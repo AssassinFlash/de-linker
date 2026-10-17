@@ -27,6 +27,7 @@ import json
 import os
 import struct
 import threading
+import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable, Sequence
@@ -273,6 +274,16 @@ class OnnxEmbedder:
 
 UrlOpen = Callable[..., Any]
 
+
+class EmbeddingError(RuntimeError):
+    """The embedding endpoint did not return vectors after every attempt.
+
+    Raised, never swallowed: the model routing law of 2026-10-11 forbids a silent
+    fallback when OpenRouter fails, so a search whose query cannot be encoded fails
+    with this error instead of ranking by keywords.
+    """
+
+
 # gemini-embedding-2: 3072 dimensions by default (Gemini embeddings guide); the API
 # rejects more than 100 inputs per request ("at most 100 requests can be in one batch",
 # AIHubMix error, 2026-10-09). Task formats from the guide's asymmetric retrieval table:
@@ -280,6 +291,20 @@ UrlOpen = Callable[..., Any]
 # "title: {title} | text: {content}".
 GEMINI_DIMENSIONS = 3072
 GEMINI_BATCH = 100
+# A query is encoded while a customer waits. OpenRouter encodes one in 0.46 s median,
+# 0.83 s at most from the VPS, and 3.8 s median, 5.35 s at most from the Mac
+# (12 requests each, measured 2026-10-17, issue #257), so an attempt may take 10 s.
+# Two attempts with 0.5 s between them end within 20.5 s; a failed turn searches
+# twice (cycle.run retries the generation once), 41 s, inside the shell's 60 s
+# proxy budget for the whole turn. A third attempt would pass it (63 s).
+QUERY_TIMEOUT = 10.0
+QUERY_ATTEMPTS = 2
+QUERY_BACKOFF = 0.5
+# A corpus build waits for big batches: one request of 100 chunks takes about 4 s
+# through AIHubMix (measured 2026-10-09) and the build has no customer waiting, so a
+# request may take minutes; one retry has covered every endpoint blip of a build.
+BUILD_TIMEOUT = 300.0
+BUILD_ATTEMPTS = 2
 # Requests in flight while embedding many texts. One request takes about 4 s through
 # AIHubMix (measured 2026-10-09); four keep a corpus build to minutes.
 GEMINI_WORKERS = 4
@@ -308,6 +333,8 @@ class GeminiEmbedder:
         base_url: str,
         urlopen: UrlOpen = urllib.request.urlopen,
         model: str = GEMINI,
+        # The clock of the query retry backoff; injected so tests need no waiting.
+        sleep: Callable[[float], None] = time.sleep,
     ) -> None:
         self._api_key = api_key
         self.model = model
@@ -315,10 +342,22 @@ class GeminiEmbedder:
         stem = base_url.rstrip("/").removesuffix("/v1")
         self._url = stem + "/v1/embeddings"
         self._urlopen = urlopen
+        self._sleep = sleep
         self._lock = threading.Lock()
         self.tokens = 0
 
-    def _embed(self, texts: Sequence[str]) -> list[bytes]:
+    def _embed(
+        self,
+        texts: Sequence[str],
+        timeout: float = BUILD_TIMEOUT,
+        attempts: int = BUILD_ATTEMPTS,
+        backoff: float = 0.0,
+    ) -> list[bytes]:
+        """Vectors of `texts`, or EmbeddingError once every attempt has failed.
+
+        A transport error, a timeout, a 429 or a 5xx is tried again; any other HTTP
+        error and an answer without the right vectors are final at once.
+        """
         request = urllib.request.Request(
             self._url,
             data=json.dumps({"model": self.model, "input": list(texts)}).encode(),
@@ -327,22 +366,43 @@ class GeminiEmbedder:
                 "Content-Type": "application/json",
             },
         )
-        try:
-            with self._urlopen(request, timeout=300) as response:
-                payload = json.load(response)
-        except urllib.error.URLError:
-            # The Mac's egress and the endpoint both hiccup (a proxy 503 was seen
-            # mid-evaluation); one immediate retry has covered every such blip.
-            with self._urlopen(request, timeout=300) as response:
-                payload = json.load(response)
-        rows = sorted(payload["data"], key=lambda row: int(row["index"]))
-        if len(rows) != len(texts):
-            raise RuntimeError(
-                f"{self.model} returned {len(rows)} embeddings for {len(texts)} texts"
-            )
-        with self._lock:
-            self.tokens += int(payload.get("usage", {}).get("total_tokens", 0))
-        return [pack([float(value) for value in row["embedding"]]) for row in rows]
+        for attempt in range(1, attempts + 1):
+            try:
+                with self._urlopen(request, timeout=timeout) as response:
+                    payload = json.load(response)
+                rows = sorted(payload["data"], key=lambda row: int(row["index"]))
+                vectors = [
+                    pack([float(value) for value in row["embedding"]]) for row in rows
+                ]
+            except urllib.error.HTTPError as error:
+                if (error.code != 429 and error.code < 500) or attempt == attempts:
+                    raise EmbeddingError(
+                        f"{self.model}: HTTP {error.code} on attempt {attempt} of "
+                        f"{attempts}"
+                    ) from error
+            except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+                if attempt == attempts:
+                    raise EmbeddingError(
+                        f"{self.model}: {type(error).__name__} after {attempts} "
+                        f"attempts: {error}"
+                    ) from error
+            except (ValueError, KeyError, TypeError) as error:
+                raise EmbeddingError(
+                    f"{self.model}: unexpected response ({type(error).__name__}: "
+                    f"{error})"
+                ) from error
+            else:
+                if len(vectors) != len(texts):
+                    raise EmbeddingError(
+                        f"{self.model} returned {len(vectors)} embeddings for "
+                        f"{len(texts)} texts"
+                    )
+                with self._lock:
+                    self.tokens += int(payload.get("usage", {}).get("total_tokens", 0))
+                return vectors
+            if backoff:
+                self._sleep(backoff * 2 ** (attempt - 1))
+        raise EmbeddingError(f"{self.model}: no attempt was made")
 
     def _embed_all(self, texts: Sequence[str]) -> list[bytes]:
         batches = [
@@ -371,7 +431,13 @@ class GeminiEmbedder:
         )
 
     def embed_query(self, text: str) -> bytes:
-        return self._embed([f"task: question answering | query: {text}"])[0]
+        """One query, on the customer's clock: QUERY_TIMEOUT, QUERY_ATTEMPTS."""
+        return self._embed(
+            [f"task: question answering | query: {text}"],
+            timeout=QUERY_TIMEOUT,
+            attempts=QUERY_ATTEMPTS,
+            backoff=QUERY_BACKOFF,
+        )[0]
 
 
 _OPENROUTER_FILE = Path("~/.config/terravolt-builder/openrouter.env").expanduser()

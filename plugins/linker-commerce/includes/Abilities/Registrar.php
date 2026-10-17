@@ -60,9 +60,10 @@ final class Registrar {
 
 	/**
 	 * Every ability of this plugin, name => instance. One class per ability
-	 * (docs/specs/13-genie.md). Write actions are not in this list.
+	 * (docs/specs/13-genie.md). Write actions are not in this list. The document
+	 * search is the Genie service's own tool (docs/specs/10-knowledge-index.md).
 	 *
-	 * @return array<string, CheckCompatibility|CompareProducts|GetCommerceVersion|GetProduct|HandoffTeam|InquiryStatus|SearchKnowledge|SearchProducts|SizeHint>
+	 * @return array<string, CheckCompatibility|CompareProducts|GetCommerceVersion|GetProduct|HandoffTeam|InquiryStatus|SearchProducts|SizeHint>
 	 */
 	public function abilities(): array {
 		return array(
@@ -74,7 +75,6 @@ final class Registrar {
 			SizeHint::NAME           => new SizeHint(),
 			InquiryStatus::NAME      => new InquiryStatus(),
 			HandoffTeam::NAME        => new HandoffTeam(),
-			SearchKnowledge::NAME    => new SearchKnowledge(),
 		);
 	}
 }

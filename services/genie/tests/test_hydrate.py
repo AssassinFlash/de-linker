@@ -1,11 +1,19 @@
 """Placeholders are filled from this turn's tools; leftover IDs stay visible."""
 
+from typing import Any
+
 import pytest
 from pydantic import ValidationError
 
 from linker_genie.facts import Fact, TurnFacts, collect
 from linker_genie.hydrate import fill, hydrate, leftover_placeholders
-from linker_genie.schema import CardsBlock, HandoffBlock, TextBlock, TurnOutput
+from linker_genie.schema import (
+    CardsBlock,
+    DocumentBlock,
+    HandoffBlock,
+    TextBlock,
+    TurnOutput,
+)
 
 
 def test_fill_replaces_known_placeholders() -> None:
@@ -200,3 +208,130 @@ def test_a_power_or_energy_value_carries_its_unit() -> None:
     )
     assert fill("{fact:p6483.ac_power_kw} kW", gathered) == "3 kW"
     assert fill("{fact:p3582.usable_kwh}kWh", gathered) == "8.03kWh"
+
+
+def _knowledge(locale: str = "en") -> TurnFacts:
+    return collect(
+        "linker/search-knowledge",
+        {
+            "hits": [
+                {
+                    "chunk_id": "770c-p37-63a0",
+                    "title": "SAJ H2 manual",
+                    "page": 37,
+                    "doc_url": "https://de-linker.com/h2.pdf",
+                    "text": "| No. of MPPT | [n1=3] | Selling Power Limit [n2=5000 W] |",
+                    "figures": {"770c-p37-63a0.n1": "3", "770c-p37-63a0.n2": "5000 W"},
+                },
+                {
+                    "chunk_id": "a786-p1-b113",
+                    "title": "GoodWe warranty",
+                    "page": 1,
+                    "doc_url": "https://de-linker.com/gw.pdf",
+                    "text": "[n1=10 years] from [n2=1 st January 2026]",
+                    "figures": {
+                        "a786-p1-b113.n1": "10 years",
+                        "a786-p1-b113.n2": "1 st January 2026",
+                    },
+                },
+                {
+                    "chunk_id": "770c-p38-f6f6",
+                    "title": "SAJ H2 manual",
+                    "page": 38,
+                    "doc_url": "https://de-linker.com/h2.pdf",
+                    "text": "More rows.",
+                    "figures": {},
+                },
+            ]
+        },
+        locale,
+    )
+
+
+def _links(blocks: list[Any]) -> list[tuple[str, str | None, str | None]]:
+    return [(b.ref, b.label, b.url) for b in blocks if isinstance(b, DocumentBlock)]
+
+
+def test_a_document_figure_is_filled_and_its_chunk_linked() -> None:
+    output = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="It has {fact:770c-p37-63a0.n1} MPPTs.", refs=[])],
+    )
+
+    blocks = hydrate(output, _knowledge()).blocks
+
+    assert blocks[0].text == "It has 3 MPPTs."  # type: ignore[union-attr]
+    assert _links(blocks) == [
+        (
+            "770c-p37-63a0",
+            "SAJ H2 manual · p.\u00a037",
+            "https://de-linker.com/h2.pdf#page=37",
+        )
+    ]
+
+
+def test_cited_chunks_become_one_link_per_file_after_the_answer() -> None:
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="First part.", refs=["770c-p37-63a0"]),
+            CardsBlock(product_ids=[3556]),
+            TextBlock(text="Second part.", refs=["770c-p38-f6f6", "a786-p1-b113"]),
+        ],
+    )
+
+    blocks = hydrate(output, _knowledge()).blocks
+
+    assert [block.type for block in blocks] == [
+        "text", "cards", "text", "document", "document",
+    ]  # fmt: skip
+    assert [(ref, label) for ref, label, _ in _links(blocks)] == [
+        ("770c-p37-63a0", "SAJ H2 manual · pp.\u00a037, 38"),
+        ("a786-p1-b113", "GoodWe warranty · p.\u00a01"),
+    ]
+
+
+def test_a_german_answer_localizes_the_figures_and_links_in_german() -> None:
+    output = TurnOutput(
+        language="de",
+        blocks=[
+            TextBlock(
+                text="Ab dem {fact:a786-p1-b113.n2} gelten {fact:a786-p1-b113.n1}.",
+                refs=["a786-p1-b113"],
+            )
+        ],
+    )
+
+    blocks = hydrate(output, _knowledge("de")).blocks
+
+    assert blocks[0].text == "Ab dem 1. Januar 2026 gelten 10 Jahre."  # type: ignore[union-attr]
+    assert [label for _, label, _ in _links(blocks)] == ["GoodWe warranty · S.\u00a01"]
+
+
+def test_a_chunk_the_model_linked_itself_is_not_linked_twice() -> None:
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="See the manual.", refs=["770c-p37-63a0"]),
+            DocumentBlock(ref="770c-p37-63a0"),
+        ],
+    )
+
+    blocks = hydrate(output, _knowledge()).blocks
+
+    assert [ref for ref, _, _ in _links(blocks)] == ["770c-p37-63a0"]
+
+
+def test_a_unit_written_twice_is_written_once() -> None:
+    assert (
+        fill("limit {fact:770c-p37-63a0.n2} W here", _knowledge())
+        == "limit 5000 W here"
+    )
+    assert fill("{fact:770c-p37-63a0.n1} MPPTs", _knowledge()) == "3 MPPTs"
+
+
+def test_two_adjacent_placeholders_both_fill() -> None:
+    """Issue #257 trial run: the unit check swallowed the second placeholder."""
+    text = "{fact:770c-p37-63a0.n1}–{fact:770c-p37-63a0.n2}."
+
+    assert fill(text, _knowledge()) == "3–5000 W."

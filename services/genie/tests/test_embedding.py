@@ -20,6 +20,9 @@ from linker_genie.embedding import (
     E5_SMALL,
     GEMINI_BATCH,
     OPEN_MODELS,
+    QUERY_ATTEMPTS,
+    QUERY_TIMEOUT,
+    EmbeddingError,
     GeminiEmbedder,
     OnnxEmbedder,
     Passage,
@@ -96,6 +99,76 @@ def test_a_document_without_title_is_marked_none() -> None:
     assert api.requests[0]["input"] == ["title: none | text: t"]
 
 
+class FailingApi:
+    """Fails every request with `error`; counts the requests and their timeouts."""
+
+    def __init__(self, error: Exception) -> None:
+        self.error = error
+        self.timeouts: list[float] = []
+
+    @contextmanager
+    def __call__(self, request: Any, timeout: float) -> Iterator[io.BytesIO]:
+        self.timeouts.append(timeout)
+        raise self.error
+        yield io.BytesIO()  # pragma: no cover - never reached
+
+
+def _http_error(code: int) -> urllib.error.HTTPError:
+    return urllib.error.HTTPError("https://a.example", code, "x", {}, None)  # type: ignore[arg-type]
+
+
+def test_a_query_that_never_encodes_raises_after_its_attempts() -> None:
+    api = FailingApi(urllib.error.URLError("proxy 503"))
+    waits: list[float] = []
+    encoder = GeminiEmbedder("k", "https://a.example", urlopen=api, sleep=waits.append)
+
+    with pytest.raises(EmbeddingError, match=f"after {QUERY_ATTEMPTS} attempts"):
+        encoder.embed_query("How many MPPT?")
+
+    assert api.timeouts == [QUERY_TIMEOUT] * QUERY_ATTEMPTS
+    assert waits == [0.5 * 2**n for n in range(QUERY_ATTEMPTS - 1)]
+    assert QUERY_ATTEMPTS >= 2
+
+
+@pytest.mark.parametrize("code", [429, 502, 503])
+def test_a_throttled_or_failing_endpoint_is_tried_again(code: int) -> None:
+    api = FailingApi(_http_error(code))
+
+    with pytest.raises(EmbeddingError, match=f"HTTP {code}"):
+        GeminiEmbedder(
+            "k", "https://a.example", urlopen=api, sleep=lambda _: None
+        ).embed_query("q")
+
+    assert len(api.timeouts) == QUERY_ATTEMPTS
+
+
+@pytest.mark.parametrize("code", [400, 401, 404])
+def test_a_refused_request_fails_at_once(code: int) -> None:
+    api = FailingApi(_http_error(code))
+
+    with pytest.raises(EmbeddingError, match=f"HTTP {code} on attempt 1"):
+        GeminiEmbedder(
+            "k", "https://a.example", urlopen=api, sleep=lambda _: None
+        ).embed_query("q")
+
+    assert len(api.timeouts) == 1
+
+
+def test_an_answer_without_vectors_fails_at_once() -> None:
+    class EmptyApi:
+        calls = 0
+
+        @contextmanager
+        def __call__(self, request: Any, timeout: float) -> Iterator[io.BytesIO]:
+            EmptyApi.calls += 1
+            yield io.BytesIO(json.dumps({"error": "no data"}).encode())
+
+    with pytest.raises(EmbeddingError, match="unexpected response"):
+        GeminiEmbedder("k", "https://a.example", urlopen=EmptyApi()).embed_query("q")
+
+    assert EmptyApi.calls == 1
+
+
 def test_gemini_retries_once_on_a_transport_error() -> None:
     class FlakyApi:
         def __init__(self) -> None:
@@ -112,7 +185,9 @@ def test_gemini_retries_once_on_a_transport_error() -> None:
 
     api = FlakyApi()
 
-    vector = GeminiEmbedder("k", "https://a.example", urlopen=api).embed_query("q")
+    vector = GeminiEmbedder(
+        "k", "https://a.example", urlopen=api, sleep=lambda _: None
+    ).embed_query("q")
 
     assert api.calls == 2
     assert vector == pack([1.0])

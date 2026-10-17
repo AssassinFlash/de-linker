@@ -1,0 +1,20 @@
+[
+  {"trial": 2, "lang": "en", "question": "What is the max PV input power of the SAJ H2-10K-T3?", "expect": {"all": ["20000|20 000|20,000|20\\.000"]}},
+  {"trial": 2, "lang": "de", "question": "Wie hoch ist die maximale PV-Eingangsleistung des SAJ H2-10K-T3?", "expect": {"all": ["20000|20 000|20,000|20\\.000"]}},
+  {"trial": 3, "lang": "de", "question": "Wie viele MPPT hat der SAJ H2-10K-T3?", "expect": {"all": ["(?<![\\d.])3(?![\\d.])", "MPP"]}},
+  {"trial": 3, "lang": "en", "question": "How many MPPTs does the SAJ H2-10K-T3 have?", "expect": {"all": ["(?<![\\d.])3(?![\\d.])", "MPP"]}},
+  {"trial": 5, "lang": "de", "question": "Welcher Speicher passt zum GoodWe ESA 10 kW?", "expect": {"all": ["BAT-D-G20"]}},
+  {"trial": 5, "lang": "en", "question": "Which battery fits the GoodWe ESA 10 kW?", "expect": {"all": ["BAT-D-G20"]}},
+  {"trial": 6, "lang": "en", "question": "What is the usable capacity of the Pylontech L260 Omni?", "expect": {"all": ["260 ?kWh|260kWh"]}},
+  {"trial": 6, "lang": "de", "question": "Wie groß ist die nutzbare Kapazität des Pylontech L260 Omni?", "expect": {"all": ["260 ?kWh|260kWh"]}},
+  {"trial": 7, "lang": "de", "question": "Welche Garantie gibt GoodWe auf Wechselrichter in Europa?", "expect": {"all": ["10 ?(Jahre|years)", "2026"]}},
+  {"trial": 7, "lang": "en", "question": "What warranty does GoodWe give on inverters in Europe?", "expect": {"all": ["10 ?(Jahre|years)", "2026"]}},
+  {"trial": 8, "lang": "en", "question": "Is the EcoFlow OCEAN 2 single-phase or three-phase, and what is its rated power?", "expect": {"all": ["(?i)single[- ]phase|1-phase|einphasig", "\\d ?k?W\\b"]}},
+  {"trial": 8, "lang": "de", "question": "Ist der EcoFlow OCEAN 2 einphasig oder dreiphasig, und wie hoch ist seine Nennleistung?", "expect": {"all": ["(?i)single[- ]phase|1-phase|einphasig", "\\d ?k?W\\b"]}},
+  {"trial": 9, "lang": "en", "question": "How do I set the export limit on an SAJ H2 inverter?", "expect": {"all": ["(?i)export limit|6\\.6"]}},
+  {"trial": 9, "lang": "de", "question": "Wie stelle ich die Einspeisebegrenzung an einem SAJ H2 Wechselrichter ein?", "expect": {"all": ["(?i)export limit|6\\.6|Einspeisebegrenzung|Exportlimit"]}},
+  {"trial": 10, "lang": "de", "question": "Wie wird der SAJ CB2-100.3-HV5 installiert? Welcher Mindestabstand?", "expect": {"all": ["1500 ?mm", "1000 ?mm", "500 ?mm", "400 ?mm"]}},
+  {"trial": 10, "lang": "en", "question": "How is the SAJ CB2-100.3-HV5 installed? What minimum clearance?", "expect": {"all": ["1500 ?mm", "1000 ?mm", "500 ?mm", "400 ?mm"]}},
+  {"trial": 19, "lang": "en", "question": "Does the SAJ H2 support EnWG 14a dimming?", "expect": {"all": ["(?i)(do|does)( not|n't)( \\w+)? (state|mention|say|describe|cover|list|specify|confirm)|no (statement|mention|information)|not (stated|mentioned|documented)"], "none": ["(?i)\\byes\\b,? (the|it)"]}},
+  {"trial": 19, "lang": "de", "question": "Unterstützt der SAJ H2 das Dimmen nach EnWG §14a?", "expect": {"all": ["(?i)nicht (genannt|erwähnt|beschrieben|angegeben|dokumentiert|aufgeführt|bestätigt)|nennen .*nicht|keine Angabe|nicht .*(nennen|erwähnen|beschreiben|angeben|aufführen|bestätigen)|sagen .*nicht|geht .*nicht hervor"], "none": ["(?i)\\bja\\b,? (der|er|das)"]}}
+]

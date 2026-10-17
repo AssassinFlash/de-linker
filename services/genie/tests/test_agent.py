@@ -182,3 +182,146 @@ def test_the_prompt_lists_the_document_refs_the_route_fetched() -> None:
         "Document refs you may link, and no others: p4106.document.0 = SAJ CHS2 Datasheet"
         in prompt
     )
+
+
+def test_the_knowledge_runner_records_the_ranking_and_hands_the_model_its_view() -> (
+    None
+):
+    from linker_genie.agent import _knowledge_runner
+
+    def search(arguments: dict[str, Any] | None) -> dict[str, Any]:
+        return {
+            "ranking": "vector",
+            "encoder": "google/gemini-embedding-2",
+            "index_version": "v1",
+            "hits": [
+                {
+                    "chunk_id": "c1",
+                    "doc_url": "https://de-linker.com/x.pdf",
+                    "title": "Manual",
+                    "page": 2,
+                    "section": "",
+                    "text": "[n1=3] MPPT",
+                    "figures": {"c1.n1": "3"},
+                }
+            ],
+        }
+
+    budget = ToolBudget()
+    runner = _knowledge_runner(search, budget, "en")
+
+    seen = runner({"query": "MPPT", "lang": "en"})
+
+    assert "doc_url" not in seen["hits"][0] and "figures" not in seen["hits"][0]
+    facts = budget.facts()
+    assert facts.facts["c1.n1"].value == "3"
+    assert facts.tool_calls == [
+        {
+            "name": "linker/search-knowledge",
+            "arguments": {"query": "MPPT", "lang": "en"},
+            "ok": True,
+            "ranking": "vector",
+            "encoder": "google/gemini-embedding-2",
+            "index_version": "v1",
+            "result": search({}),
+        }
+    ]
+
+
+def _document_payload() -> dict[str, Any]:
+    return {
+        "ranking": "vector",
+        "hits": [
+            {
+                "chunk_id": "c1",
+                "title": "M",
+                "page": 2,
+                "doc_url": "https://de-linker.com/m.pdf",
+                "section": "",
+                "text": "[n1=3] MPPT",
+                "figures": {"c1.n1": "3"},
+            }
+        ],
+    }
+
+
+def test_a_routed_document_search_reads_like_the_models_own_call() -> None:
+    from linker_genie.route import Call, Route
+    from linker_genie.understand import Prepared
+
+    arguments = {"query": "How many MPPT?", "lang": "en"}
+    prepared = Prepared(
+        route=Route("documents", calls=(Call("linker/search-knowledge", arguments),)),
+        results=[
+            {
+                "name": "linker/search-knowledge",
+                "arguments": arguments,
+                "result": _document_payload(),
+            }
+        ],
+    )
+    request = TurnRequest(
+        conversation_id="c",
+        messages=[TurnMessage(role="user", content="How many MPPT?")],
+    )
+
+    prompt = _user_prompt(request, None, prepared)
+
+    assert '"text": "[n1=3] MPPT"' in prompt
+    assert "doc_url" not in prompt and '"figures"' not in prompt
+
+
+def test_a_failed_routed_document_search_ends_the_generation() -> None:
+    from linker_genie.agent import make_generate
+    from linker_genie.knowledge import KnowledgeUnavailable
+    from linker_genie.route import Route
+    from linker_genie.understand import Prepared
+
+    prepared = Prepared(
+        route=Route("documents"),
+        knowledge_error="linker/search-knowledge: gemini: HTTP 401 on attempt 1 of 2",
+    )
+    generate = make_generate(
+        AbilityClient("http://127.0.0.1:9"), model=object(), prepared=prepared
+    )
+    request = TurnRequest(
+        conversation_id="c", messages=[TurnMessage(role="user", content="MPPT?")]
+    )
+
+    with pytest.raises(KnowledgeUnavailable, match="HTTP 401"):
+        generate(request, None)
+
+
+def test_the_route_runs_the_document_search_in_process() -> None:
+    from linker_genie.embedding import EmbeddingError
+    from linker_genie.route import Call, Route
+    from linker_genie.understand import Prepared, _run_calls
+
+    class NoWordPress:
+        def record(self, *args: Any, **kwargs: Any) -> Any:
+            raise AssertionError("the document search is not a WordPress ability")
+
+    arguments = {"query": "MPPT", "lang": "en"}
+    route = Route("documents", calls=(Call("linker/search-knowledge", arguments),))
+    request = TurnRequest(
+        conversation_id="c", messages=[TurnMessage(role="user", content="MPPT")]
+    )
+
+    prepared = Prepared(route=route)
+    _run_calls(prepared, request, NoWordPress(), lambda _: _document_payload())  # type: ignore[arg-type]
+
+    assert prepared.facts.facts["c1.n1"].value == "3"
+    assert prepared.facts.tool_calls[0]["ranking"] == "vector"
+    assert prepared.results[0]["result"]["hits"][0]["doc_url"].endswith("m.pdf")
+    assert prepared.knowledge_error is None
+
+    def broken(_: Any) -> dict[str, Any]:
+        raise EmbeddingError("gemini: URLError after 2 attempts")
+
+    failed = Prepared(route=route)
+    _run_calls(failed, request, NoWordPress(), broken)  # type: ignore[arg-type]
+
+    assert failed.knowledge_error == (
+        "linker/search-knowledge: gemini: URLError after 2 attempts"
+    )
+    assert failed.results == []

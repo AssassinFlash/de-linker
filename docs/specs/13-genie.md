@@ -35,12 +35,12 @@
 | `linker/size-hint` | `{pv_kwp?, annual_load_kwh?, phase?, backup?, plz?}` | `{summary, configurator_url(预填)}`（调 #14 引擎） |
 | `linker/inquiry-status` | `{}`（登录） | 本账户询盘列表与状态 |
 | `linker/handoff-team` | `{summary}` | `{sentence_en, sentence_de, mailto}` |
-| `linker/search-knowledge` | `{query, lang, product_ids?}` | #10 的检索结果（块 ID、文档、页） |
-只读 ability 匿名可调；写动作（加入 Lösungsentwurf、加入方案）不是 ability，由浏览器执行。
+只读 ability 匿名可调；写动作（加入 Lösungsentwurf、加入方案）不是 ability，由浏览器执行。文档检索 `linker/search-knowledge` 不是 WordPress ability：它是服务自己的工具（见 B 与规格 10「唯一检索源」，#257）。
 
 ### B. 服务（`services/genie`，FastAPI + Pydantic AI）
 - `POST /turn`（SSE 流）：`{conversation_id, messages[], locale, page_context:{type: category|product|draft|account|other, product_id?, draft_ids?}, user:{logged_in, partner?}}`。
 - Ability 调用的瞬态失败重试：5xx 与连接层异常（httpx `TransportError`）退避重试（3 次尝试、指数退避 0.25 s/0.5 s），仍失败抛 `AbilityError` 进既有兜底——失败写入轮次 meta（`fallback`/`failures`），不静默、不从服务层 500 逃逸（`abilities.py::AbilityClient._get`）。WordPress 侧的对象缓存（Redis）抖动是这一失败的主要历史来源：实例的 drop-in 现以 `WP_REDIS_GRACEFUL` 运行（规格 5、17），读失败降级为请求内缓存而非杀请求。
+- 文档检索：`linker/search-knowledge`（`{query, lang, product_ids?}`）在服务进程内读 VPS 上发布的 SQLite 索引（`linker_genie/knowledge.py`，规格 10「唯一检索源」）。路由的调用（`understand._run_calls`）和模型的工具调用走同一个 `knowledge.record`。模型读到的块文本里，每个数字都标成 `[nK=值]`；回答里写 `{fact:块ID.nK}`，水合时填入。答案依据的块由服务端加成文档链接（文档块，#233）。路由的文档检索失败时（编码或索引出错），这一轮直接进兜底，不会写出一个缺少所需文档的回答；同样不退回关键词。
 - Agent：工具 = A 的 ability（HTTP，服务令牌只用于 inquiry-status 的用户上下文透传，不持 WP 写权限）；每轮 ≤4 次工具调用；strict 结构化输出 `{language, blocks:[{type:'text', text, refs:[fact_id]} | {type:'ask', field, options[]} | {type:'cards', product_ids[]} | {type:'compare', product_ids[]} | {type:'action', name, args} | {type:'handoff', summary}]}`；文本不含数字，写 `{fact:ID}` 占位。
 - 运行时只有两个机制，都复刻自对标物：① **结构化输出**——模型只能产出带商品/事实 ID 的结构（Pydantic AI strict schema；非法结构由库拒绝并重答一次，再不行回退为"只列 qualified 卡 + 一个追问"的模板）；② **服务端填数（hydration，Rufus 的做法）**——文本里的数值由服务端从本轮工具结果填入。**没有文本改写，没有正则，没有审查层。** 范围外意图由模型按 schema 选择 handoff 块（提示词定义），不由代码判词。
 - 水合：服务端把占位符替换为工具结果里的值与单位；卡片数据由壳按 product_id 再取。

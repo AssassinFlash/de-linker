@@ -20,10 +20,13 @@ The five checks, matching the ticket and old-repo-006 §2:
    Digit runs inside a placeholder do not count.
 
 Ask's wording "数字出现在被引块" is the knowledge-index citation rule
-(docs/specs/10-knowledge-index.md): a number the answer states must occur in
-a cited chunk. When the turn cites chunks, filled numbers are checked
-against those chunk texts. When it does not cite chunks, check 5 still
-forbids bare digits in the model text.
+(docs/specs/10-knowledge-index.md): a number the answer states from a
+document must occur in a cited chunk. A document's numbers reach the answer
+only as figures of a retrieved chunk (`{fact:CHUNK_ID.nK}`, `figures.tag`),
+and each figure's value is checked against the chunk texts of this turn.
+Product facts (`pID.FIELD`) come from the product data, not from documents,
+and are not held to the chunk texts. Check 5 forbids bare digits in the model
+text either way.
 
 Beside the five, the checks of the understanding layer (#233):
 
@@ -52,6 +55,7 @@ import re
 from dataclasses import dataclass
 
 from linker_genie.facts import Fact, TurnFacts
+from linker_genie.figures import is_code
 from linker_genie.hydrate import leftover_placeholders
 from linker_genie.route import Route
 from linker_genie.schema import (
@@ -95,9 +99,20 @@ _MODEL_CODE = re.compile(
 
 
 def _bare_numbers(text: str) -> list[str]:
-    """Digit tokens that stand outside alphanumeric model codes."""
+    """Digit tokens that stand outside alphanumeric model codes.
+
+    A model code keeps its numeric segments: "CB2-100.3-HV5" is a name, written
+    plainly (`_MODEL_CODE`, #233; and a whole word that `figures.is_code` reads as
+    a name, #257, which also covers codes written in lower case).
+    """
     text = _MODEL_CODE.sub(" ", text)
-    return [token for token in _TOKEN.findall(text) if _NUMERIC_TOKEN.fullmatch(token)]
+    return [
+        token
+        for word in text.split()
+        if not is_code(word)
+        for token in _TOKEN.findall(word)
+        if _NUMERIC_TOKEN.fullmatch(token)
+    ]
 
 
 @dataclass(frozen=True)
@@ -353,7 +368,9 @@ def _no_bare_numbers(output: TurnOutput, facts: TurnFacts) -> list[str]:
                     fact = facts.facts.get(fact_id)
                     if fact is None:
                         fact = _fact_known(facts, fact_id)
-                    if fact is None:
+                    if fact is None or fact.source != "search-knowledge":
+                        continue
+                    if fact.id.endswith(".text") or fact.id in facts.chunk_ids:
                         continue
                     digits = _bare_numbers(fact.value)
                     if digits and not any(

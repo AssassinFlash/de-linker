@@ -269,16 +269,47 @@ def test_action_url_not_from_the_tools_is_refused() -> None:
     assert any("url is not from this turn" in item for item in result.failures)
 
 
-def test_number_not_in_cited_chunk_is_refused() -> None:
+def test_a_document_figure_not_in_its_chunk_is_refused() -> None:
     facts = _facts()
-    facts.add(Fact(id="p4107.made_up", value="99", source="selection-facts"))
+    facts.add(Fact(id="c1.n9", value="99", source="search-knowledge"))
     output = TurnOutput(
         language="en",
-        blocks=[
-            TextBlock(text="Secret rating {fact:p4107.made_up}.", refs=["4107", "c1"]),
-            CardsBlock(product_ids=[4107]),
-        ],
+        blocks=[TextBlock(text="Secret rating {fact:c1.n9} kW.", refs=["c1"])],
     )
     result = check(output, facts)
     assert not result.ok
     assert any("cited chunk" in item for item in result.failures)
+
+
+def test_a_document_figure_from_its_chunk_passes() -> None:
+    facts = _facts()
+    facts.add(Fact(id="c1.n1", value="10 kW", source="search-knowledge"))
+    output = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="Rated at {fact:c1.n1}.", refs=["c1"])],
+    )
+    assert check(output, facts).ok
+
+
+def test_product_facts_are_not_held_to_the_chunk_texts() -> None:
+    facts = _facts()
+    facts.add(Fact(id="p4107.price", value="1234.00", source="search-products"))
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="Net price {fact:p4107.price}, see the manual.",
+                refs=["4107", "c1"],
+            ),
+            CardsBlock(product_ids=[4107]),
+        ],
+    )
+    assert check(output, facts).ok
+
+
+def test_a_model_code_with_a_decimal_segment_is_not_a_bare_number() -> None:
+    output = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="The CB2-100.3-HV5 stands upright.", refs=["c1"])],
+    )
+    assert check(output, _facts()).ok
