@@ -103,8 +103,8 @@ class Entries {
 	}
 
 	/**
-	 * The Ask Genie chip of the catalogue search box, mountable in the
-	 * LiveCanvas templates that render the catalogue (ticket #68: the markup
+	 * The Ask Genie chip of the products search box, mountable in the
+	 * LiveCanvas templates that render the products page (ticket #68: the markup
 	 * of the search box itself belongs to those templates; this chip and its
 	 * script are the part the entries own). The chip is hidden until the
 	 * script's question detection shows it — without JavaScript the search
@@ -155,8 +155,8 @@ class Entries {
 	}
 
 	/**
-	 * The search box's script: on the pages that carry the catalogue's search
-	 * box (the catalogue and its categories) and on pages that mount the chip
+	 * The search box's script: on the pages that carry the products search
+	 * box (all products and the product categories) and on pages that mount the chip
 	 * shortcode. The chip is markup of those pages; the script only binds to
 	 * what they carry.
 	 */
@@ -189,7 +189,7 @@ class Entries {
 	}
 
 	/**
-	 * Whether the page carries the catalogue's search box or mounts the chip.
+	 * Whether the page carries the products search box or mounts the chip.
 	 */
 	private function has_search_surface(): bool {
 		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
@@ -497,7 +497,7 @@ JS,
 	}
 
 	/**
-	 * Shop chip: opens Genie over the catalogue.
+	 * Shop chip: opens Genie over the products page.
 	 */
 	public function shop_chip(): void {
 		$this->print_group( 'category' );
@@ -528,7 +528,7 @@ JS,
 	 * The chip groups of one page type: the one list the Woo hooks and the
 	 * LiveCanvas templates' shortcode both read.
 	 *
-	 * A real question carries its own `ask`. The catalogue opener does not:
+	 * A real question carries its own `ask`. The products-page opener does not:
 	 * "Ask Genie" / "Genie fragen" only opens the dock
 	 * (docs/specs/13-genie.md: the shop opener sends no message of its own).
 	 * Omitting `ask` is the absence, not an empty string the loader could send.
@@ -610,7 +610,7 @@ JS,
 	 * One chip that opens the dock, and asks only when it carries a question.
 	 *
 	 * The label is the visible text. The first question is the explicit `$ask`
-	 * the loader delivers (`data-ask-message`). An opener such as the catalogue
+	 * the loader delivers (`data-ask-message`). An opener such as the products page
 	 * "Ask Genie" button passes an empty ask and prints no payload, so a click
 	 * opens the dock without sending the label (docs/specs/13-genie.md).
 	 *
@@ -666,7 +666,7 @@ JS,
 					__( 'What happens next?', 'linker-tools' ),
 				);
 			case 'category':
-				// The catalogue page (/products/), which has no category of its own.
+				// All products (/products/), which has no category of its own.
 				return array(
 					__( 'Which model fits my project?', 'linker-tools' ),
 					__( 'Compare SAJ and GoodWe hybrid inverters', 'linker-tools' ),

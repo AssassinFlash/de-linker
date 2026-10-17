@@ -44,12 +44,15 @@ final class PageContext {
 	private const FAQ_PATH = 'faq-download';
 
 	/**
-	 * The longest title the service accepts (schema.py `PageContext.title`).
+	 * The longest title the service accepts (schema.py `PageContext.title`,
+	 * whose comment gives the source: the longest published title of the
+	 * snapshot of 2026-10-18 has 95 characters).
 	 */
 	private const TITLE_LENGTH = 300;
 
 	/**
-	 * The longest address the service accepts (schema.py `PageContext.url`).
+	 * The longest address the service accepts (schema.py `PageContext.url`:
+	 * the sitemaps protocol's limit of 2,048 characters for a page address).
 	 */
 	private const URL_LENGTH = 2048;
 
@@ -75,7 +78,7 @@ final class PageContext {
 		if ( is_front_page() ) {
 			return array(
 				'type'    => 'home',
-				'title'   => $this->plain( (string) get_the_title( $id ) ),
+				'title'   => $this->title( (string) get_the_title( $id ) ),
 				'post_id' => $id,
 			);
 		}
@@ -84,7 +87,7 @@ final class PageContext {
 			// search-products IDs); the page shows its own language's post.
 			return array(
 				'type'       => 'product',
-				'title'      => $this->plain( (string) get_the_title( $id ) ),
+				'title'      => $this->title( (string) get_the_title( $id ) ),
 				'product_id' => $this->english( $id ),
 				'post_id'    => $id,
 			);
@@ -92,32 +95,32 @@ final class PageContext {
 		if ( function_exists( 'is_product_category' ) && is_product_category() ) {
 			return array(
 				'type'        => 'category',
-				'title'       => $this->plain( (string) single_term_title( '', false ) ),
+				'title'       => $this->title( (string) single_term_title( '', false ) ),
 				'category_id' => $id,
 			);
 		}
 		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
 			return array(
 				'type'  => 'category',
-				'title' => $this->plain( (string) get_the_title( (int) wc_get_page_id( 'shop' ) ) ),
+				'title' => $this->title( (string) get_the_title( (int) wc_get_page_id( 'shop' ) ) ),
 			);
 		}
 		if ( function_exists( 'is_cart' ) && is_cart() ) {
 			return array(
 				'type'  => 'draft',
-				'title' => $this->plain( (string) get_the_title( $id ) ),
+				'title' => $this->title( (string) get_the_title( $id ) ),
 			);
 		}
 		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
 			return array(
 				'type'  => 'account',
-				'title' => $this->plain( (string) get_the_title( $id ) ),
+				'title' => $this->title( (string) get_the_title( $id ) ),
 			);
 		}
 		if ( is_singular( 'post' ) ) {
 			return array(
 				'type'    => 'blog',
-				'title'   => $this->plain( (string) get_the_title( $id ) ),
+				'title'   => $this->title( (string) get_the_title( $id ) ),
 				'post_id' => $id,
 			);
 		}
@@ -125,19 +128,19 @@ final class PageContext {
 			$title = is_home() ? get_the_title( (int) get_option( 'page_for_posts' ) ) : single_term_title( '', false );
 			return array(
 				'type'  => 'blog',
-				'title' => $this->plain( (string) $title ),
+				'title' => $this->title( (string) $title ),
 			);
 		}
 		if ( is_page() ) {
 			return array(
 				'type'    => $this->page_type( $id ),
-				'title'   => $this->plain( (string) get_the_title( $id ) ),
+				'title'   => $this->title( (string) get_the_title( $id ) ),
 				'post_id' => $id,
 			);
 		}
 		return array(
 			'type'  => 'other',
-			'title' => $this->plain( (string) wp_get_document_title() ),
+			'title' => $this->title( (string) wp_get_document_title() ),
 		);
 	}
 
@@ -176,26 +179,43 @@ final class PageContext {
 	/**
 	 * The request's own address on this site: the site's scheme and host
 	 * (the raw `home` option — the language layer rewrites `home_url()` per
-	 * language) and the requested path, without its query.
+	 * language), the requested path and its query (a filtered or searched
+	 * listing is a page of its own; the service drops the query of a single
+	 * page).
 	 */
 	private function url(): string {
-		$uri    = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( (string) $_SERVER['REQUEST_URI'] ) ) : '/';
-		$path   = (string) wp_parse_url( $uri, PHP_URL_PATH );
+		$uri    = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( (string) $_SERVER['REQUEST_URI'] ) : '/'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- escaped whole below (esc_url_raw).
+		$parts  = wp_parse_url( $uri );
+		$parts  = is_array( $parts ) ? $parts : array();
+		$path   = (string) ( $parts['path'] ?? '/' );
+		$query  = isset( $parts['query'] ) ? '?' . $parts['query'] : '';
 		$home   = wp_parse_url( (string) get_option( 'home' ) );
 		$home   = is_array( $home ) ? $home : array();
 		$origin = ( $home['scheme'] ?? 'https' ) . '://' . ( $home['host'] ?? '' ) . ( isset( $home['port'] ) ? ':' . $home['port'] : '' );
-		return mb_substr( $origin . ( '' !== $path ? $path : '/' ), 0, self::URL_LENGTH );
+		return $this->clip_url( esc_url_raw( $origin . ( '' !== $path ? $path : '/' ) . $query ) );
 	}
 
 	/**
-	 * A title as plain text: WordPress keeps titles entity-encoded
-	 * ("EMS &amp; Monitoring").
+	 * An escaped address cut to the length the service accepts. Escaping
+	 * lengthens an address (a character becomes its percent-encoding), so
+	 * the cut comes after it, and a percent-encoding the cut split is dropped.
+	 *
+	 * @param string $url An address already escaped with esc_url_raw().
+	 */
+	private function clip_url( string $url ): string {
+		if ( mb_strlen( $url ) <= self::URL_LENGTH ) {
+			return $url;
+		}
+		return (string) preg_replace( '/%[0-9A-Fa-f]?$/', '', mb_substr( $url, 0, self::URL_LENGTH ) );
+	}
+
+	/**
+	 * A title as the service accepts it: plain text, cut to its length.
 	 *
 	 * @param string $title A post title or term name.
 	 */
-	public function plain( string $title ): string {
-		$text = trim( html_entity_decode( wp_strip_all_tags( $title ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
-		return mb_substr( $text, 0, self::TITLE_LENGTH );
+	private function title( string $title ): string {
+		return mb_substr( PlainTitle::of( $title ), 0, self::TITLE_LENGTH );
 	}
 
 	/**
@@ -218,7 +238,7 @@ final class PageContext {
 			}
 		}
 		if ( isset( $raw['url'] ) && is_string( $raw['url'] ) ) {
-			$url = esc_url_raw( mb_substr( $raw['url'], 0, self::URL_LENGTH ) );
+			$url = $this->clip_url( esc_url_raw( $raw['url'] ) );
 			if ( '' !== $url ) {
 				$page['url'] = $url;
 			}

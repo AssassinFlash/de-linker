@@ -138,7 +138,13 @@ class PageContext(Strict):
     product_id: int | None = None
     # The products of the solution draft, English posts like product_id.
     draft_ids: list[int] | None = None
+    # A page address of at most 2,048 characters: the sitemaps protocol's limit for a
+    # page URL (sitemaps.org, "less than 2,048 characters"); the shell cuts to it
+    # (PageContext.php URL_LENGTH).
     url: str | None = Field(default=None, max_length=2048)
+    # The longest published title of the snapshot of 2026-10-18 has 95 characters, the
+    # longest term name 46; 300 leaves three times the room (PageContext.php
+    # TITLE_LENGTH mirrors it).
     title: str | None = Field(default=None, max_length=300)
     # The page or blog post the page shows, in the page's own language (on a product
     # page: the product post the visitor reads, the German one on a German page).

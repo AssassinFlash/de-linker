@@ -166,7 +166,7 @@ final class Preview {
 					'name' => $this->product_name( $title ),
 				);
 			case 'category':
-				// The catalogue (/products/) is a category page without a
+				// All products (/products/) is a category page without a
 				// category; the card is for the product categories.
 				return isset( $page['category_id'] )
 					? array(
@@ -352,7 +352,7 @@ final class Preview {
 	 * @param string $title The product's title.
 	 */
 	public function product_name( string $title ): string {
-		$title = $this->pages->plain( $title );
+		$title = PlainTitle::of( $title );
 		$short = trim( (string) preg_replace( '/\s*\([^()]*\)\s*$/u', '', $title ) );
 		return '' !== $short ? $short : $title;
 	}

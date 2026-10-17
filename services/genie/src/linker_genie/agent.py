@@ -25,9 +25,11 @@ from linker_genie import knowledge, page
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
+from linker_genie.tools import MAX_TOOL_CALLS as TOOL_LIMIT
 from linker_genie.understand import Prepared
 
-MAX_TOOL_CALLS = 4
+# The per-turn call limit lives with the other shared names (tools.py).
+MAX_TOOL_CALLS = TOOL_LIMIT
 # The route's results go into the prompt as JSON; a search answers with up to six
 # cards with their facts (route.SEARCH_LIMIT), and a document search with up to 16
 # chunks: 9,500 to 23,400 characters as the model reads them on the 18 questions of
@@ -321,7 +323,8 @@ def _page_lines(request: TurnRequest) -> list[str]:
     lines.append(
         "The customer is on this page: 'this page', 'here', 'this one' and 'it' "
         "without another subject mean this page or its product. To know what the "
-        "page says, use the read-page result (or call linker_read_page)."
+        "page says, use the read-page result (or call linker_read_page); the page "
+        "rule is in the reminder below."
     )
     return lines
 
@@ -396,8 +399,7 @@ def _user_prompt(
         "placeholder renders the whole range. A figure from a document chunk "
         "goes in {fact:CHUNK_ID.nK}, the [nK=…] tag shown in that chunk's text; "
         "put the chunk IDs you rely on in refs, the service links their "
-        "documents. A figure from the page the customer is on (read-page) goes "
-        "in {fact:page.nK}, with `page` in refs. Or leave the number unsaid. "
+        "documents. Or leave the number unsaid. " + page.RULE + " "
         "A document (a search-knowledge chunk ID, compat.document.N, "
         "compat.document.BATTERYID.N, or pPRODUCTID.document.N for the documents "
         "get-product listed this turn — such a ref exists only after get-product "

@@ -47,7 +47,7 @@ $genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingC
 	new Redirects(),
 	new SiteChrome( __FILE__ ),
 	$conversations,
-	new Proxy( $conversations, null, null, null, $page_context ),
+	new Proxy( $conversations, pages: $page_context ),
 	new Entries( __FILE__, $page_context, $genie_preview ),
 	new Retention( __FILE__ ),
 	new UserContext(),

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Callable, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
@@ -27,7 +28,7 @@ from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.lexicon import Match, Vocabulary
-from linker_genie.route import Route, Subject, plan, with_page
+from linker_genie.route import Call, Route, Subject, plan, with_page
 from linker_genie.schema import PageContext, TurnRequest
 from linker_genie.storeapi import VocabularyError
 
@@ -103,7 +104,12 @@ class Understander:
         route = plan(message, matches, reading, subject, request.locale, bare)
         # Jev's answer decides when the page's own content is read (#234).
         route = with_page(
-            route, request.page_context, about_page, request.user.logged_in, subject
+            route,
+            request.page_context,
+            about_page,
+            request.user.logged_in,
+            subject,
+            message,
         )
         log.update(route.as_log())
         prepared = Prepared(route=route, log=log)
@@ -211,30 +217,39 @@ def _run_calls(
     search: knowledge.Search = knowledge.SEARCH,
     pages: page.Reader = no_pages,
 ) -> None:
+    """Run the route's calls side by side; results and facts keep the route's order.
+
+    The calls do not depend on each other (route.py makes them from the message, the
+    page and the subject alone), so the page read runs while the abilities and the
+    document search do (review of PR #295: the page read added its time to every
+    page question when it ran first).
+    """
+    question = _last_customer_message(request)
+
+    def one(call: Call) -> tuple[dict[str, Any], TurnFacts]:
+        if call.ability == page.NAME:
+            # The page is read in this process from the site (page.py, #234).
+            return page.record(
+                pages, request.page_context, question, request.user.logged_in
+            )
+        if call.ability == knowledge.NAME:
+            # The document search runs in this process (knowledge.py, #257).
+            return knowledge.record(search, call.arguments, request.locale)
+        return client.record(
+            call.ability, call.arguments, request.user.context, request.locale
+        )
+
+    calls = prepared.route.calls
+    if not calls:
+        prepared.facts = merge([])
+        return
+    with ThreadPoolExecutor(max_workers=len(calls)) as pool:
+        futures = [pool.submit(one, call) for call in calls]
     parts: list[TurnFacts] = []
     failures: list[str] = []
-    for call in prepared.route.calls:
+    for call, future in zip(calls, futures, strict=True):
         try:
-            if call.ability == page.NAME:
-                # The page is read in this process from the site (page.py, #234).
-                payload, gathered = page.record(
-                    pages,
-                    request.page_context,
-                    _last_customer_message(request),
-                    request.user.logged_in,
-                )
-            elif call.ability == knowledge.NAME:
-                # The document search runs in this process (knowledge.py, #257).
-                payload, gathered = knowledge.record(
-                    search, call.arguments, request.locale
-                )
-            else:
-                payload, gathered = client.record(
-                    call.ability,
-                    call.arguments,
-                    request.user.context,
-                    request.locale,
-                )
+            payload, gathered = future.result()
         except (EmbeddingError, knowledge.KnowledgeUnavailable) as error:
             failures.append(f"{call.ability}: {error}")
             prepared.knowledge_error = f"{call.ability}: {error}"

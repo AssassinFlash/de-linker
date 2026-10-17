@@ -11,6 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from linker_genie.tools import READ_PAGE
+
 
 @dataclass
 class Fact:
@@ -88,7 +90,7 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
         _from_inquiry(gathered, payload)
     elif name.endswith("handoff-team"):
         _from_handoff(gathered, payload)
-    elif name.endswith("read-page"):
+    elif name == READ_PAGE:
         _from_page(gathered, payload)
     return gathered
 

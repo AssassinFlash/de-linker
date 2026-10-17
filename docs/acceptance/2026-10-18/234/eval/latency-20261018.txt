@@ -1,0 +1,2 @@
+sequential [('product-this-one', 'en', 3.86), ('product-meaning', 'en', 3.76), ('product-this-one', 'de', 4.7)] mean 4.11
+concurrent [('product-this-one', 'en', 3.63), ('product-meaning', 'en', 3.05), ('product-this-one', 'de', 3.66)] mean 3.45

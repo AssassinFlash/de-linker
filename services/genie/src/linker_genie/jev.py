@@ -20,11 +20,12 @@ import time
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, get_args
 
 import httpx
 
 from linker_genie.embedding import credentials
+from linker_genie.schema import PageType
 
 Intent = Literal[
     "find_products",
@@ -90,17 +91,16 @@ QUESTIONS: dict[str, dict[str, Any]] = {
     },
 }
 
-# The page types as Jev reads them; the measured ones (category, product, account,
-# solution_draft, other: eval.py) keep their names, the rest (#234) say what the
-# page is in words.
-_PAGE_TYPES = {
+# The page types as Jev reads them, one for each of schema.PageType: the measured ones
+# (category, product, account, solution_draft, other: eval.py) keep their names, the
+# rest (#234) say what the page is in words.
+_PAGE_WORDS = {
     "draft": "solution_draft",
-    "other": "other",
     "home": "home_page",
     "solution": "solution_page",
     "faq": "faq_and_documents_page",
-    "blog": "blog",
 }
+_PAGE_TYPES = {kind: _PAGE_WORDS.get(kind, kind) for kind in get_args(PageType)}
 
 
 class JevError(RuntimeError):

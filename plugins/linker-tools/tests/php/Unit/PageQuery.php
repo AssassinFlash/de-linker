@@ -287,6 +287,6 @@ trait PageQuery {
 				'return' => static fn( string $url, int $component = -1 ) => -1 === $component ? parse_url( $url ) : parse_url( $url, $component ), // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- test double of wp_parse_url.
 			)
 		);
-		$_SERVER['REQUEST_URI'] = $page['uri'] . '?utm_source=test';
+		$_SERVER['REQUEST_URI'] = $page['uri'];
 	}
 }

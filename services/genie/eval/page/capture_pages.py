@@ -31,6 +31,8 @@ _NOT_TEXT = re.compile(r"<(script|style|svg)\b.*?</\1>", re.DOTALL)
 def main() -> None:
     base, out = sys.argv[1], Path(sys.argv[2])
     out.mkdir(parents=True, exist_ok=True)
+    # Thirty seconds per page: the slowest local page view measured 3.4 s
+    # (2026-10-18, a product category), and the capture runs by hand, not in a turn.
     with httpx.Client(base_url=base, timeout=30.0, follow_redirects=True) as client:
         for name, path in PAGES.items():
             response = client.get(path)

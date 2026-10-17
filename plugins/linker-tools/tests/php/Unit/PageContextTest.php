@@ -254,6 +254,52 @@ final class PageContextTest extends TestCase {
 	}
 
 	/**
+	 * A listing keeps its query: a filtered product category is a page of
+	 * its own (the service drops the query of a single page).
+	 */
+	public function test_current_keeps_the_query_of_a_listing(): void {
+		$this->query( 'category' );
+		$_SERVER['REQUEST_URI'] = '/product-category/inverters/?filter_brand=saj';
+
+		$this->assertSame(
+			'https://de-linker.test/product-category/inverters/?filter_brand=saj',
+			( new PageContext() )->current()['url']
+		);
+	}
+
+	/**
+	 * The address is cut after it is escaped: escaping lengthens it (every
+	 * "ü" becomes "%C3%BC"), and the service refuses anything over 2,048
+	 * characters. A percent-encoding the cut splits is dropped.
+	 */
+	public function test_an_escaped_address_never_exceeds_the_services_limit(): void {
+		WP_Mock::userFunction(
+			'esc_url_raw',
+			array(
+				'return' => static fn( string $url ): string => (string) preg_replace_callback(
+					'/[^\x00-\x7F]/u',
+					static fn( array $found ): string => rawurlencode( $found[0] ),
+					$url
+				),
+			)
+		);
+		WP_Mock::passthruFunction( 'sanitize_text_field' );
+
+		$long = 'https://de-linker.test/de/suche/?s=' . str_repeat( 'Lösung%20', 400 );
+		$page = ( new PageContext() )->sanitize(
+			array(
+				'type' => 'other',
+				'url'  => $long,
+			)
+		);
+		$url  = $page['url'] ?? '';
+
+		$this->assertLessThanOrEqual( 2048, mb_strlen( $url ) );
+		$this->assertStringStartsWith( 'https://de-linker.test/de/suche/?s=L%C3%B6sung', $url );
+		$this->assertDoesNotMatchRegularExpression( '/%[0-9A-Fa-f]?$/', $url );
+	}
+
+	/**
 	 * The draft's products are the visitor's own draft, as English posts and
 	 * each once.
 	 */

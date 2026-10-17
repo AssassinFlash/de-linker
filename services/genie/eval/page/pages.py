@@ -14,7 +14,8 @@ inquiries, deepseek-flash (official API) writing the answer, the query encoder
 (gemini-embedding-2 through OpenRouter) for the documents. A signed-in row gets a
 fresh customer token from `--mint` (the shell's UserContext, valid 120 seconds).
 
-A row passes when the turn is grounded, not a fallback and not a handoff; the route
+A row passes when the turn is grounded, not a fallback and not a handoff (a delivery
+row, `expect.handoff`, must be the handoff); the route
 made the call `expect.reads` names (Jev took the message as being about the page); the
 answer cites the page when `expect.cites_page`; the products `expect.shows` names
 are cited or shown as cards; and its text matches every
@@ -57,7 +58,10 @@ def check(row: dict[str, Any], prepared: Prepared, result: TurnResult) -> list[s
     expect = row["expect"]
     if result.fallback or not result.grounded:
         failures.append("fallback or ungrounded: " + "; ".join(result.failures))
-    if any(isinstance(block, HandoffBlock) for block in result.output.blocks):
+    handed = any(isinstance(block, HandoffBlock) for block in result.output.blocks)
+    if expect.get("handoff") and not handed:
+        failures.append("a delivery question must go to the team")
+    if handed and not expect.get("handoff"):
         failures.append("answered with a handoff")
     reads = expect.get("reads")
     if reads and not any(call.ability == reads for call in prepared.route.calls):
@@ -93,7 +97,9 @@ def check(row: dict[str, Any], prepared: Prepared, result: TurnResult) -> list[s
 
 def answer_text(result: TurnResult) -> str:
     return "\n".join(
-        block.text for block in result.output.blocks if isinstance(block, TextBlock)
+        block.text if isinstance(block, TextBlock) else block.summary
+        for block in result.output.blocks
+        if isinstance(block, TextBlock | HandoffBlock)
     )
 
 
