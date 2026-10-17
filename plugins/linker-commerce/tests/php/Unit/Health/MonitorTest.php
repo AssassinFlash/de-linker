@@ -80,6 +80,14 @@ final class MonitorTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => static fn ( $response ): int => is_array( $response ) ? (int) ( $response['response']['code'] ?? 0 ) : 0 ) );
+		// WooCommerce's mailer, for the sender of the alert (its own getters read
+		// woocommerce_email_from_name / _address).
+		$mailer = \Mockery::mock();
+		$mailer->allows( 'get_from_name' )->andReturn( 'Linker' );
+		$mailer->allows( 'get_from_address' )->andReturn( 'sales@de-linker.com' );
+		$woocommerce = \Mockery::mock();
+		$woocommerce->allows( 'mailer' )->andReturn( $mailer );
+		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
 		WP_Mock::userFunction(
 			'wp_mail',
 			array(
@@ -157,7 +165,7 @@ final class MonitorTest extends TestCase {
 		$this->assertStringContainsString( 'Address: http://127.0.0.1:8901', $body );
 		$this->assertStringContainsString( 'Reason: cURL error 7: Failed to connect.', $body );
 		$this->assertStringContainsString( 'Genie uses this service.', $body );
-		$this->assertSame( array( 'Bcc: watch@example.test, mirror@example.test' ), $headers );
+		$this->assertSame( array( 'From: Linker <sales@de-linker.com>', 'Bcc: watch@example.test, mirror@example.test' ), $headers, 'Sent from WooCommerce\'s email sender, with the blind copies.' );
 	}
 
 	/**

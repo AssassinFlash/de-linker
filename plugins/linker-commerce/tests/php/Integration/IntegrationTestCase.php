@@ -9,6 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\Outbox;
+use Linker\Commerce\Mail\Throttle;
 use PHPUnit\Framework\TestCase;
 use WC_Customer;
 use WC_Order;
@@ -59,6 +62,70 @@ abstract class IntegrationTestCase extends TestCase {
 	 */
 	protected function later( callable $remove ): void {
 		$this->cleanup[] = $remove;
+	}
+
+	/**
+	 * Every test starts with the mail isolation below.
+	 */
+	protected function setUp(): void {
+		parent::setUp();
+		$this->isolate_mail();
+	}
+
+	/**
+	 * Gives the test a fresh send quota and an Outbox queue it can count on:
+	 * the instance's send record (Throttle::OPTION) is put aside and comes
+	 * back afterwards, and every queue row the test writes — with its pending
+	 * attempts — is removed, failed or not. Without it a run leaves its
+	 * queued and failed messages behind, and the next run's digest counts
+	 * them and its sends meet a full daily quota (review of #221, round 1).
+	 * setUp() calls it first, so its removal runs after the test's own.
+	 */
+	private function isolate_mail(): void {
+		$sends  = get_option( Throttle::OPTION );
+		$marker = self::newest_mail_job();
+		delete_option( Throttle::OPTION );
+		$this->later(
+			static function () use ( $sends, $marker ): void {
+				foreach ( self::mail_jobs_after( $marker ) as $id ) {
+					as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
+					wp_delete_post( $id, true );
+				}
+				if ( false === $sends ) {
+					delete_option( Throttle::OPTION );
+				} else {
+					update_option( Throttle::OPTION, $sends, false );
+				}
+			}
+		);
+	}
+
+	/**
+	 * The newest Outbox queue row's id, 0 when the queue is empty.
+	 */
+	protected static function newest_mail_job(): int {
+		$ids = self::mail_jobs_after( 0 );
+		return array() === $ids ? 0 : max( $ids );
+	}
+
+	/**
+	 * The ids of the Outbox queue rows written after $marker, oldest first.
+	 *
+	 * @param int $marker A row id; 0 for every row.
+	 * @return list<int>
+	 */
+	protected static function mail_jobs_after( int $marker ): array {
+		$ids = get_posts(
+			array(
+				'post_type'      => JobStore::POST_TYPE,
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
+				'fields'         => 'ids',
+			)
+		);
+		return array_values( array_filter( array_map( 'intval', $ids ), static fn ( int $id ): bool => $id > $marker ) );
 	}
 
 	/**

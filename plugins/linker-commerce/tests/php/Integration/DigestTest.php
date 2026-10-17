@@ -20,7 +20,6 @@ use Linker\Commerce\Digest\ProformasAwaitingReply;
 use Linker\Commerce\Digest\Scheduler;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
-use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Registration\PendingApprovals;
 use Linker\Commerce\Settings\Options;
@@ -44,14 +43,6 @@ use WC_Order;
  * @coversNothing
  */
 final class DigestTest extends IntegrationTestCase {
-
-	/**
-	 * The notification recipient and blind copies the tests read back.
-	 */
-	public function setUp(): void {
-		parent::setUp();
-		delete_option( Throttle::OPTION );
-	}
 
 	/**
 	 * The window boundaries: 25 hours in, 23 out, and exactly 24 hours out;

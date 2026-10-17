@@ -19,7 +19,6 @@ use Linker\Commerce\Digest\Scheduler;
 use Linker\Commerce\Health\Monitor;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Mail\JobStore;
-use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Presentation\ProductShortcodes;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
@@ -59,7 +58,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		// The email classes extend WC_Email, which WooCommerce loads with its mailer.
 		WC()->mailer();
 		$saved = array();
-		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_BCC, Throttle::OPTION, Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
+		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_BCC, Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, TeamMessageEmail::ID, 'linker_digest' ) as $id ) {
@@ -99,7 +98,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	 */
 	public function test_every_internal_notification_goes_to_the_internal_address_only(): void {
 		$bcc    = 'Bcc: ' . get_option( Options::NOTIFY_BCC );
-		$marker = $this->newest_job();
+		$marker = self::newest_mail_job();
 		$plugin = WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php';
 		$emails = WC()->mailer()->get_emails();
 
@@ -155,12 +154,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 			$this->assertSame( array( self::INTERNAL ), $matching[0]['to'], "{$subject} goes to the internal address alone." );
 			$this->assertContains( $bcc, $matching[0]['headers'], "{$subject} carries the blind copy of the settings." );
 			$this->assertStringNotContainsString( self::PUBLIC, implode( "\n", array_filter( $matching[0]['headers'], static fn ( string $line ): bool => 0 !== stripos( $line, 'From:' ) ) ), "{$subject} names sales@de-linker.com in no recipient header." );
-			if ( ! str_contains( $subject, 'health check' ) ) {
-				// The WooCommerce emails send From the store's sender. The
-				// health alert is a plain wp_mail() and keeps WordPress's
-				// default sender, as it did before this change.
-				$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $matching[0]['headers'], "{$subject} is still sent from the team mailbox." );
-			}
+			$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $matching[0]['headers'], "{$subject} is sent from WooCommerce's email sender, the team mailbox." );
 		}
 
 		$receipt = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $customer->get_billing_email() ) === $row['to'] ) );
@@ -197,52 +191,15 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * The newest queue row's id, 0 when the queue is empty.
-	 */
-	private function newest_job(): int {
-		$ids = get_posts(
-			array(
-				'post_type'      => JobStore::POST_TYPE,
-				'post_status'    => 'any',
-				'posts_per_page' => 1,
-				'orderby'        => 'ID',
-				'order'          => 'DESC',
-				'fields'         => 'ids',
-			)
-		);
-		return (int) ( $ids[0] ?? 0 );
-	}
-
-	/**
-	 * The routing of every queue row written after $marker; the rows and
-	 * their pending attempts are removed after the test.
+	 * The routing of every queue row written after $marker (isolate_mail()
+	 * removes the rows afterwards).
 	 *
 	 * @param int $marker The newest row id before the test.
 	 * @return list<array{subject: string, to: list<string>, headers: list<string>}>
 	 */
 	private function jobs_after( int $marker ): array {
-		$ids  = get_posts(
-			array(
-				'post_type'      => JobStore::POST_TYPE,
-				'post_status'    => 'any',
-				'posts_per_page' => -1,
-				'orderby'        => 'ID',
-				'order'          => 'ASC',
-				'fields'         => 'ids',
-			)
-		);
 		$rows = array();
-		foreach ( $ids as $id ) {
-			$id = (int) $id;
-			if ( $id <= $marker ) {
-				continue;
-			}
-			$this->later(
-				static function () use ( $id ): void {
-					as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
-					wp_delete_post( $id, true );
-				}
-			);
+		foreach ( self::mail_jobs_after( $marker ) as $id ) {
 			$data   = json_decode( (string) get_post_meta( $id, '_linker_mail_message', true ), true );
 			$data   = is_array( $data ) ? $data : array();
 			$rows[] = array(
