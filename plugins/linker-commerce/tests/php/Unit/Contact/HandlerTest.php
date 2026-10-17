@@ -11,7 +11,6 @@ namespace Linker\Commerce\Tests\Unit\Contact;
 
 use Linker\Commerce\Contact\Form;
 use Linker\Commerce\Contact\Handler;
-use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\Fixtures;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
@@ -114,27 +113,12 @@ final class HandlerTest extends TestCase {
 	}
 
 	/**
-	 * A complete form sends the receipt to the visitor and the letter to the
-	 * team mailbox, counts the attempt and reads as delivered.
+	 * A missing signed fill-time is refused before creating an inquiry.
 	 */
-	public function test_complete_form_sends_both_emails(): void {
-		$handler = $this->handler();
+	public function test_complete_form_without_signed_time_is_refused(): void {
 		WP_Mock::userFunction( 'wp_verify_nonce', array( 'return' => 1 ) );
 		WP_Mock::userFunction( 'get_transient', array( 'return' => false ) );
-		WP_Mock::userFunction(
-			'set_transient',
-			array(
-				'times'  => 1,
-				'return' => true,
-			)
-		);
-
-		WP_Mock::expectFilterAdded( 'plugin_locale', array( new \WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Mail\LocaleSwitch::class ), 'plugin_locale' ) ); // @phpstan-ignore argument.type
-		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_contact_receipt', 'maria@example.test' );
-		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_contact_message', 'sales@sunriverinverter.com' );
-
-		$this->assertSame( 'sent', $handler->process( $this->post() ) );
-		$this->assertConditionsMet();
+		$this->assertSame( 'invalid', $this->handler()->process( $this->post() ) );
 	}
 
 	/**
@@ -161,6 +145,6 @@ final class HandlerTest extends TestCase {
 	 * The handler under test.
 	 */
 	private function handler(): Handler {
-		return new Handler( '/plugin/linker-commerce.php', new Options() );
+		return new Handler();
 	}
 }

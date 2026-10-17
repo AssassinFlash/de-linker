@@ -26,6 +26,7 @@ use WP_Mock;
  */
 final class ModuleTest extends TestCase {
 
+
 	/**
 	 * The module's hooks, and no other: the shortcodes of the three page
 	 * families (the product and checkout shortcodes, the comparison page's
@@ -37,7 +38,7 @@ final class ModuleTest extends TestCase {
 	 * storefront CSS was retired.
 	 */
 	public function test_register_adds_exactly_the_module_hooks(): void {
-		$shortcodes = new Shortcodes( new LoginGate() );
+		$shortcodes = new Shortcodes();
 		$gate       = new LoginGate();
 		$windpress  = new WindPress();
 		$compare    = new ComparePage();

@@ -56,6 +56,7 @@ final class Module {
 		add_filter( 'woocommerce_cart_subtotal', array( $this->display, 'cart_subtotal' ) );
 		add_action( 'woocommerce_checkout_create_order_line_item', array( $this->display, 'remember_line_reason' ), 10, 3 );
 		add_filter( 'woocommerce_order_formatted_line_subtotal', array( $this->display, 'order_line_subtotal' ), 10, 2 );
+		add_filter( 'woocommerce_get_order_item_totals', array( $this->display, 'order_totals' ), 10, 2 );
 		add_filter( 'woocommerce_hidden_order_itemmeta', array( $this->display, 'hidden_item_meta' ) );
 		add_action( 'woocommerce_cart_collaterals', array( $this->summary, 'guest_totals' ), 5 );
 		add_action( 'woocommerce_cart_totals_after_order_total', array( $this->summary, 'unpriced_note' ) );

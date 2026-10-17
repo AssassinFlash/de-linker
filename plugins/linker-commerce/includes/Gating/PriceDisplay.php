@@ -183,6 +183,17 @@ final class PriceDisplay {
 	}
 
 	/**
+	 * A quote with missing prices, or a contact message, has no monetary total.
+	 *
+	 * @param array<string, array{label: string, value: string}> $totals Woo totals.
+	 * @param WC_Order                                           $order Inquiry.
+	 * @return array<string, array{label: string, value: string}>
+	 */
+	public function order_totals( array $totals, WC_Order $order ): array {
+		return $this->has_unpriced_lines( $order ) || 'contact' === $order->get_meta( '_linker_inquiry_source' ) ? array() : $totals;
+	}
+
+	/**
 	 * The text for a reason, escaped, without any markup: the one place each
 	 * reason's words come from, so label() and the draft's subtotal cannot
 	 * drift apart.

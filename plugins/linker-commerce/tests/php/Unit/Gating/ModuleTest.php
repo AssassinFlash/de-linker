@@ -46,6 +46,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_cart_subtotal', array( $display, 'cart_subtotal' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_checkout_create_order_line_item', array( $display, 'remember_line_reason' ), 10, 3 );
 		WP_Mock::expectFilterAdded( 'woocommerce_order_formatted_line_subtotal', array( $display, 'order_line_subtotal' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_get_order_item_totals', array( $display, 'order_totals' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_hidden_order_itemmeta', array( $display, 'hidden_item_meta' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_cart_collaterals', array( $summary, 'guest_totals' ), 5 );
 		WP_Mock::expectActionAdded( 'woocommerce_cart_totals_after_order_total', array( $summary, 'unpriced_note' ) );

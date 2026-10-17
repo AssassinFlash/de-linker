@@ -96,10 +96,10 @@ final class ApprovalTest extends IntegrationTestCase {
 			$this->assertSame( '', $this->price( $product->get_id() ), "{$status} sees no price" );
 			$this->assertNull( $this->store_api_prices( $product->get_id() ), "{$status} gets null Store API prices" );
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
-			$this->assertSame(
-				array(),
+			$this->assertArrayHasKey(
+				ProformaGateway::ID,
 				apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
-				"{$status} may not send an inquiry"
+				"{$status} may send an inquiry without seeing prices"
 			);
 		}
 
@@ -132,7 +132,7 @@ final class ApprovalTest extends IntegrationTestCase {
 	 * An account without approval cannot get an inquiry in: the draft accepts
 	 * the line, as a guest's does, but no gateway is offered for the send.
 	 */
-	public function test_a_pending_account_cannot_send_an_inquiry(): void {
+	public function test_a_pending_account_can_send_an_inquiry(): void {
 		$product  = $this->product( '1680' );
 		$customer = $this->customer();
 		$this->set_state( $customer, Approval::PENDING );
@@ -143,10 +143,10 @@ final class ApprovalTest extends IntegrationTestCase {
 		WC()->cart->empty_cart();
 		$this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ), 'The draft accepts the line, as a guest\'s does' );
 
-		$this->assertArrayNotHasKey(
+		$this->assertArrayHasKey(
 			ProformaGateway::ID,
 			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
-			'WooCommerce offers the account no gateway, so the send is refused'
+			'WooCommerce offers the inquiry gateway to pending accounts'
 		);
 	}
 
@@ -337,10 +337,10 @@ final class ApprovalTest extends IntegrationTestCase {
 		$gate = new PendingGate( new Approval(), new LoginGate( new Approval() ) );
 		$this->assertTrue( $gate->holds(), 'A pending sign-in is held.' );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Pending sees no prices.' );
-		$this->assertArrayNotHasKey(
+		$this->assertArrayHasKey(
 			ProformaGateway::ID,
 			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
-			'Pending may not send an inquiry.'
+			'Pending may send an inquiry.'
 		);
 		ob_start();
 		$gate->render();

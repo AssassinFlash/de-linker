@@ -9,9 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Contact;
 
-use Linker\Commerce\Contact\Emails\ReceiptEmail;
-use Linker\Commerce\Contact\Emails\TeamMessageEmail;
-use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Inquiry\PublicGuard;
+use Linker\Commerce\Inquiry\Sender;
 use WP_Error;
 
 /**
@@ -29,6 +28,7 @@ use WP_Error;
 final class Handler {
 
 
+
 	/**
 	 * The action the form posts (admin_post[_nopriv]_linker_contact).
 	 */
@@ -43,18 +43,6 @@ final class Handler {
 	 * Length of the window, in seconds.
 	 */
 	public const WINDOW = HOUR_IN_SECONDS;
-
-	/**
-	 * Sets up the handler.
-	 *
-	 * @param string  $plugin_file Absolute path of the main plugin file.
-	 * @param Options $options     The plugin settings (internal notification address, blind copies).
-	 */
-	public function __construct(
-		private readonly string $plugin_file,
-		private readonly Options $options
-	) {
-	}
 
 	/**
 	 * Adds the handler; it runs for visitors and for signed-in customers alike.
@@ -97,25 +85,16 @@ final class Handler {
 		}
 
 		$submission = Submission::from_post( $post );
-		if ( $submission instanceof WP_Error ) {
+		if ( $submission instanceof WP_Error || ! ( new PublicGuard() )->allows( $post ) ) {
 			return 'invalid';
 		}
 
+		$result = ( new Sender() )->submit( $submission, false );
+		if ( $result instanceof WP_Error ) {
+			return 'invalid';
+		}
 		$this->count();
-		$this->send( $submission );
 		return 'sent';
-	}
-
-	/**
-	 * Both emails: the receipt to the visitor, the letter to the internal
-	 * notification address with the settings' blind copies. The email classes are built here, not
-	 * when the plugin loads: WC_Email exists once WooCommerce is loaded.
-	 *
-	 * @param Submission $submission The visitor's message.
-	 */
-	private function send( Submission $submission ): void {
-		( new ReceiptEmail( $this->plugin_file ) )->notify( $submission );
-		( new TeamMessageEmail( $this->plugin_file, $this->options ) )->notify( $submission );
 	}
 
 	/**

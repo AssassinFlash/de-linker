@@ -192,11 +192,10 @@ final class DigestTest extends IntegrationTestCase {
 		$blocks = ( new Blocks( new JobStore() ) )->all();
 		// The approval ticket's pending-accounts block leads the digest (issue
 		// #73, the plug point of Blocks::all()); the digest's own three keep
-		// their order behind it, the failed emails closing the list — the
-		// fourth block here.
+		// their order behind it. Other modules may append their own blocks.
 		$this->assertSame(
 			array( PendingApprovals::ID, InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID ),
-			array_map( static fn ( Block $block ): string => $block->id(), $blocks )
+			array_slice( array_map( static fn ( Block $block ): string => $block->id(), $blocks ), 0, 4 )
 		);
 		$fourth = $blocks[3];
 		$this->assertSame( FailedEmails::ID, $fourth->id() );

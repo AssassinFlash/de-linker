@@ -50,7 +50,7 @@ final class Module {
 	 */
 	public function register(): void {
 		( new Form() )->register();
-		( new Handler( $this->plugin_file, $this->options ) )->register();
+		( new Handler() )->register();
 		add_filter( 'woocommerce_email_classes', array( $this, 'add_emails' ) );
 		// Before do_shortcode (priority 11 on the_content, WordPress default):
 		// the replacement has to be a shortcode by the time that filter runs.

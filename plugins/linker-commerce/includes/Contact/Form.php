@@ -37,6 +37,7 @@ use Linker\Commerce\Settings\Options;
 final class Form {
 
 
+
 	/**
 	 * The shortcode that mounts the form (the contact page's content).
 	 */
@@ -128,6 +129,7 @@ final class Form {
 		$html .= '<input type="hidden" name="lang" value="' . esc_attr( $this->locale() ) . '" />';
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, true, false );
+		$html .= ( new \Linker\Commerce\Inquiry\PublicGuard() )->fields();
 
 		if ( '' !== $state ) {
 			$html .= $state;

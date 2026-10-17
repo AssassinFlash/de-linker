@@ -15,6 +15,7 @@ namespace Linker\Commerce\Inquiry;
  */
 final class OrderAdmin {
 
+
 	/**
 	 * Relabels the order type; runs on woocommerce_register_post_type_shop_order.
 	 *
@@ -44,5 +45,36 @@ final class OrderAdmin {
 			)
 		);
 		return $args;
+	}
+	/**
+	 * Identifies both public doors in the existing Woo inquiry list.
+	 *
+	 * @param  array<string, string> $columns Native columns.
+	 * @return array<string, string>
+	 */
+	public function columns( array $columns ): array {
+		$columns['linker_source'] = __( 'Source', 'linker-commerce' );
+		return $columns;
+	}
+
+	/**
+	 * Works for both Woo order storage modes.
+	 *
+	 * @param string        $column  Column id.
+	 * @param int|\WC_Order $subject Inquiry id or object.
+	 */
+	public function source( string $column, $subject ): void {
+		if ( 'linker_source' !== $column ) {
+			return;
+		}
+		$order = $subject instanceof \WC_Order ? $subject : wc_get_order( $subject );
+		if ( ! $order instanceof \WC_Order ) {
+			return;
+		}
+		$source = 'contact' === $order->get_meta( '_linker_inquiry_source' );
+		echo esc_html( $source ? __( 'Contact form', 'linker-commerce' ) : __( 'Proforma request', 'linker-commerce' ) );
+		if ( $source ) {
+			echo ' · ' . esc_html( \Linker\Commerce\Contact\Form::intent_label( (string) $order->get_meta( '_linker_inquiry_topic' ) ) );
+		}
 	}
 }

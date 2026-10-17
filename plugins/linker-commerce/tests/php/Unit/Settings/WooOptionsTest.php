@@ -21,6 +21,7 @@ use WP_Mock;
  */
 final class WooOptionsTest extends TestCase {
 
+
 	/**
 	 * The options that make WooCommerce an inquiry site read their pinned value; others pass through.
 	 */
@@ -29,8 +30,8 @@ final class WooOptionsTest extends TestCase {
 
 		$this->assertSame( 'disabled', $options->pin( false, 'woocommerce_ship_to_countries' ) );
 		$this->assertSame( 'no', $options->pin( false, 'woocommerce_enable_coupons' ) );
-		$this->assertSame( 'no', $options->pin( false, 'woocommerce_enable_guest_checkout' ) );
-		$this->assertSame( 'required', $options->pin( false, 'woocommerce_checkout_company_field' ) );
+		$this->assertSame( 'yes', $options->pin( false, 'woocommerce_enable_guest_checkout' ) );
+		$this->assertSame( 'optional', $options->pin( false, 'woocommerce_checkout_company_field' ) );
 		$this->assertSame( 'no_amount', $options->pin( false, 'woocommerce_stock_format' ) );
 		$this->assertSame( 'yes', $options->pin( false, 'woocommerce_hide_out_of_stock_items' ) );
 		$this->assertSame( 'no', $options->pin( false, 'woocommerce_enable_reviews' ) );

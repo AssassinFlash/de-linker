@@ -25,7 +25,10 @@ use WC_Order;
  */
 final class CheckoutTest extends TestCase {
 
-	/** Woo's checkout notice stays native; only its mobile scrolling is replaced. */
+
+	/**
+	 * Woo's checkout notice stays native; only its mobile scrolling is replaced.
+	 */
 	public function test_checkout_feedback_keeps_native_validation(): void {
 		WP_Mock::userFunction( 'is_checkout', array( 'return' => true ) );
 		WP_Mock::userFunction(
@@ -49,7 +52,9 @@ final class CheckoutTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-	/** Only the two site languages can select the review fragment locale. */
+	/**
+	 * Only the two site languages can select the review fragment locale.
+	 */
 	public function test_review_language_reads_the_existing_hidden_field(): void {
 		WP_Mock::userFunction(
 			'switch_to_locale',
@@ -75,7 +80,9 @@ final class CheckoutTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-	/** Account editors never receive the checkout feedback adapter. */
+	/**
+	 * Account editors never receive the checkout feedback adapter.
+	 */
 	public function test_feedback_is_scoped_to_checkout(): void {
 		WP_Mock::userFunction( 'is_checkout', array( 'return' => false ) );
 		WP_Mock::userFunction( 'wp_add_inline_script', array( 'times' => 0 ) );
@@ -96,7 +103,7 @@ final class CheckoutTest extends TestCase {
 			'stripe'            => new \stdClass(),
 		);
 
-		$approved = new Checkout( new Approval() );
+		$approved = new Checkout();
 		$this->assertSame(
 			array( ProformaGateway::ID => $proforma ),
 			$approved->gateways( $gateways )
@@ -104,10 +111,10 @@ final class CheckoutTest extends TestCase {
 		$this->assertSame( array(), $approved->gateways( array( 'bacs' => new \stdClass() ) ) );
 
 		$this->approval_meta( array() );
-		$this->assertSame( array(), ( new Checkout( new Approval() ) )->gateways( $gateways ), 'No send for a pending account.' );
+		$this->assertSame( array( ProformaGateway::ID => $proforma ), ( new Checkout() )->gateways( $gateways ), 'Pending accounts may send inquiries.' );
 
 		$this->signed_in( 0 );
-		$guest = new Checkout( new Approval() );
+		$guest = new Checkout();
 		$this->assertSame(
 			array( ProformaGateway::ID => $proforma ),
 			$guest->gateways( $gateways ),
@@ -149,7 +156,7 @@ final class CheckoutTest extends TestCase {
 		$checkout->next_steps();
 		$html = (string) ob_get_clean();
 		$this->assertStringContainsString( 'We reply within one business day.', $html );
-		$this->assertStringContainsString( 'under Inquiries', $html );
+		$this->assertStringContainsString( 'reply to the email address', $html );
 		$this->assertStringContainsString( 'linker-proforma-success woocommerce-message', $html );
 		$this->assertStringContainsString( 'href="http://site/my-account/inquiries/"', $html );
 		$this->assertStringContainsString( 'View inquiries', $html );

@@ -25,6 +25,7 @@ use WP_Mock;
  */
 final class DraftSummaryTest extends TestCase {
 
+
 	/**
 	 * Translation and escaping return their input.
 	 */
@@ -54,7 +55,7 @@ final class DraftSummaryTest extends TestCase {
 		( new DraftSummary( $this->approved_state(), new PriceDisplay( $this->approved_state() ) ) )->guest_totals();
 		$html = (string) ob_get_clean();
 
-		$this->assertStringContainsString( 'href="https://example.test/proforma-request/">Log in and request a Proforma</a>', $html );
+		$this->assertStringContainsString( 'href="https://example.test/proforma-request/">Send inquiry</a>', $html );
 		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">No account yet? Register</a>', $html );
 	}
 
