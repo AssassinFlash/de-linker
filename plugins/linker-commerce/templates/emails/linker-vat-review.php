@@ -15,6 +15,7 @@
  */
 
 use Linker\Commerce\Registration\VatProfile;
+use Linker\Commerce\Registration\AccountsAdmin;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -41,7 +42,7 @@ printf(
 );
 ?>
 </p>
-<p><a href="<?php echo esc_url( get_edit_user_link( $customer->ID ) ); ?>"><?php esc_html_e( 'Open the customer', 'linker-commerce' ); ?></a></p>
+<p><a href="<?php echo esc_url( AccountsAdmin::url( $customer->ID ) ); ?>"><?php esc_html_e( 'Open the customer', 'linker-commerce' ); ?></a></p>
 <?php
 if ( $additional_content ) {
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );

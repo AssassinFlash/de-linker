@@ -23,20 +23,24 @@ final class LocaleSwitchTest extends TestCase {
 
 	/**
 	 * Switching sets WordPress's and WooCommerce's language, plugin translations and a fresh country list;
-	 * switching back undoes it.
+	 * switching back undoes only the locale stack entry this scope owns.
+	 *
+	 * @dataProvider switch_results
+	 * @param bool $changed Whether WordPress pushed a new locale.
 	 */
-	public function test_switches_and_back(): void {
+	public function test_switches_and_back( bool $changed ): void {
 		$woocommerce = new WooCommerce();
 		$countries   = $woocommerce->countries;
 		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
 		WP_Mock::userFunction(
 			'switch_to_locale',
 			array(
-				'times' => 1,
-				'args'  => array( 'de_DE_formal' ),
+				'times'  => 1,
+				'args'   => array( 'de_DE_formal' ),
+				'return' => $changed,
 			)
 		);
-		WP_Mock::userFunction( 'restore_previous_locale', array( 'times' => 1 ) );
+		WP_Mock::userFunction( 'restore_previous_locale', array( 'times' => $changed ? 1 : 0 ) );
 		$switch = new LocaleSwitch();
 		WP_Mock::expectFilterAdded( 'plugin_locale', array( $switch, 'plugin_locale' ) );
 		// The switch loads this plugin's German .mo itself, by file (review 2026-10-10, S2).
@@ -68,6 +72,18 @@ final class LocaleSwitchTest extends TestCase {
 		$this->assertSame( 2, $woocommerce->textdomain_loads );
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Native switch_to_locale returns false when the requested locale is already active.
+	 *
+	 * @return array<string, array{bool}>
+	 */
+	public function switch_results(): array {
+		return array(
+			'new locale'  => array( true ),
+			'same locale' => array( false ),
+		);
 	}
 
 	/**

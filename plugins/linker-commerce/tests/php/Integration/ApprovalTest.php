@@ -17,7 +17,7 @@ use Linker\Commerce\Presentation\LoginGate;
 use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Registration\Approval;
-use Linker\Commerce\Registration\ApprovalAdmin;
+use Linker\Commerce\Registration\AccountsAdmin;
 use Linker\Commerce\Registration\CustomerRole;
 use Linker\Commerce\Registration\Fields;
 use Linker\Commerce\Registration\VatProfile;
@@ -187,62 +187,17 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->assertSame( '', ( new Approval() )->reason( $customer->get_id() ), 'The approval carries no reason' );
 	}
 
-	/**
-	 * The users list's one-click approve is a link: the test follows the URL
-	 * row_action() renders as a GET request into the admin-post handler, the
-	 * way the staff member's click does, and the account is approved and the
-	 * customer mailed in one chain.
-	 */
-	public function test_the_inline_approve_link_changes_the_state(): void {
-		delete_option( Throttle::OPTION );
+	/** The former users-list operation is now a deep link to the shared card. */
+	public function test_the_user_list_links_to_review_without_a_legacy_write_hook(): void {
 		$customer = $this->customer();
-		update_user_meta( $customer->get_id(), 'locale', 'en_US' );
-		$this->capture_mail( (string) $customer->get_billing_email() );
-		$this->set_state( $customer, Approval::PENDING );
-
-		wp_set_current_user( 1 );
-		$this->assertTrue( current_user_can( 'edit_users' ), 'The fixture admin may approve.' );
-		$account = get_userdata( $customer->get_id() );
-		$this->assertInstanceOf( WP_User::class, $account );
-		$admin   = new ApprovalAdmin( new Approval() );
-		$link    = $admin->row_action( array(), $account )[ Approval::STATUS_META ];
-		$matches = array();
-		$this->assertSame( 1, preg_match( '/href="([^"]+)"/', $link, $matches ), 'The row action is a link.' );
-		parse_str( (string) parse_url( html_entity_decode( (string) ( $matches[1] ?? '' ) ), PHP_URL_QUERY ), $query );
-
-		// A clicked link is a GET request: the fields arrive in $_GET and
-		// $_REQUEST, $_POST stays empty.
-		$_GET                    = $query;
-		$_REQUEST                = $query;
-		$_POST                   = array();
-		$_SERVER['HTTP_REFERER'] = admin_url( 'users.php' );
-		// The handler ends in wp_safe_redirect(); the filter stops it there (the
-		// real redirect would end this test run) and PHPUnit reads the throw.
-		$stop = static function ( string $location ): string {
-			throw new \RuntimeException( 'redirect to ' . $location );
-		};
-		// The callback below throws instead of returning, which the redirect callback sniff cannot see.
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WordPress's own hook, observed as the real redirect path (the handler ends in wp_safe_redirect()).
-		add_filter( 'wp_redirect', $stop ); // @phpstan-ignore return.missing
-		try {
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WordPress's own hook, dispatched as admin-post.php dispatches it (the dynamic part is this plugin's constant).
-			do_action( 'admin_post_' . ApprovalAdmin::ACTION );
-			$this->fail( 'The handler ends in a redirect.' );
-		} catch ( \RuntimeException $exception ) {
-			$this->assertStringStartsWith( 'redirect to ', $exception->getMessage() );
-		} finally {
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress's own hook.
-			remove_filter( 'wp_redirect', $stop );
-			unset( $_SERVER['HTTP_REFERER'] );
-			$_GET     = array();
-			$_REQUEST = array();
-			$_POST    = array();
-		}
-
-		$this->assertSame( Approval::APPROVED, ( new Approval() )->status( $customer->get_id() ), 'The click approved the account.' );
-		$captured = $this->to_address();
-		$this->assertCount( 1, $captured, 'The approval email went out.' );
-		$this->assertStringContainsString( 'Your Linker partner account is approved.', $captured[0]['body'] );
+		$this->as_user( 1 );
+		$admin = new \Linker\Commerce\Registration\ApprovalAdmin( new Approval() );
+		$user  = get_userdata( $customer->get_id() );
+		$this->assertInstanceOf( WP_User::class, $user );
+		$link = $admin->row_action( array(), $user )[ Approval::STATUS_META ];
+		$this->assertStringContainsString( esc_url( AccountsAdmin::url( $customer->get_id() ) ), $link );
+		$this->assertFalse( has_action( 'admin_post_linker_approval' ) );
+		$this->assertFalse( has_action( 'admin_post_update' ) );
 	}
 
 	/**

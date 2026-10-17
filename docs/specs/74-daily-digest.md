@@ -1,14 +1,14 @@
 # #74 每日摘要（四块业务仪表，空摘要照发）
 
 ## 是什么
-每日 09:00（Europe/Berlin）给公司团队发一封 HTML 邮件（经 Outbox 队列，与业务邮件同重试语义）：当天待办的四块仪表。没有任何待办时照发（收不到摘要 = 管道故障信号）。第①块（待审批账号）的数据源在审批票（#73），本票交付可插拔接口，#73 落地后注册自己的块。
+每日 09:00（Europe/Berlin）给公司团队发一封 HTML 邮件（经 Outbox 队列，与业务邮件同重试语义）：当天待办的四块仪表。没有任何待办时照发（收不到摘要 = 管道故障信号）。第①块由 `Registration\PendingApprovals` 注册：只列 pending 的纯 customer（未显式记录状态也按 pending），标题显示数量；限制与拒绝不纳入新申请计数。第①块另有一行“Restricted, awaiting customer information: N”及 Accounts 页 status=restricted 链接，零也显示；限制账户的后续处理因此不被遗忘。逐项深链为 `admin.php?page=linker-accounts&focus=<用户ID>`，与后台队列及账号通知一致。
 
 ## 数字口径（写死，改动需改本节并同步测试）
 全部窗口比较在 Unix 秒上进行（存储值本就是 UTC 纪元秒；时长比较与时区无关）。时区只出现在两处：发送时刻（09:00 Europe/Berlin，随夏令时 07:00/08:00 UTC）与邮件正文里的时间显示（Europe/Berlin，显式 `DateTimeZone('Europe/Berlin')`，不随站点"常规设置"里的时区走）。"超"一律是严格大于：恰好等于窗口边界（距今整 24 小时 / 整 72 小时）的**不**计入。
 
 | 块 | 内容 | 窗口 | 起算点 |
 |---|---|---|---|
-| ① 待审批新账号 | 数量 + 公司名 + 注册时间 + 后台直达链接 | 审批票定义 | 审批票定义 |
+| ① 待审批新账号 | 标题数量 + 公司名 + 注册时间 + 审核卡片深链 | pending 的纯 customer，注册时间从早到晚，无时间窗 | 注册时间仅作展示；无条目时显示 No account is waiting for approval. / Kein Konto wartet auf die Freigabe. |
 | ② 未处理询盘 | 单号列表（编号、公司、创建时间、后台链接） | 创建时刻早于 发送时刻 − 86400 秒，且状态仍为 `wc-inquiry-received` | 询盘创建时刻（订单 `date_created`，进状态前的时间不算） |
 | ③ PI 未响应 | 单号列表（编号、公司、签发时间、后台链接） | PI 签发时刻早于 发送时刻 − 259200 秒（3 天 = 72 小时，固定时长，非自然日），且状态仍为 `wc-proforma-issued` | PI 签发时刻（订单 meta `_linker_proforma_issued`，`Proforma/Issuer` 签发时写入的 Unix 秒）。处于 `wc-proforma-issued` 但没有该 meta 的（后台手工改状态绕过签发流程的）不计入：签发时刻未知 |
 | ④ 邮件队列失败 | 封数 + 每封的收件人（Outbox 重试耗尽的消息） | 无时间窗：当前所有 `linker_mail_job` 草稿（`JobStore::FAILED_STATUS`）都算，直到有人处理 | 最近一次重试耗尽的时刻（消息保持草稿状态即视为未解决） |
@@ -26,8 +26,8 @@
 ## 给摘要加一块（#258 质检汇总等后续票的接入点）
 实现 `Linker\Commerce\Digest\Block`（四个方法见下节），在自己的 Module 里 `add_filter( 'linker_commerce_digest_blocks', fn ( array $blocks ) => [ ...$blocks, new YourBlock() ] )`——**追加在末尾**（第①块待审账号由审批票放在最前，②③④的顺序不动）。`entries()` 每条一行：`label` 必填，`url` + `link_text` 给后台直达链接（可空），`detail` 给一句说明（可空）；没有条目时显示 `empty_text()`，块照样出现（空态也是信号）。块只读数据、不发信：收件人、语言、发送与重试都归 `DigestEmail`。测试照 `tests/php/Unit/Digest/BlocksTest.php` 断言顺序，照 `tests/php/Integration/DigestTest.php` 断言真实实例里那一块出现在摘要正文。
 
-## 第①块插拔接口（审批票对接点）
-`Linker\Commerce\Digest\Block` 接口（`id()/title()/entries()/empty_text()`，entry = `label + url + link_text + detail`），`Digest/Blocks` 按固定顺序装配内置的 ②③④，并应用过滤器 `linker_commerce_digest_blocks`（传 `list<Block>`，返回 `list<Block>`，非 Block 元素被剔除）。审批票在自己的 Module 里 unshift 第①块：`add_filter( 'linker_commerce_digest_blocks', … )`；每条 entry 的 `url` 放用户资料页后台直达链接（`admin_url( 'user-edit.php?user_id=…' )` 形态）、`link_text` 放链接名（满足票面"后台直达链接"）。审批票落地前摘要只有三块；`#73` 的状态契约（用户元键）不存在于本票——对接时以审批票定义的元键为准，不在此预写。
+## 第①块插拔接口（账户审核接线）
+`Linker\Commerce\Digest\Block` 接口（`id()/title()/entries()/empty_text()`，entry = `label + url + link_text + detail`），`Digest/Blocks` 按固定顺序装配内置的 ②③④，并应用过滤器 `linker_commerce_digest_blocks`（传 `list<Block>`，返回 `list<Block>`，非 Block 元素被剔除）。`Registration\Module` 将 `PendingApprovals` 放在最前；每条 entry 的 `url` 由 `Registration\AccountsAdmin::url( $user_id )` 生成，直达 `admin.php?page=linker-accounts&focus=<用户ID>` 审核卡片，`link_text` 沿用 Open the customer / Kunden öffnen。身份及状态口径由现有 `Registration\Approval` 负责；本块不另写审批状态机。已处理账户不计入待审；限制账户另列一行数量与后台独立区域链接，拒绝账户只在历史中保留。旧邮件里的深链仍可查看当前决定。
 
 ## 邮件
 - WC_Email 子类（`Digest/DigestEmail`，继承团队通知基类），注册进 `woocommerce_email_classes`（后台 WooCommerce → Settings → Emails 可见可关）。语言 = 站点默认语言（团队邮件规则），HTML 单格式，正文模板 `templates/emails/linker-digest.php`（语义标记，零内联样式，外层沿用 WooCommerce 邮件头尾）。邮件内的时间显示一律 Europe/Berlin；日期格式随邮件语言取（EN "October 11, 2026" / DE "11. Oktober 2026"），不取站点的 date_format 选项（快照站点该选项是中文格式，与邮件语言无关）。

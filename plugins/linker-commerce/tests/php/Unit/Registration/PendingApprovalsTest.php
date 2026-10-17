@@ -17,7 +17,7 @@ use WP_User;
 
 /**
  * Tests for PendingApprovals: the block's identity, the set it lists (every
- * customer whose state is not approved, oldest first) and the entry it puts in
+ * pending plain customer, oldest first) and the entry it puts in
  * the digest's hand.
  *
  * @covers \Linker\Commerce\Registration\PendingApprovals
@@ -69,6 +69,10 @@ final class PendingApprovalsTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'admin_url', array( 'return' => static fn ( string $path ): string => 'https://example.test/wp-admin/' . $path ) );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( string $key, int|string $value, string $url ): string => $url . '&' . $key . '=' . $value ) );
+		WP_Mock::userFunction( 'get_current_blog_id', array( 'return' => 1 ) );
+		WP_Mock::userFunction( 'wp_cache_get_last_changed', array( 'return' => fn (): string => json_encode( $this->store, JSON_THROW_ON_ERROR ) ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $count ): string => (string) $count ) );
 		WP_Mock::userFunction( 'mysql2date', array( 'return' => static fn ( string $format, string $date ): string => $date ) );
 	}
 
@@ -79,31 +83,40 @@ final class PendingApprovalsTest extends TestCase {
 		$block = new PendingApprovals( new Approval() );
 
 		$this->assertSame( 'pending_accounts', $block->id() );
-		$this->assertSame( 'Accounts waiting for approval', $block->title() );
+		$this->assertSame( 'Accounts waiting for approval (2)', $block->title() );
 		$this->assertSame( 'No account is waiting for approval.', $block->empty_text() );
 	}
 
 	/**
 	 * A customer without a state waits (the default is pending); approved
-	 * accounts drop out; restricted and rejected ones wait again.
+	 * accounts, restrictions and rejections are not new applications.
 	 */
-	public function test_it_lists_the_accounts_without_approval(): void {
+	public function test_it_lists_only_pending_accounts(): void {
 		$block = new PendingApprovals( new Approval() );
 
-		$this->assertCount( 2, $block->entries(), 'No state recorded: both customers wait.' );
+		$this->assertCount( 2, $this->pending_entries( $block ), 'No state recorded: both customers wait.' );
 
 		$this->store[5][ Approval::STATUS_META ] = Approval::APPROVED;
 		$this->store[8][ Approval::STATUS_META ] = Approval::APPROVED;
-		$this->assertSame( array(), $block->entries() );
+		$this->assertSame( array(), $this->pending_entries( $block ) );
 
 		$this->store[8][ Approval::STATUS_META ] = Approval::RESTRICTED;
+		$this->assertSame( array(), $this->pending_entries( $block ) );
+		$this->assertStringContainsString( 'awaiting customer information: 1', $block->entries()[1]['label'] );
+		$this->assertStringContainsString( '&status=restricted', $block->entries()[1]['url'] );
+		$this->store[8][ Approval::STATUS_META ] = Approval::REJECTED;
+		$this->assertSame( array(), $this->pending_entries( $block ) );
+		$this->assertSame( 'Accounts waiting for approval (0)', $block->title() );
+		$this->assertSame( $block->empty_text(), $block->entries()[0]['label'] );
+		$this->assertStringContainsString( 'awaiting customer information: 0', $block->entries()[1]['label'] );
+		$this->store[8][ Approval::STATUS_META ] = Approval::PENDING;
 			/** The block's entries, in the digest's entry shape. @var list<array{label: string, url: string, link_text: string, detail: string}> $entries */
-		$entries = $block->entries();
+		$entries = $this->pending_entries( $block );
 		$this->assertSame(
 			array(
 				array(
 					'label'     => 'Maria Beispiel',
-					'url'       => 'https://example.test/wp-admin/user-edit.php?user_id=8',
+					'url'       => 'https://example.test/wp-admin/admin.php?page=linker-accounts&focus=8',
 					'link_text' => 'Open the customer',
 					'detail'    => 'Registered on 2026-10-09 08:15:00',
 				),
@@ -119,14 +132,24 @@ final class PendingApprovalsTest extends TestCase {
 	public function test_the_company_is_the_label(): void {
 		$this->store[8][ Approval::STATUS_META ] = Approval::APPROVED;
 
-		$entries = ( new PendingApprovals( new Approval() ) )->entries();
+		$entries = $this->pending_entries( new PendingApprovals( new Approval() ) );
 
 		$this->assertCount( 1, $entries, 'The account waits.' );
 		$this->assertSame(
-			array( 'Solarbau Beispiel GmbH', 'https://example.test/wp-admin/user-edit.php?user_id=5' ),
+			array( 'Solarbau Beispiel GmbH', 'https://example.test/wp-admin/admin.php?page=linker-accounts&focus=5' ),
 			array( $entries[0]['label'] ?? '', $entries[0]['url'] ?? '' ),
 			'The company is the label and the profile is the way to the account.'
 		);
+	}
+
+	/**
+	 * Application rows, distinct from the restricted summary and empty sentence.
+	 *
+	 * @param PendingApprovals $block Digest block.
+	 * @return list<array{label: string, url: string, link_text: string, detail: string}>
+	 */
+	private function pending_entries( PendingApprovals $block ): array {
+		return array_values( array_filter( $block->entries(), static fn ( array $entry ): bool => str_contains( $entry['url'], '&focus=' ) ) );
 	}
 
 	/**

@@ -1,11 +1,4 @@
-/**
- * The team's side of account approval (docs/specs/11-commerce.md §§2–3, ticket
- * 73): every registration starts pending and reads the site like a guest —
- * no price, no solution draft, no inquiry — until the team approves the
- * account. This drives the team's own users list, whose one-click "Approve"
- * is the highest-frequency action; the link is located by its href, so the
- * suite does not depend on the admin screen's language.
- */
+/** The employee approves through the canonical account-review card. */
 
 /**
  * External dependencies
@@ -41,24 +34,29 @@ export async function approveCustomer(
 	const page = await context.newPage();
 	try {
 		await page.goto(loginLink(undefined, staff()));
+		const id = wp(['user', 'get', email, '--field=ID']).trim();
 		await page.goto(
-			`${instance().url}/wp-admin/users.php?s=${encodeURIComponent(email)}`
+			`${instance().url}/wp-admin/admin.php?page=linker-accounts&focus=${id}`
 		);
-		const row = page.locator('#the-list tr', { hasText: email });
-		await expect(row, `the users list shows ${email}`).toHaveCount(1);
-		const approve = row.locator(
-			'a[href*="linker_approval_action=approve"]'
+		const card = page.locator(
+			`#linker-accounts-focus [data-account-id="${id}"]`
 		);
-		if ((await approve.count()) > 0) {
-			// WordPress reveals a row's actions on hover, and the link is
-			// outside the viewport until then (a click alone times out).
-			await row.hover();
-			await approve.first().click();
-			await page.waitForLoadState('load');
-		}
-		// The row action renders only while the account is not approved
-		// (ApprovalAdmin::row_action): its absence is the state.
-		await expect(approve, `${email} is approved`).toHaveCount(0);
+		await expect(card).toBeVisible();
+		const response = page.waitForResponse(
+			(result) =>
+				result.url().includes(`/accounts/${id}/approval`) &&
+				result.request().method() === 'POST'
+		);
+		await card
+			.getByRole('button', { name: /^(Approve|Freigeben)$/ })
+			.click();
+		expect((await response).ok()).toBe(true);
+		await expect(card.getByRole('status')).toContainText(
+			/Decision saved|Entscheidung wurde gespeichert/
+		);
+		expect(
+			wp(['user', 'meta', 'get', id, 'linker_approval_status']).trim()
+		).toBe('approved');
 	} finally {
 		await context.close();
 	}

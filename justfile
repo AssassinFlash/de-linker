@@ -7,6 +7,8 @@ mod build "tools/build.just"
 
 # Composer projects: the plugins, the production mu-plugins, and tools/local for
 # its local mu-plugins and router.
+js_projects := "plugins/linker-tools plugins/linker-commerce"
+
 php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tools mu-plugins tools/local"
 
 # uv projects: the services, tools/local (linker-local), the data migrations (tools/migrate), and the FAQ tooling.
@@ -283,9 +285,13 @@ mu-smoke name:
 
 # Installs node_modules from package-lock.json, unless the last install is newer than the lock file.
 [private]
-[working-directory("plugins/linker-tools")]
 js-install:
-    if [ ! -f node_modules/.package-lock.json ] || [ package-lock.json -nt node_modules/.package-lock.json ]; then npm ci --no-audit --no-fund; fi
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for project in {{ js_projects }}; do
+        cd "{{ justfile_directory() }}/$project"
+        if [ ! -f node_modules/.package-lock.json ] || [ package-lock.json -nt node_modules/.package-lock.json ]; then npm ci --no-audit --no-fund; fi
+    done
 
 # The regression suite's own package: types and formatting. Its tests need a
 # live instance, so they are not part of `just check`; this is what CI can run.
@@ -299,16 +305,21 @@ e2e-check: e2e-install
     cd "{{ justfile_directory() }}/tests/e2e" && npm run lint:types && npm run lint:format
 
 [private]
-[working-directory("plugins/linker-tools")]
 js-check: js-install
-    npm run lint:js
-    npm run lint:types
-    npm run lint:format
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for project in {{ js_projects }}; do
+        cd "{{ justfile_directory() }}/$project"
+        npm run lint:js
+        npm run lint:types
+        npm run lint:format
+    done
 
 [private]
 [working-directory("plugins/linker-tools")]
 js-test: js-install
     npm run test:unit
+    cd "{{ justfile_directory() }}/plugins/linker-commerce" && npm run test:unit
     # The commerce plugins' script tests are plain node:test files (jsdom
     # resolves through this project's node_modules); this gate is what runs
     # them in CI.

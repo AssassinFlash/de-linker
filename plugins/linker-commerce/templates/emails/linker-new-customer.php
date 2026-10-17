@@ -13,6 +13,7 @@
  */
 
 use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Registration\AccountsAdmin;
 use Linker\Commerce\Registration\CustomerRole;
 use Linker\Commerce\Registration\VatProfile;
 
@@ -41,7 +42,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 		</tr>
 	<?php endforeach; ?>
 </table>
-<p><a href="<?php echo esc_url( get_edit_user_link( $customer->ID ) ); ?>"><?php esc_html_e( 'Open the customer', 'linker-commerce' ); ?></a></p>
+<p><a href="<?php echo esc_url( AccountsAdmin::url( $customer->ID ) ); ?>"><?php esc_html_e( 'Open the customer', 'linker-commerce' ); ?></a></p>
 <?php
 if ( $additional_content ) {
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );

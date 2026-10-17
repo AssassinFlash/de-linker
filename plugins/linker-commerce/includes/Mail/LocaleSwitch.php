@@ -1,6 +1,6 @@
 <?php
 /**
- * Rendering an email in a given language.
+ * Rendering an email or an admin response in a given language.
  *
  * @package Linker\Commerce
  */
@@ -10,8 +10,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Mail;
 
 /**
- * Switches WordPress, WooCommerce and this plugin to a locale while an email or
- * a Proforma invoice is rendered, the way WooCommerce's own
+ * Switches WordPress, WooCommerce and this plugin to a locale while an email,
+ * a Proforma invoice or an account review response is rendered, the way WooCommerce's own
  * wc_switch_to_site_locale() does it, and switches back afterwards.
  * WooCommerce's country list keeps the names of the language it was first
  * read in, so the switch also hands WooCommerce a fresh list for its duration:
@@ -28,6 +28,14 @@ final class LocaleSwitch {
 	private string $locale = '';
 
 	/**
+	 * Whether this scope actually pushed WordPress's locale stack. A nested
+	 * email in the same language must not restore its caller's locale scope.
+	 *
+	 * @var bool
+	 */
+	private bool $switched = false;
+
+	/**
 	 * WooCommerce's country list from before the switch, while a switch is active.
 	 *
 	 * @var \WC_Countries|null
@@ -40,8 +48,8 @@ final class LocaleSwitch {
 	 * @param string $locale Locale, e.g. de_DE_formal.
 	 */
 	public function to( string $locale ): void {
-		$this->locale = $locale;
-		switch_to_locale( $locale );
+		$this->locale   = $locale;
+		$this->switched = switch_to_locale( $locale );
 		add_filter( 'plugin_locale', array( $this, 'plugin_locale' ) );
 		$this->reload_domain();
 		WC()->load_plugin_textdomain();
@@ -53,7 +61,10 @@ final class LocaleSwitch {
 	 * Switches back to the locale before the last switch.
 	 */
 	public function back(): void {
-		restore_previous_locale();
+		if ( $this->switched ) {
+			restore_previous_locale();
+			$this->switched = false;
+		}
 		remove_filter( 'plugin_locale', array( $this, 'plugin_locale' ) );
 		$this->locale = '';
 		$this->reload_domain();
