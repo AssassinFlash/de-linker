@@ -35,6 +35,12 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
   - **看图与读文件**：铭牌拍照识别与附件读取用 deepseek-flash 做（官方 API 收图；PDF 先转成文字或页面图片，证据 `docs/research/2026-10-17-deepseek-flash-vision/`）。模型通道不变。
   - **首页 hero**：未交互时外观照旧（像素门不变）；打字、点胶囊、拍照、附件、语音之后的交互可以重新设计。
   - **线上实走验收**：账号链与 Genie 的验收包括按业主路径在线上实走。每次注册产生的真实邮件只限通知、已收到、已批准三封，收件人只限 sales@sunriverinverter.com 与业主指定的测试邮箱；其余测试照旧守测试邮件纪律。
+  - **询盘对所有人开放**：不需要账号也能发询盘（推翻"发询盘需要账号"）。访客只填邮箱、姓名、公司（选填）和一个开放留言框，不问国家；Lösungsentwurf 里的产品一并带上。Proforma 请求页左右分栏（左表单、右草稿），已登录客户资料折叠成一行；地址、VAT 由团队开 Proforma 时补或从账号预填。联系表单保持现状；联系留言与询盘"两扇门、一份记录"（原型 `docs/prototypes/2026-10-17-inquiry/`）。
+  - **账号状态**：待审账号注册后保持登录，只是不显示价格，也能发询盘；"限制"用于告诉客户信息不够（缺 VAT、公司资料等），原因给客户看。
+  - **/wp-admin**：WooCommerce 把客户从 /wp-admin 转到 my-account 是保护行为，保留，但给说明页；员工以客户视角测试用 User Switching（免费插件，已装线上）。
+  - **德语**：切到德语时一切都是德语专属——地址、标题、文案；德语自动翻译必须在线上运行，模型是 deepseek-flash（仅官方 API），机器译文先标"待审"；仓库部署的模板不被自动翻译覆盖。
+  - **本地与线上同步**：本地实例是讨论与修改的参照，必须与线上一致（拉取后施加本地密钥，后台无杂项提示）。
+  - **Genie 目标**：见 `docs/specs/13-genie.md` 的"目标"一节（主动预览卡选提示卡样式，原型 `docs/prototypes/2026-10-17-preview-card/`）。
   - **分工**：调研票与原型票由 Claude 完成，实现票交给其他 AI；实现完成后业主视情况请 Claude 评审。
 
 业主只回答事实（产品数据、价格、承诺、厂商怎么说）。产品范围、工具存废、架构、措辞由本线按竞品映射与证据决定；决定只因新证据改变，改变时写明证据。
@@ -66,7 +72,7 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
 - **测试邮件纪律（业主 2026-10-11）：测试只发一封、只发 tester**。任何测试场景（夹具、e2e、验收、切换冒烟）中，邮件 To/Cc/Bcc 一律重写为 tester 单地址，一封送达即证明投递链路畅通；多收件路由（客户副本/团队/Bcc）的正确性以 **Outbox 队列收件人数据断言**验证——写在队列里即正确，不做多封实发。实现形态：测试模式收件人重写开关（选项或 env，WP-CLI 可设/可撤），#17 切换冒烟用同一开关，验证后关闭。
 - **复刻面像素零差异（业主 2026-10-11：1 个像素点的偏差都算不通过）**：营销/产品/商城/分类/博客/页头页脚的视觉验收标准是**像素级**——live|local 全页截图由同一浏览器同机同视口拍摄（禁动画、等字体图片加载），像素比对**掩膜外差异数=0**；掩膜只许记录真实动态区（如随日期变的计数）且逐项报业主，未声明的差异像素即 FAIL。允许的像素差异只有一种：裁定过的变更（工具改名/工具页重设计/bug 修复）经变更台账呈现给业主过目。工具页不受像素门约束（重设计裁定）。
 - **PHP 不解决设计问题，Snippet 不滥用（业主 2026-10-11）**：客户可见页面的组成只在 LC 动态模板、样式只在 WindPress。PHP 短代码只做数据装配、输出语义标记+类名的数据片段（零内联样式、零设计决策）；任何视觉差距的修复落点只能是 LC markup 或 WindPress 样式。禁止 PHP 页面类/布局模板；禁止经 Code Snippets 通道加代码（代码只进仓库插件，实例 snippets 表不动——旧项目的教训）。
-- **模型路由铁律（业主 2026-10-11，零漂移）**：全站只存在四条模型通道——①**Genie 对话 = deepseek-flash，仅经官方 api.deepseek.com 直连**；②**Jev = typesafe/jev-1.13，仅经 OpenRouter 原生 /v1/systemone 端点**（chat 接口的 jev-router 是元路由、逐调用转包他人，禁用）；③**gemini-embedding-2 = 仅经 OpenRouter**；④**deepseek-flash 作为 Jev 级联升级判分器，仅经官方 API**（业主 Jev 设计的既有角色）。**OpenRouter 上只允许 jev 与 embedding-2 两个模型出现**；**aihubmix 永不作默认**（仅业主明示切换时作 embedding 备用，禁止自动降级）；**禁止临时起意用任何其他模型替代**（gpt/gemini/claude/kimi/grok 等一律不出现）；OpenRouter 调用失败必须显性暴露（重试+报错），禁止静默降级。任何模型改动=业主裁定。
+- **模型路由铁律（业主 2026-10-11，零漂移）**：全站只存在四条模型通道——①**Genie 对话 = deepseek-flash，仅经官方 api.deepseek.com 直连**；②**Jev = typesafe/jev-1.13，仅经 OpenRouter 原生 /v1/systemone 端点**（chat 接口的 jev-router 是元路由、逐调用转包他人，禁用）；③**gemini-embedding-2 = 仅经 OpenRouter**；④**deepseek-flash 作为 Jev 级联升级判分器，仅经官方 API**（业主 Jev 设计的既有角色）。deepseek-flash（同一官方通道）另用于德语自动翻译（业主 2026-10-17）。**OpenRouter 上只允许 jev 与 embedding-2 两个模型出现**；**aihubmix 永不作默认**（仅业主明示切换时作 embedding 备用，禁止自动降级）；**禁止临时起意用任何其他模型替代**（gpt/gemini/claude/kimi/grok 等一律不出现）；OpenRouter 调用失败必须显性暴露（重试+报错），禁止静默降级。任何模型改动=业主裁定。
 - **三件套原生优先（业主 2026-10-11：WooCommerce/LiveCanvas/WindPress 不得每次都被忽略）**：客户可见面的实现顺序=① LC 原生 tag（词汇表从实例 livecanvas 插件提取维护：lc_loop/lc_get_cf/lc_wc_product/lc_wc_related/lc_wc_product_tab_*/lc_wp_func…）② Woo 原生机制（属性/meta/related/tabs/模板函数）③ WindPress 管线（样式）。自定义代码是**最后手段**，须在规格文档留逐项穷尽证明（合格先例：B2B 价格门=`Gating\PriceDisplay` 在源头隐藏价格，Woo 原生不做门）；只做数据装配，零设计决策。
 - 本轮发现的问题本轮修，不开 follow-up，不留 TODO。
 - **旧政权词汇零容忍（业主多次明令）**：旧仓库的 Law/ADR 编号/旧工单号不得作为"依据"出现在本仓库任何代码注释、提交信息、文档、报告与评审结论里。旧材料只有一种合法用法：作为"线上现状/旧系统行为"的中性证据**改述**（不引旧编号）；规则依据只有本文件、新仓库票据与业主当期裁定。
