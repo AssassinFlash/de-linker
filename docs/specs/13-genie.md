@@ -143,9 +143,9 @@ dock 的 mount 以 `data-page` 打印整份上下文，应用逐轮原样发回�
 
 **何时读**（`route.with_page`）：Jev 的 `about_this_page`（≥0.5，与 #233 判本页产品同一切线）为真时，在路由自己的调用之前加上 read-page（Lösungsentwurf：read-page + 至多两对逆变器×电池的 check-compatibility；已登录账户：inquiry-status），合计仍 ≤4 次调用；找人、公司物流、询盘状态三类路由不读页面。Jev 不确定或不可用时，模型可自行调用 `linker_read_page`（无参数）。每轮提示词都写明 `page=`、`page_title=`、`page_url=`，"这页 / 这款 / here / this one" 指本页或本页产品；产品页上没有型号词的问题照旧以本页商品为主语（#233）。Jev 的页面状态加上 `title`，新类型以词语命名（`home_page`、`solution_page`、`faq_and_documents_page`、`blog`）。
 
-**开场建议**（`Entries::prompts`，2–3 条，点名本页）：有预览卡的页面（首页、产品、产品分类、解决方案）用预览卡同一组问题（`Preview::asks`，#249 的评审定稿）；其余：商城 "Which model fits my project?" + SAJ/GoodWe 比较；博文 "Summarize this post" + "Which products does this post apply to?"；博客首页 "Which posts help me choose a hybrid inverter?" + "Summarize this page"；FAQ "Find the datasheet for my model" + "What does this page say about compatibility lists?"；枢纽、About、受众页 "Summarize this page" + "Which products suit my project?"；Lösungsentwurf与账户沿用既有两条；其余页 "Summarize this page" + "Which batteries work with my inverter?"。德语独立撰写在 `.po`，文案评审 `docs/acceptance/2026-10-18/234/copy-review.md`（定稿以该记录为准）。
+**开场建议**（`Entries::prompts`，2–3 条，点名本页）：有预览卡的页面（首页、产品、产品分类、解决方案）用预览卡同一组问题（`Preview::asks`，#249 的评审定稿）；其余：商城 "Which model fits my project?" + SAJ/GoodWe 比较；博文 "Summarize this post" + "Which products does this post apply to?"；博客首页 "Which of these posts cover hybrid inverters?" + "Summarize this page"；FAQ 与文档页 "Is there a datasheet for my model?" + "Which batteries work with my inverter?"（FAQ 的答案是站点文案、不作事实来源，AGENTS.md 2026-10-09）；枢纽、About、受众页 "Summarize this page" + "Which products fit my project?"；Lösungsentwurf 与账户沿用既有两条；其余页（联系、法律页、表单、工具）"Which model fits my project?" + "Which batteries work with my inverter?"（不对法律文本做摘要）。德语独立撰写在 `.po`，文案评审 `docs/acceptance/2026-10-18/234/copy-review.md`。
 
-评测：`services/genie/eval/page/`——`questions.json`（八类页面各两问 × EN/DE，含"这页说的……是什么意思"与产品页"这款"）、`run.py`（不钉 Jev，真实页面、真实 deepseek-flash；已登录行用 `UserContext` 现签令牌）、`capture_pages.py`（重取 `tests/fixtures/pages/`）。结果：`docs/acceptance/2026-10-18/234/`。
+评测：`services/genie/eval/page/`——`questions.json`（八类页面各两问 × EN/DE，含"这页说的……是什么意思"与产品页"这款"）、`pages.py`（不钉 Jev，真实页面、真实 deepseek-flash；已登录行用 `UserContext` 现签令牌）、`capture_pages.py`（重取 `tests/fixtures/pages/`）。结果：`docs/acceptance/2026-10-18/234/`。
 
 ## 理解层（#233，实现目标第 2 条）
 

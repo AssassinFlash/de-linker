@@ -1,7 +1,8 @@
-# German (formal) translations of linker-tools' PHP strings: the dock button
-# and the page chips of includes/Genie/Entries.php. Wordings match the JED
-# file (linker-tools-de_DE_formal-linker-tools-genie.json) and the explicit
-# German prompts in Entries::prompts(); AGENTS.md §3: Sie form.
+# German (formal) translations of linker-tools' PHP strings: the dock button,
+# the page chips and the opening prompts of includes/Genie/Entries.php.
+# Wordings match the JED file (linker-tools-de_DE_formal-linker-tools-genie.json);
+# AGENTS.md §3: Sie form. The prompts of #234 passed the copy review of
+# docs/acceptance/2026-10-18/234/copy-review.md.
 # Compile: msgfmt -o linker-tools-de_DE_formal.mo linker-tools-de_DE_formal.po
 msgid ""
 msgstr ""
@@ -434,3 +435,31 @@ msgstr "Welche Batterien passen zu meinem Wechselrichter?"
 #: includes/Genie/Preview.php
 msgid "Compare SAJ and GoodWe hybrid inverters"
 msgstr "Wie unterscheiden sich die Hybrid-Wechselrichter von SAJ und GoodWe?"
+
+#: includes/Genie/Entries.php
+msgid "Which model fits my project?"
+msgstr "Welches Modell passt zu meinem Projekt?"
+
+#: includes/Genie/Entries.php
+msgid "Summarize this post"
+msgstr "Worum geht es in diesem Beitrag?"
+
+#: includes/Genie/Entries.php
+msgid "Which products does this post apply to?"
+msgstr "Welche Produkte betrifft dieser Beitrag?"
+
+#: includes/Genie/Entries.php
+msgid "Which of these posts cover hybrid inverters?"
+msgstr "Welche dieser Beiträge behandeln Hybrid-Wechselrichter?"
+
+#: includes/Genie/Entries.php
+msgid "Summarize this page"
+msgstr "Worum geht es auf dieser Seite?"
+
+#: includes/Genie/Entries.php
+msgid "Is there a datasheet for my model?"
+msgstr "Gibt es ein Datenblatt zu meinem Modell?"
+
+#: includes/Genie/Entries.php
+msgid "Which products fit my project?"
+msgstr "Welche Produkte passen zu meinem Projekt?"

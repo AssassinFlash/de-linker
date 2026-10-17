@@ -678,24 +678,29 @@ JS,
 						__( 'Which products does this post apply to?', 'linker-tools' ),
 					)
 					: array(
-						__( 'Which posts help me choose a hybrid inverter?', 'linker-tools' ),
+						__( 'Which of these posts cover hybrid inverters?', 'linker-tools' ),
 						__( 'Summarize this page', 'linker-tools' ),
 					);
 			case 'faq':
+				// The FAQ and documents page: its documents, and the pairing
+				// question the compatibility data answers (its FAQ answers are
+				// site copy, not a source of facts: AGENTS.md 2026-10-09).
 				return array(
-					__( 'Find the datasheet for my model', 'linker-tools' ),
-					__( 'What does this page say about compatibility lists?', 'linker-tools' ),
+					__( 'Is there a datasheet for my model?', 'linker-tools' ),
+					__( 'Which batteries work with my inverter?', 'linker-tools' ),
 				);
 			case 'solution':
 				// The hub, About and the audience pages; the solutions themselves
 				// carry the card's questions above.
 				return array(
 					__( 'Summarize this page', 'linker-tools' ),
-					__( 'Which products suit my project?', 'linker-tools' ),
+					__( 'Which products fit my project?', 'linker-tools' ),
 				);
 			default:
+				// Contact, the legal pages, the forms and the tools: a summary
+				// would reword legal text, so the dock offers the range.
 				return array(
-					__( 'Summarize this page', 'linker-tools' ),
+					__( 'Which model fits my project?', 'linker-tools' ),
 					__( 'Which batteries work with my inverter?', 'linker-tools' ),
 				);
 		}

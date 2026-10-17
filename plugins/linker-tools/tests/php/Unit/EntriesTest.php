@@ -248,11 +248,11 @@ final class EntriesTest extends TestCase {
 			'solution'         => array( 'solution', 'What do I need for a residential storage system?' ),
 			'marketing page'   => array( 'about', 'Summarize this page' ),
 			'blog post'        => array( 'post', 'Summarize this post' ),
-			'blog index'       => array( 'blog', 'Which posts help me choose a hybrid inverter?' ),
-			'faq'              => array( 'faq', 'Find the datasheet for my model' ),
+			'blog index'       => array( 'blog', 'Which of these posts cover hybrid inverters?' ),
+			'faq'              => array( 'faq', 'Is there a datasheet for my model?' ),
 			'solution draft'   => array( 'cart', 'Check my draft' ),
 			'account'          => array( 'account', 'Where is my Proforma?' ),
-			'other'            => array( 'contact', 'Summarize this page' ),
+			'other'            => array( 'contact', 'Which model fits my project?' ),
 		);
 	}
 

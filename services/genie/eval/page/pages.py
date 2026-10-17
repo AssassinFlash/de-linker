@@ -1,6 +1,6 @@
 """Questions about the page the customer is on: issue #234's acceptance set, EN and DE.
 
-    uv run --locked python eval/page/run.py --wp http://127.0.0.1:9102 \
+    uv run --locked python eval/page/pages.py --wp http://127.0.0.1:9102 \
         --index ~/de-linker-data/index/builds/20261016T072222Z/index.sqlite \
         --mint "just wp g234 eval 'echo (new Linker\\Tools\\Genie\\UserContext())->mint();' \
             --user=857558227@qq.com" \
@@ -112,7 +112,9 @@ def main() -> None:
         token = (
             subprocess.run(
                 args.mint, shell=True, check=True, capture_output=True, text=True
-            ).stdout.strip().splitlines()[-1]
+            )
+            .stdout.strip()
+            .splitlines()[-1]
             if logged_in
             else None
         )

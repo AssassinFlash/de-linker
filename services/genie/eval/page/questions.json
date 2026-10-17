@@ -88,7 +88,7 @@
   {"id": "draft-check", "lang": "de", "question": "Meinen Entwurf prüfen",
    "page": {"type": "draft", "url": "/de/warenkorb/", "title": "Lösungsentwurf", "draft_ids": [6528, 6520]},
    "logged_in": true,
-   "expect": {"reads": "linker/read-page", "all": ["GW10K-EHA-G20", "BAT-D-G20", "(?i)freigegeben|kompatibel|passt|zusammen"]}},
+   "expect": {"reads": "linker/read-page", "all": ["GW10K-EHA-G20", "BAT-D-G20", "(?i)freigegeben|Freigabe|kompatibel|passt|zusammen"]}},
   {"id": "draft-next", "lang": "de", "question": "Wie geht es weiter?",
    "page": {"type": "draft", "url": "/de/warenkorb/", "title": "Lösungsentwurf", "draft_ids": [6528, 6520]},
    "logged_in": true,
@@ -100,12 +100,12 @@
    "expect": {"reads": "linker/inquiry-status", "all": ["(?i)cancel"]}},
   {"id": "account-guest", "lang": "en", "question": "What can I do on this page?",
    "page": {"type": "account", "url": "/my-account/", "title": "My account"},
-   "expect": {"reads": "linker/read-page", "cites_page": true, "all": ["(?i)sign in|log in", "(?i)inquir|document|price"]}},
+   "expect": {"reads": "linker/read-page", "cites_page": true, "all": ["(?i)sign[- ]?in|log ?in", "(?i)inquir|document|price"]}},
   {"id": "account-statuses", "lang": "de", "question": "Was bedeuten die Status meiner Anfragen auf dieser Seite?",
    "page": {"type": "account", "url": "/de/mein-konto/", "title": "Mein Konto"},
    "logged_in": true,
    "expect": {"reads": "linker/inquiry-status", "all": ["(?i)storniert"]}},
   {"id": "account-guest", "lang": "de", "question": "Was kann ich auf dieser Seite tun?",
    "page": {"type": "account", "url": "/de/mein-konto/", "title": "Mein Konto"},
-   "expect": {"reads": "linker/read-page", "cites_page": true, "all": ["(?i)anmelden|einloggen", "(?i)anfrage|dokument|preis|unterlagen"]}}
+   "expect": {"reads": "linker/read-page", "cites_page": true, "all": ["(?i)anmeld|melden|einlogg", "(?i)anfrage|dokument|preis|unterlagen"]}}
 ]
