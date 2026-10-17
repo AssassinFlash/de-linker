@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Integration;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Mail\TestMode;
 use PHPUnit\Framework\TestCase;
 use WC_Customer;
 use WC_Order;
@@ -22,6 +23,9 @@ use WC_Product_Simple;
  * them again after each test.
  */
 abstract class IntegrationTestCase extends TestCase {
+
+	/** Every fixture delivery uses this synthetic tester (AGENTS §5). */
+	protected const TESTER = 'tester246@example.test';
 
 	/**
 	 * Skips unless the integration configuration ran the bootstrap: LINKER_WP_ROOT
@@ -106,11 +110,18 @@ abstract class IntegrationTestCase extends TestCase {
 	 * setUp() calls it first, so its removal runs after the test's own.
 	 */
 	private function isolate_mail(): void {
+		$test_to = get_option( TestMode::OPTION );
+		( new TestMode() )->enable( self::TESTER );
 		$sends  = get_option( Throttle::OPTION );
 		$marker = self::newest_mail_job();
 		delete_option( Throttle::OPTION );
 		$this->later(
-			static function () use ( $sends, $marker ): void {
+			static function () use ( $sends, $marker, $test_to ): void {
+				if ( false === $test_to ) {
+					delete_option( TestMode::OPTION );
+				} else {
+					update_option( TestMode::OPTION, $test_to, false );
+				}
 				foreach ( self::mail_jobs_after( $marker ) as $id ) {
 					as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
 					wp_delete_post( $id, true );
