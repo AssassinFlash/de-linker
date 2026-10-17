@@ -1,0 +1,34 @@
+python3 "/Users/chesterjohn/Documents/de-linker-worktrees/c288/tools/checks/i18n-coverage.py"
+i18n-coverage: FAIL
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: live msgid is obsolete: 'Product filters'
+  source: plugins/linker-commerce/content/livecanvas/archive_product.html:12
+  source: plugins/linker-commerce/content/livecanvas/shop_page.html:12
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: live msgid is obsolete: 'Applications'
+  source: plugins/linker-commerce/content/livecanvas/blog_index.html:343
+  source: plugins/linker-commerce/content/livecanvas/category_archive.html:159
+  source: plugins/linker-commerce/content/livecanvas/search.html:155
+  source: plugins/linker-commerce/content/livecanvas/single_product.html:55
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: live msgid is obsolete: 'Breadcrumb'
+  source: plugins/linker-commerce/content/livecanvas/blog_single.html:29
+  source: plugins/linker-commerce/content/livecanvas/de/blog_single.html:20
+  source: plugins/linker-commerce/content/livecanvas/de/search.html:19
+  source: plugins/linker-commerce/content/livecanvas/search.html:27
+  source: plugins/linker-commerce/content/livecanvas/single_product.html:6
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: live msgid is obsolete: 'Clear search'
+  source: plugins/linker-commerce/content/livecanvas/faq_page.html:13
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: live msgid is obsolete: 'Check this model for the project'
+  source: plugins/linker-commerce/content/livecanvas/single_product.html:33
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: live msgid is obsolete: 'Description'
+  source: plugins/linker-commerce/content/livecanvas/single_product.html:46
+  source: plugins/linker-commerce/content/livecanvas/single_product.html:53
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: live msgid is obsolete: 'Product sections'
+  source: plugins/linker-commerce/content/livecanvas/single_product.html:51
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: live msgid is obsolete: 'Technical data'
+  source: plugins/linker-commerce/content/livecanvas/single_product.html:54
+  source: plugins/linker-commerce/content/livecanvas/single_product.html:70
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: live msgid is obsolete: 'Product questions'
+  source: plugins/linker-commerce/content/livecanvas/single_product.html:89
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: untranslated=49 exempt=49 gap=0
+plugins/linker-i18n/languages/linker-i18n-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+error: recipe `i18n-coverage` failed on line 380 with exit code 1

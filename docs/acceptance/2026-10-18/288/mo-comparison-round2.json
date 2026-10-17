@@ -1,0 +1,28 @@
+{
+  "base_revision": "d27d1a3e95a982fb4545a4f14a651f183db86345",
+  "before_round2_revision": "8e0da45b8b18e3bb59c2ee6d4070d1acf8ba10c6",
+  "main_translation_keys": 794,
+  "after_translation_keys": 798,
+  "removed": [
+    "A restriction or rejection needs a reason; the customer reads it in the email.",
+    "Choose approve, restrict or reject.",
+    "Last change %1$s by %2$s.",
+    "Required for restrict and reject; the customer reads it in the email about the change."
+  ],
+  "changed": {},
+  "added": {
+    "Applications": "Anwendungen",
+    "Breadcrumb": "Brotkrumen",
+    "Check this model for the project": "Dieses Modell für das Projekt prüfen",
+    "Description": "Beschreibung",
+    "Product filters": "Produktfilter",
+    "Product questions": "Produktfragen",
+    "Product sections": "Produktbereiche",
+    "Technical data": "Technische Daten"
+  },
+  "clear_search": "Suche leeren",
+  "po_pairs_unchanged": 861,
+  "main_entries_including_header": 782,
+  "before_round2_entries_including_header": 777,
+  "after_round2_entries_including_header": 786
+}

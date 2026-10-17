@@ -1,0 +1,15 @@
+{
+  "before_locale": "en_US",
+  "after_locale": "en_US",
+  "translations": {
+    "Clear search": "Suche leeren",
+    "Product filters": "Produktfilter",
+    "Applications": "Anwendungen",
+    "Breadcrumb": "Brotkrumen",
+    "Check this model for the project": "Dieses Modell für das Projekt prüfen",
+    "Description": "Beschreibung",
+    "Product sections": "Produktbereiche",
+    "Technical data": "Technische Daten",
+    "Product questions": "Produktfragen"
+  }
+}

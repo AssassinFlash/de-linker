@@ -10,6 +10,7 @@
     "Used for delivery and bounces for all site emails. Choose an address whose domain authorizes Hostinger in its SPF record. The visible From and Reply-To stay unchanged."
   ],
   "origin_main_pairs_preserved": 861,
-  "pot_active_entries": 825,
-  "note": "Includes obsolete entries so translations no longer referenced by source remain preserved. Only the three removed envelope-setting entries were deleted."
+  "pot_active_entries": 834,
+  "note": "All existing msgstr remain unchanged. Round 2 restores 9 live LC-fragment messages to active entries. See the compiled MO comparison.",
+  "mo_comparison": "mo-comparison-round2.json"
 }

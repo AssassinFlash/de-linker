@@ -77,6 +77,8 @@ brew install php@8.3
 | `just test` | 三个插件的 PHPUnit（WP_Mock 严格模式）；Vitest（jsdom）与 Playwright（Chromium 驱动 Storybook）；两个服务与 `tools/local`、`tools/migrate` 的 pytest（tools/local 含用真实 MySQL/Redis/PHP/WP-CLI 建两个实例的端到端测试，CI 上跳过）；`tools/pull` 的 pytest（装入测试在本机建真实 WordPress，CI 没有 MySQL/WP-CLI 时跳过） |
 | `just build` | 用 `@wordpress/scripts` 构建 `plugins/linker-tools/build/`，再写 `build/manifest.json` |
 | `just build::check` | 源码或产物与 `build/manifest.json` 不一致就失败，并列出是哪些文件 |
+| `just i18n-commerce <name>` | 用该本地实例的 WP-CLI 从 PHP/JS/build 提取，再从 LC 片段提取仍使用的既有目录词条，组合两个全新 POT 后更新 PO/MO；不读取旧 POT。例如 `just i18n-commerce c288`。LC 的英德模板正文继续由各语言模板承载，不新增或改写译文 |
+| `just i18n-coverage` | 检查德语未译词条与豁免清单；同时检查 PHP、JS/build、LC 片段中仍使用的目录词条没有被标为 obsolete。此门禁包含在 `just check` 中 |
 | `just up <name>` / `down` / `reset` / `login` / `status` / `serve` / `wp` | 本地 WordPress 实例（WordPress 7.1.3 + WooCommerce 11.2.0 + Redis 对象缓存，插件链接到当前检出）：建立与启动、停止、重建、一次性登录链接、列表、启动 engine 与 Genie、WP-CLI。见 `docs/local-stack.md` |
 | `just pull` | 线上只读快照到 `~/de-linker-data/<YYYYMMDD-HHMM>/`；`just pull load …` 等子命令见下文“线上快照” |
 | `just index` | Genie 的文档索引，只在 Mac 上跑（`docs/specs/10-knowledge-index.md`）：只读拉取媒体库 PDF 与商品、Docling 解析（按 sha256 缓存）、分块、向量、写 SQLite；数据与产物在仓库外的 `~/de-linker-data/`（`LINKER_DATA` 可改）。装 `index` 依赖组（Docling、ONNX Runtime 等），CI 不装 |

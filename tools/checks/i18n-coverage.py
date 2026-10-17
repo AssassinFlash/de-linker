@@ -8,8 +8,12 @@ description, an ERP error returned as JSON, or a post type that no screen
 shows. Customer and staff strings are not exempt.
 
 Prints one line per catalog: path, untranslated, exempt, gap.
-Exit 0 when every gap is 0. Exit 1 when a gap remains, an exemption is stale,
-or msgattrib cannot be run.
+Also rejects obsolete messages still used in PHP gettext calls, JS/build
+gettext calls or LiveCanvas fragment text/labels. Source usage is checked
+independently of the POT's references.
+
+Exit 0 when every gap is 0 and no live message is obsolete. Exit 1 when a gap
+remains, an exemption is stale, a live message is obsolete, or msgattrib fails.
 
 Usage:
     python3 tools/checks/i18n-coverage.py
@@ -22,6 +26,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from i18n_sources import catalog_msgids, source_references
 
 ROOT = Path(__file__).resolve().parents[2]
 EXEMPT_PATH = Path(__file__).resolve().parent / "i18n-exempt.json"
@@ -70,7 +75,9 @@ def untranslated(catalog: Path) -> list[str]:
     return entries
 
 
-def flush(entries: list[str], msgid: list[str] | None, msgstr: list[str] | None) -> None:
+def flush(
+    entries: list[str], msgid: list[str] | None, msgstr: list[str] | None
+) -> None:
     if not msgid:
         return
     text = "".join(msgid)
@@ -106,10 +113,22 @@ def main() -> int:
     known = {str(path) for path in found}
     for name in sorted(exemptions):
         if name not in known:
-            print(f"i18n-coverage: exemption names a missing catalog: {name}", file=sys.stderr)
+            print(
+                f"i18n-coverage: exemption names a missing catalog: {name}",
+                file=sys.stderr,
+            )
             failed = True
 
     for catalog in found:
+        plugin = (ROOT / catalog).parent.parent
+        used_obsolete = source_references(
+            plugin, catalog_msgids(ROOT / catalog, obsolete=True)
+        )
+        for msgid, references in used_obsolete.items():
+            print(f"{catalog}: live msgid is obsolete: {msgid!r}")
+            for path, line in references:
+                print(f"  source: {plugin.relative_to(ROOT)}/{path}:{line}")
+            failed = True
         missing = untranslated(catalog)
         rows = exemptions.get(str(catalog), [])
         allowed = {row["msgid"] for row in rows}

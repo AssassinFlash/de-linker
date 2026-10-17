@@ -379,6 +379,24 @@ banned-words:
 i18n-coverage:
     python3 "{{ justfile_directory() }}/tools/checks/i18n-coverage.py"
 
+# Rebuild commerce catalogs from PHP/JS/build and live catalog strings in LC
+# fragments. Both input POTs are extracted fresh; no previous POT is merged.
+[positional-arguments]
+i18n-commerce name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    plugin="{{ justfile_directory() }}/plugins/linker-commerce"
+    catalogs="$plugin/languages/linker-commerce"
+    extraction="$(mktemp -d)"
+    trap 'rm -rf "$extraction"' EXIT
+    PHP={{ php }} {{ linker_local }} wp "$1" i18n make-pot "$plugin" "$extraction/code.pot" \
+        --domain=linker-commerce --include=linker-commerce.php,includes,templates,src,build \
+        --exclude=vendor,node_modules,tests --skip-audit
+    python3 "{{ justfile_directory() }}/tools/checks/i18n_sources.py" "$plugin" "$extraction/fragments.pot"
+    msgcat --use-first --sort-by-file "$extraction/code.pot" "$extraction/fragments.pot" -o "$catalogs.pot"
+    msgmerge --update --backup=none --no-fuzzy-matching "$catalogs-de_DE_formal.po" "$catalogs.pot"
+    msgfmt --check "$catalogs-de_DE_formal.po" -o "$catalogs-de_DE_formal.mo"
+
 # Every catalog compiles: msgfmt --check over each plugin's .po and .pot
 # (tools/checks/i18n-validity.py). The coverage gate above reads the German
 # catalogs only, so a template catalog that lost a msgstr section or repeats

@@ -2,6 +2,8 @@
 
 本轮按 [PR #291 第 1 轮评审](https://github.com/AssassinFlash/de-linker/pull/291#issuecomment-6238959144) 的六项决定收敛。生产取证已完成：Hostinger `/usr/sbin/hsendmail -t` 强制信封为 `noreply@srv1798.main-hosting.eu`，设置 PHPMailer Sender 前后 Return-Path、SPF 与收件箱归类均不变。SPF 已通过，de-linker.com 无 DMARC；客户邮件在 QQ 收件箱，sunriver 的垃圾箱判定来自 From 域。内部通知使用 #286 的 sunriver 身份，客户 From 继续遵守业主裁定。证据和规则已替换进 `docs/specs/11-commerce.md` 的 Mail 一节。
 
+第 2 轮的 LC 提取修正、先红后绿门禁与编译 MO 比较见 [round2.md](round2.md)。
+
 ## 最终改动
 
 - 删除信封实现、模块钩子与依赖、Options 常量/读取方法、Woo 设置区、三条文案、专用测试及其旧验收截图/文案记录；没有替代信封机制。
@@ -26,24 +28,17 @@ just test
 
 ## 翻译生成与比较
 
-直接从当前 PHP、模板、源 JS 和 build 资源生成 POT，没有使用旧 POT 合并：
+第 2 轮补齐 LC 片段提取。重复执行以下命令即可从当前源码重建，无旧 POT 输入：
 
 ```sh
-just wp c288 i18n make-pot \
-  /Users/chesterjohn/Documents/de-linker-worktrees/c288/plugins/linker-commerce \
-  /Users/chesterjohn/Documents/de-linker-worktrees/c288/plugins/linker-commerce/languages/linker-commerce.pot \
-  --domain=linker-commerce \
-  --include=linker-commerce.php,includes,templates,src,build \
-  --exclude=vendor,node_modules,tests --skip-audit
-msgmerge --update --backup=none --no-fuzzy-matching \
-  plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po \
-  plugins/linker-commerce/languages/linker-commerce.pot
-# 从 PO 移除本轮删除的三条信封设置文案；其他 obsolete 译文保留。
-msgfmt --check plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po \
-  -o plugins/linker-commerce/languages/linker-commerce-de_DE_formal.mo
+just i18n-commerce c288
+just i18n-coverage
+just i18n-validity
 ```
 
-比较以评审前 `2a06c6dc` 的 PO 为 before，按 msgctxt、msgid、msgid_plural 分组，逐个比较全部 msgstr（含复数、obsolete；忽略位置和格式变化）。[translation-check.json](translation-check.json) 记录：864 → 861 组，861 组完全不变，changed_msgstr 为空，删除的恰好是三条信封设置文案；origin/main 的全部 861 组也都保留。POT 当前提取到 825 个有效条目，build/accounts.js 的词条直接来自 build 资源。失去源码引用的旧译文保留为 obsolete，未改译文内容。
+配方先用 WP-CLI 从 PHP/模板/源 JS/build 生成全新 POT，再从 LC 源码提取仍使用的既有目录词条，使用 `msgcat` 组合这两个全新提取结果；最后 `msgmerge --no-fuzzy-matching` 保留原译文并编译 MO。PO 只作为既有消息字典，LC 源文件决定是否仍有效；LC 的 EN/DE twins 已承载各语言正文，本轮不生成新译文。
+
+POT 当前 **834** 个有效条目，LC 提取 **29** 个已有词条，其中 **9** 个从 obsolete 恢复为 active。[translation-check.json](translation-check.json) 与 [mo-comparison-round2.json](mo-comparison-round2.json) 记录全部 **861** 个既有 PO msgid/msgstr 对不变。MO 与主线比较：仅删除四条真正退役的审批文案，改动 **0**；`Clear search → Suche leeren` 已恢复。另有八条原在主线 PO obsolete 区、仍存在 LC 片段的译文恢复进 MO。完整先红后绿与命令来源见 [round2.md](round2.md)。
 
 ## 评审与验收
 
