@@ -5,6 +5,21 @@ if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || wp_parse_url( home_url(), PHP_URL_H
 }
 $mode = $args[0] ?? 'setup';
 if ( 'cleanup' === $mode ) {
+	$quota = get_option( 'linker_246_browser_mail_quota' );
+	if ( is_array( $quota ) && array_key_exists( 'saved', $quota ) ) {
+		if ( false === $quota['saved'] ) {
+			delete_option( \Linker\Commerce\Mail\Throttle::OPTION );
+		} else {
+			update_option( \Linker\Commerce\Mail\Throttle::OPTION, $quota['saved'] );
+		}
+		delete_option( 'linker_246_browser_mail_quota' );
+	}
+	foreach ( (array) get_option( 'linker_246_browser_mail_jobs', array() ) as $job_id ) {
+		if ( 'linker_mail_job' === get_post_type( $job_id ) ) {
+			wp_delete_post( $job_id, true );
+		}
+	}
+	delete_option( 'linker_246_browser_mail_jobs' );
 	foreach ( array( 'guest246@example.test', 'guest246de@example.test', 'tester246-approved@example.test', 'tester246-pending@example.test', 'tester246-restricted@example.test' ) as $email ) {
 		foreach ( wc_get_orders( array( 'billing_email' => $email, 'limit' => -1 ) ) as $order ) {
 			$order->delete( true );
@@ -37,6 +52,15 @@ foreach ( array( 'approved', 'pending', 'restricted' ) as $status ) {
 	$customer->set_billing_last_name( 'Test' );
 	$customer->set_billing_email( 'tester246-' . $status . '@example.test' );
 	$customer->set_billing_company( '246 Fixture GmbH' );
+	$customer->set_billing_address_1( 'Teststraße 246' );
+	$customer->set_billing_city( 'Barleben' );
+	$customer->set_billing_postcode( '39179' );
+	$customer->set_billing_country( 'DE' );
+	if ( 'approved' === $status ) {
+		$customer->update_meta_data( 'billing_vat_id', 'DE123456789' );
+		$customer->update_meta_data( 'linker_vat_status', 'valid' );
+		$customer->update_meta_data( 'linker_vat_checked_number', 'DE123456789' );
+	}
 	$customer->save();
 	update_user_meta( $id, 'linker_approval_status', $status );
 	update_user_meta( $id, 'linker_approval_reason', 'restricted' === $status ? 'Please add your company VAT ID.' : '' );

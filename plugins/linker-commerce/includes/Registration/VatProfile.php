@@ -112,7 +112,7 @@ final class VatProfile {
 		$number      = VatNumber::normalize( is_string( $input ) ? $input : '' );
 		$customer_id = $order->get_customer_id();
 		$status      = $this->status( $customer_id );
-		if ( $customer_id <= 0 || ! $this->is_final( $customer_id, $status ) || $number !== get_user_meta( $customer_id, self::NUMBER_META, true ) ) {
+		if ( 0 >= $customer_id || ! $this->is_final( $customer_id, $status ) || get_user_meta( $customer_id, self::NUMBER_META, true ) !== $number ) {
 			$status = $this->verdict( $number )['status'];
 		}
 		$order->update_meta_data( self::ORDER_STATUS, $status );
