@@ -1,0 +1,21 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+....F                                                               5 / 5 (100%)
+
+Time: 00:00.020, Memory: 20.00 MB
+
+There was 1 failure:
+
+1) Linker\Commerce\Tests\Unit\Account\AdminAccessNoticeTest::test_destination_uses_the_configured_polylang_cookie_and_german_twin
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'https://example.test/de/mein-konto/?admin-access=staff'
++'https://example.test/my-account/?admin-access=staff'
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c245/plugins/linker-commerce/tests/php/Unit/Account/AdminAccessNoticeTest.php:101
+/Users/chesterjohn/Documents/de-linker-worktrees/c245/plugins/linker-commerce/vendor/10up/wp_mock/php/WP_Mock/Tools/TestCase.php:123
+
+FAILURES!
+Tests: 5, Assertions: 8, Failures: 1.

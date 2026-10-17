@@ -1,6 +1,6 @@
 /** Customer admin access through Woo's native protection and real sessions. */
 import { expect, test } from '@playwright/test';
-import { mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { instance, loginLink, REPO_ROOT, wp } from '../lib/instance';
 
@@ -303,6 +303,68 @@ test('native AJAX, admin-post and guest sign-in remain outside the explanation',
 		await expect(page.locator('#user_login')).toBeVisible();
 		await expect(page.locator('[data-linker-admin-notice]')).toHaveCount(0);
 	} finally {
+		wp(['user', 'delete', id, '--yes']);
+	}
+});
+
+test('Woo extension decisions control the explanation across requests without a role rule', async ({
+	page,
+}) => {
+	const fixture = join(
+		instance().dir,
+		'wordpress/wp-content/mu-plugins/c245-woo-decision.php'
+	);
+	if (existsSync(fixture)) {
+		throw new Error(
+			'c245 Woo decision fixture already exists; refusing to overwrite it'
+		);
+	}
+	const login = `c245-woo-decision-${Date.now()}`;
+	const id = wp([
+		'user',
+		'create',
+		login,
+		`${login}@example.test`,
+		'--role=customer',
+		'--porcelain',
+	]).trim();
+	try {
+		wp([
+			'user',
+			'meta',
+			'update',
+			id,
+			'linker_approval_status',
+			'approved',
+		]);
+		wp(['user', 'meta', 'update', id, 'c245_notice_decision', 'allow']);
+		// Woo's native default-priority filter runs before the final observer.
+		writeFileSync(
+			fixture,
+			`<?php
+add_filter('woocommerce_prevent_admin_access', static function ($prevent) {
+if (get_current_user_id() !== ${Number(id)}) { return $prevent; }
+return 'deny' === get_user_meta(${Number(id)}, 'c245_notice_decision', true);
+});
+`
+		);
+		await page.goto(loginLink(undefined, login));
+		await page.goto(`${base()}/my-account/?admin-access=staff`);
+		await expect(page.locator('[data-linker-admin-notice]')).toHaveCount(0);
+		wp(['user', 'meta', 'update', id, 'c245_notice_decision', 'deny']);
+		await page.goto(`${base()}/wp-admin/users.php`);
+		await expect(page.locator('[data-linker-admin-notice]')).toContainText(
+			`${login}@example.test`
+		);
+		wp(['user', 'meta', 'update', id, 'c245_notice_decision', 'allow']);
+		await page.goto(`${base()}/wp-admin/`);
+		await expect(page.locator('body.wp-admin')).toBeVisible();
+		await page.goto(`${base()}/my-account/?admin-access=staff`);
+		await expect(page.locator('[data-linker-admin-notice]')).toHaveCount(0);
+	} finally {
+		if (existsSync(fixture)) {
+			unlinkSync(fixture);
+		}
 		wp(['user', 'delete', id, '--yes']);
 	}
 });

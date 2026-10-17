@@ -1,0 +1,16 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+.F                                                                  2 / 2 (100%)
+
+Time: 00:00.019, Memory: 20.00 MB
+
+There was 1 failure:
+
+1) Linker\Commerce\Tests\Unit\Account\AdminAccessNoticeTest::test_a_woo_denial_selects_the_explanation_on_the_next_request
+Failed asserting that false is true.
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c245/plugins/linker-commerce/tests/php/Unit/Account/AdminAccessNoticeTest.php:66
+/Users/chesterjohn/Documents/de-linker-worktrees/c245/plugins/linker-commerce/vendor/10up/wp_mock/php/WP_Mock/Tools/TestCase.php:123
+
+FAILURES!
+Tests: 2, Assertions: 3, Failures: 1.

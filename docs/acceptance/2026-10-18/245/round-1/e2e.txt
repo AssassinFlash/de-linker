@@ -1,0 +1,17 @@
+
+Running 10 tests using 1 worker
+
+(node:2671) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › specs/admin-access.spec.ts:14:3 › en 1440: customers read the admin explanation in every approval state (13.3s)
+  ✓   2 [chromium] › specs/admin-access.spec.ts:14:3 › en 390: customers read the admin explanation in every approval state (17.6s)
+  ✓   3 [chromium] › specs/admin-access.spec.ts:14:3 › de 1440: customers read the admin explanation in every approval state (11.1s)
+  ✓   4 [chromium] › specs/admin-access.spec.ts:14:3 › de 390: customers read the admin explanation in every approval state (12.5s)
+  ✓   5 [chromium] › specs/admin-access.spec.ts:110:2 › en: one click signs out and staff sign-in reaches wp-admin (6.8s)
+  ✓   6 [chromium] › specs/admin-access.spec.ts:110:2 › de: one click signs out and staff sign-in reaches wp-admin (8.3s)
+  ✓   7 [chromium] › specs/admin-access.spec.ts:176:1 › User Switching: switch to customer, read explanation, switch back to staff (9.7s)
+  ✓   8 [chromium] › specs/admin-access.spec.ts:240:1 › the language switch keeps the explanation open in both directions (6.2s)
+  ✓   9 [chromium] › specs/admin-access.spec.ts:275:1 › native AJAX, admin-post and guest sign-in remain outside the explanation (5.2s)
+  ✓  10 [chromium] › specs/admin-access.spec.ts:310:1 › Woo extension decisions control the explanation across requests without a role rule (11.3s)
+
+  10 passed (1.8m)

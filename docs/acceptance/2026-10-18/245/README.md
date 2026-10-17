@@ -12,7 +12,7 @@ Implementation branch: `feat/245-wp-admin-notice`. Instance: **c245**, `http://1
 | --- | --- | --- |
 | Keep Woo's protective redirect | Done | `AdminAccessNotice::protect()` returns Woo's boolean unchanged; one-use redirect destination adapter. `docs/specs/245-admin-access.md` explains native-first choices. |
 | Customer `/wp-admin`, `/wp-admin/`, `/wp-admin/users.php` | Done | Browser assertions across approved, pending, restricted and rejected existing sessions; 48 address/state/language/viewport combinations. |
-| EN/DE, 1440/390, every approval state | Done | `{en,de}-{1440,390}-{approved,pending,restricted,rejected}-{admin,users}.png`. Same explanation for each approval state. |
+| EN/DE, 1440/390, every approval state | Done | `{en,de}-{1440,390}-{approved,pending,restricted,rejected}-{admin,users}.png`. For each language/width, the eight address/state captures are byte-identical: they demonstrate that the explanation ignores approval state, rather than eight distinct page layouts. |
 | EN-first / independently written formal DE, copy challenge recorded | Done | `copy-review.md`; five source strings and compiled German MO. |
 | One click signs out and presents staff login; real staff login reaches wp-admin | Done | Native WordPress form submitted in EN/DE; `{en,de}-staff-login.png` and `{en,de}-staff-after-login.png`. Fixed return target asserted before submit; actual admin body/URL asserted after. |
 | Go to my account | Done | Correct translated marker-free account URL asserted in every combination. Existing account approval gate remains unchanged. |
@@ -20,7 +20,7 @@ Implementation branch: `feat/245-wp-admin-notice`. Instance: **c245**, `http://1
 | Language switching and native exemptions | Done locally | EN↔DE keeps the explanation; AJAX/admin-post have no notice redirect, guests keep native staff-login. |
 | LC composition / WindPress style | Done | New LC account fragment under existing account page, scalar data adapter, no PHP layout. WindPress compiled through c245 admin; `windpress.txt`. |
 | Existing account design pixel parity | Done | `pixel-parity.json`: EN/DE × 1440/390, every full-page pair has **0 unmasked different pixels**, no masks. Raw `parity-{live,local}-*.png` attached. |
-| Spec + Standards | Self-review done; independent Claude review pending | `review.md` records both; Claude reviews the PR. |
+| Spec + Standards | Round-1 independent review received; fixes recorded | `review.md` and `round-1/README.md` map every decided item to verification. |
 | Live customer/staff/User Switching walk | **未完成** | Explicitly reserved for Claude after deployment; this session cannot deploy or write production. |
 
 The new explanation is the owner-authorised #245 change. It has no live counterpart before deployment; the pixel comparison proves preservation of the existing account sign-in design, not live presence of the new behaviour.
@@ -53,3 +53,8 @@ TDD evidence: `tdd-red.txt` is the original failed real-browser notice assertion
 The standard PHP run skips its 72 opt-in integration tests when the WordPress integration bootstrap is absent; the ticket's real HTTP/session fixtures run separately against c245 and are not skipped.
 
 Final repeatability readback: the 9-test suite passed, then the four parameterised approval-state tests passed again while capturing all 32 state screenshots. `just wp c245 user list --search='c245-*' --fields=ID,user_login` returned no fixture users after both suites and the Computer Use fixture were cleaned up. The migration suite additionally has 9 environment-gated integration skips in the standard run; see the complete test log.
+
+
+## Review round 1
+
+The eight per-state images within each language/width group are byte-identical. The native-access assertions cover the state/address combinations; the duplicate screenshots are evidence of the page's approval-state invariant, not eight independent visual checks. The round-1 wording change is re-captured for DE at 1440 and 390. See [round-1/README.md](round-1/README.md) for the decided Standards 1–6 and Spec 1–3 fixes, unit red/green evidence, msgstr proof and final checks. The live walk remains open on #245 for Claude after deployment.

@@ -1,0 +1,28 @@
+{
+  "baseline": "61253564",
+  "command": "wp i18n make-pot, then msgmerge --update --no-fuzzy-matching; msgfmt --check",
+  "existing_entries": 866,
+  "unchanged_existing_entries": 864,
+  "changes": [
+    {
+      "msgid": "You are signed in as %s (customer account).",
+      "before": {
+        "msgstr": "Sie sind mit %s als Kundenkonto angemeldet."
+      },
+      "after": {
+        "msgstr": "Sie sind mit Ihrem Kundenkonto %s angemeldet."
+      }
+    },
+    {
+      "msgid": "Sign out and sign in as staff",
+      "before": {
+        "msgstr": "Abmelden und als Mitarbeitende anmelden"
+      },
+      "after": {
+        "msgstr": "Abmelden und mit einem Mitarbeiterkonto anmelden"
+      }
+    }
+  ],
+  "unexpected_changes": [],
+  "pass": true
+}
