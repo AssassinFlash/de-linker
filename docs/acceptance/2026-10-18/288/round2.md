@@ -32,18 +32,18 @@ just i18n-validity
 
 ## 编译 MO 比较
 
-以 rebased `origin/main = d27d1a3e` 为基线。计数与评审一致，包含 MO 的 header 条目；复数的内部 lookup keys 另列在 JSON 中。
+初次比较基线为 `d27d1a3e`，结果是评审中的主线 782 → 修复后 786。推送前主线合并 #245，已 rebase 到 `97f6fc14` 并保留其五条新增译文；下表使用这个最新基线。计数包含 MO 的 header 条目；复数内部 lookup keys 另列在 JSON 中。
 
 | 项 | 结果 |
 |---|---|
-| 主线 MO | 782 条 |
-| 第 2 轮修正前 | 777 条 |
-| 修正后 MO | 786 条 |
+| 最新主线 MO | 787 条 |
+| 第 2 轮修正前（原评审基线） | 777 条 |
+| 最新 rebase 后 MO | 791 条 |
 | 从主线删除 | 仅下列 4 条退役审批文案 |
 | 共享译文改动 | **0** |
 | `Clear search` | **Suche leeren**，active 且已进入 MO |
 | 新进入 MO | 8 条仍在 LC 中使用的既有 obsolete 译文 |
-| PO msgid/msgstr 对 | **861 / 861** 完全不变（含 obsolete、复数与多行文本） |
+| PO msgid/msgstr 对 | 原评审前 **861 / 861**，最新主线 **866 / 866** 完全不变（含 obsolete、复数与多行文本） |
 
 允许移除的四条为：
 
@@ -58,8 +58,9 @@ c288 的实际 WordPress `translate()` 在 `de_DE_formal` 下读出九条正确�
 
 ## 本地门禁与评审
 
-- `just check`：退出 0；包括新的 source/obsolete 门禁。
-- `just test`：退出 0；包括 PHP/JS、9 项 Playwright、Genie 678 项、engine 112 项、local 98 项、FAQ 20 项、pull 113 项、cutover 82 项。
+- `just check`：首次退出 0；最新 rebase 后完整重跑中。
+- `just test`：首次退出 0；最新 rebase 后完整重跑中。
 - 新 helper 的 Ruff（含 import sorting）、format 与 strict mypy：通过。
 - 全量分支基线 `d27d1a3e...b76c5919`，本轮差异 `8e0da45b..b76c5919`；Standards、Spec 独立复核均为 0 个待处理项。Spec 评审者独立解析实际 MO，确认上表全部比较结果，旧的“Clear search 可 obsolete”建议已明确撤回。
+- 推送前因 #245 合并造成三份语言目录冲突，保留主线目录作为字典后使用同一命令重新提取、更新、编译；未覆盖主线新增译文。最新主线已固定为 `97f6fc14`。
 - 没有旧代码标识符回流；没有新增依赖。

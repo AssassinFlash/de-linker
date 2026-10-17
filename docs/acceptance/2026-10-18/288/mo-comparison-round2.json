@@ -1,8 +1,8 @@
 {
-  "base_revision": "d27d1a3e95a982fb4545a4f14a651f183db86345",
+  "base_revision": "97f6fc145fc53751d9eb298df97f6921c3d1280c",
   "before_round2_revision": "8e0da45b8b18e3bb59c2ee6d4070d1acf8ba10c6",
-  "main_translation_keys": 794,
-  "after_translation_keys": 798,
+  "main_translation_keys": 799,
+  "after_translation_keys": 803,
   "removed": [
     "A restriction or rejection needs a reason; the customer reads it in the email.",
     "Choose approve, restrict or reject.",
@@ -22,7 +22,15 @@
   },
   "clear_search": "Suche leeren",
   "po_pairs_unchanged": 861,
-  "main_entries_including_header": 782,
+  "main_entries_including_header": 787,
   "before_round2_entries_including_header": 777,
-  "after_round2_entries_including_header": 786
+  "after_round2_entries_including_header": 791,
+  "initial_comparison": {
+    "base_revision": "d27d1a3e95a982fb4545a4f14a651f183db86345",
+    "main_entries_including_header": 782,
+    "after_round2_entries_including_header": 786,
+    "po_pairs_unchanged": 861
+  },
+  "latest_main_po_pairs_preserved": 866,
+  "final_po_pairs": 866
 }

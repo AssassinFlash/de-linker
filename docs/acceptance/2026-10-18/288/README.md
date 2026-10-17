@@ -38,7 +38,7 @@ just i18n-validity
 
 配方先用 WP-CLI 从 PHP/模板/源 JS/build 生成全新 POT，再从 LC 源码提取仍使用的既有目录词条，使用 `msgcat` 组合这两个全新提取结果；最后 `msgmerge --no-fuzzy-matching` 保留原译文并编译 MO。PO 只作为既有消息字典，LC 源文件决定是否仍有效；LC 的 EN/DE twins 已承载各语言正文，本轮不生成新译文。
 
-POT 当前 **834** 个有效条目，LC 提取 **29** 个已有词条，其中 **9** 个从 obsolete 恢复为 active。[translation-check.json](translation-check.json) 与 [mo-comparison-round2.json](mo-comparison-round2.json) 记录全部 **861** 个既有 PO msgid/msgstr 对不变。MO 与主线比较：仅删除四条真正退役的审批文案，改动 **0**；`Clear search → Suche leeren` 已恢复。另有八条原在主线 PO obsolete 区、仍存在 LC 片段的译文恢复进 MO。完整先红后绿与命令来源见 [round2.md](round2.md)。
+POT 当前 **839** 个有效条目，LC 提取 **29** 个已有词条，其中 **9** 个从 obsolete 恢复为 active。[translation-check.json](translation-check.json) 与 [mo-comparison-round2.json](mo-comparison-round2.json) 记录原评审前 **861** 个既有 PO msgid/msgstr 对不变，最新主线 `97f6fc14` 的 **866** 对也全部保留。MO 与主线比较：仅删除四条真正退役的审批文案，改动 **0**；`Clear search → Suche leeren` 已恢复。另有八条原在主线 PO obsolete 区、仍存在 LC 片段的译文恢复进 MO。完整先红后绿与命令来源见 [round2.md](round2.md)。
 
 ## 评审与验收
 

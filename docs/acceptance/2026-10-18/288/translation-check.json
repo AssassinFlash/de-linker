@@ -1,7 +1,7 @@
 {
   "before_revision": "2a06c6dc0344db83c33cb818d5afad9f604b4a3c",
   "before_pairs_including_obsolete": 864,
-  "after_pairs_including_obsolete": 861,
+  "after_pairs_including_obsolete": 866,
   "unchanged_shared_pairs": 861,
   "changed_msgstr": [],
   "removed_msgids": [
@@ -9,8 +9,10 @@
     "Mail delivery",
     "Used for delivery and bounces for all site emails. Choose an address whose domain authorizes Hostinger in its SPF record. The visible From and Reply-To stay unchanged."
   ],
-  "origin_main_pairs_preserved": 861,
-  "pot_active_entries": 834,
+  "origin_main_pairs_preserved": 866,
+  "pot_active_entries": 839,
   "note": "All existing msgstr remain unchanged. Round 2 restores 9 live LC-fragment messages to active entries. See the compiled MO comparison.",
-  "mo_comparison": "mo-comparison-round2.json"
+  "mo_comparison": "mo-comparison-round2.json",
+  "origin_main_revision": "97f6fc145fc53751d9eb298df97f6921c3d1280c",
+  "added_from_main_rebase": 5
 }
