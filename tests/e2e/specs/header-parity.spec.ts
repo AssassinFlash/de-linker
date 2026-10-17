@@ -72,7 +72,7 @@ test('German navigation uses the largest spacing that fits', async ({
 		});
 		await page.evaluate(() => window.dispatchEvent(new Event('resize')));
 		await expect(header).toHaveAttribute('data-tv-nav-folded', 'true');
-		await probe.evaluate((style) => style.remove());
+		await probe.evaluate((style) => (style as HTMLStyleElement).remove());
 		await page.evaluate(() => window.dispatchEvent(new Event('resize')));
 		await expect(header.locator('.tv-desktop-nav')).toBeVisible();
 		if (process.env.LINKER_HEADER_CAPTURE) {
