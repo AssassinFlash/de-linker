@@ -1,0 +1,138 @@
+{
+  "source": "Rendered anonymous c229 German header; font ready; 900px viewport height",
+  "browser": "156.0.8078.4",
+  "rows": [
+    {
+      "width": 1300,
+      "padding": 6.03125,
+      "font": "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+      "fontSize": "14.5px",
+      "available": 1268,
+      "gap": 13,
+      "parts": [
+        {
+          "class": "tv-brand",
+          "width": 104.28125,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-desktop-nav",
+          "width": 629.953125,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-desktop-actions",
+          "width": 248,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-header-cta",
+          "width": 174.328125,
+          "marginRight": 0
+        }
+      ],
+      "zeroPaddingWidth": 1156.5625,
+      "requiredWith14": 1363.5625,
+      "foldedWith14": true
+    },
+    {
+      "width": 1366,
+      "padding": 11.3594,
+      "font": "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+      "fontSize": "14.5px",
+      "available": 1334,
+      "gap": 13.66,
+      "parts": [
+        {
+          "class": "tv-brand",
+          "width": 104.28125,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-desktop-nav",
+          "width": 629.953125,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-desktop-actions",
+          "width": 248,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-header-cta",
+          "width": 174.328125,
+          "marginRight": 0
+        }
+      ],
+      "zeroPaddingWidth": 1156.5625,
+      "requiredWith14": 1365.5425,
+      "foldedWith14": true
+    },
+    {
+      "width": 1440,
+      "padding": 13.3438,
+      "font": "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+      "fontSize": "14.5px",
+      "available": 1360,
+      "gap": 14.4,
+      "parts": [
+        {
+          "class": "tv-brand",
+          "width": 104.28125,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-desktop-nav",
+          "width": 629.953125,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-desktop-actions",
+          "width": 248,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-header-cta",
+          "width": 174.328125,
+          "marginRight": 0
+        }
+      ],
+      "zeroPaddingWidth": 1156.5625,
+      "requiredWith14": 1367.7625,
+      "foldedWith14": true
+    },
+    {
+      "width": 1920,
+      "padding": 12.9531,
+      "font": "\"Plus Jakarta Sans\", Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+      "fontSize": "14.5px",
+      "available": 1360,
+      "gap": 16,
+      "parts": [
+        {
+          "class": "tv-brand",
+          "width": 104.28125,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-desktop-nav",
+          "width": 629.953125,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-desktop-actions",
+          "width": 248,
+          "marginRight": 0
+        },
+        {
+          "class": "tv-header-cta",
+          "width": 174.328125,
+          "marginRight": 0
+        }
+      ],
+      "zeroPaddingWidth": 1156.5625,
+      "requiredWith14": 1372.5625,
+      "foldedWith14": true
+    }
+  ]
+}
