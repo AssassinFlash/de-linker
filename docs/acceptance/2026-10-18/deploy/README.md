@@ -105,6 +105,8 @@ just cutover rollback-deploy
 
 第 3 轮增量双评审：Spec 无偏差；Standards 无规则违背或新增 smell，发现采样线程异常退出会使完整密集采样等待挂住。真实 loopback 的一次截断 HTTP 响应先复现挂起，再补 worker 异常 / 结束通知，生成失败 `proof.json`，不再无限等待；回归测试为 `test_probe_reports_failed_worker_instead_of_waiting_forever`。此次工具改动无客户界面，视觉验收不适用。
 
+最终验证：rebase 到 `origin/main` 的 `71d950db`（包含 #297 / #302）后，`just check`、`just test` 均退出 0；最终全仓运行中的 cutover 套件 **120 passed**、无跳过，迁移套件保留既有外部实例跳过。日志在本机 `/tmp/c298-round3-check-final.log` 和 `/tmp/c298-round3-test.log`。截断响应修复经 Standards 定向复核，无剩余发现；本记录不把本地测试或 CI 作为生产零 fatal 的证明。
+
 端点配置在 `plan.DEPLOY_PROBE_ENDPOINTS`：首页、联系页、Proforma 请求页、`VERIFY_PRODUCT_PATHS` 中的英文产品页、commerce 产品搜索、i18n 的 `wp/v2/pages?lang=de`、tools 的只读 `genie/conversation`。i18n 自己没有 REST 命名空间，实际由 `RestLang` 进入语言并过滤原生路由；探针要求返回非空、全部为德语地址。tools GET 只读已有线程，不创建对话、不调用模型、不发信。root / base URL 从 `Target` 来，插件名单从 `plan.NEW_PLUGINS` 来，README 不另写一套主机路径或 slug。
 
 只查看端点计划，不部署：
