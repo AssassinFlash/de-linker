@@ -1,0 +1,55 @@
+#246 / PR #290 round 1 — c246 only
+Source: 32cc6f67, rebased onto origin/main 97f6fc14.
+Remaining changes after that source point: rebuilt i18n catalogs; browser fixture
+cleanup unschedules its own AS retries before deleting its recorded mail jobs;
+acceptance artifacts. No production writes or real email sends.
+
+just sync c246: PASS; snapshot 20261018-0238, captured 2026-10-17T18:49:26+00:00.
+just wp c246 linker-commerce present --allow-stale --user=1: PASS.
+just windpress-compile c246: compiled=true; file_size=683605.
+
+just check: PASS, exit 0. Full output: just-check.txt.
+- WPCS / PHPStan level 8 all PHP projects: no errors.
+- TypeScript / JS lint / ruff / mypy / tool checks: pass.
+- i18n coverage gap 0, five catalogs valid, build matches sources.
+
+just test: PASS, exit 0. Full output: just-test.txt.
+- Commerce PHP unit configuration: 1120 tests / 5368 assertions / 90 skips.
+  Real WP tests run separately below (unit config intentionally skips them).
+- i18n PHP: 190 / 432; tools PHP: 147 / 1900; mu PHP: 6 / 23.
+- Tools JS: 20 files / 120 cases; commerce JS: 2 files / 6 cases.
+- Browser engine e2e: 9 passed.
+- Genie Python: 678; engine: 112; local: 98; migrate: 94 / 9 existing skips;
+  FAQ: 20; pull: 113; cutover: 82 passed.
+
+Real WP integration, no concurrent browser fixture or presentation writes:
+LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/c246/wordpress \
+ /opt/homebrew/opt/php@8.3/bin/php plugins/linker-commerce/vendor/bin/phpunit \
+ -c plugins/linker-commerce/phpunit.integration.xml.dist
+Run 1: exit 0; 88 tests / 1003 assertions / 9 skipped; 32.977 s.
+Run 2: exit 0; 88 tests / 1003 assertions / 9 skipped; 30.335 s.
+Full outputs: integration-1.txt / integration-2.txt.
+9 existing ProductSearch HTTP fixture tests need LINKER_COMMERCE_TEST_SITE;
+all newly added #246 tests execute.
+
+TDD outputs retained: limiter-red/green, guard-red/green, routing-red/green,
+vat-red/green-proforma. Shared limiter rejects guest attempt 4 on either door
+without creating a customer receipt or team Outbox row. Contact Handler creates
+one Woo inquiry and exactly one receipt, no retired Contact email classes;
+intended team To/Bcc and customer receipt are asserted on queue data.
+
+TestMode rewrites wire recipients to synthetic tester only, no Cc/Bcc. Base
+saves/restores original TestMode, quota and limiter window; Outbox jobs and
+pending retries removed afterward. Browser submit was queue-only under full
+quota. Browser users/orders/jobs/helper options cleaned; owned orphan retry
+jobs 7332/7333 explicitly unscheduled. Runtime readback: final-runtime.json.
+
+Pixel: python3 docs/acceptance/2026-10-18/246/round-1/compare.py
+Pillow / NumPy already available, no new dependency. Exact RGB, zero tolerance,
+no masks. Final EN1440 form 0; customer page below WP operator bar 0; main 0.
+Other matrix samples and live repeat controls remain nonzero and are reported
+as an incomplete four-matrix strict full-page gate, not waived as dynamic.
+
+After cleanup readback, tester rewrite explicitly enabled for the local instance:
+just wp c246 linker-commerce test-mail on --to=tester246@example.test
+PASS. This is a local safety setting; no mail sent.

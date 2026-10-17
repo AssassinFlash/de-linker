@@ -1,0 +1,36 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+FF                                                                  2 / 2 (100%)
+
+Time: 00:01.371, Memory: 134.00 MB
+
+There were 2 failures:
+
+1) Linker\Commerce\Tests\Integration\OpenInquiryTest::test_account_billing_fields_prefill_and_send_the_edited_address with data set #0 ('', 'none')
+Inquiry edits preserve account VAT metadata: linker_vat_status
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'valid'
++'none'
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php:515
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+2) Linker\Commerce\Tests\Integration\OpenInquiryTest::test_account_billing_fields_prefill_and_send_the_edited_address with data set #1 ('CHE123456789', 'unverified')
+Inquiry edits preserve account VAT metadata: linker_vat_status
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'valid'
++'unverified'
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php:515
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 2, Assertions: 22, Failures: 2.

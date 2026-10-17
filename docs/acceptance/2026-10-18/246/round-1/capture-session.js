@@ -1,0 +1,11 @@
+// Execute in cua_repl after reading cdp and viewport documentation; bind viewport as vpR246 and fs/promises as fsR246.
+// Neither contact form is submitted; the select retains its original value.
+const stableCapture246 = async function(t,c,url,width,name){
+await vpR246.set({width,height:width===390?844:1000}); await c.send('Emulation.setDeviceMetricsOverride',{width,height:width===390?844:1000,deviceScaleFactor:1,mobile:false});if(await t.url()===url)await t.reload();else await t.goto(url);await t.getAXState({emit:false});
+const height=(await c.send('Page.getLayoutMetrics')).cssContentSize.height;
+for(let y=0;y<height;y+=800){await c.send('Runtime.evaluate',{expression:`window.scrollTo(0,${y})`});await t.getAXState({emit:false});}
+await c.send('Runtime.evaluate',{expression:'document.fonts.ready.then(()=>Promise.all(Array.from(document.images).filter(i=>i.currentSrc&&(i.offsetWidth||i.offsetHeight)).map(i=>i.decode().catch(()=>{}))))',awaitPromise:true},{timeoutMs:10000});
+await c.send('DOM.enable');await c.send('CSS.enable');const tree=await c.send('Page.getFrameTree');const sheet=await c.send('CSS.createStyleSheet',{frameId:tree.frameTree.frame.id});await c.send('CSS.setStyleSheetText',{styleSheetId:sheet.styleSheetId,text:'*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}'});
+await t.playwright.locator('#linker-contact-intent').click();await t.playwright.locator('#linker-contact-intent').press('Escape');await t.getAXState({emit:false});await t.playwright.locator('.linker-contact-head h2').click();await t.getAXState({emit:false});await c.send('Runtime.evaluate',{expression:'window.scrollTo(0,0);new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))',awaitPromise:true});
+const m=await c.send('Page.getLayoutMetrics');const s=m.cssContentSize;const shot=await c.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,fromSurface:true,clip:{x:0,y:0,width:s.width,height:s.height,scale:1}});const out='/Users/chesterjohn/Documents/de-linker-worktrees/c246/docs/acceptance/2026-10-18/246/round-1/';await fsR246.writeFile(out+name+'.png',Buffer.from(shot.data,'base64'));nodeRepl.write({name,size:s});
+};

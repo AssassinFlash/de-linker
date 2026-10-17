@@ -1,0 +1,29 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+FF                                                                  2 / 2 (100%)
+
+Time: 00:10.866, Memory: 134.00 MB
+
+There were 2 failures:
+
+1) Linker\Commerce\Tests\Integration\PublicSubmissionTest::test_an_over_limit_guest_cannot_queue_mail_on_either_door with data set "request" ('request')
+Failed asserting that Automattic\WooCommerce\Admin\Overrides\Order Object (...) is an instance of class "WP_Error".
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/PublicSubmissionTest.php:54
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+2) Linker\Commerce\Tests\Integration\PublicSubmissionTest::test_an_over_limit_guest_cannot_queue_mail_on_either_door with data set "contact" ('contact')
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'throttled'
++'sent'
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/PublicSubmissionTest.php:56
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 2, Assertions: 8, Failures: 2.

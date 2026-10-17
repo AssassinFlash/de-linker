@@ -1,0 +1,32 @@
+[
+  {
+    "name": "lk-contact-linker-team-in-barleben.webp",
+    "live_sha256": "401d9f3f78632aa20fffae6b6ad33b02ec200ac061efa9970e7d4359e1b73a88",
+    "main_sha256": "401d9f3f78632aa20fffae6b6ad33b02ec200ac061efa9970e7d4359e1b73a88",
+    "equal": true,
+    "bytes": [
+      214300,
+      214300
+    ]
+  },
+  {
+    "name": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+    "live_sha256": "74941999dad41a119edb060d01c1ee4aa90e30013bcf4f9d7b73c5702ec9adab",
+    "main_sha256": "74941999dad41a119edb060d01c1ee4aa90e30013bcf4f9d7b73c5702ec9adab",
+    "equal": true,
+    "bytes": [
+      85794,
+      85794
+    ]
+  },
+  {
+    "name": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+    "live_sha256": "526848a5f373710e8b2b5ba003f13c5087f9acfa99e71f1f659d95be29f6526d",
+    "main_sha256": "526848a5f373710e8b2b5ba003f13c5087f9acfa99e71f1f659d95be29f6526d",
+    "equal": true,
+    "bytes": [
+      335390,
+      335390
+    ]
+  }
+]

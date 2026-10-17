@@ -15,6 +15,7 @@ if ( 'cleanup' === $mode ) {
 		delete_option( 'linker_246_browser_mail_quota' );
 	}
 	foreach ( (array) get_option( 'linker_246_browser_mail_jobs', array() ) as $job_id ) {
+		as_unschedule_all_actions( \Linker\Commerce\Mail\Outbox::HOOK, array( $job_id ), \Linker\Commerce\Mail\Outbox::GROUP );
 		if ( 'linker_mail_job' === get_post_type( $job_id ) ) {
 			wp_delete_post( $job_id, true );
 		}

@@ -24,3 +24,13 @@
 重跑真实集成时发现上游后台测试设置 dashboard 后未恢复，后续 SearchScopeTest 的 `is_admin()` 因而为 true。仅在 AccountsAdminTest 中注册 `later()` 恢复 current_screen/taxnow/typenow/wp_meta_boxes 原始存在性与值；独立复核通过，目标 PHPCS 通过，应用代码未改。另一次账号数量偏差来自执行器同时创建浏览器夹具，已通过清理后串行执行修正，无产品代码修改。
 
 摘要测试还暴露秒级 filemtime 并列导致误读询盘回执：仅将 DigestTest 改为本次运行前后文件名差集，断言恰有一封新邮件，再核对 To/Bcc。独立复核无问题。修复后集成套件在最新 main 上连续两次通过：81 tests / 874 assertions / 9 既有跳过；目标 PHPCS、最终 just check、just test 均通过。
+
+## PR #290 第 1 轮修改复核
+
+全部已裁定的 hard 1–4、judgement 六项、Spec 1–3 的映射和证据见 [round-1](round-1/README.md)。限流、共享 guard、真实 Contact Handler 路由均先补失败测试再实现；定稿文案按 EN/DE 独立对抗评审。
+
+对 main→第 1 轮应用修改的独立 Standards 全量复核未发现剩余硬项。独立 Spec 复核指出：询盘编辑 VAT 经旧钩子会变更账号 VAT 审核状态。已改成只给本次订单做快照；VAT 清空或更改真实夹具先红后绿，保存的账号五个 meta 全不变，复核确认问题解决。
+
+最后 focused Standards 复核检查集成 tester 重写、原始 Outbox 路由断言、邮件姓名 trim，发现浏览器 fixture 删除 job 未取消待执行 AS retry。现已对每个本票 job 先 unschedule 再删除，并清理本地两个历史测试 job 的 orphan retry。集成完整套件在最终 main 97f6fc14 上连续两次成功（88 / 1003 / 9 既有跳过），just check / just test 通过。
+
+EN1440 最终 form 区域为0，main 对照及资源 SHA-256、所有重复拍摄原图和剩余全页像素门的边界均在 round-1；仍未以局部零差异代替四组全页通过。Claude 的管理评审尚待进行。
