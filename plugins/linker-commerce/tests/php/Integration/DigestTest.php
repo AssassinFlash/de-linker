@@ -107,6 +107,7 @@ final class DigestTest extends IntegrationTestCase {
 		$digests = array();
 		$this->capture_digests( $digests );
 		$this->with_team_recipients();
+		$before = $this->captured_files();
 
 		$this->run_digest();
 
@@ -121,7 +122,9 @@ final class DigestTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'No email failed to send.', $body );
 
 		// The blind copies are in the message the host's mail() would receive.
-		$raw = $this->latest_eml();
+		$files = array_values( array_diff( $this->captured_files(), $before ) );
+		$this->assertCount( 1, $files, 'This digest wrote exactly one captured message.' );
+		$raw = (string) file_get_contents( $files[0] );
 		// The wire copy carries the same unrewritten To (class docblock).
 		$this->assertStringContainsString( 'To: digest-team@example.test', $raw );
 		$this->assertStringContainsString( 'Bcc: bcc-one@example.test, bcc-two@example.test', $raw );
@@ -401,16 +404,12 @@ final class DigestTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * The captured email of this instance, as the host's mail() would have
-	 * received it (the isolation's mail directory).
+	 * This instance's captured messages; names identify a send even within one second.
+	 *
+	 * @return list<string>
 	 */
-	private function latest_eml(): string {
+	private function captured_files(): array {
 		$files = glob( dirname( (string) getenv( 'LINKER_WP_ROOT' ) ) . '/mail/*.eml' );
-		if ( false === $files || array() === $files ) {
-			$files = array();
-		}
-		$this->assertNotEmpty( $files, 'The isolation wrote an email.' );
-		$mtimes = array_map( 'filemtime', $files );
-		return (string) file_get_contents( $files[ array_search( max( $mtimes ), $mtimes, true ) ] );
+		return false === $files ? array() : $files;
 	}
 }
