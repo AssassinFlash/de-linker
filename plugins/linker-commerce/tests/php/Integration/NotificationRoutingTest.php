@@ -26,8 +26,10 @@ use Linker\Commerce\Registration\Emails\NewCustomerEmail;
 use Linker\Commerce\Registration\Emails\VatReviewEmail;
 use Linker\Commerce\Registration\VatProfile;
 use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Settings\SettingsTab;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductView;
+use WC_Admin_Settings;
 
 /**
  * Owner ruling 2026-10-17 (AGENTS.md §2): every internal notification goes to
@@ -59,7 +61,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		// The email classes extend WC_Email, which WooCommerce loads with its mailer.
 		WC()->mailer();
 		$saved = array();
-		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
+		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, TeamMessageEmail::ID, 'linker_digest' ) as $id ) {
@@ -92,6 +94,28 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		// Fill the minute quota so every call is stored instead of sent at
 		// once (MailChainTest does the same): a sent call never becomes a row.
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
+	}
+
+	/**
+	 * Woo's native settings save stores the sender and preserves the existing prefix.
+	 */
+	public function test_native_settings_save_keeps_the_sender_and_proforma_prefix(): void {
+		$fields = array_values(
+			array_filter(
+				( new SettingsTab( new JobStore() ) )->fields(),
+				static fn ( array $field ): bool => in_array( $field['id'], array( Options::NOTIFY_FROM, Options::PROFORMA_PREFIX ), true )
+			)
+		);
+		WC_Admin_Settings::save_fields(
+			$fields,
+			array(
+				Options::NOTIFY_FROM     => 'alerts@example.test',
+				Options::PROFORMA_PREFIX => 'DLK-PF',
+			)
+		);
+		$this->assertSame( 'alerts@example.test', get_option( Options::NOTIFY_FROM ) );
+		$this->assertSame( 'alerts@example.test', ( new Options() )->notify_from() );
+		$this->assertSame( 'DLK-PF', get_option( Options::PROFORMA_PREFIX ) );
 	}
 
 	/**

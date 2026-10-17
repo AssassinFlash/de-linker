@@ -271,12 +271,13 @@ final class SettingsTab {
 	}
 
 	/**
-	 * Keeps letters and digits of the number prefix, upper case.
+	 * Keeps letters, digits and hyphens of the number prefix, upper case.
+	 * Hyphens preserve the existing DLK-PF prefix when saving this tab (#286).
 	 *
 	 * @param mixed $value Value WooCommerce sanitized as text.
 	 */
 	public function sanitize_prefix( $value ): string {
-		return strtoupper( (string) preg_replace( '/[^A-Za-z0-9]/', '', is_string( $value ) ? $value : '' ) );
+		return strtoupper( (string) preg_replace( '/[^A-Za-z0-9-]/', '', is_string( $value ) ? $value : '' ) );
 	}
 
 	/**

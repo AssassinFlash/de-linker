@@ -143,10 +143,17 @@ final class SettingsTabTest extends TestCase {
 	}
 
 	/**
-	 * The number prefix keeps letters and digits, upper case.
+	 * The number prefix keeps letters, digits and hyphens, upper case.
 	 */
 	public function test_sanitize_prefix(): void {
-		$this->assertSame( 'PI', ( new SettingsTab( new JobStore() ) )->sanitize_prefix( 'p-i ' ) );
+		$this->assertSame( 'P-I', ( new SettingsTab( new JobStore() ) )->sanitize_prefix( 'p-i !' ) );
+	}
+
+	/**
+	 * Saving an internal sender must preserve the site's existing DLK-PF prefix.
+	 */
+	public function test_saving_settings_preserves_the_default_prefix(): void {
+		$this->assertSame( 'DLK-PF', ( new SettingsTab( new JobStore() ) )->sanitize_prefix( 'DLK-PF' ) );
 	}
 
 	/**
