@@ -63,4 +63,4 @@ just sync <实例>     # just up → just pull → just pull load <实例> lates
 
 本地（`g252`，2026-10-17 13:05 UTC 快照，线上清理之后）：后台首页、商品列表、页面列表、插件页顶部都没有任何提示（`admin/local-*.png`）。插件页那条 Site Kit 提示是在线上删除该选项之前带进快照的，第一次显示后就自己清掉了；下一份快照里不会再有。
 
-线上后台截图：未完成。业主的 Chrome 里没有 de-linker.com 的登录会话，需要业主登录后补拍，补在票上。
+线上（2026-10-17，清理之后，业主的 Chrome 会话）：后台首页、商品列表、页面列表顶部都没有任何提示；插件页也没有页面顶部的提示，LiveCanvas 横幅和 SEOPress 的"needs your attention"都不在（`admin/live-*.jpg`）。插件页里能看到 5 条"有新版本可用"（Hostinger Reach、LiveCanvas、SEOPress PRO、WindPress、WooCommerce），它们是插件列表行内的更新行，不属于页面顶部的提示，本票不处理。后台首页的"欢迎使用 WordPress"是 WordPress 自带的仪表盘欢迎面板，按用户关闭，也不属于提示条。
