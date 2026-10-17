@@ -96,12 +96,21 @@ PHRASES: dict[str, tuple[re.Pattern[str], ...]] = {
     ),
 }
 
+# Where a clause ends: a negation is read inside its own clause only.
+_CLAUSE = re.compile(r"[.!?;:,]+")
+# Words that turn a following phrase into its opposite, EN and DE, on the normalized
+# text ("don't" is "don t" there).
+_NEGATION = re.compile(
+    r"\b(?:don t|do not|dont|doesn t|does not|never|no need to|not|nicht|kein|keine|"
+    r"keinen|niemals)\b"
+)
+
 # The sentence of a turn that only answers a request for a person: the contact card
-# (the shell's ContactCard) follows it with the one-working-day promise. Copy review:
+# (the shell's ContactCard) follows it with the one-business-day promise. Copy review:
 # docs/acceptance/2026-10-18/243/copy-review.md.
 ANSWER = {
-    "en": "Yes, someone from the Linker team can get in touch with you.",
-    "de": "Gern meldet sich jemand aus dem Linker-Team bei Ihnen.",
+    "en": "Someone from the Linker team can get in touch with you by email.",
+    "de": "Jemand aus dem Linker-Team kann sich per E-Mail bei Ihnen melden.",
 }
 
 
@@ -123,13 +132,20 @@ def normalize(message: str) -> str:
 
 
 def asks_for_person(message: str) -> str | None:
-    """The words of the phrase that asks for a person, None when none matches."""
-    text = normalize(message)
-    for patterns in PHRASES.values():
-        for pattern in patterns:
-            found = pattern.search(text)
-            if found:
-                return found.group(0)
+    """The words of the phrase that asks for a person, None when none matches.
+
+    A phrase after a negation in its own clause ("I don't want to talk to a person",
+    "ich möchte nicht mit einem Mitarbeiter sprechen") is not a request; such a
+    message goes on to Jev like any other (copy review of #243). A negation in an
+    earlier clause does not reach it ("That did not help. Can I talk to a person?").
+    """
+    for clause in _CLAUSE.split(message):
+        text = normalize(clause)
+        for patterns in PHRASES.values():
+            for pattern in patterns:
+                found = pattern.search(text)
+                if found and not _NEGATION.search(text[: found.start()]):
+                    return found.group(0)
     return None
 
 

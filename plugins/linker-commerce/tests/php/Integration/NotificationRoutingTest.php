@@ -250,7 +250,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 				'draft'        => array(),
 			)
 		);
-		$row = $this->internal_message( $marker, 'Genie: ' . $guest, $from );
+		$row = $this->internal_message( $marker, 'Contact request from ' . $guest, $from );
 		$this->assertContains( 'Reply-to: ' . $guest, $row['headers'] );
 	}
 

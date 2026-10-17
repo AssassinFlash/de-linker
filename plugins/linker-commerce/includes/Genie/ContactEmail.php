@@ -46,7 +46,7 @@ final class ContactEmail extends TeamEmail {
 	public function __construct( string $plugin_file, Options $options ) {
 		$this->id            = self::ID;
 		$this->title         = __( 'Genie contact request', 'linker-commerce' );
-		$this->description   = __( 'Sent to the internal notification address, with blind copies, when a customer asks Genie for the team\'s contact.', 'linker-commerce' );
+		$this->description   = __( 'Sent to the internal notification address, with blind copies, when a customer sends a contact request from Genie.', 'linker-commerce' );
 		$this->template_html = 'emails/linker-genie-contact.php';
 		$this->placeholders  = array( '{customer}' => '' );
 		add_action( Module::ACTION . '_notification', array( $this, 'trigger' ) );
@@ -75,14 +75,14 @@ final class ContactEmail extends TeamEmail {
 	 */
 	public function get_default_subject() {
 		/* translators: {customer}: the customer's name, or their email address when no name is known. */
-		return __( 'Genie: {customer} asks the team to get in touch', 'linker-commerce' );
+		return __( 'Contact request from {customer} via Genie', 'linker-commerce' );
 	}
 
 	/**
 	 * Default heading.
 	 */
 	public function get_default_heading() {
-		return __( 'A customer asks the team to get in touch', 'linker-commerce' );
+		return __( 'New contact request via Genie', 'linker-commerce' );
 	}
 
 	/**
@@ -114,9 +114,9 @@ final class ContactEmail extends TeamEmail {
 	 */
 	public static function reason_label( string $reason ): string {
 		return match ( $reason ) {
-			'service'      => __( 'A company, delivery or service question', 'linker-commerce' ),
-			'dissatisfied' => __( 'Seemed unhappy with Genie\'s answers', 'linker-commerce' ),
-			'repeat'       => __( 'Asked the same question three times', 'linker-commerce' ),
+			'service'      => __( 'Asked about the company, delivery or service', 'linker-commerce' ),
+			'dissatisfied' => __( 'Seemed frustrated or wanted a person', 'linker-commerce' ),
+			'repeat'       => __( 'Asked the same question three times in a row', 'linker-commerce' ),
 			default        => __( 'Asked to talk to a person', 'linker-commerce' ),
 		};
 	}

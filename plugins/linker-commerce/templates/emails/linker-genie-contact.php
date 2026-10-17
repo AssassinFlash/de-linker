@@ -31,10 +31,10 @@ $linker_page_title   = (string) ( $linker_page['title'] ?? '' );
 /** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
-<p><?php esc_html_e( 'A customer asked Genie to pass the conversation to the team. Genie told them the team replies within one working day.', 'linker-commerce' ); ?></p>
+<p><?php esc_html_e( 'A contact request came in through Genie. Genie promised a reply within one business day.', 'linker-commerce' ); ?></p>
 <table class="td" cellspacing="0" cellpadding="6" border="1" style="width: 100%;">
 	<tr>
-		<th class="td" scope="row" style="text-align: left;"><?php esc_html_e( 'Why', 'linker-commerce' ); ?></th>
+		<th class="td" scope="row" style="text-align: left;"><?php esc_html_e( 'Reason', 'linker-commerce' ); ?></th>
 		<td class="td" style="text-align: left;"><?php echo esc_html( ContactEmail::reason_label( (string) ( $handoff['reason'] ?? '' ) ) ); ?></td>
 	</tr>
 	<tr>
@@ -64,7 +64,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 	</tr>
 </table>
 
-<h2><?php esc_html_e( 'Summary: what the customer wrote, latest first', 'linker-commerce' ); ?></h2>
+<h2><?php esc_html_e( 'The customer\'s last messages, newest first', 'linker-commerce' ); ?></h2>
 <?php if ( array() === $linker_summary ) : ?>
 	<p>—</p>
 <?php else : ?>
@@ -74,17 +74,17 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 		<?php endforeach; ?>
 	</ol>
 <?php endif; ?>
-<p><a href="<?php echo esc_url( (string) ( $linker_conversation['url'] ?? '' ) ); ?>"><?php esc_html_e( 'Read the whole conversation', 'linker-commerce' ); ?></a></p>
+<p><a href="<?php echo esc_url( (string) ( $linker_conversation['url'] ?? '' ) ); ?>"><?php esc_html_e( 'Open the conversation', 'linker-commerce' ); ?></a></p>
 
 <h2><?php esc_html_e( 'Solution draft', 'linker-commerce' ); ?></h2>
 <?php if ( array() === $linker_draft ) : ?>
-	<p><?php esc_html_e( 'The solution draft is empty.', 'linker-commerce' ); ?></p>
+	<p><?php esc_html_e( 'No products in the solution draft.', 'linker-commerce' ); ?></p>
 <?php else : ?>
 	<table class="td" cellspacing="0" cellpadding="6" border="1" style="width: 100%;">
 		<thead>
 			<tr>
 				<th class="td" scope="col" style="text-align: left;"><?php esc_html_e( 'Product', 'linker-commerce' ); ?></th>
-				<th class="td" scope="col" style="text-align: left;"><?php esc_html_e( 'SKU', 'linker-commerce' ); ?></th>
+				<th class="td" scope="col" style="text-align: left;"><?php esc_html_e( 'Item number', 'linker-commerce' ); ?></th>
 				<th class="td" scope="col" style="text-align: left;"><?php esc_html_e( 'Quantity', 'linker-commerce' ); ?></th>
 			</tr>
 		</thead>
@@ -99,7 +99,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 		</tbody>
 	</table>
 <?php endif; ?>
-<p><?php esc_html_e( 'Answer this email to reply to the customer directly.', 'linker-commerce' ); ?></p>
+<p><?php esc_html_e( 'A reply to this email goes straight to the customer.', 'linker-commerce' ); ?></p>
 <?php
 if ( $additional_content ) {
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );

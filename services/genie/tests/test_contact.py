@@ -59,6 +59,9 @@ def _thread(*customer: str) -> list[TurnMessage]:
         "Ich hätte gern einen Rückruf",
         "Kontaktieren Sie mich bitte",
         "MIT EINEM MITARBEITER SPRECHEN",
+        # A negation of an earlier sentence does not reach the request.
+        "That did not help at all. Can I talk to a person?",
+        "Das hat nicht geholfen. Kann ich mit jemandem sprechen?",
     ],
 )
 def test_an_explicit_request_for_a_person_is_matched_without_a_model(
@@ -81,6 +84,9 @@ def test_an_explicit_request_for_a_person_is_matched_without_a_model(
         "Which agent software runs on the EMS?",
         "Welcher Speicher passt zum SAJ H2-10K-T3?",
         "saj",
+        # A negated phrase is no request (copy review of #243).
+        "I don't want to talk to a person, just tell me the price.",
+        "Ich möchte nicht mit einem Mitarbeiter sprechen.",
     ],
 )
 def test_ordinary_questions_do_not_match(message: str) -> None:

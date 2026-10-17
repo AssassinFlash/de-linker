@@ -172,7 +172,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$rows = $this->jobs_after( $marker );
 		$this->assertCount( 1, $rows, 'one team mail, no mail to the guest' );
 		$row = $rows[0];
-		$this->assertSame( 'Genie: ' . $guest . ' asks the team to get in touch', $row['subject'] );
+		$this->assertSame( 'Contact request from ' . $guest . ' via Genie', $row['subject'] );
 		$this->assertSame( array( self::INTERNAL ), $row['to'] );
 		$this->assertContains( 'Bcc: ' . get_option( Options::NOTIFY_BCC ), $row['headers'] );
 		$this->assertContains( 'From: Linker <' . self::INTERNAL . '>', $row['headers'] );
@@ -180,7 +180,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$body = html_entity_decode( $row['body'] );
 		// The whole conversation, in the admin.
 		$this->assertStringContainsString( admin_url( 'admin.php?page=linker-genie-quality&conversation=' . $this->conversation ), $body );
-		$this->assertStringContainsString( 'Read the whole conversation', $body );
+		$this->assertStringContainsString( 'Open the conversation', $body );
 		// Why, and the summary, latest first.
 		$this->assertStringContainsString( 'Asked to talk to a person', $body );
 		$this->assertMatchesRegularExpression( '/Can I talk to a person\?.*Which battery fits the SAJ H2-10K-T3\?/s', $body );
@@ -192,7 +192,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertStringContainsString( $product->get_name(), $body );
 		$this->assertStringContainsString( $product->get_sku(), $body );
 		$this->assertMatchesRegularExpression( '/' . preg_quote( $product->get_sku(), '/' ) . '<\/td>\s*<td[^>]*>2<\/td>/', $body );
-		$this->assertStringContainsString( 'within one working day', $body );
+		$this->assertStringContainsString( 'within one business day', $body );
 		// The note on the conversation.
 		$notes = get_post_meta( $this->conversation, ContactRequest::NOTE, false );
 		$this->assertCount( 1, $notes );
@@ -210,6 +210,9 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->thread( 'This is not what I asked.' );
 		$state = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) );
 		$this->assertSame( $customer->get_billing_email(), $state->get_data()['email'] );
+		// A refusal names the mailbox customers see, never the internal one.
+		$this->assertSame( ( new Options() )->team_mailbox(), $state->get_data()['mailbox'] );
+		$this->assertNotSame( self::INTERNAL, $state->get_data()['mailbox'] );
 		$marker = self::newest_mail_job();
 
 		$response = $this->send( array( 'reason' => 'dissatisfied' ) );
@@ -220,9 +223,9 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertSame( array( self::INTERNAL ), $rows[0]['to'] );
 		$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $rows[0]['headers'] );
 		$body = html_entity_decode( $rows[0]['body'] );
-		$this->assertStringContainsString( 'Seemed unhappy with Genie', $body );
+		$this->assertStringContainsString( 'Seemed frustrated or wanted a person', $body );
 		$this->assertStringContainsString( 'Open the customer', $body );
-		$this->assertStringContainsString( 'The solution draft is empty.', $body );
+		$this->assertStringContainsString( 'No products in the solution draft.', $body );
 	}
 
 	/**

@@ -4,7 +4,8 @@
 # build/genie.js, extracted with `wp i18n make-pot . <pot>
 # --include=build/genie.js --skip-php`). AGENTS.md §3: Sie form. The prompts of
 # #234 passed the copy review of docs/acceptance/2026-10-18/234/copy-review.md;
-# the strings of #235 that of docs/acceptance/2026-10-18/235/copy-review.md.
+# the strings of #235 that of docs/acceptance/2026-10-18/235/copy-review.md;
+# the strings of #243 that of docs/acceptance/2026-10-18/243/copy-review.md.
 # Compile: msgfmt -o linker-tools-de_DE_formal.mo linker-tools-de_DE_formal.po
 # Script JSON: wp i18n make-json languages --no-purge (writes
 # linker-tools-de_DE_formal-<md5 of build/genie.js>.json, which WordPress loads
@@ -674,3 +675,73 @@ msgstr "Löschen"
 #: build/genie.js:22
 msgid "Delete conversation: %s"
 msgstr "Gespräch löschen: %s"
+
+# "Let Linker contact me" (#243): copy review docs/acceptance/2026-10-18/243/copy-review.md.
+
+#: build/genie.js
+msgid "Sending did not work. Please try again."
+msgstr "Das Senden ist fehlgeschlagen. Bitte versuchen Sie es erneut."
+
+#: build/genie.js
+#, javascript-format
+msgid "Genie cannot pass on your request right now. Please try again later or write to %s."
+msgstr "Genie kann Ihre Kontaktanfrage gerade nicht weitergeben. Bitte versuchen Sie es später erneut oder schreiben Sie an %s."
+
+#: build/genie.js
+msgid "Genie cannot pass on your request right now. Please try again later."
+msgstr "Genie kann Ihre Kontaktanfrage gerade nicht weitergeben. Bitte versuchen Sie es später erneut."
+
+#: build/genie.js
+#, javascript-format
+msgid "The team replies to %s within one business day."
+msgstr "Das Team schreibt Ihnen innerhalb eines Arbeitstags an %s."
+
+#: build/genie.js
+msgid "Let the Linker team contact you"
+msgstr "Rückmeldung vom Linker-Team"
+
+#: build/genie.js
+msgid "Your request is with the Linker team"
+msgstr "Ihre Kontaktanfrage liegt beim Linker-Team"
+
+#: build/genie.js
+msgid "Should someone from the Linker team get in touch?"
+msgstr "Soll sich jemand aus dem Linker-Team bei Ihnen melden?"
+
+#: build/genie.js
+msgid "Leave your email address and the team replies within one business day."
+msgstr "Hinterlassen Sie Ihre E-Mail-Adresse, und das Team schreibt Ihnen innerhalb eines Arbeitstags."
+
+#: build/genie.js
+msgid "Genie keeps answering your questions in the meantime."
+msgstr "Genie beantwortet Ihre Fragen in der Zwischenzeit weiter."
+
+#: build/genie.js
+msgid "Contact me"
+msgstr "Kontakt anfordern"
+
+#: includes/Genie/QualityPage.php
+msgid "Contact requests"
+msgstr "Kontaktanfragen"
+
+#. translators: 1: date and time, 2: the address the team replies to, 3: why Genie offered the contact.
+#: includes/Genie/QualityPage.php
+#, php-format
+msgid "%1$s · Reply address: %2$s · Reason: %3$s"
+msgstr "%1$s · Antwortadresse: %2$s · Grund: %3$s"
+
+#: includes/Genie/ContactRequest.php
+msgid "Asked to talk to a person"
+msgstr "Wollte mit einem Menschen sprechen"
+
+#: includes/Genie/ContactRequest.php
+msgid "Asked about the company, delivery or service"
+msgstr "Fragte nach Unternehmen, Lieferung oder Service"
+
+#: includes/Genie/ContactRequest.php
+msgid "Seemed frustrated or wanted a person"
+msgstr "Wirkte unzufrieden oder wollte einen Menschen"
+
+#: includes/Genie/ContactRequest.php
+msgid "Asked the same question three times in a row"
+msgstr "Stellte dieselbe Frage dreimal hintereinander"

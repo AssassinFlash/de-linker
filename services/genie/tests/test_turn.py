@@ -251,12 +251,12 @@ def _post(conversation: str, *customer: str, locale: str = "en") -> str:
         (
             "Can I talk to a person?",
             "en",
-            "Yes, someone from the Linker team can get in touch with you.",
+            "Someone from the Linker team can get in touch with you by email.",
         ),
         (
             "Ich möchte mit einem Mitarbeiter sprechen",
             "de",
-            "Gern meldet sich jemand aus dem Linker-Team bei Ihnen.",
+            "Jemand aus dem Linker-Team kann sich per E-Mail bei Ihnen melden.",
         ),
     ],
 )

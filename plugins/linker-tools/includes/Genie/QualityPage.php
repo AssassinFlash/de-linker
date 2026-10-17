@@ -329,11 +329,11 @@ class QualityPage {
 				'<li>%s</li>',
 				esc_html(
 					sprintf(
-						/* translators: 1: date and time, 2: the address the team replies to, 3: why Genie offered the contact (asked, service, dissatisfied, repeat). */
-						__( '%1$s: reply to %2$s (%3$s)', 'linker-tools' ),
+						/* translators: 1: date and time, 2: the address the team replies to, 3: why Genie offered the contact. */
+						__( '%1$s · Reply address: %2$s · Reason: %3$s', 'linker-tools' ),
 						$this->time( (int) ( $note['at'] ?? 0 ) ),
 						(string) ( $note['email'] ?? '' ),
-						(string) ( $note['reason'] ?? '' )
+						ContactRequest::reason_label( (string) ( $note['reason'] ?? '' ) )
 					)
 				)
 			);

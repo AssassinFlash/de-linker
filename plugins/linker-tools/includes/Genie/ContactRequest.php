@@ -16,8 +16,9 @@ use WP_REST_Response;
 /**
  * GET linker-ai/v1/genie/contact tells the contact card what it needs when it
  * appears: a signed start time (ContactGuard), the signed-in customer's
- * address (a customer with an account is never asked for one, #243) and
- * whether this conversation's request is already with the team.
+ * address (a customer with an account is never asked for one, #243),
+ * whether this conversation's request is already with the team, and the team
+ * mailbox customers see (MAILBOX_FILTER).
  *
  * POST passes the conversation on to the team. The hand-off is noted on the
  * conversation post (meta NOTE, one row per request, read by the admin's
@@ -43,6 +44,13 @@ class ContactRequest {
 	 * The action that sends the team mail (linker-commerce listens).
 	 */
 	public const ACTION = 'linker_genie_contact_requested';
+
+	/**
+	 * Filter that names the team mailbox customers see (linker-commerce's
+	 * Options::team_mailbox()); the card names it when a request is refused,
+	 * so a customer who asked for a person never meets a dead end.
+	 */
+	public const MAILBOX_FILTER = 'linker_genie_team_mailbox';
 
 	/**
 	 * Meta key of the hand-off notes on the conversation post.
@@ -75,6 +83,22 @@ class ContactRequest {
 		private readonly PageContext $pages,
 		private readonly ContactGuard $guard
 	) {}
+
+	/**
+	 * Why Genie offered the contact, in words, for the admin's conversation
+	 * view (the team mail's own labels are linker-commerce's,
+	 * Genie\ContactEmail::reason_label(), in that plugin's text domain).
+	 *
+	 * @param string $reason One of REASONS.
+	 */
+	public static function reason_label( string $reason ): string {
+		return match ( $reason ) {
+			'service'      => __( 'Asked about the company, delivery or service', 'linker-tools' ),
+			'dissatisfied' => __( 'Seemed frustrated or wanted a person', 'linker-tools' ),
+			'repeat'       => __( 'Asked the same question three times in a row', 'linker-tools' ),
+			default        => __( 'Asked to talk to a person', 'linker-tools' ),
+		};
+	}
 
 	/**
 	 * Registers the route; runs on rest_api_init.
@@ -123,6 +147,7 @@ class ContactRequest {
 				'started' => $this->guard->started(),
 				'email'   => $this->customer()['email'] ?? null,
 				'sent'    => null === $sent ? null : array( 'email' => $sent['email'] ),
+				'mailbox' => $this->mailbox(),
 			)
 		);
 		$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );
@@ -260,6 +285,20 @@ class ContactRequest {
 			);
 		}
 		return $lines;
+	}
+
+	/**
+	 * The team mailbox customers see, '' when no plugin names it.
+	 */
+	private function mailbox(): string {
+		/**
+		 * The team mailbox customers see (linker-commerce answers).
+		 *
+		 * @param string $mailbox '' until a plugin names it.
+		 * @since 0.1.0
+		 */
+		$mailbox = apply_filters( self::MAILBOX_FILTER, '' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::MAILBOX_FILTER is linker_genie_team_mailbox.
+		return false !== is_email( $mailbox ) ? $mailbox : '';
 	}
 
 	/**

@@ -43,6 +43,15 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendVote: vi.fn( async () => true ),
 	};
 } );
+vi.mock( './api/contact', () => ( {
+	readContact: vi.fn( async () => ( {
+		started: '100.sig',
+		email: null,
+		sent: null,
+		mailbox: 'sales@de-linker.com',
+	} ) ),
+	sendContact: vi.fn(),
+} ) );
 vi.mock( './api/product', () => ( {
 	productModel: vi.fn( async () => 'GW10K-ETA' ),
 } ) );
@@ -87,6 +96,7 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 		retentionDays: 90,
 		mailStarted: '1800000000',
 		mailStartedNonce: 'stamp-nonce',
+		contactUrl: '/wp-json/linker-ai/v1/genie/contact',
 		prompts: [
 			'Ask Genie',
 			'I need a three-phase hybrid inverter for a home.',
@@ -1159,4 +1169,78 @@ test( 'the page a confirmation link opens says how it went, once', async () => {
 	} finally {
 		window.history.replaceState( null, '', '/' );
 	}
+} );
+test( 'a request for a person shows the contact card, and Genie keeps answering', async () => {
+	vi.mocked( sendTurn ).mockResolvedValueOnce( {
+		meta: {
+			grounded: true,
+			fallback: false,
+			attempts: 0,
+			failures: [],
+			language: 'en',
+		},
+		blocks: [
+			{
+				type: 'text',
+				text: 'Someone from the Linker team can get in touch with you by email.',
+				refs: [],
+			},
+			{ type: 'contact', reason: 'asked' },
+		],
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const input = screen.getByLabelText( 'Ask Genie' );
+	await act( async () => {
+		fireEvent.change( input, {
+			target: { value: 'Can I talk to a person?' },
+		} );
+		fireEvent.submit( input.closest( 'form' ) as HTMLFormElement );
+	} );
+	expect(
+		await screen.findByText( 'Let the Linker team contact you' )
+	).toBeInTheDocument();
+	expect(
+		await screen.findByLabelText( 'Your email address' )
+	).toBeInTheDocument();
+	// The offer does not mute Genie: the next question is a turn as usual.
+	vi.mocked( sendTurn ).mockResolvedValueOnce( {
+		meta: {
+			grounded: true,
+			fallback: false,
+			attempts: 1,
+			failures: [],
+			language: 'en',
+		},
+		blocks: [ { type: 'text', text: 'The SAJ B2 fits it.', refs: [] } ],
+	} );
+	await act( async () => {
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Which battery fits the SAJ H2?' },
+		} );
+		fireEvent.submit(
+			screen
+				.getByLabelText( 'Ask Genie' )
+				.closest( 'form' ) as HTMLFormElement
+		);
+	} );
+	expect(
+		await screen.findByText( 'The SAJ B2 fits it.' )
+	).toBeInTheDocument();
+	expect( sendTurn ).toHaveBeenLastCalledWith(
+		'/wp-json/linker-ai/v1/genie/turn',
+		'n',
+		'en',
+		[
+			{ role: 'user', content: 'Can I talk to a person?' },
+			{
+				role: 'assistant',
+				content:
+					'Someone from the Linker team can get in touch with you by email.',
+				turnId: undefined,
+			},
+			{ role: 'user', content: 'Which battery fits the SAJ H2?' },
+		],
+		{ type: 'category' }
+	);
 } );

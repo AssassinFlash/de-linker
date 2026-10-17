@@ -1,0 +1,41 @@
+{
+  "about": "When Genie offers 'Let Linker contact me' (#243, docs/specs/13-genie.md goal 6, A5), EN and DE, against the real service: the phrase table, Jev (typesafe/jev-1.13 on OpenRouter) and deepseek-flash on the official API. `offer` is the contact block's reason the turn must carry, null for none. `thread` cases post their customer messages one turn after another in one conversation; `offers` lists the reason expected on each of those turns.",
+  "cases": [
+    {"id": "ask-en", "locale": "en", "message": "Can I talk to a person?", "offer": "asked", "by": "phrase"},
+    {"id": "ask-de", "locale": "de", "message": "Ich möchte mit einem Mitarbeiter sprechen", "offer": "asked", "by": "phrase"},
+    {"id": "ask-en-2", "locale": "en", "message": "Could somebody from your sales team give me a ring tomorrow?", "offer": "asked", "by": "jev"},
+    {"id": "ask-de-2", "locale": "de", "message": "Gibt es bei Ihnen einen Ansprechpartner, der sich mit Gewerbespeichern auskennt?", "offer": "asked", "by": "jev"},
+    {"id": "unhappy-en", "locale": "en", "message": "This is useless, you keep giving me the wrong products.", "offer": "dissatisfied", "by": "jev"},
+    {"id": "unhappy-de", "locale": "de", "message": "Das hilft mir überhaupt nicht weiter, Ihre Antworten sind falsch.", "offer": "dissatisfied", "by": "jev"},
+    {"id": "service-en", "locale": "en", "message": "Do you deliver to Austria?", "offer": "service", "by": "jev"},
+    {"id": "service-de", "locale": "de", "message": "Wie hoch sind die Versandkosten nach Österreich?", "offer": "service", "by": "jev"},
+    {"id": "plain-en", "locale": "en", "message": "Which battery fits the SAJ H2-10K-T3?", "offer": null, "by": "jev"},
+    {"id": "plain-de", "locale": "de", "message": "Welcher Speicher passt zum SAJ H2-10K-T3?", "offer": null, "by": "jev"},
+    {"id": "talk-en", "locale": "en", "message": "Can the SAJ inverter talk to a Pylontech battery?", "offer": null, "by": "jev"},
+    {"id": "talk-de", "locale": "de", "message": "Kann der Wechselrichter mit dem Speicher sprechen?", "offer": null, "by": "jev"}
+  ],
+  "threads": [
+    {
+      "id": "repeat-en",
+      "locale": "en",
+      "messages": [
+        "Which battery fits the SAJ H2-10K-T3?",
+        "which battery fits SAJ H2-10K-T3",
+        "Which battery fits the SAJ H2 10K T3??",
+        "WHICH BATTERY FITS THE SAJ H2-10K-T3"
+      ],
+      "offers": [null, null, "repeat", null]
+    },
+    {
+      "id": "repeat-de",
+      "locale": "de",
+      "messages": [
+        "Welcher Speicher passt zum SAJ H2-10K-T3?",
+        "welcher speicher passt zu SAJ H2-10K-T3",
+        "Welcher Speicher passt zum SAJ H2 10K T3 bitte?",
+        "WELCHER SPEICHER PASST ZUM SAJ H2-10K-T3"
+      ],
+      "offers": [null, null, "repeat", null]
+    }
+  ]
+}
