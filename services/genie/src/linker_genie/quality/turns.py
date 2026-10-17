@@ -12,18 +12,30 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from linker_genie.log import ADDED_COLUMNS
+
 # Seconds a read waits for the service's write lock. The service commits each
 # turn in one short INSERT, so a reader waits milliseconds; five seconds only
 # bounds a stuck writer, which the next cycle then meets again.
 BUSY_TIMEOUT = 5.0
 
+# The columns the worker reads, in `LoggedTurn` order.
 COLUMNS = (
-    "id, conversation_id, created_at, locale, fallback, tool_calls, output, "
-    "question, page, approved"
+    "id",
+    "conversation_id",
+    "created_at",
+    "locale",
+    "fallback",
+    "tool_calls",
+    "output",
+    "question",
+    "page",
+    "approved",
 )
-# The columns the service added after its first release (log.ADDED_COLUMNS) that
-# the worker reads: a log the service has not upgraded yet reads them as NULL.
-LATER_COLUMNS = ("question", "page", "approved")
+# The columns the service added after its first release: a log it has not
+# upgraded yet lacks them, and the worker reads them as NULL there (a turn with
+# no question is skipped as such; one with no account flag is not approved).
+LATER_COLUMNS = frozenset(name for name, _ in ADDED_COLUMNS)
 
 
 @dataclass(frozen=True)
@@ -66,7 +78,7 @@ class TurnSource:
         return [
             _turn(row)
             for row in self._query(
-                f"SELECT {COLUMNS} FROM turns WHERE id > ? ORDER BY id LIMIT ?",
+                "SELECT {columns} FROM turns WHERE id > ? ORDER BY id LIMIT ?",
                 (turn_id, limit),
             )
         ]
@@ -78,7 +90,7 @@ class TurnSource:
         return [
             _turn(row)
             for row in self._query(
-                f"SELECT {COLUMNS} FROM turns WHERE id IN ({marks}) ORDER BY id",
+                "SELECT {columns} FROM turns WHERE id IN (" + marks + ") ORDER BY id",
                 tuple(ids),
             )
         ]
@@ -103,6 +115,7 @@ class TurnSource:
             database.close()
 
     def _query(self, sql: str, args: tuple[Any, ...]) -> list[sqlite3.Row]:
+        """Run `sql`, its `{columns}` filled with `select_list` for this log."""
         if not self.path.exists():
             return []
         database = sqlite3.connect(
@@ -110,20 +123,24 @@ class TurnSource:
         )
         database.row_factory = sqlite3.Row
         try:
-            present = _columns(database)
-            for column in LATER_COLUMNS:
-                if column not in present:
-                    # A log the service has not upgraded yet (log.ADDED_COLUMNS):
-                    # a turn with no question is skipped as such; one with no
-                    # account flag reads as not approved.
-                    sql = sql.replace(f", {column}", f", NULL AS {column}", 1)
-            return list(database.execute(sql, args).fetchall())
+            columns = select_list(_columns(database))
+            return list(database.execute(sql.format(columns=columns), args).fetchall())
         except sqlite3.OperationalError as error:
             if "no such table" in str(error):
                 return []
             raise
         finally:
             database.close()
+
+
+def select_list(present: set[str]) -> str:
+    """The SELECT list of `COLUMNS` for a log that has the columns `present`."""
+    return ", ".join(
+        column
+        if column in present or column not in LATER_COLUMNS
+        else f"NULL AS {column}"
+        for column in COLUMNS
+    )
 
 
 def _columns(database: sqlite3.Connection) -> set[str]:

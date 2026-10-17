@@ -24,16 +24,22 @@ from fastapi.testclient import TestClient
 from linker_judges import cascade as cascade_module
 from linker_judges.judges import Answer, Judge, Verdict
 from linker_judges.registry import JUDGES
-from linker_judges.rubric import APPROPRIATE, BETTER_PICK, Question
+from linker_judges.rubric import APPROPRIATE, BETTER_PICK, REMIT, Question
 
 import linker_genie.app as app_module
 from linker_genie.app import app
 from linker_genie.facts import Fact, TurnFacts
-from linker_genie.log import TurnLog
+from linker_genie.log import ADDED_COLUMNS, TurnLog
 from linker_genie.quality import citations
 from linker_genie.quality.item import Skip, build, rendered
 from linker_genie.quality.store import Store
-from linker_genie.quality.turns import LoggedTurn, TurnSource
+from linker_genie.quality.turns import (
+    COLUMNS,
+    LATER_COLUMNS,
+    LoggedTurn,
+    TurnSource,
+    select_list,
+)
 from linker_genie.quality.wordpress import ROUTE, PushError, WordPress
 from linker_genie.quality.worker import (
     MAX_ATTEMPTS,
@@ -162,6 +168,17 @@ def test_the_log_keeps_whether_the_account_is_approved(turns: Path) -> None:
     assert approved.approved is True
     # No `partner` sent (the shell sends none before #242): not approved.
     assert pending.approved is False and guest.approved is False
+
+
+def test_the_columns_added_later_come_from_the_log_itself() -> None:
+    assert LATER_COLUMNS == {name for name, _ in ADDED_COLUMNS}
+    full = select_list(set(COLUMNS))
+    assert full == ", ".join(COLUMNS)
+    # A log from before the question and the account flag: those read as NULL.
+    oldest = select_list(set(COLUMNS) - {"question", "page", "approved"})
+    assert "NULL AS question" in oldest and "NULL AS page" in oldest
+    assert oldest.endswith("NULL AS approved")
+    assert oldest.startswith("id, conversation_id")
 
 
 def test_a_missing_log_reads_as_empty(tmp_path: Path) -> None:
@@ -358,28 +375,52 @@ def test_answers_from_our_manuals_pass_the_citation_check(name: str) -> None:
     assert citations.verify(_logged(name)) == []
 
 
+def test_both_remit_questions_share_one_remit() -> None:
+    # The spec says appropriate and better_pick share the remit: word for word.
+    assert REMIT in APPROPRIATE.instructions
+    assert REMIT in BETTER_PICK.instructions
+
+
 def test_the_remit_keeps_document_answers_and_refers_service_requests() -> None:
     # Turns 33 (GoodWe warranty terms) and 36 (CB2 installation and clearances)
     # were judged out of remit because the remit sent warranty and
     # installation questions to the team. AGENTS.md §2 (2026-10-05) sends only
     # company, service and logistics questions there.
-    for question, inside in (
-        (APPROPRIATE, "is within the remit"),
-        (BETTER_PICK, "are within it"),
+    within = _sentence(REMIT, "is within the remit")
+    referral = _sentence(REMIT, "referral")
+    for subject in ("warranty terms", "installation requirements", "clearances"):
+        assert subject in within, subject
+        assert subject not in referral, subject
+    for request in (
+        "making a warranty claim",
+        "booking installation or commissioning",
+        "delivery",
+        "payment terms",
     ):
-        within = _sentence(question.instructions, inside)
-        referral = _sentence(question.instructions, "referral")
-        for subject in ("warranty terms", "installation requirements"):
-            assert subject in within, (question.name, subject)
-            assert subject not in referral, (question.name, subject)
-        assert "warranty claim" in referral, question.name
-        assert "installation" in referral and "delivery" in referral, question.name
-    remit = APPROPRIATE.instructions
-    assert "clearances" in _sentence(remit, "is within the remit")
-    assert "booking installation or commissioning" in _sentence(remit, "referral")
-    assert "payment terms" in _sentence(remit, "referral")
-    # Stock stays a status and Incoterms stay out (AGENTS.md §2).
-    assert "never gives stock quantities" in remit and "Incoterms" in remit
+        assert request in referral, request
+
+
+def test_the_remit_allows_both_stock_statuses_and_never_a_quantity() -> None:
+    # AGENTS.md §2 2026-10-11: to the customer only the status, in stock or
+    # temporarily out of stock, never the quantity.
+    stock = _sentence(REMIT, "stock quantities")
+    assert "in stock or temporarily out of stock" in stock
+    assert "never gives stock quantities" in stock
+
+
+def test_the_remit_allows_the_one_working_day_reply_promise() -> None:
+    # AGENTS.md §2 2026-10-09: the team replies to an inquiry within one working
+    # day, and Genie promises it (13-genie.md 目标 5, 6). Other dates and
+    # commitments stay out.
+    commitments = _sentence(REMIT, "commitment")
+    assert "delivery times or dates" in commitments
+    assert "service or appointment dates" in commitments
+    assert "Incoterms" in commitments
+    assert "except one" in commitments
+    assert "replies to an inquiry within one working day" in _sentence(
+        REMIT, "may promise"
+    )
+    assert "service commitments" not in REMIT
 
 
 @pytest.mark.parametrize("name", ["t33", "t36"])
@@ -397,25 +438,54 @@ def test_turns_33_and_36_reach_the_judges_with_that_remit(
     assert "warranty terms" in appropriate.system_one()["instructions"]
 
 
-def test_a_price_is_judged_against_the_account() -> None:
-    approved = _logged("price_approved")
-    guest = replace(approved, approved=False)
-    assert build(approved).state["account"] == {"approved": True}
-    assert build(guest).state["account"] == {"approved": False}
-    approved_rule = _sentence(APPROPRIATE.instructions, "`account.approved` is true")
-    assert "may state the product prices" in approved_rule
-    other_rule = _sentence(APPROPRIATE.instructions, "`account` is missing")
-    assert "is false" in other_rule and "states no price" in other_rule
+def _priced(*, visible: bool, approved: bool) -> LoggedTurn:
+    """The priced answer, its tool's price visible or withheld, for an
+    approved account or not."""
+    turn = _logged("price_approved")
+    calls = copy.deepcopy(turn.tool_calls)
+    if not visible:
+        calls[0]["result"]["qualified"][0]["commerce"] = {
+            "price_visible": False,
+            "in_stock": True,
+            "rfq_only": False,
+        }
+    return replace(turn, tool_calls=calls, approved=approved)
+
+
+def test_the_judges_read_the_account_and_the_rule_needs_both_gates() -> None:
+    assert build(_priced(visible=True, approved=True)).state["account"] == {
+        "approved": True
+    }
+    assert build(_priced(visible=True, approved=False)).state["account"] == {
+        "approved": False
+    }
+    rule = _sentence(REMIT, "may state a product price")
+    assert "`price_visible` true" in rule and "`account.approved` is true" in rule
+    other = _sentence(REMIT, "`account` is missing")
+    assert "is false" in other and "states no price" in other
     # Telling an unapproved customer how to get a price is not a price.
-    assert "inquiry" in _sentence(APPROPRIATE.instructions, "Proforma request")
-    # The tool showed the approved account its price: the number is backed.
-    assert citations.verify(approved) == []
-    # A price the site withheld (price_visible false) backs nothing.
-    hidden = copy.deepcopy(approved.tool_calls)
-    hidden[0]["result"]["qualified"][0]["commerce"] = {"price_visible": False}
-    assert citations.verify(replace(guest, tool_calls=hidden)) == [
-        "states 1234.00, which no tool result contains"
+    assert "inquiry" in _sentence(REMIT, "Proforma request")
+
+
+def test_a_visible_price_for_an_approved_account_passes() -> None:
+    assert citations.verify(_priced(visible=True, approved=True)) == []
+
+
+def test_a_visible_price_for_an_account_not_approved_is_flagged() -> None:
+    # The tool showed the price, but the account is a guest, pending or
+    # restricted one (or the shell did not say: the default before #242).
+    assert citations.verify(_priced(visible=True, approved=False)) == [
+        "states the price of product 4109, and the account is not approved"
     ]
+
+
+def test_a_price_the_tool_did_not_return_is_flagged_even_when_approved() -> None:
+    # The account may see prices, but this turn's tool withheld it: nothing
+    # backs the number (the tool output is the ground truth).
+    for approved in (True, False):
+        assert citations.verify(_priced(visible=False, approved=approved)) == [
+            "states 1234.00, which no tool result contains"
+        ]
 
 
 # --- the cascade, as the worker drives it ---------------------------------------

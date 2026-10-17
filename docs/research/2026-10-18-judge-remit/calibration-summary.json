@@ -1,0 +1,1441 @@
+{
+ "threshold": 0.5,
+ "this_remit": {
+  "items": 118,
+  "agree": 118,
+  "standing_at_threshold": 118,
+  "agree_among_standing": 118,
+  "min_confidence": 0.7,
+  "out_of_remit_items": 26,
+  "cost_usd": 0.0088,
+  "per_item": [
+   {
+    "id": "p002",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8600000000000001
+   },
+   {
+    "id": "p010",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p011",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p012",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p014",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p015",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p016",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p025",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p030",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p037",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p038",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8600000000000001
+   },
+   {
+    "id": "p043",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p044",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p046",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8200000000000001
+   },
+   {
+    "id": "p049",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p050",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p051",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.84
+   },
+   {
+    "id": "p055",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p058",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8799999999999999
+   },
+   {
+    "id": "p062",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p063",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p065",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8999999999999999
+   },
+   {
+    "id": "p067",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p068",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.86
+   },
+   {
+    "id": "p069",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p070",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p072",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p078",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p079",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p084",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p089",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p092",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.92
+   },
+   {
+    "id": "p102",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8400000000000001
+   },
+   {
+    "id": "p104",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p105",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8200000000000001
+   },
+   {
+    "id": "p108",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8
+   },
+   {
+    "id": "p111",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p115",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p120",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p122",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.92
+   },
+   {
+    "id": "p123",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p125",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p131",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8600000000000001
+   },
+   {
+    "id": "p140",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8
+   },
+   {
+    "id": "p143",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8999999999999999
+   },
+   {
+    "id": "p144",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p150",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p154",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8600000000000001
+   },
+   {
+    "id": "p162",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.86
+   },
+   {
+    "id": "p165",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8600000000000001
+   },
+   {
+    "id": "p167",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p168",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p171",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p173",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p177",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8400000000000001
+   },
+   {
+    "id": "p183",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p186",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p187",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p193",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p194",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p197",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p199",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.84
+   },
+   {
+    "id": "p202",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.76
+   },
+   {
+    "id": "p206",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p207",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p210",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p212",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8600000000000001
+   },
+   {
+    "id": "p214",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p215",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p218",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p219",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8600000000000001
+   },
+   {
+    "id": "p220",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p223",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p224",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p231",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8799999999999999
+   },
+   {
+    "id": "p232",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p236",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p238",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p239",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p240",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p242",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.86
+   },
+   {
+    "id": "p243",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p246",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.8
+   },
+   {
+    "id": "p252",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.92
+   },
+   {
+    "id": "p255",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p256",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.86
+   },
+   {
+    "id": "p259",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8999999999999999
+   },
+   {
+    "id": "p261",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p267",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.72
+   },
+   {
+    "id": "p268",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p278",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p279",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p282",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8999999999999999
+   },
+   {
+    "id": "p286",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8400000000000001
+   },
+   {
+    "id": "p288",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8799999999999999
+   },
+   {
+    "id": "p296",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.86
+   },
+   {
+    "id": "p297",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p301",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p306",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.78
+   },
+   {
+    "id": "p307",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.84
+   },
+   {
+    "id": "p313",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p314",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p317",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p319",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p320",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p321",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p324",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.84
+   },
+   {
+    "id": "p325",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p327",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p331",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p332",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.72
+   },
+   {
+    "id": "p334",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8999999999999999
+   },
+   {
+    "id": "p335",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.86
+   },
+   {
+    "id": "p336",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.7
+   },
+   {
+    "id": "p338",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p339",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p344",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p346",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   }
+  ]
+ },
+ "formal_run_old_remit": {
+  "items": 118,
+  "agree": 118,
+  "standing_at_threshold": 118,
+  "agree_among_standing": 118,
+  "min_confidence": 0.8200000000000001,
+  "out_of_remit_items": 26,
+  "cost_usd": 0.0075,
+  "per_item": [
+   {
+    "id": "p002",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8200000000000001
+   },
+   {
+    "id": "p010",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p011",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p012",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p014",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p015",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p016",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p025",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p030",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p037",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p038",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p043",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p044",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p046",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p049",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p050",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p051",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p055",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p058",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p062",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p063",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p065",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p067",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p068",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p069",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p070",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p072",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p078",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p079",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p084",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p089",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p092",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.92
+   },
+   {
+    "id": "p102",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p104",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p105",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p108",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p111",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p115",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p120",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p122",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.94
+   },
+   {
+    "id": "p123",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p125",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p131",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8799999999999999
+   },
+   {
+    "id": "p140",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p143",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p144",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p150",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p154",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p162",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p165",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p167",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p168",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p171",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p173",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p177",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8400000000000001
+   },
+   {
+    "id": "p183",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.94
+   },
+   {
+    "id": "p186",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p187",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p193",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p194",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p197",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p199",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.86
+   },
+   {
+    "id": "p202",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p206",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p207",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p210",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p212",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p214",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p215",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p218",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p219",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p220",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p223",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p224",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p231",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p232",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p236",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p238",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.86
+   },
+   {
+    "id": "p239",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p240",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p242",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p243",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p246",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.84
+   },
+   {
+    "id": "p252",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p255",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p256",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p259",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p261",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p267",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8999999999999999
+   },
+   {
+    "id": "p268",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p278",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p279",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p282",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p286",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p288",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p296",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p297",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p301",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p306",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p307",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.88
+   },
+   {
+    "id": "p313",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p314",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p317",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p319",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p320",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p321",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.94
+   },
+   {
+    "id": "p324",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p325",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p327",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p331",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.92
+   },
+   {
+    "id": "p332",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p334",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.8999999999999999
+   },
+   {
+    "id": "p335",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.9
+   },
+   {
+    "id": "p336",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.9199999999999999
+   },
+   {
+    "id": "p338",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.92
+   },
+   {
+    "id": "p339",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.98
+   },
+   {
+    "id": "p344",
+    "human": "yes",
+    "jev": "yes",
+    "confidence": 0.96
+   },
+   {
+    "id": "p346",
+    "human": "no",
+    "jev": "no",
+    "confidence": 0.94
+   }
+  ]
+ }
+}
