@@ -114,15 +114,29 @@ final class Jobs {
 		 * @param string $kind  State::POST or State::TERM.
 		 * @param int    $id    English object ID.
 		 * @param bool   $force Translate every segment again.
-		 * @param bool   $unique Refuse a duplicate pending or running action.
 		 */
-	public function queue( string $kind, int $id, bool $force = false, bool $unique = true ): bool {
+	public function queue( string $kind, int $id, bool $force = false ): bool {
 		if ( ! $this->translator->accepts( $kind, $id ) ) {
 			return false;
 		}
 		$force = $force || State::NEEDS_REVIEW === $this->state->status( $kind, $id );
 		$this->state->set_status( $kind, $id, State::PENDING, 'queued' );
-		as_enqueue_async_action( self::HOOK, array( $kind, $id, $force, 1 ), self::GROUP, $unique );
+		$args = array( $kind, $id, $force, 1 );
+		// AS's unique flag also rejects an in-progress action. Deduplicate only
+		// pending work, so a save during any part of the runner gets a successor.
+		$pending = as_get_scheduled_actions(
+			array(
+				'hook'     => self::HOOK,
+				'group'    => self::GROUP,
+				'args'     => $args,
+				'status'   => 'pending',
+				'per_page' => 1,
+			),
+			'ids'
+		);
+		if ( array() === $pending ) {
+			as_enqueue_async_action( self::HOOK, $args, self::GROUP, false );
+		}
 		return true;
 	}
 
@@ -147,8 +161,7 @@ final class Jobs {
 		}
 		// Saved again while this run translated: the queue refused a second job then.
 		if ( State::SYNCED === $status && ! $this->translator->current( $kind, $id ) ) {
-			// This action is still in progress; AS uniqueness would reject its successor.
-			$this->queue( $kind, $id, false, false );
+			$this->queue( $kind, $id );
 		}
 	}
 }

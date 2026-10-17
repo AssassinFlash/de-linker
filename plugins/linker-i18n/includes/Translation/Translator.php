@@ -171,6 +171,17 @@ final class Translator {
 	 * @param int    $source_id English object ID.
 	 */
 	public function current( string $kind, int $source_id ): bool {
+		// Another PHP request can invalidate Redis while this worker retains an
+		// old object in its runtime cache. Re-read the source before claiming sync.
+		if ( State::POST === $kind ) {
+			clean_post_cache( $source_id );
+		} else {
+			$term = get_term( $source_id );
+			if ( $term instanceof \WP_Term ) {
+				// Without the taxonomy WordPress treats these as term_taxonomy_ids.
+				clean_term_cache( $source_id, $term->taxonomy );
+			}
+		}
 		$twin   = State::POST === $kind ? $this->german_post( $source_id ) : $this->german_term( $source_id );
 		$source = State::POST === $kind ? get_post( $source_id ) : get_term( $source_id );
 		if ( null === $twin || ! ( $source instanceof \WP_Post || $source instanceof \WP_Term ) ) {
