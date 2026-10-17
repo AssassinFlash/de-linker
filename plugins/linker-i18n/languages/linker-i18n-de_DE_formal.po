@@ -145,4 +145,4 @@ msgstr "Englischen Inhalt öffnen"
 
 #: includes/Translation/DigestBlock.php
 msgid "No German translation exceptions."
-msgstr "Keine Probleme bei deutschen Übersetzungen."
+msgstr "Keine Probleme bei deutschen Übersetzungen gemeldet."

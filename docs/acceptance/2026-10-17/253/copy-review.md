@@ -37,3 +37,15 @@
 | German sync has been queued. | Die Synchronisierung der deutschen Fassung wurde eingeplant. | 排队成功提示，允许零调用的基线收养 |
 
 独立 Spec 评审：结构异常与同步动作可原样定稿；排队提示的 DE 初稿“Die deutsche Synchronisierung”略生硬，建议明确为“Die Synchronisierung der deutschen Fassung”。已采纳，表中为定稿。EN 不变；三组定稿已同步 .pot/.po/.mo。
+
+## 第二轮补齐：每日摘要异常块
+
+在已合并的每日摘要 Block/filter 上接入，文案只用于内部摘要。
+
+| EN 初稿 | DE 独立初稿 | 用途 |
+|---|---|---|
+| German translation exceptions (%d) | Probleme bei deutschen Übersetzungen (%d) | 已记录异常的数量 |
+| Open English source | Englischen Inhalt öffnen | 英文源后台入口 |
+| No German translation exceptions. | Keine Probleme bei deutschen Übersetzungen. | 空态 |
+
+独立 Spec 对抗评审：标题及链接可定稿；德语空态应加 `gemeldet`，因为查询仅覆盖已记录的失败和结构异常，不能保证全部译文质量。采纳：**Keine Probleme bei deutschen Übersetzungen gemeldet.** EN 原文保留；三组定稿进入 .pot/.po/.mo。真实 DigestEmail/Outbox 的 EN/DE 正文与路由断言通过，无邮件实发。

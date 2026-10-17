@@ -58,7 +58,7 @@ final class DigestBlockTest extends SiteTestCase {
 			} finally {
 				$mail_ids = array_values( array_unique( array_merge( $mail_ids, array_diff( $queued(), $baseline ) ) ) );
 				foreach ( array( "linker_i18n_translate", Linker\Commerce\Mail\Outbox::HOOK ) as $hook ) {
-					foreach ( as_get_scheduled_actions( array( "hook" => $hook, "status" => "pending", "per_page" => -1 ), "ids" ) as $action ) { $a = ActionScheduler::store()->fetch_action( $action )->get_args(); if ( "linker_i18n_translate" === $hook ? in_array( (int) $a[1], array_merge( $ids, $terms ), true ) : in_array( (int) $a[0], $mail_ids, true ) ) { ActionScheduler::store()->cancel_action( $action ); } }
+					foreach ( as_get_scheduled_actions( array( "hook" => $hook, "status" => "pending", "per_page" => -1 ), "ids" ) as $action ) { $a = ActionScheduler::store()->fetch_action( $action )->get_args(); if ( "linker_i18n_translate" === $hook ? ( "post" === $a[0] ? in_array( (int) $a[1], $ids, true ) : ( "term" === $a[0] && in_array( (int) $a[1], $terms, true ) ) ) : in_array( (int) $a[0], $mail_ids, true ) ) { ActionScheduler::store()->cancel_action( $action ); } }
 				}
 				foreach ( array_merge( $ids, $mail_ids ) as $id ) { wp_delete_post( $id, true ); } foreach ( $terms as $id ) { wp_delete_term( $id, "category" ); }
 				foreach ( $options as $key => $value ) { if ( null === $value ) { delete_option( $key ); } else { update_option( $key, $value ); } }
