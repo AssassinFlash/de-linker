@@ -16,7 +16,7 @@ import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import configuratorGerman from '../languages/linker-tools-de_DE_formal-linker-tools-configurator.json';
+import configuratorGerman from '../languages/linker-tools-de_DE_formal-ff47dbd6ce1b77b210b406f2367c7ea7.json';
 
 const withLocale: Decorator = ( Story, context ) => {
 	const locale = context.globals.locale === 'de' ? 'de' : 'en';

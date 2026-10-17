@@ -10,7 +10,9 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 QUOTED = re.compile(r"(['\"`])((?:\\.|(?!\1).)*?)\1", re.DOTALL)
-CODE_TOKEN = re.compile(r"/\*.*?\*/|//[^\n]*|#[^\n]*|" + QUOTED.pattern, re.DOTALL)
+CODE_TOKEN = re.compile(r"/\*.*?\*/|//[^\n]*|" + QUOTED.pattern, re.DOTALL)
+PHP_CODE_TOKEN = re.compile(r"/\*.*?\*/|//[^\n]*|#[^\n]*|" + QUOTED.pattern, re.DOTALL)
+ARGUMENT_TOKEN = re.compile(CODE_TOKEN.pattern + r"|[()[\]{},]", re.DOTALL)
 GETTEXT_CALL = re.compile(
     r"\b(?:__|_e|_x|_ex|_n|_nx|_n_noop|_nx_noop|"
     r"esc_html__|esc_attr__|esc_html_e|esc_attr_e|esc_html_x|esc_attr_x)"
@@ -18,6 +20,27 @@ GETTEXT_CALL = re.compile(
 )
 EXCLUDED = {"vendor", "node_modules", "tests", "languages", ".git"}
 SOURCE_SUFFIXES = {".php", ".js", ".jsx", ".ts", ".tsx", ".html"}
+
+
+def code_references(plugin: Path) -> dict[str, list[tuple[str, int]]]:
+    """Gettext messages in runtime PHP/JS/TS, including the committed bundles."""
+    found: dict[str, list[tuple[str, int]]] = {}
+    for path in sorted(plugin.rglob("*")):
+        if (
+            path.suffix not in SOURCE_SUFFIXES - {".html"}
+            or EXCLUDED.intersection(path.relative_to(plugin).parts)
+            or re.search(r"\.(?:test|stories)\.[jt]sx?$", path.name)
+        ):
+            continue
+        for msgid, line in gettext_strings(
+            path.read_text(encoding="utf-8"),
+            php=path.suffix == ".php",
+            domain=plugin.name,
+        ):
+            reference = (str(path.relative_to(plugin)), line)
+            if reference not in found.setdefault(msgid, []):
+                found[msgid].append(reference)
+    return found
 
 
 def catalog_entries(catalog: Path, *, obsolete: bool = False) -> list[dict[str, str]]:
@@ -72,12 +95,46 @@ def quoted_strings(source: str) -> list[tuple[str, int]]:
     return found
 
 
-def gettext_strings(source: str) -> list[tuple[str, int]]:
+def gettext_domain(source: str, start: int) -> str | None:
+    """Read the final literal argument, respecting nested count expressions."""
+    depth = 0
+    argument = start
+    for token in ARGUMENT_TOKEN.finditer(source, start):
+        value = token[0]
+        if value == ")" and depth == 0:
+            literal = source[argument : token.start()].strip()
+            if QUOTED.fullmatch(literal):
+                return quoted_strings(literal)[0][0]
+            return None
+        if value in {"(", "[", "{"}:
+            depth += 1
+        elif value in {")", "]", "}"}:
+            depth -= 1
+        elif value == "," and depth == 0:
+            argument = token.end()
+    return None
+
+
+def gettext_strings(
+    source: str, *, php: bool = False, domain: str | None = None
+) -> list[tuple[str, int]]:
     """Message literals in gettext calls, excluding comments and technical values."""
-    found = []
+    found: list[tuple[str, int]] = []
     starts = {call.end() for call in GETTEXT_CALL.finditer(source)}
-    for token in CODE_TOKEN.finditer(source):
-        if token[1] is None or token.start() not in starts:
+    tokens = PHP_CODE_TOKEN if php else CODE_TOKEN
+    for token in tokens.finditer(source):
+        if token[1] is None:
+            continue
+        if token.start() not in starts:
+            if token[1] == "`":
+                # A JS template can interpolate a gettext call (e.g. PDF pages).
+                offset = source.count("\n", 0, token.start())
+                found.extend(
+                    (value, line + offset)
+                    for value, line in gettext_strings(token[2], domain=domain)
+                )
+            continue
+        if domain is not None and gettext_domain(source, token.start()) != domain:
             continue
         value = quoted_strings(token[0])[0][0]
         found.append((value, source.count("\n", 0, token.start()) + 1))
@@ -122,7 +179,7 @@ def source_references(
             parser.feed(source)
             strings = parser.strings
         else:
-            strings = gettext_strings(source)
+            strings = gettext_strings(source, php=path.suffix == ".php")
         for value, line in strings:
             msgid = normalized.get(" ".join(value.split()))
             if msgid is not None:

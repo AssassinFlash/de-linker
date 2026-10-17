@@ -1,0 +1,15 @@
+{
+  "ticket": 302,
+  "baseline_commit": "781f5a223b9997d3d7abf8bcacc40e439c2c4317",
+  "before_count": 209,
+  "after_count": 209,
+  "lost": [],
+  "added": [],
+  "changed": {},
+  "context_keys": [
+    "configurator\u0004Sent, but the draft does not show it yet. Please check.",
+    "configurator\u0004Not added. Try again.",
+    "configurator\u0004Saved to your account."
+  ],
+  "genie_json_unchanged": true
+}

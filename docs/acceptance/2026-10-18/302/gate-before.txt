@@ -1,0 +1,524 @@
+Baseline: 781f5a223b9997d3d7abf8bcacc40e439c2c4317
+Command: current i18n-coverage.main() against git archive of baseline linker-tools
+Exit: 1
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'north'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:79
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'north-east'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:80
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'east'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:81
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'south-east'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:82
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'south'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:83
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'south-west'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:84
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'west'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:85
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'north-west'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:86
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'faces north'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:94
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'steeper than 60°'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:96
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'outline cannot be used'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/geometry.ts:98
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Loading the aerial image…'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:398
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Click the roof of the building in the aerial image.'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:400
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Reading the official building model…'
+  source: plugins/linker-tools/build/52.js:1
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:403
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Official building model: %s'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:407
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Official building model found.'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:410
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'The plane you drew is in the list.'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:411
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Draw the plane on one roof: this one is too large or outside Germany.'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:413
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'No building at this point. Click on a roof, or draw the plane yourself.'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:417
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'No official building model is available here. Draw the roof plane yourself.'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:421
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'The roof could not be loaded. Try again.'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:424
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Roof'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:430
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Close roof step'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:436
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Aerial image: click a roof to select it'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:445
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Click the corners of the plane; click the first corner again to finish.'
+  source: plugins/linker-tools/build/52.js:2
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:453
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Facing %1$s, tilt %2$s°'
+  source: plugins/linker-tools/build/52.js:3
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:488
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: '%d module'
+  source: plugins/linker-tools/build/52.js:4
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:505
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Selected: %1$s modules, %2$s kWp'
+  source: plugins/linker-tools/build/52.js:5
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:525
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Draw a plane yourself'
+  source: plugins/linker-tools/build/52.js:5
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:534
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Tilt'
+  source: plugins/linker-tools/build/52.js:5
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:537
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Facing (south 180°)'
+  source: plugins/linker-tools/build/52.js:5
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:549
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Draw plane'
+  source: plugins/linker-tools/build/52.js:5
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:566
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Use this roof'
+  source: plugins/linker-tools/build/52.js:5
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:576
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Assumptions of the module count'
+  source: plugins/linker-tools/build/52.js:5
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:583
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Reference module %1$s with %2$s Wp; the module you install can fit differently.'
+  source: plugins/linker-tools/build/52.js:6
+  source: plugins/linker-tools/src/configurator/roof/RoofStep.tsx:591
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Site'
+  source: plugins/linker-tools/build/configurator.js:20
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:223
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:164
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Postcode of the site'
+  source: plugins/linker-tools/build/configurator.js:20
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:228
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:168
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Annual household consumption'
+  source: plugins/linker-tools/build/configurator.js:20
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:182
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Without heat pump and electric car; tick them below.'
+  source: plugins/linker-tools/build/configurator.js:20
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:187
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'PV array'
+  source: plugins/linker-tools/build/configurator.js:20
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:200
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'From the roof: %1$s modules on %2$s plane, %3$s kWp.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:219
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Change roof'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:238
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Enter kWp instead'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:246
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'No PV figure yet? Estimate from the roof'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:258
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Connection'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:267
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Grid connection'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:271
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:45
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Three-phase'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:280
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Single-phase'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:289
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Backup supply'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:304
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:294
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Not needed'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:298
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Needed'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:301
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Needed, an accessory is fine'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:305
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Load to keep running'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:370
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:316
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Optional; sizes a reserve on top.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:321
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'For how long'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:385
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:334
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Additional consumers'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:348
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Heat pump (installed or planned)'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:357
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Electric car (installed or planned)'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:368
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Existing inverter (retrofit)'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:376
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Optional. Enter its model and we list only batteries released for it.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:380
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Calculating…'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:501
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:401
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Calculate system'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialForm.tsx:402
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Inputs'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/Steps.tsx:33
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:151
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:208
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:108
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:216
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Solution'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/Steps.tsx:34
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:112
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:267
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Design report'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/Steps.tsx:35
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:118
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:362
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'The yield service did not answer. Try again in a minute.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:63
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'We do not know this postcode. Check it and try again.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:69
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'The calculation failed. Try again.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:74
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Step 2 · The figures that size the system'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:220
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Loading the map…'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:238
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Step 3 · The released system for these inputs'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:271
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Enter the household and calculate: the proposed system appears here.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:279
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Calculating yield, storage and the released system…'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/residential/ResidentialPanel.tsx:291
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Configurator steps'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/Steps.tsx:74
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Configurator'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/Steps.tsx:77
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Three steps. The result follows the inputs you enter.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/Steps.tsx:100
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Site (postcode or place)'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:42
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Power (MW)'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:43
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Storage capacity (MWh)'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:44
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Planned commissioning'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:46
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Project details'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:47
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Utility-scale storage inquiry'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:49
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Utility-scale inquiry'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:65
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Step 2 · The project we quote'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:68
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'We quote utility-scale storage per project. Describe the project and our team replies within one business day.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:73
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Project'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:79
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Write to our team'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/utility/UtilityForm.tsx:124
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Residential'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:56
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Home PV, storage and backup'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:57
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Commercial & industrial'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:61
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Site load, peak power and operating profile'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:63
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Utility'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:69
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Storage blocks, grid connection and project stage'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:71
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Solution Configurator'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:97
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Size your system and get the bill of materials.'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:103
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Project type'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:117
+  source: plugins/linker-tools/src/configurator/App.tsx:130
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Step 1 · Which project are you sizing?'
+  source: plugins/linker-tools/build/configurator.js:21
+  source: plugins/linker-tools/src/configurator/App.tsx:121
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Configurator navigation'
+  source: plugins/linker-tools/src/configurator/MobileNavigation.tsx:94
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Result'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:155
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:518
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'The load profile could not be read, or the calculation failed. Check the file and try again.'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:183
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Step 2 · The figures that size the storage'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:212
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Grid connection capacity'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:243
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Annual consumption'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:258
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Goals'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:273
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Peak shaving'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:283
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Self-consumption of PV'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:293
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Annual peak from the bill'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:315
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Optional when you upload the load profile.'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:320
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Target peak'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:334
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'PV array, existing or planned'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:352
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: '15-minute load profile (CSV, optional)'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:402
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Choose file'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:405
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'No file chosen'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:409
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'One value per line, optionally after a timestamp; the last number of each line counts.'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:412
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Values in the file'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:429
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Average power in kW'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:439
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Energy per 15 minutes in kWh'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:445
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Installation place'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:454
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Not decided'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:463
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Indoors'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:466
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Outdoors'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:469
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Site conditions'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:476
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Space, access, fire protection: anything we should know.'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:480
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Calculate storage'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:502
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Step 3 · Sized storage, or indicative ranges'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:522
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'With a 15-minute load profile we size the storage; without one you get indicative ranges.'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialPanel.tsx:538
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Load duration curve: the year sorted from highest to lowest load'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:72
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Target peak %s kW'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:101
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Load duration curve: every 15-minute value of the profile, from the highest to the lowest.'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:114
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Annual peak'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:146
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Consumption per year'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:151
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Full-load hours'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:156
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Days in the profile'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:161
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Battery power'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:180
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Battery power, indicative'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:182
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Usable energy'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:197
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:235
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Usable energy, indicative'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:199
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Peak shaving options from your load profile'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:228
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Cap'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:232
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Power'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:233
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Peaks per year'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:239
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Action'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:242
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Size for %s kW'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:259
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Systems from our range'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:270
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'System'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:277
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: '%1$s kW, %2$s kWh usable'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:290
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Send this to our team'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:323
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Send us an inquiry'
+  source: plugins/linker-tools/src/configurator/commercial/CommercialResult.tsx:324
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Choose a PNG or JPEG file.'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:52
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Choose a logo of at most 500 kB.'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:57
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Your logo on the PDF (optional)'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:86
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Choose logo'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:89
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'No logo chosen'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:92
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'PNG or JPEG, at most 500 kB.'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:95
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Your logo'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:105
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Preparing PDF…'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:117
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Download PDF'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:118
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'The PDF could not be created. Try again.'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:123
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: '%1$s, %2$s'
+  source: plugins/linker-tools/src/configurator/report/ReportView.tsx:133
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'page %d'
+  source: plugins/linker-tools/src/configurator/solution/Documents.tsx:39
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'No system in our range meets every rule'
+  source: plugins/linker-tools/src/configurator/solution/NoCandidate.tsx:40
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Rules that excluded the inverters:'
+  source: plugins/linker-tools/src/configurator/solution/NoCandidate.tsx:55
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: '%d inverter'
+  source: plugins/linker-tools/src/configurator/solution/NoCandidate.tsx:67
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'What would change the result:'
+  source: plugins/linker-tools/src/configurator/solution/NoCandidate.tsx:84
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Change the inputs'
+  source: plugins/linker-tools/src/configurator/solution/NoCandidate.tsx:100
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Released by the manufacturer'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:48
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Released with accessory'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:50
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Not released'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:52
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'No release document'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:54
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: '%s pair'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:66
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: '%s set'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:72
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: '%s pc'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:78
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'In your solution draft'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:94
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Other inverter'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:158
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Other battery'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:174
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'PV yield per year'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:194
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Usable storage'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:204
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'None'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:208
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Self-sufficiency'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:215
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Self-consumption'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:226
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Linker products'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:246
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Above the HTW limit'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:268
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Model %s'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:285
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Why this product'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:299
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Add all to solution draft'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:323
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'All products are in your solution draft.'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:339
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Some products are not confirmed in your solution draft. See the cards above.'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:345
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Open saved solution'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:355
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'The solution could not be saved. Try again.'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:364
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: "Installer's scope"
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:371
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'We do not supply these parts; the quantities follow the reference layout.'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:375
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Item'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:381
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Quantity'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:382
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Basis'
+  source: plugins/linker-tools/src/configurator/solution/Solution.tsx:383
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Please fill in this field.'
+  source: plugins/linker-tools/src/configurator/validation.ts:37
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Enter a German postcode with five digits.'
+  source: plugins/linker-tools/src/configurator/validation.ts:40
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Enter at least %s.'
+  source: plugins/linker-tools/src/configurator/validation.ts:46
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Enter more than %s.'
+  source: plugins/linker-tools/src/configurator/validation.ts:52
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Enter at most %s.'
+  source: plugins/linker-tools/src/configurator/validation.ts:59
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Enter a number.'
+  source: plugins/linker-tools/src/configurator/validation.ts:63
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source msgid missing from PO: 'Check this value.'
+  source: plugins/linker-tools/src/configurator/validation.ts:65
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: JSON not generated from PO: linker-tools-de_DE_formal-linker-tools-configurator.json
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source gaps=201 JSON problems=1
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+i18n-coverage: FAIL

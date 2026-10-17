@@ -25,6 +25,22 @@
 ## 前端（`plugins/linker-tools` React 入口 `configurator`）
 表单 `react-hook-form` + 由 ability/引擎 JSON Schema 生成的校验；地图 `maplibre-gl` + `terra-draw`；状态：空、计算中、无合格候选（说明原因与可放宽的条件）、方案、已保存；"Add all" 走 Store API 并读回；保存经 `linker/v1/solutions`（登录或 claim cookie）。
 
+### 脚本译文（#302）
+
+德语唯一编辑源为 `plugins/linker-tools/languages/linker-tools-de_DE_formal.po`。
+`just i18n-tools` 用 `wp i18n make-json --no-purge` 生成按入口路径 MD5 命名的脚本 JSON，
+并用 `msgfmt --check` 编译 PHP 的 MO；不手改 JSON，不清除 PO 中的脚本消息。
+配置器条目保留真实源码引用，并通过 `build/configurator.js` 引用归到已 enqueue 的入口，
+因此懒加载屋顶组件也使用入口预载的同一组译文。
+`Assets::register()` 的 `wp_set_script_translations()` 沿 WordPress 原生路径读取该文件。
+
+配置器与 Genie 已有的不同德语措辞通过 `configurator` gettext context 保留：
+`Sent, but the draft does not show it yet. Please check.`、`Not added. Try again.`、
+`Saved to your account.`；两侧 EN/DE 正文均不改写。
+`just i18n-coverage` 检查 linker-tools 运行时 PHP、JS、TS 的消息是否进入 PO，
+并在临时目录调用原生 `make-json --no-purge`，逐字节比较所有随插件发布的 JSON；
+缺失、多余或改动的 JSON 都失败。CI 安装与本地栈一致的 WP-CLI 版本运行此门。
+
 ## 验收
 - [ ] 8 个典型户型（planner-methods.md 表）输出落在 HTW 上限内并给区间；3 个合规用例（单相 6 kW 排除、PV 上限不足排除、每路 MPPT 熔断数量）通过。
 - [ ] 住宅三相 10 kWp：方案含住宅三相逆变器 + 有放行文件的电池；全部加入后 Lösungsentwurf 数量正确；报告 PDF EN/DE 各一份。
