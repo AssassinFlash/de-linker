@@ -10,6 +10,8 @@
 7. **营销页交互**：五页内容模块增加桌面悬停切换，点击、键盘、触屏行为不变，不改文案。
 8. **页头菜单图片**（契约 2026-10-14 修订，依据族 12 fixNote「缩略图空盒按 C8 缺图方向修线上菜单图片引用」，台账 `docs/debt/ADJUDICATION-2026-10-14.md` 修复队列）：面板与抽屉的缩略图**一律由自己的 `src` 解析**，没有水合契约——照片不得依赖脚本恰好在打开事件上把 data-src 换成 src（缺陷形态即 data-src 无 src，探针与一切非水合打开路径下都是空盒）。加载时机交给浏览器自身：桌面 mega 卡随 `loading="lazy"`、抽屉 rail 不带该属性，比例与清晰度不变、框体几何不动——这就是线上自身的标记形态（旧线上 DOM 检查点 2026-10-12，`.scratch/t16-lc-port/live/archive.html`：7 张 `src=… loading="lazy"`、5 张纯 `src`、全文档 0 个 data-src）。**2026-10-15 收口（清账决策 8）**：水合脚本 `menu-images.js` 与其 enqueue 已删除——评审 harness 实证 `src` 直解析在加载期即取图（13/13 loaded），脚本在无 data-src 时 inert，「移除旧通道前先证明新通道对等承载」已满足；`12-site-chrome.py` 的 `unresolved_menu_images` 守卫改为引号无关的 `src` 值正则（单双引号同判）。
 
+9. **页头 EN/DE 同构（#229，2026-10-18 Claude 裁定）**：德语保留完整导航与联系按钮，折叠结构与英语一致。先改 WindPress 布局；只有布局放不下才经文案对抗评审缩短德语。英语与线上 1280/1440/1920/390 全页掩膜外差异数须为 0。实测英语在 1280 已因运行时量宽折叠、1440/1920 显示桌面整排、390 显示移动菜单，德语采用相同四档结构。既有 LC partial 已含全部入口，Woo 数据装配无需更改；现有 WindPress volume 收回德语桌面按钮左右留白即可承载，不新增 PHP 布局或 JS 分支。证据与德语裁定变更台账：`docs/acceptance/2026-10-18/229/`。
+
 ## 验收
 - [ ] 页头/页脚 EN/DE 对照截图（1440/390）；跳转 301 → 200。
 - [ ] 配置器旧地址 `/linker-planner/`、`/de/linker-planer/` 301 → `/solution-configurator/`、`/de/loesungskonfigurator/`；旧工具入口（`retired_tools` 五条）直达新址（屋顶步带 `?step=roof`，一跳到 200）。
