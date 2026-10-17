@@ -22,8 +22,8 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from linker_cutover import atomic, plan
 from linker_cutover import backup as backup_module
-from linker_cutover import plan
 from linker_cutover.target import HOST_URL, CutoverError, Target, wp_prefix_for
 
 
@@ -146,8 +146,11 @@ def deploy(target: Target, *, repository: Path, staging: Path) -> Result:
     actions += deploy_theme_files(target, repository=repository)
     for slug in plan.NEW_PLUGINS:
         tree = stage_plugin(repository, slug, staging)
-        target.copy_in(tree, f"{plan.PLUGINS_DIR}/{slug}")
-        actions.append(f"deployed {slug} ({_file_count(tree)} files) from {tree}")
+        timing = atomic.publish(target, tree, f"{plan.PLUGINS_DIR}/{slug}")
+        actions.append(
+            f"deployed {slug} ({_file_count(tree)} files) from {tree} by rename"
+        )
+        actions += timing.splitlines()
 
     installed = {
         str(entry["name"])
@@ -190,6 +193,28 @@ def deploy_language_packs(target: Target) -> list[str]:
     return actions
 
 
+def rollback_deploy(target: Target, *, repository: Path) -> Result:
+    """Restore the last file publication; the full backup rollback stays separate.
+
+    Run from the checkout that deployed: its inventory names the exact owned
+    paths. Host mu-plugins and theme assets are never included in that list.
+    """
+    relatives = [f"{plan.PLUGINS_DIR}/{slug}" for slug in plan.NEW_PLUGINS]
+    source = repository / plan.MU_PLUGINS_REPO
+    relatives += [
+        f"{plan.MU_PLUGINS_DIR}/{path.name}"
+        for path in sorted(source.glob("*.php")) + sorted(source.glob("*.pem"))
+    ]
+    themes = repository / plan.THEMES_REPO
+    relatives += [
+        f"{plan.THEMES_DIR}/{path.relative_to(themes)}"
+        for path in sorted(themes.rglob("*"))
+        if path.is_file()
+    ]
+    atomic.rollback(target, relatives)
+    return Result("rollback-deploy", [f"restored {path}" for path in relatives], [])
+
+
 def deploy_mu_plugins(target: Target, *, repository: Path) -> list[str]:
     """The repository's must-use plugins, installed over the site's own directory.
 
@@ -220,11 +245,12 @@ def deploy_mu_plugins(target: Target, *, repository: Path) -> list[str]:
     for path in files:
         relative = f"{plan.MU_PLUGINS_DIR}/{path.name}"
         replaced = target.exists(relative)
-        target.copy_file_in(path, relative)
+        timing = atomic.publish(target, path, relative)
         actions.append(
             f"deployed {plan.MU_PLUGINS_REPO}/{path.name} to {relative}"
             + (" (replaced the live file)" if replaced else "")
         )
+        actions += timing.splitlines()
     return actions
 
 
@@ -256,11 +282,12 @@ def deploy_theme_files(target: Target, *, repository: Path) -> list[str]:
         relative = path.relative_to(source)
         destination = f"{plan.THEMES_DIR}/{relative}"
         replaced = target.exists(destination)
-        target.copy_file_in(path, destination)
+        timing = atomic.publish(target, path, destination)
         actions.append(
             f"deployed {plan.THEMES_REPO}/{relative} to {destination}"
             + (" (replaced the live file)" if replaced else "")
         )
+        actions += timing.splitlines()
     return actions
 
 

@@ -3,6 +3,7 @@
     linker-cutover backup       take the complete backup (step 1)
     linker-cutover maintenance  on|off (steps 2 and 7)
     linker-cutover deploy       files: the three plugins, the theme file and Polylang (step 3)
+    linker-cutover rollback-deploy restore the previous deployed files by rename
     linker-cutover plugins      export the snippets, remove the legacy plugins (step 3)
     linker-cutover data         the migrations (step 4)
     linker-cutover schema       retire the retained SEO plugin's Product template
@@ -92,6 +93,9 @@ def _parser() -> argparse.ArgumentParser:
     maintenance.add_argument("state", choices=("on", "off"))
     sub.add_parser("deploy", parents=[common], help="step 3: the files")
     sub.add_parser(
+        "rollback-deploy", parents=[common], help="restore the previous deployed files"
+    )
+    sub.add_parser(
         "plugins",
         parents=[common],
         help="step 3: snippets export, legacy plugins removed",
@@ -147,13 +151,26 @@ def main(argv: list[str] | None = None) -> int:
             staging = _workspace() / "staging"
             if not args.write:
                 for slug in plan.NEW_PLUGINS:
-                    print(f"deploy: would build and copy {slug}")
+                    print(
+                        f"deploy: would build and stage {slug}, then rename (keep .prev)"
+                    )
                 print(
-                    f"deploy: would install {plan.MU_PLUGINS_REPO}/*.php to "
-                    f"{plan.MU_PLUGINS_DIR} (step 3 needs that directory in the checkout)"
+                    f"deploy: would stage {plan.MU_PLUGINS_REPO}/*.php and *.pem beside "
+                    f"{plan.MU_PLUGINS_DIR} files, then rename (keep .prev)"
+                )
+                print(
+                    f"deploy: would stage {plan.THEMES_REPO}/ files, then rename (keep .prev)"
                 )
                 return 0
             _print(steps.deploy(target, repository=repository, staging=staging))
+            return 0
+        if args.command == "rollback-deploy":
+            if not args.write:
+                print(
+                    "rollback-deploy: would restore the previous deployed files by rename"
+                )
+                return 0
+            _print(steps.rollback_deploy(target, repository=repository))
             return 0
         if args.command == "plugins":
             snippets = _backup(target, args) / "snippets"

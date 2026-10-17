@@ -4,6 +4,9 @@
 #16 通过；业主确认维护窗口（夜间，停机以分钟计）；本地演练过完整切换脚本两次（干净快照 → 切换 → 回滚 → 再切换）。
 
 ## 脚本 `tools/cutover/`（经 `ssh hostinger-de-linker`，每步可单独重跑）
+
+**文件发布（#298）**：三个仓库插件先完整上传到 live 同目录的隐藏 `.next` 目录，再执行两次 rename（live → `.prev`、`.next` → live）；mu-plugin PHP/PEM 与仓库管理的子主题文件旁置上传后以单次 rename 替换，保留 `.prev`。上传失败不碰 live；目录切换失败/可捕获中断自动恢复。`just cutover rollback-deploy` 在同一部署检出版本恢复上一版文件，不导入数据库。下文“就地替换”指 URL/插件 slug 不变，不再逐文件覆盖 live。逐路径计时、本地实证、回滚边界与 Claude 的生产零 fatal 验收步骤见 [2026-10-18 部署记录](../acceptance/2026-10-18/deploy/README.md)。
+
 1. **备份**：mysqldump 导出数据库（`wp db export` 在生产主机不可用：WP-CLI 的 export 先调 `exec()`，而主机的 `disable_functions` 含 `exec`——理由与出处见变更记录 2026-10-11（#81））、`wp-content/uploads`、`wp-content/plugins`、`.htaccess`、选项导出 → 本地 `~/de-linker-data/cutover-<date>/`，sha256 清单。
 2. **维护模式开**（`wp maintenance-mode activate`）。
 3. **部署**：rsync 三个新插件（含 `vendor/` 与 `build/`；`linker-i18n` 同 slug 就地替换；`.po/.mo` 随各插件自己的 `languages/` 走，不单独复制）；Polylang 用 WP-CLI 从 wordpress.org 原生安装并激活（已装则只补激活）；**WP 核心与 WooCommerce 的 de_DE_formal 语言包同样用 WP-CLI 原生安装（只装不激活，全站默认语言保持英文、前台语言由 Polylang 逐页切换；2026-10-15 事故：切换后线上没有任何语言包，德语页的 Woo/WP 核心字符串全部回退英文——本地栈在实例创建时就装这两份包，tools/local `install_language_packs`，所以缺陷只在线上可见）**；`mu-plugins/*.php`（含新错误记录件）装入 `wp-content/mu-plugins/`。停用并删除 `terravolt-b2b-core`、`linker-ai-assistant`、`woocommerce-gateway-stripe`、`code-snippets`（先按**当时的活动行**把代码导出到备份目录——本仓库不携带旧树的自定义代码，仓库里只留"活动行的功能已由新插件承接"的确认记录；2026-10-11 盘点活动行为 2 条）、`terravolt-b2b-core-broken-20260704/` 与两个备份压缩包、以及插件与 mu 目录里的 `*.bak-*`。

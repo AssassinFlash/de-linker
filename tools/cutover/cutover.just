@@ -38,6 +38,11 @@ maintenance state *options:
 deploy *options:
     PHP={{ php }} {{ linker_cutover }} deploy "$@" --write
 
+# Restore the preceding file deploy by rename; no database import or upload.
+[positional-arguments]
+rollback-deploy *options:
+    PHP={{ php }} {{ linker_cutover }} rollback-deploy "$@" --write
+
 # Step 3: export the snippet rows, then deactivate and delete the legacy plugins.
 [positional-arguments]
 plugins *options:

@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from linker_cutover import backup, cli
+from linker_cutover import atomic, backup, cli, plan
 from linker_cutover.target import CutoverError, Target
 
 
@@ -96,3 +96,39 @@ def test_an_explicit_backup_directory_is_still_checked(
 
     _dump(given)
     assert cli._backup(_target(tmp_path), _arguments(backup=given)) == given
+
+
+def test_deploy_dry_run_describes_staging_rename_and_all_owned_paths(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The operator can see the switch strategy without touching the target."""
+    monkeypatch.setattr(cli, "_target", lambda _: _target(tmp_path))
+    assert cli.main(["deploy"]) == 0
+    output = capsys.readouterr().out
+    assert "rename" in output
+    assert ".prev" in output
+    assert "themes/" in output
+    assert not list(tmp_path.iterdir())
+
+
+def test_rollback_deploy_command_is_dry_unless_write_is_given(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The single operator command uses the same local filesystem switch."""
+    target = _target(tmp_path / "site")
+    repository = tmp_path / "repo"
+    repository.mkdir()
+    source = tmp_path / "release"
+    source.mkdir()
+    (source / "plugin.php").write_text("new")
+    for slug in plan.NEW_PLUGINS:
+        live = Path(target.path_of(f"{plan.PLUGINS_DIR}/{slug}"))
+        live.mkdir(parents=True)
+        (live / "plugin.php").write_text("old")
+        atomic.publish(target, source, f"{plan.PLUGINS_DIR}/{slug}")
+    monkeypatch.setattr(cli, "_target", lambda _: target)
+    monkeypatch.setattr(cli, "repository_root", lambda: repository)
+    assert cli.main(["rollback-deploy", "--target", "local:c298"]) == 0
+    assert (live / "plugin.php").read_text() == "new"
+    assert cli.main(["rollback-deploy", "--target", "local:c298", "--write"]) == 0
+    assert (live / "plugin.php").read_text() == "old"

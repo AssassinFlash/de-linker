@@ -313,18 +313,79 @@ def test_the_deploy_installs_the_recorder_over_the_live_file(tmp_path: Path) -> 
 
     source, destination = target.rsyncs[0]
     assert Path(source).name == recorder
-    assert destination == f"{target.root}/{plan.MU_PLUGINS_DIR}/{recorder}"
+    assert destination == f"{target.root}/{plan.MU_PLUGINS_DIR}/.{recorder}.next"
     assert len(target.rsyncs) == 6, (
         "the recorder, its certificate, the theme file and the three plugins"
     )
     pem = [
-        destination for _, destination in target.rsyncs if destination.endswith(".pem")
+        destination
+        for _, destination in target.rsyncs
+        if destination.endswith(".pem.next")
     ]
-    assert pem == [f"{target.root}/{plan.MU_PLUGINS_DIR}/linker-engine-ca.pem"]
+    assert pem == [f"{target.root}/{plan.MU_PLUGINS_DIR}/.linker-engine-ca.pem.next"]
     assert result.actions[0] == (
         f"deployed {plan.MU_PLUGINS_REPO}/{recorder} to "
         f"{plan.MU_PLUGINS_DIR}/{recorder} (replaced the live file)"
     )
+
+
+def test_deploy_and_rollback_use_real_filesystem_on_local_stand_in(
+    tmp_path: Path,
+) -> None:
+    """Only WP-CLI is stubbed: staging, rsync, shell and rename all really run."""
+
+    class DiskTarget(Target):
+        def wp(self, *args: str, check: bool = True) -> str:
+            del check
+            if args[:2] == ("plugin", "list"):
+                return '[{"name":"polylang"}]'
+            return ""
+
+    target = DiskTarget(
+        "fixture", str(tmp_path / "site"), "http://127.0.0.1", (), None, None
+    )
+    repository = _repository(tmp_path)
+    old_inodes: dict[str, int] = {}
+    for slug in plan.NEW_PLUGINS:
+        live = Path(target.path_of(f"{plan.PLUGINS_DIR}/{slug}"))
+        live.mkdir(parents=True)
+        (live / f"{slug}.php").write_text("old plugin")
+        old_inodes[slug] = live.stat().st_ino
+    recorder = Path(target.path_of(f"{plan.MU_PLUGINS_DIR}/linker-error-recorder.php"))
+    recorder.parent.mkdir(parents=True)
+    recorder.write_text("old recorder")
+    host = recorder.with_name("host.php")
+    host.write_text("host plugin")
+    theme = Path(
+        target.path_of(f"{plan.THEMES_DIR}/picostrap5-child-base/functions.php")
+    )
+    theme.parent.mkdir(parents=True)
+    theme.write_text("old theme")
+    style = theme.with_name("style.css")
+    style.write_text("theme assets")
+
+    steps.deploy(target, repository=repository, staging=tmp_path / "staging")
+
+    for slug in plan.NEW_PLUGINS:
+        live = Path(target.path_of(f"{plan.PLUGINS_DIR}/{slug}"))
+        assert (live / f"{slug}.php").read_text() == "<?php"
+        assert live.with_name(f".{slug}.prev").stat().st_ino == old_inodes[slug]
+    assert recorder.read_text() == "<?php // the recorder"
+    assert theme.read_text() == "<?php // the theme file"
+    assert host.read_text() == "host plugin"
+    assert style.read_text() == "theme assets"
+
+    steps.rollback_deploy(target, repository=repository)
+
+    for slug in plan.NEW_PLUGINS:
+        live = Path(target.path_of(f"{plan.PLUGINS_DIR}/{slug}"))
+        assert (live / f"{slug}.php").read_text() == "old plugin"
+        assert live.stat().st_ino == old_inodes[slug]
+    assert recorder.read_text() == "old recorder"
+    assert theme.read_text() == "old theme"
+    assert not recorder.with_name("linker-engine-ca.pem").exists()
+    assert host.read_text() == "host plugin"
+    assert style.read_text() == "theme assets"
 
 
 def test_the_deploy_installs_the_theme_file_over_the_live_one(tmp_path: Path) -> None:
@@ -348,7 +409,10 @@ def test_the_deploy_installs_the_theme_file_over_the_live_one(tmp_path: Path) ->
     assert len(installed) == 1
     source, destination = installed[0]
     assert source == str(repository / plan.THEMES_REPO / relative)
-    assert destination == f"{target.root}/{plan.THEMES_DIR}/{relative}"
+    assert (
+        destination
+        == f"{target.root}/{plan.THEMES_DIR}/picostrap5-child-base/.functions.php.next"
+    )
     assert (
         f"deployed {plan.THEMES_REPO}/{relative} to "
         f"{plan.THEMES_DIR}/{relative} (replaced the live file)" in result.actions
