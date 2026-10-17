@@ -93,9 +93,10 @@ def test_a_call_without_a_customer_carries_no_identity() -> None:
 def test_the_customer_context_rides_the_abilities_that_answer_for_the_customer() -> (
     None
 ):
-    """The inquiry list and the three product abilities answer with the
-    customer's prices or inquiries; the compatibility contract, the sizing hint
-    and the team sentence are the same for everybody and never see the token."""
+    """The inquiry list and the two product abilities with a commerce object
+    answer with the customer's inquiries or prices; the comparison (no price),
+    the compatibility contract, the sizing hint and the team sentence are the
+    same for everybody and never see the token."""
     recorder = Recorder()
     client = client_for(recorder)
     token = "40|1792300000|signature"
@@ -120,7 +121,6 @@ def test_the_customer_context_rides_the_abilities_that_answer_for_the_customer()
         "linker/inquiry-status",
         "linker/search-products",
         "linker/get-product",
-        "linker/compare-products",
     ]
     assert set(USER_CONTEXT_ABILITIES) == set(carried)
 

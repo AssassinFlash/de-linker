@@ -138,6 +138,19 @@ final class GeniePricesTest extends SiteTestCase {
 	}
 
 	/**
+	 * The comparison page prints each column's product page price line (it
+	 * shares ProductView::price_html): the approved account reads the price
+	 * and "Quoted per project", the pending account its own state.
+	 */
+	public function test_the_comparison_page_prints_each_product_pages_price_line(): void {
+		$approved = $this->compare( 'approved' );
+		$this->assertSame( '€1,680.00', $approved[0] );
+		$this->assertSame( self::SENTENCES['project'], $approved[1] );
+
+		$this->assertSame( array( self::SENTENCES['pending'], self::SENTENCES['pending'] ), $this->compare( 'pending' ) );
+	}
+
+	/**
 	 * A token that is forged or expired answers as a guest.
 	 */
 	public function test_a_forged_or_expired_token_reads_as_a_guest(): void {
@@ -210,14 +223,25 @@ final class GeniePricesTest extends SiteTestCase {
 	}
 
 	/**
-	 * The price line the product page shows the account, as text.
+	 * The comparison page's "Net price" row for the two products, as text.
 	 *
-	 * @param int    $product Product (English).
-	 * @param string $lang    Page language.
-	 * @param string $state   Approval state, or "guest".
+	 * @param string $state Approval state.
+	 * @return list<string>
 	 */
-	private function page_price( int $product, string $lang, string $state ): string {
-		$url     = trim( self::wp( array( 'eval', sprintf( 'echo get_permalink( "de" === "%2$s" ? pll_get_post( %1$d, "de" ) : %1$d );', $product, $lang ) ) ) );
+	private function compare( string $state ): array {
+		$html = $this->fetch( '/compare-products/?ids=' . self::PRICED . ',' . self::PROJECT, $state );
+		$this->assertSame( 1, preg_match( '#>Net price</th>(.*?)</tr>#s', $html, $row ), 'no price row' );
+		preg_match_all( '#<td[^>]*>(.*?)</td>#s', $row[1] ?? '', $cells );
+		return array_map( static fn ( string $cell ): string => trim( html_entity_decode( strip_tags( $cell ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ), $cells[1] );
+	}
+
+	/**
+	 * A page of the site as the account sees it (its login cookie, or none).
+	 *
+	 * @param string $path  Path and query.
+	 * @param string $state Approval state, or "guest".
+	 */
+	private function fetch( string $path, string $state ): string {
 		$headers = '';
 		if ( 'guest' !== $state ) {
 			$cookie   = trim( self::wp( array( 'eval', sprintf( 'echo LOGGED_IN_COOKIE . "=" . rawurlencode( wp_generate_auth_cookie( %d, time() + 600, "logged_in" ) );', self::$users[ $state ] ) ) ) );
@@ -232,7 +256,19 @@ final class GeniePricesTest extends SiteTestCase {
 				),
 			)
 		);
-		$html    = (string) file_get_contents( self::$site . self::path( $url ), false, $context );
+		return (string) file_get_contents( self::$site . $path, false, $context );
+	}
+
+	/**
+	 * The price line the product page shows the account, as text.
+	 *
+	 * @param int    $product Product (English).
+	 * @param string $lang    Page language.
+	 * @param string $state   Approval state, or "guest".
+	 */
+	private function page_price( int $product, string $lang, string $state ): string {
+		$url  = trim( self::wp( array( 'eval', sprintf( 'echo get_permalink( "de" === "%2$s" ? pll_get_post( %1$d, "de" ) : %1$d );', $product, $lang ) ) ) );
+		$html = $this->fetch( self::path( $url ), $state );
 		$this->assertSame( 1, preg_match( '#<div class="pdp-price">(.*?)</div>#s', $html, $match ), 'no price line on ' . $url );
 		return trim( html_entity_decode( strip_tags( $match[1] ?? '' ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
 	}

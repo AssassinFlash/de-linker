@@ -272,37 +272,39 @@ final class ProductView {
 	 * @return array{html: string, url: string} The price HTML and the sign-in URL for a visitor.
 	 */
 	private function price( \WC_Product $product ): array {
+		return array(
+			'html' => $this->price_html( $product ),
+			'url'  => CommerceState::LOGIN === $this->state->page_reason( $product )
+				? $this->login_url( (string) $product->get_permalink() )
+				: '',
+		);
+	}
+
+	/**
+	 * The product page's price line: the price, or the sentence in its place.
+	 * The comparison page prints the same line, and Genie's card reads the
+	 * same CommerceState::page_reason() (#242).
+	 *
+	 * @param \WC_Product $product The product.
+	 */
+	public function price_html( \WC_Product $product ): string {
 		$reason = $this->state->page_reason( $product );
 		if ( null === $reason || CommerceState::UNPRICED === $reason ) {
 			// WooCommerce's own price, or its empty-price text ("Price on
 			// request", Gating\PriceDisplay).
-			return array(
-				'html' => $product->get_price_html(),
-				'url'  => '',
-			);
+			return $product->get_price_html();
 		}
 		if ( CommerceState::PROJECT === $reason ) {
 			// An approved account on a product quoted per project (live 1957):
 			// the account is not what hides the price (#242).
-			return array(
-				'html' => __( 'Quoted per project', 'linker-commerce' ),
-				'url'  => '',
-			);
+			return __( 'Quoted per project', 'linker-commerce' );
 		}
 		if ( CommerceState::APPROVAL === $reason ) {
-			$status = $this->state->current_approval_status();
-			$text   = Approval::PENDING === $status
+			return Approval::PENDING === $this->state->current_approval_status()
 				? __( 'Prices after approval', 'linker-commerce' )
 				: __( 'Not available for your account', 'linker-commerce' );
-			return array(
-				'html' => $text,
-				'url'  => '',
-			);
 		}
-		return array(
-			'html' => __( 'Net price after partner sign-in', 'linker-commerce' ),
-			'url'  => $this->login_url( (string) $product->get_permalink() ),
-		);
+		return __( 'Net price after partner sign-in', 'linker-commerce' );
 	}
 
 	/**

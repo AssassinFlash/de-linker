@@ -43,16 +43,15 @@ USER_CONTEXT_HEADER = "X-Linker-User-Context"
 # The ability that answers about the browsing customer's own inquiries.
 USER_CONTEXT_ABILITY = "linker/inquiry-status"
 # Every ability whose answer depends on the browsing customer: the inquiry list,
-# and the product abilities whose commerce object carries the customer's prices
-# (ProductCommerce in linker-commerce; compare-products' columns read the same
-# rule). check-compatibility, size-hint and handoff-team answer the same for
-# everybody and never see the token.
+# and the two product abilities whose commerce object carries the customer's
+# prices (ProductCommerce in linker-commerce). compare-products returns no price,
+# and check-compatibility, size-hint and handoff-team answer the same for
+# everybody: they never see the token.
 USER_CONTEXT_ABILITIES = frozenset(
     {
         USER_CONTEXT_ABILITY,
         "linker/search-products",
         "linker/get-product",
-        "linker/compare-products",
     }
 )
 
