@@ -23,6 +23,7 @@ use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\QualityPage;
 use Linker\Tools\Genie\QualityRoute;
@@ -52,5 +53,6 @@ $quality       = new QualityStore(); // phpcs:ignore WordPress.NamingConventions
 	new EngineProxy(),
 	$quality,
 	new QualityRoute( $quality ),
-	new QualityPage( $quality, new Thread() )
+	new QualityPage( $quality, new Thread() ),
+	new Preview()
 ) )->register();

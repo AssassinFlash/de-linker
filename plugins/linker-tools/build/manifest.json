@@ -49,9 +49,14 @@
 		"src/genie/config.ts": "07037b23398dae9b06ef8408dcfa5fae4ecdd591150573eb330efdef39188981",
 		"src/genie/genie.css": "9605628d005689ad71a991460935b5efef1017f0a708e7641689a04132a60d30",
 		"src/genie/index.tsx": "4ea81be0b05ebc9d56a6a396e22b8fea6fd3e7625954ba0733c4a0986f947f86",
+		"src/preview/controller.ts": "b947a4678a3c18df781fe4eb991896c78592a7bff106fe3f8969d55f539c87cf",
+		"src/preview/index.ts": "741ef5c42c832c8cd081e2a6026d774d680ac5d152b7f6a1de7fc6a94fc294ae",
+		"src/preview/memory.ts": "7e83accb83f3fbf51782215b553bdf0c11607176c527ef1a3815a60a50e3846a",
+		"src/preview/preview.css": "1021bbca36cc76b5b230cdd0d3be848e089467c86eec7943c394b0888dfc3670",
+		"src/preview/rules.ts": "212bfc79e157c730e436cdd9b7935f9db39b48b24d3d506bfa062a1c096ce6ec",
 		"src/shared/ProductCard.tsx": "661fb0f43261810f1d07062adcb6fb2e9b8f2ca5838f25ba271733052a788188",
 		"src/shared/product-card.css": "722568790afd03bd5bc7a93a590b525bc4e51a50b523824dd07556787d6c09d7",
-		"webpack.config.js": "635f5938fe37b312557c8f7e5ae6b2ee9135e5001ac58b579916de85ef4c6d7f"
+		"webpack.config.js": "ad675ba2c438c6fdc2afa82f8b057586723bb01253f1cc8ca8f7b29ffca4ce26"
 	},
 	"build": {
 		"build/52.js": "e348bbca25a6aab0796342354e4693c7c2c246acfd330d4834d7b0c7cc25e63e",
@@ -65,6 +70,10 @@
 		"build/genie-rtl.css": "602f4481e33d95fe092db3fd077ef9e0334209739dbfc53a4d2680407bb6c610",
 		"build/genie.asset.php": "e5ad6ee355149f9f1a4c4c66b35f62a53e242262a31c97e9a9964ddcdc7d4a69",
 		"build/genie.css": "027c8e106597228eebfb9ca2b281a6f3a040488a4b3e9086c8d5d867305f4698",
-		"build/genie.js": "6270ba150fa458756fafcb00fc02c01545d23a14479de6dc9ba54f210df7a9f7"
+		"build/genie.js": "6270ba150fa458756fafcb00fc02c01545d23a14479de6dc9ba54f210df7a9f7",
+		"build/preview-rtl.css": "02f7ec4826c07616bf707f2079840e4cff5e7a0fc410d2185ec08b34dab5961b",
+		"build/preview.asset.php": "af76427dc1677c7096a0ff6d6090b956cf62fa10bb3786cc32f4adc7d29a2ec5",
+		"build/preview.css": "26078d390f942fa9ab9efe82594108eaa3c3b0f32a962769b595dceaae912c9b",
+		"build/preview.js": "94c2fd483891610ae3d3e3a212ee4e03aaab62ec09def2317c6f276b5e7abe59"
 	}
 }

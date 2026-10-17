@@ -1,0 +1,198 @@
+/*
+ * Genie's preview card, variant A "提示卡" (owner 2026-10-17, ticket #249;
+ * docs/prototypes/2026-10-17-preview-card/DECISION.md). A Genie surface, so
+ * its look is the tool's own (AGENTS.md 2026-10-10: tool pages may be
+ * redesigned); every value below is the prototype's `.lpp`/`.lpp--A` rule
+ * (preview-prototype.css) carried onto the BEM class of the same part. The
+ * type follows the page (`inherit`) where the prototype named the site's
+ * fonts.
+ *
+ * The stylesheet loads only on the pages that carry the card (Preview.php).
+ */
+
+/* `.lpp` + `.lpp--A`: the card floats above the dock's button (which sits at
+ * bottom 20px and is 50px tall; genie.css), never over the page's flow. */
+.linker-genie-peek {
+	position: fixed;
+	right: 20px;
+	bottom: 84px;
+	z-index: 10000;
+	box-sizing: border-box;
+	width: 320px;
+	max-width: calc(100vw - 40px);
+	padding: 12px 14px;
+	border: 1px solid #e1e6e9;
+	border-radius: 16px;
+	background: #fff;
+	color: #172636;
+	font-family: inherit;
+	box-shadow:
+		0 18px 50px rgba(18, 34, 56, 0.16),
+		0 3px 10px rgba(18, 34, 56, 0.08);
+	opacity: 0;
+	transform: translateY(8px);
+	transition:
+		opacity 0.25s ease,
+		transform 0.25s ease;
+}
+
+.linker-genie-peek.is-in {
+	opacity: 1;
+	transform: none;
+}
+
+.linker-genie-peek[hidden] {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.linker-genie-peek {
+		transform: none;
+		transition: none;
+	}
+}
+
+/* `.lpp-head` */
+.linker-genie-peek__head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #0b1f33;
+	font-size: 12px;
+	font-weight: 650;
+}
+
+.linker-genie-peek__name {
+	flex: 1;
+	min-width: 0;
+}
+
+/* `.lpp-mark` */
+.linker-genie-peek__mark {
+	color: #087c73;
+	font-size: 14px;
+}
+
+/* `.lpp-close` */
+.linker-genie-peek__close {
+	flex: none;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: #5f6b7c;
+	font-family: inherit;
+	font-size: 20px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.linker-genie-peek__close:hover {
+	background: #f1f4f6;
+	color: #172636;
+}
+
+/* `.lpp-title` */
+.linker-genie-peek__title {
+	margin: 8px 0 2px;
+	color: #172636;
+	font-size: 15px;
+	font-weight: 650;
+	line-height: 1.35;
+}
+
+/* `.lpp-lead` */
+.linker-genie-peek__lead {
+	margin: 0 0 10px;
+	color: #5f6b7c;
+	font-size: 12.5px;
+	line-height: 1.45;
+}
+
+/* `.lpp-chips` */
+.linker-genie-peek__asks {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* `.lpp-chip` */
+.linker-genie-peek__ask {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #dfe7ec;
+	border-radius: 10px;
+	background: #fff;
+	color: #172636;
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.35;
+	text-align: left;
+	cursor: pointer;
+}
+
+.linker-genie-peek__ask:hover {
+	border-color: #087c73;
+	color: #087c73;
+}
+
+.linker-genie-peek__ask:focus-visible,
+.linker-genie-peek__close:focus-visible {
+	outline: 2px solid #087c73;
+	outline-offset: 2px;
+}
+
+/* `.lpp-ai`: the AI disclosure on first contact (目标 9; EU AI Act Art. 50).
+ * The prototype's #8a96a3 on white is 3.0:1; #6b7785 reaches the 4.5:1 that
+ * WCAG 2.2 1.4.3 asks of 11px text. */
+.linker-genie-peek__ai {
+	margin: 10px 0 0;
+	color: #6b7785;
+	font-size: 11px;
+}
+
+/*
+ * Phones and narrow windows: no card, only a mark on the Genie button
+ * (目标 4; INTL.md §0.3 "手机": Baymard keeps such prompts desktop-only,
+ * HubSpot's phone choices are a prompt or the launcher alone). The
+ * breakpoint is the dock's own: below 861px the resting button is hidden
+ * (genie.css, the live page's switch), so the mark brings the button back
+ * for the rest of this page view and the button opens the dock as it does
+ * on a desktop.
+ */
+@media (max-width: 860px) {
+	.linker-genie-peek {
+		display: none;
+	}
+
+	.linker-genie.linker-genie--peek {
+		display: block;
+	}
+}
+
+/* `.linker-genie-open.lpp-badged::after`, as a plain dot: the mark says
+ * "something for this page", not a count of messages. */
+.linker-genie--peek > .linker-genie-open {
+	position: relative;
+}
+
+@media (max-width: 860px) {
+	.linker-genie--peek > .linker-genie-open::after {
+		content: "";
+		position: absolute;
+		top: -2px;
+		right: -2px;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: #d63638;
+		box-shadow: 0 0 0 2px #fff;
+	}
+}

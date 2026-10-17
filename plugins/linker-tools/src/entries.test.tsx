@@ -9,13 +9,19 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
  */
 import webpackConfig from '../webpack.config.js';
 
-// The entries are whatever webpack.config.js builds; the titles are what the
-// test expects each app to render.
-const entries = Object.keys( webpackConfig.entry );
+// The entries are whatever webpack.config.js builds. The apps render into
+// mount points, with the titles the test expects; a page script mounts
+// nothing (the preview card's rules, ticket #249, have their own tests).
 const titles: Record< string, string > = {
 	genie: "Genie - Linker's AI assistant",
 	configurator: 'Solution Configurator',
 };
+const scripts: Record< string, string > = {
+	preview: './src/preview/index.ts',
+};
+const entries = Object.keys( webpackConfig.entry ).filter(
+	( entry ) => ! ( entry in scripts )
+);
 
 function mountPoint( name: string ) {
 	return `<div data-linker-app="${ name }"></div>`;
@@ -37,15 +43,16 @@ afterEach( () => {
 	document.body.innerHTML = '';
 } );
 
-test( 'every built entry is src/<entry>/index.tsx and has an expected title', () => {
-	expect( webpackConfig.entry ).toEqual(
-		Object.fromEntries(
+test( 'every built app is src/<entry>/index.tsx and has an expected title', () => {
+	expect( webpackConfig.entry ).toEqual( {
+		...Object.fromEntries(
 			Object.keys( titles ).map( ( entry ) => [
 				entry,
 				`./src/${ entry }/index.tsx`,
 			] )
-		)
-	);
+		),
+		...scripts,
+	} );
 } );
 
 test.each( entries )(

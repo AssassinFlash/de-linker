@@ -101,6 +101,19 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 - 组件：线程、消息、追问芯片、ProductCard（加入 Lösungsentwurf 并读回数量；加入方案；状态 pending/added/unverified/retry 在卡内、高度稳定）、CompareTable、Handoff。
 - 文案：按 AGENTS.md 规则逐处写，EN/DE；对抗评审记录附 PR。
 
+### 主动预览卡（#249，实现目标第 4 条；业主选样式 A · 提示卡，`docs/prototypes/2026-10-17-preview-card/DECISION.md`）
+
+- **哪些页有卡**（`Linker\Tools\Genie\Preview::context()`，名单即全部）：首页（`is_front_page`，EN/DE）、产品页、产品分类页（`is_product_category`）、解决方案页（`/solution/` 枢纽页的子页，德语经 `pll_get_post` 找枢纽孪生页的子页；枢纽页本身不算）。其余页——Lösungsentwurf、Proforma 请求、账户与登录注册、联系、配置器、博客——没有卡，也不加载卡的脚本与样式。
+- **卡点名当前页面**：产品＝商品标题去掉括号里的描述（"SAJ H2-10K-T3 (10 kW …)" → "SAJ H2-10K-T3"）；分类＝分类名；解决方案＝页面标题（英文句中小写化，缩写与内部大写词保留）。名字取自页面已显示的数据；#234 合并后改用它的页面上下文，本票不扩展 PageContext。
+- **组成**：PHP 在 `wp_footer` 打印隐藏的 `<aside data-linker-genie-peek>`（语义标记 + 类名，文案经 `.po`），`src/preview/`（构建入口 `preview`，不是 React 应用）决定何时显示；样式 `src/preview/preview.css` 随入口构建，只在有卡的页面加载（工具面的设计，同 dock 的 genie.css 先例）。无 JavaScript 时卡永不出现。
+- **规则**（`src/preview/rules.ts`，每个数字带来源注释，起步值见 `docs/research/2026-10-17-ai-assistants/INTL.md` §0.3、`CN.md` §5.2）：
+  - 锚点（每类页面一个 LC 模板选择器：首页 `.hero-cinematic`、产品 `.pdp-layout`、分类第一张 `.product-card`、解决方案 `.lk-hero-cinematic`）的底边升到视口 40% 线以上＝滚过主内容；之后停留 8 秒才出现。页面上找不到锚点时按滚过四分之三屏算。
+  - 每次访问最多一次（`sessionStorage`）；本次访问里打开过 Genie（任何入口）或 dock 正开着＝对话进行中，不出现；点 × 或在卡内按 Esc 后 30 天不出现（`localStorage` 记到期时刻）。浏览器存储读不了时按"已关闭"处理，不出现。
+  - 访客正在输入框里打字时不出现，离开输入框后再出现；卡从不取焦点、不开 dock、不出遮罩，出现时以 `aria-live="polite"` 播报；卡一直留着，直到关闭、点建议或打开 Genie。
+  - 点建议：卡收起，经 dock 加载器的 `linker-genie-ask` 事件把建议原文作为第一问发给真实 Genie（与产品页 Ask 同一入口）。点建议不算关闭。
+  - 860 px 及以下（dock 自己的断点：线上该宽度下圆钮隐藏）：不出卡，圆钮带红点出现；点圆钮照常打开 Genie，标记随之消失。
+- 测试：`src/preview/*.test.ts`（规则与控制器）、`tests/php/Unit/PreviewTest.php`、`tests/e2e/specs/genie-preview.spec.ts`（1440/390 × EN/DE，逐条规则，`page.clock` 快进）。验收与文案评审：`docs/acceptance/2026-10-18/249/`。
+
 ## 理解层（#233，实现目标第 2 条）
 
 每轮在模型之前由 `services/genie/src/linker_genie/understand.py` 准备：
@@ -136,6 +149,7 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 - [ ] 视觉验收：四入口 + 常驻 × 状态 × EN/DE × 1440/390。
 
 ## 变更记录
+- 2026-10-18（#249 主动预览卡）：见 §C"主动预览卡"。新增 `Linker\Tools\Genie\Preview` 与构建入口 `preview`（`src/preview/`）；手机端的"圆钮标记"让 860 px 以下本来隐藏的圆钮在出标记时出现（目标 4 的裁定变更，静止状态外观不变）。验收 `docs/acceptance/2026-10-18/249/`。
 - 2026-10-17（#233 理解层）：见上文"理解层"一节。新增 `lexicon` / `storeapi` / `jev` / `route` / `understand` 五个模块与 `document` 块（`DocumentBlock`，壳 `DocumentLink.tsx`）；轮次日志加 `understanding` 列（旧库自动补列），SSE meta 加 `route` / `intent` / `jev_error`。证据 `docs/acceptance/2026-10-17/233/`。
 - 2026-10-16（入面取证，欠账 P1）：§C 的 Entries 条目按实例实测重述（原文把产品页与账户页的入口写成芯片组）。取证（snapshot 实例 `nbatch` + 本检出代码，逐面读 HTML）：分类/商城 2 枚 `linker-genie-chip`（短代码挂载）；产品页 `[data-pdp-ask]` 1 枚、无芯片，dock mount 带 `data-page-type="product"` 与三条产品问句的 `data-prompts`；购物车有货态 2 枚 `data-page-type="draft"` 芯片（`woocommerce_before_cart` 经 `[woocommerce_cart]` 的 Woo 模板真的触发）；空 Proforma 请求页 1 枚 `linker-gate-genie-pill`；账户页 0 芯片、dock mount 带 `data-page-type="account"` 与两条账户问句的 `data-prompts`。逐面对照验收过的设计（#174 原型变体 A 只有 `.tools-row` 与 `.plan-with`，无芯片组；#184 原型的 Genie pill 只在 `gates.html?gate=empty-proforma`，工作台各页零 Genie）：**每个面的既定入口都已挂着**，无需回挂代码；`Entries::product_chips/account_chips` 与其 Woo 钩子留作可挂载部件（`[linker_genie_chips page_type="…"]` 可显式挂载），删它们属另一裁定。判分行的入口随之更正（`genie-panel.md` B1–B3、B6、B7）。
 - 2026-10-16（德语四行 e2e 恢复）：R3-de / R5-de / R6-de / R7-de 自 2026-10-11 的 `pending-main` 全部撤除。**R6-de 是服务缺陷**：兼容合同的条件是 `{en, de}` 双语对（`plugins/linker-commerce/data/compatibility.json`），而 `facts.collect` 恒取英文侧——德语轮次里 `{fact:compat.condition…}` 水合后会把英文句子插进德语答案（该行的判据：德语答案不得含英文功能词）。修复：`collect` / `AbilityClient.record` / `_ability_runner` 透传轮次 locale（`agent.py` 从 `TurnRequest` 取；`INPUT_DOCS` 与工具签名不变），条件按轮次语言取侧、缺侧回退到存在的另一侧（与 `TradeRules::word` 同规则）；`_condition_text` 同时服务 search-products 的 pairings 与 check-compatibility 两个调用点。**R7-de 是套件过期**：2026-10-13 文案评审定稿句「Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.」用的是可分动词，spec 旧正则只认 `anmelden`，永不匹配——正则补上定稿句的形态。R3-de / R5-de 复测恢复（2026-10-11 记录的失分是采样落进兜底的路径；2026-10-13 的兜底修复后多次重采样未再复现）。判分测试：`tests/test_hydrate.py`（德语取侧与半写对回退）、`tests/test_agent.py`（locale 透传）；实测与证据 `docs/acceptance/2026-10-16/genie-de-e2e/`。同轮修掉套件行循环的采样判定：`expect(attempts).toEqual([])` 会把"首采样失分、后采样达标"的行记红，与文件头、`askRow` 注释及 PR #96 的既定语义相反（#96 前段"两次都不过才算失败"、后段"最多三次采样…全不过才算失败"，新判定两者同时满足）（暴露：R6-en 2026-10-16 首采样占位符失分、二采样达标仍红）——改判 `result === null`，三采样全失才是失败/pending skip。

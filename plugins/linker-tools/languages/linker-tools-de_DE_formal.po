@@ -323,3 +323,112 @@ msgstr "Die Prüfer konnten nicht entscheiden."
 #, php-format
 msgid "Conversation %d"
 msgstr "Unterhaltung %d"
+
+# Genie's preview card (ticket #249). German written on its own, not
+# translated; review record docs/acceptance/2026-10-18/249/copy-review.md.
+# A German name cannot be inflected, so the placeholder stands before a
+# colon or in apposition ("zur Kategorie %s") wherever case would matter.
+
+#: includes/Genie/Preview.php
+msgid "Close. Suggestion cards stay hidden for 30 days."
+msgstr "Schließen. Vorschlagskarten bleiben 30 Tage lang ausgeblendet."
+
+#: includes/Genie/Preview.php
+msgid "AI assistant"
+msgstr "KI-Assistent"
+
+#: includes/Genie/Preview.php
+msgid "answers can contain mistakes"
+msgstr "Antworten können Fehler enthalten"
+
+#. translators: %s: the product's name, e.g. "SAJ H2-10K-T3".
+#: includes/Genie/Preview.php
+#, php-format
+msgid "Looking at the %s?"
+msgstr "Fragen zu %s?"
+
+#: includes/Genie/Preview.php
+msgid "Genie answers from our product data and the manufacturers' documents."
+msgstr "Genie antwortet auf Grundlage unserer Produktdaten und der Herstellerunterlagen."
+
+#. translators: %s: the product's name.
+#: includes/Genie/Preview.php
+#, php-format
+msgid "What pairs with the %s?"
+msgstr "%s: Was passt dazu?"
+
+#. translators: %s: the product's name.
+#: includes/Genie/Preview.php
+#, php-format
+msgid "Show the documents for the %s"
+msgstr "%s: Unterlagen anzeigen"
+
+#. translators: %s: the product's name.
+#: includes/Genie/Preview.php
+#, php-format
+msgid "Compare the %s with similar models"
+msgstr "%s mit ähnlichen Modellen vergleichen"
+
+#. translators: %s: the product category's name as the page shows it, e.g. "Inverters".
+#: includes/Genie/Preview.php
+#, php-format
+msgid "Looking at %s?"
+msgstr "Fragen zur Kategorie %s?"
+
+#: includes/Genie/Preview.php
+msgid "Genie compares the models in this category and checks which suit your project."
+msgstr "Genie vergleicht die Modelle dieser Kategorie und prüft, welche zu Ihrem Projekt passen."
+
+#. translators: %s: the product category's name as the page shows it.
+#: includes/Genie/Preview.php
+#, php-format
+msgid "%s: which model fits my project?"
+msgstr "%s: Welches Modell passt zu meinem Projekt?"
+
+#. translators: %s: the product category's name as the page shows it.
+#: includes/Genie/Preview.php
+#, php-format
+msgid "%s: how do the series differ?"
+msgstr "%s: Worin unterscheiden sich die Serien?"
+
+#. translators: %s: the solution's name, e.g. "residential storage".
+#: includes/Genie/Preview.php
+#, php-format
+msgid "Planning a %s project?"
+msgstr "%s in Planung?"
+
+#: includes/Genie/Preview.php
+msgid "Genie sizes the system and picks the products with you."
+msgstr "Genie legt die Anlage mit Ihnen aus und wählt die passenden Produkte dazu."
+
+#. translators: %s: the solution's name.
+#: includes/Genie/Preview.php
+#, php-format
+msgid "What do I need for a %s system?"
+msgstr "%s: Welche Produkte brauche ich?"
+
+#. translators: %s: the solution's name.
+#: includes/Genie/Preview.php
+#, php-format
+msgid "Size a %s system for my project"
+msgstr "%s: Anlage für mein Projekt auslegen"
+
+#: includes/Genie/Preview.php
+msgid "Ask Genie about our products"
+msgstr "Fragen Sie Genie zu unseren Produkten"
+
+#: includes/Genie/Preview.php
+msgid "Genie finds any model in our range and checks what works with it."
+msgstr "Genie findet jedes Modell aus unserem Sortiment und prüft, was dazu passt."
+
+#: includes/Genie/Preview.php
+msgid "Find the SAJ H2-10K-T3"
+msgstr "Zeigen Sie mir den SAJ H2-10K-T3"
+
+#: includes/Genie/Preview.php
+msgid "Which batteries work with the GoodWe ESA GW10K-EHA-G20?"
+msgstr "Welche Batterien passen zum GoodWe ESA GW10K-EHA-G20?"
+
+#: includes/Genie/Preview.php
+msgid "Compare SAJ and GoodWe hybrid inverters"
+msgstr "Hybrid-Wechselrichter von SAJ und GoodWe vergleichen"
