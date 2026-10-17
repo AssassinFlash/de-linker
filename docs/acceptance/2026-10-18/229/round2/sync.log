@@ -1,0 +1,81 @@
+./composer.json is valid
+./composer.json is valid
+./composer.json is valid
+./composer.json is valid
+./composer.json is valid
+PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project tools/local linker-local up "$@"
+c229: plugins linker-commerce, linker-i18n, linker-tools -> /Users/chesterjohn/Documents/de-linker-worktrees/c229
+c229: http://127.0.0.1:9099/ (wp-admin: local-admin, password in /Users/chesterjohn/de-linker-local/c229/admin.txt)
+c229: mail in /Users/chesterjohn/de-linker-local/c229/mail/, blocked requests in /Users/chesterjohn/de-linker-local/c229/logs/isolation.log
+uv run --locked --project /Users/chesterjohn/Documents/de-linker-worktrees/c229/tools/pull linker-pull snapshot
+snapshot 20261018-0409 from hostinger-de-linker into /Users/chesterjohn/de-linker-data/.20261018-0409.partial
+unchanged files link to 20261018-0328
+database: mysqldump on the host, pseudonymized on arrival
+database: 3,793 so far
+database: 8,014 so far
+database: 12,360 so far
+database: 16,380 so far
+database: 20,693 so far
+database: 24,886 so far
+database: 29,190 so far
+database: 33,186 so far
+database: 89,514 rows in 62 tables, check passed
+uploads: rsync from hostinger-de-linker
+uploads: 19,272 files copied or hard-linked, 11 directories
+plugin livecanvas: rsync from hostinger-de-linker
+plugin livecanvas: 3,780 files copied or hard-linked, 509 directories
+plugin wp-seopress: rsync from hostinger-de-linker
+plugin wp-seopress: 1,361 files copied or hard-linked, 265 directories
+plugin wp-seopress-pro: rsync from hostinger-de-linker
+plugin wp-seopress-pro: 2,280 files copied or hard-linked, 408 directories
+plugin windpress: rsync from hostinger-de-linker
+plugin windpress: 735 files copied or hard-linked, 128 directories
+theme picostrap5-child-base: rsync from hostinger-de-linker
+theme picostrap5-child-base: 308 files copied or hard-linked, 42 directories
+theme picostrap5: rsync from hostinger-de-linker
+theme picostrap5: 214 files copied or hard-linked, 27 directories
+live plugins: rsync from hostinger-de-linker
+live plugins: 11,064 files copied or hard-linked, 1,644 directories
+live mu-plugins: rsync from hostinger-de-linker
+live mu-plugins: 5 files copied or hard-linked, 1 directories
+hashing files for the manifest
+snapshot /Users/chesterjohn/de-linker-data/20261018-0409
+PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project /Users/chesterjohn/Documents/de-linker-worktrees/c229/tools/pull linker-pull load "$@"
+database: importing /Users/chesterjohn/de-linker-data/20261018-0409/db.sql.gz into linker_c229
+search-replace https://de-linker.com -> http://127.0.0.1:9099: 5974 replacements
+search-replace https:\/\/de-linker.com -> http:\/\/127.0.0.1:9099: 112 replacements
+search-replace https%3A%2F%2Fde-linker.com -> http%3A%2F%2F127.0.0.1%3A9099: 80 replacements
+files: uploads, plugins, themes
+active plugins: polylang, linker-commerce, linker-i18n, linker-tools, redis-cache, woocommerce, advanced-custom-fields-pro, classic-editor, google-site-kit, livecanvas, user-switching, windpress, wp-seopress-pro, wp-seopress
+licence seopress-pro: applied
+licence livecanvas: applied
+{
+ "home": "http://127.0.0.1:9099",
+ "published_products": {
+  "snapshot": 212,
+  "instance": 212
+ },
+ "attachments": {
+  "snapshot": 2755,
+  "instance": 2755
+ },
+ "attachment_files_missing": 0,
+ "live_address_left": {
+  "https://de-linker.com": 0,
+  "https:\\/\\/de-linker.com": 0,
+  "https%3A%2F%2Fde-linker.com": 0
+ },
+ "staff_logins": [
+  "857558227@qq.com"
+ ],
+ "ok": true,
+ "licences": {
+  "seopress-pro": "applied",
+  "livecanvas": "applied"
+ },
+ "snapshot": {
+  "name": "20261018-0409",
+  "taken": "2026-10-17T20:17:30+00:00"
+ }
+}
+exit_code: 0

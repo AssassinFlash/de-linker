@@ -24,6 +24,7 @@
 	}
 	disclosures.forEach( item => {
 		const button = buttonFor( item );
+		const isOpen = () => button.getAttribute( 'aria-expanded' ) === 'true';
 		const menu = item.querySelector( '.tv-mega-menu, .tv-b2b-acct-menu' );
 		// `.tv-b2b-acct` carries no data-tv-nav-primary; the account menu is
 		// the one other disclosure.
@@ -53,7 +54,7 @@
 			if ( ! item.contains( document.activeElement ) ) setOpen( item, false );
 		} );
 		button.addEventListener( 'click', event => {
-			const open = hovered && event.detail > 0 || button.getAttribute( 'aria-expanded' ) !== 'true';
+			const open = hovered && event.detail > 0 || ! isOpen();
 			hovered = false;
 			closeOthers( item );
 			setOpen( item, open );
@@ -66,7 +67,7 @@
 				if ( ! links.length || ! [ 'ArrowDown', 'ArrowUp', 'Home', 'End' ].includes( event.key ) ) return;
 				event.preventDefault();
 				closeOthers( item );
-				const wasClosed = button.getAttribute( 'aria-expanded' ) !== 'true';
+				const wasClosed = ! isOpen();
 				setOpen( item, true );
 				const at = links.indexOf( document.activeElement );
 				const next = event.key === 'Home' ? 0 : event.key === 'End' ? links.length - 1 : event.key === 'ArrowDown' ? ( at + 1 ) % links.length : ( at <= 0 ? links.length : at ) - 1;
@@ -77,7 +78,14 @@
 				// hidden and has no such transition).
 				const target = links[ next ];
 				if ( wasClosed && menu.classList.contains( 'tv-mega-menu' ) ) {
-					const focus = () => target.focus();
+					// A closed menu must not steal focus from the next disclosure;
+					// the fallback must not undo a later arrow after transitionend.
+					let focused = false;
+					const focus = () => {
+						if ( focused || ! isOpen() ) return;
+						focused = true;
+						target.focus();
+					};
 					const onEnd = transition => {
 						if ( transition.target !== menu || transition.propertyName !== 'visibility' ) return;
 						menu.removeEventListener( 'transitionend', onEnd );

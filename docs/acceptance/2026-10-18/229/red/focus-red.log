@@ -1,0 +1,85 @@
+TAP version 13
+# Subtest: the first ArrowDown opens the mega menu and focuses after visibility
+ok 1 - the first ArrowDown opens the mega menu and focuses after visibility
+  ---
+  duration_ms: 42.41725
+  type: 'test'
+  ...
+# Subtest: the fallback focuses when the visibility transition never ends
+ok 2 - the fallback focuses when the visibility transition never ends
+  ---
+  duration_ms: 8.007
+  type: 'test'
+  ...
+# Subtest: a later ArrowDown on an open menu focuses in the same turn
+ok 3 - a later ArrowDown on an open menu focuses in the same turn
+  ---
+  duration_ms: 7.610167
+  type: 'test'
+  ...
+# Subtest: closing a menu cancels its delayed keyboard focus
+not ok 4 - closing a menu cancels its delayed keyboard focus
+  ---
+  duration_ms: 6.176167
+  type: 'test'
+  location: '/Users/chesterjohn/Documents/de-linker-worktrees/c229/plugins/linker-commerce/tests/js/header-menu.test.mjs:83:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected "actual" not to be reference-equal to "expected":
+
+    HTMLAnchorElement {}
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  operator: 'notStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/chesterjohn/Documents/de-linker-worktrees/c229/plugins/linker-commerce/tests/js/header-menu.test.mjs:90:9)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: completed opening focus does not undo the next keyboard selection
+not ok 5 - completed opening focus does not undo the next keyboard selection
+  ---
+  duration_ms: 7.922
+  type: 'test'
+  location: '/Users/chesterjohn/Documents/de-linker-worktrees/c229/plugins/linker-commerce/tests/js/header-menu.test.mjs:94:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Values have same structure but are not reference-equal:
+
+    HTMLAnchorElement {}
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/chesterjohn/Documents/de-linker-worktrees/c229/plugins/linker-commerce/tests/js/header-menu.test.mjs:105:9)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: an account menu served without hidden is closed on load
+ok 6 - an account menu served without hidden is closed on load
+  ---
+  duration_ms: 5.098375
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 4
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 697.447916

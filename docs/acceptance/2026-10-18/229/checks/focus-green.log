@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: the first ArrowDown opens the mega menu and focuses after visibility
+ok 1 - the first ArrowDown opens the mega menu and focuses after visibility
+  ---
+  duration_ms: 41.221417
+  type: 'test'
+  ...
+# Subtest: the fallback focuses when the visibility transition never ends
+ok 2 - the fallback focuses when the visibility transition never ends
+  ---
+  duration_ms: 6.439084
+  type: 'test'
+  ...
+# Subtest: a later ArrowDown on an open menu focuses in the same turn
+ok 3 - a later ArrowDown on an open menu focuses in the same turn
+  ---
+  duration_ms: 5.067667
+  type: 'test'
+  ...
+# Subtest: closing a menu cancels its delayed keyboard focus
+ok 4 - closing a menu cancels its delayed keyboard focus
+  ---
+  duration_ms: 6.172417
+  type: 'test'
+  ...
+# Subtest: completed opening focus does not undo the next keyboard selection
+ok 5 - completed opening focus does not undo the next keyboard selection
+  ---
+  duration_ms: 5.375167
+  type: 'test'
+  ...
+# Subtest: an account menu served without hidden is closed on load
+ok 6 - an account menu served without hidden is closed on load
+  ---
+  duration_ms: 3.545375
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 507.642083

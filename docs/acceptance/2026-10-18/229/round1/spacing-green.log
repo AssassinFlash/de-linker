@@ -1,0 +1,101 @@
+
+Running 2 tests using 1 worker
+
+(node:29782) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › specs/header-parity.spec.ts:39:1 › German navigation uses the largest spacing that fits (727ms)
+| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding |
+|---:|---|---|---|---|---:|
+| 390 | false | false | false | false | 14px |
+| 1276 | false | false | false | false | 14px |
+| 1277 | false | false | false | false | 14px |
+| 1278 | false | false | false | false | 14px |
+| 1279 | false | false | false | false | 14px |
+| 1280 | true | true | false | false | 4.54688px |
+| 1281 | true | true | false | false | 4.54688px |
+| 1282 | false | false | true | true | 4.57812px |
+| 1283 | false | false | true | true | 4.65625px |
+| 1284 | false | false | true | true | 4.73438px |
+| 1285 | false | false | true | true | 4.8125px |
+| 1286 | false | false | true | true | 4.89062px |
+| 1287 | false | false | true | true | 4.98438px |
+| 1288 | false | false | true | true | 5.0625px |
+| 1289 | false | false | true | true | 5.14062px |
+| 1290 | false | false | true | true | 5.21875px |
+| 1291 | false | false | true | true | 5.29688px |
+| 1292 | false | false | true | true | 5.375px |
+| 1293 | false | false | true | true | 5.46875px |
+| 1294 | false | false | true | true | 5.54688px |
+| 1295 | false | false | true | true | 5.625px |
+| 1296 | false | false | true | true | 5.70312px |
+| 1297 | false | false | true | true | 5.78125px |
+| 1298 | false | false | true | true | 5.85938px |
+| 1299 | false | false | true | true | 5.95312px |
+| 1300 | false | false | true | true | 6.03125px |
+| 1310 | false | false | true | true | 6.84375px |
+| 1320 | false | false | true | true | 7.64062px |
+| 1330 | false | false | true | true | 8.45312px |
+| 1340 | false | false | true | true | 9.26562px |
+| 1350 | false | false | true | true | 10.0781px |
+| 1360 | false | false | true | true | 10.875px |
+| 1370 | false | false | true | true | 11.6875px |
+| 1380 | false | false | true | true | 12.5px |
+| 1390 | false | false | true | true | 13.2969px |
+| 1400 | false | false | true | true | 13.4531px |
+| 1410 | false | false | true | true | 13.4219px |
+| 1420 | false | false | true | true | 13.3906px |
+| 1430 | false | false | true | true | 13.375px |
+| 1440 | false | false | true | true | 13.3438px |
+| 1450 | false | false | true | true | 13.3281px |
+| 1460 | false | false | true | true | 13.2969px |
+| 1470 | false | false | true | true | 13.2656px |
+| 1480 | false | false | true | true | 13.25px |
+| 1490 | false | false | true | true | 13.2188px |
+| 1500 | false | false | true | true | 13.2031px |
+| 1510 | false | false | true | true | 13.1719px |
+| 1520 | false | false | true | true | 13.1406px |
+| 1530 | false | false | true | true | 13.125px |
+| 1540 | false | false | true | true | 13.0938px |
+| 1550 | false | false | true | true | 13.0781px |
+| 1560 | false | false | true | true | 13.0469px |
+| 1570 | false | false | true | true | 13.0156px |
+| 1580 | false | false | true | true | 13px |
+| 1590 | false | false | true | true | 12.9688px |
+| 1600 | false | false | true | true | 12.9531px |
+| 1610 | false | false | true | true | 12.9531px |
+| 1620 | false | false | true | true | 12.9531px |
+| 1630 | false | false | true | true | 12.9531px |
+| 1640 | false | false | true | true | 12.9531px |
+| 1650 | false | false | true | true | 12.9531px |
+| 1660 | false | false | true | true | 12.9531px |
+| 1670 | false | false | true | true | 12.9531px |
+| 1680 | false | false | true | true | 12.9531px |
+| 1690 | false | false | true | true | 12.9531px |
+| 1700 | false | false | true | true | 12.9531px |
+| 1710 | false | false | true | true | 12.9531px |
+| 1720 | false | false | true | true | 12.9531px |
+| 1730 | false | false | true | true | 12.9531px |
+| 1740 | false | false | true | true | 12.9531px |
+| 1750 | false | false | true | true | 12.9531px |
+| 1760 | false | false | true | true | 12.9531px |
+| 1770 | false | false | true | true | 12.9531px |
+| 1780 | false | false | true | true | 12.9531px |
+| 1790 | false | false | true | true | 12.9531px |
+| 1800 | false | false | true | true | 12.9531px |
+| 1810 | false | false | true | true | 12.9531px |
+| 1820 | false | false | true | true | 12.9531px |
+| 1830 | false | false | true | true | 12.9531px |
+| 1840 | false | false | true | true | 12.9531px |
+| 1850 | false | false | true | true | 12.9531px |
+| 1860 | false | false | true | true | 12.9531px |
+| 1870 | false | false | true | true | 12.9531px |
+| 1880 | false | false | true | true | 12.9531px |
+| 1890 | false | false | true | true | 12.9531px |
+| 1900 | false | false | true | true | 12.9531px |
+| 1910 | false | false | true | true | 12.9531px |
+| 1920 | false | false | true | true | 12.9531px |
+| 1930 | false | false | true | true | 12.9531px |
+| 1940 | false | false | true | true | 12.9531px |
+  ✓  2 [chromium] › specs/header-parity.spec.ts:64:1 › EN/DE share every header fold boundary (3.7s)
+
+  2 passed (5.2s)

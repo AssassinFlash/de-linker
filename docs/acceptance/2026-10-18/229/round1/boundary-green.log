@@ -1,0 +1,100 @@
+
+Running 1 test using 1 worker
+
+(node:13565) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding |
+|---:|---|---|---|---|---:|
+| 390 | false | false | false | false | 14px |
+| 1276 | false | false | false | false | 14px |
+| 1277 | false | false | false | false | 14px |
+| 1278 | false | false | false | false | 14px |
+| 1279 | false | false | false | false | 14px |
+| 1280 | true | true | false | false | 4.55px |
+| 1281 | true | true | false | false | 4.55px |
+| 1282 | false | false | true | true | 4.55px |
+| 1283 | false | false | true | true | 4.55px |
+| 1284 | false | false | true | true | 4.55px |
+| 1285 | false | false | true | true | 4.55px |
+| 1286 | false | false | true | true | 4.55px |
+| 1287 | false | false | true | true | 4.55px |
+| 1288 | false | false | true | true | 4.55px |
+| 1289 | false | false | true | true | 4.55px |
+| 1290 | false | false | true | true | 4.55px |
+| 1291 | false | false | true | true | 4.55px |
+| 1292 | false | false | true | true | 4.55px |
+| 1293 | false | false | true | true | 4.55px |
+| 1294 | false | false | true | true | 4.55px |
+| 1295 | false | false | true | true | 4.55px |
+| 1296 | false | false | true | true | 4.55px |
+| 1297 | false | false | true | true | 4.55px |
+| 1298 | false | false | true | true | 4.55px |
+| 1299 | false | false | true | true | 4.55px |
+| 1300 | false | false | true | true | 4.55px |
+| 1310 | false | false | true | true | 4.55px |
+| 1320 | false | false | true | true | 4.55px |
+| 1330 | false | false | true | true | 4.55px |
+| 1340 | false | false | true | true | 4.55px |
+| 1350 | false | false | true | true | 4.55px |
+| 1360 | false | false | true | true | 4.55px |
+| 1370 | false | false | true | true | 4.55px |
+| 1380 | false | false | true | true | 4.55px |
+| 1390 | false | false | true | true | 4.55px |
+| 1400 | false | false | true | true | 4.55px |
+| 1410 | false | false | true | true | 4.55px |
+| 1420 | false | false | true | true | 4.55px |
+| 1430 | false | false | true | true | 4.55px |
+| 1440 | false | false | true | true | 4.55px |
+| 1450 | false | false | true | true | 4.55px |
+| 1460 | false | false | true | true | 4.55px |
+| 1470 | false | false | true | true | 4.55px |
+| 1480 | false | false | true | true | 4.55px |
+| 1490 | false | false | true | true | 4.55px |
+| 1500 | false | false | true | true | 4.55px |
+| 1510 | false | false | true | true | 4.55px |
+| 1520 | false | false | true | true | 4.55px |
+| 1530 | false | false | true | true | 4.55px |
+| 1540 | false | false | true | true | 4.55px |
+| 1550 | false | false | true | true | 4.55px |
+| 1560 | false | false | true | true | 4.55px |
+| 1570 | false | false | true | true | 4.55px |
+| 1580 | false | false | true | true | 4.55px |
+| 1590 | false | false | true | true | 4.55px |
+| 1600 | false | false | true | true | 4.55px |
+| 1610 | false | false | true | true | 4.55px |
+| 1620 | false | false | true | true | 4.55px |
+| 1630 | false | false | true | true | 4.55px |
+| 1640 | false | false | true | true | 4.55px |
+| 1650 | false | false | true | true | 4.55px |
+| 1660 | false | false | true | true | 4.55px |
+| 1670 | false | false | true | true | 4.55px |
+| 1680 | false | false | true | true | 4.55px |
+| 1690 | false | false | true | true | 4.55px |
+| 1700 | false | false | true | true | 4.55px |
+| 1710 | false | false | true | true | 4.55px |
+| 1720 | false | false | true | true | 4.55px |
+| 1730 | false | false | true | true | 4.55px |
+| 1740 | false | false | true | true | 4.55px |
+| 1750 | false | false | true | true | 4.55px |
+| 1760 | false | false | true | true | 4.55px |
+| 1770 | false | false | true | true | 4.55px |
+| 1780 | false | false | true | true | 4.55px |
+| 1790 | false | false | true | true | 4.55px |
+| 1800 | false | false | true | true | 4.55px |
+| 1810 | false | false | true | true | 4.55px |
+| 1820 | false | false | true | true | 4.55px |
+| 1830 | false | false | true | true | 4.55px |
+| 1840 | false | false | true | true | 4.55px |
+| 1850 | false | false | true | true | 4.55px |
+| 1860 | false | false | true | true | 4.55px |
+| 1870 | false | false | true | true | 4.55px |
+| 1880 | false | false | true | true | 4.55px |
+| 1890 | false | false | true | true | 4.55px |
+| 1900 | false | false | true | true | 4.55px |
+| 1910 | false | false | true | true | 4.55px |
+| 1920 | false | false | true | true | 4.55px |
+| 1930 | false | false | true | true | 4.55px |
+| 1940 | false | false | true | true | 4.55px |
+  ✓  1 [chromium] › specs/header-parity.spec.ts:39:1 › EN/DE share every header fold boundary (6.7s)
+
+  1 passed (7.4s)
