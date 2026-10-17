@@ -306,6 +306,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$this->assertSame( array( self::INTERNAL ), $row['to'] );
 		$this->assertContains( 'Bcc: ' . get_option( Options::NOTIFY_BCC ), $row['headers'] );
 		$this->assertContains( 'From: Linker <' . $from . '>', $row['headers'] );
+		$this->assertContains( \Linker\Commerce\Mail\Message::INTERNAL_HEADER, $row['headers'], 'Every internal producer explicitly selects its transport.' );
 		$this->assertStringNotContainsString( self::PUBLIC, implode( "\n", array_filter( $row['headers'], static fn ( string $line ): bool => 0 !== stripos( $line, 'From:' ) ) ) );
 		return $row;
 	}

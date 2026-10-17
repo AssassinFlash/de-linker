@@ -37,6 +37,7 @@ final class ModuleTest extends TestCase {
 			WP_Mock::expectActionAdded( 'init', array( $jobs, 'register_post_type' ) );
 			WP_Mock::expectFilterAdded( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
 			WP_Mock::expectActionAdded( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
+		WP_Mock::expectActionAdded( 'phpmailer_init', array( $outbox, 'configure_mailer' ) );
 		WP_Mock::expectActionAdded( Outbox::HOOK, array( $outbox, 'retry' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_switching_email_locale', array( $locale, 'allow' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_restoring_email_locale', array( $locale, 'allow' ), 10, 2 );

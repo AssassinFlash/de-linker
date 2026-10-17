@@ -10,9 +10,10 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Digest;
 
 use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Health\InternalMail;
 
 /**
- * Assembles the digest's blocks: the three this plugin builds, in the order of
+ * Assembles the digest's blocks: the four this plugin builds, in the order of
  * docs/specs/74-daily-digest.md, then whatever other tickets registered — the
  * approval ticket puts the pending accounts first, so the owner's daily
  * approvals lead the email.
@@ -36,6 +37,7 @@ final class Blocks {
 			new InquiriesAwaitingProforma(),
 			new ProformasAwaitingReply(),
 			new FailedEmails( $this->jobs ),
+			new InternalMail(),
 		);
 		/**
 		 * The approval ticket adds the pending-accounts block here, unshifted

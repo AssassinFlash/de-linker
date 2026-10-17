@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Health;
 
 use Linker\Commerce\Settings\Options;
+use Linker\Commerce\Mail\Message;
 use WP_Error;
 
 /**
@@ -180,7 +181,7 @@ final class Monitor {
 		// Plain wp_mail() needs an explicit sender; WC_Email installs its own
 		// sender filters for the other internal notifications (#286).
 		$sender  = $this->options->notify_sender();
-		$headers = array( sprintf( 'From: %s <%s>', $sender->name, $sender->email ) );
+		$headers = array( sprintf( 'From: %s <%s>', $sender->name, $sender->email ), Message::INTERNAL_HEADER );
 		$bcc     = $this->options->notify_bcc();
 		if ( array() !== $bcc ) {
 			$headers[] = 'Bcc: ' . implode( ', ', $bcc );

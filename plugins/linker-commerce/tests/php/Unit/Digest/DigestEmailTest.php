@@ -57,7 +57,7 @@ final class DigestEmailTest extends TestCase {
 		$this->assertSame( '/plugin/templates/', $email->template_base );
 		$this->assertFalse( $email->is_customer_email() );
 		$this->assertSame( 'October 11, 2026', $email->placeholders['{date}'] );
-		$header = "Content-Type: text/html\r\nBcc: one@example.test, two@example.test\r\n";
+		$header = "Content-Type: text/html\r\nX-Linker-Internal: yes\r\nBcc: one@example.test, two@example.test\r\n";
 		$this->filter_returns( 'woocommerce_email_headers', $header, array( $header, 'linker_digest', false, $email ) );
 		$this->assertSame( $header, $email->get_headers() );
 		$this->assertConditionsMet();

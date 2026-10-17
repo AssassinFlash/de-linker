@@ -29,7 +29,19 @@
 - `Settings`（后台一页：对外团队邮箱、内部通知收件人、发件人与 Bcc 列表、对接人、银行条款、PI 前缀）。
 - `Health`（`Monitor`：WP cron daily 依次 GET `linker_genie_url`/`linker_engine_url` 的 `/health`（实例配置，本地 `just serve` 写、切换 #17 写），非 200 或不可达或地址为空 → 经 `wp_mail`（即 Outbox 队列）发内部通知，To 内部通知收件人（`Options::notify_to()`）+ Bcc（#221 起；此前 To 对接人）；两服务都健康不发。主题与正文 EN 先行、DE 独立撰写，对抗评审记录 `docs/acceptance/2026-10-11/67/copy-review.md`）。
 
-## Mail：Hostinger 投递证据（#288）
+## Mail：内部认证 SMTP（#297）
+
+2026-10-18 的最新裁定与证据见 [#297](https://github.com/AssassinFlash/de-linker/issues/297)：仅改可见 From 后，内部摘要仍进 sunriver 垃圾箱；`hsendmail` 的服务器信封与 sunriver From 不对齐，且没有 DKIM。内部通知改走 `smtp.hostinger.com` 的认证 SMTP，客户邮件继续 PHP `mail()`，From 继续 `sales@de-linker.com`。下面 #288 是此前的取证记录，其“仅改内部身份解决”的推断由本次实际摘要头取代。
+
+- **原生传输入口**：`Mail\Module` 注册 `phpmailer_init`，由正在投递的 `Outbox` 选择传输。`TeamEmail`（包括摘要）、联系团队信 `TeamMessageEmail`、健康告警在头里显式加入 `Message::INTERNAL_HEADER`（`X-Linker-Internal: yes`）。队列固化这个标记，重试、限速后恢复投递、tester 重写都保留；PHPMailer 真正发送前移除该头。收件人、主题、From 都不用于猜测内部身份；未标记的消息使用 `isMail()`。
+- **凭据唯一来源**：`Mail\InternalSmtp` 从 `$HOME/.config/terravolt-builder/sunriver-smtp.env` 读取 `LINKER_SMTP_HOST`、`LINKER_SMTP_PORT`、`LINKER_SMTP_USER`、`LINKER_SMTP_PASS`。文件在 web root 外，仅业主放置密码并限制文件权限；执行者和 Claude 不读取、创建、传递密码。格式为 `KEY=value`，含特殊字符时使用双引号，亦支持外围单引号；不执行 shell、不展开环境变量。凭据不进入 WP options、队列、日志、仓库或后台字段。只有测试可以注入装有假值的临时文件路径。
+- **身份与加密**：SMTP 用户必须等于 `Options::notify_sender()->email`，实际 PHPMailer From 也必须等于该用户；旧队列 From 不符时失败并重试，不替换客户或历史邮件身份。PHPMailer 原生隐式 TLS 用端口 465，其余远端端口使用必需的 STARTTLS（通常 587）；证书校验保留原生缺省。仅测试所需的 `127.0.0.1` sink 允许本机明文 AUTH。每次开始前、成功或失败后清空认证信息，关闭 SMTP 连接并恢复 `mail()`，防止 WordPress 复用对象把客户邮件送进内部 SMTP。
+- **缺配置的可见回退**：文件不存在、不可读、字段不完整、格式/端口无效，或用户与内部 From 设置不匹配时，内部邮件退回 `mail()`。健康区块 `Health\InternalMail` 作为每日摘要的一个固定区块，仅列一条 `Internal mail not authenticated.` / `Interne E-Mails sind nicht authentifiziert.`，不另发告警邮件。配置完整时只说明“已配置”，不声称服务器连通或收件箱已验证。已配置 SMTP 的连接、TLS、认证或投递失败照旧进 Outbox 重试，不改走 `mail()`；日志、队列错误只保留固定的 `Internal notification delivery failed.`，协议 debug 关闭，避免服务器回显秘密。
+- **配额与重试**：仍共用 `Throttle`；主机额度 10/分钟、100/滚动 24 小时，本站沿用预留后的 8/80（来源 `mail-root-cause.md` §3、§9）。重试间隔仍为 1、5、30 分钟与 2、6、12、24 小时。每次只投一封，To/Bcc 随同一封走；测试模式继续仅重写投递副本。
+- **原生优先证明**：WordPress 已附带 PHPMailer 和 `phpmailer_init`，无需新 SMTP 插件、依赖或传输协议实现；Woo `TeamEmail` 只给出内部身份和标记，Outbox 负责已有队列边界与通道选择。全站 SMTP 插件会改变客户邮件通道，无法满足本票的身份分流。
+- **本地证明与生产验收分开**：`InternalSmtpTest` 用自启动的 loopback sink 做真实 AUTH/投递及失败后重试，客户与缺配置邮件落本地文件；`NotificationRoutingTest` 验六类生产者的队列标记与身份；CI 在既有临时实例跑同组测试。生产的 sunriver 收件箱、`dkim=pass d=sunriverinverter.com`、`dmarc=pass` 由 Claude 部署后以单封摘要验证，未验前本票不算生产完成。操作与回滚见 `docs/acceptance/2026-10-18/297/README.md`。
+
+## Mail：Hostinger 投递证据（#288，历史证据）
 
 [PR #291 第 1 轮评审](https://github.com/AssassinFlash/de-linker/pull/291#issuecomment-6238959144) 记录了 Claude 在 2026-10-17 18:42–18:51 UTC 的生产取证：同样的 `wp_mail()` 消息、可见 From `Linker <sales@de-linker.com>`，先不设 Sender，再通过 `phpmailer_init` 把 Sender 设为 `sales@sunriverinverter.com`；探针确认钩子执行，`Mailer=mail`、Sender 为指定地址。
 
@@ -60,7 +72,7 @@ sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`
 
 内部通知的 From 为 `Linker <内部发件地址>`（#286；默认 `Linker <sales@sunriverinverter.com>`），空值、无效地址或非字符串值回到此默认值。`Mail\TeamEmail` 与联系留言的 `Contact\Emails\TeamMessageEmail` 通过 Woo 原生 `get_from_name()` / `get_from_address()` 提供发件人，Woo 只在发送该封信时安装过滤器；健康告警是普通 `wp_mail()`，显式携带同一内部发件人头。Outbox 在捕获时将已解析的 From 固化到队列消息，之后重试保留。客户邮件继续读取 WooCommerce → Settings → Emails 的发件人设置（线上 `Linker <sales@de-linker.com>`），内部设置不改该值；两类邮件的 Reply-to 规则不变（与客户相关的内部通知回复客户，联系留言回复访客，摘要与健康告警不新增 Reply-to）。
 
-**新增一封内部通知的唯一做法**（#243"让 Linker 联系我"等）：继承 `Mail\TeamEmail`（`WC_Email` 子类），在 `trigger()` 里设好占位符后调 `notify( $order_or_user )`；收件人与 Bcc 由基类从 `notify_to()` / `notify_bcc()` 填，From 由基类读取 `notify_sender()`，Reply-to 是该订单或用户；在本模块的 `woocommerce_email_classes` 注册，员工在 Woo 邮件列表里可见可关。不是 Woo 邮件的纯 `wp_mail()`（如健康告警）直接用 `notify_to()` 作 To、`notify_sender()` 的名称与地址拼 `From:` 头、`notify_bcc()` 拼 `Bcc:` 头。两种都经 Outbox（限速、重试、日志）。不要自己写地址，也不要读 `team_mailbox()` 发内部信。
+**新增一封内部通知的唯一做法**（#243"让 Linker 联系我"等）：继承 `Mail\TeamEmail`（`WC_Email` 子类），在 `trigger()` 里设好占位符后调 `notify( $order_or_user )`；收件人与 Bcc 由基类从 `notify_to()` / `notify_bcc()` 填，From 由基类读取 `notify_sender()`，内部路由标记由基类加入，Reply-to 是该订单或用户；在本模块的 `woocommerce_email_classes` 注册，员工在 Woo 邮件列表里可见可关。不是 Woo 邮件的纯 `wp_mail()`（如健康告警）直接用 `notify_to()` 作 To、`notify_sender()` 的名称与地址拼 `From:` 头、`notify_bcc()` 拼 `Bcc:` 头，并必须携带 `Mail\Message::INTERNAL_HEADER`。两种都经 Outbox（限速、重试、日志）。不要自己写地址，也不要读 `team_mailbox()` 发内部信。
 
 验证：`tests/php/Integration/NotificationRoutingTest.php` 以默认及自定义内部发件地址覆盖六类内部通知的 From、相关客户和访客的 Reply-to，并验证客户询盘和联系回执继续使用 Woo 发件人；同一文件以 Outbox 队列数据断言六类内部通知都只到 `notify_to()` + Bcc、不含 `sales@de-linker.com`，并断言上表第一行各处仍是 `sales@de-linker.com`；新加的内部通知照此加一行断言。
 

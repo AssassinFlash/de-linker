@@ -92,4 +92,14 @@ final class MessageTest extends TestCase {
 		$this->assertEquals( $message, Message::from_array( $message->to_array() ) );
 		$this->assertEquals( new Message( array(), '', '', array(), array() ), Message::from_array( array( 'subject' => 3 ) ) );
 	}
+
+	/**
+	 * Only an explicit internal marker selects SMTP, including after queue storage.
+	 */
+	public function test_internal_marker_survives_the_queue(): void {
+		$internal = new Message( array( 'tester@example.test' ), 'S', 'B', array( 'X-Linker-Internal: yes' ), array() );
+		$this->assertTrue( Message::from_array( $internal->to_array() )->is_internal() );
+		$customer = new Message( array( 'sales@sunriverinverter.com' ), 'S', 'B', array( 'From: Linker <sales@sunriverinverter.com>' ), array() );
+		$this->assertFalse( $customer->is_internal(), 'Neither recipient nor From implies internal mail.' );
+	}
 }

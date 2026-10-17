@@ -65,7 +65,7 @@ final class NewInquiryEmailTest extends TestCase {
 			),
 			$email->placeholders
 		);
-		$header = "Content-Type: text/html\r\nReply-to: Maria Beispiel <maria@example.test>\r\nBcc: copy@example.test\r\n";
+		$header = "Content-Type: text/html\r\nX-Linker-Internal: yes\r\nReply-to: Maria Beispiel <maria@example.test>\r\nBcc: copy@example.test\r\n";
 		$this->filter_returns( 'woocommerce_email_headers', $header, array( $header, 'linker_new_inquiry', $order, $email ) );
 		$this->assertSame( $header, $email->get_headers() );
 		$this->assertConditionsMet();

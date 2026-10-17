@@ -18,6 +18,11 @@ namespace Linker\Commerce\Mail;
 final class Message {
 
 	/**
+	 * Explicit internal routing marker, persisted by Outbox (#297).
+	 */
+	public const INTERNAL_HEADER = 'X-Linker-Internal: yes';
+
+	/**
 	 * Sets up the message.
 	 *
 	 * @param string[] $to          Recipients.
@@ -33,6 +38,18 @@ final class Message {
 		public readonly array $headers,
 		public readonly array $attachments
 	) {}
+
+	/**
+	 * Whether the producer marked this as an internal notification.
+	 */
+	public function is_internal(): bool {
+		foreach ( $this->headers as $header ) {
+			if ( 0 === strcasecmp( trim( $header ), self::INTERNAL_HEADER ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * The message of a wp_mail() call, read on pre_wp_mail.

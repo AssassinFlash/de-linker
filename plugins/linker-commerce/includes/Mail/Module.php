@@ -37,6 +37,7 @@ final class Module {
 		add_action( 'init', array( $this->jobs, 'register_post_type' ) );
 			add_filter( 'pre_wp_mail', array( $this->outbox, 'intercept' ), 10, 2 );
 			add_action( 'wp_mail_failed', array( $this->outbox, 'remember_error' ) );
+		add_action( 'phpmailer_init', array( $this->outbox, 'configure_mailer' ) );
 		add_action( Outbox::HOOK, array( $this->outbox, 'retry' ) );
 		add_filter( 'woocommerce_allow_switching_email_locale', array( $this->locale, 'allow' ), 10, 2 );
 		add_filter( 'woocommerce_allow_restoring_email_locale', array( $this->locale, 'allow' ), 10, 2 );

@@ -15,6 +15,10 @@
 
 发送时刻 = 本次 cron 触发的时刻。同一条数据在边界附近的两封摘要之间移动是预期行为。
 
+## 内部认证健康（#297）
+
+在原有四块之后固定加入 `Health\InternalMail`：缺失、不可读、无效或身份不匹配的 SMTP 配置只列一条“Internal mail not authenticated.” / “Interne E-Mails sind nicht authentifiziert.”，同时内部邮件按裁定回退 PHP `mail()`；配置完整时显示配置已具备，不宣称远端连通或收件箱成功。该块只读配置、不另发邮件、不展示配置值；后续扩展块仍追加其后。SMTP 失败继续由 Outbox 重试并在耗尽时进入失败邮件块。传输与凭据契约见 spec 11 的“Mail：内部认证 SMTP”。
+
 ## 发送与调度
 - WP 原生 cron：`wp_schedule_single_event` 单次事件链——每次发送完成后把下一次排在"现在之后最近的 09:00 Europe/Berlin"；初始化时（init）无事件才补排。夏令时切换后的一次发送会按旧偏移落在 08:00 或 10:00，该次发送随即自校正；规则就是"每次发送重算下一次"。
 - 收件人 = 内部通知收件人（To，`Options::notify_to()`，WooCommerce → Settings → Inquiries 的 Internal notifications → Recipient，缺省 `sales@sunriverinverter.com`）+ 抄送列表（Bcc，`notify_bcc()`，同节 Blind copies），与全部内部通知同源（`docs/specs/11-commerce.md` “内部通知收件人”，#221）。空摘要也发。
@@ -27,7 +31,7 @@
 实现 `Linker\Commerce\Digest\Block`（四个方法见下节），在自己的 Module 里 `add_filter( 'linker_commerce_digest_blocks', fn ( array $blocks ) => [ ...$blocks, new YourBlock() ] )`——**追加在末尾**（第①块待审账号由审批票放在最前，②③④的顺序不动）。`entries()` 每条一行：`label` 必填，`url` + `link_text` 给后台直达链接（可空），`detail` 给一句说明（可空）；没有条目时显示 `empty_text()`，块照样出现（空态也是信号）。块只读数据、不发信：收件人、语言、发送与重试都归 `DigestEmail`。测试照 `tests/php/Unit/Digest/BlocksTest.php` 断言顺序，照 `tests/php/Integration/DigestTest.php` 断言真实实例里那一块出现在摘要正文。
 
 ## 第①块插拔接口（账户审核接线）
-`Linker\Commerce\Digest\Block` 接口（`id()/title()/entries()/empty_text()`，entry = `label + url + link_text + detail`），`Digest/Blocks` 按固定顺序装配内置的 ②③④，并应用过滤器 `linker_commerce_digest_blocks`（传 `list<Block>`，返回 `list<Block>`，非 Block 元素被剔除）。`Registration\Module` 将 `PendingApprovals` 放在最前；每条 entry 的 `url` 由 `Registration\AccountsAdmin::url( $user_id )` 生成，直达 `admin.php?page=linker-accounts&focus=<用户ID>` 审核卡片，`link_text` 沿用 Open the customer / Kunden öffnen。身份及状态口径由现有 `Registration\Approval` 负责；本块不另写审批状态机。已处理账户不计入待审；限制账户另列一行数量与后台独立区域链接，拒绝账户只在历史中保留。旧邮件里的深链仍可查看当前决定。
+`Linker\Commerce\Digest\Block` 接口（`id()/title()/entries()/empty_text()`，entry = `label + url + link_text + detail`），`Digest/Blocks` 按固定顺序装配内置的 ②③④与内部认证健康块，并应用过滤器 `linker_commerce_digest_blocks`（传 `list<Block>`，返回 `list<Block>`，非 Block 元素被剔除）。`Registration\Module` 将 `PendingApprovals` 放在最前；每条 entry 的 `url` 由 `Registration\AccountsAdmin::url( $user_id )` 生成，直达 `admin.php?page=linker-accounts&focus=<用户ID>` 审核卡片，`link_text` 沿用 Open the customer / Kunden öffnen。身份及状态口径由现有 `Registration\Approval` 负责；本块不另写审批状态机。已处理账户不计入待审；限制账户另列一行数量与后台独立区域链接，拒绝账户只在历史中保留。旧邮件里的深链仍可查看当前决定。
 
 ## 邮件
 - WC_Email 子类（`Digest/DigestEmail`，继承团队通知基类），注册进 `woocommerce_email_classes`（后台 WooCommerce → Settings → Emails 可见可关）。语言 = 站点默认语言（团队邮件规则），HTML 单格式，正文模板 `templates/emails/linker-digest.php`（语义标记，零内联样式，外层沿用 WooCommerce 邮件头尾）。邮件内的时间显示一律 Europe/Berlin；日期格式随邮件语言取（EN "October 11, 2026" / DE "11. Oktober 2026"），不取站点的 date_format 选项（快照站点该选项是中文格式，与邮件语言无关）。

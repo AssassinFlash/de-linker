@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-17T19:46:49+00:00\n"
+"POT-Creation-Date: 2026-10-17T21:06:53+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -683,7 +683,7 @@ msgstr ""
 "benötigt das Dokument und die Seite, auf der er steht."
 
 #: includes/Contact/Emails/ContactEmail.php:72
-#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:122
+#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:123
 #: includes/Registration/Emails/CustomerApprovalEmail.php:130
 msgid "HTML"
 msgstr "HTML"
@@ -702,11 +702,11 @@ msgstr ""
 msgid "We received your message"
 msgstr "Wir haben Ihre Nachricht erhalten"
 
-#: includes/Contact/Emails/TeamMessageEmail.php:46
+#: includes/Contact/Emails/TeamMessageEmail.php:47
 msgid "Contact form message"
 msgstr "Nachricht über das Kontaktformular"
 
-#: includes/Contact/Emails/TeamMessageEmail.php:47
+#: includes/Contact/Emails/TeamMessageEmail.php:48
 msgid ""
 "Sent to the internal notification address, with blind copies, when the "
 "contact form is sent."
@@ -715,11 +715,11 @@ msgstr ""
 "das Kontaktformular abgesendet wird."
 
 #. translators: {name}: the visitor's name.
-#: includes/Contact/Emails/TeamMessageEmail.php:106
+#: includes/Contact/Emails/TeamMessageEmail.php:108
 msgid "New message from {name}"
 msgstr "Neue Nachricht von {name}"
 
-#: includes/Contact/Emails/TeamMessageEmail.php:113
+#: includes/Contact/Emails/TeamMessageEmail.php:115
 msgid "New message from the contact form"
 msgstr "Neue Nachricht über das Kontaktformular"
 
@@ -1022,38 +1022,56 @@ msgstr "Angebot pro Projekt"
 msgid "Price on request"
 msgstr "Preis auf Anfrage"
 
+#: includes/Health/InternalMail.php:39
+msgid "Internal mail authentication"
+msgstr "Authentifizierung interner E-Mails"
+
+#: includes/Health/InternalMail.php:53
+msgid "Internal mail not authenticated."
+msgstr "Interne E-Mails sind nicht authentifiziert."
+
+#: includes/Health/InternalMail.php:56
+msgid ""
+"Internal notifications use PHP mail(). Check the SMTP configuration on the "
+"server."
+msgstr "Interne Benachrichtigungen werden über PHP mail() versendet. Prüfen Sie die SMTP-Konfiguration auf dem Server."
+
+#: includes/Health/InternalMail.php:65
+msgid "Authenticated SMTP is configured for internal notifications."
+msgstr "Authentifiziertes SMTP ist für interne Benachrichtigungen konfiguriert."
+
 #. translators: %s: option name.
-#: includes/Health/Monitor.php:118
+#: includes/Health/Monitor.php:119
 #, php-format
 msgid "the address option %s is empty"
 msgstr "die Adressoption %s ist leer"
 
 #. translators: %d: HTTP status code.
-#: includes/Health/Monitor.php:130
+#: includes/Health/Monitor.php:131
 #, php-format
 msgid "the service answered HTTP %d instead of 200"
 msgstr "der Dienst antwortete mit HTTP %d statt 200"
 
-#: includes/Health/Monitor.php:144 includes/Presentation/LoginGate.php:279
+#: includes/Health/Monitor.php:145 includes/Presentation/LoginGate.php:279
 msgid "Genie"
 msgstr "Genie"
 
-#: includes/Health/Monitor.php:144
+#: includes/Health/Monitor.php:145
 msgid "engine"
 msgstr "Engine"
 
-#: includes/Health/Monitor.php:153
+#: includes/Health/Monitor.php:154
 msgid "The Solution Configurator"
 msgstr "Der Lösungskonfigurator"
 
 #. translators: %s: service name (Genie or engine).
-#: includes/Health/Monitor.php:165
+#: includes/Health/Monitor.php:166
 #, php-format
 msgid "The %s service failed its health check"
 msgstr "Gesundheitsprüfung fehlgeschlagen: Dienst %s"
 
 #. translators: 1: service name, 2: address, 3: reason, 4: UTC time, 5: what uses the service.
-#: includes/Health/Monitor.php:170
+#: includes/Health/Monitor.php:171
 #, php-format
 msgid ""
 "The daily health check could not reach the %1$s service.\n"

@@ -93,8 +93,9 @@ abstract class TeamEmail extends WC_Email {
 	 * Content type, the reply address (the customer) and the blind copies.
 	 */
 	public function get_headers() {
-		$header = 'Content-Type: ' . $this->get_content_type() . "\r\n";
-		$reply  = $this->reply_to();
+		$header  = 'Content-Type: ' . $this->get_content_type() . "\r\n";
+		$header .= Message::INTERNAL_HEADER . "\r\n";
+		$reply   = $this->reply_to();
 		if ( '' !== $reply ) {
 			$header .= 'Reply-to: ' . $reply . "\r\n";
 		}

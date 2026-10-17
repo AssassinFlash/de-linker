@@ -11,7 +11,7 @@ namespace Linker\Commerce\Digest;
 
 /**
  * A section of the daily digest email (docs/specs/74-daily-digest.md). The
- * plugin ships the three blocks it can build itself; the approval ticket
+ * plugin ships the four blocks it can build itself; the approval ticket
  * registers the pending-accounts block through the
  * linker_commerce_digest_blocks filter, with the admin links of its entries.
  */
