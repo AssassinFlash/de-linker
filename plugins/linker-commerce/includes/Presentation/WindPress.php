@@ -83,6 +83,13 @@ final class WindPress {
 				'content' => Tokens::read( $path ),
 			);
 		}
+		$fragments = glob( $root . '/content/livecanvas/inquiry/*.html' );
+		foreach ( false === $fragments ? array() : $fragments as $path ) {
+			$contents[] = array(
+				'name'    => 'livecanvas/inquiry/' . basename( $path ),
+				'content' => Tokens::read( $path ),
+			);
+		}
 		foreach ( $this->php_files( $root . '/includes/Presentation' ) as $path ) {
 			$contents[] = array(
 				'name'    => 'includes/Presentation/' . basename( $path ),

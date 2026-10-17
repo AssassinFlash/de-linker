@@ -71,7 +71,7 @@ sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`
 - #244 的摘要与预填应接这一个入口的经验证数据，不另造记录；#250 在确认卡实际发送时调用同一入口，须保留该调用方的 nonce、bot guard 与客户确认。当前入口只接受当前会话草稿，传入的产品/价格字段不会参与创建。
 - 可选注册：`Inquiry\AccountLink` 以 Woo 订单 key 校验持有者，只允许客单且注册邮箱与该单邮箱一致；不以邮箱匹配开放其他询盘，也不自动建账号。价格仍须批准。
 
-原生优先证明：LC 动态 checkout 模板仍承载页面，布局在 `content/livecanvas/inquiry/`，样式进入 WindPress 卷。短代码只装配转义数据、语言文案、nonce 与 Woo 产品行。LC 的产品循环没有“当前 Woo 会话草稿”与“按 nonce 接收公开询盘”的能力；Woo 原生 checkout 要求地址等账单字段且不能同时表示联系页的无产品消息，故自定义窄表单 adapter；订单创建、存储、四状态、邮件、原生草稿更新与感谢页全部沿用 Woo。原生 AJAX checkout 另挂同一 PublicGuard，避免绕开公开表单的机器人校验。
+原生优先证明：LC 动态 checkout 模板仍承载页面，布局在 `content/livecanvas/inquiry/`，样式进入 WindPress 卷。短代码只装配转义数据、语言文案、nonce 与 Woo 产品行。LC 的产品循环没有“当前 Woo 会话草稿”与“按 nonce 接收公开询盘”的能力；Woo 的 woocommerce_checkout_fields 可以精简账单字段；但原生 checkout 拒绝空草稿，无法表示联系页的无产品留言。为两扇门与后续确认卡提供同一个经确认的发送边界，故自定义窄表单 adapter；订单创建、存储、四状态、邮件、原生草稿更新与感谢页全部沿用 Woo。旧的原生 AJAX checkout 在 validation hook 阶段拒绝，Store API checkout 的 GET/POST 在 rest_pre_dispatch 阶段拒绝（该原生 GET 也可能创建草稿订单）。Store API 产品与草稿 API 继续可用；这样所有公开的询盘写入都经过唯一 Sender。
 
 ## 内部通知收件人（#221，业主 2026-10-17；#286 发件人拆分）
 

@@ -29,4 +29,13 @@
 
 ## 对抗评审
 
-独立评审意见与最终核对结果会在本分支评审完成后补入此节。
+独立 Spec/文案评审由 `review_spec_copy` 完成，全量 diff 初审发现一组 P2：待审页、注册回执、限制邮件与登录说明仍暗示账号获批后才能询盘。修订后再次逐条核对，结论 PASS；新表单、空态、回执和可选注册文案也通过。团队邮件在公司为空时改用姓名，避免空括号。
+
+| 位置 | 初稿问题 | EN 定稿 | DE 定稿 |
+|---|---|---|---|
+| 待审页、注册回执 | 旧文案把询盘权限与审批绑定 | We are reviewing your partner account and will email you when it is approved. You can send inquiries now; approval opens net prices. | Wir prüfen Ihr Partnerkonto und informieren Sie per E-Mail über die Freigabe. Anfragen können Sie bereits senden; Nettopreise sehen Sie nach der Freigabe. |
+| 限制邮件 | 旧文案说 Proforma 请求暂停 | You can browse products and send inquiries. Net prices remain unavailable while your account is limited. You can also reach us at sales@de-linker.com. | Sie können Produkte ansehen und Anfragen senden. Solange Ihr Konto eingeschränkt ist, werden keine Nettopreise angezeigt. Sie erreichen uns auch unter sales@de-linker.com. |
+| 登录说明 | 登录即展示价格的含义不准确 | Net prices after account approval | Nettopreise nach Freigabe Ihres Kontos |
+| 退役的原生结账入口 | 绕过新表单不能静默创建询盘 | Please use the inquiry form to send your inquiry. | Bitte senden Sie Ihre Anfrage über das Anfrageformular. |
+
+评审基准：AGENTS.md、本票、已选原型、既有 .po 术语和线上商务文案。`linker-copywriting` 的 Hard Stops 文件在本机列出的技能目录及项目内均未找到，未声称执行该缺失文件；本记录提供可检查的独立初审意见、修订与通过结论。英德词条已随插件发布，审批邮件的真实夹具断言同步更新。

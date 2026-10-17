@@ -19,6 +19,22 @@ use WC_Order;
  * view, this is the send.
  */
 final class Checkout {
+	/**
+	 * Blocks the unused Store API checkout before it can create a draft order.
+	 * The Store API cart and product routes remain available.
+	 *
+	 * @param mixed            $result Earlier short-circuit result.
+	 * @param \WP_REST_Server  $server REST server.
+	 * @param \WP_REST_Request $request REST request.
+	 * @return mixed
+	 */
+	public function block_store_checkout( $result, \WP_REST_Server $server, \WP_REST_Request $request ) {
+		unset( $server );
+		return preg_match( '#^/wc/store/v[0-9]+/checkout(?:/|$)#', $request->get_route() )
+			? new \WP_Error( 'linker_inquiry_form_required', __( 'Please use the inquiry form to send your inquiry.', 'linker-commerce' ), array( 'status' => 403 ) )
+			: $result;
+	}
+
 
 	/**
 	 * The receipt's product links stay in the inquiry's own language.
@@ -187,17 +203,13 @@ JS
 		return substr_replace( $url, (string) get_permalink( $german ), 0, strlen( $english ) );
 	}
 	/**
-	 * Protect Woo's alternate AJAX transport with the same public checks.
+	 * Retire Woo's native AJAX submission; public writes use the shared sender.
 	 *
 	 * @param array<string, mixed> $data   Native validated checkout fields.
 	 * @param \WP_Error            $errors Native checkout errors.
 	 */
 	public function validate_public( array $data, \WP_Error $errors ): void {
 		unset( $data );
-     // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Woo verified its checkout nonce before this hook.
-		$post = wp_unslash( $_POST );
-		if ( ! ( new PublicGuard() )->allows( $post ) ) {
-			$errors->add( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
-		}
+		$errors->add( 'linker_inquiry_form_required', __( 'Please use the inquiry form to send your inquiry.', 'linker-commerce' ) );
 	}
 }

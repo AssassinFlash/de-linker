@@ -220,7 +220,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$restricted = $this->approval_mail_body( 'de_DE_formal', Approval::RESTRICTED, 'Net prices are for businesses.' );
 		$this->assertStringContainsString( 'Ihr Partner-Konto ist vorerst eingeschränkt.', $restricted );
 		$this->assertStringContainsString(
-			'Sie können die Produkte weiterhin ansehen und uns jederzeit unter sales@de-linker.com erreichen. Nettopreise und Proforma-Anfrage sind pausiert, solange das Konto eingeschränkt ist.',
+			'Sie können Produkte ansehen und Anfragen senden. Solange Ihr Konto eingeschränkt ist, werden keine Nettopreise angezeigt. Sie erreichen uns auch unter sales@de-linker.com.',
 			$restricted
 		);
 		$this->assertStringContainsString( 'Unser Grund:', $restricted );
@@ -241,7 +241,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		$restricted_en = $this->approval_mail_body( 'en_US', Approval::RESTRICTED, 'Net prices are for businesses.' );
 		$this->assertStringContainsString( 'Your partner account has been limited for now.', $restricted_en );
 		$this->assertStringContainsString(
-			'You can keep browsing the products, and you can reach us any time at sales@de-linker.com. Net prices and the Proforma request are paused while the account is limited.',
+			'You can browse products and send inquiries. Net prices remain unavailable while your account is limited. You can also reach us at sales@de-linker.com.',
 			$restricted_en
 		);
 		$this->assertStringContainsString( 'Our reason:', $restricted_en );

@@ -110,7 +110,7 @@ final class LoginGate {
 			$this->badge( 'pending', esc_html__( 'Under review', 'linker-commerce' ) ),
 			esc_html__( 'Your account is under review', 'linker-commerce' ),
 			'',
-			'<p>' . esc_html__( 'We are reviewing your partner account. Net prices and the Proforma request open as soon as it is approved, and we will email you.', 'linker-commerce' ) . '</p>'
+			'<p>' . esc_html__( 'We are reviewing your partner account and will email you when it is approved. You can send inquiries now; approval opens net prices.', 'linker-commerce' ) . '</p>'
 				. '<p>' . $this->mailto_sentence(
 					/* translators: %s: the team's email address. */
 					__( 'Until then, browse the products and write to %s with any question.', 'linker-commerce' )

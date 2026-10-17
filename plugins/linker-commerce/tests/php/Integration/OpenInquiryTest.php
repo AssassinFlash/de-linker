@@ -22,6 +22,21 @@ use WC_Order;
  */
 final class OpenInquiryTest extends IntegrationTestCase {
 
+	/** Retired Woo checkout transports cannot bypass the shared public inquiry sender. */
+	public function test_alternate_checkout_transports_cannot_create_an_inquiry(): void {
+		$this->as_user( 0 );
+		$marker = self::newest_mail_job();
+		$errors = new \WP_Error();
+		do_action( 'woocommerce_after_checkout_validation', array(), $errors ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Woo's validation boundary.
+		$this->assertTrue( $errors->has_errors() );
+		foreach ( array( 'GET', 'POST' ) as $method ) {
+			$response = rest_do_request( new \WP_REST_Request( $method, '/wc/store/v1/checkout' ) );
+			$this->assertSame( 403, $response->get_status() );
+			$this->assertSame( 'linker_inquiry_form_required', $response->get_data()['code'] );
+		}
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+	}
+
 	/** The public product button must reach the draft rather than require sign-in. */
 	public function test_guest_product_action_adds_to_the_draft_without_opening_prices(): void {
 		$this->as_user( 0 );
@@ -81,6 +96,8 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$html = do_shortcode( '[linker_inquiry_form]' );
 		$this->assertStringNotContainsString( '[linker_inquiry_', $html );
 		$this->assertStringContainsString( 'id="inquiry-name" name="name"', $html );
+		// Woo posts to the draft route and redirects to this form through its native referer.
+		$this->assertStringContainsString( '<form method="post" action="' . wc_get_cart_url() . '">', $html );
 		$this->assertStringContainsString( 'value="" required', $html );
 		$this->assertStringContainsString( 'action="' . admin_url( 'admin-post.php' ) . '"', $html );
 		$fields = WC()->session->get( 'linker_inquiry_fields' );
@@ -92,6 +109,28 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$literal = '[linker_inquiry_text key=title]';
 		WC()->session->set( 'linker_inquiry_fields', array( 'message' => $literal ) );
 		$this->assertStringContainsString( '>' . esc_attr( $literal ) . '</textarea>', do_shortcode( '[linker_inquiry_form]' ) );
+	}
+
+	/** Retained validation feedback follows the language when the customer switches pages. */
+	public function test_retained_error_changes_language_with_the_request_page(): void {
+		wc_load_cart();
+		$error  = WC()->session->get( 'linker_inquiry_error' );
+		$locale = WC()->session->get( 'linker_inquiry_error_locale' );
+		$this->later(
+			static function () use ( $error, $locale ): void {
+				WC()->session->set( 'linker_inquiry_error', $error );
+				WC()->session->set( 'linker_inquiry_error_locale', $locale );
+			}
+		);
+		WC()->session->set( 'linker_inquiry_error', 'Please add a product or write a message.' );
+		WC()->session->set( 'linker_inquiry_error_locale', 'en_US' );
+		$language = new \Linker\Commerce\Mail\LocaleSwitch();
+		$language->to( 'de_DE_formal' );
+		try {
+			$this->assertSame( 'Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut.', ( new \Linker\Commerce\Inquiry\Form() )->value( array( 'key' => 'error' ) ) );
+		} finally {
+			$language->back();
+		}
 	}
 
 	/** A German form's validation does not send the customer back with English text. */
@@ -131,6 +170,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame( 'de_DE_formal', $order->get_meta( '_linker_locale' ) );
 		$this->assertStringContainsString( '/de/proforma-anfrage/', $order->get_checkout_order_received_url() );
 		$this->assertSame( 0, $order->get_item_count() );
+		$this->assertSame( array(), $order->get_order_item_totals(), 'A message alone has no monetary total.' );
 	}
 
 	/** Admin-post is an admin request; the stored product line must still use the form's language. */
@@ -331,16 +371,21 @@ final class OpenInquiryTest extends IntegrationTestCase {
 			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
 		);
 		WC()->mailer();
+		$address                = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Preserve the exact test runner value for restoration.
 		$_SERVER['REMOTE_ADDR'] = '127.246.0.1';
 		$limit_key              = 'linker_contact_' . md5( '127.246.0.1' );
 		$recent                 = get_transient( $limit_key );
 		delete_transient( $limit_key );
 		$this->later(
-			static function () use ( $limit_key, $recent ): void {
+			static function () use ( $limit_key, $recent, $address ): void {
 				delete_transient( $limit_key );
 				if ( false !== $recent ) {
 					set_transient( $limit_key, $recent, HOUR_IN_SECONDS );
-				} unset( $_SERVER['REMOTE_ADDR'] );
+				} if ( null === $address ) {
+					unset( $_SERVER['REMOTE_ADDR'] );
+				} else {
+					$_SERVER['REMOTE_ADDR'] = $address;
+				}
 			}
 		);
 		$handler = new \Linker\Commerce\Contact\Handler();

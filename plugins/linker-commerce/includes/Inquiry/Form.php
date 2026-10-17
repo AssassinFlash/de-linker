@@ -56,6 +56,10 @@ final class Form {
 		if ( '' === $email && is_user_logged_in() ) {
 			$email = wp_get_current_user()->user_email;
 		}
+		$error = (string) WC()->session->get( 'linker_inquiry_error', '' );
+		if ( '' !== $error && WC()->session->get( 'linker_inquiry_error_locale' ) !== get_locale() ) {
+			$error = __( 'Please check your entries and send the form again.', 'linker-commerce' );
+		}
 		$values = array(
 			'name'               => $name,
 			'email'              => $email,
@@ -63,7 +67,6 @@ final class Form {
 			'message'            => '',
 			'action'             => admin_url( 'admin-post.php' ),
 			'draft-url'          => wc_get_cart_url(),
-			'request-url'        => wc_get_checkout_url(),
 			'login-url'          => wc_get_page_permalink( 'myaccount' ),
 			'privacy'            => \Linker\Commerce\Presentation\PageUrls::translated( 'privacy-policy' ),
 			'open'               => is_user_logged_in() && '' !== $name && '' !== $email && array() === $previous ? '' : 'open',
@@ -71,7 +74,7 @@ final class Form {
 			'draft-empty'        => WC()->cart->is_empty() ? 'hidden' : '',
 			'consent-attributes' => is_user_logged_in() ? 'checked' : 'required',
 			'guest-hide'         => is_user_logged_in() ? 'hidden' : '',
-			'error'              => WC()->session->get( 'linker_inquiry_error', '' ),
+			'error'              => $error,
 		);
 		if ( in_array( $key, array( 'name', 'email', 'company', 'message' ), true ) && isset( $previous[ $key ] ) && is_string( $previous[ $key ] ) ) {
 			return esc_attr( $previous[ $key ] );
@@ -141,7 +144,7 @@ final class Form {
 					'{{key}}'      => esc_attr( $key ),
 					'{{label}}'    => esc_attr( sprintf( /* translators: %s: product name. */ __( 'Quantity for %s', 'linker-commerce' ), $product->get_name() ) ),
 					'{{price}}'    => wp_kses_post( $product->get_price_html() ),
-					// Native cart link filter resolves the Polylang twin without changing product identity.
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.HookCommentWrongStyle, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Woo's native cart link filter resolves the language twin.
 					'{{url}}'      => esc_url( (string) apply_filters( 'woocommerce_cart_item_permalink', $product->get_permalink(), $line, $key ) ),
 				)
 			);
