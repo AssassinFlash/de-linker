@@ -1,1 +1,39 @@
-Final verification results will be filled after the last rebase.
+#246 verification, local instance c246 (http://127.0.0.1:9087)
+Source under test: 8b5ecfeb (docs-only verification record follows).
+Base after git fetch origin && git rebase origin/main: b7cbbf40, up to date.
+
+just check: PASS, exit 0.
+- PHPCS / PHPStan all PHP projects: no errors.
+- JS lint / TypeScript / e2e lint: pass.
+- Python ruff / mypy and tool checks: pass.
+- banned-words clean; i18n coverage gap 0; five catalogs valid; build matches source.
+
+just test: PASS, exit 0.
+- Commerce PHP: 1088 cases, 5354 assertions, 71 skips in unit configuration
+  (1017 unit cases execute; real WordPress cases run separately below).
+- i18n PHP: 190 tests / 432 assertions; tools PHP: 125 / 1802; mu PHP: 6 / 23.
+- JS: 18 files, 98 tests pass; engine browser e2e: 9 pass.
+- Python: Genie 658 pass; engine 112 pass; local 98 pass; migrate 94 pass / 9 skip;
+  FAQ 20 pass; pull 113 pass; cutover 82 pass.
+Existing skip counts are reported rather than called full live acceptance.
+
+Real WordPress integration, run twice against c246:
+LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/c246/wordpress \
+  /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpunit -c phpunit.integration.xml.dist
+Run 1: exit 0, Tests 66, Assertions 641, Skipped 9, 20.363 seconds.
+Run 2: exit 0, Tests 66, Assertions 641, Skipped 9, 25.331 seconds.
+The nine existing ProductSearchRest / SelectionFactsRest tests require a separate
+LINKER_COMMERCE_TEST_SITE fixture URL. All #246 OpenInquiryTest cases execute.
+
+Observed red -> green regressions: template attributes and customer shortcodes,
+German order line with canonical product ID, alternate checkout transport rejection,
+WindPress inquiry fragment provider, retained error language switch, message-only
+inquiry monetary totals. Browser also verified Woo quantity update + return.
+
+WindPress admin compilation on c246: compiled true; last_generated 1792258289;
+cache size 681132 bytes. No plugin CSS enqueue / separate Tailwind pipeline.
+
+Mail: local file spool only. Recipient correctness asserted from Outbox queue
+records under forced throttle, not by sending multiple real emails.
+Browser synthetic users and their inquiries: cleaned by browser-fixtures.php cleanup.
+Production: no writes, deployment, merge or live email tests.
