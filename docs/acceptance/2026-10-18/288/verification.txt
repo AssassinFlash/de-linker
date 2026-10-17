@@ -37,24 +37,30 @@ All 861 origin/main pairs preserved. Fresh POT: 825 entries; built JS included.
 See translation-check.json for the machine-readable result.
 
 ROUND 2 — supersedes the round-1 POT-only preservation conclusion/count.
-Rebased on origin/main d27d1a3e.
+Initially rebased on d27d1a3e; final origin/main base is 97f6fc14.
+The final rebase retains all five new #245 translations.
 just i18n-commerce c288: repeated successfully; native PHP/JS/build POT plus
 fresh LC fragment POT, never an old POT input. 29 live LC catalog messages;
-9 entries restored active; final POT 834 entries.
+9 entries restored active; final POT 839 entries.
 TDD public gate: bad PR catalogs exit 1 (9 live obsolete entries, including
 Clear search); regenerated catalogs exit 0. See round2-red.txt/round2-green.txt.
-Compiled MO comparison (including header): main 782, old PR 777, final 786.
+Compiled MO comparison (including header): latest main 787, final 791.
+Initial round-2 baseline was main 782, old PR 777, repaired 786.
 Removed exactly 4 retired approval messages; changed translations 0;
 8 older LC translations added back, and Clear search -> Suche leeren retained.
-All 861 pre-round-2 PO msgid/msgstr pairs unchanged, including plurals,
-obsolete entries and multiline text. See mo-comparison-round2.json.
+All 861 pre-round-2 and all 866 latest-main PO msgid/msgstr pairs unchanged,
+including plurals, obsolete entries and multiline text.
+See mo-comparison-round2.json.
 c288 WordPress translate(): all 9 restored German messages read correctly;
 locale restored. See runtime-translations-round2.json.
 Helper Ruff/import sorting/format and strict mypy: PASS.
 Final just check: exit 0. Final just test: exit 0.
-PHP commerce 1110 tests / 5401 assertions (78 integration tests skipped by
+PHP commerce 1125 tests / 5429 assertions (78 integration tests skipped by
 unit bootstrap); i18n 190/432, tools 147/1900, mu-plugins 6/23.
 JS units 120+6; Node scripts 46; Playwright 9.
 Python Genie 678, engine 112, local 98, FAQ 20, pull 113, cutover 82: PASS.
+Migration tooling: 94 passed, 9 real-instance tests skipped by its bootstrap.
 Independent Spec and Standards review: 0 outstanding on each axis.
+Latest rebase catalog outputs independently confirmed by Spec reviewer:
+787 -> 791 MO entries, only 4 retired messages removed, no msgstr changes.
 No mail sends, deployment or merge.

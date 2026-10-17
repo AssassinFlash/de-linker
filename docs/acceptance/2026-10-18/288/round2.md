@@ -58,9 +58,10 @@ c288 的实际 WordPress `translate()` 在 `de_DE_formal` 下读出九条正确�
 
 ## 本地门禁与评审
 
-- `just check`：首次退出 0；最新 rebase 后完整重跑中。
-- `just test`：首次退出 0；最新 rebase 后完整重跑中。
+- `just check`：首次退出 0；最新 rebase 后完整重跑退出 0。
+- `just test`：首次退出 0；最新 rebase 后完整重跑退出 0。commerce PHP 1,125 tests / 5,429 assertions（默认 bootstrap 跳过 78 个真实实例测试）；其余 PHP、JS、Node、Playwright 与全部 Python 套件通过。
 - 新 helper 的 Ruff（含 import sorting）、format 与 strict mypy：通过。
 - 全量分支基线 `d27d1a3e...b76c5919`，本轮差异 `8e0da45b..b76c5919`；Standards、Spec 独立复核均为 0 个待处理项。Spec 评审者独立解析实际 MO，确认上表全部比较结果，旧的“Clear search 可 obsolete”建议已明确撤回。
 - 推送前因 #245 合并造成三份语言目录冲突，保留主线目录作为字典后使用同一命令重新提取、更新、编译；未覆盖主线新增译文。最新主线已固定为 `97f6fc14`。
+- 最新 rebase 的语言产物另经 Spec 评审者独立读回：MO 787 → 791，仅四条退役文案删除，共享译文改动 0，原 861 对及最新主线 866 对全部保留。
 - 没有旧代码标识符回流；没有新增依赖。
