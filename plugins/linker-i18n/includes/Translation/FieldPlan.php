@@ -96,7 +96,7 @@ final class FieldPlan {
 			foreach ( $map as $key => $part ) {
 				if ( $part instanceof TagPart ) {
 					foreach ( $this->target->segments[ $index ]->map as $german ) {
-						if ( $german instanceof TagPart && $german->attributes === $part->attributes ) {
+						if ( $german instanceof TagPart && $german->attributes === $part->attributes && $german->tag->name === $part->tag->name ) {
 							$map[ $key ] = new TagPart( $german->tag, $part->attributes );
 							break;
 						}

@@ -73,7 +73,7 @@ final class Planner {
 					// An inline element may span a sentence boundary. Do not send
 					// that unsplittable run as one replacement for several sentences.
 					$visible = (string) preg_replace( Segment::PLACEHOLDER, '', $english->segments[ $index ]->text );
-					if ( 1 === preg_match( '/[.!?]\s+(?=\p{Lu})/u', $visible ) ) {
+					if ( 1 === preg_match( '/[.!?]\s+(?=\p{Lu})/u', $visible ) || $english->segments[ $index ]->markup_signature() !== $german->segments[ $index ]->markup_signature() ) {
 						return FieldPlan::blocked( $english, $current[0] );
 					}
 					continue;

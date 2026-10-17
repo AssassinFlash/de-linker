@@ -68,6 +68,26 @@ final class Segment {
 	}
 
 	/**
+	 * Inline tag names by placeholder, including their paired closing slots.
+	 * Attribute values and protected model/number placeholders are excluded.
+	 *
+	 * @return array<string, string>
+	 */
+	public function markup_signature(): array {
+		$signature = array();
+		foreach ( $this->map as $key => $value ) {
+			if ( ! str_starts_with( ltrim( $key, '/' ), 't' ) ) {
+				continue;
+			}
+			$raw = $value instanceof TagPart ? $value->tag->raw : $value;
+			if ( 1 === preg_match( '/^<\/?([a-z][a-z0-9:-]*)\b/i', $raw, $match ) ) {
+				$signature[ $key ] = strtolower( $match[1] );
+			}
+		}
+		return $signature;
+	}
+
+	/**
 	 * The segment printed from a translation of its text.
 	 *
 	 * @param string             $translation  Translated text with the same placeholders.
