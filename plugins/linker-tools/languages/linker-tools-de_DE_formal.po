@@ -421,14 +421,16 @@ msgstr "Fragen Sie Genie zu unseren Produkten"
 msgid "Genie finds any model in our range and checks what works with it."
 msgstr "Genie findet jedes Modell aus unserem Sortiment und prüft, was dazu passt."
 
+#. translators: %s: an inverter from the current product range, e.g. "SAJ H2-10K-T3".
 #: includes/Genie/Preview.php
-msgid "Find the SAJ H2-10K-T3"
-msgstr "Zeigen Sie mir den SAJ H2-10K-T3"
+#, php-format
+msgid "Tell me about the %s"
+msgstr "%s: Was sind die wichtigsten Daten?"
 
 #: includes/Genie/Preview.php
-msgid "Which batteries work with the GoodWe ESA GW10K-EHA-G20?"
-msgstr "Welche Batterien passen zum GoodWe ESA GW10K-EHA-G20?"
+msgid "Which batteries work with my inverter?"
+msgstr "Welche Batterien passen zu meinem Wechselrichter?"
 
 #: includes/Genie/Preview.php
 msgid "Compare SAJ and GoodWe hybrid inverters"
-msgstr "Hybrid-Wechselrichter von SAJ und GoodWe vergleichen"
+msgstr "Wie unterscheiden sich die Hybrid-Wechselrichter von SAJ und GoodWe?"

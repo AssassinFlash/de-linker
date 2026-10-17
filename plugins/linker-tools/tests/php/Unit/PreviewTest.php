@@ -57,7 +57,7 @@ final class PreviewTest extends TestCase {
 	 */
 	public function pages(): array {
 		return array(
-			'home'             => array( 'home', 'home', '' ),
+			'home'             => array( 'home', 'home', 'GoodWe GW60K-STS-G10' ),
 			'product'          => array( 'product', 'product', 'SAJ H2-10K-T3' ),
 			'category'         => array( 'category', 'category', 'EMS & Monitoring' ),
 			'solution (en)'    => array( 'solution', 'solution', 'Residential Storage' ),
@@ -128,9 +128,18 @@ final class PreviewTest extends TestCase {
 		$this->assertGreaterThanOrEqual( 2, count( $copy['asks'] ) );
 		$this->assertLessThanOrEqual( 4, count( $copy['asks'] ) );
 		$this->assertNotSame( '', $copy['lead'] );
-		if ( '' !== $name ) {
+		if ( '' !== $name && 'home' !== $type ) {
 			$this->assertStringContainsStringIgnoringCase( $name, $copy['title'] );
+		}
+		if ( '' !== $name ) {
 			$this->assertStringContainsStringIgnoringCase( $name, $copy['asks'][0] );
+		}
+		// The home card names no fixed product: a fixed name goes stale when
+		// the product is withdrawn; the model comes from the product data.
+		if ( 'home' === $type ) {
+			foreach ( $copy['asks'] as $ask ) {
+				$this->assertDoesNotMatchRegularExpression( '/H2-10K-T3|GW10K-EHA-G20/', $ask );
+			}
 		}
 		foreach ( $copy['asks'] as $ask ) {
 			$this->assertStringNotContainsString( '%s', $ask );
@@ -144,10 +153,11 @@ final class PreviewTest extends TestCase {
 	 */
 	public function copies(): array {
 		return array(
-			'home'     => array( 'home', '' ),
-			'product'  => array( 'product', 'SAJ H2-10K-T3' ),
-			'category' => array( 'category', 'Inverters' ),
-			'solution' => array( 'solution', 'Residential Storage' ),
+			'home'              => array( 'home', 'GoodWe GW60K-STS-G10' ),
+			'home, empty range' => array( 'home', '' ),
+			'product'           => array( 'product', 'SAJ H2-10K-T3' ),
+			'category'          => array( 'category', 'Inverters' ),
+			'solution'          => array( 'solution', 'Residential Storage' ),
 		);
 	}
 
@@ -170,6 +180,7 @@ final class PreviewTest extends TestCase {
 		$this->assertStringContainsString( 'data-linker-genie-peek ', $html );
 		$this->assertStringContainsString( ' hidden>', $html );
 		$this->assertStringContainsString( 'data-anchor=".pdp-layout"', $html );
+		$this->assertStringNotContainsString( 'data-page-type', $html );
 		$this->assertStringContainsString( 'aria-live="polite"', $html );
 		$this->assertStringNotContainsString( 'autofocus', $html );
 		$this->assertStringContainsString( 'SAJ H2-10K-T3', $html );
@@ -179,6 +190,27 @@ final class PreviewTest extends TestCase {
 		// Its own attribute: the dock loader's click handler must not also
 		// open on a suggestion (the card dispatches the ask event once).
 		$this->assertStringNotContainsString( 'data-linker-genie-open', $html );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A solution page's main content is the first section after its hero
+	 * (both hero templates), not the hero itself.
+	 */
+	public function test_solution_anchor_is_the_section_after_the_hero(): void {
+		$this->page( 'solution' );
+		WP_Mock::passthruFunction( '__' );
+		WP_Mock::passthruFunction( 'esc_attr__' );
+		WP_Mock::passthruFunction( 'esc_html__' );
+		WP_Mock::passthruFunction( 'esc_attr' );
+		WP_Mock::passthruFunction( 'esc_html' );
+
+		ob_start();
+		( new Preview() )->card();
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'data-anchor=":is(.lk-hero-cinematic, .lk-hero-utility) ~ section"', $html );
+		$this->assertStringContainsString( 'Planning a residential storage project?', $html );
 		$this->assertConditionsMet();
 	}
 
@@ -259,6 +291,27 @@ final class PreviewTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'single_term_title', array( 'return' => 'EMS &amp; Monitoring' ) );
+		WP_Mock::userFunction(
+			'get_terms',
+			array(
+				'return' => static fn(): array => array( new \WP_Term( (object) array( 'term_id' => 449 ) ) ),
+			)
+		);
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'solution-de' === $page ? 'de' : 'en' ) );
+		WP_Mock::userFunction( 'pll_get_term', array( 'return' => 610 ) );
+		WP_Mock::userFunction(
+			'get_posts',
+			array(
+				'return' => array(
+					new \WP_Post(
+						(object) array(
+							'ID'         => 6530,
+							'post_title' => 'GoodWe GW60K-STS-G10',
+						)
+					),
+				),
+			)
+		);
 		WP_Mock::passthruFunction( 'wp_strip_all_tags' );
 		WP_Mock::userFunction(
 			'get_page_by_path',

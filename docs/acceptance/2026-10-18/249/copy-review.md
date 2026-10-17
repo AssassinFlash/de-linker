@@ -81,3 +81,19 @@ Genie 现在还不读页面（#234），所以每条建议自己点名产品 / �
 | /de/loesung/heimspeicher/ | Heimspeicher: Welche Produkte brauche ich? | 德语回答，出 Heimspeicher 产品并引向 Lösungskonfigurator |
 
 产品页建议 1 的端到端截图：`screens/en-1440-product-suggestion-answered.png`、`screens/de-1440-product-suggestion-answered.png`。
+
+## 第 2 轮（PR #287 评审第 1 轮之后）
+
+代码评审要求首页建议不写死商品（"SAJ H2-10K-T3"、"GoodWe ESA GW10K-EHA-G20" 下架即过时）：改为从当前商品数据取，或不依赖具体商品。初稿 → 独立评审代理（只读）→ 定稿：
+
+| 位置 | 初稿 | 评审意见 | 定稿 |
+|---|---|---|---|
+| 首页 · 建议 1 EN | Find the {name}（{name}＝最新发布的商品） | "Find the …" 像对搜索框下命令，不像对话；"最新商品"可能是电表、线缆，与卡的话题不符 | **Tell me about the {name}**；{name} 限逆变器分类里最新发布的一款（代码 `Preview::example_model()`），保留"报型号出产品"这条确定性最强的路径 |
+| 首页 · 建议 1 DE | Zeigen Sie mir das Produkt {name} | "das Produkt" 同位语解决了性别；"Zeigen Sie mir" 生硬，Genie 也不是"展示"；建议 "Was können Sie mir zum Produkt {name} sagen?" | 评审稿实测（真实 Genie，两次）只回一句"Hier sind passende Produkte aus unserem Sortiment."加一张卡，"Erzählen Sie mir mehr über das Produkt {name}" 同样；**定稿 {name}: Was sind die wichtigsten Daten?**——冒号形式与其它建议一致、不变格，实测给出数据手册里的 PV、电池、电网侧参数 |
+| 首页 · 建议 2 | Which batteries work with my inverter? / Welche Batterien passen zu meinem Wechselrichter? | 不依赖商品、自然；Genie 会追问是哪台逆变器，是合适的开场 | 同初稿 |
+| 首页 · 建议 3 EN | Compare SAJ and GoodWe hybrid inverters | 保留；品牌名的过时风险低 | 同初稿 |
+| 首页 · 建议 3 DE | Hybrid-Wechselrichter von SAJ und GoodWe vergleichen | 不定式像给自己记的待办，不是对人说的话；与建议 2 的问句形式统一 | **Wie unterscheiden sich die Hybrid-Wechselrichter von SAJ und GoodWe?** |
+
+本地实例当前取到的示例（2026-10-18）：EN "Tell me about the GoodWe ESA GW10K-EHA-G20"，DE "GoodWe ESA GW10K-EHA-G20: Was sind die wichtigsten Daten?"。
+
+实测（真实 Genie）：EN 建议 1 给出该型号的 AC、PV、电池侧参数；建议 2 追问逆变器品牌型号；DE 建议 1（定稿）给出数据手册参数；DE 建议 3 按系列比较两家。德语"Was können Sie mir zum Produkt … sagen?"只得到一句模板话加卡片，这是 Genie 理解层对德语"介绍某产品"问法的薄弱处（#233 的范围），本票选用能答好的问法，不改理解层。

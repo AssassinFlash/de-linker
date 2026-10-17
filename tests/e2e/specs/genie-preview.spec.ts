@@ -24,6 +24,7 @@ import { expect, test, type Page } from '@playwright/test';
  * Internal dependencies
  */
 import { instance } from '../lib/instance';
+import { DWELL_MS } from '../../../plugins/linker-tools/src/preview/rules';
 
 type Lang = 'en' | 'de';
 type Kind = 'home' | 'product' | 'category' | 'solution';
@@ -70,7 +71,10 @@ const NEVER = [
 
 const DESKTOP = { width: 1440, height: 900 };
 const PHONE = { width: 390, height: 844 };
-const DWELL = 8_000;
+/** The card's own dwell (src/preview/rules.ts). */
+const DWELL = DWELL_MS;
+/** A visit ends after 30 minutes without activity (src/preview/memory.ts). */
+const MINUTE = 60_000;
 const DAY = 86_400_000;
 const START = new Date('2026-10-18T09:00:00Z');
 
@@ -101,18 +105,22 @@ async function arrive(
 
 /** Scrolls the anchor the card names well above the 40% line. */
 async function scrollPast(page: Page): Promise<void> {
-	await page.evaluate(() => {
+	const found = await page.evaluate(() => {
 		const card = document.querySelector<HTMLElement>(
 			'[data-linker-genie-peek]'
 		);
 		const anchor = card?.dataset.anchor
 			? document.querySelector(card.dataset.anchor)
 			: null;
-		const bottom = anchor
-			? anchor.getBoundingClientRect().bottom + window.scrollY
-			: window.innerHeight;
+		if (!anchor) {
+			return false;
+		}
+		const bottom = anchor.getBoundingClientRect().bottom + window.scrollY;
 		window.scrollTo(0, Math.max(0, bottom - window.innerHeight * 0.3));
+		return true;
 	});
+	// A selector that misses the live template would fall back silently.
+	expect(found, 'the page carries the anchor the card names').toBe(true);
 }
 
 const card = (page: Page) => page.locator('[data-linker-genie-peek]');
@@ -180,19 +188,70 @@ for (const lang of ['en', 'de'] as const) {
 			await shot(page, `${lang}-1440-home-0-in-hero`);
 		});
 
-		test('once per visit', async ({ page }) => {
+		test('once per visit, across tabs', async ({ context, page }) => {
 			await page.setViewportSize(DESKTOP);
 			await arrive(page, PAGES[lang].product);
 			await scrollPast(page);
 			await page.clock.runFor(DWELL + 500);
 			await expect(card(page)).toBeVisible();
 
-			// The next page of the same visit (same tab, same session).
+			// The next page of the same visit, in the same tab.
 			await page.goto(`${instance().url}${PAGES[lang].category}`);
 			await scrollPast(page);
 			await page.clock.runFor(DWELL * 2);
 			await expect(card(page), 'not twice in one visit').toBeHidden();
 			await shot(page, `${lang}-1440-category-once-per-visit`);
+
+			// A second tab of the same visit, ten minutes later.
+			const tab = await context.newPage();
+			await tab.setViewportSize(DESKTOP);
+			await arrive(
+				tab,
+				PAGES[lang].solution,
+				new Date(START.getTime() + 10 * MINUTE)
+			);
+			await scrollPast(tab);
+			await tab.clock.runFor(DWELL * 2);
+			await expect(card(tab), 'not in another tab either').toBeHidden();
+			await shot(tab, `${lang}-1440-solution-other-tab-same-visit`);
+			await tab.close();
+
+			// After 30 minutes without activity a new visit begins.
+			const later = await context.newPage();
+			await later.setViewportSize(DESKTOP);
+			await arrive(
+				later,
+				PAGES[lang].solution,
+				new Date(START.getTime() + 45 * MINUTE)
+			);
+			await scrollPast(later);
+			await later.clock.runFor(DWELL + 500);
+			await expect(card(later), 'a new visit').toBeVisible();
+			await shot(later, `${lang}-1440-solution-new-visit-after-idle`);
+			await later.close();
+		});
+
+		test('a solution page waits past the hero for its first section', async ({
+			page,
+		}) => {
+			await page.setViewportSize(DESKTOP);
+			await arrive(page, PAGES[lang].solution);
+			// The hero is gone; the first section after it is still on screen.
+			await page.evaluate(() => {
+				const hero = document.querySelector(
+					'.lk-hero-cinematic, .lk-hero-utility'
+				) as Element;
+				const bottom =
+					hero.getBoundingClientRect().bottom + window.scrollY;
+				window.scrollTo(0, bottom - window.innerHeight * 0.3);
+			});
+			await page.clock.runFor(DWELL * 2);
+			await expect(card(page), 'not for the hero alone').toBeHidden();
+			await shot(page, `${lang}-1440-solution-0-past-hero-only`);
+
+			await scrollPast(page);
+			await page.clock.runFor(DWELL + 500);
+			await expect(card(page)).toBeVisible();
 		});
 
 		test('closed: away for 30 days, back after them', async ({
@@ -325,7 +384,8 @@ for (const lang of ['en', 'de'] as const) {
 							'::after'
 						).backgroundColor
 				);
-				expect(mark, 'the red mark').toBe('rgb(214, 54, 56)');
+				// --proto-sem-danger (#b85a45), the system's red.
+				expect(mark, 'the red mark').toBe('rgb(184, 90, 69)');
 				expect(
 					await page.evaluate(
 						() => document.activeElement === document.body

@@ -40,7 +40,10 @@ final class Preview {
 	 *   below it is then on screen (INTL.md §0.3: "技术参数区进入视口");
 	 * - category: the first product card, i.e. the first row of products
 	 *   (INTL.md §0.3: "第一行产品之后");
-	 * - solution: the solution page's hero.
+	 * - solution: the first section after the hero (residential and
+	 *   commercial pages: `.lk-hero-cinematic`, then the capabilities strip;
+	 *   utility pages: `.lk-hero-utility`, then the systems section), so the
+	 *   hero alone is not "the main content".
 	 *
 	 * @var array<string, string>
 	 */
@@ -48,7 +51,7 @@ final class Preview {
 		'home'     => '.hero-cinematic',
 		'product'  => '.pdp-layout',
 		'category' => '.product-card',
-		'solution' => '.lk-hero-cinematic',
+		'solution' => ':is(.lk-hero-cinematic, .lk-hero-utility) ~ section',
 	);
 
 	/**
@@ -56,6 +59,11 @@ final class Preview {
 	 * the language layer. The solution pages are its children.
 	 */
 	private const SOLUTION_HUB = 'solution';
+
+	/**
+	 * The product category the home card's example model comes from.
+	 */
+	private const EXAMPLE_CATEGORY = 'inverters';
 
 	/**
 	 * Hooks the script and the card.
@@ -97,8 +105,7 @@ final class Preview {
 			);
 		}
 		printf(
-			'<aside class="linker-genie-peek" data-linker-genie-peek data-page-type="%1$s" data-anchor="%2$s" aria-labelledby="linker-genie-peek-title" aria-live="polite" hidden><div class="linker-genie-peek__head"><span class="linker-genie-peek__mark" aria-hidden="true">&#10022;</span><span class="linker-genie-peek__name">Genie</span><button type="button" class="linker-genie-peek__close" data-linker-genie-peek-close aria-label="%3$s"><span aria-hidden="true">&times;</span></button></div><p class="linker-genie-peek__title" id="linker-genie-peek-title">%4$s</p><p class="linker-genie-peek__lead">%5$s</p><ul class="linker-genie-peek__asks">%6$s</ul><p class="linker-genie-peek__ai">%7$s<span aria-hidden="true"> · </span>%8$s</p></aside>',
-			esc_attr( $context['type'] ),
+			'<aside class="linker-genie-peek" data-linker-genie-peek data-anchor="%1$s" aria-labelledby="linker-genie-peek-title" aria-live="polite" hidden><div class="linker-genie-peek__head"><span class="linker-genie-peek__mark" aria-hidden="true">&#10022;</span><span class="linker-genie-peek__name">Genie</span><button type="button" class="linker-genie-peek__close" data-linker-genie-peek-close aria-label="%2$s"><span aria-hidden="true">&times;</span></button></div><p class="linker-genie-peek__title" id="linker-genie-peek-title">%3$s</p><p class="linker-genie-peek__lead">%4$s</p><ul class="linker-genie-peek__asks">%5$s</ul><p class="linker-genie-peek__ai">%6$s<span aria-hidden="true"> · </span>%7$s</p></aside>',
 			esc_attr( self::ANCHORS[ $context['type'] ] ),
 			esc_attr__( 'Close. Suggestion cards stay hidden for 30 days.', 'linker-tools' ),
 			esc_html( $copy['title'] ),
@@ -121,7 +128,7 @@ final class Preview {
 		if ( is_front_page() ) {
 			return array(
 				'type' => 'home',
-				'name' => '',
+				'name' => $this->example_model(),
 			);
 		}
 		if ( function_exists( 'is_product' ) && is_product() ) {
@@ -143,6 +150,82 @@ final class Preview {
 			);
 		}
 		return null;
+	}
+
+	/**
+	 * A model from the current range for the home card's "ask about a
+	 * model" suggestion: the newest published inverter (the newest product
+	 * is the first card of the product listing, /products/, read
+	 * 2026-10-18; the inverter category keeps the example a main product,
+	 * not a meter or a cable), in the request's language. Read from the
+	 * product data on every page view, so a withdrawn product is never
+	 * named; empty when the range is empty, and the card then drops that
+	 * suggestion.
+	 */
+	private function example_model(): string {
+		$args = array(
+			'post_type'        => 'product',
+			'post_status'      => 'publish',
+			'numberposts'      => 1,
+			'orderby'          => array(
+				'date' => 'DESC',
+				'ID'   => 'DESC',
+			),
+			'suppress_filters' => false,
+			// Hidden products are not in the listing (Woo's own visibility term).
+			'tax_query'        => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- one row, once per home page view.
+				'relation' => 'AND',
+				array(
+					'taxonomy' => 'product_cat',
+					'field'    => 'term_id',
+					'terms'    => $this->inverter_terms(),
+				),
+				array(
+					'taxonomy' => 'product_visibility',
+					'field'    => 'name',
+					'terms'    => array( 'exclude-from-catalog' ),
+					'operator' => 'NOT IN',
+				),
+			),
+		);
+		if ( function_exists( 'pll_current_language' ) && is_string( pll_current_language() ) ) {
+			$args['lang'] = pll_current_language();
+		}
+		$posts = get_posts( $args );
+		$first = $posts[0] ?? null;
+		return $first instanceof \WP_Post ? $this->product_name( $first->post_title ) : '';
+	}
+
+	/**
+	 * The inverter category in both languages: the English term
+	 * (`inverters`) and its German twin through the language layer.
+	 *
+	 * @return list<int>
+	 */
+	private function inverter_terms(): array {
+		// `lang => ''` asks the language layer for every language: on a
+		// German page it would otherwise hide the English term.
+		$terms = get_terms(
+			array(
+				'taxonomy'   => 'product_cat',
+				'slug'       => self::EXAMPLE_CATEGORY,
+				'hide_empty' => false,
+				'number'     => 1,
+				'lang'       => '',
+			)
+		);
+		$term  = is_array( $terms ) ? ( $terms[0] ?? null ) : null;
+		if ( ! $term instanceof \WP_Term ) {
+			return array( 0 );
+		}
+		$ids = array( (int) $term->term_id );
+		if ( function_exists( 'pll_get_term' ) ) {
+			$twin = (int) pll_get_term( (int) $term->term_id, 'de' );
+			if ( $twin > 0 ) {
+				$ids[] = $twin;
+			}
+		}
+		return $ids;
 	}
 
 	/**
@@ -195,26 +278,30 @@ final class Preview {
 					),
 				);
 			case 'solution':
+				$name = $this->in_sentence( $name );
 				return array(
 					/* translators: %s: the solution's name, e.g. "residential storage". */
-					'title' => sprintf( __( 'Planning a %s project?', 'linker-tools' ), $this->in_sentence( $name ) ),
+					'title' => sprintf( __( 'Planning a %s project?', 'linker-tools' ), $name ),
 					'lead'  => __( 'Genie sizes the system and picks the products with you.', 'linker-tools' ),
 					'asks'  => array(
 						/* translators: %s: the solution's name. */
-						sprintf( __( 'What do I need for a %s system?', 'linker-tools' ), $this->in_sentence( $name ) ),
+						sprintf( __( 'What do I need for a %s system?', 'linker-tools' ), $name ),
 						/* translators: %s: the solution's name. */
-						sprintf( __( 'Size a %s system for my project', 'linker-tools' ), $this->in_sentence( $name ) ),
+						sprintf( __( 'Size a %s system for my project', 'linker-tools' ), $name ),
 					),
 				);
 			default:
+				$asks = array();
+				if ( '' !== $name ) {
+					/* translators: %s: an inverter from the current product range, e.g. "SAJ H2-10K-T3". */
+					$asks[] = sprintf( __( 'Tell me about the %s', 'linker-tools' ), $name );
+				}
+				$asks[] = __( 'Which batteries work with my inverter?', 'linker-tools' );
+				$asks[] = __( 'Compare SAJ and GoodWe hybrid inverters', 'linker-tools' );
 				return array(
 					'title' => __( 'Ask Genie about our products', 'linker-tools' ),
 					'lead'  => __( 'Genie finds any model in our range and checks what works with it.', 'linker-tools' ),
-					'asks'  => array(
-						__( 'Find the SAJ H2-10K-T3', 'linker-tools' ),
-						__( 'Which batteries work with the GoodWe ESA GW10K-EHA-G20?', 'linker-tools' ),
-						__( 'Compare SAJ and GoodWe hybrid inverters', 'linker-tools' ),
-					),
+					'asks'  => $asks,
 				);
 		}
 	}

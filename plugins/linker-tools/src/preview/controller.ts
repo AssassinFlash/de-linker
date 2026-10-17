@@ -53,18 +53,19 @@ export function startPreview(
 	}
 
 	function gateOpen(): boolean {
+		const now = Date.now();
 		return mayShow( {
-			shownThisVisit: memory.shown(),
-			openedThisVisit: memory.opened(),
+			shownThisVisit: memory.shown( now ),
+			openedThisVisit: memory.opened( now ),
 			dockOpen,
 			dismissedUntil: memory.dismissedUntil(),
-			now: Date.now(),
+			now,
 		} );
 	}
 
 	function show() {
 		shown = true;
-		memory.markShown();
+		memory.markShown( Date.now() );
 		card.hidden = false;
 		dock()?.classList.add( DOCK_CLASS );
 		// The entrance runs on the next frame, after the card has a box.
@@ -104,6 +105,8 @@ export function startPreview(
 	}
 
 	function onScroll() {
+		// Scrolling is activity: it keeps the visit alive in every tab.
+		memory.touch( Date.now() );
 		if ( armed || shown ) {
 			return;
 		}
@@ -116,7 +119,7 @@ export function startPreview(
 	// Genie opened by any entry: a conversation is under way for the rest
 	// of this visit, and the card steps aside.
 	function onOpened() {
-		memory.markOpened();
+		memory.markOpened( Date.now() );
 		waitingForBlur = false;
 		if ( timer !== undefined ) {
 			clearTimeout( timer );
@@ -179,6 +182,9 @@ export function startPreview(
 	doc.addEventListener( 'focusout', onFocusOut );
 	card.addEventListener( 'click', onCardClick );
 	card.addEventListener( 'keydown', onCardKey );
+	// A page view is activity: it continues the visit, or starts a new one
+	// after VISIT_IDLE_MS of quiet in every tab.
+	memory.touch( Date.now(), true );
 	// A page opened already scrolled (a reload, a back navigation) starts
 	// the wait at once.
 	onScroll();

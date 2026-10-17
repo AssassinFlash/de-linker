@@ -1,11 +1,14 @@
 /*
  * Genie's preview card, variant A "提示卡" (owner 2026-10-17, ticket #249;
  * docs/prototypes/2026-10-17-preview-card/DECISION.md). A Genie surface, so
- * its look is the tool's own (AGENTS.md 2026-10-10: tool pages may be
- * redesigned); every value below is the prototype's `.lpp`/`.lpp--A` rule
- * (preview-prototype.css) carried onto the BEM class of the same part. The
- * type follows the page (`inherit`) where the prototype named the site's
- * fonts.
+ * its layout is the tool's own (AGENTS.md 2026-10-10: tool pages may be
+ * redesigned): sizes and spacing are the prototype's `.lpp`/`.lpp--A` rule
+ * (preview-prototype.css) carried onto the BEM class of the same part.
+ *
+ * Colours, radii, shadows and the focus ring come from the site's design
+ * tokens (plugins/linker-commerce/content/windpress/tokens.css, compiled
+ * into the WindPress cache every front page loads); the prototype's own hex
+ * values are not carried. The type follows the page (`inherit`).
  *
  * The stylesheet loads only on the pages that carry the card (Preview.php).
  */
@@ -21,19 +24,17 @@
 	width: 320px;
 	max-width: calc(100vw - 40px);
 	padding: 12px 14px;
-	border: 1px solid #e1e6e9;
-	border-radius: 16px;
-	background: #fff;
-	color: #172636;
+	border: 1px solid var(--proto-color-line);
+	border-radius: var(--proto-radius-card);
+	background: var(--proto-color-surface);
+	color: var(--proto-color-ink);
 	font-family: inherit;
-	box-shadow:
-		0 18px 50px rgba(18, 34, 56, 0.16),
-		0 3px 10px rgba(18, 34, 56, 0.08);
+	box-shadow: var(--proto-shadow-3), var(--proto-shadow-1);
 	opacity: 0;
 	transform: translateY(8px);
 	transition:
-		opacity 0.25s ease,
-		transform 0.25s ease;
+		opacity var(--proto-duration) var(--proto-ease),
+		transform var(--proto-duration) var(--proto-ease);
 }
 
 .linker-genie-peek.is-in {
@@ -57,7 +58,7 @@
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	color: #0b1f33;
+	color: var(--proto-color-ink);
 	font-size: 12px;
 	font-weight: 650;
 }
@@ -69,7 +70,7 @@
 
 /* `.lpp-mark` */
 .linker-genie-peek__mark {
-	color: #087c73;
+	color: var(--proto-color-accent);
 	font-size: 14px;
 }
 
@@ -80,9 +81,9 @@
 	height: 28px;
 	padding: 0;
 	border: 0;
-	border-radius: 8px;
+	border-radius: var(--proto-radius-md);
 	background: transparent;
-	color: #5f6b7c;
+	color: var(--proto-color-muted);
 	font-family: inherit;
 	font-size: 20px;
 	line-height: 1;
@@ -90,14 +91,14 @@
 }
 
 .linker-genie-peek__close:hover {
-	background: #f1f4f6;
-	color: #172636;
+	background: var(--proto-neutral-100);
+	color: var(--proto-color-ink);
 }
 
 /* `.lpp-title` */
 .linker-genie-peek__title {
 	margin: 8px 0 2px;
-	color: #172636;
+	color: var(--proto-color-ink);
 	font-size: 15px;
 	font-weight: 650;
 	line-height: 1.35;
@@ -106,7 +107,7 @@
 /* `.lpp-lead` */
 .linker-genie-peek__lead {
 	margin: 0 0 10px;
-	color: #5f6b7c;
+	color: var(--proto-color-muted);
 	font-size: 12.5px;
 	line-height: 1.45;
 }
@@ -126,10 +127,10 @@
 	box-sizing: border-box;
 	width: 100%;
 	padding: 8px 12px;
-	border: 1px solid #dfe7ec;
-	border-radius: 10px;
-	background: #fff;
-	color: #172636;
+	border: 1px solid var(--proto-color-line);
+	border-radius: var(--proto-radius-lg);
+	background: var(--proto-color-surface);
+	color: var(--proto-color-ink);
 	font-family: inherit;
 	font-size: 13px;
 	font-weight: 500;
@@ -139,22 +140,22 @@
 }
 
 .linker-genie-peek__ask:hover {
-	border-color: #087c73;
-	color: #087c73;
+	border-color: var(--proto-color-accent);
+	color: var(--proto-color-accent);
 }
 
 .linker-genie-peek__ask:focus-visible,
 .linker-genie-peek__close:focus-visible {
-	outline: 2px solid #087c73;
+	outline: var(--proto-focus-ring);
 	outline-offset: 2px;
 }
 
 /* `.lpp-ai`: the AI disclosure on first contact (目标 9; EU AI Act Art. 50).
- * The prototype's #8a96a3 on white is 3.0:1; #6b7785 reaches the 4.5:1 that
- * WCAG 2.2 1.4.3 asks of 11px text. */
+ * The muted token on the surface is 6.3:1, above the 4.5:1 that WCAG 2.2
+ * 1.4.3 asks of 11px text. */
 .linker-genie-peek__ai {
 	margin: 10px 0 0;
-	color: #6b7785;
+	color: var(--proto-color-muted);
 	font-size: 11px;
 }
 
@@ -178,7 +179,8 @@
 }
 
 /* `.linker-genie-open.lpp-badged::after`, as a plain dot: the mark says
- * "something for this page", not a count of messages. */
+ * "something for this page", not a count of messages. The red is the
+ * system's danger token (the prototype's "红色标记"). */
 .linker-genie--peek > .linker-genie-open {
 	position: relative;
 }
@@ -191,8 +193,8 @@
 		right: -2px;
 		width: 12px;
 		height: 12px;
-		border-radius: 50%;
-		background: #d63638;
-		box-shadow: 0 0 0 2px #fff;
+		border-radius: var(--proto-radius-round);
+		background: var(--proto-sem-danger);
+		box-shadow: 0 0 0 2px var(--proto-color-surface);
 	}
 }

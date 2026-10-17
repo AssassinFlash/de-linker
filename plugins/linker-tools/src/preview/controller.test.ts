@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import { DOCK_CLASS, IN_CLASS, startPreview } from './controller';
-import { KEYS } from './memory';
+import { KEYS, VISIT_IDLE_MS, type Visit } from './memory';
 import { DISMISS_MS, DWELL_MS } from './rules';
 
 // The markup Preview.php prints, trimmed to what the rules touch.
@@ -32,6 +32,21 @@ function dock(): HTMLElement {
 	return document.querySelector( '.linker-genie' ) as HTMLElement;
 }
 
+function visit(): Visit {
+	return JSON.parse( window.localStorage.getItem( KEYS.visit ) ?? '{}' );
+}
+
+// The next page view, in this tab or another tab of the same browser: the
+// same localStorage, a fresh document.
+function nextPage( bottom = 0 ) {
+	document.body.innerHTML = PAGE;
+	const hero = document.querySelector( '.hero' ) as HTMLElement;
+	vi.spyOn( hero, 'getBoundingClientRect' ).mockReturnValue( {
+		bottom,
+	} as DOMRect );
+	start();
+}
+
 function start() {
 	stop();
 	stop = startPreview( card() );
@@ -48,7 +63,6 @@ beforeEach( () => {
 	vi.useFakeTimers();
 	vi.setSystemTime( new Date( '2026-10-18T10:00:00Z' ) );
 	window.localStorage.clear();
-	window.sessionStorage.clear();
 	document.body.innerHTML = PAGE;
 	heroBottom = 600;
 	vi.spyOn( window, 'innerHeight', 'get' ).mockReturnValue( 1000 );
@@ -84,7 +98,7 @@ describe( 'the trigger', () => {
 		expect( card().hidden ).toBe( false );
 		expect( card() ).toHaveClass( IN_CLASS );
 		expect( dock() ).toHaveClass( DOCK_CLASS );
-		expect( window.sessionStorage.getItem( KEYS.shown ) ).toBe( '1' );
+		expect( visit().shown ).toBe( true );
 	} );
 
 	test( 'never takes the focus', () => {
@@ -116,27 +130,41 @@ describe( 'the trigger', () => {
 } );
 
 describe( 'once per visit', () => {
-	test( 'the next page of the same visit stays quiet', () => {
+	test( 'the next page, or another tab, of the same visit stays quiet', () => {
 		start();
 		scrollHeroTo( 0 );
 		vi.advanceTimersByTime( DWELL_MS );
 		expect( card().hidden ).toBe( false );
 
-		document.body.innerHTML = PAGE; // the next page view
-		const hero = document.querySelector( '.hero' ) as HTMLElement;
-		vi.spyOn( hero, 'getBoundingClientRect' ).mockReturnValue( {
-			bottom: 0,
-		} as DOMRect );
-		start();
+		nextPage();
 		vi.advanceTimersByTime( DWELL_MS * 2 );
 		expect( card().hidden ).toBe( true );
 	} );
 
-	test( 'a new visit (a new browser session) sees it again', () => {
-		window.sessionStorage.setItem( KEYS.shown, '1' );
-		window.sessionStorage.clear();
+	test( 'activity keeps the visit going past 30 minutes in all', () => {
 		start();
 		scrollHeroTo( 0 );
+		vi.advanceTimersByTime( DWELL_MS );
+		expect( card().hidden ).toBe( false );
+
+		vi.advanceTimersByTime( VISIT_IDLE_MS - 60_000 );
+		window.dispatchEvent( new Event( 'scroll' ) ); // still active
+		vi.advanceTimersByTime( VISIT_IDLE_MS - 60_000 );
+
+		nextPage();
+		vi.advanceTimersByTime( DWELL_MS * 2 );
+		expect( card().hidden ).toBe( true );
+	} );
+
+	test( 'after 30 minutes without activity a new visit sees it again', () => {
+		start();
+		scrollHeroTo( 0 );
+		vi.advanceTimersByTime( DWELL_MS );
+		expect( card().hidden ).toBe( false );
+		stop();
+
+		vi.advanceTimersByTime( VISIT_IDLE_MS + 1 );
+		nextPage();
 		vi.advanceTimersByTime( DWELL_MS );
 		expect( card().hidden ).toBe( false );
 	} );
@@ -159,7 +187,7 @@ describe( 'during a conversation', () => {
 		document.querySelector< HTMLElement >( '.linker-genie-open' )?.click();
 		vi.advanceTimersByTime( DWELL_MS );
 		expect( card().hidden ).toBe( true );
-		expect( window.sessionStorage.getItem( KEYS.opened ) ).toBe( '1' );
+		expect( visit().opened ).toBe( true );
 	} );
 
 	test( 'opening Genie hides a card that is up', () => {
@@ -193,7 +221,7 @@ describe( 'a suggestion', () => {
 			{ message: 'What pairs with the SAJ H2-10K-T3?' },
 		] );
 		expect( card().hidden ).toBe( true );
-		expect( window.sessionStorage.getItem( KEYS.opened ) ).toBe( '1' );
+		expect( visit().opened ).toBe( true );
 		// A suggestion is not a close: the 30 days do not start.
 		expect( window.localStorage.getItem( KEYS.dismissedUntil ) ).toBeNull();
 	} );
@@ -214,7 +242,6 @@ describe( 'closing', () => {
 		).toBe( Date.now() + DISMISS_MS );
 
 		// A new visit within the 30 days stays quiet …
-		window.sessionStorage.clear();
 		vi.setSystemTime( Date.now() + DISMISS_MS - 60_000 );
 		document.body.innerHTML = PAGE;
 		start();
@@ -224,7 +251,6 @@ describe( 'closing', () => {
 
 		// … and the first visit after them sees it again.
 		stop();
-		window.sessionStorage.clear();
 		vi.setSystemTime( Date.now() + 120_000 );
 		document.body.innerHTML = PAGE;
 		start();
