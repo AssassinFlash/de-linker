@@ -42,9 +42,9 @@
       1440,
       8591
     ],
-    "unmasked_different_pixels": 13090,
+    "unmasked_different_pixels": 13059,
     "difference_bounds": [
-      189,
+      188,
       21,
       1416,
       67
@@ -71,9 +71,9 @@
       1920,
       8757
     ],
-    "unmasked_different_pixels": 13084,
+    "unmasked_different_pixels": 13074,
     "difference_bounds": [
-      430,
+      429,
       21,
       1656,
       67

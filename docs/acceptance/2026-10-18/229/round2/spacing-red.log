@@ -1,0 +1,38 @@
+
+Running 1 test using 1 worker
+
+(node:48668) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/header-parity.spec.ts:44:1 › German desktop retains cross-engine safety headroom (15.5s)
+
+
+  1) [chromium] › specs/header-parity.spec.ts:44:1 › German desktop retains cross-engine safety headroom
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('#tv-header-v2').locator('.tv-desktop-nav')
+    Expected: visible
+    Received: hidden
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeVisible" locator('#tv-header-v2').locator('.tv-desktop-nav') with timeout 15000ms
+      - waiting for locator('#tv-header-v2').locator('.tv-desktop-nav')
+        33 × locator resolved to <div class="tv-desktop-nav">…</div>
+           - unexpected value "hidden"
+
+
+      75 | 		});
+      76 | 		await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+    > 77 | 		await expect(header.locator('.tv-desktop-nav')).toBeVisible();
+         | 		                                                ^
+      78 | 		await expect(header).not.toHaveAttribute('data-tv-nav-folded', 'true');
+      79 | 		await probe.evaluate((style) => (style as HTMLStyleElement).remove());
+      80 | 		await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c229/tests/e2e/specs/header-parity.spec.ts:77:51
+
+    Error Context: artifacts/test-results/header-parity-German-deskt-f1655-ross-engine-safety-headroom-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/header-parity.spec.ts:44:1 › German desktop retains cross-engine safety headroom
+error: recipe `e2e` failed with exit code 1

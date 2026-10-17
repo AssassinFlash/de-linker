@@ -21,7 +21,7 @@ test.describe.configure({ timeout: 45_000 });
 test.afterEach(async ({ page }, info) => {
 	if (process.env.LINKER_HEADER_CAPTURE && page.url() !== 'about:blank') {
 		await page.screenshot({
-			path: `${process.env.LINKER_HEADER_CAPTURE}/${info.title.replace(/[^\w-]+/g, '-')}.png`,
+			path: `${process.env.LINKER_HEADER_CAPTURE}/${info.project.name}/${info.title.replace(/[^\w-]+/g, '-')}.png`,
 			fullPage: false,
 			animations: 'disabled',
 		});
@@ -41,17 +41,24 @@ const viewports = [
 	[390, false],
 ] as const;
 
-test('German navigation uses the largest spacing that fits', async ({
+test('German desktop retains cross-engine safety headroom', async ({
 	page,
-}) => {
+}, info) => {
 	await page.goto(`${instance().url}/de/`);
 	await page.evaluate(() => document.fonts.ready);
-	// Independent rendered bounds: docs/acceptance/2026-10-18/229/round1/layout-metrics.json.
+	const spacing = [];
+	// Round 2 measured worst-engine width + inter-engine spread + 1px per
+	// padding side on six links. Bounds preserve usable spacing after that
+	// reserve: docs/acceptance/2026-10-18/229/round2/layout-metrics.json.
+	// 1288 is the first width above the review's protected boundary zone;
+	// 1940 is the sweep's upper endpoint, not a new responsive breakpoint.
 	for (const [width, minimum] of [
-		[1300, 6],
-		[1366, 11.3],
-		[1440, 13.3],
-		[1920, 12.9],
+		[1288, 3.9],
+		[1300, 4.9],
+		[1366, 10.2],
+		[1440, 12.2],
+		[1920, 11.8],
+		[1940, 11.8],
 	]) {
 		await page.setViewportSize({ width: width!, height: viewportHeight });
 		const header = page.locator('#tv-header-v2');
@@ -62,26 +69,40 @@ test('German navigation uses the largest spacing that fits', async ({
 			.evaluate((link) => parseFloat(getComputedStyle(link).paddingLeft));
 		expect(padding).toBeGreaterThanOrEqual(minimum!);
 		expect(padding).toBeLessThanOrEqual(14);
-		// Chromium lays out in 1/64px units. One more unit per side must overflow;
-		// otherwise the current spacing left usable space on the table.
-		// CSSOM serializes 12.953125 as 12.9531; restore the layout unit before
-		// adding one, so the probe does not accidentally round down again.
-		const nextPadding = (Math.round(padding * 64) + 1) / 64;
+		spacing.push({ width, padding });
+		// Add 12px of real layout pressure (1px on each padding side), rather
+		// than duplicating the stylesheet's fit formula in the assertion.
 		const probe = await page.addStyleTag({
-			content: `html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:${nextPadding}px!important}`,
+			content: `html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:${padding + 1}px!important}`,
 		});
 		await page.evaluate(() => window.dispatchEvent(new Event('resize')));
-		await expect(header).toHaveAttribute('data-tv-nav-folded', 'true');
+		// A visible row before the scheduled fit() is not pressure-test proof.
+		await page.evaluate(
+			() =>
+				new Promise<void>((resolve) => {
+					requestAnimationFrame(() =>
+						requestAnimationFrame(() => resolve())
+					);
+				})
+		);
+		await expect(header.locator('.tv-desktop-nav')).toBeVisible();
+		await expect(header).not.toHaveAttribute('data-tv-nav-folded', 'true');
+		await expect(
+			header.locator('.tv-header-cta:not(.tv-mobile-cta)')
+		).toBeVisible();
 		await probe.evaluate((style) => (style as HTMLStyleElement).remove());
 		await page.evaluate(() => window.dispatchEvent(new Event('resize')));
-		await expect(header.locator('.tv-desktop-nav')).toBeVisible();
 		if (process.env.LINKER_HEADER_CAPTURE) {
 			await page.screenshot({
-				path: `${process.env.LINKER_HEADER_CAPTURE}/de-${width}-spacing.png`,
+				path: `${process.env.LINKER_HEADER_CAPTURE}/${info.project.name}/de-${width}-spacing.png`,
 				animations: 'disabled',
 			});
 		}
 	}
+	await info.attach('header-spacing.json', {
+		body: JSON.stringify(spacing, null, 2),
+		contentType: 'application/json',
+	});
 });
 
 test('EN/DE share every header fold boundary', async ({ browser }, info) => {
@@ -120,6 +141,12 @@ test('EN/DE share every header fold boundary', async ({ browser }, info) => {
 							})
 					);
 					return page.locator('#tv-header-v2').evaluate((header) => {
+						// Firefox reports a viewport-aligned right edge as
+						// 1283.0000305175781: observed noise is 1/32768px.
+						// Allow 32x that noise, still below a 1/64px layout step.
+						// Source: docs/acceptance/2026-10-18/229/round2/firefox-rects.jsonl.
+						// The independent RGB pixel gate has zero tolerance.
+						const rectangleEpsilon = 1 / 1024;
 						const nav = header.querySelector('.tv-desktop-nav')!;
 						const cta = header.querySelector(
 							'.tv-header-cta:not(.tv-mobile-cta)'
@@ -128,11 +155,33 @@ test('EN/DE share every header fold boundary', async ({ browser }, info) => {
 							header.querySelector('#tv-mobile-toggle')!;
 						const desktop =
 							getComputedStyle(nav).display !== 'none';
-						const boxes = [
+						const parts = [
 							...header.querySelectorAll(
 								'.tv-brand, .tv-desktop-nav, .tv-desktop-actions, .tv-header-cta:not(.tv-mobile-cta)'
 							),
-						].map((element) => element.getBoundingClientRect());
+						];
+						const boxes = parts.map((part) =>
+							part.getBoundingClientRect()
+						);
+						const frame = header.querySelector('.tv-nav-frame')!;
+						const frameStyle = getComputedStyle(frame);
+						const available = Math.floor(
+							frame.clientWidth -
+								parseFloat(frameStyle.paddingLeft) -
+								parseFloat(frameStyle.paddingRight)
+						);
+						const required =
+							parts.reduce(
+								(sum, part, index) =>
+									sum +
+									boxes[index]!.width +
+									(parseFloat(
+										getComputedStyle(part).marginRight
+									) || 0),
+								0
+							) +
+							(parts.length - 1) *
+								parseFloat(frameStyle.columnGap);
 						return {
 							folded:
 								header.getAttribute('data-tv-nav-folded') ===
@@ -144,6 +193,7 @@ test('EN/DE share every header fold boundary', async ({ browser }, info) => {
 							padding: getComputedStyle(
 								header.querySelector('.tv-nav-link')!
 							).paddingLeft,
+							headroom: desktop ? available - required : null,
 							// Painted boxes verify usable layout independently of fit().
 							overlap:
 								desktop &&
@@ -152,7 +202,10 @@ test('EN/DE share every header fold boundary', async ({ browser }, info) => {
 										box.left <
 											(index
 												? boxes[index - 1]!.right
-												: 0) || box.right > innerWidth
+												: 0) -
+												rectangleEpsilon ||
+										box.right >
+											innerWidth + rectangleEpsilon
 								),
 						};
 					});
@@ -166,6 +219,13 @@ test('EN/DE share every header fold boundary', async ({ browser }, info) => {
 			expect
 				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
 				.toBe(english!.desktop);
+			if (width >= 1288) {
+				// Independent measured spread + six links' 12px pressure reserve;
+				// round2/safety-margin.json records the precise source calculation.
+				expect
+					.soft(german!.headroom, `${width}px: sourced DE reserve`)
+					.toBeGreaterThanOrEqual(12.35);
+			}
 			for (const state of states) {
 				expect
 					.soft(
@@ -188,12 +248,12 @@ test('EN/DE share every header fold boundary', async ({ browser }, info) => {
 			}
 		}
 		console.log(
-			'| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding |'
+			'| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding | DE headroom |'
 		);
-		console.log('|---:|---|---|---|---|---:|');
+		console.log('|---:|---|---|---|---|---:|---:|');
 		for (const row of rows) {
 			console.log(
-				`| ${row.width} | ${row.en!.folded} | ${row.de!.folded} | ${row.en!.desktop} | ${row.de!.desktop} | ${row.de!.padding} |`
+				`| ${row.width} | ${row.en!.folded} | ${row.de!.folded} | ${row.en!.desktop} | ${row.de!.desktop} | ${row.de!.padding} | ${row.de!.headroom} |`
 			);
 		}
 		await info.attach('header-boundary-sweep.json', {
@@ -211,7 +271,7 @@ for (const locale of ['en', 'de'] as const) {
 	for (const width of [1440, 390]) {
 		test(`${locale}-${width}: navigation disclosures remain usable`, async ({
 			page,
-		}) => {
+		}, info) => {
 			await page.setViewportSize({ width, height: viewportHeight });
 			await page.goto(`${instance().url}${path}`);
 			await page.evaluate(() => document.fonts.ready);
@@ -230,7 +290,7 @@ for (const locale of ['en', 'de'] as const) {
 					await expect(item.locator('.tv-mega-menu')).toBeVisible();
 					if (process.env.LINKER_HEADER_CAPTURE) {
 						await page.screenshot({
-							path: `${process.env.LINKER_HEADER_CAPTURE}/${locale}-${width}-${key}.png`,
+							path: `${process.env.LINKER_HEADER_CAPTURE}/${info.project.name}/${locale}-${width}-${key}.png`,
 							animations: 'disabled',
 						});
 					}
@@ -251,7 +311,7 @@ for (const locale of ['en', 'de'] as const) {
 					await expect(section).toHaveAttribute('open', '');
 					if (process.env.LINKER_HEADER_CAPTURE) {
 						await page.screenshot({
-							path: `${process.env.LINKER_HEADER_CAPTURE}/${locale}-${width}-${key}.png`,
+							path: `${process.env.LINKER_HEADER_CAPTURE}/${info.project.name}/${locale}-${width}-${key}.png`,
 							animations: 'disabled',
 						});
 					}

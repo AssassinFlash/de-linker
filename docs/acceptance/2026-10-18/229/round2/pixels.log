@@ -1,0 +1,25 @@
+home-1280-live.png
+home-1280-local.png
+de-1280-live.png
+de-1280-local.png
+home-1440-live.png
+home-1440-local.png
+de-1440-live.png
+de-1440-local.png
+home-1920-live.png
+home-1920-local.png
+de-1920-live.png
+de-1920-local.png
+home-390-live.png
+home-390-local.png
+de-390-live.png
+de-390-local.png
+{"language": "en", "viewport_width": 1280, "image_size": [1296, 7989], "unmasked_different_pixels": 0, "difference_bounds": null, "masks": [], "ruled_change": false}
+{"language": "de", "viewport_width": 1280, "image_size": [1296, 8221], "unmasked_different_pixels": 0, "difference_bounds": null, "masks": [], "ruled_change": false}
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 8278], "unmasked_different_pixels": 0, "difference_bounds": null, "masks": [], "ruled_change": false}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 8591], "unmasked_different_pixels": 13059, "difference_bounds": [188, 21, 1416, 67], "masks": [], "ruled_change": true}
+{"language": "en", "viewport_width": 1920, "image_size": [1920, 8410], "unmasked_different_pixels": 0, "difference_bounds": null, "masks": [], "ruled_change": false}
+{"language": "de", "viewport_width": 1920, "image_size": [1920, 8757], "unmasked_different_pixels": 13074, "difference_bounds": [429, 21, 1656, 67], "masks": [], "ruled_change": true}
+{"language": "en", "viewport_width": 390, "image_size": [390, 8809], "unmasked_different_pixels": 0, "difference_bounds": null, "masks": [], "ruled_change": false}
+{"language": "de", "viewport_width": 390, "image_size": [390, 9265], "unmasked_different_pixels": 0, "difference_bounds": null, "masks": [], "ruled_change": false}
+exit_code: 0
