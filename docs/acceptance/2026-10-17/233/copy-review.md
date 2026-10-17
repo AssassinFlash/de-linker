@@ -91,3 +91,10 @@ answer…" / "Ich konnte Ihre Frage…"）与 LOGIN_REQUIRED；术语基准：
 
 - 定稿已写入 `services/genie/src/linker_genie/template.py`（SIZING、DOCUMENTS）与 `hydrate.py`（`PAGE_WORD` 与不换行空格）。
 - 评审指出的 `facts.py` 里 `p.{page}` 英文值：这些值只作事实 ID 的内容，不再进入客户可见文本——`ground.py` 的 `_documents` 拒绝任何指向文档事实的 `{fact:…}` 占位符，文档只经文档块呈现，标签由 `hydrate.document_label` 按语言生成。测试：`tests/test_ground_understanding.py::test_no_url_stands_in_the_text`、`test_a_german_document_link_says_seite`。
+
+## 第 1 轮评审补充：多页缩写（PR #279）
+
+同一文件被引用多页时合成一个链接（评审意见 1）。
+- 初稿：EN `pp. 3, 7`；DE `S. 3, 7`。
+- 异议：DE 是否需要复数形式？不需要。德语出版惯例里一页、多页都写 "S."（如 "S. 3, 7"、"S. 3–7"），没有 "SS." 这种写法。EN 的 "pp." 是英文引文的标准多页缩写，和单页的 "p." 成对。缩写与页码之间沿用不换行空格。页码升序排列，逗号分隔；不合并成区间，因为引用的是互不相邻的单页。
+- 定稿：EN `pp.`（`PAGES_WORD["en"]`）；DE `S.`（`PAGES_WORD["de"]`）。测试：`tests/test_ground_understanding.py::test_one_file_is_one_link_with_its_cited_pages`、`test_a_german_link_of_several_pages_keeps_s`。

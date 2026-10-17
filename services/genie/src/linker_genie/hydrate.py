@@ -24,13 +24,21 @@ from linker_genie.schema import (
 # The page abbreviation of a document link, per language (copy review:
 # docs/acceptance/2026-10-17/233/copy-review.md).
 PAGE_WORD = {"en": "p.", "de": "S."}
+PAGES_WORD = {"en": "pp.", "de": "S."}
 
 PLACEHOLDER = re.compile(r"\{fact:([^}]+)\}")
 
 
 def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
-    """Return a copy whose text blocks and handoff summaries are filled."""
+    """Return a copy whose text blocks and handoff summaries are filled.
+
+    Document blocks become links, one per file: two refs to the same file (two
+    batteries citing the same configuration instructions, trial question 4,
+    2026-10-17) are one link, its cited pages joined ("pp. 3, 7").
+    """
     blocks: list[Block] = []
+    # File URL → (index of its link in `blocks`, the document, its cited pages).
+    links: dict[str, tuple[int, Document, list[int]]] = {}
     for block in output.blocks:
         if isinstance(block, TextBlock):
             blocks.append(block.model_copy(update={"text": fill(block.text, facts)}))
@@ -40,38 +48,66 @@ def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
             )
         elif isinstance(block, DocumentBlock):
             document = facts.documents.get(block.ref)
-            if document is not None:
-                blocks.append(
-                    block.model_copy(
-                        update={
-                            "label": document_label(document, output.language),
-                            "url": document_url(document),
-                        }
-                    )
-                )
+            if document is None:
+                continue
+            if document.url in links:
+                index, first, pages = links[document.url]
+            else:
+                index, first, pages = len(blocks), document, []
+                blocks.append(block)
+                links[document.url] = (index, first, pages)
+            if document.page is not None and document.page not in pages:
+                pages.append(document.page)
+            blocks[index] = blocks[index].model_copy(
+                update={
+                    "label": document_label(first, output.language, pages),
+                    "url": document_url(first, pages),
+                }
+            )
         else:
             blocks.append(block)
     return output.model_copy(update={"blocks": blocks})
 
 
-def document_label(document: Document, language: str) -> str:
-    """ "SAJ H2 user manual · p. 42" — the title and, when known, the page."""
-    if document.page is None:
+def document_label(
+    document: Document, language: str, pages: list[int] | None = None
+) -> str:
+    """ "SAJ H2 user manual · p. 42" — the title and, when known, the cited pages.
+
+    Several pages of one file read "pp. 3, 7" in English and "S. 3, 7" in German
+    (German keeps "S." for more than one page).
+    """
+    cited = sorted(
+        set(
+            pages
+            if pages is not None
+            else [document.page]
+            if document.page is not None
+            else []
+        )
+    )
+    if not cited:
         return document.title
+    word = PAGE_WORD.get(language, "p.")
+    if len(cited) > 1:
+        word = PAGES_WORD.get(language, "pp.")
     # A no-break space keeps "S." and its number on one line at 390 px.
-    return f"{document.title} · {PAGE_WORD.get(language, 'p.')}\u00a0{document.page}"
+    return f"{document.title} · {word}\u00a0{', '.join(str(page) for page in cited)}"
 
 
-def document_url(document: Document) -> str:
-    """The document URL, opening a PDF at the cited page.
+def document_url(document: Document, pages: list[int] | None = None) -> str:
+    """The document URL, opening a PDF at its first cited page.
 
     `#page=N` is the PDF open parameter (Adobe, "Parameters for Opening PDF Files")
     that the browsers' PDF viewers honor; any other document keeps its URL.
     """
-    if document.page is not None and document.url.lower().split("?", 1)[0].endswith(
-        ".pdf"
-    ):
-        return f"{document.url}#page={document.page}"
+    cited = (
+        sorted(pages)
+        if pages
+        else ([document.page] if document.page is not None else [])
+    )
+    if cited and document.url.lower().split("?", 1)[0].endswith(".pdf"):
+        return f"{document.url}#page={cited[0]}"
     return document.url
 
 

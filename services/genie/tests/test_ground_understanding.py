@@ -302,3 +302,41 @@ def test_the_fallback_shows_at_most_the_routes_six_cards() -> None:
     facts.qualified_ids = set(range(100, 112))
     cards = [b for b in fallback(facts, "en").blocks if isinstance(b, CardsBlock)]
     assert len(cards[0].product_ids) == 6
+
+
+def test_one_file_is_one_link_with_its_cited_pages() -> None:
+    facts = _facts()
+    other = "https://de-linker.com/wp-content/uploads/2026/03/H2-configuration.pdf"
+    facts.documents["compat.document.1832.0"] = Document(
+        other, "H2 Configuration Instructions", None
+    )
+    facts.documents["compat.document.2067.0"] = Document(
+        other, "H2 Configuration Instructions", None
+    )
+    output = _turn(
+        TextBlock(text="See the documents.", refs=["c1"]),
+        DocumentBlock(ref="c1"),
+        DocumentBlock(ref="compat.document.1832.0"),
+        DocumentBlock(ref="compat.document.0"),
+        DocumentBlock(ref="compat.document.2067.0"),
+    )
+    links = [b for b in hydrate(output, facts).blocks if isinstance(b, DocumentBlock)]
+    assert [(b.label, b.url) for b in links] == [
+        ("SAJ H2 user manual · pp.\u00a07, 42", PDF + "#page=7"),
+        ("H2 Configuration Instructions", other),
+    ]
+
+
+def test_a_german_link_of_several_pages_keeps_s() -> None:
+    output = TurnOutput(
+        language="de",
+        blocks=[
+            TextBlock(text="Siehe Handbuch.", refs=["c1"]),
+            DocumentBlock(ref="c1"),
+            DocumentBlock(ref="compat.document.0"),
+        ],
+    )
+    (link,) = [
+        b for b in hydrate(output, _facts()).blocks if isinstance(b, DocumentBlock)
+    ]
+    assert link.label == "SAJ H2 user manual · S.\u00a07, 42"

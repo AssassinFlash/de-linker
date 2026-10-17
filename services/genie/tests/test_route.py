@@ -183,17 +183,39 @@ def test_small_talk_without_product_words_runs_no_tool() -> None:
     assert (route.name, route.calls) == ("model", ())
 
 
+def test_a_how_to_question_with_product_words_searches_the_documents_in_code() -> None:
+    # Trial question 9: Jev reads documents_specs at 0.67, below CONFIDENT.
+    h2 = Subject((), {}, {}, {}, {"saj-h2": {3557, 3556, 4107, 4108, 3558}})
+    matches = [Match("series", "saj-h2", "saj-h2", frozenset(), "SAJ H2")]
+    message = "How do I set the export limit on an SAJ H2 inverter?"
+    route = plan(message, matches, _reading("documents_specs", 0.67), h2, "en")
+    assert route.name == "documents"
+    assert [c.ability for c in route.calls] == [
+        "linker/search-products",
+        "linker/search-knowledge",
+    ]
+    assert route.calls[0].arguments["series"] == "saj-h2"
+    assert route.calls[1].arguments == {
+        "query": message,
+        "lang": "en",
+        "product_ids": [3556, 3557, 3558, 4107],
+    }
+    assert route.no_handoff and not route.show_products
+
+
+def test_a_document_reading_uses_the_matched_models_for_the_documents() -> None:
+    matches = [_model("H2-10K-T3", 4107)]
+    route = plan(
+        "export limit H2-10K-T3?", matches, _reading("documents_specs", 0.5), H2, "en"
+    )
+    assert route.calls[-1].arguments["product_ids"] == [4107]
+
+
 def test_product_words_in_an_unplaced_question_search_without_forcing_cards() -> None:
     matches = [Match("series", "saj-h2", "saj-h2", frozenset(), "SAJ H2")]
-    reading = _reading("documents_specs", 0.67)
-    route = plan(
-        "How do I set the export limit on an SAJ H2 inverter?",
-        matches,
-        reading,
-        NONE,
-        "en",
-    )
+    reading = _reading("compare", 0.6)
+    route = plan("SAJ H2 or something else?", matches, reading, NONE, "en")
     assert route.name == "products"
-    assert route.calls[0].ability == "linker/search-products"
+    assert [c.ability for c in route.calls] == ["linker/search-products"]
     assert not route.show_products
-    assert "Jev leans to documents_specs (0.67)" in route.hint
+    assert "Jev leans to compare (0.60)" in route.hint

@@ -33,6 +33,12 @@ SEARCH_LIMIT = 6
 # (OCEAN 2) inside the documents of the cards it shows.
 KNOWLEDGE_PRODUCTS = 4
 
+DOCUMENTS_HINT = (
+    "This is a question about documents or technical values. Answer from the "
+    "search-knowledge chunks (cite them) and the product facts; show the "
+    "documents as document blocks. It is not a question for the team."
+)
+
 RouteName = Literal[
     "products",
     "documents",
@@ -178,7 +184,7 @@ def plan(
         calls = [
             Call(
                 "linker/search-knowledge",
-                _knowledge_input(message, subject, lang),
+                _knowledge_input(message, matches, subject, lang),
             )
         ]
         search = _search_input(matches, lang)
@@ -193,12 +199,7 @@ def plan(
             "documents",
             tuple(calls),
             no_handoff=True,
-            hint=(
-                "This is a question about documents or technical values. Answer "
-                "from the search-knowledge chunks (cite them) and the product facts; "
-                "show the documents as document blocks. It is not a question for "
-                "the team." + family
-            ),
+            hint=DOCUMENTS_HINT + family,
             reasons=tuple(reasons),
         )
     if intent == "pairing_compatibility":
@@ -236,6 +237,30 @@ def plan(
                 "its products as cards, cited in the text refs. A product word is "
                 "never a name or a greeting." + family
             ),
+            reasons=tuple(reasons),
+        )
+    if (
+        search is not None
+        and named
+        and reading is not None
+        and reading.intent == "documents_specs"
+    ):
+        # Product words in a question Jev reads as a document question, however
+        # sure it is: code runs both searches, the model does not decide whether
+        # to look (trial question 9, "How do I set the export limit on an SAJ H2
+        # inverter?", Jev documents_specs 0.67 — the model did not look and
+        # answered that the documents had nothing; review of PR #279).
+        return Route(
+            "documents",
+            (
+                *_searches(search, matches, subject),
+                Call(
+                    "linker/search-knowledge",
+                    _knowledge_input(message, matches, subject, lang),
+                ),
+            ),
+            no_handoff=True,
+            hint=DOCUMENTS_HINT + family,
             reasons=tuple(reasons),
         )
     if search is not None and named:
@@ -381,10 +406,25 @@ def _search_input(matches: list[Match], lang: str) -> dict[str, Any] | None:
     return found
 
 
-def _knowledge_input(message: str, subject: Subject, lang: str) -> dict[str, Any]:
+def _knowledge_input(
+    message: str, matches: list[Match], subject: Subject, lang: str
+) -> dict[str, Any]:
+    """search-knowledge for the message, narrowed to the products it names.
+
+    The matched models (or the page's product) first; a series named without a
+    model ("SAJ H2") narrows to the series' products instead — the family shares
+    its datasheet and manual, so a few of its members carry its documents.
+    """
     found: dict[str, Any] = {"query": message, "lang": lang}
-    if subject.ids:
-        found["product_ids"] = list(subject.ids[:KNOWLEDGE_PRODUCTS])
+    ids = list(subject.ids)
+    if not ids:
+        for match in matches:
+            if match.kind == "series":
+                for pid in sorted(subject.series_members.get(match.value, set())):
+                    if pid not in ids:
+                        ids.append(pid)
+    if ids:
+        found["product_ids"] = ids[:KNOWLEDGE_PRODUCTS]
     return found
 
 
