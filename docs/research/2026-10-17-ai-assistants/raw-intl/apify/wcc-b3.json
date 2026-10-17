@@ -1,0 +1,3104 @@
+[
+ {
+  "url": "https://press.aboutamazon.com/2025/11/amazon-business-unveils-next-generation-ai-solutions-to-help-organizations-and-small-businesses-save-time-and-money",
+  "crawl": {
+   "loadedUrl": "https://press.aboutamazon.com/2025/11/amazon-business-unveils-next-generation-ai-solutions-to-help-organizations-and-small-businesses-save-time-and-money",
+   "loadedTime": "2026-10-17T05:41:58.663Z",
+   "referrerUrl": "https://press.aboutamazon.com/2025/11/amazon-business-unveils-next-generation-ai-solutions-to-help-organizations-and-small-businesses-save-time-and-money",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 31110,
+   "contentType": "text/html;charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://press.aboutamazon.com/2025/11/amazon-business-unveils-next-generation-ai-solutions-to-help-organizations-and-small-businesses-save-time-and-money",
+   "title": "Amazon-Business-Unveils-Next-Generation-AI-Solutions-to-Help-Organizations-and-Small-Businesses-Save-Time-and-Money - US Press Center",
+   "description": "With Amazon Business Assistant, business buyers can now use AI-powered guidance while shopping to discover savings, make informed purchase decisions, and access instant account management support",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Amazon Business Unveils Next Generation AI Solutions to Help Organizations and Small Businesses Save Time and Money"
+    },
+    {
+     "property": "og:url",
+     "content": "https://press.aboutamazon.com/2025/11/amazon-business-unveils-next-generation-ai-solutions-to-help-organizations-and-small-businesses-save-time-and-money"
+    },
+    {
+     "property": "og:image",
+     "content": "https://assets.aboutamazon.com/dims4/default/3039ed1/2147483647/strip/true/crop/2000x1000+0+63/resize/1200x600!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2Fb3%2F79%2Fb0e61293471b9d35c5ff02e46f37%2Famazon-logo-hero-images-2024.jpg"
+    },
+    {
+     "property": "og:image:url",
+     "content": "https://assets.aboutamazon.com/dims4/default/3039ed1/2147483647/strip/true/crop/2000x1000+0+63/resize/1200x600!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2Fb3%2F79%2Fb0e61293471b9d35c5ff02e46f37%2Famazon-logo-hero-images-2024.jpg"
+    },
+    {
+     "property": "og:image:secure_url",
+     "content": "https://assets.aboutamazon.com/dims4/default/3039ed1/2147483647/strip/true/crop/2000x1000+0+63/resize/1200x600!/quality/90/?url=https%3A%2F%2Fassets.aboutamazon.com%2Fb3%2F79%2Fb0e61293471b9d35c5ff02e46f37%2Famazon-logo-hero-images-2024.jpg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "600"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Amazon smile logo"
+    },
+    {
+     "property": "og:description",
+     "content": "With Amazon Business Assistant, business buyers can now use AI-powered guidance while shopping to discover savings, make informed purchase decisions, and access instant account management support"
+    },
+    {
+     "property": "og:site_name",
+     "content": "US Press Center"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2025-11-12T13:00:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2025-11-12T16:46:57.532"
+    },
+    {
+     "property": "article:section",
+     "content": "Amazon Business"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "http://schema.org",
+     "@type": "PressRelease",
+     "url": "https://press.aboutamazon.com/2025/11/amazon-business-unveils-next-generation-ai-solutions-to-help-organizations-and-small-businesses-save-time-and-money",
+     "dateModified": "2025-11-12T13:00:00Z",
+     "datePublished": "2025-11-12T13:00:00Z",
+     "headline": "Amazon-Business-Unveils-Next-Generation-AI-Solutions-to-Help-Organizations-and-Small-Businesses-Save-Time-and-Money",
+     "image": [
+      {
+       "@context": "http://schema.org",
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/35/e3/3d5f6ca8495583f0a21db2e4b0e4/amazon-news-logo-final-smaller.svg"
+      }
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "name": "US Press Center",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://assets.aboutamazon.com/35/e3/3d5f6ca8495583f0a21db2e4b0e4/amazon-news-logo-final-smaller.svg"
+      },
+      "parentOrganization": {
+       "@type": "Organization",
+       "name": "Amazon",
+       "url": "https://www.amazon.com"
+      }
+     },
+     "description": "With Amazon Business Assistant, business buyers can now use AI-powered guidance while shopping to discover savings, make informed purchase decisions, and access instant account management support"
+    }
+   ],
+   "headers": {
+    "content-type": "text/html;charset=UTF-8",
+    "content-length": "31110",
+    "date": "Fri, 16 Oct 2026 18:35:36 GMT",
+    "x-envoy-decorator-operation": "brightspot-frontend-verify.about.svc.cluster.local:80/*",
+    "server": "istio-envoy",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "cache-control": "max-age=120, stale-while-revalidate=86400, stale-if-error=86400",
+    "x-powered-by": "Brightspot",
+    "content-encoding": "gzip",
+    "x-envoy-upstream-service-time": "116",
+    "vary": "Accept-Encoding",
+    "x-cache": "Hit from cloudfront",
+    "via": "1.1 ade0cadf195b634f1ce60fe31eb474a2.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "CMH68-P1",
+    "x-amz-cf-id": "kbJdsVjJXwP8vkE1a0BHXbzjCJosD3CWdMeMrCIm3uSwUR6HeTZGug==",
+    "age": "39979",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/press-aboutamazon-com-2025-11-amazon-business-unveils-next-generation-ai-solutions-to-help-organizat.md>"
+ },
+ {
+  "url": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/",
+  "crawl": {
+   "loadedUrl": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/",
+   "loadedTime": "2026-10-17T05:41:59.747Z",
+   "referrerUrl": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/",
+   "title": "Amid a 50% Increase in Worldwide Supplier Growth, Alibaba.com Unveils New AI Functions",
+   "description": null,
+   "author": "Digital Commerce 360 Staff",
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Amid a 50% Increase in Worldwide Supplier Growth, Alibaba.com Unveils New AI Functions"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Digital Commerce 360"
+    },
+    {
+     "property": "article:publisher",
+     "content": "https://www.facebook.com/DigitalCommerce360/"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2025-11-26T16:41:44+00:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2025-12-09T13:52:32+00:00"
+    },
+    {
+     "property": "og:image",
+     "content": "https://www.digitalcommerce360.com/wp-content/uploads/2025/11/112625_Alibaba_SC_HERO-1024x493.png"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1370"
+    },
+    {
+     "property": "og:image:height",
+     "content": "660"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@graph": [
+      {
+       "@type": "Article",
+       "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/#article",
+       "isPartOf": {
+        "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/"
+       },
+       "author": {
+        "name": "Digital Commerce 360 Staff",
+        "@id": "https://www.digitalcommerce360.com/#/schema/person/4b794aabcd45dcececdc86f054cf0742"
+       },
+       "headline": "Amid a 50% Increase in Worldwide Supplier Growth, Alibaba.com Unveils New AI Functions",
+       "datePublished": "2025-11-26T16:41:44+00:00",
+       "dateModified": "2025-12-09T13:52:32+00:00",
+       "mainEntityOfPage": {
+        "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/"
+       },
+       "wordCount": 799,
+       "publisher": {
+        "@id": "https://www.digitalcommerce360.com/#organization"
+       },
+       "image": {
+        "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/#primaryimage"
+       },
+       "thumbnailUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2025/11/112625_Alibaba_SC_HERO.png",
+       "inLanguage": "en-US",
+       "copyrightYear": "2025",
+       "copyrightHolder": {
+        "@id": "https://www.digitalcommerce360.com/#organization"
+       }
+      },
+      {
+       "@type": "WebPage",
+       "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/",
+       "url": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/",
+       "name": "Amid a 50% Increase in Worldwide Supplier Growth, Alibaba.com Unveils New AI Functions",
+       "isPartOf": {
+        "@id": "https://www.digitalcommerce360.com/#website"
+       },
+       "primaryImageOfPage": {
+        "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/#primaryimage"
+       },
+       "image": {
+        "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/#primaryimage"
+       },
+       "thumbnailUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2025/11/112625_Alibaba_SC_HERO.png",
+       "datePublished": "2025-11-26T16:41:44+00:00",
+       "dateModified": "2025-12-09T13:52:32+00:00",
+       "breadcrumb": {
+        "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/#breadcrumb"
+       },
+       "inLanguage": "en-US",
+       "potentialAction": [
+        {
+         "@type": "ReadAction",
+         "target": [
+          "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/"
+         ]
+        }
+       ]
+      },
+      {
+       "@type": "ImageObject",
+       "inLanguage": "en-US",
+       "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/#primaryimage",
+       "url": "https://www.digitalcommerce360.com/wp-content/uploads/2025/11/112625_Alibaba_SC_HERO.png",
+       "contentUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2025/11/112625_Alibaba_SC_HERO.png",
+       "width": 1370,
+       "height": 660,
+       "caption": "Amid a 50% Increase in Worldwide Supplier Growth, Alibaba.com Unveils New AI Functions"
+      },
+      {
+       "@type": "BreadcrumbList",
+       "@id": "https://www.digitalcommerce360.com/2025/11/26/amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-unveils-new-ai-functions/#breadcrumb",
+       "itemListElement": [
+        {
+         "@type": "ListItem",
+         "position": 1,
+         "name": "Home",
+         "item": "https://www.digitalcommerce360.com/"
+        },
+        {
+         "@type": "ListItem",
+         "position": 2,
+         "name": "Amid a 50% Increase in Worldwide Supplier Growth, Alibaba.com Unveils New AI Functions"
+        }
+       ]
+      },
+      {
+       "@type": "WebSite",
+       "@id": "https://www.digitalcommerce360.com/#website",
+       "url": "https://www.digitalcommerce360.com/",
+       "name": "Digital Commerce 360",
+       "description": "Your source for ecommerce news, analysis and research",
+       "publisher": {
+        "@id": "https://www.digitalcommerce360.com/#organization"
+       },
+       "potentialAction": [
+        {
+         "@type": "SearchAction",
+         "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.digitalcommerce360.com/?s={search_term_string}"
+         },
+         "query-input": {
+          "@type": "PropertyValueSpecification",
+          "valueRequired": true,
+          "valueName": "search_term_string"
+         }
+        }
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "Organization",
+       "@id": "https://www.digitalcommerce360.com/#organization",
+       "name": "Digital Commerce 360 | Internet Retailer",
+       "url": "https://www.digitalcommerce360.com/",
+       "logo": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://www.digitalcommerce360.com/#/schema/logo/image/",
+        "url": "https://www.digitalcommerce360.com/wp-content/uploads/2018/04/Digital-Commerce-360-Digital-Use-Logo-External-White.jpg",
+        "contentUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2018/04/Digital-Commerce-360-Digital-Use-Logo-External-White.jpg",
+        "width": 1366,
+        "height": 345,
+        "caption": "Digital Commerce 360 | Internet Retailer"
+       },
+       "image": {
+        "@id": "https://www.digitalcommerce360.com/#/schema/logo/image/"
+       },
+       "sameAs": [
+        "https://www.facebook.com/DigitalCommerce360/",
+        "https://x.com/DigitalComm360"
+       ]
+      },
+      {
+       "@type": "Person",
+       "@id": "https://www.digitalcommerce360.com/#/schema/person/4b794aabcd45dcececdc86f054cf0742",
+       "name": "Digital Commerce 360 Staff",
+       "image": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://secure.gravatar.com/avatar/c84a8917a0d314bd3fc7bdb1d99e6946e08f24cb1d53b41b4c647266be461065?s=96&d=mm&r=g",
+        "url": "https://secure.gravatar.com/avatar/c84a8917a0d314bd3fc7bdb1d99e6946e08f24cb1d53b41b4c647266be461065?s=96&d=mm&r=g",
+        "contentUrl": "https://secure.gravatar.com/avatar/c84a8917a0d314bd3fc7bdb1d99e6946e08f24cb1d53b41b4c647266be461065?s=96&d=mm&r=g",
+        "caption": "Digital Commerce 360 Staff"
+       }
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:41:56 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "vary": "Accept-Encoding, Accept-Encoding, Cookie",
+    "last-modified": "Tue, 09 Dec 2025 07:52:32 GMT",
+    "link": "<https://www.digitalcommerce360.com/wp-json/>; rel=\"https://api.w.org/\", <https://www.digitalcommerce360.com/wp-json/wp/v2/posts/1346746>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://www.digitalcommerce360.com/?p=1346746>; rel=shortlink",
+    "x-powered-by": "WP Engine",
+    "x-cacheable": "YES:15552000.000",
+    "cache-control": "max-age=15552000, must-revalidate",
+    "x-cache": "MISS",
+    "x-cache-group": "normal",
+    "age": "6335179",
+    "x-xss-protection": "1; mode=block;",
+    "feature-policy": "accelerometer 'none'; autoplay 'none'; battery 'none'; camera 'none'; fullscreen 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; notifications 'none'; payment 'none'; picture-in-picture 'none'; push 'none'; speaker 'none'; sync-xhr 'none'; usb 'none'; vibrate 'none';",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "no-referrer-when-downgrade",
+    "cf-cache-status": "HIT",
+    "content-security-policy": "frame-ancestors 'self';",
+    "set-cookie": "__cf_bm=QBYia7otGjeoQQQzrmJBuQGhpBdyWpZV45twZWNup5g-1792215716.8923645-1.0.1.1-rSC2IXuPWFHdrCTqJDmeXjzLN4BAunxULnNX5V__XHNPEeQVHkSU2cYp8CUNT_7V2so9C_Yyxg8I8FD8Igx_qRfaSX266UltV5oQZlIUPDF_VOILnbCq9ZNNd88Cgu7f; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.digitalcommerce360.com; Expires=Sat, 17 Oct 2026 06:11:56 GMT",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfa269ae111e9-ORD",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-digitalcommerce360-com-2025-11-26-amid-a-50-increase-in-worldwide-supplier-growth-alibaba-com-un.md>"
+ },
+ {
+  "url": "https://seller.alibaba.com/businessblogs/alibabacom-unveils-ai-mode----while-fueling-57-surge-in-european-orders-and-a-50-increase-in-worldwide-supplier-growth-px002dhxt",
+  "crawl": {
+   "loadedUrl": "https://seller.alibaba.com/businessblogs/alibabacom-unveils-ai-mode----while-fueling-57-surge-in-european-orders-and-a-50-increase-in-worldwide-supplier-growth-px002dhxt",
+   "loadedTime": "2026-10-17T05:42:05.553Z",
+   "referrerUrl": "https://seller.alibaba.com/businessblogs/alibabacom-unveils-ai-mode----while-fueling-57-surge-in-european-orders-and-a-50-increase-in-worldwide-supplier-growth-px002dhxt",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 50984,
+   "contentType": "text/html;charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://seller.alibaba.com/businessblogs/alibabacom-unveils-ai-mode----while-fueling-57-surge-in-european-orders-and-a-50-increase-in-worldwide-supplier-growth-px002dhxt",
+   "title": "Alibaba.com US Seller Pricing & Plan | Sell to 40M+ B2B Buyers",
+   "description": "Compare Alibaba.com US seller pricing and plans, reach 40M+ B2B buyers worldwide, and get leads for under $10. Membership is $2,799/year.",
+   "author": null,
+   "keywords": "Alibaba.com seller pricing, Alibaba.com membership cost, Alibaba seller plans USA, how much to sell on Alibaba.com, Alibaba.com Gold Supplier price, sell on Alibaba.com USA, become Alibaba.com supplier, B2B marketplace for US sellers",
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:title",
+     "content": "Alibaba.com US Seller Pricing & Plan | Sell to 40M+ B2B Buyers"
+    },
+    {
+     "property": "og:description",
+     "content": "Join 200,000+ suppliers selling to 40M+ global B2B buyers on Alibaba.com. AI tools, KWA credits, dedicated onboarding and RFQ access included."
+    },
+    {
+     "property": "og:site_name",
+     "content": "Alibaba.com"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@graph": [
+      {
+       "@type": "WebPage",
+       "name": "Alibaba.com US Seller Pricing & Plans",
+       "description": "Compare Alibaba.com US seller pricing and membership plans and start selling to 40M+ B2B buyers worldwide",
+       "publisher": {
+        "@type": "Organization",
+        "name": "Alibaba.com",
+        "url": "https://www.alibaba.com"
+       },
+       "mainEntity": {
+        "@type": "ProfessionalService",
+        "name": "Alibaba.com US Supplier Program",
+        "description": "B2B marketplace supplier membership for US businesses to sell globally",
+        "provider": {
+         "@type": "Organization",
+         "name": "Alibaba.com"
+        },
+        "areaServed": {
+         "@type": "Country",
+         "name": "United States"
+        },
+        "serviceType": "B2B Marketplace Membership"
+       }
+      },
+      {
+       "@type": "FAQPage",
+       "mainEntity": [
+        {
+         "@type": "Question",
+         "name": "What are the criteria to sell on Alibaba.com as a US supplier?",
+         "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A U.S.-registered business entity with a Certificate of Registration. Individual sellers are not eligible. Sellers must also have the capacity to supply products in wholesale quantities."
+         }
+        },
+        {
+         "@type": "Question",
+         "name": "What do I get from the paid membership?",
+         "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "As an Alibaba.com paid seller member, you get a customized storefront, 17-language support, access to 1M+ active B2B buyers, RFQ opportunities, AI-powered marketing tools, instant message translation, free onboarding, traffic boosts, advertising credits, and U.S.-based customer support. For more details, please see the full feature list above or contact our service team."
+         }
+        },
+        {
+         "@type": "Question",
+         "name": "Why should I sell my products on Alibaba.com?",
+         "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "As an Alibaba.com seller, you get more than a digital storefront on a global marketplace. You get an end-to-end wholesale service platform calibrated to help you grow your business and provide services to your buyers. This is your opportunity to expand your sales with an additional revenue stream and reach new customers."
+         }
+        },
+        {
+         "@type": "Question",
+         "name": "What is the next step once I have paid online?",
+         "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Once you've paid online, our customer support team will reach out to assist you with Business Verification (BV). Once you've passed BV, we will start the onboarding process to prepare your online store launch. We will need: product images, descriptions, your company logo, and other specifics you want shown in your storefront."
+         }
+        },
+        {
+         "@type": "Question",
+         "name": "What is Business Verification and is it required?",
+         "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "After you sign up for Alibaba.com, you need to submit required documents that prove you are a legal business entity registered in the US. This process is called Business Verification and is required for selling on Alibaba.com."
+         }
+        },
+        {
+         "@type": "Question",
+         "name": "How does Alibaba.com compare to Faire?",
+         "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Alibaba.com and Faire serve different seller needs. Alibaba.com charges a commission well below 15%, with a 6-month commission-free period for new sellers, includes KWA advertising credits to drive extra exposure, offers a fully customizable storefront, provides both self-managed and platform logistics options, and protects sellers with a 2-hour unconditional refund window after which any buyer refund requires seller approval. Faire takes 17.5% on every marketplace order, offers strong curation and a streamlined Shopify integration, provides limited storefront control, and applies a 60-day return window that shifts risk to the seller."
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "content-type": "text/html;charset=UTF-8",
+    "x-application-context": "icbu-supplier-center:7001",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1; mode=block",
+    "pragma": "no-cache",
+    "strict-transport-security": "max-age=31536000 ; includeSubDomains",
+    "icbu_s_tag": "0_2_11",
+    "icbu_s_ip": "0IXX5bvRU4LlnXd1BtJFEGLb0FepuRN0HuBXrAE9yqOXjxwDipsqAg==",
+    "icbu_s_hostname": "MCZfpy954gH3PNCVRqInavkXaDaJYmp8kZtRHBMfaJQT8lOTInTPnFmT9z3bDHGCVfNP9KLD1arx1Dc+YlUpHvZYXo5nnuE8Xjx5Sglmsjk=",
+    "icbu_s_unit": "rg-us-east",
+    "icbu_s_v": "1.0.21",
+    "content-language": "zh-CN",
+    "x-frame-options": "ALLOW-FROM http://crm.alibaba.com/ https://crm.alibaba.com/",
+    "content-encoding": "gzip",
+    "ups-target-key": "oak_app.vipserver",
+    "x-protocol": "HTTP/1.1",
+    "eagleeye-traceid": "2103070b17914380563527590e0e64",
+    "s-brt": "364",
+    "s-rt": "366",
+    "timing-allow-origin": "*",
+    "eagleid": "2103070b17914380563527590e0e64",
+    "server-timing": "rt;dur=0.366, eagleid;desc=2103070b17914380563527590e0e64, brt;dur=364",
+    "content-length": "50984",
+    "cache-control": "must-revalidate, max-age=1814339",
+    "expires": "Sat, 07 Nov 2026 05:40:56 GMT",
+    "date": "Sat, 17 Oct 2026 05:41:57 GMT",
+    "vary": "Accept-Encoding",
+    "alt-svc": "h3=\":443\"; ma=2592000",
+    "edge-type": "akamai",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/seller-alibaba-com-businessblogs-alibabacom-unveils-ai-mode-while-fueling-57-surge-in-european-order.md>"
+ },
+ {
+  "url": "https://openai.com/index/buy-it-in-chatgpt/",
+  "crawl": {
+   "loadedUrl": "https://openai.com/index/buy-it-in-chatgpt/",
+   "loadedTime": "2026-10-17T05:42:24.265Z",
+   "referrerUrl": "https://openai.com/index/buy-it-in-chatgpt/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://openai.com/index/buy-it-in-chatgpt/",
+   "title": "Buy it in ChatGPT: Instant Checkout and the Agentic Commerce Protocol | OpenAI",
+   "description": "We’re taking first steps toward agentic commerce in ChatGPT with new ways for people, AI agents, and businesses to shop together.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Buy it in ChatGPT: Instant Checkout and the Agentic Commerce Protocol"
+    },
+    {
+     "property": "og:description",
+     "content": "We’re taking first steps toward agentic commerce in ChatGPT with new ways for people, AI agents, and businesses to shop together."
+    },
+    {
+     "property": "og:url",
+     "content": "https://openai.com/index/buy-it-in-chatgpt/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "OpenAI"
+    },
+    {
+     "property": "og:locale",
+     "content": "en-US"
+    },
+    {
+     "property": "og:image",
+     "content": "https://images.ctfassets.net/kftzwdyauwt9/4kgp9kNT4ulj1qi5xrwCtn/30b2a53b038e30efa47a1686e5e1b989/Updated_Hero.png?w=1600&h=900&fit=fill"
+    },
+    {
+     "property": "og:image:secure_url",
+     "content": "https://images.ctfassets.net/kftzwdyauwt9/4kgp9kNT4ulj1qi5xrwCtn/30b2a53b038e30efa47a1686e5e1b989/Updated_Hero.png?w=1600&h=900&fit=fill"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1600"
+    },
+    {
+     "property": "og:image:height",
+     "content": "900"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:42:22 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "age": "2976",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "nel": "{\"report_to\":\"cf-nel\", \"success_fraction\":0.01, \"max_age\":604800}",
+    "content-security-policy": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googleadservices.com https://www.google.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://static.cloudflareinsights.com https://snap.licdn.com https://www.redditstatic.com https://bat.bing.com https://connect.facebook.net https://challenges.cloudflare.com https://*.mktoweb.com https://www.youtube.com https://s.ytimg.com https://player.vimeo.com https://cdn.leandata.com https://cdn1.leandata.com https://api.observablehq.com https://cdn.jsdelivr.net; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://*.mktoweb.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; font-src 'self' data: https://cdn.openai.com https://cdn.jsdelivr.net; connect-src 'self' https://app.leandata.com https: wss:; media-src 'self' data: blob: https:; frame-src 'self' https://cdn.openai.com https://gpt5-coding-examples.vercel.app https://docs.google.com https://player.twitch.tv https://player.vimeo.com https://vimeo.com https://www.youtube.com https://m.youtube.com https://youtu.be https://www.youtube-nocookie.com https://w.soundcloud.com https://tidal-rush-paradise-gp.skirano.chatgpt.site https://*.mktoweb.com https://challenges.cloudflare.com https://openai-opco.my.leandata.com https:; worker-src 'self' blob:; manifest-src 'self'; form-action 'self' https://*.mktoweb.com; upgrade-insecure-requests",
+    "report-to": "{\"group\":\"cf-nel\", \"max_age\":604800, \"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Tac92NG3RuKYZgxl3yIdcLLDGjKoheiO3GRuNnj9kxQtJHj8yJXZ0IEkyR3nODsWOaxdMPRJW%2FIQWEToDJrYvb%2BmxgG2zYiU7Rmboox3sK7ew8fU3F7Sl63QxP0%3D\"}]}",
+    "server": "cloudflare",
+    "x-content-type-options": "nosniff",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, accept-encoding",
+    "x-matched-path": "/[locale]/[country]/[flags]/[...slug]",
+    "x-nextjs-prerender": "1",
+    "x-nextjs-stale-time": "300",
+    "x-powered-by": "Next.js",
+    "x-vercel-cache": "HIT",
+    "x-vercel-id": "cle1::pdx1::dqxxk-1792215742148-e78568e3a293",
+    "cf-cache-status": "DYNAMIC",
+    "set-cookie": "country=US; Path=/; Expires=Sun, 17 Oct 2027 05:42:22 GMT; Max-Age=31536000\noai-did=c1bc113b-3d5b-435e-a4d0-b319130c35da; Path=/; Expires=Sun, 17 Oct 2027 05:42:22 GMT; Max-Age=31536000; Domain=.openai.com\nlocale=%7B%22computedPreferredLocale%22%3A%22en-US%22%2C%22v%22%3A1%7D; Path=/\n__cf_bm=9uODwiShhJ0rkHLA8V0e6Z4nEQUBnmDvVTxXmwt5yTM-1792215742.1300247-1.0.1.1-E2GgBZU.ksmYyVhFd0PfSMbBlT4czDUrAaj1lo0nUza0xfkQusBq3dAZ5FBP_p6SxZtpkAX5pFMGaRJmuiKE4Y3yGMK9r1aev7wPsFOw7h5CYPz47M00LX0tHx8QmTI1; HttpOnly; SameSite=None; Secure; Path=/; Domain=openai.com; Expires=Sat, 17 Oct 2026 06:12:22 GMT\n_cfuvid=vhmZoS2oqW9RMO4DORZ.W6aqocYrraot.Hq1xptb0hI-1792215742.1300247-1.0.1.1-zkfStxkoNWSmbpPU9YwtcmCO_2HB96_dZumrm1fdzZY; HttpOnly; SameSite=None; Secure; Path=/; Domain=openai.com",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfac449b4118f-ORD",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/openai-com-index-buy-it-in-chatgpt.md>"
+ },
+ {
+  "url": "https://www.cnbc.com/2026/03/24/openai-revamps-shopping-experience-in-chatgpt-after-instant-checkout.html",
+  "crawl": {
+   "loadedUrl": "https://www.cnbc.com/2026/03/24/openai-revamps-shopping-experience-in-chatgpt-after-instant-checkout.html",
+   "loadedTime": "2026-10-17T05:42:24.468Z",
+   "referrerUrl": "https://www.cnbc.com/2026/03/24/openai-revamps-shopping-experience-in-chatgpt-after-instant-checkout.html",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.cnbc.com/2026/03/24/openai-revamps-shopping-experience-in-chatgpt-after-instant-checkout.html",
+   "title": "OpenAI revamps shopping experience in ChatGPT after Instant Checkout",
+   "description": "OpenAI said the new experience will make it easier for users to find and compare products.",
+   "author": "Ashley Capoot",
+   "keywords": "Breaking News: Technology,Technology,Enterprise,Breaking News: Business,Media,Retail industry,Shopify Inc,Nordstrom Inc,Amazon.com Inc,Shopify Inc,ETSY Inc,eBay Inc,Target Corp,Maplebear (Instacart),Walmart Inc,ProShares Online Retail ETF,Alphabet Class A,business news",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "OpenAI revamps shopping experience in ChatGPT after struggling with Instant Checkout offering"
+    },
+    {
+     "property": "og:description",
+     "content": "OpenAI said the new experience will make it easier for users to find and compare products."
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.cnbc.com/2026/03/24/openai-revamps-shopping-experience-in-chatgpt-after-instant-checkout.html"
+    },
+    {
+     "property": "og:site_name",
+     "content": "CNBC"
+    },
+    {
+     "property": "og:image",
+     "content": "https://image.cnbcfm.com/api/v1/image/108236133-17647882242025-11-06t201852z_653951074_rc2umcacl8qk_rtrmadp_0_openai-outlook.jpeg?v=1765924912&w=1920&h=1080"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "OpenAI revamps shopping experience in ChatGPT after struggling with Instant Checkout offering"
+    },
+    {
+     "property": "og:description",
+     "content": "OpenAI said the new experience will make it easier for users to find and compare products."
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.cnbc.com/2026/03/24/openai-revamps-shopping-experience-in-chatgpt-after-instant-checkout.html"
+    },
+    {
+     "property": "og:site_name",
+     "content": "CNBC"
+    },
+    {
+     "property": "og:image",
+     "content": "https://image.cnbcfm.com/api/v1/image/108236133-17647882242025-11-06t201852z_653951074_rc2umcacl8qk_rtrmadp_0_openai-outlook.jpeg?v=1765924912&w=1920&h=1080"
+    },
+    {
+     "property": "article:publisher",
+     "content": "https://www.facebook.com/cnbc"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2026-03-24T17:32:19+0000"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-03-24T19:44:40+0000"
+    },
+    {
+     "property": "article:section",
+     "content": "Technology"
+    },
+    {
+     "property": "article:author",
+     "content": "https://www.facebook.com/CNBC"
+    },
+    {
+     "property": "article:opinion",
+     "content": "false"
+    },
+    {
+     "property": "article:tag",
+     "content": "Breaking News: Technology"
+    },
+    {
+     "property": "article:tag",
+     "content": "Technology"
+    },
+    {
+     "property": "article:tag",
+     "content": "Enterprise"
+    },
+    {
+     "property": "article:tag",
+     "content": "Breaking News: Business"
+    },
+    {
+     "property": "article:tag",
+     "content": "Media"
+    },
+    {
+     "property": "article:tag",
+     "content": "Retail industry"
+    },
+    {
+     "property": "article:tag",
+     "content": "Shopify Inc"
+    },
+    {
+     "property": "article:tag",
+     "content": "Nordstrom Inc"
+    },
+    {
+     "property": "article:tag",
+     "content": "Amazon.com Inc"
+    },
+    {
+     "property": "article:tag",
+     "content": "Shopify Inc"
+    },
+    {
+     "property": "article:tag",
+     "content": "ETSY Inc"
+    },
+    {
+     "property": "article:tag",
+     "content": "eBay Inc"
+    },
+    {
+     "property": "article:tag",
+     "content": "Target Corp"
+    },
+    {
+     "property": "article:tag",
+     "content": "Maplebear (Instacart)"
+    },
+    {
+     "property": "article:tag",
+     "content": "Walmart Inc"
+    },
+    {
+     "property": "article:tag",
+     "content": "ProShares Online Retail ETF"
+    },
+    {
+     "property": "article:tag",
+     "content": "Alphabet Class A"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "NewsArticle",
+     "description": "OpenAI said the new experience will make it easier for users to find and compare products.",
+     "speakable": {
+      "@type": "SpeakableSpecification",
+      "xpath": [
+       "/html/head/title",
+       "/html/head/meta[@name=\"description\"]/@content"
+      ],
+      "cssSelector": [
+       ".group p"
+      ]
+     },
+     "mainEntityOfPage": "https://www.cnbc.com/2026/03/24/openai-revamps-shopping-experience-in-chatgpt-after-instant-checkout.html",
+     "url": "https://www.cnbc.com/2026/03/24/openai-revamps-shopping-experience-in-chatgpt-after-instant-checkout.html",
+     "headline": "OpenAI revamps shopping experience in ChatGPT after struggling with Instant Checkout offering",
+     "dateCreated": "2026-03-24T17:32:19+0000",
+     "datePublished": "2026-03-24T17:32:19+0000",
+     "dateModified": "2026-03-24T19:44:40+0000",
+     "author": [
+      {
+       "@type": "Person",
+       "name": "Ashley Capoot",
+       "url": "https://www.cnbc.com/ashley-capoot/"
+      }
+     ],
+     "publisher": {
+      "@type": "NewsMediaOrganization",
+      "name": "CNBC",
+      "url": "https://www.cnbc.com/",
+      "foundingDate": "1989-04-17",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://sc.cnbcfm.com/applications/cnbc.com/staticcontent/img/cnbc-hdr-logo2.png",
+       "width": 378,
+       "height": 98
+      },
+      "sameAs": [
+       "https://www.facebook.com/cnbc",
+       "https://www.instagram.com/cnbc",
+       "https://www.linkedin.com/company/cnbc",
+       "https://twitter.com/cnbc",
+       "https://en.wikipedia.org/wiki/CNBC",
+       "https://www.youtube.com/cnbc"
+      ]
+     },
+     "articleSection": "Technology",
+     "keywords": [
+      "cnbc",
+      "Articles",
+      "Breaking News: Technology",
+      "Technology",
+      "Enterprise",
+      "Breaking News: Business",
+      "Media",
+      "Retail industry",
+      "Shopify Inc",
+      "Nordstrom Inc",
+      "Amazon.com Inc",
+      "ETSY Inc",
+      "eBay Inc",
+      "Target Corp",
+      "Maplebear (Instacart)",
+      "Walmart Inc",
+      "ProShares Online Retail ETF",
+      "Alphabet Class A",
+      "Retail",
+      "AI - Artificial Intelligence",
+      "source:tagname:CNBC US Source"
+     ],
+     "image": [
+      {
+       "@type": "ImageObject",
+       "url": "https://image.cnbcfm.com/api/v1/image/108236133-17647882242025-11-06t201852z_653951074_rc2umcacl8qk_rtrmadp_0_openai-outlook.jpeg?v=1765924912&w=1200&h=675",
+       "width": 1200,
+       "height": 675
+      },
+      {
+       "@type": "ImageObject",
+       "url": "https://image.cnbcfm.com/api/v1/image/108236133-17647882242025-11-06t201852z_653951074_rc2umcacl8qk_rtrmadp_0_openai-outlook.jpeg?v=1765924912&w=1200&h=1200",
+       "width": 1200,
+       "height": 1200
+      }
+     ],
+     "video": {
+      "@type": "VideoObject",
+      "contentUrl": "https://pdl-iphone-cnbc-com.akamaized.net/7000407555/aa00fcf0-26df-11f1-9a76-977af70438c1/1774287743-44763643377-hd_L.mp4",
+      "description": "CNBC's MacKenzie Sigalos reports on news regarding OpenAI and Anthropic.",
+      "duration": "PT2M28S",
+      "name": "OpenAI, Anthropic battle for deals with private equity companies",
+      "thumbnailUrl": "https://image.cnbcfm.com/api/v1/image/108281771-1774289991632-1774287743-44763643377-hd.jpg?v=1774290015",
+      "uploadDate": "2026-03-23T17:42:25+0000"
+     }
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "x-request-id": "ea299d02-4dfe-472e-9381-bb9aaeca40f9",
+    "etag": "W/\"cd44a-FbgpmTtaFD3EhXEgrDJOnqjW0ng\"",
+    "x-ttl": "5.000",
+    "x-varnish": "298569149",
+    "accept-ranges": "bytes",
+    "content-encoding": "gzip",
+    "expires": "Sat, 17 Oct 2026 05:42:22 GMT",
+    "cache-control": "max-age=0, no-cache",
+    "pragma": "no-cache",
+    "date": "Sat, 17 Oct 2026 05:42:22 GMT",
+    "set-cookie": "AWSALB=TssmgTI+pAg1ba8cjPSFL2nHWFnaeUKvlUHLB1L/P1kW5T/mvlqor8vIuwl1dJTVWoLQZDz/2sbGUOHGdGo2SDzSkDtn0ZhdnJjrdLPNNiLoJAK41FmcxtdNWD8q; Expires=Sat, 24 Oct 2026 05:42:21 GMT; Path=/\nAWSALBCORS=TssmgTI+pAg1ba8cjPSFL2nHWFnaeUKvlUHLB1L/P1kW5T/mvlqor8vIuwl1dJTVWoLQZDz/2sbGUOHGdGo2SDzSkDtn0ZhdnJjrdLPNNiLoJAK41FmcxtdNWD8q; Expires=Sat, 24 Oct 2026 05:42:21 GMT; Path=/; SameSite=None; Secure\nregion=USA; <signed-url-removed> 15-Jan-2027 05:42:22 GMT; path=/; domain=.cnbc.com\nakaas_CNBC_AudienceSegmentation=1794807742~rv=43~id=9229b38d50f8d78914e621092534e700; path=/; Expires=Mon, 16 Nov 2026 05:42:22 GMT; Domain=.www.cnbc.com; Secure; SameSite=None",
+    "content-security-policy": "frame-ancestors 'self' *.cnbc.com https://cnbc.zendesk.com;",
+    "vary": "Accept-Encoding, User-Agent",
+    "akamai-grn": "0.24182117.1792215741.2ece3f87",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-cnbc-com-2026-03-24-openai-revamps-shopping-experience-in-chatgpt-after-instant-checkout-html.md>"
+ },
+ {
+  "url": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/",
+  "crawl": {
+   "loadedUrl": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/",
+   "loadedTime": "2026-10-17T05:42:47.060Z",
+   "referrerUrl": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/",
+   "title": "Walmart credits Sparky AI agent with lifting AOV, unit sales growth",
+   "description": "Walmart is using AI (including its Sparky agent) to drive sales, make fulfillment and supply chain decisions, and raise advertising returns.",
+   "author": "Abbas Haleem",
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Walmart credits Sparky AI agent with lifting AOV, unit sales growth"
+    },
+    {
+     "property": "og:description",
+     "content": "Walmart is using AI (including its Sparky agent) to drive sales, make fulfillment and supply chain decisions, and raise advertising returns."
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Digital Commerce 360"
+    },
+    {
+     "property": "article:publisher",
+     "content": "https://www.facebook.com/DigitalCommerce360/"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2026-05-22T18:29:23+00:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-05-22T18:57:32+00:00"
+    },
+    {
+     "property": "og:image",
+     "content": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/sparky-2.png"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1193"
+    },
+    {
+     "property": "og:image:height",
+     "content": "644"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@graph": [
+      {
+       "@type": "Article",
+       "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/#article",
+       "isPartOf": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/"
+       },
+       "author": {
+        "name": "Abbas Haleem",
+        "@id": "https://www.digitalcommerce360.com/#/schema/person/9c343ce26a124921bf83bcd0fa423819"
+       },
+       "headline": "Walmart credits Sparky AI agent with lifting AOV, unit sales growth",
+       "datePublished": "2026-05-22T18:29:23+00:00",
+       "dateModified": "2026-05-22T18:57:32+00:00",
+       "mainEntityOfPage": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/"
+       },
+       "wordCount": 638,
+       "publisher": {
+        "@id": "https://www.digitalcommerce360.com/#organization"
+       },
+       "image": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/#primaryimage"
+       },
+       "thumbnailUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/sparky-2.png",
+       "inLanguage": "en-US",
+       "copyrightYear": "2026",
+       "copyrightHolder": {
+        "@id": "https://www.digitalcommerce360.com/#organization"
+       }
+      },
+      {
+       "@type": "WebPage",
+       "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/",
+       "url": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/",
+       "name": "Walmart credits Sparky AI agent with lifting AOV, unit sales growth",
+       "isPartOf": {
+        "@id": "https://www.digitalcommerce360.com/#website"
+       },
+       "primaryImageOfPage": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/#primaryimage"
+       },
+       "image": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/#primaryimage"
+       },
+       "thumbnailUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/sparky-2.png",
+       "datePublished": "2026-05-22T18:29:23+00:00",
+       "dateModified": "2026-05-22T18:57:32+00:00",
+       "description": "Walmart is using AI (including its Sparky agent) to drive sales, make fulfillment and supply chain decisions, and raise advertising returns.",
+       "breadcrumb": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/#breadcrumb"
+       },
+       "inLanguage": "en-US",
+       "potentialAction": [
+        {
+         "@type": "ReadAction",
+         "target": [
+          "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/"
+         ]
+        }
+       ]
+      },
+      {
+       "@type": "ImageObject",
+       "inLanguage": "en-US",
+       "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/#primaryimage",
+       "url": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/sparky-2.png",
+       "contentUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/sparky-2.png",
+       "width": 1193,
+       "height": 644,
+       "caption": "Walmart highlights where customers can access its AI agent for shopping assistance in its mobile app. | Image credit: Still from Walmart Sparky video"
+      },
+      {
+       "@type": "BreadcrumbList",
+       "@id": "https://www.digitalcommerce360.com/2026/05/22/walmart-sparky-agent-ai-sales-supply-chain/#breadcrumb",
+       "itemListElement": [
+        {
+         "@type": "ListItem",
+         "position": 1,
+         "name": "Home",
+         "item": "https://www.digitalcommerce360.com/"
+        },
+        {
+         "@type": "ListItem",
+         "position": 2,
+         "name": "Walmart credits Sparky AI agent with lifting AOV, unit sales growth"
+        }
+       ]
+      },
+      {
+       "@type": "WebSite",
+       "@id": "https://www.digitalcommerce360.com/#website",
+       "url": "https://www.digitalcommerce360.com/",
+       "name": "Digital Commerce 360",
+       "description": "Your source for ecommerce news, analysis and research",
+       "publisher": {
+        "@id": "https://www.digitalcommerce360.com/#organization"
+       },
+       "potentialAction": [
+        {
+         "@type": "SearchAction",
+         "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.digitalcommerce360.com/?s={search_term_string}"
+         },
+         "query-input": {
+          "@type": "PropertyValueSpecification",
+          "valueRequired": true,
+          "valueName": "search_term_string"
+         }
+        }
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "Organization",
+       "@id": "https://www.digitalcommerce360.com/#organization",
+       "name": "Digital Commerce 360 | Internet Retailer",
+       "url": "https://www.digitalcommerce360.com/",
+       "logo": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://www.digitalcommerce360.com/#/schema/logo/image/",
+        "url": "https://www.digitalcommerce360.com/wp-content/uploads/2018/04/Digital-Commerce-360-Digital-Use-Logo-External-White.jpg",
+        "contentUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2018/04/Digital-Commerce-360-Digital-Use-Logo-External-White.jpg",
+        "width": 1366,
+        "height": 345,
+        "caption": "Digital Commerce 360 | Internet Retailer"
+       },
+       "image": {
+        "@id": "https://www.digitalcommerce360.com/#/schema/logo/image/"
+       },
+       "sameAs": [
+        "https://www.facebook.com/DigitalCommerce360/",
+        "https://x.com/DigitalComm360"
+       ]
+      },
+      {
+       "@type": "Person",
+       "@id": "https://www.digitalcommerce360.com/#/schema/person/9c343ce26a124921bf83bcd0fa423819",
+       "name": "Abbas Haleem",
+       "image": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://secure.gravatar.com/avatar/fa3214bffed029c98fb31e87d9142ee75e9e46d530b82d045eff8e0d51a711c8?s=96&d=mm&r=g",
+        "url": "https://secure.gravatar.com/avatar/fa3214bffed029c98fb31e87d9142ee75e9e46d530b82d045eff8e0d51a711c8?s=96&d=mm&r=g",
+        "contentUrl": "https://secure.gravatar.com/avatar/fa3214bffed029c98fb31e87d9142ee75e9e46d530b82d045eff8e0d51a711c8?s=96&d=mm&r=g",
+        "caption": "Abbas Haleem"
+       }
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:42:43 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "vary": "Accept-Encoding, Accept-Encoding, Cookie",
+    "last-modified": "Fri, 22 May 2026 13:57:32 GMT",
+    "link": "<https://www.digitalcommerce360.com/wp-json/>; rel=\"https://api.w.org/\", <https://www.digitalcommerce360.com/wp-json/wp/v2/posts/1359606>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://www.digitalcommerce360.com/?p=1359606>; rel=shortlink",
+    "x-powered-by": "WP Engine",
+    "x-cacheable": "YES:15552000.000",
+    "cache-control": "max-age=15552000, must-revalidate",
+    "x-cache": "MISS",
+    "x-cache-group": "normal",
+    "age": "5722103",
+    "x-xss-protection": "1; mode=block;",
+    "feature-policy": "accelerometer 'none'; autoplay 'none'; battery 'none'; camera 'none'; fullscreen 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; notifications 'none'; payment 'none'; picture-in-picture 'none'; push 'none'; speaker 'none'; sync-xhr 'none'; usb 'none'; vibrate 'none';",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "no-referrer-when-downgrade",
+    "cf-cache-status": "HIT",
+    "content-security-policy": "frame-ancestors 'self';",
+    "set-cookie": "__cf_bm=.xu3SQ0nzXRwDeSAIDYETo1uWh.N6PaDtAsTgpPb8ik-1792215763.0525122-1.0.1.1-PRc_vp9Vklh1HVSX2fwynFVNBtadhSrODR78dQZrBMxdTyyDfyBwF1ofyWJcdgixWEfgCi_v7Nyb9rwjHVr60mWQudLJkcUfsiKauWXtv2qSQa15xTES2JhxK77FbLeV; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.digitalcommerce360.com; Expires=Sat, 17 Oct 2026 06:12:43 GMT",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfb470ef8d7c2-ORD",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-digitalcommerce360-com-2026-05-22-walmart-sparky-agent-ai-sales-supply-chain.md>"
+ },
+ {
+  "url": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/",
+  "crawl": {
+   "loadedUrl": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/",
+   "loadedTime": "2026-10-17T05:43:04.361Z",
+   "referrerUrl": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/",
+   "title": "Grainger Embeds AI Across Warehouse Operations, Customer Service and Ecommerce - Distribution Strategy Group",
+   "description": null,
+   "author": "Mark Brohan",
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Grainger Embeds AI Across Warehouse Operations, Customer Service and Ecommerce - Distribution Strategy Group"
+    },
+    {
+     "property": "og:description",
+     "content": "CEO D.G. Macpherson said Grainger’s AI deployments now fall into two primary categories: internal productivity and customer-facing digital capabilities."
+    },
+    {
+     "property": "og:url",
+     "content": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Distribution Strategy Group"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2026-05-25T16:42:58+00:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-09-07T20:01:00+00:00"
+    },
+    {
+     "property": "og:image",
+     "content": "https://distributionstrategy.com/wp-content/uploads/2025/05/wwg-scaled-1-1024x576.jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "2560"
+    },
+    {
+     "property": "og:image:height",
+     "content": "1440"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@graph": [
+      {
+       "@type": "Article",
+       "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/#article",
+       "isPartOf": {
+        "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/"
+       },
+       "author": [
+        {
+         "@id": "https://distributionstrategy.com/#/schema/person/490a366e3ff5ec1fc52c07179fb57d46"
+        }
+       ],
+       "headline": "Grainger Embeds AI Across Warehouse Operations, Customer Service and Ecommerce",
+       "datePublished": "2026-05-25T16:42:58+00:00",
+       "dateModified": "2026-09-07T20:01:00+00:00",
+       "mainEntityOfPage": {
+        "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/"
+       },
+       "wordCount": 439,
+       "publisher": {
+        "@id": "https://distributionstrategy.com/#organization"
+       },
+       "image": {
+        "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/#primaryimage"
+       },
+       "thumbnailUrl": "https://distributionstrategy.com/wp-content/uploads/2025/05/wwg-scaled-1-1024x576.jpeg",
+       "articleSection": [
+        "AI &amp; Automation",
+        "AI, Tech, &amp; Digital Commerce",
+        "B2B Ecommerce &amp; Marketplaces",
+        "Customer Experience &amp; Retention",
+        "Operations",
+        "Sales &amp; Marketing",
+        "Warehousing &amp; Distribution Centers"
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "WebPage",
+       "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/",
+       "url": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/",
+       "name": "Grainger Embeds AI Across Warehouse Operations, Customer Service and Ecommerce - Distribution Strategy Group",
+       "isPartOf": {
+        "@id": "https://distributionstrategy.com/#website"
+       },
+       "primaryImageOfPage": {
+        "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/#primaryimage"
+       },
+       "image": {
+        "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/#primaryimage"
+       },
+       "thumbnailUrl": "https://distributionstrategy.com/wp-content/uploads/2025/05/wwg-scaled-1-1024x576.jpeg",
+       "datePublished": "2026-05-25T16:42:58+00:00",
+       "dateModified": "2026-09-07T20:01:00+00:00",
+       "breadcrumb": {
+        "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/#breadcrumb"
+       },
+       "inLanguage": "en-US",
+       "potentialAction": [
+        {
+         "@type": "ReadAction",
+         "target": [
+          "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/"
+         ]
+        }
+       ]
+      },
+      {
+       "@type": "ImageObject",
+       "inLanguage": "en-US",
+       "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/#primaryimage",
+       "url": "https://distributionstrategy.com/wp-content/uploads/2025/05/wwg-scaled-1-1024x576.jpeg",
+       "contentUrl": "https://distributionstrategy.com/wp-content/uploads/2025/05/wwg-scaled-1-1024x576.jpeg",
+       "width": 2560,
+       "height": 1440
+      },
+      {
+       "@type": "BreadcrumbList",
+       "@id": "https://distributionstrategy.com/2026/05/grainger-embeds-ai-across-warehouse-operations-customer-service-and-ecommerce/#breadcrumb",
+       "itemListElement": [
+        {
+         "@type": "ListItem",
+         "position": 1,
+         "name": "Home",
+         "item": "https://distributionstrategy.com/"
+        },
+        {
+         "@type": "ListItem",
+         "position": 2,
+         "name": "Grainger Embeds AI Across Warehouse Operations, Customer Service and Ecommerce"
+        }
+       ]
+      },
+      {
+       "@type": "WebSite",
+       "@id": "https://distributionstrategy.com/#website",
+       "url": "https://distributionstrategy.com/",
+       "name": "Distribution Strategy Group",
+       "description": "Thought Leadership and Software for Wholesale Change Agents",
+       "publisher": {
+        "@id": "https://distributionstrategy.com/#organization"
+       },
+       "potentialAction": [
+        {
+         "@type": "SearchAction",
+         "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://distributionstrategy.com/?s={search_term_string}"
+         },
+         "query-input": {
+          "@type": "PropertyValueSpecification",
+          "valueRequired": true,
+          "valueName": "search_term_string"
+         }
+        }
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "Organization",
+       "@id": "https://distributionstrategy.com/#organization",
+       "name": "Distribution Strategy Group",
+       "url": "https://distributionstrategy.com/",
+       "logo": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://distributionstrategy.com/#/schema/logo/image/",
+        "url": "https://distributionstrategy.com/wp-content/uploads/2026/03/Logo.svg",
+        "contentUrl": "https://distributionstrategy.com/wp-content/uploads/2026/03/Logo.svg",
+        "caption": "Distribution Strategy Group"
+       },
+       "image": {
+        "@id": "https://distributionstrategy.com/#/schema/logo/image/"
+       }
+      },
+      {
+       "@type": "Person",
+       "@id": "https://distributionstrategy.com/#/schema/person/490a366e3ff5ec1fc52c07179fb57d46",
+       "name": "Mark Brohan",
+       "image": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://secure.gravatar.com/avatar/8f9f8d5f68591c3218e9072f137f3c20369529362923d6bf3162a7275a5b511d?s=96&d=mm&r=ge2e8882c412e505349ed8c06a5d42996",
+        "url": "https://secure.gravatar.com/avatar/8f9f8d5f68591c3218e9072f137f3c20369529362923d6bf3162a7275a5b511d?s=96&d=mm&r=g",
+        "contentUrl": "https://secure.gravatar.com/avatar/8f9f8d5f68591c3218e9072f137f3c20369529362923d6bf3162a7275a5b511d?s=96&d=mm&r=g",
+        "caption": "Mark Brohan"
+       },
+       "sameAs": [
+        "https://distributionstrategy.com"
+       ],
+       "url": "https://distributionstrategy.com/author/markbrohan/"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:43:00 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "vary": "Accept-Encoding, Accept-Encoding, Cookie",
+    "link": "<https://distributionstrategy.com/wp-json/>; rel=\"https://api.w.org/\", <https://distributionstrategy.com/wp-json/wp/v2/posts/10626>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://distributionstrategy.com/?p=10626>; rel=shortlink",
+    "x-powered-by": "WP Engine",
+    "x-tec-api-origin": "https://distributionstrategy.com",
+    "x-tec-api-root": "https://distributionstrategy.com/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1",
+    "x-cacheable": "SHORT",
+    "cache-control": "max-age=600, must-revalidate",
+    "x-cache": "MISS",
+    "x-cache-group": "normal",
+    "last-modified": "Sat, 17 Oct 2026 05:43:00 GMT",
+    "cf-cache-status": "EXPIRED",
+    "set-cookie": "__cf_bm=xLLqCzqngXV1jDippw8MrjyXGPXEDuomdthyPwflmFw-1792215779.637645-1.0.1.1-lQU.2rejsIqdqtY2BV6mu6fPJdfb5dlM7APxz2etPtVzts7.sqx_c7fgrDQhHt9NNmRHzQqQZt78nxCsVjGn2iGDuiqOLbc4PXyc4OElTjyg06I5nzR9XMIclK5i3QMn; HttpOnly; SameSite=None; Secure; Path=/; Domain=distributionstrategy.com; Expires=Sat, 17 Oct 2026 06:13:00 GMT",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfbaebd61b6f8-ORD",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/distributionstrategy-com-2026-05-grainger-embeds-ai-across-warehouse-operations-customer-service-and.md>"
+ },
+ {
+  "url": "https://www.databricks.com/customers/grainger",
+  "crawl": {
+   "loadedUrl": "https://www.databricks.com/customers/grainger",
+   "loadedTime": "2026-10-17T05:43:15.051Z",
+   "referrerUrl": "https://www.databricks.com/customers/grainger",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.databricks.com/customers/grainger",
+   "title": "Grainger uses GenAI innovation to help keep industries up and running | Databricks",
+   "description": "Grainger uses generative AI to enhance e-commerce product discovery for improved customer service.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Databricks"
+    },
+    {
+     "property": "og:title",
+     "content": "Grainger | Databricks"
+    },
+    {
+     "property": "og:description",
+     "content": "Grainger uses GenAI innovation to help keep industries up and running"
+    },
+    {
+     "property": "og:image",
+     "content": "https://www.databricks.com/sites/default/files/2025-07/2025-07-cs-grainger-og-1200x630.png"
+    },
+    {
+     "property": "og:image:url",
+     "content": "https://www.databricks.com/sites/default/files/2025-07/2025-07-cs-grainger-og-1200x630.png"
+    },
+    {
+     "property": "article:published_time",
+     "content": "Mon, 07/29/2024 - 08:42"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "Wed, 06/10/2026 - 09:19"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.databricks.com/customers/grainger"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "630"
+    },
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:43:12 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "cf-ray": "a4bcfbfe98f222ad-PIT",
+    "cf-cache-status": "DYNAMIC",
+    "access-control-allow-origin": "*",
+    "age": "34754",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-disposition": "inline; filename=\"grainger\"",
+    "x-frame-options": "DENY",
+    "last-modified": "Fri, 16 Oct 2026 20:03:57 GMT",
+    "server": "cloudflare",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "vary": "accept-encoding",
+    "x-vercel-cache": "HIT",
+    "x-vercel-id": "iad1::w2vnv-1792215792513-3a226c6dc493",
+    "set-cookie": "__cf_bm=Sj7nRkKXnADF8V_xt3qFRn5Zh2jbg2d45p9dvMs.OEE-1792215792.4145756-1.0.1.1-DPc5SEg1qPpRI3QQ0JbcDslVY5s7fqPlTKGTPiNoxZA5ZHTvVobXaOl6WFjJtjHKkIVJajf0D2t2vCUNwjWhEM_lnf44lg766sVt42AXMbflUM5D33F91HmoNfQMPKAj; HttpOnly; SameSite=None; Secure; Path=/; Domain=databricks.com; Expires=Sat, 17 Oct 2026 06:13:12 GMT",
+    "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=24, cfOrigin;dur=0, cfWorker;dur=133",
+    "content-security-policy": "default-src 'unsafe-inline' 'unsafe-eval' vitals.vercel-insights.com https: data: wss://*.qualified.com *.arkoselabs.com; block-all-mixed-content; upgrade-insecure-requests",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1; mode=block",
+    "content-encoding": "br",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-databricks-com-customers-grainger.md>"
+ },
+ {
+  "url": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/",
+  "crawl": {
+   "loadedUrl": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/",
+   "loadedTime": "2026-10-17T05:43:28.963Z",
+   "referrerUrl": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/",
+   "title": "Lowe's Tightens Its Grip on the Small Pro with AI Tools, Trades Investment - Distribution Strategy Group",
+   "description": null,
+   "author": "Mark Brohan",
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Lowe's Tightens Its Grip on the Small Pro with AI Tools, Trades Investment - Distribution Strategy Group"
+    },
+    {
+     "property": "og:description",
+     "content": "The most consequential long-term signal for the distribution industry was Lowe's $250 million commitment through the Lowe's Foundation to train approximately 250,000 skilled tradespeople."
+    },
+    {
+     "property": "og:url",
+     "content": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Distribution Strategy Group"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2026-05-21T20:47:34+00:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-09-07T20:01:02+00:00"
+    },
+    {
+     "property": "og:image",
+     "content": "https://distributionstrategy.com/wp-content/uploads/2026/05/AdobeStock_1945681168_Editorial_Use_Only-1024x475.jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "2560"
+    },
+    {
+     "property": "og:image:height",
+     "content": "1186"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@graph": [
+      {
+       "@type": "Article",
+       "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/#article",
+       "isPartOf": {
+        "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/"
+       },
+       "author": [
+        {
+         "@id": "https://distributionstrategy.com/#/schema/person/490a366e3ff5ec1fc52c07179fb57d46"
+        }
+       ],
+       "headline": "Lowe&#8217;s Tightens Its Grip on the Small Pro with AI Tools, Trades Investment",
+       "datePublished": "2026-05-21T20:47:34+00:00",
+       "dateModified": "2026-09-07T20:01:02+00:00",
+       "mainEntityOfPage": {
+        "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/"
+       },
+       "wordCount": 829,
+       "publisher": {
+        "@id": "https://distributionstrategy.com/#organization"
+       },
+       "image": {
+        "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/#primaryimage"
+       },
+       "thumbnailUrl": "https://distributionstrategy.com/wp-content/uploads/2026/05/AdobeStock_1945681168_Editorial_Use_Only-1024x475.jpeg",
+       "articleSection": [
+        "AI &amp; Automation",
+        "AI, Tech, &amp; Digital Commerce",
+        "Economics &amp; Market Data",
+        "Industry News, Analysis &amp; Vertical Markets"
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "WebPage",
+       "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/",
+       "url": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/",
+       "name": "Lowe's Tightens Its Grip on the Small Pro with AI Tools, Trades Investment - Distribution Strategy Group",
+       "isPartOf": {
+        "@id": "https://distributionstrategy.com/#website"
+       },
+       "primaryImageOfPage": {
+        "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/#primaryimage"
+       },
+       "image": {
+        "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/#primaryimage"
+       },
+       "thumbnailUrl": "https://distributionstrategy.com/wp-content/uploads/2026/05/AdobeStock_1945681168_Editorial_Use_Only-1024x475.jpeg",
+       "datePublished": "2026-05-21T20:47:34+00:00",
+       "dateModified": "2026-09-07T20:01:02+00:00",
+       "breadcrumb": {
+        "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/#breadcrumb"
+       },
+       "inLanguage": "en-US",
+       "potentialAction": [
+        {
+         "@type": "ReadAction",
+         "target": [
+          "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/"
+         ]
+        }
+       ]
+      },
+      {
+       "@type": "ImageObject",
+       "inLanguage": "en-US",
+       "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/#primaryimage",
+       "url": "https://distributionstrategy.com/wp-content/uploads/2026/05/AdobeStock_1945681168_Editorial_Use_Only-1024x475.jpeg",
+       "contentUrl": "https://distributionstrategy.com/wp-content/uploads/2026/05/AdobeStock_1945681168_Editorial_Use_Only-1024x475.jpeg",
+       "width": 2560,
+       "height": 1186,
+       "caption": "Lowe's"
+      },
+      {
+       "@type": "BreadcrumbList",
+       "@id": "https://distributionstrategy.com/2026/05/lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-investment/#breadcrumb",
+       "itemListElement": [
+        {
+         "@type": "ListItem",
+         "position": 1,
+         "name": "Home",
+         "item": "https://distributionstrategy.com/"
+        },
+        {
+         "@type": "ListItem",
+         "position": 2,
+         "name": "Lowe&#8217;s Tightens Its Grip on the Small Pro with AI Tools, Trades Investment"
+        }
+       ]
+      },
+      {
+       "@type": "WebSite",
+       "@id": "https://distributionstrategy.com/#website",
+       "url": "https://distributionstrategy.com/",
+       "name": "Distribution Strategy Group",
+       "description": "Thought Leadership and Software for Wholesale Change Agents",
+       "publisher": {
+        "@id": "https://distributionstrategy.com/#organization"
+       },
+       "potentialAction": [
+        {
+         "@type": "SearchAction",
+         "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://distributionstrategy.com/?s={search_term_string}"
+         },
+         "query-input": {
+          "@type": "PropertyValueSpecification",
+          "valueRequired": true,
+          "valueName": "search_term_string"
+         }
+        }
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "Organization",
+       "@id": "https://distributionstrategy.com/#organization",
+       "name": "Distribution Strategy Group",
+       "url": "https://distributionstrategy.com/",
+       "logo": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://distributionstrategy.com/#/schema/logo/image/",
+        "url": "https://distributionstrategy.com/wp-content/uploads/2026/03/Logo.svg",
+        "contentUrl": "https://distributionstrategy.com/wp-content/uploads/2026/03/Logo.svg",
+        "caption": "Distribution Strategy Group"
+       },
+       "image": {
+        "@id": "https://distributionstrategy.com/#/schema/logo/image/"
+       }
+      },
+      {
+       "@type": "Person",
+       "@id": "https://distributionstrategy.com/#/schema/person/490a366e3ff5ec1fc52c07179fb57d46",
+       "name": "Mark Brohan",
+       "image": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://secure.gravatar.com/avatar/8f9f8d5f68591c3218e9072f137f3c20369529362923d6bf3162a7275a5b511d?s=96&d=mm&r=ge2e8882c412e505349ed8c06a5d42996",
+        "url": "https://secure.gravatar.com/avatar/8f9f8d5f68591c3218e9072f137f3c20369529362923d6bf3162a7275a5b511d?s=96&d=mm&r=g",
+        "contentUrl": "https://secure.gravatar.com/avatar/8f9f8d5f68591c3218e9072f137f3c20369529362923d6bf3162a7275a5b511d?s=96&d=mm&r=g",
+        "caption": "Mark Brohan"
+       },
+       "sameAs": [
+        "https://distributionstrategy.com"
+       ],
+       "url": "https://distributionstrategy.com/author/markbrohan/"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:43:27 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-cache-status": "EXPIRED",
+    "vary": "Accept-Encoding, Accept-Encoding, Cookie",
+    "link": "<https://distributionstrategy.com/wp-json/>; rel=\"https://api.w.org/\", <https://distributionstrategy.com/wp-json/wp/v2/posts/10614>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://distributionstrategy.com/?p=10614>; rel=shortlink",
+    "x-powered-by": "WP Engine",
+    "x-tec-api-origin": "https://distributionstrategy.com",
+    "x-tec-api-root": "https://distributionstrategy.com/wp-json/tribe/events/v1/",
+    "x-tec-api-version": "v1",
+    "x-cacheable": "SHORT",
+    "cache-control": "max-age=600, must-revalidate",
+    "x-cache": "MISS",
+    "x-cache-group": "normal",
+    "last-modified": "Sat, 17 Oct 2026 05:43:27 GMT",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfc5c3c26b6f8-ORD",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/distributionstrategy-com-2026-05-lowes-tightens-its-grip-on-the-small-pro-with-ai-tools-trades-inves.md>"
+ },
+ {
+  "url": "https://www.fool.com/earnings/call-transcripts/2026/05/07/grainger-gww-q1-2026-earnings-transcript/",
+  "crawl": {
+   "loadedUrl": "https://www.fool.com/earnings/call-transcripts/2026/05/07/grainger-gww-q1-2026-earnings-transcript/",
+   "loadedTime": "2026-10-17T05:43:26.364Z",
+   "referrerUrl": "https://www.fool.com/earnings/call-transcripts/2026/05/07/grainger-gww-q1-2026-earnings-transcript/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.fool.com/earnings/call-transcripts/2026/05/07/grainger-gww-q1-2026-earnings-transcript/",
+   "title": "Grainger (GWW) Q1 2026 Earnings Transcript | The Motley Fool",
+   "description": "Grainger (GWW) Q1 2026 Earnings Transcript",
+   "author": "Motley Fool Transcribing",
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Grainger (GWW) Q1 2026 Earnings Transcript | The Motley Fool"
+    },
+    {
+     "property": "og:description",
+     "content": "Grainger (GWW) Q1 2026 Earnings Transcript"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.fool.com/earnings/call-transcripts/2026/05/07/grainger-gww-q1-2026-earnings-transcript/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "The Motley Fool"
+    },
+    {
+     "property": "og:image",
+     "content": "https://g.foolcdn.com/image/?url=https%3A%2F%2Fcdn.content.foolcdn.com%2Fimages%2F1umn9qeh%2Fproduction%2Fb4204f36ed605fc54d4ba32e2cb31d1dd892afd6-800x450.jpg%3Fw%3D800%26q%3D75%26fit%3Dmax%26auto%3Dformat&w=1200&op=resize"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1200"
+    },
+    {
+     "property": "og:image:height",
+     "content": "630"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Grainger (GWW) Q1 2026 Earnings Transcript"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2026-05-07T16:22:30Z"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-05-07T16:22:30Z"
+    },
+    {
+     "property": "article:author",
+     "content": "Motley Fool Transcribing"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "NewsArticle",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.fool.com/earnings/call-transcripts/2026/05/07/grainger-gww-q1-2026-earnings-transcript/"
+     },
+     "headline": "Grainger (GWW) Q1 2026 Earnings Transcript",
+     "datePublished": "2026-05-07T16:22:30.000Z",
+     "dateModified": "2026-05-07T16:22:30.000Z",
+     "author": {
+      "@type": "Person",
+      "name": "Motley Fool Transcribing",
+      "url": "https://www.fool.com/author/20032/",
+      "jobTitle": "Contributing Analyst",
+      "image": {
+       "@type": "ImageObject",
+       "url": "https://g.foolcdn.com/avatar/2041746765/large.ashx",
+       "height": "80",
+       "width": "80"
+      }
+     },
+     "about": [
+      {
+       "@type": "Corporation",
+       "tickerSymbol": "NYSE GWW"
+      }
+     ],
+     "publisher": {
+      "@type": "Organization",
+      "@id": "https://www.fool.com/",
+      "name": "The Motley Fool",
+      "url": "https://www.fool.com/",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://g.foolcdn.com/misc-assets/logo-tmf-primary-7-magenta-royalpurple.svg",
+       "width": "157",
+       "height": "43"
+      },
+      "brand": "The Motley Fool",
+      "contactPoint": {
+       "@type": "ContactPoint",
+       "contactType": "Media Inquiries",
+       "email": "pr@fool.com"
+      },
+      "publishingPrinciples": "https://www.fool.com/about/",
+      "sameAs": [
+       "https://www.fool.com/about/",
+       "https://en.wikipedia.org/wiki/The_Motley_Fool",
+       "https://www.wikidata.org/wiki/Q7752442",
+       "https://www.linkedin.com/company/the-motley-fool",
+       "https://www.facebook.com/themotleyfool/",
+       "https://x.com/themotleyfool",
+       "https://www.instagram.com/themotleyfoolofficial/",
+       "https://www.youtube.com/channel/UCpRQuynBX9Qy9tPrcswpPag",
+       "https://www.pinterest.com/themotleyfool/",
+       "https://www.tiktok.com/@themotleyfoolofficial",
+       "https://www.google.com/search?kgmid=/m/0578mk"
+      ]
+     },
+     "description": null,
+     "image": {
+      "@type": "ImageObject",
+      "url": "https://cdn.content.foolcdn.com/images/1umn9qeh/production/b4204f36ed605fc54d4ba32e2cb31d1dd892afd6-800x450.jpg?w=800&q=75&fit=max&auto=format",
+      "height": "630",
+      "width": "1200"
+     }
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:43:10 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "referrer-policy": "no-referrer-when-downgrade, strict-origin-when-cross-origin",
+    "strict-transport-security": "max-age=15552000",
+    "x-frame-options": "SAMEORIGIN",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "0",
+    "permissions-policy": "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+    "cache-control": "public, max-age=300, s-maxage=300",
+    "x-cache-set-by": "middleware",
+    "x-pathname": "/earnings/call-transcripts/2026/05/07/grainger-gww-q1-2026-earnings-transcript/",
+    "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+    "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=53, cfOrigin;dur=0",
+    "x-kong-upstream-latency": "1190",
+    "x-kong-proxy-latency": "4",
+    "link": "<https://g.foolcdn.com/static/foolcom/_next/static/media/867bce6efedfde96-s.p.ttf>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/ttf\", <https://g.foolcdn.com/static/foolcom/_next/static/media/d9396795aa5ec363-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", <https://g.foolcdn.com/static/foolcom/_next/static/media/de6476984585df9b-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", <https://g.foolcdn.com/static/foolcom/_next/static/css/6f145c6aaf6c4db6.css>; rel=preload; as=\"style\", <https://g.foolcdn.com/static/foolcom/_next/static/css/02c67f1af3f6ba77.css>; rel=preload; as=\"style\"",
+    "x-kong-request-id": "682f38764e5a740b5a899f415f75e530",
+    "last-modified": "Sat, 17 Oct 2026 05:43:10 GMT",
+    "cf-cache-status": "HIT",
+    "content-encoding": "br",
+    "server": "cloudflare",
+    "cf-ray": "a4bcfbf22e841064-ORD",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-fool-com-earnings-call-transcripts-2026-05-07-grainger-gww-q1-2026-earnings-transcript.md>"
+ },
+ {
+  "url": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/",
+  "crawl": {
+   "loadedUrl": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/",
+   "loadedTime": "2026-10-17T05:43:33.345Z",
+   "referrerUrl": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/",
+   "title": "Lowe's gets AI assistance with 15.5% online sales growth in Q1",
+   "description": "Lowe's praised online sales and success with Pro customers as factors in its overall fiscal Q1 2026 growth.",
+   "author": "Kevin Williams",
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Lowe's gets AI assistance with 15.5% online sales growth in Q1"
+    },
+    {
+     "property": "og:description",
+     "content": "Lowe's praised online sales and success with Pro customers as factors in its overall fiscal Q1 2026 growth."
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Digital Commerce 360"
+    },
+    {
+     "property": "article:publisher",
+     "content": "https://www.facebook.com/DigitalCommerce360/"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2026-05-21T17:00:40+00:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2026-09-10T00:22:02+00:00"
+    },
+    {
+     "property": "og:image",
+     "content": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/lowes-q1-online-sales-scaled.jpeg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "2560"
+    },
+    {
+     "property": "og:image:height",
+     "content": "1920"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/jpeg"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@graph": [
+      {
+       "@type": "Article",
+       "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/#article",
+       "isPartOf": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/"
+       },
+       "author": {
+        "name": "Kevin Williams",
+        "@id": "https://www.digitalcommerce360.com/#/schema/person/66eae62f0905159d53a0a9fd9e06e7ff"
+       },
+       "headline": "Lowe&#8217;s gets AI assistance with 15.5% online sales growth in Q1",
+       "datePublished": "2026-05-21T17:00:40+00:00",
+       "dateModified": "2026-09-10T00:22:02+00:00",
+       "mainEntityOfPage": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/"
+       },
+       "wordCount": 880,
+       "publisher": {
+        "@id": "https://www.digitalcommerce360.com/#organization"
+       },
+       "image": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/#primaryimage"
+       },
+       "thumbnailUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/lowes-q1-online-sales-scaled.jpeg",
+       "inLanguage": "en-US",
+       "copyrightYear": "2026",
+       "copyrightHolder": {
+        "@id": "https://www.digitalcommerce360.com/#organization"
+       }
+      },
+      {
+       "@type": "WebPage",
+       "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/",
+       "url": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/",
+       "name": "Lowe's gets AI assistance with 15.5% online sales growth in Q1",
+       "isPartOf": {
+        "@id": "https://www.digitalcommerce360.com/#website"
+       },
+       "primaryImageOfPage": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/#primaryimage"
+       },
+       "image": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/#primaryimage"
+       },
+       "thumbnailUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/lowes-q1-online-sales-scaled.jpeg",
+       "datePublished": "2026-05-21T17:00:40+00:00",
+       "dateModified": "2026-09-10T00:22:02+00:00",
+       "description": "Lowe's praised online sales and success with Pro customers as factors in its overall fiscal Q1 2026 growth.",
+       "breadcrumb": {
+        "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/#breadcrumb"
+       },
+       "inLanguage": "en-US",
+       "potentialAction": [
+        {
+         "@type": "ReadAction",
+         "target": [
+          "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/"
+         ]
+        }
+       ]
+      },
+      {
+       "@type": "ImageObject",
+       "inLanguage": "en-US",
+       "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/#primaryimage",
+       "url": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/lowes-q1-online-sales-scaled.jpeg",
+       "contentUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2026/05/lowes-q1-online-sales-scaled.jpeg",
+       "width": 2560,
+       "height": 1920,
+       "caption": "Lowe's Q1 online sales results | Image credit: Mahmoud Suhail - Adobe Stock"
+      },
+      {
+       "@type": "BreadcrumbList",
+       "@id": "https://www.digitalcommerce360.com/2026/05/21/lowes-ai-online-sales-q1-fy26/#breadcrumb",
+       "itemListElement": [
+        {
+         "@type": "ListItem",
+         "position": 1,
+         "name": "Home",
+         "item": "https://www.digitalcommerce360.com/"
+        },
+        {
+         "@type": "ListItem",
+         "position": 2,
+         "name": "Lowe&#8217;s gets AI assistance with 15.5% online sales growth in Q1"
+        }
+       ]
+      },
+      {
+       "@type": "WebSite",
+       "@id": "https://www.digitalcommerce360.com/#website",
+       "url": "https://www.digitalcommerce360.com/",
+       "name": "Digital Commerce 360",
+       "description": "Your source for ecommerce news, analysis and research",
+       "publisher": {
+        "@id": "https://www.digitalcommerce360.com/#organization"
+       },
+       "potentialAction": [
+        {
+         "@type": "SearchAction",
+         "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.digitalcommerce360.com/?s={search_term_string}"
+         },
+         "query-input": {
+          "@type": "PropertyValueSpecification",
+          "valueRequired": true,
+          "valueName": "search_term_string"
+         }
+        }
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "Organization",
+       "@id": "https://www.digitalcommerce360.com/#organization",
+       "name": "Digital Commerce 360 | Internet Retailer",
+       "url": "https://www.digitalcommerce360.com/",
+       "logo": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://www.digitalcommerce360.com/#/schema/logo/image/",
+        "url": "https://www.digitalcommerce360.com/wp-content/uploads/2018/04/Digital-Commerce-360-Digital-Use-Logo-External-White.jpg",
+        "contentUrl": "https://www.digitalcommerce360.com/wp-content/uploads/2018/04/Digital-Commerce-360-Digital-Use-Logo-External-White.jpg",
+        "width": 1366,
+        "height": 345,
+        "caption": "Digital Commerce 360 | Internet Retailer"
+       },
+       "image": {
+        "@id": "https://www.digitalcommerce360.com/#/schema/logo/image/"
+       },
+       "sameAs": [
+        "https://www.facebook.com/DigitalCommerce360/",
+        "https://x.com/DigitalComm360"
+       ]
+      },
+      {
+       "@type": "Person",
+       "@id": "https://www.digitalcommerce360.com/#/schema/person/66eae62f0905159d53a0a9fd9e06e7ff",
+       "name": "Kevin Williams",
+       "image": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://secure.gravatar.com/avatar/79189d1737d25a6d51e64a9da5d49d72a3dbbbe24cb7ac0bcb3603b73a61d351?s=96&d=mm&r=g",
+        "url": "https://secure.gravatar.com/avatar/79189d1737d25a6d51e64a9da5d49d72a3dbbbe24cb7ac0bcb3603b73a61d351?s=96&d=mm&r=g",
+        "contentUrl": "https://secure.gravatar.com/avatar/79189d1737d25a6d51e64a9da5d49d72a3dbbbe24cb7ac0bcb3603b73a61d351?s=96&d=mm&r=g",
+        "caption": "Kevin Williams"
+       }
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:43:27 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "server": "cloudflare",
+    "cf-cache-status": "HIT",
+    "vary": "Accept-Encoding, Accept-Encoding, Cookie",
+    "last-modified": "Wed, 09 Sep 2026 19:22:02 GMT",
+    "link": "<https://www.digitalcommerce360.com/wp-json/>; rel=\"https://api.w.org/\", <https://www.digitalcommerce360.com/wp-json/wp/v2/posts/1359573>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://www.digitalcommerce360.com/?p=1359573>; rel=shortlink",
+    "x-powered-by": "WP Engine",
+    "x-cacheable": "YES:86400.000",
+    "cache-control": "max-age=15552000, must-revalidate",
+    "x-cache": "MISS",
+    "x-cache-group": "normal",
+    "age": "733734",
+    "x-xss-protection": "1; mode=block;",
+    "feature-policy": "accelerometer 'none'; autoplay 'none'; battery 'none'; camera 'none'; fullscreen 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; notifications 'none'; payment 'none'; picture-in-picture 'none'; push 'none'; speaker 'none'; sync-xhr 'none'; usb 'none'; vibrate 'none';",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "referrer-policy": "no-referrer-when-downgrade",
+    "content-security-policy": "frame-ancestors 'self';",
+    "content-encoding": "br",
+    "cf-ray": "a4bcfc5c38a0d7c2-ORD",
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-digitalcommerce360-com-2026-05-21-lowes-ai-online-sales-q1-fy26.md>"
+ },
+ {
+  "url": "https://corporate.zalando.com/en/fashion/tracking-future-why-zalando-uniquely-placed-lead-next-era-retail",
+  "crawl": {
+   "loadedUrl": "https://corporate.zalando.com/en/fashion/tracking-future-why-zalando-uniquely-placed-lead-next-era-retail",
+   "loadedTime": "2026-10-17T05:43:53.960Z",
+   "referrerUrl": "https://corporate.zalando.com/en/fashion/tracking-future-why-zalando-uniquely-placed-lead-next-era-retail",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.zalando.com/en/fashion/tracking-future-why-zalando-uniquely-placed-lead-next-era-retail",
+   "title": "Zalando: Tracking the future: Why Zalando is uniquely placed to lead the next era of retail | Zalando Corporate",
+   "description": "All informations about „Tracking the future: Why Zalando is uniquely placed to lead the next era of retail“ at Zalando Corporate ✓ Current information about Zalando SE",
+   "author": null,
+   "keywords": ", Fashion,Convenience,Technology,",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Zalando Corporate Website"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.zalando.com/en/fashion/tracking-future-why-zalando-uniquely-placed-lead-next-era-retail"
+    },
+    {
+     "property": "og:title",
+     "content": "Tracking the future: Why Zalando is uniquely placed to lead the next era of retail"
+    },
+    {
+     "property": "og:description",
+     "content": "All informations about „Tracking the future: Why Zalando is uniquely placed to lead the next era of retail“ at Zalando Corporate, Current information about Zalando SE"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.zalando.com/public/media/sbahn_nathalie-joanna.jpg?VersionId=Fi7157dit1Xp5kVPDBgyDOiQtQIva2z5"
+    }
+   ],
+   "jsonLd": [
+    {
+     "embedUrl": "https://player.vimeo.com/video/1175166790?h=bc7877a620",
+     "thumbnailUrl": "https://i.vimeocdn.com/video/2135951891-eeeac16ff162bdb9600b43b92b8b37b4d99b541192a1c1ca17f44e4fef415fe8-d?f=webp",
+     "name": "Virtual Round Table - Media Day [EN]_without Q&A",
+     "description": "This is \"Virtual Round Table - Media Day [EN]_without Q&A\" by \"Zalando SE\" on Vimeo, the home for high quality videos and the people who love them.",
+     "duration": "PT1951S",
+     "uploadDate": "2026-03-19T10:08:59-04:00",
+     "@context": "https://schema.org/",
+     "@type": "VideoObject"
+    }
+   ],
+   "headers": {
+    "cache-control": "max-age=3600, public",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 15 Oct 2026 11:58:54 GMT",
+    "etag": "W/\"1792065533\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Thu, 15 Oct 2026 11:58:53 GMT",
+    "vary": "Accept-Encoding, Cookie",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 11 (https://www.drupal.org)",
+    "transfer-encoding": "chunked"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-zalando-com-en-fashion-tracking-future-why-zalando-uniquely-placed-lead-next-era-retail.md>"
+ },
+ {
+  "url": "https://corporate.zalando.com/en/company/winning-battle-attention",
+  "crawl": {
+   "loadedUrl": "https://corporate.zalando.com/en/company/winning-battle-attention",
+   "loadedTime": "2026-10-17T05:43:54.047Z",
+   "referrerUrl": "https://corporate.zalando.com/en/company/winning-battle-attention",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://corporate.zalando.com/en/company/winning-battle-attention",
+   "title": "Zalando: Winning the battle for attention | Zalando Corporate",
+   "description": "All informations about „Winning the battle for attention “ at Zalando Corporate ✓ Current information about Zalando SE",
+   "author": null,
+   "keywords": ", Company,Fashion,",
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:site_name",
+     "content": "Zalando Corporate Website"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://corporate.zalando.com/en/company/winning-battle-attention"
+    },
+    {
+     "property": "og:title",
+     "content": "Winning the battle for attention"
+    },
+    {
+     "property": "og:description",
+     "content": "All informations about „Winning the battle for attention “ at Zalando Corporate, Current information about Zalando SE"
+    },
+    {
+     "property": "og:image",
+     "content": "https://corporate.zalando.com/public/media/zalando-se_telling-stories_hero_image_kl.jpg?VersionId=ikMma1Equ9uzqltkj555WJauHpIpm6l8"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "cache-control": "max-age=3600, public",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-language": "en",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Fri, 16 Oct 2026 21:43:27 GMT",
+    "etag": "W/\"1792187005\"",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Fri, 16 Oct 2026 21:43:25 GMT",
+    "vary": "Accept-Encoding, Cookie",
+    "x-content-type-options": "nosniff",
+    "x-drupal-cache": "HIT",
+    "x-drupal-dynamic-cache": "MISS",
+    "x-frame-options": "SAMEORIGIN",
+    "x-generator": "Drupal 11 (https://www.drupal.org)",
+    "transfer-encoding": "chunked"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/corporate-zalando-com-en-company-winning-battle-attention.md>"
+ },
+ {
+  "url": "https://www.retail-week.com/fashion/app-tour-how-zalandos-ai-powered-chatbot-is-changing-customer-engagement/7051397.article",
+  "crawl": {
+   "loadedUrl": "https://www.retail-week.com/fashion/app-tour-how-zalandos-ai-powered-chatbot-is-changing-customer-engagement/7051397.article",
+   "loadedTime": "2026-10-17T05:44:07.364Z",
+   "referrerUrl": "https://www.retail-week.com/fashion/app-tour-how-zalandos-ai-powered-chatbot-is-changing-customer-engagement/7051397.article",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 48177,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.retail-week.com/fashion/app-tour-how-zalandos-ai-powered-chatbot-is-changing-customer-engagement/7051397.article",
+   "title": "App tour: How Zalando’s AI-powered chatbot is changing customer engagement | Retail Week",
+   "description": "With more retailers experimenting with AI in their customer offering, Retail Week analyses how Zalando’s AI-powered app is pushing the retailer forward",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "App tour: How Zalando’s AI-powered chatbot is changing customer engagement"
+    },
+    {
+     "property": "og:type",
+     "content": "Article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.retail-week.com/fashion/app-tour-how-zalandos-ai-powered-chatbot-is-changing-customer-engagement/7051397.article"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Retail Week"
+    },
+    {
+     "property": "og:description",
+     "content": "With more retailers experimenting with AI in their customer offering, Retail Week analyses how Zalando's AI-powered app is pushing the retailer forward"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1024"
+    },
+    {
+     "property": "og:image:height",
+     "content": "536"
+    },
+    {
+     "property": "og:image",
+     "content": "https://d53bpfpeyyyn7.cloudfront.net/Pictures/1024x536/5/5/1/3127551_zalandose_ss26_ooh_festival_kl_102367.jpg"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Zalando festival collection photoshoot"
+    },
+    {
+     "property": "og:image",
+     "content": "https://d53bpfpeyyyn7.cloudfront.net/Pictures/1024x536/5/4/1/3127541_zalandoapp3_357119.png"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Zalando app"
+    },
+    {
+     "property": "og:image",
+     "content": "https://d53bpfpeyyyn7.cloudfront.net/Pictures/1024x536/5/4/2/3127542_zalandoapp1_421803.jpg"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Zalando app"
+    },
+    {
+     "property": "og:image",
+     "content": "https://d53bpfpeyyyn7.cloudfront.net/Pictures/1024x536/5/4/3/3127543_zalandoapp2_337884.jpg"
+    },
+    {
+     "property": "og:image:alt",
+     "content": "Zalando app"
+    },
+    {
+     "property": "twitter:card",
+     "content": "summary_large_image"
+    },
+    {
+     "property": "twitter:title",
+     "content": "App tour: How Zalando’s AI-powered chatbot is changing customer ..."
+    },
+    {
+     "property": "twitter:description",
+     "content": "With more retailers experimenting with AI in their customer offering, Retail Week analyses how Zalando's AI-powered app is pushing the retailer forward"
+    },
+    {
+     "property": "twitter:image:src",
+     "content": "https://d53bpfpeyyyn7.cloudfront.net/Pictures/1120xAny/5/5/1/3127551_zalandose_ss26_ooh_festival_kl_102367.jpg"
+    },
+    {
+     "property": "twitter:image:alt",
+     "content": "Zalando festival collection photoshoot"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "Article",
+     "description": "With more retailers experimenting with AI in their customer offering, Retail Week analyses how Zalando’s AI-powered app is pushing the retailer forward",
+     "image": "https://d53bpfpeyyyn7.cloudfront.net/Pictures/2000xAny/5/5/1/3127551_zalandose_ss26_ooh_festival_kl_102367.jpg",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://www.retail-week.com/fashion/app-tour-how-zalandos-ai-powered-chatbot-is-changing-customer-engagement/7051397.article"
+     },
+     "author": {
+      "@type": "Person",
+      "name": "Tabitha Bennett"
+     },
+     "dateCreated": "2026-06-12",
+     "dateModified": "2026-08-04",
+     "datePublished": "2026-06-15",
+     "hasPart": {
+      "@type": "WebPageElement",
+      "isAccessibleForFree": false,
+      "cssSelector": ".restrictedcontent"
+     },
+     "headline": "App tour: How Zalando’s AI-powered chatbot is changing customer engagement",
+     "isAccessibleForFree": false,
+     "publisher": {
+      "@type": "Organization",
+      "name": "Retail Week",
+      "logo": {
+       "@type": "ImageObject",
+       "url": "https://www.retail-week.com/magazine/dest/graphics/logo/logo.png"
+      }
+     }
+    }
+   ],
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:02 GMT",
+    "content-type": "text/html; charset=utf-8",
+    "content-length": "48177",
+    "cache-control": "private",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding",
+    "x-frame-options": "SAMEORIGIN",
+    "content-security-policy": "default-src https:; script-src https: 'unsafe-inline' 'unsafe-eval' blob: 'unsafe-inline'; frame-src https: data:; style-src https: 'unsafe-inline'; img-src https: data: blob:; media-src https: data: blob:; font-src https: data:; connect-src https: wss:; child-src https: blob:; object-src 'none'; frame-ancestors 'self' https://subs.retail-week.com;",
+    "referrer-policy": "no-referrer-when-downgrade",
+    "x-xss-protection": "1; mode=block",
+    "x-content-type-options": "nosniff",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload;",
+    "set-cookie": "WV_SESSION=yoxrikltr4tilh3tdg5dszod; path=/; HttpOnly; SameSite=Lax\nAnonUserCookie=4d0150ba-3f8f-4148-8ec5-7f535a570573; domain=.retail-week.com; <signed-url-removed> 16-Oct-2027 23:00:00 GMT; path=/; HttpOnly\nCSRFToken=lPF4NbY37DHpzgIVJaCom7sQ; path=/; HttpOnly",
+    "x-server-name": "LIVE-FAILOVER-3",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-retail-week-com-fashion-app-tour-how-zalandos-ai-powered-chatbot-is-changing-customer-engagement.md>"
+ },
+ {
+  "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50",
+  "crawl": {
+   "loadedUrl": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50",
+   "loadedTime": "2026-10-17T05:44:16.975Z",
+   "referrerUrl": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 14071,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50",
+   "title": "Article 50: Transparency obligations for providers and deployers of certain AI systems | AI Act Service Desk",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "AI Act Service Desk - Article 50: Transparency obligations for providers and deployers of certain AI systems"
+    },
+    {
+     "property": "og:image",
+     "content": "https://ai-act-service-desk.ec.europa.eu/themes/custom/sip_theme/logo.svg"
+    },
+    {
+     "property": "og:url",
+     "content": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "content-length": "14071",
+    "date": "Sat, 17 Oct 2026 05:44:15 GMT",
+    "x-age": "5",
+    "content-language": "en",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN",
+    "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+    "last-modified": "Tue, 13 Oct 2026 15:35:37 GMT",
+    "content-encoding": "gzip",
+    "accept-ranges": "bytes",
+    "x-fpfis": "2087418 2774762",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload;",
+    "cache-control": "public, max-age=300, s-maxage=300",
+    "etag": "\"1791905737-gzip\"",
+    "vary": "Cookie, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 3077e51ba09dfad95d9df56fc9169c2a.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "CMH51-P1",
+    "x-amz-cf-id": "OzcB4bwtEyP3zMNDdNUlOX2e_o_gUwEipmiCzBGpqakEFLKWafrfhw==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/ai-act-service-desk-ec-europa-eu-en-ai-act-article-50.md>"
+ },
+ {
+  "url": "https://www.estrategy-consulting.de/en/insights/marketplace-leaders-ralf-buehler-conrad-electronic/",
+  "crawl": {
+   "loadedUrl": "https://www.estrategy-consulting.de/en/insights/marketplace-leaders-ralf-buehler-conrad-electronic/",
+   "loadedTime": "2026-10-17T05:44:21.100Z",
+   "referrerUrl": "https://www.estrategy-consulting.de/en/insights/marketplace-leaders-ralf-buehler-conrad-electronic/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.estrategy-consulting.de/en/insights/marketplace-leaders-ralf-buehler-conrad-electronic/",
+   "title": "Marketplace Leaders: Ralf Bühler, Conrad Electronic | eStrategy Consulting",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-GB",
+   "openGraph": [
+    {
+     "property": "og:locale",
+     "content": "en_GB"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Marketplace Leaders: Ralf Bühler, Conrad Electronic | eStrategy Consulting"
+    },
+    {
+     "property": "og:description",
+     "content": "Founded in 1923, the company ventured into the marketplace business in 2017. In the style of “learning by doing”, Conrad Electronic has now developed into a marketplace with over 10 million product offers from 800 sellers in Germany. Ralf Bühler, CEO of Conrad Electronic, reports on how this transformation has been and will continue to be implemented."
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.estrategy-consulting.de/en/insights/marketplace-leaders-ralf-buehler-conrad-electronic/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "eStrategy Consulting"
+    },
+    {
+     "property": "article:publisher",
+     "content": "https://www.facebook.com/estrategyconsulting/"
+    },
+    {
+     "property": "article:tag",
+     "content": "Marketplace Leaders"
+    },
+    {
+     "property": "article:section",
+     "content": "Insights"
+    },
+    {
+     "property": "article:published_time",
+     "content": "2024-03-12T09:39:37+01:00"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2024-09-08T13:06:01+02:00"
+    },
+    {
+     "property": "og:updated_time",
+     "content": "2024-09-08T13:06:01+02:00"
+    },
+    {
+     "property": "og:image",
+     "content": "https://www.estrategy-consulting.de/wp-content/uploads/Portrait-Ralf-Buehler-Conrad-Electronic-CEO.jpg"
+    },
+    {
+     "property": "og:image:secure_url",
+     "content": "https://www.estrategy-consulting.de/wp-content/uploads/Portrait-Ralf-Buehler-Conrad-Electronic-CEO.jpg"
+    },
+    {
+     "property": "og:image:width",
+     "content": "452"
+    },
+    {
+     "property": "og:image:height",
+     "content": "735"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "date": "Sat, 17 Oct 2026 05:44:14 GMT",
+    "server": "Apache/2.4.68 (Unix)",
+    "x-powered-by": "PHP/8.3.35",
+    "expires": "Sat, 17 Oct 2026 06:44:17 GMT",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding, X-Forwarded-For, User-Agent",
+    "last-modified": "Sat, 17 Oct 2026 05:44:17 GMT",
+    "etag": "\"c0d17ea551246d0f33f408569ba3dcb8\"",
+    "referrer-policy": "no-referrer-when-downgrade",
+    "content-type": "text/html; charset=UTF-8",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-estrategy-consulting-de-en-insights-marketplace-leaders-ralf-buehler-conrad-electronic.md>"
+ },
+ {
+  "url": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/",
+  "crawl": {
+   "loadedUrl": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/",
+   "loadedTime": "2026-10-17T05:43:46.975Z",
+   "referrerUrl": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentLengthBytes": 27710,
+   "contentType": "text/html; charset=UTF-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/",
+   "title": "Guidelines for Human-AI Interaction - Microsoft HAX Toolkit",
+   "description": null,
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:locale",
+     "content": "en_US"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:title",
+     "content": "Guidelines for Human-AI Interaction - Microsoft HAX Toolkit"
+    },
+    {
+     "property": "og:description",
+     "content": "Best practices for designing AI user experiences What are the Guidelines? The Guidelines are evidence-based best practices for designing your AI user experiences. How do I use the Guidelines? The Design Library helps you learn each Guideline. Explore examples and design patterns for implementing them throughout the user experience: upon initial interaction, during interaction, when […]"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Microsoft HAX Toolkit"
+    },
+    {
+     "property": "article:modified_time",
+     "content": "2023-10-17T20:35:01+00:00"
+    },
+    {
+     "property": "og:image",
+     "content": "https://www.microsoft.com/en-us/haxtoolkit/uploads/prod/2021/06/hax_cards_home.png"
+    },
+    {
+     "property": "og:image:width",
+     "content": "1250"
+    },
+    {
+     "property": "og:image:height",
+     "content": "750"
+    },
+    {
+     "property": "og:image:type",
+     "content": "image/png"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@graph": [
+      {
+       "@type": "WebPage",
+       "@id": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/",
+       "url": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/",
+       "name": "Guidelines for Human-AI Interaction - Microsoft HAX Toolkit",
+       "isPartOf": {
+        "@id": "https://www.microsoft.com/en-us/haxtoolkit/#website"
+       },
+       "primaryImageOfPage": {
+        "@id": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/#primaryimage"
+       },
+       "image": {
+        "@id": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/#primaryimage"
+       },
+       "thumbnailUrl": "https://www.microsoft.com/en-us/haxtoolkit/uploads/2021/06/hax_cards_home.png",
+       "datePublished": "2021-04-04T01:14:01+00:00",
+       "dateModified": "2023-10-17T20:35:01+00:00",
+       "breadcrumb": {
+        "@id": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/#breadcrumb"
+       },
+       "inLanguage": "en-US",
+       "potentialAction": [
+        {
+         "@type": "ReadAction",
+         "target": [
+          "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/"
+         ]
+        }
+       ]
+      },
+      {
+       "@type": "ImageObject",
+       "inLanguage": "en-US",
+       "@id": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/#primaryimage",
+       "url": "https://www.microsoft.com/en-us/haxtoolkit/uploads/2021/06/hax_cards_home.png",
+       "contentUrl": "https://www.microsoft.com/en-us/haxtoolkit/uploads/2021/06/hax_cards_home.png",
+       "width": 1250,
+       "height": 750
+      },
+      {
+       "@type": "BreadcrumbList",
+       "@id": "https://www.microsoft.com/en-us/haxtoolkit/ai-guidelines/#breadcrumb",
+       "itemListElement": [
+        {
+         "@type": "ListItem",
+         "position": 1,
+         "name": "Home",
+         "item": "https://www.microsoft.com/en-us/haxtoolkit/"
+        },
+        {
+         "@type": "ListItem",
+         "position": 2,
+         "name": "Guidelines for Human-AI Interaction"
+        }
+       ]
+      },
+      {
+       "@type": "WebSite",
+       "@id": "https://www.microsoft.com/en-us/haxtoolkit/#website",
+       "url": "https://www.microsoft.com/en-us/haxtoolkit/",
+       "name": "Microsoft HAX Toolkit",
+       "description": "Collaborative tools to help you create more effective and responsible human-AI experiences",
+       "publisher": {
+        "@id": "https://www.microsoft.com/en-us/haxtoolkit/#organization"
+       },
+       "potentialAction": [
+        {
+         "@type": "SearchAction",
+         "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.microsoft.com/en-us/haxtoolkit/?s={search_term_string}"
+         },
+         "query-input": {
+          "@type": "PropertyValueSpecification",
+          "valueRequired": true,
+          "valueName": "search_term_string"
+         }
+        }
+       ],
+       "inLanguage": "en-US"
+      },
+      {
+       "@type": "Organization",
+       "@id": "https://www.microsoft.com/en-us/haxtoolkit/#organization",
+       "name": "Microsoft Corporation",
+       "url": "https://www.microsoft.com/en-us/haxtoolkit/",
+       "logo": {
+        "@type": "ImageObject",
+        "inLanguage": "en-US",
+        "@id": "https://www.microsoft.com/en-us/haxtoolkit/#/schema/logo/image/",
+        "url": "https://www.microsoft.com/en-us/haxtoolkit/uploads/2022/07/msft-logo.png",
+        "contentUrl": "https://www.microsoft.com/en-us/haxtoolkit/uploads/2022/07/msft-logo.png",
+        "width": 1536,
+        "height": 1536,
+        "caption": "Microsoft Corporation"
+       },
+       "image": {
+        "@id": "https://www.microsoft.com/en-us/haxtoolkit/#/schema/logo/image/"
+       }
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "content-type": "text/html; charset=UTF-8",
+    "x-frame-options": "SAMEORIGIN",
+    "link": "<https://www.microsoft.com/en-us/haxtoolkit/wp-json/>; rel=\"https://api.w.org/\", <https://www.microsoft.com/en-us/haxtoolkit/wp-json/wp/v2/pages/105>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://www.microsoft.com/en-us/haxtoolkit/?p=105>; rel=shortlink",
+    "x-elasticpress-query": "true",
+    "last-modified": "Sat, 17 Oct 2026 03:14:16 GMT",
+    "x-batcache": "MISS",
+    "strict-transport-security": "max-age=15724800; includeSubDomains",
+    "content-encoding": "gzip",
+    "content-length": "27710",
+    "date": "Sat, 17 Oct 2026 05:43:43 GMT",
+    "vary": "Accept-Encoding",
+    "tls_version": "tls1.3",
+    "ms-cv": "CASMicrosoftCVc6436e67.0",
+    "ms-cv-esi": "CASMicrosoftCVc6436e67.0",
+    "x-edgescape-location": "country_code=US",
+    "cache-control": "max-age=86400",
+    "x-rtag": "OneRoute_Default",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-microsoft-com-en-us-haxtoolkit-ai-guidelines.md>"
+ },
+ {
+  "url": "https://business.amazon.com/en/blog/new-assistant-conversational-skills",
+  "crawl": {
+   "loadedUrl": "https://business.amazon.com/en/blog/new-assistant-conversational-skills",
+   "loadedTime": "2026-10-17T05:45:13.696Z",
+   "referrerUrl": "https://business.amazon.com/en/blog/new-assistant-conversational-skills",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://business.amazon.com/en/blog/new-assistant-conversational-skills",
+   "title": "Try new conversational skills with Amazon Business Assistant | Amazon Business",
+   "description": "Amazon Business Assistant now answers more of your questions with step-by-step guidance through natural conversation. ",
+   "author": null,
+   "keywords": "Article",
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:type",
+     "content": "blogs"
+    },
+    {
+     "property": "og:title",
+     "content": "Try new conversational skills with Amazon Business Assistant"
+    },
+    {
+     "property": "og:description",
+     "content": "Amazon Business Assistant now answers more of your questions with step-by-step guidance through natural conversation. "
+    },
+    {
+     "property": "og:image",
+     "content": "https://static-assets.business.amazon.com/assets/global/polaris/blog-category-images/research-blog-hero-1640x920-1.png.transform/1450x664/image.jpg"
+    },
+    {
+     "property": "og:url",
+     "content": "https://business.amazon.com/en/blog/new-assistant-conversational-skills"
+    },
+    {
+     "property": "twitter:site",
+     "content": "@AmazonBusiness"
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "http://schema.org",
+     "@type": "BlogPosting",
+     "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://business.amazon.com/en/blog/new-assistant-conversational-skills"
+     },
+     "headline": "Try new conversational skills with Amazon Business Assistant",
+     "image": {
+      "@type": "ImageObject",
+      "url": "/assets/global/polaris/blog-category-images/research-blog-hero-1640x920-1.png"
+     },
+     "url": "https://business.amazon.com/en/blog/new-assistant-conversational-skills",
+     "datePublished": "2026-05-14T13_32_00.000Z",
+     "dateModified": "2026-07-17T20_22_48.675Z",
+     "description": "",
+     "text": "",
+     "author": {
+      "@type": "Person",
+      "name": "Elle Hawthorne"
+     },
+     "Publisher": {
+      "@type": "Organization",
+      "name": "Amazon Business",
+      "logo": {
+       "@type": "ImageObject",
+       "url": ""
+      }
+     }
+    }
+   ],
+   "headers": {
+    "content-type": "text/html;charset=utf-8",
+    "server": "Server",
+    "date": "Sat, 17 Oct 2026 05:44:49 GMT",
+    "set-cookie": "session-id=132-0310511-9252975; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:44:49 GMT; Path=/; Secure\nsession-id-time=2082787201l; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:44:49 GMT; Path=/; Secure\nsst-main=Sst1|PQKzwgcMZm2kbzDprs0oQG2FB1XRNCoXJlDoAQw3lnM2mq7Tawq4khfKZxpMSEBN_uFMpBZ8CH-1lLatk83rVuMbJekRJX8Brw6kni1n9FgL1-owgTOigUMPwzY-fbgeMzK66D0RfTmq6sEn5q9v00R2ycHOnaUaXYVhEjIRxur3UtF9ZNST5Q0xlEgw2g-vhY_kLf8NpZMDBI6lJ4RpIlsPXnljbCx_MQ3458IfH3K0m6HMw5j0jElWRpe9QwiRMC7n; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:44:49 GMT; Path=/; Secure; HttpOnly; SameSite=Lax\ni18n-prefs=USD; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:44:49 GMT; Path=/\nlc-main=en_US; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:44:49 GMT; Path=/",
+    "accept-ch": "ect, rtt, downlink, device-memory, sec-ch-device-memory, viewport-width, sec-ch-viewport-width, dpr, sec-ch-dpr, sec-ch-ua-full-version-list, viewport-height, sec-ch-viewport-height",
+    "accept-ch-lifetime": "86400",
+    "cache-control": "no-cache",
+    "content-encoding": "gzip",
+    "content-language": "en-US",
+    "content-security-policy": "upgrade-insecure-requests;report-uri https://metrics.media-amazon.com/;default-src 'self' wss: blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline'",
+    "permissions-policy": "ch-dpr=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-viewport-width=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-downlink=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-ect=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\")",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1;",
+    "content-security-policy-report-only": "report-uri https://metrics.media-amazon.com/;default-src 'self' wss: blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline'",
+    "x-amz-rid": "EHYXK6WKWHG12XAYX21R",
+    "strict-transport-security": "max-age=47474747; includeSubDomains; preload",
+    "edge-cache-control": "no-store, no-cache, stale-if-error=0, stale-while-revalidate=0",
+    "vary": "User-Agent, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 ac9d99d80216e8ed0f411e6f253f72c0.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "JFK50-P12",
+    "x-amz-cf-id": "IXDRO1il5_AvRUBSWgcmfWH-6OIDdMY_rX6BRfL2lV0AEnkYw07_9Q==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/business-amazon-com-en-blog-new-assistant-conversational-skills.md>"
+ },
+ {
+  "url": "https://business.amazon.com/en/solutions/streamlined-purchasing/ab-assistant",
+  "crawl": {
+   "loadedUrl": "https://business.amazon.com/en/solutions/streamlined-purchasing/ab-assistant",
+   "loadedTime": "2026-10-17T05:45:18.063Z",
+   "referrerUrl": "https://business.amazon.com/en/solutions/streamlined-purchasing/ab-assistant",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html;charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://business.amazon.com/en/solutions/streamlined-purchasing/ab-assistant",
+   "title": "Amazon Business Assistant | Amazon Business",
+   "description": "Transform business purchasing with AI-powered guidance. Learn how Amazon Business Assistant helps optimize your procurement.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en-US",
+   "openGraph": [
+    {
+     "property": "og:type",
+     "content": "website"
+    },
+    {
+     "property": "og:title",
+     "content": "Amazon Business Assistant | Amazon Business"
+    },
+    {
+     "property": "og:description",
+     "content": "Transform business purchasing with AI-powered guidance. Learn how Amazon Business Assistant helps optimize your procurement."
+    },
+    {
+     "property": "og:image",
+     "content": "https://static-assets.business.amazon.com/assets/global/polaris/images/ab_1200x627.png.transform/1450x664/image.jpg"
+    },
+    {
+     "property": "og:url",
+     "content": "https://business.amazon.com/en/solutions/streamlined-purchasing/ab-assistant"
+    },
+    {
+     "property": "twitter:site",
+     "content": "@AmazonBusiness"
+    }
+   ],
+   "jsonLd": null,
+   "headers": {
+    "content-type": "text/html;charset=utf-8",
+    "server": "Server",
+    "date": "Sat, 17 Oct 2026 05:44:52 GMT",
+    "set-cookie": "ubid-main=133-4104724-6556967; Domain=.amazon.com; Expires=Sun, 17-Oct-2027 05:44:52 GMT; Path=/; Secure",
+    "accept-ch": "ect, rtt, downlink, device-memory, sec-ch-device-memory, viewport-width, sec-ch-viewport-width, dpr, sec-ch-dpr, sec-ch-ua-full-version-list, viewport-height, sec-ch-viewport-height",
+    "accept-ch-lifetime": "86400",
+    "cache-control": "no-cache",
+    "content-encoding": "gzip",
+    "content-language": "en-US",
+    "content-security-policy": "upgrade-insecure-requests;report-uri https://metrics.media-amazon.com/;default-src 'self' wss: blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline'",
+    "permissions-policy": "ch-dpr=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-viewport-width=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-downlink=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\"), ch-ect=(self \"https://m.media-amazon.com\" \"https://images-na.ssl-images-amazon.com\")",
+    "x-content-type-options": "nosniff",
+    "x-xss-protection": "1;",
+    "content-security-policy-report-only": "report-uri https://metrics.media-amazon.com/;default-src 'self' wss: blob: https: data: mediastream: 'unsafe-eval' 'unsafe-inline'",
+    "x-amz-rid": "GDQDVF8DPWNP86NEK21Z",
+    "strict-transport-security": "max-age=47474747; includeSubDomains; preload",
+    "edge-cache-control": "no-store, no-cache, stale-if-error=0, stale-while-revalidate=0",
+    "vary": "User-Agent, Accept-Encoding",
+    "x-cache": "Miss from cloudfront",
+    "via": "1.1 ac9d99d80216e8ed0f411e6f253f72c0.cloudfront.net (CloudFront)",
+    "x-amz-cf-pop": "JFK50-P12",
+    "x-amz-cf-id": "VOee1NEbigXsnOWszOGZDOInWsVJoj-1jHCc6u6BgmVo-2pUXlsGng==",
+    "x-firefox-spdy": "h2"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/business-amazon-com-en-solutions-streamlined-purchasing-ab-assistant.md>"
+ },
+ {
+  "url": "https://www.retaildive.com/news/walmart-sparky-chatgpt-instant-checkout/815647/",
+  "crawl": {
+   "loadedUrl": "https://www.retaildive.com/news/walmart-sparky-chatgpt-instant-checkout/815647/",
+   "loadedTime": "2026-10-17T05:46:25.053Z",
+   "referrerUrl": "https://www.retaildive.com/news/walmart-sparky-chatgpt-instant-checkout/815647/",
+   "httpStatusCode": 200,
+   "depth": 0,
+   "contentType": "text/html; charset=utf-8"
+  },
+  "metadata": {
+   "canonicalUrl": "https://www.retaildive.com/news/walmart-sparky-chatgpt-instant-checkout/815647/",
+   "title": "Walmart brings Sparky to ChatGPT as OpenAI rethinks Instant Checkout | Retail Dive",
+   "description": "OpenAI is pivoting away from handling purchases after its initial efforts failed to provide enough flexibility.",
+   "author": null,
+   "keywords": null,
+   "languageCode": "en",
+   "openGraph": [
+    {
+     "property": "og:title",
+     "content": "Walmart brings Sparky to ChatGPT as OpenAI rethinks Instant Checkout"
+    },
+    {
+     "property": "og:site_name",
+     "content": "Retail Dive"
+    },
+    {
+     "property": "og:type",
+     "content": "article"
+    },
+    {
+     "property": "og:url",
+     "content": "https://www.retaildive.com/news/walmart-sparky-chatgpt-instant-checkout/815647/"
+    },
+    {
+     "property": "og:image",
+     "content": "https://imgproxy.divecdn.com/SWlmDGwYrPjXSIGMJcKxrY2AMAGkh8nYeQ_lvKBZcwk/g:nowe:2:525/c:4029:2276/rs:fit:770:435/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9JTUdfMTk4My5qcGVn.webp"
+    },
+    {
+     "property": "og:description",
+     "content": "OpenAI is pivoting away from handling purchases after its initial efforts failed to provide enough flexibility."
+    }
+   ],
+   "jsonLd": [
+    {
+     "@context": "https://schema.org",
+     "@type": "NewsArticle",
+     "headline": "Walmart brings Sparky to ChatGPT as OpenAI rethinks Instant Checkout",
+     "image": [
+      "https://imgproxy.divecdn.com/6F1hZNEfoMNe1N59WA8YGBVTK04Y1pHRxsd_dQ5mHRo/g:nowe:2:525/c:4029:2276/rs:fill:1200:1200:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9JTUdfMTk4My5qcGVn.webp",
+      "https://imgproxy.divecdn.com/-KIdXBzpe9GnOpYGQW6Y7CfSdAM4USWv9XNd-ydjrt0/g:nowe:2:525/c:4029:2276/rs:fill:1200:900:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9JTUdfMTk4My5qcGVn.webp",
+      "https://imgproxy.divecdn.com/HVKr-8i6ZJdWpAD28pEP3ApLCknYCBfjR7xTqDmW5c8/g:nowe:2:525/c:4029:2276/rs:fill:1200:675:1/Z3M6Ly9kaXZlc2l0ZS1zdG9yYWdlL2RpdmVpbWFnZS9JTUdfMTk4My5qcGVn.webp"
+     ],
+     "datePublished": "2026-03-25T11:58:00",
+     "dateModified": "",
+     "author": [
+      {
+       "@type": "Person",
+       "name": "Dani James",
+       "url": "https://www.retaildive.com/editors/djames/"
+      }
+     ]
+    }
+   ],
+   "headers": {
+    "cache-control": "public, max-age=14400",
+    "cf-cache-status": "EXPIRED",
+    "cf-ray": "a4bd00ac3d1f4261-EWR",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 05:46:24 GMT",
+    "expires": "Sat, 17 Oct 2026 09:46:24 GMT",
+    "last-modified": "Sat, 17 Oct 2026 05:46:24 GMT",
+    "server": "cloudflare",
+    "set-cookie": "__cf_bm=dJkXvQhqzANqujL.sRjH3zJp3b6xpuOJAJ0tVYqrVCo-1792215984.0381472-1.0.1.1-i3_HVWDJnxGuMMQKmjqaPTjA7QZh3CH0np_O.mSdxbz90GoSHs4U9P6Rsv3bJN0oCXW7Qil5ChkBjjvLe1_1WxPzusSQJLBWvzfhsHIqddXI21baFOPbA9aorkyBEStZ; HttpOnly; SameSite=None; Secure; Path=/; Domain=retaildive.com; Expires=Sat, 17 Oct 2026 06:16:24 GMT",
+    "sniply-options": "BLOCK",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "vary": "Cookie, accept-encoding",
+    "x-apify-unblocker-final-url": "https://www.retaildive.com/news/walmart-sparky-chatgpt-instant-checkout/815647/",
+    "x-apify-unblocker-route": "GANYMEDE",
+    "connection": "keep-alive",
+    "keep-alive": "timeout=5",
+    "transfer-encoding": "chunked"
+   }
+  },
+  "htmlUrl": null,
+  "markdown": "<see pages/www-retaildive-com-news-walmart-sparky-chatgpt-instant-checkout-815647.md>"
+ }
+]

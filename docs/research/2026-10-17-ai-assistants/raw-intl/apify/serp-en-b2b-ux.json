@@ -1,0 +1,3435 @@
+[
+ {
+  "searchQuery": {
+   "term": "Shopify Inbox AI agent site:help.shopify.com",
+   "url": "http://www.google.com/search?q=Shopify+Inbox+AI+agent+site%3Ahelp.shopify.com&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=Shopify+Inbox+AI+agent+site%3Ahelp.shopify.com&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [
+   {
+    "title": "Shopify inbox ai agent not working",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntfhKoP8jfbXKgwy5acyJgUJfhJJQ:1792214949126&q=Shopify+inbox+ai+agent+not+working&sa=X&ved=2ahUKEwiHiZ37qMCXAxWKUUEAHRCjBH0Q1QJ6BAg6EAE"
+   },
+   {
+    "title": "How to use shopify inbox ai agent",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntfhKoP8jfbXKgwy5acyJgUJfhJJQ:1792214949126&q=How+to+use+shopify+inbox+ai+agent&sa=X&ved=2ahUKEwiHiZ37qMCXAxWKUUEAHRCjBH0Q1QJ6BAg5EAE"
+   },
+   {
+    "title": "Shopify inbox ai agent not working",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntfhKoP8jfbXKgwy5acyJgUJfhJJQ:1792214949126&q=Shopify+inbox+ai+agent+not+working&sa=X&ved=2ahUKEwiHiZ37qMCXAxWKUUEAHRCjBH0Q1QJ6BAg6EAE"
+   },
+   {
+    "title": "How to use shopify inbox ai agent",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntfhKoP8jfbXKgwy5acyJgUJfhJJQ:1792214949126&q=How+to+use+shopify+inbox+ai+agent&sa=X&ved=2ahUKEwiHiZ37qMCXAxWKUUEAHRCjBH0Q1QJ6BAg5EAE"
+   }
+  ],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Assigning your Inbox agent to conversations",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/en/manual/inbox/assigning-your-ai-staff-member",
+    "displayedUrl": "https://help.shopify.com › assigning-your-ai-staff-member",
+    "description": "Choose when your Inbox agent handles customer conversations in Shopify Inbox, and learn how to switch between AI and staff chat modes.",
+    "emphasizedKeywords": [
+     "Choose when your Inbox agent handles customer conversations"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Set up instant answers for Shopify Inbox",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/en/manual/inbox/chat-settings-and-appearance/instant-answers",
+    "displayedUrl": "https://help.shopify.com › chat-settings-and-appearance",
+    "description": "From your Shopify admin, go to Sales channels > Inbox . Click Chat settings. In the Instant answers section, click a suggested instant answer.",
+    "emphasizedKeywords": [
+     "Shopify",
+     "Inbox"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "AI-generated suggested replies in Shopify Inbox",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/en/manual/inbox/chat-settings-and-appearance/suggested-replies",
+    "displayedUrl": "https://help.shopify.com › chat-settings-and-appearance",
+    "description": "AI-generated suggested replies use artificial intelligence to help your staff compose responses to customer inquiries more quickly.",
+    "emphasizedKeywords": [
+     "AI-generated suggested replies"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "AI-powered tools",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/en/manual/ai-powered-tools",
+    "displayedUrl": "https://help.shopify.com › manual › ai-powered-tools",
+    "description": "Shopify Inbox, Get AI-generated instant answer suggestions and suggested replies for your customer conversations. File editor, Replace the background of an ...Read more",
+    "emphasizedKeywords": [
+     "Get AI-generated instant answer suggestions and suggested replies"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Shopify Inbox",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/en/manual/inbox",
+    "displayedUrl": "https://help.shopify.com › manual › inbox",
+    "description": "The Inbox agent answers customer questions about your products, shipping, returns, sizing, and store policies by using your product catalog, store policies, ...",
+    "emphasizedKeywords": [
+     "answers customer questions about your products, shipping, returns, sizing, and store policies"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "Configuring chat settings and appearance for Shopify Inbox",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/en/manual/inbox/chat-settings-and-appearance",
+    "displayedUrl": "https://help.shopify.com › manual › chat-settings-and-ap...",
+    "description": "This section covers your chat settings, the customer sign-in setting, instant answers, and automatic first replies.",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Managing customer conversations",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/en/manual/inbox/conversations",
+    "displayedUrl": "https://help.shopify.com › manual › inbox › conversations",
+    "description": "AI conversations can display topic tags such as Sales, Support, and Store Policies, based on what the Inbox agent did in the conversation.",
+    "emphasizedKeywords": [
+     "AI conversations can display topic tags"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Set up your Shopify Inbox availability and automated first ...",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/en/manual/inbox/chat-settings-and-appearance/availability-and-first-reply",
+    "displayedUrl": "https://help.shopify.com › chat-settings-and-appearance",
+    "description": "Customers receive an AI response instead. From your Shopify admin, go to Sales channels > Inbox . Click Chat settings, and then click Availability. In the ...",
+    "emphasizedKeywords": [
+     "Customers receive an AI response instead"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "הקצאת נציג ה-Inbox לשיחות",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/he/manual/inbox/assigning-your-ai-staff-member",
+    "displayedUrl": "https://help.shopify.com › inbox",
+    "description": "הלקוחות מקבלים הודעה על כך שהצ'אט מופעל על ידי Shopify ושהם משוחחים עם AI. הודעה זו מוצגת באופן אוטומטי ולא ניתן להסיר או להתאים אותה אישית. אופן הטיפול בנתונים.Read more",
+    "emphasizedKeywords": [
+     "Shopify",
+     "AI"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Shop app customer experience",
+    "websiteTitle": "Shopify Help Center",
+    "url": "https://help.shopify.com/en/manual/online-sales-channels/shop/customer-experience",
+    "displayedUrl": "https://help.shopify.com › manual › online-sales-channels",
+    "description": "When using an AI agent, customers can also perform tasks such as reordering, tracking orders, and checking store return policies. When they're ready to purchase ...Read more",
+    "emphasizedKeywords": [
+     "AI agent"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "RS Components AI assistant site:rs-online.com OR site:rsgroup.com",
+   "url": "http://www.google.com/search?q=RS+Components+AI+assistant+site%3Ars-online.com+OR+site%3Arsgroup.com&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=RS+Components+AI+assistant+site%3Ars-online.com+OR+site%3Arsgroup.com&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "NVIDIA: The Ultimate Industrial AI Engine.",
+    "websiteTitle": "RS Components",
+    "url": "https://uk.rs-online.com/web/mb/nvidia/",
+    "displayedUrl": "https://uk.rs-online.com › web › nvidia",
+    "description": "The NVIDIA Jetson Orin Nano Super Developer Kit offers up to 67 TOPS of AI performance for generative AI at the edge. It supports advanced AI workloads like ...Read more",
+    "emphasizedKeywords": [
+     "offers up to 67 TOPS of AI performance"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Guide to Advanced Robotics and Automation for Industry",
+    "websiteTitle": "RS Components",
+    "url": "https://uk.rs-online.com/web/content/smart-advanced-technologies/ai-robotics/robotic-process-automation/guide-to-advanced-robotics-and-automation-for-industry",
+    "displayedUrl": "https://uk.rs-online.com › robotic-process-automation",
+    "description": "Advanced robotics and automation have revolutionised industry, improving productivity and safety, and carrying out repetitive tasks ...",
+    "date": "2026-09-08T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "The AI Revolution | Also In the News",
+    "websiteTitle": "RS Online",
+    "url": "https://www.rs-online.com/designspark/the-ai-revolution",
+    "displayedUrl": "https://www.rs-online.com › designspark › the-ai-revol...",
+    "description": "A chatbot or digital assistant is a computer program that uses artificial intelligence to interact with users automatically without the need ...Read more",
+    "date": "2018-05-09T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "artificial intelligence"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "RS Group | Industrial products and service solutions provider",
+    "websiteTitle": "RS Group",
+    "url": "https://www.rsgroup.com/",
+    "displayedUrl": "https://www.rsgroup.com",
+    "description": "We are a global distributor of maintenance, repair and operations products and service solutions to help customers with their industrial equipment",
+    "emphasizedKeywords": [
+     "global distributor of maintenance, repair and operations products and service solutions"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Will Robots Take Our Jobs?",
+    "websiteTitle": "RS Components",
+    "url": "https://uk.rs-online.com/web/content/smart-advanced-technologies/ai-robotics/industrial-robotics-cobots/robots-will-they-take-our-jobs",
+    "displayedUrl": "https://uk.rs-online.com › industrial-robotics-cobots › r...",
+    "description": "The online support provided by robots, often called chatbots or voice-activated personal assistants, are capable of a certain level of natural ...Read more",
+    "date": "2026-09-08T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "online",
+     "assistants"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "7 Robotic and AI Applications Transforming Healthcare",
+    "websiteTitle": "RS Components",
+    "url": "https://uk.rs-online.com/web/content/smart-advanced-technologies/medical-technology/advanced-medtech-innovations/7-robotic-and-ai-applications-transforming-healthcare",
+    "displayedUrl": "https://uk.rs-online.com › advanced-medtech-innovations",
+    "description": "Utilising AI-powered chatbots and virtual health assistants to arrange appointments, communicate with patients ... © RS Components Ltd.Read more",
+    "date": "2026-09-09T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "AI-powered chatbots and virtual health assistants"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "News",
+    "websiteTitle": "RS Online",
+    "url": "https://www.rs-online.com/designspark/news",
+    "displayedUrl": "https://www.rs-online.com › designspark › news",
+    "description": "Arduino's AI Assistant: Revolutionising Coding for Arduino Innovators. Unlock Smarter Manufacturing: Download the RS Industrial Automation. Wins 2024 EDGE ...",
+    "emphasizedKeywords": [
+     "Arduino's AI Assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Arduino's AI Assistant | Revolutionising Coding for ...",
+    "websiteTitle": "RS Online",
+    "url": "https://www.rs-online.com/designspark/arduinos-ai-assistant-revolutionising-coding-for-arduino-innovators",
+    "displayedUrl": "https://www.rs-online.com › designspark › arduinos-ai-...",
+    "description": "In this blog, we explore Arduino's new AI Assistant, built to help you write, debug and learn code faster in the Arduino Cloud.",
+    "date": "2025-07-17T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Arduino's new AI Assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "Robots and the future of work",
+    "websiteTitle": "RS Components",
+    "url": "https://uk.rs-online.com/web/content/smart-advanced-technologies/ai-robotics/industrial-robotics-cobots/robots-and-the-future-of-work",
+    "displayedUrl": "https://uk.rs-online.com › industrial-robotics-cobots › r...",
+    "description": "According to McKinsey, widespread adoption of AI, machine learning and robotics could boost global productivity growth by between 0.8% and 1.4% ...Read more",
+    "date": "2026-09-08T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "AI"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Meet the Arduino® UNO Q | A New Era for Innovators",
+    "websiteTitle": "RS Online",
+    "url": "https://www.rs-online.com/designspark/meet-the-arduinor-uno-q-a-new-era-for-innovators",
+    "displayedUrl": "https://www.rs-online.com › designspark › meet-the-ard...",
+    "description": "Whether you're building a smart assistant, a vision-enabled robot, or a connected sensor hub, the UNO Q gives you the tools to do it all.Read more",
+    "date": "2025-10-07T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "DigiKey AI assistant OR chatbot site:digikey.com",
+   "url": "http://www.google.com/search?q=DigiKey+AI+assistant+OR+chatbot+site%3Adigikey.com&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=DigiKey+AI+assistant+OR+chatbot+site%3Adigikey.com&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Build an Open-Source AI Buddy: a DIY AI Companion for ...",
+    "websiteTitle": "DigiKey",
+    "url": "https://www.digikey.com/en/maker/projects/build-an-open-source-ai-buddy-a-diy-ai-companion-for-kids/e48bc486a9ba45efbd35fd70d19026c3",
+    "displayedUrl": "https://www.digikey.com › maker › projects › build-an-...",
+    "description": "Unlike commercial AI toys, AI Buddy is completely DIY and customizable. From the enclosure to the software, everything is designed to be modified, expanded, and ...Read more",
+    "emphasizedKeywords": [
+     "AI Buddy is completely DIY and customizable"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Nigel™ AI Advisor - NI",
+    "websiteTitle": "DigiKey",
+    "url": "https://www.digikey.com/en/product-highlight/n/national-instruments/nigel-ai-advisor",
+    "displayedUrl": "https://www.digikey.com › national-instruments › nigel...",
+    "description": "Nigel AI Advisor provides contextual guidance, automation, and insight in NI software to help eliminate time-consuming development and other ...",
+    "date": "2025-08-14T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Nigel AI Advisor"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Animatronic AI Assistant/Companion - #3 by mikellcasady",
+    "websiteTitle": "DigiKey TechForum",
+    "url": "https://forum.digikey.com/t/animatronic-ai-assistant-companion/55388/3",
+    "displayedUrl": "https://forum.digikey.com › animatronic-ai-assistant-co...",
+    "description": "Animatronic AI Assistant/Companion · Maker, DIY · part-identification ... How does DFRobot's open-source hardware lower the barrier to AI ...Read more",
+    "date": "2025-05-14T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Animatronic AI Assistant/Companion"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Edge AI",
+    "websiteTitle": "DigiKey",
+    "url": "https://www.digikey.com/en/application-technology/edge-ai",
+    "displayedUrl": "https://www.digikey.com › application-technology › ed...",
+    "description": "Things like a smart home assistants (Alexa or Siri) have Edge AI in them. When you say \"Hey Alexa\" the Edge AI recognizes that phrase and wakes up the smart ...Read more",
+    "emphasizedKeywords": [
+     "Edge AI"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Webinar – 5 Ways AI Is Changing Electronic Design and Test",
+    "websiteTitle": "DigiKey",
+    "url": "https://www.digikey.com/en/blog/webinar-5-ways-ai-is-changing-electronic-design-and-test",
+    "displayedUrl": "https://www.digikey.com › blog › webinar-5-ways-ai-is...",
+    "description": "Learn how AI can create a meaningful impact across system design, measurement automation, test sequence management, and data analysis.",
+    "date": "2026-07-22T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Learn how AI can create a meaningful impact"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "EP02: Want to develop an AI voice project? Get it done in 3 ...",
+    "websiteTitle": "DigiKey TechForum",
+    "url": "https://forum.digikey.com/t/ep02-want-to-develop-an-ai-voice-project-get-it-done-in-3-minutes-with-this-kit/68700",
+    "displayedUrl": "https://forum.digikey.com › ep02-want-to-develop-an-a...",
+    "description": "Blossom from M5Stack will unlock the AtomS3R AI Chatbot Kit for you — this mini kit integrates voice recognition, AI assistant, and smart home control, making ...",
+    "emphasizedKeywords": [
+     "AI Chatbot",
+     "AI assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Animatronic AI Assistant/Companion - Maker, DIY",
+    "websiteTitle": "DigiKey TechForum",
+    "url": "https://forum.digikey.com/t/animatronic-ai-assistant-companion/55388",
+    "displayedUrl": "https://forum.digikey.com › animatronic-ai-assistant-co...",
+    "description": "Based on your description, you wouldn't need the Jetson Orin, but rather split the processing/controls between your gaming PC and the reTerminal ...Read more",
+    "date": "2025-05-14T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Animatronic AI Assistant/Companion - #2 by Nathan_2268",
+    "websiteTitle": "DigiKey TechForum",
+    "url": "https://forum.digikey.com/t/animatronic-ai-assistant-companion/55388/2",
+    "displayedUrl": "https://forum.digikey.com › animatronic-ai-assistant-co...",
+    "description": "DigiKey TechForum - An Electronic Component and Engineering Solution Forum · Animatronic AI Assistant/Companion · Maker, DIY · part- ...Read more",
+    "date": "2025-05-14T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Animatronic AI Assistant/Companion"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "ESP32 AI Voice Assistant with MCP for Smart Home Control",
+    "websiteTitle": "DigiKey",
+    "url": "https://www.digikey.com/es/maker/projects/esp32-ai-voice-assistant-with-mcp-for-smart-home-control/298f92944e3446149febc78d67531a19",
+    "displayedUrl": "https://www.digikey.com › maker › projects › esp32-ai-...",
+    "description": "This project demonstrates how to build a fully functional AI voice assistant that listens for wake words, processes natural language interactions, and controls ...",
+    "emphasizedKeywords": [
+     "fully functional AI voice assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Simplify Edge AI Deployment with a Wireless SoC",
+    "websiteTitle": "DigiKey",
+    "url": "https://www.digikey.com/en/articles/how-to-accelerate-edge-ai-deployments-with-an-npu-enabled-multiprotocol-wireless-soc",
+    "displayedUrl": "https://www.digikey.com › articles › how-to-accelerate-...",
+    "description": "The AI assistant integrates with the user's preferred models, including Claude Code, Cursor, GitHub, and Copilot, and covers the full lifecycle, ...Read more",
+    "date": "2026-06-17T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "integrates with the user's preferred models"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "Segen Solar AI assistant",
+   "url": "http://www.google.com/search?q=Segen+Solar+AI+assistant&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=Segen+Solar+AI+assistant&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [
+   {
+    "title": "Segen solar ai assistant login",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+solar+ai+assistant+login&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgrEAE"
+   },
+   {
+    "title": "Segen solar ai assistant app",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+solar+ai+assistant+app&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgwEAE"
+   },
+   {
+    "title": "SegenSolar",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=SegenSolar&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgvEAE"
+   },
+   {
+    "title": "Segen solar portal login",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+solar+portal+login&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgtEAE"
+   },
+   {
+    "title": "Segen solar email address",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+solar+email+address&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAguEAE"
+   },
+   {
+    "title": "Segen Ltd",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+Ltd&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgsEAE"
+   },
+   {
+    "title": "Segen contact number",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+contact+number&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgpEAE"
+   },
+   {
+    "title": "Segen global revenue",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+global+revenue&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgqEAE"
+   },
+   {
+    "title": "Segen solar ai assistant login",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+solar+ai+assistant+login&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgrEAE"
+   },
+   {
+    "title": "Segen solar ai assistant app",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+solar+ai+assistant+app&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgwEAE"
+   },
+   {
+    "title": "SegenSolar",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=SegenSolar&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgvEAE"
+   },
+   {
+    "title": "Segen solar portal login",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+solar+portal+login&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgtEAE"
+   },
+   {
+    "title": "Segen solar email address",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+solar+email+address&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAguEAE"
+   },
+   {
+    "title": "Segen Ltd",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+Ltd&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgsEAE"
+   },
+   {
+    "title": "Segen contact number",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+contact+number&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgpEAE"
+   },
+   {
+    "title": "Segen global revenue",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnuhBbv1T6phiwcHHxiJFGelV6mc3Q:1792214949794&q=Segen+global+revenue&sa=X&ved=2ahUKEwjxo8X7qMCXAxWvIbkGHa7iDUkQ1QJ6BAgqEAE"
+   }
+  ],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Already registered on the Segen Portal? Learn how to ...",
+    "websiteTitle": "Facebook · SegenSolar South Africa",
+    "url": "https://www.facebook.com/SegenSolarZA/videos/already-registered-on-the-segen-portallearn-how-to-make-the-most-of-your-account/1622944182640328/",
+    "displayedUrl": "4 reactions  ·  20 hours ago",
+    "description": "This video demonstrates how the Sigen AI personalization app, part of the Sigen App 4.0, can help users create a personalized energy strategy.Read more",
+    "emphasizedKeywords": [
+     "Sigen AI personalization app"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Segen Solar System Design Tool",
+    "websiteTitle": "Segen UK",
+    "url": "https://www.segen.co.uk/segen-design-tool/",
+    "displayedUrl": "https://www.segen.co.uk › segen-design-tool",
+    "description": "The Segen solar system design tool helps installers create accurate, compliant systems faster and order all the parts in one place.",
+    "emphasizedKeywords": [
+     "helps installers create accurate, compliant systems fast"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Segen Portal Login and Join | Wholesale Solar Panels ...",
+    "websiteTitle": "Segen EU",
+    "url": "https://segensolar.eu/portal/",
+    "displayedUrl": "https://segensolar.eu › portal",
+    "description": "Log in to the Segen Portal now and discover exclusive wholesale prices for solar modules, energy storage systems and EV chargers!",
+    "emphasizedKeywords": [
+     "Log in to the Segen Portal now"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "How to Build an AI Assistant for Your Solar Panel Business",
+    "websiteTitle": "YouTube · Pabbly",
+    "url": "https://www.youtube.com/watch?v=zyHx_EnOnyY",
+    "displayedUrl": "230+ views  ·  1 year ago",
+    "description": "",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Built a simple AI assistant to capture + qualify site leads ...",
+    "websiteTitle": "Reddit · r/SolarDIY",
+    "url": "https://www.reddit.com/r/SolarDIY/comments/1kc2ran/built_a_simple_ai_assistant_to_capture_qualify/",
+    "displayedUrl": "8 comments  ·  1 year ago",
+    "description": "Built a simple AI assistant to capture + qualify site leads (thinking of testing for solar next) ... New AI Engineer here - Super curious about AI ...Read more",
+    "emphasizedKeywords": [
+     "Built a simple AI assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "Solar Energy Management (SEM) — Smart solar + EV + ...",
+    "websiteTitle": "Home Assistant Community",
+    "url": "https://community.home-assistant.io/t/solar-energy-management-sem-smart-solar-ev-battery-orchestration/1003701",
+    "displayedUrl": "https://community.home-assistant.io › solar-energy-man...",
+    "description": "Solar Energy Management (SEM) — a Home Assistant integration that turns your solar panels, battery, and EV charger into one intelligent system.",
+    "date": "2026-04-12T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Solar",
+     "Assistant",
+     "solar"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "SegenSolar South Africa (@segensolarsa) · Johannesburg",
+    "websiteTitle": "Instagram · segensolarsa",
+    "url": "https://www.instagram.com/segensolarsa/?hl=en",
+    "displayedUrl": "220+ followers",
+    "description": "Need technical assistance? Speak to your Segen Account Manager or Technical Team. Sign in to the Portal to find the information you need.",
+    "emphasizedKeywords": [
+     "to your Segen Account Manager or Technical Team"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "AI Solar Assistant to Maximize ROI for Energy Companies- Onix",
+    "websiteTitle": "onixnet.com",
+    "url": "https://www.onixnet.com/blog/introducing-the-ai-powered-solar-assistant-for-energy-companies/",
+    "displayedUrl": "https://www.onixnet.com › AI/ML tools and services",
+    "description": "Switching to solar can be complex. Onix's AI-powered solar assistant simplifies the process with site analysis, predictive maintenance, and improved ROI.",
+    "emphasizedKeywords": [
+     "Onix's AI-powered solar assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "aiOverview": {
+   "type": "live",
+   "content": "Hello! As your Segen Solar AI assistant, I am here to help you navigate the world of renewable energy products and solutions.Whether you are an installer, reseller, or system designer, I can assist you with:☀️ Product Information: Details on solar panels, inverters, battery storage, and mounting systems.⚙️ System Design: Guidance on matching inverters with compatible battery brands or calculating string sizes.📋 Brands & Availability: Information on top brands like SolaX, Pylontech, Victron, JA Solar, and Longi.🔧 Technical Support: Troubleshooting common fault codes, understanding datasheets, or reviewing installation best practices.How can I help you with your solar project today? Let me know if you are looking for specific product recommendations, trying to solve a technical issue, or need help matching system components.How can I help you with your solar project today? Let me know if you are looking for specific product recommendations, trying to solve a technical issue, or need help matching system components.AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMore",
+   "sources": []
+  },
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "site:baymard.com chat popup OR \"chat widget\"",
+   "url": "http://www.google.com/search?q=site%3Abaymard.com+chat+popup+OR+%22chat+widget%22&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=site%3Abaymard.com+chat+popup+OR+%22chat+widget%22&gl=us&hl=en",
+  "hasNextPage": false,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "These Three (Popular) Approaches to Implementing 'Live ...",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/research-articles/live-chat-usability-issues",
+    "displayedUrl": "https://baymard.com › live-chat-usability-issues",
+    "description": "Another live chat implementation is dialog popups. These differ from overlay dialogs as they do not usually take up the entire screen and in ...Read more",
+    "date": "2019-10-15T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "chat"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "4 Design Patterns That Violate “Back” Button UX ...",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/research-articles/back-button-expectations",
+    "displayedUrl": "https://baymard.com › back-button-expectations",
+    "description": "Our large-scale usability testing reveals that users expect the \"Back\" button to take them back to what they perceive to be their previous ...",
+    "date": "2020-07-20T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Filtering UX: Combining Filter Options",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/research-articles/allow-applying-of-multiple-filter-values",
+    "displayedUrl": "https://baymard.com › research-articles › allow-applyin...",
+    "description": "Not being able to select multiple filter options forces users to tediously reload the product list page between filter selections.",
+    "date": "2024-01-23T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "10 Cyber Monday UX Best Practices",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/research-articles/10-sales-ux-best-practices",
+    "displayedUrl": "https://baymard.com › research-articles › 10-sales-ux-b...",
+    "description": "Discover 10 sales UX best practices to transform how you convert customers this Cyber Monday. Read more.",
+    "date": "2024-11-19T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Checkout UX: Avoid “Apply” Buttons",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/research-articles/checkout-usability-apply-buttons",
+    "displayedUrl": "https://baymard.com › research-articles › checkout-usab...",
+    "description": "Avoid requiring users to tap or click “Apply” buttons in the checkout flow, except in cases of entering promo codes or gift card numbers",
+    "date": "2025-05-14T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "site:nngroup.com AI chatbot prompt suggestions",
+   "url": "http://www.google.com/search?q=site%3Anngroup.com+AI+chatbot+prompt+suggestions&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=site%3Anngroup.com+AI+chatbot+prompt+suggestions&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Prompt Suggestions",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/prompt-suggestions/",
+    "displayedUrl": "https://www.nngroup.com › articles › prompt-suggestions",
+    "description": "Prompt suggestions are system-generated hints that guide users in forming queries or commands for AI tools. These can be full questions, phrases ...Read more",
+    "date": "2025-04-25T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "system-generated hints that guide users in forming queries or commands"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "CARE: Structure for Crafting AI Prompts",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/careful-prompts/",
+    "displayedUrl": "https://www.nngroup.com › articles › careful-prompts",
+    "description": "To get better results from generative-AI chatbots, write CAREful prompts. Include context, what you're asking the system to do, rules for ...",
+    "date": "2024-05-24T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "write CAREful prompts"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Prompt Controls in GenAI Chatbots: 4 Main Uses and Best ...",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/prompt-controls-genai/",
+    "displayedUrl": "https://www.nngroup.com › articles › prompt-controls-g...",
+    "description": "Facilitating Followups · Edit the previous prompt · Have the bot read the answer aloud · Copy the answer · Regenerate the answer · Provide feedback ...Read more",
+    "date": "2024-08-02T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Edit the previous prompt"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Designing Use-Case Prompt Suggestions",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/designing-use-case-prompt-suggestions/",
+    "displayedUrl": "https://www.nngroup.com › articles › designing-use-case...",
+    "description": "Use-case prompt suggestions are intended to help users understand what they can use the AI tool for and how to interact with it.",
+    "date": "2025-06-27T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Use-case prompt suggestions"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Prompt Structure in Conversations with Generative AI",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/ai-prompt-structure/",
+    "displayedUrl": "https://www.nngroup.com › articles › ai-prompt-structure",
+    "description": "Most prompts contain a combination of the following components: request, framing context, ,\" \"Give me more,\" and filler prompts.",
+    "date": "2023-11-24T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "request, framing context, ,\" \"Give me more,\" and filler prompts"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "CARE: Structure for Crafting AI Prompts (Video)",
+    "websiteTitle": "Nielsen Norman Group · NNgroup",
+    "url": "https://www.nngroup.com/videos/care-for-ai-prompts/",
+    "displayedUrl": "https://www.nngroup.com · Apr 28, 2025",
+    "description": "",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "10 Guidelines for Designing Your Site's AI Chatbots",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/ai-chatbots-design-guidelines/",
+    "displayedUrl": "https://www.nngroup.com › articles › ai-chatbots-design-...",
+    "description": "Helpful site-specific AI chatbots clearly state their capabilities, offer relevant prompt suggestions, and quickly signal they know what users",
+    "date": "2026-04-24T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "offer relevant prompt suggestions"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "The 6 Types of Conversations with Generative AI",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/ai-conversation-types/",
+    "displayedUrl": "https://www.nngroup.com › ai-conversation-types",
+    "description": "For example, for a prompt such as best Mother's Day gifts, the bot can ask for specific information (e.g., age, hobbies, location) about the ...Read more",
+    "date": "2023-11-10T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "best Mother's Day gifts"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "Prompt to Design Interfaces",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/vague-prototyping/",
+    "displayedUrl": "https://www.nngroup.com › articles › vague-prototyping",
+    "description": "This article discusses common issues with vague text prompts and offers recommendations on how to achieve better results from AI-prototyping ...Read more",
+    "date": "2025-12-05T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "text prompts"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Response Outlining with Generative-AI Chatbots",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/response-outlining/",
+    "displayedUrl": "https://www.nngroup.com › articles › response-outlining",
+    "description": "Summary: Users add specificity to their prompts by outlining the structure of the desired response. Outlines are standard in writing.Read more",
+    "date": "2024-02-02T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Users add specificity to their prompts"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "site:baymard.com live chat",
+   "url": "http://www.google.com/search?q=site%3Abaymard.com+live+chat&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=site%3Abaymard.com+live+chat&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "These Three (Popular) Approaches to Implementing 'Live ...",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/research-articles/live-chat-usability-issues",
+    "displayedUrl": "https://baymard.com › live-chat-usability-issues",
+    "description": "Three live chat approaches that we've observed during testing — overlay dialogs, dialog pop-ups, and sticky/floating chat elements — all carry ...Read more",
+    "date": "2019-10-15T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "overlay dialogs, dialog pop-ups, and sticky/floating chat elements"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Internet Service Providers UX Benchmark 2026",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/blog/internet-service-providers-ux-benchmark-2026",
+    "displayedUrl": "https://baymard.com › blog › internet-service-providers...",
+    "description": "At Baymard, we've just released a new UX benchmark with 7 “Internet Service Providers (ISP)” UX case studies.Read more",
+    "date": "2026-07-28T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "35 Data-Driven Ecommerce Best Practices",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/blog/ecommerce-ux-best-practices",
+    "displayedUrl": "https://baymard.com › Blog › Baymard UX Blog",
+    "description": "On mobile, be cautious about using any kind of “sticky” chat elements. Instead, place static links to live chat functions in your header, footer ...Read more",
+    "date": "2021-12-09T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "place static links to live chat functions"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Rebecca Hugo-Terrey",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/about/team/rebecca-hugo",
+    "displayedUrl": "https://baymard.com › about › team › rebecca-hugo",
+    "description": "Rebecca is a senior UX auditor at Baymard since 2018. 'Live Chat' are Often Highly Disruptive for Users",
+    "emphasizedKeywords": [
+     "Live Chat"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "5 Proven UX Strategies For \"No Results\" Pages",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/research-articles/no-results-page",
+    "displayedUrl": "https://baymard.com › research-articles › no-results-page",
+    "description": "If your site offers a sales call center, live chat, or other customer service options, be sure to include the direct phone number and links to ...Read more",
+    "date": "2025-02-18T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "live chat"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "What is Split Testing? 6 Split Test Ideas for E-Commerce",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/blog/split-testing",
+    "displayedUrl": "https://baymard.com › Blog › Baymard UX Blog",
+    "description": "Live chat features can be helpful when users are looking for a quick answer. However, they are frequently a source of frustration for users, ...Read more",
+    "date": "2022-02-17T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Live chat features can be helpful when users are looking for a quick answer"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Footer Links Should be Divided into Distinct Semantic ...",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/research-articles/footer-links-ecommerce",
+    "displayedUrl": "https://baymard.com › footer-links-ecommerce",
+    "description": "Our testing shows that footer links can significantly help users looking for auxiliary information. Yet, we also observed several footer ...",
+    "date": "2019-10-30T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "16 Actionable Ecommerce Conversion Rate Optimization ...",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/blog/ecommerce-cro",
+    "displayedUrl": "https://baymard.com › Blog › Baymard UX Blog",
+    "description": "Constantly interrupting users should be avoided. Instead of helping, this chat irritates and deters users. These days, live chat pop-up boxes ...Read more",
+    "date": "2021-10-18T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "live chat pop-up boxes"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "How to Present UX Research Findings to Get Buy-In From ...",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/blog/present-ux-research-findings-stakeholder-buy-in",
+    "displayedUrl": "https://baymard.com › Blog › Baymard UX Blog",
+    "description": "Learn how to present UX findings to executives, overcome pushback, frame data around business metrics, and secure crucial stakeholder ...",
+    "date": "2026-09-11T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Learn how to present UX findings to executives"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Apparel: 10 Best Practices on Sizing",
+    "websiteTitle": "Baymard",
+    "url": "https://baymard.com/research-articles/apparel-size-information",
+    "displayedUrl": "https://baymard.com › apparel-size-information",
+    "description": "L.L. Bean provides a link to “Live Chat” within the sizing overlay.Read more",
+    "date": "2022-07-06T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Live Chat"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "Fin \"collect\" email lead site:intercom.com/help",
+   "url": "http://www.google.com/search?q=Fin+%22collect%22+email+lead+site%3Aintercom.com%2Fhelp&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=Fin+%22collect%22+email+lead+site%3Aintercom.com%2Fhelp&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Fin for Sales integrations: Create leads in your CRM",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/13128480-fin-for-sales-integrations-create-leads-in-your-crm",
+    "displayedUrl": "https://www.intercom.com › ... › Roles › Fin for Sales",
+    "description": "Configure your POST request to your CRM's lead creation endpoint, and define the data you want Fin to collect (like Name, Email, and Company) in ...Read more",
+    "date": "2026-07-01T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "lead",
+     "Fin",
+     "collect",
+     "Email"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "How to train Fin for Sales",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/13927077-how-to-train-fin-for-sales",
+    "displayedUrl": "https://www.intercom.com › ... › Roles › Fin for Sales",
+    "description": "Fin will ask relevant questions to determine whether a lead meets your criteria. Additional data to collect - Choose any extra information Fin ...Read more",
+    "date": "2026-09-21T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Fin",
+     "lead",
+     "collect",
+     "Fin"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Fin for Sales FAQs | Intercom Help",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/13927115-fin-for-sales-faqs",
+    "displayedUrl": "https://www.intercom.com › ... › Roles › Fin for Sales",
+    "description": "What is the best way to collect additional prospect data after Fin for Sales parameters are already set up? ... Does Fin support automated email ...Read more",
+    "date": "2026-09-22T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "collect",
+     "Fin",
+     "Fin",
+     "email"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Manually qualify leads as you chat",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/6584205-manually-qualify-leads-as-you-chat",
+    "displayedUrl": "https://www.intercom.com › ... › Conversations › Handling",
+    "description": "This allows your sales team to define and collect important information about your leads. By default, you'll see the following user and ...Read more",
+    "date": "2026-05-07T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "collect",
+     "leads"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Convert leads to users with Series | Intercom Help",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/1202529-convert-leads-to-users-with-series",
+    "displayedUrl": "https://www.intercom.com › ... › Series › Getting started",
+    "description": "Pro tip: You can also collect your visitors' email addresses with ongoing messages. Once collected they'll become leads. Then, you can add a ...Read more",
+    "date": "2026-04-07T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "collect",
+     "email",
+     "leads"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "Contacts FAQs | Intercom Help",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/8827723-contacts-faqs",
+    "displayedUrl": "https://www.intercom.com › ... › Contacts › FAQs",
+    "description": "You can also manually qualify your leads in the Inbox as you chat to them. And/or set up automations to collect contact details from your leads, ...Read more",
+    "date": "2026-10-05T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "leads",
+     "collect",
+     "leads"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "How do visitors, leads and users work in Intercom?",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/310-how-do-visitors-leads-and-users-work-in-intercom",
+    "displayedUrl": "https://www.intercom.com › help › articles › 310-how-d...",
+    "description": "You can use Basics or Workflows (if it's part of your subscription) to collect this data. Outside of the Inbox, you can update a lead's name ...Read more",
+    "date": "2026-08-28T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "collect",
+     "lead's"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Book meetings with Calendly using Fin for Sales",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/15733346-book-meetings-with-calendly-using-fin-for-sales",
+    "displayedUrl": "https://www.intercom.com › ... › Roles › Fin for Sales",
+    "description": "If your Calendly event type has required questions, Fin must collect answers to them before it can complete a booking. Fin will first try to ...Read more",
+    "date": "2026-08-10T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Fin",
+     "collect",
+     "Fin"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "Use Fin AI Agent in Workflows",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/10032299-use-fin-ai-agent-in-workflows",
+    "displayedUrl": "https://www.intercom.com › ... › Fin AI Agent › Deploy",
+    "description": "Any messages you add to a workflow with Fin over email will be sent as one email. ... Enable \"Collect more information when a customer asks to speak to the team\".Read more",
+    "emphasizedKeywords": [
+     "Fin",
+     "email",
+     "email",
+     "Collect"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Define the right qualification data for your business",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/1155528-define-the-right-qualification-data-for-your-business",
+    "displayedUrl": "https://www.intercom.com › help › articles › 1155528-d...",
+    "description": "Before you do either, you'll need to define the qualification data that's most useful to collect about your leads. ... Fin Sales Agent is ...Read more",
+    "date": "2026-04-07T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "collect",
+     "leads",
+     "Fin"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "Fin handover site:intercom.com",
+   "url": "http://www.google.com/search?q=Fin+handover+site%3Aintercom.com&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=Fin+handover+site%3Aintercom.com&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Hand over Fin AI Agent conversations to another support tool",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/7995955-hand-over-fin-ai-agent-conversations-to-another-support-tool",
+    "displayedUrl": "https://www.intercom.com › ... › Fin AI Agent › Deploy",
+    "description": "To hand a Fin AI Agent conversation over to an external support tool, you need to close the conversation on Intercom and open a new ticket in ...Read more",
+    "date": "2026-06-12T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "close the conversation on Intercom"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Fin AI Agent outcomes | Intercom Help",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/8205718-fin-ai-agent-outcomes",
+    "displayedUrl": "https://www.intercom.com › ... › Plans & pricing › Usage",
+    "description": "Fin will hand over if it's unable to resolve the customer's question, a customer asks for human support, or an escalation rule or guidance ...",
+    "date": "2026-09-23T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Fin",
+     "hand over"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Manage Fin AI Agent's escalation guidance and rules",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/12396892-manage-fin-ai-agent-s-escalation-guidance-and-rules",
+    "displayedUrl": "https://www.intercom.com › ... › Fin AI Agent › Train",
+    "description": "In Fin over chat, escalation to a human teammate happens through text — Fin offers the handoff conversationally, not through a button.",
+    "emphasizedKeywords": [
+     "Fin offers the handoff conversationally"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Use Fin AI Agent in Workflows",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/10032299-use-fin-ai-agent-in-workflows",
+    "displayedUrl": "https://www.intercom.com › ... › Fin AI Agent › Deploy",
+    "description": "Fin's handover Fin escalates conversations based on natural language cues — such as a direct request for human support, negative feedback, or repeated replies",
+    "emphasizedKeywords": [
+     "Fin's handover Fin"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Fin, the AI Agent for Customer Service, Keeps Getting Better",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/blog/fin-ai-chatbot-customer-service-improvements",
+    "displayedUrl": "https://www.intercom.com › Blog",
+    "description": "Fin will follow your pre-defined handover preferences and any custom answers for Fin will continue to work as normal.",
+    "date": "2024-01-16T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Fin will follow your pre-defined handover preferences"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "Provide Fin AI Agent with specific guidance",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/help/en/articles/10210126-provide-fin-ai-agent-with-specific-guidance",
+    "displayedUrl": "https://www.intercom.com › ... › Fin AI Agent › Train",
+    "description": "Yes, Fin Guidance based handovers and escaltions follow the same route as non-guidance based handovers.",
+    "date": "2026-10-02T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Fin Guidance based handovers"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Getting Fin to give up after a certain number of tries",
+    "websiteTitle": "Intercom Community",
+    "url": "https://community.intercom.com/train-fin-94/getting-fin-to-give-up-after-a-certain-number-of-tries-13069",
+    "displayedUrl": "https://community.intercom.com › ... › Fin › Train Fin",
+    "description": "Hi Intercom Community,I’m trying to fine-tune how FIN handles unresolved issues. Specifically:Is there a way to set a limit on how many times FIN ...",
+    "date": "2025-10-27T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "New UI for Fin answers and handover to teammates in ...",
+    "websiteTitle": "Intercom",
+    "url": "https://www.intercom.com/changes/en/80878-new-ui-for-fin-answers-and-handover-to-teammates-in-the-messenger",
+    "displayedUrl": "https://www.intercom.com › changes › 80878-new-ui-fo...",
+    "description": "Improved handovers: We've made it easier to understand who is currently handling the conversation and whether it's been handed over from Fin AI ...Read more",
+    "date": "2025-01-27T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Improved handovers"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "Fin FAQs",
+    "websiteTitle": "Intercom Community",
+    "url": "https://community.intercom.com/fin-faqs-97",
+    "displayedUrl": "https://community.intercom.com › ... › Fin",
+    "description": "Hi all, Whenever Fin escalates a conversation to our Customer Support team, it automatically sends its own handoff message to the customer (something like \"A ...Read more",
+    "emphasizedKeywords": [
+     "automatically sends its own handoff message"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Customize multilingual Fin handover message",
+    "websiteTitle": "Intercom Community",
+    "url": "https://community.intercom.com/ideas/967",
+    "displayedUrl": "https://community.intercom.com › Ideas",
+    "description": "We have implemented multilingual Fin to support our users in 13 different languages. We've customized the welcome message for each language, ...",
+    "emphasizedKeywords": [
+     "multilingual Fin"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "intrusive interstitials site:developers.google.com",
+   "url": "http://www.google.com/search?q=intrusive+interstitials+site%3Adevelopers.google.com&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=intrusive+interstitials+site%3Adevelopers.google.com&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [
+   {
+    "title": "Intrusive interstitials chrome",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntskF-UfuceMHUg8oChqUAGwYWbVg:1792214966974&q=Intrusive+interstitials+chrome&sa=X&ved=2ahUKEwjss96DqcCXAxVu87sIHQ8YENMQ1QJ6BAg4EAE"
+   },
+   {
+    "title": "Intrusive interstitials meaning",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntskF-UfuceMHUg8oChqUAGwYWbVg:1792214966974&q=Intrusive+interstitials+meaning&sa=X&ved=2ahUKEwjss96DqcCXAxVu87sIHQ8YENMQ1QJ6BAg6EAE"
+   },
+   {
+    "title": "Intrusive interstitials android",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntskF-UfuceMHUg8oChqUAGwYWbVg:1792214966974&q=Intrusive+interstitials+android&sa=X&ved=2ahUKEwjss96DqcCXAxVu87sIHQ8YENMQ1QJ6BAg5EAE"
+   },
+   {
+    "title": "Intrusive interstitials chrome",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntskF-UfuceMHUg8oChqUAGwYWbVg:1792214966974&q=Intrusive+interstitials+chrome&sa=X&ved=2ahUKEwjss96DqcCXAxVu87sIHQ8YENMQ1QJ6BAg4EAE"
+   },
+   {
+    "title": "Intrusive interstitials meaning",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntskF-UfuceMHUg8oChqUAGwYWbVg:1792214966974&q=Intrusive+interstitials+meaning&sa=X&ved=2ahUKEwjss96DqcCXAxVu87sIHQ8YENMQ1QJ6BAg6EAE"
+   },
+   {
+    "title": "Intrusive interstitials android",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQntskF-UfuceMHUg8oChqUAGwYWbVg:1792214966974&q=Intrusive+interstitials+android&sa=X&ved=2ahUKEwjss96DqcCXAxVu87sIHQ8YENMQ1QJ6BAg5EAE"
+   }
+  ],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Avoid intrusive interstitials and dialogs",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials",
+    "displayedUrl": "https://developers.google.com › ... › Documentation",
+    "description": "Intrusive interstitials and dialogs are page elements that obstruct users' view of the content, usually for promotional purposes.",
+    "emphasizedKeywords": [
+     "page elements that obstruct users' view of the content"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Helping users easily access content on mobile",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/blog/2016/08/helping-users-easily-access-content-on",
+    "displayedUrl": "https://developers.google.com › search › blog › 2016/08",
+    "description": "Pages that show intrusive interstitials provide a poorer experience to users than other pages where content is immediately accessible.",
+    "emphasizedKeywords": [
+     "Pages that show intrusive interstitials provide a poorer experience to users"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Understanding page experience in Google Search results",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/docs/appearance/page-experience",
+    "displayedUrl": "https://developers.google.com › ... › Documentation",
+    "description": "Do your pages avoid using intrusive interstitials? Is your page designed so visitors can easily distinguish the main content from other content on your page?Read more",
+    "emphasizedKeywords": [
+     "intrusive interstitials"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Understanding Core Web Vitals and Google search results",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/docs/appearance/core-web-vitals",
+    "displayedUrl": "https://developers.google.com › ... › Documentation",
+    "description": "Core Web Vitals is a set of metrics that measure real-world user experience for loading performance, interactivity, and visual stability of the page.Read more",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Google+: A case study on App Download Interstitials",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/blog/2015/07/google-case-study-on-app-download-interstitials",
+    "displayedUrl": "https://developers.google.com › search › blog › 2015/07",
+    "description": "Many mobile sites use promotional app interstitials to encourage users to download their native mobile apps. a full page interstitial can ...",
+    "date": "2015-07-23T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "promotional app interstitials"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "More time, tools, and details on the page experience update",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/blog/2021/04/more-details-page-experience",
+    "displayedUrl": "https://developers.google.com › search › blog › 2021/04",
+    "description": "... intrusive interstitials, and mobile friendliness. The Page Experience report offers valuable metrics, such as the percentage of URLs with good page ...Read more",
+    "emphasizedKeywords": [
+     "intrusive interstitials"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "The role of page experience in creating helpful content",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/blog/2023/04/page-experience-in-search",
+    "displayedUrl": "https://developers.google.com › search › blog › 2023/04",
+    "description": "Page experience signals had been listed as Core Web Vitals, mobile-friendly, HTTPS and no intrusive interstitials. Are these signals still used in search ...Read more",
+    "emphasizedKeywords": [
+     "no intrusive interstitials"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Timing for bringing page experience to Google Search",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/blog/2020/11/timing-for-page-experience",
+    "displayedUrl": "https://developers.google.com › search › blog › 2020/11",
+    "description": "... intrusive interstitial guidelines. A diagram illustrating the components of Search's signal for page experience. The change for non-AMP content to become ...Read more",
+    "emphasizedKeywords": [
+     "intrusive interstitial guidelines"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "Patrick Kettner | Blog Pusat Google Penelusuran",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/blog/authors/patrick-kettner?hl=id",
+    "displayedUrl": "https://developers.google.com › p...",
+    "description": "... intrusive interstitials contribute to a great page experience. 00:00 Introduction 1:21 HTTPS 2:35 Mobile friendliness 4:19 Intrusive interstitials 5:46 ...Read more",
+    "emphasizedKeywords": [
+     "intrusive interstitials contribute to a great page experience"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Evaluating page experience for a better web",
+    "websiteTitle": "Google for Developers",
+    "url": "https://developers.google.com/search/blog/2020/05/evaluating-page-experience",
+    "displayedUrl": "https://developers.google.com › search › blog › 2020/05",
+    "description": "... intrusive interstitial guidelines, to provide a holistic picture of page experience. Because we continue to work on identifying and measuring aspects of ...Read more",
+    "emphasizedKeywords": [
+     "intrusive interstitial guidelines"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "Shopify \"AI agent\" Inbox handoff staff \"store email\"",
+   "url": "http://www.google.com/search?q=Shopify+%22AI+agent%22+Inbox+handoff+staff+%22store+email%22&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=Shopify+%22AI+agent%22+Inbox+handoff+staff+%22store+email%22&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "O",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Anyone here actually using AI automation/agents in their ...",
+    "websiteTitle": "Reddit · r/AiAutomations",
+    "url": "https://www.reddit.com/r/AiAutomations/comments/1syozsc/anyone_here_actually_using_ai_automationagents_in/",
+    "displayedUrl": "20+ comments  ·  5 months ago",
+    "description": "I keep hearing a lot about AI agents, automation, “AI running your store” etc. but how much of it is actually useful in real Shopify workflows? ...",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Shopify AI Agents: Storefront, Sidekick, and Store ...",
+    "websiteTitle": "EcomBrain",
+    "url": "https://ecombrain.io/shopify-ai-agent",
+    "displayedUrl": "https://ecombrain.io › shopify-ai-agent",
+    "description": "A practical guide to the three jobs hidden inside 'Shopify AI agent': shopper assistance, Shopify-admin work, and approval-controlled operations ...Read more",
+    "date": "2026-07-22T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Shopify AI agent",
+     "Shopify"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Shopify's AI generates effective email campaign ideas",
+    "websiteTitle": "Facebook · Klaviyo Email Marketing Community | MA",
+    "url": "https://www.facebook.com/groups/544033120196337/posts/1528280558438250/",
+    "displayedUrl": "8 comments  ·  9 months ago",
+    "description": "The data gathered by AI will also help you make better predictions regarding your customers' buying habits. All this information will help your ...Read more",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Shopify AI Support Agent: Knowledge, Handoff, and QA",
+    "websiteTitle": "WESWOO",
+    "url": "https://www.weswoo.com/en/shopify-aikefujiqirenpeizhi724xiaoshizidongyingdahexinshijian/",
+    "displayedUrl": "https://www.weswoo.com › shopify-aikefujiqirenpeizhi...",
+    "description": "Can an AI agent replace human support? No. Complex, sensitive, and high-risk cases need human judgement. How should multilingual support be ...Read more",
+    "date": "2025-10-15T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "AI agent"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Built an AI storefront agent for Shopify looking for early ...",
+    "websiteTitle": "Shopify Community",
+    "url": "https://community.shopify.com/t/built-an-ai-storefront-agent-for-shopify-looking-for-early-merchant-feedback/583679",
+    "displayedUrl": "https://community.shopify.com › built-an-ai-storefront-...",
+    "description": "I'd be interested to learn how the AI agent handles product recommendations, customer support, and checkout assistance. Early merchant ...Read more",
+    "date": "2026-01-14T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "AI agent"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "How to Build AI Agents for Shopify",
+    "websiteTitle": "YouTube · Ross Fledderjohn",
+    "url": "https://www.youtube.com/watch?v=vQCNCYwaVcE",
+    "displayedUrl": "5K+ views  ·  2 years ago",
+    "description": "",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "AI Customer support agent : r/shopifyDev",
+    "websiteTitle": "Reddit · r/shopifyDev",
+    "url": "https://www.reddit.com/r/shopifyDev/comments/1l386hf/ai_customer_support_agent/",
+    "displayedUrl": "30+ comments  ·  1 year ago",
+    "description": "It centralizes everything and makes handoffs clean. Add an AI agent on top to handle the repetitive stuff (order status, tracking links, returns ...Read more",
+    "emphasizedKeywords": [
+     "handoffs",
+     "AI agent"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Shopify Inbox upgrade?",
+    "websiteTitle": "Shopify Community",
+    "url": "https://community.shopify.com/t/shopify-inbox-upgrade/573127",
+    "displayedUrl": "https://community.shopify.com › shopify-inbox-upgrade",
+    "description": "When might we expect to see an update to the Shopify Inbox system to include AI Agent functionality covered by the knowledge base app and ...",
+    "date": "2025-10-29T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Shopify Inbox",
+     "AI Agent"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "aiOverview": {
+   "type": "live",
+   "content": "Shopify Inbox handles customer chats and uses AI-generated response suggestions to draft replies based on your store's info. When a conversation needs human review or handoff, it routes through your store settings and connected staff channels.Your Store email is the primary address used to sign up for Shopify, found in Settings > General in your Shopify admin.System-generated exports, notifications, and administrative alerts route to this address.Shopify Inbox Handoff & Staff RoutingAI Chat Suggestions: Shopify Inbox provides AI-generated response drafts to help your team answer customer chats faster.Staff Handoff: When a chat requires a live team member or escalates past automated/AI assistance, it hands off to staff members managing the Shopify Inbox dashboard or mobile app.Forwarding/External Ticketing: If you connect Inbox or customer messaging to external helpdesk or ticketing systems (like Zendesk or Gorgias), conversations can forward to designated team email aliases or support desks.Would you like help setting up staff permissions, configuring Shopify Inbox routing rules, or connecting an external helpdesk to your store email?Would you like help setting up staff permissions, configuring Shopify Inbox routing rules, or connecting an external helpdesk to your store email?AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMore",
+   "sources": [
+    {
+     "url": "https://help.shopify.com/en/manual/inbox/conversations",
+     "title": "Managing customer conversations - Shopify Help Center",
+     "description": "You can manage the details of a conversation from the desktop version of Shopify Inbox or from the mobile app. All conversation de..."
+    },
+    {
+     "url": "https://www.linkedin.com/posts/shruya-technolab_70-of-shopify-stores-still-handle-customer-activity-7506937442004799488-1zhF",
+     "title": "Shruya Technolab's Post",
+     "description": "Shruya Technolab's Post Shruya Technolab 44 followers 1d 70% of Shopify stores still handle customer chats manually. Shopify just ..."
+    },
+    {
+     "url": "https://help.shopify.com/en/manual/intro-to-shopify/initial-setup/setup-your-email",
+     "title": "Setting up your email - Shopify Help Center",
+     "description": "Your Store email is the email address that you used when you signed up for Shopify, and it's listed in Settings > General of your ..."
+    }
+   ]
+  },
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "site:nngroup.com customer-service chat guidelines",
+   "url": "http://www.google.com/search?q=site%3Anngroup.com+customer-service+chat+guidelines&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=site%3Anngroup.com+customer-service+chat+guidelines&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "O",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "The User Experience of Customer-Service Chat",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/chat-ux/",
+    "displayedUrl": "https://www.nngroup.com › articles › chat-ux",
+    "description": "1.Place a Link to Chat on the Contact Us Page and Label it Chat ・ 4.Do Not Hide Chat Under Vague Labels such as Ask a Question ・ 5.Have a ...",
+    "date": "2019-01-13T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "1.Place a Link to Chat on the Contact Us Page and Label it Chat"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "customer service Articles & Videos",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/topic/customer-service/",
+    "displayedUrl": "https://www.nngroup.com › topic › customer-service",
+    "description": "Don't hide or replace these elements with automated tools such as 'Contact Us' forms or chat. The User Experience of Customer-Service Chat: 20 Guidelines.Read more",
+    "emphasizedKeywords": [
+     "chat",
+     "Customer",
+     "Service Chat",
+     "Guidelines"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Minimize the Need for Customer Service to Improve ...",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/customer-service-omnichannel-ux/",
+    "displayedUrl": "https://www.nngroup.com › articles › customer-service-o...",
+    "description": "Make Customer Service Easily Accessible ... A simple way to minimize customer calls is to not provide a phone number or other contact information.Read more",
+    "date": "2016-09-11T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Customer Service"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "'Contact Us' Page Guidelines",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/contact-us-pages/",
+    "displayedUrl": "https://www.nngroup.com › articles › contact-us-pages",
+    "description": "If Available and Reliable, Include Chat and Social Media Channels on Contact Us Pages. 10. It's good to have online chat as a contact option, ...Read more",
+    "date": "2019-08-18T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Include Chat and Social Media Channels on Contact Us Pages"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "10 Guidelines for Designing Your Site's AI Chatbots",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/ai-chatbots-design-guidelines/",
+    "displayedUrl": "https://www.nngroup.com › articles › ai-chatbots-design-...",
+    "description": "Consolidate Your AI Chat with Other Chat Features 2. Keep the Chatbot Accessible Across Pages 3. Show What the Chatbot Can Do Through ...",
+    "date": "2026-04-24T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Consolidate Your AI Chat with Other Chat Features"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "The User Experience of Chatbots",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/chatbots/",
+    "displayedUrl": "https://www.nngroup.com › articles › chatbots",
+    "description": "Be upfront about using a bot and not a human. Clearly tell people what tasks the bot can do. Make sure you don't create false expectations.",
+    "date": "2018-11-25T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Be upfront about using a bot and not a human"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Customer-Service Information on Websites: The Hub-and- ...",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/customer-service-model/",
+    "displayedUrl": "https://www.nngroup.com › articles › customer-service-...",
+    "description": "Customer-Service Guidelines · 1. Provide at least one customer-service hub page that serves as a catch-all. · 2. Name the main hub page Customer ...Read more",
+    "date": "2018-07-29T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Customer-Service Guidelines"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "User-Feedback Requests: 5 Guidelines",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/user-feedback/",
+    "displayedUrl": "https://www.nngroup.com › articles › user-feedback",
+    "description": "Summary: Surveys asking users to give feedback during or after an interaction should not interrupt the users' task and should be sent to the ...Read more",
+    "date": "2023-03-26T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "should not interrupt the users' task"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "service design Articles, Videos, Reports, and Training Courses",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/topic/service-design/?page=3",
+    "displayedUrl": "https://www.nngroup.com › topic › service-design",
+    "description": "The User Experience of Customer-Service Chat: 20 Guidelines. January 13, 2019 ... Websites structure and deliver customer-service information in many different ...",
+    "emphasizedKeywords": [
+     "20 Guidelines"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "The UX of Phone-Tree Systems: 16 Usability Guidelines",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/phone-tree-guidelines/",
+    "displayedUrl": "https://www.nngroup.com › articles › phone-tree-guideli...",
+    "description": "Summary: Users who call organizations often find themselves in frustrating phone trees. Badly designed interactive voice response (IVR) ...Read more",
+    "date": "2022-08-14T12:00:00.000Z",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "Würth AI assistant online shop",
+   "url": "http://www.google.com/search?q=W%C3%BCrth+AI+assistant+online+shop&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=W%C3%BCrth+AI+assistant+online+shop&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "O",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Digital assistant PICO in the spotlight on Tagesschau",
+    "websiteTitle": "Würth IT",
+    "url": "https://www.wuerth-it.com/one-IT/newsroom/PICO-Tagesschau-2.php",
+    "displayedUrl": "https://www.wuerth-it.com › Newsroom",
+    "description": "PICO, the Würth Group's AI-supported chat and voice assistant, was prominently featured. PICO supports sales reps in handling administrative tasks, such as ...",
+    "emphasizedKeywords": [
+     "PICO, the Würth Group's AI-supported chat and voice assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Dan Lenehan - AI Shop Assistant",
+    "websiteTitle": "LinkedIn · Dan Lenehan",
+    "url": "https://www.linkedin.com/posts/dan-lenehan-683a42165_nice-bit-of-friday-news-wurth-ireland-ltd-activity-7514278667838017537-qTqd",
+    "displayedUrl": "10+ reactions  ·  1 week ago",
+    "description": "We're delighted to welcome Wurth Ireland Ltd as an AI Shop Assistant client. Würth Ireland was founded in Limerick in 1982. It supplies ...Read more",
+    "emphasizedKeywords": [
+     "Wurth",
+     "AI Shop Assistant",
+     "Würth"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "AI response Meet the Würth AI Assistant 🤖 Need help ...",
+    "websiteTitle": "Instagram · wurthireland",
+    "url": "https://www.instagram.com/p/DeOq_WOoFAV/",
+    "displayedUrl": "1 like  ·  1 week ago",
+    "description": "Meet the Würth AI Assistant Need help finding the right kit for the job, a Würth alternative, or your nearest Trade Store? Just ask. Find it ...Read more",
+    "emphasizedKeywords": [
+     "Just ask"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Würth Online Shop",
+    "websiteTitle": "Würth Industrie Service",
+    "url": "https://www.wuerth-industrie.com/web/en/wuerthindustrie/cteile_management/ecommerce/wuerth_online_shop/wuerthonlineshop.php",
+    "displayedUrl": "https://www.wuerth-industrie.com › ... › E-Procurement",
+    "description": "At the Würth Online-Shop you can find details about your order, information about more than 150,000 products and additional services – 24 hours a day, 7 days a ...Read more",
+    "emphasizedKeywords": [
+     "about your order"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "How Würth uses AI to drive Personalization and Sales in B2B E ...",
+    "websiteTitle": "YouTube · Intershop",
+    "url": "https://www.youtube.com/watch?v=HPu375oj4TI",
+    "displayedUrl": "170+ views  ·  11 months ago",
+    "description": "",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "Würth wins reta award for its digital sales assistant PICO",
+    "websiteTitle": "Würth Group",
+    "url": "https://news.wuerth.com/wuerth-wins-reta-award-for-its-digital-sales-assistant-pico/",
+    "displayedUrl": "https://news.wuerth.com › wuerth-wins-reta-award-for-i...",
+    "description": "The chat and voice assistant is based on artificial intelligence and a large language model. Best AI & Robotics Application.",
+    "date": "2024-02-28T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "assistant",
+     "artificial intelligence",
+     "AI"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Live Chat - Direct Contact with our Specialists",
+    "websiteTitle": "Würth Elektronik",
+    "url": "https://www.we-online.com/en/support/contact/chat-support?srsltid=AU7gw4X53cqbJXfVfeVY4IvmEHsNGhpaqUvpyrDKWyeD8a6lceFSF50T",
+    "displayedUrl": "https://www.we-online.com › ... › Support › Contact",
+    "description": "Chat with us. We will be happy to advise and inform you quickly, personally and directly. Our Würth Elektronik chat team looks forward to hearing from you.",
+    "emphasizedKeywords": [
+     "Chat with us"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Wurth USA | Homepage",
+    "websiteTitle": "Wurth USA",
+    "url": "https://www.wurthusa.com/?srsltid=AU7gw4UBCzRE_q-sbrYomB2We191l1ZGnGZCn1I8YXTUx_pNo0zO7Y34",
+    "displayedUrl": "https://www.wurthusa.com",
+    "description": "ORDERING YOUR FAVORITE WURTH PRODUCTS JUST GOT EASIER. Unlock your online account and get access to over 20,000+ products anytime, anywhere. With an online ...Read more",
+    "emphasizedKeywords": [
+     "ORDERING YOUR FAVORITE WURTH PRODUCTS JUST GOT EASIER"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "Würth IT tests Copilot for the Group's 400 companies",
+    "websiteTitle": "Microsoft",
+    "url": "https://www.microsoft.com/en/customers/story/1756857946254477192-wuerth-it-gmbh-microsoft-365-discrete-manufacturing-en-germany",
+    "displayedUrl": "https://www.microsoft.com › customers › story › 175685...",
+    "description": "Würth IT took part in an early access program (EAP) for Copilot for Microsoft 365 and tested an AI assistant for the entire Würth Group. The ...Read more",
+    "date": "2024-04-18T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Würth",
+     "AI assistant",
+     "Würth"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [
+   {
+    "answer": null,
+    "question": "Is Würth a good company to work for?",
+    "title": null,
+    "url": null,
+    "date": null
+   },
+   {
+    "answer": null,
+    "question": "How much does a virtual AI assistant cost?",
+    "title": null,
+    "url": null,
+    "date": null
+   },
+   {
+    "answer": null,
+    "question": "How to order Wurth products?",
+    "title": null,
+    "url": null,
+    "date": null
+   },
+   {
+    "answer": null,
+    "question": "What kind of company is Würth?",
+    "title": null,
+    "url": null,
+    "date": null
+   }
+  ],
+  "aiOverview": {
+   "type": "live",
+   "content": "The Würth AI Assistant is an interactive chat tool located in the bottom-right corner of regional Würth eShops (such as the Würth Ireland eShop) to help customers find products, alternative parts, and trade stores.Würth AI Assistant (Chatbot): Available directly on web eShops to answer product and service queries in real time.Würth Lens: A smart image recognition feature inside the official Würth app that identifies tools and parts from photos within seconds.PICO: An AI-supported chat and voice assistant used internally by Würth’s sales force for administrative tasks like handling delivery notes and invoices.AI Recommendation Engines: Cloud-based e-commerce personalization tools (using providers like Rutsis) that adjust search result rankings, bundle products based on purchase history or weather data, and support sales staff via portals like Speedy Touch.If you are looking for a specific regional online shop (such as Germany, the UK, Ireland, or the US), let me know which country you are shopping in and I can provide the direct link.If you are looking for a specific regional online shop (such as Germany, the UK, Ireland, or the US), let me know which country you are shopping in and I can provide the direct link.AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMore",
+   "sources": [
+    {
+     "url": "https://www.instagram.com/p/DeOq_WOoFAV/",
+     "title": "AI response Meet the Würth AI Assistant Need help finding the ...",
+     "description": "AI response Meet the Würth AI Assistant 🤖 Need help finding the right kit for the job, a Würth alternative, or your nearest Trade..."
+    },
+    {
+     "url": "https://www.wuerth-it.com/one-IT/newsroom/PICO-Tagesschau-2.php",
+     "title": "Würth IT demonstrates AI expertise: Digital assistant PICO in the spotlight on Tagesschau",
+     "description": "The Würth Group's AI-supported chat and voice assistant, PICO, was featured in a television report by the German news station ARD."
+    }
+   ]
+  },
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "Drift playbook targeting scroll OR \"time on page\" site:drift.com OR site:salesloft.com",
+   "url": "http://www.google.com/search?q=Drift+playbook+targeting+scroll+OR+%22time+on+page%22+site%3Adrift.com+OR+site%3Asalesloft.com&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=Drift+playbook+targeting+scroll+OR+%22time+on+page%22+site%3Adrift.com+OR+site%3Asalesloft.com&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Drift - Chat Playbook Guide Part 1",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/Chat-Playbook-Guide-Part-1",
+    "displayedUrl": "https://help.salesloft.com › article › Chat-Playbook-Gui...",
+    "description": "Seconds on site (in seconds) – Similar to \"Time on page\" but measured from the start of the visitor's session and independent of the amount of ...Read more",
+    "date": "2024-07-25T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Time on page"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Drift - How to Use Targeting and Display Conditions",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/How-to-Use-Targeting-and-Display-Conditions",
+    "displayedUrl": "https://help.salesloft.com › article › How-to-Use-Targeti...",
+    "description": "Seconds on site (in seconds) – Similar to \"Time on page\" but measured from the start of the visitor's session and independent of the amount of ...Read more",
+    "date": "2024-07-27T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Time on page"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "How To Build Bot Playbooks - Drift",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/How-To-Build-Bot-Playbooks",
+    "displayedUrl": "https://help.salesloft.com › article › How-To-Build-Bot-...",
+    "description": "Targeting your playbook is where you'll select who actually sees the bot when they visit your site. To read further on targeting options for ...Read more",
+    "date": "2024-07-25T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Targeting",
+     "playbook",
+     "targeting"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "How to use Drift Intel",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/How-to-use-Drift-Intel",
+    "displayedUrl": "https://help.salesloft.com › article › How-to-use-Drift-In...",
+    "description": "With Drift Intel, Bot and chat playbooks have a robust list of firmographic targeting conditions. To utilize these: Create a bot Playbook, find the Targeting ...",
+    "emphasizedKeywords": [
+     "Drift",
+     "playbooks",
+     "targeting",
+     "Playbook",
+     "Targeting"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Drift - What Hour Settings Affect What?",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/What-Hour-Settings-Affect-What",
+    "displayedUrl": "https://help.salesloft.com › article › What-Hour-Settings...",
+    "description": "For your offline/online hours, playbooks must be configured to follow them. You can set this up in your display conditions. The display ...Read more",
+    "date": "2026-08-19T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "playbooks"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "Drift - Targeting Conditions",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/Targeting-Conditions?language=en_US",
+    "displayedUrl": "https://help.salesloft.com › article › Targeting-Conditions",
+    "description": "Seconds on site (in seconds) – Similar to \"Time on page\" but measured from the start of the visitor's session and independent of the amount of ...Read more",
+    "date": "2024-07-26T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Time on page"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Drift - Manage the Display Settings of Your Widget",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/How-to-Set-Up-and-Manage-the-Display-Settings-of-Your-Widget",
+    "displayedUrl": "https://help.salesloft.com › article › How-to-Set-Up-and...",
+    "description": "However, you can have a Playbook targeted for the page that the widget is excluded on and that Playbook will fire as normal and the widget will ...",
+    "date": "2025-09-17T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Playbook targeted",
+     "Playbook"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "How to Connect Drift to Demandbase",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/How-to-Connect-Drift-to-Demandbase",
+    "displayedUrl": "https://help.salesloft.com › article › How-to-Connect-Dr...",
+    "description": "Head to the Chat Widget section under App Settings and select Hours & Targeting. Scroll down to find the Targeting options.Read more",
+    "date": "2026-08-19T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Targeting",
+     "Scroll",
+     "Targeting"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "Drift - Setting the Hours for your Widget, Teams, and ...",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/Setting-the-Hours-for-your-Widget-Teams-and-Individual-Users?language=en_US",
+    "displayedUrl": "https://help.salesloft.com › article › Setting-the-Hours-f...",
+    "description": "You can set this up in Settings > App Settings > Drift Widget > Default Widget > Status (here). As a reminder, enabled playbooks take priority ...Read more",
+    "date": "2024-07-25T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Drift",
+     "playbooks"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "How to Sync Accounts into Drift from Salesforce and Set Up ...",
+    "websiteTitle": "Salesloft",
+    "url": "https://help.salesloft.com/s/article/How-to-Sync-Accounts-into-Drift-from-Salesforce-and-Set-Up-a-Personalized-Welcome-Message",
+    "displayedUrl": "https://help.salesloft.com › article › How-to-Sync-Acco...",
+    "description": "Advanced Targeting Set the Frequency to have your Playbook deliver to your audience once, once per session, or on every page load!",
+    "date": "2026-08-19T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Targeting",
+     "Playbook"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "Conrad Electronic AI assistant shop",
+   "url": "http://www.google.com/search?q=Conrad+Electronic+AI+assistant+shop&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=Conrad+Electronic+AI+assistant+shop&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "L",
+  "relatedQueries": [
+   {
+    "title": "Conrad electronic ai assistant shop phone number",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+electronic+ai+assistant+shop+phone+number&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAg7EAE"
+   },
+   {
+    "title": "Conrad electronic ai assistant shop address",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+electronic+ai+assistant+shop+address&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhIEAE"
+   },
+   {
+    "title": "Conrad electronic ai assistant shop usa",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+electronic+ai+assistant+shop+usa&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhPEAE"
+   },
+   {
+    "title": "Conrad Online-Shop",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+Online-Shop&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhKEAE"
+   },
+   {
+    "title": "Conrad Fisher",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+Fisher&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhQEAE"
+   },
+   {
+    "title": "Conrad Electronic contact number",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+Electronic+contact+number&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhOEAE"
+   },
+   {
+    "title": "Conrad Electronic Group",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+Electronic+Group&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhEEAE"
+   },
+   {
+    "title": "German electronic store online",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=German+electronic+store+online&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAg-EAE"
+   },
+   {
+    "title": "Conrad electronic ai assistant shop phone number",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+electronic+ai+assistant+shop+phone+number&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAg7EAE"
+   },
+   {
+    "title": "Conrad electronic ai assistant shop address",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+electronic+ai+assistant+shop+address&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhIEAE"
+   },
+   {
+    "title": "Conrad electronic ai assistant shop usa",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+electronic+ai+assistant+shop+usa&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhPEAE"
+   },
+   {
+    "title": "Conrad Online-Shop",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+Online-Shop&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhKEAE"
+   },
+   {
+    "title": "Conrad Fisher",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+Fisher&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhQEAE"
+   },
+   {
+    "title": "Conrad Electronic contact number",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+Electronic+contact+number&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhOEAE"
+   },
+   {
+    "title": "Conrad Electronic Group",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=Conrad+Electronic+Group&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAhEEAE"
+   },
+   {
+    "title": "German electronic store online",
+    "url": "https://www.google.com/search?sca_esv=f2b28609a781f236&hl=en&gl=us&sxsrf=APpeQnviyXO9U230XWAzZr7eg2LM9AaHVg:1792214971009&q=German+electronic+store+online&sa=X&ved=2ahUKEwii2dSFqcCXAxXzVUEAHbR_EAgQ1QJ6BAg-EAE"
+   }
+  ],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Conrad Electronic » All parts of success",
+    "websiteTitle": "Conrad Electronic",
+    "url": "https://www.conrad.com/?srsltid=AU7gw4WQWYOOAKyBT08D1vt3QFCO6ZH6eoL36WBL7uCzzJBJTMyXzCum",
+    "displayedUrl": "https://www.conrad.com",
+    "description": "Your procurement platform for technical business supplies | More than 450000 products | Customer-centric solutions & services.",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "Conrad Electronic Customer Success Story",
+    "websiteTitle": "Google Workspace",
+    "url": "https://workspace.google.com/customers/conrad-electronic/",
+    "displayedUrl": "https://workspace.google.com › customers › conrad-elect...",
+    "description": "Explore this Retail & Wholesale Trade customer success story to learn how Conrad Electronic found success by collaborating with Google Workspace.",
+    "emphasizedKeywords": [
+     "Conrad Electronic"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Marketplace Leaders: Ralf Bühler, Conrad Electronic",
+    "websiteTitle": "eStrategy Consulting",
+    "url": "https://www.estrategy-consulting.de/en/insights/marketplace-leaders-ralf-buehler-conrad-electronic/",
+    "displayedUrl": "https://www.estrategy-consulting.de › insights › market...",
+    "description": "in one of our online shops, we are working with an AI assistant, a kind of digital advisor. It helps to find the right product for individual applications. It ...",
+    "emphasizedKeywords": [
+     "AI assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Astro AI Shop » Buy online at Conrad",
+    "websiteTitle": "Conrad Electronic",
+    "url": "https://www.conrad.com/en/brands/astro-ai.html?srsltid=AU7gw4Wfb0k1uMK-KhBYr1ZyCeJnr7BNrwl_Q1lo4ZieIPKcioB9DjqZ",
+    "displayedUrl": "https://www.conrad.com › brands › astro-ai",
+    "description": "Large selection of the brand Astro AI ✚ Up to 3 years guarantee with free customer card possible ➤ Fast & Free delivery from €59.50.",
+    "emphasizedKeywords": [
+     "Large selection of the brand Astro AI"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Conrad Electronic International GmbH & Co KG Reviews",
+    "websiteTitle": "Trustpilot",
+    "url": "https://www.trustpilot.com/review/order.conrad.com",
+    "displayedUrl": "https://www.trustpilot.com › review › order.conrad.com",
+    "description": "115 people have already reviewed Conrad Electronic International GmbH & Co KG. Read about their experiences and share your own!",
+    "emphasizedKeywords": [
+     "Conrad Electronic International GmbH & Co KG"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "averageRating": 3.5,
+    "numberOfReviews": 115,
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "Company",
+    "websiteTitle": "Conrad Electronic",
+    "url": "https://www.conrad.com/en/about/company.html?srsltid=AU7gw4Whr8ca65ftbsLQWCA1UtoAK8O0cd89K79iSortTXUYoL0E7GZx",
+    "displayedUrl": "https://www.conrad.com › About Conrad",
+    "description": "The centrepiece of our business is the online shop, Available 24/7, covering everything there is to know about shopping at Conrad.",
+    "emphasizedKeywords": [
+     "online shop"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Conrad Electronic Group",
+    "websiteTitle": "LinkedIn · Conrad Electronic Group",
+    "url": "https://www.linkedin.com/company/conrad-electronic-se/?viewAsMember=true",
+    "displayedUrl": "24.9K+ followers",
+    "description": "Welcome to Conrad Electronic. Since 1923, we've been a reliable partner for technology and electronics. Today, we serve as a sourcing platform, ...",
+    "emphasizedKeywords": [
+     "Conrad Electronic"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Brands Shop » Buy online at Conrad",
+    "websiteTitle": "Conrad Electronic",
+    "url": "https://www.conrad.com/en/brands.html?srsltid=AU7gw4WsSo9BayXwnKsp8-2majT58t7JXCFL_a4NsaTNbmb1AvPy-eHb",
+    "displayedUrl": "https://www.conrad.com › brands",
+    "description": "Wide selection of Brands products | Fast delivery | Reasonable prices | Your technology expert. ed Shop Shipping within Europe 2 Years Warranty 30 Days Money ...",
+    "emphasizedKeywords": [
+     "Fast delivery"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "How Conrad grew their online offering to better serve the ...",
+    "websiteTitle": "Mirakl",
+    "url": "https://www.mirakl.com/content/customer-stories/conrad/",
+    "displayedUrl": "https://www.mirakl.com › content › customer-stories › c...",
+    "description": "How Conrad Electronic grew from 800000 products to 7 million+ offers in 5 years by launching one of Europe's first B2B marketplaces for technical supplies ...",
+    "emphasizedKeywords": [
+     "Conrad Electronic"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "aiOverview": {
+   "type": "live",
+   "content": "Conrad Electronic uses artificial intelligence across its online technology and B2B procurement platform to power backend logistics, product categorization, alternative product displays, and generative AI advisor testing. While they do not feature a single stand-alone \"AI Assistant Shop,\" they use AI tools to optimize sourcing across more than 10 million products.If you are looking to shop for AI hardware, electronics, or smart home assistants, Conrad offers an extensive technical assortment.Smart Assistants & AI Electronics at ConradYou can browse and purchase a variety of smart home and automated systems directly from their digital storefronts:You can browse and purchase a variety of smart home and automated systems directly from their digital storefronts:Smart Home Systems: Major platforms like Apple HomePod, Philips Hue, Shelly, and Aqara are available via the online shop.Development & AI Kits: They supply education and development hardware suitable for building custom AI applications or robotics.AstroAI Brand Store: Conrad hosts a dedicated brand catalog for AstroAI tools and electronic accessories.AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMoreRegional Conrad PlatformsDepending on your physical location in Europe, you can access localized customer support and inventories through their main regional marketplaces:Depending on your physical location in Europe, you can access localized customer support and inventories through their main regional marketplaces:CountryPlatform LinkGermanyConrad GermanyAustriaConrad AustriaFranceConrad FranceItalyConrad ItalyNetherlandsConrad NetherlandsInternational / Pan-EuropeanConrad Sourcing PlatformWould you like help finding a specific AI development board, smart home hub, or details on how to set up a B2B procurement account on the Conrad platform?Would you like help finding a specific AI development board, smart home hub, or details on how to set up a B2B procurement account on the Conrad platform?",
+   "sources": [
+    {
+     "url": "https://www.conrad.com/",
+     "title": "Conrad Electronic » All parts of success",
+     "description": "Conrad Electronic / Conrad Sourcing Platform: online shop for technology and electronics in Europe. Offers 24/7 sourcing, one-stop..."
+    },
+    {
+     "url": "https://www.conrad.com/en/brands/astro-ai.html?srsltid=AU7gw4U-eyqPrpgEWZ2YZxZQlQ4GGyYgFzynvmneNVagm156cGBjsMIi",
+     "title": "Astro AI Shop » Buy online at Conrad",
+     "description": "Large selection of the brand Astro AI ✚ Up to 3 years guarantee with free customer card possible ➤ Fast & Free delivery from €59.5..."
+    },
+    {
+     "url": "https://www.estrategy-consulting.de/en/insights/marketplace-leaders-ralf-buehler-conrad-electronic/",
+     "title": "Marketplace Leaders: Ralf Bühler, Conrad Electronic | eStrategy Consulting",
+     "description": "Company: Conrad Electronic (Hirschau, Bavaria, CEO Ralf Bühler since 2021). Transformation: Shifted from B2C/B2B retailer to curat..."
+    },
+    {
+     "url": "https://www.conrad.com/en/about/company/holdings.html",
+     "title": "Holdings",
+     "description": "Table_title: Conrad Electronic International GmbH & Co. KG Table_content: | Austria | Conrad Electronic GmbH & Co.KG | conrad.at |"
+    },
+    {
+     "url": "https://www.trustpilot.com/review/www.conrad.de",
+     "title": "Conrad Electronic SE Reviews",
+     "description": "Contact info * Klaus-Conrad-Str. 1, 92240, Hirschau, Germany * kundenbewertungen@conrad.de * www.conrad.de"
+    }
+   ]
+  },
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "chatflow trigger \"scroll\" percentage site:knowledge.hubspot.com",
+   "url": "http://www.google.com/search?q=chatflow+trigger+%22scroll%22+percentage+site%3Aknowledge.hubspot.com&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=chatflow+trigger+%22scroll%22+percentage+site%3Aknowledge.hubspot.com&gl=us&hl=en",
+  "hasNextPage": false,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Create and conduct customer satisfaction surveys",
+    "websiteTitle": "HubSpot",
+    "url": "https://knowledge.hubspot.com/customer-feedback/create-and-send-customer-satisfaction-surveys",
+    "displayedUrl": "https://knowledge.hubspot.com › customer-feedback",
+    "description": "In the When section, enter the number of seconds before the survey is shown to a visitor. You can also select on 50% page scroll. In the ...Read more",
+    "date": "2026-06-20T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "scroll"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "Libra Energy solar wholesale AI assistant",
+   "url": "http://www.google.com/search?q=Libra+Energy+solar+wholesale+AI+assistant&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=Libra+Energy+solar+wholesale+AI+assistant&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [
+   {
+    "title": "Libra energy solar wholesale ai assistant cost",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+energy+solar+wholesale+ai+assistant+cost&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAgyEAE"
+   },
+   {
+    "title": "Libra Solar",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+Solar&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAg2EAE"
+   },
+   {
+    "title": "Libra energy shop",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+energy+shop&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAg1EAE"
+   },
+   {
+    "title": "Libra power",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+power&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAg0EAE"
+   },
+   {
+    "title": "Libra shop",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+shop&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAgzEAE"
+   },
+   {
+    "title": "Libra energy solar wholesale ai assistant cost",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+energy+solar+wholesale+ai+assistant+cost&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAgyEAE"
+   },
+   {
+    "title": "Libra Solar",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+Solar&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAg2EAE"
+   },
+   {
+    "title": "Libra energy shop",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+energy+shop&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAg1EAE"
+   },
+   {
+    "title": "Libra power",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+power&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAg0EAE"
+   },
+   {
+    "title": "Libra shop",
+    "url": "https://www.google.com/search?sca_esv=2f4e5f7f4d538f07&gl=us&hl=en&sxsrf=APpeQnu35oqMF9LNVPQGrlR8Mbo5uHLPmg:1792214975689&q=Libra+shop&sa=X&ved=2ahUKEwjur--HqcCXAxVlhysGHVUsDMkQ1QJ6BAgzEAE"
+   }
+  ],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "AI Sales Agent for Solar Installers",
+    "websiteTitle": "solarVis",
+    "url": "https://solarvis.co/en/products/ai-sales-agent",
+    "displayedUrl": "https://solarvis.co › Home › Products",
+    "description": "An AI sales agent for solar is a website assistant trained on your company's products, pricing, and local regulations. It answers technical solar questions ...Read more",
+    "emphasizedKeywords": [
+     "website assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "About us",
+    "websiteTitle": "Libra Energy",
+    "url": "https://www.libra.energy/en/about-us",
+    "displayedUrl": "https://www.libra.energy › about-us",
+    "description": "Libra Energy is an importer, distributor and full-service wholesaler of sustainable energy products and charging solutions for electric vehicles.Read more",
+    "emphasizedKeywords": [
+     "Libra Energy"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "SolaX AI Copilot | Smart Energy Assistant with AI-Driven ...",
+    "websiteTitle": "YouTube · Solar&Solar PV Wholesale",
+    "url": "https://www.youtube.com/watch?v=h_bW3b_2HpQ",
+    "displayedUrl": "80+ views  ·  1 year ago",
+    "description": "",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "AI Solar Assistant to Maximize ROI for Energy Companies- Onix",
+    "websiteTitle": "onixnet.com",
+    "url": "https://www.onixnet.com/blog/introducing-the-ai-powered-solar-assistant-for-energy-companies/",
+    "displayedUrl": "https://www.onixnet.com › AI/ML tools and services",
+    "description": "Switching to solar can be complex. Onix's AI-powered solar assistant simplifies the process with site analysis, predictive maintenance, and improved ROI.",
+    "emphasizedKeywords": [
+     "Onix's AI-powered solar assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Prototyping data tools with AI, a case study꞉ Solar + Battery ...",
+    "websiteTitle": "ember-energy.org",
+    "url": "https://ember-energy.org/latest-updates/prototyping-data-tools-with-ai-a-case-study-solar-battery-atlas/",
+    "displayedUrl": "https://ember-energy.org › Latest Updates",
+    "description": "The Ember Futures team has been using AI to develop a prototype data tool that shows how round-the-clock solar is a reality for much of the world, building",
+    "emphasizedKeywords": [
+     "AI",
+     "solar"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "Solar AI email assistant for solar companies",
+    "websiteTitle": "Virtualworkforce.ai",
+    "url": "https://virtualworkforce.ai/email-assistant-for-solar-companies/",
+    "displayedUrl": "https://virtualworkforce.ai › email-assistant-for-solar-co...",
+    "description": "Streamline your solar business with a virtual AI assistant. Manage email campaigns, schedule appointments, billing and databases for solar ...",
+    "date": "2026-01-18T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "virtual AI assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Top 10 AI Tools for Solar Installation Businesses in 2026",
+    "websiteTitle": "QuoteIQ",
+    "url": "https://myquoteiq.com/top-10-ai-tools-for-solar-installation-businesses-in-2026/",
+    "displayedUrl": "https://myquoteiq.com › top-10-ai-tools-for-solar-install...",
+    "description": "Virtual Call Team — a 24/7 AI phone assistant that answers, qualifies leads, and books appointments so after-hours solar inquiries don't leak to a competitor.",
+    "emphasizedKeywords": [
+     "AI",
+     "assistant",
+     "solar"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "averageRating": 4.7,
+    "numberOfReviews": null,
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Enhancing Solar Assistant with AI for advanced data analysis",
+    "websiteTitle": "Facebook · Sol-Ark owners information network",
+    "url": "https://www.facebook.com/groups/902076940657887/posts/1797461101119462/",
+    "displayedUrl": "9 comments  ·  1 year ago",
+    "description": "There has been a lot of talk about Solar Assistant in this group. It is a real upgrade from Sol-Ark's app, but you can take it to the next level with ...",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "Libra Solar",
+    "websiteTitle": "LinkedIn · Libra Solar",
+    "url": "https://www.linkedin.com/company/librasolar",
+    "displayedUrl": "30+ followers",
+    "description": "Find people you know at Libra Solar. Browse recommended jobs for you. View all updates, news, and articles. Join now. Similar pages. Libra Energy. Wholesale.Read more",
+    "emphasizedKeywords": [
+     "Libra Energy"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "aiOverview": {
+   "type": "live",
+   "content": "Welcome! As an AI assistant specializing in the solar wholesale space, I am here to help you navigate products, technical details, and logistics related to Libra Energy, a leading full-service European wholesaler and distributor of sustainable energy solutions.Whether you are a professional PV installer, a commercial project developer, or an engineering partner, I can assist you with:Product Range & Inventory: Navigating their comprehensive catalog of high-quality, independently tested N-Type and all-black solar modules, hybrid inverters, energy storage systems, and EV charging solutions.Technical Advice & Quality Control: Providing details on layout design calculators, product training, or the rigorous quality inspections conducted by Libra's own Dutch Quality Control Team.Order & Installer Support: Helping you connect with the right department or finding resources in the new Libra Energy knowledge base for real-time stock levels, order histories, and upcoming training sessions.To help me give you the best possible assistance, how can I help you today? If you'd like to narrow things down, let me know:To help me give you the best possible assistance, how can I help you today? If you'd like to narrow things down, let me know:Are you looking for specific product specifications (e.g., solar panels, inverters, or battery storage)?Do you need assistance with technical support or layout design calculators for an upcoming project?Would you like information on how to access the Libra Energy webshop portal or check current stock levels?AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMore",
+   "sources": [
+    {
+     "url": "https://www.libra.energy/en/about-us",
+     "title": "About us | Libra Energy",
+     "description": "Company Overview: Libra Energy (founded 2007, part of Rensa Family) is a leading European importer, distributor, and full-service ..."
+    },
+    {
+     "url": "https://www.libra.energy/en/contact",
+     "title": "Please contact us",
+     "description": "Customer Support For advice about the right choice of products, questions about your orders and administrative queries, get in con..."
+    },
+    {
+     "url": "https://www.libra.energy/en/category/solar-modules",
+     "title": "Solar modules - Libra Energy",
+     "description": "Full-service wholesaler Direct advice from our specialists Unique quality checks on our products Categories Solar modules Inverter..."
+    }
+   ]
+  },
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "Mouser AI assistant OR chatbot site:mouser.com",
+   "url": "http://www.google.com/search?q=Mouser+AI+assistant+OR+chatbot+site%3Amouser.com&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=Mouser+AI+assistant+OR+chatbot+site%3Amouser.com&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "O",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Chatbots: Audio, AI, and Machine Learning",
+    "websiteTitle": "Mouser Electronics Australia",
+    "url": "https://au.mouser.com/en/applications/chatbots-audio-ai-and-machine-learning/?srsltid=AU7gw4U0z6rbb6-wcDWMD10Wyrn2NxsPt0N0-VRp8eMKuQesdVyoW0db",
+    "displayedUrl": "https://au.mouser.com › applications › chatbots-audio-ai...",
+    "description": "Chatbots combine audio technologies, AI, and machine learning by receiving sensor input—using algorithms to determine actionable insights, responding",
+    "emphasizedKeywords": [
+     "Chatbots combine audio technologies, AI, and machine learning"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "AtomS3R-AI Chatbot",
+    "websiteTitle": "Mouser Electronics",
+    "url": "https://lv.mouser.com/pdfDocs/1AtomS3R-AIChatbot.pdf",
+    "displayedUrl": "https://lv.mouser.com › pdfDocs › 1AtomS3R-AIChatbot",
+    "description": "This tutorial introduces how to build a personal voice assistant application with the AtomS3R + Atomic Echo Base hardware combo by flashing the.",
+    "emphasizedKeywords": [
+     "assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Engineering AI Daily - Mouser (Beta Version: 9.13.8.0)",
+    "websiteTitle": "Mouser Electronics",
+    "url": "https://www.mouser.com/empowering-innovation/engineering-ai-daily?utm_source=twitter&utm_medium=social&utm_campaign=eit2026-eai-en&srsltid=AU7gw4XQq1h-RKabqviZbb9oO3mDpCa4UVvWwtMklfRB3ZVOvaGYnh0Q",
+    "displayedUrl": "https://www.mouser.com › empowering-innovation › e...",
+    "description": "Mouser Presents Engineering AI for daily life from embedded intelligence to everyday tasks. Alexa, Siri, Google Assistant) summarization, translation, and ...",
+    "emphasizedKeywords": [
+     "Mouser Presents Engineering AI for daily life"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "The Elusive AI Personal Assistant | Bench Talk",
+    "websiteTitle": "Mouser Electronics Australia",
+    "url": "https://au.mouser.com/en/blog/elusive-ai-personal-assistant?srsltid=AU7gw4WEmVAkAnnN-niIAbt9T7zunyLM-CG77OFnQuPAxbdAtdruY7F4",
+    "displayedUrl": "https://au.mouser.com › blog › elusive-ai-personal-assist...",
+    "description": "No longer just a luxury, the AI personal assistant should be able to manage our inboxes, calendars, and calls while relaying the executive summary to us. While ...",
+    "emphasizedKeywords": [
+     "AI personal assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Build a Voice Assistant with TensorFlow Lite",
+    "websiteTitle": "Mouser Electronics",
+    "url": "https://www.mouser.com/en/applications/voice-assistant-tensorflow-lite/?srsltid=AU7gw4V6sdM1FiPbpRlEr5TyAc63Q-J_TNGYnx63baDDvKqPlS1lqnE0",
+    "displayedUrl": "https://www.mouser.com › applications › voice-assistant...",
+    "description": "In this project, we look at building a voice assistant with no need for an internet connection and can be used to control various types of ...",
+    "date": "2020-07-06T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "building a voice assistant with no need for an internet connection"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "M5Stack AtomS3R-AI & AtomS3R-CAM Chatbots",
+    "websiteTitle": "Mouser Electronics",
+    "url": "https://www.mouser.com/new/m5stack/m5stack-atoms3r-ai-cam-chatbots/",
+    "displayedUrl": "https://www.mouser.com › new › m5stack-atoms3r-ai-c...",
+    "description": "The AtomS3R-CAM and AtomS3R-AI chatbots support integration with XiaoZhi voice assistant, OpenAI voice assistant, and Volcengine voice assistant ...Read more",
+    "date": "2025-09-08T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "AI",
+     "assistant",
+     "assistant",
+     "assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "New Tech Tuesdays: Agent-Based AI: Rabbit r1 and ...",
+    "websiteTitle": "Mouser Electronics",
+    "url": "https://www.mouser.com/blog/new-tech-agent-based-ai-power-of-lams?srsltid=AU7gw4Uad4-P0bCDK97xJdqUtcemMWEBUw-vvLMalVr-2MGSEwU8Jpu4",
+    "displayedUrl": "https://www.mouser.com › blog › new-tech-agent-based...",
+    "description": "The rabbit r1 innovates the human-machine interface (HMI) by merging the functionality of voice assistants with the AI power of LLMs like ...Read more",
+    "date": "2024-02-27T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "AI"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "M5Stack AtomS3R-AI & AtomS3R-CAM Chatbots",
+    "websiteTitle": "Mouser Electronics Europe",
+    "url": "https://eu.mouser.com/ru/new/m5stack/m5stack-atoms3r-ai-cam-chatbots/",
+    "displayedUrl": "https://eu.mouser.com › new › m5...",
+    "description": "The AtomS3R-CAM and AtomS3R-AI chatbots support integration with XiaoZhi voice assistant, OpenAI voice assistant, and Volcengine voice assistant. Typical ...",
+    "emphasizedKeywords": [
+     "AI",
+     "assistant",
+     "assistant",
+     "assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "THE SMARTER EDGE",
+    "websiteTitle": "Mouser Electronics",
+    "url": "https://www.mouser.com/pdfdocs/Mouser-Methods-v2i3.pdf?srsltid=AU7gw4UfYAxBbmoaJotkv4D14TAufVPKS08Npqo0TKiq9uI31CSMoh6K",
+    "displayedUrl": "https://www.mouser.com › Mouser-Methods-v2i3",
+    "description": "a compelling platform for building AI processing into the more sophisticated edge systems in IoT applications. AI brings intelligence to devices to allow them ...",
+    "emphasizedKeywords": [
+     "a compelling platform for building AI processing"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Demystifying the Model Context Protocol | Bench Talk",
+    "websiteTitle": "Mouser Electronics",
+    "url": "https://www.mouser.com/blog/demystifying-model-context-protocol?srsltid=AU7gw4VQ1jl9Y4Zx1viq3vXR3kCORx3e6finnPmEZ7zPFFHp8Suxx1hP",
+    "displayedUrl": "https://www.mouser.com › blog › demystifying-model-...",
+    "description": "In this setup, the MCP host is the application that is integrating AI, such as an IDE, notebook, or enterprise assistant. The host includes ...Read more",
+    "date": "2025-06-12T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "AI",
+     "assistant"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "AI agent handoff summary site:support.zendesk.com",
+   "url": "http://www.google.com/search?q=AI+agent+handoff+summary+site%3Asupport.zendesk.com&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=AI+agent+handoff+summary+site%3Asupport.zendesk.com&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Managing conversation handoff and handback",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/4408824482586-Managing-conversation-handoff-and-handback",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 440882...",
+    "description": "Handoff is removing the AI agent as the conversation's first responder and making an agent the first responder.",
+    "emphasizedKeywords": [
+     "removing the AI agent as the conversation's first responder"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "About voice AI agents",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/10169333291290-About-voice-AI-agents",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 101693...",
+    "description": "The agent sees the AI-generated summary on the ticket to get instant context for a smooth handoff. The agent assists the caller and ends the call.",
+    "emphasizedKeywords": [
+     "AI-generated summary on the ticket"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Release notes through 2025-11-07",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/9932433464218-Release-notes-through-2025-11-07",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 993243...",
+    "description": "Zendesk ticket histories with AI summaries, sentiment, and key highlights, which helps them prioritize outreach, prep for renewals, and spot ...",
+    "date": "2025-11-07T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Zendesk ticket histories with AI summaries"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Understanding AI agent tickets for AI agent–only ...",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/9204149016346-Understanding-AI-agent-tickets-for-AI-agent-only-conversations",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 920414...",
+    "description": "AI agent tickets are tickets for conversations that were handled entirely by a messaging or voice AI agent or by a default messaging response,",
+    "emphasizedKeywords": [
+     "AI agent tickets"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "Creating and using custom agents in Zendesk (EAP)",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/10724438136858-Creating-and-using-custom-agents-in-Zendesk-EAP",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 107244...",
+    "description": "Summary: ◁▽. You can create custom AI agents using simple procedures, approved articles, and actions to automate specific support tasks.Read more",
+    "emphasizedKeywords": [
+     "Summary",
+     "AI agents"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "What's new in Zendesk: October 2026",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/11299475537306-What-s-new-in-Zendesk-October-2026",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 112994...",
+    "description": "A Knowledge reply for email AI agents is now available. The AI agent uses this reply when no relevant use case is detected. It searches your ...Read more",
+    "date": "2026-10-07T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "AI agents",
+     "AI agent"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Release notes through 2026-10-02",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/11323938137370-Release-notes-through-2026-10-02",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 113239...",
+    "description": "Shipped.ai is an AI support agent built specifically for ecommerce. It does not just answer the question and hand off. It resolves the ticket ...Read more",
+    "date": "2026-10-04T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Shipped.ai is an AI support agent built specifically for ecommerce"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "Zendesk Implementation Checklist for Startups",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/4408819815194-Zendesk-Implementation-Checklist-for-Startups",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 440881...",
+    "description": "Choose what your AI agent can handle, when it should hand off, and how it should sound. Start with writing assistance, ticket summaries, and intelligent triage ...",
+    "emphasizedKeywords": [
+     "Choose what your AI agent can handle, when it should hand off"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 8
+   },
+   {
+    "title": "Understanding custom agents and turning on the ...",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/10724212443802-Understanding-custom-agents-and-turning-on-the-agent-builder-EAP",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 107242...",
+    "description": "Custom agents are AI agents that work behind the scenes to automate complex, multi-system tasks and help resolve customer issues. Admins can use the agent ...Read more",
+    "emphasizedKeywords": [
+     "Custom agents are AI agents"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 9
+   },
+   {
+    "title": "Routing messaging tickets and notifying agents",
+    "websiteTitle": "Zendesk help",
+    "url": "https://support.zendesk.com/hc/en-us/articles/4408829019162-Routing-messaging-tickets-and-notifying-agents",
+    "displayedUrl": "https://support.zendesk.com › en-us › articles › 440882...",
+    "description": "... AI agent configuration will hand off the conversation to a live agent. This creates a ticket associated with that conversation. These events can be preceded ...Read more",
+    "emphasizedKeywords": [
+     "AI agent configuration will hand off the conversation to a live agent"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 10
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ },
+ {
+  "searchQuery": {
+   "term": "site:nngroup.com chat pop-up proactive",
+   "url": "http://www.google.com/search?q=site%3Anngroup.com+chat+pop-up+proactive&gl=us&hl=en",
+   "device": "DESKTOP",
+   "page": 1,
+   "type": "SEARCH",
+   "domain": "google.com",
+   "countryCode": "US",
+   "languageCode": "en",
+   "locationUule": null,
+   "resultsPerPage": 10
+  },
+  "url": "http://www.google.com/search?q=site%3Anngroup.com+chat+pop-up+proactive&gl=us&hl=en",
+  "hasNextPage": true,
+  "serpProviderCode": "OX",
+  "relatedQueries": [],
+  "paidResults": [],
+  "paidProducts": [],
+  "organicResults": [
+   {
+    "title": "Cancel vs Close: Design to Distinguish the Difference",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/cancel-vs-close/",
+    "displayedUrl": "https://www.nngroup.com › articles › cancel-vs-close",
+    "description": "When a popup takes over the majority of your screen, hitting the X button serves to both close that modal and perhaps cancel any process it ...",
+    "date": "2019-09-01T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "popup"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 1
+   },
+   {
+    "title": "About Us Sections",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://media.nngroup.com/media/reports/free/Presenting_Company_Information_on_Corporate_Websites_3rd_Edition.pdf",
+    "displayedUrl": "https://media.nngroup.com › media › reports › free",
+    "description": "“I usually find that the chat pops up around pricing stuff; More often than not, I am going to ignore that. I want to get all of the information I need first ...Read more",
+    "emphasizedKeywords": [
+     "chat pops up around pricing stuff"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 2
+   },
+   {
+    "title": "Designing for Young Adults (Ages 18–25)",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://media.nngroup.com/media/reports/free/Designing_for_Young_Adults_3rd_Edition.pdf",
+    "displayedUrl": "https://media.nngroup.com › media › reports › free",
+    "description": "Avoid presenting important content using pop-ups. Pop-ups are generally associated with advertising or distracting, less important information.",
+    "date": "2024-02-26T12:00:00.000Z",
+    "emphasizedKeywords": [
+     "Avoid presenting important content using pop-ups"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 3
+   },
+   {
+    "title": "Intranet Portals: UX Design Experience from Real-Life ...",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://media.nngroup.com/media/reports/free/Intranet_Portals-_UX_Design_Experience_from_Real-Life_Projects.pdf",
+    "displayedUrl": "https://media.nngroup.com › media › reports › free",
+    "description": "This is the pop-up for a team member's profile. Here users can view an employees name, contact details, job title, brief profile or job description and to whom ...",
+    "emphasizedKeywords": [
+     "pop",
+     "up"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 4
+   },
+   {
+    "title": "UX & Usability Articles from Nielsen Norman Group - NN/G",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://www.nngroup.com/articles/",
+    "displayedUrl": "https://www.nngroup.com › articles",
+    "description": "Research-based articles about user experience (UX), interaction design, web usability, user testing, and UI/GUI design by Nielsen Norman Group",
+    "emphasizedKeywords": [],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 5
+   },
+   {
+    "title": "Intranet Design Annual The Best Intranets of 2008",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://media.nngroup.com/media/reports/free/Intranet_Design_Annual_2008.pdf",
+    "displayedUrl": "https://media.nngroup.com › media › reports › free",
+    "description": "The question is repeated in a pop-up window, as is the user's answer. A bar chart quantifies all the answers. Page 253. Ten Best Intranets: Ministry of ...",
+    "emphasizedKeywords": [
+     "pop",
+     "up"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 6
+   },
+   {
+    "title": "Intranet Design Annual 2019",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://media.nngroup.com/media/reports/free/Intranet_Design_Annual_2019.pdf",
+    "displayedUrl": "https://media.nngroup.com › media › reports › free",
+    "description": "Websites, email, phone, and chat options to help users with various health topics appear in the Contact card in the lower right of the ...",
+    "emphasizedKeywords": [
+     "chat"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "type": "organic",
+    "position": 7
+   },
+   {
+    "title": "User Experience Careers",
+    "websiteTitle": "Nielsen Norman Group",
+    "url": "https://media.nngroup.com/media/reports/free/User_Experience_Careers.pdf",
+    "displayedUrl": "https://media.nngroup.com › media › reports › free",
+    "description": "by S Farrell · Cited by 14 — How to Become a UX Pro, and How to Hire. Skype (VOIP client, voice, chat, video chat, screensharing) Skype (VOIP client, voice, chat, video chat, screensharing)",
+    "emphasizedKeywords": [
+     "chat",
+     "chat",
+     "chat",
+     "chat"
+    ],
+    "siteLinks": [],
+    "productInfo": {},
+    "personalInfo": {
+     "rawText": "by S Farrell · Cited by 14 — How to Become a UX Pro, and How to Hire. Skype (VOIP client, voice, chat, video chat, screensharing) Skype (VOIP client, voice, chat, video chat, screensharing)"
+    },
+    "type": "organic",
+    "position": 8
+   }
+  ],
+  "suggestedResults": [],
+  "peopleAlsoAsk": [],
+  "customData": null
+ }
+]
