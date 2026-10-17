@@ -1,0 +1,46 @@
+/* PROTOTYPE · map #220 · ticket #249 — throwaway. Follows the site's Genie dock: white, navy text, teal action. */
+.lpp { position: fixed; right: 20px; bottom: 84px; z-index: 100040; font-family: Inter, "Plus Jakarta Sans", Arial, sans-serif; color: #172636; opacity: 0; transform: translateY(8px); transition: opacity .25s ease, transform .25s ease; }
+.lpp.is-in { opacity: 1; transform: none; }
+.lpp[hidden] { display: none; }
+.lpp-mark { color: #087c73; font-size: 14px; }
+.lpp-head { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 650; color: #0b1f33; }
+.lpp-head > span:not(.lpp-mark) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lpp-close { border: 0; background: transparent; color: #5f6b7c; font-size: 20px; line-height: 1; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; flex: none; }
+.lpp-close:hover { background: #f1f4f6; color: #172636; }
+.lpp-title { margin: 8px 0 2px; font-size: 15px; font-weight: 650; line-height: 1.35; }
+.lpp-lead { margin: 0 0 10px; font-size: 12.5px; color: #5f6b7c; line-height: 1.45; }
+.lpp-chips { display: flex; flex-direction: column; gap: 6px; }
+.lpp-chip { text-align: left; border: 1px solid #dfe7ec; background: #fff; color: #172636; border-radius: 10px; padding: 8px 12px; font-family: inherit; font-size: 13px; font-weight: 500; line-height: 1.35; cursor: pointer; }
+.lpp-chip:hover, .lpp-row:hover, .lpp-tile:hover { border-color: #087c73; color: #087c73; }
+.lpp-ai { margin: 10px 0 0; font-size: 11px; color: #8a96a3; }
+
+/* A — peek card above the Genie button */
+.lpp--A { width: 320px; background: #fff; border: 1px solid #e1e6e9; border-radius: 16px; padding: 12px 14px 12px; box-shadow: 0 18px 50px rgba(18, 34, 56, .16), 0 3px 10px rgba(18, 34, 56, .08); }
+
+/* B — one-line bubble next to the Genie button; click expands */
+.lpp--B { right: 84px; bottom: 28px; max-width: 420px; }
+.lpp-bubble { display: flex; align-items: center; gap: 4px; background: #fff; border: 1px solid #e1e6e9; border-radius: 999px; padding: 4px 4px 4px 14px; box-shadow: 0 10px 28px rgba(18, 34, 56, .16); }
+.lpp-bubble__text { border: 0; background: none; font-family: inherit; font-size: 13.5px; font-weight: 600; color: #172636; cursor: pointer; text-align: left; padding: 6px 0; }
+.lpp-bubble__cta { color: #087c73; margin-left: 6px; white-space: nowrap; }
+.lpp-more { margin-bottom: 8px; background: #fff; border: 1px solid #e1e6e9; border-radius: 14px; padding: 10px; box-shadow: 0 10px 28px rgba(18, 34, 56, .12); display: flex; flex-direction: column; gap: 6px; }
+.lpp--B.is-open { display: flex; flex-direction: column-reverse; }
+.lpp--B.is-open .lpp-more { margin: 0 0 8px; }
+
+/* C — richer context card */
+.lpp--C { width: 360px; background: #fff; border: 1px solid #e1e6e9; border-radius: 18px; padding: 12px 14px 12px; box-shadow: 0 22px 60px rgba(18, 34, 56, .18), 0 3px 10px rgba(18, 34, 56, .08); }
+.lpp-img { display: block; width: 100%; height: 120px; object-fit: contain; background: #f6f8f9; border-radius: 12px; margin: 10px 0 8px; }
+.lpp-rows { display: flex; flex-direction: column; margin-top: 8px; border-top: 1px solid #eef1f3; }
+.lpp-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; text-align: left; border: 0; border-bottom: 1px solid #eef1f3; background: none; padding: 10px 2px; font-family: inherit; font-size: 13.5px; font-weight: 500; color: #172636; cursor: pointer; }
+.lpp-row span { color: #087c73; }
+.lpp-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.lpp-tile { border: 1px solid #dfe7ec; background: #f8faf9; border-radius: 12px; padding: 14px 10px; font-family: inherit; font-size: 13px; font-weight: 600; color: #172636; cursor: pointer; text-align: left; min-height: 64px; }
+
+/* phones: only a badge on the Genie button */
+.linker-genie-open.lpp-badged { position: relative; }
+.linker-genie-open.lpp-badged::after { content: '1'; position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; border-radius: 9px; background: #d63638; color: #fff; font: 700 11px/18px Arial, sans-serif; text-align: center; box-shadow: 0 0 0 2px #fff; }
+
+/* prototype chrome */
+.lpp-switcher { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 100100; background: #1d2327; color: #fff; border-radius: 999px; padding: 6px 8px; display: flex; gap: 10px; align-items: center; box-shadow: 0 8px 24px rgba(0, 0, 0, .35); font: 12.5px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: calc(100vw - 24px); }
+.lpp-switcher button { background: #3c434a; color: #fff; border: 0; border-radius: 999px; min-width: 30px; height: 30px; cursor: pointer; font-size: 13px; padding: 0 10px; }
+.lpp-status { color: #c3c4c7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 360px; }
+@media (max-width: 600px) { .lpp-status { display: none; } }
