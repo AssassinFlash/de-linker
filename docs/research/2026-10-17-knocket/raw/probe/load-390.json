@@ -1,0 +1,168 @@
+{
+ "page_url": "http://127.0.0.1:8765/index.html",
+ "viewport": [
+  390,
+  844
+ ],
+ "fetched_utc": "2026-10-17T08:21:16Z",
+ "body_style_before": "Georgia, serif|18px|40px",
+ "body_style_after": "Georgia, serif|18px|40px",
+ "state": {
+  "headLinks": [
+   "<style>body{font-family:Georgia,serif;font-size:18px;margin:40px;background:#fafafa}</style>",
+   "<link rel=\"stylesheet\" href=\"https://trtc.io/knocket-sdk/sdk.css\">"
+  ],
+  "bodyChildren": [
+   "H1#.",
+   "P#.",
+   "SCRIPT#.",
+   "DIV#contact-widget-auto.contact-widget-auto"
+  ],
+  "localStorageKeys": [
+   "TIM_20032564_f145fd3b67d64f4704_vis_web_005bc32d01_profile",
+   "tim_error_assistance",
+   "visitorId-f145fd3b67d64f4704",
+   "imUserInfo-f145fd3b67d64f4704"
+  ],
+  "cookie": "",
+  "widgetText": "\n    /* Contact Widget Shadow DOM Styles */\n    .contact-widget-container {\n      width: 100%;\n      height: 100%;\n    }\n    .contact-widget-auto {\n      z-index: 999;\n    }\n    \n    /* 样式隔离和重置 */\n    ...<truncated: shadow-DOM style text>"
+ },
+ "cookies": [],
+ "websockets": [
+  {
+   "url": "wss://20032564w4s.my-imcloud.com/binfo",
+   "query_keys": [
+    "sdkappid",
+    "instanceid",
+    "random",
+    "platform",
+    "host",
+    "version",
+    "sdkversion",
+    "compress"
+   ]
+  }
+ ],
+ "requests": [
+  {
+   "t": 1792225259.823,
+   "method": "GET",
+   "url": "http://127.0.0.1:8765/index.html",
+   "type": "document"
+  },
+  {
+   "t": 1792225259.826,
+   "method": "GET",
+   "url": "https://trtc.io/knocket-sdk/sdk.js?identifier=f145fd3b67d64f4704&v=1792224006909",
+   "type": "script"
+  },
+  {
+   "t": 1792225263.879,
+   "method": "GET",
+   "url": "https://trtc.io/knocket-sdk/sdk.css",
+   "type": "stylesheet"
+  },
+  {
+   "t": 1792225263.883,
+   "method": "POST",
+   "url": "https://api.trtc.io/common/portal-api-lc",
+   "type": "fetch",
+   "post": "{\"Action\":\"ModifyTenantWidgetStatus\",\"Data\":{\"identifier\":\"f145fd3b67d64f4704\",\"type\":\"widget\",\"host\":\"http://127.0.0.1:8765/index.html\"}}"
+  },
+  {
+   "t": 1792225263.887,
+   "method": "POST",
+   "url": "https://api.trtc.io/common/portal-api-lc",
+   "type": "fetch",
+   "post": "{\"Action\":\"DescribeWidgetUiVersion\",\"Data\":{\"identifier\":\"f145fd3b67d64f4704\"}}"
+  },
+  {
+   "t": 1792225263.887,
+   "method": "POST",
+   "url": "https://api.trtc.io/common/portal-api-lc",
+   "type": "fetch",
+   "post": "{\"Action\":\"DescribeContactFormState\",\"Data\":{\"identifier\":\"f145fd3b67d64f4704\",\"visitorId\":\"web_005bc32d01\"}}"
+  },
+  {
+   "t": 1792225263.887,
+   "method": "POST",
+   "url": "https://api.trtc.io/common/portal-api-lc",
+   "type": "fetch",
+   "post": "{\"Action\":\"DescribeWidgetConfig\",\"Data\":{\"identifier\":\"f145fd3b67d64f4704\"}}"
+  },
+  {
+   "t": 1792225263.887,
+   "method": "POST",
+   "url": "https://api.trtc.io/common/portal-api-lc",
+   "type": "fetch",
+   "post": "{\"Action\":\"CreateVisitor\",\"Data\":{\"identifier\":\"f145fd3b67d64f4704\",\"visitorId\":\"web_005bc32d01\",\"type\":\"tenant\"}}"
+  },
+  {
+   "t": 1792225263.887,
+   "method": "GET",
+   "url": "https://api.trtc.io/common/portal-live-chat-events?identifier=f145fd3b67d64f4704&visitorId=web_005bc32d01&afterCursor=0",
+   "type": "eventsource"
+  },
+  {
+   "t": 1792225267.447,
+   "response_for": "https://api.trtc.io/common/portal-api-lc",
+   "status": 200,
+   "body": "{\"code\":0,\"data\":{\"code\":0,\"requestId\":\"JPoZXpGxgIeNMk9T\",\"data\":{\"UseNewUi\":true}},\"message\":\"ok\",\"requestId\":\"92dd2916-4190-486f-8153-f39e37b04d8e\"}"
+  },
+  {
+   "t": 1792225267.447,
+   "response_for": "https://api.trtc.io/common/portal-api-lc",
+   "status": 200,
+   "body": "{\"code\":0,\"data\":{\"code\":0,\"requestId\":\"SW0hcyeeIYoYMxjG\",\"data\":{\"Identifier\":\"f145fd3b67d64f4704\",\"Data\":{\"faqs\":{\"items\":[],\"enabled\":false},\"heading\":\"Welcome👋\",\"logoUrl\":\"https://trtc.io/contact-widget/images/1509062458/de-linker-logo-300x300.png\",\"greeting\":\"Hello. How can I help you today?\",\"language\":\"en\",\"timezone\":\"UTC+08:00\",\"yourName\":\"Assistant\",\"timeRanges\":[{\"id\":\"1\",\"endTime\":\"21:00\",\"dateLabel\":[1,5],\"startTime\":\"09:00\"}],\"bookMeeting\":{\"url\":\"\",\"enabled\":false},\"buttonStyle\":\"icon\",\"description\":\"How can we help you today?\",\"socialMedia\":{\"enabled\":false,\"telegram\":\"\",\"whatsapp\":\"\",\"instagram\":\"\",\"messenger\":\"\"},\"primaryColor\":\"#1C66E5\",\"availableTime\":\"always\",\"offlineMessage\":\"We are currently offline. Please leave a message, and we'll reply shortly.\",\"visitorInfoCollection\":{\"fields\":{\"name\":{\"enabled\":true,\"required\":false},\"email\":{\"enabled\":true,\"required\":true},\"phone\":{\"enabled\":true,\"required\":false},\"message\":{\"enabled\":true,\"required\":false}},\"contactFormTiming\":\"off\"}},\"UpdatedAt\":\"2026-10-17T08:00:06.135Z\"}},\"message\":\"ok\",\"requestId\":\"f7f215e2-d2f2-4ced-bf77-88b18191c7ab\"}"
+  },
+  {
+   "t": 1792225267.47,
+   "response_for": "https://api.trtc.io/common/portal-api-lc",
+   "status": 200,
+   "body": "{\"code\":0,\"data\":{\"code\":0,\"requestId\":\"cm3CfEkMcVTlrwem\",\"data\":{\"Status\":\"idle\",\"TakeoverBy\":null,\"HumanRouteSource\":null,\"Mode\":\"off\",\"RequiredFields\":[\"email\"],\"ContactComplete\":false,\"AiActive\":false,\"AiCapabilityAvailable\":false,\"HumanAvailable\":true,\"LastVisibleMessageAt\":null,\"InactiveExpiresAt\":null,\"Bot\":null,\"ShouldShowForm\":false,\"Presentation\":{\"revision\":0,\"status\":\"idle\",\"takeoverBy\":null,\"humanRouteSource\":null,\"humanAvailable\":true,\"AiActive\":false,\"aiCapabilityAvailable\":false,\"bot\":null,\"contactForm\":{\"mode\":\"off\",\"shouldShow\":false,\"blocking\":false,\"placement\":null,\"requiredFields\":[\"email\"],\"submitted\":false},\"lastVisibleMessageAt\":null,\"inactiveExpiresAt\":null}}},\"message\":\"ok\",\"requestId\":\"b6b96e2a-3b79-4dab-80c4-ec1c649f1f25\"}"
+  },
+  {
+   "t": 1792225267.846,
+   "response_for": "https://api.trtc.io/common/portal-api-lc",
+   "status": 200,
+   "body": "{\"code\":0,\"data\":{\"code\":0,\"requestId\":\"uYXFWDRHxCk03Dls\",\"data\":{\"success\":true}},\"message\":\"ok\",\"requestId\":\"59bd4ba0-f41a-4b7f-8844-df2975bb01bb\"}"
+  },
+  {
+   "t": 1792225268.014,
+   "method": "POST",
+   "url": "https://api.trtc.io/common/portal-api-lc",
+   "type": "fetch",
+   "post": "{\"Action\":\"DescribeUserSig\",\"Data\":{\"identifier\":\"f145fd3b67d64f4704\",\"visitorId\":\"web_005bc32d01\",\"type\":\"tenant\"}}"
+  },
+  {
+   "t": 1792225268.015,
+   "response_for": "https://api.trtc.io/common/portal-api-lc",
+   "status": 200,
+   "body": "{\"code\":0,\"data\":{\"code\":0,\"requestId\":\"Tf3J0b3kNzHgi0yB\",\"data\":{\"visitor\":{\"id\":201477,\"visitorId\":\"web_005bc32d01\",\"imUserId\":\"f145fd3b67d64f4704_vis_web_005bc32d01\",\"nickname\":\"web_005bc32d01\",\"isNew\":true},\"im\":{\"userCreated\":true}}},\"message\":\"ok\",\"requestId\":\"c0b868b5-2835-4571-b4eb-c0d429bbf2c9\"}"
+  },
+  {
+   "t": 1792225269.995,
+   "method": "GET",
+   "url": "blob:http://127.0.0.1:8765/494e8174-8adf-4218-9c7e-a5dbe9c5484e",
+   "type": "script"
+  },
+  {
+   "t": 1792225269.999,
+   "method": "GET",
+   "url": "blob:http://127.0.0.1:8765/c29f6aa1-0a20-45e8-a644-abd6e9b2dc3a",
+   "type": "script"
+  },
+  {
+   "t": 1792225270.007,
+   "method": "GET",
+   "url": "https://web.sdk.qcloud.com/im/download/error-message/v3/0.0.7/tim-error-message.txt",
+   "type": "xhr"
+  },
+  {
+   "t": 1792225270.011,
+   "response_for": "https://api.trtc.io/common/portal-api-lc",
+   "status": 200,
+   "body": "{\"code\":0,\"data\":{\"code\":0,\"requestId\":\"TmPR1XVZOWdvmOzK\",\"data\":{\"sdkAppId\":20032564,\"imUserId\":\"f145fd3b67d64f4704_vis_web_005bc32d01\",\"userSig\":\"<redacted>\",\"adminImUserId\":\"f145fd3b67d64f4704_adm\"}},\"message\":\"ok\",\"requestId\":\"2cef3636-618e-4e59-ae3e-4c5b5d26a91f\"}"
+  }
+ ]
+}
