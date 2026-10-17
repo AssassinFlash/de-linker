@@ -1,14 +1,14 @@
 /**
  * Prices follow the account in Genie (#242, docs/specs/13-genie.md 目标 8).
  *
- * On the SAJ H2-10K-T3's product page, an approved partner account and a guest
- * ask Genie what the product costs, in English and in German, at 1440 and 390
- * px. The card's price line must be the product page's own: the approved
- * account reads the page's net price word for word, the guest reads the page's
- * sign-in sentence and no amount. With LINKER_ACCEPTANCE_DIR set, each card is
+ * On the SAJ H2-10K-T3's product page, an approved, a pending and a restricted
+ * account and a guest ask Genie what the product costs, in English and in
+ * German, at 1440 and 390 px. The card's price line must be the product page's
+ * own: the approved account reads the page's net price word for word, the
+ * others the page's own sentence and no amount. With LINKER_ACCEPTANCE_DIR set, each card is
  * photographed there (docs/acceptance/2026-10-18/242/).
  *
- * The approved account is made for the run and removed afterwards.
+ * The three accounts are made for the run and removed afterwards.
  */
 
 /**
@@ -28,29 +28,45 @@ const QUESTION = {
 	en: 'What does the SAJ H2-10K-T3 cost?',
 	de: 'Was kostet der SAJ H2-10K-T3?',
 } as const;
-// The product page's sentence where a guest's price would be (ProductView).
-const GUEST_LINE = {
-	en: 'Net price after partner sign-in',
-	de: 'Nettopreis nach Partner-Anmeldung',
+// The product page's sentence where the price would be (ProductView), for the
+// accounts that see none.
+const LINES = {
+	guest: {
+		en: 'Net price after partner sign-in',
+		de: 'Nettopreis nach Partner-Anmeldung',
+	},
+	pending: { en: 'Prices after approval', de: 'Preise nach Freigabe' },
+	restricted: {
+		en: 'Not available for your account',
+		de: 'Für Ihr Konto nicht verfügbar',
+	},
 } as const;
+const STATES = ['approved', 'pending', 'restricted'] as const;
+type Signed = (typeof STATES)[number];
 
-let approved = '';
-let approvedId = 0;
+// The accounts of this run, by state: made for it and removed afterwards.
+const accounts = {} as Record<Signed, { email: string; id: number }>;
 
 test.beforeAll(() => {
-	approved = `genie-prices-e2e-${Date.now()}@example.test`;
-	approvedId = Number(
-		wp([
-			'eval',
-			`$id = wp_insert_user( array( 'user_login' => '${approved}', 'user_email' => '${approved}', 'user_pass' => wp_generate_password(), 'role' => 'customer' ) );` +
-				`update_user_meta( $id, 'linker_approval_status', 'approved' ); echo $id;`,
-		]).trim()
-	);
+	for (const state of STATES) {
+		const email = `genie-prices-e2e-${state}-${Date.now()}@example.test`;
+		const id = Number(
+			wp([
+				'eval',
+				`$id = wp_insert_user( array( 'user_login' => '${email}', 'user_email' => '${email}', 'user_pass' => wp_generate_password(), 'role' => 'customer' ) );` +
+					`update_user_meta( $id, 'linker_approval_status', '${state}' ); echo $id;`,
+			]).trim()
+		);
+		accounts[state] = { email, id };
+	}
 });
 
 test.afterAll(() => {
-	if (approvedId > 0) {
-		wp(['user', 'delete', String(approvedId), '--yes']);
+	const ids = Object.values(accounts)
+		.map((account) => account.id)
+		.filter((id) => id > 0);
+	if (ids.length > 0) {
+		wp(['user', 'delete', ...ids.map(String), '--yes']);
 	}
 });
 
@@ -86,7 +102,7 @@ async function askGenie(page: Page, question: string): Promise<void> {
 
 for (const lang of ['en', 'de'] as const) {
 	for (const width of [1440, 390]) {
-		for (const who of ['approved', 'guest'] as const) {
+		for (const who of [...STATES, 'guest'] as const) {
 			test(`${who} · ${lang} · ${width}: the card's price line is the product page's`, async ({
 				page,
 			}) => {
@@ -95,14 +111,14 @@ for (const lang of ['en', 'de'] as const) {
 					width,
 					height: width > 500 ? 900 : 844,
 				});
-				if ('approved' === who) {
+				if ('guest' !== who) {
 					// Each row starts a new conversation: the account's earlier
 					// thread would otherwise be restored with its own card.
 					wp([
 						'eval',
-						`foreach ( get_posts( array( 'post_type' => 'linker_conversation', 'author' => ${approvedId}, 'numberposts' => -1, 'post_status' => 'any', 'fields' => 'ids' ) ) as $id ) { wp_delete_post( $id, true ); }`,
+						`foreach ( get_posts( array( 'post_type' => 'linker_conversation', 'author' => ${accounts[who].id}, 'numberposts' => -1, 'post_status' => 'any', 'fields' => 'ids' ) ) as $id ) { wp_delete_post( $id, true ); }`,
 					]);
-					await page.goto(loginLink(undefined, approved));
+					await page.goto(loginLink(undefined, accounts[who].email));
 				}
 				await page.goto(`${instance().url}${productPath(lang)}`);
 				const onPage = await pagePrice(page);
@@ -125,8 +141,9 @@ for (const lang of ['en', 'de'] as const) {
 					expect(onCard).toMatch(/1[.,]680/);
 					await expect(line).toHaveClass(/linker-card__price--net/);
 				} else {
-					expect(onCard).toBe(GUEST_LINE[lang]);
-					expect(onPage).toBe(GUEST_LINE[lang]);
+					expect(onCard).toBe(LINES[who][lang]);
+					expect(onPage).toBe(LINES[who][lang]);
+					await expect(line).toHaveClass(/linker-card__price--note/);
 					expect(
 						await page.locator('.linker-genie-app').innerText(),
 						'no amount anywhere in the conversation'
