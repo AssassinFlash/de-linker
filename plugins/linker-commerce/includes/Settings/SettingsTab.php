@@ -107,6 +107,15 @@ final class SettingsTab {
 				'autoload'    => false,
 			),
 			array(
+				'title'       => __( 'Sender email', 'linker-commerce' ),
+				'desc'        => __( 'Internal notifications use this address with the sender name Linker. Customer emails use the WooCommerce sender settings.', 'linker-commerce' ),
+				'id'          => Options::NOTIFY_FROM,
+				'type'        => 'email',
+				'default'     => Options::DEFAULT_NOTIFY_FROM,
+				'placeholder' => Options::DEFAULT_NOTIFY_FROM,
+				'autoload'    => false,
+			),
+			array(
 				'title'    => __( 'Blind copies', 'linker-commerce' ),
 				'desc'     => __( 'One address per line.', 'linker-commerce' ),
 				'id'       => Options::NOTIFY_BCC,

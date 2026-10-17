@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Abilities\HandoffTeam;
 use Linker\Commerce\Contact\Emails\TeamMessageEmail;
+use Linker\Commerce\Contact\Emails\ReceiptEmail;
 use Linker\Commerce\Contact\Form;
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Digest\Module as DigestModule;
@@ -58,7 +59,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		// The email classes extend WC_Email, which WooCommerce loads with its mailer.
 		WC()->mailer();
 		$saved = array();
-		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_BCC, Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
+		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, TeamMessageEmail::ID, 'linker_digest' ) as $id ) {
@@ -79,6 +80,9 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		// the copy address the owner keeps once it is shown to arrive.
 		delete_option( Options::TEAM_TO );
 		delete_option( Options::NOTIFY_TO );
+		delete_option( Options::NOTIFY_FROM );
+		update_option( 'woocommerce_email_from_name', 'Linker' );
+		update_option( 'woocommerce_email_from_address', self::PUBLIC );
 		update_option( Options::NOTIFY_BCC, 'copy-' . self::tag() . '@example.test' );
 		foreach ( array_keys( $saved ) as $name ) {
 			if ( str_starts_with( $name, 'woocommerce_linker_' ) ) {
@@ -93,10 +97,17 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	/**
 	 * New customer, VAT check, new inquiry, contact form message, daily
 	 * digest and health alert: each is one queued message To the internal
-	 * address with the blind copy, sent from the team mailbox, and none of
+	 * address with the blind copy, sent from the internal sender, and none of
 	 * them names sales@de-linker.com as a recipient.
+	 *
+	 * @testWith ["", "sales@sunriverinverter.com"]
+	 *           ["alerts@example.test", "alerts@example.test"]
+	 *
+	 * @param string $saved_from Saved internal sender (empty uses the default).
+	 * @param string $from       Expected sender, independently of To.
 	 */
-	public function test_every_internal_notification_goes_to_the_internal_address_only(): void {
+	public function test_every_internal_notification_goes_to_the_internal_address_only( string $saved_from, string $from ): void {
+		update_option( Options::NOTIFY_FROM, $saved_from );
 		$bcc    = 'Bcc: ' . get_option( Options::NOTIFY_BCC );
 		$marker = self::newest_mail_job();
 		$plugin = WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php';
@@ -122,6 +133,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		);
 		$this->assertInstanceOf( Submission::class, $submission );
 		( new TeamMessageEmail( $plugin, new Options() ) )->notify( $submission );
+		( new ReceiptEmail( $plugin ) )->notify( $submission );
 		( new DigestModule( $plugin, new JobStore() ) )->run();
 		$this->later(
 			static function (): void {
@@ -154,13 +166,22 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 			$this->assertSame( array( self::INTERNAL ), $matching[0]['to'], "{$subject} goes to the internal address alone." );
 			$this->assertContains( $bcc, $matching[0]['headers'], "{$subject} carries the blind copy of the settings." );
 			$this->assertStringNotContainsString( self::PUBLIC, implode( "\n", array_filter( $matching[0]['headers'], static fn ( string $line ): bool => 0 !== stripos( $line, 'From:' ) ) ), "{$subject} names sales@de-linker.com in no recipient header." );
-			$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $matching[0]['headers'], "{$subject} is sent from WooCommerce's email sender, the team mailbox." );
+			$this->assertContains( 'From: Linker <' . $from . '>', $matching[0]['headers'], "{$subject} is sent from the internal sender." );
+			if ( str_starts_with( $subject, 'New customer:' ) || str_starts_with( $subject, 'VAT check changed:' ) || str_starts_with( $subject, 'New inquiry #' ) ) {
+				$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $matching[0]['headers'], 'Replies still go to the customer.' );
+			} elseif ( str_starts_with( $subject, 'New message from ' ) ) {
+				$this->assertContains( 'Reply-to: Maria Beispiel <' . $submission->email . '>', $matching[0]['headers'], 'Replies still go to the visitor.' );
+			}
 		}
 
 		$receipt = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $customer->get_billing_email() ) === $row['to'] ) );
 		$this->assertNotSame( array(), $receipt, 'The customer got their own receipt of the inquiry.' );
 		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'], 'Customer mail is sent from the team mailbox.' );
 		$this->assertStringNotContainsString( self::INTERNAL, implode( "\n", $receipt[0]['headers'] ), 'Customer mail never names the internal address.' );
+		$contact_receipt = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $submission->email ) === $row['to'] ) );
+		$this->assertCount( 1, $contact_receipt );
+		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $contact_receipt[0]['headers'], 'Contact receipts keep WooCommerce\'s sender after the internal notification.' );
+		$this->assertContains( 'Reply-to: Linker <' . self::PUBLIC . '>', $contact_receipt[0]['headers'], 'Customer replies still go to WooCommerce\'s sender.' );
 	}
 
 	/**

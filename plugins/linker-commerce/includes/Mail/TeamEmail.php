@@ -71,6 +71,25 @@ abstract class TeamEmail extends WC_Email {
 	public function restore_locale(): void {}
 
 	/**
+	 * Internal mail uses its own sender; WC_Email installs these getters as
+	 * wp_mail filters while sending, and Outbox persists their values (#286).
+	 *
+	 * @param string $from_name Sender name passed by WordPress.
+	 */
+	public function get_from_name( $from_name = '' ) {
+		return 'Linker';
+	}
+
+	/**
+	 * The internal sender address, independent of WooCommerce's customer mail.
+	 *
+	 * @param string $from_email Sender address passed by WordPress.
+	 */
+	public function get_from_address( $from_email = '' ) {
+		return $this->options->notify_from();
+	}
+
+	/**
 	 * Content type, the reply address (the customer) and the blind copies.
 	 */
 	public function get_headers() {

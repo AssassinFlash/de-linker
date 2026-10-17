@@ -36,9 +36,10 @@ final class NewCustomerEmailTest extends TestCase {
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 		$this->options(
 			array(
-				Options::TEAM_TO    => 'sales@de-linker.com',
-				Options::NOTIFY_BCC => "one@example.test\ntwo@example.test",
-				'WPLANG'            => '',
+				Options::TEAM_TO     => 'sales@de-linker.com',
+				Options::NOTIFY_FROM => 'alerts@example.test',
+				Options::NOTIFY_BCC  => "one@example.test\ntwo@example.test",
+				'WPLANG'             => '',
 			)
 		);
 		WP_Mock::userFunction(
@@ -74,6 +75,8 @@ final class NewCustomerEmailTest extends TestCase {
 		$this->assertSame( 'linker_new_customer', $email->id );
 		$this->assertSame( '/plugin/templates/', $email->template_base );
 		$this->assertFalse( $email->is_customer_email() );
+		$this->assertSame( 'Linker', $email->get_from_name() );
+		$this->assertSame( 'alerts@example.test', $email->get_from_address() );
 
 		WP_Mock::userFunction(
 			'get_userdata',

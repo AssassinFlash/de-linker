@@ -63,6 +63,24 @@ final class TeamMessageEmail extends ContactEmail {
 	}
 
 	/**
+	 * Internal notifications identify the sender as Linker (#286).
+	 *
+	 * @param string $from_name Sender name passed by WordPress.
+	 */
+	public function get_from_name( $from_name = '' ) {
+		return 'Linker';
+	}
+
+	/**
+	 * WC_Email applies this address while sending; Outbox preserves it for retries.
+	 *
+	 * @param string $from_email Sender address passed by WordPress.
+	 */
+	public function get_from_address( $from_email = '' ) {
+		return $this->options->notify_from();
+	}
+
+	/**
 	 * The reply address (the visitor) and the blind copies of the settings.
 	 */
 	public function get_headers() {

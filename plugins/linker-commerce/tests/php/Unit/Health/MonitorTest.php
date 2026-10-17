@@ -80,14 +80,6 @@ final class MonitorTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => static fn ( $response ): int => is_array( $response ) ? (int) ( $response['response']['code'] ?? 0 ) : 0 ) );
-		// WooCommerce's mailer, for the sender of the alert (its own getters read
-		// woocommerce_email_from_name / _address).
-		$mailer = \Mockery::mock();
-		$mailer->allows( 'get_from_name' )->andReturn( 'Linker' );
-		$mailer->allows( 'get_from_address' )->andReturn( 'sales@de-linker.com' );
-		$woocommerce = \Mockery::mock();
-		$woocommerce->allows( 'mailer' )->andReturn( $mailer );
-		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
 		WP_Mock::userFunction(
 			'wp_mail',
 			array(
@@ -146,11 +138,18 @@ final class MonitorTest extends TestCase {
 
 	/**
 	 * The check asks both services, one after the other, and sends one message
-	 * per service that did not answer: to the contact person, with the blind
+	 * per service that did not answer: to the internal recipient, with the blind
 	 * copies of the settings, naming the service, the address and the reason.
+	 *
+	 * @testWith ["", "sales@sunriverinverter.com"]
+	 *           ["alerts@example.test", "alerts@example.test"]
+	 *
+	 * @param string $saved    Saved sender.
+	 * @param string $expected Expected sender.
 	 */
-	public function test_sends_one_alert_per_failed_service(): void {
-		$this->answers = array(
+	public function test_sends_one_alert_per_failed_service( string $saved, string $expected ): void {
+		$this->options[ Options::NOTIFY_FROM ] = $saved;
+		$this->answers                         = array(
 			'http://127.0.0.1:8901/health' => new WP_Error( 'http_request_failed', 'cURL error 7: Failed to connect.' ),
 			'http://127.0.0.1:8902/health' => array( 'response' => array( 'code' => 200 ) ),
 		);
@@ -165,7 +164,7 @@ final class MonitorTest extends TestCase {
 		$this->assertStringContainsString( 'Address: http://127.0.0.1:8901', $body );
 		$this->assertStringContainsString( 'Reason: cURL error 7: Failed to connect.', $body );
 		$this->assertStringContainsString( 'Genie uses this service.', $body );
-		$this->assertSame( array( 'From: Linker <sales@de-linker.com>', 'Bcc: watch@example.test, mirror@example.test' ), $headers, 'Sent from WooCommerce\'s email sender, with the blind copies.' );
+		$this->assertSame( array( 'From: Linker <' . $expected . '>', 'Bcc: watch@example.test, mirror@example.test' ), $headers, 'Sent from the internal sender, with the blind copies.' );
 	}
 
 	/**

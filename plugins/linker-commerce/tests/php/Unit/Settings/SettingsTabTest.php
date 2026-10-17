@@ -45,6 +45,19 @@ final class SettingsTabTest extends TestCase {
 	}
 
 	/**
+	 * Internal mail has its own sender field beside its recipient (#286).
+	 */
+	public function test_internal_sender_setting(): void {
+		$fields = ( new SettingsTab( new JobStore() ) )->fields();
+		$ids    = array_column( $fields, 'id' );
+		$index  = array_search( Options::NOTIFY_TO, $ids, true );
+		$this->assertIsInt( $index );
+		$this->assertSame( Options::NOTIFY_FROM, $fields[ $index + 1 ]['id'] );
+		$this->assertSame( 'email', $fields[ $index + 1 ]['type'] );
+		$this->assertSame( 'sales@sunriverinverter.com', $fields[ $index + 1 ]['default'] );
+	}
+
+	/**
 	 * Every option of Options has a field, each section is opened and closed, and output and save use the same fields.
 	 */
 	public function test_fields_cover_every_option(): void {

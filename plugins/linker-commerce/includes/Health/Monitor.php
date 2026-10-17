@@ -16,8 +16,8 @@ use WP_Error;
  * Once a day, asks each service for GET /health (docs/specs/13-genie.md,
  * docs/specs/14-solution-configurator.md). A service that does not answer
  * with HTTP 200 triggers one message to the internal notification address
- * (Options::notify_to(), with its blind copies), from WooCommerce's email
- * sender like every other internal notification, through wp_mail() — the
+ * (Options::notify_to(), with its blind copies), from the internal sender
+ * (Options::notify_from()), through wp_mail() — the
  * Outbox takes it from there (queued, retried). Nothing is sent when every
  * service answers. WordPress has no built-in monitor for external services,
  * so the check itself is this plugin's; everything around it is WordPress's
@@ -177,12 +177,9 @@ final class Monitor {
 			gmdate( 'Y-m-d H:i' ),
 			$this->consumer( $service )
 		);
-		// The sender every other internal notification has: WooCommerce's own
-		// "From" name and address (WooCommerce → Settings → Emails), read
-		// through its mailer. A plain wp_mail() would otherwise go out from
-		// WordPress's default wordpress@<host>.
-		$mailer  = WC()->mailer();
-		$headers = array( 'From: ' . $mailer->get_from_name() . ' <' . $mailer->get_from_address() . '>' );
+		// Plain wp_mail() needs an explicit sender; WC_Email installs its own
+		// sender filters for the other internal notifications (#286).
+		$headers = array( 'From: Linker <' . $this->options->notify_from() . '>' );
 		$bcc     = $this->options->notify_bcc();
 		if ( array() !== $bcc ) {
 			$headers[] = 'Bcc: ' . implode( ', ', $bcc );
