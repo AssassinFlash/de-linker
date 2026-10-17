@@ -66,7 +66,7 @@ final class ManualGermanTest extends SiteTestCase {
 			'attribute quotes'         => array( "<p>First.</p><img alt='Battery'><p>Second.</p>", "<p>Erste.</p><img alt='Batterie'><p>Zweite.</p>", "<p>First.</p><img alt='Battery'><p>Changed second.</p>", "<p>Erste.</p><img alt='Batterie'><p>[de] Changed second.</p>", 'synced', array( 'Changed second.' ) ),
 			'inline German title'      => array( "<p>First <a title='Download'>sentence</a>.</p>", "<p>Erster <a title='Herunterladen'>Satz</a>.</p>", "<p>Changed first <a title='Download'>sentence</a>.</p>", "<p>[de] Changed first <a title='Herunterladen'>sentence</a>.</p>", 'synced', array( 'Changed first <t1>sentence</t1>.' ) ),
 			'unsafe sentence boundary' => array( '<p>First sentence. <strong>Second sentence.</strong></p>', '<p>Erster Satz. <strong>Zweiter Satz.</strong></p>', '<p>First sentence. <strong>Changed second sentence.</strong></p>', '<p>Erster Satz. <strong>Zweiter Satz.</strong></p>', 'structure_mismatch', array() ),
-			'different inline tags' => array( "<p>First <a title='Download'>sentence</a>.</p>", "<p>Erster <span title='Herunterladen'>Satz</span>.</p>", "<p>Changed first <a title='Download'>sentence</a>.</p>", "<p>Erster <span title='Herunterladen'>Satz</span>.</p>", 'structure_mismatch', array() ),
+			'different inline tags'    => array( "<p>First <a title='Download'>sentence</a>.</p>", "<p>Erster <span title='Herunterladen'>Satz</span>.</p>", "<p>Changed first <a title='Download'>sentence</a>.</p>", "<p>Erster <span title='Herunterladen'>Satz</span>.</p>", 'structure_mismatch', array() ),
 		);
 	}
 

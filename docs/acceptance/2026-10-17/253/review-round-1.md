@@ -25,6 +25,18 @@
 
 独立 Spec 复核又指出属性引号被规范化、改句内德语 title 回退英文、跨 inline 标签的句界，以及未改 SEO 随正文合批的问题。已补精确输出及请求 segments 断言：未改属性不经回填，改句内使用既有德语属性；无法安全分句的跨标签 run 作为结构异常保留，零模型调用；已收养的空/缺字段在英文未变时仍保持空/缺。`Document::segment_roles()` 承接角色提取，按 Standards 建议从 Planner 移回文档表示所属模块。
 
+进一步核对行内标签的开闭名称及占位符槽位；人工德语用 span 而英文用 a 的改句直接作为结构异常保留，不产生混合标签。校验器拒收夹具改用丢失 IP65 保护占位符，确保它仍实际经过模型输出校验而不是先被结构保护拦截。
+
+## 本轮验证结果
+
+- i18n 单元：**169 tests / 368 assertions 通过**。
+- 真实 WordPress/Woo/Polylang/Redis/Action Scheduler：**23 tests / 285 assertions 通过**；包含模板安全 4 / 39 和全部原有并发回归。
+- 不清表、不手工复位，紧接着原样重跑 `ManualGermanTest`：**6 tests / 37 assertions 通过**。所有副本和本测试排队任务在 finally 清除，原 About 页不修改。
+- `just check` 与全仓 `just test` 通过；末次 PHP WPCS / PHPStan 8 无错误。全仓测试使用 [初轮记录](validation.md) 同一临时数据库名隔离，测试集合和断言不变；pull 104 passed、cutover 78 passed，退出码 0。
+- Spec：初审的 3 类问题及标签配对的进一步缺口全部修复，最终 **0 项未解决 finding**。Standards：**0 个硬违规、0 个值得处理的气味**。后台文案已采纳独立评审的 DE 修改并定稿。
+
+复核代码提交在 rebase 前为 `2aab8e6`，rebase 后等价提交 `daa70485`。最新主分支 `d1056b67` 只新增另一张票的试题判断及 Genie 验收措辞文档，没有改变本票代码。
+
 ## 上线步骤（尚未授权执行）
 
 Claude 评审与合并后，另获业主上线及生产密钥写入同意，再协调唯一部署窗口：备份 → 部署安全代码并读回 → 退休两类模板遗留任务及状态 → 网站目录之外写密钥并读回 → 处理当前 6 个 pending 页面及 `translate --missing` 补缺 → 逐项核对成功、失败或结构异常 → 网页后台保存英文产品、异步官方翻译及德语前台实走 → cutover verify。

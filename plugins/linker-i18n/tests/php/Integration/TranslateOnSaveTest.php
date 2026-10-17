@@ -295,7 +295,7 @@ final class TranslateOnSaveTest extends SiteTestCase {
 	}
 
 	/**
-	 * A translation that loses its markup is rejected twice and nothing is
+	 * A translation that loses its protected model placeholder is rejected twice and nothing is
 	 * stored: the German stays as it was and the product is failed.
 	 *
 	 * @depends test_edited_german_is_updated_automatically
@@ -304,7 +304,7 @@ final class TranslateOnSaveTest extends SiteTestCase {
 		$before     = self::state()['content'];
 		$english    = self::PARAGRAPHS;
 		$english[1] = '<p>Download the datasheet and the manual for the wiring diagram.</p>';
-		$english[2] = '<p>BREAK-PLACEHOLDERS: the warranty covers <em>twelve</em> years.</p>';
+		$english[2] = '<p>BREAK-PLACEHOLDERS: the IP65 warranty covers twelve years.</p>';
 		self::write_english( $english );
 		$this->assertSame( 1, self::run_jobs( 'post', self::$english, true ) );
 
