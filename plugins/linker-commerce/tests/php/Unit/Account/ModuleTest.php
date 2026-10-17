@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Account;
 
+use Linker\Commerce\Account\AdminAccessNotice;
 use Linker\Commerce\Account\AuthTemplates;
 use Linker\Commerce\Account\ContactCard;
 use Linker\Commerce\Account\DocumentDownload;
@@ -67,7 +68,18 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'signed_out_notice' ) );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $auth, 'register_redirect' ) );
 
-		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending, $auth ) )->register();
+		$admin_access = new AdminAccessNotice();
+		WP_Mock::expectFilterAdded( 'woocommerce_prevent_admin_access', array( $admin_access, 'protect' ), PHP_INT_MAX );
+		WP_Mock::expectFilterAdded( 'wc_get_template', array( $admin_access, 'template' ), 50, 2 );
+		WP_Mock::userFunction(
+			'add_shortcode',
+			array(
+				'args' => array( 'linker_admin_access_field', array( $admin_access, 'field' ) ),
+				'once' => true,
+			)
+		);
+
+		( new Module( $menu, $contact, $inquiries, $saved, $documents, $download, $route, $pending, $auth, $admin_access ) )->register();
 
 		$this->assertConditionsMet();
 	}

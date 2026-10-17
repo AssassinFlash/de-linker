@@ -1,0 +1,35 @@
+
+Running 1 test using 1 worker
+
+(node:53805) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/admin-access.spec.ts:12:3 › en 1440: customers read the admin explanation in every approval state (28.3s)
+
+
+  1) [chromium] › specs/admin-access.spec.ts:12:3 › en 1440: customers read the admin explanation in every approval state 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-linker-admin-notice]')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('[data-linker-admin-notice]') with timeout 15000ms
+      - waiting for locator('[data-linker-admin-notice]')
+
+
+      23 | 						await page.goto(`${base()}${path}`);
+      24 | 						const notice = page.locator('[data-linker-admin-notice]');
+    > 25 | 						await expect(notice).toBeVisible();
+         | 						                     ^
+      26 | 						await expect(notice).toContainText(email);
+      27 | 						await expect(notice).toContainText(language === 'de' ? 'Der Verwaltungsbereich ist ausschließlich für Linker-Mitarbeitende vorgesehen.' : 'The admin area is for Linker staff only.');
+      28 | 						await expect(page).toHaveURL(language === 'de' ? /\/de\/mein-konto\/\?admin-access=staff/ : /\/my-account\/\?admin-access=staff/);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c245/tests/e2e/specs/admin-access.spec.ts:25:28
+
+    Error Context: artifacts/test-results/admin-access-en-1440-custo-ffd8e-ion-in-every-approval-state-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/admin-access.spec.ts:12:3 › en 1440: customers read the admin explanation in every approval state 

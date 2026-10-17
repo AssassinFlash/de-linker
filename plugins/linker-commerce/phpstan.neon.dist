@@ -20,6 +20,8 @@ parameters:
 		# Stand-ins for WordPress and WooCommerce classes; PHPStan reads the real ones from the stubs.
 		- tests/php/Doubles
 	scanFiles:
+		# The existing language helper is supplied by the companion plugin.
+		- ../linker-i18n/includes/Languages.php
 		# WP_CLI (the commands call WP_CLI::error/warning/log/success and catch
 		# WP_CLI\ExitException); wp-cli is not in the WordPress stubs. The
 		# runtime doubles live in wordpress.php, which stays out of analysis so

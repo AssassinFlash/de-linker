@@ -95,6 +95,25 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 
 		public function __construct( public readonly int $user_id ) {}
 
+		/** @var array<int, array<string, array<string, mixed>>> */
+		private static array $sessions = array();
+
+		public function get( $token ): ?array {
+			return self::$sessions[ $this->user_id ][ $token ] ?? null;
+		}
+
+		public function update( $token, $session ): void {
+			if ( null === $session ) {
+				unset( self::$sessions[ $this->user_id ][ $token ] );
+			} else {
+				self::$sessions[ $this->user_id ][ $token ] = $session;
+			}
+		}
+
+		public function destroy( $token ): void {
+			unset( self::$sessions[ $this->user_id ][ $token ] );
+		}
+
 		public function destroy_all(): void {
 			self::$destroyed_all[] = $this->user_id;
 		}

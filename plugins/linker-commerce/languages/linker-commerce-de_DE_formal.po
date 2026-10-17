@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-15T14:05:35+00:00\n"
+"POT-Creation-Date: 2026-10-17T19:24:19+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -193,6 +193,8 @@ msgstr "Produkte und Anfragen von de-linker.com."
 #: includes/Abilities/SearchProducts.php:118
 #: includes/Presentation/ProductShortcodes.php:156
 #: includes/Presentation/ProductShortcodes.php:1910
+#: includes/Presentation/ProductShortcodes.php:159
+#: includes/Presentation/ProductShortcodes.php:1906
 msgid "Search products"
 msgstr "Produkte suchen"
 
@@ -220,6 +222,10 @@ msgstr ""
 msgid "Solution Configurator URL with the fields as query arguments."
 msgstr ""
 
+#: includes/Account/AuthTemplates.php:153
+msgid "You have been signed out."
+msgstr "Sie wurden abgemeldet."
+
 #: includes/Account/ContactCard.php:47
 msgid "Your contact person"
 msgstr "Ihre Ansprechperson"
@@ -229,8 +235,7 @@ msgid "This document is not available."
 msgstr "Dieses Dokument ist nicht verfügbar."
 
 #: includes/Account/DocumentDownload.php:91
-#: includes/Account/DocumentDownload.php:136
-#: includes/Admin/FaqsMetaBox.php:73
+#: includes/Account/DocumentDownload.php:136 includes/Admin/FaqsMetaBox.php:73
 #: includes/Admin/FiguresMetaBox.php:78
 #: includes/Presentation/AccountTemplates.php:462
 #: includes/Presentation/LibraryPage.php:374
@@ -239,6 +244,7 @@ msgstr "Dieses Dokument ist nicht verfügbar."
 #: includes/Products/Materials.php:1633
 #: templates/myaccount/linker-documents.php:23
 #: templates/myaccount/linker-documents.php:31
+#: includes/Products/Materials.php:1591
 msgid "Document"
 msgstr "Dokument"
 
@@ -250,8 +256,7 @@ msgstr ""
 "Dieses Dokument ist nur für das Konto abrufbar, zu dem es gehört. Bitte "
 "melden Sie sich mit diesem Konto an."
 
-#: includes/Account/DocumentDownload.php:134
-#: includes/Vocabulary/Terms.php:78
+#: includes/Account/DocumentDownload.php:134 includes/Vocabulary/Terms.php:78
 #: includes/Vocabulary/Terms.php:79
 msgid "Log in"
 msgstr "Anmelden"
@@ -268,8 +273,7 @@ msgstr "Proformarechnung %1$s (Anfrage #%2$s)"
 msgid "Design report: %s"
 msgstr "Auslegungsbericht: %s"
 
-#: includes/Account/InquiryList.php:39
-#: includes/Account/Menu.php:79
+#: includes/Account/InquiryList.php:39 includes/Account/Menu.php:79
 #: includes/Inquiry/OrderAdmin.php:31
 #: includes/Presentation/AccountTemplates.php:457
 #: includes/Proforma/AdminBox.php:130
@@ -310,8 +314,7 @@ msgstr "Ansehen"
 msgid "Proforma invoice (PDF)"
 msgstr "Proformarechnung (PDF)"
 
-#: includes/Account/InquiryList.php:74
-#: includes/Vocabulary/Terms.php:110
+#: includes/Account/InquiryList.php:74 includes/Vocabulary/Terms.php:110
 msgid "Request again"
 msgstr "Erneut anfragen"
 
@@ -319,48 +322,42 @@ msgstr "Erneut anfragen"
 msgid "Datasheet (PDF)"
 msgstr "Datenblatt (PDF)"
 
-#: includes/Account/Menu.php:48
-#: includes/Presentation/AccountTemplates.php:164
+#: includes/Account/Menu.php:48 includes/Presentation/AccountTemplates.php:164
 #: includes/Presentation/AccountTemplates.php:452
 msgid "Overview"
 msgstr "Übersicht"
 
-#: includes/Account/Menu.php:49
-#: includes/Account/Menu.php:75
-#: includes/Inquiry/OrderAdmin.php:30
-#: includes/Inquiry/OrderAdmin.php:32
+#: includes/Account/Menu.php:49 includes/Account/Menu.php:75
+#: includes/Inquiry/OrderAdmin.php:30 includes/Inquiry/OrderAdmin.php:32
 #: includes/Presentation/AccountTemplates.php:453
-#: includes/Settings/SettingsTab.php:41
-#: includes/Vocabulary/Terms.php:116
+#: includes/Settings/SettingsTab.php:41 includes/Vocabulary/Terms.php:116
 #: templates/emails/linker-proforma-issued.php:47
 msgid "Inquiries"
 msgstr "Anfragen"
 
-#: includes/Account/Menu.php:50
-#: includes/Account/Menu.php:84
+#: includes/Account/Menu.php:50 includes/Account/Menu.php:84
 #: includes/Account/SavedSolutions.php:74
 msgid "Saved solutions"
 msgstr "Gespeicherte Lösungen"
 
-#: includes/Account/Menu.php:51
-#: includes/Account/Menu.php:86
+#: includes/Account/Menu.php:51 includes/Account/Menu.php:86
 #: includes/Admin/DocumentsMetaBox.php:52
 #: includes/Presentation/AccountTemplates.php:476
 #: includes/Presentation/LibraryPage.php:379
 #: includes/Presentation/ProductShortcodes.php:852
+#: includes/Presentation/ProductShortcodes.php:855
 msgid "Documents"
 msgstr "Dokumente"
 
-#: includes/Account/Menu.php:52
-#: includes/Account/Menu.php:88
-#: includes/Contact/Form.php:160
-#: templates/emails/linker-new-customer.php:23
+#: includes/Account/Menu.php:52 includes/Account/Menu.php:88
+#: includes/Contact/Form.php:160 templates/emails/linker-new-customer.php:23
 #: templates/myaccount/auth/form-register.php:72
+#: includes/Registration/AccountsTable.php:43
+#: templates/emails/linker-new-customer.php:24
 msgid "Company"
 msgstr "Unternehmen"
 
-#: includes/Account/Menu.php:53
-#: includes/Account/Menu.php:90
+#: includes/Account/Menu.php:53 includes/Account/Menu.php:90
 msgid "Account details"
 msgstr "Kontodetails"
 
@@ -369,8 +366,7 @@ msgid "Log out"
 msgstr "Abmelden"
 
 #. translators: %s: inquiry number.
-#: includes/Account/Menu.php:82
-#: includes/Vocabulary/Terms.php:115
+#: includes/Account/Menu.php:82 includes/Vocabulary/Terms.php:115
 #, php-format
 msgid "Inquiry #%s"
 msgstr "Anfrage #%s"
@@ -434,6 +430,7 @@ msgstr "Typ"
 #: includes/Admin/DocumentsMetaBox.php:74
 #: includes/Admin/DocumentsMetaBox.php:123
 #: includes/Presentation/ProductShortcodes.php:1949
+#: includes/Presentation/ProductShortcodes.php:1945
 msgid "Language"
 msgstr "Sprache"
 
@@ -459,8 +456,7 @@ msgstr ""
 msgid "Question"
 msgstr "Frage"
 
-#: includes/Admin/FaqsMetaBox.php:70
-#: includes/Presentation/LibraryPage.php:373
+#: includes/Admin/FaqsMetaBox.php:70 includes/Presentation/LibraryPage.php:373
 msgid "Answer"
 msgstr "Antwort"
 
@@ -472,8 +468,7 @@ msgstr "Frage (Deutsch)"
 msgid "Answer (German)"
 msgstr "Antwort (Deutsch)"
 
-#: includes/Admin/FaqsMetaBox.php:74
-#: includes/Admin/FiguresMetaBox.php:79
+#: includes/Admin/FaqsMetaBox.php:74 includes/Admin/FiguresMetaBox.php:79
 msgid "Page"
 msgstr "Seite"
 
@@ -487,8 +482,7 @@ msgstr ""
 "Die FAQ-Zeilen %s behalten ihren bisherigen Inhalt: Eine Antwort braucht das "
 "Dokument und die Seite, auf der sie gedruckt ist."
 
-#: includes/Admin/FaqsMetaBox.php:228
-#: includes/Admin/FiguresMetaBox.php:116
+#: includes/Admin/FaqsMetaBox.php:228 includes/Admin/FiguresMetaBox.php:116
 msgid "— none —"
 msgstr "— keines —"
 
@@ -535,9 +529,9 @@ msgstr ""
 "benötigt das Dokument und die Seite, auf der er steht."
 
 #: includes/Contact/Emails/ContactEmail.php:72
-#: includes/Mail/CustomerOrderEmail.php:89
-#: includes/Mail/TeamEmail.php:101
+#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:101
 #: includes/Registration/Emails/CustomerApprovalEmail.php:130
+#: includes/Mail/TeamEmail.php:122
 msgid "HTML"
 msgstr "HTML"
 
@@ -556,10 +550,12 @@ msgid "We received your message"
 msgstr "Wir haben Ihre Nachricht erhalten"
 
 #: includes/Contact/Emails/TeamMessageEmail.php:45
+#: includes/Contact/Emails/TeamMessageEmail.php:46
 msgid "Contact form message"
 msgstr "Nachricht über das Kontaktformular"
 
 #: includes/Contact/Emails/TeamMessageEmail.php:46
+#: includes/Contact/Emails/TeamMessageEmail.php:47
 msgid ""
 "Sent to the internal notification address, with blind copies, when the "
 "contact form is sent."
@@ -569,16 +565,19 @@ msgstr ""
 
 #. translators: {name}: the visitor's name.
 #: includes/Contact/Emails/TeamMessageEmail.php:87
+#: includes/Contact/Emails/TeamMessageEmail.php:106
 msgid "New message from {name}"
 msgstr "Neue Nachricht von {name}"
 
 #: includes/Contact/Emails/TeamMessageEmail.php:94
+#: includes/Contact/Emails/TeamMessageEmail.php:113
 msgid "New message from the contact form"
 msgstr "Neue Nachricht über das Kontaktformular"
 
 #: includes/Contact/Form.php:137
 #: includes/Presentation/ProductShortcodes.php:1579
 #: includes/Presentation/Shortcodes.php:287
+#: includes/Presentation/ProductShortcodes.php:1575
 msgid "CONTACT LINKER"
 msgstr "KONTAKT ZU LINKER"
 
@@ -608,9 +607,10 @@ msgstr "Es geht um"
 msgid "Where can we reply?"
 msgstr "Wohin dürfen wir antworten?"
 
-#: includes/Contact/Form.php:155
-#: includes/Settings/SettingsTab.php:110
+#: includes/Contact/Form.php:155 includes/Settings/SettingsTab.php:110
 #: templates/emails/linker-new-customer.php:25
+#: includes/Settings/SettingsTab.php:137
+#: templates/emails/linker-new-customer.php:26
 msgid "Name"
 msgstr "Name"
 
@@ -632,8 +632,7 @@ msgstr ""
 "Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser "
 "Nachricht verwendet werden."
 
-#: includes/Contact/Form.php:170
-#: templates/myaccount/auth/form-register.php:125
+#: includes/Contact/Form.php:170 templates/myaccount/auth/form-register.php:125
 msgid "Privacy"
 msgstr "Datenschutz"
 
@@ -680,11 +679,11 @@ msgstr "Zusammenarbeit mit Linker"
 msgid "A question"
 msgstr "Eine Frage"
 
-#: includes/Contact/Form.php:232
+#: includes/Contact/Form.php:232 includes/Contact/Form.php:233
 msgid "Prefer email?"
 msgstr "Lieber per E-Mail?"
 
-#: includes/Contact/Form.php:234
+#: includes/Contact/Form.php:234 includes/Contact/Form.php:235
 msgid ""
 "Send your question directly to our team. Opening your email app does not "
 "send a message."
@@ -692,33 +691,33 @@ msgstr ""
 "Schreiben Sie unserem Team direkt. Das Öffnen Ihres E-Mail-Programms sendet "
 "noch keine Nachricht."
 
-#: includes/Contact/Form.php:237
+#: includes/Contact/Form.php:237 includes/Contact/Form.php:238
 msgid "Still exploring?"
 msgstr "Noch in der Orientierung?"
 
-#: includes/Contact/Form.php:238
+#: includes/Contact/Form.php:238 includes/Contact/Form.php:239
 msgid "Take your time."
 msgstr "Nehmen Sie sich Zeit."
 
-#: includes/Contact/Form.php:239
+#: includes/Contact/Form.php:239 includes/Contact/Form.php:240
 msgid "Use Genie to explore the options, then return to your question."
 msgstr ""
 "Mit Genie können Sie Ihre Möglichkeiten erkunden und später zu Ihrer Frage "
 "zurückkehren."
 
-#: includes/Contact/Form.php:240
+#: includes/Contact/Form.php:240 includes/Contact/Form.php:241
 msgid "Explore with Genie"
 msgstr "Mit Genie weiterdenken"
 
-#: includes/Contact/Form.php:275
+#: includes/Contact/Form.php:275 includes/Contact/Form.php:276
 msgid "Thank you. Your message is with the Linker team."
 msgstr "Vielen Dank. Ihre Nachricht liegt beim Linker-Team."
 
-#: includes/Contact/Form.php:276
+#: includes/Contact/Form.php:276 includes/Contact/Form.php:277
 msgid "Please check your entries and send the form again."
 msgstr "Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut."
 
-#: includes/Contact/Form.php:277
+#: includes/Contact/Form.php:277 includes/Contact/Form.php:278
 msgid ""
 "We received several messages from this connection. Please try again later or "
 "write to sales@de-linker.com."
@@ -726,7 +725,7 @@ msgstr ""
 "Von dieser Verbindung sind mehrere Nachrichten eingegangen. Bitte versuchen "
 "Sie es später erneut oder schreiben Sie an sales@de-linker.com."
 
-#: includes/Contact/Form.php:293
+#: includes/Contact/Form.php:293 includes/Contact/Form.php:294
 msgid "Send another message"
 msgstr "Weitere Nachricht senden"
 
@@ -746,12 +745,12 @@ msgstr "Bitte schreiben Sie Ihre Nachricht."
 msgid "Please agree to the use of your details for the reply."
 msgstr "Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu."
 
-#: includes/Digest/DigestEmail.php:45
-#: includes/Digest/DigestEmail.php:82
+#: includes/Digest/DigestEmail.php:45 includes/Digest/DigestEmail.php:82
+#: includes/Digest/DigestEmail.php:46 includes/Digest/DigestEmail.php:83
 msgid "Daily digest"
 msgstr "Tagesübersicht"
 
-#: includes/Digest/DigestEmail.php:46
+#: includes/Digest/DigestEmail.php:46 includes/Digest/DigestEmail.php:47
 msgid ""
 "Sent to the internal notification address, with blind copies, every morning "
 "at 9:00 (Berlin time)."
@@ -759,7 +758,7 @@ msgstr ""
 "Geht jeden Morgen um 9:00 Uhr (Ortszeit Berlin) an die Adresse für interne "
 "Benachrichtigungen, mit Blindkopien."
 
-#: includes/Digest/DigestEmail.php:75
+#: includes/Digest/DigestEmail.php:75 includes/Digest/DigestEmail.php:76
 msgid "Daily digest, {date}"
 msgstr "Tagesübersicht, {date}"
 
@@ -850,8 +849,7 @@ msgstr "Anmelden und Proforma anfordern"
 msgid "No account yet? Register"
 msgstr "Noch kein Konto? Registrieren"
 
-#: includes/Gating/DraftSummary.php:65
-#: includes/Gating/DraftSummary.php:83
+#: includes/Gating/DraftSummary.php:65 includes/Gating/DraftSummary.php:83
 msgid ""
 "For products without a price, we state the price in your Proforma invoice."
 msgstr ""
@@ -861,14 +859,12 @@ msgstr ""
 msgid "Log in for prices"
 msgstr "Preise nach Anmeldung"
 
-#: includes/Gating/PriceDisplay.php:199
-#: includes/Storefront/ProductView.php:285
+#: includes/Gating/PriceDisplay.php:199 includes/Storefront/ProductView.php:285
 #: includes/Storefront/ProductView.php:311
 msgid "Not available for your account"
 msgstr "Für Ihr Konto nicht verfügbar"
 
-#: includes/Gating/PriceDisplay.php:200
-#: includes/Storefront/ProductView.php:284
+#: includes/Gating/PriceDisplay.php:200 includes/Storefront/ProductView.php:284
 #: includes/Storefront/ProductView.php:310
 msgid "Prices after approval"
 msgstr "Preise nach Freigabe"
@@ -882,38 +878,38 @@ msgid "Price on request"
 msgstr "Preis auf Anfrage"
 
 #. translators: %s: option name.
-#: includes/Health/Monitor.php:116
+#: includes/Health/Monitor.php:116 includes/Health/Monitor.php:118
 #, php-format
 msgid "the address option %s is empty"
 msgstr "die Adressoption %s ist leer"
 
 #. translators: %d: HTTP status code.
-#: includes/Health/Monitor.php:128
+#: includes/Health/Monitor.php:128 includes/Health/Monitor.php:130
 #, php-format
 msgid "the service answered HTTP %d instead of 200"
 msgstr "der Dienst antwortete mit HTTP %d statt 200"
 
-#: includes/Health/Monitor.php:142
-#: includes/Presentation/LoginGate.php:279
+#: includes/Health/Monitor.php:142 includes/Presentation/LoginGate.php:279
+#: includes/Health/Monitor.php:144
 msgid "Genie"
 msgstr "Genie"
 
-#: includes/Health/Monitor.php:142
+#: includes/Health/Monitor.php:142 includes/Health/Monitor.php:144
 msgid "engine"
 msgstr "Engine"
 
-#: includes/Health/Monitor.php:151
+#: includes/Health/Monitor.php:151 includes/Health/Monitor.php:153
 msgid "The Solution Configurator"
 msgstr "Der Lösungskonfigurator"
 
 #. translators: %s: service name (Genie or engine).
-#: includes/Health/Monitor.php:163
+#: includes/Health/Monitor.php:163 includes/Health/Monitor.php:165
 #, php-format
 msgid "The %s service failed its health check"
 msgstr "Gesundheitsprüfung fehlgeschlagen: Dienst %s"
 
 #. translators: 1: service name, 2: address, 3: reason, 4: UTC time, 5: what uses the service.
-#: includes/Health/Monitor.php:168
+#: includes/Health/Monitor.php:168 includes/Health/Monitor.php:170
 #, php-format
 msgid ""
 "The daily health check could not reach the %1$s service.\n"
@@ -934,16 +930,16 @@ msgstr ""
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
 
-#: includes/Inquiry/Checkout.php:111
-#: includes/Inquiry/Checkout.php:136
+#: includes/Inquiry/Checkout.php:111 includes/Inquiry/Checkout.php:136
 #: includes/Inquiry/Checkout.php:142
 #: templates/emails/linker-inquiry-received.php:34
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
 
-#: includes/Inquiry/Statuses.php:45
-#: includes/Inquiry/Statuses.php:80
-#: includes/Inquiry/Statuses.php:84
+#: includes/Inquiry/Checkout.php:135
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:33
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:53
+#: includes/Vocabulary/Terms.php:107
 msgid "Inquiry received"
 msgstr "Anfrage eingegangen"
 
@@ -1033,11 +1029,9 @@ msgid "Inquiries list"
 msgstr "Liste der Anfragen"
 
 #: includes/Inquiry/ProformaGateway.php:46
-#: includes/Inquiry/ProformaGateway.php:61
-#: includes/Proforma/AdminBox.php:47
-#: includes/Settings/SettingsTab.php:132
-#: includes/Vocabulary/Terms.php:75
-#: templates/proforma/proforma.php:72
+#: includes/Inquiry/ProformaGateway.php:61 includes/Proforma/AdminBox.php:47
+#: includes/Settings/SettingsTab.php:132 includes/Vocabulary/Terms.php:75
+#: templates/proforma/proforma.php:72 includes/Settings/SettingsTab.php:159
 msgid "Proforma invoice"
 msgstr "Proformarechnung"
 
@@ -1054,8 +1048,7 @@ msgstr ""
 "Mitarbeitenden in der Anfrage aus. Immer aktiv: Nur so lässt sich eine "
 "Anfrage senden."
 
-#: includes/Inquiry/Statuses.php:45
-#: includes/Inquiry/Statuses.php:80
+#: includes/Inquiry/Statuses.php:45 includes/Inquiry/Statuses.php:80
 #: includes/Inquiry/Statuses.php:84
 msgctxt "Inquiry status"
 msgid "Inquiry received"
@@ -1069,7 +1062,8 @@ msgid_plural "Inquiry received <span class=\"count\">(%s)</span>"
 msgstr[0] "Anfrage eingegangen <span class=\"count\">(%s)</span>"
 msgstr[1] "Anfrage eingegangen <span class=\"count\">(%s)</span>"
 
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:41
+#: includes/Inquiry/Statuses.php:57 includes/Inquiry/Statuses.php:81
+#: includes/Inquiry/Statuses.php:85
 msgctxt "Inquiry status"
 msgid "Proforma invoice issued"
 msgstr "Proformarechnung ausgestellt"
@@ -1144,10 +1138,10 @@ msgstr "Gespeichert am"
 
 #: includes/Presentation/AccountTemplates.php:465
 #: includes/Presentation/ProductShortcodes.php:623
-#: includes/Storefront/ProductView.php:306
-#: includes/Vocabulary/Labels.php:33
+#: includes/Storefront/ProductView.php:306 includes/Vocabulary/Labels.php:33
 #: includes/Vocabulary/Terms.php:43
 #: templates/myaccount/linker-saved-solutions.php:54
+#: includes/Presentation/ProductShortcodes.php:626
 msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
 
@@ -1160,6 +1154,24 @@ msgstr "Auslegungsbericht (PDF)"
 #: includes/Presentation/AccountTemplates.php:469
 msgid "No inquiries yet."
 msgstr "Noch keine Anfragen."
+
+#: includes/Presentation/AccountTemplates.php:470
+#: includes/Presentation/LoginGate.php:105
+#: includes/Presentation/LoginGate.php:118
+#: includes/Presentation/LoginGate.php:147
+#: includes/Presentation/LoginGate.php:162
+#: includes/Presentation/LoginGate.php:177
+#: includes/Presentation/Shortcodes.php:386 includes/Vocabulary/Terms.php:38
+#: templates/emails/linker-approval-approved.php:26
+#: templates/emails/linker-registration-received.php:38
+msgid "Browse products"
+msgstr "Zu den Produkten"
+
+#: includes/Presentation/AccountTemplates.php:471
+#: includes/Presentation/ProductShortcodes.php:318
+#: includes/Presentation/ProductShortcodes.php:321
+msgid "Open the Solution Configurator"
+msgstr "Lösungskonfigurator öffnen"
 
 #: includes/Presentation/AccountTemplates.php:472
 #: templates/myaccount/linker-documents.php:15
@@ -1186,6 +1198,21 @@ msgstr "Neueste Anfragen"
 #: includes/Presentation/AccountTemplates.php:475
 msgid "View all"
 msgstr "Alle anzeigen"
+
+#. translators: %s: inquiry number.
+#: includes/Presentation/AccountTemplates.php:790
+#: includes/Vocabulary/Terms.php:121
+#, php-format
+msgid "View inquiry %s"
+msgstr "Anfrage %s ansehen"
+
+#. translators: %s: number of products in the inquiry.
+#: includes/Presentation/AccountTemplates.php:806
+#, php-format
+msgid "%s product"
+msgid_plural "%s products"
+msgstr[0] "%s Produkt"
+msgstr[1] "%s Produkte"
 
 #: includes/Presentation/BlogShortcodes.php:157
 msgid "Read article"
@@ -1218,11 +1245,17 @@ msgstr "Vergleichstabelle der Produkte"
 #: includes/Storefront/ProductView.php:642
 #: templates/myaccount/linker-saved-solutions.php:29
 #: templates/myaccount/linker-saved-solutions.php:41
+#: includes/Presentation/ProductShortcodes.php:143
+#: includes/Presentation/ProductShortcodes.php:149
+#: includes/Presentation/ProductShortcodes.php:153
+#: includes/Presentation/ProductShortcodes.php:1540
+#: includes/Storefront/ProductView.php:643
 msgid "Products"
 msgstr "Produkte"
 
 #: includes/Presentation/ComparePage.php:225
 #: includes/Presentation/ProductShortcodes.php:1386
+#: includes/Presentation/ProductShortcodes.php:1382
 msgid "Item number"
 msgstr "Artikelnummer"
 
@@ -1236,11 +1269,13 @@ msgstr "Verfügbarkeit"
 
 #: includes/Presentation/ComparePage.php:311
 #: includes/Presentation/ProductShortcodes.php:848
+#: includes/Presentation/ProductShortcodes.php:851
 msgid "Compare"
 msgstr "Vergleichen"
 
-#: includes/Presentation/ProductShortcodes.php:138
-#: includes/Storefront/ArchiveSchema.php:90
+#: includes/Presentation/ComparePage.php:353
+#: includes/Storefront/ProductFilters.php:617
+#: includes/Storefront/ProductView.php:242
 msgid "Home"
 msgstr "Privat"
 
@@ -1308,6 +1343,7 @@ msgstr "Keine Dokumente dieses Typs."
 
 #: includes/Presentation/LibraryPage.php:371
 #: includes/Presentation/ProductShortcodes.php:850
+#: includes/Presentation/ProductShortcodes.php:853
 msgid "Ask Genie"
 msgstr "Genie fragen"
 
@@ -1321,11 +1357,13 @@ msgstr "Handelsregel"
 
 #: includes/Presentation/LibraryPage.php:375
 #: includes/Presentation/ProductShortcodes.php:1509
+#: includes/Presentation/ProductShortcodes.php:1505
 msgid "Previous"
 msgstr "Zurück"
 
 #: includes/Presentation/LibraryPage.php:376
 #: includes/Presentation/ProductShortcodes.php:1518
+#: includes/Presentation/ProductShortcodes.php:1514
 msgid "Next"
 msgstr "Weiter"
 
@@ -1343,17 +1381,17 @@ msgid "Download"
 msgstr "Herunterladen"
 
 #: includes/Presentation/LibraryPage.php:496
-#: includes/Products/Materials.php:1628
+#: includes/Products/Materials.php:1628 includes/Products/Materials.php:1585
 msgid "Datasheet"
 msgstr "Datenblatt"
 
 #: includes/Presentation/LibraryPage.php:497
-#: includes/Products/Materials.php:1629
+#: includes/Products/Materials.php:1629 includes/Products/Materials.php:1586
 msgid "Manual"
 msgstr "Handbuch"
 
 #: includes/Presentation/LibraryPage.php:498
-#: includes/Products/Materials.php:1631
+#: includes/Products/Materials.php:1631 includes/Products/Materials.php:1588
 msgid "Certificate"
 msgstr "Zertifikat"
 
@@ -1362,11 +1400,12 @@ msgid "Compatibility"
 msgstr "Kompatibilität"
 
 #: includes/Presentation/LibraryPage.php:500
-#: includes/Products/Materials.php:1630
+#: includes/Products/Materials.php:1630 includes/Products/Materials.php:1587
 msgid "Warranty"
 msgstr "Garantie"
 
 #: includes/Presentation/LibraryPage.php:501
+#: includes/Products/Materials.php:1590
 msgid "Brochure"
 msgstr "Broschüre"
 
@@ -1379,8 +1418,8 @@ msgid "German"
 msgstr "Deutsch"
 
 #: includes/Presentation/LibraryPage.php:517
-#: includes/Products/Materials.php:1284
-#: includes/Products/Materials.php:1435
+#: includes/Products/Materials.php:1284 includes/Products/Materials.php:1435
+#: includes/Products/Materials.php:1233 includes/Products/Materials.php:1392
 msgid "Multilingual"
 msgstr "Mehrsprachig"
 
@@ -1398,6 +1437,58 @@ msgid_plural "covers %d products"
 msgstr[0] "gilt für %d Produkt"
 msgstr[1] "gilt für %d Produkte"
 
+#: includes/Presentation/LoginGate.php:95
+msgid "Account with limited access"
+msgstr "Konto mit eingeschränktem Zugriff"
+
+#: includes/Presentation/LoginGate.php:96
+#: includes/Presentation/LoginGate.php:97
+msgid "Access currently limited"
+msgstr "Zugriff derzeit eingeschränkt"
+
+#: includes/Presentation/LoginGate.php:99
+msgid ""
+"Your partner account is limited for now: the products and your questions "
+"stay open, net prices and the Proforma request are paused."
+msgstr ""
+"Ihr Partner-Konto ist vorerst eingeschränkt: Produkte und Ihre Fragen "
+"bleiben offen, Nettopreise und Proforma-Anfrage sind pausiert."
+
+#. translators: %s: the team's email address.
+#: includes/Presentation/LoginGate.php:103
+#, php-format
+msgid "Write to %s and we will look at your account again."
+msgstr "Schreiben Sie an %s, und wir sehen uns Ihr Konto erneut an."
+
+#: includes/Presentation/LoginGate.php:109
+msgid "Account under review"
+msgstr "Konto in Prüfung"
+
+#: includes/Presentation/LoginGate.php:110
+msgid "Under review"
+msgstr "In Prüfung"
+
+#: includes/Presentation/LoginGate.php:111
+msgid "Your account is under review"
+msgstr "Ihr Konto wird geprüft"
+
+#: includes/Presentation/LoginGate.php:113
+#: templates/emails/linker-registration-received.php:24
+msgid ""
+"We are reviewing your partner account. Net prices and the Proforma request "
+"open as soon as it is approved, and we will email you."
+msgstr ""
+"Wir prüfen Ihr Partner-Konto. Nettopreise und die Proforma-Anfrage öffnen "
+"sich mit der Freigabe; wir melden uns per E-Mail."
+
+#. translators: %s: the team's email address.
+#: includes/Presentation/LoginGate.php:116
+#: templates/emails/linker-registration-received.php:32
+#, php-format
+msgid "Until then, browse the products and write to %s with any question."
+msgstr ""
+"Bis dahin können Sie die Produkte ansehen und Ihre Fragen an %s schreiben."
+
 #: includes/Presentation/LoginGate.php:142
 #: includes/Presentation/Shortcodes.php:381
 msgid "Empty solution draft"
@@ -1414,19 +1505,6 @@ msgid ""
 msgstr ""
 "Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie "
 "dann für Ihre Proformarechnung zurück."
-
-#: includes/Presentation/AccountTemplates.php:470
-#: includes/Presentation/LoginGate.php:105
-#: includes/Presentation/LoginGate.php:118
-#: includes/Presentation/LoginGate.php:147
-#: includes/Presentation/LoginGate.php:162
-#: includes/Presentation/LoginGate.php:177
-#: includes/Presentation/Shortcodes.php:386
-#: includes/Vocabulary/Terms.php:38
-#: templates/emails/linker-approval-approved.php:26
-#: templates/emails/linker-registration-received.php:38
-msgid "Browse products"
-msgstr "Zu den Produkten"
 
 #: includes/Presentation/LoginGate.php:156
 #: includes/Presentation/LoginGate.php:171
@@ -1456,160 +1534,160 @@ msgstr ""
 msgid "Sign in or register"
 msgstr "Anmelden oder registrieren"
 
+#: includes/Presentation/LoginGate.php:173
+msgid "Sign in to request your Proforma"
+msgstr "Melden Sie sich an, um Ihre Proformarechnung anzufordern"
+
+#: includes/Presentation/LoginGate.php:175
+msgid ""
+"Your solution draft is saved. Log in with your partner account to send the "
+"inquiry — no account yet? Register on the account page; the draft waits for "
+"you."
+msgstr ""
+"Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem Partner-Konto "
+"an, um die Anfrage abzusenden — noch kein Konto? Registrieren Sie sich auf "
+"der Kontoseite; Ihr Entwurf wartet dort auf Sie."
+
 #: includes/Presentation/LoginGate.php:239
 #: templates/emails/linker-approval-rejected.php:25
 #: templates/emails/linker-approval-restricted.php:26
 msgid "Our reason:"
 msgstr "Unser Grund:"
 
-#: includes/Presentation/LoginGate.php:95
-msgid "Account with limited access"
-msgstr "Konto mit eingeschränktem Zugriff"
-
-#: includes/Presentation/LoginGate.php:96
-#: includes/Presentation/LoginGate.php:97
-msgid "Access currently limited"
-msgstr "Zugriff derzeit eingeschränkt"
-
-#: includes/Presentation/LoginGate.php:99
-msgid ""
-"Your partner account is limited for now: the products and your questions "
-"stay open, net prices and the Proforma request are paused."
-msgstr ""
-"Ihr Partner-Konto ist vorerst eingeschränkt: Produkte und Ihre Fragen "
-"bleiben offen, Nettopreise und Proforma-Anfrage sind pausiert."
-
-#: includes/Presentation/LoginGate.php:103
-msgid "Write to %s and we will look at your account again."
-msgstr "Schreiben Sie an %s, und wir sehen uns Ihr Konto erneut an."
-
-#: includes/Presentation/LoginGate.php:109
-msgid "Account under review"
-msgstr "Konto in Prüfung"
-
-#: includes/Presentation/LoginGate.php:111
-msgid "Your account is under review"
-msgstr "Ihr Konto wird geprüft"
-
-#: includes/Presentation/LoginGate.php:113
-#: templates/emails/linker-registration-received.php:24
-msgid ""
-"We are reviewing your partner account. Net prices and the Proforma request "
-"open as soon as it is approved, and we will email you."
-msgstr ""
-"Wir prüfen Ihr Partner-Konto. Nettopreise und die Proforma-Anfrage öffnen "
-"sich mit der Freigabe; wir melden uns per E-Mail."
-
-#: includes/Presentation/LoginGate.php:116
-#: templates/emails/linker-registration-received.php:32
-msgid "Until then, browse the products and write to %s with any question."
-msgstr "Bis dahin können Sie die Produkte ansehen und Ihre Fragen an %s schreiben."
-
 #: includes/Presentation/ProductShortcodes.php:138
 #: includes/Storefront/ArchiveSchema.php:90
+#: includes/Presentation/ProductShortcodes.php:141
 msgctxt "breadcrumb"
 msgid "Home"
 msgstr "Startseite"
 
 #: includes/Presentation/ProductShortcodes.php:153
 #: includes/Storefront/ArchiveSchema.php:66
+#: includes/Presentation/ProductShortcodes.php:156
 msgid "Search products or filter by category and project requirements."
 msgstr ""
 "Suchen Sie Produkte oder filtern Sie nach Kategorie und Projektanforderungen."
 
 #: includes/Presentation/ProductShortcodes.php:156
+#: includes/Presentation/ProductShortcodes.php:159
 msgid "Search model or item number"
 msgstr "Modell oder Artikelnummer suchen"
 
 #: includes/Presentation/ProductShortcodes.php:157
 #: includes/Presentation/ProductShortcodes.php:1910
+#: includes/Presentation/ProductShortcodes.php:160
+#: includes/Presentation/ProductShortcodes.php:1906
 msgid "Search"
 msgstr "Suchen"
 
 #: includes/Presentation/ProductShortcodes.php:189
+#: includes/Presentation/ProductShortcodes.php:192
 msgid "Product categories"
 msgstr "Produktkategorien"
 
 #: includes/Presentation/ProductShortcodes.php:190
 #: includes/Presentation/ProductShortcodes.php:262
+#: includes/Presentation/ProductShortcodes.php:193
+#: includes/Presentation/ProductShortcodes.php:265
 msgid "All products"
 msgstr "Alle Produkte"
 
 #: includes/Presentation/ProductShortcodes.php:217
+#: includes/Presentation/ProductShortcodes.php:220
 msgid "Close filters"
 msgstr "Filter schließen"
 
 #: includes/Presentation/ProductShortcodes.php:230
 #: includes/Presentation/ProductShortcodes.php:239
 #: includes/Presentation/ProductShortcodes.php:431
+#: includes/Presentation/ProductShortcodes.php:233
+#: includes/Presentation/ProductShortcodes.php:242
+#: includes/Presentation/ProductShortcodes.php:434
 msgid "Filters"
 msgstr "Filter"
 
 #. translators: %d: number of selected filters.
 #: includes/Presentation/ProductShortcodes.php:231
+#: includes/Presentation/ProductShortcodes.php:234
 #, php-format
 msgid "Filters (%d)"
 msgstr "Filter (%d)"
 
 #: includes/Presentation/ProductShortcodes.php:240
+#: includes/Presentation/ProductShortcodes.php:243
 msgid "Reset"
 msgstr "Reset"
 
 #: includes/Presentation/ProductShortcodes.php:253
+#: includes/Presentation/ProductShortcodes.php:256
 msgid "Category"
 msgstr "Kategorie"
 
 #: includes/Presentation/ProductShortcodes.php:275
 #: includes/Storefront/ProductView.php:241
+#: includes/Presentation/ProductShortcodes.php:278
 msgid "Application"
 msgstr "Anwendung"
 
 #: includes/Presentation/ProductShortcodes.php:276
+#: includes/Presentation/ProductShortcodes.php:279
 msgid "Brand"
 msgstr "Marke"
 
 #: includes/Presentation/ProductShortcodes.php:277
 #: includes/Products/Materials.php:775
+#: includes/Presentation/ProductShortcodes.php:280
 msgid "Phase"
 msgstr "Phase"
 
 #: includes/Presentation/ProductShortcodes.php:278
+#: includes/Presentation/ProductShortcodes.php:281
 msgid "Power"
 msgstr "Leistung"
 
 #: includes/Presentation/ProductShortcodes.php:303
 #: includes/Presentation/ProductShortcodes.php:455
 #: includes/Storefront/ProductView.php:249
+#: includes/Presentation/ProductShortcodes.php:306
+#: includes/Presentation/ProductShortcodes.php:458
 msgid "AC power"
 msgstr "AC-Leistung"
 
 #: includes/Presentation/ProductShortcodes.php:303
+#: includes/Presentation/ProductShortcodes.php:306
 msgid "Minimum AC power in kilowatts"
 msgstr "Minimale AC-Leistung in Kilowatt"
 
 #: includes/Presentation/ProductShortcodes.php:303
+#: includes/Presentation/ProductShortcodes.php:306
 msgid "Maximum AC power in kilowatts"
 msgstr "Maximale AC-Leistung in Kilowatt"
 
 #: includes/Presentation/ProductShortcodes.php:306
 #: includes/Presentation/ProductShortcodes.php:456
 #: includes/Products/Materials.php:779
+#: includes/Presentation/ProductShortcodes.php:309
+#: includes/Presentation/ProductShortcodes.php:459
 msgid "Usable energy"
 msgstr "Nutzbare Energie"
 
 #: includes/Presentation/ProductShortcodes.php:306
+#: includes/Presentation/ProductShortcodes.php:309
 msgid "Minimum usable energy in kilowatt hours"
 msgstr "Minimale nutzbare Energie in Kilowattstunden"
 
 #: includes/Presentation/ProductShortcodes.php:306
+#: includes/Presentation/ProductShortcodes.php:309
 msgid "Maximum usable energy in kilowatt hours"
 msgstr "Maximale nutzbare Energie in Kilowattstunden"
 
 #: includes/Presentation/ProductShortcodes.php:316
+#: includes/Presentation/ProductShortcodes.php:319
 msgid "Plan with the Solution Configurator"
 msgstr "Mit dem Lösungskonfigurator planen"
 
 #: includes/Presentation/ProductShortcodes.php:317
+#: includes/Presentation/ProductShortcodes.php:320
 msgid ""
 "Configure a storage system from your site data; the result is a solution "
 "draft you can send as an inquiry."
@@ -1617,103 +1695,121 @@ msgstr ""
 "Konfigurieren Sie aus Ihren Standortdaten ein Speichersystem; das Ergebnis "
 "ist ein Lösungsentwurf, den Sie als Anfrage senden können."
 
-#: includes/Presentation/AccountTemplates.php:471
-#: includes/Presentation/ProductShortcodes.php:318
-msgid "Open the Solution Configurator"
-msgstr "Lösungskonfigurator öffnen"
-
 #: includes/Presentation/ProductShortcodes.php:322
+#: includes/Presentation/ProductShortcodes.php:325
 msgid "Clear"
 msgstr "Zurücksetzen"
 
 #: includes/Presentation/ProductShortcodes.php:323
+#: includes/Presentation/ProductShortcodes.php:326
 msgid "Show products"
 msgstr "Produkte anzeigen"
 
 #: includes/Presentation/ProductShortcodes.php:351
+#: includes/Presentation/ProductShortcodes.php:354
 msgid "Set"
 msgstr "Übernehmen"
 
 #: includes/Presentation/ProductShortcodes.php:381
+#: includes/Presentation/ProductShortcodes.php:384
 msgid "Recommended"
 msgstr "Empfohlen"
 
 #: includes/Presentation/ProductShortcodes.php:382
+#: includes/Presentation/ProductShortcodes.php:385
 msgid "Newest first"
 msgstr "Neueste zuerst"
 
 #: includes/Presentation/ProductShortcodes.php:383
+#: includes/Presentation/ProductShortcodes.php:386
 msgid "Name A-Z"
 msgstr "Name A-Z"
 
 #: includes/Presentation/ProductShortcodes.php:384
+#: includes/Presentation/ProductShortcodes.php:387
 msgid "Power high-low"
 msgstr "Leistung hoch-niedrig"
 
 #: includes/Presentation/ProductShortcodes.php:385
+#: includes/Presentation/ProductShortcodes.php:388
 msgid "Power low-high"
 msgstr "Leistung niedrig-hoch"
 
 #: includes/Presentation/ProductShortcodes.php:391
 #: includes/Vocabulary/Terms.php:68
+#: includes/Presentation/ProductShortcodes.php:394
 msgid "Sort products"
 msgstr "Produkte sortieren"
 
 #: includes/Presentation/ProductShortcodes.php:411
+#: includes/Presentation/ProductShortcodes.php:414
 msgid "No product matches these filters. Clear one to see more."
 msgstr ""
 "Kein Produkt passt zu dieser Filterauswahl. Setzen Sie einen Filter zurück, "
 "um mehr zu sehen."
 
 #: includes/Presentation/ProductShortcodes.php:430
+#: includes/Presentation/ProductShortcodes.php:433
 msgid "Product actions"
 msgstr "Produktaktionen"
 
 #: includes/Presentation/ProductShortcodes.php:455
+#: includes/Presentation/ProductShortcodes.php:458
 msgid "kW"
 msgstr "kW"
 
 #: includes/Presentation/ProductShortcodes.php:456
+#: includes/Presentation/ProductShortcodes.php:459
 msgid "kWh"
 msgstr "kWh"
 
 #: includes/Presentation/ProductShortcodes.php:477
+#: includes/Presentation/ProductShortcodes.php:480
 msgid "Clear all"
 msgstr "Alle zurücksetzen"
 
 #. translators: %s: product name.
 #: includes/Presentation/ProductShortcodes.php:571
+#: includes/Presentation/ProductShortcodes.php:574
 #, php-format
 msgid "Compare: %s"
 msgstr "Vergleichen: %s"
 
 #: includes/Presentation/ProductShortcodes.php:593
 #: includes/Presentation/ProductShortcodes.php:1881
+#: includes/Presentation/ProductShortcodes.php:596
+#: includes/Presentation/ProductShortcodes.php:1877
 msgid "Item no."
 msgstr "Artikelnr."
 
 #: includes/Presentation/ProductShortcodes.php:603
+#: includes/Presentation/ProductShortcodes.php:606
 msgid "Model"
 msgstr "Modell"
 
 #: includes/Presentation/ProductShortcodes.php:607
+#: includes/Presentation/ProductShortcodes.php:610
 msgid "Key product data"
 msgstr "Produktdaten"
 
 #: includes/Presentation/ProductShortcodes.php:622
+#: includes/Presentation/ProductShortcodes.php:625
 msgid "View product"
 msgstr "Produkt ansehen"
 
 #: includes/Presentation/ProductShortcodes.php:625
+#: includes/Presentation/ProductShortcodes.php:628
 msgid "Log in for pricing"
 msgstr "Für Preise anmelden"
 
 #: includes/Presentation/ProductShortcodes.php:826
+#: includes/Presentation/ProductShortcodes.php:829
 msgid "Ask about this product"
 msgstr "Produkt anfragen"
 
 #. translators: %s: product name with item number.
 #: includes/Presentation/ProductShortcodes.php:844
+#: includes/Presentation/ProductShortcodes.php:847
 #, php-format
 msgid ""
 "About %s: give me the key specs, which batteries or inverters it pairs with, "
@@ -1724,36 +1820,43 @@ msgstr ""
 "geeignet ist."
 
 #: includes/Presentation/ProductShortcodes.php:882
+#: includes/Presentation/ProductShortcodes.php:885
 msgid "New system"
 msgstr "Neues System"
 
 #. translators: %s: product name with item number.
 #: includes/Presentation/ProductShortcodes.php:884
+#: includes/Presentation/ProductShortcodes.php:887
 #, php-format
 msgid "I am planning a new system with %s."
 msgstr "Ich plane ein neues System mit %s."
 
 #: includes/Presentation/ProductShortcodes.php:887
+#: includes/Presentation/ProductShortcodes.php:890
 msgid "Extend an existing system"
 msgstr "Bestehendes System erweitern"
 
 #. translators: %s: product name with item number.
 #: includes/Presentation/ProductShortcodes.php:889
+#: includes/Presentation/ProductShortcodes.php:892
 #, php-format
 msgid "I am extending an existing system with %s."
 msgstr "Ich erweitere ein bestehendes System um %s."
 
 #: includes/Presentation/ProductShortcodes.php:892
+#: includes/Presentation/ProductShortcodes.php:895
 msgid "Replace an existing unit"
 msgstr "Gerät ersetzen"
 
 #. translators: %s: product name with item number.
 #: includes/Presentation/ProductShortcodes.php:894
+#: includes/Presentation/ProductShortcodes.php:897
 #, php-format
 msgid "I am replacing a unit in an existing system with %s."
 msgstr "Ich ersetze ein Gerät in einem bestehenden System durch %s."
 
 #: includes/Presentation/ProductShortcodes.php:897
+#: includes/Presentation/ProductShortcodes.php:900
 msgid ""
 "Then ask one question at a time for what you still need (existing model, "
 "quantity, installation postcode, installation date) and check compatibility, "
@@ -1764,20 +1867,24 @@ msgstr ""
 "Systemkomponenten und Lieferfenster anhand aktueller Linker-Daten."
 
 #: includes/Presentation/ProductShortcodes.php:937
+#: includes/Presentation/ProductShortcodes.php:933
 msgid "Product photography for this model is in preparation."
 msgstr "Die Produktfotografie für dieses Modell wird vorbereitet."
 
 #: includes/Presentation/ProductShortcodes.php:951
+#: includes/Presentation/ProductShortcodes.php:947
 msgid "Product image 2"
 msgstr "Produktbild 2"
 
 #. translators: %d: image number.
 #: includes/Presentation/ProductShortcodes.php:996
+#: includes/Presentation/ProductShortcodes.php:992
 #, php-format
 msgid "Product image %d"
 msgstr "Produktbild %d"
 
 #: includes/Presentation/ProductShortcodes.php:1020
+#: includes/Presentation/ProductShortcodes.php:1016
 msgid ""
 "Introduction in preparation. The specification below carries the values from "
 "the datasheet on file."
@@ -1786,10 +1893,12 @@ msgstr ""
 "Werte des hinterlegten Datenblatts."
 
 #: includes/Presentation/ProductShortcodes.php:1183
+#: includes/Presentation/ProductShortcodes.php:1179
 msgid "Specifications"
 msgstr "Spezifikationen"
 
 #: includes/Presentation/ProductShortcodes.php:1189
+#: includes/Presentation/ProductShortcodes.php:1185
 msgid ""
 "The specification table for this product is in preparation. Ask us for the "
 "datasheet."
@@ -1798,15 +1907,18 @@ msgstr ""
 "uns nach dem Datenblatt."
 
 #: includes/Presentation/ProductShortcodes.php:1192
+#: includes/Presentation/ProductShortcodes.php:1188
 msgid "Specification group"
 msgstr "Spezifikationsgruppe"
 
 #: includes/Presentation/ProductShortcodes.php:1232
+#: includes/Presentation/ProductShortcodes.php:1228
 msgid "About these specifications"
 msgstr "Zu diesen Angaben"
 
 #. translators: %s: product name.
 #: includes/Presentation/ProductShortcodes.php:1260
+#: includes/Presentation/ProductShortcodes.php:1256
 #, php-format
 msgid ""
 "Scenarios that show which projects the %s belongs in, and the limits behind "
@@ -1816,38 +1928,47 @@ msgstr ""
 "der Empfehlung unserer Ingenieure zugrunde liegen."
 
 #: includes/Presentation/ProductShortcodes.php:1266
+#: includes/Presentation/ProductShortcodes.php:1262
 msgid "Project scenario"
 msgstr "Projektszenario"
 
 #: includes/Presentation/ProductShortcodes.php:1266
+#: includes/Presentation/ProductShortcodes.php:1262
 msgid "Project note"
 msgstr "Projekthinweis"
 
 #: includes/Presentation/ProductShortcodes.php:1273
+#: includes/Presentation/ProductShortcodes.php:1269
 msgid "Project"
 msgstr "Projekt"
 
 #: includes/Presentation/ProductShortcodes.php:1273
+#: includes/Presentation/ProductShortcodes.php:1269
 msgid "Checks"
 msgstr "Prüfpunkte"
 
 #: includes/Presentation/ProductShortcodes.php:1273
+#: includes/Presentation/ProductShortcodes.php:1269
 msgid "Linker view"
 msgstr "Linker-Einschätzung"
 
 #: includes/Presentation/ProductShortcodes.php:1275
+#: includes/Presentation/ProductShortcodes.php:1271
 msgid "Project information"
 msgstr "Projektinformationen"
 
 #: includes/Presentation/ProductShortcodes.php:1293
+#: includes/Presentation/ProductShortcodes.php:1289
 msgid "Limits for the configuration"
 msgstr "Grenzen für die Konfiguration"
 
 #: includes/Presentation/ProductShortcodes.php:1298
+#: includes/Presentation/ProductShortcodes.php:1294
 msgid "Linker's read"
 msgstr "Unsere Einschätzung"
 
 #: includes/Presentation/ProductShortcodes.php:1321
+#: includes/Presentation/ProductShortcodes.php:1317
 msgid ""
 "No documents are attached to this product yet. Ask us and we will add them."
 msgstr ""
@@ -1855,17 +1976,20 @@ msgstr ""
 "ergänzen sie."
 
 #: includes/Presentation/ProductShortcodes.php:1416
+#: includes/Presentation/ProductShortcodes.php:1412
 msgid "On the compatibility list on file"
 msgstr "In der hinterlegten Kompatibilitätsliste"
 
 #. translators: %s: manufacturer
 #: includes/Presentation/ProductShortcodes.php:1418
+#: includes/Presentation/ProductShortcodes.php:1414
 #, php-format
 msgid "On %s's compatibility list"
 msgstr "In der Kompatibilitätsliste von %s"
 
 #. translators: %d: number of product families.
 #: includes/Presentation/ProductShortcodes.php:1487
+#: includes/Presentation/ProductShortcodes.php:1483
 #, php-format
 msgid "%d product family"
 msgid_plural "%d product families"
@@ -1873,27 +1997,32 @@ msgstr[0] "%d Produktfamilie"
 msgstr[1] "%d Produktfamilien"
 
 #: includes/Presentation/ProductShortcodes.php:1505
+#: includes/Presentation/ProductShortcodes.php:1501
 msgid "Product pagination"
 msgstr "Seitennavigation der Produkte"
 
 #. translators: %s: product category name.
 #: includes/Presentation/ProductShortcodes.php:1547
+#: includes/Presentation/ProductShortcodes.php:1543
 #, php-format
 msgid "Category: %s"
 msgstr "Kategorie: %s"
 
 #. translators: %s: shop page title.
 #: includes/Presentation/ProductShortcodes.php:1549
+#: includes/Presentation/ProductShortcodes.php:1545
 #, php-format
 msgid "Archives: %s"
 msgstr "Archiv: %s"
 
 #: includes/Presentation/ProductShortcodes.php:1580
+#: includes/Presentation/ProductShortcodes.php:1576
 msgid "Not sure which model to look for?"
 msgstr "Noch nicht sicher, welches Modell passt?"
 
 #: includes/Presentation/ProductShortcodes.php:1581
 #: includes/Presentation/Shortcodes.php:289
+#: includes/Presentation/ProductShortcodes.php:1577
 msgid ""
 "Your question includes this page as context. You can remove it before "
 "sending."
@@ -1902,18 +2031,22 @@ msgstr ""
 "entfernen."
 
 #: includes/Presentation/ProductShortcodes.php:1584
+#: includes/Presentation/ProductShortcodes.php:1580
 msgid "Need help choosing?"
 msgstr "Hilfe bei der Auswahl?"
 
 #: includes/Presentation/ProductShortcodes.php:1875
+#: includes/Presentation/ProductShortcodes.php:1871
 msgid "All models"
 msgstr "Alle Modelle"
 
 #: includes/Presentation/ProductShortcodes.php:1877
+#: includes/Presentation/ProductShortcodes.php:1873
 msgid "Selected model"
 msgstr "Ausgewähltes Modell"
 
 #: includes/Presentation/ProductShortcodes.php:1904
+#: includes/Presentation/ProductShortcodes.php:1900
 msgid "My account"
 msgstr "Mein Konto"
 
@@ -1921,15 +2054,17 @@ msgstr "Mein Konto"
 #: includes/Presentation/ProductShortcodes.php:1931
 #: templates/myaccount/auth/form-login.php:69
 #: templates/myaccount/auth/form-register.php:134
+#: includes/Presentation/ProductShortcodes.php:1900
+#: includes/Presentation/ProductShortcodes.php:1927
 msgid "Sign in"
 msgstr "Anmelden"
 
 #: includes/Presentation/ProductShortcodes.php:1914
 #: includes/Presentation/ProductShortcodes.php:1916
-#: includes/Vocabulary/Labels.php:96
-#: includes/Vocabulary/Labels.php:171
-#: includes/Vocabulary/Labels.php:195
-#: includes/Vocabulary/Terms.php:31
+#: includes/Vocabulary/Labels.php:96 includes/Vocabulary/Labels.php:171
+#: includes/Vocabulary/Labels.php:195 includes/Vocabulary/Terms.php:31
+#: includes/Presentation/ProductShortcodes.php:1910
+#: includes/Presentation/ProductShortcodes.php:1912
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
 
@@ -2124,8 +2259,7 @@ msgstr ""
 msgid "Discuss your project"
 msgstr "Projekt besprechen"
 
-#: includes/Presentation/Shortcodes.php:383
-#: includes/Vocabulary/Terms.php:37
+#: includes/Presentation/Shortcodes.php:383 includes/Vocabulary/Terms.php:37
 msgid "Your solution draft is empty."
 msgstr "Ihr Lösungsentwurf ist leer."
 
@@ -2137,18 +2271,15 @@ msgstr ""
 "Durchsuchen Sie jetzt die Produkte. Das Hinzufügen zum Lösungsentwurf ist "
 "erst nach der Kontoprüfung möglich."
 
-#: includes/Products/Comparison.php:221
-#: includes/Storefront/ProductView.php:292
+#: includes/Products/Comparison.php:221 includes/Storefront/ProductView.php:292
 msgid "Net price after partner sign-in"
 msgstr "Nettopreis nach Partner-Anmeldung"
 
-#: includes/Products/Comparison.php:224
-#: includes/Storefront/ProductView.php:67
+#: includes/Products/Comparison.php:224 includes/Storefront/ProductView.php:67
 msgid "In stock"
 msgstr "Auf Lager"
 
-#: includes/Products/Comparison.php:225
-#: includes/Storefront/ProductView.php:67
+#: includes/Products/Comparison.php:225 includes/Storefront/ProductView.php:67
 msgid "Currently unavailable"
 msgstr "Derzeit nicht verfügbar"
 
@@ -2304,8 +2435,7 @@ msgstr "Wallboxen"
 msgid "Power consumption"
 msgstr "Leistungsaufnahme"
 
-#: includes/Products/Materials.php:792
-#: includes/Products/Materials.php:793
+#: includes/Products/Materials.php:792 includes/Products/Materials.php:793
 #: includes/Products/Materials.php:815
 msgid "Operating temperature"
 msgstr "Betriebstemperatur"
@@ -2362,8 +2492,7 @@ msgstr "Max. Ladestrom"
 msgid "Max. discharge current"
 msgstr "Max. Entladestrom"
 
-#: includes/Products/Materials.php:807
-#: includes/Products/Materials.php:824
+#: includes/Products/Materials.php:807 includes/Products/Materials.php:824
 msgid "Cycle life"
 msgstr "Zyklenlebensdauer"
 
@@ -2387,8 +2516,7 @@ msgstr "Unterstützte Geräte"
 msgid "Communication"
 msgstr "Kommunikation"
 
-#: includes/Products/Materials.php:813
-#: includes/Products/Materials.php:814
+#: includes/Products/Materials.php:813 includes/Products/Materials.php:814
 msgid "Ingress protection"
 msgstr "Schutzart"
 
@@ -2420,8 +2548,7 @@ msgstr "Module pro Stapel"
 msgid "Role"
 msgstr "Funktion"
 
-#: includes/Products/Materials.php:826
-#: includes/Products/Materials.php:827
+#: includes/Products/Materials.php:826 includes/Products/Materials.php:827
 msgid "Altitude"
 msgstr "Betriebshöhe"
 
@@ -2483,10 +2610,8 @@ msgstr ""
 "Paketpreis für einen lieferfähigen Artikel innerhalb Deutschlands: %s bei "
 "Absenden. Fracht für mehrere Artikel wird gesondert bestätigt."
 
-#: includes/Products/Materials.php:1087
-#: includes/Products/Materials.php:1097
-#: includes/Products/Materials.php:1118
-#: includes/Products/Materials.php:1127
+#: includes/Products/Materials.php:1087 includes/Products/Materials.php:1097
+#: includes/Products/Materials.php:1118 includes/Products/Materials.php:1127
 #: includes/Products/Materials.php:1134
 msgid "Delivery included in your Proforma"
 msgstr "Lieferung in Ihrer Proforma enthalten"
@@ -2501,7 +2626,7 @@ msgstr "Voraussichtliche Lieferung innerhalb Deutschlands: %1$s bis %2$s"
 msgid "The final delivery charge is included in your Proforma."
 msgstr "Die endgültigen Frachtkosten werden in Ihrer Proforma ausgewiesen."
 
-#: includes/Products/Materials.php:1632
+#: includes/Products/Materials.php:1632 includes/Products/Materials.php:1589
 msgid "Compatibility list"
 msgstr "Kompatibilitätsliste"
 
@@ -2692,31 +2817,37 @@ msgstr ""
 "Es konnte keine Proforma-Nummer vergeben werden. Bitte versuchen Sie es "
 "erneut."
 
-#: includes/Registration/Approval.php:92
+#: includes/Registration/Approval.php:92 includes/Registration/Approval.php:101
 msgid "The username or the password is not correct."
 msgstr "Benutzername oder Passwort ist nicht korrekt."
 
 #: includes/Registration/Approval.php:213
+#: includes/Registration/Approval.php:227
 msgid "Pending review"
 msgstr "In Prüfung"
 
 #: includes/Registration/Approval.php:214
+#: includes/Registration/Approval.php:228
 msgid "Approved"
 msgstr "Freigegeben"
 
 #: includes/Registration/Approval.php:215
+#: includes/Registration/Approval.php:229
 msgid "Restricted"
 msgstr "Eingeschränkt"
 
 #: includes/Registration/Approval.php:216
+#: includes/Registration/Approval.php:230
 msgid "Rejected"
 msgstr "Abgelehnt"
 
 #: includes/Registration/Approval.php:218
+#: includes/Registration/Approval.php:232
 msgid "No decision yet"
 msgstr "Noch nicht entschieden"
 
 #: includes/Registration/Approval.php:234
+#: includes/Registration/Approval.php:248
 msgid ""
 "This account is not approved for sign-in. We have emailed you the reason. "
 "Write to sales@de-linker.com and we will look at it again."
@@ -2725,28 +2856,31 @@ msgstr ""
 "per E-Mail geschickt. Schreiben Sie an sales@de-linker.com; wir sehen uns "
 "Ihr Konto erneut an."
 
-#: build/accounts.js
-#: includes/Registration/ApprovalAdmin.php:45
-#: includes/Registration/ApprovalAdmin.php:158
+#: build/accounts.js includes/Registration/ApprovalAdmin.php:45
+#: includes/Registration/ApprovalAdmin.php:158 build/accounts.js:1
 msgid "Approve"
 msgstr "Freigeben"
 
-#: build/accounts.js
-#: includes/Registration/ApprovalAdmin.php:49
+#: build/accounts.js includes/Registration/ApprovalAdmin.php:49
+#: build/accounts.js:1
 msgid "Restrict"
 msgstr "Einschränken"
 
-#: build/accounts.js
-#: includes/Registration/ApprovalAdmin.php:53
+#: build/accounts.js includes/Registration/ApprovalAdmin.php:53
+#: build/accounts.js:1
 msgid "Reject"
 msgstr "Ablehnen"
 
 #: includes/Registration/ApprovalAdmin.php:114
 #: templates/emails/linker-new-customer.php:30
+#: includes/Registration/AccountsTable.php:45
+#: includes/Registration/ApprovalAdmin.php:40
+#: templates/emails/linker-new-customer.php:31
 msgid "Approval"
 msgstr "Freigabe"
 
 #: includes/Registration/ApprovalAdmin.php:181
+#: includes/Registration/ApprovalAdmin.php:92
 msgid "Linker approval"
 msgstr "Linker-Freigabe"
 
@@ -2757,6 +2891,7 @@ msgid "Last change %1$s by %2$s."
 msgstr "Letzte Änderung %1$s durch %2$s."
 
 #: includes/Registration/ApprovalAdmin.php:202
+#: includes/Registration/AccountsTable.php:46
 msgid "Reason"
 msgstr "Grund"
 
@@ -2769,6 +2904,7 @@ msgstr ""
 "zur Änderung."
 
 #: includes/Registration/ApprovalAdmin.php:237
+#: includes/Registration/AccountsController.php:111
 msgid "You are not allowed to change this account."
 msgstr "Sie dürfen dieses Konto nicht ändern."
 
@@ -2789,8 +2925,8 @@ msgstr ""
 #: includes/Registration/BillingVatField.php:86
 #: includes/Registration/Fields.php:73
 #: templates/emails/linker-new-customer.php:28
-#: templates/proforma/proforma.php:87
-#: templates/proforma/proforma.php:102
+#: templates/proforma/proforma.php:87 templates/proforma/proforma.php:102
+#: templates/emails/linker-new-customer.php:29
 msgid "VAT ID"
 msgstr "USt-IdNr."
 
@@ -2805,11 +2941,13 @@ msgstr "Kundenprüfung"
 #: includes/Registration/BillingVatField.php:94
 #: includes/Registration/Fields.php:67
 #: templates/emails/linker-new-customer.php:24
+#: templates/emails/linker-new-customer.php:25
 msgid "Business type"
 msgstr "Unternehmensart"
 
 #: includes/Registration/BillingVatField.php:99
 #: templates/emails/linker-new-customer.php:29
+#: templates/emails/linker-new-customer.php:30
 msgid "VAT check"
 msgstr "USt-IdNr.-Prüfung"
 
@@ -2968,21 +3106,27 @@ msgid "Please enter a valid postcode."
 msgstr "Bitte geben Sie eine gültige Postleitzahl ein."
 
 #: includes/Registration/PendingApprovals.php:50
+#: includes/Registration/PendingApprovals.php:72
 msgid "Accounts waiting for approval"
 msgstr "Konten, die auf die Freigabe warten"
 
 #: includes/Registration/PendingApprovals.php:79
+#: includes/Registration/PendingApprovals.php:132
 msgid "No account is waiting for approval."
 msgstr "Kein Konto wartet auf die Freigabe."
 
 #: includes/Registration/PendingApprovals.php:97
 #: templates/emails/linker-new-customer.php:44
 #: templates/emails/linker-vat-review.php:44
+#: includes/Registration/PendingApprovals.php:150
+#: templates/emails/linker-new-customer.php:45
+#: templates/emails/linker-vat-review.php:45
 msgid "Open the customer"
 msgstr "Kunden öffnen"
 
 #. translators: %s: the day and time the account registered.
 #: includes/Registration/PendingApprovals.php:100
+#: includes/Registration/PendingApprovals.php:153
 #, php-format
 msgid "Registered on %s"
 msgstr "Registriert am %s"
@@ -3025,8 +3169,7 @@ msgstr[1] ""
 "WooCommerce → Status → Logs (linker-mail); jede Nachricht bleibt unter ihrer "
 "Beitrags-ID in der Warteschlange."
 
-#: includes/Settings/SettingsTab.php:78
-#: includes/Settings/SettingsTab.php:84
+#: includes/Settings/SettingsTab.php:78 includes/Settings/SettingsTab.php:84
 msgid "Team mailbox"
 msgstr "Team-Postfach"
 
@@ -3039,19 +3182,19 @@ msgstr ""
 "in den Antworten von Genie. Interne Benachrichtigungen gehen nicht an diese "
 "Adresse."
 
-#: includes/Settings/SettingsTab.php:92
+#: includes/Settings/SettingsTab.php:92 includes/Settings/SettingsTab.php:119
 msgid "Blind copies"
 msgstr "Blindkopien"
 
-#: includes/Settings/SettingsTab.php:93
+#: includes/Settings/SettingsTab.php:93 includes/Settings/SettingsTab.php:120
 msgid "One address per line."
 msgstr "Eine Adresse pro Zeile."
 
-#: includes/Settings/SettingsTab.php:104
+#: includes/Settings/SettingsTab.php:104 includes/Settings/SettingsTab.php:131
 msgid "Contact person"
 msgstr "Ansprechperson"
 
-#: includes/Settings/SettingsTab.php:106
+#: includes/Settings/SettingsTab.php:106 includes/Settings/SettingsTab.php:133
 msgid ""
 "Shown to customers at the top of their account. Without an email address the "
 "team mailbox is shown."
@@ -3061,14 +3204,16 @@ msgstr ""
 
 #: includes/Settings/SettingsTab.php:116
 #: templates/emails/linker-new-customer.php:26
+#: includes/Settings/SettingsTab.php:143
+#: templates/emails/linker-new-customer.php:27
 msgid "Email"
 msgstr "E-Mail"
 
-#: includes/Settings/SettingsTab.php:122
+#: includes/Settings/SettingsTab.php:122 includes/Settings/SettingsTab.php:149
 msgid "Phone"
 msgstr "Telefon"
 
-#: includes/Settings/SettingsTab.php:134
+#: includes/Settings/SettingsTab.php:134 includes/Settings/SettingsTab.php:161
 msgid ""
 "Printed on every Proforma invoice. The seller address is the store address "
 "under General."
@@ -3076,11 +3221,11 @@ msgstr ""
 "Steht auf jeder Proformarechnung. Die Anschrift des Verkäufers ist die Shop-"
 "Adresse unter „Allgemein“."
 
-#: includes/Settings/SettingsTab.php:138
+#: includes/Settings/SettingsTab.php:138 includes/Settings/SettingsTab.php:165
 msgid "Number prefix"
 msgstr "Nummernpräfix"
 
-#: includes/Settings/SettingsTab.php:139
+#: includes/Settings/SettingsTab.php:139 includes/Settings/SettingsTab.php:166
 msgid ""
 "Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year. Empty "
 "uses DLK-PF, the prefix on de-linker.com."
@@ -3088,47 +3233,47 @@ msgstr ""
 "Nummern haben die Form PRÄFIX-JAHR-NNNN und zählen jedes Kalenderjahr ab 1. "
 "Bleibt das Feld leer, gilt DLK-PF, das Präfix auf de-linker.com."
 
-#: includes/Settings/SettingsTab.php:147
+#: includes/Settings/SettingsTab.php:147 includes/Settings/SettingsTab.php:174
 msgid "Seller"
 msgstr "Verkäufer"
 
-#: includes/Settings/SettingsTab.php:154
+#: includes/Settings/SettingsTab.php:154 includes/Settings/SettingsTab.php:181
 msgid "Seller VAT ID"
 msgstr "USt-IdNr. des Verkäufers"
 
-#: includes/Settings/SettingsTab.php:160
-#: templates/proforma/proforma.php:169
+#: includes/Settings/SettingsTab.php:160 templates/proforma/proforma.php:169
+#: includes/Settings/SettingsTab.php:187
 msgid "Account holder"
 msgstr "Kontoinhaber"
 
-#: includes/Settings/SettingsTab.php:166
-#: templates/proforma/proforma.php:171
+#: includes/Settings/SettingsTab.php:166 templates/proforma/proforma.php:171
+#: includes/Settings/SettingsTab.php:193
 msgid "Bank"
 msgstr "Bank"
 
-#: includes/Settings/SettingsTab.php:172
-#: templates/proforma/proforma.php:173
+#: includes/Settings/SettingsTab.php:172 templates/proforma/proforma.php:173
+#: includes/Settings/SettingsTab.php:199
 msgid "IBAN"
 msgstr "IBAN"
 
-#: includes/Settings/SettingsTab.php:178
-#: templates/proforma/proforma.php:175
+#: includes/Settings/SettingsTab.php:178 templates/proforma/proforma.php:175
+#: includes/Settings/SettingsTab.php:205
 msgid "BIC"
 msgstr "BIC"
 
 #. translators: %s: the addresses that were left out, comma-separated.
-#: includes/Settings/SettingsTab.php:211
+#: includes/Settings/SettingsTab.php:211 includes/Settings/SettingsTab.php:238
 #, php-format
 msgid "Not an email address, left out: %s"
 msgstr "Keine E-Mail-Adresse, nicht übernommen: %s"
 
-#: includes/Settings/SettingsTab.php:227
+#: includes/Settings/SettingsTab.php:227 includes/Settings/SettingsTab.php:254
 msgid ""
 "The IBAN is not valid (check digits do not match); the previous IBAN is kept."
 msgstr ""
 "Die IBAN ist ungültig (Prüfziffern stimmen nicht); die bisherige IBAN bleibt."
 
-#: includes/Settings/SettingsTab.php:242
+#: includes/Settings/SettingsTab.php:242 includes/Settings/SettingsTab.php:269
 msgid "The BIC is not valid (8 or 11 characters); the previous BIC is kept."
 msgstr "Der BIC ist ungültig (8 oder 11 Zeichen); der bisherige BIC bleibt."
 
@@ -3233,18 +3378,15 @@ msgstr "Nutzbare Energie"
 msgid "Sign in for partner pricing"
 msgstr "Für Partnerpreise anmelden"
 
-#: includes/Vocabulary/Labels.php:40
-#: includes/Vocabulary/Terms.php:89
+#: includes/Vocabulary/Labels.php:40 includes/Vocabulary/Terms.php:89
 msgid "Request Proforma"
 msgstr "Proforma anfordern"
 
-#: includes/Vocabulary/Labels.php:47
-#: includes/Vocabulary/Terms.php:104
+#: includes/Vocabulary/Labels.php:47 includes/Vocabulary/Terms.php:104
 msgid "Thank you. Your inquiry has been received."
 msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
 
-#: includes/Vocabulary/Labels.php:54
-#: includes/Vocabulary/Terms.php:90
+#: includes/Vocabulary/Labels.php:54 includes/Vocabulary/Terms.php:90
 msgid ""
 "Please log in to request a Proforma invoice. No account yet? Register on the "
 "account page."
@@ -3297,8 +3439,7 @@ msgstr ""
 "und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
 "Steuern und Lieferbedingungen vor der Proforma-Anfrage."
 
-#: includes/Vocabulary/Labels.php:174
-#: includes/Vocabulary/Terms.php:40
+#: includes/Vocabulary/Labels.php:174 includes/Vocabulary/Terms.php:40
 msgid "Proforma request"
 msgstr "Proforma-Anfrage"
 
@@ -3469,13 +3610,11 @@ msgstr "Sie haben bereits ein Konto?"
 msgid "Register"
 msgstr "Registrieren"
 
-#: includes/Vocabulary/Terms.php:82
-#: includes/Vocabulary/Terms.php:126
+#: includes/Vocabulary/Terms.php:82 includes/Vocabulary/Terms.php:126
 msgid "Company details"
 msgstr "Unternehmensdaten"
 
-#: includes/Vocabulary/Terms.php:83
-#: includes/Vocabulary/Terms.php:87
+#: includes/Vocabulary/Terms.php:83 includes/Vocabulary/Terms.php:87
 msgid "Notes"
 msgstr "Anmerkungen"
 
@@ -3584,13 +3723,6 @@ msgid "You have not sent an inquiry yet."
 msgstr "Sie haben noch keine Anfrage gesendet."
 
 #. translators: %s: inquiry number.
-#: includes/Presentation/AccountTemplates.php:790
-#: includes/Vocabulary/Terms.php:121
-#, php-format
-msgid "View inquiry %s"
-msgstr "Anfrage %s ansehen"
-
-#. translators: %s: inquiry number.
 #: includes/Vocabulary/Terms.php:123
 #, php-format
 msgid "View inquiry number %s"
@@ -3611,8 +3743,7 @@ msgid "Save company details"
 msgstr "Unternehmensdaten speichern"
 
 #. translators: 1: link to the inquiries, 2: link to the company details, 3: link to the account details.
-#: includes/Vocabulary/Terms.php:130
-#: includes/Vocabulary/Terms.php:132
+#: includes/Vocabulary/Terms.php:130 includes/Vocabulary/Terms.php:132
 #, php-format
 msgid ""
 "In your account you can follow your <a href=\"%1$s\">inquiries</a>, keep "
@@ -3795,6 +3926,7 @@ msgid "Thank you for your inquiry %s."
 msgstr "vielen Dank für Ihre Anfrage %s."
 
 #: templates/emails/linker-new-customer.php:27
+#: templates/emails/linker-new-customer.php:28
 msgid "Address"
 msgstr "Anschrift"
 
@@ -3833,24 +3965,120 @@ msgstr "Wir haben Ihre Partner-Registrierung erhalten."
 
 #. translators: 1: company, 2: VAT ID.
 #: templates/emails/linker-vat-review.php:28
+#: templates/emails/linker-vat-review.php:29
 #, php-format
 msgid "The VAT check of %1$s (VAT ID %2$s) changed."
 msgstr "Die USt-IdNr.-Prüfung von %1$s (USt-IdNr. %2$s) hat sich geändert."
 
 #. translators: 1: verdict before, 2: verdict now.
 #: templates/emails/linker-vat-review.php:38
+#: templates/emails/linker-vat-review.php:39
 #, php-format
 msgid "Before: %1$s. Now: %2$s."
 msgstr "Vorher: %1$s. Jetzt: %2$s."
+
+#: templates/myaccount/account/form-edit-account.php:29
+msgid "Your details"
+msgstr "Ihre Angaben"
+
+#: templates/myaccount/account/form-edit-account.php:71
+msgid "Password change"
+msgstr "Passwort ändern"
+
+#: templates/myaccount/account/form-edit-account.php:74
+msgid "Leave the password fields blank to keep your current password."
+msgstr ""
+"Lassen Sie die Passwortfelder leer, um Ihr aktuelles Passwort zu behalten."
+
+#: templates/myaccount/account/form-edit-account.php:77
+msgid "Current password"
+msgstr "Aktuelles Passwort"
+
+#: templates/myaccount/account/form-edit-account.php:81
+#: templates/myaccount/auth/form-reset-password.php:39
+msgid "New password"
+msgstr "Neues Passwort"
+
+#: templates/myaccount/account/form-edit-account.php:83
+#: templates/myaccount/auth/form-register.php:105
+#: templates/myaccount/auth/form-reset-password.php:41
+msgid "Use at least 8 characters with a mix of letters, numbers and symbols."
+msgstr ""
+"Verwenden Sie mindestens 8 Zeichen mit Buchstaben, Zahlen und Sonderzeichen."
+
+#: templates/myaccount/account/form-edit-account.php:86
+msgid "Confirm new password"
+msgstr "Neues Passwort bestätigen"
+
+#: templates/myaccount/account/form-edit-account.php:88
+#: templates/myaccount/auth/form-reset-password.php:46
+msgid "The passwords do not match."
+msgstr "Die Passwörter stimmen nicht überein."
+
+#: templates/myaccount/auth/form-login.php:57
+msgid "Your partner account"
+msgstr "Ihr Partner-Konto"
+
+#: templates/myaccount/auth/form-login.php:58
+msgid "The workspace for installers, EPCs and distributors."
+msgstr ""
+"Der Arbeitsbereich für Installationsbetriebe, EPC-Unternehmen und Händler."
+
+#: templates/myaccount/auth/form-login.php:60
+msgid "Net prices and Proforma requests once approved"
+msgstr "Nettopreise und Proforma-Anfragen nach Freigabe"
+
+#: templates/myaccount/auth/form-login.php:61
+msgid "Every inquiry and document in one place"
+msgstr "Alle Anfragen und Dokumente an einem Ort"
+
+#: templates/myaccount/auth/form-login.php:62
+#: templates/myaccount/auth/form-register.php:51
+msgid "We answer inquiries within one working day"
+msgstr "Wir beantworten Anfragen innerhalb eines Arbeitstages"
 
 #: templates/myaccount/auth/form-login.php:70
 msgid "Your inquiries, documents and prices in one place."
 msgstr "Ihre Anfragen, Dokumente und Preise an einem Ort."
 
 #: templates/myaccount/auth/form-login.php:122
+msgid "No partner account yet?"
+msgstr "Noch kein Partner-Konto?"
+
+#: templates/myaccount/auth/form-login.php:122
 #: templates/myaccount/auth/form-register.php:58
 msgid "Create your business account"
 msgstr "Erstellen Sie Ihr Firmenkonto"
+
+#: templates/myaccount/auth/form-lost-password.php:25
+#: templates/myaccount/auth/lost-password-confirmation.php:22
+msgid "Reset your password"
+msgstr "Passwort zurücksetzen"
+
+#: templates/myaccount/auth/form-lost-password.php:53
+#: templates/myaccount/auth/lost-password-confirmation.php:29
+msgid "Back to sign in"
+msgstr "Zurück zur Anmeldung"
+
+#: templates/myaccount/auth/form-register.php:46
+msgid "Create your partner account"
+msgstr "Legen Sie Ihr Partner-Konto an"
+
+#: templates/myaccount/auth/form-register.php:47
+msgid ""
+"For installers, EPCs and distributors: net prices, documents and inquiries "
+"in one workspace."
+msgstr ""
+"Für Installationsbetriebe, EPC-Unternehmen und Händler: Nettopreise, "
+"Dokumente und Anfragen in einem Arbeitsbereich."
+
+#: templates/myaccount/auth/form-register.php:50
+msgid "You see net prices on every product after approval"
+msgstr "Nettopreise sehen Sie zu jedem Produkt nach der Freigabe"
+
+#: templates/myaccount/auth/form-register.php:52
+msgid "We run the VAT ID check in VIES for you"
+msgstr "Wir prüfen die USt-IdNr. im VIES für Sie"
 
 #: templates/myaccount/auth/form-register.php:59
 msgid "We review every new account before activation."
@@ -3868,15 +4096,17 @@ msgstr "Zugangsdaten"
 msgid "Terms of Sale"
 msgstr "Verkaufsbedingungen"
 
-#: templates/myaccount/auth/form-lost-password.php:25
-#: templates/myaccount/auth/lost-password-confirmation.php:22
-msgid "Reset your password"
-msgstr "Passwort zurücksetzen"
+#: templates/myaccount/auth/form-register.php:134
+msgid "Already have a partner account?"
+msgstr "Sie haben bereits ein Partner-Konto?"
 
-#: templates/myaccount/auth/form-lost-password.php:53
-#: templates/myaccount/auth/lost-password-confirmation.php:29
-msgid "Back to sign in"
-msgstr "Zurück zur Anmeldung"
+#: templates/myaccount/auth/form-reset-password.php:31
+msgid "Choose a new password"
+msgstr "Wählen Sie ein neues Passwort"
+
+#: templates/myaccount/auth/form-reset-password.php:44
+msgid "Re-enter new password"
+msgstr "Neues Passwort wiederholen"
 
 #: templates/myaccount/linker-saved-solutions.php:27
 #: templates/myaccount/linker-saved-solutions.php:39
@@ -3958,131 +4188,289 @@ msgstr ""
 msgid "Reference"
 msgstr "Verwendungszweck"
 
-#: templates/myaccount/auth/form-login.php:57
-msgid "Your partner account"
-msgstr "Ihr Partner-Konto"
+#: includes/Settings/SettingsTab.php:96
+msgid "Internal notifications"
+msgstr "Interne Benachrichtigungen"
 
-#: templates/myaccount/auth/form-login.php:58
-msgid "The workspace for installers, EPCs and distributors."
-msgstr ""
-"Der Arbeitsbereich für Installationsbetriebe, EPC-Unternehmen und "
-"Händler."
-
-#: templates/myaccount/auth/form-login.php:60
-msgid "Net prices and Proforma requests once approved"
-msgstr "Nettopreise und Proforma-Anfragen nach Freigabe"
-
-#: templates/myaccount/auth/form-login.php:61
-msgid "Every inquiry and document in one place"
-msgstr "Alle Anfragen und Dokumente an einem Ort"
-
-#: templates/myaccount/auth/form-login.php:62
-#: templates/myaccount/auth/form-register.php:51
-msgid "We answer inquiries within one working day"
-msgstr "Wir beantworten Anfragen innerhalb eines Arbeitstages"
-
-#: templates/myaccount/auth/form-login.php:122
-msgid "No partner account yet?"
-msgstr "Noch kein Partner-Konto?"
-
-#: templates/myaccount/auth/form-register.php:134
-msgid "Already have a partner account?"
-msgstr "Sie haben bereits ein Partner-Konto?"
-
-#: templates/myaccount/account/form-edit-account.php:83
-#: templates/myaccount/auth/form-register.php:105
-#: templates/myaccount/auth/form-reset-password.php:41
-msgid "Use at least 8 characters with a mix of letters, numbers and symbols."
-msgstr ""
-"Verwenden Sie mindestens 8 Zeichen mit Buchstaben, Zahlen und "
-"Sonderzeichen."
-
-#: templates/myaccount/auth/form-reset-password.php:31
-msgid "Choose a new password"
-msgstr "Wählen Sie ein neues Passwort"
-
-#: templates/myaccount/account/form-edit-account.php:81
-#: templates/myaccount/auth/form-reset-password.php:39
-msgid "New password"
-msgstr "Neues Passwort"
-
-#: templates/myaccount/auth/form-reset-password.php:44
-msgid "Re-enter new password"
-msgstr "Neues Passwort wiederholen"
-
-#: templates/myaccount/account/form-edit-account.php:88
-#: templates/myaccount/auth/form-reset-password.php:46
-msgid "The passwords do not match."
-msgstr "Die Passwörter stimmen nicht überein."
-
-#: templates/myaccount/account/form-edit-account.php:29
-msgid "Your details"
-msgstr "Ihre Angaben"
-
-#: templates/myaccount/account/form-edit-account.php:71
-msgid "Password change"
-msgstr "Passwort ändern"
-
-#: templates/myaccount/account/form-edit-account.php:74
-msgid "Leave the password fields blank to keep your current password."
-msgstr ""
-"Lassen Sie die Passwortfelder leer, um Ihr aktuelles Passwort zu "
-"behalten."
-
-#: templates/myaccount/account/form-edit-account.php:77
-msgid "Current password"
-msgstr "Aktuelles Passwort"
-
-#: templates/myaccount/account/form-edit-account.php:86
-msgid "Confirm new password"
-msgstr "Neues Passwort bestätigen"
-
-#: includes/Presentation/LoginGate.php:110
-msgid "Under review"
-msgstr "In Prüfung"
-
-#: includes/Presentation/LoginGate.php:173
-msgid "Sign in to request your Proforma"
-msgstr "Melden Sie sich an, um Ihre Proformarechnung anzufordern"
-
-#: includes/Presentation/LoginGate.php:175
+#: includes/Settings/SettingsTab.php:98
 msgid ""
-"Your solution draft is saved. Log in with your partner account to "
-"send the inquiry — no account yet? Register on the account page; the "
-"draft waits for you."
+"Every internal notification (new customer, VAT check, new inquiry, contact "
+"form message, daily digest, health check) is one message to this address, "
+"with a blind copy to each address below."
 msgstr ""
-"Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem "
-"Partner-Konto an, um die Anfrage abzusenden — noch kein Konto? "
-"Registrieren Sie sich auf der Kontoseite; Ihr Entwurf wartet dort "
-"auf Sie."
+"Jede interne Benachrichtigung (neuer Kunde, USt-IdNr.-Prüfung, neue Anfrage, "
+"Nachricht über das Kontaktformular, Tagesübersicht, Gesundheitsprüfung) ist "
+"eine Nachricht an diese Adresse, mit einer Blindkopie an jede Adresse unten."
 
-#: includes/Account/AuthTemplates.php:153
-msgid "You have been signed out."
-msgstr "Sie wurden abgemeldet."
+#: includes/Settings/SettingsTab.php:102
+msgid "Recipient"
+msgstr "Empfänger"
 
-#: includes/Presentation/AccountTemplates.php:806
-msgid "%s product"
-msgid_plural "%s products"
-msgstr[0] "%s Produkt"
-msgstr[1] "%s Produkte"
+#: includes/Registration/Accounts.php:104
+#: includes/Registration/Accounts.php:162
+msgid "Company website"
+msgstr "Unternehmenswebsite"
 
-#: templates/myaccount/auth/form-register.php:46
-msgid "Create your partner account"
-msgstr "Legen Sie Ihr Partner-Konto an"
+#: includes/Registration/Accounts.php:129
+#: includes/Registration/Accounts.php:197
+msgid "You do not have permission to switch to this customer."
+msgstr "Sie sind nicht berechtigt, zur Ansicht dieses Kunden zu wechseln."
 
-#: templates/myaccount/auth/form-register.php:47
-msgid "For installers, EPCs and distributors: net prices, documents and inquiries in one workspace."
+#: includes/Registration/Accounts.php:129
+#: includes/Registration/Accounts.php:197
+msgid "User Switching is not active."
+msgstr "User Switching ist nicht aktiviert."
+
+#: includes/Registration/AccountsAdmin.php:51 build/accounts.js:2
+#: includes/Registration/AccountsAdmin.php:54
+msgid "Accounts waiting for you"
+msgstr "Konten zur Prüfung"
+
+#: includes/Registration/AccountsAdmin.php:57
+#: includes/Registration/AccountsAdmin.php:61
+msgid "All accounts →"
+msgstr "Alle Konten →"
+
+#: includes/Registration/AccountsAdmin.php:68
+#: includes/Registration/AccountsAdmin.php:106
+#: includes/Registration/AccountsAdmin.php:72
+#: includes/Registration/AccountsAdmin.php:110
+msgid "Accounts"
+msgstr "Konten"
+
+#. translators: %s: number of accounts waiting for review.
+#: includes/Registration/AccountsAdmin.php:82 build/accounts.js:2
+#: includes/Registration/AccountsAdmin.php:86
+#, php-format
+msgid "%s account to review"
+msgid_plural "%s accounts to review"
+msgstr[0] "%s Konto zu prüfen"
+msgstr[1] "%s Konten zu prüfen"
+
+#: includes/Registration/AccountsAdmin.php:109
+#: includes/Registration/AccountsAdmin.php:114
+msgid "Search accounts"
+msgstr "Konten suchen"
+
+#: includes/Registration/AccountsController.php:78
+#: includes/Registration/AccountsController.php:84
+msgid "You are not allowed to review accounts."
+msgstr "Sie sind nicht berechtigt, Konten zu prüfen."
+
+#: includes/Registration/AccountsController.php:92
+#: includes/Registration/AccountsController.php:139
+msgid "This account is unavailable or you do not have permission to review it."
 msgstr ""
-"Für Installationsbetriebe, EPC-Unternehmen und Händler: Nettopreise, "
-"Dokumente und Anfragen in einem Arbeitsbereich."
+"Dieses Konto ist nicht verfügbar oder Sie sind nicht berechtigt, es zu "
+"prüfen."
 
-#: templates/myaccount/auth/form-register.php:50
-msgid "You see net prices on every product after approval"
-msgstr "Nettopreise sehen Sie zu jedem Produkt nach der Freigabe"
+#: includes/Registration/AccountsController.php:117 build/accounts.js:1
+#: includes/Registration/AccountsController.php:116
+msgid ""
+"Enter a reason for the customer before restricting or rejecting the account."
+msgstr ""
+"Geben Sie einen Grund für den Kunden an, bevor Sie das Konto einschränken "
+"oder ablehnen."
 
-#: templates/myaccount/auth/form-register.php:52
-msgid "We run the VAT ID check in VIES for you"
-msgstr "Wir prüfen die USt-IdNr. im VIES für Sie"
+#. translators: %s: email domain.
+#: includes/Registration/AccountSignals.php:37
+#: includes/Registration/AccountSignals.php:56
+#, php-format
+msgid "Free email provider: %s"
+msgstr "Kostenloser E-Mail-Anbieter: %s"
+
+#. translators: %s: email domain.
+#: includes/Registration/AccountSignals.php:37
+#: includes/Registration/AccountSignals.php:56
+#, php-format
+msgid "Email domain: %s (not verified)"
+msgstr "E-Mail-Domain: %s (nicht geprüft)"
+
+#. translators: %s: matched text in the company name.
+#: includes/Registration/AccountSignals.php:47
+#: includes/Registration/AccountSignals.php:66
+#, php-format
+msgid "Possible automated registration: company name contains \"%s\"."
+msgstr ""
+"Möglicherweise automatisierte Registrierung: Der Unternehmensname enthält "
+"„%s“."
+
+#: includes/Registration/AccountSignals.php:52
+#: includes/Registration/AccountSignals.php:71
+msgid "No suspicious company-name pattern found. Please verify the company."
+msgstr ""
+"Kein auffälliges Muster im Unternehmensnamen erkannt. Bitte prüfen Sie das "
+"Unternehmen."
+
+#: includes/Registration/AccountsTable.php:44
+msgid "Contact"
+msgstr "Kontakt"
+
+#: includes/Registration/AccountsTable.php:47
+#: includes/Registration/RegistrationInformation.php:69
+msgid "Registered"
+msgstr "Registriert am"
+
+#: includes/Registration/AccountsTable.php:76
+msgid "No accounts match these filters."
+msgstr "Für diese Filter wurden keine Konten gefunden."
+
+#: includes/Registration/AccountsTable.php:102
+#: includes/Registration/AccountsTable.php:124
+#: includes/Registration/ApprovalAdmin.php:114
+msgid "Review or change decision"
+msgstr "Prüfen oder Entscheidung ändern"
+
+#: includes/Registration/AccountsTable.php:122
+#: includes/Registration/AccountsTable.php:134
+msgid "All accounts"
+msgstr "Alle Konten"
+
+#: includes/Registration/RegistrationInformation.php:63
+msgid "Login email"
+msgstr "E-Mail-Adresse für die Anmeldung"
+
+#: build/accounts.js:1 build/accounts.js:2
+msgid "The request failed. Please try again."
+msgstr "Die Anfrage ist fehlgeschlagen. Bitte versuchen Sie es erneut."
+
+#: build/accounts.js:1
+msgid "Automatic checks"
+msgstr "Automatische Prüfungen"
+
+#: build/accounts.js:1
+msgid "Details"
+msgstr "Details"
+
+#: build/accounts.js:1
+msgid "View the website as this customer"
+msgstr "Website als dieser Kunde ansehen"
+
+#: build/accounts.js:1
+msgid "Reason for the customer"
+msgstr "Grund für den Kunden"
+
+#: build/accounts.js:1
+msgid ""
+"The customer receives this reason by email. Explain what information is "
+"needed or why the account cannot be approved."
+msgstr ""
+"Der Kunde erhält diesen Grund per E-Mail. Erläutern Sie, welche Angaben "
+"fehlen oder warum das Konto nicht freigegeben werden kann."
+
+#: build/accounts.js:1
+msgid "Restrict and notify customer"
+msgstr "Einschränken und Kunden informieren"
+
+#: build/accounts.js:1
+msgid "Reject and notify customer"
+msgstr "Ablehnen und Kunden informieren"
+
+#: build/accounts.js:1
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: build/accounts.js:1
+msgid "Saving decision…"
+msgstr "Entscheidung wird gespeichert…"
+
+#: build/accounts.js:1
+msgid "Decision saved. You can change it at any time."
+msgstr "Die Entscheidung wurde gespeichert. Sie können sie jederzeit ändern."
+
+#: build/accounts.js:1
+msgid "Loading accounts…"
+msgstr "Konten werden geladen…"
+
+#: build/accounts.js:1
+msgid "Try again"
+msgstr "Erneut versuchen"
+
+#: build/accounts.js:1
+msgid ""
+"No accounts are waiting for review. New registrations will appear here and "
+"in the top bar."
+msgstr ""
+"Es warten keine Konten auf Prüfung. Neue Registrierungen erscheinen hier und "
+"in der oberen Leiste."
+
+#: build/accounts.js:2
+msgid "Review account"
+msgstr "Konto prüfen"
+
+#: build/accounts.js:2
+msgid "Close"
+msgstr "Schließen"
+
+#: includes/Registration/Accounts.php:162
+msgid "Website (from email domain)"
+msgstr "Website der E-Mail-Domain"
+
+#: includes/Registration/AccountsAdmin.php:111
+msgid "Restricted, awaiting customer information"
+msgstr "Eingeschränkt, Angaben vom Kunden fehlen"
+
+#. translators: %s: number of restricted accounts awaiting customer information.
+#. translators: %s: number of restricted accounts awaiting information.
+#: includes/Registration/PendingApprovals.php:92
+#, php-format
+msgid "Restricted, awaiting customer information: %s"
+msgstr "Eingeschränkt, Angaben vom Kunden fehlen: %s"
+
+#: includes/Registration/PendingApprovals.php:94
+msgid "View restricted accounts"
+msgstr "Eingeschränkte Konten ansehen"
+
+#: build/accounts.js build/accounts.js:1
+msgid "No restricted accounts are awaiting customer information."
+msgstr "Bei keinem eingeschränkten Konto fehlen derzeit Kundenangaben."
+
+#: includes/Settings/SettingsTab.php includes/Settings/SettingsTab.php:110
+msgid "Sender email"
+msgstr "Absenderadresse"
+
+#: includes/Settings/SettingsTab.php includes/Settings/SettingsTab.php:111
+msgid ""
+"Internal notifications use this address with the sender name Linker. "
+"Customer emails use the WooCommerce sender settings."
+msgstr ""
+"Interne Benachrichtigungen werden mit dieser Adresse und dem Absendernamen "
+"Linker gesendet. Für E-Mails an Kunden gelten die Absendereinstellungen von "
+"WooCommerce."
+
+#: includes/Account/AdminAccessNotice.php
+#: includes/Account/AdminAccessNotice.php:112
+#: includes/Account/AdminAccessNotice.php:113
+msgid "Linker staff only"
+msgstr "Bereich für Linker-Mitarbeitende"
+
+#. translators: %s: email of the signed-in customer.
+#: includes/Account/AdminAccessNotice.php
+#: includes/Account/AdminAccessNotice.php:115
+#: includes/Account/AdminAccessNotice.php:116
+#, php-format
+msgid "You are signed in as %s (customer account)."
+msgstr "Sie sind mit Ihrem Kundenkonto %s angemeldet."
+
+#: includes/Account/AdminAccessNotice.php
+#: includes/Account/AdminAccessNotice.php:117
+#: includes/Account/AdminAccessNotice.php:118
+msgid "The admin area is for Linker staff only."
+msgstr ""
+"Der Verwaltungsbereich ist ausschließlich für Linker-Mitarbeitende "
+"vorgesehen."
+
+#: includes/Account/AdminAccessNotice.php
+#: includes/Account/AdminAccessNotice.php:119
+#: includes/Account/AdminAccessNotice.php:120
+msgid "Sign out and sign in as staff"
+msgstr "Abmelden und mit einem Mitarbeiterkonto anmelden"
+
+#: includes/Account/AdminAccessNotice.php
+#: includes/Account/AdminAccessNotice.php:121
+#: includes/Account/AdminAccessNotice.php:122
+msgid "Go to my account"
+msgstr "Zu meinem Konto"
 
 #~ msgid "How can we help?"
 #~ msgstr "Wie können wir Ihnen helfen?"
@@ -4198,211 +4586,3 @@ msgstr "Wir prüfen die USt-IdNr. im VIES für Sie"
 #~ "Sie können die Produkte durchsuchen und eine Artikelnummernliste "
 #~ "abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der "
 #~ "Kontoprüfung möglich."
-
-#: includes/Settings/SettingsTab.php:96
-msgid "Internal notifications"
-msgstr "Interne Benachrichtigungen"
-
-#: includes/Settings/SettingsTab.php:98
-msgid ""
-"Every internal notification (new customer, VAT check, new inquiry, contact "
-"form message, daily digest, health check) is one message to this address, "
-"with a blind copy to each address below."
-msgstr ""
-"Jede interne Benachrichtigung (neuer Kunde, USt-IdNr.-Prüfung, neue Anfrage, "
-"Nachricht über das Kontaktformular, Tagesübersicht, Gesundheitsprüfung) ist "
-"eine Nachricht an diese Adresse, mit einer Blindkopie an jede Adresse unten."
-
-#: includes/Settings/SettingsTab.php:102
-msgid "Recipient"
-msgstr "Empfänger"
-
-#: includes/Registration/Accounts.php:104
-msgid "Company website"
-msgstr "Unternehmenswebsite"
-
-#: includes/Registration/Accounts.php:129
-msgid "You do not have permission to switch to this customer."
-msgstr "Sie sind nicht berechtigt, zur Ansicht dieses Kunden zu wechseln."
-
-#: includes/Registration/Accounts.php:129
-msgid "User Switching is not active."
-msgstr "User Switching ist nicht aktiviert."
-
-#: includes/Registration/AccountsAdmin.php:51
-#: build/accounts.js:2
-msgid "Accounts waiting for you"
-msgstr "Konten zur Prüfung"
-
-#: includes/Registration/AccountsAdmin.php:57
-msgid "All accounts →"
-msgstr "Alle Konten →"
-
-#: includes/Registration/AccountsAdmin.php:68
-#: includes/Registration/AccountsAdmin.php:106
-msgid "Accounts"
-msgstr "Konten"
-
-#. translators: %s: number of accounts waiting for review.
-#: includes/Registration/AccountsAdmin.php:82
-#: build/accounts.js:2
-#, php-format,js-format
-msgid "%s account to review"
-msgid_plural "%s accounts to review"
-msgstr[0] "%s Konto zu prüfen"
-msgstr[1] "%s Konten zu prüfen"
-
-#: includes/Registration/AccountsAdmin.php:109
-msgid "Search accounts"
-msgstr "Konten suchen"
-
-#: includes/Registration/AccountsController.php:78
-msgid "You are not allowed to review accounts."
-msgstr "Sie sind nicht berechtigt, Konten zu prüfen."
-
-#: includes/Registration/AccountsController.php:92
-msgid "This account is unavailable or you do not have permission to review it."
-msgstr "Dieses Konto ist nicht verfügbar oder Sie sind nicht berechtigt, es zu prüfen."
-
-#: includes/Registration/AccountsController.php:117
-#: build/accounts.js:1
-msgid "Enter a reason for the customer before restricting or rejecting the account."
-msgstr "Geben Sie einen Grund für den Kunden an, bevor Sie das Konto einschränken oder ablehnen."
-
-#. translators: %s: email domain.
-#: includes/Registration/AccountSignals.php:37
-#, php-format
-msgid "Free email provider: %s"
-msgstr "Kostenloser E-Mail-Anbieter: %s"
-
-#. translators: %s: email domain.
-#: includes/Registration/AccountSignals.php:37
-#, php-format
-msgid "Email domain: %s (not verified)"
-msgstr "E-Mail-Domain: %s (nicht geprüft)"
-
-#. translators: %s: matched text in the company name.
-#: includes/Registration/AccountSignals.php:47
-#, php-format
-msgid "Possible automated registration: company name contains \"%s\"."
-msgstr "Möglicherweise automatisierte Registrierung: Der Unternehmensname enthält „%s“."
-
-#: includes/Registration/AccountSignals.php:52
-msgid "No suspicious company-name pattern found. Please verify the company."
-msgstr "Kein auffälliges Muster im Unternehmensnamen erkannt. Bitte prüfen Sie das Unternehmen."
-
-#: includes/Registration/AccountsTable.php:44
-msgid "Contact"
-msgstr "Kontakt"
-
-#: includes/Registration/AccountsTable.php:47
-#: includes/Registration/RegistrationInformation.php:69
-msgid "Registered"
-msgstr "Registriert am"
-
-#: includes/Registration/AccountsTable.php:76
-msgid "No accounts match these filters."
-msgstr "Für diese Filter wurden keine Konten gefunden."
-
-#: includes/Registration/AccountsTable.php:102
-msgid "Review or change decision"
-msgstr "Prüfen oder Entscheidung ändern"
-
-#: includes/Registration/AccountsTable.php:122
-msgid "All accounts"
-msgstr "Alle Konten"
-
-#: includes/Registration/RegistrationInformation.php:63
-msgid "Login email"
-msgstr "E-Mail-Adresse für die Anmeldung"
-
-#: build/accounts.js:1
-#: build/accounts.js:2
-msgid "The request failed. Please try again."
-msgstr "Die Anfrage ist fehlgeschlagen. Bitte versuchen Sie es erneut."
-
-#: build/accounts.js:1
-msgid "Automatic checks"
-msgstr "Automatische Prüfungen"
-
-#: build/accounts.js:1
-msgid "Details"
-msgstr "Details"
-
-#: build/accounts.js:1
-msgid "View the website as this customer"
-msgstr "Website als dieser Kunde ansehen"
-
-#: build/accounts.js:1
-msgid "Reason for the customer"
-msgstr "Grund für den Kunden"
-
-#: build/accounts.js:1
-msgid "The customer receives this reason by email. Explain what information is needed or why the account cannot be approved."
-msgstr "Der Kunde erhält diesen Grund per E-Mail. Erläutern Sie, welche Angaben fehlen oder warum das Konto nicht freigegeben werden kann."
-
-#: build/accounts.js:1
-msgid "Restrict and notify customer"
-msgstr "Einschränken und Kunden informieren"
-
-#: build/accounts.js:1
-msgid "Reject and notify customer"
-msgstr "Ablehnen und Kunden informieren"
-
-#: build/accounts.js:1
-msgid "Cancel"
-msgstr "Abbrechen"
-
-#: build/accounts.js:1
-msgid "Saving decision…"
-msgstr "Entscheidung wird gespeichert…"
-
-#: build/accounts.js:1
-msgid "Decision saved. You can change it at any time."
-msgstr "Die Entscheidung wurde gespeichert. Sie können sie jederzeit ändern."
-
-#: build/accounts.js:1
-msgid "Loading accounts…"
-msgstr "Konten werden geladen…"
-
-#: build/accounts.js:1
-msgid "Try again"
-msgstr "Erneut versuchen"
-
-#: build/accounts.js:1
-msgid "No accounts are waiting for review. New registrations will appear here and in the top bar."
-msgstr "Es warten keine Konten auf Prüfung. Neue Registrierungen erscheinen hier und in der oberen Leiste."
-
-#: build/accounts.js:2
-msgid "Review account"
-msgstr "Konto prüfen"
-
-#: build/accounts.js:2
-msgid "Close"
-msgstr "Schließen"
-
-msgid "Website (from email domain)"
-msgstr "Website der E-Mail-Domain"
-
-msgid "Restricted, awaiting customer information"
-msgstr "Eingeschränkt, Angaben vom Kunden fehlen"
-
-#. translators: %s: number of restricted accounts awaiting customer information.
-#, php-format
-msgid "Restricted, awaiting customer information: %s"
-msgstr "Eingeschränkt, Angaben vom Kunden fehlen: %s"
-
-msgid "View restricted accounts"
-msgstr "Eingeschränkte Konten ansehen"
-
-#: build/accounts.js
-msgid "No restricted accounts are awaiting customer information."
-msgstr "Bei keinem eingeschränkten Konto fehlen derzeit Kundenangaben."
-
-#: includes/Settings/SettingsTab.php
-msgid "Sender email"
-msgstr "Absenderadresse"
-
-#: includes/Settings/SettingsTab.php
-msgid "Internal notifications use this address with the sender name Linker. Customer emails use the WooCommerce sender settings."
-msgstr "Interne Benachrichtigungen werden mit dieser Adresse und dem Absendernamen Linker gesendet. Für E-Mails an Kunden gelten die Absendereinstellungen von WooCommerce."

@@ -27,6 +27,9 @@ use WP_Term;
  */
 final class ProductShortcodes {
 
+	/** Visitor query state retained when switching this page's language. */
+	private const LANGUAGE_QUERY_KEYS = array( 's', 'orderby', 'step', 'key', 'admin-access' );
+
 	/**
 	 * Product families one catalogue page shows (the live shop's 24).
 	 */
@@ -2017,15 +2020,17 @@ final class ProductShortcodes {
 		// a catalogue page sets orderby to its default even when the address
 		// carried none. `key` is the order key the confirmation page needs —
 		// without it Woo renders the thank-you page without order details.
+		// `admin-access` keeps the explanation selected in the other language;
+		// its visibility still requires Woo's recorded session decision.
 		$kept = array();
-		foreach ( array( 's', 'orderby', 'step', 'key' ) as $query_key ) {
+		foreach ( self::LANGUAGE_QUERY_KEYS as $query_key ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the public address, not a submitted form.
 			if ( ! isset( $_GET[ $query_key ] ) || ! \is_string( $_GET[ $query_key ] ) || '' === $_GET[ $query_key ] ) {
 				continue;
 			}
 			$kept[ $query_key ] = sanitize_text_field( wp_unslash( $_GET[ $query_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
 		}
-		return (string) add_query_arg( $kept, remove_query_arg( array( 's', 'orderby', 'step', 'key', 'cbq' ), $url ) );
+		return (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'cbq' ) ), $url ) );
 	}
 
 	/**

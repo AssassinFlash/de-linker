@@ -1,0 +1,29 @@
+{
+  "meaning": "Repeated captures prove approval-state invariance, not separate layouts.",
+  "groups": [
+    {
+      "language": "en",
+      "width": 1440,
+      "captures": 8,
+      "distinct_byte_contents": 1
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "captures": 8,
+      "distinct_byte_contents": 1
+    },
+    {
+      "language": "de",
+      "width": 1440,
+      "captures": 8,
+      "distinct_byte_contents": 1
+    },
+    {
+      "language": "de",
+      "width": 390,
+      "captures": 8,
+      "distinct_byte_contents": 1
+    }
+  ]
+}

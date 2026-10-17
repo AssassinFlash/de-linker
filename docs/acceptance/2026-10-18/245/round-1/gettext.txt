@@ -1,0 +1,10 @@
+PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project tools/local linker-local wp "$@"
+Plugin file detected.
+Warning: The string "Hello %s," has 2 different translator comments. (templates/emails/linker-contact-receipt.php:27)
+translators: %s: the visitor's name.
+translators: %s: the customer's full name.
+Warning: The string "Restricted, awaiting customer information: %s" has 2 different translator comments. (includes/Registration/PendingApprovals.php:92)
+translators: %s: number of restricted accounts awaiting customer information.
+translators: %s: number of restricted accounts awaiting information.
+Success: POT file successfully generated.
+.................................................................................... done.

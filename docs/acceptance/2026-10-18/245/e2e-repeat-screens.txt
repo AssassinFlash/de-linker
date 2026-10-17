@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:21936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › specs/admin-access.spec.ts:14:3 › en 1440: customers read the admin explanation in every approval state (11.2s)
+  ✓  2 [chromium] › specs/admin-access.spec.ts:14:3 › en 390: customers read the admin explanation in every approval state (11.2s)
+  ✓  3 [chromium] › specs/admin-access.spec.ts:14:3 › de 1440: customers read the admin explanation in every approval state (14.1s)
+  ✓  4 [chromium] › specs/admin-access.spec.ts:14:3 › de 390: customers read the admin explanation in every approval state (13.3s)
+
+  4 passed (50.6s)
