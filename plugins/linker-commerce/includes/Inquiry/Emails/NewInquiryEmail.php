@@ -34,7 +34,7 @@ final class NewInquiryEmail extends TeamEmail {
 	public function __construct( string $plugin_file, Options $options ) {
 		$this->id            = self::ID;
 		$this->title         = __( 'New inquiry', 'linker-commerce' );
-		$this->description   = __( 'Sent to the team mailbox, with blind copies, when an inquiry is received.', 'linker-commerce' );
+		$this->description   = __( 'Sent to the internal notification address, with blind copies, when an inquiry is received.', 'linker-commerce' );
 		$this->template_html = 'emails/linker-new-inquiry.php';
 		$this->placeholders  = array(
 			'{order_number}' => '',

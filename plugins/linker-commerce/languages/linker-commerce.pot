@@ -533,7 +533,9 @@ msgid "Contact form message"
 msgstr ""
 
 #: includes/Contact/Emails/TeamMessageEmail.php:46
-msgid "Sent to the team mailbox, with blind copies, when the contact form is sent."
+msgid ""
+"Sent to the internal notification address, with blind copies, when the "
+"contact form is sent."
 msgstr ""
 
 #. translators: {name}: the visitor's name.
@@ -704,7 +706,9 @@ msgid "Daily digest"
 msgstr ""
 
 #: includes/Digest/DigestEmail.php:46
-msgid "Sent to the team mailbox, with blind copies, every morning at 9:00 (Berlin time)."
+msgid ""
+"Sent to the internal notification address, with blind copies, every morning "
+"at 9:00 (Berlin time)."
 msgstr ""
 
 #: includes/Digest/DigestEmail.php:75
@@ -905,7 +909,9 @@ msgid "New inquiry"
 msgstr ""
 
 #: includes/Inquiry/Emails/NewInquiryEmail.php:37
-msgid "Sent to the team mailbox, with blind copies, when an inquiry is received."
+msgid ""
+"Sent to the internal notification address, with blind copies, when an "
+"inquiry is received."
 msgstr ""
 
 #. translators: {order_number}: inquiry number, {company}: customer's company.
@@ -2633,7 +2639,9 @@ msgid "New customer"
 msgstr ""
 
 #: includes/Registration/Emails/NewCustomerEmail.php:38
-msgid "Sent to the team mailbox, with blind copies, when a customer registers."
+msgid ""
+"Sent to the internal notification address, with blind copies, when a "
+"customer registers."
 msgstr ""
 
 #. translators: {company}: the customer's company.
@@ -2692,7 +2700,9 @@ msgid "VAT check changed"
 msgstr ""
 
 #: includes/Registration/Emails/VatReviewEmail.php:47
-msgid "Sent to the team mailbox, with blind copies, when the VIES verdict of a customer changes."
+msgid ""
+"Sent to the internal notification address, with blind copies, when the VIES "
+"verdict of a customer changes."
 msgstr ""
 
 #. translators: {company}: the customer's company.
@@ -2784,7 +2794,9 @@ msgid "Team mailbox"
 msgstr ""
 
 #: includes/Settings/SettingsTab.php:80
-msgid "Every company notification (new customer, new inquiry, VAT check) is one message to the team mailbox, with a blind copy to each address below."
+msgid ""
+"The address customers see: on the Proforma, on the website and in Genie's "
+"answers. Internal notifications do not go here."
 msgstr ""
 
 #: includes/Settings/SettingsTab.php:92
@@ -3638,4 +3650,19 @@ msgstr ""
 
 #: templates/proforma/proforma.php:177
 msgid "Reference"
+msgstr ""
+
+#: includes/Settings/SettingsTab.php:96
+msgid "Internal notifications"
+msgstr ""
+
+#: includes/Settings/SettingsTab.php:98
+msgid ""
+"Every internal notification (new customer, VAT check, new inquiry, contact "
+"form message, daily digest, health check) is one message to this address, "
+"with a blind copy to each address below."
+msgstr ""
+
+#: includes/Settings/SettingsTab.php:102
+msgid "Recipient"
 msgstr ""

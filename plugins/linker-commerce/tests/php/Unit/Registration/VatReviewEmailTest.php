@@ -45,7 +45,7 @@ final class VatReviewEmailTest extends TestCase {
 		WP_Mock::userFunction( 'get_userdata', array( 'return' => $user ) );
 		$this->expect_action_on_any( VatProfile::CHANGED_ACTION . '_notification', VatReviewEmail::class, 'trigger', 10, 3 );
 		$this->allow_locale_switch( 'en_US' );
-		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_vat_review', 'sales@de-linker.com' );
+		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_vat_review', 'sales@sunriverinverter.com' );
 
 		$email = new VatReviewEmail( '/plugin/linker-commerce.php', new Options() );
 		$email->trigger( 5, VatProfile::INVALID, VatProfile::VALID );

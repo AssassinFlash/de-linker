@@ -586,10 +586,11 @@ msgstr "Nachricht über das Kontaktformular"
 
 #: includes/Contact/Emails/TeamMessageEmail.php:46
 msgid ""
-"Sent to the team mailbox, with blind copies, when the contact form is sent."
+"Sent to the internal notification address, with blind copies, when the "
+"contact form is sent."
 msgstr ""
-"Wird an das Team-Postfach gesendet, mit Blindkopien, wenn das "
-"Kontaktformular abgesendet wird."
+"Geht an die Adresse für interne Benachrichtigungen (mit Blindkopien), wenn "
+"das Kontaktformular abgesendet wird."
 
 #. translators: {name}: the visitor's name.
 #: includes/Contact/Emails/TeamMessageEmail.php:87
@@ -777,11 +778,11 @@ msgstr "Tagesübersicht"
 
 #: includes/Digest/DigestEmail.php:46
 msgid ""
-"Sent to the team mailbox, with blind copies, every morning at 9:00 (Berlin "
-"time)."
+"Sent to the internal notification address, with blind copies, every morning "
+"at 9:00 (Berlin time)."
 msgstr ""
-"Wird jeden Morgen um 9:00 Uhr (Ortszeit Berlin) an das Postfach des Teams "
-"gesendet, mit Blindkopien."
+"Geht jeden Morgen um 9:00 Uhr (Ortszeit Berlin) an die Adresse für interne "
+"Benachrichtigungen, mit Blindkopien."
 
 #: includes/Digest/DigestEmail.php:75
 msgid "Daily digest, {date}"
@@ -1000,10 +1001,11 @@ msgstr "Neue Anfrage"
 
 #: includes/Inquiry/Emails/NewInquiryEmail.php:37
 msgid ""
-"Sent to the team mailbox, with blind copies, when an inquiry is received."
+"Sent to the internal notification address, with blind copies, when an "
+"inquiry is received."
 msgstr ""
-"Geht an das Team-Postfach (mit Blindkopien), wenn eine Anfrage eingegangen "
-"ist."
+"Geht an die Adresse für interne Benachrichtigungen (mit Blindkopien), wenn "
+"eine Anfrage eingegangen ist."
 
 #. translators: {order_number}: inquiry number, {company}: customer's company.
 #: includes/Inquiry/Emails/NewInquiryEmail.php:68
@@ -2872,9 +2874,12 @@ msgid "New customer"
 msgstr "Neuer Kunde"
 
 #: includes/Registration/Emails/NewCustomerEmail.php:38
-msgid "Sent to the team mailbox, with blind copies, when a customer registers."
+msgid ""
+"Sent to the internal notification address, with blind copies, when a "
+"customer registers."
 msgstr ""
-"Geht an das Team-Postfach (mit Blindkopien), wenn sich ein Kunde registriert."
+"Geht an die Adresse für interne Benachrichtigungen (mit Blindkopien), wenn "
+"sich ein Kunde registriert."
 
 #. translators: {company}: the customer's company.
 #: includes/Registration/Emails/NewCustomerEmail.php:64
@@ -2939,11 +2944,11 @@ msgstr "USt-IdNr.-Prüfung geändert"
 
 #: includes/Registration/Emails/VatReviewEmail.php:47
 msgid ""
-"Sent to the team mailbox, with blind copies, when the VIES verdict of a "
-"customer changes."
+"Sent to the internal notification address, with blind copies, when the VIES "
+"verdict of a customer changes."
 msgstr ""
-"Geht an das Team-Postfach (mit Blindkopien), wenn sich das VIES-Ergebnis "
-"eines Kunden ändert."
+"Geht an die Adresse für interne Benachrichtigungen (mit Blindkopien), wenn "
+"sich das VIES-Ergebnis eines Kunden ändert."
 
 #. translators: {company}: the customer's company.
 #: includes/Registration/Emails/VatReviewEmail.php:79
@@ -3049,12 +3054,12 @@ msgstr "Team-Postfach"
 
 #: includes/Settings/SettingsTab.php:80
 msgid ""
-"Every company notification (new customer, new inquiry, VAT check) is one "
-"message to the team mailbox, with a blind copy to each address below."
+"The address customers see: on the Proforma, on the website and in Genie's "
+"answers. Internal notifications do not go here."
 msgstr ""
-"Jede Benachrichtigung an das Unternehmen (neuer Kunde, neue Anfrage, USt-"
-"IdNr.-Prüfung) ist eine Nachricht an das Team-Postfach, mit einer Blindkopie "
-"an jede Adresse unten."
+"Die Adresse, die Kunden sehen: auf der Proformarechnung, auf der Website und "
+"in den Antworten von Genie. Interne Benachrichtigungen gehen nicht an diese "
+"Adresse."
 
 #: includes/Settings/SettingsTab.php:92
 msgid "Blind copies"
@@ -4215,3 +4220,21 @@ msgstr "Wir prüfen die USt-IdNr. im VIES für Sie"
 #~ "Sie können die Produkte durchsuchen und eine Artikelnummernliste "
 #~ "abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der "
 #~ "Kontoprüfung möglich."
+
+#: includes/Settings/SettingsTab.php:96
+msgid "Internal notifications"
+msgstr "Interne Benachrichtigungen"
+
+#: includes/Settings/SettingsTab.php:98
+msgid ""
+"Every internal notification (new customer, VAT check, new inquiry, contact "
+"form message, daily digest, health check) is one message to this address, "
+"with a blind copy to each address below."
+msgstr ""
+"Jede interne Benachrichtigung (neuer Kunde, USt-IdNr.-Prüfung, neue Anfrage, "
+"Nachricht über das Kontaktformular, Tagesübersicht, Gesundheitsprüfung) ist "
+"eine Nachricht an diese Adresse, mit einer Blindkopie an jede Adresse unten."
+
+#: includes/Settings/SettingsTab.php:102
+msgid "Recipient"
+msgstr "Empfänger"

@@ -46,7 +46,7 @@ use WC_Order;
 final class DigestTest extends IntegrationTestCase {
 
 	/**
-	 * The team mailbox and blind copies the tests read back.
+	 * The notification recipient and blind copies the tests read back.
 	 */
 	public function setUp(): void {
 		parent::setUp();
@@ -109,7 +109,7 @@ final class DigestTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * An empty digest still goes out: one email to the team mailbox, with the
+	 * An empty digest still goes out: one email to the notification recipient, with the
 	 * blind copies in the headers and every block's empty sentence.
 	 */
 	public function test_empty_digest_still_sends(): void {
@@ -167,7 +167,7 @@ final class DigestTest extends IntegrationTestCase {
 
 		$this->assertCount( 1, $digests, 'The retry delivers.' );
 		// Delivered, so the unrewritten To once more (class docblock).
-		$this->assertSame( array( 'sales@de-linker.com' ), $digests[0][0] );
+		$this->assertSame( array( 'sales@sunriverinverter.com' ), $digests[0][0], 'The internal notification address (Options::DEFAULT_NOTIFY_TO).' );
 		$this->assertCount( 0, ( new JobStore() )->failed(), 'Delivered, so not failed.' );
 	}
 
@@ -194,7 +194,7 @@ final class DigestTest extends IntegrationTestCase {
 		$this->assertCount( 1, $failed, 'The digest itself is the failed message.' );
 		// Queue data: the original recipient, which a send-side rewrite never
 		// touches (class docblock).
-		$this->assertSame( array( 'sales@de-linker.com' ), $failed[0]['to'] );
+		$this->assertSame( array( 'sales@sunriverinverter.com' ), $failed[0]['to'] );
 		$this->assertStringStartsWith( 'Daily digest, ', $failed[0]['subject'] );
 
 		remove_action( 'phpmailer_init', $fail, PHP_INT_MAX );
@@ -211,7 +211,7 @@ final class DigestTest extends IntegrationTestCase {
 		$this->assertSame( FailedEmails::ID, $fourth->id() );
 		$this->assertCount( 1, $fourth->entries() );
 		$this->assertStringContainsString( 'Daily digest', $fourth->entries()[0]['label'] );
-		$this->assertStringContainsString( 'sales@de-linker.com', $fourth->entries()[0]['detail'] );
+		$this->assertStringContainsString( 'sales@sunriverinverter.com', $fourth->entries()[0]['detail'] );
 
 		// The queue is empty again for the other tests.
 		wp_delete_post( $job_id, true );
@@ -339,24 +339,24 @@ final class DigestTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Team mailbox and blind copies for the run, restored afterwards.
+	 * Notification recipient and blind copies for the run, restored afterwards.
 	 */
 	private function with_team_recipients(): void {
-		$team_to  = get_option( Options::TEAM_TO );
-		$team_bcc = get_option( Options::TEAM_BCC );
-		update_option( Options::TEAM_TO, 'digest-team@example.test' );
-		update_option( Options::TEAM_BCC, "bcc-one@example.test\nbcc-two@example.test" );
+		$team_to  = get_option( Options::NOTIFY_TO );
+		$team_bcc = get_option( Options::NOTIFY_BCC );
+		update_option( Options::NOTIFY_TO, 'digest-team@example.test' );
+		update_option( Options::NOTIFY_BCC, "bcc-one@example.test\nbcc-two@example.test" );
 		$this->later(
 			static function () use ( $team_to, $team_bcc ): void {
 				if ( false === $team_to ) {
-					delete_option( Options::TEAM_TO );
+					delete_option( Options::NOTIFY_TO );
 				} else {
-					update_option( Options::TEAM_TO, $team_to );
+					update_option( Options::NOTIFY_TO, $team_to );
 				}
 				if ( false === $team_bcc ) {
-					delete_option( Options::TEAM_BCC );
+					delete_option( Options::NOTIFY_BCC );
 				} else {
-					update_option( Options::TEAM_BCC, $team_bcc );
+					update_option( Options::NOTIFY_BCC, $team_bcc );
 				}
 			}
 		);

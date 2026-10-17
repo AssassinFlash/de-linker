@@ -126,6 +126,13 @@ LEGACY_TABLE_PREFIXES = ("tv_b2b_", "tv_woo_b2b_", "linker_")
 # `linker_engine_url` and `linker_i18n_*` — so the rule is a prefix and the
 # report prints every name it would take before `--write` takes it.
 LEGACY_OPTION_PREFIXES = ("tv_", "dlk_", "linker_ai_", "terravolt_")
+# The old tree's WP-Cron hooks. Removing its plugins leaves their events on the
+# schedule with no handler — read on the host 2026-10-17: `tv_b2b_daily_digest`,
+# `tv_b2b_stock_mirror_nightly`, `tv_b2b_projection_check_nightly`,
+# `tv_b2b_project_media_cleanup_daily`, `linker_ai_provider_watch` and
+# `linker_ai_conversation_cleanup` were still due every day. The new tree's
+# hooks are `linker_commerce_*`, `linker_tools_*` and `linker_i18n_*`.
+LEGACY_CRON_PREFIXES = ("tv_b2b_", "linker_ai_")
 
 
 @dataclass(frozen=True)

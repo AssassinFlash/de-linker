@@ -15,7 +15,8 @@ use WP_Error;
 /**
  * Once a day, asks each service for GET /health (docs/specs/13-genie.md,
  * docs/specs/14-solution-configurator.md). A service that does not answer
- * with HTTP 200 triggers one message to the team through wp_mail() — the
+ * with HTTP 200 triggers one message to the internal notification address
+ * (Options::notify_to(), with its blind copies) through wp_mail() — the
  * Outbox takes it from there (queued, retried). Nothing is sent when every
  * service answers. WordPress has no built-in monitor for external services,
  * so the check itself is this plugin's; everything around it is WordPress's
@@ -176,10 +177,10 @@ final class Monitor {
 			$this->consumer( $service )
 		);
 		$headers = array();
-		$bcc     = $this->options->team_bcc();
+		$bcc     = $this->options->notify_bcc();
 		if ( array() !== $bcc ) {
 			$headers[] = 'Bcc: ' . implode( ', ', $bcc );
 		}
-		wp_mail( $this->options->contact()['email'], $subject, $body, $headers );
+		wp_mail( $this->options->notify_to(), $subject, $body, $headers );
 	}
 }

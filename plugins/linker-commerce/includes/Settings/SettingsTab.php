@@ -77,7 +77,7 @@ final class SettingsTab {
 			array(
 				'title' => __( 'Team mailbox', 'linker-commerce' ),
 				'type'  => 'title',
-				'desc'  => __( 'Every company notification (new customer, new inquiry, VAT check) is one message to the team mailbox, with a blind copy to each address below.', 'linker-commerce' ),
+				'desc'  => __( 'The address customers see: on the Proforma, on the website and in Genie\'s answers. Internal notifications do not go here.', 'linker-commerce' ),
 				'id'    => 'linker_commerce_team',
 			),
 			array(
@@ -89,16 +89,34 @@ final class SettingsTab {
 				'autoload'    => false,
 			),
 			array(
+				'type' => 'sectionend',
+				'id'   => 'linker_commerce_team',
+			),
+			array(
+				'title' => __( 'Internal notifications', 'linker-commerce' ),
+				'type'  => 'title',
+				'desc'  => __( 'Every internal notification (new customer, VAT check, new inquiry, contact form message, daily digest, health check) is one message to this address, with a blind copy to each address below.', 'linker-commerce' ),
+				'id'    => 'linker_commerce_notify',
+			),
+			array(
+				'title'       => __( 'Recipient', 'linker-commerce' ),
+				'id'          => Options::NOTIFY_TO,
+				'type'        => 'email',
+				'default'     => Options::DEFAULT_NOTIFY_TO,
+				'placeholder' => Options::DEFAULT_NOTIFY_TO,
+				'autoload'    => false,
+			),
+			array(
 				'title'    => __( 'Blind copies', 'linker-commerce' ),
 				'desc'     => __( 'One address per line.', 'linker-commerce' ),
-				'id'       => Options::TEAM_BCC,
+				'id'       => Options::NOTIFY_BCC,
 				'type'     => 'textarea',
 				'css'      => 'min-width: 300px; min-height: 80px;',
 				'autoload' => false,
 			),
 			array(
 				'type' => 'sectionend',
-				'id'   => 'linker_commerce_team',
+				'id'   => 'linker_commerce_notify',
 			),
 			array(
 				'title' => __( 'Contact person', 'linker-commerce' ),

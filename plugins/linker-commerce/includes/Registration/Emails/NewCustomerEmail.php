@@ -35,7 +35,7 @@ final class NewCustomerEmail extends TeamEmail {
 	public function __construct( string $plugin_file, Options $options ) {
 		$this->id            = self::ID;
 		$this->title         = __( 'New customer', 'linker-commerce' );
-		$this->description   = __( 'Sent to the team mailbox, with blind copies, when a customer registers.', 'linker-commerce' );
+		$this->description   = __( 'Sent to the internal notification address, with blind copies, when a customer registers.', 'linker-commerce' );
 		$this->template_html = 'emails/linker-new-customer.php';
 		$this->placeholders  = array( '{company}' => '' );
 		add_action( Fields::REGISTERED_ACTION . '_notification', array( $this, 'trigger' ) );

@@ -222,11 +222,12 @@ final class Form {
 
 	/**
 	 * The two cards beside the form: the direct address and the way into
-	 * Genie. Words from the live card; the address is the team mailbox this
-	 * form writes to, so both ways reach the same place.
+	 * Genie. Words from the live card; the address is the team mailbox
+	 * customers see. The form's own letter goes to the internal notification
+	 * address instead (owner ruling 2026-10-17, Options::notify_to()).
 	 */
 	private function rail(): string {
-		$email = ( new Options() )->team_to();
+		$email = ( new Options() )->team_mailbox();
 		$html  = '<aside class="linker-contact-rail">';
 		$html .= '<div class="linker-contact-rail-card linker-contact-email">';
 		$html .= '<span class="linker-contact-overline">' . esc_html__( 'Prefer email?', 'linker-commerce' ) . '</span>';

@@ -33,7 +33,7 @@ final class MonitorTest extends TestCase {
 		Monitor::GENIE_URL_OPTION  => 'http://127.0.0.1:8901',
 		Monitor::ENGINE_URL_OPTION => 'http://127.0.0.1:8902',
 		Options::CONTACT_EMAIL     => 'ops@example.test',
-		Options::TEAM_BCC          => 'watch@example.test, mirror@example.test',
+		Options::NOTIFY_BCC        => 'watch@example.test, mirror@example.test',
 		Options::TEAM_TO           => 'sales@de-linker.com',
 	);
 
@@ -152,7 +152,7 @@ final class MonitorTest extends TestCase {
 		$this->assertSame( array( 'http://127.0.0.1:8901/health', 'http://127.0.0.1:8902/health' ), $this->requests, 'Both services are asked, in the declared order.' );
 		$this->assertCount( 1, $this->mails, 'Only the failed service sends a message.' );
 		[ $to, $subject, $body, $headers ] = $this->mails[0];
-		$this->assertSame( 'ops@example.test', $to, 'The contact person receives the message.' );
+		$this->assertSame( 'sales@sunriverinverter.com', $to, 'The internal notification address receives the message, not the contact person customers see.' );
 		$this->assertSame( 'The Genie service failed its health check', $subject );
 		$this->assertStringContainsString( 'Address: http://127.0.0.1:8901', $body );
 		$this->assertStringContainsString( 'Reason: cURL error 7: Failed to connect.', $body );

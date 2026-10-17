@@ -168,7 +168,7 @@ final class Shortcodes {
 		}
 		$row     = $copy[ $surface ];
 		$intent  = self::invitation_intent( $surface );
-		$email   = ( new Options() )->team_to();
+		$email   = ( new Options() )->team_mailbox();
 		$context = $this->invitation_context( $intent );
 		$url     = (string) add_query_arg(
 			array(

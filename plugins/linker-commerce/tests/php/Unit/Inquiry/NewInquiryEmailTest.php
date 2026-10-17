@@ -42,8 +42,8 @@ final class NewInquiryEmailTest extends TestCase {
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 		$this->options(
 			array(
-				Options::TEAM_BCC => 'copy@example.test',
-				'WPLANG'          => '',
+				Options::NOTIFY_BCC => 'copy@example.test',
+				'WPLANG'            => '',
 			)
 		);
 		$this->expect_action_on_any( 'woocommerce_order_status_pending_to_' . Statuses::RECEIVED . '_notification', NewInquiryEmail::class, 'trigger', 10, 2 );
@@ -53,7 +53,7 @@ final class NewInquiryEmailTest extends TestCase {
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );
 		$order->allows( 'get_formatted_billing_full_name' )->andReturn( 'Maria Beispiel' );
 		$this->allow_locale_switch( 'en_US' );
-		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_new_inquiry', 'sales@de-linker.com' );
+		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_new_inquiry', 'sales@sunriverinverter.com' );
 
 		$email = new NewInquiryEmail( '/plugin/linker-commerce.php', new Options() );
 		$email->trigger( 20, $order );

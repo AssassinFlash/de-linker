@@ -146,6 +146,16 @@ final class Outbox {
 			if ( $job_id > 0 ) {
 				$this->jobs->delete( $job_id );
 			}
+			// The one record of a delivery that every PHP the site runs on
+			// writes. The host's mail.log is written by the web PHP alone: the
+			// cron runner (`wp cron event run --due-now`, docs/specs/17-cutover.md)
+			// runs the CLI PHP, whose mail.log is unset (read on the host
+			// 2026-10-17), so the digest, the health alert and every retry left
+			// no trace there.
+			wc_get_logger()->info(
+				sprintf( 'Email "%s" sent to %s%s.', $message->subject, implode( ', ', $delivery->to ), self::blind_copies( $delivery->headers ) ),
+				array( 'source' => self::LOG_SOURCE )
+			);
 			return true;
 		}
 
@@ -179,5 +189,19 @@ final class Outbox {
 		if ( $job_id > 0 ) {
 			as_schedule_single_action( $time, self::HOOK, array( $job_id ), self::GROUP );
 		}
+	}
+
+	/**
+	 * ", bcc …" for the log line of a delivery, '' without blind copies.
+	 *
+	 * @param string[] $headers Header lines, "Name: value".
+	 */
+	private static function blind_copies( array $headers ): string {
+		foreach ( $headers as $line ) {
+			if ( 0 === stripos( $line, 'Bcc:' ) ) {
+				return ', bcc ' . trim( substr( $line, 4 ) );
+			}
+		}
+		return '';
 	}
 }

@@ -77,14 +77,14 @@ final class ModuleTest extends TestCase {
 		WP_Mock::userFunction( 'wp_date', array( 'return' => 'October 11, 2026' ) );
 		$this->options(
 			array(
-				Options::TEAM_TO  => 'sales@de-linker.com',
-				Options::TEAM_BCC => '',
-				'WPLANG'          => '',
-				'date_format'     => 'F j, Y',
+				Options::TEAM_TO    => 'sales@de-linker.com',
+				Options::NOTIFY_BCC => '',
+				'WPLANG'            => '',
+				'date_format'       => 'F j, Y',
 			)
 		);
 		$this->allow_locale_switch( 'en_US' );
-		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@de-linker.com' );
+		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@sunriverinverter.com' );
 		$this->filter_returns( 'linker_commerce_digest_blocks', null );
 		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array() ) );
 		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );

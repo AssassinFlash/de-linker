@@ -36,9 +36,9 @@ final class NewCustomerEmailTest extends TestCase {
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 		$this->options(
 			array(
-				Options::TEAM_TO  => 'sales@de-linker.com',
-				Options::TEAM_BCC => "one@example.test\ntwo@example.test",
-				'WPLANG'          => '',
+				Options::TEAM_TO    => 'sales@de-linker.com',
+				Options::NOTIFY_BCC => "one@example.test\ntwo@example.test",
+				'WPLANG'            => '',
 			)
 		);
 		WP_Mock::userFunction(
@@ -83,7 +83,7 @@ final class NewCustomerEmailTest extends TestCase {
 			)
 		);
 		$this->allow_locale_switch( 'en_US' );
-		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_new_customer', 'sales@de-linker.com' );
+		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_new_customer', 'sales@sunriverinverter.com' );
 
 		$email->trigger( 5 );
 

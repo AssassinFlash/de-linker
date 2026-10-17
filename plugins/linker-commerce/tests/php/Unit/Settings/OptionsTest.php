@@ -35,15 +35,17 @@ final class OptionsTest extends TestCase {
 	}
 
 	/**
-	 * Without settings, notifications go to sales@de-linker.com (AGENTS.md §2) and numbers start with DLK-PF.
+	 * Without settings, customers see sales@de-linker.com, internal notifications go to
+	 * sales@sunriverinverter.com (AGENTS.md §2, 2026-10-17) and numbers start with DLK-PF.
 	 */
 	public function test_defaults(): void {
 		$this->options( array() );
 		$options = new Options();
 
-		$this->assertSame( 'sales@de-linker.com', $options->team_to() );
-			$this->assertSame( array(), $options->team_bcc() );
-			$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
+		$this->assertSame( 'sales@de-linker.com', $options->team_mailbox() );
+		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_to() );
+		$this->assertSame( array(), $options->notify_bcc() );
+		$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
 		$this->assertSame(
 			array(
 				'name'  => '',
@@ -56,17 +58,53 @@ final class OptionsTest extends TestCase {
 	}
 
 	/**
-	 * Blind copies: one per line or separated by commas; invalid, duplicate and the team mailbox itself are left out.
+	 * Blind copies: one per line or separated by commas; invalid, duplicate and the notification recipient itself are left out.
 	 */
 	public function test_blind_copies_are_cleaned(): void {
 		$this->options(
 			array(
-				Options::TEAM_TO  => 'sales@de-linker.com',
-				Options::TEAM_BCC => "one@example.test\nnot-an-address, two@example.test;one@example.test\nsales@de-linker.com",
+				Options::NOTIFY_TO  => 'alerts@example.test',
+				Options::NOTIFY_BCC => "one@example.test\nnot-an-address, two@example.test;one@example.test\nalerts@example.test",
 			)
 		);
 
-		$this->assertSame( array( 'one@example.test', 'two@example.test' ), ( new Options() )->team_bcc() );
+		$this->assertSame( array( 'one@example.test', 'two@example.test' ), ( new Options() )->notify_bcc() );
+	}
+
+	/**
+	 * The two addresses are separate settings: pointing internal notifications elsewhere leaves every
+	 * address customers see — the team mailbox, the Proforma seller, the contact fallback — on the
+	 * team mailbox (owner ruling 2026-10-17), and the other way round.
+	 */
+	public function test_internal_and_customer_addresses_are_independent(): void {
+		$this->options(
+			array(
+				Options::NOTIFY_TO            => 'sales@sunriverinverter.com',
+				Options::NOTIFY_BCC           => 'chester@de-linker.com',
+				'woocommerce_default_country' => 'DE',
+			)
+		);
+		$options = new Options();
+
+		$this->assertSame( 'sales@de-linker.com', $options->team_mailbox() );
+		$this->assertSame( 'sales@de-linker.com', $options->seller()['email'] );
+		$this->assertSame( 'sales@de-linker.com', $options->contact()['email'] );
+		$this->assertSame( 'sales@sunriverinverter.com', $options->notify_to() );
+		$this->assertSame( array( 'chester@de-linker.com' ), $options->notify_bcc() );
+	}
+
+	/**
+	 * A changed team mailbox moves what customers see and never the notification recipient.
+	 */
+	public function test_team_mailbox_is_not_the_notification_recipient(): void {
+		$this->options(
+			array(
+				Options::TEAM_TO              => 'team@example.test',
+				'woocommerce_default_country' => 'DE',
+			)
+		);
+		$this->assertSame( 'team@example.test', ( new Options() )->seller()['email'] );
+		$this->assertSame( 'sales@sunriverinverter.com', ( new Options() )->notify_to(), 'The team mailbox never becomes the notification recipient.' );
 	}
 
 	/**
@@ -108,7 +146,7 @@ final class OptionsTest extends TestCase {
 		);
 		$options = new Options();
 
-			$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
-			$this->assertSame( '', $options->bank()['iban'] );
+		$this->assertSame( 'DLK-PF', $options->proforma_prefix() );
+		$this->assertSame( '', $options->bank()['iban'] );
 	}
 }

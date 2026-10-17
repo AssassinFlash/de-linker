@@ -14,7 +14,8 @@ use Linker\Commerce\Mail\TeamEmail;
 use Linker\Commerce\Settings\Options;
 
 /**
- * One email a day to the team mailbox, with the blind copies, in the site's
+ * One email a day to the internal notification address, with the blind
+ * copies (Options::notify_to() and notify_bcc()), in the site's
  * language, as HTML (docs/specs/74-daily-digest.md). It goes out through
  * wp_mail() like every email of the site, so the Outbox queues and retries it
  * like every email of the site; it is sent whether the blocks have items or
@@ -43,7 +44,7 @@ final class DigestEmail extends TeamEmail {
 	public function __construct( string $plugin_file, Options $options ) {
 		$this->id            = self::ID;
 		$this->title         = __( 'Daily digest', 'linker-commerce' );
-		$this->description   = __( 'Sent to the team mailbox, with blind copies, every morning at 9:00 (Berlin time).', 'linker-commerce' );
+		$this->description   = __( 'Sent to the internal notification address, with blind copies, every morning at 9:00 (Berlin time).', 'linker-commerce' );
 		$this->template_html = 'emails/linker-digest.php';
 		$this->placeholders  = array( '{date}' => '' );
 		parent::__construct( $plugin_file, $options );
@@ -58,7 +59,7 @@ final class DigestEmail extends TeamEmail {
 		$this->blocks = $blocks;
 		// WC_Email's "no object" value: there is no customer to reply to.
 		$this->object                 = false;
-		$this->recipient              = $this->options->team_to();
+		$this->recipient              = $this->options->notify_to();
 		$this->placeholders['{date}'] = Format::today();
 		$this->locale_switch->to( LocaleSwitch::site_default() );
 		try {

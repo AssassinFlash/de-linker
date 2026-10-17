@@ -35,10 +35,10 @@ final class DigestEmailTest extends TestCase {
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 		$this->options(
 			array(
-				Options::TEAM_TO  => 'sales@de-linker.com',
-				Options::TEAM_BCC => "one@example.test\ntwo@example.test",
-				'WPLANG'          => '',
-				'date_format'     => 'F j, Y',
+				Options::TEAM_TO    => 'sales@de-linker.com',
+				Options::NOTIFY_BCC => "one@example.test\ntwo@example.test",
+				'WPLANG'            => '',
+				'date_format'       => 'F j, Y',
 			)
 		);
 		WP_Mock::userFunction(
@@ -48,7 +48,7 @@ final class DigestEmailTest extends TestCase {
 			)
 		);
 		$this->allow_locale_switch( 'en_US' );
-		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@de-linker.com' );
+		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@sunriverinverter.com' );
 
 		$email = new DigestEmail( '/plugin/linker-commerce.php', new Options() );
 		$email->send_report( array() );

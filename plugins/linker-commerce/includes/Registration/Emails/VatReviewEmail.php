@@ -44,7 +44,7 @@ final class VatReviewEmail extends TeamEmail {
 	public function __construct( string $plugin_file, Options $options ) {
 		$this->id            = self::ID;
 		$this->title         = __( 'VAT check changed', 'linker-commerce' );
-		$this->description   = __( 'Sent to the team mailbox, with blind copies, when the VIES verdict of a customer changes.', 'linker-commerce' );
+		$this->description   = __( 'Sent to the internal notification address, with blind copies, when the VIES verdict of a customer changes.', 'linker-commerce' );
 		$this->template_html = 'emails/linker-vat-review.php';
 		$this->placeholders  = array( '{company}' => '' );
 		add_action( VatProfile::CHANGED_ACTION . '_notification', array( $this, 'trigger' ), 10, 3 );
