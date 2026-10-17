@@ -1,0 +1,160 @@
+[
+  {
+    "form": {
+      "bottom": 1173.9921875,
+      "height": 909.4921875,
+      "left": 681.59375,
+      "right": 1392,
+      "top": 264.5,
+      "width": 710.40625,
+      "x": 681.59375,
+      "y": 264.5
+    },
+    "images": [
+      {
+        "filter": "none",
+        "natural": [
+          2048,
+          1152
+        ],
+        "objectPosition": "46% 50%",
+        "opacity": "1",
+        "rect": {
+          "bottom": 1448.2734375,
+          "height": 1359.2734375,
+          "left": 0,
+          "right": 633.59375,
+          "top": 89,
+          "width": 633.59375,
+          "x": 0,
+          "y": 89
+        },
+        "src": "https://de-linker.com/wp-content/uploads/2026/08/lk-contact-linker-team-in-barleben.webp",
+        "transform": "none"
+      },
+      {
+        "filter": "saturate(0.75)",
+        "natural": [
+          1492,
+          1054
+        ],
+        "objectPosition": "50% 50%",
+        "opacity": "1",
+        "rect": {
+          "bottom": 2188.2734375,
+          "height": 640,
+          "left": 765,
+          "right": 1353.6015625,
+          "top": 1548.2734375,
+          "width": 588.6015625,
+          "x": 765,
+          "y": 1548.2734375
+        },
+        "src": "https://de-linker.com/wp-content/uploads/2026/07/linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+        "transform": "none"
+      },
+      {
+        "filter": "none",
+        "natural": [
+          2400,
+          1800
+        ],
+        "objectPosition": "50% 35%",
+        "opacity": "1",
+        "rect": {
+          "bottom": 2938.2734375,
+          "height": 650,
+          "left": 0,
+          "right": 1440,
+          "top": 2288.2734375,
+          "width": 1440,
+          "x": 0,
+          "y": 2288.2734375
+        },
+        "src": "https://de-linker.com/wp-content/uploads/2026/08/lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+        "transform": "none"
+      }
+    ],
+    "label": "review-live-en-1440",
+    "url": "https://de-linker.com/contact/"
+  },
+  {
+    "form": {
+      "bottom": 1173.9921875,
+      "height": 909.4921875,
+      "left": 681.59375,
+      "right": 1392,
+      "top": 264.5,
+      "width": 710.40625,
+      "x": 681.59375,
+      "y": 264.5
+    },
+    "images": [
+      {
+        "filter": "none",
+        "natural": [
+          2048,
+          1152
+        ],
+        "objectPosition": "46% 50%",
+        "opacity": "1",
+        "rect": {
+          "bottom": 1448.2734375,
+          "height": 1359.2734375,
+          "left": 0,
+          "right": 633.59375,
+          "top": 89,
+          "width": 633.59375,
+          "x": 0,
+          "y": 89
+        },
+        "src": "http://127.0.0.1:9087/wp-content/uploads/2026/08/lk-contact-linker-team-in-barleben.webp",
+        "transform": "none"
+      },
+      {
+        "filter": "saturate(0.75)",
+        "natural": [
+          1492,
+          1054
+        ],
+        "objectPosition": "50% 50%",
+        "opacity": "1",
+        "rect": {
+          "bottom": 2188.2734375,
+          "height": 640,
+          "left": 765,
+          "right": 1353.6015625,
+          "top": 1548.2734375,
+          "width": 588.6015625,
+          "x": 765,
+          "y": 1548.2734375
+        },
+        "src": "http://127.0.0.1:9087/wp-content/uploads/2026/07/linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+        "transform": "none"
+      },
+      {
+        "filter": "none",
+        "natural": [
+          2400,
+          1800
+        ],
+        "objectPosition": "50% 35%",
+        "opacity": "1",
+        "rect": {
+          "bottom": 2938.2734375,
+          "height": 650,
+          "left": 0,
+          "right": 1440,
+          "top": 2288.2734375,
+          "width": 1440,
+          "x": 0,
+          "y": 2288.2734375
+        },
+        "src": "http://127.0.0.1:9087/wp-content/uploads/2026/08/lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+        "transform": "none"
+      }
+    ],
+    "label": "review-feature-en-1440",
+    "url": "http://127.0.0.1:9087/contact/"
+  }
+]

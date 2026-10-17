@@ -1,5 +1,7 @@
 # #246 询盘对所有人开放：本地实现证据
 
+> 本页保留首次交回的历史实走和截图。PR #290 第 1 轮修改后的当前接口、最新测试、补拍与像素归因，以 [round-1/README.md](round-1/README.md) 为准。
+
 工作树 `c246`，分支 `feat/246-inquiry-open`，实例 `http://127.0.0.1:9087`。继续使用前一执行会话的改动，逐项核对后保留；没有更改主检出、其他实例、生产、模型通道或账号审批机制。快照来自 `20261018-0059`（线上采集时间 `2026-10-17T17:11:58+00:00`），通过 `just sync c246` 装入；LC `present` 与 WindPress 编译均在该实例完成。
 
 ## 完成标准
@@ -10,7 +12,7 @@
 | 允许没有产品、只有留言；产品与留言均空时拒绝 | 完成 | 浏览器 DE #7332；`received-message-de-*`、`empty-*`、`error-*`；真实夹具断言 |
 | 已登录资料折叠，approved/pending/restricted 均可直接发送，价格权限不变 | 完成 | 实走 #7244/#7245/#7246；`approved-*`、`pending-*`、`restricted-*`；三状态数据提供器 |
 | 左表单、右草稿，可改数量，移动端顺排 | 完成 | [访客 EN 桌面](guest-en-1440.jpg)、[访客 DE 手机](guest-de-390.jpg)、`draft-updated-de-*`；Woo 原生数量更新后返回询盘页 |
-| 一份询盘一个发送入口，供 #244/#250 调用 | 完成 | `Inquiry\Sender::submit(Submission, bool $with_draft = true)`；请求表单和联系表单都调用；原生 AJAX/Store API checkout 旁路在写入前拒绝 |
+| 一份询盘一个发送入口，供 #244/#250 调用 | 完成 | `Inquiry\Sender::request(Submission, array $billing = [])` / `message(Submission)`；两扇门共用核心；原生 AJAX/Store API checkout 旁路在写入前拒绝 |
 | 联系表单可见组成保持不变，进入同一询盘列表 | 完成 | `OpenInquiryTest::test_contact_message_creates_one_inquiry_without_consuming_the_draft`；联系表单源代码的可见组成未改；像素残差另列 |
 | 内部通知继承 TeamEmail，经 notify()/Options 通知路由与 Outbox | 完成 | `test_sender_routes_the_team_mail_and_receipt_through_outbox` 强制入队，断言 To/Bcc 与客户回执分开；实际浏览器邮件仅捕获到本地文件 |
 | 回执/感谢页可选注册，同邮箱预填，正确 key 才可附到新账号 | 完成 | `test_account_link_claim_requires_both_the_key_and_the_same_email`；访客成功页截图；不自动创建账号 |

@@ -4452,6 +4452,236 @@ msgstr ""
 msgid "Reference"
 msgstr "Verwendungszweck"
 
+#: includes/Genie/ConversationEmail.php
+msgid "Genie conversation"
+msgstr "Genie-Unterhaltung"
+
+#: includes/Genie/ConversationEmail.php
+msgid "Sent when someone asks for a copy of a Genie conversation by email."
+msgstr "Geht an die Person, die eine Genie-Unterhaltung per E-Mail anfordert."
+
+#: includes/Genie/ConversationEmail.php
+msgid "Your conversation with Genie"
+msgstr "Ihr Gespräch mit Genie"
+
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-conversation.php
+#, php-format
+msgid ""
+"As requested on %s, here is your conversation with Genie, Linker's AI "
+"assistant."
+msgstr ""
+"Wie auf %s angefordert, erhalten Sie hier Ihr Gespräch mit Genie, dem KI-"
+"Assistenten von Linker."
+
+#: templates/emails/linker-genie-conversation.php
+msgid "You"
+msgstr "Sie"
+
+#: templates/emails/linker-genie-conversation.php
+msgid ""
+"Genie is an AI system, and its answers can contain mistakes. Where an answer "
+"differs from the product's datasheet, the datasheet applies."
+msgstr ""
+"Genie ist ein KI-System und seine Antworten können Fehler enthalten. "
+"Maßgeblich sind die Datenblätter auf den Produktseiten."
+
+#: templates/emails/linker-genie-conversation.php
+msgid "Replies to this email go to the Linker team."
+msgstr "Eine Antwort auf diese E-Mail erreicht das Linker-Team."
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Genie conversation: address confirmation"
+msgstr "Genie-Unterhaltung: Adressbestätigung"
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid ""
+"Sent to the address a visitor without an account enters to get a Genie "
+"conversation by email. It holds only a link that confirms the address; the "
+"conversation follows after the click."
+msgstr ""
+"Geht an die Adresse, die ein Besucher ohne Konto für eine Genie-Unterhaltung "
+"per E-Mail angibt. Die E-Mail enthält nur einen Link zur Bestätigung; die "
+"Unterhaltung folgt nach dem Klick."
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Conversation with Genie requested for this email address"
+msgstr "Gespräch mit Genie für diese E-Mail-Adresse angefordert"
+
+#: includes/Genie/ConfirmAddressEmail.php
+msgid "Confirm your email address"
+msgstr "Bestätigen Sie Ihre E-Mail-Adresse"
+
+#. translators: %s: the site's domain, e.g. de-linker.com.
+#: templates/emails/linker-genie-confirm-address.php
+#, php-format
+msgid ""
+"On %s, a conversation with Genie, Linker's AI assistant, was requested for "
+"this email address."
+msgstr ""
+"Auf %s wurde angefordert, ein Gespräch mit Genie, dem KI-Assistenten von "
+"Linker, an diese E-Mail-Adresse zu senden."
+
+#: templates/emails/linker-genie-confirm-address.php
+msgid "Send me the conversation"
+msgstr "Gespräch zusenden"
+
+#. translators: %d: how many hours the link works.
+#: templates/emails/linker-genie-confirm-address.php
+#, php-format
+msgid "The link works once and expires after %d hour."
+msgid_plural "The link works once and expires after %d hours."
+msgstr[0] "Der Link lässt sich einmal verwenden und läuft nach %d Stunde ab."
+msgstr[1] "Der Link lässt sich einmal verwenden und läuft nach %d Stunden ab."
+
+#: templates/emails/linker-genie-confirm-address.php
+msgid ""
+"The conversation is sent only once the link is opened. If you did not ask "
+"for it, you can ignore this email."
+msgstr ""
+"Das Gespräch wird erst gesendet, wenn der Link geöffnet wird. Falls Sie es "
+"nicht angefordert haben, können Sie diese E-Mail ignorieren."
+
+#: includes/Gating/DraftSummary.php:46
+msgid ""
+"You can send this solution draft without an account. Net prices are "
+"available after account approval."
+msgstr ""
+"Sie können diesen Lösungsentwurf ohne Konto senden. Nettopreise sehen Sie "
+"nach der Freigabe Ihres Kontos."
+
+#: includes/Gating/DraftSummary.php:48 includes/Inquiry/Form.php:134
+msgid "Send inquiry"
+msgstr "Anfrage senden"
+
+#: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:137
+msgid "Please use the inquiry form to send your inquiry."
+msgstr "Bitte senden Sie Ihre Anfrage über das Anfrageformular."
+
+#: includes/Inquiry/Checkout.php:101
+msgid "Create an account with this email"
+msgstr "Konto mit dieser E-Mail-Adresse erstellen"
+
+#: includes/Inquiry/Checkout.php:102
+#: templates/emails/linker-inquiry-received.php:36
+msgid "The Linker team will reply to the email address you provided."
+msgstr "Das Linker-Team antwortet Ihnen an die angegebene E-Mail-Adresse."
+
+#: includes/Inquiry/Form.php:124 includes/Vocabulary/Labels.php:97
+msgid "Send an inquiry"
+msgstr "Anfrage senden"
+
+#: includes/Inquiry/Form.php:125
+msgid ""
+"Tell us what you need. The products in your solution draft will be included."
+msgstr ""
+"Teilen Sie uns Ihr Anliegen mit. Die Produkte aus Ihrem Lösungsentwurf "
+"werden mitgesendet."
+
+#: includes/Inquiry/Form.php:126
+msgid "Message (optional)"
+msgstr "Nachricht (optional)"
+
+#: includes/Inquiry/Form.php:127
+msgid "Your reply details"
+msgstr "Ihre Kontaktdaten"
+
+#: includes/Inquiry/Form.php:128
+msgid "Change"
+msgstr "Ändern"
+
+#: includes/Inquiry/Form.php:131
+msgid "Company (optional)"
+msgstr "Unternehmen (optional)"
+
+#: includes/Inquiry/Form.php:136
+msgid "No account needed."
+msgstr "Kein Konto erforderlich."
+
+#: includes/Inquiry/Form.php:137
+msgid "Have an approved account? Log in for net prices and saved details."
+msgstr ""
+"Sie haben bereits ein freigegebenes Partnerkonto? Melden Sie sich an, um "
+"Nettopreise zu sehen und Ihre gespeicherten Angaben zu verwenden."
+
+#: includes/Inquiry/Form.php:139
+msgid "Edit solution draft"
+msgstr "Lösungsentwurf bearbeiten"
+
+#. translators: %s: product name.
+#: includes/Inquiry/Form.php:162
+#, php-format
+msgid "Quantity for %s"
+msgstr "Menge für %s"
+
+#: includes/Inquiry/Form.php:169
+msgid "You can send a message without products."
+msgstr "Sie können uns auch ohne Produkte eine Nachricht senden."
+
+#: includes/Inquiry/OrderAdmin.php:55
+msgid "Source"
+msgstr "Eingang"
+
+#: includes/Inquiry/OrderAdmin.php:74
+#: templates/emails/linker-new-inquiry.php:37
+msgid "Contact form"
+msgstr "Kontaktformular"
+
+#: includes/Inquiry/Sender.php:35
+msgid "Please add a product or write a message."
+msgstr "Bitte fügen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht."
+
+#: includes/Inquiry/Sender.php:60
+msgid "Please try sending your inquiry again."
+msgstr "Bitte senden Sie Ihre Anfrage erneut."
+
+#: includes/Presentation/LoginGate.php:65
+#: templates/emails/linker-registration-received.php:24
+msgid ""
+"We are reviewing your partner account and will email you when it is "
+"approved. You can send inquiries now; approval opens net prices."
+msgstr ""
+"Wir prüfen Ihr Partnerkonto und informieren Sie per E-Mail über die "
+"Freigabe. Anfragen können Sie bereits senden; Nettopreise sehen Sie nach der "
+"Freigabe."
+
+#: includes/Presentation/LoginGate.php:83
+msgid ""
+"You can send inquiries. Net prices are unavailable while your account is "
+"limited."
+msgstr ""
+"Sie können Anfragen senden. Solange Ihr Konto eingeschränkt ist, werden "
+"keine Nettopreise angezeigt."
+
+#: includes/Presentation/Shortcodes.php:368
+msgid ""
+"Browse products and add them to your solution draft. You can send an inquiry "
+"without an account."
+msgstr ""
+"Wählen Sie Produkte für Ihren Lösungsentwurf aus. Sie können Ihre Anfrage "
+"ohne Konto senden."
+
+#: templates/emails/linker-approval-restricted.php:24
+msgid ""
+"You can browse products and send inquiries. Net prices remain unavailable "
+"while your account is limited. You can also reach us at sales@de-linker.com."
+msgstr ""
+"Sie können Produkte ansehen und Anfragen senden. Solange Ihr Konto "
+"eingeschränkt ist, werden keine Nettopreise angezeigt. Sie erreichen uns "
+"auch unter sales@de-linker.com."
+
+#: templates/emails/linker-inquiry-received.php:39
+msgid ""
+"Create an account with this email to see net prices after approval and track "
+"your inquiry."
+msgstr ""
+"Erstellen Sie mit dieser E-Mail-Adresse ein Konto. Nach der Freigabe sehen "
+"Sie Nettopreise und können Ihre Anfrage verfolgen."
+
+#: templates/myaccount/auth/form-login.php:60
+msgid "Net prices after account approval"
+msgstr "Nettopreise nach Freigabe Ihres Kontos"
+
 #~ msgid "Authenticated SMTP is configured for internal notifications."
 #~ msgstr ""
 #~ "Authentifiziertes SMTP ist für interne Benachrichtigungen konfiguriert."

@@ -1,0 +1,8 @@
+{
+  "commit": "d27d1a3e",
+  "has_sender": false,
+  "site": "http://127.0.0.1:9087",
+  "mail_transport": false,
+  "snapshot": "20261018-0238",
+  "note": "Captured current origin/main d27d1a3e before the next fetch. Subsequent 97f6fc14 adds only an account-admin explanation page and scoped CSS, with no contact-page changes. Feature rebased onto 97f6fc14 before final checks."
+}

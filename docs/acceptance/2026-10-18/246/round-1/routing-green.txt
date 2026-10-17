@@ -1,0 +1,7 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+..                                                                  2 / 2 (100%)
+
+Time: 00:02.710, Memory: 136.00 MB
+
+OK (2 tests, 112 assertions)

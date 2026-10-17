@@ -1,0 +1,13 @@
+{
+    "site": "http:\/\/127.0.0.1:9087",
+    "has_sender": true,
+    "local_file_mail": true,
+    "test_mode": false,
+    "browser_users_helper": false,
+    "browser_jobs_helper": false,
+    "browser_quota_helper": false,
+    "owned_pending_actions": [
+        false,
+        false
+    ]
+}
