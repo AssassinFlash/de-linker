@@ -45,12 +45,19 @@ final class AssetsTest extends TestCase {
 			)
 		);
 
-		foreach ( array( 'configurator', 'genie' ) as $entry ) {
+		foreach ( array( 'configurator', 'genie', 'preview' ) as $entry ) {
 			$asset = require $plugin_dir . 'build/' . $entry . '.asset.php';
 
-			$this->assertContains( 'react-jsx-runtime', $asset['dependencies'] );
-			$this->assertContains( 'wp-element', $asset['dependencies'] );
-			$this->assertContains( 'wp-i18n', $asset['dependencies'] );
+			if ( 'preview' === $entry ) {
+				// The preview card's page script (ticket #249) is no app: it
+				// loads on the pages with the card, without React.
+				$this->assertNotContains( 'react-jsx-runtime', $asset['dependencies'] );
+				$this->assertNotContains( 'wp-element', $asset['dependencies'] );
+			} else {
+				$this->assertContains( 'react-jsx-runtime', $asset['dependencies'] );
+				$this->assertContains( 'wp-element', $asset['dependencies'] );
+				$this->assertContains( 'wp-i18n', $asset['dependencies'] );
+			}
 
 			WP_Mock::userFunction(
 				'wp_register_script',
