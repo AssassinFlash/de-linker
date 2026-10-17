@@ -17,8 +17,11 @@ use WP_Mock\Tools\TestCase;
  * Tests for Preview.
  *
  * @covers \Linker\Tools\Genie\Preview
+ * @covers \Linker\Tools\Genie\PageContext
  */
 final class PreviewTest extends TestCase {
+
+	use PageQuery;
 
 	/**
 	 * The four page types carry the card, each with its anchor; every
@@ -59,10 +62,15 @@ final class PreviewTest extends TestCase {
 		return array(
 			'home'             => array( 'home', 'home', 'GoodWe GW60K-STS-G10' ),
 			'product'          => array( 'product', 'product', 'SAJ H2-10K-T3' ),
+			'product (de)'     => array( 'product-de', 'product', 'SAJ H2-10K-T3' ),
 			'category'         => array( 'category', 'category', 'EMS & Monitoring' ),
 			'solution (en)'    => array( 'solution', 'solution', 'Residential Storage' ),
 			'solution (de)'    => array( 'solution-de', 'solution', 'Heimspeicher' ),
 			'solution hub'     => array( 'hub', null, '' ),
+			'about'            => array( 'about', null, '' ),
+			'all products'     => array( 'shop', null, '' ),
+			'blog post'        => array( 'post', null, '' ),
+			'faq'              => array( 'faq', null, '' ),
 			'solution draft'   => array( 'cart', null, '' ),
 			'proforma request' => array( 'proforma', null, '' ),
 			'account, sign-in' => array( 'account', null, '' ),
@@ -258,46 +266,19 @@ final class PreviewTest extends TestCase {
 	}
 
 	/**
-	 * Mocks the conditional tags for one page.
+	 * Mocks one page of the site, and the product data the home card's
+	 * example model comes from.
 	 *
-	 * @param string $page home, product, category, solution, solution-de, hub, cart, proforma, account or admin.
+	 * @param string $page A page of PageQuery.
 	 */
 	private function page( string $page ): void {
-		WP_Mock::userFunction( 'is_admin', array( 'return' => 'admin' === $page ) );
-		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'solution-de' === $page ? 'de_DE_formal' : 'en_US' ) );
-		WP_Mock::userFunction( 'is_front_page', array( 'return' => 'home' === $page ) );
-		WP_Mock::userFunction( 'is_product', array( 'return' => 'product' === $page ) );
-		WP_Mock::userFunction( 'is_product_category', array( 'return' => 'category' === $page ) );
-		WP_Mock::userFunction( 'is_page', array( 'return' => in_array( $page, array( 'solution', 'solution-de', 'hub', 'cart', 'proforma', 'account' ), true ) ) );
-		$ids = array(
-			'product'     => 4107,
-			'solution'    => 750,
-			'solution-de' => 6923,
-			'hub'         => 746,
-			'cart'        => 11,
-			'proforma'    => 12,
-			'account'     => 13,
-		);
-		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => $ids[ $page ] ?? 0 ) );
-		$titles = array(
-			4107 => 'SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)',
-			750  => 'Residential Storage',
-			6923 => 'Heimspeicher',
-		);
-		WP_Mock::userFunction(
-			'get_the_title',
-			array(
-				'return' => static fn( int $id ): string => $titles[ $id ] ?? 'Page',
-			)
-		);
-		WP_Mock::userFunction( 'single_term_title', array( 'return' => 'EMS &amp; Monitoring' ) );
+		$this->query( $page );
 		WP_Mock::userFunction(
 			'get_terms',
 			array(
 				'return' => static fn(): array => array( new \WP_Term( (object) array( 'term_id' => 449 ) ) ),
 			)
 		);
-		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'solution-de' === $page ? 'de' : 'en' ) );
 		WP_Mock::userFunction( 'pll_get_term', array( 'return' => 610 ) );
 		WP_Mock::userFunction(
 			'get_posts',
@@ -310,31 +291,6 @@ final class PreviewTest extends TestCase {
 						)
 					),
 				),
-			)
-		);
-		WP_Mock::passthruFunction( 'wp_strip_all_tags' );
-		WP_Mock::userFunction(
-			'get_page_by_path',
-			array(
-				'return' => static fn( string $path ): ?\WP_Post => 'solution' === $path
-					? new \WP_Post( (object) array( 'ID' => 746 ) )
-					: null,
-			)
-		);
-		WP_Mock::userFunction(
-			'pll_get_post',
-			array(
-				'return' => static fn( int $id, string $lang ): int => 746 === $id && 'de' === $lang ? 6871 : 0,
-			)
-		);
-		$parents = array(
-			750  => 746,
-			6923 => 6871,
-		);
-		WP_Mock::userFunction(
-			'wp_get_post_parent_id',
-			array(
-				'return' => static fn( int $id ): int => $parents[ $id ] ?? 0,
 			)
 		);
 	}

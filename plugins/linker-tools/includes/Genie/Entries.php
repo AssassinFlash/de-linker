@@ -47,9 +47,32 @@ class Entries {
 	/**
 	 * Sets up the entries.
 	 *
-	 * @param string $plugin_file Absolute path of the main plugin file.
+	 * @param string           $plugin_file Absolute path of the main plugin file.
+	 * @param PageContext|null $pages       The page of the request; a default one is built when omitted.
+	 * @param Preview|null     $preview     The preview card, whose questions the dock offers on its pages.
 	 */
-	public function __construct( private readonly string $plugin_file ) {}
+	public function __construct(
+		private readonly string $plugin_file,
+		?PageContext $pages = null,
+		?Preview $preview = null
+	) {
+		$this->pages   = $pages ?? new PageContext();
+		$this->preview = $preview ?? new Preview( $this->pages );
+	}
+
+	/**
+	 * The page of the request (ticket #234).
+	 *
+	 * @var PageContext
+	 */
+	private readonly PageContext $pages;
+
+	/**
+	 * The preview card (ticket #249).
+	 *
+	 * @var Preview
+	 */
+	private readonly Preview $preview;
 
 	/**
 	 * Hooks the chips and the dock; runs during plugin registration.
@@ -453,7 +476,7 @@ JS,
 		$locale = $this->locale();
 		$page   = $this->page_context();
 		return sprintf(
-			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\'></div>',
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\'></div>',
 			esc_attr( $surface ),
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
@@ -467,7 +490,9 @@ JS,
 			esc_attr( $this->disclosure( $locale ) ),
 			esc_attr( esc_url_raw( home_url( '/my-account/' ) ) ),
 			esc_attr( esc_url_raw( $this->workspace_url() ) ),
-			esc_attr( (string) wp_json_encode( $this->prompts( $page, $locale ) ) )
+			esc_attr( (string) wp_json_encode( $this->prompts( $page ) ) ),
+			// The whole page context, sent back with every turn (#234).
+			esc_attr( (string) wp_json_encode( $page ) )
 		);
 	}
 
@@ -611,70 +636,78 @@ JS,
 	}
 
 	/**
-	 * The opening prompts of one page type in its language.
+	 * The opening prompts of one page, two or three of them, naming the
+	 * page where it has a name (docs/specs/13-genie.md, 目标 3: "打开即点名
+	 * 当前产品或分类", "每类页面至少两条本页建议").
 	 *
-	 * @param array{type: string} $page   Page context.
-	 * @param string              $locale `en` or `de`.
+	 * On the pages that carry the preview card — home, product, product
+	 * category, solution — the dock offers the card's own questions
+	 * (Preview::asks). Copy review: docs/acceptance/2026-10-18/249/ for
+	 * those, docs/acceptance/2026-10-18/234/copy-review.md for the rest;
+	 * German is written on its own in languages/linker-tools-de_DE_formal.po.
+	 *
+	 * @param array{type: string, title?: string, post_id?: int, category_id?: int} $page The page context.
 	 * @return list<string>
 	 */
-	public function prompts( array $page, string $locale ): array {
-		$de = 'de' === $locale;
+	public function prompts( array $page ): array {
+		$card = $this->preview->asks( $page );
+		if ( null !== $card ) {
+			return $card;
+		}
 		switch ( $page['type'] ) {
-			case 'product':
-				return array(
-					$de ? 'Was passt zu diesem Modell?' : 'What pairs with this model?',
-					$de ? 'Vergleichen mit …' : 'Compare with…',
-					$de ? 'Unterlagen' : 'Documents',
-				);
 			case 'draft':
 				return array(
-					$de ? 'Meinen Entwurf prüfen' : 'Check my draft',
-					$de ? 'Wie geht es weiter?' : 'What happens next?',
+					__( 'Check my draft', 'linker-tools' ),
+					__( 'What happens next?', 'linker-tools' ),
 				);
 			case 'account':
 				return array(
-					$de ? 'Wo steht meine Proforma?' : 'Where is my Proforma?',
-					$de ? 'Wie geht es weiter?' : 'What happens next?',
+					__( 'Where is my Proforma?', 'linker-tools' ),
+					__( 'What happens next?', 'linker-tools' ),
 				);
 			case 'category':
+				// The catalogue page (/products/), which has no category of its own.
 				return array(
-					__( 'Ask Genie', 'linker-tools' ),
-					$de
-						? 'Ich brauche einen dreiphasigen Hybridwechselrichter für ein Wohngebäude mit 10 kWp PV.'
-						: 'I need a three-phase hybrid inverter for a home with 10 kWp PV.',
+					__( 'Which model fits my project?', 'linker-tools' ),
+					__( 'Compare SAJ and GoodWe hybrid inverters', 'linker-tools' ),
+				);
+			case 'blog':
+				return isset( $page['post_id'] )
+					? array(
+						__( 'Summarize this post', 'linker-tools' ),
+						__( 'Which products does this post apply to?', 'linker-tools' ),
+					)
+					: array(
+						__( 'Which posts help me choose a hybrid inverter?', 'linker-tools' ),
+						__( 'Summarize this page', 'linker-tools' ),
+					);
+			case 'faq':
+				return array(
+					__( 'Find the datasheet for my model', 'linker-tools' ),
+					__( 'What does this page say about compatibility lists?', 'linker-tools' ),
+				);
+			case 'solution':
+				// The hub, About and the audience pages; the solutions themselves
+				// carry the card's questions above.
+				return array(
+					__( 'Summarize this page', 'linker-tools' ),
+					__( 'Which products suit my project?', 'linker-tools' ),
 				);
 			default:
 				return array(
-					__( 'Ask Genie', 'linker-tools' ),
-					$de
-						? 'Ich brauche einen Hybridwechselrichter für ein Wohngebäude.'
-						: 'I need a hybrid inverter for a home.',
+					__( 'Summarize this page', 'linker-tools' ),
+					__( 'Which batteries work with my inverter?', 'linker-tools' ),
 				);
 		}
 	}
 
 	/**
-	 * Page context from the current query.
+	 * The page of the current request (PageContext, ticket #234).
 	 *
-	 * @return array{type: string, product_id?: int}
+	 * @return array{type: string, url: string, title: string, product_id?: int, post_id?: int, category_id?: int}
 	 */
 	public function page_context(): array {
-		if ( function_exists( 'is_product' ) && is_product() ) {
-			return array(
-				'type'       => 'product',
-				'product_id' => (int) get_queried_object_id(),
-			);
-		}
-		if ( function_exists( 'is_cart' ) && is_cart() ) {
-			return array( 'type' => 'draft' );
-		}
-		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
-			return array( 'type' => 'account' );
-		}
-		if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
-			return array( 'type' => 'category' );
-		}
-		return array( 'type' => 'other' );
+		return $this->pages->current();
 	}
 
 	/**

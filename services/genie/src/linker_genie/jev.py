@@ -90,7 +90,17 @@ QUESTIONS: dict[str, dict[str, Any]] = {
     },
 }
 
-_PAGE_TYPES = {"draft": "solution_draft", "other": "other"}
+# The page types as Jev reads them; the measured ones (category, product, account,
+# solution_draft, other: eval.py) keep their names, the rest (#234) say what the
+# page is in words.
+_PAGE_TYPES = {
+    "draft": "solution_draft",
+    "other": "other",
+    "home": "home_page",
+    "solution": "solution_page",
+    "faq": "faq_and_documents_page",
+    "blog": "blog",
+}
 
 
 class JevError(RuntimeError):
@@ -210,11 +220,17 @@ def _reading(body: dict[str, Any], seconds: float) -> Reading:
         raise JevError(f"jev answer is incomplete: {error!r}") from error
 
 
-def page_state(page_type: str, product_name: str | None) -> dict[str, Any]:
-    """The page as Jev's state describes it (the shape eval.py measured)."""
+def page_state(
+    page_type: str, product_name: str | None, title: str | None = None
+) -> dict[str, Any]:
+    """The page as Jev's state describes it: the shape eval.py measured, and the
+    page's title (#234), so "what does this page mean by …" on a blog post or a
+    solution page is read as a question about that page."""
     state: dict[str, Any] = {"type": _PAGE_TYPES.get(page_type, page_type)}
     if product_name:
         state["product"] = product_name
+    if title:
+        state["title"] = title
     return state
 
 

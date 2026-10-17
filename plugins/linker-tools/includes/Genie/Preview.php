@@ -14,10 +14,9 @@ namespace Linker\Tools\Genie;
  * categories and the solution pages, and loads the script that decides when
  * it appears (src/preview/; docs/specs/13-genie.md, 目标 4 and "主动预览卡").
  *
- * The card names the page from what the page already shows — the product's
- * title, the category's name, the solution page's title. Reading the page's
- * content for Genie is ticket #234; the card switches to that page context
- * once it exists.
+ * The card names the page from the page context Genie's turns carry
+ * (PageContext, ticket #234): the product's title, the category's name, the
+ * solution page's title.
  *
  * Every other page — the solution draft, the Proforma request, the account,
  * sign-in and registration, contact and the rest — gets no card: the list of
@@ -117,6 +116,22 @@ final class Preview {
 	}
 
 	/**
+	 * Sets up the card.
+	 *
+	 * @param PageContext|null $pages The page of the request; a default one is built when omitted.
+	 */
+	public function __construct( ?PageContext $pages = null ) {
+		$this->pages = $pages ?? new PageContext();
+	}
+
+	/**
+	 * The page of the request (ticket #234's page context).
+	 *
+	 * @var PageContext
+	 */
+	private readonly PageContext $pages;
+
+	/**
 	 * The page the card is for, or null when this page gets no card.
 	 *
 	 * @return array{type: 'home'|'product'|'category'|'solution', name: string}|null
@@ -125,31 +140,64 @@ final class Preview {
 		if ( is_admin() ) {
 			return null;
 		}
-		if ( is_front_page() ) {
-			return array(
-				'type' => 'home',
-				'name' => $this->example_model(),
-			);
+		return $this->card_page( $this->pages->current() );
+	}
+
+	/**
+	 * The card's page for a page context (PageContext), or null for a page
+	 * without a card. The name is the page's own: the product's title
+	 * without its description, the category's name, the solution page's
+	 * title; on the home page, a model of the current range.
+	 *
+	 * @param array{type: string, title?: string, post_id?: int, category_id?: int} $page The page context.
+	 * @return array{type: 'home'|'product'|'category'|'solution', name: string}|null
+	 */
+	public function card_page( array $page ): ?array {
+		$title = (string) ( $page['title'] ?? '' );
+		switch ( $page['type'] ) {
+			case 'home':
+				return array(
+					'type' => 'home',
+					'name' => $this->example_model(),
+				);
+			case 'product':
+				return array(
+					'type' => 'product',
+					'name' => $this->product_name( $title ),
+				);
+			case 'category':
+				// The catalogue (/products/) is a category page without a
+				// category; the card is for the product categories.
+				return isset( $page['category_id'] )
+					? array(
+						'type' => 'category',
+						'name' => $title,
+					)
+					: null;
+			case 'solution':
+				// The solutions only: not the hub, About or the audience pages.
+				return isset( $page['post_id'] ) && $this->is_solution( (int) $page['post_id'] )
+					? array(
+						'type' => 'solution',
+						'name' => $title,
+					)
+					: null;
+			default:
+				return null;
 		}
-		if ( function_exists( 'is_product' ) && is_product() ) {
-			return array(
-				'type' => 'product',
-				'name' => $this->product_name( (string) get_the_title( get_queried_object_id() ) ),
-			);
-		}
-		if ( function_exists( 'is_product_category' ) && is_product_category() ) {
-			return array(
-				'type' => 'category',
-				'name' => $this->plain( (string) single_term_title( '', false ) ),
-			);
-		}
-		if ( is_page() && $this->is_solution( (int) get_queried_object_id() ) ) {
-			return array(
-				'type' => 'solution',
-				'name' => $this->plain( (string) get_the_title( get_queried_object_id() ) ),
-			);
-		}
-		return null;
+	}
+
+	/**
+	 * The questions the card offers on a page, or null for a page without a
+	 * card. The dock offers the same questions when it opens on that page
+	 * (Entries::prompts), so both name the page the same way.
+	 *
+	 * @param array{type: string, title?: string, post_id?: int, category_id?: int} $page The page context.
+	 * @return list<string>|null
+	 */
+	public function asks( array $page ): ?array {
+		$card = $this->card_page( $page );
+		return null === $card ? null : $this->copy( $card )['asks'];
 	}
 
 	/**
@@ -229,17 +277,6 @@ final class Preview {
 	}
 
 	/**
-	 * A title as plain text. WordPress keeps names entity-encoded ("C&amp;I
-	 * battery cabinet", "EMS &amp; Monitoring"); the card escapes once, on
-	 * output.
-	 *
-	 * @param string $title A post title or term name.
-	 */
-	private function plain( string $title ): string {
-		return trim( html_entity_decode( wp_strip_all_tags( $title ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
-	}
-
-	/**
 	 * What the card says on one page: a title naming the page, one sentence,
 	 * and two to four questions Genie answers (目标 4). The wording passed the
 	 * copy review of docs/acceptance/2026-10-18/249/copy-review.md; German is
@@ -315,7 +352,7 @@ final class Preview {
 	 * @param string $title The product's title.
 	 */
 	public function product_name( string $title ): string {
-		$title = $this->plain( $title );
+		$title = $this->pages->plain( $title );
 		$short = trim( (string) preg_replace( '/\s*\([^()]*\)\s*$/u', '', $title ) );
 		return '' !== $short ? $short : $title;
 	}

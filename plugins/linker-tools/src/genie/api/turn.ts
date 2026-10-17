@@ -101,9 +101,18 @@ export interface TurnMessage {
 	turnId?: number;
 }
 
+/**
+ * The page a turn comes from (includes/Genie/PageContext.php, #234): its
+ * type, address and title and the IDs of what it shows. The proxy keeps
+ * only these keys and fills a solution draft's products itself.
+ */
 export interface PageContext {
 	type: string;
+	url?: string;
+	title?: string;
 	product_id?: number;
+	post_id?: number;
+	category_id?: number;
 }
 
 /** One row of the history rail. */

@@ -55,16 +55,26 @@ class Proxy {
 	 * @param callable( string, array<string, mixed> ): (string|int|WP_Error)|null $fetch         Optional HTTP client for tests: a body string (turn), an int status (vote), or WP_Error.
 	 * @param Thread|null                                                          $thread        Conversation store; a default one is built when omitted.
 	 * @param UserContext|null                                                     $user_context  Identity handed to the service; a default one is built when omitted.
+	 * @param PageContext|null                                                     $pages         The page a turn comes from; a default one is built when omitted.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
 		private $fetch = null,
 		?Thread $thread = null,
-		?UserContext $user_context = null
+		?UserContext $user_context = null,
+		?PageContext $pages = null
 	) {
 		$this->thread       = $thread ?? new Thread();
 		$this->user_context = $user_context ?? new UserContext();
+		$this->pages        = $pages ?? new PageContext();
 	}
+
+	/**
+	 * The page-context seam (ticket #234).
+	 *
+	 * @var PageContext
+	 */
+	private readonly PageContext $pages;
 
 	/**
 	 * The conversation store.
@@ -253,12 +263,18 @@ class Proxy {
 			return new WP_Error( 'linker_genie_conversation', 'Could not open a conversation.', array( 'status' => 500 ) );
 		}
 		$locale = $this->locale( $request->get_param( 'locale' ) );
-		$page   = $request->get_param( 'page' );
+		// The page the browser names, checked key by key; the service reads
+		// the page's content itself from it (#234). A solution draft's
+		// products come from the visitor's own draft, never the browser.
+		$page = $this->pages->sanitize( $request->get_param( 'page' ) );
+		if ( 'draft' === $page['type'] ) {
+			$page['draft_ids'] = $this->pages->draft_ids();
+		}
 		$body   = array(
 			'conversation_id' => (string) $conversation,
 			'messages'        => $request->get_param( 'messages' ),
 			'locale'          => $locale,
-			'page_context'    => is_array( $page ) ? $page : array( 'type' => 'other' ),
+			'page_context'    => $page,
 			// `partner` is deliberately absent: this shell cannot know the
 			// customer's partner status, and a fake value would lie to the
 			// service. `context` is the signed-in customer's short-lived

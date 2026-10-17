@@ -11,7 +11,20 @@ from typing import Annotated, Any, Literal, get_args
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Locale = Literal["en", "de"]
-PageType = Literal["category", "product", "draft", "account", "other"]
+# The eight kinds of page Genie tells apart (#234, docs/specs/13-genie.md 目标 3), and
+# `other` for the rest (contact, legal, forms, the tools). The shell decides the type
+# (plugins/linker-tools/includes/Genie/PageContext.php).
+PageType = Literal[
+    "home",
+    "product",
+    "category",
+    "solution",
+    "blog",
+    "faq",
+    "draft",
+    "account",
+    "other",
+]
 AskField = Literal[
     "phase",
     "application",
@@ -112,9 +125,26 @@ class TurnOutput(Strict):
 
 
 class PageContext(Strict):
+    """The page the customer is on when they send the turn (#234).
+
+    The shell sends what the page shows: its type, address and title, and the IDs of
+    what it shows. The service reads the page's content itself from those IDs
+    (`linker_genie.page`); the title is only how the page names itself.
+    """
+
     type: PageType = "other"
+    # A product page's product, as the turn's product IDs are: the English post
+    # (search-products' IDs, lexicon.py), also on the German page.
     product_id: int | None = None
+    # The products of the solution draft, English posts like product_id.
     draft_ids: list[int] | None = None
+    url: str | None = Field(default=None, max_length=2048)
+    title: str | None = Field(default=None, max_length=300)
+    # The page or blog post the page shows, in the page's own language (on a product
+    # page: the product post the visitor reads, the German one on a German page).
+    post_id: int | None = None
+    # The product category the page lists, in the page's own language.
+    category_id: int | None = None
 
 
 class UserContext(Strict):

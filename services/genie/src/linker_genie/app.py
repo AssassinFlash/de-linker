@@ -17,7 +17,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
-from linker_genie import jev
+from linker_genie import jev, page
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import make_generate, model_name, provider_name
 from linker_genie.cycle import TurnResult, run
@@ -31,6 +31,7 @@ app = FastAPI(title="Genie - Linker's AI assistant")
 _log: TurnLog | None = None
 _client: AbilityClient | None = None
 _understander: Understander | None = None
+_pages: page.PageReader | None = None
 
 
 def _log_path() -> Path:
@@ -62,11 +63,22 @@ def _wp_url() -> str:
     return os.environ.get("GENIE_WP_URL", "http://127.0.0.1")
 
 
+def page_reader() -> page.PageReader:
+    """The pages of the site this service serves (page.py, #234)."""
+    global _pages
+    if _pages is None:
+        _pages = page.PageReader(_wp_url())
+    return _pages
+
+
 def understander() -> Understander:
-    """Product words from the site's Store API, and Jev on OpenRouter (understand.py)."""
+    """Product words from the site's Store API, Jev on OpenRouter, and the customer's
+    page read from the site (understand.py)."""
     global _understander
     if _understander is None:
-        _understander = Understander(StoreVocabulary(_wp_url()).get, jev.from_env())
+        _understander = Understander(
+            StoreVocabulary(_wp_url()).get, jev.from_env(), pages=page_reader().read
+        )
     return _understander
 
 
@@ -87,7 +99,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         else understander().prepare(body, ability_client())
     )
     generate = getattr(request.app.state, "generate", None) or make_generate(
-        ability_client(), prepared=prepared
+        ability_client(), prepared=prepared, pages=page_reader().read
     )
     try:
         result = run(body, generate, prepared.route, prepared.facts)

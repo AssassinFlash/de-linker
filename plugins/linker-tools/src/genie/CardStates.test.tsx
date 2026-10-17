@@ -69,6 +69,7 @@ function config(): GenieConfig {
 		locale: 'en',
 		pageType: 'category',
 		productId: 0,
+		page: { type: 'category' },
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 		threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
 		conversationsUrl: '/wp-json/linker-ai/v1/genie/conversations',

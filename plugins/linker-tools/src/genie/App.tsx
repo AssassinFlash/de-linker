@@ -233,12 +233,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						config.restNonce,
 						config.locale,
 						next,
-						{
-							type: config.pageType,
-							...( config.productId > 0
-								? { product_id: config.productId }
-								: {} ),
-						}
+						config.page
 					);
 					const assistant = assistantMessage( answer );
 					currentThread.current = next.concat( assistant );
