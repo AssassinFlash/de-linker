@@ -1,0 +1,12 @@
+srv1791674
+answers 75/75, errors 0
+intent 73/75 = 97.3%
+  #260 en: 31/32
+  #260 de: 27/28
+  live en: 10/10
+  live de: 5/5
+confident (>= 0.8) 69/75, right when confident 68/69
+about_this_page 74/75, wants_person 74/75
+latency p50 0.139 s, p90 0.206 s; cost $0.002627
+  MISS de Erzähl mir einen Witz other -> small_talk 0.99
+  MISS en what happens after I send the inquiry? company_logistics_service -> inquiry_status 0.53

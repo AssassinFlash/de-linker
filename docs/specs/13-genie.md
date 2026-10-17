@@ -101,6 +101,18 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 - 组件：线程、消息、追问芯片、ProductCard（加入 Lösungsentwurf 并读回数量；加入方案；状态 pending/added/unverified/retry 在卡内、高度稳定）、CompareTable、Handoff。
 - 文案：按 AGENTS.md 规则逐处写，EN/DE；对抗评审记录附 PR。
 
+## 理解层（#233，实现目标第 2 条）
+
+每轮在模型之前由 `services/genie/src/linker_genie/understand.py` 准备：
+
+1. **产品词**（`lexicon.py`、`storeapi.py`）：词表来自 Woo 原生 Store API（`/wp-json/wc/store/v1/products` 与 `/products/categories`，EN + `lang=de`），不新增 WP 端代码；缓存 10 分钟。品牌、系列（slug、去品牌别名，一词别名须含数字或在标题中大写出现）、型号（`pa_model`、标题里的字母数字码、SKU 与去前缀 SKU）、分类（只认本身是 device class 的分类；德语名经 SKU 关联到英文分类）。比较前归一化（小写、只留字母数字），按空白与连字符切词，最长匹配优先。德语商品是独立文章，轮次里的商品 ID 一律是英文 ID。读不到 Store API 时显式记日志（`vocabulary_error`），本轮无产品词。
+2. **Jev**（`jev.py`）：typesafe/jev-1.13，仅经 OpenRouter `/api/v1/systemone`，一次问四题：`intent`（10 类，判据同 `docs/research/2026-10-17-jev-intent/eval.py`）、`about_this_page`、`wants_person`、`needs_followup`。每次 6 秒超时、最多 3 次；仍失败、拒绝或答复来自别的模型都抛 `JevError`，记入轮次日志 `jev_error` 与 SSE meta，本轮由 deepseek-flash 自行决定（票里允许的唯一降级）。
+3. **路由**（`route.py`）：意图置信 ≥0.8 由代码调工具——找产品 → search-products（产品词给出的过滤；一个系列族同时有单相和三相时按相数各搜三张）；文档参数 → search-knowledge（`product_ids` = 匹配到的型号或本页产品）+ get-product / 族搜索；配对 → 两件 check-compatibility、一台逆变器 `with_pairings` 搜索；对比 → compare-products；选型 → size-hint（kWp、年用电、相数、备电由代码从原句读出）并要求配置器动作、不出卡片；询盘 → inquiry-status；找人 → `route.person()`（#243 只替换这个函数）；公司物流 → handoff-team。整条消息都是产品词（裸词）时，无论 Jev 怎样答都走产品搜索并要求出卡片；长句里的产品词在 Jev 不确定时照搜但不强制卡片。其余交 deepseek-flash 决定。路由的调用计入每轮 4 次工具预算，结果以 JSON 放进提示词。
+4. **核验**（`ground.py` 第 6–8 条）：文档只以 `document` 块出现（模型只写 `ref`，服务填标签与 `#page=N` 链接；get-product 的文档是 `pID.document.N`），正文与占位符里不得有 URL；AGENTS.md §3 禁用词（article/catalogue/cart/basket，Artikel/Katalog/Warenkorb）；路由要求（产品词出卡、选型带配置器无卡、产品与文档类不转团队、找人与公司类只有 handoff 块）。兜底按路由出形状（选型 = 配置器、文档 = 文档链接、产品 ≤6 张卡）。
+5. **事实**：get-product 的数据表 `figures`（`n_mppt` 等）按轮次语言登记为 `pID.<key>`；功率与能量类选择事实水合时补单位（kW/kWh）。
+
+评测：`services/genie/eval/understanding/`——`bare_words.json`（75 条裸词 EN/DE，离线测试与线上实例共用）、`jev_cases.json`（#260 的 60 条 + 线上真实问句 15 条）、`run.py`、`jev_eval.py`、`capture.py`（重取 Store API 夹具 `tests/fixtures/storeapi.json`）。结果：`docs/acceptance/2026-10-17/233/`。
+
 ## 验收
 
 旧 Advisor 的 190/191 只是症状。下面的保证与面板是**构建时的测试与评估集**（Rufus 用评估集和 LLM-as-judge 衡量质量，见 `docs/research/2026-10-09/platform-ai-shopping-assistants.md` 第 155、191 行），不是运行时组件；每条标注复刻来源。
@@ -124,6 +136,7 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
 - [ ] 视觉验收：四入口 + 常驻 × 状态 × EN/DE × 1440/390。
 
 ## 变更记录
+- 2026-10-17（#233 理解层）：见上文"理解层"一节。新增 `lexicon` / `storeapi` / `jev` / `route` / `understand` 五个模块与 `document` 块（`DocumentBlock`，壳 `DocumentLink.tsx`）；轮次日志加 `understanding` 列（旧库自动补列），SSE meta 加 `route` / `intent` / `jev_error`。证据 `docs/acceptance/2026-10-17/233/`。
 - 2026-10-16（入面取证，欠账 P1）：§C 的 Entries 条目按实例实测重述（原文把产品页与账户页的入口写成芯片组）。取证（snapshot 实例 `nbatch` + 本检出代码，逐面读 HTML）：分类/商城 2 枚 `linker-genie-chip`（短代码挂载）；产品页 `[data-pdp-ask]` 1 枚、无芯片，dock mount 带 `data-page-type="product"` 与三条产品问句的 `data-prompts`；购物车有货态 2 枚 `data-page-type="draft"` 芯片（`woocommerce_before_cart` 经 `[woocommerce_cart]` 的 Woo 模板真的触发）；空 Proforma 请求页 1 枚 `linker-gate-genie-pill`；账户页 0 芯片、dock mount 带 `data-page-type="account"` 与两条账户问句的 `data-prompts`。逐面对照验收过的设计（#174 原型变体 A 只有 `.tools-row` 与 `.plan-with`，无芯片组；#184 原型的 Genie pill 只在 `gates.html?gate=empty-proforma`，工作台各页零 Genie）：**每个面的既定入口都已挂着**，无需回挂代码；`Entries::product_chips/account_chips` 与其 Woo 钩子留作可挂载部件（`[linker_genie_chips page_type="…"]` 可显式挂载），删它们属另一裁定。判分行的入口随之更正（`genie-panel.md` B1–B3、B6、B7）。
 - 2026-10-16（德语四行 e2e 恢复）：R3-de / R5-de / R6-de / R7-de 自 2026-10-11 的 `pending-main` 全部撤除。**R6-de 是服务缺陷**：兼容合同的条件是 `{en, de}` 双语对（`plugins/linker-commerce/data/compatibility.json`），而 `facts.collect` 恒取英文侧——德语轮次里 `{fact:compat.condition…}` 水合后会把英文句子插进德语答案（该行的判据：德语答案不得含英文功能词）。修复：`collect` / `AbilityClient.record` / `_ability_runner` 透传轮次 locale（`agent.py` 从 `TurnRequest` 取；`INPUT_DOCS` 与工具签名不变），条件按轮次语言取侧、缺侧回退到存在的另一侧（与 `TradeRules::word` 同规则）；`_condition_text` 同时服务 search-products 的 pairings 与 check-compatibility 两个调用点。**R7-de 是套件过期**：2026-10-13 文案评审定稿句「Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.」用的是可分动词，spec 旧正则只认 `anmelden`，永不匹配——正则补上定稿句的形态。R3-de / R5-de 复测恢复（2026-10-11 记录的失分是采样落进兜底的路径；2026-10-13 的兜底修复后多次重采样未再复现）。判分测试：`tests/test_hydrate.py`（德语取侧与半写对回退）、`tests/test_agent.py`（locale 透传）；实测与证据 `docs/acceptance/2026-10-16/genie-de-e2e/`。同轮修掉套件行循环的采样判定：`expect(attempts).toEqual([])` 会把"首采样失分、后采样达标"的行记红，与文件头、`askRow` 注释及 PR #96 的既定语义相反（#96 前段"两次都不过才算失败"、后段"最多三次采样…全不过才算失败"，新判定两者同时满足）（暴露：R6-en 2026-10-16 首采样占位符失分、二采样达标仍红）——改判 `result === null`，三采样全失才是失败/pending skip。
 - 2026-10-14（线上复核族 17、23）：`?s=` 隐式主查询从 `product`+`post` 收回为 `post`。证据：旧线上 `?s=PV`（EN 与 DE）是 7 篇带图博客卡、无分页；当前线上同查询把 GoodWe ESA 商品渲染成文章卡并分页（1 2 3 … 8）。目录搜索仍走 `q` 与 `linker/v1/catalog-search`，不走 `?s=`。显式指名 post_type 的请求不动。

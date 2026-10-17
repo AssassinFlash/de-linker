@@ -12,8 +12,18 @@ from __future__ import annotations
 
 import re
 
-from linker_genie.facts import Fact, TurnFacts
-from linker_genie.schema import Block, HandoffBlock, TextBlock, TurnOutput
+from linker_genie.facts import Document, Fact, TurnFacts
+from linker_genie.schema import (
+    Block,
+    DocumentBlock,
+    HandoffBlock,
+    TextBlock,
+    TurnOutput,
+)
+
+# The page abbreviation of a document link, per language (copy review:
+# docs/acceptance/2026-10-17/233/copy-review.md).
+PAGE_WORD = {"en": "p.", "de": "S."}
 
 PLACEHOLDER = re.compile(r"\{fact:([^}]+)\}")
 
@@ -28,9 +38,49 @@ def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
             blocks.append(
                 block.model_copy(update={"summary": fill(block.summary, facts)})
             )
+        elif isinstance(block, DocumentBlock):
+            document = facts.documents.get(block.ref)
+            if document is not None:
+                blocks.append(
+                    block.model_copy(
+                        update={
+                            "label": document_label(document, output.language),
+                            "url": document_url(document),
+                        }
+                    )
+                )
         else:
             blocks.append(block)
     return output.model_copy(update={"blocks": blocks})
+
+
+def document_label(document: Document, language: str) -> str:
+    """ "SAJ H2 user manual · p. 42" — the title and, when known, the page."""
+    if document.page is None:
+        return document.title
+    # A no-break space keeps "S." and its number on one line at 390 px.
+    return f"{document.title} · {PAGE_WORD.get(language, 'p.')}\u00a0{document.page}"
+
+
+def document_url(document: Document) -> str:
+    """The document URL, opening a PDF at the cited page.
+
+    `#page=N` is the PDF open parameter (Adobe, "Parameters for Opening PDF Files")
+    that the browsers' PDF viewers honor; any other document keeps its URL.
+    """
+    if document.page is not None and document.url.lower().split("?", 1)[0].endswith(
+        ".pdf"
+    ):
+        return f"{document.url}#page={document.page}"
+    return document.url
+
+
+# The unit a selection fact is stated in, by the end of its key (the keys of
+# Products/SelectionFactSet.php: ac_power_kw, pv_input_kw, usable_kwh, nominal_kwh,
+# kwh_range). A value without its unit read "starts at 3 with 9 of PV input" in
+# trial question 8 (2026-10-17); the unit is added when the text does not already
+# follow the placeholder with it.
+UNITS = (("_kwh", "kWh"), ("kwh_range", "kWh"), ("_kw", "kW"))
 
 
 def fill(text: str, facts: TurnFacts) -> str:
@@ -39,9 +89,22 @@ def fill(text: str, facts: TurnFacts) -> str:
 
     def replace(match: re.Match[str]) -> str:
         fact = _lookup(facts, match.group(1))
-        return fact.value if fact is not None else match.group(0)
+        if fact is None:
+            return match.group(0)
+        unit = _unit(match.group(1)) if fact.source == "selection-facts" else None
+        following = text[match.end() :].lstrip().lower()
+        if unit and not following.startswith(unit.lower()):
+            return f"{fact.value} {unit}"
+        return fact.value
 
     return PLACEHOLDER.sub(replace, text)
+
+
+def _unit(fact_id: str) -> str | None:
+    for ending, unit in UNITS:
+        if fact_id.endswith(ending):
+            return unit
+    return None
 
 
 def _lookup(facts: TurnFacts, fact_id: str) -> Fact | None:

@@ -11,6 +11,11 @@ Three shapes, each inside the protocol set by construction
   the qualified cards plus one ask, cards cited by the text's refs. A
   German turn's text and ask options are German; an English turn's are
   English. The handoff mailbox sentence is not this shape.
+- A sizing turn (route.py): one sentence and the configurator action, never a
+  stack of cards; the configurator does the sizing (trial question 14,
+  docs/research/2026-10-17-knocket/TRIAL.md).
+- A document turn with documents found: one sentence and the documents as links,
+  before any cards.
 - With nothing citable (every ability call failed - an outage or a storm -
   or the model produced no product structure twice): the mailbox sentence
   when handoff-team ran this turn, and the degraded declaration only when
@@ -24,12 +29,16 @@ Three shapes, each inside the protocol set by construction
 from __future__ import annotations
 
 from linker_genie.facts import TurnFacts
+from linker_genie.hydrate import hydrate
+from linker_genie.route import SEARCH_LIMIT, Route
 from linker_genie.schema import (
     ASK_FIELDS,
+    ActionBlock,
     AskBlock,
     AskField,
     Block,
     CardsBlock,
+    DocumentBlock,
     HandoffBlock,
     Locale,
     TextBlock,
@@ -64,6 +73,26 @@ LOGIN_REQUIRED = {
     "de": "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.",
 }
 
+# The sizing and document shapes' sentences (#233). Functional UI text; wording:
+# docs/acceptance/2026-10-17/233/copy-review.md.
+SIZING = {
+    "en": (
+        "The Solution Configurator sizes the battery from your annual "
+        "consumption and your PV system."
+    ),
+    "de": (
+        "Der Lösungskonfigurator ermittelt die passende Speichergröße anhand "
+        "Ihres Jahresverbrauchs und Ihrer PV-Leistung."
+    ),
+}
+DOCUMENTS = {
+    "en": "Here is what I found for your question.",
+    "de": "Zu Ihrer Frage habe ich Folgendes gefunden.",
+}
+# Document links the document shape shows: search-knowledge ranks its hits, and three
+# keep the answer short (the trial's failures were answers that listed too much).
+FALLBACK_DOCUMENTS = 3
+
 # English function words that only appear in an English sentence. The e2e
 # suite uses the same test (tests/e2e/specs/genie.spec.ts ENGLISH_ONLY) to
 # refuse a German answer that mixes in an English fragment.
@@ -97,7 +126,7 @@ def german_is_clean(text: str) -> bool:
     return not any(fragment in padded for fragment in _ENGLISH_FRAGMENT)
 
 
-def fallback(facts: TurnFacts, locale: str) -> TurnOutput:
+def fallback(facts: TurnFacts, locale: str, route: Route | None = None) -> TurnOutput:
     """A protocol-set answer for a turn grounding refused twice, in `locale`."""
     language = language_of(locale)
     # The login fact outranks every other shape. A guest Proforma question
@@ -105,6 +134,26 @@ def fallback(facts: TurnFacts, locale: str) -> TurnOutput:
     # ship the mailbox sentence the handoff tool returned.
     if "inquiry.login_required" in facts.facts:
         return login_required(language)
+    url = facts.facts.get("size.configurator_url")
+    if route is not None and route.name == "sizing" and url is not None:
+        return TurnOutput(
+            language=language,
+            blocks=[
+                TextBlock(text=SIZING[language]),
+                ActionBlock(name="open_configurator", args={"url": url.value}),
+            ],
+        )
+    if route is not None and route.name == "documents" and facts.documents:
+        refs = [ref for ref in facts.documents if ref in facts.chunk_ids] or list(
+            facts.documents
+        )
+        document_blocks: list[Block] = [
+            TextBlock(text=DOCUMENTS[language], refs=refs[:FALLBACK_DOCUMENTS])
+        ]
+        document_blocks.extend(
+            DocumentBlock(ref=ref) for ref in refs[:FALLBACK_DOCUMENTS]
+        )
+        return hydrate(TurnOutput(language=language, blocks=document_blocks), facts)
     qualified = sorted(facts.qualified_ids)
     if not qualified and not facts.product_ids:
         # The handoff-team sentence when the tool ran this turn; the degraded
@@ -128,10 +177,10 @@ def fallback(facts: TurnFacts, locale: str) -> TurnOutput:
     )
     blocks: list[Block] = [
         TextBlock(text=text, refs=refs),
-        # Twelve, because search-products' own limit is 12 (docs/specs/
-        # 13-genie.md §A, `limit≤12`): the template can never show more cards
-        # than the tool that qualified them may return.
-        CardsBlock(product_ids=ids[:12]),
+        # The route's six (route.SEARCH_LIMIT): a fallback that dumped twelve
+        # cards was trial question 11's failure (2026-10-17); one ask follows to
+        # narrow the rest.
+        CardsBlock(product_ids=ids[:SEARCH_LIMIT]),
     ]
     ask_field = _ask_field(facts)
     if ask_field is not None:

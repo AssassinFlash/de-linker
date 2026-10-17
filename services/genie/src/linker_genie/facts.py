@@ -20,6 +20,15 @@ class Fact:
     source: str
 
 
+@dataclass(frozen=True)
+class Document:
+    """A hosted document a tool of this turn returned, for a document block."""
+
+    url: str
+    title: str
+    page: int | None
+
+
 @dataclass
 class TurnFacts:
     """Everything this turn's tools returned that an answer may cite."""
@@ -30,6 +39,9 @@ class TurnFacts:
     chunk_ids: set[str] = field(default_factory=set)
     unknown_fields: list[str] = field(default_factory=list)
     tool_calls: list[dict[str, Any]] = field(default_factory=list)
+    # Fact or chunk ID → the document it names (search-knowledge hits, pairing
+    # documents), so a document block can link it instead of printing the URL.
+    documents: dict[str, Document] = field(default_factory=dict)
 
     def add(self, fact: Fact) -> None:
         self.facts[fact.id] = fact
@@ -55,7 +67,7 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
     if name.endswith("search-products"):
         _from_search(gathered, payload, locale)
     elif name.endswith("get-product"):
-        _from_product(gathered, payload)
+        _from_product(gathered, payload, locale)
     elif name.endswith("compare-products"):
         _from_compare(gathered, payload)
     elif name.endswith("check-compatibility"):
@@ -79,6 +91,7 @@ def merge(parts: list[TurnFacts]) -> TurnFacts:
         combined.qualified_ids.update(part.qualified_ids)
         combined.chunk_ids.update(part.chunk_ids)
         combined.tool_calls.extend(part.tool_calls)
+        combined.documents.update(part.documents)
         for field_name in part.unknown_fields:
             if field_name not in combined.unknown_fields:
                 combined.unknown_fields.append(field_name)
@@ -149,25 +162,36 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
                     continue
                 page = document.get("page")
                 value = f"{url} · p.{page}" if isinstance(page, int) else url
-                gathered.add(
-                    Fact(
-                        id=f"compat.document.{paired_id}.{document_index}",
-                        value=value,
-                        source="search-products",
-                    )
-                )
+                fact_id = f"compat.document.{paired_id}.{document_index}"
+                gathered.add(Fact(id=fact_id, value=value, source="search-products"))
+                gathered.documents[fact_id] = _document(document, url, page)
     unknown = payload.get("unknown_fields")
     if isinstance(unknown, list):
         gathered.unknown_fields = [str(item) for item in unknown]
 
 
-def _from_product(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+def _from_product(
+    gathered: TurnFacts, payload: dict[str, Any], locale: str = "en"
+) -> None:
     product_id = payload.get("product_id")
     if isinstance(product_id, int) and product_id > 0:
         gathered.product_ids.add(product_id)
         raw_facts = payload.get("facts")
         facts = raw_facts if isinstance(raw_facts, dict) else {}
         _add_selection_facts(gathered, product_id, facts)
+        raw_figures = payload.get("figures")
+        if isinstance(raw_figures, dict):
+            _add_figures(gathered, product_id, raw_figures, locale)
+        # The product's hosted documents (datasheet, manual): linkable as
+        # document blocks `pID.document.N`, never as a URL in the text (#233).
+        for index, document in enumerate(payload.get("documents") or []):
+            if not isinstance(document, dict):
+                continue
+            url = document.get("url")
+            if isinstance(url, str) and url:
+                gathered.documents[f"p{product_id}.document.{index}"] = _document(
+                    document, url, document.get("page")
+                )
 
 
 def _from_compare(gathered: TurnFacts, payload: dict[str, Any]) -> None:
@@ -209,13 +233,9 @@ def _from_compatibility(
             continue
         page = document.get("page")
         value = f"{url} · p.{page}" if isinstance(page, int) else url
-        gathered.add(
-            Fact(
-                id=f"compat.document.{index}",
-                value=value,
-                source="check-compatibility",
-            )
-        )
+        fact_id = f"compat.document.{index}"
+        gathered.add(Fact(id=fact_id, value=value, source="check-compatibility"))
+        gathered.documents[fact_id] = _document(document, url, page)
 
 
 def _from_size_hint(gathered: TurnFacts, payload: dict[str, Any]) -> None:
@@ -246,6 +266,13 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
         if isinstance(text, str) and text:
             gathered.add(
                 Fact(id=f"{chunk_id}.text", value=text, source="search-knowledge")
+            )
+        url = hit.get("doc_url")
+        if isinstance(url, str) and url:
+            gathered.documents[chunk_id] = Document(
+                url=url,
+                title=str(title) or _file_name(url),
+                page=page if isinstance(page, int) else None,
             )
 
 
@@ -279,6 +306,49 @@ def _from_handoff(gathered: TurnFacts, payload: dict[str, Any]) -> None:
         value = payload.get(key)
         if isinstance(value, str) and value:
             gathered.add(Fact(id=f"handoff.{key}", value=value, source="handoff-team"))
+
+
+def _add_figures(
+    gathered: TurnFacts, product_id: int, figures: dict[str, Any], locale: str
+) -> None:
+    """The datasheet figures get-product returns (n_mppt, max_pv_input_v, …).
+
+    Each is a cited value of the hosted datasheet (Products/SelectionFacts figures
+    meta); without them the model had no placeholder for "how many MPPT" (trial
+    question 3, 2026-10-17) and wrote the digit, which grounding refused. A German
+    turn reads `value_de` where the figure has one. A selection fact of the same
+    key stays: it is the one search-products filters on.
+    """
+    for key, figure in figures.items():
+        if not isinstance(figure, dict):
+            continue
+        fact_id = f"p{product_id}.{key}"
+        if fact_id in gathered.facts:
+            continue
+        value = figure.get("value")
+        german = figure.get("value_de")
+        if locale.startswith("de") and isinstance(german, str) and german:
+            value = german
+        if not isinstance(value, str) or not value:
+            continue
+        unit = figure.get("unit")
+        rendered = f"{value} {unit}" if isinstance(unit, str) and unit else value
+        gathered.add(Fact(id=fact_id, value=rendered, source="datasheet-figures"))
+
+
+def _document(document: dict[str, Any], url: str, page: Any) -> Document:
+    title = document.get("title")
+    return Document(
+        url=url,
+        title=title if isinstance(title, str) and title else _file_name(url),
+        page=page if isinstance(page, int) else None,
+    )
+
+
+def _file_name(url: str) -> str:
+    """The document's file name without extension, for a document with no title."""
+    name = url.rstrip("/").rsplit("/", 1)[-1].split("?", 1)[0]
+    return name.rsplit(".", 1)[0].replace("-", " ").replace("_", " ") or url
 
 
 def _condition_text(condition: Any, locale: str) -> str:

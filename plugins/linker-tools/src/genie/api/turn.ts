@@ -59,13 +59,25 @@ export interface HandoffBlock {
 	summary: string;
 }
 
+/**
+ * A hosted document; the service fills `label` and `url` from the tool
+ * results (the model writes only the reference).
+ */
+export interface DocumentBlock {
+	type: 'document';
+	ref: string;
+	label: string | null;
+	url: string | null;
+}
+
 export type Block =
 	| TextBlock
 	| AskBlock
 	| CompareBlock
 	| CardsBlock
 	| ActionBlock
-	| HandoffBlock;
+	| HandoffBlock
+	| DocumentBlock;
 
 export interface TurnMeta {
 	/** The logged turn; the vote buttons address it. */

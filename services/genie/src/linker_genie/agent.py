@@ -15,6 +15,7 @@ writes a secret.
 
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Callable
 from pathlib import Path
@@ -23,8 +24,13 @@ from typing import Any
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
+from linker_genie.understand import Prepared
 
 MAX_TOOL_CALLS = 4
+# The route's results go into the prompt as JSON; a search answers with up to six
+# cards with their facts (route.SEARCH_LIMIT), well under this ceiling, which only
+# keeps a runaway result from crowding the conversation out of the context.
+MAX_RESULT_CHARS = 24_000
 # The input objects the abilities accept (docs/specs/13-genie.md §A). The REST
 # introspection of an ability is permission-protected, so the shapes live here,
 # next to the only consumer. The source of truth is the `input_schema` each
@@ -84,9 +90,10 @@ def _env_with_credentials() -> dict[str, str]:
 class ToolBudget:
     """Counts ability calls in one turn; the fifth is refused."""
 
-    def __init__(self, limit: int = MAX_TOOL_CALLS) -> None:
+    def __init__(self, limit: int = MAX_TOOL_CALLS, used: int = 0) -> None:
         self.limit = limit
-        self.used = 0
+        # The route's own calls (understand.py) count against the same four.
+        self.used = used
         self.parts: list[TurnFacts] = []
 
     def allow(self) -> bool:
@@ -160,15 +167,21 @@ def build_model() -> Any:
 def make_generate(
     client: AbilityClient,
     model: Any | None = None,
+    prepared: Prepared | None = None,
 ) -> Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]:
-    """A `cycle.Generate` that runs the Pydantic AI agent with the ability client."""
+    """A `cycle.Generate` that runs the Pydantic AI agent with the ability client.
+
+    With `prepared`, the route's results are already fetched: the model reads them
+    from the prompt and may call the tools left in the budget. The facts it returns
+    are only its own calls'; the cycle merges them with the route's (cycle.run).
+    """
 
     def generate(
         request: TurnRequest, retry_reason: str | None
     ) -> tuple[TurnOutput, TurnFacts]:
         from pydantic_ai import Agent, Tool
 
-        budget = ToolBudget()
+        budget = ToolBudget(used=prepared.calls_made if prepared else 0)
         tools = []
         for name in ABILITY_NAMES:
             runner = _ability_runner(
@@ -196,7 +209,7 @@ def make_generate(
             model_settings=settings,
             retries={"output": 1, "tools": 1},
         )
-        result = agent.run_sync(_user_prompt(request, retry_reason))
+        result = agent.run_sync(_user_prompt(request, retry_reason, prepared))
         output = result.output
         if not isinstance(output, TurnOutput):
             output = TurnOutput.model_validate(output)
@@ -230,7 +243,9 @@ def _ability_runner(
     return run
 
 
-def _user_prompt(request: TurnRequest, retry_reason: str | None) -> str:
+def _user_prompt(
+    request: TurnRequest, retry_reason: str | None, prepared: Prepared | None = None
+) -> str:
     lines = [
         f"locale={request.locale}",
         f"page={request.page_context.type}",
@@ -242,6 +257,15 @@ def _user_prompt(request: TurnRequest, retry_reason: str | None) -> str:
         lines.append(
             "draft_ids=" + ",".join(str(i) for i in request.page_context.draft_ids)
         )
+    if prepared is not None and prepared.route.hint:
+        lines.append("Service routing: " + prepared.route.hint)
+    if prepared is not None and prepared.results:
+        results = json.dumps(prepared.results, ensure_ascii=False)
+        lines.append(
+            "Tool results the service already fetched for this turn (use them; "
+            "do not call the same tool again with the same input): "
+            + results[:MAX_RESULT_CHARS]
+        )
     if retry_reason:
         lines.append("The previous answer failed grounding: " + retry_reason)
         lines.append("Produce a new structured turn that passes the checks.")
@@ -251,13 +275,21 @@ def _user_prompt(request: TurnRequest, retry_reason: str | None) -> str:
         "Reminder: answer as strict TurnOutput JSON. No number in text in "
         "any form — no digits (10), no spelled-out words (ten, forty-eight, "
         "zehn, achtundvierzig), no model name spelled letter by letter; "
+        "the terms single-phase, three-phase, einphasig and dreiphasig are "
+        "words, not numbers, and are written as such; "
         "numbers go in {fact:PRODUCTID.FIELD} placeholders naming exactly "
         "the fact keys the tools returned (device_class, application, "
         "phase, ac_power_kw, pv_input_kw, usable_kwh, nominal_kwh, "
         "kwh_range, pID.price, compat.verdict, compat.verdict.BATTERYID, "
-        "compat.condition.N, compat.document.N, handoff.sentence_en, "
+        "compat.condition.N, handoff.sentence_en, "
         "handoff.sentence_de); never a subfield like kwh_range.min. A range "
         "placeholder renders the whole range. Or leave the number unsaid. "
+        "A document (a search-knowledge chunk ID, compat.document.N, "
+        "compat.document.BATTERYID.N, or pPRODUCTID.document.N for the documents "
+        "get-product lists) is never a placeholder and never a URL in "
+        'the text: add a block {"type":"document","ref":"<that ID>"}. '
+        "Never write article, catalogue, cart or basket (Artikel, Katalog, "
+        "Warenkorb): say product, product category, solution draft. "
         "Every ID of a cards block must appear in the text block's refs. "
         "Out-of-scope turns: call handoff-team, then one handoff block "
         "summarized as {fact:handoff.sentence_en} or "

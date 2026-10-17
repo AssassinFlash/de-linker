@@ -13,6 +13,16 @@ from linker_genie.app import app
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.log import TurnLog
 from linker_genie.schema import CardsBlock, TextBlock, TurnOutput, TurnRequest
+from linker_genie.understand import nothing
+
+
+@pytest.fixture(autouse=True)
+def no_understanding() -> Iterator[None]:
+    """The turn tests inject the generator; the understanding layer has its own
+    tests (test_understand.py), so these never reach the Store API or Jev."""
+    app.state.prepare = nothing
+    yield
+    del app.state.prepare
 
 
 @pytest.fixture()
@@ -157,3 +167,56 @@ def test_an_internal_failure_is_logged_and_raised(log: TurnLog) -> None:
     assert row is not None
     assert row[0] == 0 and row[1] == 1
     assert "internal" in row[2]
+
+
+def test_a_jev_failure_is_visible_in_the_stream_and_the_log(log: TurnLog) -> None:
+    from linker_genie.route import Route
+    from linker_genie.understand import Prepared
+
+    def prepare(request: TurnRequest) -> Prepared:
+        return Prepared(
+            route=Route("model", reasons=("jev unavailable",)),
+            log={
+                "jev_error": "jev failed after 3 attempts: http 503",
+                "route": "model",
+            },
+        )
+
+    app.state.prepare = prepare
+    app.state.generate = _generate
+    response = TestClient(app).post(
+        "/turn",
+        json={
+            "conversation_id": "c9",
+            "messages": [{"role": "user", "content": "hi"}],
+            "locale": "en",
+        },
+    )
+    meta = json.loads(response.text.split("data: ", 1)[1].split("\n", 1)[0])
+    assert meta["route"] == "model"
+    assert meta["jev_error"] == "jev failed after 3 attempts: http 503"
+    row = log._db.execute(
+        "SELECT understanding FROM turns WHERE conversation_id = 'c9'"
+    ).fetchone()
+    assert json.loads(row[0])["jev_error"] == "jev failed after 3 attempts: http 503"
+
+
+def test_an_old_log_gains_the_understanding_column(tmp_path: Path) -> None:
+    import sqlite3
+
+    path = tmp_path / "old.sqlite"
+    old = sqlite3.connect(path)
+    old.execute(
+        "CREATE TABLE turns (id INTEGER PRIMARY KEY, conversation_id TEXT NOT NULL,"
+        " created_at TEXT NOT NULL DEFAULT (datetime('now')), locale TEXT NOT NULL,"
+        " grounded INTEGER NOT NULL, failures TEXT NOT NULL, fallback INTEGER NOT NULL,"
+        " provider TEXT NOT NULL, model TEXT NOT NULL, tool_calls TEXT NOT NULL,"
+        " output TEXT NOT NULL, vote INTEGER)"
+    )
+    old.commit()
+    old.close()
+    upgraded = TurnLog(path)
+    upgraded.record("c", "en", True, (), False, "deepseek", "deepseek-flash", [], {})
+    columns = [r[1] for r in upgraded._db.execute("PRAGMA table_info(turns)")]
+    upgraded.close()
+    assert columns[-1] == "understanding"

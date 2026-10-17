@@ -4,7 +4,8 @@ The log is also the quality check's queue (docs/specs/33-judge-bakeoff.md,
 "部署目标"): the judge worker reads it after the fact and never writes it. The
 worker judges what the customer asked (`question`), on which page (`page`),
 against what the turn's abilities returned (`tool_calls[*].result`), so those
-are logged with the turn.
+are logged with the turn. The understanding layer's record (product words,
+Jev's reading, the route, its failures) is logged with it too (#233).
 """
 
 from __future__ import annotations
@@ -29,13 +30,14 @@ CREATE TABLE IF NOT EXISTS turns (
     output TEXT NOT NULL,
     vote INTEGER,
     question TEXT,
-    page TEXT
+    page TEXT,
+    understanding TEXT
 );
 """
 
 # Columns added after the first release: a log the service already wrote keeps
 # its rows and gains the columns (NULL for the turns logged before them).
-ADDED_COLUMNS = (("question", "TEXT"), ("page", "TEXT"))
+ADDED_COLUMNS = (("question", "TEXT"), ("page", "TEXT"), ("understanding", "TEXT"))
 
 
 class TurnLog:
@@ -70,13 +72,15 @@ class TurnLog:
         output: dict[str, Any],
         question: str = "",
         page: dict[str, Any] | None = None,
+        understanding: dict[str, Any] | None = None,
     ) -> int:
         cursor = self._db.execute(
             """
             INSERT INTO turns (
                 conversation_id, locale, grounded, failures, fallback,
-                provider, model, tool_calls, output, question, page
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                provider, model, tool_calls, output, question, page,
+                understanding
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 conversation_id,
@@ -90,6 +94,7 @@ class TurnLog:
                 json.dumps(output),
                 question,
                 json.dumps(page or {}),
+                json.dumps(understanding or {}, ensure_ascii=False),
             ),
         )
         self._db.commit()

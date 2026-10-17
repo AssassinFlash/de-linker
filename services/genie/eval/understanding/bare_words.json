@@ -1,0 +1,532 @@
+{
+ "_about": "Bare product words, EN and DE (#233): each must show products of its expectation as cards and never be taken for a name or a greeting. Used by tests/test_lexicon.py (offline, against tests/fixtures/storeapi.json) and eval/understanding/run.py (live, against a local instance). \"bare\": false marks a product word with a describing word beside it (\"hybrid inverter\"): Jev routes it, code alone does not.",
+ "cases": [
+  {
+   "lang": "en",
+   "message": "saj",
+   "expect": {
+    "brand": "saj"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "saj",
+   "expect": {
+    "brand": "saj"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "SAJ",
+   "expect": {
+    "brand": "saj"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "SAJ",
+   "expect": {
+    "brand": "saj"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "Saj",
+   "expect": {
+    "brand": "saj"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "Saj",
+   "expect": {
+    "brand": "saj"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "goodwe",
+   "expect": {
+    "brand": "goodwe"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "goodwe",
+   "expect": {
+    "brand": "goodwe"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "GoodWe",
+   "expect": {
+    "brand": "goodwe"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "GoodWe",
+   "expect": {
+    "brand": "goodwe"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "GOODWE",
+   "expect": {
+    "brand": "goodwe"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "GOODWE",
+   "expect": {
+    "brand": "goodwe"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "pylontech",
+   "expect": {
+    "brand": "pylontech"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "pylontech",
+   "expect": {
+    "brand": "pylontech"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "ecoflow",
+   "expect": {
+    "brand": "ecoflow"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "ecoflow",
+   "expect": {
+    "brand": "ecoflow"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "EcoFlow",
+   "expect": {
+    "brand": "ecoflow"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "EcoFlow",
+   "expect": {
+    "brand": "ecoflow"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "chint",
+   "expect": {
+    "brand": "chint"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "chint",
+   "expect": {
+    "brand": "chint"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "H2-10K-T3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "H2-10K-T3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "h2-10k-t3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "h2-10k-t3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "H210KT3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "H210KT3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "h2 10k t3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "h2 10k t3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "DLK-SAJ-H210KT3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "DLK-SAJ-H210KT3",
+   "expect": {
+    "model": "H2-10K-T3"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "GW10K-ETA-G20",
+   "expect": {
+    "model": "GW10K-ETA-G20"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "GW10K-ETA-G20",
+   "expect": {
+    "model": "GW10K-ETA-G20"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "CB2-100.3-HV5",
+   "expect": {
+    "model": "CB2-100.3-HV5"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "CB2-100.3-HV5",
+   "expect": {
+    "model": "CB2-100.3-HV5"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "L260-OMNI",
+   "expect": {
+    "model": "L260-OMNI"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "L260-OMNI",
+   "expect": {
+    "model": "L260-OMNI"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "L260 Omni",
+   "expect": {
+    "model": "L260-OMNI"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "L260 Omni",
+   "expect": {
+    "model": "L260-OMNI"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "EF HD-P1-12K0-S2",
+   "expect": {
+    "model": "EF HD-P1-12K0-S2"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "EF HD-P1-12K0-S2",
+   "expect": {
+    "model": "EF HD-P1-12K0-S2"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "HS3-5K-T2-W/G-PX",
+   "expect": {
+    "model": "HS3-5K-T2-W/G-PX"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "HS3-5K-T2-W/G-PX",
+   "expect": {
+    "model": "HS3-5K-T2-W/G-PX"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "DTSU666",
+   "expect": {
+    "model": "DTSU666"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "DTSU666",
+   "expect": {
+    "model": "DTSU666"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "SAJ H2",
+   "expect": {
+    "series": "saj-h2"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "SAJ H2",
+   "expect": {
+    "series": "saj-h2"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "saj h2",
+   "expect": {
+    "series": "saj-h2"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "saj h2",
+   "expect": {
+    "series": "saj-h2"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "HS2",
+   "expect": {
+    "series": "saj-hs2"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "HS2",
+   "expect": {
+    "series": "saj-hs2"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "GoodWe ESA",
+   "expect": {
+    "title": "ESA"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "GoodWe ESA",
+   "expect": {
+    "title": "ESA"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "OCEAN 2",
+   "expect": {
+    "title": "OCEAN 2"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "OCEAN 2",
+   "expect": {
+    "title": "OCEAN 2"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "EcoFlow OCEAN 2",
+   "expect": {
+    "title": "OCEAN 2"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "EcoFlow OCEAN 2",
+   "expect": {
+    "title": "OCEAN 2"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "inverters",
+   "expect": {
+    "category": "inverters"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "inverter",
+   "expect": {
+    "category": "inverters"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "hybrid inverter",
+   "expect": {
+    "category": "inverters"
+   },
+   "bare": false
+  },
+  {
+   "lang": "de",
+   "message": "Wechselrichter",
+   "expect": {
+    "category": "inverters"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "Hybrid-Wechselrichter",
+   "expect": {
+    "category": "inverters"
+   },
+   "bare": false
+  },
+  {
+   "lang": "en",
+   "message": "home storage",
+   "expect": {
+    "category": "home-storage"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "Heimspeicher",
+   "expect": {
+    "category": "home-storage"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "battery systems",
+   "expect": {
+    "category": "battery-systems"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "Batteriesysteme",
+   "expect": {
+    "category": "battery-systems"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "EV chargers",
+   "expect": {
+    "category": "ev-chargers"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "EV charger",
+   "expect": {
+    "category": "ev-chargers"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "Ladestationen",
+   "expect": {
+    "category": "ev-chargers"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "Ladestation",
+   "expect": {
+    "category": "ev-chargers"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "accessories",
+   "expect": {
+    "category": "accessories"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "Zubehör",
+   "expect": {
+    "category": "accessories"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "all-in-one systems",
+   "expect": {
+    "category": "all-in-one-systems"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "All-in-One-Systeme",
+   "expect": {
+    "category": "all-in-one-systems"
+   }
+  },
+  {
+   "lang": "en",
+   "message": "EMS",
+   "expect": {
+    "category": "ems-monitoring"
+   }
+  },
+  {
+   "lang": "de",
+   "message": "EMS",
+   "expect": {
+    "category": "ems-monitoring"
+   }
+  }
+ ]
+}
