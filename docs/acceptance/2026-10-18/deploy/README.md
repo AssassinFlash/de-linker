@@ -1,6 +1,6 @@
 # #298 · 整批 rename 发布与站外回滚备份
 
-依据：[票 #298](https://github.com/AssassinFlash/de-linker/issues/298) 与 [PR #299 第 1 轮已裁定意见](https://github.com/AssassinFlash/de-linker/pull/299#issuecomment-6241352856)。本记录按该轮意见更新，取代此前逐插件切换和备份留在 web root 的方案。
+依据：[票 #298](https://github.com/AssassinFlash/de-linker/issues/298)、[PR #299 第 1 轮已裁定意见](https://github.com/AssassinFlash/de-linker/pull/299#issuecomment-6241352856) 与[第 3 轮意见](https://github.com/AssassinFlash/de-linker/pull/299#issuecomment-6241929864)。本记录按已裁定意见更新，取代此前逐插件切换和备份留在 web root 的方案。
 
 ## 发布路径
 
@@ -102,6 +102,8 @@ just cutover rollback-deploy
 采样配置的来源与速率：第 3 轮决定 5 要求构建 / 上传低频、切换至读回密集；本票将原 **0.1 s** 间隔改为所有端点共用的单一轮询流，构建 / 上传则降十倍到 **1 s**。每次响应后才计等待，所以持续流量分别至多约 **10 GET/s** 与 **1 GET/s**（全体合计），最多一个在途请求；不把配置说成 Hostinger 容量事实。部署进程在调用切换 shell 前刷新专用信号行，父进程实时读到后升频；持续至 deploy 的 verify / archive 读回结束，至少完成一轮密集采样。最终 fatal 元数据在采样线程与前后快照请求全部结束后读取。
 
 成功归档并读回后，只保留当前批次；专用 `~/deploy-prev/` 下无 `manifest.json` 的中断批次也清理。失败恢复时无法删除的 `.failed` 保留供检查，并阻止新发布覆盖它。正常发布会确认 web root 无 `.next/.prev/.prev-absent/.failed` 残件。
+
+第 3 轮增量双评审：Spec 无偏差；Standards 无规则违背或新增 smell，发现采样线程异常退出会使完整密集采样等待挂住。真实 loopback 的一次截断 HTTP 响应先复现挂起，再补 worker 异常 / 结束通知，生成失败 `proof.json`，不再无限等待；回归测试为 `test_probe_reports_failed_worker_instead_of_waiting_forever`。此次工具改动无客户界面，视觉验收不适用。
 
 端点配置在 `plan.DEPLOY_PROBE_ENDPOINTS`：首页、联系页、Proforma 请求页、`VERIFY_PRODUCT_PATHS` 中的英文产品页、commerce 产品搜索、i18n 的 `wp/v2/pages?lang=de`、tools 的只读 `genie/conversation`。i18n 自己没有 REST 命名空间，实际由 `RestLang` 进入语言并过滤原生路由；探针要求返回非空、全部为德语地址。tools GET 只读已有线程，不创建对话、不调用模型、不发信。root / base URL 从 `Target` 来，插件名单从 `plan.NEW_PLUGINS` 来，README 不另写一套主机路径或 slug。
 

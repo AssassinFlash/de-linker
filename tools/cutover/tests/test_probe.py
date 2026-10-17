@@ -39,6 +39,9 @@ def proof_site(tmp_path: Path) -> Iterator[tuple[Target, dict[str, str]]]:
             else:
                 body = '<html lang="en"><body>fixture</body></html>'
             self.send_response(200)
+            if body == "truncated-response":
+                replies.pop(path)  # One failed HTTP response; readback can run.
+                self.send_header("Content-Length", str(len(body) + 1))
             self.end_headers()
             self.wfile.write(body.encode())
 
@@ -266,3 +269,47 @@ def test_deployment_process_signals_switch_before_it_finishes(tmp_path: Path) ->
         "LINKER_CUTOVER_SWITCH_START",
         "readback",
     ]
+
+
+def test_probe_reports_failed_worker_instead_of_waiting_forever(
+    proof_site: tuple[Target, dict[str, str]], tmp_path: Path
+) -> None:
+    """A real truncated response ends the observer with failed proof evidence."""
+    target, replies = proof_site
+    source = tmp_path / "release"
+    source.mkdir()
+    (source / "plugin.php").write_text("new")
+    artifacts = []
+    for slug in plan.NEW_PLUGINS:
+        relative = f"{plan.PLUGINS_DIR}/{slug}"
+        live = Path(target.path_of(relative))
+        live.mkdir(parents=True)
+        (live / "plugin.php").write_text("old")
+        artifacts.append(atomic.Artifact(source, relative))
+
+    def deploy(switch_started: Callable[[], None]) -> int:
+        replies["/"] = "truncated-response"
+        receipt = atomic.publish(
+            target,
+            artifacts,
+            deploy_id="20261018T000000Z-worker-failure",
+            on_switch=switch_started,
+        )
+        atomic.archive(target, receipt)
+        return 0
+
+    results: list[probe.Proof] = []
+    evidence = tmp_path / "failed-worker-proof"
+    observer = threading.Thread(
+        target=lambda: results.append(probe.observe(target, deploy, evidence=evidence)),
+        daemon=True,
+    )
+    observer.start()
+    # A dense seven-endpoint loopback sweep takes under a second. Five seconds
+    # bounds this regression so a dead watcher cannot hang the whole suite.
+    observer.join(timeout=5)
+
+    assert not observer.is_alive(), "probe hung after its sampling worker exited"
+    assert not results[0].successful
+    assert "IncompleteRead" in " ".join(results[0].notes)
+    assert (evidence / "proof.json").is_file()

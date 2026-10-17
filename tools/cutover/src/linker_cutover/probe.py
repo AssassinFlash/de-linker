@@ -200,7 +200,8 @@ def observe(
     stop = threading.Event()
     switching = threading.Event()
     wake = threading.Event()
-    dense_complete = threading.Event()
+    dense_or_stopped = threading.Event()
+    worker_errors: list[str] = []
 
     def switch_started() -> None:
         switching.set()
@@ -209,22 +210,29 @@ def observe(
     def watch() -> None:
         index = 0
         dense_seen: set[str] = set()
-        while not stop.is_set():
-            endpoint = endpoints[index % len(endpoints)]
-            cadence = "dense" if switching.is_set() else "steady"
-            sample = _sample(target, endpoint, "during", cadence)
-            samples.append(sample)
-            if cadence == "dense":
-                dense_seen.add(endpoint.name)
-                if len(dense_seen) == len(endpoints):
-                    dense_complete.set()
-            index += 1
-            wake.wait(
-                DENSE_INTERVAL_SECONDS
-                if switching.is_set()
-                else STEADY_INTERVAL_SECONDS
-            )
-            wake.clear()
+        try:
+            while not stop.is_set():
+                endpoint = endpoints[index % len(endpoints)]
+                cadence = "dense" if switching.is_set() else "steady"
+                sample = _sample(target, endpoint, "during", cadence)
+                samples.append(sample)
+                if cadence == "dense":
+                    dense_seen.add(endpoint.name)
+                    if len(dense_seen) == len(endpoints):
+                        dense_or_stopped.set()
+                index += 1
+                wake.wait(
+                    DENSE_INTERVAL_SECONDS
+                    if switching.is_set()
+                    else STEADY_INTERVAL_SECONDS
+                )
+                wake.clear()
+        except Exception as error:
+            # A failed worker must wake its observer, including transport errors
+            # outside _sample's normal contract (e.g. a truncated HTTP body).
+            worker_errors.append(f"probe worker failed: {type(error).__name__}")
+        finally:
+            dense_or_stopped.set()
 
     thread = threading.Thread(target=watch)
     thread.start()
@@ -234,13 +242,14 @@ def observe(
         if switching.is_set():
             # Even a very fast local switch must sample every endpoint in the
             # dense phase before the final log/inode readback closes the window.
-            dense_complete.wait()
+            dense_or_stopped.wait()
         else:
             notes.append("deployment did not report the switch marker")
     finally:
         stop.set()
         wake.set()
         thread.join()
+    notes += worker_errors
     samples += [_sample(target, endpoint, "after") for endpoint in endpoints]
     after_logs = _fatal_metadata(target)
     try:
