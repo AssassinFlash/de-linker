@@ -104,6 +104,13 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		wp_mail( 'internal@example.test', 'Retry fixture', 'Retry fixture.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>', 'Bcc: copy@example.test' ) );
 		$ids = self::mail_jobs_after( $marker );
 		$this->assertCount( 1, $ids );
+		// A successful retry deletes its post, so the base cleanup can no longer
+		// discover it. Keep this test's ID to remove its manually fired actions.
+		$this->later(
+			static function () use ( $ids ): void {
+				as_unschedule_all_actions( Outbox::HOOK, array( $ids[0] ), Outbox::GROUP );
+			}
+		);
 		$job = ( new JobStore() )->load( $ids[0] );
 		$this->assertNotNull( $job );
 		$this->assertTrue( $job['message']->is_internal() );

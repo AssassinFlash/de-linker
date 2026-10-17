@@ -13,7 +13,7 @@
 | Spec 11 Mail 更新 | `docs/specs/11-commerce.md` 的“Mail：内部认证 SMTP（#297）”；同步 spec 74 健康区块。 | 完成 |
 | 部署后，业主凭据就位，Claude 触发一封摘要，进入 sunriver 收件箱，DKIM 与 DMARC 通过 | 此实现会话不能执行，见下面准确步骤。 | **未完成（Claude）** |
 
-真实 mail 集成组（CI 同组）本地连续两次通过：**26 tests / 280 assertions**。它包括 SMTP 四场景、六类通知生产者、旧重试、摘要与健康告警回归。SMTP 测试可连跑；每次自行清理本次夹具并恢复原状态。
+真实 mail 集成组（CI 同组）本地连续两次通过：**26 tests / 280 assertions**。它包括 SMTP 四场景、六类通知生产者、旧重试、摘要与健康告警回归。SMTP 四场景另以 `--repeat 2` 连跑通过（8 tests / 100 assertions）；成功重试删除队列记录后，夹具仍保留自身 job ID 清理手动触发产生的重试排程。原生 Action Scheduler 读回的孤立待重试排程数为 0。每次自行清理本次夹具并恢复原状态。
 
 全仓库门禁：`just check` **PASS**（PHPCS / PHPStan 8 / JS / Ruff / mypy / i18n / 构建）；`just test` **PASS**。默认商务套件中 82 个未加载真实 WP 的集成项按设计跳过，本票真实邮件链由上面的独立 26 项实际运行证明。其余门禁包括 PHP i18n 190 项、tools 188 项、mu 6 项；前端单元 128 项与 Playwright 9 项；Genie 723 项、engine 112 项、local 98 项、migrate 94 项（另 9 项按原配置跳过）、FAQ 20 项、pull 113 项、cutover 82 项。新增行旧标识符检查无命中，`git diff --check` 通过。
 
