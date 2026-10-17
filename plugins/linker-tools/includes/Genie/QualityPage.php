@@ -287,6 +287,8 @@ class QualityPage {
 		}
 		echo '</tbody></table>';
 
+		$this->render_contact_requests( $conversation );
+
 		printf( '<h2>%s</h2>', esc_html__( 'Conversation', 'linker-tools' ) );
 		$thread = $this->thread->read( $conversation );
 		echo '<table class="widefat fixed striped"><tbody>';
@@ -297,7 +299,70 @@ class QualityPage {
 				nl2br( esc_html( (string) $message['content'] ) )
 			);
 		}
+		// The last answer is kept as its stream (Thread::STREAM), not among the
+		// messages: shown here so the page holds the whole conversation, which
+		// the team mail of a contact request links to (#243).
+		$last = self::answer_text( $thread['stream'] );
+		if ( '' !== $last ) {
+			printf( '<tr><th scope="row">Genie</th><td>%s</td></tr>', nl2br( esc_html( $last ) ) );
+		}
 		echo '</tbody></table>';
+	}
+
+	/**
+	 * The conversation's contact requests (#243): when, why, and where the team replies.
+	 *
+	 * @param int $conversation Conversation post ID.
+	 */
+	private function render_contact_requests( int $conversation ): void {
+		$notes = get_post_meta( $conversation, ContactRequest::NOTE, false );
+		if ( ! is_array( $notes ) || array() === $notes ) {
+			return;
+		}
+		printf( '<h2>%s</h2>', esc_html__( 'Contact requests', 'linker-tools' ) );
+		echo '<ul>';
+		foreach ( $notes as $note ) {
+			if ( ! is_array( $note ) ) {
+				continue;
+			}
+			printf(
+				'<li>%s</li>',
+				esc_html(
+					sprintf(
+						/* translators: 1: date and time, 2: the address the team replies to, 3: why Genie offered the contact (asked, service, dissatisfied, repeat). */
+						__( '%1$s: reply to %2$s (%3$s)', 'linker-tools' ),
+						$this->time( (int) ( $note['at'] ?? 0 ) ),
+						(string) ( $note['email'] ?? '' ),
+						(string) ( $note['reason'] ?? '' )
+					)
+				)
+			);
+		}
+		echo '</ul>';
+	}
+
+	/**
+	 * The text of a stored answer stream: its text and handoff blocks, in order.
+	 *
+	 * @param string $stream The service's SSE text (Thread::STREAM).
+	 */
+	public static function answer_text( string $stream ): string {
+		$parts = array();
+		foreach ( explode( "\n\n", $stream ) as $event ) {
+			if ( ! str_starts_with( $event, 'event: block' ) || ! preg_match( '/^data: (.+)$/m', $event, $data ) ) {
+				continue;
+			}
+			$block = json_decode( $data[1], true );
+			if ( ! is_array( $block ) ) {
+				continue;
+			}
+			if ( 'text' === ( $block['type'] ?? '' ) ) {
+				$parts[] = (string) ( $block['text'] ?? '' );
+			} elseif ( 'handoff' === ( $block['type'] ?? '' ) ) {
+				$parts[] = (string) ( $block['summary'] ?? '' );
+			}
+		}
+		return trim( implode( "\n\n", array_filter( $parts ) ) );
 	}
 
 	/**

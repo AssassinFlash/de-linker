@@ -45,12 +45,15 @@ abstract class TeamEmail extends WC_Email {
 	}
 
 	/**
-	 * Sends the notification about an object (an order or a customer).
+	 * Sends the notification about an object (an order or a customer), or
+	 * about a guest who has neither (null: the subclass names the reply
+	 * address, reply_to()).
 	 *
-	 * @param WC_Order|WP_User $subject What the notification is about.
+	 * @param WC_Order|WP_User|null $subject What the notification is about.
 	 */
-	protected function notify( WC_Order|WP_User $subject ): void {
-		$this->object    = $subject;
+	protected function notify( WC_Order|WP_User|null $subject ): void {
+		// WC_Email's own "no object" is false.
+		$this->object    = $subject ?? false;
 		$this->recipient = $this->options->notify_to();
 		$this->locale_switch->to( LocaleSwitch::site_default() );
 		try {
@@ -164,7 +167,7 @@ abstract class TeamEmail extends WC_Email {
 	/**
 	 * "Name <address>" of the customer the notification is about, or ''.
 	 */
-	private function reply_to(): string {
+	protected function reply_to(): string {
 		if ( $this->object instanceof WC_Order && is_email( $this->object->get_billing_email() ) ) {
 			return trim( $this->object->get_formatted_billing_full_name() . ' <' . $this->object->get_billing_email() . '>' );
 		}

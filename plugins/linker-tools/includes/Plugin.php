@@ -12,6 +12,7 @@ namespace Linker\Tools;
 use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
 use Linker\Tools\Genie\ConversationMail;
+use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Preview;
@@ -47,6 +48,7 @@ final class Plugin {
 	 * @param QualityPage      $quality_page  The quality check's admin page.
 	 * @param Preview          $preview       Genie's preview card (ticket #249).
 	 * @param ConversationMail $mail        "Email me this conversation" and its confirmation link (ticket #235).
+	 * @param ContactRequest   $contact       "Let Linker contact me": the contact card's route (#243).
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -64,7 +66,8 @@ final class Plugin {
 		private readonly QualityRoute $quality_route,
 		private readonly QualityPage $quality_page,
 		private readonly Preview $preview,
-		private readonly ConversationMail $mail
+		private readonly ConversationMail $mail,
+		private readonly ContactRequest $contact
 	) {}
 
 	/**
@@ -77,6 +80,7 @@ final class Plugin {
 		add_action( 'rest_api_init', array( $this->proxy, 'register' ) );
 		add_action( 'rest_api_init', array( $this->engine_proxy, 'register' ) );
 		add_action( 'rest_api_init', array( $this->quality_route, 'register' ) );
+		add_action( 'rest_api_init', array( $this->contact, 'register' ) );
 		$this->redirects->register();
 		$this->site_chrome->register();
 		$this->entries->register();

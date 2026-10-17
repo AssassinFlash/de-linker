@@ -19,6 +19,10 @@ parameters:
 	excludePaths:
 		# Stand-ins for WordPress and WooCommerce classes; PHPStan reads the real ones from the stubs.
 		- tests/php/Doubles
+	scanDirectories:
+		# Genie's contact route of the companion plugin: the integration test of the
+		# contact request drives it with this plugin's team mail (#243).
+		- ../linker-tools/includes/Genie
 	scanFiles:
 		# The existing language helper is supplied by the companion plugin.
 		- ../linker-i18n/includes/Languages.php

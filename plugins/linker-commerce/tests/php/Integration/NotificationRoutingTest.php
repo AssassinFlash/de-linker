@@ -17,6 +17,8 @@ use Linker\Commerce\Contact\Form;
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Digest\Module as DigestModule;
 use Linker\Commerce\Digest\Scheduler;
+use Linker\Commerce\Genie\ContactEmail;
+use Linker\Commerce\Genie\Module as GenieModule;
 use Linker\Commerce\Health\Monitor;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Mail\JobStore;
@@ -64,7 +66,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
-		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, TeamMessageEmail::ID, 'linker_digest' ) as $id ) {
+		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, TeamMessageEmail::ID, 'linker_digest', ContactEmail::ID ) as $id ) {
 			$saved[ 'woocommerce_' . $id . '_settings' ] = get_option( 'woocommerce_' . $id . '_settings' );
 		}
 		$this->later(
@@ -207,6 +209,49 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$this->assertCount( 1, $receipt );
 		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
 		$this->assertContains( 'Reply-to: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
+	}
+
+	/**
+	 * Genie's contact request (#243) goes to the internal recipient, replies
+	 * to the address the customer left.
+	 *
+	 * @testWith ["", "sales@sunriverinverter.com"]
+	 *           ["alerts@example.test", "alerts@example.test"]
+	 *
+	 * @param string $saved_from Saved internal sender.
+	 * @param string $from       Effective sender.
+	 */
+	public function test_genie_contact_notification_routing( string $saved_from, string $from ): void {
+		update_option( Options::NOTIFY_FROM, $saved_from );
+		$guest  = 'linker-it-' . self::tag() . '@example.test';
+		$marker = self::newest_mail_job();
+		/** This action is documented in linker-tools/includes/Genie/ContactRequest.php */
+		do_action(
+			GenieModule::ACTION, // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- GenieModule::ACTION is linker_genie_contact_requested.
+			array(
+				'conversation' => array(
+					'id'       => 1,
+					'url'      => admin_url( 'admin.php?page=linker-genie-quality&conversation=1' ),
+					'messages' => 1,
+				),
+				'reason'       => 'asked',
+				'locale'       => 'en',
+				'customer'     => array(
+					'user_id' => 0,
+					'email'   => $guest,
+					'name'    => '',
+				),
+				'summary'      => array( 'Can I talk to a person?' ),
+				'page'         => array(
+					'type'  => 'home',
+					'url'   => home_url( '/' ),
+					'title' => 'Home',
+				),
+				'draft'        => array(),
+			)
+		);
+		$row = $this->internal_message( $marker, 'Genie: ' . $guest, $from );
+		$this->assertContains( 'Reply-to: ' . $guest, $row['headers'] );
 	}
 
 	/**

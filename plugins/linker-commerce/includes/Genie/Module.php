@@ -1,6 +1,7 @@
 <?php
 /**
- * The email side of Genie's "email me this conversation".
+ * The email side of Genie: "email me this conversation" (#235) and "Let
+ * Linker contact me" (#243).
  *
  * @package Linker\Commerce
  */
@@ -9,6 +10,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Genie;
 
+use Linker\Commerce\Settings\Options;
+
 /**
  * Genie lives in linker-tools; the site's emails live here (every one a
  * WooCommerce email of this plugin, sent through the Outbox). linker-tools
@@ -16,6 +19,13 @@ namespace Linker\Commerce\Genie;
  * this module answers them (ticket #235, docs/specs/13-genie.md goal 7):
  * SEND_FILTER with ConversationEmail, CONFIRM_FILTER with
  * ConfirmAddressEmail.
+ *
+ * "Let Linker contact me" (#243): linker-tools' contact card route fires
+ * ACTION with the hand-off; this module makes it one of WooCommerce's
+ * transactional email actions and registers the team mail that answers it
+ * (ContactEmail, a Mail\TeamEmail), so it goes through Woo's mailer and the
+ * Outbox like every other internal notification; and it answers
+ * MAILBOX_FILTER with the team mailbox customers see.
  */
 final class Module {
 
@@ -26,19 +36,58 @@ final class Module {
 	public const CONFIRM_FILTER = 'linker_tools_genie_confirm_address';
 
 	/**
+	 * The action linker-tools fires with a contact request's hand-off
+	 * (Linker\Tools\Genie\ContactRequest::ACTION). Here, not on the email
+	 * class: WooCommerce reads the action list before it loads WC_Email.
+	 */
+	public const ACTION = 'linker_genie_contact_requested';
+
+	/**
+	 * The filter the contact card's route reads the team mailbox from
+	 * (Linker\Tools\Genie\ContactRequest::MAILBOX_FILTER).
+	 */
+	public const MAILBOX_FILTER = 'linker_genie_team_mailbox';
+
+	/**
 	 * Sets up the module.
 	 *
-	 * @param string $plugin_file Absolute path of the main plugin file.
+	 * @param string  $plugin_file Absolute path of the main plugin file.
+	 * @param Options $options     The plugin settings (internal notification recipients, team mailbox).
 	 */
-	public function __construct( private readonly string $plugin_file ) {}
+	public function __construct(
+		private readonly string $plugin_file,
+		private readonly Options $options
+	) {}
 
 	/**
 	 * Adds the module's hooks.
 	 */
 	public function register(): void {
 		add_filter( 'woocommerce_email_classes', array( $this, 'add_emails' ) );
+		add_filter( 'woocommerce_email_actions', array( $this, 'email_actions' ) );
 		add_filter( self::SEND_FILTER, array( $this, 'send' ), 10, 2 );
 		add_filter( self::CONFIRM_FILTER, array( $this, 'confirm' ), 10, 2 );
+		add_filter( self::MAILBOX_FILTER, array( $this, 'mailbox' ) );
+	}
+
+	/**
+	 * WooCommerce sends emails only on the actions in this list.
+	 *
+	 * @param string[] $actions Actions.
+	 * @return string[]
+	 */
+	public function email_actions( array $actions ): array {
+		$actions[] = self::ACTION;
+		return $actions;
+	}
+
+	/**
+	 * The team mailbox customers see, for the contact card's refusals.
+	 *
+	 * @return string Options::team_mailbox().
+	 */
+	public function mailbox(): string {
+		return $this->options->team_mailbox();
 	}
 
 	/**
@@ -50,6 +99,7 @@ final class Module {
 	public function add_emails( array $emails ): array {
 		$emails[ ConversationEmail::class ]   = new ConversationEmail( $this->plugin_file );
 		$emails[ ConfirmAddressEmail::class ] = new ConfirmAddressEmail( $this->plugin_file );
+		$emails[ ContactEmail::class ]        = new ContactEmail( $this->plugin_file, $this->options );
 		return $emails;
 	}
 

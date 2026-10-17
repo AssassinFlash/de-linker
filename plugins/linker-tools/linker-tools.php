@@ -21,6 +21,8 @@ namespace Linker\Tools;
 
 use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
+use Linker\Tools\Genie\ContactGuard;
+use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
@@ -39,11 +41,11 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$conversations = new Conversations(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
-$thread        = new Thread(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
+$conversations = new Conversations(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used four times below.
+$thread        = new Thread(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used three times below.
 $mail          = new ConversationMail( $conversations, $thread ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
 $quality       = new QualityStore(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used three times below.
-$page_context  = new PageContext(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used three times below.
+$page_context  = new PageContext(); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used four times below.
 $genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- bootstrap scope, used twice below.
 ( new Plugin(
 	new Assets( __FILE__ ),
@@ -61,5 +63,6 @@ $genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingC
 	new QualityRoute( $quality ),
 	new QualityPage( $quality, new Thread() ),
 	$genie_preview,
-	$mail
+	$mail,
+	new ContactRequest( $conversations, $thread, $page_context, new ContactGuard() )
 ) )->register();
