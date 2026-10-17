@@ -13,11 +13,14 @@ for the "5.0" of BU2-5.0-HV1), while a number written beside a code is checked.
 
 A price is a number with one more gate (#258 review; the remit's price rule):
 the tool must have returned it as visible and the account must be approved.
+Since #242 the model writes no price at all; the product card carries it, and the
+card's price line passes the same two gates (`_card_prices`).
 """
 
 from __future__ import annotations
 
 import re
+from typing import Any
 
 from linker_genie.facts import TurnFacts, collect, merge
 from linker_genie.ground import bare_numbers
@@ -49,6 +52,8 @@ def verify(turn: LoggedTurn) -> list[str]:
             for pid in block.get("product_ids") or []:
                 if pid not in facts.product_ids:
                     failures.append(f"shows product {pid}, which no tool returned")
+        if kind == "cards":
+            failures.extend(_card_prices(block, facts, turn.approved))
         if kind in ("text", "handoff"):
             text = str(block.get("text" if kind == "text" else "summary", ""))
             for number in bare_numbers(text):
@@ -61,6 +66,29 @@ def verify(turn: LoggedTurn) -> list[str]:
                         for pid, price in prices.items()
                         if _same_amount(number, price)
                     )
+    return failures
+
+
+def _card_prices(block: dict[str, Any], facts: TurnFacts, approved: bool) -> list[str]:
+    """A card's price line passes the same two gates as a price in the text
+    (#242): the turn's tool returned it for this product as the product page's
+    price line (`price_text`, only when it was visible), and the account is an
+    approved one. A line that only says why there is no price states nothing."""
+    failures: list[str] = []
+    for line in block.get("prices") or []:
+        if not isinstance(line, dict) or not line.get("text"):
+            continue
+        pid = line.get("product_id")
+        returned = facts.commerce.get(pid) if isinstance(pid, int) else None
+        if not returned or returned.get("price_text") != line["text"]:
+            failures.append(
+                f"shows a price of product {pid} on its card that no tool returned"
+            )
+        elif not approved:
+            failures.append(
+                f"shows the price of product {pid} on its card, and the account is "
+                "not approved"
+            )
     return failures
 
 

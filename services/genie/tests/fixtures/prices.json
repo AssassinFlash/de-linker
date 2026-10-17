@@ -1,0 +1,357 @@
+{
+ "approved": {
+  "search_h2_en": {
+   "qualified": [
+    {
+     "product_id": 4107,
+     "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+     "facts": {
+      "device_class": "inverters",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "usable_kwh": "unknown",
+      "nominal_kwh": "unknown"
+     },
+     "commerce": {
+      "price_visible": true,
+      "in_stock": true,
+      "rfq_only": false,
+      "price": "1680",
+      "price_text": "€1,680.00"
+     }
+    }
+   ],
+   "excluded": {
+    "by_reason": {
+     "text": 105
+    }
+   },
+   "unknown_fields": []
+  },
+  "product_4107_en": {
+   "product_id": 4107,
+   "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+   "facts": {
+    "device_class": "inverters",
+    "application": "home",
+    "phase": 3,
+    "ac_power_kw": 10,
+    "pv_input_kw": 20,
+    "usable_kwh": "unknown",
+    "nominal_kwh": "unknown"
+   },
+   "commerce": {
+    "price_visible": true,
+    "in_stock": true,
+    "rfq_only": false,
+    "price": "1680",
+    "price_text": "€1,680.00"
+   }
+  },
+  "product_4107_de": {
+   "product_id": 4107,
+   "title": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter)",
+   "facts": {
+    "device_class": "inverters",
+    "application": "home",
+    "phase": 3,
+    "ac_power_kw": 10,
+    "pv_input_kw": 20,
+    "usable_kwh": "unknown",
+    "nominal_kwh": "unknown"
+   },
+   "commerce": {
+    "price_visible": true,
+    "in_stock": true,
+    "rfq_only": false,
+    "price": "1680",
+    "price_text": "1.680,00 €"
+   }
+  },
+  "product_1957_en": {
+   "product_id": 1957,
+   "title": "GoodWe GW208.9-BAT-LCD-G10",
+   "facts": {
+    "device_class": "battery-systems",
+    "application": "commercial",
+    "phase": "unknown",
+    "ac_power_kw": "unknown",
+    "pv_input_kw": "unknown",
+    "usable_kwh": "unknown",
+    "nominal_kwh": 208.9
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": true,
+    "price_reason": "project"
+   }
+  }
+ },
+ "pending": {
+  "search_h2_en": {
+   "qualified": [
+    {
+     "product_id": 4107,
+     "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+     "facts": {
+      "device_class": "inverters",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "usable_kwh": "unknown",
+      "nominal_kwh": "unknown"
+     },
+     "commerce": {
+      "price_visible": false,
+      "in_stock": true,
+      "rfq_only": false,
+      "price_reason": "pending"
+     }
+    }
+   ],
+   "excluded": {
+    "by_reason": {
+     "text": 105
+    }
+   },
+   "unknown_fields": []
+  },
+  "product_4107_en": {
+   "product_id": 4107,
+   "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+   "facts": {
+    "device_class": "inverters",
+    "application": "home",
+    "phase": 3,
+    "ac_power_kw": 10,
+    "pv_input_kw": 20,
+    "usable_kwh": "unknown",
+    "nominal_kwh": "unknown"
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": false,
+    "price_reason": "pending"
+   }
+  },
+  "product_4107_de": {
+   "product_id": 4107,
+   "title": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter)",
+   "facts": {
+    "device_class": "inverters",
+    "application": "home",
+    "phase": 3,
+    "ac_power_kw": 10,
+    "pv_input_kw": 20,
+    "usable_kwh": "unknown",
+    "nominal_kwh": "unknown"
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": false,
+    "price_reason": "pending"
+   }
+  },
+  "product_1957_en": {
+   "product_id": 1957,
+   "title": "GoodWe GW208.9-BAT-LCD-G10",
+   "facts": {
+    "device_class": "battery-systems",
+    "application": "commercial",
+    "phase": "unknown",
+    "ac_power_kw": "unknown",
+    "pv_input_kw": "unknown",
+    "usable_kwh": "unknown",
+    "nominal_kwh": 208.9
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": true,
+    "price_reason": "pending"
+   }
+  }
+ },
+ "restricted": {
+  "search_h2_en": {
+   "qualified": [
+    {
+     "product_id": 4107,
+     "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+     "facts": {
+      "device_class": "inverters",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "usable_kwh": "unknown",
+      "nominal_kwh": "unknown"
+     },
+     "commerce": {
+      "price_visible": false,
+      "in_stock": true,
+      "rfq_only": false,
+      "price_reason": "restricted"
+     }
+    }
+   ],
+   "excluded": {
+    "by_reason": {
+     "text": 105
+    }
+   },
+   "unknown_fields": []
+  },
+  "product_4107_en": {
+   "product_id": 4107,
+   "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+   "facts": {
+    "device_class": "inverters",
+    "application": "home",
+    "phase": 3,
+    "ac_power_kw": 10,
+    "pv_input_kw": 20,
+    "usable_kwh": "unknown",
+    "nominal_kwh": "unknown"
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": false,
+    "price_reason": "restricted"
+   }
+  },
+  "product_4107_de": {
+   "product_id": 4107,
+   "title": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter)",
+   "facts": {
+    "device_class": "inverters",
+    "application": "home",
+    "phase": 3,
+    "ac_power_kw": 10,
+    "pv_input_kw": 20,
+    "usable_kwh": "unknown",
+    "nominal_kwh": "unknown"
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": false,
+    "price_reason": "restricted"
+   }
+  },
+  "product_1957_en": {
+   "product_id": 1957,
+   "title": "GoodWe GW208.9-BAT-LCD-G10",
+   "facts": {
+    "device_class": "battery-systems",
+    "application": "commercial",
+    "phase": "unknown",
+    "ac_power_kw": "unknown",
+    "pv_input_kw": "unknown",
+    "usable_kwh": "unknown",
+    "nominal_kwh": 208.9
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": true,
+    "price_reason": "restricted"
+   }
+  }
+ },
+ "guest": {
+  "search_h2_en": {
+   "qualified": [
+    {
+     "product_id": 4107,
+     "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+     "facts": {
+      "device_class": "inverters",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "usable_kwh": "unknown",
+      "nominal_kwh": "unknown"
+     },
+     "commerce": {
+      "price_visible": false,
+      "in_stock": true,
+      "rfq_only": false,
+      "price_reason": "login"
+     }
+    }
+   ],
+   "excluded": {
+    "by_reason": {
+     "text": 105
+    }
+   },
+   "unknown_fields": []
+  },
+  "product_4107_en": {
+   "product_id": 4107,
+   "title": "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)",
+   "facts": {
+    "device_class": "inverters",
+    "application": "home",
+    "phase": 3,
+    "ac_power_kw": 10,
+    "pv_input_kw": 20,
+    "usable_kwh": "unknown",
+    "nominal_kwh": "unknown"
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": false,
+    "price_reason": "login"
+   }
+  },
+  "product_4107_de": {
+   "product_id": 4107,
+   "title": "SAJ H2-10K-T3 (10-kW-Dreiphasen-Hybrid-Wechselrichter)",
+   "facts": {
+    "device_class": "inverters",
+    "application": "home",
+    "phase": 3,
+    "ac_power_kw": 10,
+    "pv_input_kw": 20,
+    "usable_kwh": "unknown",
+    "nominal_kwh": "unknown"
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": false,
+    "price_reason": "login"
+   }
+  },
+  "product_1957_en": {
+   "product_id": 1957,
+   "title": "GoodWe GW208.9-BAT-LCD-G10",
+   "facts": {
+    "device_class": "battery-systems",
+    "application": "commercial",
+    "phase": "unknown",
+    "ac_power_kw": "unknown",
+    "pv_input_kw": "unknown",
+    "usable_kwh": "unknown",
+    "nominal_kwh": 208.9
+   },
+   "commerce": {
+    "price_visible": false,
+    "in_stock": true,
+    "rfq_only": true,
+    "price_reason": "login"
+   }
+  }
+ }
+}

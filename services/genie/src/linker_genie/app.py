@@ -22,6 +22,7 @@ from linker_genie.abilities import AbilityClient
 from linker_genie.agent import make_generate, model_name, provider_name
 from linker_genie.cycle import TurnResult, run
 from linker_genie.log import TurnLog
+from linker_genie.prices import commerce_lookup
 from linker_genie.schema import TurnRequest, VoteRequest
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.understand import Prepared, Understander
@@ -52,9 +53,8 @@ def turn_log() -> TurnLog:
 def ability_client() -> AbilityClient:
     global _client
     if _client is None:
-        # No token is sent, ever: see linker_genie.abilities. A token that
-        # carries WordPress rights must not be configured until #16's
-        # user-context passthrough exists (leftovers of ticket 13).
+        # No service token, ever: the only identity is the customer's own
+        # short-lived token, passed per call (linker_genie.abilities).
         _client = AbilityClient(_wp_url())
     return _client
 
@@ -101,8 +101,11 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     generate = getattr(request.app.state, "generate", None) or make_generate(
         ability_client(), prepared=prepared, pages=page_reader().read
     )
+    commerce = getattr(request.app.state, "commerce", None) or commerce_lookup(
+        ability_client(), body
+    )
     try:
-        result = run(body, generate, prepared.route, prepared.facts)
+        result = run(body, generate, prepared.route, prepared.facts, commerce)
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
         turn_log().record(
             conversation_id=body.conversation_id,
@@ -122,6 +125,10 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         raise
     if result.retried and result.attempts > 1:
         prepared.log["retried"] = list(result.retried)
+    if result.price_failures:
+        # A card whose price line could not be read shows none; the cause is
+        # logged with the turn, never swallowed (prices.fill).
+        prepared.log["price_failures"] = list(result.price_failures)
     turn_id = turn_log().record(
         conversation_id=body.conversation_id,
         locale=body.locale,

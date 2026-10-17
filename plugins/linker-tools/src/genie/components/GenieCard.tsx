@@ -2,7 +2,8 @@
  * A product card of the answer, with its actions inside the card
  * (docs/specs/13-genie.md). Display data comes from the Store API; the model
  * name comes from the get-product ability, so the card names the model and
- * never `#<id>`.
+ * never `#<id>`; the price line comes with the answer, filled by the service
+ * for this customer's account (#242).
  */
 
 /**
@@ -18,6 +19,51 @@ import { ProductCard, type CardState } from '../../shared/ProductCard';
 import type { storeClient } from '../../configurator/api/store';
 import type { StoreProduct } from '../../configurator/types';
 import { productModel } from '../api/product';
+import type { CardPrice } from '../api/turn';
+
+/**
+ * The card's price line (#242): the price as the service filled it, or the
+ * sentence the product page shows in its place, word for word (linker-commerce
+ * ProductView and PriceDisplay; German in the same words as there).
+ *
+ * @param price The line the service filled; undefined when it filled none.
+ */
+export function priceLine(
+	price: CardPrice | undefined
+): { text: string; kind: 'net' | 'note' } | undefined {
+	if ( price?.text ) {
+		return { text: price.text, kind: 'net' };
+	}
+	switch ( price?.reason ) {
+		case 'login':
+			return {
+				text: __( 'Net price after partner sign-in', 'linker-tools' ),
+				kind: 'note',
+			};
+		case 'pending':
+			return {
+				text: __( 'Prices after approval', 'linker-tools' ),
+				kind: 'note',
+			};
+		case 'restricted':
+			return {
+				text: __( 'Not available for your account', 'linker-tools' ),
+				kind: 'note',
+			};
+		case 'project':
+			return {
+				text: __( 'Quoted per project', 'linker-tools' ),
+				kind: 'note',
+			};
+		case 'unpriced':
+			return {
+				text: __( 'Price on request', 'linker-tools' ),
+				kind: 'note',
+			};
+		default:
+			return undefined;
+	}
+}
 
 export function GenieCard( {
 	productId,
@@ -25,6 +71,7 @@ export function GenieCard( {
 	store,
 	locale,
 	status,
+	price,
 	onAdd,
 	onSave,
 }: {
@@ -33,6 +80,7 @@ export function GenieCard( {
 	store: ReturnType< typeof storeClient >;
 	locale: string;
 	status: { state: CardState; text: string };
+	price?: CardPrice;
 	onAdd: ( productId: number ) => void;
 	onSave: ( productId: number, title: string ) => void;
 } ) {
@@ -76,6 +124,7 @@ export function GenieCard( {
 			role={ __( 'Product', 'linker-tools' ) }
 			title={ product.name }
 			model={ modelText }
+			price={ priceLine( price ) }
 			url={ product.permalink }
 			image={ product.images[ 0 ] }
 			badges={

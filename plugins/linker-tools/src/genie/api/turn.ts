@@ -29,10 +29,25 @@ export interface AskBlock {
 	options: string[];
 }
 
-/** Qualified products; the shell fetches their display data from the Store API. */
+/**
+ * A card's price line, filled by the service from the customer's own product
+ * ability (#242): `text` is the price as the product page prints it for an
+ * approved partner account; otherwise `reason` says why there is none.
+ */
+export interface CardPrice {
+	product_id: number;
+	text?: string | null;
+	reason?: 'login' | 'pending' | 'restricted' | 'project' | 'unpriced' | null;
+}
+
+/**
+ * Qualified products; the shell fetches their display data from the Store API,
+ * and their price lines come with the block (`prices`).
+ */
 export interface CardsBlock {
 	type: 'cards';
 	product_ids: number[];
+	prices?: CardPrice[] | null;
 }
 
 /** A comparison of two to four products. */

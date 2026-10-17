@@ -395,22 +395,36 @@ class Proxy {
 		if ( 'draft' === $page['type'] ) {
 			$page['draft_ids'] = $this->pages->draft_ids();
 		}
-		$body   = array(
+		/**
+		 * Whether the visitor sees prices: linker-commerce answers with its
+		 * one price rule (CommerceState::visitor_sees_prices, #242); without
+		 * it the default stands and nobody is a partner.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param bool $sees False unless the price rule says otherwise.
+		 */
+		$partner = true === apply_filters( 'linker_commerce_visitor_sees_prices', false ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- linker-commerce's filter, read here; not this plugin's own hook.
+		$body    = array(
 			'conversation_id' => (string) $conversation,
 			'messages'        => $request->get_param( 'messages' ),
 			'locale'          => $locale,
 			'page_context'    => $page,
-			// `partner` is deliberately absent: this shell cannot know the
-			// customer's partner status, and a fake value would lie to the
-			// service. `context` is the signed-in customer's short-lived
-			// token, so the service can ask about *their* inquiries without
-			// holding a WordPress session (UserContext).
+			// `partner` is whether this account sees prices, by the site's one
+			// price rule (linker-commerce's CommerceState answers the filter;
+			// without it nobody does): a signed-in pending or restricted
+			// account is not a partner (#242). `context` is the signed-in
+			// customer's short-lived token: the service sends it back on the
+			// product abilities and the inquiry list, so they answer for this
+			// customer without the service holding a WordPress session
+			// (UserContext).
 			'user'            => array(
 				'logged_in' => is_user_logged_in(),
+				'partner'   => $partner,
 				'context'   => $this->user_context->mint(),
 			),
 		);
-		$stream = $this->post( rtrim( $base, '/' ) . '/assistant/turn', $body );
+		$stream  = $this->post( rtrim( $base, '/' ) . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}

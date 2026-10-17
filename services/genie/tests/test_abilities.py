@@ -1,10 +1,10 @@
 """What the ability client sends, where the customer's identity may ride, and
 how a transiently failing ability call is retried.
 
-The service calls the read-only abilities anonymously; the only identity it
-ever carries is the shell's short-lived token, and only on the one ability
-that answers about the browsing customer (docs/specs/13-genie.md §B, #16's
-user-context passthrough).
+The service holds no identity of its own; the only identity it ever carries is
+the shell's short-lived token, and only on the abilities whose answer depends on
+the browsing customer: the inquiry list, and the product abilities whose prices
+follow the account (#242, docs/specs/13-genie.md 价格跟账号走).
 
 The retry tests stand in for the storm: a Redis hiccup on the WordPress side
 kills the ability's request mid-read, which the service sees as a 5xx or a
@@ -21,6 +21,7 @@ import pytest
 
 from linker_genie.abilities import (
     ABILITY_ATTEMPTS,
+    USER_CONTEXT_ABILITIES,
     USER_CONTEXT_ABILITY,
     USER_CONTEXT_HEADER,
     AbilityClient,
@@ -80,7 +81,7 @@ def client_for(recorder: Recorder | Flaky, clock: Clock | None = None) -> Abilit
     )
 
 
-def test_a_read_only_call_carries_no_identity() -> None:
+def test_a_call_without_a_customer_carries_no_identity() -> None:
     recorder = Recorder()
     client = client_for(recorder)
 
@@ -89,15 +90,39 @@ def test_a_read_only_call_carries_no_identity() -> None:
     assert USER_CONTEXT_HEADER not in recorder.requests[0].headers
 
 
-def test_the_customer_context_rides_only_the_inquiry_ability() -> None:
+def test_the_customer_context_rides_the_abilities_that_answer_for_the_customer() -> (
+    None
+):
+    """The inquiry list and the three product abilities answer with the
+    customer's prices or inquiries; the compatibility contract, the sizing hint
+    and the team sentence are the same for everybody and never see the token."""
     recorder = Recorder()
     client = client_for(recorder)
+    token = "40|1792300000|signature"
 
-    client.run(USER_CONTEXT_ABILITY, {}, "u123|1|signature")
-    client.run("linker/get-product", {"product_id": 4107}, "u123|1|signature")
+    for name in (
+        USER_CONTEXT_ABILITY,
+        "linker/search-products",
+        "linker/get-product",
+        "linker/compare-products",
+        "linker/check-compatibility",
+        "linker/size-hint",
+        "linker/handoff-team",
+    ):
+        client.run(name, {}, token)
 
-    assert recorder.requests[0].headers[USER_CONTEXT_HEADER] == "u123|1|signature"
-    assert USER_CONTEXT_HEADER not in recorder.requests[1].headers
+    carried = [
+        request.url.path.split("/abilities/")[1].removesuffix("/run")
+        for request in recorder.requests
+        if request.headers.get(USER_CONTEXT_HEADER) == token
+    ]
+    assert carried == [
+        "linker/inquiry-status",
+        "linker/search-products",
+        "linker/get-product",
+        "linker/compare-products",
+    ]
+    assert set(USER_CONTEXT_ABILITIES) == set(carried)
 
 
 def test_without_a_context_even_the_inquiry_ability_stays_anonymous() -> None:

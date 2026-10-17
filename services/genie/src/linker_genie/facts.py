@@ -45,6 +45,10 @@ class TurnFacts:
     # Fact or chunk ID → the document it names (search-knowledge hits, pairing
     # documents), so a document block can link it instead of printing the URL.
     documents: dict[str, Document] = field(default_factory=dict)
+    # Product ID → the commerce object a product ability returned for this
+    # customer (price_visible, price, price_text, price_reason; #242), from which
+    # the service fills the product cards' price lines (prices.fill).
+    commerce: dict[int, dict[str, Any]] = field(default_factory=dict)
 
     def add(self, fact: Fact) -> None:
         self.facts[fact.id] = fact
@@ -104,6 +108,7 @@ def merge(parts: list[TurnFacts]) -> TurnFacts:
         combined.chunk_ids.update(part.chunk_ids)
         combined.tool_calls.extend(part.tool_calls)
         combined.documents.update(part.documents)
+        combined.commerce.update(part.commerce)
         for field_name in part.unknown_fields:
             if field_name not in combined.unknown_fields:
                 combined.unknown_fields.append(field_name)
@@ -122,16 +127,7 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
         raw_facts = item.get("facts")
         facts = raw_facts if isinstance(raw_facts, dict) else {}
         _add_selection_facts(gathered, product_id, facts)
-        raw_commerce = item.get("commerce")
-        commerce = raw_commerce if isinstance(raw_commerce, dict) else {}
-        if commerce.get("price_visible") and commerce.get("price") not in (None, ""):
-            gathered.add(
-                Fact(
-                    id=f"p{product_id}.price",
-                    value=str(commerce["price"]),
-                    source="search-products",
-                )
-            )
+        _add_commerce(gathered, product_id, item.get("commerce"), "search-products")
         # The pairings the tool itself annotated on this inverter: the battery
         # ids become citable, a released verdict qualifies the battery for
         # cards (the tool cleared it — same rank as search qualification),
@@ -194,6 +190,7 @@ def _from_product(
         raw_figures = payload.get("figures")
         if isinstance(raw_figures, dict):
             _add_figures(gathered, product_id, raw_figures, locale)
+        _add_commerce(gathered, product_id, payload.get("commerce"), "get-product")
         # The product's hosted documents (datasheet, manual): linkable as
         # document blocks `pID.document.N`, never as a URL in the text (#233).
         for index, document in enumerate(payload.get("documents") or []):
@@ -204,6 +201,22 @@ def _from_product(
                 gathered.documents[f"p{product_id}.document.{index}"] = _document(
                     document, url, document.get("page")
                 )
+
+
+def _add_commerce(gathered: TurnFacts, product_id: int, raw: Any, source: str) -> None:
+    """The product's commerce object for this customer (#242).
+
+    The price stays a fact (`pID.price`) only so the quality check can tell a
+    price the site let this turn see (`quality/citations.py`): the model never
+    writes it (ground.py), the product card shows it (prices.fill).
+    """
+    if not isinstance(raw, dict):
+        return
+    gathered.commerce[product_id] = raw
+    if raw.get("price_visible") and raw.get("price") not in (None, ""):
+        gathered.add(
+            Fact(id=f"p{product_id}.price", value=str(raw["price"]), source=source)
+        )
 
 
 def _from_compare(gathered: TurnFacts, payload: dict[str, Any]) -> None:

@@ -166,7 +166,7 @@ def test_the_log_keeps_whether_the_account_is_approved(turns: Path) -> None:
     _ask("What does it cost?")
     approved, pending, guest = TurnSource(turns).after(0, 10)
     assert approved.approved is True
-    # No `partner` sent (the shell sends none before #242): not approved.
+    # No `partner` sent (a turn logged before #242, or a guest): not approved.
     assert pending.approved is False and guest.approved is False
 
 
@@ -473,7 +473,7 @@ def test_a_visible_price_for_an_approved_account_passes() -> None:
 
 def test_a_visible_price_for_an_account_not_approved_is_flagged() -> None:
     # The tool showed the price, but the account is a guest, pending or
-    # restricted one (or the shell did not say: the default before #242).
+    # restricted one (or a turn logged before #242, when the shell sent none).
     assert citations.verify(_priced(visible=True, approved=False)) == [
         "states the price of product 4109, and the account is not approved"
     ]
