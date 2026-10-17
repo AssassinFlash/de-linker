@@ -134,15 +134,37 @@ final class ManualGermanTest extends SiteTestCase {
 				$expected = preg_replace( "/" . preg_quote( "Wir arbeiten mit Installateuren und EPCs in ganz Europa zusammen, um den Aufwand bei Speichern zu reduzieren.", "/" ) . "/", "[de] " . $new, $fixture["german"], 1 );
 				$payload = json_decode( end( $calls[0]["messages"] )["content"], true );
 				$second = array( "replaced" => $replaced, "exact" => $expected === get_post( $de )->post_content, "calls" => count( $calls ), "status" => get_post_meta( $en, "_linker_i18n_status", true ), "segments" => $payload["segments"], "seo_kept" => "" === get_post_meta( $de, "_seopress_titles_desc", true ) );
+				$insert = "We offer technical guidance for every project.";
+				$anchor = "You handle everything through Linker.";
+				$german_anchor = "Sie wickeln alles über Linker ab.";
+				$source = str_replace( $anchor, $anchor . " " . $insert, $source );
+				$expected = str_replace( $german_anchor, $german_anchor . " Wir bieten technische Unterstützung für jedes Projekt.", $expected );
+				wp_update_post( wp_slash( array( "ID" => $en, "post_content" => $source ) ) );
+				do_action( "linker_i18n_translate", "post", $en, false, 1 );
+				$payload = json_decode( end( $calls[1]["messages"] )["content"], true );
+				$inserted = array( "exact" => $expected === get_post( $de )->post_content, "calls" => count( $calls ), "segments" => $payload["segments"], "status" => get_post_meta( $en, "_linker_i18n_status", true ) );
+				// Delete a human sentence: only its corresponding German sentence is removed.
+				$source = str_replace( $anchor . " ", "", $source );
+				$expected = str_replace( $german_anchor . " ", "", $expected );
+				wp_update_post( wp_slash( array( "ID" => $en, "post_content" => $source ) ) );
+				do_action( "linker_i18n_translate", "post", $en, false, 1 );
+				$deleted = array( "exact" => $expected === get_post( $de )->post_content, "calls" => count( $calls ), "status" => get_post_meta( $en, "_linker_i18n_status", true ) );
 				$before = get_post( $de )->post_content; $hash = get_post_meta( $de, "_linker_i18n_source_hash", true );
-				wp_update_post( wp_slash( array( "ID" => $en, "post_content" => $source . "<p>Another sentence with no German slot.</p>" ) ) );
+				// Swap two adjacent sentences in the real About page without changing markup.
+				$left = "There is no container-level minimum order.";
+				$right = "You can order complete system packages for individual residential installations or commercial sites as your project schedule requires.";
+				$swapped = str_replace( $left . " " . $right, $right . " " . $left, $source, $swap_count );
+				wp_update_post( wp_slash( array( "ID" => $en, "post_content" => $swapped ) ) );
+				do_action( "linker_i18n_translate", "post", $en, false, 1 );
+				$reordered = array( "same" => $before === get_post( $de )->post_content, "calls" => count( $calls ), "status" => get_post_meta( $en, "_linker_i18n_status", true ), "swapped" => $swap_count );
+				wp_update_post( wp_slash( array( "ID" => $en, "post_content" => "<p>Unrelated replacement without an equal anchor.</p>" ) ) );
 				do_action( "linker_i18n_translate", "post", $en, true, 1 );
 				do_action( "linker_i18n_translate", "post", $en, true, 3 );
 				$column = new Linker\I18n\Admin\StatusColumn( new Linker\I18n\Languages(), new Linker\I18n\Translation\State(), ( new ReflectionClass( Linker\I18n\Jobs::class ) )->newInstanceWithoutConstructor() );
 				$status = get_post_meta( $en, "_linker_i18n_status", true );
 				$report = array_values( array_filter( ( new Linker\I18n\Translation\StatusReport() )->issues(), static fn( $row ) => $en === $row["id"] && "post" === $row["kind"] ) );
 				$third = array( "same" => $before === get_post( $de )->post_content, "baseline_kept" => $hash === get_post_meta( $de, "_linker_i18n_source_hash", true ), "calls" => count( $calls ), "status" => $status, "label" => $column->label( true, $status ), "report" => $report );
-				return array( $first, $second, $third, $fixture["reviewed"] );
+				return array( $first, $second, $third, $fixture["reviewed"], $inserted, $deleted, $reordered );
 			} finally {
 				foreach ( as_get_scheduled_actions( array( "hook" => "linker_i18n_translate", "group" => "linker-i18n", "status" => "pending", "per_page" => -1 ), "ids" ) as $action ) { $args = ActionScheduler::store()->fetch_action( $action )->get_args(); if ( "post" === $args[0] && in_array( (int) $args[1], $ids, true ) ) { ActionScheduler::store()->cancel_action( $action ); } }
 				foreach ( $ids as $id ) { wp_delete_post( $id, true ); }
@@ -163,9 +185,35 @@ final class ManualGermanTest extends SiteTestCase {
 		$this->assertSame( 'synced', $result[1]['status'] );
 		$this->assertSame( array( 'We work alongside installers and EPCs across Europe to simplify storage projects.' ), $result[1]['segments'] );
 		$this->assertTrue( $result[1]['seo_kept'] );
+		$this->assertSame(
+			array(
+				'exact'    => true,
+				'calls'    => 2,
+				'segments' => array( 'We offer technical guidance for every project.' ),
+				'status'   => 'synced',
+			),
+			$result[4]
+		);
+		$this->assertSame(
+			array(
+				'exact'  => true,
+				'calls'  => 2,
+				'status' => 'synced',
+			),
+			$result[5]
+		);
+		$this->assertSame(
+			array(
+				'same'    => true,
+				'calls'   => 2,
+				'status'  => 'structure_mismatch',
+				'swapped' => 1,
+			),
+			$result[6]
+		);
 		$this->assertTrue( $result[2]['same'] );
 		$this->assertTrue( $result[2]['baseline_kept'] );
-		$this->assertSame( 1, $result[2]['calls'] );
+		$this->assertSame( 2, $result[2]['calls'] );
 		$this->assertSame( 'structure_mismatch', $result[2]['status'] );
 		$this->assertSame( 'German out of date: structure differs', $result[2]['label'] );
 		$this->assertCount( 1, $result[2]['report'] );

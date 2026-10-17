@@ -17,18 +17,22 @@ final class FieldPlan {
 	/**
 	 * Sets up the plan.
 	 *
-	 * @param Document           $english English document.
-	 * @param string|null        $kept Complete German field, or null to rebuild it.
-	 * @param array<int, string> $verbatim Known German markup by English index.
-	 * @param Document|null      $target Existing German markup; only changed sentence slots are replaced.
-	 * @param bool               $mismatch Whether alignment failed and all German must stay.
+	 * @param Document                                    $english English document.
+	 * @param string|null                                 $kept Complete German field, or null to rebuild it.
+	 * @param array<int, string>                          $verbatim Known German markup by English index.
+	 * @param Document|null                               $target Existing German markup; only changed sentence slots are replaced.
+	 * @param bool                                        $mismatch Whether alignment failed and all German must stay.
+	 * @param array<int, int>                             $mapping Current English index => previous German index.
+	 * @param list<array{int, int, array{int, int}|null}> $splices German part ranges to delete or insert an English fragment into.
 	 */
 	private function __construct(
 		public readonly Document $english,
 		public readonly ?string $kept,
 		public readonly array $verbatim,
 		public readonly ?Document $target = null,
-		public readonly bool $mismatch = false
+		public readonly bool $mismatch = false,
+		public readonly array $mapping = array(),
+		public readonly array $splices = array()
 	) {}
 
 	/**
@@ -54,12 +58,14 @@ final class FieldPlan {
 	/**
 	 * Builds from English markup with known and newly translated segments.
 	 *
-	 * @param Document           $english English document.
-	 * @param array<int, string> $verbatim Known German markup.
-	 * @param Document|null      $target Existing German markup, if aligned.
+	 * @param Document                                    $english English document.
+	 * @param array<int, string>                          $verbatim Known German markup.
+	 * @param Document|null                               $target Existing German markup, if aligned.
+	 * @param array<int, int>                             $mapping Current English index => previous German index.
+	 * @param list<array{int, int, array{int, int}|null}> $splices Part ranges to splice.
 	 */
-	public static function build( Document $english, array $verbatim = array(), ?Document $target = null ): self {
-		return new self( $english, null, $verbatim, $target );
+	public static function build( Document $english, array $verbatim = array(), ?Document $target = null, array $mapping = array(), array $splices = array() ): self {
+		return new self( $english, null, $verbatim, $target, false, $mapping, $splices );
 	}
 
 	/**
@@ -91,22 +97,37 @@ final class FieldPlan {
 		}
 		$bytes = array();
 		foreach ( $translations as $index => $text ) {
+			if ( ! isset( $this->mapping[ $index ] ) ) {
+				continue; // Inserted sentences are rendered together with their own wrappers below.
+			}
+			$old     = $this->mapping[ $index ];
 			$segment = $this->english->segments[ $index ];
 			$map     = $segment->map;
 			foreach ( $map as $key => $part ) {
 				if ( $part instanceof TagPart ) {
-					foreach ( $this->target->segments[ $index ]->map as $german ) {
-						if ( $german instanceof TagPart && $german->attributes === $part->attributes && $german->tag->name === $part->tag->name ) {
+					$attributes = array_map( fn( int $attribute ): int => $this->mapping[ $attribute ] ?? -1, $part->attributes );
+					foreach ( $this->target->segments[ $old ]->map as $german ) {
+						if ( $german instanceof TagPart && $german->attributes === $attributes && $german->tag->name === $part->tag->name ) {
 							$map[ $key ] = new TagPart( $german->tag, $part->attributes );
 							break;
 						}
 					}
 				}
 			}
-			$changed         = new Segment( $segment->text, $segment->raw, $map, $segment->html );
-			$html            = $changed->render( $text, $translations );
-			$bytes[ $index ] = null === $localize ? $html : $localize( $html );
+			$changed       = new Segment( $segment->text, $segment->raw, $map, $segment->html );
+			$html          = $changed->render( $text, $translations );
+			$bytes[ $old ] = null === $localize ? $html : $localize( $html );
 		}
-		return $this->target->render( array(), $bytes );
+		$parts   = $this->target->render_parts( array(), $bytes );
+		$splices = $this->splices;
+		usort( $splices, static fn( array $left, array $right ): int => $right[0] <=> $left[0] );
+		foreach ( $splices as list( $start, $end, $source ) ) {
+			$html = null === $source ? '' : $this->english->slice( $source[0], $source[1] )->render( $translations );
+			if ( null !== $source && null !== $localize ) {
+				$html = $localize( $html );
+			}
+			array_splice( $parts, $start, $end - $start, array( $html ) );
+		}
+		return implode( '', $parts );
 	}
 }

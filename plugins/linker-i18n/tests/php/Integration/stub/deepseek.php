@@ -29,6 +29,12 @@ usort( $terms, static fn( array $a, array $b ): int => strlen( $b['en'] ) <=> st
 
 $translations = array();
 foreach ( $segments as $segment ) {
+	// The About edit sequence needs a normal sentence start so it can be
+	// segmented again after insertion; the generic [de] marker is not prose.
+	if ( 'We offer technical guidance for every project.' === $segment ) {
+		$translations[] = 'Wir bieten technische Unterstützung für jedes Projekt.';
+		continue;
+	}
 	$text = (string) $segment;
 	foreach ( $terms as $entry ) {
 		$text = (string) preg_replace( '/(?<![\p{L}\p{N}])' . preg_quote( $entry['en'], '/' ) . 's?(?![\p{L}\p{N}])/iu', $entry['de'], $text );

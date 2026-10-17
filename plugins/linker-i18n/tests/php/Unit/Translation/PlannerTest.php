@@ -97,17 +97,59 @@ final class PlannerTest extends TestCase {
 	}
 
 	/**
-	 * Structural changes retain the entire German field as a visible exception.
+	 * Anchored insertions/deletions keep shifted German slots and their exact markup.
+	 *
+	 * @dataProvider sentence_edits
+	 * @param string             $old Previous English.
+	 * @param string             $german Human German.
+	 * @param string             $next Current English.
+	 * @param string             $expected Expected German.
+	 * @param array<int, string> $translations Only new/changed sentences.
+	 * @param bool               $blocked Whether alignment is ambiguous.
 	 */
-	public function test_insertions_and_deletions_preserve_german(): void {
-		$removed = $this->planner()->plan( '<p>First paragraph.</p>', true, array( self::GERMAN, true ), $this->unit(), false );
-		$this->assertSame( array(), $removed->missing() );
-		$this->assertTrue( $removed->mismatch );
-		$this->assertSame( self::GERMAN, $removed->render( array() ) );
-		$inserted = $this->planner()->plan( '<p>New paragraph.</p>' . self::ENGLISH, true, array( self::GERMAN, true ), $this->unit(), false );
-		$this->assertTrue( $inserted->mismatch );
-		$this->assertSame( array(), $inserted->missing() );
-		$this->assertSame( self::GERMAN, $inserted->render( array() ) );
+	public function test_sentence_edits( string $old, string $german, string $next, string $expected, array $translations, bool $blocked = false ): void {
+		$unit = array(
+			'src'      => $this->planner()->split( $old, true )->hashes(),
+			'out'      => array(),
+			'conflict' => false,
+		);
+		$plan = $this->planner()->plan( $next, true, array( $german, true ), $unit, false );
+		$this->assertSame( $blocked, $plan->mismatch );
+		$this->assertSame( array_keys( $translations ), $plan->missing() );
+		$this->assertSame( $expected, $plan->render( $translations ) );
+	}
+
+	/**
+	 * Sentence positions include ordinary text, complete paragraphs and shifted attributes.
+	 *
+	 * @return array<string, array{string, string, string, string, array<int, string>, bool}>
+	 */
+	public function sentence_edits(): array {
+		return array(
+			'paragraph prepend'              => array( self::ENGLISH, self::GERMAN, '<p>New paragraph.</p>' . self::ENGLISH, '<p>Neu.</p>' . self::GERMAN, array( 0 => 'Neu.' ), false ),
+			'paragraph append'               => array( self::ENGLISH, self::GERMAN, self::ENGLISH . '<p>New paragraph.</p>', self::GERMAN . '<p>Neu.</p>', array( 2 => 'Neu.' ), false ),
+			'paragraph deletion'             => array( self::ENGLISH, self::GERMAN, '<p>First paragraph.</p>', '<p>Erster Absatz.</p>', array(), false ),
+			'middle insertion'               => array( '<p>First. Last.</p>', "<p class='manual'>Erster  Satz. Letzter Satz.</p>", '<p>First. New. Last.</p>', "<p class='manual'>Erster  Satz. Neu. Letzter Satz.</p>", array( 1 => 'Neu.' ), false ),
+			'last insertion'                 => array( '<p>First.</p>', "<p class='manual'>Erster  Satz.</p>", '<p>First. New.</p>', "<p class='manual'>Erster  Satz. Neu.</p>", array( 1 => 'Neu.' ), false ),
+			'first insertion'                => array( '<p>First.</p>', '<p>Erster.</p>', '<p>New. First.</p>', '<p>Neu. Erster.</p>', array( 0 => 'Neu.' ), false ),
+			'middle deletion'                => array( '<p>First. Middle. Last.</p>', '<p>Erster  Satz. Mitte. Letzter Satz.</p>', '<p>First. Last.</p>', '<p>Erster  Satz. Letzter Satz.</p>', array(), false ),
+			'last deletion'                  => array( '<p>First. Last.</p>', '<p>Erster  Satz. Letzter.</p>', '<p>First.</p>', '<p>Erster  Satz.</p>', array(), false ),
+			'wrapped insertion'              => array( '<p>First. Last.</p>', '<p>Erster. Letzter.</p>', '<p>First. New <strong>sentence</strong>. Last.</p>', '<p>Erster. Neuer <strong>Satz</strong>. Letzter.</p>', array( 1 => 'Neuer <t1>Satz</t1>.' ), false ),
+			'shifted replacement attributes' => array(
+				"<p>First.</p><p>Second <a title='Download'>sentence</a>.</p>",
+				"<p>Erster.</p><p>Zweiter <a title='Herunterladen'>Satz</a>.</p>",
+				"<p>New.</p><p>First.</p><p>Changed <a title='Download'>sentence</a>.</p>",
+				"<p>Neu.</p><p>Erster.</p><p>Geänderter <a title='Herunterladen'>Satz</a>.</p>",
+				array(
+					0 => 'Neu.',
+					3 => 'Geänderter <t1>Satz</t1>.',
+				),
+				false,
+			),
+			'reorder'                        => array( self::ENGLISH, self::GERMAN, '<p>Second paragraph.</p><p>First paragraph.</p>', self::GERMAN, array(), true ),
+			'no anchor'                      => array( self::ENGLISH, self::GERMAN, '<p>New.</p>', self::GERMAN, array(), true ),
+			'ambiguous repeated anchor'      => array( '<p>Same. Same.</p>', '<p>Eins. Zwei.</p>', '<p>Same. New. Same.</p>', '<p>Eins. Zwei.</p>', array(), true ),
+		);
 	}
 
 	/**

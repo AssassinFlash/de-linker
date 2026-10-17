@@ -57,30 +57,107 @@ final class Planner {
 			return FieldPlan::keep( $english, $current[0] );
 		}
 		$german = $this->split( $current[0], $html );
-		if ( count( $unit['src'] ) !== count( $german->segments ) || count( $unit['src'] ) !== count( $english->segments ) || $english->segment_roles() !== $german->segment_roles() ) {
+		if ( count( $unit['src'] ) !== count( $german->segments ) ) {
 			return FieldPlan::blocked( $english, $current[0] );
 		}
-		$runs     = $this->aligner->runs( $unit['src'], $english->hashes() );
-		$verbatim = array();
+		$runs    = $this->aligner->runs( $unit['src'], $english->hashes() );
+		$removed = array();
+		$added   = array();
 		foreach ( $runs as $run ) {
-			// Insertion/deletion/reordering has no reliable German sentence slot.
-			if ( $run[1] !== $run[3] || $run[2] !== $run[4] ) {
+			if ( 'equal' !== $run[0] ) {
+				array_push( $removed, ...array_slice( $unit['src'], $run[1], $run[2] - $run[1] ) );
+				array_push( $added, ...array_slice( $english->hashes(), $run[3], $run[4] - $run[3] ) );
+			}
+		}
+		// A sentence removed here and added elsewhere is a move, not a new sentence.
+		if ( array() !== array_intersect( $removed, $added ) ) {
+			return FieldPlan::blocked( $english, $current[0] );
+		}
+		$verbatim     = array();
+		$mapping      = array();
+		$splices      = array();
+		$roles        = $english->segment_roles();
+		$german_roles = $german->segment_roles();
+		foreach ( $runs as $position => $run ) {
+			if ( in_array( $run[0], array( 'insert', 'delete' ), true ) ) {
+				$anchored = false;
+				foreach ( array( $position - 1, $position + 1 ) as $neighbor ) {
+					$anchor = $runs[ $neighbor ] ?? null;
+					if ( null !== $anchor && 'equal' === $anchor[0] && $this->unique_anchor( $unit['src'], $english->hashes(), $anchor ) ) {
+						$anchored = true;
+						break;
+					}
+				}
+				if ( ! $anchored ) {
+					return FieldPlan::blocked( $english, $current[0] );
+				}
+				if ( 'delete' === $run[0] ) {
+					$span = $german->span( $run[1], $run[2] );
+					if ( null === $span ) {
+						return FieldPlan::blocked( $english, $current[0] );
+					}
+					$splices[] = array( $span[0], $span[1], null );
+				} else {
+					$span = $english->span( $run[3], $run[4] );
+					if ( null === $span ) {
+						return FieldPlan::blocked( $english, $current[0] );
+					}
+					// Prefer the next unchanged sentence; the previous one anchors an append.
+					$after = ! isset( $runs[ $position + 1 ] ) || 'equal' !== $runs[ $position + 1 ][0];
+					$index = $after ? $run[1] - 1 : $run[2];
+					$at    = $german->boundary( $index, $after, $span[2] );
+					if ( null === $at ) {
+						return FieldPlan::blocked( $english, $current[0] );
+					}
+					$splices[] = array( $at, $at, array( $span[0], $span[1] ) );
+				}
+				continue;
+			}
+			if ( $run[2] - $run[1] !== $run[4] - $run[3] ) {
 				return FieldPlan::blocked( $english, $current[0] );
 			}
 			for ( $k = 0; $k < $run[2] - $run[1]; $k++ ) {
 				$index = $run[3] + $k;
-				if ( 'equal' !== $run[0] ) {
-					// An inline element may span a sentence boundary. Do not send
-					// that unsplittable run as one replacement for several sentences.
-					$visible = (string) preg_replace( Segment::PLACEHOLDER, '', $english->segments[ $index ]->text );
-					if ( 1 === preg_match( '/[.!?]\s+(?=\p{Lu})/u', $visible ) || $english->segments[ $index ]->markup_signature() !== $german->segments[ $index ]->markup_signature() ) {
-						return FieldPlan::blocked( $english, $current[0] );
-					}
+				$old   = $run[1] + $k;
+				if ( $roles[ $index ] !== $german_roles[ $old ] ) {
+					return FieldPlan::blocked( $english, $current[0] );
+				}
+				$mapping[ $index ] = $old;
+				if ( 'equal' === $run[0] ) {
+					$verbatim[ $index ] = $german->segments[ $old ]->raw;
 					continue;
 				}
-				$verbatim[ $index ] = $german->segments[ $run[1] + $k ]->raw;
+				// An inline element spanning sentence boundaries cannot be replaced safely.
+				$visible = (string) preg_replace( Segment::PLACEHOLDER, '', $english->segments[ $index ]->text );
+				if ( 1 === preg_match( '/[.!?]\s+(?=\p{Lu})/u', $visible ) || $english->segments[ $index ]->markup_signature() !== $german->segments[ $old ]->markup_signature() ) {
+					return FieldPlan::blocked( $english, $current[0] );
+				}
 			}
 		}
-		return FieldPlan::build( $english, $verbatim, $german );
+		return FieldPlan::build( $english, $verbatim, $german, $mapping, $splices );
+	}
+
+	/**
+	 * Adjacent equal runs locate an edit only if their sequence occurs once.
+	 *
+	 * @param array<int, string>                $old Previous English hashes.
+	 * @param array<int, string>                $current Current English hashes.
+	 * @param array{string, int, int, int, int} $run Equal run.
+	 */
+	private function unique_anchor( array $old, array $current, array $run ): bool {
+		$needle = array_slice( $old, $run[1], $run[2] - $run[1] );
+		foreach ( array( $old, $current ) as $hashes ) {
+			$matches = 0;
+			$last    = count( $hashes ) - count( $needle );
+			for ( $i = 0; $i <= $last; $i++ ) {
+				if ( array_slice( $hashes, $i, count( $needle ) ) === $needle ) {
+					++$matches;
+				}
+			}
+			if ( 1 !== $matches ) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
