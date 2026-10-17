@@ -25,7 +25,7 @@ brew services start redis
 | `just reset <name>` | 删库、删目录、清掉本实例的 Redis 键、重建（端口不变），可反复执行；2026-10-09 实测 11–43 秒（同上，随机器负载） |
 | `just login <name> [--user <login>]` | 打印一次性登录链接：10 分钟内有效，用一次即作废；默认用户 `local-admin` |
 | `just status` | 列出实例：地址、库、服务器与服务是否在跑、WordPress/WooCommerce 版本、链接到哪个检出 |
-| `just serve <name>` | 用 uv 启动 `services/engine` 与 `services/genie`，地址写进实例。engine 需要的两份数据由它备好：检出里的 `plugins/linker-commerce/data/compatibility.json`，以及站点自己服务的工程 feed（`linker/v1/engineering-feed`，取回写进实例的 `engine/feed.json`）——站点答不上来就报错，不留一个没有数据的 engine |
+| `just serve <name>` | 用 uv 启动 `services/engine` 与 `services/genie`，地址写进实例。engine 需要的两份数据由它备好：检出里的 `plugins/linker-commerce/data/compatibility.json`，以及站点自己服务的工程 feed（`linker/v1/engineering-feed`，取回写进实例的 `engine/feed.json`）——站点答不上来就报错，不留一个没有数据的 engine。Genie 的文档索引同样由它备好：设了 `GENIE_INDEX` 就用它，否则用 `$LINKER_DATA/index/builds/` 下最新的构建（默认 `~/de-linker-data`），输出里会打印用的是哪个版本，可与 VPS 的 `current` 对照。一个都找不到时，在启动任何服务之前就报错，并写明怎么取到索引（从 VPS rsync，或 `just index`） |
 | `just wp <name> <args…>` | 对实例运行 WP-CLI，例如 `just wp a plugin list` |
 
 名字只能用小写字母、数字与 `_`，字母开头（它同时是库名、目录名）。每条工作线（每张票）用自己的实例，例如 `just up t7`。
