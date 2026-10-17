@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.ground import check
 from linker_genie.hydrate import hydrate
+from linker_genie.prices import Lookup, fill
 from linker_genie.route import Route
 from linker_genie.schema import TurnOutput, TurnRequest
 from linker_genie.template import fallback
@@ -30,6 +31,8 @@ class TurnResult:
     attempts: int
     # The failures of an attempt the retry replaced, kept for the turn log.
     retried: tuple[str, ...] = ()
+    # Card price lookups that failed (prices.fill); their cards show no price line.
+    price_failures: tuple[str, ...] = ()
 
 
 def run(
@@ -37,12 +40,16 @@ def run(
     generate: Generate,
     route: Route | None = None,
     seed: TurnFacts | None = None,
+    commerce: Lookup | None = None,
 ) -> TurnResult:
     """Produce a grounded, hydrated turn. `generate` may call tools.
 
     `route` and `seed` are the understanding layer's (understand.py): the checks
     hold the answer to the route, and the facts of the route's own calls survive a
     model that fails twice, so the fallback still shows what code found.
+    Every card of the shipped turn, the fallback's too, gets its price line from
+    the turn's tools (prices.fill, #242); `commerce` reads the products no tool
+    priced, as the customer.
     """
     retry_reason: str | None = None
     seeded = seed or TurnFacts()
@@ -59,23 +66,31 @@ def run(
         last_facts = merge([seeded, facts])
         result = check(output, last_facts, route)
         if result.ok:
+            priced, priced_facts, missed = fill(
+                hydrate(output, last_facts), last_facts, commerce
+            )
             return TurnResult(
-                output=hydrate(output, last_facts),
-                facts=last_facts,
+                output=priced,
+                facts=priced_facts,
                 grounded=True,
                 failures=(),
                 fallback=False,
                 attempts=attempt,
                 retried=last_failures,
+                price_failures=tuple(missed),
             )
         last_failures = result.failures
         retry_reason = result.reason
+    priced, priced_facts, missed = fill(
+        fallback(last_facts, request.locale, route), last_facts, commerce
+    )
     return TurnResult(
-        output=fallback(last_facts, request.locale, route),
-        facts=last_facts,
+        output=priced,
+        facts=priced_facts,
         grounded=False,
         failures=last_failures,
         fallback=True,
         attempts=2,
         retried=last_failures,
+        price_failures=tuple(missed),
     )

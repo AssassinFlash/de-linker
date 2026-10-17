@@ -143,7 +143,7 @@ final class GetProduct {
 			'attributes' => (object) $this->attributes( $id ),
 			'documents'  => $this->documents( $id ),
 			'faq'        => $this->faq( $id, $lang ),
-			'commerce'   => ProductCommerce::of( $id, $product instanceof WC_Product ? $product : null ),
+			'commerce'   => ProductCommerce::of( $id, $product instanceof WC_Product ? $product : null, $lang ),
 		);
 	}
 

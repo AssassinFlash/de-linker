@@ -93,6 +93,42 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * Whether the account is approved comes from the site's one price rule
+	 * (linker-commerce answers `linker_commerce_visitor_sees_prices`, #242),
+	 * never from being signed in: a signed-in pending or restricted account
+	 * is not approved, and without linker-commerce nobody is.
+	 *
+	 * @testWith [true, true, true]
+	 *           [true, false, false]
+	 *           [false, false, false]
+	 *           [true, null, false]
+	 *
+	 * @param bool      $logged_in Whether the visitor is signed in.
+	 * @param bool|null $rule      The rule's answer; null when no plugin answers.
+	 * @param bool      $partner   The `partner` the service receives.
+	 */
+	public function test_turn_sends_whether_the_account_sees_prices( bool $logged_in, ?bool $rule, bool $partner ): void {
+		$this->wp_functions( $logged_in );
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		if ( null !== $rule ) {
+			$this->price_rule_says( $rule );
+		}
+		$caught  = array();
+		$fetch   = static function ( string $url, array $body ) use ( &$caught ) {
+			unset( $url );
+			$caught = $body;
+			return "event: meta\ndata: {}\n\n";
+		};
+		$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_param( 'messages', array() );
+
+		$this->proxy( $fetch )->turn( $request );
+
+		$this->assertSame( $logged_in, $caught['user']['logged_in'] );
+		$this->assertSame( $partner, $caught['user']['partner'] );
+	}
+
+	/**
 	 * The page the browser names is checked key by key (#234); a solution
 	 * draft's products are read from the visitor's own draft, as English
 	 * posts, whatever the browser sent.
@@ -256,11 +292,30 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
-	 * WordPress functions every test path touches.
+	 * What linker-commerce's price rule answers the shell
+	 * (`linker_commerce_visitor_sees_prices`, applied with false).
+	 *
+	 * @param bool $sees The rule's answer.
+	 * @throws \LogicException When WP_Mock answers with another responder.
 	 */
-	private function wp_functions(): void {
-		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+	private function price_rule_says( bool $sees ): void {
+		$responder = WP_Mock::onFilter( 'linker_commerce_visitor_sees_prices' )->with( false );
+		if ( ! $responder instanceof WP_Mock\Filter_Responder ) {
+			throw new \LogicException( 'WP_Mock::onFilter() answers with a Filter_Responder.' );
+		}
+		$responder->reply( $sees );
+	}
+
+	/**
+	 * WordPress functions every test path touches.
+	 *
+	 * @param bool $logged_in Whether a visitor is signed in.
+	 */
+	private function wp_functions( bool $logged_in = false ): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $logged_in ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
+		// No plugin answers the price rule: the filter's own default comes back.
+		$this->price_rule_says( false );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction(
 			'is_wp_error',
@@ -356,6 +411,7 @@ final class ProxyTest extends TestCase {
 	public function test_a_signed_in_visitor_is_refused_anothers_unowned_conversation(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+		$this->price_rule_says( false );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction(
 			'is_wp_error',

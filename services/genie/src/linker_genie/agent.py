@@ -348,6 +348,7 @@ def _user_prompt(
         f"locale={request.locale}",
         *_page_lines(request),
         f"logged_in={request.user.logged_in}",
+        f"partner={request.user.partner}",
     ]
     if request.page_context.product_id:
         lines.append(f"product_id={request.page_context.product_id}")
@@ -393,13 +394,17 @@ def _user_prompt(
         "numbers go in {fact:PRODUCTID.FIELD} placeholders naming exactly "
         "the fact keys the tools returned (device_class, application, "
         "phase, ac_power_kw, pv_input_kw, usable_kwh, nominal_kwh, "
-        "kwh_range, pID.price, compat.verdict, compat.verdict.BATTERYID, "
+        "kwh_range, compat.verdict, compat.verdict.BATTERYID, "
         "compat.condition.N, handoff.sentence_en, "
         "handoff.sentence_de); never a subfield like kwh_range.min. A range "
         "placeholder renders the whole range. A figure from a document chunk "
         "goes in {fact:CHUNK_ID.nK}, the [nK=…] tag shown in that chunk's text; "
         "put the chunk IDs you rely on in refs, the service links their "
-        "documents. Or leave the number unsaid. " + page.RULE + " "
+        "documents. Or leave the number unsaid. A price is never written in "
+        "text, not even as a placeholder: show the product as a card, whose "
+        "price line the service fills for this account; with partner=True say "
+        "the card shows the net price, otherwise say once that approved partner "
+        "accounts see net prices. " + page.RULE + " "
         "A document (a search-knowledge chunk ID, compat.document.N, "
         "compat.document.BATTERYID.N, or pPRODUCTID.document.N for the documents "
         "get-product listed this turn — such a ref exists only after get-product "

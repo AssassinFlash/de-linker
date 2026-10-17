@@ -30,6 +30,13 @@ final class StoreApiPricesTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		// English products: each answers for itself (CommerceState::is_rfq_only asks the language layer).
+		$this->english_products(
+			array(
+				1 => 1,
+				2 => 2,
+			)
+		);
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => 'orderable' ) );
 		WP_Mock::userFunction(
 			'wc_get_product',

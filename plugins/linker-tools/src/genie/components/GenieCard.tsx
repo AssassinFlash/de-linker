@@ -2,7 +2,8 @@
  * A product card of the answer, with its actions inside the card
  * (docs/specs/13-genie.md). Display data comes from the Store API; the model
  * name comes from the get-product ability, so the card names the model and
- * never `#<id>`.
+ * never `#<id>`; the price line comes with the answer, filled by the service
+ * for this customer's account (#242).
  */
 
 /**
@@ -18,6 +19,24 @@ import { ProductCard, type CardState } from '../../shared/ProductCard';
 import type { storeClient } from '../../configurator/api/store';
 import type { StoreProduct } from '../../configurator/types';
 import { productModel } from '../api/product';
+import type { CardPrice } from '../api/turn';
+
+/**
+ * The card's price line (#242), exactly as the service filled it: the product
+ * page's own line for this customer, already in the page's language (the price,
+ * or the page's sentence when `reason` says why there is none). The shell words
+ * nothing itself.
+ *
+ * @param price The line the service filled; undefined when it filled none.
+ */
+export function priceLine(
+	price: CardPrice | undefined
+): { text: string; kind: 'net' | 'note' } | undefined {
+	if ( ! price?.text ) {
+		return undefined;
+	}
+	return { text: price.text, kind: price.reason ? 'note' : 'net' };
+}
 
 export function GenieCard( {
 	productId,
@@ -25,6 +44,7 @@ export function GenieCard( {
 	store,
 	locale,
 	status,
+	price,
 	onAdd,
 	onSave,
 }: {
@@ -33,6 +53,7 @@ export function GenieCard( {
 	store: ReturnType< typeof storeClient >;
 	locale: string;
 	status: { state: CardState; text: string };
+	price?: CardPrice;
 	onAdd: ( productId: number ) => void;
 	onSave: ( productId: number, title: string ) => void;
 } ) {
@@ -76,6 +97,7 @@ export function GenieCard( {
 			role={ __( 'Product', 'linker-tools' ) }
 			title={ product.name }
 			model={ modelText }
+			price={ priceLine( price ) }
 			url={ product.permalink }
 			image={ product.images[ 0 ] }
 			badges={

@@ -216,8 +216,11 @@ final class Comparison {
 			'facts'         => $facts->to_array(),
 			'sku'           => $product instanceof WC_Product ? (string) $product->get_sku() : '',
 			'image'         => self::image( $id ),
-			'price'         => $product instanceof WC_Product && $visible
-				? $product->get_price_html()
+			// The product page's own price line (ProductView::price_html): an
+			// approved account on a product quoted per project reads "Quoted
+			// per project", an account awaiting approval its own state (#242).
+			'price'         => $product instanceof WC_Product
+				? $this->view->price_html( $product )
 				: __( 'Net price after partner sign-in', 'linker-commerce' ),
 			'price_visible' => $visible,
 			'availability'  => $product instanceof WC_Product && $product->is_in_stock()

@@ -293,12 +293,11 @@ def test_a_document_figure_from_its_chunk_passes() -> None:
 
 def test_product_facts_are_not_held_to_the_chunk_texts() -> None:
     facts = _facts()
-    facts.add(Fact(id="p4107.price", value="1234.00", source="search-products"))
     output = TurnOutput(
         language="en",
         blocks=[
             TextBlock(
-                text="Net price {fact:p4107.price}, see the manual.",
+                text="Rated {fact:p4107.ac_power_kw}, see the manual.",
                 refs=["4107", "c1"],
             ),
             CardsBlock(product_ids=[4107]),

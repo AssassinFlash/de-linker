@@ -42,6 +42,13 @@ final class CommerceState {
 	public const APPROVAL = 'approval';
 
 	/**
+	 * The surfaces that print a price, each with its own order of reasons
+	 * (see reason()).
+	 */
+	public const CARD = 'card';
+	public const PAGE = 'page';
+
+	/**
 	 * Sets up the state.
 	 *
 	 * @param Approval $approval The account approval rule.
@@ -49,13 +56,20 @@ final class CommerceState {
 	public function __construct( private readonly Approval $approval = new Approval() ) {}
 
 	/**
-	 * Whether the product is quoted per project; a variation follows its parent.
+	 * Whether the product is quoted per project; a variation follows its parent,
+	 * and a German product its English one (`linker_commerce_facts_product_id`,
+	 * answered by linker-i18n): the mode is the English record's, as the
+	 * selection facts are, and the solution draft holds the English product
+	 * (the German twin of 1957 carries no mode of its own in the live snapshot
+	 * of 2026-10-17, and its page showed the price an English page hides).
 	 *
 	 * @param WC_Product $product Product.
 	 */
 	public function is_rfq_only( WC_Product $product ): bool {
 		$id = $product->get_parent_id() > 0 ? $product->get_parent_id() : $product->get_id();
-		return self::RFQ_ONLY === get_post_meta( $id, self::MODE_META, true );
+		/** This filter is documented in includes/Products/SelectionFacts.php */
+		$source = (int) apply_filters( 'linker_commerce_facts_product_id', $id );
+		return self::RFQ_ONLY === get_post_meta( $source > 0 ? $source : $id, self::MODE_META, true );
 	}
 
 	/**
@@ -95,17 +109,36 @@ final class CommerceState {
 	}
 
 	/**
-	 * Why the product shows a text instead of a price, or null when it shows a price.
+	 * Why a product shows a text instead of its price on a surface, or null
+	 * when it shows the price. The two surfaces ask in different orders, each
+	 * as the live site shows it:
+	 *
+	 * - CARD — WooCommerce's own price HTML (`woocommerce_empty_price_html`:
+	 *   Woo's loops and the Store API's `price_html`), the solution draft's and
+	 *   the inquiry's lines, the draft summary: the product before the account.
+	 *   Live 2026-10-18: a guest's `/wc/store/v1/products/1957` answers
+	 *   `price_html` "Quoted per project".
+	 * - PAGE — the product page, the comparison page and Genie's product card
+	 *   (#242): the account before the product. Live 2026-10-18: the guest's
+	 *   product page of 1957 reads "Net price after partner sign-in".
+	 *
+	 * Either way an approved account on a priced product sees the price, and
+	 * on a product without a stored price reads "on request".
 	 *
 	 * @param WC_Product $product Product.
-	 * @return self::LOGIN|self::PROJECT|self::UNPRICED|self::APPROVAL|null
+	 * @param string     $surface self::CARD or self::PAGE.
+	 * @return self::LOGIN|self::APPROVAL|self::PROJECT|self::UNPRICED|null
+	 * @throws \InvalidArgumentException For a surface the rule does not know.
 	 */
-	public function reason( WC_Product $product ): ?string {
-		if ( $this->is_rfq_only( $product ) ) {
-			return self::PROJECT;
+	public function reason( WC_Product $product, string $surface ): ?string {
+		if ( self::CARD !== $surface && self::PAGE !== $surface ) {
+			throw new \InvalidArgumentException( 'Unknown price surface.' );
 		}
-		if ( ! $this->visitor_sees_prices() ) {
-			return $this->visitor_reason();
+		$account = $this->visitor_sees_prices() ? null : $this->visitor_reason();
+		$project = $this->is_rfq_only( $product ) ? self::PROJECT : null;
+		$first   = self::CARD === $surface ? ( $project ?? $account ) : ( $account ?? $project );
+		if ( null !== $first ) {
+			return $first;
 		}
 		return '' === (string) $product->get_price( 'edit' ) ? self::UNPRICED : null;
 	}

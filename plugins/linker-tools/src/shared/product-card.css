@@ -68,6 +68,24 @@
 	color: var(--proto-color-muted, #5a6363);
 }
 
+/* The price line (#242): the net price as the product page sets it (bold,
+ * pdp.css .pdp-price-net), or the muted sentence that stands where a price is
+ * hidden. */
+.linker-card__price {
+	margin: 0;
+	font-size: var(--proto-size-sm, 0.875rem);
+}
+
+.linker-card__price--net {
+	font-size: var(--proto-size-md, 1rem);
+	font-weight: 600;
+	color: var(--proto-color-ink, #0c0f0f);
+}
+
+.linker-card__price--note {
+	color: var(--proto-color-muted, #5a6363);
+}
+
 .linker-card__quantity {
 	font-weight: 700;
 	color: var(--proto-color-ink, #0c0f0f);

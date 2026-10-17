@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Annotated, Any, Literal, get_args
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic.json_schema import SkipJsonSchema
 
 Locale = Literal["en", "de"]
 # The eight kinds of page Genie tells apart (#234, docs/specs/13-genie.md 目标 3), and
@@ -63,9 +64,31 @@ class AskBlock(Strict):
     options: list[str] = Field(default_factory=list)
 
 
+# Why a card shows no price: the product page's own reasons
+# (linker-commerce ProductCommerce::REASONS, CommerceState::page_reason).
+PriceReason = Literal["login", "pending", "restricted", "project", "unpriced"]
+
+
+class CardPrice(Strict):
+    """A product card's price line, filled by the service, never by the model (#242).
+
+    `text` is what the customer's own product page prints where the price stands,
+    in the turn's language: the price for an approved partner account, otherwise
+    the page's sentence, with `reason` saying why there is no price. The shell
+    only renders it.
+    """
+
+    product_id: int
+    text: str
+    reason: PriceReason | None = None
+
+
 class CardsBlock(Strict):
     type: Literal["cards"] = "cards"
     product_ids: list[int]
+    # Filled after the run from the turn's tool results (prices.fill); the model
+    # does not see the field, and whatever it puts there is replaced.
+    prices: SkipJsonSchema[list[CardPrice] | None] = None
 
 
 class CompareBlock(Strict):
@@ -160,20 +183,23 @@ class UserContext(Strict):
         description=(
             "Whether the customer is an approved partner account, the one kind "
             "of account the site shows net prices (CommerceState). Guests, "
-            "pending and restricted accounts are not. The shell does not send "
-            "it yet (#242 makes prices follow the account); absent reads as not "
-            "approved. The turn log keeps it so the quality judges can tell a "
-            "price shown to an approved account from one shown to anybody else."
+            "pending and restricted accounts are not. The shell sends the site's "
+            "own answer (linker_commerce_visitor_sees_prices, #242), never "
+            "'signed in'; absent reads as not approved. The turn log keeps it so "
+            "the quality judges can tell a price shown to an approved account "
+            "from one shown to anybody else."
         ),
     )
     context: str | None = Field(
         default=None,
         description=(
             "The signed-in customer's identity token, minted by the shell and "
-            "valid for 120 seconds (nothing marks it used; the window is the "
-            "whole of its life). The service sends it back on the one ability "
-            "that answers about this customer (linker/inquiry-status) and never "
-            "stores it."
+            "valid for UserContext::TTL seconds (plugins/linker-tools; nothing "
+            "marks it used, the window is the whole of its life). The service "
+            "sends it back on the abilities that "
+            "answer for this customer (abilities.USER_CONTEXT_ABILITIES: the "
+            "inquiry list and the product abilities, whose prices follow the "
+            "account) and never stores or logs it."
         ),
     )
 

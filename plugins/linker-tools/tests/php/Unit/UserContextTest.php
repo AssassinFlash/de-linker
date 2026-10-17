@@ -84,30 +84,125 @@ final class UserContextTest extends TestCase {
 	}
 
 	/**
-	 * The header is only read on ability requests, and never over a session.
+	 * The token signs a request in only on the routes WordPress parsed for the
+	 * abilities it was issued for (inquiry-status, search-products,
+	 * get-product), and the user is signed out again after the answer.
+	 *
+	 * @testWith ["/wp-abilities/v1/abilities/linker/inquiry-status/run", 44]
+	 *           ["/wp-abilities/v1/abilities/linker/search-products/run", 44]
+	 *           ["/wp-abilities/v1/abilities/linker/get-product/run", 44]
+	 *           ["/wp-abilities/v1/abilities/linker/compare-products/run", 0]
+	 *           ["/wp-abilities/v1/abilities/linker/handoff-team/run", 0]
+	 *           ["/wp-abilities/v1/abilities", 0]
+	 *           ["/linker/v1/engineering-feed", 0]
+	 *           ["/linker-ai/v1/genie/turn", 0]
+	 *
+	 * @param string $route The route WordPress parsed.
+	 * @param int    $user  The user the request runs as.
 	 */
-	public function test_determine_accepts_the_header_on_ability_requests_only(): void {
+	public function test_the_token_works_only_on_the_abilities_it_was_issued_for( string $route, int $user ): void {
 		$this->wp_functions();
-		$token                                 = '44|' . ( time() + 60 ) . '|' . $this->signature( '44|' . ( time() + 60 ) );
-		$_SERVER['HTTP_X_LINKER_USER_CONTEXT'] = $token;
-		$context                               = new UserContext();
+		$signed  = $this->sign_in_recorder();
+		$request = new \WP_REST_Request( 'GET', $route );
+		$request->set_header( 'x_linker_user_context', $this->token( 44 ) );
 
-		$_SERVER['REQUEST_URI'] = '/wp-json/linker/v1/engineering-feed';
-		$this->assertFalse( $context->determine( false ), 'a feed request stays anonymous' );
+		$context = new UserContext();
+		$this->assertNull( $context->enter( null, null, $request ) );
+		$this->assertSame( $user > 0 ? array( 44 ) : array(), $signed->users );
 
-		$_SERVER['REQUEST_URI'] = '/wp-json/wp-abilities/v1/abilities/linker%2Finquiry-status/run';
-		$this->assertSame( 44, $context->determine( false ) );
+		$response = $context->leave( new \WP_REST_Response( array() ), null, $request );
+		if ( $user > 0 ) {
+			$this->assertSame( array( 44, 0 ), $signed->users, 'signed out after the answer' );
+			$this->assertSame( 'no-store, private', $response->get_headers()['Cache-Control'] ?? null );
+		} else {
+			$this->assertSame( array(), $response->get_headers() );
+		}
+	}
 
-		// A session WordPress already established always wins.
-		$this->assertSame( 7, $context->determine( 7 ) );
+	/**
+	 * A query string that names an ability route does not move the request:
+	 * the route is the one WordPress parsed, not text found in the address.
+	 */
+	public function test_a_forged_query_string_is_refused(): void {
+		$this->wp_functions();
+		$signed                 = $this->sign_in_recorder();
+		$_SERVER['REQUEST_URI'] = '/wp-json/linker-ai/v1/genie/turn?x=/wp-abilities/v1/abilities/linker/get-product/run';
+		$request                = new \WP_REST_Request( 'GET', '/linker-ai/v1/genie/turn' );
+		$request->set_header( 'x_linker_user_context', $this->token( 44 ) );
 
-		// A bad token does not become a user.
-		$_SERVER['HTTP_X_LINKER_USER_CONTEXT'] = '44|9999999999|made-up';
-		$this->assertFalse( $context->determine( false ) );
+		( new UserContext() )->enter( null, null, $request );
 
-		unset( $_SERVER['HTTP_X_LINKER_USER_CONTEXT'] );
-		$this->assertFalse( $context->determine( false ), 'no header, no user' );
-		$this->assertConditionsMet();
+		$this->assertSame( array(), $signed->users );
+	}
+
+	/**
+	 * Only a read (GET) is signed in; a session WordPress already established,
+	 * a bad token and a missing header all leave the request as it is.
+	 */
+	public function test_other_requests_stay_as_they_are(): void {
+		$this->wp_functions();
+		$signed  = $this->sign_in_recorder();
+		$route   = '/wp-abilities/v1/abilities/linker/get-product/run';
+		$context = new UserContext();
+
+		$post = new \WP_REST_Request( 'POST', $route );
+		$post->set_header( 'x_linker_user_context', $this->token( 44 ) );
+		$context->enter( null, null, $post );
+
+		$forged = new \WP_REST_Request( 'GET', $route );
+		$forged->set_header( 'x_linker_user_context', '44|9999999999|made-up' );
+		$context->enter( null, null, $forged );
+
+		$context->enter( null, null, new \WP_REST_Request( 'GET', $route ) );
+
+		// A result another filter already decided is passed through untouched.
+		$decided = new \WP_REST_Request( 'GET', $route );
+		$decided->set_header( 'x_linker_user_context', $this->token( 44 ) );
+		$this->assertSame( 'decided', $context->enter( 'decided', null, $decided ) );
+
+		$this->assertSame( array(), $signed->users );
+	}
+
+	/**
+	 * A visitor WordPress already signed in (the cookie) keeps that session.
+	 */
+	public function test_a_session_always_wins(): void {
+		$this->wp_functions( true );
+		$signed  = $this->sign_in_recorder();
+		$request = new \WP_REST_Request( 'GET', '/wp-abilities/v1/abilities/linker/get-product/run' );
+		$request->set_header( 'x_linker_user_context', $this->token( 44 ) );
+
+		( new UserContext() )->enter( null, null, $request );
+
+		$this->assertSame( array(), $signed->users );
+	}
+
+	/**
+	 * A valid token for a user.
+	 *
+	 * @param int $user User.
+	 */
+	private function token( int $user ): string {
+		$payload = $user . '|' . ( time() + 60 );
+		return $payload . '|' . $this->signature( $payload );
+	}
+
+	/**
+	 * Records wp_set_current_user() calls in `users`.
+	 */
+	private function sign_in_recorder(): \stdClass {
+		$signed        = new \stdClass();
+		$signed->users = array();
+		WP_Mock::userFunction(
+			'wp_set_current_user',
+			array(
+				'return' => static function ( int $user ) use ( $signed ) {
+					$signed->users[] = $user;
+					return null;
+				},
+			)
+		);
+		return $signed;
 	}
 
 	/**
@@ -121,8 +216,11 @@ final class UserContextTest extends TestCase {
 
 	/**
 	 * The WordPress functions these paths need.
+	 *
+	 * @param bool $signed_in Whether WordPress already signed a visitor in.
 	 */
-	private function wp_functions(): void {
+	private function wp_functions( bool $signed_in = false ): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $signed_in ) );
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'test-salt' ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction(

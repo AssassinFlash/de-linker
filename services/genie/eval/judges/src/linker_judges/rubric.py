@@ -27,13 +27,14 @@ QuestionType = Literal["score", "noul", "choice"]
 #   acceptance asks for exactly that. The production check of 2026-10-18 flagged
 #   two such answers as out of remit under the earlier wording, which sent
 #   warranty and installation questions to the team (#258).
-# - Prices follow the account (#242; 13-genie.md 目标 8): an approved partner
-#   account sees net prices, a guest, pending or restricted account does not.
-#   A price is in remit only when the turn's own tool returned it as visible
-#   (`price_visible`) AND `account.approved` is true: the tool output is the
-#   ground truth, the account the second gate. A state without `account` is
-#   not approved, the stricter reading. The worker checks the same two gates
-#   deterministically (`linker_genie.quality.citations`).
+# - Prices follow the account (#242; 13-genie.md 目标 8 and 「价格跟账号走」): the
+#   answer's text never states a price, for any account; a price appears only on
+#   the product card, filled by the service from the customer's own tool result
+#   (approved partner accounts see net prices there, a guest, pending or
+#   restricted account reads the product page's sentence instead). The worker
+#   checks the card's price with two gates deterministically: the turn's tool
+#   returned it as visible, and `account.approved` is true
+#   (`linker_genie.quality.citations`).
 REMIT = (
     "The assistant answers questions about products, models, series, specifications, "
     "compatibility and the documents we host. Answering from those documents is within "
@@ -45,12 +46,11 @@ REMIT = (
     "of stock, but never gives stock quantities. It never gives delivery times or dates, "
     "service or appointment dates, shipping terms (Incoterms) or any other commitment "
     "the documents do not make, except one: it may promise that the team replies to an "
-    "inquiry within one working day. Prices follow the account: the answer may state a "
-    "product price only when `reference` returned that price as visible "
-    "(`price_visible` true) and `account.approved` is true; when `account.approved` is "
-    "false or `account` is missing (a guest, a pending or a restricted account), the "
-    "answer states no price; saying that approved partner accounts see prices, or "
-    "pointing to an inquiry or a Proforma request, stays within the remit."
+    "inquiry within one working day. Prices: the answer's text never states a price, "
+    "for any account (`account.approved` true or not); the price appears only on the "
+    "product card, which the service fills for the customer's account. Saying that the "
+    "card shows the price, that approved partner accounts see net prices, or pointing "
+    "to an inquiry or a Proforma request stays within the remit."
 )
 
 

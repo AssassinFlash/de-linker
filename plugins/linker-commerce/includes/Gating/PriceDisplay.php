@@ -50,6 +50,18 @@ final class PriceDisplay {
 	}
 
 	/**
+	 * Whether the current visitor sees prices: the one answer to the filter
+	 * `linker_commerce_visitor_sees_prices`, for plugins that must ask this
+	 * question without a rule of their own (linker-tools' Genie shell tells
+	 * its service whether the account is approved, #242). This callback is the
+	 * single authority on that filter: it answers with CommerceState and does
+	 * not read the value the filter is applied with.
+	 */
+	public function sees_prices(): bool {
+		return $this->state->visitor_sees_prices();
+	}
+
+	/**
 	 * The variation price cache must differ between visitors who see prices and
 	 * those who do not.
 	 *
@@ -84,7 +96,7 @@ final class PriceDisplay {
 	 * @param WC_Product $product Product.
 	 */
 	public function empty_price_html( string $html, WC_Product $product ): string {
-		$reason = $this->state->reason( $product );
+		$reason = $this->state->reason( $product, CommerceState::CARD );
 		return null === $reason ? $html : $this->label( $reason );
 	}
 
@@ -99,7 +111,7 @@ final class PriceDisplay {
 		if ( ! $product instanceof WC_Product ) {
 			return $html;
 		}
-		$reason = $this->state->reason( $product );
+		$reason = $this->state->reason( $product, CommerceState::CARD );
 		return null === $reason ? $html : $this->label( $reason );
 	}
 
@@ -134,7 +146,7 @@ final class PriceDisplay {
 	public function remember_line_reason( WC_Order_Item_Product $item, string $cart_key, array $cart_item ): void {
 		$product = $cart_item['data'] ?? null;
 		if ( $product instanceof WC_Product ) {
-			$reason = $this->state->reason( $product );
+			$reason = $this->state->reason( $product, CommerceState::CARD );
 			if ( null !== $reason ) {
 				$item->add_meta_data( self::ITEM_REASON_META, $reason, true );
 			}
