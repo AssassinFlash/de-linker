@@ -1,0 +1,154 @@
+{
+  "_about": "The three turns the 2026-10-18 production check flagged wrongly (#258), paraphrased: same question kind, same tool shapes, same answer kind, product and manual data only, no customer data. t27: the citation check read the 5.0 of the model code BU2-5.0-HV1 as a number. t33 and t36: the remit sent warranty terms and installation clearances from our hosted manuals to the team. price_approved: a priced answer logged for an approved partner account; the tests also read it as a guest's (#242).",
+  "t27": {
+    "id": 27,
+    "conversation_id": "9027",
+    "created_at": "2026-10-17 18:12:45",
+    "locale": "en",
+    "fallback": false,
+    "question": "saj",
+    "page": {"type": "other", "product_id": null, "draft_ids": null},
+    "tool_calls": [
+      {
+        "name": "linker/search-products",
+        "arguments": {"brand": "saj", "lang": "en", "limit": 6},
+        "result": {
+          "qualified": [
+            {"product_id": 1178, "title": "SAJ ATS1-T63-A", "facts": {"device_class": "accessories", "phase": 3, "ac_power_kw": "unknown"}, "commerce": {"price_visible": false, "in_stock": true}},
+            {"product_id": 2092, "title": "SAJ BC2-HV1 battery control unit", "facts": {"device_class": "battery-systems", "usable_kwh": "unknown"}, "commerce": {"price_visible": false, "in_stock": true}},
+            {"product_id": 2090, "title": "SAJ BU2-5.0-HV1 battery module", "facts": {"device_class": "battery-systems", "usable_kwh": 4.6, "nominal_kwh": 5.12}, "commerce": {"price_visible": false, "in_stock": true}},
+            {"product_id": 4109, "title": "SAJ HS2-5K-T2-X hybrid inverter", "facts": {"device_class": "inverters", "phase": 3, "ac_power_kw": 5}, "commerce": {"price_visible": false, "in_stock": true}}
+          ]
+        }
+      }
+    ],
+    "output": {
+      "language": "en",
+      "blocks": [
+        {
+          "type": "text",
+          "text": "These SAJ products are in our range: the ATS1-T63-A accessory, the BC2-HV1 and BU2-5.0-HV1 home batteries, and the three-phase hybrid inverter HS2-5K-T2-X. Which one would you like to look at, or which device do you want to pair?",
+          "refs": ["1178", "2092", "2090", "4109"]
+        },
+        {"type": "cards", "product_ids": [1178, 2092, 2090, 4109]}
+      ]
+    }
+  },
+  "t33": {
+    "id": 33,
+    "conversation_id": "9033",
+    "created_at": "2026-10-17 18:14:06",
+    "locale": "de",
+    "fallback": false,
+    "question": "Wie lange gilt die GoodWe-Garantie auf Wechselrichter in Europa?",
+    "page": {"type": "other", "product_id": null, "draft_ids": null},
+    "tool_calls": [
+      {
+        "name": "linker/search-knowledge",
+        "arguments": {"query": "GoodWe Garantie Wechselrichter Europa", "lang": "de"},
+        "result": {
+          "ranking": "vector",
+          "hits": [
+            {
+              "chunk_id": "goodwe-warranty-eu-p5-a",
+              "doc_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe_DE.pdf",
+              "title": "GoodWe-Wechselrichter-Garantie für Europa (DE)",
+              "page": 5,
+              "text": "Der Wechselrichter hat standardmäßig eine beschränkte Garantie von [n1=5 Jahren]. Die Bedingungen gelten für Geräte, die über autorisierte Kanäle erworben und in der EU, im Vereinigten Königreich, in Norwegen oder in der Schweiz installiert wurden.",
+              "figures": {"goodwe-warranty-eu-p5-a.n1": "5 Jahren"}
+            },
+            {
+              "chunk_id": "goodwe-warranty-eu-p1-b",
+              "doc_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe_DE.pdf",
+              "title": "GoodWe-Wechselrichter-Garantie für Europa (DE)",
+              "page": 1,
+              "text": "Für netzgekoppelte Wohngebäude-Wechselrichter und Hybrid-Wechselrichter der Serien ES G2, ET G2 und ESA, die ab dem [n1=1. Januar 2026] hergestellt wurden, gilt eine beschränkte Garantie von [n2=10 Jahren].",
+              "figures": {"goodwe-warranty-eu-p1-b.n1": "1. Januar 2026", "goodwe-warranty-eu-p1-b.n2": "10 Jahren"}
+            }
+          ]
+        }
+      }
+    ],
+    "output": {
+      "language": "de",
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Für GoodWe-Wechselrichter gilt standardmäßig eine beschränkte Garantie von 5 Jahren, wenn das Gerät über autorisierte Kanäle gekauft und in der EU, im Vereinigten Königreich, in Norwegen oder in der Schweiz installiert wurde. Für Wohngebäude- und Hybrid-Wechselrichter der Serien ES G2, ET G2 und ESA, die ab dem 1. Januar 2026 hergestellt wurden, gilt eine beschränkte Garantie von 10 Jahren.",
+          "refs": ["goodwe-warranty-eu-p5-a", "goodwe-warranty-eu-p1-b"]
+        }
+      ]
+    }
+  },
+  "t36": {
+    "id": 36,
+    "conversation_id": "9036",
+    "created_at": "2026-10-17 18:15:01",
+    "locale": "de",
+    "fallback": false,
+    "question": "Wie stellt man den SAJ CB2-100.3-HV5 auf, und welche Abstände braucht er?",
+    "page": {"type": "other", "product_id": null, "draft_ids": null},
+    "tool_calls": [
+      {
+        "name": "linker/search-knowledge",
+        "arguments": {"query": "SAJ CB2-100.3-HV5 Installation Mindestabstand", "lang": "de", "product_ids": [4106]},
+        "result": {
+          "ranking": "vector",
+          "hits": [
+            {
+              "chunk_id": "saj-cb2-qig-p1-a",
+              "doc_url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CB2_57.3-100.3-HV5_Quick-Installation-Guide_EN.pdf",
+              "title": "SAJ CB2 57.3-100.3-HV5 Kurzanleitung zur Installation (EN)",
+              "page": 1,
+              "text": "The cabinet can be installed either indoors or outdoors. Reserve at least the following space around the whole battery system to ensure good air circulation: ≥ [n1=1500 mm] ≥ [n2=400 mm] ≥ [n3=500 mm] ≥ [n4=1000 mm] ≥ [n5=500 mm]. Install vertically only, on level ground.",
+              "figures": {"saj-cb2-qig-p1-a.n1": "1500 mm", "saj-cb2-qig-p1-a.n2": "400 mm", "saj-cb2-qig-p1-a.n3": "500 mm", "saj-cb2-qig-p1-a.n4": "1000 mm", "saj-cb2-qig-p1-a.n5": "500 mm"}
+            }
+          ]
+        }
+      },
+      {
+        "name": "linker/get-product",
+        "arguments": {"product_id": 4106, "lang": "de"},
+        "result": {"product_id": 4106, "title": "SAJ CB2-100.3-HV5", "model": "CB2-100.3-HV5", "brand": "SAJ", "facts": {"device_class": "battery-systems", "usable_kwh": 90.2, "nominal_kwh": 100.3}}
+      }
+    ],
+    "output": {
+      "language": "de",
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Der SAJ CB2-100.3-HV5 kann innen oder außen aufgestellt werden, nur senkrecht und auf ebenem Boden. Für die Luftzirkulation hält man rund um das System mindestens 1500 mm, 400 mm, 500 mm, 1000 mm und 500 mm frei; welcher Abstand zu welcher Seite gehört, zeigt die Abbildung der Kurzanleitung.",
+          "refs": ["saj-cb2-qig-p1-a", "4106"]
+        }
+      ]
+    }
+  },
+  "price_approved": {
+    "id": 51,
+    "conversation_id": "9051",
+    "created_at": "2026-10-18 09:00:00",
+    "locale": "en",
+    "fallback": false,
+    "question": "What does the HS2-5K-T2-X cost?",
+    "page": {"type": "product", "product_id": 4109, "draft_ids": null},
+    "approved": true,
+    "tool_calls": [
+      {
+        "name": "linker/search-products",
+        "arguments": {"q": "HS2-5K-T2-X"},
+        "result": {
+          "qualified": [
+            {"product_id": 4109, "title": "SAJ HS2-5K-T2-X hybrid inverter", "facts": {"device_class": "inverters", "ac_power_kw": 5}, "commerce": {"price_visible": true, "price": "1234.00", "in_stock": true, "rfq_only": false}}
+          ]
+        }
+      }
+    ],
+    "output": {
+      "language": "en",
+      "blocks": [
+        {"type": "text", "text": "Your price for the HS2-5K-T2-X is 1234.00.", "refs": ["4109"]},
+        {"type": "cards", "product_ids": [4109]}
+      ]
+    }
+  }
+}

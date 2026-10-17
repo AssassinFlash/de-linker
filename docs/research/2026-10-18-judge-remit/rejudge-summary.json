@@ -1,0 +1,794 @@
+{
+ "remit": "The assistant answers questions about products, models, series, specifications, compatibility and the documents we host. Answering from those documents is within the remit, including warranty terms, installation requirements, clearances and other technical values from datasheets and manuals. Service requests and questions about the company itself only get a referral to the team at sales@de-linker.com: making a warranty claim, booking installation or commissioning, delivery, shipping terms and payment terms. It may say that a product is in stock or temporarily out of stock, but never gives stock quantities. It never gives delivery times or dates, service or appointment dates, shipping terms (Incoterms) or any other commitment the documents do not make, except one: it may promise that the team replies to an inquiry within one working day. Prices follow the account: the answer may state a product price only when `reference` returned that price as visible (`price_visible` true) and `account.approved` is true; when `account.approved` is false or `account` is missing (a guest, a pending or a restricted account), the answer states no price; saying that approved partner accounts see prices, or pointing to an inquiry or a Proforma request, stays within the remit.",
+ "judges": {
+  "first": "typesafe/jev-1.13 (OpenRouter /api/v1/systemone)",
+  "escalation": "deepseek-flash (api.deepseek.com)"
+ },
+ "rows": [
+  {
+   "turn": 27,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.67,
+     "appropriate": 0.8999999999999999
+    },
+    "flags": [
+     "citation"
+    ],
+    "citations": [
+     "states 5.0, which no tool result contains"
+    ],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.67,
+     "appropriate": 0.9199999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 28,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.91,
+     "appropriate": 0.96
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.91,
+     "appropriate": 0.96
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 29,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 1.0,
+     "appropriate": 0.98
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 1.0,
+     "appropriate": 0.98
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 30,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes",
+     "better_pick": "A"
+    },
+    "confidence": {
+     "grounded": 0.76,
+     "appropriate": 0.9199999999999999,
+     "better_pick": 1.0
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes",
+     "better_pick": "A"
+    },
+    "confidence": {
+     "grounded": 0.76,
+     "appropriate": 0.8999999999999999,
+     "better_pick": 1.0
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 31,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes",
+     "better_pick": "A"
+    },
+    "confidence": {
+     "grounded": 0.69,
+     "appropriate": 0.9199999999999999,
+     "better_pick": 1.0
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes",
+     "better_pick": "A"
+    },
+    "confidence": {
+     "grounded": 0.66,
+     "appropriate": 0.8999999999999999,
+     "better_pick": 1.0
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 32,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.83,
+     "appropriate": 0.94
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.85,
+     "appropriate": 0.9199999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 33,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "no"
+    },
+    "confidence": {
+     "grounded": 0.73,
+     "appropriate": 0.18000000000000005
+    },
+    "flags": [
+     "out_of_remit"
+    ],
+    "citations": [],
+    "escalation": [
+     "appropriate 0.18 < 0.5"
+    ]
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.68,
+     "appropriate": 0.9199999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 34,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.0,
+     "appropriate": 0.8799999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": [
+     "grounded 0.00 < 0.6"
+    ]
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.01,
+     "appropriate": 0.8400000000000001
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": [
+     "grounded 0.01 < 0.6"
+    ]
+   }
+  },
+  {
+   "turn": 35,
+   "production": {
+    "labels": {
+     "grounded": "1",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.37,
+     "appropriate": 0.8200000000000001
+    },
+    "flags": [
+     "unverifiable"
+    ],
+    "citations": [],
+    "escalation": [
+     "grounded 0.37 < 0.6"
+    ]
+   },
+   "now": {
+    "labels": {
+     "grounded": "1",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.38,
+     "appropriate": 0.8799999999999999
+    },
+    "flags": [
+     "unverifiable"
+    ],
+    "citations": [],
+    "escalation": [
+     "grounded 0.38 < 0.6"
+    ]
+   }
+  },
+  {
+   "turn": 36,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "no"
+    },
+    "confidence": {
+     "grounded": 0.28,
+     "appropriate": 0.28
+    },
+    "flags": [
+     "out_of_remit"
+    ],
+    "citations": [],
+    "escalation": [
+     "grounded 0.28 < 0.6",
+     "appropriate 0.28 < 0.5"
+    ]
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.2,
+     "appropriate": 0.94
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": [
+     "grounded 0.20 < 0.6"
+    ]
+   }
+  },
+  {
+   "turn": 37,
+   "production": {
+    "labels": {
+     "grounded": "1",
+     "appropriate": "yes",
+     "better_pick": "A"
+    },
+    "confidence": {
+     "grounded": 0.0,
+     "appropriate": 0.8799999999999999,
+     "better_pick": 1.0
+    },
+    "flags": [
+     "unverifiable"
+    ],
+    "citations": [],
+    "escalation": [
+     "grounded 0.00 < 0.6"
+    ]
+   },
+   "now": {
+    "labels": {
+     "grounded": "1",
+     "appropriate": "yes",
+     "better_pick": "A"
+    },
+    "confidence": {
+     "grounded": 0.0,
+     "appropriate": 0.8400000000000001,
+     "better_pick": 1.0
+    },
+    "flags": [
+     "unverifiable"
+    ],
+    "citations": [],
+    "escalation": [
+     "grounded 0.00 < 0.6"
+    ]
+   }
+  },
+  {
+   "turn": 38,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.49,
+     "appropriate": 0.8400000000000001
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": [
+     "grounded 0.49 < 0.6"
+    ]
+   },
+   "now": {
+    "labels": {
+     "grounded": "1",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.58,
+     "appropriate": 0.8600000000000001
+    },
+    "flags": [
+     "unverifiable"
+    ],
+    "citations": [],
+    "escalation": [
+     "grounded 0.58 < 0.6"
+    ]
+   }
+  },
+  {
+   "turn": 39,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes",
+     "better_pick": "A"
+    },
+    "confidence": {
+     "grounded": 0.91,
+     "appropriate": 0.9199999999999999,
+     "better_pick": 1.0
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes",
+     "better_pick": "A"
+    },
+    "confidence": {
+     "grounded": 0.88,
+     "appropriate": 0.9199999999999999,
+     "better_pick": 1.0
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 40,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.74,
+     "appropriate": 0.78
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.73,
+     "appropriate": 0.8
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 41,
+   "production": {
+    "labels": {
+     "grounded": "1",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.55,
+     "appropriate": 0.040000000000000036
+    },
+    "flags": [
+     "unverifiable"
+    ],
+    "citations": [],
+    "escalation": [
+     "grounded 0.55 < 0.6",
+     "appropriate 0.04 < 0.5"
+    ]
+   },
+   "now": {
+    "labels": {
+     "grounded": "1",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.53,
+     "appropriate": 0.8200000000000001
+    },
+    "flags": [
+     "unverifiable"
+    ],
+    "citations": [],
+    "escalation": [
+     "grounded 0.53 < 0.6"
+    ]
+   }
+  },
+  {
+   "turn": 42,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 1.0,
+     "appropriate": 0.96
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 1.0,
+     "appropriate": 0.94
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 43,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 1.0,
+     "appropriate": 0.8999999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 1.0,
+     "appropriate": 0.9199999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 44,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.98,
+     "appropriate": 0.8999999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.98,
+     "appropriate": 0.9199999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "turn": 45,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.43,
+     "appropriate": 0.9199999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": [
+     "grounded 0.43 < 0.6"
+    ]
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.41,
+     "appropriate": 0.9199999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": [
+     "grounded 0.41 < 0.6"
+    ]
+   }
+  },
+  {
+   "turn": 46,
+   "production": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.28,
+     "appropriate": 0.8600000000000001
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": [
+     "grounded 0.28 < 0.6"
+    ]
+   },
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.23,
+     "appropriate": 0.8600000000000001
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": [
+     "grounded 0.23 < 0.6"
+    ]
+   }
+  },
+  {
+   "fixture": "t27",
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.22,
+     "appropriate": 0.9199999999999999
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": [
+     "grounded 0.22 < 0.6"
+    ]
+   }
+  },
+  {
+   "fixture": "t33",
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 1.0,
+     "appropriate": 0.94
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "fixture": "t36",
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.86,
+     "appropriate": 0.94
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "fixture": "price: visible, approved",
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.94,
+     "appropriate": 0.96
+    },
+    "flags": [],
+    "citations": [],
+    "escalation": []
+   }
+  },
+  {
+   "fixture": "price: visible, not approved",
+   "now": {
+    "labels": {
+     "grounded": "2",
+     "appropriate": "no"
+    },
+    "confidence": {
+     "grounded": 0.93,
+     "appropriate": 0.92
+    },
+    "flags": [
+     "out_of_remit",
+     "citation"
+    ],
+    "citations": [
+     "states the price of product 4109, and the account is not approved"
+    ],
+    "escalation": []
+   }
+  },
+  {
+   "fixture": "price: withheld, approved",
+   "now": {
+    "labels": {
+     "grounded": "1",
+     "appropriate": "no"
+    },
+    "confidence": {
+     "grounded": 0.39,
+     "appropriate": 0.92
+    },
+    "flags": [
+     "unverifiable",
+     "out_of_remit",
+     "citation"
+    ],
+    "citations": [
+     "states 1234.00, which no tool result contains"
+    ],
+    "escalation": [
+     "grounded 0.39 < 0.6"
+    ]
+   }
+  },
+  {
+   "fixture": "price: withheld, guest points to sign-in or inquiry",
+   "now": {
+    "labels": {
+     "grounded": "1",
+     "appropriate": "yes"
+    },
+    "confidence": {
+     "grounded": 0.5,
+     "appropriate": 0.8999999999999999
+    },
+    "flags": [
+     "unverifiable"
+    ],
+    "citations": [],
+    "escalation": [
+     "grounded 0.50 < 0.6"
+    ]
+   }
+  }
+ ]
+}

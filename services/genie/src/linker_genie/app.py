@@ -105,6 +105,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
             question=_question(body),
             page=body.page_context.model_dump(),
             understanding=prepared.log,
+            approved=body.user.partner,
         )
         raise
     if result.retried and result.attempts > 1:
@@ -122,6 +123,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         question=_question(body),
         page=body.page_context.model_dump(),
         understanding=prepared.log,
+        approved=body.user.partner,
     )
     return StreamingResponse(
         _sse(result, turn_id, prepared),

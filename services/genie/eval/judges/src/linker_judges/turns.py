@@ -88,7 +88,9 @@ def turns_state(row: dict[str, Any]) -> dict[str, Any]:
     text the customer reads), `reference` (the JSON the turn's ability calls
     returned), `cards` (the offered product ids, informational), and for rows
     with candidates `answer_a` (the real reply) and `answer_b` (the constructed
-    wrong-pick variant).
+    wrong-pick variant). `account` (`{"approved": bool}`) is passed on when the
+    row has it: the remit judges a price against it, and reads a state without
+    it as not approved (rubric.REMIT).
     """
     state: dict[str, Any] = {
         "question": row["question"],
@@ -99,6 +101,8 @@ def turns_state(row: dict[str, Any]) -> dict[str, Any]:
     if row.get("answer_b") is not None:
         state["answer_a"] = row["answer_a"]
         state["answer_b"] = row["answer_b"]
+    if row.get("account") is not None:
+        state["account"] = row["account"]
     return state
 
 

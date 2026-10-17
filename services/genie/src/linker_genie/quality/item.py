@@ -63,6 +63,9 @@ def build(turn: LoggedTurn) -> Item:
         # empty state it would call fine (score.py's build_item, same rule).
         "reference": {"calls": calls},
         "cards": cards,
+        # The remit judges a price against this (rubric.REMIT): an approved
+        # account may see net prices, a guest, pending or restricted one not.
+        "account": {"approved": turn.approved},
     }
     swap = wrong_pick(turn, cards, page)
     if swap is not None:

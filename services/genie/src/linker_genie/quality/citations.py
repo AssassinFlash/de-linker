@@ -5,20 +5,23 @@ turn's tools returned, and every number it states occurs in a cited source.
 `ground.py` enforces this before the answer ships, on the placeholders; this
 re-checks the shipped, filled answer against the tool results the log kept,
 so a hydration or template defect that slipped past shows up per turn.
+
+What counts as a number is ground.py's own rule (`ground.bare_numbers`): a
+model code written whole (BU2-5.0-HV1, CB2-100.3-HV5, GW125/261-ESA-LCN-G10)
+is a name, not the numbers inside it (#258: turn 27 on production was flagged
+for the "5.0" of BU2-5.0-HV1), while a number written beside a code is checked.
+
+A price is a number with one more gate (#258 review; the remit's price rule):
+the tool must have returned it as visible and the account must be approved.
 """
 
 from __future__ import annotations
 
 import re
 
-from linker_genie.facts import collect, merge
+from linker_genie.facts import TurnFacts, collect, merge
+from linker_genie.ground import bare_numbers
 from linker_genie.quality.turns import LoggedTurn
-
-# The token rule of ground.py's check 5: a letters-and-digits token (GW10K,
-# H2, ETA-G20) is a model code; a purely numeric token (48, 5.0, 8,7) is a
-# number the answer states.
-TOKEN = re.compile(r"[A-Za-z0-9]+(?:[.,][0-9]+)?")
-NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 
 
 def verify(turn: LoggedTurn) -> list[str]:
@@ -31,6 +34,7 @@ def verify(turn: LoggedTurn) -> list[str]:
     )
     known = facts.ids()
     sources = " ".join(fact.value for fact in facts.facts.values())
+    prices = _visible_prices(facts)
     failures: list[str] = []
     for block in turn.output.get("blocks") or []:
         if not isinstance(block, dict):
@@ -47,14 +51,41 @@ def verify(turn: LoggedTurn) -> list[str]:
                     failures.append(f"shows product {pid}, which no tool returned")
         if kind in ("text", "handoff"):
             text = str(block.get("text" if kind == "text" else "summary", ""))
-            for number in _numbers(text):
+            for number in bare_numbers(text):
                 if not _occurs(number, sources):
                     failures.append(f"states {number}, which no tool result contains")
+                elif not turn.approved:
+                    failures.extend(
+                        f"states the price of product {pid}, and the account is "
+                        "not approved"
+                        for pid, price in prices.items()
+                        if _same_amount(number, price)
+                    )
     return failures
 
 
-def _numbers(text: str) -> list[str]:
-    return [token for token in TOKEN.findall(text) if NUMBER.fullmatch(token)]
+def _visible_prices(facts: TurnFacts) -> dict[str, str]:
+    """Product id → price, for the prices the turn's tools returned as visible.
+
+    `facts.collect` keeps a price only when the ability said `price_visible`,
+    so these are exactly the prices the site let this turn see. The remit
+    (`linker_judges.rubric.REMIT`, #242) allows one in the answer only when the
+    account is approved as well: the tool output is the ground truth, the
+    account the second gate. A price the tools did not return fails as any
+    unbacked number does.
+    """
+    return {
+        fact.id.removeprefix("p").removesuffix(".price"): fact.value
+        for fact in facts.facts.values()
+        if fact.id.startswith("p") and fact.id.endswith(".price")
+    }
+
+
+def _same_amount(number: str, price: str) -> bool:
+    try:
+        return float(number.replace(",", ".")) == float(price.replace(",", "."))
+    except ValueError:
+        return False
 
 
 def _occurs(number: str, sources: str) -> bool:

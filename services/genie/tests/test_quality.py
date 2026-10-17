@@ -7,6 +7,7 @@ and the site by an httpx MockTransport, so no test reaches a model or a site.
 
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import re
@@ -23,16 +24,22 @@ from fastapi.testclient import TestClient
 from linker_judges import cascade as cascade_module
 from linker_judges.judges import Answer, Judge, Verdict
 from linker_judges.registry import JUDGES
-from linker_judges.rubric import Question
+from linker_judges.rubric import APPROPRIATE, BETTER_PICK, REMIT, Question
 
 import linker_genie.app as app_module
 from linker_genie.app import app
 from linker_genie.facts import Fact, TurnFacts
-from linker_genie.log import TurnLog
+from linker_genie.log import ADDED_COLUMNS, TurnLog
 from linker_genie.quality import citations
 from linker_genie.quality.item import Skip, build, rendered
 from linker_genie.quality.store import Store
-from linker_genie.quality.turns import LoggedTurn, TurnSource
+from linker_genie.quality.turns import (
+    COLUMNS,
+    LATER_COLUMNS,
+    LoggedTurn,
+    TurnSource,
+    select_list,
+)
 from linker_genie.quality.wordpress import ROUTE, PushError, WordPress
 from linker_genie.quality.worker import (
     MAX_ATTEMPTS,
@@ -92,7 +99,11 @@ def turns(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Path]:
     log.close()
 
 
-def _ask(question: str, page: dict[str, Any] | None = None) -> None:
+def _ask(
+    question: str,
+    page: dict[str, Any] | None = None,
+    user: dict[str, Any] | None = None,
+) -> None:
     body: dict[str, Any] = {
         "conversation_id": "812",
         "messages": [
@@ -104,6 +115,8 @@ def _ask(question: str, page: dict[str, Any] | None = None) -> None:
     }
     if page is not None:
         body["page_context"] = page
+    if user is not None:
+        body["user"] = user
     assert TestClient(app).post("/assistant/turn", json=body).status_code == 200
 
 
@@ -143,6 +156,29 @@ def test_an_old_log_gains_the_columns_and_keeps_its_rows(tmp_path: Path) -> None
     TurnLog(path).close()
     [after] = TurnSource(path).after(0, 10)
     assert after.question is None and after.conversation_id == "7"
+    # A turn logged before the log kept the account reads as not approved.
+    assert before.approved is False and after.approved is False
+
+
+def test_the_log_keeps_whether_the_account_is_approved(turns: Path) -> None:
+    _ask("What does it cost?", user={"logged_in": True, "partner": True})
+    _ask("What does it cost?", user={"logged_in": True})
+    _ask("What does it cost?")
+    approved, pending, guest = TurnSource(turns).after(0, 10)
+    assert approved.approved is True
+    # No `partner` sent (the shell sends none before #242): not approved.
+    assert pending.approved is False and guest.approved is False
+
+
+def test_the_columns_added_later_come_from_the_log_itself() -> None:
+    assert LATER_COLUMNS == {name for name, _ in ADDED_COLUMNS}
+    full = select_list(set(COLUMNS))
+    assert full == ", ".join(COLUMNS)
+    # A log from before the question and the account flag: those read as NULL.
+    oldest = select_list(set(COLUMNS) - {"question", "page", "approved"})
+    assert "NULL AS question" in oldest and "NULL AS page" in oldest
+    assert oldest.endswith("NULL AS approved")
+    assert oldest.startswith("id, conversation_id")
 
 
 def test_a_missing_log_reads_as_empty(tmp_path: Path) -> None:
@@ -271,6 +307,187 @@ def test_refs_and_cards_beyond_the_tools_are_citation_failures() -> None:
     ]
 
 
+# --- the production flags of 2026-10-18 (#258) ---------------------------------
+
+FLAGGED: dict[str, dict[str, Any]] = json.loads(
+    (
+        Path(__file__).parent / "fixtures" / "quality" / "production-flags.json"
+    ).read_text(encoding="utf-8")
+)
+
+
+def _logged(name: str) -> LoggedTurn:
+    row = FLAGGED[name]
+    return LoggedTurn(
+        id=row["id"],
+        conversation_id=row["conversation_id"],
+        created_at=row["created_at"],
+        locale=row["locale"],
+        fallback=row["fallback"],
+        tool_calls=row["tool_calls"],
+        output=row["output"],
+        question=row["question"],
+        page=row["page"],
+        approved=row.get("approved", False),
+    )
+
+
+def _said(turn: LoggedTurn, text: str) -> LoggedTurn:
+    return replace(
+        turn, output={"blocks": [{"type": "text", "text": text, "refs": []}]}
+    )
+
+
+def _sentence(text: str, phrase: str) -> str:
+    """The one sentence or clause (split at `.`, `;`, `?`) holding `phrase`."""
+    [sentence] = [part for part in re.split(r"[.;?] ", text) if phrase in part]
+    return sentence
+
+
+def test_turn_27_a_model_code_is_a_name_not_a_number() -> None:
+    # Production flagged "states 5.0, which no tool result contains": the 5.0
+    # of BU2-5.0-HV1. ground.py lets the code through; the re-check must too.
+    assert citations.verify(_logged("t27")) == []
+
+
+@pytest.mark.parametrize(
+    "code", ["CB2-100.3-HV5", "BU2-5.0-HV1", "GW125/261-ESA-LCN-G10", "HS2-5K-T2-X"]
+)
+def test_whole_model_codes_carry_no_numbers(code: str) -> None:
+    assert citations.verify(_said(_logged("t27"), f"Pair it with the {code}.")) == []
+
+
+def test_a_number_beside_a_model_code_is_still_checked() -> None:
+    turn = _logged("t27")
+    # The tool returned 5.12 kWh for the BU2-5.0-HV1: that number is backed.
+    assert citations.verify(_said(turn, "The BU2-5.0-HV1 holds 5.12 kWh.")) == []
+    # The code's own digits back nothing written outside it.
+    assert citations.verify(_said(turn, "The BU2-5.0-HV1 holds 5.0 kWh.")) == [
+        "states 5.0, which no tool result contains"
+    ]
+    assert citations.verify(_said(turn, "The CB2-100.3-HV5 holds 100.3 kWh.")) == [
+        "states 100.3, which no tool result contains"
+    ]
+
+
+@pytest.mark.parametrize("name", ["t33", "t36"])
+def test_answers_from_our_manuals_pass_the_citation_check(name: str) -> None:
+    assert citations.verify(_logged(name)) == []
+
+
+def test_both_remit_questions_share_one_remit() -> None:
+    # The spec says appropriate and better_pick share the remit: word for word.
+    assert REMIT in APPROPRIATE.instructions
+    assert REMIT in BETTER_PICK.instructions
+
+
+def test_the_remit_keeps_document_answers_and_refers_service_requests() -> None:
+    # Turns 33 (GoodWe warranty terms) and 36 (CB2 installation and clearances)
+    # were judged out of remit because the remit sent warranty and
+    # installation questions to the team. AGENTS.md §2 (2026-10-05) sends only
+    # company, service and logistics questions there.
+    within = _sentence(REMIT, "is within the remit")
+    referral = _sentence(REMIT, "referral")
+    for subject in ("warranty terms", "installation requirements", "clearances"):
+        assert subject in within, subject
+        assert subject not in referral, subject
+    for request in (
+        "making a warranty claim",
+        "booking installation or commissioning",
+        "delivery",
+        "payment terms",
+    ):
+        assert request in referral, request
+
+
+def test_the_remit_allows_both_stock_statuses_and_never_a_quantity() -> None:
+    # AGENTS.md §2 2026-10-11: to the customer only the status, in stock or
+    # temporarily out of stock, never the quantity.
+    stock = _sentence(REMIT, "stock quantities")
+    assert "in stock or temporarily out of stock" in stock
+    assert "never gives stock quantities" in stock
+
+
+def test_the_remit_allows_the_one_working_day_reply_promise() -> None:
+    # AGENTS.md §2 2026-10-09: the team replies to an inquiry within one working
+    # day, and Genie promises it (13-genie.md 目标 5, 6). Other dates and
+    # commitments stay out.
+    commitments = _sentence(REMIT, "commitment")
+    assert "delivery times or dates" in commitments
+    assert "service or appointment dates" in commitments
+    assert "Incoterms" in commitments
+    assert "except one" in commitments
+    assert "replies to an inquiry within one working day" in _sentence(
+        REMIT, "may promise"
+    )
+    assert "service commitments" not in REMIT
+
+
+@pytest.mark.parametrize("name", ["t33", "t36"])
+def test_turns_33_and_36_reach_the_judges_with_that_remit(
+    name: str, judges: Judges
+) -> None:
+    status, record = judge_turn(_logged(name), JUDGES["jev"], JUDGES["deepseek"])
+    assert status == "judged" and record["flags"] == []
+    [state] = judges.states
+    assert state["account"] == {"approved": False}
+    assert state["reference"]["calls"][0]["name"] == "linker/search-knowledge"
+    [asked] = judges.asked
+    [appropriate] = [question for question in asked if question.name == "appropriate"]
+    assert appropriate.instructions == APPROPRIATE.instructions
+    assert "warranty terms" in appropriate.system_one()["instructions"]
+
+
+def _priced(*, visible: bool, approved: bool) -> LoggedTurn:
+    """The priced answer, its tool's price visible or withheld, for an
+    approved account or not."""
+    turn = _logged("price_approved")
+    calls = copy.deepcopy(turn.tool_calls)
+    if not visible:
+        calls[0]["result"]["qualified"][0]["commerce"] = {
+            "price_visible": False,
+            "in_stock": True,
+            "rfq_only": False,
+        }
+    return replace(turn, tool_calls=calls, approved=approved)
+
+
+def test_the_judges_read_the_account_and_the_rule_needs_both_gates() -> None:
+    assert build(_priced(visible=True, approved=True)).state["account"] == {
+        "approved": True
+    }
+    assert build(_priced(visible=True, approved=False)).state["account"] == {
+        "approved": False
+    }
+    rule = _sentence(REMIT, "may state a product price")
+    assert "`price_visible` true" in rule and "`account.approved` is true" in rule
+    other = _sentence(REMIT, "`account` is missing")
+    assert "is false" in other and "states no price" in other
+    # Telling an unapproved customer how to get a price is not a price.
+    assert "inquiry" in _sentence(REMIT, "Proforma request")
+
+
+def test_a_visible_price_for_an_approved_account_passes() -> None:
+    assert citations.verify(_priced(visible=True, approved=True)) == []
+
+
+def test_a_visible_price_for_an_account_not_approved_is_flagged() -> None:
+    # The tool showed the price, but the account is a guest, pending or
+    # restricted one (or the shell did not say: the default before #242).
+    assert citations.verify(_priced(visible=True, approved=False)) == [
+        "states the price of product 4109, and the account is not approved"
+    ]
+
+
+def test_a_price_the_tool_did_not_return_is_flagged_even_when_approved() -> None:
+    # The account may see prices, but this turn's tool withheld it: nothing
+    # backs the number (the tool output is the ground truth).
+    for approved in (True, False):
+        assert citations.verify(_priced(visible=False, approved=approved)) == [
+            "states 1234.00, which no tool result contains"
+        ]
+
+
 # --- the cascade, as the worker drives it ---------------------------------------
 
 
@@ -279,6 +496,8 @@ class Judges:
 
     def __init__(self) -> None:
         self.calls: list[str] = []
+        self.states: list[dict[str, Any]] = []
+        self.asked: list[tuple[Question, ...]] = []
         self.jev: Callable[[tuple[Question, ...]], Verdict] = lambda qs: _verdict(
             {q.name: ("2" if q.name == "grounded" else _top(q), 0.95) for q in qs}
         )
@@ -291,6 +510,8 @@ class Judges:
         self, judge: Judge, state: dict[str, Any], questions: tuple[Question, ...]
     ) -> Verdict:
         self.calls.append(judge.name)
+        self.states.append(state)
+        self.asked.append(questions)
         return self.jev(questions) if judge.name == "jev" else self.deepseek(questions)
 
 
