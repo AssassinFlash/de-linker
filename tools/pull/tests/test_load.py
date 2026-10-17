@@ -14,6 +14,7 @@ from __future__ import annotations
 import gzip
 import json
 import os
+import secrets
 import shutil
 import subprocess
 from collections.abc import Iterator
@@ -27,8 +28,13 @@ from linker_pull.anonymize import Anonymizer, accounts_from_dump
 
 WORDPRESS = "7.1.3"
 PORT = 8199  # only part of the address written into the database; nothing listens
-SOURCE_DB = "linker_t6_pytest_source"
-NAME = "t6_pytest"
+# Every run names its own databases (process id and a random suffix), so two
+# sessions running these tests against the one local MySQL at the same time
+# never share a database (#252: a concurrent run in another worktree wrote
+# into this one's source database mid-test).
+RUN = f"{os.getpid()}_{secrets.token_hex(3)}"
+SOURCE_DB = f"linker_t6_pytest_source_{RUN}"
+NAME = f"t6_pytest_{RUN}"
 SOCKET_QUERY = "SELECT @@socket"
 # The live knowledge table as MariaDB 11.8's mysqldump writes it (the
 # 2026-10-17 snapshot's wp_genie_chunks, cut to one row of four dimensions):
@@ -147,8 +153,10 @@ def core(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 @pytest.fixture(scope="module")
 def snapshot_dir(
-    core: Path, tmp_path_factory: pytest.TempPathFactory
+    core: Path, tmp_path_factory: pytest.TempPathFactory, request: pytest.FixtureRequest
 ) -> Iterator[Path]:
+    # Dropped however the fixture ends, a failure half-way included.
+    request.addfinalizer(lambda: mysql(f"DROP DATABASE IF EXISTS `{SOURCE_DB}`"))
     work = tmp_path_factory.mktemp("live")
     docroot = work / "wordpress"
     install(docroot, SOURCE_DB, "https://de-linker.com", core)
@@ -302,13 +310,15 @@ def licences(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture
-def instance(core: Path, tmp_path: Path) -> Iterator[Instance]:
+def instance(core: Path, tmp_path: Path, request: pytest.FixtureRequest) -> Instance:
+    request.addfinalizer(
+        lambda: mysql(f"DROP DATABASE IF EXISTS `{database_of(NAME)}`")
+    )
     home = tmp_path / "local"
     target = home / NAME / "wordpress"
     install(target, database_of(NAME), f"http://127.0.0.1:{PORT}", core)
     register(home, NAME, PORT)
-    yield load.instance(NAME, None, home)
-    mysql(f"DROP DATABASE IF EXISTS `{database_of(NAME)}`")
+    return load.instance(NAME, None, home)
 
 
 def test_the_snapshot_lands_with_every_form_of_the_live_address_rewritten(
