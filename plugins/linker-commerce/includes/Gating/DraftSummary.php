@@ -20,7 +20,6 @@ use WC_Product;
  */
 final class DraftSummary {
 
-
 	/**
 	 * Sets up the summary.
 	 *
@@ -30,8 +29,7 @@ final class DraftSummary {
 	public function __construct(
 		private readonly CommerceState $state,
 		private readonly PriceDisplay $display
-	) {
-	}
+	) {}
 
 	/**
 	 * Replaces the totals box of the solution draft with the login box for guests.

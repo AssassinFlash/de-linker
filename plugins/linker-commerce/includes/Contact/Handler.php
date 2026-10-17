@@ -22,27 +22,15 @@ use WP_Error;
  *
  * The form is public, so it carries the protections a public form needs: a
  * nonce, a honeypot ("website"), and a small per-connection limit that keeps
- * one connection from filling the shared host's mail quota. A filled honeypot
- * is answered like a delivered message and sent nowhere.
+ * one connection from filling the shared host's mail quota. Filled honeypots and forged clocks are rejected before any inquiry is written.
  */
 final class Handler {
-
 
 
 	/**
 	 * The action the form posts (admin_post[_nopriv]_linker_contact).
 	 */
 	public const ACTION = Form::ACTION;
-
-	/**
-	 * Messages one connection may send per window.
-	 */
-	public const LIMIT = 3;
-
-	/**
-	 * Length of the window, in seconds.
-	 */
-	public const WINDOW = HOUR_IN_SECONDS;
 
 	/**
 	 * Adds the handler; it runs for visitors and for signed-in customers alike.
@@ -75,12 +63,7 @@ final class Handler {
 			return 'invalid';
 		}
 
-		if ( '' !== trim( (string) ( $post[ Form::TRAP_FIELD ] ?? '' ) ) ) {
-			// A filled honeypot is a bot: answer like a delivery, send nothing.
-			return 'sent';
-		}
-
-		if ( ! $this->within_limit() ) {
+		if ( ( new PublicGuard() )->is_limited() ) {
 			return 'throttled';
 		}
 
@@ -89,11 +72,8 @@ final class Handler {
 			return 'invalid';
 		}
 
-		$result = ( new Sender() )->submit( $submission, false );
-		if ( $result instanceof WP_Error ) {
-			return 'invalid';
-		}
-		$this->count();
+		( new Sender() )->message( $submission );
+		( new PublicGuard() )->record();
 		return 'sent';
 	}
 
@@ -124,46 +104,5 @@ final class Handler {
 	private function back( string $back, string $state ): void {
 		wp_safe_redirect( add_query_arg( Form::STATE_PARAM, $state, $back ) . '#' . Form::ANCHOR );
 		exit;
-	}
-
-	/**
-	 * Whether this connection may send another message.
-	 */
-	private function within_limit(): bool {
-		return \count( $this->recent() ) < self::LIMIT;
-	}
-
-	/**
-	 * Counts this attempt.
-	 */
-	private function count(): void {
-		$recent   = $this->recent();
-		$recent[] = time();
-		set_transient( $this->key(), $recent, self::WINDOW );
-	}
-
-	/**
-	 * The times of this connection's messages within the window.
-	 *
-	 * @return list<int>
-	 */
-	private function recent(): array {
-		$stored = get_transient( $this->key() );
-		$times  = array();
-		foreach ( \is_array( $stored ) ? $stored : array() as $time ) {
-			if ( \is_int( $time ) && $time > time() - self::WINDOW ) {
-				$times[] = $time;
-			}
-		}
-		return $times;
-	}
-
-	/**
-	 * The transient of this connection. The address is the one the connection
-	 * came from — never a forwarded header, which a sender could set freely.
-	 */
-	private function key(): string {
-		$address = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) ) : '';
-		return 'linker_contact_' . md5( $address );
 	}
 }

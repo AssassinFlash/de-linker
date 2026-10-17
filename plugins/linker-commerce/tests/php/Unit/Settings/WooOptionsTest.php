@@ -21,7 +21,6 @@ use WP_Mock;
  */
 final class WooOptionsTest extends TestCase {
 
-
 	/**
 	 * The options that make WooCommerce an inquiry site read their pinned value; others pass through.
 	 */

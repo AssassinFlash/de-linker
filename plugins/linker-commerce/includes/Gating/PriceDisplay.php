@@ -200,7 +200,7 @@ final class PriceDisplay {
 	 *
 	 * @param string $reason One of the CommerceState reasons.
 	 */
-	private function reason_text( string $reason ): string {
+	public function reason_text( string $reason ): string {
 		if ( CommerceState::LOGIN === $reason ) {
 			return esc_html__( 'Log in for prices', 'linker-commerce' );
 		}

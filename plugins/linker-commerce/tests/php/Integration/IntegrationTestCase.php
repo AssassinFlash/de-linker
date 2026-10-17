@@ -70,6 +70,30 @@ abstract class IntegrationTestCase extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$this->isolate_mail();
+		$this->isolate_public_connection();
+	}
+
+	/** Each test has its own public connection window, restored on exit. */
+	private function isolate_public_connection(): void {
+		$exists                 = array_key_exists( 'REMOTE_ADDR', $_SERVER );
+		$address                = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact runner value for restoration.
+		$_SERVER['REMOTE_ADDR'] = '127.0.0.246';
+		$key                    = 'linker_contact_' . md5( '127.0.0.246' );
+		$previous               = get_transient( $key );
+		delete_transient( $key );
+		$this->later(
+			static function () use ( $exists, $address, $key, $previous ): void {
+				delete_transient( $key );
+				if ( false !== $previous ) {
+					set_transient( $key, $previous, HOUR_IN_SECONDS );
+				}
+				if ( $exists ) {
+					$_SERVER['REMOTE_ADDR'] = $address;
+				} else {
+					unset( $_SERVER['REMOTE_ADDR'] );
+				}
+			}
+		);
 	}
 
 	/**

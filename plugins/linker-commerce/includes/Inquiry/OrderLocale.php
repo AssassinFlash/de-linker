@@ -18,7 +18,6 @@ use WC_Order;
  */
 final class OrderLocale {
 
-
 	/**
 	 * Order meta: locale of the inquiry.
 	 */
@@ -38,7 +37,7 @@ final class OrderLocale {
 	 * The locale of the current request: the language the checkout form posted
 	 * first (its AJAX address ?wc-ajax=checkout names no language, so Polylang
 	 * answers with the default one there; the form's own "lang" field,
-	 * Checkout::language_field(), is the customer's page), then Polylang's
+	 * Form::hidden(), is the customer's page), then Polylang's
 	 * current language, and WordPress's own answer when neither does.
 	 *
 	 * @param  string|null $language Explicit form language for non-global callers.

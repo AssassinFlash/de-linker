@@ -11,10 +11,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Abilities\HandoffTeam;
-use Linker\Commerce\Contact\Emails\TeamMessageEmail;
-use Linker\Commerce\Contact\Emails\ReceiptEmail;
 use Linker\Commerce\Contact\Form;
-use Linker\Commerce\Contact\Submission;
+use Linker\Commerce\Contact\Handler;
 use Linker\Commerce\Digest\Module as DigestModule;
 use Linker\Commerce\Digest\Scheduler;
 use Linker\Commerce\Health\Monitor;
@@ -64,7 +62,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
-		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, TeamMessageEmail::ID, 'linker_digest' ) as $id ) {
+		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, 'linker_digest' ) as $id ) {
 			$saved[ 'woocommerce_' . $id . '_settings' ] = get_option( 'woocommerce_' . $id . '_settings' );
 		}
 		$this->later(
@@ -85,7 +83,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		delete_option( Options::NOTIFY_FROM );
 		update_option( 'woocommerce_email_from_name', 'Linker' );
 		update_option( 'woocommerce_email_from_address', self::PUBLIC );
-		update_option( Options::NOTIFY_BCC, 'copy-' . self::tag() . '@example.test' );
+		update_option( Options::NOTIFY_BCC, 'chester@de-linker.com' );
 		foreach ( array_keys( $saved ) as $name ) {
 			if ( str_starts_with( $name, 'woocommerce_linker_' ) ) {
 				delete_option( $name );
@@ -147,17 +145,39 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$vat_review->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
 		$order = $this->send_inquiry( $customer, array( array( $this->product( '100' ), 1 ) ) );
 		$this->as_user( 0 );
-		$submission = Submission::from_post(
-			array(
-				'name'    => 'Maria Beispiel',
-				'email'   => 'linker-it-' . self::tag() . '@example.test',
-				'message' => 'A question about a storage system.',
-				'consent' => '1',
+		$stamp         = (string) ( time() - 5 );
+		$contact_email = 'linker-it-' . self::tag() . '@example.test';
+		$this->assertSame(
+			'sent',
+			( new Handler() )->process(
+				array(
+					'name'                 => 'Maria Beispiel',
+					'email'                => $contact_email,
+					'message'              => 'A question about a storage system.',
+					'consent'              => '1',
+					Form::NONCE_FIELD      => wp_create_nonce( Form::NONCE_ACTION ),
+					'linker_started'       => $stamp,
+					'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+				)
 			)
 		);
-		$this->assertInstanceOf( Submission::class, $submission );
-		( new TeamMessageEmail( $plugin, new Options() ) )->notify( $submission );
-		( new ReceiptEmail( $plugin ) )->notify( $submission );
+		$contacts = wc_get_orders(
+			array(
+				'billing_email' => $contact_email,
+				'limit'         => -1,
+			)
+		);
+		$this->assertIsArray( $contacts );
+		foreach ( $contacts as $contact ) {
+			$this->later(
+				static function () use ( $contact ): void {
+					$contact->delete( true );
+				}
+			);
+		}
+		$this->assertCount( 1, $contacts, 'The contact door writes one native inquiry.' );
+		$this->assertArrayNotHasKey( 'Linker\\Commerce\\Contact\\Emails\\ReceiptEmail', $emails );
+		$this->assertArrayNotHasKey( 'Linker\\Commerce\\Contact\\Emails\\TeamMessageEmail', $emails );
 		( new DigestModule( $plugin, new JobStore() ) )->run();
 		$this->later(
 			static function (): void {
@@ -179,7 +199,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 			'New customer: Linker Integration Test GmbH',
 			'VAT check changed: Linker Integration Test GmbH',
 			'New inquiry #' . $order->get_order_number() . ' from ',
-			'New message from Maria Beispiel',
+			'New inquiry #' . $contacts[0]->get_order_number() . ' from ',
 			'Daily digest, ',
 			'The Genie service failed its health check',
 			'The engine service failed its health check',
@@ -191,10 +211,10 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 			$this->assertContains( $bcc, $matching[0]['headers'], "{$subject} carries the blind copy of the settings." );
 			$this->assertStringNotContainsString( self::PUBLIC, implode( "\n", array_filter( $matching[0]['headers'], static fn ( string $line ): bool => 0 !== stripos( $line, 'From:' ) ) ), "{$subject} names sales@de-linker.com in no recipient header." );
 			$this->assertContains( 'From: Linker <' . $from . '>', $matching[0]['headers'], "{$subject} is sent from the internal sender." );
-			if ( str_starts_with( $subject, 'New customer:' ) || str_starts_with( $subject, 'VAT check changed:' ) || str_starts_with( $subject, 'New inquiry #' ) ) {
+			if ( str_starts_with( $subject, 'New customer:' ) || str_starts_with( $subject, 'VAT check changed:' ) || str_starts_with( $subject, 'New inquiry #' . $order->get_order_number() . ' ' ) ) {
 				$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $matching[0]['headers'], 'Replies still go to the customer.' );
-			} elseif ( str_starts_with( $subject, 'New message from ' ) ) {
-				$this->assertContains( 'Reply-to: Maria Beispiel <' . $submission->email . '>', $matching[0]['headers'], 'Replies still go to the visitor.' );
+			} elseif ( str_starts_with( $subject, 'New inquiry #' . $contacts[0]->get_order_number() . ' ' ) ) {
+				$this->assertContains( 'Reply-to: Maria Beispiel <' . $contact_email . '>', $matching[0]['headers'], 'Replies still go to the visitor.' );
 			}
 		}
 
@@ -202,7 +222,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$this->assertNotSame( array(), $receipt, 'The customer got their own receipt of the inquiry.' );
 		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'], 'Customer mail is sent from the team mailbox.' );
 		$this->assertStringNotContainsString( self::INTERNAL, implode( "\n", $receipt[0]['headers'] ), 'Customer mail never names the internal address.' );
-		$contact_receipt = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $submission->email ) === $row['to'] ) );
+		$contact_receipt = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $contact_email ) === $row['to'] ) );
 		$this->assertCount( 1, $contact_receipt );
 		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $contact_receipt[0]['headers'], 'Contact receipts keep WooCommerce\'s sender after the internal notification.' );
 		$this->assertContains( 'Reply-to: Linker <' . self::PUBLIC . '>', $contact_receipt[0]['headers'], 'Customer replies still go to WooCommerce\'s sender.' );

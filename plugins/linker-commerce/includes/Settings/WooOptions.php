@@ -17,7 +17,6 @@ namespace Linker\Commerce\Settings;
  */
 final class WooOptions {
 
-
 	/**
 	 * Option name of the endpoint set the rewrite rules were last built for.
 	 */

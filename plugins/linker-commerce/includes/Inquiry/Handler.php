@@ -42,12 +42,20 @@ final class Handler {
 		$locale   = new LocaleSwitch();
 		$locale->to( OrderLocale::current( $language ) );
 		try {
+			$guard = new PublicGuard();
 			$nonce = $post[ self::NONCE ] ?? '';
-			if ( ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION ) || ! ( new PublicGuard() )->allows( $post ) ) {
+			if ( is_string( $nonce ) && wp_verify_nonce( $nonce, self::ACTION ) && $guard->is_limited() ) {
+				return new WP_Error( 'linker_inquiry_throttled', __( 'We received several messages from this connection. Please try again later or write to sales@de-linker.com.', 'linker-commerce' ) );
+			}
+			if ( ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION ) || ! $guard->allows( $post ) ) {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 			}
 			$details = Submission::from_post( $post, false );
-			return $details instanceof WP_Error ? $details : ( new Sender() )->submit( $details );
+			$result  = $details instanceof WP_Error ? $details : ( new Sender() )->request( $details, $post );
+			if ( $result instanceof WC_Order ) {
+				$guard->record();
+			}
+			return $result;
 		} finally {
 			$locale->back();
 		}

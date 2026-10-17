@@ -39,3 +39,17 @@
 | 退役的原生结账入口 | 绕过新表单不能静默创建询盘 | Please use the inquiry form to send your inquiry. | Bitte senden Sie Ihre Anfrage über das Anfrageformular. |
 
 评审基准：AGENTS.md、本票、已选原型、既有 .po 术语和线上商务文案。`linker-copywriting` 的 Hard Stops 文件在本机列出的技能目录及项目内均未找到，未声称执行该缺失文件；本记录提供可检查的独立初审意见、修订与通过结论。英德词条已随插件发布，审批邮件的真实夹具断言同步更新。
+
+## PR #290 round 1: restricted account notice
+
+Draft EN: **Access currently limited** — “You can send inquiries. Net prices are unavailable while your account is limited.”
+
+Independent DE draft: **Zugang derzeit eingeschränkt** — “Sie können Anfragen senden. Solange Ihr Konto eingeschränkt ist, werden keine Nettopreise angezeigt.”
+
+Adversarial review (`review_spec_copy`, 2026-10-18): body passes. It states that inquiries remain open, limits only prices, makes no new response/approval promise, uses Sie, and leaves the actual team's saved reason visible. Terminology objection: the established gettext title is **Zugriff derzeit eingeschränkt**, not Zugang. Keep the established title and reason label **Unser Grund:**.
+
+Final EN: **Access currently limited** — “You can send inquiries. Net prices are unavailable while your account is limited.” **Our reason:** followed by the escaped, stored reason.
+
+Final DE: **Zugriff derzeit eingeschränkt** — “Sie können Anfragen senden. Solange Ihr Konto eingeschränkt ist, werden keine Nettopreise angezeigt.” **Unser Grund:** followed by the escaped, stored reason. The team's free-text reason is not machine translated by this form.
+
+Honeypot accessible label uses the existing reviewed gettext pair **Website / Website** from the contact form; the shared guard now emits it for both doors. No visible contact wording changes.

@@ -19,9 +19,18 @@ final class Form {
 
 
 	/**
+	 * One render's consumed flash values.
+	 *
+	 * @var array<string, mixed>
+	 */
+	private array $flash = array();
+
+	/**
 	 * Registers the form and its escaped data tags.
 	 */
 	public function register(): void {
+		add_shortcode( 'linker_inquiry_billing', array( BillingFields::class, 'render' ) );
+		add_shortcode( 'linker_inquiry_restriction', array( new \Linker\Commerce\Presentation\LoginGate(), 'restricted_notice' ) );
 		add_shortcode( 'linker_inquiry_form', array( $this, 'render' ) );
 		add_shortcode( 'linker_inquiry_text', array( $this, 'text' ) );
 		add_shortcode( 'linker_inquiry_hidden', array( $this, 'hidden' ) );
@@ -33,10 +42,18 @@ final class Form {
 	 * LC's own fragment with no PHP layout.
 	 */
 	public function render(): string {
-		$template = do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) );
-		// Core intentionally refuses shortcode expansion in form actions and empty attributes.
-		// Insert customer text last so a message can never execute shortcodes.
-		return preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => $this->value( array( 'key' => $token[1] ) ), $template ) ?? '';
+		foreach ( array( 'fields', 'error', 'error_locale' ) as $key ) {
+			$this->flash[ $key ] = WC()->session->get( 'linker_inquiry_' . $key );
+			WC()->session->set( 'linker_inquiry_' . $key, null );
+		}
+		try {
+			$template = do_shortcode( Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/form.html' ) );
+			// Core intentionally refuses shortcode expansion in form actions and empty attributes.
+			// Insert customer text last so a message can never execute shortcodes.
+			return preg_replace_callback( '/\{\{([a-z-]+)\}\}/', fn ( array $token ): string => $this->value( array( 'key' => $token[1] ) ), $template ) ?? '';
+		} finally {
+			$this->flash = array();
+		}
 	}
 
 	/**
@@ -47,7 +64,7 @@ final class Form {
 	public function value( $atts = array() ): string {
 		$key      = (string) ( $atts['key'] ?? '' );
 		$customer = new WC_Customer( get_current_user_id() );
-		$previous = (array) WC()->session->get( 'linker_inquiry_fields', array() );
+		$previous = (array) ( $this->flash['fields'] ?? array() );
 		$name     = trim( $customer->get_billing_first_name() . ' ' . $customer->get_billing_last_name() );
 		if ( '' === $name && is_user_logged_in() ) {
 			$name = trim( (string) wp_get_current_user()->first_name . ' ' . (string) wp_get_current_user()->last_name );
@@ -56,8 +73,8 @@ final class Form {
 		if ( '' === $email && is_user_logged_in() ) {
 			$email = wp_get_current_user()->user_email;
 		}
-		$error = (string) WC()->session->get( 'linker_inquiry_error', '' );
-		if ( '' !== $error && WC()->session->get( 'linker_inquiry_error_locale' ) !== get_locale() ) {
+		$error = (string) ( $this->flash['error'] ?? '' );
+		if ( '' !== $error && ( $this->flash['error_locale'] ?? '' ) !== get_locale() ) {
 			$error = __( 'Please check your entries and send the form again.', 'linker-commerce' );
 		}
 		$values = array(
