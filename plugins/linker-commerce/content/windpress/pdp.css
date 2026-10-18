@@ -1,19 +1,13 @@
 /*
- * The product page's own styles, authored for this site from the accepted
- * redesign prototype (docs/specs/174-pdp.md): variant A — white page,
- * hairline-separated full-width blocks below a gallery/intro + inquiry rail
- * upper half. The rail sticks only inside the upper half (its grid area ends
- * there), the section nav sticks below the measured header height, and the
- * phone action bar is the floating glass pill.
+ * Product-page presentation in the WindPress volume. LiveCanvas owns the
+ * sections; native Woo data fragments retain their product facts and actions.
  *
- * The rules are scoped to the product root and reach the page only through the
- * WindPress volume (present copies this file into uploads/windpress/data/ and
- * imports it from main.css; the compile ships it in the cache). Class names are
- * the ones the templates and the data shortcodes print — the shortcodes are
- * untouched.
- *
- * Numbers: the prototype's values (docs/design/2026-10-15-pdp-prototype/
- * index.html) mapped onto the site tokens of tokens.css.
+ * Design authority: the owner's 2026-10-18 review requested a calmer whole
+ * product page. A balanced gallery/inquiry panel, dominant product title,
+ * readable document and compatibility rows, and a solid mobile action bar use
+ * this site's existing fonts, colours and spacing scale from tokens.css.
+ * Remaining section dimensions follow the accepted product-page prototype
+ * in docs/design/2026-10-15-pdp-prototype/index.html.
  */
 
 #tv-storefront-pdp {
@@ -33,9 +27,9 @@
 	--pdp-font: "Plus Jakarta Sans", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
 	/* One container rule for the whole page (the four former insets collapse
 	   into this pair). */
-	--pdp-container: 1360px;
+	--pdp-container: 1280px;
 	--pdp-pad: clamp(20px, 4vw, 40px);
-	--pdp-gap: clamp(48px, 7vw, 88px);
+	--pdp-gap: clamp(40px, 6vw, 72px);
 
 	padding: 0 0 80px;
 	background: var(--pdp-paper);
@@ -115,7 +109,7 @@
    ================================================================ */
 #tv-storefront-pdp .pdp-layout {
 	display: grid;
-	grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
 	grid-template-areas:
 		"gallery rail"
 		"intro rail";
@@ -157,8 +151,8 @@
 	padding: 0;
 	border: 1px solid var(--pdp-line);
 	border-radius: var(--proto-radius-card);
-	background: var(--pdp-journal);
-	aspect-ratio: 4 / 3;
+	background: var(--pdp-paper);
+	aspect-ratio: 6 / 5;
 	overflow: hidden;
 	cursor: zoom-in;
 }
@@ -167,7 +161,7 @@
 	display: block;
 	width: 100%;
 	height: 100%;
-	padding: 32px;
+	padding: 16px;
 	object-fit: contain;
 }
 
@@ -281,7 +275,7 @@
 	margin: 0;
 	color: var(--pdp-ink);
 	font-family: var(--pdp-font);
-	font-size: clamp(24px, 2.4vw, 32px);
+	font-size: clamp(28px, 3vw, 40px);
 	font-weight: 700;
 	line-height: 1.15;
 	letter-spacing: -0.01em;
@@ -443,25 +437,27 @@
 #tv-storefront-pdp .pdp-product-tools {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 8px;
-	margin-top: 14px;
+	gap: 16px;
+	margin-top: 20px;
+	padding-top: 12px;
+	border-top: 1px solid var(--pdp-line);
 }
 
 #tv-storefront-pdp .pdp-tool {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
+	gap: 8px;
 	min-width: 0;
-	min-height: 72px;
+	min-height: 48px;
 	padding: 10px 6px;
-	border: 1px solid var(--pdp-line);
-	border-radius: 12px;
+	border: 0;
+	border-radius: 8px;
 	background: var(--pdp-paper);
 	color: var(--pdp-ink);
 	font-family: inherit;
-	font-size: 12.5px;
+	font-size: 13px;
 	font-weight: 600;
 	line-height: 1.4;
 	text-align: center;
@@ -490,9 +486,8 @@
 /* Project entry */
 #tv-storefront-pdp .pdp-project-check {
 	margin-top: 14px;
-	border: 1px solid var(--pdp-line);
-	border-radius: 14px;
-	background: var(--pdp-journal);
+	border-top: 1px solid var(--pdp-line);
+	background: var(--pdp-paper);
 	overflow: hidden;
 }
 
@@ -643,7 +638,7 @@
 	margin: 0;
 	color: var(--pdp-ink);
 	font-family: var(--pdp-font);
-	font-size: clamp(26px, 3.4vw, 40px);
+	font-size: clamp(26px, 2.6vw, 32px);
 	font-weight: 700;
 	line-height: 1.15;
 	letter-spacing: -0.01em;
@@ -1133,11 +1128,10 @@
 	line-height: 1.5;
 }
 
-/* Documents — a fluid grid: as many cards as the container fits. The title
-   sits outside the grid, so the tracks collapse to the cards that exist. */
+/* Documents share the compatibility area's two-column reading width. */
 #tv-storefront-pdp .pdp-doc-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 16px;
 	margin-top: 36px;
 }
@@ -1367,7 +1361,7 @@
 /* ================================================================
    RESPONSIVE — one breakpoint set for the whole page: <=1023px the
    upper stacks, <=860px the phone layout (app-sized rail, dots,
-   floating glass action pill).
+   solid bottom action bar).
    ================================================================ */
 @media (max-width: 1023px) {
 	#tv-storefront-pdp .pdp-pairings {
@@ -1419,7 +1413,7 @@
 @media (max-width: 860px) {
 	/* The phone page keeps its own order: identity, key figures, delivery,
 	   the second action, the tool row, the project entry — the price and the
-	   primary action live in the action pill below. */
+	   primary action live in the bottom action bar. */
 	#tv-storefront-pdp {
 		padding-bottom: calc(var(--pdp-action-height, 64px) + 52px);
 	}
@@ -1768,23 +1762,20 @@
 		font-size: 15px;
 	}
 
-	/* The phone action bar: the floating glass pill. */
+	/* A stable, solid action bar follows the owner's product-page correction. */
 	#tv-storefront-pdp .pdp-mobile-action {
 		position: fixed;
 		z-index: 60;
-		left: 12px;
-		right: 12px;
-		bottom: calc(12px + env(safe-area-inset-bottom));
+		left: 0;
+		right: 0;
+		bottom: 0;
 		display: flex;
 		align-items: center;
 		gap: 10px;
-		padding: 6px 6px 6px 16px;
-		border: 1px solid rgba(255, 255, 255, 0.55);
-		border-radius: var(--proto-radius-round);
-		background: rgba(255, 255, 255, 0.72);
-		-webkit-backdrop-filter: blur(20px) saturate(1.6);
-		backdrop-filter: blur(20px) saturate(1.6);
-		box-shadow: 0 8px 28px rgba(21, 53, 47, 0.14);
+		padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+		border-top: 1px solid var(--pdp-line);
+		background: var(--pdp-paper);
+		box-shadow: 0 -4px 20px rgba(21, 53, 47, 0.06);
 	}
 
 	#tv-storefront-pdp .pdp-mobile-action .pdp-price {
@@ -1809,17 +1800,17 @@
 	#tv-storefront-pdp .pdp-mobile-action .pdp-btn-dark {
 		flex: 0 0 auto;
 		width: auto;
-		max-width: 10.5rem;
+		max-width: 12rem;
 		min-height: 44px;
 		margin: 0;
 		padding: 10px 16px;
-		border-radius: var(--proto-radius-round);
+		border-radius: 12px;
 		font-size: 14px;
 		line-height: 1.15;
 		white-space: normal;
 	}
 
-	/* The comparison chip and the assistant launcher clear the pill. The
+	/* The comparison chip and the assistant launcher clear the action bar. The
 	   chip's own class is the one ComparePage prints (`linker-compare-chip`);
 	   its Tailwind `bottom-24` would otherwise ride on the measured bar. */
 	body:has(#tv-storefront-pdp) #compare-chip.linker-compare-chip,
