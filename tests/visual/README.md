@@ -2,7 +2,8 @@
 
 One entry point captures live/local with the same Chromium build and compares
 every RGB pixel. It uses `tests/e2e`'s existing Playwright installation and Python
-Pillow. It never submits forms or changes either site.
+Pillow. It never submits inquiry, account or payment forms. The optional `visit` fixture
+below can populate a disposable anonymous solution draft and then empty it.
 
 ```sh
 node tests/visual/pixel-parity.mjs <outdir> <live-base> <local-base> \
@@ -37,7 +38,8 @@ acceptance artefacts stay in their ticket directories; new runs call this tool.
 
 For a disclosure or another state, use `--scenarios <json>` instead of
 `--paths`. Each scenario contains a unique `name`, `path`, optional `widths`,
-ordered `actions` (`click`, `fill: [selector, value]`, or `press: [selector, key]`),
+ordered `actions` (`click`, `fill: [selector, value]`, `press: [selector, key]`,
+or `visit: "/relative/path"`),
 and `ruledRegions: [{name, selector, padding?}]`. Selectors may match repeated
 components; each matching rectangle is recorded separately, using the union of
 the live and local bounds. A new component may be absent on live; it must exist
@@ -54,3 +56,12 @@ are recorded as failures and are never cropped, padded or aligned away.
 for machines whose HTTPS proxy intermittently refuses CONNECT tunnels. It does
 not change system settings or rendering flags; the capture manifest records the
 network route. Default behavior remains the system route.
+
+A scenario with `emptyDraftAfter: true` is an explicit disposable cart fixture.
+Its `visit` actions can call Woo's existing `?add-to-cart=ID` on the same base,
+then return to the draft. In `finally`, the capture follows that anonymous
+session's native nonce-bearing `a.remove` links and verifies it is empty.
+No signed-in cookie is loaded and no order, inquiry or email is submitted.
+Use a language-specific add route (for example `/de/?add-to-cart=4107`) so the
+native Woo notice is in the same language as the captured page. The manifest
+records the declared scenario; the raw full-page images remain unchanged.

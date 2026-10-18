@@ -64,7 +64,7 @@ for (const locale of ['en', 'de'] as const) {
 					async (route) => {
 						posted = route.request().postDataJSON();
 						await held;
-						const stream = `event: meta\ndata: ${JSON.stringify({ grounded: true, fallback: false, attempts: 1, failures: [], language: locale, turn_id: 223 })}\n\nevent: block\ndata: ${JSON.stringify({ type: 'text', text: complete, refs: [] })}\n\nevent: done\ndata: {"ok":true}\n\n`;
+						const stream = `event: meta\ndata: ${JSON.stringify({ grounded: true, fallback: false, attempts: 1, failures: [], language: locale, turn_id: 223 })}\n\nevent: block\ndata: ${JSON.stringify({ type: 'text', text: complete, refs: [] })}\n\nevent: block\ndata: ${JSON.stringify({ type: 'ask', field: 'phase', options: german ? ['Einphasig', 'Dreiphasig'] : ['Single-phase', 'Three-phase'] })}\n\nevent: done\ndata: {"ok":true}\n\n`;
 						await route.fulfill({
 							json: { conversation_id: 223, stream },
 						});
@@ -200,6 +200,11 @@ for (const locale of ['en', 'de'] as const) {
 						)
 					)
 					.toBeLessThan(2);
+				const choices = page.getByRole('group', {
+					name: german ? 'Netzanschluss' : 'Grid connection',
+				});
+				await expect(choices).toBeInViewport({ ratio: 1 });
+				await expect(choices.getByRole('button')).toHaveCount(2);
 				const finalLine = page
 					.locator('.linker-genie-message-body p')
 					.last();
@@ -211,6 +216,15 @@ for (const locale of ['en', 'de'] as const) {
 				await page.screenshot({
 					path: join(evidence, `${name}-latest.png`),
 				});
+				await choices
+					.getByRole('button', {
+						name: german ? 'Dreiphasig' : 'Three-phase',
+						exact: true,
+					})
+					.click();
+				await expect
+					.poll(() => posted.messages.at(-1)?.content)
+					.toBe(german ? 'Dreiphasig' : 'Three-phase');
 				await expect(
 					page.locator('.linker-genie-app__composer')
 				).toBeInViewport();

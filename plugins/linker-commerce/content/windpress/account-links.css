@@ -18,7 +18,11 @@
 @media(max-width:760px){#tv-footer-v2 .footer-account-tile{padding:9px 10px;min-height:47px;border-radius:12px}}
 /* The sentence and its link are two lines: inline-block left "details.Create
    account" glued (review round 1, owner-reported class of defect). */
-.linker-inquiry-guest>.linker-create-account{display:block;margin-top:8px}
+/* The final guest block has 40px of existing column gap on mobile and
+   page padding on desktop. Use 29px of that space for the new line
+   (21px type + 8px gap), preserving the original form/footer geometry. */
+.linker-inquiry-guest:has(>.linker-create-account){position:relative}
+.linker-inquiry-guest>.linker-create-account{display:block;position:absolute;top:calc(100% + 8px);left:0;margin:0}
 .sf-card-price>.linker-create-account{display:inline-block;margin-left:8px;font-size:12px}
 .pdp-price .linker-create-account,.pdp-app-price .linker-create-account{display:inline-block;margin-left:12px;font-size:13px}
 .sf-cart-empty__actions>.linker-create-account{display:inline-flex;align-items:center;min-height:44px;padding:12px 4px;border:1px solid transparent}
@@ -235,3 +239,26 @@ body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>
 .linker-genie-reply{position:relative}
 .linker-genie-app .linker-genie-reply__show{position:absolute;right:0;top:-36px;max-width:calc(100% - 96px);margin:0;white-space:nowrap}
 .linker-genie-app--workspace .linker-genie-reply__show{top:-44px}
+
+/* #223 owner reply-structure correction: distinguish the introduction, existing
+   Markdown hierarchy and real next-step blocks. Values use the established
+   4px rhythm; these are presentation choices, never model-text inference. */
+.linker-genie-app .linker-genie-message-body>p:first-child:has(~p){font-weight:500;color:#181818}
+.linker-genie-app .linker-genie-message-body h1{font-size:1.375em;line-height:1.35;letter-spacing:-.02em}
+.linker-genie-app .linker-genie-message-body h2{font-size:1.25em;line-height:1.4;letter-spacing:-.015em}
+.linker-genie-app .linker-genie-message-body :is(h3,h4,h5,h6){font-size:1.0625em;line-height:1.5}
+.linker-genie-app .linker-genie-message-body li::marker{color:#737373;font-weight:500}
+.linker-genie-app .linker-genie-message-body li>p{margin-bottom:8px}
+.linker-genie-app .linker-genie-message-body thead{background:#f7f7f7}
+.linker-genie-app .linker-genie-message-body th{font-weight:600;border-top:1px solid #e5e5e5}
+.linker-genie-app .linker-genie-app__ask{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:20px 0 0;margin:16px 0 20px;border-top:1px solid #ebebeb}
+.linker-genie-ask-label{grid-column:1/-1;margin:0 0 4px;font-size:13px;line-height:20px;font-weight:600;color:#5d5d5d}
+.linker-genie-app .linker-genie-app__ask>.linker-genie-app__chip{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;min-height:48px;padding:12px 14px;border:1px solid #e5e5e5;border-radius:12px;background:#fff;color:#262626;font-size:14px;line-height:20px;text-align:left;white-space:normal}
+.linker-genie-app .linker-genie-app__ask>.linker-genie-app__chip:hover{background:#f7f7f7;border-color:#bdbdbd}
+.linker-genie-app .linker-genie-app__ask>.linker-genie-app__chip:focus-visible{outline:2px solid #181818;outline-offset:2px}
+.linker-genie-app__ask>.linker-genie-app__chip>span{flex-shrink:0;color:#858585}
+.linker-genie-app .linker-genie-document-row{margin:12px 0}
+.linker-genie-app .linker-genie-app__document{display:flex;align-items:center;gap:12px;width:fit-content;max-width:100%;padding:12px 14px;border:1px solid #e5e5e5;border-radius:12px;background:#fafafa;color:#262626;font-size:14px;line-height:22px;text-decoration:none;overflow-wrap:anywhere}
+.linker-genie-app__document>svg{flex-shrink:0;color:#737373}
+.linker-genie-app__document>span:last-child{margin-left:auto;padding-left:4px;color:#737373}
+.linker-genie-app .linker-genie-app__document:hover{border-color:#bdbdbd;background:#f5f5f5}

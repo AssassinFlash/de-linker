@@ -59,8 +59,7 @@ msgid "Genie could not load."
 msgstr "Genie konnte nicht geladen werden."
 
 #: includes/Genie/Entries.php build/genie.js:19
-#: src/configurator/residential/ResidentialPanel.tsx:308
-#: src/genie/App.tsx:1351
+#: src/configurator/residential/ResidentialPanel.tsx:308 src/genie/App.tsx:1351
 #: build/configurator.js
 msgid "Try again"
 msgstr "Erneut versuchen"
@@ -529,10 +528,8 @@ msgstr "Anfrage ansehen"
 msgid "Model"
 msgstr "Modell"
 
-#: build/genie.js:1
-#: src/configurator/solution/Solution.tsx:256
-#: src/genie/components/Compare.tsx:55
-#: src/genie/components/GenieCard.tsx:86
+#: build/genie.js:1 src/configurator/solution/Solution.tsx:256
+#: src/genie/components/Compare.tsx:55 src/genie/components/GenieCard.tsx:86
 #: build/configurator.js
 msgid "In stock"
 msgstr "Auf Lager"
@@ -557,10 +554,8 @@ msgstr "Produkt"
 msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
 
-#: build/genie.js:1
-#: src/configurator/solution/Solution.tsx:334
-#: src/genie/components/GenieCard.tsx:109
-#: build/configurator.js
+#: build/genie.js:1 src/configurator/solution/Solution.tsx:334
+#: src/genie/components/GenieCard.tsx:109 build/configurator.js
 msgid "Save solution"
 msgstr "Lösung speichern"
 
@@ -638,11 +633,8 @@ msgstr "Hilfreich"
 msgid "Not helpful"
 msgstr "Nicht hilfreich"
 
-#: build/genie.js:13
-#: src/configurator/solution/Solution.tsx:90
-#: src/genie/App.tsx:509
-#: src/genie/App.tsx:517
-#: build/configurator.js
+#: build/genie.js:13 src/configurator/solution/Solution.tsx:90
+#: src/genie/App.tsx:509 src/genie/App.tsx:517 build/configurator.js
 msgid "Adding…"
 msgstr "Wird hinzugefügt …"
 
@@ -650,25 +642,20 @@ msgstr "Wird hinzugefügt …"
 msgid "In your solution draft."
 msgstr "Im Lösungsentwurf."
 
-#: build/genie.js:13
-#: src/genie/App.tsx:520
+#: build/genie.js:13 src/genie/App.tsx:520
 msgid "Sent, but the draft does not show it yet. Please check."
 msgstr "Gesendet, aber der Entwurf zeigt es noch nicht. Bitte prüfen."
 
-#: build/genie.js:13
-#: src/genie/App.tsx:523
+#: build/genie.js:13 src/genie/App.tsx:523
 msgid "Not added. Try again."
 msgstr "Nicht hinzugefügt. Bitte erneut versuchen."
 
-#: build/genie.js:13
-#: src/configurator/solution/Solution.tsx:333
-#: src/genie/App.tsx:531
-#: build/configurator.js
+#: build/genie.js:13 src/configurator/solution/Solution.tsx:333
+#: src/genie/App.tsx:531 build/configurator.js
 msgid "Saving…"
 msgstr "Wird gespeichert …"
 
-#: build/genie.js:13
-#: src/genie/App.tsx:551
+#: build/genie.js:13 src/genie/App.tsx:551
 msgid "Saved to your account."
 msgstr "Im Konto gespeichert."
 
@@ -1122,7 +1109,7 @@ msgid "No PV figure yet? Estimate from the roof"
 msgstr "Noch keine PV-Leistung? Aus dem Dach abschätzen"
 
 #: src/configurator/residential/ResidentialForm.tsx:271
-#: src/configurator/utility/UtilityForm.tsx:45 build/configurator.js
+#: src/configurator/utility/UtilityForm.tsx:45 build/configurator.js build/genie.js
 msgid "Grid connection"
 msgstr "Netzanschluss"
 
@@ -1620,12 +1607,12 @@ msgstr ""
 "Zeichnen Sie die Fläche auf einem einzelnen Dach ein: Diese ist zu groß oder "
 "liegt außerhalb Deutschlands."
 
-
 #. #302: retain the configurator wording independently of Genie.
 #: src/configurator/solution/Solution.tsx build/configurator.js
 msgctxt "configurator"
 msgid "Sent, but the draft does not show it yet. Please check."
-msgstr "Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf."
+msgstr ""
+"Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf."
 
 #. #302: retain the configurator wording independently of Genie.
 #: src/configurator/solution/Solution.tsx build/configurator.js
@@ -1640,19 +1627,24 @@ msgid "Saved to your account."
 msgstr "In Ihrem Konto gespeichert."
 
 # "Let Linker contact me" (#243): copy review docs/acceptance/2026-10-18/243/copy-review.md.
-
 #: build/genie.js
 msgid "Sending did not work. Please try again."
 msgstr "Das Senden ist fehlgeschlagen. Bitte versuchen Sie es erneut."
 
 #: build/genie.js
 #, javascript-format
-msgid "Genie cannot pass on your request right now. Please try again later or write to %s."
-msgstr "Genie kann Ihre Kontaktanfrage gerade nicht weitergeben. Bitte versuchen Sie es später erneut oder schreiben Sie an %s."
+msgid ""
+"Genie cannot pass on your request right now. Please try again later or write "
+"to %s."
+msgstr ""
+"Genie kann Ihre Kontaktanfrage gerade nicht weitergeben. Bitte versuchen Sie "
+"es später erneut oder schreiben Sie an %s."
 
 #: build/genie.js
 msgid "Genie cannot pass on your request right now. Please try again later."
-msgstr "Genie kann Ihre Kontaktanfrage gerade nicht weitergeben. Bitte versuchen Sie es später erneut."
+msgstr ""
+"Genie kann Ihre Kontaktanfrage gerade nicht weitergeben. Bitte versuchen Sie "
+"es später erneut."
 
 #: build/genie.js
 #, javascript-format
@@ -1673,7 +1665,9 @@ msgstr "Soll sich jemand aus dem Linker-Team bei Ihnen melden?"
 
 #: build/genie.js
 msgid "Leave your email address and the team replies within one business day."
-msgstr "Hinterlassen Sie Ihre E-Mail-Adresse, und das Team schreibt Ihnen innerhalb eines Arbeitstags."
+msgstr ""
+"Hinterlassen Sie Ihre E-Mail-Adresse, und das Team schreibt Ihnen innerhalb "
+"eines Arbeitstags."
 
 #: build/genie.js
 msgid "Genie keeps answering your questions in the meantime."
@@ -1715,14 +1709,15 @@ msgstr "Es wurde keine Bestätigungs-E-Mail versendet."
 
 #: build/genie.js
 msgid "I agree that my details may be used to respond to this message."
-msgstr "Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser Nachricht verwendet werden."
+msgstr ""
+"Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser "
+"Nachricht verwendet werden."
 
 #: build/genie.js
 msgid "Please agree to the use of your details for the reply."
 msgstr "Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu."
 
 # #236 attachments and nameplates: copy review docs/acceptance/2026-10-18/236/copy-review.md
-
 #. translators: %s is the name of the file the customer attached.
 #: build/genie.js
 msgid "%s could not be read."
@@ -1808,8 +1803,12 @@ msgid "My device is the %s"
 msgstr "Mein Gerät ist das Modell %s"
 
 #: build/genie.js
-msgid "This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC) and PDFs."
-msgstr "Dieser Dateityp kann nicht gesendet werden. Genie liest Fotos (JPEG, PNG, WebP oder HEIC) und PDFs."
+msgid ""
+"This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC) "
+"and PDFs."
+msgstr ""
+"Dieser Dateityp kann nicht gesendet werden. Genie liest Fotos (JPEG, PNG, "
+"WebP oder HEIC) und PDFs."
 
 #. translators: %d is the largest PDF in megabytes.
 #: build/genie.js
@@ -1817,24 +1816,36 @@ msgid "This file is too large. A PDF can be up to %d MB."
 msgstr "Diese Datei ist zu groß. Ein PDF darf bis zu %d MB groß sein."
 
 #: build/genie.js
-msgid "This browser cannot open HEIC photos. Please attach the photo as a JPEG."
-msgstr "Dieser Browser kann HEIC-Fotos nicht öffnen. Bitte hängen Sie das Foto als JPEG an."
+msgid ""
+"This browser cannot open HEIC photos. Please attach the photo as a JPEG."
+msgstr ""
+"Dieser Browser kann HEIC-Fotos nicht öffnen. Bitte hängen Sie das Foto als "
+"JPEG an."
 
 #: build/genie.js
 msgid "This photo could not be opened. Please choose another one."
-msgstr "Dieses Foto konnte nicht geöffnet werden. Bitte wählen Sie ein anderes."
+msgstr ""
+"Dieses Foto konnte nicht geöffnet werden. Bitte wählen Sie ein anderes."
 
 #: build/genie.js
-msgid "You have reached the hourly limit for files. Please try again later; typed questions still work."
-msgstr "Sie haben das stündliche Limit für Dateien erreicht. Bitte versuchen Sie es später erneut. Fragen per Text beantwortet Genie weiterhin."
+msgid ""
+"You have reached the hourly limit for files. Please try again later; typed "
+"questions still work."
+msgstr ""
+"Sie haben das stündliche Limit für Dateien erreicht. Bitte versuchen Sie es "
+"später erneut. Fragen per Text beantwortet Genie weiterhin."
 
 #: build/genie.js
 msgid "Preparing file…"
 msgstr "Datei wird vorbereitet …"
 
 #: build/genie.js
-msgid "Genie reads the brand and model from a nameplate photo and checks them against our range."
-msgstr "Genie liest Marke und Modell vom Foto des Typenschilds und gleicht sie mit unserem Sortiment ab."
+msgid ""
+"Genie reads the brand and model from a nameplate photo and checks them "
+"against our range."
+msgstr ""
+"Genie liest Marke und Modell vom Foto des Typenschilds und gleicht sie mit "
+"unserem Sortiment ab."
 
 #: build/genie.js
 msgid "Choose a photo"
@@ -1859,7 +1870,6 @@ msgid "Look up my device from a nameplate photo"
 msgstr "Welches Modell steht auf meinem Typenschild?"
 
 # "The inquiry confirmation card" (#250): copy review docs/acceptance/2026-10-18/250/copy-review.md.
-
 #. translators: 1: inquiry number, 2: the inquiry's status.
 #: build/genie.js
 msgid "Inquiry #%1$s · %2$s"
@@ -1964,24 +1974,37 @@ msgid "Please add an email address we can reply to."
 msgstr "Bitte geben Sie eine E-Mail-Adresse an, an die wir antworten können."
 
 #: build/genie.js
-msgid "Your solution draft changed. Check the lines and send the inquiry again."
-msgstr "Ihr Lösungsentwurf hat sich geändert. Prüfen Sie die Angaben und senden Sie die Anfrage erneut."
+msgid ""
+"Your solution draft changed. Check the lines and send the inquiry again."
+msgstr ""
+"Ihr Lösungsentwurf hat sich geändert. Prüfen Sie die Angaben und senden Sie "
+"die Anfrage erneut."
 
 #: build/genie.js
 msgid "Add a product to your solution draft or write a message."
-msgstr "Fügen Sie Ihrem Lösungsentwurf ein Produkt hinzu oder schreiben Sie eine Nachricht."
+msgstr ""
+"Fügen Sie Ihrem Lösungsentwurf ein Produkt hinzu oder schreiben Sie eine "
+"Nachricht."
 
 #: build/genie.js
 msgid "Genie cannot send an inquiry right now. Please use the inquiry page."
-msgstr "Genie kann gerade keine Anfrage senden. Bitte nutzen Sie die Anfrageseite."
+msgstr ""
+"Genie kann gerade keine Anfrage senden. Bitte nutzen Sie die Anfrageseite."
 
 #: build/genie.js
-msgid "The inquiry could not be sent. Please check your solution draft on the inquiry page."
-msgstr "Die Anfrage konnte nicht gesendet werden. Prüfen Sie Ihren Lösungsentwurf auf der Anfrageseite."
+msgid ""
+"The inquiry could not be sent. Please check your solution draft on the "
+"inquiry page."
+msgstr ""
+"Die Anfrage konnte nicht gesendet werden. Prüfen Sie Ihren Lösungsentwurf "
+"auf der Anfrageseite."
 
 #: build/genie.js
 msgid "Sending did not work. Please try again, or use the inquiry page."
-msgstr "Das Senden ist fehlgeschlagen. Bitte versuchen Sie es erneut oder nutzen Sie die Anfrageseite."
+msgstr ""
+"Das Senden ist fehlgeschlagen. Bitte versuchen Sie es erneut oder nutzen Sie "
+"die Anfrageseite."
+
 #: src/genie/components/HelperFooter.tsx build/genie.js
 msgid "Genie is an AI assistant."
 msgstr "Genie ist ein KI-Assistent."
@@ -2008,4 +2031,9 @@ msgstr "Kopiert"
 
 #: src/genie/components/CopyReply.tsx build/genie.js
 msgid "Copy failed. Select the text and copy it manually."
-msgstr "Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell."
+msgstr ""
+"Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell."
+
+#: build/genie.js
+msgid "Continue with your project"
+msgstr "Weiter mit Ihrem Projekt"
