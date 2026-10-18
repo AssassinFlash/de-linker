@@ -75,7 +75,10 @@ def run(wp: list[str], request: dict[str, Any]) -> dict[str, Any]:
     )
     if line is None:
         sys.exit(f"no {MARKER} answer in wp eval-file output")
-    return json.loads(base64.b64decode(line[len(MARKER) :]).decode())
+    answer = json.loads(base64.b64decode(line[len(MARKER) :]).decode())
+    if not isinstance(answer, dict):
+        sys.exit(f"{MARKER} answer is not a JSON object")
+    return {str(key): value for key, value in answer.items()}
 
 
 def main(argv: list[str] | None = None) -> int:
