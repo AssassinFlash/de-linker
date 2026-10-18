@@ -125,7 +125,7 @@ final class InquirySummary {
 		if ( array() === $messages ) {
 			return null;
 		}
-		$last = (string) ( end( $messages )['content'] ?? '' );
+		$last = (string) $messages[ array_key_last( $messages ) ]['content'];
 		$key  = 'linker_genie_summary_' . $conversation . '_' . count( $messages ) . '_' . substr( md5( $last ), 0, 8 );
 		$seen = get_transient( $key );
 		if ( is_array( $seen ) ) {
@@ -152,14 +152,12 @@ final class InquirySummary {
 		}
 		$body   = array(
 			'locale'   => $locale,
-			'messages' => array_values(
-				array_map(
-					static fn ( array $message ): array => array(
-						'role'    => (string) ( $message['role'] ?? 'user' ),
-						'content' => (string) ( $message['content'] ?? '' ),
-					),
-					$messages
-				)
+			'messages' => array_map(
+				static fn ( array $message ): array => array(
+					'role'    => (string) ( $message['role'] ?? 'user' ),
+					'content' => (string) ( $message['content'] ?? '' ),
+				),
+				$messages
 			),
 			'products' => $products,
 		);
