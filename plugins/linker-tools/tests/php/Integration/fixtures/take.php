@@ -10,6 +10,9 @@
 declare( strict_types = 1 );
 
 // phpcs:disable WordPress.Security.ValidatedSanitizedInput, WordPress.Security.EscapeOutput -- a command-line fixture.
+if ( ! isset( $argv ) ) {
+	exit( 2 );
+}
 [ , $linker_tools_root, $linker_tools_name, $linker_tools_limit, $linker_tools_who ] = $argv;
 define( 'WP_USE_THEMES', false ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- WordPress's own constant.
 $_SERVER['HTTP_HOST']   = 'localhost';
