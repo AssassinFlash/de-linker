@@ -11,9 +11,11 @@ if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_
 global $wpdb;
 $key  = 'linker_222_browser';
 $mode = $args[0] ?? '';
-// A previous request may have retained this fixture after its SQL row was deleted.
-// Invalidate only this fixture key; never flush the instance's shared cache.
-wp_cache_delete( $key, 'options' );
+// Read back the fixture-owned options from storage between CLI/web requests.
+// Deleted SQL rows may still have a persistent cache entry; never flush the site.
+foreach ( array( $key, Throttle::OPTION, TestMode::OPTION ) as $option ) {
+	wp_cache_delete( $option, 'options' );
+}
 if ( 'setup' === $mode ) {
 	if ( false !== get_option( $key ) ) {
 		throw new RuntimeException( 'An existing fixture must be restored before another run.' );
@@ -46,6 +48,7 @@ if ( 'read' === $mode ) {
 	echo wp_json_encode( array(
 		'user' => $user ? $user->ID : 0,
 		'status' => $user ? ( new Approval() )->status( $user->ID ) : '',
+		'stored_status' => $user ? $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->usermeta} WHERE user_id=%d AND meta_key=%s", $user->ID, Approval::STATUS_META ) ) : null,
 		'orders' => array_map( static fn ( $order ) => array( 'customer' => $order->get_customer_id(), 'status' => $order->get_status(), 'items' => $order->get_item_count() ), $orders ),
 		'mail' => array_map( static function ( $id ) {
 			$message = json_decode( get_post_meta( $id, '_linker_mail_message', true ), true );
@@ -60,6 +63,7 @@ if ( in_array( $mode, array( 'approved', 'restricted', 'rejected' ), true ) ) {
 	if ( ! $staff || ! user_can( $staff, 'edit_users' ) ) { throw new RuntimeException( 'The designated employee is unavailable.' ); }
 	wp_set_current_user( $staff->ID );
 	if ( ! ( new Approval() )->set( $user->ID, $mode, $args[1] ?? '' ) ) { throw new RuntimeException( 'Decision refused.' ); }
+	echo wp_json_encode( array( 'user' => $user->ID, 'status' => ( new Approval() )->status( $user->ID ), 'stored_status' => $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->usermeta} WHERE user_id=%d AND meta_key=%s", $user->ID, Approval::STATUS_META ) ) ) );
 	return;
 }
 if ( 'deliver-one' === $mode ) {
@@ -86,6 +90,7 @@ if ( $user ) {
 }
 foreach ( $state['options'] as $option => $value ) {
 	if ( false === $value ) { delete_option( $option ); } else { update_option( $option, $value, false ); }
+	wp_cache_delete( $option, 'options' );
 }
 $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker_commerce_limit_%'" );
 foreach ( $state['limits'] as $row ) { $wpdb->insert( $wpdb->options, array_merge( $row, array( 'autoload' => 'off' ) ) ); }

@@ -190,7 +190,12 @@ for (const language of ['en', 'de'] as const) {
 					await expect(page.locator('#username')).toHaveCount(0);
 				}
 
-				run('approved');
+				const decision = JSON.parse(run('approved'));
+				writeFileSync(
+					join(output, `${prefix}-decision.json`),
+					JSON.stringify(decision, null, 2)
+				);
+				expect(decision.status).toBe('approved');
 				await page.goto(base + product);
 				await expect(
 					priceBlock.locator('.woocommerce-Price-amount').first()
