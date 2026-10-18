@@ -223,7 +223,7 @@ final class PriceDisplay {
 			if ( Approval::APPROVED === $status ) {
 				return $this->reason_text( CommerceState::UNPRICED );
 			}
-			$text   = Approval::PENDING !== $status
+			$text = Approval::PENDING !== $status
 				? __( 'Not available for your account', 'linker-commerce' )
 				: __( 'Account under review. Prices after approval.', 'linker-commerce' );
 			return esc_html( $text );

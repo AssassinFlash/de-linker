@@ -155,7 +155,7 @@ final class PriceDisplayTest extends TestCase {
 	/** Approval removes pending wording even from an inquiry's recorded missing price. */
 	public function test_approved_account_reads_a_neutral_note_on_its_pending_inquiry(): void {
 		$display = $this->visitor( true );
-		$item = \Mockery::mock( \WC_Order_Item_Product::class );
+		$item    = \Mockery::mock( \WC_Order_Item_Product::class );
 		$item->allows( 'get_meta' )->with( PriceDisplay::ITEM_REASON_META )->andReturn( CommerceState::APPROVAL );
 		$item->allows( 'get_total' )->andReturn( '0' );
 		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $display->order_line_subtotal( '€0.00', $item ) );
