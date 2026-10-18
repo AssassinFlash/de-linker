@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Presentation\BlogShortcodes;
+use Linker\Commerce\Presentation\JournalTitles;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 use WP_Post;
@@ -40,6 +41,8 @@ final class BlogShortcodesTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
+		// These native fragment fixtures have no Polylang source-pair data.
+		WP_Mock::userFunction( 'pll_get_post_language', array( 'return' => false ) );
 	}
 
 	/**
@@ -62,6 +65,7 @@ final class BlogShortcodesTest extends TestCase {
 			)
 		);
 
+		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		$codes->register();
 
 		$this->assertConditionsMet();

@@ -35,3 +35,26 @@ Empty search: **“No matching posts found. Try another search term or choose a 
 The reader reference calls for clear reading controls. Final labels: **On this page / Auf dieser Seite**, **Post sections / Abschnitte dieses Beitrags**, **Overview / Überblick**, **Post details / Beitragsdetails**, **Related reading / Passende Beiträge**, **Share / Teilen**, **Published / Veröffentlicht**, **Previous post / Vorheriger Beitrag**, **Next post / Nächster Beitrag**. Existing **Back to blog / Zurück zum Blog** and project-quote labels stay. Review rejected invented watch history, rating, follower, like, read-time or popularity indicators: none has a backing data contract here. Post body, facts and actual author/date remain native.
 
 Sharing detail review: the native LC tooltip “Share on …” is hard-coded English even in the German template. The final toolbar uses the actual platform name for both `title` and `aria-label`, under the localized **Share / Teilen** heading. Brand names and native share destinations are preserved; no new marketing claim or body copy is added.
+
+## Owner-requested concise discovery labels
+
+The owner found full headings too dense in both the mobile list and desktop content-dashboard view. Initial proposal: truncate full titles to two lines. Review objection: mechanical truncation can hide the actual comparison or decision. Final: separately reviewed short labels for discovery, while the native full title remains in the reader and browser title.
+
+Independent adversarial review requested five refinements: make the first comparison explicitly about a hybrid inverter; retain the home-storage qualifier in sizing; use PV rather than the vague German Solar; preserve monitoring in the data-layer label; and name the concrete home-storage backup/expansion subjects. All five were incorporated below. The other five pairs were assessed as natural and accurate.
+
+The checked-in copy resolves through English source identity and Polylang; a new or subsequently changed post falls back to its native full title. No native post title, SEO title, excerpt, body or URL is overwritten.
+
+| English short label | Independently written German short label |
+|---|---|
+| Hybrid inverter or AC storage? | Hybridwechselrichter oder AC-Speicher? |
+| Pairing inverters and batteries | Wechselrichter und Batterie kombinieren |
+| Sizing home storage for backup | Heimspeicher für Notstrom auslegen |
+| Battery storage: indoors or outdoors? | Batteriespeicher: innen oder außen? |
+| Commissioning solar and storage | PV und Speicher in Betrieb nehmen |
+| Documents for project handover | Dokumente für die Projektübergabe |
+| Remote monitoring after installation | Fernüberwachung nach der Installation |
+| Gateways, meters and cloud monitoring | Gateway, Zähler und Fernüberwachung |
+| Home storage: backup and expansion | Heimspeicher: Notstrom und Ausbau |
+| Planning commercial battery storage | Gewerbespeicher planen |
+
+The labels retain specific subjects without invented popularity or technical outcomes. German uses natural noun/verb phrases without informal address. The native LC post-field callback receives each exact loop item, and unrelated fields return null to continue native behavior.

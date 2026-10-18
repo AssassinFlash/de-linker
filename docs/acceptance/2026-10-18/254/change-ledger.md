@@ -9,9 +9,9 @@
 
 The inquiry change does not add fields, invent product facts, require an account or change submission behavior. The optional signed-in company/address fields retain their existing native contract. All composition changes live in LC exports and WindPress; PHP supplies product data and existing translated labels.
 
-English marketing, product lists, categories, blog, navigation, draft and account pages retain the zero-pixel comparison requirement. Browser titles do not change screenshot pixels. No dynamic masks are presumed. Preliminary captures with unloaded lazy images or media spinners were rejected and are not used as passing evidence.
+English home, product lists, product categories, FAQ, comparison, draft and authentication pages retain the zero-pixel comparison requirement; later owner-authorized journal and service changes are listed below. Browser titles do not change screenshot pixels. No dynamic masks are presumed. Preliminary captures with unloaded lazy images or media spinners were rejected and are not used as passing evidence.
 
-Visual fixture disclosure: videos are paused at their loaded first frame and animations/transitions/caret are disabled identically before/after. Lazy images must be scrolled into view and loaded. The error-state captures explicitly seed the existing local Woo session flash with synthetic details; the form consumes it normally. They prove error presentation, while the real submission/validation behavior is covered by the repeated OpenInquiry integration suite. Confirmation captures use owned local records and native keys. No production fixture, test message or test account is created.
+Visual fixture disclosure: videos are paused at their loaded first frame and animations/transitions/caret are disabled identically before/after. Native images are made eager in the local-only fixture and awaited through their decode promises; strict captures use no preparatory scrolling. The error-state captures explicitly seed the existing local Woo session flash with synthetic details; the form consumes it normally. They prove error presentation, while the real submission/validation behavior is covered by the repeated OpenInquiry integration suite. Confirmation captures use owned local records and native keys. No production fixture, test message or test account is created.
 
 The accepted EN baseline waits for the native image `decode()` promises and two paint frames in the local fixture, then confirms the readiness marker before capture. An earlier product baseline with blank compatibility images was rejected. No placeholder capture is used to claim parity.
 
@@ -25,15 +25,15 @@ After seeing stabilized before/after diagnostics, the owner said the designs the
 
 | Region | Final design intent | Native / data contract |
 |---|---|---|
-| Blog archive recommendation and adjacent reading rows | A compact open reading composition, useful image scale, full titles and a quieter summary; no stacked padded card shell. | The same LC loops, featured image, post title, excerpt and permalink. |
-| Blog category topics | A labelled open index with naturally wrapped labels, two columns on mobile and a native current-topic indicator. | LC `lc_get_cats` → WordPress `wp_list_categories` → Polylang term links; “All topics” / “Alle Themen”. |
+| Blog archive recommendation and adjacent reading rows | Superseded by the owner-supplied journal references below; native relationships remain unchanged. | The same LC loops, featured image, post title, excerpt and permalink. |
+| Blog category topics | Superseded by the topic sidebar and horizontal mobile rail in the final journal reference below. | LC `lc_get_cats` → WordPress `wp_list_categories` → Polylang term links; “All topics” / “Alle Themen”. |
 | Service introduction | Aligned existing photo group and a continuous capability list; mobile shows all four capabilities with readable type. | The stored LC content remains intact. New WindPress rules replace the visual effect of its photo dock in this region; native contact/navigation remains intact. |
 
 The zero-pixel gate now applies to the nine unaffected English page types at both viewports (18 comparisons). Product, inquiry, blog index, blog category and service page screenshots carry the owner-authorized region changes; those changes are reviewed visually and listed here. No dynamic mask or colour tolerance is introduced.
 
 ### Final journal reference
 
-The owner's later [light reference](owner-journal-reference-1.png) and [dark reference](owner-journal-reference-2.png) specify the desired content-platform composition. The final EN/DE index, category and search lists use a topic rail/sidebar, native search, featured cover, thumbnail feed and desktop more-reading rail. This supersedes the intermediate traditional archive-card treatment. All cards remain genuine written-post links; thumbnail ratios and visual grouping do not imply video functionality. The shared site chrome and individual post-reading template are preserved. Search is an additional explicitly verified visual state of this same discovery flow.
+The owner's later [light reference](owner-journal-reference-1.png) and [dark reference](owner-journal-reference-2.png) specify the desired content-platform composition. The final EN/DE index, category and search lists use a topic rail/sidebar, native search, featured cover, thumbnail feed and desktop more-reading rail. This supersedes the intermediate traditional archive-card treatment. All cards remain genuine written-post links; thumbnail ratios and visual grouping do not imply video functionality. The shared site chrome is preserved; the later single-post reading authorization below supersedes preservation of that individual template. Search is an additional explicitly verified visual state of this same discovery flow.
 
 ### Approved service and single-post reading
 
@@ -42,3 +42,7 @@ The owner approved the service screenshot, then supplied [mobile browsing](owner
 ### Card and sharing detail feedback
 
 The owner subsequently rejected the small three-column feed cards and default sharing buttons. Desktop cards now use two columns with contained product imagery, category/title/date hierarchy and consistent white surfaces; mobile retains compact reading rows. LC sharing stays native and gains four equal circular targets with accessible platform names. This is within the already authorized journal discovery/reader EN and DE redesign.
+
+### Concise labels and dashboard navigation
+
+The owner then identified full discovery headings as too dense and asked for the same app-dashboard feeling on desktop. Reviewed short EN/DE labels now appear only in discovery/related navigation; complete native titles remain on the reading page and in browser/SEO metadata. Topic navigation gains decorative line icons, a stronger current-topic surface, an integrated desktop sidebar panel, and a mobile position after heading/search. These supersede the intermediate full-title discovery screenshots; final captures are refreshed after the source change.

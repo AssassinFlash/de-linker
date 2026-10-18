@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 use Linker\Commerce\Presentation\AccountTemplates;
 use Linker\Commerce\Presentation\ComparePage;
 use Linker\Commerce\Presentation\LibraryPage;
+use Linker\Commerce\Presentation\JournalTitles;
 use Linker\Commerce\Presentation\LoginGate;
 use Linker\Commerce\Presentation\Module;
 use Linker\Commerce\Presentation\Shortcodes;
@@ -65,6 +66,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_product_scripts' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_account_scripts' ) );
 
+		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		$module->register();
 
 		$this->assertConditionsMet();
