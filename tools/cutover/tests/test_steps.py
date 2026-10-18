@@ -17,8 +17,30 @@ from types import SimpleNamespace
 
 import pytest
 
-from linker_cutover import plan, steps
+from linker_cutover import plan, snapshot, steps
 from linker_cutover.target import CutoverError, Target
+
+
+@pytest.fixture(autouse=True)
+def _no_database(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    """Deploys here run on stand-in sites with no database: record the snapshot instead.
+
+    The snapshot itself is tested against a real shell in test_snapshot.py; here
+    it only has to happen before anything is switched.
+    """
+    taken: list[str] = []
+
+    def fake(target: Target, home: Path) -> snapshot.Snapshot:
+        taken.append(target.label)
+        return snapshot.Snapshot(
+            name="db-20261018T000000Z.sql.gz",
+            path=home / "snapshots" / "db-20261018T000000Z.sql.gz",
+            bytes=1,
+            sha256="0" * 64,
+        )
+
+    monkeypatch.setattr(snapshot, "take", fake)
+    return taken
 
 
 class FakeTarget(Target):
@@ -404,7 +426,8 @@ def test_the_deploy_installs_the_recorder_over_the_live_file(tmp_path: Path) -> 
         if destination.endswith(".pem.next")
     ]
     assert pem == [f"{target.root}/{plan.MU_PLUGINS_DIR}/.linker-engine-ca.pem.next"]
-    assert result.actions[0] == (f"deployed {plan.MU_PLUGINS_DIR}/{recorder} by rename")
+    assert result.actions[0].startswith("database snapshot ")
+    assert result.actions[1] == (f"deployed {plan.MU_PLUGINS_DIR}/{recorder} by rename")
 
 
 def test_deploy_and_rollback_use_real_filesystem_on_local_stand_in(
@@ -1139,3 +1162,50 @@ def test_a_unit_that_does_not_come_up_fails_the_step(
         steps.services(
             repository=_services_repository(tmp_path), addresses={}, run=True
         )
+
+
+def test_the_deploy_snapshots_the_database_before_anything_is_uploaded(
+    tmp_path: Path, _no_database: list[str]
+) -> None:
+    """The snapshot is the deploy's backup (#305): it must exist before the first upload."""
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+    uploads_when_snapshot_ran: list[int] = []
+
+    def recording(site: Target, home: Path) -> snapshot.Snapshot:
+        uploads_when_snapshot_ran.append(len(target.rsyncs))
+        return snapshot.Snapshot("db-20261018T000000Z.sql.gz", home / "x", 1, "0" * 64)
+
+    result = steps.deploy(
+        target,
+        repository=repository,
+        staging=tmp_path / "staging",
+        deploy_id="20261018T000000Z-fixture",
+        take_snapshot=recording,
+    )
+
+    assert uploads_when_snapshot_ran == [0]
+    assert target.rsyncs
+    assert "restore-snapshot db-20261018T000000Z.sql.gz" in result.actions[0]
+
+
+def test_a_failed_snapshot_stops_the_deploy_before_any_upload(tmp_path: Path) -> None:
+    """No snapshot, no switch: a deploy without its backup must not touch the live site."""
+    target = FilesystemTarget(tmp_path / "site")
+    repository = _repository(tmp_path)
+
+    def failing(site: Target, home: Path) -> snapshot.Snapshot:
+        raise CutoverError(
+            "the snapshot did not report a verified file; nothing was switched"
+        )
+
+    with pytest.raises(CutoverError, match="snapshot"):
+        steps.deploy(
+            target,
+            repository=repository,
+            staging=tmp_path / "staging",
+            deploy_id="20261018T000000Z-fixture",
+            take_snapshot=failing,
+        )
+
+    assert target.rsyncs == []

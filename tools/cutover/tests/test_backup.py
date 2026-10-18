@@ -373,3 +373,40 @@ def test_the_gate_folds_case_because_this_mac_has_one_slot(tmp_path: Path) -> No
     )
     with pytest.raises(CutoverError, match="missing like"):
         backup._prove_the_tree_arrived(target, PLUGINS, local)
+
+
+def test_a_second_backup_hard_links_what_did_not_change(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#305: only what changed travels; every backup is still a whole tree of its own."""
+    _streams_a_stand_in_dump(monkeypatch)
+    site, root = _site(tmp_path)
+    home = tmp_path / "home"
+    first = backup.create(site, home, now=datetime(2026, 10, 18, 1, 0, tzinfo=UTC))
+    changed = root / PLUGINS / "linker-commerce" / "linker-commerce.php"
+    changed.write_text("<?php // plugin, new version", encoding="utf-8")
+
+    second = backup.create(site, home, now=datetime(2026, 10, 18, 2, 0, tzinfo=UTC))
+
+    upload = Path(UPLOADS) / "2026" / "09" / "a.png"
+    assert (first.directory / upload).stat().st_ino == (
+        second.directory / upload
+    ).stat().st_ino
+    plugin = Path(PLUGINS) / "linker-commerce" / "linker-commerce.php"
+    assert (first.directory / plugin).stat().st_ino != (
+        second.directory / plugin
+    ).stat().st_ino
+    assert (
+        (second.directory / plugin).read_text(encoding="utf-8").endswith("new version")
+    )
+    assert (first.directory / plugin).read_text(encoding="utf-8") == "<?php // plugin"
+
+
+def test_an_unfinished_backup_is_not_linked_from(tmp_path: Path) -> None:
+    home = tmp_path
+    (home / "cutover-20261018-0100").mkdir()
+    done = home / "cutover-20261017-0100"
+    done.mkdir()
+    (done / backup.MANIFEST).write_text("{}", encoding="utf-8")
+
+    assert backup.latest_complete(home) == done

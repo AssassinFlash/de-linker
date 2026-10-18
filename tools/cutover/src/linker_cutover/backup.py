@@ -121,9 +121,18 @@ def _wp_array(target: Target) -> str:
     return "(" + " ".join(shlex.quote(part) for part in target.wp_on_target()) + ")"
 
 
-def dump_script(target: Target) -> str:
-    """The shell script that writes the database, gzip-compressed, to standard output."""
+def dump_script(target: Target, *, skip: tuple[str, ...] = ()) -> str:
+    """The shell script that writes the database, gzip-compressed, to standard output.
+
+    `skip` names tables, without the WordPress prefix, to leave out; the prefix
+    and database name are read on the machine the site runs on, so the same
+    script serves both targets. The full backup skips nothing.
+    """
     wp = _wp_array(target)
+    skipping = "".join(
+        f'SKIP+=(--ignore-table="$name.$prefix"{shlex.quote(table)})\n'
+        for table in skip
+    )
     return f"""set -euo pipefail
 cd {shlex.quote(target.root)}
 wp={wp}
@@ -131,12 +140,16 @@ wp={wp}
 {_DUMP_FLAGS}
 db_target
 dump_extra
-MYSQL_PWD="$("${{wp[@]}}" config get DB_PASSWORD)" mysqldump \\
+name="$("${{wp[@]}}" config get DB_NAME)"
+prefix="$("${{wp[@]}}" config get table_prefix)"
+SKIP=()
+{skipping}MYSQL_PWD="$("${{wp[@]}}" config get DB_PASSWORD)" mysqldump \\
   --single-transaction --quick --skip-dump-date --order-by-primary \\
   --default-character-set=utf8mb4 --no-tablespaces \\
   {_expansion("DUMP_EXTRA")} \\
+  {_expansion("SKIP")} \\
   {_expansion("DB_ARGS")} \\
-  "$("${{wp[@]}}" config get DB_NAME)" | gzip
+  "$name" | gzip
 """
 
 
@@ -221,9 +234,28 @@ def _prove_the_tree_arrived(target: Target, relative: str, local: Path) -> None:
         )
 
 
+def latest_complete(home: Path, *, exclude: Path | None = None) -> Path | None:
+    """The newest `cutover-*` backup under `home` that finished (has its manifest)."""
+    candidates = sorted(
+        (
+            path
+            for path in home.glob("cutover-2*")
+            if path.is_dir() and (path / MANIFEST).is_file() and path != exclude
+        ),
+        key=lambda path: path.name,
+    )
+    return candidates[-1] if candidates else None
+
+
 def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup:
-    """Take the backup: database, uploads, plugins, .htaccess, options, manifest."""
+    """Take the backup: database, uploads, plugins, .htaccess, options, manifest.
+
+    Files unchanged since the newest complete backup are hard-linked to it,
+    not copied again (#305): every backup is still a whole, restorable tree on
+    its own, and only what changed travels.
+    """
     directory = destination(home, now=now)
+    previous = latest_complete(home, exclude=directory)
     # An empty directory is a run that died before it wrote anything (the
     # window would otherwise be blocked for the rest of that minute); anything
     # in it is somebody's backup, and a second one must not merge into it.
@@ -252,9 +284,15 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
     dump_sha = sha256(dump)
     print(f"backup: database {dump.stat().st_size} bytes, sha256 {dump_sha[:16]}…")
 
+    if previous is not None:
+        print(f"backup: unchanged files are hard-linked from {previous}")
     for relative in (UPLOADS, PLUGINS):
         print(f"backup: {relative}")
-        target.copy_out(relative, directory / relative)
+        target.copy_out(
+            relative,
+            directory / relative,
+            link_dest=None if previous is None else previous / relative,
+        )
         _prove_the_tree_arrived(target, relative, directory / relative)
 
     # The switch writes the mu directory too — the recorder is installed over
@@ -267,7 +305,11 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
     print(f"backup: {MU_PLUGINS}")
     present = True
     try:
-        target.copy_out(MU_PLUGINS, directory / MU_PLUGINS)
+        target.copy_out(
+            MU_PLUGINS,
+            directory / MU_PLUGINS,
+            link_dest=None if previous is None else previous / MU_PLUGINS,
+        )
     except CutoverError as error:
         present = False
         print(f"backup: no {MU_PLUGINS} ({error})")
