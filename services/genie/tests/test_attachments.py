@@ -408,3 +408,17 @@ def test_a_ratings_glued_figures_are_spaced_so_they_can_be_cited() -> None:
     _payload, gathered = attachments.record(reading)
     values = {f.value for fid, f in gathered.facts.items() if ".n" in fid}
     assert {"1000 Vdc", "200", "850 Vdc"} <= values
+
+
+def test_a_long_pdf_names_the_pages_past_the_cap_as_one_range(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(attachments, "MAX_PDF_PAGES", 2)
+    monkeypatch.setattr(attachments, "MAX_RENDERED_PAGES", 2)
+    see = See()
+    [reading] = attachments.read(
+        [_upload(_image_pdf(5), "application/pdf", "manual.pdf")], 0, see
+    )
+    assert len(see.shown) == 2
+    assert reading.pages == 5
+    assert "--- pages not read: 3–5 ---" in reading.text

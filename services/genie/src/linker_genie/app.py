@@ -1,7 +1,11 @@
 """HTTP entry point: `uvicorn linker_genie.app:app`.
 
 POST /assistant/turn and POST /turn (alias) stream one grounded turn as SSE: the
-understanding layer prepares the turn (understand.py), the agent writes it.
+understanding layer prepares the turn (understand.py; it reads the turn's attached
+files first, attachments.py), the agent writes it. The stream is `meta`, an
+`attachment` and a `reading` event per file of the turn (the proxy keeps the readings
+with the conversation and takes them out of what the browser gets), a `block` per
+block, `done`.
 POST /turn/{id}/vote and POST /assistant/turn/{id}/vote store a customer's
 thumbs-up or thumbs-down for a logged turn. GET /health reports that the
 process is up.

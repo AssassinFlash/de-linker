@@ -165,6 +165,8 @@ class _File:
     # A PDF's text pages by page number, and its pages left unread.
     texts: dict[int, str] = field(default_factory=dict)
     unread: list[int] = field(default_factory=list)
+    # The first page past MAX_PDF_PAGES, when the file has more.
+    beyond: int | None = None
 
 
 def read(
@@ -298,8 +300,9 @@ def _pdf(item: _File, index: int, raw: bytes) -> list[_Job]:
         item.pages = len(document)
         for number in range(1, item.pages + 1):
             if number > MAX_PDF_PAGES:
-                item.unread.append(number)
-                continue
+                # The rest is named as one range, however long the file is.
+                item.beyond = number
+                break
             page = document[number - 1]
             try:
                 textpage = page.get_textpage()
@@ -419,11 +422,11 @@ def _pdf_reading(item: _File, jobs: list[_Job]) -> AttachmentReading:
         elif job.answer is None:
             failed_pages.append(job.page)
     parts = [f"--- page {number} ---\n{pages[number]}" for number in sorted(pages)]
-    unread = sorted([*item.unread, *failed_pages])
+    unread = [str(n) for n in sorted([*item.unread, *failed_pages])]
+    if item.beyond is not None:
+        unread.append(f"{item.beyond}–{item.pages}")
     if unread:
-        parts.append(
-            "--- pages not read: " + ", ".join(str(n) for n in unread) + " ---"
-        )
+        parts.append("--- pages not read: " + ", ".join(unread) + " ---")
     text = "\n".join(parts)[:MAX_READING_CHARS]
     return AttachmentReading(
         id=item.id,
