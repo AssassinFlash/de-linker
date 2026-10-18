@@ -107,3 +107,24 @@ LC 模板法被否的理由：注册链的载体是 Woo 的模板与表单处理
 - 注册页沿用账号页的 SEO 标题与 canonical（站点对账号页全部端点的既有行为）。若业主希望
   注册页有自己的 `<title>`，落点是 SEO 标题层（SEOPress 模板 + `Labels`），与本票无关。
 - #223 已裁定全部访客登录提示旁提供独立注册入口，包括密码找回、文档 403 和 Genie。文档和询盘的账户归属检查不变；新建账户不授予原账户的权限。注册开关关闭或访客已登录时不提供创建账户入口。
+
+## 8. #223 入口数据适配：原生能力逐项核对
+
+2026-10-18 在唯一实例 `c223` 的已安装 LiveCanvas 源码核对：
+`modules/templating-shortcodes.php:7–23` 的 `lc_wp_func` 只调用无参数函数；
+`modules/templating-shortcodes-woocommerce.php:607–615` 的 `lc_wc_get_page_url`
+只用 `wc_get_page_id(page)` 和 `get_permalink()` 取页面，不能生成账户端点；该模块的
+`lc_wc_product`、`lc_wc_label` 等为商品数据标签。两文件与 `modules/shortcodes.php`
+没有访客状态与 Woo 注册选项的组合条件标签。原生 `lc_get_partial` 负责装入片段，不能
+把这两个条件和当前语言端点绑定到片段内的链接。没有在 LC 中执行 PHP 或新增表单处理。
+
+| 窄适配 | 优先尝试的原生能力 | 余下的最小自定义部分 |
+| :--- | :--- | :--- |
+| `linker_create_account` | Woo `wc_get_account_endpoint_url()` 经现有 `AuthTemplates::register_url()`；Polylang 原生本语言账户页；LC fragment | 同时判断 `is_user_logged_in()` 与 `woocommerce_enable_myaccount_registration`，转义 URL 和 gettext 文案，填入 LC 的单链接片段。原生页面 URL 标签不能生成 `register` 端点或有条件地移除整条链接 |
+| `linker_guest_account_links` | Woo `wc_get_page_permalink('myaccount')`；上一行注册数据；LC `account/guest-links.html` | 访客条件下填入两个本语言目标，向既有 Genie 挂载适配提供 LC 内容；React 根外组成仍在 LC，服务和模型文字不参与判断 |
+| `linker_footer_account` | LC 每语言 footer partial + `account/footer-entry.html`；Woo 本语言账户地址 | 原有一条项目要容纳两个独立目标，复用同一访客／注册条件；PHP 只填数据。换成硬编码 href 会丢失 Polylang 和注册关闭条件 |
+| `linker_footer_account_count` | LC 页脚原有计数位置 | 原计数 03，在注册目的地可用时为 04；与同一可用性数据保持一致。原生标签没有计算该条件计数的接口，不在模板硬编码永远 04 |
+| 草稿价格单元、草稿摘要、私有文档拒绝页 | Woo 原生价格过滤器／cart collaterals、既有下载拒绝处理 | 既有回调只传递转义后的状态、地址和链接数据给 `account/*.html`；组成移到 LC，不增加权限、端点、表结构或 CSS 通道 |
+
+样式全部进 `content/windpress/account-links.css`，由现有 WindPress provider 扫描这些
+LC 文件并官方编译。页头 `fit()`、断点、安全余量及 #229 的 Firefox 五个例外不变。

@@ -13,6 +13,8 @@ use WC_Order;
 use WC_Order_Item;
 use WC_Order_Item_Product;
 use WC_Product;
+use Linker\Commerce\Presentation\AccountLinks;
+use Linker\Commerce\Presentation\Tokens;
 
 /**
  * Applies CommerceState: a product whose price the visitor may not see has no
@@ -250,10 +252,13 @@ final class PriceDisplay {
 	 */
 	public function label( string $reason ): string {
 		if ( CommerceState::LOGIN === $reason ) {
-			return sprintf(
-				'<a class="linker-price-login" href="%1$s">%2$s</a>',
-				esc_url( wc_get_page_permalink( 'myaccount' ) ),
-				$this->reason_text( $reason )
+			return strtr(
+				Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/price-gate.html' ),
+				array(
+					'{{signin-url}}' => esc_url( wc_get_page_permalink( 'myaccount' ) ),
+					'{{signin}}'     => $this->reason_text( $reason ),
+					'{{create}}'     => AccountLinks::create(),
+				)
 			);
 		}
 		return '<span class="linker-price-note">' . $this->reason_text( $reason ) . '</span>';

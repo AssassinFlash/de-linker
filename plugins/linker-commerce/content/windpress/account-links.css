@@ -1,4 +1,9 @@
-/* #223: direct registration entries; LC owns their markup. */
+/* #223: direct registration entries; LC owns their markup.
+   Header dimensions inherit chrome.css .tv-b2b-acct-menu a / mobile buttons.
+   Footer geometry (70/50/47px, 1000/760px) inherits the unchanged EN/DE
+   partials/footer.html .footer-route-list a rules (lines 25, 62, 79).
+   Card/draft 44px targets inherit storefront.css action controls; the
+   smaller gaps/padding split that existing footprint (223 change ledger). */
 .linker-create-account{color:var(--proto-teal-600,#0c7f73);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 #tv-header-v2 .tv-b2b-acct-menu>.linker-create-account{display:flex;align-items:center;box-sizing:border-box;min-height:41px;padding:9px 11px;border:1px solid transparent;border-radius:9px;color:#172636;font-size:13.5px;font-weight:600;line-height:1.5;text-decoration:none}
 #tv-header-v2 .tv-b2b-acct-menu>.linker-create-account:hover{background:#f5f6f8;border-color:#d7dde4}
@@ -6,9 +11,9 @@
 #tv-header-v2 .tv-mobile-utility-row>.linker-create-account{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:0 12px;border:1px solid var(--proto-neutral-200);border-radius:8px;background:#fff;color:var(--proto-ink);font-size:13.5px;font-weight:700;text-decoration:none}
 #tv-footer-v2 .footer-account-tile{display:flex;align-items:center;gap:10px;min-height:70px;height:100%;padding:12px;border:1px solid #ffffffb8;border-radius:14px;background:#ffffff43;box-shadow:inset 0 1px 0 #ffffff7a;line-height:1.5;font-size:12px;font-weight:500}
 #tv-footer-v2 .footer-account-entries{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;flex:1;min-width:0}
-#tv-footer-v2 .footer-account-entries>a{display:inline;min-height:0;height:auto;padding:0;border:0;border-radius:0;background:none;box-shadow:none;line-height:1.5;font-size:inherit;font-weight:inherit}
+#tv-footer-v2 .footer-route-list .footer-account-entries>a{display:inline;min-height:0;height:auto;padding:0;border:0;border-radius:0;background:none;box-shadow:none;line-height:1.5;font-size:inherit;font-weight:inherit}
 #tv-footer-v2 .footer-account-entries>.linker-create-account{text-decoration:underline;text-underline-offset:3px;color:#147e76}
-#tv-footer-v2 .footer-account-entries>a:hover{color:#087f79;background:none;border:0}
+#tv-footer-v2 .footer-route-list .footer-account-entries>a:hover{color:#087f79;background:none;border:0}
 @media(max-width:1000px){#tv-footer-v2 .footer-account-tile{min-height:50px}}
 @media(max-width:760px){#tv-footer-v2 .footer-account-tile{padding:9px 10px;min-height:47px;border-radius:12px}}
 .linker-inquiry-guest>.linker-create-account{display:inline-block;margin-top:8px}
@@ -34,3 +39,6 @@
 .linker-auth-links:has(>.linker-create-account){flex-direction:row;flex-wrap:wrap;justify-content:center;gap:10px 20px}
 .sf-cart-empty__actions:has(>.linker-create-account){gap:8px}
 #tv-storefront-cart .sf-cart-empty__actions:has(>.linker-create-account)>.sf-cart-btn,.sf-cart-empty__actions>.linker-create-account{padding-inline:4px;font-size:.875rem}
+
+#linker-compare td>.linker-create-account{display:inline-block;margin-left:12px}
+.linker-price-entries>.linker-create-account{display:inline-block;margin-left:8px}

@@ -49,6 +49,8 @@ final class PriceDisplayTest extends TestCase {
 		// English products: each answers for itself (CommerceState::is_rfq_only asks the language layer).
 		$this->english_products( array( 4107 => 4107 ) );
 		$this->plain_text();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'yes' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => fn (): bool => $this->logged_in ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => fn (): string => $this->mode ) );
@@ -145,7 +147,9 @@ final class PriceDisplayTest extends TestCase {
 	 * approval), quoted per project, price on request (no stored price).
 	 */
 	public function test_texts_instead_of_prices(): void {
-		$this->assertSame( '<a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a>', $this->visitor( false )->empty_price_html( '', $this->product() ) );
+		$guest = $this->visitor( false )->empty_price_html( '', $this->product() );
+		$this->assertStringContainsString( '<a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a>', $guest );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">Create account</a>', $guest );
 		$this->assertSame( '<span class="linker-price-note">Account under review. Prices after approval.</span>', $this->visitor( true, 'orderable', false )->empty_price_html( '', $this->product() ) );
 		$this->assertSame( '<span class="linker-price-note">Quoted per project</span>', $this->visitor( true, 'rfq_only' )->empty_price_html( '', $this->product( '22350' ) ) );
 		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $this->visitor( true )->empty_price_html( '', $this->product( '' ) ) );

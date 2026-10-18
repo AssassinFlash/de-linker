@@ -1,6 +1,8 @@
 /** Guest sign-in surfaces also offer the native registration endpoint (#223). */
 import { expect, test } from '@playwright/test';
-import { instance, loginLink, wp } from '../lib/instance';
+import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { instance, loginLink, REPO_ROOT, wp } from '../lib/instance';
 
 test.describe.configure({ timeout: 60_000 });
 
@@ -49,6 +51,75 @@ for (const locale of ['en', 'de'] as const) {
 				);
 			});
 		}
+		test(`${locale}-${width}: filled draft pairs every guest price prompt`, async ({
+			page,
+			context,
+		}) => {
+			await page.setViewportSize({ width, height: 900 });
+			await context.request.get(instance().url + '/?add-to-cart=4107');
+			await page.goto(
+				instance().url + (locale === 'de' ? '/de/warenkorb/' : '/cart/')
+			);
+			const gates = page.locator(
+				'.woocommerce-cart-form .linker-price-entries'
+			);
+			await expect(gates).toHaveCount(2);
+			for (const gate of await gates.all()) {
+				await expect(
+					gate.locator('.linker-price-login')
+				).toHaveAttribute('href', instance().url + account);
+				await expect(
+					gate.locator('.linker-create-account')
+				).toHaveAttribute(
+					'href',
+					instance().url + account + 'register/'
+				);
+			}
+			await expect(
+				page.locator('.linker-login-box .linker-create-account')
+			).toBeVisible();
+			const evidence = join(
+				REPO_ROOT,
+				'docs/acceptance/2026-10-18/223/filled-draft'
+			);
+			mkdirSync(evidence, { recursive: true });
+			await page.screenshot({
+				path: join(evidence, `${locale}-${width}.png`),
+				fullPage: true,
+			});
+			await gates.first().locator('.linker-create-account').click();
+			await expect(page).toHaveURL(
+				instance().url + account + 'register/'
+			);
+			// This disposable browser owns its anonymous Woo session; no user cart is changed.
+		});
+		test(`${locale}-${width}: registration survives a family model switch`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height: 900 });
+			await page.goto(
+				instance().url +
+					(locale === 'de' ? '/de/produkte/?brand=saj' : '/products/?brand=saj')
+			);
+			const card = page
+				.locator('[data-linker-family-card]')
+				.filter({ has: page.locator('[data-linker-select-product]') })
+				.first();
+			const choice = card.locator('[data-linker-select-product]').last();
+			const selectedId = await choice.getAttribute(
+				'data-linker-select-product'
+			);
+			await card.locator('.card-product-picker>summary').click();
+			await choice.click();
+			await expect(card).toHaveAttribute('data-product-id', selectedId!);
+			await card
+				.locator('.sf-card-actions .linker-create-account')
+				.click();
+			await expect(page).toHaveURL(
+				instance().url + account + 'register/'
+			);
+		});
+
 		for (const [surface, route, selector] of [
 			[
 				'shop',
@@ -154,6 +225,11 @@ for (const locale of ['en', 'de'] as const) {
 			const panel = page.locator('#footer-panel-account');
 			await expect(panel.locator('.linker-create-account')).toBeVisible();
 			await expect(panel.locator('.footer-panel-count')).toHaveText('04');
+			expect(
+				await panel
+					.locator('.footer-account-tile')
+					.evaluate((e) => e.getBoundingClientRect().height)
+			).toBe(width === 1440 ? 70 : 47);
 			await panel.locator('.linker-create-account').click();
 			await expect(page).toHaveURL(
 				instance().url + account + 'register/'
