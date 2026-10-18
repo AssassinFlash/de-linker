@@ -24,9 +24,39 @@ import { expect, test, type Browser, type Page } from '@playwright/test';
 /**
  * Internal dependencies
  */
-import { REPO_ROOT, instance } from '../lib/instance';
+import { REPO_ROOT, instance, wp } from '../lib/instance';
 
 type Lang = 'en' | 'de';
+
+const TESTER = 'linker-e2e-232@example.test';
+
+/**
+ * The local instance's counters, cleared so the hero's inquiry and contact
+ * sends are not refused by the hour's limiter or the mail throttle; the test
+ * mail option keeps every recipient at the tester (AGENTS.md §5).
+ */
+function freshCounters(): void {
+	wp([
+		'eval',
+		"global $wpdb; $wpdb->query( \"DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker\\_tools\\_limit\\_genie\\_inquiry%' OR option_name LIKE 'linker\\_tools\\_limit\\_genie\\_contact%' OR option_name LIKE 'linker\\_commerce\\_limit\\_public\\_receipts%'\" ); delete_option( 'linker_commerce_mail_sends' );",
+	]);
+}
+
+let previousMail = '';
+test.beforeAll(() => {
+	previousMail = wp([
+		'eval',
+		"echo (string) get_option( 'linker_commerce_test_mail_to' );",
+	]).trim();
+	wp(['option', 'update', 'linker_commerce_test_mail_to', TESTER]);
+});
+test.afterAll(() => {
+	if (previousMail) {
+		wp(['option', 'update', 'linker_commerce_test_mail_to', previousMail]);
+	} else {
+		wp(['option', 'delete', 'linker_commerce_test_mail_to']);
+	}
+});
 
 const LANGS: Lang[] = ['en', 'de'];
 const VIEWPORTS = [
@@ -206,6 +236,35 @@ for (const lang of LANGS) {
 				const page = await fresh(browser, lang, viewport);
 				const path = pageBase(lang);
 				await enter(page, 'saj');
+
+				// The header says who is answering and offers both exits,
+				// and the hero's own words fold away (review round 1, item 7).
+				const bar = await header(page);
+				expect(bar).toContain(
+					'de' === lang
+						? 'Genie – der KI-Assistent von Linker'
+						: "Genie - Linker's AI assistant"
+				);
+				expect(bar).toContain(
+					'de' === lang
+						? 'In der Seitenleiste fortsetzen'
+						: 'Continue in the side panel'
+				);
+				await expect(
+					page.getByRole('button', {
+						name: 'de' === lang ? 'Schließen' : 'Close',
+					})
+				).toHaveCount(1);
+				for (const selector of [
+					'.hero-badge',
+					'.hero-title',
+					'.hero-subtitle',
+					'.hero-capsules',
+					'.hero-footnote',
+				]) {
+					await expect(page.locator(selector)).toBeHidden();
+				}
+
 				await answered(page);
 				const cards = page.locator(
 					'.linker-genie-hero__cards .linker-card'
@@ -418,6 +477,114 @@ for (const lang of LANGS) {
 					page.locator('.linker-genie-app__attachment--refused')
 				).toBeVisible({ timeout: 15_000 });
 				await shot(page, `hero-${at}-refused`);
+				await page.context().close();
+			});
+
+			test('the #243 contact and #250 inquiry cards send from the hero', async ({
+				browser,
+			}) => {
+				test.setTimeout(900_000);
+				freshCounters();
+
+				// "Let Linker contact me": the guest leaves an address, the
+				// card sends and confirms.
+				let page = await fresh(browser, lang, viewport);
+				await enter(
+					page,
+					'de' === lang
+						? 'Ich möchte mit einem Mitarbeiter sprechen'
+						: 'Can I talk to a person?'
+				);
+				const contact = page.locator('.linker-genie-contact');
+				await expect(contact).toBeVisible({ timeout: 240_000 });
+				await expect(contact).toContainText(/business day|Arbeitstag/);
+				await contact
+					.locator('.linker-genie-contact__email')
+					.fill(TESTER);
+				await contact
+					.getByLabel(/I agree|Ich bin damit einverstanden/)
+					.check();
+				// The signed start time is three seconds old at the least.
+				await page.waitForTimeout(3_000);
+				await contact.locator('.linker-genie-contact__send').click();
+				await expect(contact).toContainText(
+					/Your request is with the Linker team|Ihre Kontaktanfrage liegt beim Linker-Team/,
+					{ timeout: 30_000 }
+				);
+				await contact.scrollIntoViewIfNeeded();
+				await shot(page, `hero-${at}-contact`);
+				await page.context().close();
+
+				// The inquiry confirmation card (#250): draft a product, ask
+				// for an inquiry, confirm the card, and keep the record.
+				page = await fresh(browser, lang, viewport);
+				await enter(
+					page,
+					'de' === lang
+						? 'saj h2 10k Wechselrichter'
+						: 'saj h2 10k inverter'
+				);
+				await answered(page);
+				const add = page.getByRole('button', {
+					name: /Add to solution draft|Zum Lösungsentwurf hinzufügen/,
+				});
+				await expect(add.first()).toBeVisible({ timeout: 60_000 });
+				const product = (
+					await page
+						.locator(
+							'.linker-genie-hero__cards .linker-card__title'
+						)
+						.first()
+						.innerText()
+				).trim();
+				await add.first().click();
+				await expect(
+					page.getByText(
+						/In your solution draft\.|Im Lösungsentwurf\./
+					)
+				).toBeVisible({ timeout: 30_000 });
+				await page.waitForTimeout(3_000);
+
+				await enter(
+					page,
+					'de' === lang
+						? 'Bitte senden Sie eine Anfrage für dieses Produkt.'
+						: 'Please send an inquiry for this product.'
+				);
+				const card = page.locator('.linker-genie-inquiry');
+				await expect(card).toBeVisible({ timeout: 60_000 });
+				await expect(card).toContainText(product);
+				await expect(card).toContainText(
+					/We reply within one business day|Wir antworten innerhalb eines Arbeitstags/
+				);
+				await card
+					.getByRole('textbox', { name: /^Name$/ })
+					.fill('Maria Weber');
+				await card
+					.getByRole('textbox', {
+						name: /Reply email|E-Mail für die Antwort/,
+					})
+					.fill(TESTER);
+				await card
+					.getByRole('textbox', {
+						name: /Company \(optional\)|Unternehmen \(optional\)/,
+					})
+					.fill('Weber Solar');
+				await card
+					.getByLabel(/I agree|Ich bin damit einverstanden/)
+					.check();
+				await page.waitForTimeout(3_000);
+				await card.locator('.linker-genie-inquiry__send').click();
+				const sent = page.locator('.linker-genie-inquiry--sent');
+				await expect(sent).toContainText(
+					/Your inquiry is with the Linker team|Ihre Anfrage liegt beim Linker-Team/,
+					{ timeout: 30_000 }
+				);
+				await expect(sent).toContainText(
+					/Inquiry #\d+ · Inquiry received|Anfrage Nr\. \d+ · Anfrage eingegangen/
+				);
+				await sent.scrollIntoViewIfNeeded();
+				await shot(page, `hero-${at}-inquiry`);
 				await page.context().close();
 			});
 		});

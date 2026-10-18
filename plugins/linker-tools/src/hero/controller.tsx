@@ -22,6 +22,10 @@ import { __ } from '@wordpress/i18n';
  */
 import type { GenieConfig } from '../genie/config';
 import { ACCEPT } from '../genie/attachments/prepare';
+import {
+	startDictation,
+	type DictationSession,
+} from '../genie/shared/dictation';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession } from './session';
 import {
@@ -39,25 +43,8 @@ export const OPEN_CLASS = 'linker-genie-hero--open';
 /** The class of the way back beside the dock button. */
 export const PILL_CLASS = 'linker-genie-hero-pill';
 
-/** The photo picker's offer: the nameplate button takes a photo (prepare.ts). */
-const PHOTO_ACCEPT =
-	'image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif';
-
-/** The browser's speech recognition, structurally (App.tsx's Dictation). */
-interface Dictation {
-	lang: string;
-	onresult:
-		| ( ( event: {
-				results: ArrayLike< ArrayLike< { transcript: string } > >;
-		  } ) => void )
-		| null;
-	onend: ( () => void ) | null;
-	onerror: ( () => void ) | null;
-	start: () => void;
-	stop: () => void;
-}
-
-type DictationCtor = new () => Dictation;
+/** The id every hero trigger points at with aria-controls. */
+export const SURFACE_ID = 'linker-genie-hero-surface';
 
 export interface HeroControllerOptions {
 	config: GenieConfig;
@@ -104,12 +91,24 @@ export function startHero(
 
 	let state: HeroState = initialHeroState;
 	let expandedNow = false;
-	let host: HTMLElement | null = null;
 	let root: ReturnType< typeof createRoot > | null = null;
 	let bridge: HeroBridge | null = null;
 	let pending: { text: string; files?: ArrayLike< File > } | null = null;
 	let pill: HTMLButtonElement | null = null;
-	let recognition: Dictation | null = null;
+	let recognition: DictationSession | null = null;
+	// The control that opened the conversation: focus returns to it on close.
+	let lastTrigger: HTMLElement | null = null;
+	// The six controls, for aria-expanded / aria-controls (populated below).
+	const triggers: HTMLElement[] = [];
+
+	// The conversation's container exists from the start, hidden, so every
+	// trigger's aria-controls resolves even while the hero is resting. It
+	// carries no content until the conversation unfolds.
+	const host = doc.createElement( 'div' );
+	host.className = 'linker-genie-hero__host';
+	host.id = SURFACE_ID;
+	host.hidden = true;
+	dialog!.insertBefore( host, dialog!.firstChild );
 
 	const picker = doc.createElement( 'input' );
 	picker.type = 'file';
@@ -127,6 +126,9 @@ export function startHero(
 		if ( expanded !== expandedNow ) {
 			expandedNow = expanded;
 			hero.classList.toggle( OPEN_CLASS, expanded );
+			triggers.forEach( ( trigger ) =>
+				trigger.setAttribute( 'aria-expanded', String( expanded ) )
+			);
 			if ( expanded ) {
 				prompt!.placeholder = __( 'Ask a follow-up…', 'linker-tools' );
 				mount();
@@ -143,9 +145,7 @@ export function startHero(
 		if ( root ) {
 			return;
 		}
-		host = doc.createElement( 'div' );
-		host.className = 'linker-genie-hero__host';
-		dialog!.insertBefore( host, dialog!.firstChild );
+		host.hidden = false;
 		root = createRoot( host );
 		const session = makeSession();
 		root.render(
@@ -176,8 +176,8 @@ export function startHero(
 			root.unmount();
 			root = null;
 		}
-		host?.remove();
-		host = null;
+		host.hidden = true;
+		host.replaceChildren();
 	}
 
 	function onReady( next: HeroBridge ): void {
@@ -192,12 +192,20 @@ export function startHero(
 	/**
 	 * Opens the conversation and asks one question (or sends picked files).
 	 *
-	 * @param text  The question; empty when the files are the question.
-	 * @param files Files from the page's picker.
+	 * @param text    The question; empty when the files are the question.
+	 * @param files   Files from the page's picker.
+	 * @param trigger The page's control that started it; focus returns there.
 	 */
-	function runAsk( text: string, files?: ArrayLike< File > ): void {
+	function runAsk(
+		text: string,
+		files?: ArrayLike< File >,
+		trigger?: HTMLElement
+	): void {
 		if ( ! text.trim() && ! ( files && files.length > 0 ) ) {
 			return;
+		}
+		if ( trigger ) {
+			lastTrigger = trigger;
 		}
 		update( { type: 'ask' } );
 		if ( bridge ) {
@@ -209,7 +217,12 @@ export function startHero(
 
 	/** Folds the conversation back to the resting hero. */
 	function close(): void {
+		const trigger = lastTrigger;
+		lastTrigger = null;
 		update( { type: 'close' } );
+		// The hero is back: the control that opened it takes the focus again
+		// (review round 1, item 3).
+		trigger?.focus?.();
 	}
 
 	/**
@@ -226,52 +239,39 @@ export function startHero(
 		close();
 	}
 
-	function openPicker( kind: 'photo' | 'file' ): void {
-		picker.accept = 'photo' === kind ? PHOTO_ACCEPT : ACCEPT;
+	function openPicker(): void {
+		// One accepted set for both buttons: prepare.ts refuses what Genie
+		// cannot read, and the nameplate button may still receive a PDF.
+		picker.accept = ACCEPT;
 		// A pick of the same file again must fire again.
 		picker.value = '';
 		picker.click();
 	}
 
-	function startDictation(): void {
-		const speech = win as Window & {
-			SpeechRecognition?: DictationCtor;
-			webkitSpeechRecognition?: DictationCtor;
-		};
-		const Ctor = speech.SpeechRecognition ?? speech.webkitSpeechRecognition;
-		if ( ! Ctor ) {
-			prompt!.focus();
-			return;
-		}
+	function dictate(): void {
 		if ( recognition ) {
 			recognition.stop();
+			recognition = null;
 			return;
 		}
-		const session = new Ctor();
-		session.lang = options.config.locale === 'de' ? 'de-DE' : 'en-US';
-		session.onresult = ( event ) => {
-			const heard = event.results[ 0 ]?.[ 0 ]?.transcript ?? '';
-			if ( heard ) {
+		const session = startDictation(
+			win,
+			options.config.locale,
+			( heard ) => {
 				prompt!.value = prompt!.value
 					? `${ prompt!.value } ${ heard }`
 					: heard;
+			},
+			() => {
+				recognition = null;
 			}
-		};
-		session.onend = () => {
-			recognition = null;
-		};
-		session.onerror = () => {
-			recognition = null;
-		};
-		recognition = session;
-		try {
-			session.start();
-		} catch {
-			// A browser that refuses the microphone gets the field, not a
-			// broken button.
-			recognition = null;
+		);
+		if ( ! session ) {
+			// No dictation, or a refused microphone: the field is the way in.
 			prompt!.focus();
+			return;
 		}
+		recognition = session;
 	}
 
 	function syncPill(): void {
@@ -304,7 +304,7 @@ export function startHero(
 	function onKeyDown( event: KeyboardEvent ): void {
 		if ( event.key === 'Enter' && ! event.shiftKey ) {
 			event.preventDefault();
-			runAsk( prompt!.value );
+			runAsk( prompt!.value, undefined, prompt! );
 		}
 	}
 
@@ -312,13 +312,17 @@ export function startHero(
 		// The live anchor is the no-JavaScript fallback; with the script the
 		// conversation opens in place instead of leaving the page.
 		event.preventDefault();
-		runAsk( prompt!.value );
+		runAsk( prompt!.value, undefined, sendButton! );
 	}
 
 	function capsuleClick( capsule: Element ): ( event: Event ) => void {
 		return ( event: Event ) => {
 			event.preventDefault();
-			runAsk( ( capsule.textContent ?? '' ).trim() );
+			runAsk(
+				( capsule.textContent ?? '' ).trim(),
+				undefined,
+				capsule as HTMLElement
+			);
 		};
 	}
 
@@ -334,26 +338,29 @@ export function startHero(
 
 	function onPhotoClick( event: Event ): void {
 		event.preventDefault();
+		lastTrigger = photoButton;
 		if ( ! heroExpanded( state ) ) {
 			update( { type: 'ask' } );
 		}
-		openPicker( 'photo' );
+		openPicker();
 	}
 
 	function onAttachClick( event: Event ): void {
 		event.preventDefault();
+		lastTrigger = attachButton;
 		if ( ! heroExpanded( state ) ) {
 			update( { type: 'ask' } );
 		}
-		openPicker( 'file' );
+		openPicker();
 	}
 
 	function onVoiceClick( event: Event ): void {
 		event.preventDefault();
+		lastTrigger = voiceButton;
 		if ( ! heroExpanded( state ) ) {
 			update( { type: 'ask' } );
 		}
-		startDictation();
+		dictate();
 	}
 
 	function onPickerChange(): void {
@@ -386,6 +393,25 @@ export function startHero(
 		listener: capsuleClick( capsule ),
 	} ) );
 
+	// The six triggers announce the surface they control (review round 1,
+	// item 3): the textarea with Enter, the send button, every capsule, the
+	// nameplate, attachment and voice buttons.
+	[
+		prompt,
+		sendButton,
+		...capsules.map( ( { capsule } ) => capsule ),
+		photoButton,
+		attachButton,
+		voiceButton,
+	].forEach( ( trigger ) => {
+		if ( ! trigger ) {
+			return;
+		}
+		triggers.push( trigger );
+		trigger.setAttribute( 'aria-expanded', 'false' );
+		trigger.setAttribute( 'aria-controls', SURFACE_ID );
+	} );
+
 	prompt.addEventListener( 'keydown', onKeyDown );
 	sendButton.addEventListener( 'click', onSendClick );
 	photoButton?.addEventListener( 'click', onPhotoClick );
@@ -416,6 +442,7 @@ export function startHero(
 			capsule.removeEventListener( 'click', listener )
 		);
 		unmount();
+		host.remove();
 		pill?.remove();
 		picker.remove();
 		recognition?.stop();

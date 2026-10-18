@@ -1,8 +1,8 @@
 /**
  * The conversation the home hero unfolds in place (ticket #232, variant B):
  * the header the owner specified, the shared thread (session.ts), the #236
- * attachment cards, and the answer's cards in a four-column grid (two on a
- * phone).
+ * attachment cards, the #250 inquiry confirmation card and the #243 contact
+ * card, and the answer's cards in a four-column grid (two on a phone).
  *
  * The page's own textarea stays the follow-up field: this component renders
  * above it, inside `.hero-dialog`, and the controller wires Enter, the send
@@ -13,20 +13,19 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { saveSolution } from '../configurator/api/solutions';
 import { storeClient } from '../configurator/api/store';
-import type { CardState } from '../shared/ProductCard';
+import type { SentInquiry } from '../genie/api/inquiry';
 import {
-	TurnError,
+	assistantMessage,
 	type Block,
-	type CardPrice,
-	type CardsBlock,
-	type CompareBlock,
+	type ContactBlock,
+	type SentContact,
+	type SentInquiryCard,
 	type Turn,
 	type TurnMessage,
 } from '../genie/api/turn';
@@ -38,10 +37,19 @@ import {
 } from '../genie/components/AttachmentChips';
 import { BlockView } from '../genie/components/BlockView';
 import { Compare } from '../genie/components/Compare';
+import { ContactCard, ContactSent } from '../genie/components/ContactCard';
 import { GenieCard } from '../genie/components/GenieCard';
+import { InquiryCard, InquirySent } from '../genie/components/InquiryCard';
 import { Reply } from '../genie/components/Reply';
 import { Transcript } from '../genie/components/Transcript';
 import type { GenieConfig } from '../genie/config';
+import { idsOf, pricesOf } from '../genie/shared/blocks';
+import { useCardActions } from '../genie/shared/cardActions';
+import {
+	attachmentRefusalReason,
+	buildQuestion,
+	typeModelPrompt,
+} from '../genie/shared/conversation';
 import { HeroSession } from './session';
 
 /** The controller's way into the conversation while it is unfolded. */
@@ -71,8 +79,8 @@ export interface HeroConversationProps {
 	setPrompt: ( text: string ) => void;
 	/** Focuses the page's follow-up field. */
 	focusPrompt: () => void;
-	/** Opens the page's file picker ('photo' for the nameplate button). */
-	requestPicker: ( kind: 'photo' | 'file' ) => void;
+	/** Opens the page's file picker. */
+	requestPicker: () => void;
 }
 
 type Phase = 'ask' | 'waiting' | 'error';
@@ -92,13 +100,17 @@ export function HeroConversation( {
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
 	const [ refused, setRefused ] = useState( '' );
+	// The newest answer, spoken by the live region when it arrives.
+	const [ live, setLive ] = useState( '' );
 	const [ pendingSend, setPendingSend ] = useState< {
 		text: string;
 	} | null >( null );
-	const [ cardStates, setCardStates ] = useState<
-		{ productId: number; status: { state: CardState; text: string } }[]
-	>( [] );
+	// The cards that were already sent from this conversation (#243/#250).
+	const [ contacts, setContacts ] = useState< SentContact[] >( [] );
+	const [ inquiries, setInquiries ] = useState< SentInquiryCard[] >( [] );
+	const turnAt = useRef( -1 );
 	const sending = useRef( false );
+	const closeRef = useRef< HTMLButtonElement >( null );
 	const files = useAttachments();
 	// The bridge is registered once; the refs keep it calling the latest
 	// render's send and file state.
@@ -106,73 +118,104 @@ export function HeroConversation( {
 	filesRef.current = files;
 	const sendRef = useRef< ( text: string ) => void >( () => undefined );
 	const [ store ] = useState( () => storeClient( config.restUrl ) );
+	const {
+		statusFor,
+		addToDraft: addCardToDraft,
+		saveCardSolution,
+	} = useCardActions( {
+		restUrl: config.restUrl,
+		restNonce: config.restNonce,
+		locale: config.locale,
+		store,
+	} );
 	const locale = config.locale;
 
 	// The conversation the browser already has: the dock's thread, or what
 	// the hero itself asked before it was folded and unfolded again.
 	useEffect( () => {
 		let cancelled = false;
-		void session.load().then( ( stored ) => {
-			if ( ! cancelled ) {
-				setThread( stored.messages );
-				setTurn( stored.turn );
-			}
-		} );
+		void session
+			.load()
+			.then( ( stored ) => {
+				if ( ! cancelled ) {
+					setThread( stored.messages );
+					setTurn( stored.turn );
+					setContacts( stored.contacts ?? [] );
+					setInquiries( stored.inquiries ?? [] );
+					turnAt.current = stored.turn
+						? stored.messages.length - 1
+						: -1;
+				}
+			} )
+			.catch( () => undefined );
 		return () => {
 			cancelled = true;
 		};
 	}, [ session ] );
 
+	// The conversation has the focus when it unfolds; the page's trigger gets
+	// it back when it closes (the controller restores it).
+	useEffect( () => {
+		closeRef.current?.focus();
+	}, [] );
+
 	useEffect( () => {
 		onConversation( thread.length > 0 );
 	}, [ thread.length, onConversation ] );
 
+	const sent = useCallback( ( email: string, receipt: boolean ) => {
+		const after = turnAt.current;
+		setContacts( ( known ) =>
+			known.some( ( card ) => card.after === after )
+				? known
+				: [ ...known, { after, email, receipt } ]
+		);
+	}, [] );
+
+	const inquirySent = useCallback( ( inquiry: SentInquiry ) => {
+		const after = turnAt.current;
+		setInquiries( ( known ) =>
+			known.some( ( card ) => card.after === after )
+				? known
+				: [ ...known, { ...inquiry, after } ]
+		);
+	}, [] );
+
 	const send = useCallback(
 		async ( text: string ) => {
 			const picked = filesRef.current.uploads;
-			const question = [
-				text.trim(),
-				...picked.map( ( upload ) =>
-					// translators: %s is the name of a file the visitor attached.
-					__( 'Attached: %s', 'linker-tools' ).replace(
-						'%s',
-						upload.name
-					)
-				),
-			]
-				.filter( ( part ) => part !== '' )
-				.join( '\n' );
+			const question = buildQuestion( text, picked );
 			if ( ! question || sending.current || filesRef.current.busy ) {
 				return;
 			}
 			sending.current = true;
 			setRefused( '' );
+			setLive( '' );
 			setPhase( 'waiting' );
 			setPrompt( '' );
 			let shown: TurnMessage[] = [];
 			try {
-				// Read first, so the dock's thread is part of this question
-				// and the proxy records the whole conversation (session.ts).
-				await session.load();
 				shown = [
 					...session.messages,
 					{ role: 'user', content: question },
 				];
 				setThread( shown );
+				// session.ask re-reads the shared thread before it sends, so
+				// a dock turn is neither lost nor overwritten (session.ts).
 				const result = await session.ask( question, picked );
 				filesRef.current.clear();
 				setThread( result.messages );
 				setTurn( result.answer );
+				setContacts( result.contacts ?? [] );
+				setInquiries( result.inquiries ?? [] );
+				turnAt.current = result.messages.length - 1;
+				setLive( assistantMessage( result.answer ).content );
 				setPhase( 'ask' );
 			} catch ( error ) {
 				// A file the proxy refused is said as such and the question
 				// goes back into the field; anything else is no answer, and
 				// the question stays so the error has something to stand under.
-				const reason =
-					error instanceof TurnError &&
-					error.code.startsWith( 'linker_genie_attachment_' )
-						? error.code.slice( 'linker_genie_attachment_'.length )
-						: '';
+				const reason = attachmentRefusalReason( error );
 				if ( reason ) {
 					setThread( session.messages );
 					setPrompt( text );
@@ -227,78 +270,35 @@ export function HeroConversation( {
 		onReady( { ask: bridgeAsk } );
 	}, [ onReady, bridgeAsk ] );
 
-	function cardStatus( productId: number, state: CardState, text: string ) {
-		setCardStates( ( items ) => {
-			const found = items.some(
-				( item ) => item.productId === productId
-			);
-			return found
-				? items.map( ( item ) =>
-						item.productId === productId
-							? { ...item, status: { state, text } }
-							: item
-					)
-				: [ ...items, { productId, status: { state, text } } ];
-		} );
-	}
-
-	async function addCardToDraft( productId: number ) {
-		cardStatus( productId, 'pending', __( 'Adding…', 'linker-tools' ) );
-		await store.addAll( [ { productId, quantity: 1 } ], ( id, state ) =>
-			cardStatus(
-				id,
-				state,
-				{
-					pending: __( 'Adding…', 'linker-tools' ),
-					added: __( 'In your solution draft.', 'linker-tools' ),
-					unverified: __(
-						'Sent, but the draft does not show it yet. Please check.',
-						'linker-tools'
-					),
-					retry: __( 'Not added. Try again.', 'linker-tools' ),
-				}[ state ]
-			)
-		);
-	}
-
-	async function saveCardSolution( productId: number, title: string ) {
-		cardStatus( productId, 'pending', __( 'Saving…', 'linker-tools' ) );
-		try {
-			await saveSolution( config.restUrl, config.restNonce, {
-				kind: 'residential',
-				title,
-				input: {
-					locale,
-					plz: '',
-					annual_kwh: 0,
-					pv_kwp: 0,
-					phase: 3,
-					backup: 'none',
-					heat_pump: false,
-					electric_vehicle: false,
-				},
-				lines: [ { productId, quantity: 1 } ],
-			} );
-			cardStatus(
-				productId,
-				'added',
-				__( 'Saved to your account.', 'linker-tools' )
-			);
-		} catch {
-			cardStatus(
-				productId,
-				'retry',
-				__( 'Not saved. Try again.', 'linker-tools' )
-			);
-		}
-	}
-
 	const blocks: Block[] = turn?.blocks ?? [];
 	const cardIds = idsOf( blocks, 'cards' );
 	const compareIds = idsOf( blocks, 'compare' );
 	const cardPrices = pricesOf( blocks );
 	const hasCompare = blocks.some( ( block ) => 'compare' === block.type );
 	const hasCards = blocks.some( ( block ) => 'cards' === block.type );
+	const offersInquiry = blocks.some(
+		( block ) => 'action' === block.type && 'send_inquiry' === block.name
+	);
+	const currentInquiry = inquiries.find(
+		( card ) => card.after === turnAt.current
+	);
+	const contactBlock = blocks.find(
+		( block ): block is ContactBlock =>
+			'contact' === block.type &&
+			! contacts.some( ( card ) => card.after === turnAt.current )
+	);
+	// The inquiry card, or the record once it was sent (review round 1, P0).
+	const inquiryAfterAnswer = currentInquiry ? (
+		<InquirySent inquiry={ currentInquiry } />
+	) : (
+		<InquiryCard
+			inquiryUrl={ config.inquiryUrl }
+			nonce={ config.restNonce }
+			locale={ locale }
+			page={ config.page }
+			onSent={ inquirySent }
+		/>
+	);
 
 	return (
 		<div className="linker-genie-hero__surface" lang={ locale }>
@@ -315,6 +315,7 @@ export function HeroConversation( {
 						{ __( 'Continue in the side panel', 'linker-tools' ) }
 					</button>
 					<button
+						ref={ closeRef }
 						type="button"
 						className="linker-genie-hero__close"
 						aria-label={ __( 'Close', 'linker-tools' ) }
@@ -332,6 +333,9 @@ export function HeroConversation( {
 					'Answers come from our product data and documents, and can still be wrong.',
 					'linker-tools'
 				) }
+			</p>
+			<p className="screen-reader-text" role="status" aria-live="polite">
+				{ live }
 			</p>
 			{ thread.length > 0 ? (
 				<Transcript
@@ -370,6 +374,38 @@ export function HeroConversation( {
 								) : (
 									message.content
 								) }
+								{ 'assistant' === message.role
+									? contacts
+											.filter(
+												( card ) => card.after === index
+											)
+											.slice( 0, 1 )
+											.map( ( card ) => (
+												<ContactSent
+													key={ card.email }
+													email={ card.email }
+													receipt={
+														false !== card.receipt
+													}
+												/>
+											) )
+									: null }
+								{ 'assistant' === message.role
+									? inquiries
+											.filter(
+												( card ) =>
+													card.after === index &&
+													card.after !==
+														turnAt.current
+											)
+											.slice( 0, 1 )
+											.map( ( card ) => (
+												<InquirySent
+													key={ card.order }
+													inquiry={ card }
+												/>
+											) )
+									: null }
 							</li>
 						) ) }
 						{ 'waiting' === phase ? (
@@ -407,19 +443,10 @@ export function HeroConversation( {
 										bridgeAsk( message )
 									}
 									onTypeModel={ () => {
-										setPrompt(
-											sprintf(
-												// translators: %s stays empty: the customer types the model after the words.
-												__(
-													'My device is the %s',
-													'linker-tools'
-												),
-												''
-											)
-										);
+										setPrompt( typeModelPrompt() );
 										focusPrompt();
 									} }
-									onPhoto={ () => requestPicker( 'photo' ) }
+									onPhoto={ () => requestPicker() }
 								/>
 							) )
 						: null }
@@ -446,15 +473,7 @@ export function HeroConversation( {
 									restUrl={ config.restUrl }
 									store={ store }
 									locale={ locale }
-									status={
-										cardStates.find(
-											( item ) =>
-												item.productId === productId
-										)?.status ?? {
-											state: 'idle',
-											text: '',
-										}
-									}
+									status={ statusFor( productId ) }
 									price={ cardPrices.find(
 										( line ) =>
 											line.product_id === productId
@@ -472,6 +491,20 @@ export function HeroConversation( {
 							locale={ locale }
 						/>
 					) : null }
+					{ 'waiting' !== phase && contactBlock ? (
+						<ContactCard
+							key={ `${ turn?.meta?.turn_id ?? 0 }-contact` }
+							block={ contactBlock }
+							contactUrl={ config.contactUrl }
+							nonce={ config.restNonce }
+							locale={ locale }
+							page={ config.page }
+							onSent={ sent }
+						/>
+					) : null }
+					{ 'waiting' !== phase && offersInquiry
+						? inquiryAfterAnswer
+						: null }
 				</Transcript>
 			) : null }
 			<AttachmentChips
@@ -485,33 +518,4 @@ export function HeroConversation( {
 			) : null }
 		</div>
 	);
-}
-
-/**
- * The price lines of the turn's cards, as the service filled them (#242).
- *
- * @param blocks The turn's blocks.
- */
-function pricesOf( blocks: Block[] ): CardPrice[] {
-	for ( const block of blocks ) {
-		if ( 'cards' === block.type ) {
-			return block.prices ?? [];
-		}
-	}
-	return [];
-}
-
-/**
- * The product ids of the turn's card or comparison block.
- *
- * @param blocks The turn's blocks.
- * @param kind   Which block.
- */
-function idsOf( blocks: Block[], kind: 'cards' | 'compare' ): number[] {
-	for ( const block of blocks ) {
-		if ( block.type === kind ) {
-			return ( block as CardsBlock | CompareBlock ).product_ids;
-		}
-	}
-	return [];
 }

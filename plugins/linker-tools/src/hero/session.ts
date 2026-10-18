@@ -2,10 +2,10 @@
  * One Genie conversation, read by both surfaces (ticket #232): the proxy
  * keeps the thread on the conversation post and names it with the browser's
  * cookie, so the hero and the dock share it as long as each reads before it
- * writes. The dock does that on mount; the hero reads when it unfolds, then
- * sends the whole thread back with its next question. Sending only the hero's
- * own messages would replace the dock's history (Proxy::turn records the
- * request's messages), so the read comes first.
+ * writes. The hero reads on mount for its view, and re-reads before every
+ * send: the dock may have answered while the hero was folded, and
+ * Proxy::turn records the request's messages, so sending a stale thread
+ * would replace the dock's history.
  */
 
 /**
@@ -17,6 +17,8 @@ import {
 	readThread,
 	sendTurn,
 	type PageContext,
+	type SentContact,
+	type SentInquiryCard,
 	type Turn,
 	type TurnMessage,
 } from '../genie/api/turn';
@@ -35,6 +37,9 @@ export interface HeroSessionConfig {
 export interface HeroStoredThread {
 	messages: TurnMessage[];
 	turn: Turn | null;
+	/** The cards the dock (or an earlier hero turn) already sent (#243/#250). */
+	contacts?: SentContact[];
+	inquiries?: SentInquiryCard[];
 }
 
 /** The one read the hero needs; a test passes the proxy's double. */
@@ -49,6 +54,8 @@ export type HeroSendTurn = typeof sendTurn;
 export class HeroSession {
 	private messagesValue: TurnMessage[] = [];
 	private turnValue: Turn | null = null;
+	private contactsValue: SentContact[] = [];
+	private inquiriesValue: SentInquiryCard[] = [];
 	private loading: Promise< void > | null = null;
 
 	/**
@@ -73,33 +80,49 @@ export class HeroSession {
 	}
 
 	/**
-	 * Reads the conversation the browser already has, once.
+	 * Reads the conversation the browser already has, once per mount.
 	 *
 	 * @return The stored thread.
 	 */
 	async load(): Promise< HeroStoredThread > {
 		if ( ! this.loading ) {
-			this.loading = this.read(
-				this.config.threadUrl,
-				this.config.nonce
-			).then( ( stored ) => {
-				this.messagesValue = stored.messages;
-				this.turnValue = stored.turn;
-			} );
+			await this.refresh();
+		} else {
+			await this.loading;
 		}
+		return this.snapshot();
+	}
+
+	/**
+	 * Re-reads the shared thread before a send.
+	 */
+	private async refresh(): Promise< void > {
+		this.loading = this.read(
+			this.config.threadUrl,
+			this.config.nonce
+		).then( ( stored ) => {
+			this.messagesValue = stored.messages;
+			this.turnValue = stored.turn;
+			this.contactsValue = stored.contacts ?? [];
+			this.inquiriesValue = stored.inquiries ?? [];
+		} );
 		await this.loading;
+	}
+
+	private snapshot(): HeroStoredThread {
 		return {
 			messages: this.messagesValue,
 			turn: this.turnValue,
+			contacts: this.contactsValue,
+			inquiries: this.inquiriesValue,
 		};
 	}
 
 	/**
-	 * Sends one question on top of the stored conversation.
-	 *
-	 * The thread is appended only after the proxy answered: a refused turn
-	 * (a file the proxy rejects, a service error) leaves the conversation as
-	 * it was, which is what the field then shows again.
+	 * Sends one question on top of the conversation as it stands on the
+	 * server now. The thread is appended only after the proxy answered: a
+	 * refused turn (a file the proxy rejects, a service error) leaves the
+	 * conversation as it was, which is what the field then shows again.
 	 *
 	 * @param text    The question, file names already named in it.
 	 * @param uploads The turn's files, apart from the messages (#236).
@@ -107,8 +130,15 @@ export class HeroSession {
 	async ask(
 		text: string,
 		uploads: Upload[] = []
-	): Promise< { messages: TurnMessage[]; answer: Turn } > {
-		await this.load();
+	): Promise< {
+		messages: TurnMessage[];
+		answer: Turn;
+		contacts?: SentContact[];
+		inquiries?: SentInquiryCard[];
+	} > {
+		// Every send, not only the first: the dock may have written a turn
+		// while this view was folded (or both surfaces are open).
+		await this.refresh();
 		const next: TurnMessage[] = [
 			...this.messagesValue,
 			{ role: 'user', content: text },
@@ -123,6 +153,9 @@ export class HeroSession {
 		);
 		this.messagesValue = next.concat( assistantMessage( answer ) );
 		this.turnValue = answer;
-		return { messages: this.messagesValue, answer };
+		return {
+			...this.snapshot(),
+			answer,
+		};
 	}
 }

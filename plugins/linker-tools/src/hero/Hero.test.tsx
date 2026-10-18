@@ -27,6 +27,43 @@ import type { Upload } from '../genie/attachments/prepare';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession, type HeroSessionConfig } from './session';
 
+vi.mock( '../genie/api/contact', () => ( {
+	readContact: vi.fn( async () => ( {
+		started: '100.sig',
+		email: null,
+		sent: null,
+		mailbox: 'sales@de-linker.com',
+	} ) ),
+	sendContact: vi.fn(),
+} ) );
+vi.mock( '../genie/api/inquiry', () => ( {
+	readInquiry: vi.fn( async () => ( {
+		conversation: 5,
+		started: '100',
+		startedNonce: 'sig',
+		account: null,
+		lines: [
+			{
+				product_id: 4107,
+				name: 'SAJ H2-10K-T3',
+				sku: 'H2-10K-T3',
+				quantity: 2,
+				price_html: '<span>1.234,00&nbsp;€</span>',
+				url: 'https://de-linker.test/product/saj-h2-10k-t3/',
+			},
+		],
+		linesDigest: 'digest-1',
+		message: 'We need two units this quarter.',
+		summary: 'Two inverters for a three-phase rooftop.',
+		sent: null,
+		pageUrl: 'https://de-linker.test/inquiry/',
+	} ) ),
+	sendInquiry: vi.fn(),
+} ) );
+vi.mock( '../genie/api/product', () => ( {
+	productModel: vi.fn( async () => 'GW10K-ETA' ),
+} ) );
+
 const CONFIG: GenieConfig = {
 	surface: 'helper',
 	locale: 'en',
@@ -109,7 +146,7 @@ function renderHero(
 		onConversation: ( has: boolean ) => void;
 		setPrompt: ( text: string ) => void;
 		focusPrompt: () => void;
-		requestPicker: ( kind: 'photo' | 'file' ) => void;
+		requestPicker: () => void;
 	} > = {}
 ) {
 	const calls = {
@@ -143,6 +180,8 @@ test( 'the unfolded conversation names Genie and offers both exits', async () =>
 	expect(
 		screen.getByText( "Genie is Linker's AI assistant." )
 	).toBeInTheDocument();
+	// Focus moves into the unfolded surface (review round 1, item 3).
+	expect( screen.getByRole( 'button', { name: 'Close' } ) ).toHaveFocus();
 
 	fireEvent.click(
 		screen.getByRole( 'button', { name: 'Continue in the side panel' } )
@@ -178,9 +217,14 @@ test( 'a question asked through the hero gets a real answer and counts as a conv
 			screen.getByText( 'Which inverters fit a three-phase home?' )
 		).toBeInTheDocument()
 	);
-	expect( await screen.findByText( 'Answer 1' ) ).toBeInTheDocument();
+	// The answer is in the thread and in the live region for screen readers.
+	await waitFor( () =>
+		expect( screen.getAllByText( 'Answer 1' ).length ).toBeGreaterThan( 0 )
+	);
 	expect( answers.send ).toHaveBeenCalledTimes( 1 );
 	expect( onConversation ).toHaveBeenCalledWith( true );
+	// The live region carries the new answer (review round 1, item 3).
+	expect( screen.getByRole( 'status' ) ).toHaveTextContent( 'Answer 1' );
 } );
 
 test( 'a failed first turn keeps the question and shows the retry sentence', async () => {
@@ -314,4 +358,50 @@ test( 'a file type Genie cannot read is refused before any turn', async () => {
 		)
 	).toBeInTheDocument();
 	expect( answers.send ).not.toHaveBeenCalled();
+} );
+
+test( 'the #243 contact card renders in the hero', async () => {
+	const turn: Turn = {
+		meta: null,
+		blocks: [ { type: 'contact', reason: 'asked' } ],
+	};
+	renderHero(
+		session(
+			[
+				{ role: 'user', content: 'Can I talk to a person?' },
+				{ role: 'assistant', content: 'The Linker team can help.' },
+			],
+			turn
+		).session
+	);
+
+	expect(
+		await screen.findByText( 'Let the Linker team contact you' )
+	).toBeInTheDocument();
+	expect( document.querySelector( '.linker-genie-contact' ) ).not.toBeNull();
+} );
+
+test( 'the #250 inquiry confirmation card renders in the hero', async () => {
+	const turn: Turn = {
+		meta: null,
+		blocks: [ { type: 'action', name: 'send_inquiry', args: {} } ],
+	};
+	renderHero(
+		session(
+			[
+				{ role: 'user', content: 'Please send an inquiry.' },
+				{ role: 'assistant', content: 'Check the inquiry below.' },
+			],
+			turn
+		).session
+	);
+
+	expect( await screen.findByText( 'Your inquiry' ) ).toBeInTheDocument();
+	expect( document.querySelector( '.linker-genie-inquiry' ) ).not.toBeNull();
+	expect( screen.getAllByText( 'SAJ H2-10K-T3' ).length ).toBeGreaterThan(
+		0
+	);
+	expect(
+		screen.getByText( 'We reply within one business day.' )
+	).toBeInTheDocument();
 } );

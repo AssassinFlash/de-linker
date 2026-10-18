@@ -14,9 +14,15 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { storeClient } from '../configurator/api/store';
-import { saveSolution } from '../configurator/api/solutions';
-import type { CardState } from '../shared/ProductCard';
 import type { GenieConfig } from './config';
+import { idsOf, pricesOf } from './shared/blocks';
+import { useCardActions } from './shared/cardActions';
+import {
+	attachmentRefusalReason,
+	buildQuestion,
+	typeModelPrompt,
+} from './shared/conversation';
+import { startDictation, type DictationSession } from './shared/dictation';
 import {
 	assistantMessage,
 	deleteConversation,
@@ -25,11 +31,6 @@ import {
 	readThread,
 	selectConversation,
 	sendTurn,
-	TurnError,
-	type Block,
-	type CardPrice,
-	type CardsBlock,
-	type CompareBlock,
 	type ContactBlock,
 	type ConversationSummary,
 	type SentContact,
@@ -73,32 +74,8 @@ import {
 import { VoteButtons } from './components/VoteButtons';
 import './genie.css';
 
-interface CardItem {
-	productId: number;
-	status: { state: CardState; text: string };
-}
-
-/**
- * The browser's own speech recognition, structurally — lib.dom's
- * SpeechRecognition is what the engine ships; the constructor and the three
- * events the dictation button uses. `webkitSpeechRecognition` is the same
- * interface under its prefixed name.
- */
-interface Dictation {
-	lang: string;
-	onresult:
-		| ( ( event: {
-				results: ArrayLike< ArrayLike< { transcript: string } > >;
-		  } ) => void )
-		| null;
-	onend: ( () => void ) | null;
-	onerror: ( () => void ) | null;
-	start: () => void;
-	stop: () => void;
-}
-
-/** Test seam: the dictation test stubs the constructor. */
-export type { Dictation };
+/** Test seam: the dictation test stubs the constructor (shared/dictation.ts). */
+export type { Dictation } from './shared/dictation';
 
 type Phase = 'ask' | 'waiting' | 'error';
 type HistoryPhase = 'loading' | 'ready' | 'failed';
@@ -111,13 +88,6 @@ type MailPhase = 'idle' | 'form' | 'sending' | EmailOutcome;
  * picking a conversation folds it; wider, it is docked and stays.
  */
 const OVERLAY_WIDTH = 768;
-
-declare global {
-	interface Window {
-		SpeechRecognition?: new () => Dictation;
-		webkitSpeechRecognition?: new () => Dictation;
-	}
-}
 
 /**
  * One lane for restore, switch and ask. It lives outside the component:
@@ -178,7 +148,6 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ revealingAt, setRevealingAt ] = useState< number | null >( null );
 	const finishReveal = useCallback( () => setRevealingAt( null ), [] );
 	const [ input, setInput ] = useState( '' );
-	const [ cards, setCards ] = useState< CardItem[] >( [] );
 	const [ history, setHistory ] = useState< ConversationSummary[] >( [] );
 	const [ historyPhase, setHistoryPhase ] =
 		useState< HistoryPhase >( 'loading' );
@@ -209,7 +178,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// dictation heard lands in the field.
 	const attachInput = useRef< HTMLInputElement >( null );
 	const field = useRef< HTMLInputElement >( null );
-	const recognition = useRef< Dictation | null >( null );
+	const dictation = useRef< DictationSession | null >( null );
 	const files = useAttachments();
 	// Why the last turn's files were refused by the proxy, if they were.
 	const [ refused, setRefused ] = useState( '' );
@@ -233,6 +202,16 @@ export function App( { config }: { config: GenieConfig } ) {
 	}, [] );
 
 	const store = storeClient( config.restUrl );
+	const {
+		statusFor: cardStatusFor,
+		addToDraft: addCardToDraft,
+		saveCardSolution,
+	} = useCardActions( {
+		restUrl: config.restUrl,
+		restNonce: config.restNonce,
+		locale: config.locale,
+		store,
+	} );
 	const workspace = config.surface === 'workspace';
 
 	const refreshHistory = useCallback( () => {
@@ -296,18 +275,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const ask = useCallback(
 		async ( text: string ) => {
 			const uploads = files.uploads;
-			const question = [
-				text.trim(),
-				...uploads.map( ( upload ) =>
-					// translators: %s is the name of a file the visitor attached.
-					__( 'Attached: %s', 'linker-tools' ).replace(
-						'%s',
-						upload.name
-					)
-				),
-			]
-				.filter( ( part ) => part !== '' )
-				.join( '\n' );
+			const question = buildQuestion( text, uploads );
 			if ( ! question || sending.current || files.busy ) {
 				return;
 			}
@@ -356,13 +324,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				} catch ( error ) {
 					// A file the proxy refused (Attachments.php) is said as
 					// such; anything else is Genie not answering.
-					const reason =
-						error instanceof TurnError &&
-						error.code.startsWith( 'linker_genie_attachment_' )
-							? error.code.slice(
-									'linker_genie_attachment_'.length
-								)
-							: '';
+					const reason = attachmentRefusalReason( error );
 					if ( reason ) {
 						// Nothing was sent: the question leaves the thread and
 						// goes back into the field, to send again without
@@ -397,13 +359,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const typeModel = useCallback( () => {
 		// The model goes where the placeholder stands; the field opens with
 		// the words before it, ready for the customer to type the name.
-		setInput(
-			sprintf(
-				// translators: %s stays empty: the customer types the model after the words.
-				__( 'My device is the %s', 'linker-tools' ),
-				''
-			)
-		);
+		setInput( typeModelPrompt() );
 		field.current?.focus();
 	}, [] );
 
@@ -569,35 +525,29 @@ export function App( { config }: { config: GenieConfig } ) {
 	// has none, the button says so and stays. The recognition lives for the
 	// mount; stopping it on unmount is what a second mount must not inherit.
 	const dictate = useCallback( () => {
-		const SpeechRecognition =
-			window.SpeechRecognition ?? window.webkitSpeechRecognition;
-		if ( ! SpeechRecognition ) {
+		if ( dictating ) {
+			dictation.current?.stop();
 			return;
 		}
-		if ( dictating && recognition.current ) {
-			recognition.current.stop();
-			return;
-		}
-		const session = new SpeechRecognition();
-		session.lang = config.locale === 'de' ? 'de-DE' : 'en-US';
-		session.onresult = ( event ) => {
-			const heard = event.results[ 0 ]?.[ 0 ]?.transcript ?? '';
-			if ( heard ) {
+		const session = startDictation(
+			window,
+			config.locale,
+			( heard ) =>
 				setInput( ( current ) =>
 					current ? `${ current } ${ heard }` : heard
-				);
-			}
-		};
-		session.onend = () => setDictating( false );
-		session.onerror = () => setDictating( false );
-		recognition.current = session;
+				),
+			() => setDictating( false )
+		);
+		if ( ! session ) {
+			return;
+		}
+		dictation.current = session;
 		setDictating( true );
-		session.start();
 	}, [ config.locale, dictating ] );
 
 	// The mount's own cleanup, not a reaction to a render; the ref is the
 	// one thing the deps rule treats as stable, so the list stays empty.
-	useEffect( () => () => recognition.current?.stop(), [] );
+	useEffect( () => () => dictation.current?.stop(), [] );
 
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const cardPrices = pricesOf( turn?.blocks ?? [] );
@@ -626,11 +576,13 @@ export function App( { config }: { config: GenieConfig } ) {
 				// shut: read it before showing, then deliver any question.
 				const message =
 					typeof detail.message === 'string' ? detail.message : '';
-				void showStored().then( () => {
-					if ( message ) {
-						void ask( message );
-					}
-				} );
+				void showStored()
+					.then( () => {
+						if ( message ) {
+							void ask( message );
+						}
+					} )
+					.catch( () => undefined );
 				return;
 			}
 			if (
@@ -656,75 +608,6 @@ export function App( { config }: { config: GenieConfig } ) {
 	useEffect( () => {
 		window.dispatchEvent( new CustomEvent( 'linker-genie-ready' ) );
 	}, [] );
-
-	function onCardStatus( productId: number, state: CardState, text: string ) {
-		setCards( ( items ) => {
-			const found = items.some(
-				( item ) => item.productId === productId
-			);
-			return found
-				? items.map( ( item ) =>
-						item.productId === productId
-							? { ...item, status: { state, text } }
-							: item
-					)
-				: [ ...items, { productId, status: { state, text } } ];
-		} );
-	}
-
-	async function addCardToDraft( productId: number ) {
-		onCardStatus( productId, 'pending', __( 'Adding…', 'linker-tools' ) );
-		const complete = await store.addAll(
-			[ { productId, quantity: 1 } ],
-			( id, state ) =>
-				onCardStatus(
-					id,
-					state,
-					{
-						pending: __( 'Adding…', 'linker-tools' ),
-						added: __( 'In your solution draft.', 'linker-tools' ),
-						unverified: __(
-							'Sent, but the draft does not show it yet. Please check.',
-							'linker-tools'
-						),
-						retry: __( 'Not added. Try again.', 'linker-tools' ),
-					}[ state ]
-				)
-		);
-		void complete;
-	}
-
-	async function saveCardSolution( productId: number, title: string ) {
-		onCardStatus( productId, 'pending', __( 'Saving…', 'linker-tools' ) );
-		try {
-			await saveSolution( config.restUrl, config.restNonce, {
-				kind: 'residential',
-				title,
-				input: {
-					locale: config.locale,
-					plz: '',
-					annual_kwh: 0,
-					pv_kwp: 0,
-					phase: 3,
-					backup: 'none',
-					heat_pump: false,
-					electric_vehicle: false,
-				},
-				lines: [ { productId, quantity: 1 } ],
-			} );
-			onCardStatus(
-				productId,
-				'added',
-				__( 'Saved to your account.', 'linker-tools' )
-			);
-		} catch {
-			onCardStatus(
-				productId,
-				'retry',
-				__( 'Not saved. Try again.', 'linker-tools' )
-			);
-		}
-	}
 
 	const historyView = ! workspace && dockHistory;
 	// A conversation with an answer can be emailed; one still waiting for
@@ -1237,16 +1120,9 @@ export function App( { config }: { config: GenieConfig } ) {
 												restUrl={ config.restUrl }
 												store={ store }
 												locale={ config.locale }
-												status={
-													cards.find(
-														( item ) =>
-															item.productId ===
-															productId
-													)?.status ?? {
-														state: 'idle',
-														text: '',
-													}
-												}
+												status={ cardStatusFor(
+													productId
+												) }
 												price={ cardPrices.find(
 													( line ) =>
 														line.product_id ===
@@ -1748,27 +1624,4 @@ function HistoryList( {
 			) : null }
 		</>
 	);
-}
-
-/**
- * The price lines of the turn's cards, as the service filled them (#242).
- *
- * @param blocks The turn's blocks.
- */
-function pricesOf( blocks: Block[] ): CardPrice[] {
-	for ( const block of blocks ) {
-		if ( 'cards' === block.type ) {
-			return block.prices ?? [];
-		}
-	}
-	return [];
-}
-
-function idsOf( blocks: Block[], kind: 'cards' | 'compare' ): number[] {
-	for ( const block of blocks ) {
-		if ( block.type === kind ) {
-			return ( block as CardsBlock | CompareBlock ).product_ids;
-		}
-	}
-	return [];
 }

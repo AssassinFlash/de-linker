@@ -131,16 +131,34 @@ afterEach( () => {
 	document.body.innerHTML = '';
 } );
 
-test( 'the resting hero is left exactly as it was', () => {
+test( 'the resting hero is left visually as it was; the hidden surface is ready', () => {
 	const { hero } = start( session().session );
 
 	expect( hero.classList.contains( 'linker-genie-hero--open' ) ).toBe(
 		false
 	);
+	const host = document.querySelector< HTMLElement >(
+		'.linker-genie-hero__host'
+	)!;
+	expect( host ).not.toBeNull();
+	expect( host.hidden ).toBe( true );
+	expect( host.id ).toBe( 'linker-genie-hero-surface' );
 	expect(
 		document.querySelector( '.linker-genie-hero__surface' )
 	).toBeNull();
 	expect( document.querySelector( '.linker-genie-hero-pill' ) ).toBeNull();
+
+	// The six triggers point at the surface and start collapsed (item 3).
+	const triggers = document.querySelectorAll(
+		'.hero-prompt, .hero-send, .hero-capsule, [data-linker-assistant-open]'
+	);
+	expect( triggers ).toHaveLength( 6 );
+	triggers.forEach( ( trigger ) => {
+		expect( trigger.getAttribute( 'aria-expanded' ) ).toBe( 'false' );
+		expect( trigger.getAttribute( 'aria-controls' ) ).toBe(
+			'linker-genie-hero-surface'
+		);
+	} );
 } );
 
 test( 'typing and Enter unfolds the conversation in place', async () => {
@@ -166,6 +184,16 @@ test( 'typing and Enter unfolds the conversation in place', async () => {
 	expect(
 		screen.getByText( "Genie - Linker's AI assistant" )
 	).toBeInTheDocument();
+	// Focus moves into the surface and every trigger says it is expanded.
+	const close = document.querySelector( '.linker-genie-hero__close' )!;
+	expect( close.ownerDocument.activeElement ).toBe( close );
+	document
+		.querySelectorAll(
+			'.hero-prompt, .hero-send, .hero-capsule, [data-linker-assistant-open]'
+		)
+		.forEach( ( trigger ) =>
+			expect( trigger.getAttribute( 'aria-expanded' ) ).toBe( 'true' )
+		);
 } );
 
 test( 'an empty Enter leaves the resting hero alone', async () => {
@@ -233,10 +261,10 @@ test( 'the close button restores the resting hero and keeps the conversation', a
 		{ role: 'assistant', content: 'Here are the SAJ models.' },
 	] );
 	const { hero } = start( answers.session );
+	const capsule =
+		document.querySelector< HTMLAnchorElement >( '.hero-capsule' )!;
 	await act( async () => {
-		fireEvent.click(
-			document.querySelector< HTMLAnchorElement >( '.hero-capsule' )!
-		);
+		fireEvent.click( capsule );
 	} );
 	await screen.findByText( 'Here are the SAJ models.' );
 
@@ -247,6 +275,15 @@ test( 'the close button restores the resting hero and keeps the conversation', a
 	expect( hero.classList.contains( 'linker-genie-hero--open' ) ).toBe(
 		false
 	);
+	// Focus returns to the control that opened the conversation (item 3).
+	expect( capsule.ownerDocument.activeElement ).toBe( capsule );
+	document
+		.querySelectorAll(
+			'.hero-prompt, .hero-send, .hero-capsule, [data-linker-assistant-open]'
+		)
+		.forEach( ( trigger ) =>
+			expect( trigger.getAttribute( 'aria-expanded' ) ).toBe( 'false' )
+		);
 	expect(
 		document.querySelector( '.linker-genie-hero__surface' )
 	).toBeNull();
@@ -352,7 +389,8 @@ test( 'the nameplate button opens a photo picker and sends the picked photo', as
 	const input =
 		document.querySelector< HTMLInputElement >( 'input[type="file"]' )!;
 	expect( input.accept ).toContain( 'image/jpeg' );
-	expect( input.accept ).not.toContain( 'application/pdf' );
+	// One accepted set for both buttons (prepare.ts ACCEPT).
+	expect( input.accept ).toContain( 'application/pdf' );
 
 	const file = new File( [ 'plain text' ], 'notes.txt', {
 		type: 'text/plain',

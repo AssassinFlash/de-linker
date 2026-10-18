@@ -165,7 +165,37 @@ test( 'load is read once per session', async () => {
 
 	await session.load();
 	await session.load();
-	await session.ask( 'One more.' );
 
 	expect( read ).toHaveBeenCalledTimes( 1 );
+} );
+
+test( 'every send re-reads the thread, so a dock turn is not overwritten', async () => {
+	const { state, read, send } = server( DOCK_THREAD );
+	const session = new HeroSession( CONFIG, read, send );
+
+	await session.load();
+	// The dock answered while the hero was folded (or both surfaces are open).
+	state.messages = [
+		...DOCK_THREAD,
+		{ role: 'user', content: 'Dock follow-up' },
+		{ role: 'assistant', content: 'Dock answer' },
+	] as TurnMessage[];
+
+	await session.ask( 'Hero follow-up' );
+
+	const sent = send.mock.calls[ 0 ][ 3 ].map(
+		( message ) => message.content
+	);
+	expect( sent ).toEqual( [
+		'Which inverters fit a three-phase home?',
+		'These three fit.',
+		'Dock follow-up',
+		'Dock answer',
+		'Hero follow-up',
+	] );
+	expect( state.messages.map( ( message ) => message.content ) ).toEqual( [
+		...sent,
+		'Answer 5',
+	] );
+	expect( read ).toHaveBeenCalledTimes( 2 );
 } );
