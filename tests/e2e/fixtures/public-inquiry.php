@@ -39,7 +39,7 @@ if ( ! is_array( $state ) ) { throw new RuntimeException( 'No browser fixture to
 $orders = wc_get_orders( array( 'billing_email' => $state['email'], 'limit' => -1 ) );
 $jobs = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type='linker_mail_job' AND ID > %d ORDER BY ID", $state['marker'] ) );
 if ( 'read' === $mode ) {
-	echo wp_json_encode( array( 'orders' => array_map( static fn ( $order ) => array( 'status' => $order->get_status(), 'source' => $order->get_meta( '_linker_inquiry_source' ), 'skipped' => $order->get_meta( '_linker_receipt_skipped' ), 'items' => count( $order->get_items() ) ), $orders ), 'mail' => array_map( static fn ( $id ) => json_decode( get_post_meta( $id, '_linker_mail_message', true ), true ), $jobs ) ) );
+	echo wp_json_encode( array( 'orders' => array_map( static fn ( $order ) => array( 'status' => $order->get_status(), 'customer' => $order->get_customer_id(), 'source' => $order->get_meta( '_linker_inquiry_source' ), 'skipped' => $order->get_meta( '_linker_receipt_skipped' ), 'items' => count( $order->get_items() ) ), $orders ), 'mail' => array_map( static fn ( $id ) => json_decode( get_post_meta( $id, '_linker_mail_message', true ), true ), $jobs ) ) );
 	return;
 }
 if ( 'cleanup' !== $mode ) { throw new RuntimeException( 'Unknown fixture mode.' ); }

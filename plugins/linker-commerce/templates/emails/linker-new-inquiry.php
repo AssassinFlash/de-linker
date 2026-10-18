@@ -7,6 +7,7 @@
  * @package Linker\Commerce
  *
  * @var WC_Order $order              The inquiry.
+ * @var string   $sender_label       Company, name, or real reply email.
  * @var string   $email_heading      Heading.
  * @var string   $additional_content Closing paragraph from the email settings.
  * @var bool     $sent_to_admin      True.
@@ -23,13 +24,22 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 <p>
 <?php
-printf(
-	/* translators: 1: inquiry number, 2: company, 3: customer's full name. */
-	esc_html__( 'New inquiry %1$s from %2$s (%3$s).', 'linker-commerce' ),
-	esc_html( '#' . $order->get_order_number() ),
-	esc_html( '' !== $order->get_billing_company() ? $order->get_billing_company() : $order->get_formatted_billing_full_name() ),
-	esc_html( $order->get_formatted_billing_full_name() )
-);
+if ( '' === trim( $order->get_formatted_billing_full_name() ) ) {
+	printf(
+		/* translators: 1: inquiry number, 2: company or reply email when no name was given. */
+		esc_html__( 'New inquiry %1$s from %2$s.', 'linker-commerce' ),
+		esc_html( '#' . $order->get_order_number() ),
+		esc_html( $sender_label )
+	);
+} else {
+	printf(
+		/* translators: 1: inquiry number, 2: company, 3: customer's full name. */
+		esc_html__( 'New inquiry %1$s from %2$s (%3$s).', 'linker-commerce' ),
+		esc_html( '#' . $order->get_order_number() ),
+		esc_html( $sender_label ),
+		esc_html( $order->get_formatted_billing_full_name() )
+	);
+}
 ?>
 </p>
 <p><a href="<?php echo esc_url( $order->get_edit_order_url() ); ?>"><?php esc_html_e( 'Open the inquiry', 'linker-commerce' ); ?></a></p>

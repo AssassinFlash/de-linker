@@ -1,0 +1,26 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+FF                                                                  2 / 2 (100%)
+
+Time: 00:00.380, Memory: 136.00 MB
+
+There were 2 failures:
+
+1) Linker\Commerce\Tests\Integration\PublicSubmissionTest::test_nameless_handoff_has_complete_customer_and_team_letters with data set #0 ('en', 'Hello,')
+The receipt has a complete salutation without an empty name.
+Failed asserting that 0 is identical to 1.
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/PublicSubmissionTest.php:248
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+2) Linker\Commerce\Tests\Integration\PublicSubmissionTest::test_nameless_handoff_has_complete_customer_and_team_letters with data set #1 ('de', 'Guten Tag,')
+The receipt has a complete salutation without an empty name.
+Failed asserting that 0 is identical to 1.
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/PublicSubmissionTest.php:248
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 2, Assertions: 6, Failures: 2.

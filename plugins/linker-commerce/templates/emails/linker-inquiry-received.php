@@ -23,8 +23,12 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 <p>
 <?php
-/* translators: %s: the customer's full name. */
-printf( esc_html__( 'Hello %s,', 'linker-commerce' ), esc_html( $order->get_formatted_billing_full_name() ) );
+if ( '' === trim( $order->get_formatted_billing_full_name() ) ) {
+	esc_html_e( 'Hello,', 'linker-commerce' );
+} else {
+	/* translators: %s: the customer's full name. */
+	printf( esc_html__( 'Hello %s,', 'linker-commerce' ), esc_html( $order->get_formatted_billing_full_name() ) );
+}
 ?>
 </p>
 <p>

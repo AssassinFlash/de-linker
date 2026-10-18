@@ -214,6 +214,45 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * Optional-name callers get complete, localized letters without blank placeholders.
+	 *
+	 * @testWith ["en", "Hello,"]
+	 *           ["de", "Guten Tag,"]
+	 * @param string $language Inquiry language.
+	 * @param string $greeting Independently reviewed generic salutation.
+	 */
+	public function test_nameless_handoff_has_complete_customer_and_team_letters( string $language, string $greeting ): void {
+		$this->as_user( 0 );
+		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
+		$email   = 'tester246-nameless-' . self::tag() . '@example.test';
+		$details = \Linker\Commerce\Contact\Submission::from_handoff(
+			array(
+				'email'   => $email,
+				'message' => 'Please contact me.',
+				'consent' => '1',
+				'lang'    => $language,
+			)
+		);
+		$this->assertInstanceOf( \Linker\Commerce\Contact\Submission::class, $details );
+		$marker = self::newest_mail_job();
+		$order  = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$rows     = array_map( static fn ( int $id ): array => json_decode( (string) get_post_meta( $id, '_linker_mail_message', true ), true ), self::mail_jobs_after( $marker ) );
+		$receipts = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $email ) === $row['to'] ) );
+		$team     = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $email ) !== $row['to'] ) );
+		$this->assertCount( 1, $receipts );
+		$this->assertSame( 1, preg_match( '/<p[^>]*>\s*' . preg_quote( $greeting, '/' ) . '\s*<\/p>/', $receipts[0]['body'] ), 'The receipt has a complete salutation without an empty name.' );
+		$this->assertCount( 1, $team );
+		$this->assertStringEndsWith( $email, $team[0]['subject'] );
+		$this->assertStringContainsString( $email . '.', $team[0]['body'] );
+		$this->assertStringNotContainsString( '().', $team[0]['body'] );
+	}
+
+	/**
 	 * Both public doors.
 	 *
 	 * @return array<string, array{string}>

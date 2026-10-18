@@ -1,0 +1,38 @@
+
+Running 1 test using 1 worker
+
+(node:58174) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/public-inquiry.spec.ts:16:5 › en 390 request capped: fresh guest can submit after Woo creates its cookie (22.9s)
+
+
+  1) [chromium] › specs/public-inquiry.spec.ts:16:5 › en 390 request capped: fresh guest can submit after Woo creates its cookie
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByText('We have not sent a confirmation email.')
+    Expected: visible
+    Received: hidden
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toBeVisible" getByText('We have not sent a confirmation email.') with timeout 15000ms
+      - waiting for getByText('We have not sent a confirmation email.')
+        34 × locator resolved to <p class="linker-next-steps">We have not sent a confirmation email. The Linker…</p>
+           - unexpected value "hidden"
+
+
+       98 | 								? (door === 'contact' ? 'Eine Bestätigung per E-Mail wurde nicht versendet.' : 'Es wurde keine Bestätigungs-E-Mail versendet.')
+       99 | 								: 'We have not sent a confirmation email.';
+    > 100 | 							await expect(page.getByText(notice, { exact: false })).toBeVisible();
+          | 							                                                       ^
+      101 | 						}
+      102 |
+      103 | 						mkdirSync(evidence, { recursive: true });
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c246/tests/e2e/specs/public-inquiry.spec.ts:100:63
+
+    Error Context: artifacts/test-results/public-inquiry-en-390-requ-a5f1b-fter-Woo-creates-its-cookie-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/public-inquiry.spec.ts:16:5 › en 390 request capped: fresh guest can submit after Woo creates its cookie
+error: recipe `e2e` failed with exit code 1

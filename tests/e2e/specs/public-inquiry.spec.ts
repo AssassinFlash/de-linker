@@ -78,6 +78,10 @@ for (const language of ['en', 'de']) {
 						).toBeVisible();
 						const readback = JSON.parse(run('read'));
 						expect(readback.orders).toHaveLength(1);
+						expect(readback.orders[0].customer).toBe(0);
+						expect(readback.orders[0].items).toBe(
+							door === 'request' ? 1 : 0
+						);
 						expect(readback.orders[0].status).toBe(
 							'inquiry-received'
 						);
@@ -94,13 +98,15 @@ for (const language of ['en', 'de']) {
 							expect(readback.orders[0].skipped).toBe(
 								'daily_cap'
 							);
-							await expect(page.locator('body')).toContainText(
+							const notice =
 								language === 'de'
 									? door === 'contact'
 										? 'Eine Bestätigung per E-Mail wurde nicht versendet.'
 										: 'Es wurde keine Bestätigungs-E-Mail versendet.'
-									: 'We have not sent a confirmation email.'
-							);
+									: 'We have not sent a confirmation email.';
+							await expect(
+								page.getByText(notice, { exact: false })
+							).toBeVisible();
 						}
 
 						mkdirSync(evidence, { recursive: true });
@@ -115,6 +121,27 @@ for (const language of ['en', 'de']) {
 								2
 							)
 						);
+						expect(
+							await page.evaluate(
+								() =>
+									document.documentElement.scrollWidth <=
+									innerWidth
+							)
+						).toBe(true);
+						await page.evaluate(async () => {
+							await document.fonts.ready;
+							await Promise.all(
+								Array.from(document.images, async (image) => {
+									image.loading = 'eager';
+									await Promise.race([
+										image.decode().catch(() => undefined),
+										new Promise((resolve) =>
+											setTimeout(resolve, 5_000)
+										),
+									]);
+								})
+							);
+						});
 						await page.screenshot({
 							path: join(
 								evidence,
