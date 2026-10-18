@@ -4,7 +4,7 @@
  *
  * Design authority: the owner's 2026-10-18 review requested a calmer whole
  * product page. A balanced gallery/inquiry panel, dominant product title,
- * readable document and compatibility rows, and a solid mobile action bar use
+ * readable document and compatibility rows use
  * this site's existing fonts, colours and spacing scale from tokens.css.
  * Remaining section dimensions follow the accepted product-page prototype
  * in docs/design/2026-10-15-pdp-prototype/index.html.
@@ -1361,7 +1361,7 @@
 /* ================================================================
    RESPONSIVE — one breakpoint set for the whole page: <=1023px the
    upper stacks, <=860px the phone layout (app-sized rail, dots,
-   solid bottom action bar).
+   floating glass action pill).
    ================================================================ */
 @media (max-width: 1023px) {
 	#tv-storefront-pdp .pdp-pairings {
@@ -1413,7 +1413,7 @@
 @media (max-width: 860px) {
 	/* The phone page keeps its own order: identity, key figures, delivery,
 	   the second action, the tool row, the project entry — the price and the
-	   primary action live in the bottom action bar. */
+	   primary action live in the action pill below. */
 	#tv-storefront-pdp {
 		padding-bottom: calc(var(--pdp-action-height, 64px) + 52px);
 	}
@@ -1762,20 +1762,23 @@
 		font-size: 15px;
 	}
 
-	/* A stable, solid action bar follows the owner's product-page correction. */
+	/* The phone action bar: the floating glass pill. */
 	#tv-storefront-pdp .pdp-mobile-action {
 		position: fixed;
 		z-index: 60;
-		left: 0;
-		right: 0;
-		bottom: 0;
+		left: 12px;
+		right: 12px;
+		bottom: calc(12px + env(safe-area-inset-bottom));
 		display: flex;
 		align-items: center;
 		gap: 10px;
-		padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
-		border-top: 1px solid var(--pdp-line);
-		background: var(--pdp-paper);
-		box-shadow: 0 -4px 20px rgba(21, 53, 47, 0.06);
+		padding: 6px 6px 6px 16px;
+		border: 1px solid rgba(255, 255, 255, 0.55);
+		border-radius: var(--proto-radius-round);
+		background: rgba(255, 255, 255, 0.72);
+		-webkit-backdrop-filter: blur(20px) saturate(1.6);
+		backdrop-filter: blur(20px) saturate(1.6);
+		box-shadow: 0 8px 28px rgba(21, 53, 47, 0.14);
 	}
 
 	#tv-storefront-pdp .pdp-mobile-action .pdp-price {
@@ -1800,11 +1803,11 @@
 	#tv-storefront-pdp .pdp-mobile-action .pdp-btn-dark {
 		flex: 0 0 auto;
 		width: auto;
-		max-width: 12rem;
+		max-width: 10.5rem;
 		min-height: 44px;
 		margin: 0;
 		padding: 10px 16px;
-		border-radius: 12px;
+		border-radius: var(--proto-radius-round);
 		font-size: 14px;
 		line-height: 1.15;
 		white-space: normal;
