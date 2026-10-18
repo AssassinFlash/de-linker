@@ -32,7 +32,10 @@ python3 -m unittest discover -s tests/visual -p 'test_*.py'
 
 Capture conditions preserve the already measured procedure: software raster and
 sRGB to avoid GPU dithering, disabled motion/caret, full-height layout before
-decoding lazy images, and loaded fonts. The preview card is dismissed only in
+decoding visible images, and loaded fonts. Native lazy loading and responsive
+image selection remain unchanged; hidden lazy menu images are not awaited.
+For filled drafts, `capture.json` also records the selected cart image URL and
+natural size for each side. The preview card is dismissed only in
 each disposable browser context so the page is captured at rest. Historical
 acceptance artefacts stay in their ticket directories; new runs call this tool.
 

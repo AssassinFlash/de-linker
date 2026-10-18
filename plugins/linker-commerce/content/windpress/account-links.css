@@ -253,12 +253,20 @@ body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>
 .linker-genie-app .linker-genie-message-body li>p{margin-bottom:8px}
 .linker-genie-app .linker-genie-message-body thead{background:#f7f7f7}
 .linker-genie-app .linker-genie-message-body th{font-weight:600;border-top:1px solid #e5e5e5}
-.linker-genie-app .linker-genie-app__ask{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:20px 0 0;margin:16px 0 20px;border-top:1px solid #ebebeb}
-.linker-genie-ask-label{grid-column:1/-1;margin:0 0 4px;font-size:13px;line-height:20px;font-weight:600;color:#5d5d5d}
-.linker-genie-app .linker-genie-app__ask>.linker-genie-app__chip{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;min-height:48px;padding:12px 14px;border:1px solid #e5e5e5;border-radius:12px;background:#fff;color:#262626;font-size:14px;line-height:20px;text-align:left;white-space:normal}
-.linker-genie-app .linker-genie-app__ask>.linker-genie-app__chip:hover{background:#f7f7f7;border-color:#bdbdbd}
+/* Quick replies are immediate send actions. The contained group and explicit
+   send label distinguish them from document links and from answer prose. */
+.linker-genie-app .linker-genie-app__ask{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:18px;margin:20px 0;border:1px solid #dededb;border-radius:16px;background:#f7f7f5}
+.linker-genie-ask-heading{grid-column:1/-1;margin-bottom:4px}
+.linker-genie-ask-title{margin:0;font-size:14px;line-height:22px;font-weight:650;color:#262626}
+.linker-genie-ask-hint{margin:2px 0 0;font-size:12px;line-height:18px;color:#646464}
+.linker-genie-ask-label{grid-column:1/-1;margin:0;font-size:12px;line-height:18px;font-weight:600;color:#646464}
+.linker-genie-app .linker-genie-app__ask>.linker-genie-app__chip{display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0;min-height:52px;padding:12px 14px;border:1px solid #c8c8c3;border-radius:10px;background:#fff;color:#262626;font-size:14px;line-height:22px;text-align:left;white-space:normal;box-shadow:0 1px 2px #00000006}
+.linker-genie-app .linker-genie-app__ask>.linker-genie-app__chip:hover{background:#eeefeb;border-color:#777b74}
 .linker-genie-app .linker-genie-app__ask>.linker-genie-app__chip:focus-visible{outline:2px solid #181818;outline-offset:2px}
-.linker-genie-app__ask>.linker-genie-app__chip>span{flex-shrink:0;color:#858585}
+.linker-genie-app .linker-genie-ask-option{min-width:0;font-weight:600;overflow-wrap:anywhere}
+.linker-genie-app .linker-genie-ask-send{display:flex;align-items:center;gap:6px;flex-shrink:0;font-size:12px;font-weight:500;color:#555d56}
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__ask{grid-template-columns:minmax(0,1fr)}
+@media(max-width:767px){.linker-genie-app .linker-genie-app__ask{grid-template-columns:minmax(0,1fr);padding:14px}}
 .linker-genie-app .linker-genie-document-row{margin:12px 0}
 .linker-genie-app .linker-genie-app__document{display:flex;align-items:center;gap:12px;width:fit-content;max-width:100%;padding:12px 14px;border:1px solid #e5e5e5;border-radius:12px;background:#fafafa;color:#262626;font-size:14px;line-height:22px;text-decoration:none;overflow-wrap:anywhere}
 .linker-genie-app__document>svg{flex-shrink:0;color:#737373}

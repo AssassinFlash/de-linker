@@ -2037,3 +2037,11 @@ msgstr ""
 #: build/genie.js
 msgid "Continue with your project"
 msgstr "Weiter mit Ihrem Projekt"
+
+#: build/genie.js
+msgid "Reply with an option"
+msgstr "Antwort auswählen"
+
+#: build/genie.js
+msgid "Your selection is sent to Genie."
+msgstr "Ihre Auswahl wird an Genie gesendet."

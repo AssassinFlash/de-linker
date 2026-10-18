@@ -183,7 +183,7 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 	);
 	expect( await screen.findByText( 'Three-phase' ) ).toBeInTheDocument();
 	expect(
-		screen.getByRole( 'group', { name: 'Grid connection' } )
+		screen.getByRole( 'group', { name: 'Reply with an option' } )
 	).toBeInTheDocument();
 	// The disclosure is still there exactly once after the turn.
 	expect(

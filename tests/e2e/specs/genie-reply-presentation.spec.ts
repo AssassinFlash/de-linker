@@ -201,10 +201,20 @@ for (const locale of ['en', 'de'] as const) {
 					)
 					.toBeLessThan(2);
 				const choices = page.getByRole('group', {
-					name: german ? 'Netzanschluss' : 'Grid connection',
+					name: german ? 'Antwort auswählen' : 'Reply with an option',
 				});
 				await expect(choices).toBeInViewport({ ratio: 1 });
 				await expect(choices.getByRole('button')).toHaveCount(2);
+				await expect(
+					choices.getByText(
+						german
+							? 'Ihre Auswahl wird an Genie gesendet.'
+							: 'Your selection is sent to Genie.'
+					)
+				).toBeVisible();
+				await expect(
+					choices.locator('.linker-genie-ask-send')
+				).toHaveText(german ? ['Senden', 'Senden'] : ['Send', 'Send']);
 				const finalLine = page
 					.locator('.linker-genie-message-body p')
 					.last();

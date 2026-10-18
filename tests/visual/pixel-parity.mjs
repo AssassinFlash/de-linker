@@ -67,6 +67,7 @@ for (const width of widths) {
 		let language;
 		let headerHeight;
 		const ruledRegions = new Map();
+		const imageSources = {};
 		for (const [base, label] of values.baseline
 			? [[localBase, "before"]]
 			: [
@@ -144,18 +145,39 @@ for (const width of widths) {
 				await page.waitForLoadState("networkidle");
 				await page.evaluate(async () => {
 					await Promise.all(
-						[...document.images].map((img) => img.decode().catch(() => {})),
+						[...document.images]
+							.filter(
+								(img) =>
+									img.getClientRects().length > 0 &&
+									getComputedStyle(img).visibility !== "hidden",
+							)
+							.map((img) => img.decode().catch(() => {})),
 					);
 				});
 				await page.waitForLoadState("networkidle");
 				await page.evaluate(async () => {
 					await Promise.all(
-						[...document.images].map((img) => img.decode().catch(() => {})),
+						[...document.images]
+							.filter(
+								(img) =>
+									img.getClientRects().length > 0 &&
+									getComputedStyle(img).visibility !== "hidden",
+							)
+							.map((img) => img.decode().catch(() => {})),
 					);
 					await document.fonts.ready;
 				});
 				// Existing capture setup settles fonts/layout for 800ms after decode.
 				await page.waitForTimeout(800);
+				imageSources[label] = await page
+					.locator(".woocommerce-cart-form img")
+					.evaluateAll((images) =>
+						images.map((img) => ({
+							source: new URL(img.currentSrc).pathname,
+							loading: img.loading,
+							natural: [img.naturalWidth, img.naturalHeight],
+						})),
+					);
 				const metadata = await page.evaluate(() => ({
 					language: document.documentElement.lang.split(/[-_]/)[0],
 					headerHeight: Math.ceil(
@@ -240,6 +262,7 @@ for (const width of widths) {
 			language,
 			headerHeight,
 			ruledRegions: [...ruledRegions.values()],
+			imageSources,
 		});
 	}
 }
