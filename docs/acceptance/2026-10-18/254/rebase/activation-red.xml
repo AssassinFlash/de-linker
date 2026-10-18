@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="1" assertions="17" errors="0" warnings="0" failures="1" skipped="0" time="17.203636">
+    <testsuite name="integration" tests="1" assertions="17" errors="0" warnings="0" failures="1" skipped="0" time="17.203636">
+      <testsuite name="Linker\I18n\Tests\Integration\GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" tests="1" assertions="17" errors="0" warnings="0" failures="1" skipped="0" time="17.203636">
+        <testcase name="test_activation_recovers_from_a_stale_individual_option_cache" class="Linker\I18n\Tests\Integration\GermanUrlsTest" classname="Linker.I18n.Tests.Integration.GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" line="264" assertions="17" time="17.203636">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Linker\I18n\Tests\Integration\GermanUrlsTest::test_activation_recovers_from_a_stale_individual_option_cache
+Rollback must remove the observed cached activation without a database row.
+Failed asserting that '1' is null.
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php:270</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

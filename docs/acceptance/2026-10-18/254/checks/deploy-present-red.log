@@ -1,0 +1,52 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/c254/tools/cutover
+configfile: pyproject.toml
+collected 47 items / 46 deselected / 1 selected
+
+tests/test_steps.py F                                                    [100%]
+
+=================================== FAILURES ===================================
+_______ test_deploy_publishes_the_volume_before_native_cache_generation ________
+
+tmp_path = PosixPath('/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/pytest-of-chesterjohn/pytest-176/test_deploy_publishes_the_volu0')
+
+    def test_deploy_publishes_the_volume_before_native_cache_generation(
+        tmp_path: Path,
+    ) -> None:
+        """A fresh volume needs WindPress's browser compilation before final verify."""
+    
+        class UncompiledVolume(FilesystemTarget):
+            """The native present command rejects a cache older than its new sources."""
+    
+            def wp(self, *args: str, check: bool = True) -> str:
+                if args[:2] == ("linker-commerce", "present") and "--allow-stale" not in args:
+                    raise CutoverError("WindPress cache is stale: generate it in its admin")
+                return super().wp(*args, check=check)
+    
+        target = UncompiledVolume(tmp_path / "site")
+>       result = steps.deploy(
+            target,
+            repository=_repository(tmp_path),
+            staging=tmp_path / "staging",
+            deploy_id="20261018T000000Z-fixture",
+        )
+
+tests/test_steps.py:460: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/linker_cutover/steps.py:305: in deploy
+    target.wp("linker-commerce", "present", "--user=1")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = test_deploy_publishes_the_volume_before_native_cache_generation.<locals>.UncompiledVolume(label='fixture', root='/priv...76/test_deploy_publishes_the_volu0/site', base_url='http://127.0.0.1', prefix=(), shell_prefix=None, rsync_remote=None)
+check = True, args = ('linker-commerce', 'present', '--user=1')
+
+    def wp(self, *args: str, check: bool = True) -> str:
+        if args[:2] == ("linker-commerce", "present") and "--allow-stale" not in args:
+>           raise CutoverError("WindPress cache is stale: generate it in its admin")
+E           linker_cutover.target.CutoverError: WindPress cache is stale: generate it in its admin
+
+tests/test_steps.py:456: CutoverError
+=========================== short test summary info ============================
+FAILED tests/test_steps.py::test_deploy_publishes_the_volume_before_native_cache_generation
+======================= 1 failed, 46 deselected in 0.80s =======================

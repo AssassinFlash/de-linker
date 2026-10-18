@@ -1,0 +1,120 @@
+{
+  "source_commit": "103a70ee4b2c68065e9d83a6fac583545583bdbd",
+  "base_origin_main": "4cf4936355f93c8b1ca38747985c7373873b7b31",
+  "instance": "c254 http://127.0.0.1:9129",
+  "snapshot": {
+    "name": "20261018-1043",
+    "taken": "2026-10-18T02:52:16+00:00",
+    "loaded": "2026-10-18T02:54:26+00:00"
+  },
+  "completed_at_utc": "2026-10-18T13:31:56.657195+00:00",
+  "standard_checks": {
+    "just check": {
+      "exit_code": 0,
+      "output": "../checks/rebased-just-check.log"
+    },
+    "just test": {
+      "exit_code": 0,
+      "output": "../checks/rebased-just-test.log"
+    },
+    "default_skipped_integrations_are_acceptance": false
+  },
+  "explicit_current_source_integration": {
+    "GermanUrlsTest_and_JournalTitlesTest": [
+      {
+        "tests": 30,
+        "assertions": 35611,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0,
+        "file": "integration-1.xml",
+        "seconds": 897.472689
+      },
+      {
+        "tests": 30,
+        "assertions": 35611,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0,
+        "file": "integration-2.xml",
+        "seconds": 847.788797
+      }
+    ],
+    "OpenInquiryTest_and_BlogSingleFaceTest": [
+      {
+        "tests": 24,
+        "assertions": 197,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0,
+        "file": "inquiry-reader-1.xml",
+        "seconds": 5.971511
+      },
+      {
+        "tests": 24,
+        "assertions": 197,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0,
+        "file": "inquiry-reader-2.xml",
+        "seconds": 5.31563
+      }
+    ]
+  },
+  "routes": {
+    "reviewed": 184,
+    "changed_first_hop_301": 97,
+    "distinct_canonical_titles": 175,
+    "defects": 0,
+    "sitemap": {
+      "german": 149,
+      "english": 148,
+      "english_unchanged": true,
+      "german_expected": true
+    },
+    "full_table": "completion.md",
+    "http_readback": "route-results.json"
+  },
+  "visual": {
+    "current_source_native_readback": "visual-readback.json",
+    "current_source_frames": 8,
+    "source_delta": "source-delta.json",
+    "strict_pixel_report": "../pixel-results.json",
+    "strict_pixel_capture_base": "1f271843c0e65d0cbdc59f52fd8be120211be87b",
+    "strict_pixel_capture_source": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+    "unaffected_english_comparisons": 18,
+    "changed_pixels_each": 0,
+    "masks": [],
+    "tolerance": 0,
+    "new_source_consent_change": "Normal font weight preserved from main; scoped to the authorized inquiry redesign, with fresh 4-state readback."
+  },
+  "reviews": {
+    "source": "103a70ee4b2c68065e9d83a6fac583545583bdbd",
+    "spec_unresolved": 0,
+    "standards_hard_issues": 0,
+    "nonblocking_heuristics": 2,
+    "report": "README.md"
+  },
+  "cleanup": {
+    "owned_test_users": 0,
+    "owned_test_posts": 0,
+    "owned_functional_orders_remaining": [],
+    "functional_orders_checked": 3,
+    "visual_mu_present": false,
+    "test_mail_override_present": false,
+    "migration_active": true,
+    "migration_active_sql": "1",
+    "migration_backup_objects": 77,
+    "migration_backup_present": true,
+    "site": "http://127.0.0.1:9129",
+    "empty_conversations_after_final_readback": 0,
+    "empty_conversation_evidence": "empty-conversation-final-state.json"
+  },
+  "final_cli_readback": "migration-final-state.txt",
+  "production_write_deploy_merge_or_real_mail": false,
+  "ci_evidence_location": "Current GitHub PR #316 head checks; final URL/status recorded in the PR and handoff."
+}

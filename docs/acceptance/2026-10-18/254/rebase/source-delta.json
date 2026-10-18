@@ -1,0 +1,30 @@
+{
+  "old_delivery": "6a9e397af64d9d92232c325243d3734423c65a37",
+  "new_source": "103a70ee4b2c68065e9d83a6fac583545583bdbd",
+  "old_base": "1f271843c0e65d0cbdc59f52fd8be120211be87b",
+  "new_base": "4cf4936355f93c8b1ca38747985c7373873b7b31",
+  "feature_files": 63,
+  "byte_identical": 59,
+  "changed_files": [
+    "plugins/linker-commerce/content/windpress/auth.css",
+    "plugins/linker-commerce/includes/Inquiry/Form.php",
+    "plugins/linker-i18n/includes/GermanUrlMigration.php",
+    "plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php"
+  ],
+  "conflict": "auth.css old inquiry block replaced by approved styled block; native main account-status selector preserved; normal consent weight restored separately.",
+  "additional_compatibility_files": [
+    "plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php",
+    "plugins/linker-tools/includes/Genie/InquirySummary.php",
+    "plugins/linker-tools/tests/php/Unit/InquirySummaryTest.php",
+    "tools/cutover/tests/test_steps.py"
+  ],
+  "additional_compatibility_change": "Native existing_id() for summary context reads; two public HTTP no-new-conversation assertions and corresponding unit fixture resolver. Red/green preserved in addendum.",
+  "migration_cache_recovery": "The two i18n differences invalidate only the native nonautoloaded ACTIVE cache at apply/rollback entry and add the observed-state CLI/HTTP/SQL regression. No UI source changed.",
+  "new_main_preserved": "Native plugin autoloaders, summary-note fallback, after-present OPcache reset and --allow-stale are preserved byte-for-byte; original read-only existing_id repair remains.",
+  "catalog_diff_from_current_main": [
+    "plugins/linker-i18n/languages/linker-i18n-de_DE_formal.mo",
+    "plugins/linker-i18n/languages/linker-i18n-de_DE_formal.po",
+    "plugins/linker-i18n/languages/linker-i18n.pot"
+  ],
+  "catalog_regeneration_evidence": "catalog-preservation.json"
+}

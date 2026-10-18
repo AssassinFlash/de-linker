@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="5" assertions="177" errors="0" warnings="0" failures="0" skipped="0" time="160.884187">
+    <testsuite name="integration" tests="5" assertions="177" errors="0" warnings="0" failures="0" skipped="0" time="160.884187">
+      <testsuite name="Linker\I18n\Tests\Integration\GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" tests="5" assertions="177" errors="0" warnings="0" failures="0" skipped="0" time="160.884187">
+        <testcase name="test_first_apply_rejects_unreviewed_titles_before_writing" class="Linker\I18n\Tests\Integration\GermanUrlsTest" classname="Linker.I18n.Tests.Integration.GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" line="110" assertions="75" time="46.880188"/>
+        <testcase name="test_original_bootstrap_is_retired_after_the_german_url_migration" class="Linker\I18n\Tests\Integration\GermanUrlsTest" classname="Linker.I18n.Tests.Integration.GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" line="233" assertions="22" time="29.205009"/>
+        <testcase name="test_activation_recovers_from_a_stale_individual_option_cache" class="Linker\I18n\Tests\Integration\GermanUrlsTest" classname="Linker.I18n.Tests.Integration.GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" line="264" assertions="30" time="28.499920"/>
+        <testcase name="test_repeat_apply_repairs_a_stale_native_rewrite_cache" class="Linker\I18n\Tests\Integration\GermanUrlsTest" classname="Linker.I18n.Tests.Integration.GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" line="287" assertions="26" time="30.183200"/>
+        <testcase name="test_unexpected_existing_slug_is_a_read_only_conflict" class="Linker\I18n\Tests\Integration\GermanUrlsTest" classname="Linker.I18n.Tests.Integration.GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" line="546" assertions="24" time="26.115871"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>
