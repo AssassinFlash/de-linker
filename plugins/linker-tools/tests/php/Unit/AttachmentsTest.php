@@ -253,4 +253,50 @@ final class AttachmentsTest extends TestCase {
 
 		$this->assertSame( array( 'user:42×1' ), $this->taken );
 	}
+
+	/**
+	 * A parts list passes (#251): CSV as text, Excel as the zip it is; the
+	 * workbook itself is checked by the service, which reads the rows.
+	 */
+	public function test_parts_lists_pass_as_text_and_workbook(): void {
+		$files = $this->attachments()->check(
+			array(
+				self::file( "Produkt;Menge\nSAJ H2-10K-T3;2\n", 'text/csv', 'list.csv' ),
+				self::file( "PK\x03\x04workbook", 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'list.xlsx' ),
+			)
+		);
+
+		$this->assertIsArray( $files );
+		$this->assertSame(
+			array( 'text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ),
+			array_column( $files, 'type' )
+		);
+	}
+
+	/**
+	 * A binary file renamed to .csv is a 415: the text is checked, not only the
+	 * extension.
+	 */
+	public function test_a_binary_file_sent_as_csv_is_refused(): void {
+		$result = $this->attachments()->check(
+			array( self::file( "\x00\x01binary", 'text/csv', 'list.csv' ) )
+		);
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_genie_attachment_type', $result->get_error_code() );
+		$this->assertSame( 415, $result->get_error_data()['status'] );
+	}
+
+	/**
+	 * A CSV is refused past its own ceiling (the image's would let a 6 MB text
+	 * file through).
+	 */
+	public function test_a_csv_over_its_limit_is_refused(): void {
+		$csv    = self::file( 'a' . str_repeat( '0', Attachments::MAX_CSV_BYTES ), 'text/csv', 'list.csv' );
+		$result = $this->attachments()->check( array( $csv ) );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_genie_attachment_size', $result->get_error_code() );
+		$this->assertSame( 413, $result->get_error_data()['status'] );
+	}
 }

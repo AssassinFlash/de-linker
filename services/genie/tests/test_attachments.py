@@ -10,6 +10,7 @@ import base64
 import io
 import json
 import logging
+import zipfile
 from pathlib import Path
 from typing import Any
 
@@ -699,3 +700,158 @@ def test_the_three_tables_of_first_bytes_are_one() -> None:
         bytes(int(b, 16) for b in re.findall(r"0x([0-9a-f]{2})", ts_mark.group(2)))
         == mark
     )
+
+
+XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+
+def _xlsx(rows: list[list[str]]) -> bytes:
+    """A minimal Excel workbook: one sheet, shared strings (as Excel writes)."""
+    from xml.sax.saxutils import escape
+
+    shared: list[str] = []
+    sheet_rows = []
+    for number, row in enumerate(rows, start=1):
+        cells = []
+        for index, value in enumerate(row):
+            shared.append(value)
+            cells.append(
+                f'<c r="{chr(ord("A") + index)}{number}" t="s"><v>{len(shared) - 1}</v></c>'
+            )
+        sheet_rows.append(f'<row r="{number}">{"".join(cells)}</row>')
+    files = {
+        "xl/workbook.xml": (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+            'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+            '<sheets><sheet name="Liste" sheetId="1" r:id="rId1"/></sheets></workbook>'
+        ),
+        "xl/_rels/workbook.xml.rels": (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            '<Relationship Id="rId1" '
+            'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" '
+            'Target="worksheets/sheet1.xml"/></Relationships>'
+        ),
+        "xl/sharedStrings.xml": (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            + "".join(f"<si><t>{escape(value)}</t></si>" for value in shared)
+            + "</sst>"
+        ),
+        "xl/worksheets/sheet1.xml": (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            f"<sheetData>{''.join(sheet_rows)}</sheetData></worksheet>"
+        ),
+    }
+    out = io.BytesIO()
+    with zipfile.ZipFile(out, "w") as book:
+        for name, content in files.items():
+            book.writestr(name, content)
+    return out.getvalue()
+
+
+def test_a_csv_list_is_read_as_tab_separated_rows() -> None:
+    raw = b"Produkt;Menge\nSAJ H2-10K-T3;2\nGoodWe GW10K-ETA-G20;3\n"
+    [reading] = attachments.read([_upload(raw, "text/csv", "list.csv")], [], None)
+    assert reading.kind == "list"
+    assert reading.failed is None
+    assert reading.text.splitlines() == [
+        "Produkt\tMenge",
+        "SAJ H2-10K-T3\t2",
+        "GoodWe GW10K-ETA-G20\t3",
+    ]
+    assert not reading.truncated
+
+
+def test_an_excel_list_is_read_as_rows() -> None:
+    raw = _xlsx(
+        [["Produkt", "Menge"], ["SAJ H2-10K-T3", "2"], ["GoodWe GW10K-ETA-G20", "3"]]
+    )
+    [reading] = attachments.read([_upload(raw, XLSX_TYPE, "list.xlsx")], [], None)
+    assert reading.kind == "list"
+    assert reading.failed is None
+    assert reading.text.splitlines() == [
+        "Produkt\tMenge",
+        "SAJ H2-10K-T3\t2",
+        "GoodWe GW10K-ETA-G20\t3",
+    ]
+
+
+def test_a_binary_file_sent_as_csv_is_refused() -> None:
+    [reading] = attachments.read(
+        [_upload(b"\x00\x01binary", "text/csv", "list.csv")], [], None
+    )
+    assert reading.failed == "unreadable_list"
+
+
+def test_a_zip_that_is_no_workbook_is_refused() -> None:
+    [reading] = attachments.read(
+        [_upload(b"PK\x03\x04not a zip", XLSX_TYPE, "list.xlsx")], [], None
+    )
+    assert reading.failed == "unreadable_list"
+
+
+def test_a_list_past_its_row_cap_says_so(monkeypatch: pytest.MonkeyPatch) -> None:
+    from linker_genie import parts
+
+    monkeypatch.setattr(parts, "MAX_ROWS", 2)
+    raw = b"SAJ H2-10K-T3;2\nSAJ H2-12K-T3;1\nSAJ H2-15K-T3;4\n"
+    [reading] = attachments.read([_upload(raw, "text/csv", "list.csv")], [], None)
+    assert reading.truncated
+    assert reading.text.splitlines() == [
+        "SAJ H2-10K-T3\t2",
+        "SAJ H2-12K-T3\t1",
+        "[the rest of the list was not read]",
+    ]
+
+
+def test_a_failed_list_keeps_its_kind() -> None:
+    """#251 review: a failed CSV/xlsx is a list, so the shell offers a file again."""
+    [reading] = attachments.read(
+        [_upload(b"\x00\x01binary", "text/csv", "list.csv")], [], None
+    )
+    assert (reading.kind, reading.failed) == ("list", "unreadable_list")
+
+
+def test_a_failed_photo_stays_a_photo() -> None:
+    [reading] = attachments.read(
+        [_upload(b"\xff\xd8\xffnotajpeg", "image/jpeg", "plate.jpg")], [], None
+    )
+    assert (reading.kind, reading.failed) == ("photo", "unreadable_image")
+
+
+def test_a_long_list_is_cut_with_one_marker_inside_the_reading_cap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_genie import parts
+
+    # 201 rows, each longer than the marker: the row cap and the character cap
+    # both bite; the reading must stay valid and end with the marker.
+    monkeypatch.setattr(parts, "MAX_ROWS", 200)
+    line = "SAJ H2-10K-T3 " + "x" * 500
+    raw = ("\n".join([f"{line},{n}" for n in range(1, 202)])).encode()
+    [reading] = attachments.read([_upload(raw, "text/csv", "list.csv")], [], None)
+    assert reading.failed is None
+    assert reading.truncated
+    assert len(reading.text) <= 60_000
+    assert reading.text.endswith("[the rest of the list was not read]")
+    # The rows the text holds still parse (no half row before the marker).
+    assert parts.rows_of_reading(reading)
+
+
+def test_a_list_long_in_characters_under_the_row_cap_says_so(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from linker_genie import parts
+
+    # 150 rows (under MAX_ROWS) but 75 000 characters: a silent cut would lose
+    # rows with no marker; the marker is the evidence.
+    monkeypatch.setattr(parts, "MAX_ROWS", 200)
+    line = "SAJ H2-10K-T3 " + "x" * 500
+    raw = ("\n".join([f"{line},{n}" for n in range(1, 151)])).encode()
+    [reading] = attachments.read([_upload(raw, "text/csv", "list.csv")], [], None)
+    assert reading.truncated
+    assert reading.text.endswith("[the rest of the list was not read]")
+    assert len(reading.text) <= 60_000

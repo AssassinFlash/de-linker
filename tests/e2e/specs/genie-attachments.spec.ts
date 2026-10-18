@@ -64,7 +64,7 @@ const WORDS: Record<
 		typeModel: 'Type the model',
 		unreadable: 'The model could not be read.',
 		refused:
-			'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC) and PDFs.',
+			'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC), PDFs and parts lists (CSV or .xlsx).',
 		question:
 			'What is the maximum PV array power of the H2-10K-T3 in this datasheet?',
 		sent: /Yes, it's the SAJ H2-10K-T3\. What works with it\?/,
@@ -76,7 +76,7 @@ const WORDS: Record<
 		typeModel: 'Modell eingeben',
 		unreadable: 'Das Modell konnte nicht gelesen werden.',
 		refused:
-			'Dieser Dateityp kann nicht gesendet werden. Genie liest Fotos (JPEG, PNG, WebP oder HEIC) und PDFs.',
+			'Dieser Dateityp kann nicht gesendet werden. Genie liest Fotos (JPEG, PNG, WebP oder HEIC), PDFs und Teilelisten (CSV oder .xlsx).',
 		question:
 			'Welche maximale PV-Leistung hat der H2-10K-T3 laut diesem Datenblatt?',
 		sent: /Ja, es ist das Modell SAJ H2-10K-T3\. Was passt dazu\?/,
@@ -195,8 +195,9 @@ for (const lang of ['en', 'de'] as Lang[]) {
 
 			// A file Genie does not read never leaves the browser.
 			await picker.setInputFiles({
-				name: 'parts.xlsx',
-				mimeType: 'application/vnd.ms-excel',
+				name: 'notes.docx',
+				mimeType:
+					'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 				buffer: Buffer.from('not a photo'),
 			});
 			await expect(page.getByRole('alert')).toHaveText(words.refused);
