@@ -148,7 +148,7 @@ final class InquirySummaryTest extends TestCase {
 			$summary['quantities']
 		);
 		$this->assertSame( array( 'Three-phase connection' ), $summary['conditions'] );
-		$this->assertSame( 'Roof is ready.', $summary['note'] );
+		$this->assertSame( 'I need 2 inverters.', $summary['note'], 'the note is the customer\'s own sentence, never the model\'s third-person one' );
 		$this->assertSame( 1, $calls );
 	}
 

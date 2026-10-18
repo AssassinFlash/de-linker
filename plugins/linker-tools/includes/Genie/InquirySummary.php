@@ -169,13 +169,12 @@ final class InquirySummary {
 		if ( '' === $summary ) {
 			return $this->by_rule( $messages, 'unreadable' );
 		}
-		// The form starts its message from the note (acceptance A7): when the
-		// model states none, the customer's last message is that note, the same
-		// one the rule-based fallback gives.
-		$note = trim( (string) ( $answer['note'] ?? '' ) );
-		if ( '' === $note ) {
-			$note = $this->last_said( $messages );
-		}
+		// The form starts its message from the note (acceptance A7), so the note
+		// is always the customer's own last sentence: the model writes its note
+		// in the third person ("The customer asked to …"), which is wrong voice
+		// for a message the customer sends to the team (measured on the #250
+		// card, 2026-10-18). The model's summary is separate and stays as it is.
+		$note = $this->last_said( $messages );
 		return array(
 			'summary'    => mb_substr( $summary, 0, self::MAX_SUMMARY ),
 			'quantities' => $this->quantities( $answer['quantities'] ?? array() ),
