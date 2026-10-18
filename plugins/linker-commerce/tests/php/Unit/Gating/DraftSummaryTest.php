@@ -82,7 +82,13 @@ final class DraftSummaryTest extends TestCase {
 		) {
 			WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
-			WP_Mock::userFunction( 'remove_action', array( 'times' => 1, 'args' => array( 'woocommerce_cart_collaterals', 'woocommerce_cart_totals', 10 ) ) );
+			WP_Mock::userFunction(
+				'remove_action',
+				array(
+					'times' => 1,
+					'args'  => array( 'woocommerce_cart_collaterals', 'woocommerce_cart_totals', 10 ),
+				)
+			);
 			WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'https://example.test/proforma-request/' ) );
 			$this->approval_meta( array( Approval::STATUS_META => $status ) );
 			$state = new CommerceState( new Approval() );
