@@ -10,7 +10,7 @@ Running 1 test using 1 worker
   ✘  1 [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration (2.7s)
 
 
-  1) [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration 
+  1) [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -29,4 +29,4 @@ Running 1 test using 1 worker
     Error Context: artifacts/test-results/account-entries-en-1440-sh-e2f25--prompt-offers-registration-chromium/error-context.md
 
   1 failed
-    [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration 
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration

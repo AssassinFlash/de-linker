@@ -6,7 +6,7 @@ Running 1 test using 1 worker
   ✘  1 [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: product price prompt offers registration (15.4s)
 
 
-  1) [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: product price prompt offers registration 
+  1) [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: product price prompt offers registration
 
     Error: expect(locator).toBeVisible() failed
 
@@ -32,5 +32,5 @@ Running 1 test using 1 worker
     Error Context: artifacts/test-results/account-entries-en-1440-pr-e5b86--prompt-offers-registration-chromium/error-context.md
 
   1 failed
-    [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: product price prompt offers registration 
+    [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: product price prompt offers registration
 error: recipe `e2e` failed with exit code 1

@@ -10,7 +10,7 @@ Running 1 test using 1 worker
   ✘  1 [chromium] › specs/genie-real-format.spec.ts:8:2 › en: real multi-part guidance uses readable Markdown (26.1s)
 
 
-  1) [chromium] › specs/genie-real-format.spec.ts:8:2 › en: real multi-part guidance uses readable Markdown 
+  1) [chromium] › specs/genie-real-format.spec.ts:8:2 › en: real multi-part guidance uses readable Markdown
 
     Error: expect(received).toBeGreaterThan(expected)
 
@@ -29,4 +29,4 @@ Running 1 test using 1 worker
     Error Context: artifacts/test-results/genie-real-format-en-real--e8f3b-ance-uses-readable-Markdown-chromium/error-context.md
 
   1 failed
-    [chromium] › specs/genie-real-format.spec.ts:8:2 › en: real multi-part guidance uses readable Markdown 
+    [chromium] › specs/genie-real-format.spec.ts:8:2 › en: real multi-part guidance uses readable Markdown

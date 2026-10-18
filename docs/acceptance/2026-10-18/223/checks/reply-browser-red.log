@@ -6,7 +6,7 @@ Running 1 test using 1 worker
   ✘  1 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-dock: waiting, formatted response and reader-controlled scroll (17.2s)
 
 
-  1) [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-dock: waiting, formatted response and reader-controlled scroll 
+  1) [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-dock: waiting, formatted response and reader-controlled scroll
 
     Error: expect(locator).toBeVisible() failed
 
@@ -32,4 +32,4 @@ Running 1 test using 1 worker
     Error Context: tests/e2e/artifacts/test-results/genie-reply-presentation-e-4615d-nd-reader-controlled-scroll-chromium/error-context.md
 
   1 failed
-    [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-dock: waiting, formatted response and reader-controlled scroll 
+    [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-dock: waiting, formatted response and reader-controlled scroll

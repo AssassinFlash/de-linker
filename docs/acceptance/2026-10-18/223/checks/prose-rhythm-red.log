@@ -25,4 +25,3 @@ AssertionError: expected <p></p> to have a length of 3 but got 1
       Tests  1 failed | 2 passed (3)
    Start at  12:47:39
    Duration  746ms (environment 52%, setup 24%, import 11%, tests 9%, transform 4%)
-

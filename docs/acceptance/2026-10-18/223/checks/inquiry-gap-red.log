@@ -10,7 +10,7 @@ Running 1 test using 1 worker
   ✘  1 [chromium] › specs/account-entries.spec.ts:334:3 › en-390: open inquiry keeps both optional account entries (622ms)
 
 
-  1) [chromium] › specs/account-entries.spec.ts:334:3 › en-390: open inquiry keeps both optional account entries 
+  1) [chromium] › specs/account-entries.spec.ts:334:3 › en-390: open inquiry keeps both optional account entries
 
     Error: expect(received).toBeGreaterThanOrEqual(expected)
 
@@ -29,4 +29,4 @@ Running 1 test using 1 worker
     Error Context: artifacts/test-results/account-entries-en-390-ope-a5c6a-th-optional-account-entries-chromium/error-context.md
 
   1 failed
-    [chromium] › specs/account-entries.spec.ts:334:3 › en-390: open inquiry keeps both optional account entries 
+    [chromium] › specs/account-entries.spec.ts:334:3 › en-390: open inquiry keeps both optional account entries

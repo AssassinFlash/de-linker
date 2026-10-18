@@ -21,7 +21,7 @@ Running 53 tests using 1 worker
   ✘  14 [chromium] › specs/account-entries.spec.ts:12:4 › en-390: Genie dock has native guest entries (48.8s)
 
 
-  1) [chromium] › specs/account-entries.spec.ts:12:4 › en-1440: Genie workspace has native guest entries 
+  1) [chromium] › specs/account-entries.spec.ts:12:4 › en-1440: Genie workspace has native guest entries
 
     Test timeout of 60000ms exceeded.
 
@@ -132,7 +132,7 @@ Running 53 tests using 1 worker
         at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:18
 
   1 failed
-    [chromium] › specs/account-entries.spec.ts:12:4 › en-1440: Genie workspace has native guest entries 
+    [chromium] › specs/account-entries.spec.ts:12:4 › en-1440: Genie workspace has native guest entries
   1 interrupted
     [chromium] › specs/account-entries.spec.ts:12:4 › en-390: Genie dock has native guest entries ──
   39 did not run

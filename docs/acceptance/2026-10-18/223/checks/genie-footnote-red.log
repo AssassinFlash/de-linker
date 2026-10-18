@@ -34,4 +34,3 @@ Error: Failed to resolve import "./HelperFooter" from "src/genie/components/Help
       Tests  no tests
    Start at  12:09:24
    Duration  686ms (environment 66%, setup 31%, transform 2%)
-

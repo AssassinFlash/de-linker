@@ -6,27 +6,27 @@
 == plugins/linker-commerce: PHPCS, PHPStan
 Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-commerce/phpstan.neon.dist.
 
- [OK] No errors                                                                 
+ [OK] No errors
 
 == plugins/linker-i18n: PHPCS, PHPStan
 Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-i18n/phpstan.neon.dist.
 
- [OK] No errors                                                                 
+ [OK] No errors
 
 == plugins/linker-tools: PHPCS, PHPStan
 Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/phpstan.neon.dist.
 
- [OK] No errors                                                                 
+ [OK] No errors
 
 == mu-plugins: PHPCS, PHPStan
 Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/mu-plugins/phpstan.neon.dist.
 
- [OK] No errors                                                                 
+ [OK] No errors
 
 == tools/local: PHPCS, PHPStan
 Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/tools/local/phpstan.neon.dist.
 
- [OK] No errors                                                                 
+ [OK] No errors
 
 
 > linker-tools@0.1.0 lint:js

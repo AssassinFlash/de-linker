@@ -6,7 +6,7 @@ Running 1 test using 1 worker
   ✘  1 [chromium] › specs/account-entries.spec.ts:11:3 › en-1440: header registration opens its own language's form (17.3s)
 
 
-  1) [chromium] › specs/account-entries.spec.ts:11:3 › en-1440: header registration opens its own language's form 
+  1) [chromium] › specs/account-entries.spec.ts:11:3 › en-1440: header registration opens its own language's form
 
     Error: expect(locator).toBeVisible() failed
 
@@ -32,5 +32,5 @@ Running 1 test using 1 worker
     Error Context: artifacts/test-results/account-entries-en-1440-he-52e03-ens-its-own-language-s-form-chromium/error-context.md
 
   1 failed
-    [chromium] › specs/account-entries.spec.ts:11:3 › en-1440: header registration opens its own language's form 
+    [chromium] › specs/account-entries.spec.ts:11:3 › en-1440: header registration opens its own language's form
 error: recipe `e2e` failed with exit code 1

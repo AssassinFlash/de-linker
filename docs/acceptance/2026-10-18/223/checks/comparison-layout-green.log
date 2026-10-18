@@ -39,7 +39,7 @@ Running 14 tests using 1 worker
   ✓  14 [chromium] › specs/account-entries.spec.ts:199:4 › de-390: four comparison models stay readable inside the scroll region (700ms)
 
 
-  1) [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration 
+  1) [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -57,7 +57,7 @@ Running 14 tests using 1 worker
 
     Error Context: artifacts/test-results/account-entries-en-1440-sh-e2f25--prompt-offers-registration-chromium/error-context.md
 
-  2) [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: category price prompt offers registration 
+  2) [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: category price prompt offers registration
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -75,7 +75,7 @@ Running 14 tests using 1 worker
 
     Error Context: artifacts/test-results/account-entries-en-1440-ca-7ad05--prompt-offers-registration-chromium/error-context.md
 
-  3) [chromium] › specs/account-entries.spec.ts:151:4 › en-390: shop price prompt offers registration 
+  3) [chromium] › specs/account-entries.spec.ts:151:4 › en-390: shop price prompt offers registration
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -93,7 +93,7 @@ Running 14 tests using 1 worker
 
     Error Context: artifacts/test-results/account-entries-en-390-shop-price-prompt-offers-registration-chromium/error-context.md
 
-  4) [chromium] › specs/account-entries.spec.ts:151:4 › en-390: category price prompt offers registration 
+  4) [chromium] › specs/account-entries.spec.ts:151:4 › en-390: category price prompt offers registration
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -111,7 +111,7 @@ Running 14 tests using 1 worker
 
     Error Context: artifacts/test-results/account-entries-en-390-cat-2786a--prompt-offers-registration-chromium/error-context.md
 
-  5) [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: shop price prompt offers registration 
+  5) [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: shop price prompt offers registration
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -129,7 +129,7 @@ Running 14 tests using 1 worker
 
     Error Context: artifacts/test-results/account-entries-de-1440-sh-a5060--prompt-offers-registration-chromium/error-context.md
 
-  6) [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: category price prompt offers registration 
+  6) [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: category price prompt offers registration
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -147,7 +147,7 @@ Running 14 tests using 1 worker
 
     Error Context: artifacts/test-results/account-entries-de-1440-ca-48cc2--prompt-offers-registration-chromium/error-context.md
 
-  7) [chromium] › specs/account-entries.spec.ts:151:4 › de-390: shop price prompt offers registration 
+  7) [chromium] › specs/account-entries.spec.ts:151:4 › de-390: shop price prompt offers registration
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -165,7 +165,7 @@ Running 14 tests using 1 worker
 
     Error Context: artifacts/test-results/account-entries-de-390-shop-price-prompt-offers-registration-chromium/error-context.md
 
-  8) [chromium] › specs/account-entries.spec.ts:151:4 › de-390: category price prompt offers registration 
+  8) [chromium] › specs/account-entries.spec.ts:151:4 › de-390: category price prompt offers registration
 
     Error: expect(received).toBe(expected) // Object.is equality
 
@@ -184,12 +184,12 @@ Running 14 tests using 1 worker
     Error Context: artifacts/test-results/account-entries-de-390-cat-a8abc--prompt-offers-registration-chromium/error-context.md
 
   8 failed
-    [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration 
-    [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: category price prompt offers registration 
-    [chromium] › specs/account-entries.spec.ts:151:4 › en-390: shop price prompt offers registration 
-    [chromium] › specs/account-entries.spec.ts:151:4 › en-390: category price prompt offers registration 
-    [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: shop price prompt offers registration 
-    [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: category price prompt offers registration 
-    [chromium] › specs/account-entries.spec.ts:151:4 › de-390: shop price prompt offers registration 
-    [chromium] › specs/account-entries.spec.ts:151:4 › de-390: category price prompt offers registration 
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: category price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-390: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-390: category price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: category price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › de-390: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › de-390: category price prompt offers registration
   6 passed (39.1s)
