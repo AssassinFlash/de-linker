@@ -13,6 +13,8 @@ use Linker\Commerce\Autoload;
 use Linker\Commerce\Tests\TestCase;
 
 /**
+ * Tests for the namespace fallback loader.
+ *
  * @covers \Linker\Commerce\Autoload
  */
 final class AutoloadTest extends TestCase {

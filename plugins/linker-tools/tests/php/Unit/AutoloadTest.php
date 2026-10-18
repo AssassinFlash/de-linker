@@ -13,6 +13,8 @@ use Linker\Tools\Autoload;
 use WP_Mock\Tools\TestCase;
 
 /**
+ * Tests for the namespace fallback loader.
+ *
  * @covers \Linker\Tools\Autoload
  */
 final class AutoloadTest extends TestCase {
