@@ -18,7 +18,7 @@
 | 发送成功确认 | Woo 默认 `myaccount/lost-password-confirmation.php`（裸文本落在页底） | **新增覆写** `templates/myaccount/auth/lost-password-confirmation.php`：同一张卡，Woo 的 notice + 过滤后的说明句进卡头 |
 | 重置密码表单 | Woo 默认 `myaccount/form-reset-password.php`（裸模板，链路最差一环） | **新增覆写** `templates/myaccount/auth/form-reset-password.php`：卡 + 双密码字段 + Woo 自带眼睛 + Woo 自带强度计 |
 | 账户细节（改密） | Woo 默认 `myaccount/form-edit-account.php` | **新增覆写** `templates/myaccount/account/form-edit-account.php`：资料卡 + 改密卡（说明行 + 干净标签） |
-| pending 状态 | `Account/PendingGate.php` 整页替换审核卡 | 原生 `woocommerce_account_content` 在端点内容前显示 LC 状态卡；完整工作台、导航和联系卡保留（业主 2026-10-17，待审账号保持登录） |
+| pending 状态 | `Account/PendingGate.php` 整页替换审核卡 | `Account/AccountStatusNotice.php` 通过原生 `woocommerce_account_content` 在端点内容前显示 pending/restricted 共用的 LC 状态卡（restricted 含保存原因）；完整工作台、导航和联系卡保留（业主 2026-10-17，待审账号保持登录） |
 | restricted / 空 Proforma / guest 带草稿门禁 | `Presentation/LoginGate.php` 的 `sf-checkout-empty` 文本块 | 同文件重写为卡片（badge + 标题 + 正文 + 动作）；guest 门禁两种形态（草稿空 = 取号，草稿有货 = 登录发送） |
 | 工作台骨架 | `content/livecanvas/account/workspace.html` + `mobile-nav.html` | 重写：桌面 = 左侧栏（WORKPLACE/ACCOUNT 两组）；移动 = **只有底部胶囊 tab 栏**（顶部 `details/summary` 折叠菜单删除） |
 | 询盘列表行 | `inquiry-card.html` 行内展开全量商品行 | 重写：`n Produkte` 摘要（`_n` 复数）+ 单号 + 状态胶囊 + 日期 + 金额 + `View` 箭头 |
@@ -153,3 +153,10 @@
 - 桌面品牌面板（≥1080px）只在登录/注册两页出现，且每张卡一个（V1）；辅助页（忘记密码、重置、确认）保持居中单卡，与原型一致。
 - 移动端工作台导航只有底部胶囊栏；1024px 是侧栏/胶囊的切换点（与原型 `app.css` 一致）。
 - 强度计复用 Woo 的判分与文案（`pwsL10n`），不自定义阈值；`min_password_strength` 沿用 Woo 默认 3。
+
+## #222 第一轮评审裁定（2026-10-18）
+
+- 账户状态适配器名为 `AccountStatusNotice`，通过 Woo 原生内容 hook 输出局部 LC 卡片；pending 与 restricted 共用组件，后者同时显示状态和保存原因。询盘页沿用同一原因片段。价格原因由 `CommerceState::reason()` 决定，包括批准后历史无价询盘的 `UNPRICED`；文案层只映射原因。账户列表、概览与详情直接共用 `PriceDisplay::shows_order_total()`，无价询盘不输出货币零值或空 Amount 标签。
+- **run10 稳定性：已关闭，非代码缺陷。** [Claude 第一轮评审](https://github.com/AssassinFlash/de-linker/pull/310#issuecomment-6245533011) 确认：本地共享 Redis DB 0 在审批秒发生 Predis 读错误，graceful 模式使一次请求回退数据库、下一次读取旧缓存。产品与卡片均经 `Approval::status()` → `get_user_meta`，原生 `update_user_meta` 负责失效，并无第二个审批来源。线上只读核实没有 object-cache drop-in（`wp cache type` 为 Default），LiteSpeed Cache 不活跃，账户响应为 `private, no-cache`，因此当前线上配置不具有该故障路径。原始时间线与日志见 `docs/acceptance/2026-10-18/222/diagnostics/cache-availability.json`、`run10-failure.txt` 和 `readback.json`。不新增审批缓存、轮询或会话机制；未来启用 Redis 必须通过规格 17 的一致性条件。
+
+前文 St3 的 `PendingGate::output()` 记录为当时实现；现已由上述原生 Woo 内容 hook 取代，无模板替换器。

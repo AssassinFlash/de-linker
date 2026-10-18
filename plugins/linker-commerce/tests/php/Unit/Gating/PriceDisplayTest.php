@@ -215,4 +215,35 @@ final class PriceDisplayTest extends TestCase {
 
 		$this->assertSame( array( '_reduced_stock', PriceDisplay::ITEM_REASON_META ), $display->hidden_item_meta( array( '_reduced_stock' ) ) );
 	}
+
+	/**
+	 * All inquiry surfaces share visibility and missing-line checks.
+	 *
+	 * @testWith [true, true, false, true]
+	 *           [true, true, true, false]
+	 *           [true, false, false, false]
+	 *           [false, false, false, false]
+	 * @param bool $signed_in Signed-in visitor.
+	 * @param bool $approved Approved customer.
+	 * @param bool $unpriced A line awaits a price.
+	 * @param bool $visible Monetary totals are visible.
+	 */
+	public function test_inquiry_totals_follow_account_and_lines( bool $signed_in, bool $approved, bool $unpriced, bool $visible ): void {
+		$display = $this->visitor( $signed_in, 'orderable', $approved );
+		$item    = Mockery::mock( WC_Order_Item_Product::class );
+		$item->allows( 'get_meta' )->with( PriceDisplay::ITEM_REASON_META )->andReturn( $unpriced ? CommerceState::APPROVAL : '' );
+		$item->allows( 'get_total' )->andReturn( $unpriced ? '0' : '100' );
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_items' )->andReturn( array( $item ) );
+		$order->allows( 'get_item_count' )->andReturn( 1 );
+		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
+		$totals = array(
+			'order_total' => array(
+				'label' => 'Total',
+				'value' => '€100.00',
+			),
+		);
+		$this->assertSame( $visible, $display->shows_order_total( $order ) );
+		$this->assertSame( $visible ? $totals : array(), $display->order_totals( $totals, $order ) );
+	}
 }

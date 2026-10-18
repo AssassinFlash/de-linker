@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
-use Linker\Commerce\Account\PendingGate;
+use Linker\Commerce\Account\AccountStatusNotice;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Inquiry\ProformaGateway;
 use Linker\Commerce\Presentation\LoginGate;
@@ -334,7 +334,7 @@ final class ApprovalTest extends IntegrationTestCase {
 
 		$this->set_state( $customer, Approval::PENDING );
 		$this->as_user( $customer->get_id() );
-		$gate = new PendingGate( new Approval(), new LoginGate( new Approval() ) );
+		$gate = new AccountStatusNotice( new Approval(), new LoginGate( new Approval() ) );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Pending sees no prices.' );
 		$this->assertArrayHasKey(
 			ProformaGateway::ID,
@@ -362,7 +362,9 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->as_user( $customer->get_id() );
 		ob_start();
 		$gate->render();
-		$this->assertSame( '', (string) ob_get_clean(), 'Restricted never reads the pending status.' );
+		$restricted = (string) ob_get_clean();
+		$this->assertStringContainsString( 'Access currently limited', $restricted );
+		$this->assertStringContainsString( 'Net prices are for businesses.', $restricted );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Restricted sees no prices.' );
 		$this->assertStringContainsString( 'Net prices are for businesses.', ( new LoginGate( new Approval() ) )->restricted_notice() );
 

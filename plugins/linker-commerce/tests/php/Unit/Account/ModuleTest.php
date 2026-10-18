@@ -17,7 +17,7 @@ use Linker\Commerce\Account\Documents;
 use Linker\Commerce\Account\InquiryList;
 use Linker\Commerce\Account\Menu;
 use Linker\Commerce\Account\Module;
-use Linker\Commerce\Account\PendingGate;
+use Linker\Commerce\Account\AccountStatusNotice;
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Account\SolutionsRoute;
@@ -50,7 +50,7 @@ final class ModuleTest extends TestCase {
 		foreach ( array( 'orders', 'view-order', 'saved-solutions', 'documents', 'edit-address', 'edit-account' ) as $endpoint ) {
 			WP_Mock::expectFilterAdded( 'woocommerce_endpoint_' . $endpoint . '_title', array( $menu, 'title' ), 10, 2 );
 		}
-		$pending = new PendingGate();
+		$pending = new AccountStatusNotice();
 		WP_Mock::expectActionAdded( 'woocommerce_account_content', array( $pending, 'render' ), 5 );
 		WP_Mock::expectActionAdded( 'linker_account_after_content', array( $contact, 'render' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_account_orders_columns', array( $inquiries, 'columns' ) );

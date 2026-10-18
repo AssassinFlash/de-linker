@@ -458,7 +458,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$this->assertSame( 2, $result->get_item_count() );
 		foreach ( $result->get_items() as $line ) {
 			$this->assertInstanceOf( \WC_Order_Item_Product::class, $line );
-			$this->assertSame( 'approved' === $status ? '' : 'approval', $line->get_meta( '_linker_price_reason' ) );
+			$this->assertSame( 'approved' === $status ? '' : ( 'pending' === $status ? 'approval' : 'unavailable' ), $line->get_meta( '_linker_price_reason' ) );
 		}
 	}
 

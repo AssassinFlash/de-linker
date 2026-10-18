@@ -145,11 +145,15 @@ final class AccountTemplatesTest extends TestCase {
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_date_created' )->andReturn( null );
 		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
+		$order->allows( 'get_item_count' )->andReturn( 3 );
+		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
 		$first = Mockery::mock( \WC_Order_Item_Product::class );
 		$first->allows( 'get_quantity' )->andReturn( 2 );
+		$first->allows( 'get_meta' )->with( \Linker\Commerce\Gating\PriceDisplay::ITEM_REASON_META )->andReturn( '' );
 		$second = Mockery::mock( \WC_Order_Item_Product::class );
 		$second->allows( 'get_quantity' )->andReturn( 1 );
+		$second->allows( 'get_meta' )->with( \Linker\Commerce\Gating\PriceDisplay::ITEM_REASON_META )->andReturn( '' );
 		$order->allows( 'get_items' )->andReturn( array( $first, $second ) );
 
 		$row = ( new AccountTemplates() )->inquiry_row( $order );
@@ -167,6 +171,45 @@ final class AccountTemplatesTest extends TestCase {
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => '0' ) );
 		$row = ( new AccountTemplates() )->inquiry_row( $this->inquiry( Statuses::RECEIVED, '' ) );
 		$this->assertSame( '', $row['total'] );
+	}
+
+	/** An approved customer cannot read a monetary total for an unpriced inquiry. */
+	public function test_approved_unpriced_inquiry_has_no_total(): void {
+		$this->plain_text();
+		$this->visible_prices( true );
+		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => 'Inquiry received' ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => '1' ) );
+		$item = Mockery::mock( \WC_Order_Item_Product::class );
+		$item->allows( 'get_quantity' )->andReturn( 1 );
+		$item->allows( 'get_meta' )->with( \Linker\Commerce\Gating\PriceDisplay::ITEM_REASON_META )->andReturn( 'approval' );
+		$item->allows( 'get_total' )->andReturn( '0' );
+		$row = ( new AccountTemplates() )->inquiry_row( $this->inquiry( Statuses::RECEIVED, '', array( $item ) ) );
+		$this->assertSame( '', $row['total'] );
+	}
+
+	/** The pending inquiry summary omits its monetary field, including its label. */
+	public function test_pending_summary_has_no_empty_amount_label(): void {
+		$this->plain_text();
+		$this->visible_prices( false );
+		WP_Mock::userFunction( 'add_shortcode' );
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => 'Inquiry received' ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => '0' ) );
+		$adapter = new AccountTemplates();
+		WP_Mock::expectFilterAdded( 'wc_get_template', array( $adapter, 'template' ), 20, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $adapter, 'orders_query' ) );
+		$adapter->register();
+		$this->expand_fields( $adapter );
+		ob_start();
+		AccountTemplates::output(
+			array(
+				'template_name' => 'myaccount/view-order.php',
+				'args'          => array( 'order' => $this->inquiry( Statuses::RECEIVED, '' ) ),
+			)
+		);
+		$html = (string) ob_get_clean();
+		$this->assertStringNotContainsString( 'Amount', $html );
+		$this->assertStringNotContainsString( '€', $html );
 	}
 
 	/** Shortcode attributes cannot choose an arbitrary PHP action. */
@@ -416,9 +459,9 @@ final class AccountTemplatesTest extends TestCase {
 	 * @param bool $visible The shared rule's answer.
 	 */
 	private function visible_prices( bool $visible ): void {
-		$prices = WP_Mock::onFilter( 'linker_commerce_visitor_sees_prices' )->with( false );
-		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $prices );
-		$prices->reply( $visible );
+		$this->approval_meta( array( Approval::STATUS_META => $visible ? Approval::APPROVED : Approval::PENDING ) );
+		$this->signed_in( 5 );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
 	}
 
 	/**
@@ -434,8 +477,8 @@ final class AccountTemplatesTest extends TestCase {
 			array(
 				'return' => static function ( string $content ) use ( $adapter ): string {
 					return (string) preg_replace_callback(
-						'/\[linker_account_field key=["\']([a-z-]+)["\']\]/',
-						static fn ( array $m ): string => $adapter->field( array( 'key' => $m[1] ) ),
+						'/\[linker_account_(field|rows|text) (key|type)=["\']([a-z-]+)["\']\]/',
+						static fn ( array $m ): string => $adapter->{$m[1]}( array( $m[2] => $m[3] ) ),
 						$content
 					);
 				},
@@ -446,17 +489,20 @@ final class AccountTemplatesTest extends TestCase {
 	/**
 	 * An inquiry for the account-row assertions.
 	 *
-	 * @param string $status Status slug.
-	 * @param string $number Stored Proforma number.
+	 * @param string                        $status Status slug.
+	 * @param string                        $number Stored Proforma number.
+	 * @param array<\WC_Order_Item_Product> $items Inquiry product lines.
 	 */
-	private function inquiry( string $status, string $number ): WC_Order {
+	private function inquiry( string $status, string $number, array $items = array() ): WC_Order {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
 		$order->allows( 'get_status' )->andReturn( $status );
 		$order->allows( 'has_status' )->andReturnUsing( static fn ( string $asked ): bool => $asked === $status );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
-		$order->allows( 'get_items' )->andReturn( array() );
+		$order->allows( 'get_items' )->andReturn( $items );
+		$order->allows( 'get_item_count' )->andReturn( count( $items ) );
+		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
 		$order->allows( 'get_date_created' )->andReturn( null );
 		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );

@@ -12,6 +12,8 @@ namespace Linker\Commerce\Presentation;
 use Linker\Commerce\Account\DocumentDownload;
 use Linker\Commerce\Account\InquiryList;
 use Linker\Commerce\Account\SavedSolutions;
+use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Vocabulary\LocaleFormat;
@@ -80,8 +82,9 @@ final class AccountTemplates {
 	 * documents() as its fallback.
 	 *
 	 * @param \Linker\Commerce\Account\Documents|null $documents The shared assembly.
+	 * @param PriceDisplay                            $prices Shared inquiry total visibility.
 	 */
-	public function __construct( ?\Linker\Commerce\Account\Documents $documents = null ) {
+	public function __construct( ?\Linker\Commerce\Account\Documents $documents = null, private readonly PriceDisplay $prices = new PriceDisplay( new CommerceState() ) ) {
 		$this->documents = $documents;
 	}
 
@@ -502,6 +505,8 @@ final class AccountTemplates {
 				$order = $this->args['order'] ?? null;
 				// phpcs:ignore WordPress.WP.Capabilities.Unknown -- Woo's per-order meta capability.
 				return $order instanceof WC_Order && current_user_can( 'view_order', $order->get_id() ) ? $this->fragment( 'summary', $this->order_row( $order ) ) : '';
+			case 'amount':
+				return '' !== ( $this->row['total'] ?? '' ) ? $this->fragment( 'amount', $this->row ) : '';
 			case 'proforma':
 				$order = $this->row['order'] ?? null;
 				if ( ! $order instanceof WC_Order || ! InquiryList::has_proforma( $order ) ) {
@@ -780,8 +785,7 @@ final class AccountTemplates {
 				'status'          => wc_get_order_status_name( $order->get_status() ),
 				'status-slug'     => $order->get_status(),
 				'date'            => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
-				/** This filter is documented in includes/Gating/PriceDisplay.php */
-				'total'           => apply_filters( 'linker_commerce_visitor_sees_prices', false ) ? $order->get_formatted_order_total() : '',
+				'total'           => $this->prices->shows_order_total( $order ) ? $order->get_formatted_order_total() : '',
 				'url'             => $order->get_view_order_url(),
 				'items-summary'   => self::items_summary( $count ),
 				/* translators: %s: inquiry number. */

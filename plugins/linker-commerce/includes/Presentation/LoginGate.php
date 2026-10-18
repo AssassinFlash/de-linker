@@ -1,6 +1,6 @@
 <?php
 /**
- * The pending account page and the restricted inquiry notice.
+ * Account status presentation and the restricted inquiry notice.
  *
  * @package Linker\Commerce
  */
@@ -11,7 +11,7 @@ namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Registration\Approval;
 
-/** Pending account presentation and the native empty-checkout redirect rule. */
+/** Account notices and the native empty-checkout redirect rule. */
 final class LoginGate {
 
 	/**
@@ -43,15 +43,19 @@ final class LoginGate {
 		return $this->is_proforma_request() ? false : $redirect;
 	}
 
-	/** The pending status within the usable account, using the live card design. */
-	public function pending_html(): string {
+	/** Pending and restricted status within the usable account, using the live card design. */
+	public function account_status_html(): string {
+		$status     = $this->approval->status( get_current_user_id() );
+		$restricted = Approval::RESTRICTED === $status;
 		return strtr(
-			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/pending-status.html' ),
+			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/status-notice.html' ),
 			array(
-				'{{label}}'    => esc_attr__( 'Account under review', 'linker-commerce' ),
-				'{{badge}}'    => esc_html__( 'Under review', 'linker-commerce' ),
-				'{{title}}'    => esc_html__( 'Your account is under review', 'linker-commerce' ),
-				'{{message}}'  => esc_html__( 'We are reviewing your partner account and will email you when it is approved. You can send inquiries now; approval opens net prices.', 'linker-commerce' ),
+				'{{status}}'   => esc_attr( $status ),
+				'{{label}}'    => esc_attr( $restricted ? __( 'Access currently limited', 'linker-commerce' ) : __( 'Account under review', 'linker-commerce' ) ),
+				'{{badge}}'    => esc_html( $restricted ? __( 'Restricted', 'linker-commerce' ) : __( 'Under review', 'linker-commerce' ) ),
+				'{{title}}'    => esc_html( $restricted ? __( 'Access currently limited', 'linker-commerce' ) : __( 'Your account is under review', 'linker-commerce' ) ),
+				'{{message}}'  => esc_html( $restricted ? __( 'You can send inquiries. Net prices are unavailable while your account is limited.', 'linker-commerce' ) : __( 'We are reviewing your partner account and will email you when it is approved. You can send inquiries now; approval opens net prices.', 'linker-commerce' ) ),
+				'{{reason}}'   => $restricted ? $this->reason_notice( $this->approval->reason( get_current_user_id() ) ) : '',
 				'{{contact}}'  => $this->mailto_sentence(
 					/* translators: %s: the team's email address. */
 					__( 'Until then, browse the products and write to %s with any question.', 'linker-commerce' )
@@ -101,12 +105,12 @@ final class LoginGate {
 		if ( '' === $reason ) {
 			return '';
 		}
-		$icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16.5V11"/><path d="M12 7.6h.01"/></svg>';
-		return sprintf(
-			'<div class="notice notice-info" role="status">%1$s<div><strong>%2$s</strong> %3$s</div></div>',
-			$icon,
-			esc_html__( 'Our reason:', 'linker-commerce' ),
-			esc_html( $reason )
+		return strtr(
+			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/restriction-reason.html' ),
+			array(
+				'{{label}}'  => esc_html__( 'Our reason:', 'linker-commerce' ),
+				'{{reason}}' => esc_html( $reason ),
+			)
 		);
 	}
 

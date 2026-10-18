@@ -618,7 +618,8 @@
 	font-weight: 600;
 }
 
-.linker-gate-badge.is-pending { background: var(--acct-warn-bg); color: var(--acct-warn-ink); }
+.linker-gate-badge.is-pending,
+.linker-gate-badge.is-restricted { background: var(--acct-warn-bg); color: var(--acct-warn-ink); }
 .linker-gate-badge.is-restricted { background: var(--acct-danger-bg); color: var(--acct-danger-ink); }
 
 .linker-gate-sub { margin: 6px 0 0; font-size: 15px; color: var(--acct-muted); }

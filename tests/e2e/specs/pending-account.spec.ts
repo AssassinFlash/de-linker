@@ -236,6 +236,17 @@ for (const language of ['en', 'de'] as const) {
 				await expect(
 					page.locator('.linker-account-status')
 				).toHaveCount(0);
+				await expect(
+					page.locator('.linker-account-main')
+				).not.toContainText(/€|EUR/);
+				await expect(
+					page
+						.locator('.linker-account-main dt')
+						.filter({
+							hasText:
+								language === 'de' ? /^Betrag$/ : /^Amount$/,
+						})
+				).toHaveCount(0);
 				await shot(page, `${prefix}-approved-account`);
 				await page
 					.locator('a.linker-account-row[data-inquiry]')
@@ -280,6 +291,17 @@ for (const language of ['en', 'de'] as const) {
 					page.locator('form.linker-inquiry-form')
 				).toBeVisible();
 				await shot(page, `${prefix}-restricted-reason`);
+				await page.goto(base + account);
+				await expect(
+					page.locator('.linker-account-status')
+				).toContainText(reason);
+				await expect(
+					page.locator('.linker-gate-badge.is-restricted')
+				).toBeVisible();
+				await expect(
+					page.locator('.linker-account-main')
+				).toBeVisible();
+				await shot(page, `${prefix}-restricted-account`);
 				run('rejected', reason);
 				await page.goto(base + account);
 				await expect(page.locator('#username')).toBeVisible();

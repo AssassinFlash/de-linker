@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Storefront;
 
 use Linker\Commerce\Gating\CommerceState;
-use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Gating\PriceDisplay;
 
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\SelectionFactSet;
@@ -299,10 +299,8 @@ final class ProductView {
 			// the account is not what hides the price (#242).
 			return __( 'Quoted per project', 'linker-commerce' );
 		}
-		if ( CommerceState::APPROVAL === $reason ) {
-			return Approval::PENDING === $this->state->current_approval_status()
-				? __( 'Account under review. Prices after approval.', 'linker-commerce' )
-				: __( 'Not available for your account', 'linker-commerce' );
+		if ( in_array( $reason, array( CommerceState::APPROVAL, CommerceState::UNAVAILABLE ), true ) ) {
+			return ( new PriceDisplay( $this->state ) )->reason_text( $reason );
 		}
 		return __( 'Net price after partner sign-in', 'linker-commerce' );
 	}

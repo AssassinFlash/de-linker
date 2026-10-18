@@ -22,7 +22,7 @@ final class AdminAccessNotice {
 	public function register(): void {
 		// Read Woo's final decision after other filters; never change it.
 		add_filter( 'woocommerce_prevent_admin_access', array( $this, 'protect' ), PHP_INT_MAX );
-		// PendingGate selects its card at 40; this explicit notice follows at 50.
+		// This explicit explanation selects its template after the account adapters.
 		add_filter( 'wc_get_template', array( $this, 'template' ), 50, 2 );
 		add_shortcode( 'linker_admin_access_field', array( $this, 'field' ) );
 	}

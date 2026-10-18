@@ -11,7 +11,6 @@ namespace Linker\Commerce\Abilities;
 
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Mail\LocaleSwitch;
-use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Storefront\ProductView;
 use WC_Product;
 
@@ -35,7 +34,7 @@ final class ProductCommerce {
 	/**
 	 * Why a card shows no price: the product page's reasons, the approval split
 	 * into the two account states a customer can be in while signed in (a
-	 * rejected account cannot sign in, Approval::gate_login).
+	 * rejected account cannot sign in).
 	 */
 	public const REASONS = array( 'login', 'pending', 'restricted', 'project', 'unpriced' );
 
@@ -108,7 +107,7 @@ final class ProductCommerce {
 		}
 		$reason = $state->reason( $product, CommerceState::PAGE );
 		if ( null !== $reason ) {
-			$commerce['price_reason'] = self::reason( $reason, $state );
+			$commerce['price_reason'] = self::reason( $reason );
 		}
 
 		return $commerce;
@@ -158,14 +157,14 @@ final class ProductCommerce {
 	/**
 	 * The card's reason code, with the approval named.
 	 *
-	 * @param string        $reason One of the CommerceState reasons.
-	 * @param CommerceState $state  The price rule.
+	 * @param string $reason One of the CommerceState reasons.
 	 */
-	private static function reason( string $reason, CommerceState $state ): string {
+	private static function reason( string $reason ): string {
 		return match ( $reason ) {
 			CommerceState::LOGIN    => 'login',
 			CommerceState::PROJECT  => 'project',
-			CommerceState::APPROVAL => Approval::PENDING === $state->current_approval_status() ? 'pending' : 'restricted',
+			CommerceState::APPROVAL => 'pending',
+			CommerceState::UNAVAILABLE => 'restricted',
 			default                 => 'unpriced',
 		};
 	}
