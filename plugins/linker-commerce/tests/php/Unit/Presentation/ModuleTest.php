@@ -54,7 +54,7 @@ final class ModuleTest extends TestCase {
 		// price gate is not a shortcode: prices are hidden at their source
 		// (Gating\PriceDisplay), and the registration nothing consumed went
 		// with it.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 63 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 64 ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $account, 'orders_query' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );

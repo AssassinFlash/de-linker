@@ -43,8 +43,7 @@ final class Shortcodes {
 	 * chrome's, the product list's invitation) resolves its target here.
 	 */
 	public static function contact_page_url(): string {
-		$translated = PageUrls::translated( 'contact' );
-		return '' === $translated ? (string) home_url( '/contact/' ) : $translated;
+		return PageUrls::page( 'contact' );
 	}
 
 	/**
@@ -214,7 +213,7 @@ final class Shortcodes {
 			$title = 'Linker';
 		}
 		if ( '' === $url ) {
-			$url = home_url( '/' );
+			$url = PageUrls::home();
 		}
 		return array(
 			'kind'      => $kind,
@@ -342,7 +341,7 @@ final class Shortcodes {
 	 */
 	public function site_url( $atts = array() ): string {
 		unset( $atts );
-		return esc_url( home_url( '/' ) );
+		return esc_url( PageUrls::home() );
 	}
 
 		/**

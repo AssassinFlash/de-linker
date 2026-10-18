@@ -191,8 +191,7 @@ final class AccountTemplates {
 	 * @param string $slug The page's path.
 	 */
 	private function translated_page_url( string $slug ): string {
-		$translated = PageUrls::translated( $slug );
-		return '' === $translated ? (string) home_url( '/' . $slug . '/' ) : $translated;
+		return PageUrls::page( $slug );
 	}
 
 	/**

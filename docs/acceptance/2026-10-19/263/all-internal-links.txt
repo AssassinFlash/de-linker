@@ -1,0 +1,6 @@
+# Every internal <a href> on every German URL (instance c263, snapshot 20261019-0141)
+# Excludes wp-content/wp-json/wp-admin/feed/sitemaps, external hosts, mailto/tel/# and the EN half of the language switch.
+candidates: 0
+
+# Every /de/ link on English pages except the DE half of the language switch
+German links on EN pages: 0

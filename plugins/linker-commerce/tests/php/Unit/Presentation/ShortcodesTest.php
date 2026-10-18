@@ -607,7 +607,7 @@ final class ShortcodesTest extends TestCase {
 		);
 
 		$this->assertSame(
-			'<a class="tv-blog-single-btn-primary-lg" href="https://example.test/contact/">Projektangebot anfragen →</a>',
+			'<a class="tv-blog-single-btn-primary-lg" href="https://example.test/de/kontakt/">Projektangebot anfragen →</a>',
 			$html
 		);
 	}
@@ -644,16 +644,34 @@ final class ShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * A request on the site's contact page: no page object, so the link is the
-	 * site's own /contact/ address.
+	 * A request with the contact page present: the link is its address in the
+	 * page's language (ticket #263, H1's sibling on the site chrome).
 	 *
 	 * @param string $language `en` or `de`.
 	 */
 	private function contact_page( string $language ): void {
 		WP_Mock::userFunction( 'shortcode_atts', array( 'return' => fn ( array $pairs, array $atts ): array => array_merge( $pairs, $atts ) ) );
-		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => null ) );
-		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/contact/' ) );
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'args'   => array( 'contact' ),
+				'return' => new \WP_Post( (object) array( 'ID' => 5 ) ),
+			)
+		);
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => $language ) );
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 5, 'de' ),
+				'return' => 6,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'return' => static fn ( int $id ): string => 6 === $id ? 'https://example.test/de/kontakt/' : 'https://example.test/contact/',
+			)
+		);
 	}
 
 	/**

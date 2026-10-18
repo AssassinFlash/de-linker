@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Account;
 
 use Linker\Commerce\Presentation\AccountLinks;
+use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Presentation\Tokens;
 
 use Linker\Commerce\Proforma\Issuer;
@@ -51,7 +52,7 @@ final class DocumentDownload {
 				self::QUERY_VAR => 'proforma',
 				'id'            => $order->get_id(),
 			),
-			home_url( '/' )
+			PageUrls::home()
 		);
 	}
 
@@ -66,7 +67,7 @@ final class DocumentDownload {
 				self::QUERY_VAR => 'report',
 				'id'            => $solution_id,
 			),
-			home_url( '/' )
+			PageUrls::home()
 		);
 	}
 
