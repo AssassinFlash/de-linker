@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import os
 import re
 import time
 from pathlib import Path
@@ -36,7 +37,7 @@ from typing import Any
 import httpx
 
 from linker_genie import attachments
-from linker_genie.agent import DEFAULT_BASE_URL, _env_with_credentials, model_name
+from linker_genie.agent import chat_endpoint, model_name
 from linker_genie.lexicon import normalize
 from linker_genie.nameplate import identify
 from linker_genie.schema import Upload
@@ -106,16 +107,15 @@ def _case_path(name: str, labels_root: Path) -> Path:
 
 
 def readings(wp: str, labels_root: Path) -> list[dict[str, Any]]:
-    env = _env_with_credentials()
-    key = env.get("GENIE_API_KEY") or env.get("DEEPSEEK_API_KEY") or ""
-    base = env.get("GENIE_BASE_URL") or env.get("DEEPSEEK_BASE_URL") or DEFAULT_BASE_URL
+    base, key = chat_endpoint()
     see = Vision(key, base, model_name())
     vocabulary = StoreVocabulary(wp).get()
     rows = []
     for case in CASES["photos"]:
         path = _case_path(case["file"], labels_root)
         started = time.monotonic()
-        [reading] = attachments.read([_upload(path)], 0, see)
+        # One file per turn, no earlier reading: ids start at att1 as the shell's do.
+        [reading] = attachments.read([_upload(path)], [], see)
         seconds = round(time.monotonic() - started, 2)
         found = identify(reading, vocabulary)
         grade = found.grade if found else None
@@ -184,7 +184,15 @@ def _turn(
         "readings": readings_sent,
     }
     started = time.monotonic()
-    response = client.post(f"{service.rstrip('/')}/assistant/turn", json=body)
+    # The service requires the shell's token on every POST (gate.py): the eval
+    # runs on the machine that runs the service, where `just serve` sets it.
+    headers = {}
+    token = os.environ.get("GENIE_SERVICE_TOKEN", "")
+    if token:
+        headers["X-Linker-Service-Token"] = token
+    response = client.post(
+        f"{service.rstrip('/')}/assistant/turn", json=body, headers=headers
+    )
     response.raise_for_status()
     return _events(response.text), round(time.monotonic() - started, 2)
 
@@ -305,7 +313,7 @@ def turns(service: str, uploads_root: Path) -> list[dict[str, Any]]:
                         f"states a lead time from the file: {lead.group(0)}"
                     )
                 if case.get("handoff") and not any(
-                    b.get("type") == "contact" for b in blocks
+                    b.get("type") == "handoff" for b in blocks
                 ):
                     failures.append("no handoff block")
                 rows.append(
@@ -340,7 +348,7 @@ def main() -> None:
     parser.add_argument(
         "--labels",
         type=Path,
-        default=Path("~/de-linker-data/eval/attachments").expanduser(),
+        default=Path("~/de-linker-data/eval/attachments/labels").expanduser(),
         help="the folder the extracted label images live in (not in the repository)",
     )
     parser.add_argument("--out", type=Path, required=True)

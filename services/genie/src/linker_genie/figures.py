@@ -308,12 +308,15 @@ _SWAP = str.maketrans(".,", ",.")
 def swap_decimals(value: str, mark: str, locale: str) -> str:
     """A figure in the turn's language: "12.5 A" reads "12,5 A" in German.
 
-    `mark` is the decimal mark of the text the figure comes from; when the turn's
-    language writes the other one, the decimal and thousands marks trade places
+    `mark` is the decimal mark of the text the figure comes from, "" when that
+    text wrote no decimal number at all: its separators are thousands marks, and
+    converting them blind turns "3,552 kWh" into a three-decimal "3.552" a German
+    reader takes for 3552 (review round 1 of PR #309, item 9). When the turn's
+    language writes the other mark, the decimal and thousands marks trade places
     ("1,680.00" ↔ "1.680,00"). Dates keep their dots.
     """
     wanted = "," if locale.startswith("de") else "."
-    if mark == wanted or _DATE.search(value):
+    if mark not in (".", ",") or mark == wanted or _DATE.search(value):
         return value
     return re.sub(
         r"\d[\d.,]*\d",

@@ -500,3 +500,60 @@ def test_the_service_answers_only_its_shell(
     with caplog.at_level(logging.ERROR, logger="linker_genie.gate"):
         assert shell.post("/assistant/turn", json=body).status_code == 503
     assert "GENIE_SERVICE_TOKEN is not set" in caplog.text
+
+
+def test_forget_takes_a_failed_derived_calls_error_with_it(tmp_path: Any) -> None:
+    """A failed search's error carries its arguments: the reading's words.
+
+    `understand._run` records "linker/search-products: <error>" in
+    `call_failures`, and the error quotes the arguments made from the nameplate.
+    `forget` removes that entry with the reading (review round 1 of PR #309).
+    """
+    from linker_genie.log import TurnLog
+
+    log = TurnLog(tmp_path / "turns.sqlite")
+    turn_id = log.record(
+        conversation_id="c1",
+        locale="en",
+        grounded=True,
+        failures=(),
+        fallback=False,
+        provider="p",
+        model="m",
+        tool_calls=[
+            {
+                "name": "linker/read-attachment",
+                "arguments": {"id": "att1"},
+                "ok": True,
+                "result": {
+                    "id": "att1",
+                    "kind": "nameplate",
+                    "text": "Model: H2-10K-T3",
+                },
+            },
+            {
+                "name": "linker/search-products",
+                "arguments": {"text": "H2-10K-T3"},
+                "ok": True,
+                "result": {},
+                "from_reading": "att1",
+            },
+        ],
+        output={},
+        understanding={
+            "call_failures": [
+                "linker/search-products: H2-10K-T3 unavailable",
+                "linker/get-product: stock unreadable",
+            ]
+        },
+    )
+    assert turn_id > 0
+
+    assert log.forget("c1") == 1
+    (calls, understanding) = log._db.execute(
+        "SELECT tool_calls, understanding FROM turns WHERE id = ?", (turn_id,)
+    ).fetchone()
+    assert "H2-10K-T3" not in calls
+    assert "H2-10K-T3" not in understanding
+    assert "stock unreadable" in understanding
+    log.close()

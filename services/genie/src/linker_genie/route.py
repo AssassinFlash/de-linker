@@ -56,25 +56,27 @@ _LOGISTICS = re.compile(
 )
 
 PAGE_HINT = (
-    " The customer asks about the page they are on; the service read it "
-    "(read-page: the page's opening and the passages nearest the question, with "
-    "its outline). "
+    " The customer asks about the page they are on; its text is here: the page's "
+    "opening and the passages nearest the question, with its outline. "
     + page_tool.RULE
     + " A product, document or pairing question about the page's product is still "
-    "answered from the product tools and the documents. When no read-page result is "
-    "among the tool results, say that the page could not be read just now; never "
-    "guess what it says."
+    "answered from the product data and the documents. When the page's text is not "
+    "available this turn, say that the page could not be read just now; never "
+    "guess what it says. Speak to the customer about the page; never mention a "
+    "service, a reading, a tool or an id in the text."
 )
 DRAFT_HINT = (
-    " The customer asks about their solution draft: its products are in the "
-    "read-page result, and the pairings of its inverters and batteries are checked "
-    "(check-compatibility). Name the products, say which pairs are released, with "
-    "conditions, and which are not or unknown; cite the product IDs in refs. An "
-    "empty draft has no products: say so and offer to find products."
+    " The customer asks about their solution draft: its products are here, and "
+    "the pairings of its inverters and batteries have been checked. Name the "
+    "products, say which pairs are released, with conditions, and which are not "
+    "or unknown; cite the product IDs in refs. An empty draft has no products: "
+    "say so and offer to find products. Speak to the customer about their draft; "
+    "never mention a service, a reading, a tool or an id in the text."
 )
 ACCOUNT_HINT = (
     " The customer asks about their account page: it shows their inquiries, which "
-    "inquiry-status returned; answer from them."
+    "are here; answer from them. Never mention a service, a reading, a tool or an "
+    "id in the text."
 )
 SERVICE_HINT = (
     "This is a company, delivery or service question: answer with the "

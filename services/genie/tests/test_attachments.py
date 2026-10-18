@@ -562,6 +562,26 @@ def test_a_german_datasheets_figures_read_in_english_with_a_point() -> None:
     }
 
 
+def test_a_german_thousands_mark_is_never_turned_into_a_decimal() -> None:
+    """A reading with no decimal number keeps its thousands marks (item 9).
+
+    "3,552 kWh" is 3552 in German, and "1.680 mm" is 1680: without a 1-2 digit
+    decimal anywhere the mark is unknown, so nothing is swapped. Turning them
+    into "3.552" and "1,680" would make a German reader see 3.552 and 1.68.
+    """
+    reading = AttachmentReading(
+        id="att1",
+        name="datenblatt.pdf",
+        kind="document",
+        text="Nennenergie: 3,552 kWh\nAbmessung: 1.680 mm",
+    )
+    _payload, german = attachments.record(reading, "de")
+    values = {f.value for fid, f in german.facts.items() if ".n" in fid}
+    assert {"3,552 kWh", "1.680 mm"} <= values
+    assert not any(value.startswith("3.552") for value in values)
+    assert not any(value.startswith("1,680") for value in values)
+
+
 def test_an_amount_from_a_file_is_never_stated_as_a_price_or_delivery_cost() -> None:
     from linker_genie import ground
     from linker_genie.schema import TextBlock, TurnOutput

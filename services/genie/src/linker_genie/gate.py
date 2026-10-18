@@ -59,7 +59,11 @@ class Gate:
             )
             await _answer(send, 503, "the service token is not configured")
             return
-        if not hmac.compare_digest(headers.get(HEADER, ""), expected):
+        # Bytes: headers arrive latin-1-decoded, and compare_digest raises
+        # TypeError on a non-ASCII string, where a hostile header would get a
+        # 500 instead of 401 (review round 1 of PR #309).
+        given = headers.get(HEADER, "").encode("latin-1", "ignore")
+        if not hmac.compare_digest(given, expected.encode("utf-8")):
             log.warning(
                 "genie gate: %s %s without the service token",
                 scope["method"],

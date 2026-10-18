@@ -12,7 +12,7 @@ SCRIPT = Path(__file__).resolve().parents[1] / "ops" / "activate.sh"
 UNIT = Path(__file__).resolve().parents[1] / "ops" / "linker-genie-judge.service"
 
 
-def _tree(tmp_path: Path, token: bool) -> dict[str, str]:
+def _tree(tmp_path: Path, token: bool, service_token: bool = True) -> dict[str, str]:
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     calls = tmp_path / "calls.txt"
@@ -31,6 +31,7 @@ def _tree(tmp_path: Path, token: bool) -> dict[str, str]:
     env_file = tmp_path / "linker-genie.env"
     env_file.write_text(
         "GENIE_WP_URL=https://site.example\n"
+        + ("GENIE_SERVICE_TOKEN=service\n" if service_token else "")
         + ("GENIE_JUDGE_TOKEN=abc\n" if token else "")
     )
     return {
@@ -97,3 +98,12 @@ def test_a_unit_that_does_not_come_up_fails_the_run(tmp_path: Path) -> None:
 
     assert result.returncode == 1
     assert "NOT ACTIVE linker-genie-judge.service" in result.stderr
+
+
+def test_without_the_service_token_the_run_refuses_to_start(tmp_path: Path) -> None:
+    """Every Genie POST would be 503: fail before the units restart (#236, gate.py)."""
+    result = _run(_tree(tmp_path, token=True, service_token=False))
+
+    assert result.returncode == 3
+    assert "GENIE_SERVICE_TOKEN" in result.stderr
+    assert "systemctl restart" not in _calls(tmp_path)

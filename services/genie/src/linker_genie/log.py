@@ -166,6 +166,7 @@ class TurnLog:
         for turn_id, raw, raw_understanding in rows:
             calls = _calls(raw)
             touched = False
+            derived: set[str] = set()
             for call in calls:
                 if call.get("name") == READ_ATTACHMENT:
                     result = call.get("result")
@@ -185,6 +186,8 @@ class TurnLog:
                     # The words of this call are the reading's: they go with it.
                     call["arguments"] = {}
                     call["result"] = {"purged": True}
+                    if isinstance(call.get("name"), str):
+                        derived.add(call["name"])
                     touched = True
             understanding = json.loads(raw_understanding) if raw_understanding else {}
             if not isinstance(understanding, dict):
@@ -197,6 +200,21 @@ class TurnLog:
                         call["from_reading"] = None
                         call["purged"] = True
                         touched = True
+            # A failed call's error carries its arguments (the search words): an
+            # entry naming a purged call goes too.
+            failures = understanding.get("call_failures")
+            if isinstance(failures, list):
+                kept = [
+                    entry
+                    for entry in failures
+                    if not (
+                        isinstance(entry, str)
+                        and any(entry.startswith(f"{name}: ") for name in derived)
+                    )
+                ]
+                if len(kept) != len(failures):
+                    understanding["call_failures"] = kept
+                    touched = True
             if touched:
                 self._db.execute(
                     "UPDATE turns SET tool_calls = ?, understanding = ? WHERE id = ?",

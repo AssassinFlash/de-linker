@@ -78,11 +78,11 @@ uv run --locked python eval/attachments/nameplates.py --wp http://127.0.0.1:9121
 | 6 轮次日志 PII | 完成：reading 只记一次全文，后续轮次记 `earlier`；删除会话时 `forget` 清 reading 文字、由该文字派生的调用（`from_reading`）的参数/结果，以及 `understanding` 路由日志里的同一段文字。规格 13 "保存与清理"已写明 | `log.py`、`route.py`、`understand.py`、`docs/specs/13-genie.md` |
 | 7 视觉通道守卫 | 完成：图像读取仅在 base URL 主机为 `api.deepseek.com` 时运行，否则显式失败 | `gate.py`、`vision.py` |
 | 8 附件里的价格/交货 | 完成：提示词加同一条规则；核验拒绝把 `att*` 数字说成价格/运费；评测新增价格表与交货条款 PDF（EN/DE）与"不得出现金额/时效、交货走 handoff"断言 | `prompts/{en,de}/system.md`、`ground.py`、`eval/attachments/papers.py`、`cases.json` |
-| 9 单位与地区格式 | 完成：附件数字带单位水合、按本轮语言格式化；评测通过条件检查单位与小数格式 | `hydrate.py`、`figures.py`、评测 |
+| 9 单位与地区格式 | 完成：附件数字带单位水合、按本轮语言格式化（`12.5 A`→`12,5 A`）；文档没有小数时（只有千分位，如 `3,552 kWh`、`1.680 mm`）不转换。单元测试覆盖两个方向；评测的 `answer` 断言按数字比对（去掉分隔符），不判格式，格式由单元测试把关 | `hydrate.py`、`figures.py`、`test_attachments.py` |
 | 10 "der Dienst" 泄漏 | 完成：路由提示不再出现内部用语，只对客户说照片与设备 | `route.py` |
 | 11 品牌猜测 | 完成：读到的品牌只在本站产品词表内才保留，否则按未读出处理；`thinking.md` 的表述已更正 | `nameplate.py`、`thinking.md` |
 | 12 真实铭牌精配 | 部分完成：从我们自托管文档抽出铭牌图（GoodWe GW112.6-BAT-AC-G10 两张 exact、GW5KN-ET 一张 none）；SAJ 与 Pylontech 的托管文档无铭牌，README 记录排查结论。评测用例已接入（`--labels`），**尚未重跑**（需本地栈与官方通道密钥） | `eval/attachments/{README.md,cases.json,nameplates.py}`、`~/de-linker-data/eval/attachments/labels/` |
 | 13 首页预览卡 | 完成：e2e 改为桌面点卡片上的"拍铭牌"建议（手机按现有设计无卡片，走标记入口）；截屏新增 `${lang}-${width}-0-card`。**截屏需在本地栈重拍** | `tests/e2e/specs/genie-attachments.spec.ts` |
 | 14 hero 交接 | 已记录在 #232 | #232 评论 |
 
-本轮验证：服务端 `pytest` **909 passed**、`ruff`、`mypy` 全过；壳 `vitest` **178 passed**、`tsc`、`eslint` 全过；PHP 单元 **230 passed**。端到端评测与截屏重跑待本地栈（与合并前一致的门）。
+本轮验证（含评审修复）：服务端 `pytest` **912 passed**、`ruff`、`mypy` 全过；壳 `vitest` **178 passed**、`tsc`、`eslint` 全过；PHP 单元 **230 passed**。端到端评测与截屏重跑待本地栈（与合并前一致的门）。

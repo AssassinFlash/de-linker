@@ -24,6 +24,8 @@ ratings read, output tokens (of them reasoning).
 Earlier the same day, with thinking on inside the evaluation, `pylontech-us3000c` timed
 out twice at 30 s (the client's timeout) and the reading failed.
 
+**品牌猜测（评审第 1 轮第 11 条）**：关思考后，`saj-r5-6k-s2-15` 的标签不印厂商，同一张照片在不同运行里读出过 INVS、SOLIS、HVS（上表这一次读到 null；开思考时为 null）。读到的品牌因此只在本站产品词表内才保留（`nameplate.with_known_brand`），词表外按未读出处理：`none`/`partial` 路由不会把猜出的品牌当作我们的品牌。
+
 **Decision**: off. Every model read with thinking on is read the same with it off, or
 left null (US3000C under the pen line, the unticked multi-model label), and a null
 model is graded `unreadable`, which asks the customer for a sharper photo or the model

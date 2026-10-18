@@ -483,11 +483,21 @@ _POINT_DECIMAL = re.compile(r"(?<![\d.,])\d+\.\d{1,2}(?![\d.,])")
 _COMMA_DECIMAL = re.compile(r"(?<![\d.,])\d+,\d{1,2}(?![\d.,])")
 
 
-def decimal_mark(text: str) -> Literal[".", ","]:
-    """The decimal mark a reading writes: a comma when it writes more decimal commas
-    than decimal points (a German datasheet), else a point (a nameplate's)."""
+def decimal_mark(text: str) -> Literal[".", ",", ""]:
+    """The decimal mark a reading writes, or "" when it writes no decimal number.
+
+    A comma when it writes more decimal commas than decimal points (a German
+    datasheet), the point when it writes more points. Three-digit groups are left
+    out on purpose ("1.000" and "1,000" are thousands in one language or the
+    other), so a reading whose only separator is a thousands mark answers "":
+    there is nothing to convert, and swapping would turn "3,552 kWh" into a
+    three-decimal "3.552" a German reader takes for 3552 (review round 1 of
+    PR #309, item 9)."""
     commas = len(_COMMA_DECIMAL.findall(text))
-    return "," if commas > len(_POINT_DECIMAL.findall(text)) else "."
+    points = len(_POINT_DECIMAL.findall(text))
+    if commas == points:
+        return ""
+    return "," if commas > points else "."
 
 
 def recorded(reading_id: str) -> dict[str, Any]:

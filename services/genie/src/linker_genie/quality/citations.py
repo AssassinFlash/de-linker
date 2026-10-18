@@ -28,7 +28,18 @@ from linker_genie.quality.turns import LoggedTurn
 
 
 def verify(turn: LoggedTurn) -> list[str]:
-    """What the shipped answer states or cites beyond the turn's tool results."""
+    """What the shipped answer states or cites beyond the turn's tool results.
+
+    A turn whose file readings were purged with their conversation
+    (`log.TurnLog.forget`) is not judged: the reading text that vouched for the
+    answer's figures is gone by design, so every citation would look unfounded
+    (review round 1 of PR #309). New turns are judged before any deletion.
+    """
+    if any(
+        isinstance(call.get("result"), dict) and call["result"].get("purged")
+        for call in turn.tool_calls
+    ):
+        return []
     facts = merge(
         [
             collect(str(call.get("name", "")), call.get("result"), turn.locale)

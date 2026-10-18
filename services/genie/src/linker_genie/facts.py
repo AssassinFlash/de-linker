@@ -319,7 +319,9 @@ def _from_attachment(gathered: TurnFacts, payload: dict[str, Any], locale: str) 
             Fact(id=f"{reading_id}.text", value=text, source="read-attachment")
         )
     figures = payload.get("figures")
-    mark = str(payload.get("decimal") or ".")
+    # "" when the reading wrote no decimal number: its separators are thousands
+    # marks, and swapping them blind would misplace the decimal (figures.py).
+    mark = str(payload.get("decimal") or "")
     for figure, value in (figures if isinstance(figures, dict) else {}).items():
         if isinstance(figure, str) and isinstance(value, str) and value:
             gathered.add(
