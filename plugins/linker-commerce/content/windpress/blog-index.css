@@ -316,8 +316,8 @@
     border-top: 1px solid var(--proto-line-journal); border-bottom: 1px solid var(--proto-line-journal);
   }
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-item {
-    display: grid; gap: 1rem; align-items: center;
-    padding-block: 1.25rem; border-bottom: 1px solid var(--proto-line-journal);
+    display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 1.25rem; align-items: center;
+    padding-block: 1.5rem; border-bottom: 1px solid var(--proto-line-journal);
     text-decoration: none; cursor: pointer;
   }
   @media (min-width: 640px) {
@@ -327,11 +327,11 @@
   }
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-item:last-child { border-bottom: none; }
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-thumb {
-    position: relative; height: 5.5rem; overflow: hidden; border-radius:8px;
+    position: relative; aspect-ratio: 4 / 3; height: auto; overflow: hidden; border-radius: 8px;
     background: var(--proto-neutral-100);
   }
   @media (min-width: 640px) {
-    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-thumb { height: 5rem; }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-thumb { height: auto; }
   }
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-thumb img {
     width: 100%; height: 100%; object-fit: cover; display: block;
@@ -367,54 +367,48 @@
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-practical-item:hover .tv-blog-practical-arrow {
     background: var(--proto-teal-600);
   }
-  /* guide card (right column) */
+  /* Owner-reviewed archive feature: one image and an open reading column.
+     Ratios follow the existing 120px reading thumbnails; the shared 640/1024
+     breakpoints keep full titles readable in both languages. */
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card {
-    border-radius:16px; overflow: hidden;
-    border: 1px solid var(--proto-line-journal); background: #ffffff;
-    box-shadow:none;
-    transition: box-shadow 0.2s, transform 0.2s;
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem;
+    border: 0; border-radius: 0; overflow: visible; background: transparent;
+    color: var(--proto-navy-deep); box-shadow: none;
   }
-  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card:hover {
-    transform:none;
-    box-shadow:none;
-  }
+  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card:hover { transform: none; box-shadow: none; }
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-img {
-    position: relative; aspect-ratio: 4 / 3; overflow: hidden;
-    background: var(--proto-neutral-100);
+    position: relative; aspect-ratio: 16 / 10; overflow: hidden;
+    border-radius: 12px; background: var(--proto-neutral-100);
   }
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-img img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    transition: transform 0.3s;
-  }
-  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card:hover .tv-blog-guide-img img {
-    transform: scale(1.02);
+    display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 35%;
   }
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-img .tv-blog-img-fallback-lg {
-    width: 100%; height: 100%;
-    background: linear-gradient(135deg, var(--proto-neutral-100) 0%, var(--proto-line-journal) 100%);
+    width: 100%; height: 100%; background: var(--proto-neutral-100);
   }
-  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-img .tv-blog-guide-overlay {
-    position: absolute; inset: 0;
-    background: rgba(16,44,48,0.06);
-    transition: background 0.2s;
-  }
-  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card:hover .tv-blog-guide-overlay {
-    background: rgba(16,44,48,0);
-  }
-  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-body {
-    padding: 1.5rem 1.5rem 1.75rem;
-  }
-  @media (min-width: 768px) {
-    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-body { padding: 1.75rem 2rem 2rem; }
-  }
+  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-overlay { display: none; }
+  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-body { padding: 0; }
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-title {
-    font-family: var(--proto-font-sans);
-    font-size: clamp(1.25rem, 2.5vw, 1.75rem); font-weight: 600;
-    letter-spacing: -0.02em; line-height: 1.15; color: var(--proto-navy-deep);
+    margin: 0; font-family: var(--proto-font-display);
+    font-size: clamp(1.375rem, 2.2vw, 1.875rem); font-weight: 600;
+    letter-spacing: -.025em; line-height: 1.3; color: var(--proto-navy-deep);
   }
   #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-excerpt {
-    margin-top: 0.75rem;
-    font-size: 0.9375rem; line-height: 1.6; color: var(--proto-ink-muted-deep);
+    margin-top: 1rem; max-width: 48ch;
+    font-size: .9375rem; font-weight: 400; line-height: 1.7; color: var(--proto-ink-muted-deep);
+  }
+  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card:focus-visible {
+    outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset);
+  }
+  #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card:hover .tv-blog-guide-title { color: var(--proto-teal-700); }
+  @media (max-width: 639px) {
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card {
+      grid-template-columns: 104px minmax(0, 1fr); gap: 1.25rem;
+      padding-top: 1.25rem; border-top: 1px solid var(--proto-line-journal);
+    }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-img { aspect-ratio: 3 / 4; border-radius: 8px; }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-title { font-size: 1.125rem; line-height: 1.4; }
+    #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-excerpt { margin-top: .75rem; font-size: .875rem; line-height: 1.65; }
   }
   /* ============================================================
      MODULE 4 — EDITORIAL METHOD SPOTLIGHT
@@ -770,7 +764,7 @@
   width: 0.875rem; height: 0.875rem;
 }
 #tv-blog-index-v1 #tv-blog-practical .tv-blog-guide-card {
-  display: block; text-decoration: none;
+  text-decoration: none;
 }
 #tv-blog-index-v1 #tv-blog-editorial .tv-blog-editorial-link svg {
   width: 0.875rem; height: 0.875rem;

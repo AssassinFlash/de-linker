@@ -130,40 +130,45 @@
 /* ============================================================
    MODULE 2 — CATEGORY NAV RAIL
  ============================================================ */
+/* Owner-requested topic navigation: an open index, with native WordPress
+   current-category semantics. The shared 640px breakpoint changes two mobile
+   columns into three; labels wrap naturally instead of becoming tall pills. */
 #tv-blog-category-v1 #tv-blog-cat-nav {
-  background: #f5f7fb;
-  padding-block: clamp(1rem, 2vw, 1.5rem);
+  padding-block: var(--proto-space-5); background: var(--proto-canvas-white);
+  border-bottom: 1px solid var(--proto-line-journal);
 }
 #tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-inner {
-  display: flex; flex-wrap: wrap; gap: 0.5rem;
-  padding: 0.75rem clamp(1rem, 3vw, 1.25rem);
-  background: rgba(255,255,255,0.52);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(216,226,240,0.64);
-  border-radius: 20px;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-4);
 }
 #tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-all {
-  display: inline-flex; align-items: center; min-height: 2rem;
-  padding: 0 0.875rem; border-radius: 9999px;
-  background: #13b8a6; color: #0b2233;
-  font-family: Inter, system-ui, sans-serif;
-  font-size: 0.75rem; font-weight: 600;
-  text-decoration: none;
-  transition: background 0.2s;
+  display: inline-flex; justify-self: start; align-items: center; gap: var(--proto-space-3);
+  padding: var(--proto-space-2) 0; color: var(--proto-teal-700);
+  font: 600 .875rem/1.5 var(--proto-font-sans); text-decoration: none;
 }
-#tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-all:hover { background: #0c7f73; }
-#tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-item {
-  display: inline-flex; align-items: center; min-height: 2rem;
-  padding: 0 0.875rem; border-radius: 9999px;
-  border: 1px solid #c3d1e4; color: #344459;
-  font-family: Inter, system-ui, sans-serif;
-  font-size: 0.75rem; font-weight: 500;
-  text-decoration: none;
-  transition: border-color 0.2s, color 0.2s;
+#tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-inner > ul { display: block; padding: 0; margin: 0; list-style: none; }
+#tv-blog-category-v1 #tv-blog-cat-nav .categories {
+  display: block; padding: 0; margin: 0; border: 0;
+  font: 600 .75rem/1.5 var(--proto-font-sans); color: var(--proto-ink-muted-deep);
 }
-#tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-item:hover {
-  border-color: #0c7f73; color: #0c7f73;
+#tv-blog-category-v1 #tv-blog-cat-nav ul ul {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--proto-space-5); padding: 0; margin: var(--proto-space-2) 0 0; list-style: none;
+}
+#tv-blog-category-v1 #tv-blog-cat-nav li.cat-item { min-width: 0; padding: 0; margin: 0; border-bottom: 1px solid var(--proto-line-journal); }
+#tv-blog-category-v1 #tv-blog-cat-nav li.cat-item a {
+  display: flex; align-items: center; min-height: var(--proto-control-height);
+  padding-block: var(--proto-space-3); color: var(--proto-ink-muted-deep);
+  font: 400 .875rem/1.6 var(--proto-font-sans); text-decoration: none; overflow-wrap: break-word;
+}
+#tv-blog-category-v1 #tv-blog-cat-nav li.current-cat { border-bottom-color: var(--proto-teal-700); }
+#tv-blog-category-v1 #tv-blog-cat-nav li.current-cat > a { color: var(--proto-teal-700); font-weight: 600; }
+#tv-blog-category-v1 #tv-blog-cat-nav a:hover { color: var(--proto-teal-600); text-decoration: underline; text-underline-offset: .25em; }
+#tv-blog-category-v1 #tv-blog-cat-nav a:focus-visible { outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset); }
+@media (min-width: 640px) {
+  #tv-blog-category-v1 #tv-blog-cat-nav ul ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  #tv-blog-category-v1 #tv-blog-cat-nav .tv-blog-cat-nav-inner { grid-template-columns: 160px minmax(0, 1fr); gap: var(--proto-space-7); }
 }
 /* ============================================================
    MODULE 3 — CATEGORY FEED

@@ -17,3 +17,7 @@ Scope: document titles and the few visible names required by renamed routes. Exi
 English message identifiers identify each task (sign in, create an account, reset password, solution draft, FAQ and documents). German wording was composed for the German task and formal locale, using the existing project terminology. Brand and model tokens remain unchanged. No body copy, dates, product claims or general descriptions are rewritten here.
 
 The final full route table is the review surface for uniqueness and German expression. Automated checks decode HTML entities and normalise whitespace before comparing actual document titles. Model-only titles are allowed where the native German product's title is its proper model name. Full Spec review includes this table and these copy decisions.
+
+## Topic navigation label review
+
+Initial EN “All articles” / DE “Alle Artikel” was both prohibited vocabulary and misleading as a selected pill on a category page. “All topics” / “Alle Themen” describes the route back to the journal index; it remains a quiet unselected link. The native category list selects only the current topic with `aria-current="page"`. No category names, summaries, product facts or promises are rewritten.

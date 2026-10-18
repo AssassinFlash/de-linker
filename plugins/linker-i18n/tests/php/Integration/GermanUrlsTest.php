@@ -25,6 +25,33 @@ final class GermanUrlsTest extends SiteTestCase {
 	 */
 	private mixed $migration_state = null;
 
+	/** The topic navigation identifies the current topic through native category links. */
+	public function test_journal_topics_identify_the_current_category_in_each_language(): void {
+		$applied = false;
+		try {
+			self::wp( array( 'linker-i18n', 'german-urls', '--apply' ) );
+			$applied = true;
+			foreach ( array( '/category/system-design/' => 'Journal topics', '/de/kategorie/systemauslegung/' => 'Themen im Journal' ) as $path => $label ) {
+				$page = self::get( $path );
+				self::assertSame( 200, $page['status'] );
+				$document = new \DOMDocument();
+				@$document->loadHTML( $page['body'], LIBXML_NONET );
+				$xpath = new \DOMXPath( $document );
+				$nav   = $xpath->query( '//nav[contains(@class,"tv-blog-cat-nav-inner")]' );
+				self::assertSame( 1, $nav->length, 'Topics must be a labelled navigation landmark.' );
+				self::assertSame( $label, $nav->item( 0 )->getAttribute( 'aria-label' ) );
+				$current = $xpath->query( './/a[@aria-current="page"]', $nav->item( 0 ) );
+				self::assertSame( 1, $current->length, 'Only the current topic is selected.' );
+				self::assertSame( self::$site . $path, $current->item( 0 )->getAttribute( 'href' ) );
+				self::assertStringNotContainsString( 'article', strtolower( $nav->item( 0 )->textContent ) );
+			}
+		} finally {
+			if ( $applied ) {
+				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) );
+			}
+		}
+	}
+
 	/** SEOPress filters receive complete tags; endpoint URLs must remain inside them. */
 	public function test_german_endpoint_metadata_is_valid_html_not_visible_url_text(): void {
 		$applied = false;

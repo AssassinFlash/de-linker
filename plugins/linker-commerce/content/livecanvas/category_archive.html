@@ -63,14 +63,10 @@
   ============================================================ -->
   <div id="tv-blog-cat-nav">
     <div class="tv-blog-container">
-      <div class="lc-block tv-blog-cat-nav-inner">
-        <a href="/blog/" class="tv-blog-cat-nav-all">All articles</a>
-        <loop type="taxonomy_term" taxonomy="category" count="8" orderby="name" order="asc">
-          <a href="{Field url}" class="tv-blog-cat-nav-item">
-            <field name="title"></field>
-          </a>
-        </loop>
-      </div>
+      <nav class="lc-block tv-blog-cat-nav-inner" aria-label="Journal topics">
+        <a href="/blog/" class="tv-blog-cat-nav-all">All topics<span aria-hidden="true">↗</span></a>
+        [lc_get_cats title_li="Topics" taxonomy="category" orderby="name" order="ASC" depth="1" use_desc_for_title="0"]
+      </nav>
     </div>
   </div>
 
