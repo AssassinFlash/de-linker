@@ -18,7 +18,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from linker_cutover import backup, plan, snapshot, steps
+from linker_cutover import atomic, backup, plan, snapshot, steps
 from linker_cutover.target import CutoverError, Target
 
 
@@ -44,6 +44,15 @@ def _no_database(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> list[str]:
     # The weekly reminder reads the data root; the real one on this machine
     # decided the action list (CI has no backups, this Mac does).
     monkeypatch.setattr(backup, "DATA_HOME", tmp_path / "data-home")
+    # The reset posts to the site; these stand-in sites have none (the real
+    # step is tested end to end in test_opcache_reset.py).
+    monkeypatch.setattr(
+        steps,
+        "opcache_reset_script",
+        lambda target: (
+            f"printf '{atomic.AFTER_SWITCH_MARKER}opcache-reset=stub attempts=0\\n'"
+        ),
+    )
     return taken
 
 
@@ -1246,3 +1255,20 @@ def test_the_reminder_is_the_last_line_and_shifts_nothing(tmp_path: Path) -> Non
     assert result.actions[0].startswith("database snapshot ")
     assert result.actions[-1].startswith("reminder: ")
     assert sum(line.startswith("reminder: ") for line in result.actions) == 1
+
+
+def test_the_deploy_reports_the_after_switch_reset(tmp_path: Path) -> None:
+    """The reset's answer is on the deploy log, right after the switch timing (#308)."""
+    target = FilesystemTarget(tmp_path / "site")
+    result = steps.deploy(
+        target,
+        repository=_repository(tmp_path),
+        staging=tmp_path / "staging",
+        deploy_id="20261018T000000Z-fixture",
+    )
+    timing = next(
+        i
+        for i, line in enumerate(result.actions)
+        if line.startswith("total switch duration")
+    )
+    assert result.actions[timing + 1] == "after switch: opcache-reset=stub attempts=0"

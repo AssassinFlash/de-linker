@@ -5,6 +5,7 @@
 	<file>linker-error-recorder.php</file>
 	<file>linker-engine-pin.php</file>
 	<file>linker-site-guards.php</file>
+	<file>linker-deploy-reset.php</file>
 	<file>tests</file>
 
 	<rule ref="../tools/php/phpcs.xml"/>
@@ -15,6 +16,7 @@
 	-->
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
 		<exclude-pattern>linker-error-recorder.php</exclude-pattern>
+		<exclude-pattern>linker-deploy-reset.php</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
