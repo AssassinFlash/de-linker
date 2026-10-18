@@ -47,7 +47,7 @@ model, factual/short/exact-answer rules, tools, API, transport and permissions.
 | Full Spec + Standards reviews and old-code absence | 完成 | [Separate review conclusions](review.md), [added-line scan](checks/legacy-added-lines.log) |
 | Main #236 attachments, #250 inquiry cards, #322 asset version retained | 完成 | [Review](review.md), build and browser regressions |
 | Official WindPress compilation and served readback | 完成 | [Compile](checks/windpress-final.log), [readback](checks/present-final.log) |
-| Rebase on latest fetched origin/main and just check/just test | 完成 | Base05a3fbc1, source160623c9; [just check](checks/just-check-final.log), [just test](checks/just-test-final.log); CI is recorded on PR312’s final head |
+| Rebase on latest fetched origin/main and just check/just test | 完成 | Base18d3029b; CI on PR312’s final head is the gate. The linked [just check](checks/just-check-final.log) and [just test](checks/just-test-final.log) logs are from the pre-rebase source and are retained as history. |
 | Inline conversation inside homepage/other hero | **Delegated to #232** | Hero entries currently open the shared full workspace and use its reply design. Inline transcript wiring is not delivered here; the owner ruled on 2026-10-18 that it belongs to the open ticket #232. #223 does not claim it. |
 
 The design follows the supplied direction and [official source research](../../../research/2026-10-18-genie-reply-design/REFERENCES.md).
