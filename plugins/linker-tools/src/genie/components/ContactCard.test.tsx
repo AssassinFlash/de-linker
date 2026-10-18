@@ -73,7 +73,7 @@ test( 'a guest leaves an address and reads the one-business-day promise', async 
 			sent: null,
 			mailbox: 'sales@de-linker.com',
 		},
-		{ sent: true, email: 'maria@example.test' }
+		{ sent: true, email: 'maria@example.test', receipt: true }
 	);
 	card( fetcher );
 	expect(
@@ -83,6 +83,11 @@ test( 'a guest leaves an address and reads the one-business-day promise', async 
 	).toBeTruthy();
 	const field = await screen.findByLabelText( 'Your email address' );
 	fireEvent.change( field, { target: { value: ' maria@example.test ' } } );
+	fireEvent.click(
+		screen.getByLabelText(
+			'I agree that my details may be used to respond to this message.'
+		)
+	);
 	await waitFor( () =>
 		expect(
 			screen
@@ -103,6 +108,7 @@ test( 'a guest leaves an address and reads the one-business-day promise', async 
 		website: '',
 		started: '100',
 		started_nonce: 'sig',
+		consent: '1',
 		reason: 'asked',
 		locale: 'en',
 		page: PAGE,
@@ -118,7 +124,7 @@ test( 'a signed-in customer is not asked for an address', async () => {
 			sent: null,
 			mailbox: 'sales@de-linker.com',
 		},
-		{ sent: true, email: 'maria@firma.test' }
+		{ sent: true, email: 'maria@firma.test', receipt: true }
 	);
 	card( fetcher, 'dissatisfied' );
 	await screen.findByText(
@@ -139,11 +145,15 @@ test( 'a request already with the team shows as sent', async () => {
 		started: '100',
 		started_nonce: 'sig',
 		email: null,
-		sent: { email: 'maria@example.test' },
+		sent: { email: 'maria@example.test', receipt: false },
 	} );
 	card( fetcher );
 	await screen.findByText( 'Your request is with the Linker team' );
 	expect( screen.queryByRole( 'button' ) ).toBeNull();
+	// The receipt cap held the receipt back: the card says so.
+	expect(
+		screen.getByText( 'We have not sent a confirmation email.' )
+	).toBeTruthy();
 } );
 
 test.each( [
@@ -151,6 +161,11 @@ test.each( [
 		'linker_genie_contact_email',
 		400,
 		'Please enter a valid email address.',
+	],
+	[
+		'linker_genie_contact_consent',
+		400,
+		'Please agree to the use of your details for the reply.',
 	],
 	[
 		'linker_genie_contact_limited',

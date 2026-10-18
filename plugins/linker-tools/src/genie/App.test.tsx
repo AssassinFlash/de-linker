@@ -1352,6 +1352,7 @@ test( 'the sent contact card stays in the history on the next turn', async () =>
 	vi.mocked( sendContact ).mockResolvedValue( {
 		ok: true,
 		email: 'maria@example.test',
+		receipt: true,
 	} );
 	vi.mocked( sendTurn ).mockResolvedValueOnce( CONTACT_TURN );
 	render( <App config={ config() } /> );
@@ -1381,7 +1382,7 @@ test( 'the sent contact card stays in the history on the next turn', async () =>
 		started: '100',
 		startedNonce: 'sig',
 		email: null,
-		sent: { email: 'maria@example.test' },
+		sent: { email: 'maria@example.test', receipt: true },
 		mailbox: 'sales@de-linker.com',
 	} );
 	vi.mocked( sendTurn ).mockResolvedValueOnce( {
@@ -1419,7 +1420,7 @@ test( 'a reload shows the sent card in the history, once', async () => {
 			},
 		],
 		turn: CONTACT_TURN,
-		contacts: [ { after: 1, email: 'maria@example.test' } ],
+		contacts: [ { after: 1, email: 'maria@example.test', receipt: false } ],
 	} );
 	vi.mocked( listConversations ).mockResolvedValue( {
 		currentId: 5,
@@ -1438,6 +1439,10 @@ test( 'a reload shows the sent card in the history, once', async () => {
 		screen.getByText(
 			'The team replies to maria@example.test within one business day.'
 		)
+	).toBeInTheDocument();
+	// The receipt cap held the receipt back, and the card says so.
+	expect(
+		screen.getByText( 'We have not sent a confirmation email.' )
 	).toBeInTheDocument();
 	expect( screen.queryByRole( 'button', { name: 'Contact me' } ) ).toBeNull();
 } );

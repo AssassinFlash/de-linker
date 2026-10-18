@@ -41,7 +41,7 @@ export interface ContactCardProps {
 	 * The request is with the team (sent now, or found sent when the card
 	 * appeared): the conversation keeps the sent card in its history.
 	 */
-	onSent?: ( email: string ) => void;
+	onSent?: ( email: string, receipt: boolean ) => void;
 	/** Fetch for tests. */
 	fetcher?: typeof fetch;
 }
@@ -51,16 +51,31 @@ export interface ContactCardProps {
  * conversation's history after the answer that offered it, on later turns and
  * after a reload (review round 1 of #243).
  *
- * @param props       The card.
- * @param props.email Where the team replies.
+ * @param props         The card.
+ * @param props.email   Where the team replies.
+ * @param props.receipt False when the site's receipt cap held the receipt back.
  */
-export function ContactSent( { email }: { email: string } ) {
+export function ContactSent( {
+	email,
+	receipt = true,
+}: {
+	email: string;
+	receipt?: boolean;
+} ) {
 	return (
 		<section className="linker-genie-contact">
 			<p className="linker-genie-contact__title">
 				{ __( 'Your request is with the Linker team', 'linker-tools' ) }
 			</p>
 			<p className="linker-genie-contact__text">{ replyText( email ) }</p>
+			{ receipt ? null : (
+				<p className="linker-genie-contact__text">
+					{ __(
+						'We have not sent a confirmation email.',
+						'linker-tools'
+					) }
+				</p>
+			) }
 			<p className="linker-genie-contact__text">
 				{ __(
 					'Genie keeps answering your questions in the meantime.',
@@ -81,6 +96,12 @@ export function ContactSent( { email }: { email: string } ) {
 function failureText( failure: ContactFailure, mailbox: string ): string {
 	if ( 'email' === failure ) {
 		return __( 'Please enter a valid email address.', 'linker-tools' );
+	}
+	if ( 'consent' === failure ) {
+		return __(
+			'Please agree to the use of your details for the reply.',
+			'linker-tools'
+		);
 	}
 	if ( 'retry' === failure ) {
 		return __( 'Sending did not work. Please try again.', 'linker-tools' );
@@ -128,8 +149,11 @@ export function ContactCard( {
 	const [ email, setEmail ] = useState( '' );
 	const [ trap, setTrap ] = useState( '' );
 	const [ sentTo, setSentTo ] = useState( '' );
+	const [ receipt, setReceipt ] = useState( true );
+	const [ consent, setConsent ] = useState( false );
 	const [ failure, setFailure ] = useState< ContactFailure | null >( null );
 	const field = useId();
+	const consentField = useId();
 	// The latest callback, read when the card's state arrives.
 	const notify = useRef( onSent );
 	notify.current = onSent;
@@ -143,8 +167,9 @@ export function ContactCard( {
 			setState( read );
 			if ( read?.sent ) {
 				setSentTo( read.sent.email );
+				setReceipt( read.sent.receipt );
 				setPhase( 'sent' );
-				notify.current?.( read.sent.email );
+				notify.current?.( read.sent.email, read.sent.receipt );
 				return;
 			}
 			setPhase( 'ready' );
@@ -172,7 +197,12 @@ export function ContactCard( {
 			contactUrl,
 			nonce,
 			{
-				...( account ? {} : { email: email.trim() } ),
+				...( account
+					? {}
+					: {
+							email: email.trim(),
+							...( consent ? { consent: '1' as const } : {} ),
+						} ),
 				website: trap,
 				started: state?.started ?? '',
 				started_nonce: state?.startedNonce ?? '',
@@ -184,8 +214,9 @@ export function ContactCard( {
 		);
 		if ( result.ok ) {
 			setSentTo( result.email );
+			setReceipt( result.receipt );
 			setPhase( 'sent' );
-			onSent?.( result.email );
+			onSent?.( result.email, result.receipt );
 			return;
 		}
 		setFailure( result.failure );
@@ -218,6 +249,14 @@ export function ContactCard( {
 		<section className="linker-genie-contact" aria-live="polite">
 			<p className="linker-genie-contact__title">{ title }</p>
 			<p className="linker-genie-contact__text">{ text }</p>
+			{ sent && ! receipt ? (
+				<p className="linker-genie-contact__text">
+					{ __(
+						'We have not sent a confirmation email.',
+						'linker-tools'
+					) }
+				</p>
+			) : null }
 			{ sent ? (
 				<p className="linker-genie-contact__text">
 					{ __(
@@ -251,6 +290,25 @@ export function ContactCard( {
 								}
 								aria-invalid={ 'email' === failure }
 							/>
+							{ /* The consent the site's public doors ask a guest
+							 * for (#246); an account's customer gave it. */ }
+							<div className="linker-genie-contact__consent">
+								<input
+									id={ consentField }
+									type="checkbox"
+									checked={ consent }
+									onChange={ ( event ) =>
+										setConsent( event.target.checked )
+									}
+									aria-invalid={ 'consent' === failure }
+								/>
+								<label htmlFor={ consentField }>
+									{ __(
+										'I agree that my details may be used to respond to this message.',
+										'linker-tools'
+									) }
+								</label>
+							</div>
 						</>
 					) }
 					{ /* The honeypot: people never see it, bots fill it in. */ }

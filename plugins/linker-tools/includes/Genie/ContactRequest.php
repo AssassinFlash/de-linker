@@ -20,14 +20,14 @@ use WP_REST_Response;
  * whether this conversation's request is already with the team, and the team
  * mailbox customers see (MAILBOX_FILTER).
  *
- * POST passes the conversation on to the team. The hand-off is noted on the
- * conversation post (meta NOTE, one row per request, read by the admin's
- * conversation view) and handed to the mail through the action ACTION; the
- * team mail itself is linker-commerce's (Genie\ContactEmail, a
- * Mail\TeamEmail: recipients from the internal notification settings,
- * docs/specs/11-commerce.md "内部通知收件人"). No mail goes to the customer:
- * the card shows the confirmation, and an address a guest typed never
- * receives mail from this route.
+ * POST passes the conversation on to the team. A Genie hand-off is a contact
+ * message arriving through Genie: linker-commerce answers CONTACT_FILTER by
+ * sending it through #246's one door for messages (Inquiry\Sender::message():
+ * one record, #246's team mail to the internal notification recipients with
+ * the hand-off in it, and the customer's receipt under the site's receipt
+ * cap, the contact form's own). The request is noted on the conversation post
+ * (meta NOTE, one row per request: the admin's conversation view and the
+ * history's sent card read it).
  *
  * The hand-off carries the link to the whole conversation in the admin, a
  * summary (the customer's last messages, newest first), the page the card
@@ -41,9 +41,10 @@ class ContactRequest {
 	public const ROUTE = '/genie/contact';
 
 	/**
-	 * The action that sends the team mail (linker-commerce listens).
+	 * The filter linker-commerce answers with the record it made and whether
+	 * the receipt went (Linker\Commerce\Genie\Module::CONTACT_FILTER).
 	 */
-	public const ACTION = 'linker_genie_contact_requested';
+	public const CONTACT_FILTER = 'linker_tools_genie_contact_team';
 
 	/**
 	 * Filter that names the team mailbox customers see (linker-commerce's
@@ -150,6 +151,7 @@ class ContactRequest {
 						'website'       => array( 'type' => 'string' ),
 						'started'       => array( 'type' => 'string' ),
 						'started_nonce' => array( 'type' => 'string' ),
+						'consent'       => array( 'type' => 'string' ),
 						'reason'        => array(
 							'type' => 'string',
 							'enum' => self::REASONS,
@@ -177,7 +179,7 @@ class ContactRequest {
 				'started'       => $stamp['started'],
 				'started_nonce' => $stamp['nonce'],
 				'email'         => $this->customer()['email'] ?? null,
-				'sent'          => null === $sent ? null : array( 'email' => $sent['email'] ),
+				'sent'          => $sent,
 				'mailbox'       => $this->mailbox(),
 			)
 		);
@@ -214,6 +216,11 @@ class ContactRequest {
 			if ( ! is_email( $email ) ) {
 				return $this->error( 'linker_genie_contact_email', 400 );
 			}
+			// The consent the site's other public doors ask for (#246); an
+			// account's customer gave it when signing up.
+			if ( '1' !== (string) $request->get_param( 'consent' ) ) {
+				return $this->error( 'linker_genie_contact_consent', 400 );
+			}
 			$customer = array(
 				'user_id' => 0,
 				'email'   => $email,
@@ -223,15 +230,28 @@ class ContactRequest {
 		$sent = $this->sent( $conversation );
 		if ( null !== $sent && $sent['email'] === $customer['email'] ) {
 			// Nothing new since the team got this conversation: not twice.
-			return $this->reply( $customer['email'] );
+			return $this->reply( $customer['email'], $sent['receipt'] );
 		}
-		if ( ! has_action( self::ACTION ) ) {
+		if ( ! has_filter( self::CONTACT_FILTER ) ) {
 			return $this->error( 'linker_genie_contact_unavailable', 503 );
 		}
 		if ( '' !== $this->guard->take() ) {
 			return $this->error( 'linker_genie_contact_limited', 429 );
 		}
 		$handoff = $this->handoff( $conversation, $customer, $request );
+		/**
+		 * A customer asked Genie for the team's contact (#243): linker-commerce
+		 * sends it through #246's Sender::message() and answers with the record.
+		 *
+		 * @param mixed                $sent    null until a listener sent it; then array{order: int, receipt: bool}.
+		 * @param array<string, mixed> $handoff See handoff().
+		 * @since 0.1.0
+		 */
+		$sent = apply_filters( self::CONTACT_FILTER, null, $handoff ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::CONTACT_FILTER is linker_tools_genie_contact_team.
+		if ( ! is_array( $sent ) || ! isset( $sent['order'] ) ) {
+			return $this->error( 'linker_genie_contact_unavailable', 503 );
+		}
+		$receipt = ! empty( $sent['receipt'] );
 		add_post_meta(
 			$conversation,
 			self::NOTE,
@@ -243,17 +263,11 @@ class ContactRequest {
 				'user_id'  => $customer['user_id'],
 				'page'     => $handoff['page'],
 				'messages' => $handoff['conversation']['messages'],
+				'order'    => (int) $sent['order'],
+				'receipt'  => $receipt,
 			)
 		);
-		/**
-		 * A customer asked Genie for the team's contact (#243); the team mail
-		 * (linker-commerce, Genie\ContactEmail) listens.
-		 *
-		 * @param array<string, mixed> $handoff See handoff().
-		 * @since 0.1.0
-		 */
-		do_action( self::ACTION, $handoff ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::ACTION is linker_genie_contact_requested.
-		return $this->reply( $customer['email'] );
+		return $this->reply( $customer['email'], $receipt );
 	}
 
 	/**
@@ -321,15 +335,17 @@ class ContactRequest {
 	 * which is the index of the answer that showed the card).
 	 *
 	 * @param int $conversation Conversation post ID.
-	 * @return list<array{after: int, email: string}>
+	 * @return list<array{after: int, email: string, receipt: bool}>
 	 */
 	public static function cards( int $conversation ): array {
 		$cards = array();
 		foreach ( $conversation > 0 ? (array) get_post_meta( $conversation, self::NOTE, false ) : array() as $note ) {
 			if ( is_array( $note ) && is_email( (string) ( $note['email'] ?? '' ) ) ) {
 				$cards[] = array(
-					'after' => (int) ( $note['messages'] ?? 0 ),
-					'email' => (string) $note['email'],
+					'after'   => (int) ( $note['messages'] ?? 0 ),
+					'email'   => (string) $note['email'],
+					// A note of before the receipt (none was sent then) reads as none.
+					'receipt' => ! empty( $note['receipt'] ),
 				);
 			}
 		}
@@ -404,7 +420,7 @@ class ContactRequest {
 	 * This conversation's request, when nothing was said since it went out.
 	 *
 	 * @param int $conversation Conversation post ID.
-	 * @return array{email: string}|null
+	 * @return array{email: string, receipt: bool}|null
 	 */
 	private function sent( int $conversation ): ?array {
 		$notes = get_post_meta( $conversation, self::NOTE, false );
@@ -416,7 +432,10 @@ class ContactRequest {
 		if ( (int) ( $last['messages'] ?? -1 ) !== $count ) {
 			return null;
 		}
-		return array( 'email' => (string) ( $last['email'] ?? '' ) );
+		return array(
+			'email'   => (string) ( $last['email'] ?? '' ),
+			'receipt' => ! empty( $last['receipt'] ),
+		);
 	}
 
 	/**
@@ -433,13 +452,15 @@ class ContactRequest {
 	/**
 	 * The card's answer to a request that is with the team.
 	 *
-	 * @param string $email Where the team replies.
+	 * @param string $email   Where the team replies.
+	 * @param bool   $receipt Whether the receipt went (the site's receipt cap may hold it back).
 	 */
-	private function reply( string $email ): WP_REST_Response {
+	private function reply( string $email, bool $receipt = true ): WP_REST_Response {
 		$reply = new WP_REST_Response(
 			array(
-				'sent'  => true,
-				'email' => $email,
+				'sent'    => true,
+				'email'   => $email,
+				'receipt' => $receipt,
 			)
 		);
 		$reply->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0' );

@@ -227,12 +227,12 @@ export function App( { config }: { config: GenieConfig } ) {
 	}, [ config.conversationsUrl, config.restNonce, show ] );
 
 	// A request is with the team: its card stays after the shown turn's answer.
-	const sent = useCallback( ( email: string ) => {
+	const sent = useCallback( ( email: string, receipt: boolean ) => {
 		const after = turnAt.current;
 		setContacts( ( known ) =>
 			known.some( ( card ) => card.after === after )
 				? known
-				: [ ...known, { after, email } ]
+				: [ ...known, { after, email, receipt } ]
 		);
 	}, [] );
 
@@ -925,6 +925,10 @@ export function App( { config }: { config: GenieConfig } ) {
 													<ContactSent
 														key={ card.email }
 														email={ card.email }
+														receipt={
+															false !==
+															card.receipt
+														}
 													/>
 												) ) }
 										</li>
@@ -1054,9 +1058,7 @@ export function App( { config }: { config: GenieConfig } ) {
 											nonce={ config.restNonce }
 											locale={ config.locale }
 											page={ config.page }
-											onSent={ ( email ) =>
-												sent( email )
-											}
+											onSent={ sent }
 										/>
 									) ) }
 							</div>

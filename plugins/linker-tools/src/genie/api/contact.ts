@@ -25,16 +25,18 @@ export interface ContactState {
 	/** The signed-in customer's address; null for a guest. */
 	email: string | null;
 	/** The request already with the team, when nothing was said since. */
-	sent: { email: string } | null;
+	sent: { email: string; receipt: boolean } | null;
 	/** The team mailbox customers see, named when a request is refused. */
 	mailbox: string;
 }
 
 /** Why a request did not go out; the card turns each into its sentence. */
-export type ContactFailure = 'email' | 'retry' | 'limited' | 'unavailable';
+export type ContactFailure =
+	'email' | 'consent' | 'retry' | 'limited' | 'unavailable';
 
 export type ContactResult =
-	{ ok: true; email: string } | { ok: false; failure: ContactFailure };
+	| { ok: true; email: string; receipt: boolean }
+	| { ok: false; failure: ContactFailure };
 
 /**
  * The card's state from the route; null when the route cannot be read.
@@ -69,7 +71,10 @@ export async function readContact(
 			email: typeof body.email === 'string' ? body.email : null,
 			sent:
 				body.sent && typeof body.sent.email === 'string'
-					? { email: body.sent.email }
+					? {
+							email: body.sent.email,
+							receipt: false !== body.sent.receipt,
+						}
 					: null,
 			mailbox: typeof body.mailbox === 'string' ? body.mailbox : '',
 		};
@@ -88,6 +93,7 @@ export async function readContact(
  * @param request.website       The honeypot's value (empty for a person).
  * @param request.started       The signed start time readContact() returned.
  * @param request.started_nonce Its signature.
+ * @param request.consent       A guest's consent, the site's public doors' own.
  * @param request.reason        Why Genie offered the contact.
  * @param request.locale        The page's language.
  * @param request.page          The page context the turn carried.
@@ -101,6 +107,7 @@ export async function sendContact(
 		website: string;
 		started: string;
 		started_nonce: string;
+		consent?: '1';
 		reason: ContactReason;
 		locale: Locale;
 		page: PageContext;
@@ -121,12 +128,18 @@ export async function sendContact(
 		const body = ( await response.json().catch( () => ( {} ) ) ) as {
 			email?: string;
 			code?: string;
+			receipt?: boolean;
 		};
 		if ( response.ok ) {
-			return { ok: true, email: body.email ?? request.email ?? '' };
+			return {
+				ok: true,
+				email: body.email ?? request.email ?? '',
+				receipt: false !== body.receipt,
+			};
 		}
 		const failures: Record< string, ContactFailure > = {
 			linker_genie_contact_email: 'email',
+			linker_genie_contact_consent: 'consent',
 			linker_genie_contact_retry: 'retry',
 			linker_genie_contact_limited: 'limited',
 		};

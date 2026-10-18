@@ -74,3 +74,22 @@ linker-copywriting Hard Stops（事务邮件主题属公开面）；`.po` 既有
 
 另：评审指出短语表会对否定句（"I don't want to talk to a person"）误触发。**采纳**：`contact.asks_for_person` 只在短语所在分句里
 没有否定词时命中（`_CLAUSE`、`_NEGATION`；正反例在 `tests/test_contact.py`），否定句照常交 Jev。
+
+## 补记：#246 合并后（评审第 1 轮之二）
+
+交接改走 #246 的联系记录，客户得到与联系表单一样的回执。新出现在 Genie 卡上的三句**全部沿用 #246 已评审的措辞与译文**，不另写：
+
+| 位置 | EN / DE（沿用） | 来源 |
+|---|---|---|
+| 访客同意句（勾选框） | I agree that my details may be used to respond to this message. / Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser Nachricht verwendet werden. | #246 询盘与联系表单 |
+| 未勾选时的提示 | Please agree to the use of your details for the reply. / Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu. | #246 `Submission` |
+| 回执上限时（卡与历史里的卡） | We have not sent a confirmation email. / Es wurde keine Bestätigungs-E-Mail versendet. | #246 联系表单的 `sent_no_receipt` |
+
+团队邮件改为 #246 的 `NewInquiryEmail`（主题"New inquiry #… from …"沿用），Genie 一节新增两句（内部邮件，按上文 C 组的定稿取词）：
+
+| 位置 | EN / DE | 说明 |
+|---|---|---|
+| 小节标题 | Through Genie / Über Genie | 与 C 组"via Genie / über Genie"同一介词取向；作标题用名词短语 |
+| 承诺句 | Genie promised a reply within one business day. / Genie hat eine Antwort innerhalb eines Arbeitstags zugesagt. | C3 定稿的第二句原样 |
+
+C 组中随 `Genie\ContactEmail` 删除而不再使用的：C1、C2、C3 首句、C6、C12、C13（团队邮件的主题、标题、回复说明由 #246 的邮件给出）。其余（原因标签、"The customer's last messages, newest first"、"Open the conversation"、Lösungsentwurf 表头）沿用。

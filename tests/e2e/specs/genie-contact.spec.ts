@@ -3,8 +3,9 @@
  * "转人工", A5). In English and German, as a guest and signed in, at 1440 and
  * 390: the customer asks for a person, the contact card appears under the
  * service's sentence, the guest leaves an address (the signed-in customer is
- * not asked), the card confirms with the one-business-day promise, the team
- * mail lands in the instance's spool, and Genie answers the next question.
+ * not asked), the card confirms with the one-business-day promise, #246's
+ * team mail and the customer's receipt land in the instance's spool, and
+ * Genie answers the next question.
  *
  * The instance's outgoing mail stays in its spool (docs/local-stack.md
  * §隔离); the routing itself is asserted on the Outbox queue by
@@ -95,13 +96,16 @@ async function ask(page: Page, question: string): Promise<string> {
 }
 
 /**
- * The contact counters of this machine's connection, cleared: the suite sends
- * more requests in an hour than one connection may (ContactGuard::LIMIT).
+ * The local instance's counters, cleared: the suite sends more requests in an
+ * hour than one connection may (ContactRequest::LIMIT), more receipts than a
+ * day allows (#246's ReceiptLimit), and more mail in a minute than the Outbox
+ * sends at once (Mail\\Throttle, whose record this clears so the mail lands in
+ * the spool now).
  */
 function freshCounters(): void {
 	wp([
 		'eval',
-		'global $wpdb; $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE \'linker\\_tools\\_limit\\_genie\\_contact%\'" );',
+		"global $wpdb; $wpdb->query( \"DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker\\_tools\\_limit\\_genie\\_contact%' OR option_name LIKE 'linker\\_commerce\\_limit\\_public\\_receipts%'\" ); delete_option( 'linker_commerce_mail_sends' );",
 	]);
 }
 
@@ -146,6 +150,10 @@ for (const lang of ['en', 'de'] as const) {
 				const sentAt = mark();
 				if ('guest' === who) {
 					await field.fill(GUEST);
+					// The consent the site's public doors ask a guest for.
+					await card
+						.getByLabel(/I agree|Ich bin damit einverstanden/)
+						.check();
 				}
 				// The signed start time is three seconds old at the least.
 				await page.waitForTimeout(3_000);
@@ -157,15 +165,20 @@ for (const lang of ['en', 'de'] as const) {
 					'guest' === who ? GUEST : CUSTOMER
 				);
 				await shot(page, `${lang}-${width}-${who}-sent`);
+				// One record through #246's door: the team mail and the receipt.
+				await expect
+					.poll(() => since(sentAt, /^New inquiry #/).length, {
+						message: 'the team mail is in the spool',
+						timeout: 30_000,
+					})
+					.toBe(1);
 				await expect
 					.poll(
 						() =>
-							since(
-								sentAt,
-								/^(Contact request from|Kontaktanfrage von) /
-							).length,
+							since(sentAt, /^(Your inquiry #|Ihre Anfrage #)/)
+								.length,
 						{
-							message: 'the team mail is in the spool',
+							message: 'the receipt is in the spool',
 							timeout: 30_000,
 						}
 					)
@@ -200,4 +213,38 @@ for (const lang of ['en', 'de'] as const) {
 			});
 		}
 	}
+}
+
+// Over #246's daily receipt cap the request still reaches the team; the card
+// says no confirmation email went (review round 1 of #243).
+for (const [lang, width] of [
+	['en', 1440],
+	['de', 390],
+] as const) {
+	test(`over the receipt cap the card says so (${lang}, ${width})`, async ({
+		page,
+	}) => {
+		test.setTimeout(300_000);
+		freshCounters();
+		wp([
+			'eval',
+			"$r = new Linker\\Commerce\\Inquiry\\RateLimit( 'public_receipts', Linker\\Commerce\\Inquiry\\ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS ); while ( $r->take( '' ) ) {}",
+		]);
+		await page.context().clearCookies();
+		await page.setViewportSize(VIEWPORTS[width]);
+		await page.goto(`${instance().url}${ASK[lang].page}`);
+		await openDock(page);
+		await ask(page, ASK[lang].person);
+		const card = page.locator('.linker-genie-contact');
+		await card.locator('.linker-genie-contact__email').fill(GUEST);
+		await card.getByLabel(/I agree|Ich bin damit einverstanden/).check();
+		await page.waitForTimeout(3_000);
+		await card.locator('.linker-genie-contact__send').click();
+		await expect(page.locator('.linker-genie-contact')).toContainText(
+			/We have not sent a confirmation email|Es wurde keine Bestätigungs-E-Mail versendet/
+		);
+		await page.locator('.linker-genie-contact').scrollIntoViewIfNeeded();
+		await shot(page, `${lang}-${width}-guest-no-receipt`);
+		freshCounters();
+	});
 }

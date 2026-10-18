@@ -43,7 +43,11 @@ if ( '' === trim( $order->get_formatted_billing_full_name() ) ) {
 ?>
 </p>
 <p><a href="<?php echo esc_url( $order->get_edit_order_url() ); ?>"><?php esc_html_e( 'Open the inquiry', 'linker-commerce' ); ?></a></p>
-<?php if ( 'contact' === $order->get_meta( '_linker_inquiry_source' ) ) : ?>
+<?php
+// A contact message through Genie (#243) names its own door below, with its hand-off.
+$linker_handoff = $order->get_meta( \Linker\Commerce\Genie\Module::HANDOFF_META );
+if ( 'contact' === $order->get_meta( '_linker_inquiry_source' ) && ! is_array( $linker_handoff ) ) :
+	?>
 <p><?php esc_html_e( 'Contact form', 'linker-commerce' ); ?><br />
 	<?php
 	printf(
@@ -55,6 +59,10 @@ if ( '' === trim( $order->get_formatted_billing_full_name() ) ) {
 </p>
 <?php endif; ?>
 <?php
+if ( is_array( $linker_handoff ) ) {
+	// A contact message through Genie (#243): its hand-off.
+	wc_get_template( 'emails/linker-genie-handoff.php', array( 'handoff' => $linker_handoff ), '', $email->template_base );
+}
 /**
  * This action is documented in woocommerce/templates/emails/customer-on-hold-order.php
  */

@@ -1563,6 +1563,22 @@ body:has(.pdp-buy-inner)
 	white-space: nowrap;
 }
 
+/* The consent line under the address: the chips' grey, the disclosure's size. */
+.linker-genie-contact__consent {
+	display: flex;
+	flex-basis: 100%;
+	order: 1;
+	align-items: flex-start;
+	gap: 8px;
+	color: #5d5d5d;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.linker-genie-contact__consent input {
+	margin-top: 2px;
+}
+
 .linker-genie-contact__error {
 	margin: 8px 0 0;
 	color: var(--proto-sem-danger, #b85a45);

@@ -10,8 +10,10 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
-use Linker\Commerce\Genie\ContactEmail;
 use Linker\Commerce\Genie\Module;
+use Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail;
+use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
+use Linker\Commerce\Inquiry\ReceiptLimit;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Settings\Options;
 use Linker\Tools\Genie\ContactRequest;
@@ -19,15 +21,18 @@ use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\FormGuard;
 use Linker\Tools\Genie\RateLimit;
 use Linker\Tools\Genie\Thread;
+use WC_Order;
 use WP_REST_Request;
 use WP_REST_Response;
 
 /**
- * The instance's linker-tools route (ContactRequest) and this plugin's team
- * mail (Genie\ContactEmail) together, as the site runs them (#243,
- * docs/specs/13-genie.md goal 6, A5 and A6). The routing and the content are
- * read from the Outbox queue (AGENTS.md §5, test mail rule): the minute quota
- * is full, so each mail is stored as a queue row instead of being sent.
+ * The instance's linker-tools route (ContactRequest) and this plugin's door for
+ * messages (#246: Inquiry\Sender::message() — the record, the team mail with
+ * the Genie hand-off, the customer's receipt under the receipt cap) together,
+ * as the site runs them (#243, docs/specs/13-genie.md goal 6, A5 and A6). The
+ * routing and the content are read from the Outbox queue (AGENTS.md §5, test
+ * mail rule): the minute quota is full, so each mail is stored as a queue row
+ * instead of being sent.
  *
  * @coversNothing
  */
@@ -37,6 +42,15 @@ final class GenieContactTest extends IntegrationTestCase {
 	 * The default internal recipient (Options::DEFAULT_NOTIFY_TO).
 	 */
 	private const INTERNAL = 'sales@sunriverinverter.com';
+
+	/**
+	 * The limiters this test takes places of: the contact door's, and #246's
+	 * receipts (ReceiptLimit). Their rows are put back as they were.
+	 */
+	private const LIMITS = array(
+		RateLimit::PREFIX . 'genie_contact',
+		\Linker\Commerce\Inquiry\RateLimit::PREFIX . 'public_receipts',
+	);
 
 	/**
 	 * The conversation of the test.
@@ -62,10 +76,13 @@ final class GenieContactTest extends IntegrationTestCase {
 		}
 		WC()->mailer();
 		$saved = array();
-		foreach ( array( Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, 'woocommerce_' . ContactEmail::ID . '_settings' ) as $name ) {
+		foreach ( array( Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, 'woocommerce_' . NewInquiryEmail::ID . '_settings', 'woocommerce_' . InquiryReceivedEmail::ID . '_settings' ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
-		$counters      = self::counters();
+		$counters = self::counters();
+		$started  = gmdate( 'Y-m-d H:i:s', time() - 1 );
+		// Every test starts with fresh limits; the instance's own counts come back afterwards.
+		self::clear_limits();
 		$address       = '192.0.2.' . wp_rand( 1, 254 );
 		$this->address = $address;
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput -- kept as they are, to be put back as they were.
@@ -74,15 +91,18 @@ final class GenieContactTest extends IntegrationTestCase {
 		$server  = $_SERVER['REMOTE_ADDR'] ?? null;
 		// phpcs:enable
 		$this->later(
-			function () use ( $saved, $counters, $cookie, $browser, $server ): void {
+			function () use ( $saved, $counters, $cookie, $browser, $server, $started ): void {
+				// The records this test's requests made (#246's contact records).
+				foreach ( self::records( $started ) as $record ) {
+					$record->delete( true );
+				}
 				foreach ( $saved as $name => $value ) {
 					false === $value ? delete_option( $name ) : update_option( $name, $value );
 				}
 				// The contact limits' rows as they were: the site's day counter
 				// counts on, this test's connection leaves none.
 				global $wpdb;
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the limiter's own rows (RateLimit::take()).
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( RateLimit::PREFIX . 'genie_contact' ) . '%' ) );
+				self::clear_limits();
 				foreach ( $counters as $name => $value ) {
 					// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- puts back the rows counters() read.
 					$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'off')", $name, $value ) );
@@ -112,7 +132,8 @@ final class GenieContactTest extends IntegrationTestCase {
 		);
 		delete_option( Options::NOTIFY_TO );
 		delete_option( Options::NOTIFY_FROM );
-		delete_option( 'woocommerce_' . ContactEmail::ID . '_settings' );
+		delete_option( 'woocommerce_' . NewInquiryEmail::ID . '_settings' );
+		delete_option( 'woocommerce_' . InquiryReceivedEmail::ID . '_settings' );
 		update_option( Options::NOTIFY_BCC, 'copy-' . self::tag() . '@example.test' );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$_SERVER['REMOTE_ADDR'] = $address;
@@ -139,11 +160,11 @@ final class GenieContactTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Both plugins name one action: linker-tools fires what this plugin listens to.
+	 * Both plugins name one filter: linker-tools asks what this plugin answers.
 	 */
-	public function test_both_plugins_name_the_same_action(): void {
-		$this->assertSame( ContactRequest::ACTION, Module::ACTION );
-		$this->assertNotFalse( has_action( Module::ACTION ) );
+	public function test_both_plugins_name_the_same_filter(): void {
+		$this->assertSame( ContactRequest::CONTACT_FILTER, Module::CONTACT_FILTER );
+		$this->assertNotFalse( has_filter( Module::CONTACT_FILTER ) );
 	}
 
 	/**
@@ -179,30 +200,44 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertSame(
 			array(
-				'sent'  => true,
-				'email' => $guest,
+				'sent'    => true,
+				'email'   => $guest,
+				'receipt' => true,
 			),
 			$response->get_data()
 		);
+		// One record: #246's contact message, the hand-off on it.
+		$record = $this->record( $guest );
+		$this->assertSame( 'linker_contact', $record->get_created_via() );
+		$this->assertSame( 'contact', $record->get_meta( '_linker_inquiry_source' ) );
+		$this->assertSame( 'Can I talk to a person?', $record->get_customer_note() );
+		$this->assertSame( $this->conversation, $record->get_meta( Module::HANDOFF_META )['conversation']['id'] );
+		// The team mail (#246's, to the internal recipient) and the receipt.
 		$rows = $this->jobs_after( $marker );
-		$this->assertCount( 1, $rows, 'one team mail, no mail to the guest' );
-		$row = $rows[0];
-		$this->assertSame( 'Contact request from ' . $guest . ' via Genie', $row['subject'] );
-		$this->assertSame( array( self::INTERNAL ), $row['to'] );
+		$this->assertCount( 2, $rows, 'the team mail and the receipt' );
+		$team = $this->row_to( $rows, self::INTERNAL );
+		$row  = $team;
+		$this->assertSame( 'New inquiry #' . $record->get_order_number() . ' from ' . $guest, $row['subject'] );
 		$this->assertContains( 'Bcc: ' . get_option( Options::NOTIFY_BCC ), $row['headers'] );
 		$this->assertContains( 'From: Linker <' . self::INTERNAL . '>', $row['headers'] );
-		$this->assertContains( 'Reply-to: ' . $guest, $row['headers'] );
+		$this->assertNotEmpty( array_filter( $row['headers'], static fn ( string $line ): bool => str_starts_with( $line, 'Reply-to:' ) && str_contains( $line, $guest ) ) );
+		$receipt = $this->row_to( $rows, $guest );
+		$this->assertStringContainsString( '#' . $record->get_order_number(), $receipt['subject'] );
+		// The record carries the page's language, which #246's receipt is written in.
+		$this->assertSame( 'de_DE_formal', $record->get_meta( \Linker\Commerce\Inquiry\OrderLocale::META ) );
 		$body = html_entity_decode( $row['body'] );
 		// The whole conversation, in the admin.
 		$this->assertStringContainsString( admin_url( 'admin.php?page=linker-genie-quality&conversation=' . $this->conversation ), $body );
 		$this->assertStringContainsString( 'Open the conversation', $body );
+		// #246's team mail names the door: Genie, not the contact form.
+		$this->assertStringContainsString( 'Through Genie', $body );
+		$this->assertStringNotContainsString( 'Contact form', $body );
 		// Why, and the summary, latest first.
 		$this->assertStringContainsString( 'Asked to talk to a person', $body );
 		$this->assertMatchesRegularExpression( '/Can I talk to a person\?.*Which battery fits the SAJ H2-10K-T3\?/s', $body );
 		// The page.
 		$this->assertStringContainsString( home_url( '/de/produkt/saj-h2-10k-t3/' ), $body );
 		$this->assertStringContainsString( 'SAJ H2-10K-T3', $body );
-		$this->assertStringContainsString( '>DE<', $body );
 		// The solution draft, line by line.
 		$this->assertStringContainsString( $product->get_name(), $body );
 		$this->assertStringContainsString( $product->get_sku(), $body );
@@ -213,6 +248,48 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertCount( 1, $notes );
 		$this->assertSame( $guest, $notes[0]['email'] );
 		$this->assertSame( 'asked', $notes[0]['reason'] );
+		$this->assertSame( $record->get_id(), $notes[0]['order'] );
+		$this->assertTrue( $notes[0]['receipt'] );
+	}
+
+	/**
+	 * Over the site's receipt cap the request still reaches the team; the
+	 * receipt alone is held back, and the card and the history say so.
+	 */
+	public function test_over_the_receipt_cap_the_team_gets_it_and_the_card_says_no_receipt(): void {
+		$receipts = new \Linker\Commerce\Inquiry\RateLimit( 'public_receipts', ReceiptLimit::DAILY_CAP, DAY_IN_SECONDS );
+		while ( $receipts->take( '' ) ) {
+			// Fill today's receipts; setUp() puts their count back afterwards.
+			continue;
+		}
+		$this->thread( 'Can I talk to a person?' );
+		$guest    = 'linker-it-' . self::tag() . '@example.test';
+		$marker   = self::newest_mail_job();
+		$response = $this->send( array( 'email' => $guest ) + self::fields() );
+		$this->assertSame( 200, $response->get_status() );
+		$this->assertFalse( $response->get_data()['receipt'] );
+		$rows = $this->jobs_after( $marker );
+		$this->assertCount( 1, $rows, 'the team mail only' );
+		$this->assertSame( array( self::INTERNAL ), $rows[0]['to'] );
+		$this->assertSame( 'daily_cap', $this->record( $guest )->get_meta( ReceiptLimit::SKIPPED_META ) );
+		$stored = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/conversation' ) )->get_data();
+		$this->assertFalse( $stored['contacts'][0]['receipt'] );
+	}
+
+	/**
+	 * A guest who did not give the consent the site's public doors ask for is
+	 * refused, and nothing is recorded or sent.
+	 */
+	public function test_a_guest_without_consent_is_refused(): void {
+		$this->thread( 'Can I talk to a person?' );
+		$guest  = 'linker-it-' . self::tag() . '@example.test';
+		$marker = self::newest_mail_job();
+		$fields = self::fields();
+		unset( $fields['consent'] );
+		$response = $this->send( array( 'email' => $guest ) + $fields );
+		$this->assertSame( 400, $response->get_status() );
+		$this->assertSame( array(), $this->jobs_after( $marker ) );
+		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $guest ) ) );
 	}
 
 	/**
@@ -233,14 +310,16 @@ final class GenieContactTest extends IntegrationTestCase {
 		$response = $this->send( array( 'reason' => 'dissatisfied' ) );
 
 		$this->assertSame( 200, $response->get_status() );
+		$record = $this->record( $customer->get_billing_email() );
+		$this->assertSame( $customer->get_id(), $record->get_customer_id() );
 		$rows = $this->jobs_after( $marker );
-		$this->assertCount( 1, $rows );
-		$this->assertSame( array( self::INTERNAL ), $rows[0]['to'] );
-		$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $rows[0]['headers'] );
-		$body = html_entity_decode( $rows[0]['body'] );
+		$this->assertCount( 2, $rows, 'the team mail and the receipt' );
+		$team = $this->row_to( $rows, self::INTERNAL );
+		$this->assertNotEmpty( array_filter( $team['headers'], static fn ( string $line ): bool => str_starts_with( $line, 'Reply-to:' ) && str_contains( $line, $customer->get_billing_email() ) ) );
+		$body = html_entity_decode( $team['body'] );
 		$this->assertStringContainsString( 'Seemed frustrated or wanted a person', $body );
-		$this->assertStringContainsString( 'Open the customer', $body );
 		$this->assertStringContainsString( 'No products in the solution draft.', $body );
+		$this->row_to( $rows, $customer->get_billing_email() );
 	}
 
 	/**
@@ -304,7 +383,8 @@ final class GenieContactTest extends IntegrationTestCase {
 			$this->conversation = 0;
 			unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
 		}
-		$this->assertCount( ContactRequest::LIMIT, $this->jobs_after( $marker ) );
+		// Each accepted request is a team mail and a receipt.
+		$this->assertCount( 2 * ContactRequest::LIMIT, $this->jobs_after( $marker ) );
 	}
 
 	/**
@@ -342,9 +422,16 @@ final class GenieContactTest extends IntegrationTestCase {
 		$first  = $this->send( $params );
 		$second = $this->send( $params );
 		$this->assertSame( array( 200, 200 ), array( $first->get_status(), $second->get_status() ) );
-		$this->assertCount( 1, $this->jobs_after( $marker ) );
+		// Once: one team mail and one receipt.
+		$this->assertCount( 2, $this->jobs_after( $marker ) );
 		$state = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/contact' ) );
-		$this->assertSame( array( 'email' => $params['email'] ), $state->get_data()['sent'] );
+		$this->assertSame(
+			array(
+				'email'   => $params['email'],
+				'receipt' => true,
+			),
+			$state->get_data()['sent']
+		);
 	}
 
 	/**
@@ -367,9 +454,8 @@ final class GenieContactTest extends IntegrationTestCase {
 			restore_previous_locale();
 		}
 		$this->assertSame( 200, $response->get_status() );
-		$rows = $this->jobs_after( $marker );
-		$this->assertCount( 1, $rows );
-		$this->assertStringContainsString( 'Asked to talk to a person', html_entity_decode( $rows[0]['body'] ) );
+		$team = $this->row_to( $this->jobs_after( $marker ), self::INTERNAL );
+		$this->assertStringContainsString( 'Asked to talk to a person', html_entity_decode( $team['body'] ) );
 		$this->assertSame( 'Asked to talk to a person', get_post_meta( $this->conversation, ContactRequest::NOTE, false )[0]['label'] );
 	}
 
@@ -387,8 +473,9 @@ final class GenieContactTest extends IntegrationTestCase {
 		$this->assertSame(
 			array(
 				array(
-					'after' => 3,
-					'email' => $guest,
+					'after'   => 3,
+					'email'   => $guest,
+					'receipt' => true,
 				),
 			),
 			$stored['contacts']
@@ -434,10 +521,58 @@ final class GenieContactTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * The one queue row to an address.
+	 *
+	 * @param list<array{subject: string, to: list<string>, headers: list<string>, body: string}> $rows    Queue rows.
+	 * @param string                                                                              $address The recipient.
+	 * @return array{subject: string, to: list<string>, headers: list<string>, body: string}
+	 */
+	private function row_to( array $rows, string $address ): array {
+		$found = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $address ) === $row['to'] ) );
+		$this->assertCount( 1, $found, "one row to {$address}" );
+		return $found[0];
+	}
+
+	/**
+	 * The one contact record of an address.
+	 *
+	 * @param string $email Billing email.
+	 */
+	private function record( string $email ): WC_Order {
+		$records = wc_get_orders(
+			array(
+				'billing_email' => $email,
+				'limit'         => -1,
+			)
+		);
+		$this->assertIsArray( $records );
+		$this->assertCount( 1, $records );
+		$this->assertInstanceOf( WC_Order::class, $records[0] );
+		return $records[0];
+	}
+
+	/**
+	 * The contact records made since a moment (GMT).
+	 *
+	 * @param string $since GMT date and time.
+	 * @return list<WC_Order>
+	 */
+	private static function records( string $since ): array {
+		$found = wc_get_orders(
+			array(
+				'created_via'  => 'linker_contact',
+				'date_created' => '>=' . strtotime( $since . ' UTC' ),
+				'limit'        => -1,
+			)
+		);
+		return array_values( array_filter( is_array( $found ) ? $found : array(), static fn ( WC_Order $order ): bool => is_array( $order->get_meta( Module::HANDOFF_META ) ) ) );
+	}
+
+	/**
 	 * A person's guard fields: a stamp of this door from ten seconds ago.
 	 *
 	 * @param int $age Seconds since the card appeared.
-	 * @return array{website: string, started: string, started_nonce: string}
+	 * @return array{website: string, started: string, started_nonce: string, consent: string}
 	 */
 	private static function fields( int $age = 10 ): array {
 		$stamp = ( new FormGuard( 'genie_contact', ContactRequest::LIMIT, ContactRequest::DAILY ) )->stamp( time() - $age );
@@ -445,7 +580,19 @@ final class GenieContactTest extends IntegrationTestCase {
 			'website'       => '',
 			'started'       => $stamp['started'],
 			'started_nonce' => $stamp['nonce'],
+			'consent'       => '1',
 		);
+	}
+
+	/**
+	 * Deletes the rows of LIMITS.
+	 */
+	private static function clear_limits(): void {
+		global $wpdb;
+		foreach ( self::LIMITS as $limit ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the limiter's own rows (RateLimit::take()).
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $limit ) . '%' ) );
+		}
 	}
 
 	/**
@@ -455,14 +602,17 @@ final class GenieContactTest extends IntegrationTestCase {
 	 */
 	private static function counters(): array {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the limiter's own rows, never loaded through the options API.
-		$rows  = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( RateLimit::PREFIX . 'genie_contact' ) . '%' ), ARRAY_A );
 		$found = array();
-		foreach ( (array) $rows as $row ) {
-			$found[ (string) $row['option_name'] ] = (string) $row['option_value'];
+		foreach ( self::LIMITS as $limit ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the limiter's own rows, never loaded through the options API.
+			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $limit ) . '%' ), ARRAY_A );
+			foreach ( (array) $rows as $row ) {
+				$found[ (string) $row['option_name'] ] = (string) $row['option_value'];
+			}
 		}
 		return $found;
 	}
+
 
 	/**
 	 * A conversation of this visitor with the customer messages given and an

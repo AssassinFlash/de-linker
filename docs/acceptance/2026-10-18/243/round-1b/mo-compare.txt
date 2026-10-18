@@ -1,0 +1,27 @@
+== linker-commerce (against origin/main e9a61270)
+main 792 · branch 796 · lost 0 · changed 0 · added 4
+added "Genie promised a reply within one business day."
+added "Open the conversation"
+added "The customer's last messages, newest first"
+added "Through Genie"
+== linker-tools (against origin/main e9a61270)
+main 346 · branch 365 · lost 0 · changed 0 · added 19
+added "%1$s · Reply address: %2$s · Reason: %3$s"
+added "Asked about the company, delivery or service"
+added "Asked the same question three times in a row"
+added "Asked to talk to a person"
+added "Contact me"
+added "Contact requests"
+added "Genie cannot pass on your request right now. Please try again later or write to %s."
+added "Genie cannot pass on your request right now. Please try again later."
+added "Genie keeps answering your questions in the meantime."
+added "I agree that my details may be used to respond to this message."
+added "Leave your email address and the team replies within one business day."
+added "Let the Linker team contact you"
+added "Please agree to the use of your details for the reply."
+added "Seemed frustrated or wanted a person"
+added "Sending did not work. Please try again."
+added "Should someone from the Linker team get in touch?"
+added "The team replies to %s within one business day."
+added "We have not sent a confirmation email."
+added "Your request is with the Linker team"

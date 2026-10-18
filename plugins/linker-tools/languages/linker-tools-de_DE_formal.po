@@ -1708,3 +1708,15 @@ msgstr "Wirkte unzufrieden oder wollte einen Menschen"
 #: includes/Genie/ContactRequest.php
 msgid "Asked the same question three times in a row"
 msgstr "Stellte dieselbe Frage dreimal hintereinander"
+
+#: build/genie.js
+msgid "We have not sent a confirmation email."
+msgstr "Es wurde keine Bestätigungs-E-Mail versendet."
+
+#: build/genie.js
+msgid "I agree that my details may be used to respond to this message."
+msgstr "Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser Nachricht verwendet werden."
+
+#: build/genie.js
+msgid "Please agree to the use of your details for the reply."
+msgstr "Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu."

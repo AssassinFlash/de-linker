@@ -603,6 +603,7 @@ final class ProxyTest extends TestCase {
 					array(
 						'messages' => 1,
 						'email'    => 'maria@example.test',
+						'receipt'  => true,
 					),
 				),
 			)
@@ -616,8 +617,9 @@ final class ProxyTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'after' => 1,
-					'email' => 'maria@example.test',
+					'after'   => 1,
+					'email'   => 'maria@example.test',
+					'receipt' => true,
 				),
 			),
 			$data['contacts']

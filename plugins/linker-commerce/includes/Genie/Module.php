@@ -10,7 +10,11 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Genie;
 
+use Linker\Commerce\Contact\Submission;
+use Linker\Commerce\Inquiry\ReceiptLimit;
+use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Settings\Options;
+use WP_Error;
 
 /**
  * Genie lives in linker-tools; the site's emails live here (every one a
@@ -20,11 +24,13 @@ use Linker\Commerce\Settings\Options;
  * SEND_FILTER with ConversationEmail, CONFIRM_FILTER with
  * ConfirmAddressEmail.
  *
- * "Let Linker contact me" (#243): linker-tools' contact card route fires
- * ACTION with the hand-off; this module makes it one of WooCommerce's
- * transactional email actions and registers the team mail that answers it
- * (ContactEmail, a Mail\TeamEmail), so it goes through Woo's mailer and the
- * Outbox like every other internal notification; and it answers
+ * "Let Linker contact me" (#243) is a contact message that arrives through
+ * Genie: linker-tools' contact card route asks on CONTACT_FILTER with the
+ * hand-off, and this module sends it through #246's one door for messages,
+ * Inquiry\Sender::message() — one record (a Woo order of the contact source),
+ * #246's team mail and the customer's receipt under the site's receipt cap.
+ * The hand-off rides on the record (HANDOFF_META), and #246's team mail shows
+ * it (templates/emails/linker-genie-handoff.php). It also answers
  * MAILBOX_FILTER with the team mailbox customers see.
  */
 final class Module {
@@ -36,11 +42,16 @@ final class Module {
 	public const CONFIRM_FILTER = 'linker_tools_genie_confirm_address';
 
 	/**
-	 * The action linker-tools fires with a contact request's hand-off
-	 * (Linker\Tools\Genie\ContactRequest::ACTION). Here, not on the email
-	 * class: WooCommerce reads the action list before it loads WC_Email.
+	 * The filter linker-tools asks with a contact request's hand-off
+	 * (Linker\Tools\Genie\ContactRequest::CONTACT_FILTER).
 	 */
-	public const ACTION = 'linker_genie_contact_requested';
+	public const CONTACT_FILTER = 'linker_tools_genie_contact_team';
+
+	/**
+	 * The record's meta that keeps the hand-off for the team mail and the
+	 * inquiry screen.
+	 */
+	public const HANDOFF_META = '_linker_genie_handoff';
 
 	/**
 	 * The filter the contact card's route reads the team mailbox from
@@ -64,21 +75,53 @@ final class Module {
 	 */
 	public function register(): void {
 		add_filter( 'woocommerce_email_classes', array( $this, 'add_emails' ) );
-		add_filter( 'woocommerce_email_actions', array( $this, 'email_actions' ) );
 		add_filter( self::SEND_FILTER, array( $this, 'send' ), 10, 2 );
 		add_filter( self::CONFIRM_FILTER, array( $this, 'confirm' ), 10, 2 );
 		add_filter( self::MAILBOX_FILTER, array( $this, 'mailbox' ) );
+		add_filter( self::CONTACT_FILTER, array( $this, 'contact' ), 10, 2 );
 	}
 
 	/**
-	 * WooCommerce sends emails only on the actions in this list.
+	 * Sends a contact request through #246's door; the CONTACT_FILTER answer.
 	 *
-	 * @param string[] $actions Actions.
-	 * @return string[]
+	 * The customer's last message is the record's message; the rest of the
+	 * hand-off (why, the page, the conversation, the solution draft) rides on
+	 * the record for the team mail. A guest gives an email address only, so
+	 * the name may be empty (Submission::from_handoff()); the card asked for
+	 * the consent a guest gives, and an account's customer gave it at sign-up.
+	 *
+	 * @param mixed $sent    An earlier answer: an array when another listener sent it.
+	 * @param mixed $handoff The hand-off (Linker\Tools\Genie\ContactRequest::handoff()).
+	 * @return array{order: int, receipt: bool}|null The record and whether the receipt went; null when the hand-off is not one.
 	 */
-	public function email_actions( array $actions ): array {
-		$actions[] = self::ACTION;
-		return $actions;
+	public function contact( mixed $sent, mixed $handoff ): ?array {
+		if ( is_array( $sent ) && isset( $sent['order'] ) ) {
+			return array(
+				'order'   => (int) $sent['order'],
+				'receipt' => ! empty( $sent['receipt'] ),
+			);
+		}
+		if ( ! is_array( $handoff ) || ! is_array( $handoff['customer'] ?? null ) ) {
+			return null;
+		}
+		$summary = is_array( $handoff['summary'] ?? null ) ? $handoff['summary'] : array();
+		$details = Submission::from_handoff(
+			array(
+				'name'    => (string) ( $handoff['customer']['name'] ?? '' ),
+				'email'   => (string) ( $handoff['customer']['email'] ?? '' ),
+				'message' => (string) ( $summary[0] ?? $handoff['reason_label'] ?? '' ),
+				'consent' => '1',
+				'lang'    => (string) ( $handoff['locale'] ?? 'en' ),
+			)
+		);
+		if ( $details instanceof WP_Error ) {
+			return null;
+		}
+		$order = ( new Sender() )->message( $details, array( self::HANDOFF_META => $handoff ) );
+		return array(
+			'order'   => $order->get_id(),
+			'receipt' => 'daily_cap' !== $order->get_meta( ReceiptLimit::SKIPPED_META ),
+		);
 	}
 
 	/**
@@ -99,7 +142,6 @@ final class Module {
 	public function add_emails( array $emails ): array {
 		$emails[ ConversationEmail::class ]   = new ConversationEmail( $this->plugin_file );
 		$emails[ ConfirmAddressEmail::class ] = new ConfirmAddressEmail( $this->plugin_file );
-		$emails[ ContactEmail::class ]        = new ContactEmail( $this->plugin_file, $this->options );
 		return $emails;
 	}
 

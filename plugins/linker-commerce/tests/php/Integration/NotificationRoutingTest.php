@@ -15,7 +15,6 @@ use Linker\Commerce\Contact\Form;
 use Linker\Commerce\Contact\Handler;
 use Linker\Commerce\Digest\Module as DigestModule;
 use Linker\Commerce\Digest\Scheduler;
-use Linker\Commerce\Genie\ContactEmail;
 use Linker\Commerce\Genie\Module as GenieModule;
 use Linker\Commerce\Health\Monitor;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
@@ -243,11 +242,12 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	 */
 	public function test_genie_contact_notification_routing( string $saved_from, string $from ): void {
 		update_option( Options::NOTIFY_FROM, $saved_from );
+		$this->as_user( 0 );
 		$guest  = 'linker-it-' . self::tag() . '@example.test';
 		$marker = self::newest_mail_job();
-		/** This action is documented in linker-tools/includes/Genie/ContactRequest.php */
-		do_action(
-			GenieModule::ACTION, // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- GenieModule::ACTION is linker_genie_contact_requested.
+		// A contact message through Genie is #246's record, team mail and receipt.
+		$sent = ( new GenieModule( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new Options() ) )->contact(
+			null,
 			array(
 				'conversation' => array(
 					'id'       => 1,
@@ -255,6 +255,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 					'messages' => 1,
 				),
 				'reason'       => 'asked',
+				'reason_label' => 'Asked to talk to a person',
 				'locale'       => 'en',
 				'customer'     => array(
 					'user_id' => 0,
@@ -270,8 +271,19 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 				'draft'        => array(),
 			)
 		);
-		$row = $this->internal_message( $marker, 'Contact request from ' . $guest, $from );
-		$this->assertContains( 'Reply-to: ' . $guest, $row['headers'] );
+		$this->assertIsArray( $sent );
+		$order = wc_get_order( $sent['order'] );
+		$this->assertInstanceOf( \WC_Order::class, $order );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$row = $this->internal_message( $marker, 'New inquiry #' . $order->get_order_number() . ' from ' . $guest, $from );
+		$this->assertNotEmpty( array_filter( $row['headers'], static fn ( string $line ): bool => str_starts_with( $line, 'Reply-to:' ) && str_contains( $line, $guest ) ) );
+		$receipt = array_values( array_filter( $this->jobs_after( $marker ), static fn ( array $row ): bool => array( $guest ) === $row['to'] ) );
+		$this->assertCount( 1, $receipt );
+		$this->assertContains( 'From: Linker <' . self::PUBLIC . '>', $receipt[0]['headers'] );
 	}
 
 	/**

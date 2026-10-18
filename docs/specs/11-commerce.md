@@ -82,7 +82,7 @@ sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`
 | 用途 | 读取 | 设置（WooCommerce → Settings → Inquiries） | 缺省 |
 |---|---|---|---|
 | 客户看得到的团队邮箱：Proforma 卖方邮箱、页面 mailto（产品页联系带、联系页直达地址、邀请带）、Genie 转人工句（`linker/handoff-team`）、对接人缺省 | `Options::team_mailbox()` | Team mailbox（`linker_commerce_team_to`） | `sales@de-linker.com` |
-| 内部通知的收件人：新注册、VAT 复核、新询盘、联系表单留言、Genie 转人工（#243）、每日摘要、服务健康告警 | `Options::notify_to()` | Internal notifications → Recipient（`linker_commerce_notify_to`） | `sales@sunriverinverter.com` |
+| 内部通知的收件人：新注册、VAT 复核、新询盘、联系表单留言（含经 Genie 来的联系留言，#243）、每日摘要、服务健康告警 | `Options::notify_to()` | Internal notifications → Recipient（`linker_commerce_notify_to`） | `sales@sunriverinverter.com` |
 | 内部通知的发件人地址（名称固定为 `Linker`） | `Options::notify_sender()->email` | Internal notifications → Sender email（`linker_commerce_notify_from`，紧邻 Recipient） | `sales@sunriverinverter.com` |
 | 内部通知的抄送 | `Options::notify_bcc()` | Internal notifications → Blind copies（`linker_commerce_team_bcc`，沿用原选项名，线上值不迁移） | 空 |
 
@@ -90,7 +90,7 @@ sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`
 
 **新增一封内部通知的唯一做法**（#243"让 Linker 联系我"等）：继承 `Mail\TeamEmail`（`WC_Email` 子类），在 `trigger()` 里设好占位符后调 `notify( $order_or_user )`；收件人与 Bcc 由基类从 `notify_to()` / `notify_bcc()` 填，From 由基类读取 `notify_sender()`，内部路由标记由基类加入，Reply-to 是该订单或用户；在本模块的 `woocommerce_email_classes` 注册，员工在 Woo 邮件列表里可见可关。不是 Woo 邮件的纯 `wp_mail()`（如健康告警）直接用 `notify_to()` 作 To、`notify_sender()` 的名称与地址拼 `From:` 头、`notify_bcc()` 拼 `Bcc:` 头，并必须携带 `Mail\Message::INTERNAL_HEADER`。两种都经 Outbox（限速、重试、日志）。不要自己写地址，也不要读 `team_mailbox()` 发内部信。
 
-验证：`tests/php/Integration/NotificationRoutingTest.php` 以默认及自定义内部发件地址覆盖七类内部通知（#243 加 Genie 转人工 `Genie\ContactEmail`，访客的 Reply-to 是其留下的地址；内容齐全另见 `GenieContactTest`）的 From、相关客户和访客的 Reply-to，并验证客户询盘和联系回执继续使用 Woo 发件人；同一文件以 Outbox 队列数据断言七类内部通知都只到 `notify_to()` + Bcc、不含 `sales@de-linker.com`，并断言上表第一行各处仍是 `sales@de-linker.com`；新加的内部通知照此加一行断言。
+验证：`tests/php/Integration/NotificationRoutingTest.php` 以默认及自定义内部发件地址覆盖六类内部通知（经 Genie 来的联系留言是 #246 的联系记录与团队邮件，另有一行断言其路由与回执；内容齐全见 `GenieContactTest`）的 From、相关客户和访客的 Reply-to，并验证客户询盘和联系回执继续使用 Woo 发件人；同一文件以 Outbox 队列数据断言六类内部通知都只到 `notify_to()` + Bcc、不含 `sales@de-linker.com`，并断言上表第一行各处仍是 `sales@de-linker.com`；新加的内部通知照此加一行断言。
 
 ## 邮件（票据 73 起四封随审批走，注册确认是第五封）
 - ① 注册 → 团队（`NewCustomerEmail`，含审批状态行与后台直达链接）。
