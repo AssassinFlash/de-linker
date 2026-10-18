@@ -1,5 +1,5 @@
 /** Pending customers keep their workspace and the same session when approved. */
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page, type BrowserContext } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { instance, REPO_ROOT, wp } from '../lib/instance';
@@ -63,11 +63,12 @@ for (const language of ['en', 'de'] as const) {
 			const prefix = `${language}-${width}`;
 			mkdirSync(output, { recursive: true });
 			run('setup', email);
-			const context = await browser.newContext({
-				viewport: { width, height: 900 },
-				reducedMotion: 'reduce',
-			});
+			let context: BrowserContext | undefined;
 			try {
+				context = await browser.newContext({
+					viewport: { width, height: 900 },
+					reducedMotion: 'reduce',
+				});
 				await context.addInitScript(() =>
 					localStorage.setItem(
 						'linker-genie-peek-dismissed-until',
@@ -207,6 +208,19 @@ for (const language of ['en', 'de'] as const) {
 					page.locator('.linker-account-status')
 				).toHaveCount(0);
 				await shot(page, `${prefix}-approved-account`);
+				await page
+					.locator('a.linker-account-row[data-inquiry]')
+					.first()
+					.click();
+				await expect(
+					page.locator('.linker-account-main')
+				).not.toContainText(pending);
+				await expect(
+					page.locator('.linker-price-note').first()
+				).toHaveText(
+					language === 'de' ? 'Preis auf Anfrage' : 'Price on request'
+				);
+				await shot(page, `${prefix}-approved-inquiry`);
 				const approved = read();
 				expect(
 					approved.mail.some(
@@ -258,8 +272,11 @@ for (const language of ['en', 'de'] as const) {
 					)
 				);
 			} finally {
-				await context.close();
-				run('cleanup');
+				try {
+					await context?.close();
+				} finally {
+					run('cleanup');
+				}
 			}
 		});
 	}

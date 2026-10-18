@@ -33,6 +33,11 @@ if ( ! is_array( $state ) ) {
 }
 $user = get_user_by( 'email', $state['email'] );
 $jobs = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type='linker_mail_job' AND ID > %d ORDER BY ID", $state['marker'] ) );
+// A concurrent local mail job is not owned by this fixture, even if newer.
+$jobs = array_values( array_filter( $jobs, static function ( $id ) use ( $state ) {
+	$message = json_decode( get_post_meta( $id, '_linker_mail_message', true ), true );
+	return is_array( $message ) && ( in_array( $state['email'], $message['to'], true ) || str_contains( $message['body'], $state['email'] ) );
+} ) );
 $orders = wc_get_orders( array( 'billing_email' => $state['email'], 'limit' => -1 ) );
 if ( 'read' === $mode ) {
 	echo wp_json_encode( array(
@@ -41,7 +46,7 @@ if ( 'read' === $mode ) {
 		'orders' => array_map( static fn ( $order ) => array( 'customer' => $order->get_customer_id(), 'status' => $order->get_status(), 'items' => $order->get_item_count() ), $orders ),
 		'mail' => array_map( static function ( $id ) {
 			$message = json_decode( get_post_meta( $id, '_linker_mail_message', true ), true );
-			return array_intersect_key( $message, array_flip( array( 'to', 'cc', 'bcc', 'subject' ) ) );
+			return array_intersect_key( $message, array_flip( array( 'to', 'headers', 'subject' ) ) );
 		}, $jobs ),
 	) );
 	return;

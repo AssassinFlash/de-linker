@@ -218,7 +218,12 @@ final class PriceDisplay {
 		}
 		if ( CommerceState::APPROVAL === $reason ) {
 			$status = $this->state->current_approval_status();
-			$text   = Approval::APPROVED !== $status && Approval::PENDING !== $status
+			// An inquiry can retain its original approval reason after approval;
+			// its unset line price then needs the neutral request wording.
+			if ( Approval::APPROVED === $status ) {
+				return $this->reason_text( CommerceState::UNPRICED );
+			}
+			$text   = Approval::PENDING !== $status
 				? __( 'Not available for your account', 'linker-commerce' )
 				: __( 'Account under review. Prices after approval.', 'linker-commerce' );
 			return esc_html( $text );

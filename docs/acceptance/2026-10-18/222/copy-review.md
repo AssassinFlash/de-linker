@@ -11,4 +11,4 @@
 
 复核：价格短提示无登录指令；restricted 的原因与提示不被 pending 替代；无 catalogue/article/cart，无否定对比、三连排比或无依据的强化词。客户可见邮箱继续为 sales@de-linker.com。
 
-独立评审意见与处理将在全量 diff 的 Spec 评审完成后记录于本文件。
+独立 Spec 评审认可两种语言的短提示，指出它只能描述真正待审的账号：待审询盘保存的 approval 原因在批准后仍可能被重放。已修正为批准后对尚未定价的历史询盘行显示既有中性文案 `Price on request` / `Preis auf Anfrage`，并增加回归验证。注册与批准邮件不变。
