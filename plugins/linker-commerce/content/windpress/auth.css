@@ -597,7 +597,8 @@
 	box-shadow: var(--acct-shadow-card);
 }
 
-.linker-gate h1 {
+.linker-gate h1,
+.linker-account-status h2 {
 	margin: 0;
 	font-size: clamp(24px, 2.6vw, 30px);
 	font-weight: 600;

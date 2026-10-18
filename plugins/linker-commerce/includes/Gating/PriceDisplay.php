@@ -13,7 +13,6 @@ use WC_Order;
 use WC_Order_Item;
 use WC_Order_Item_Product;
 use WC_Product;
-use Linker\Commerce\Registration\Approval;
 
 /**
  * Applies CommerceState: a product whose price the visitor may not see has no
@@ -161,10 +160,14 @@ final class PriceDisplay {
 	 */
 	public function order_line_subtotal( string $subtotal, WC_Order_Item $item ): string {
 		$reason = $item->get_meta( self::ITEM_REASON_META );
+		if ( $item instanceof WC_Order_Item_Product && ! $this->state->visitor_sees_prices() ) {
+			return $this->label( $this->state->reason( is_string( $reason ) ? $reason : '', CommerceState::CARD ) ?? $this->state->visitor_reason() );
+		}
 		if ( ! $item instanceof WC_Order_Item_Product || ! is_string( $reason ) || '' === $reason || 0.0 !== (float) $item->get_total() ) {
 			return $subtotal;
 		}
-		return $this->label( $reason );
+		$reason = $this->state->reason( $reason, CommerceState::CARD );
+		return null === $reason ? $subtotal : $this->label( $reason );
 	}
 
 	/**
@@ -202,7 +205,17 @@ final class PriceDisplay {
 	 * @return array<string, array{label: string, value: string}>
 	 */
 	public function order_totals( array $totals, WC_Order $order ): array {
-		return 0 === $order->get_item_count() || $this->has_unpriced_lines( $order ) || 'contact' === $order->get_meta( '_linker_inquiry_source' ) ? array() : $totals;
+		return $this->shows_order_total( $order ) ? $totals : array();
+	}
+
+	/**
+	 * The same monetary-total rule for the inquiry detail, row and summary.
+	 *
+	 * @param WC_Order $order Inquiry.
+	 */
+	public function shows_order_total( WC_Order $order ): bool {
+		return $this->state->visitor_sees_prices() && 0 < $order->get_item_count()
+			&& ! $this->has_unpriced_lines( $order ) && 'contact' !== $order->get_meta( '_linker_inquiry_source' );
 	}
 
 	/**
@@ -217,11 +230,10 @@ final class PriceDisplay {
 			return esc_html__( 'Log in for prices', 'linker-commerce' );
 		}
 		if ( CommerceState::APPROVAL === $reason ) {
-			$status = $this->state->current_approval_status();
-			$text   = Approval::APPROVED !== $status && Approval::PENDING !== $status
-				? __( 'Not available for your account', 'linker-commerce' )
-				: __( 'Prices after approval', 'linker-commerce' );
-			return esc_html( $text );
+			return esc_html__( 'Account under review. Prices after approval.', 'linker-commerce' );
+		}
+		if ( CommerceState::UNAVAILABLE === $reason ) {
+			return esc_html__( 'Not available for your account', 'linker-commerce' );
 		}
 		$text = CommerceState::PROJECT === $reason
 			? __( 'Quoted per project', 'linker-commerce' )

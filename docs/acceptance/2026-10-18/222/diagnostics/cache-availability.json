@@ -1,0 +1,28 @@
+{
+  "run10ApprovalDecisionUtc": "2026-10-18T03:12:12.182522Z",
+  "run10ProductScreenshotUtc": "2026-10-18T03:12:14.450266Z",
+  "localPhpErrors": [
+    {
+      "utc": "2026-10-18T03:12:13Z",
+      "type": "Predis connection read error",
+      "endpoint": "127.0.0.1:6379",
+      "entry": "web router.php; object cache initialization"
+    },
+    {
+      "utc": "2026-10-18T03:19:37Z",
+      "type": "Redis BUSY during SELECT; another script was running",
+      "endpoint": "127.0.0.1:6379",
+      "entry": "web router.php; object cache initialization"
+    }
+  ],
+  "finding": "Closed by Claude round 1: local shared Redis DB 0 graceful-mode read failure caused database fallback followed by a stale cache read. Not an account-code bug.",
+  "faultSimulation": "Interrupted by reboot before a verdict; synthetic customer and test options restored before retry.",
+  "recovery": "User rebooted the Mac; c222 restarted, interrupted fixture removed, GitHub reachable, origin/main unchanged at 0fddf100.",
+  "liveConfiguration": {
+    "objectCacheDropIn": false,
+    "cacheType": "Default",
+    "liteSpeedCache": "inactive",
+    "accountCacheControl": "private, no-cache",
+    "source": "https://github.com/AssassinFlash/de-linker/pull/310#issuecomment-6245533011"
+  }
+}

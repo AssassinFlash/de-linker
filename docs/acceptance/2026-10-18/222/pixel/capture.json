@@ -1,0 +1,117 @@
+{
+  "cases": [
+    {
+      "path": "/my-account/",
+      "stem": "my_account",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89
+    },
+    {
+      "path": "/de/mein-konto/",
+      "stem": "de_mein_konto",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89
+    },
+    {
+      "path": "/my-account/register/",
+      "stem": "my_account_register",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89
+    },
+    {
+      "path": "/de/mein-konto/register/",
+      "stem": "de_mein_konto_register",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89
+    },
+    {
+      "path": "/product/saj-h2-10k-t3/",
+      "stem": "product_saj_h2_10k_t3",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89
+    },
+    {
+      "path": "/de/produkt/saj-h2-10k-t3/",
+      "stem": "de_produkt_saj_h2_10k_t3",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89
+    },
+    {
+      "path": "/product-category/inverters/",
+      "stem": "product_category_inverters",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89
+    },
+    {
+      "path": "/de/produkt-kategorie/wechselrichter/",
+      "stem": "de_produkt_kategorie_wechselrichter",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89
+    },
+    {
+      "path": "/my-account/",
+      "stem": "my_account",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81
+    },
+    {
+      "path": "/de/mein-konto/",
+      "stem": "de_mein_konto",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81
+    },
+    {
+      "path": "/my-account/register/",
+      "stem": "my_account_register",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81
+    },
+    {
+      "path": "/de/mein-konto/register/",
+      "stem": "de_mein_konto_register",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81
+    },
+    {
+      "path": "/product/saj-h2-10k-t3/",
+      "stem": "product_saj_h2_10k_t3",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81
+    },
+    {
+      "path": "/de/produkt/saj-h2-10k-t3/",
+      "stem": "de_produkt_saj_h2_10k_t3",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81
+    },
+    {
+      "path": "/product-category/inverters/",
+      "stem": "product_category_inverters",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81
+    },
+    {
+      "path": "/de/produkt-kategorie/wechselrichter/",
+      "stem": "de_produkt_kategorie_wechselrichter",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81
+    }
+  ],
+  "allowedHeaderChanges": []
+}

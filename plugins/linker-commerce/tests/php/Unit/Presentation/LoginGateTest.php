@@ -120,7 +120,7 @@ final class LoginGateTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
 
-		$html = ( new LoginGate( $this->approval( Approval::PENDING ) ) )->pending_html();
+		$html = ( new LoginGate( $this->approval( Approval::PENDING ) ) )->account_status_html();
 
 		$this->assertStringContainsString( 'under review', $html );
 		$this->assertStringContainsString( 'Browse products', $html );
@@ -136,7 +136,7 @@ final class LoginGateTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
 
-		$html = ( new LoginGate( $this->approval( Approval::PENDING ) ) )->pending_html();
+		$html = ( new LoginGate( $this->approval( Approval::PENDING ) ) )->account_status_html();
 
 		$this->assertStringContainsString( 'linker-gate-badge is-pending', $html );
 		$this->assertStringContainsString( 'Under review', $html );

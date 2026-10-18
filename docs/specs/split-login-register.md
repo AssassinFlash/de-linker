@@ -41,9 +41,7 @@ sign-in 页与注册页两张独立页面，保留互相跳转入口。设计基
 3. **POLYLANG 语言链路不变。** 端点 slug 跨语言共享是本站在线现状（`lost-password` 等
    同理），德语注册页自然是 `/de/mein-konto/register/`，`wc_get_account_endpoint_url()`
    在德语请求里返回德语地址；页面文案仍由 Polylang 的 locale 驱动 `.po`。
-4. **pending 门禁与登录用户的边界免费获得。** `PendingGate::redirect()` 对任何 endpoint
-   请求把 pending 账号送回 `/my-account/`（先于本票的模板分流执行），pending 用户不会
-   看到注册卡；已登录账号访问注册页由本票的 `register_redirect()` 送回账号页（工作台或
+4. **pending 与登录用户的边界免费获得。** #222（2026-10-17 裁定）起 pending 账号保持登录与工作台，不再由门禁送回账号页；已登录账号访问注册页由本票的 `register_redirect()` 送回账号页（工作台或
    门禁卡），游客才是注册页的访客。
 5. **没有新增设计决策。** 两张卡的 markup 与样式（`auth.css` 的 `.linker-auth-unit`
    两列/`.linker-auth-brand` 面板/`.linker-auth-steps` 三步）原样复用 #184 的成品，
@@ -86,7 +84,7 @@ LC 模板法被否的理由：注册链的载体是 Woo 的模板与表单处理
 | `/my-account/` guest | HTTP 200，`.linker-auth-unit` × 1（登录单元），注册卡不在页上，卡底链接 `…/my-account/register/` |
 | `/my-account/register/` guest | HTTP 200，`.linker-auth-unit` × 1（注册单元），`#reg_email` 等字段齐全，`linker-auth-register` 计数 3（section/step/…），卡底 `…/my-account/` |
 | `/de/mein-konto/register/` guest | HTTP 200，德语（`Erstellen Sie Ihr Firmenkonto`、`Sie haben bereits ein Partner-Konto? Anmelden`） |
-| 已登录账号访问注册页 | 302 → `/my-account/`（工作台；pending 账号由 `PendingGate` 先一步处理为门禁卡） |
+| 已登录账号访问注册页 | 302 → `/my-account/`（工作台；pending 账号同样保持工作台，#222） |
 | 注册提交 | e2e `account.spec.ts` 的 VAT 两条用例走注册页提交 → 自动登录 → 账号待审批标记写入（WP-CLI 读回） |
 | 登录错误回本页 | e2e `en/de: a wrong password is refused with the form's own error` 断言仍在 `/my-account/` 上、`#username` 在页 |
 | 注册错误回注册页 | e2e `en: the register form … refuses a bad email server-side` 断言 URL 仍在 `/register/`、notice 与 `#reg_email` 在页、`#username` 不在页 |

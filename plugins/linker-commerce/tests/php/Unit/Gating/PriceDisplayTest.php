@@ -146,10 +146,19 @@ final class PriceDisplayTest extends TestCase {
 	 */
 	public function test_texts_instead_of_prices(): void {
 		$this->assertSame( '<a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a>', $this->visitor( false )->empty_price_html( '', $this->product() ) );
-		$this->assertSame( '<span class="linker-price-note">Prices after approval</span>', $this->visitor( true, 'orderable', false )->empty_price_html( '', $this->product() ) );
+		$this->assertSame( '<span class="linker-price-note">Account under review. Prices after approval.</span>', $this->visitor( true, 'orderable', false )->empty_price_html( '', $this->product() ) );
 		$this->assertSame( '<span class="linker-price-note">Quoted per project</span>', $this->visitor( true, 'rfq_only' )->empty_price_html( '', $this->product( '22350' ) ) );
 		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $this->visitor( true )->empty_price_html( '', $this->product( '' ) ) );
 		$this->assertSame( 'WooCommerce', $this->visitor( true )->empty_price_html( 'WooCommerce', $this->product() ) );
+	}
+
+	/** Approval removes pending wording even from an inquiry's recorded missing price. */
+	public function test_approved_account_reads_a_neutral_note_on_its_pending_inquiry(): void {
+		$display = $this->visitor( true );
+		$item    = \Mockery::mock( \WC_Order_Item_Product::class );
+		$item->allows( 'get_meta' )->with( PriceDisplay::ITEM_REASON_META )->andReturn( CommerceState::APPROVAL );
+		$item->allows( 'get_total' )->andReturn( '0' );
+		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $display->order_line_subtotal( '€0.00', $item ) );
 	}
 
 	/**
@@ -174,7 +183,7 @@ final class PriceDisplayTest extends TestCase {
 		$guest = $this->visitor( false )->cart_subtotal( '€0.00' );
 		$this->assertSame( '<span class="linker-price-note">Log in for prices</span>', $guest );
 		$this->assertStringNotContainsString( '<a ', $guest, 'No link inside the theme\'s own link to the draft.' );
-		$this->assertSame( '<span class="linker-price-note">Prices after approval</span>', $this->visitor( true, 'orderable', false )->cart_subtotal( '€0.00' ) );
+		$this->assertSame( '<span class="linker-price-note">Account under review. Prices after approval.</span>', $this->visitor( true, 'orderable', false )->cart_subtotal( '€0.00' ) );
 		$this->assertSame( '€3,360.00', $this->visitor( true )->cart_subtotal( '€3,360.00' ) );
 	}
 
@@ -205,5 +214,56 @@ final class PriceDisplayTest extends TestCase {
 		$this->assertFalse( $display->has_unpriced_lines( $order ) );
 
 		$this->assertSame( array( '_reduced_stock', PriceDisplay::ITEM_REASON_META ), $display->hidden_item_meta( array( '_reduced_stock' ) ) );
+	}
+
+	/**
+	 * Removing account price access also hides previously priced inquiry lines.
+	 *
+	 * @testWith ["pending", "Account under review. Prices after approval."]
+	 *           ["restricted", "Not available for your account"]
+	 *           ["guest", "Log in for prices"]
+	 * @param string $status Account state.
+	 * @param string $note Expected price note.
+	 */
+	public function test_priced_inquiry_line_respects_current_access( string $status, string $note ): void {
+		$this->logged_in = 'guest' !== $status;
+		$this->approval_meta( array( Approval::STATUS_META => $status ) );
+		$item = Mockery::mock( WC_Order_Item_Product::class );
+		$item->allows( 'get_meta' )->with( PriceDisplay::ITEM_REASON_META )->andReturn( '' );
+		$item->allows( 'get_total' )->andReturn( '100' );
+		$html = ( new PriceDisplay( new CommerceState() ) )->order_line_subtotal( '€100.00', $item );
+		$this->assertStringContainsString( $note, $html );
+		$this->assertStringNotContainsString( '€', $html );
+	}
+
+	/**
+	 * All inquiry surfaces share visibility and missing-line checks.
+	 *
+	 * @testWith [true, true, false, true]
+	 *           [true, true, true, false]
+	 *           [true, false, false, false]
+	 *           [false, false, false, false]
+	 * @param bool $signed_in Signed-in visitor.
+	 * @param bool $approved Approved customer.
+	 * @param bool $unpriced A line awaits a price.
+	 * @param bool $visible Monetary totals are visible.
+	 */
+	public function test_inquiry_totals_follow_account_and_lines( bool $signed_in, bool $approved, bool $unpriced, bool $visible ): void {
+		$display = $this->visitor( $signed_in, 'orderable', $approved );
+		$item    = Mockery::mock( WC_Order_Item_Product::class );
+		$item->allows( 'get_meta' )->with( PriceDisplay::ITEM_REASON_META )->andReturn( $unpriced ? CommerceState::APPROVAL : '' );
+		$item->allows( 'get_total' )->andReturn( $unpriced ? '0' : '100' );
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_items' )->andReturn( array( $item ) );
+		$order->allows( 'get_item_count' )->andReturn( 1 );
+		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
+		$totals = array(
+			'order_total' => array(
+				'label' => 'Total',
+				'value' => '€100.00',
+			),
+		);
+		$this->assertSame( $visible, $display->shows_order_total( $order ) );
+		$this->assertSame( $visible ? $totals : array(), $display->order_totals( $totals, $order ) );
 	}
 }

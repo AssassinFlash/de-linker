@@ -384,7 +384,7 @@ test.describe('the commercial chain', () => {
 
 			// 2. The account waits for the team: every registration starts
 			// pending (docs/specs/11-commerce.md §2), and a pending account
-			// reads the site like a guest — no price, no draft button.
+			// keeps its session and may add products, without seeing prices.
 			await page.goto(url(PAGES[locale].product));
 			const pendingText = withoutFreightEstimate(
 				await page.locator('body').innerText()
@@ -395,8 +395,8 @@ test.describe('the commercial chain', () => {
 			).not.toMatch(PRICE);
 			expect(
 				pendingText,
-				'a pending account is not offered the draft'
-			).not.toMatch(PAGES[locale].draftButton);
+				'a pending account can add to the solution draft'
+			).toMatch(PAGES[locale].draftButton);
 
 			// 3. The team approves the account in its own users list.
 			await approveCustomer(browser, email);

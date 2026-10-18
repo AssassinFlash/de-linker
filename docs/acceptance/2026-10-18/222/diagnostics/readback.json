@@ -1,0 +1,88 @@
+{
+  "failedRun": 10,
+  "symptom": "Approved product price visible, then account still had one pending notice. Approval CLI and SQL were approved.",
+  "rootCause": "Closed by Claude round 1: local shared Redis failure in graceful mode; live has no object cache drop-in. No account-code fix required.",
+  "minimizedProbes": [
+    {
+      "run": 2,
+      "postApprovalRequests": 12,
+      "pendingResponses": 0
+    },
+    {
+      "run": 3,
+      "postApprovalRequests": 12,
+      "pendingResponses": 0
+    },
+    {
+      "run": 4,
+      "postApprovalRequests": 12,
+      "pendingResponses": 0
+    },
+    {
+      "run": 5,
+      "postApprovalRequests": 12,
+      "pendingResponses": 0
+    },
+    {
+      "run": 6,
+      "postApprovalRequests": 12,
+      "pendingResponses": 0
+    },
+    {
+      "run": 7,
+      "postApprovalRequests": 12,
+      "pendingResponses": 0
+    },
+    {
+      "run": 8,
+      "postApprovalRequests": 12,
+      "pendingResponses": 0
+    },
+    {
+      "run": 9,
+      "postApprovalRequests": 12,
+      "pendingResponses": 0
+    },
+    {
+      "run": 10,
+      "postApprovalRequests": 12,
+      "pendingResponses": 0
+    }
+  ],
+  "instrumentedMatrices": {
+    "run11": "4/4",
+    "run12": "4/4",
+    "run13": "4/4"
+  },
+  "instrumentedRequestCount": 301,
+  "storedCacheDivergences": [
+    {
+      "time": 1792294014.836746,
+      "sapi": "cli-server",
+      "path": "/wp-admin/",
+      "user": 334,
+      "stored": "pending",
+      "cached": false,
+      "account": 0
+    },
+    {
+      "time": 1792294030.749463,
+      "sapi": "cli-server",
+      "path": "/wp-admin/",
+      "user": 335,
+      "stored": "pending",
+      "cached": false,
+      "account": 0
+    },
+    {
+      "time": 1792294046.356968,
+      "sapi": "cli-server",
+      "path": "/wp-admin/",
+      "user": 336,
+      "stored": "pending",
+      "cached": false,
+      "account": 0
+    }
+  ],
+  "temporaryMuPluginRemoved": true
+}

@@ -1,0 +1,23 @@
+
+Running 16 tests using 1 worker
+
+(node:26009) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › specs/genie-prices.spec.ts:109:4 › approved · en · 1440: the card's price line is the product page's (14.5s)
+  ✓   2 [chromium] › specs/genie-prices.spec.ts:109:4 › pending · en · 1440: the card's price line is the product page's (10.9s)
+  ✓   3 [chromium] › specs/genie-prices.spec.ts:109:4 › restricted · en · 1440: the card's price line is the product page's (10.8s)
+  ✓   4 [chromium] › specs/genie-prices.spec.ts:109:4 › guest · en · 1440: the card's price line is the product page's (7.7s)
+  ✓   5 [chromium] › specs/genie-prices.spec.ts:109:4 › approved · en · 390: the card's price line is the product page's (10.6s)
+  ✓   6 [chromium] › specs/genie-prices.spec.ts:109:4 › pending · en · 390: the card's price line is the product page's (10.9s)
+  ✓   7 [chromium] › specs/genie-prices.spec.ts:109:4 › restricted · en · 390: the card's price line is the product page's (9.3s)
+  ✓   8 [chromium] › specs/genie-prices.spec.ts:109:4 › guest · en · 390: the card's price line is the product page's (4.0s)
+  ✓   9 [chromium] › specs/genie-prices.spec.ts:109:4 › approved · de · 1440: the card's price line is the product page's (10.6s)
+  ✓  10 [chromium] › specs/genie-prices.spec.ts:109:4 › pending · de · 1440: the card's price line is the product page's (10.7s)
+  ✓  11 [chromium] › specs/genie-prices.spec.ts:109:4 › restricted · de · 1440: the card's price line is the product page's (10.8s)
+  ✓  12 [chromium] › specs/genie-prices.spec.ts:109:4 › guest · de · 1440: the card's price line is the product page's (8.7s)
+  ✓  13 [chromium] › specs/genie-prices.spec.ts:109:4 › approved · de · 390: the card's price line is the product page's (9.9s)
+  ✓  14 [chromium] › specs/genie-prices.spec.ts:109:4 › pending · de · 390: the card's price line is the product page's (10.5s)
+  ✓  15 [chromium] › specs/genie-prices.spec.ts:109:4 › restricted · de · 390: the card's price line is the product page's (11.0s)
+  ✓  16 [chromium] › specs/genie-prices.spec.ts:109:4 › guest · de · 390: the card's price line is the product page's (9.1s)
+
+  16 passed (2.7m)

@@ -1,0 +1,42 @@
+
+Running 4 tests using 1 worker
+
+(node:14203) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › specs/pending-account.spec.ts:43:3 › en 1440: register → pending workspace and inquiry → approve in the same session (28.1s)
+  ✓  2 [chromium] › specs/pending-account.spec.ts:43:3 › en 390: register → pending workspace and inquiry → approve in the same session (21.4s)
+  ✓  3 [chromium] › specs/pending-account.spec.ts:43:3 › de 1440: register → pending workspace and inquiry → approve in the same session (22.8s)
+  ✘  4 [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session (48.7s)
+
+
+  1) [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.linker-account-status')
+    Expected: 0
+    Received: 1
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.linker-account-status') with timeout 15000ms
+      - waiting for locator('.linker-account-status')
+        34 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      213 | 				await expect(
+      214 | 					page.locator('.linker-account-status')
+    > 215 | 				).toHaveCount(0);
+          | 				  ^
+      216 | 				await shot(page, `${prefix}-approved-account`);
+      217 | 				await page
+      218 | 					.locator('a.linker-account-row[data-inquiry]')
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c222/tests/e2e/specs/pending-account.spec.ts:215:7
+
+    Error Context: artifacts/test-results/pending-account-de-390-reg-a6326-approve-in-the-same-session-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session
+  3 passed (2.0m)
+error: recipe `e2e` failed with exit code 1

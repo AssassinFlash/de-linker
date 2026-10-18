@@ -36,10 +36,11 @@ final class CommerceState {
 	/**
 	 * Why a product shows a text instead of a price.
 	 */
-	public const LOGIN    = 'login';
-	public const PROJECT  = 'project';
-	public const UNPRICED = 'unpriced';
-	public const APPROVAL = 'approval';
+	public const LOGIN       = 'login';
+	public const PROJECT     = 'project';
+	public const UNPRICED    = 'unpriced';
+	public const APPROVAL    = 'approval';
+	public const UNAVAILABLE = 'unavailable';
 
 	/**
 	 * The surfaces that print a price, each with its own order of reasons
@@ -85,10 +86,13 @@ final class CommerceState {
 	 * Why the visitor without prices shows a text: a guest reads "log in", a
 	 * signed-in account without approval reads its own state.
 	 *
-	 * @return self::LOGIN|self::APPROVAL
+	 * @return self::LOGIN|self::UNAVAILABLE|self::APPROVAL
 	 */
 	public function visitor_reason(): string {
-		return is_user_logged_in() ? self::APPROVAL : self::LOGIN;
+		if ( ! is_user_logged_in() ) {
+			return self::LOGIN;
+		}
+		return Approval::PENDING === $this->current_approval_status() ? self::APPROVAL : self::UNAVAILABLE;
 	}
 
 	/**
@@ -125,21 +129,21 @@ final class CommerceState {
 	 * Either way an approved account on a priced product sees the price, and
 	 * on a product without a stored price reads "on request".
 	 *
-	 * @param WC_Product $product Product.
-	 * @param string     $surface self::CARD or self::PAGE.
-	 * @return self::LOGIN|self::APPROVAL|self::PROJECT|self::UNPRICED|null
+	 * @param WC_Product|string $product Product or the recorded reason of an inquiry line.
+	 * @param string            $surface self::CARD or self::PAGE.
+	 * @return self::LOGIN|self::UNAVAILABLE|self::APPROVAL|self::PROJECT|self::UNPRICED|null
 	 * @throws \InvalidArgumentException For a surface the rule does not know.
 	 */
-	public function reason( WC_Product $product, string $surface ): ?string {
+	public function reason( WC_Product|string $product, string $surface ): ?string {
 		if ( self::CARD !== $surface && self::PAGE !== $surface ) {
 			throw new \InvalidArgumentException( 'Unknown price surface.' );
 		}
 		$account = $this->visitor_sees_prices() ? null : $this->visitor_reason();
-		$project = $this->is_rfq_only( $product ) ? self::PROJECT : null;
+		$project = ( $product instanceof WC_Product ? $this->is_rfq_only( $product ) : self::PROJECT === $product ) ? self::PROJECT : null;
 		$first   = self::CARD === $surface ? ( $project ?? $account ) : ( $account ?? $project );
 		if ( null !== $first ) {
 			return $first;
 		}
-		return '' === (string) $product->get_price( 'edit' ) ? self::UNPRICED : null;
+		return is_string( $product ) || '' === (string) $product->get_price( 'edit' ) ? self::UNPRICED : null;
 	}
 }

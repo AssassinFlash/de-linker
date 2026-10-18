@@ -122,9 +122,8 @@ final class AuthTemplates {
 
 	/**
 	 * The register page is the guests' sign-up: a signed-in account is sent to
-	 * the account page, which shows its own state (the workspace, or the review
-	 * card — a pending account reaches that card from every endpoint already,
-	 * PendingGate running first).
+	 * the account workspace, which shows the current review status alongside
+	 * its normal content.
 	 */
 	public function register_redirect(): void {
 		if ( ! self::is_register_request() || ! is_user_logged_in() ) {

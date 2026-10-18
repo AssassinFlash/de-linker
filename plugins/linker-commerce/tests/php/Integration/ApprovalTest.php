@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
-use Linker\Commerce\Account\PendingGate;
+use Linker\Commerce\Account\AccountStatusNotice;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Inquiry\ProformaGateway;
 use Linker\Commerce\Presentation\LoginGate;
@@ -129,8 +129,8 @@ final class ApprovalTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * An account without approval cannot get an inquiry in: the draft accepts
-	 * the line, as a guest's does, but no gateway is offered for the send.
+	 * A pending account can add a product and send its inquiry through the
+	 * same public gateway, while approval continues to govern prices.
 	 */
 	public function test_a_pending_account_can_send_an_inquiry(): void {
 		$product  = $this->product( '1680' );
@@ -148,6 +148,24 @@ final class ApprovalTest extends IntegrationTestCase {
 			apply_filters( 'woocommerce_available_payment_gateways', $this->gateways() ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- WooCommerce's own filter, applied as the request page applies it.
 			'WooCommerce offers the inquiry gateway to pending accounts'
 		);
+	}
+
+	/** Native inquiry detail filters follow approval changes for already-priced lines. */
+	public function test_priced_inquiry_detail_loses_prices_when_access_is_limited(): void {
+		$customer = $this->customer();
+		$this->set_state( $customer, Approval::APPROVED );
+		$this->as_user( $customer->get_id() );
+		$order = $this->send_inquiry( $customer, array( array( $this->product( '100' ), 1 ) ) );
+		$item  = array_values( $order->get_items() )[0];
+		$this->assertInstanceOf( \WC_Order_Item_Product::class, $item );
+		$this->assertGreaterThan( 0, (float) $item->get_total() );
+		$this->assertStringContainsString( 'woocommerce-Price-amount', $order->get_formatted_line_subtotal( $item ) );
+		foreach ( array( Approval::PENDING, Approval::RESTRICTED ) as $status ) {
+			$this->set_state( $customer, $status, Approval::RESTRICTED === $status ? 'Please complete your company information.' : '' );
+			$this->as_user( $customer->get_id() );
+			$this->assertStringNotContainsString( 'woocommerce-Price-amount', $order->get_formatted_line_subtotal( $item ), $status );
+			$this->assertSame( array(), $order->get_order_item_totals(), $status );
+		}
 	}
 
 	/**
@@ -320,13 +338,13 @@ final class ApprovalTest extends IntegrationTestCase {
 	}
 
 		/**
-		 * A pending sign-in is held on the review page, including a direct request
-		 * for the inquiries and the documents. Approving opens those pages again.
+		 * A pending sign-in reads its status without losing inquiry access.
+		 * Approving removes the notice and opens prices in the current session.
 		 * A restricted account keeps the workplace and reads its own gate, with
 		 * the reason, on the Proforma request. A rejection cannot sign in, and
 		 * the reason is in the email.
 		 */
-	public function test_a_pending_sign_in_is_held_until_approval(): void {
+	public function test_a_pending_account_reads_a_status_and_keeps_inquiry_access(): void {
 		delete_option( Throttle::OPTION );
 		$customer = $this->customer();
 		update_user_meta( $customer->get_id(), 'locale', 'en_US' );
@@ -334,8 +352,7 @@ final class ApprovalTest extends IntegrationTestCase {
 
 		$this->set_state( $customer, Approval::PENDING );
 		$this->as_user( $customer->get_id() );
-		$gate = new PendingGate( new Approval(), new LoginGate( new Approval() ) );
-		$this->assertTrue( $gate->holds(), 'A pending sign-in is held.' );
+		$gate = new AccountStatusNotice( new Approval(), new LoginGate( new Approval() ) );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Pending sees no prices.' );
 		$this->assertArrayHasKey(
 			ProformaGateway::ID,
@@ -345,11 +362,13 @@ final class ApprovalTest extends IntegrationTestCase {
 		ob_start();
 		$gate->render();
 		$review = (string) ob_get_clean();
-		$this->assertStringContainsString( 'Your account is under review', $review, 'The review page is what a pending sign-in reads.' );
+		$this->assertStringContainsString( 'Your account is under review', $review, 'The pending status is rendered inside the usable account.' );
 
 		$this->set_state( $customer, Approval::APPROVED );
 		$this->as_user( $customer->get_id() );
-		$this->assertFalse( $gate->holds(), 'Approved is no longer held.' );
+		ob_start();
+		$gate->render();
+		$this->assertSame( '', (string) ob_get_clean(), 'Approved no longer reads the pending status.' );
 		$this->assertTrue( ( new CommerceState() )->visitor_sees_prices(), 'Approved sees prices.' );
 		$this->assertArrayHasKey(
 			ProformaGateway::ID,
@@ -359,7 +378,11 @@ final class ApprovalTest extends IntegrationTestCase {
 
 		$this->set_state( $customer, Approval::RESTRICTED, 'Net prices are for businesses.' );
 		$this->as_user( $customer->get_id() );
-		$this->assertFalse( $gate->holds(), 'Restricted keeps the workplace.' );
+		ob_start();
+		$gate->render();
+		$restricted = (string) ob_get_clean();
+		$this->assertStringContainsString( 'Access currently limited', $restricted );
+		$this->assertStringContainsString( 'Net prices are for businesses.', $restricted );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Restricted sees no prices.' );
 		$this->assertStringContainsString( 'Net prices are for businesses.', ( new LoginGate( new Approval() ) )->restricted_notice() );
 

@@ -130,7 +130,7 @@ final class CommerceStateTest extends TestCase {
 	 * @testWith [false, null, "orderable", "1680", "login"]
 	 *           [false, null, "rfq_only", "33250", "login"]
 	 *           [true, "pending", "rfq_only", "33250", "approval"]
-	 *           [true, "restricted", "orderable", "1680", "approval"]
+	 *           [true, "restricted", "orderable", "1680", "unavailable"]
 	 *           [true, "approved", "rfq_only", "33250", "project"]
 	 *           [true, "approved", "orderable", "", "unpriced"]
 	 *           [true, "approved", "orderable", "1680", null]
@@ -177,5 +177,13 @@ final class CommerceStateTest extends TestCase {
 	public function test_an_unknown_surface_is_refused(): void {
 		$this->expectException( \InvalidArgumentException::class );
 		( new CommerceState( new Approval() ) )->reason( $this->product( 4107 ), 'shelf' );
+	}
+
+	/** A recorded approval reason becomes an unset line price after approval. */
+	public function test_approved_historical_approval_reason_is_unpriced(): void {
+		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
+		$this->signed_in( 5 );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		$this->assertSame( CommerceState::UNPRICED, ( new CommerceState() )->reason( CommerceState::APPROVAL, CommerceState::CARD ) );
 	}
 }

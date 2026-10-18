@@ -1,6 +1,6 @@
 <?php
 /**
- * The pending account page and the restricted inquiry notice.
+ * Account status presentation and the restricted inquiry notice.
  *
  * @package Linker\Commerce
  */
@@ -11,7 +11,7 @@ namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Registration\Approval;
 
-/** Pending account presentation and the native empty-checkout redirect rule. */
+/** Account notices and the native empty-checkout redirect rule. */
 final class LoginGate {
 
 	/**
@@ -43,31 +43,26 @@ final class LoginGate {
 		return $this->is_proforma_request() ? false : $redirect;
 	}
 
-	/**
-	 * The pending-review page, for the account page as well as the empty
-	 * Proforma request. Both surfaces read this one markup.
-	 */
-	public function pending_html(): string {
-		return $this->approval_gate();
-	}
-
-	/**
-	 * The pending account page; inquiries stay open during review.
-	 */
-	private function approval_gate(): string {
-		$products = $this->products_url();
-
-		return $this->card(
-			esc_attr__( 'Account under review', 'linker-commerce' ),
-			$this->badge( 'pending', esc_html__( 'Under review', 'linker-commerce' ) ),
-			esc_html__( 'Your account is under review', 'linker-commerce' ),
-			'',
-			'<p>' . esc_html__( 'We are reviewing your partner account and will email you when it is approved. You can send inquiries now; approval opens net prices.', 'linker-commerce' ) . '</p>'
-				. '<p>' . $this->mailto_sentence(
+	/** Pending and restricted status within the usable account, using the live card design. */
+	public function account_status_html(): string {
+		$status     = $this->approval->status( get_current_user_id() );
+		$restricted = Approval::RESTRICTED === $status;
+		return strtr(
+			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/status-notice.html' ),
+			array(
+				'{{status}}'   => esc_attr( $status ),
+				'{{label}}'    => esc_attr( $restricted ? __( 'Access currently limited', 'linker-commerce' ) : __( 'Account under review', 'linker-commerce' ) ),
+				'{{badge}}'    => esc_html( $restricted ? __( 'Restricted', 'linker-commerce' ) : __( 'Under review', 'linker-commerce' ) ),
+				'{{title}}'    => esc_html( $restricted ? __( 'Access currently limited', 'linker-commerce' ) : __( 'Your account is under review', 'linker-commerce' ) ),
+				'{{message}}'  => esc_html( $restricted ? __( 'You can send inquiries. Net prices are unavailable while your account is limited.', 'linker-commerce' ) : __( 'We are reviewing your partner account and will email you when it is approved. You can send inquiries now; approval opens net prices.', 'linker-commerce' ) ),
+				'{{reason}}'   => $restricted ? $this->reason_notice( $this->approval->reason( get_current_user_id() ) ) : '',
+				'{{contact}}'  => $this->mailto_sentence(
 					/* translators: %s: the team's email address. */
 					__( 'Until then, browse the products and write to %s with any question.', 'linker-commerce' )
-				) . '</p>',
-			$this->action( $products, esc_html__( 'Browse products', 'linker-commerce' ), 'primary' )
+				),
+				'{{products}}' => esc_url( $this->products_url() ),
+				'{{browse}}'   => esc_html__( 'Browse products', 'linker-commerce' ),
+			)
 		);
 	}
 
@@ -102,47 +97,6 @@ final class LoginGate {
 	}
 
 	/**
-	 * One gate card: the badge (when the state has one), the heading, the body
-	 * paragraphs and the actions. Every part is already escaped.
-	 *
-	 * @param string $label   The card's accessible name.
-	 * @param string $badge   The state badge, or an empty string.
-	 * @param string $title   The card's heading, escaped.
-	 * @param string $meta    Any markup directly under the heading, escaped.
-	 * @param string $body    The body paragraphs, escaped.
-	 * @param string $actions The action links, escaped.
-	 * @param string $links   Any links under the actions, escaped.
-	 */
-	private function card( string $label, string $badge, string $title, string $meta, string $body, string $actions, string $links = '' ): string {
-		return sprintf(
-			'<div class="linker-gate-col"><section class="linker-gate" aria-label="%1$s">%2$s<h1>%3$s</h1>%4$s<div class="linker-gate-body">%5$s</div><div class="linker-gate-actions">%6$s</div>%7$s</section></div>',
-			$label,
-			$badge,
-			$title,
-			$meta,
-			$body,
-			$actions,
-			$links
-		);
-	}
-
-	/**
-	 * A state badge with its own mark.
-	 *
-	 * @param string $state pending or restricted.
-	 * @param string $text  The badge's word, escaped.
-	 */
-	private function badge( string $state, string $text ): string {
-		$clock = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.6V12l3.2 2"/></svg>';
-		return sprintf(
-			'<span class="linker-gate-badge is-%1$s">%2$s<span>%3$s</span></span>',
-			esc_attr( $state ),
-			$clock,
-			$text
-		);
-	}
-
-	/**
 	 * The restricted account's reason, as the card's info notice.
 	 *
 	 * @param string $reason The reason the team stored.
@@ -151,28 +105,12 @@ final class LoginGate {
 		if ( '' === $reason ) {
 			return '';
 		}
-		$icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16.5V11"/><path d="M12 7.6h.01"/></svg>';
-		return sprintf(
-			'<div class="notice notice-info" role="status">%1$s<div><strong>%2$s</strong> %3$s</div></div>',
-			$icon,
-			esc_html__( 'Our reason:', 'linker-commerce' ),
-			esc_html( $reason )
-		);
-	}
-
-	/**
-	 * One action link.
-	 *
-	 * @param string $url   The target.
-	 * @param string $label The link's word, escaped.
-	 * @param string $kind  primary or ghost.
-	 */
-	private function action( string $url, string $label, string $kind ): string {
-		return sprintf(
-			'<a class="linker-gate-btn is-%1$s" href="%2$s">%3$s</a>',
-			esc_attr( $kind ),
-			esc_url( $url ),
-			$label
+		return strtr(
+			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/restriction-reason.html' ),
+			array(
+				'{{label}}'  => esc_html__( 'Our reason:', 'linker-commerce' ),
+				'{{reason}}' => esc_html( $reason ),
+			)
 		);
 	}
 

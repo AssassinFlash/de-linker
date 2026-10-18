@@ -1,0 +1,47 @@
+round1-pending-browser.log
+  ✓  1 [chromium] › specs/pending-account.spec.ts:43:3 › en 1440: register → pending workspace and inquiry → approve in the same session (23.7s)
+  ✓  2 [chromium] › specs/pending-account.spec.ts:43:3 › en 390: register → pending workspace and inquiry → approve in the same session (19.1s)
+  ✓  3 [chromium] › specs/pending-account.spec.ts:43:3 › de 1440: register → pending workspace and inquiry → approve in the same session (23.6s)
+  ✓  4 [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session (20.7s)
+  4 passed (1.5m)
+
+round1-pending-repeat.log
+  ✓  1 [chromium] › specs/pending-account.spec.ts:43:3 › en 1440: register → pending workspace and inquiry → approve in the same session (23.1s)
+  ✓  2 [chromium] › specs/pending-account.spec.ts:43:3 › en 390: register → pending workspace and inquiry → approve in the same session (20.0s)
+  ✓  3 [chromium] › specs/pending-account.spec.ts:43:3 › de 1440: register → pending workspace and inquiry → approve in the same session (20.6s)
+  ✓  4 [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session (19.0s)
+  4 passed (1.4m)
+
+round1-public-browser.log
+  ✓   1 [chromium] › specs/public-inquiry.spec.ts:20:5 › en 1440 contact receipt: fresh guest can submit after Woo creates its cookie (8.0s)
+  ✓   2 [chromium] › specs/public-inquiry.spec.ts:20:5 › en 1440 contact capped: fresh guest can submit after Woo creates its cookie (7.3s)
+  ✓   3 [chromium] › specs/public-inquiry.spec.ts:20:5 › en 1440 request receipt: fresh guest can submit after Woo creates its cookie (7.5s)
+  ✓   4 [chromium] › specs/public-inquiry.spec.ts:20:5 › en 1440 request capped: fresh guest can submit after Woo creates its cookie (7.4s)
+  ✓   5 [chromium] › specs/public-inquiry.spec.ts:20:5 › en 390 contact receipt: fresh guest can submit after Woo creates its cookie (8.4s)
+  ✓   6 [chromium] › specs/public-inquiry.spec.ts:20:5 › en 390 contact capped: fresh guest can submit after Woo creates its cookie (7.0s)
+  ✓   7 [chromium] › specs/public-inquiry.spec.ts:20:5 › en 390 request receipt: fresh guest can submit after Woo creates its cookie (7.1s)
+  ✓   8 [chromium] › specs/public-inquiry.spec.ts:20:5 › en 390 request capped: fresh guest can submit after Woo creates its cookie (7.2s)
+  ✓   9 [chromium] › specs/public-inquiry.spec.ts:20:5 › de 1440 contact receipt: fresh guest can submit after Woo creates its cookie (7.4s)
+  ✓  10 [chromium] › specs/public-inquiry.spec.ts:20:5 › de 1440 contact capped: fresh guest can submit after Woo creates its cookie (7.5s)
+  ✓  11 [chromium] › specs/public-inquiry.spec.ts:20:5 › de 1440 request receipt: fresh guest can submit after Woo creates its cookie (7.4s)
+  ✓  12 [chromium] › specs/public-inquiry.spec.ts:20:5 › de 1440 request capped: fresh guest can submit after Woo creates its cookie (7.2s)
+  ✓  13 [chromium] › specs/public-inquiry.spec.ts:20:5 › de 390 contact receipt: fresh guest can submit after Woo creates its cookie (7.4s)
+  ✓  14 [chromium] › specs/public-inquiry.spec.ts:20:5 › de 390 contact capped: fresh guest can submit after Woo creates its cookie (8.0s)
+  ✓  15 [chromium] › specs/public-inquiry.spec.ts:20:5 › de 390 request receipt: fresh guest can submit after Woo creates its cookie (7.2s)
+  ✓  16 [chromium] › specs/public-inquiry.spec.ts:20:5 › de 390 request capped: fresh guest can submit after Woo creates its cookie (7.0s)
+  16 passed (2.0m)
+
+round1-restored-browser.log
+  ✓  1 [chromium] › specs/pending-account.spec.ts:43:3 › en 1440: register → pending workspace and inquiry → approve in the same session (21.7s)
+  ✓  2 [chromium] › specs/pending-account.spec.ts:43:3 › en 390: register → pending workspace and inquiry → approve in the same session (19.4s)
+  ✓  3 [chromium] › specs/pending-account.spec.ts:43:3 › de 1440: register → pending workspace and inquiry → approve in the same session (24.4s)
+  ✓  4 [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session (19.3s)
+  4 passed (1.4m)
+
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+.........                                                           9 / 9 (100%)
+
+Time: 00:03.628, Memory: 156.00 MB
+
+OK (9 tests, 148 assertions)

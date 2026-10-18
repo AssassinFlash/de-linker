@@ -7,6 +7,9 @@
 	<file>templates</file>
 	<file>content</file>
 	<file>tests</file>
+	<file>../../tests/e2e/fixtures/BrowserFixture.php</file>
+	<file>../../tests/e2e/fixtures/pending-account.php</file>
+	<file>../../tests/e2e/fixtures/public-inquiry.php</file>
 	<file>../../tools/php/bootstrap.php</file>
 	<!-- The data migrations of the products this plugin reads. -->
 	<file>../../tools/migrate</file>

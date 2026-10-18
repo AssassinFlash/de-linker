@@ -134,6 +134,7 @@ final class AccountTemplatesTest extends TestCase {
 
 	/** The inquiry row's own summary: how many products, and the number behind it. */
 	public function test_inquiry_row_carries_the_product_count_and_the_view_label(): void {
+		$this->visible_prices( true );
 		$this->plain_text();
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
@@ -144,11 +145,15 @@ final class AccountTemplatesTest extends TestCase {
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
 		$order->allows( 'get_date_created' )->andReturn( null );
 		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
+		$order->allows( 'get_item_count' )->andReturn( 3 );
+		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
 		$first = Mockery::mock( \WC_Order_Item_Product::class );
 		$first->allows( 'get_quantity' )->andReturn( 2 );
+		$first->allows( 'get_meta' )->with( \Linker\Commerce\Gating\PriceDisplay::ITEM_REASON_META )->andReturn( '' );
 		$second = Mockery::mock( \WC_Order_Item_Product::class );
 		$second->allows( 'get_quantity' )->andReturn( 1 );
+		$second->allows( 'get_meta' )->with( \Linker\Commerce\Gating\PriceDisplay::ITEM_REASON_META )->andReturn( '' );
 		$order->allows( 'get_items' )->andReturn( array( $first, $second ) );
 
 		$row = ( new AccountTemplates() )->inquiry_row( $order );
@@ -156,6 +161,55 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertSame( '3 products', $row['items-summary'] );
 		$this->assertArrayNotHasKey( 'items-count', $row, 'The row carries the summary the list shows, not a second count nothing reads.' );
 		$this->assertSame( 'View inquiry #20', $row['view-aria'] );
+	}
+
+	/** Account inquiry rows use the shared price answer, including a recorded zero. */
+	public function test_inquiry_total_is_hidden_when_shared_price_rule_says_no(): void {
+		$this->plain_text();
+		$this->visible_prices( false );
+		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => 'Inquiry received' ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => '0' ) );
+		$row = ( new AccountTemplates() )->inquiry_row( $this->inquiry( Statuses::RECEIVED, '' ) );
+		$this->assertSame( '', $row['total'] );
+	}
+
+	/** An approved customer cannot read a monetary total for an unpriced inquiry. */
+	public function test_approved_unpriced_inquiry_has_no_total(): void {
+		$this->plain_text();
+		$this->visible_prices( true );
+		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => 'Inquiry received' ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => '1' ) );
+		$item = Mockery::mock( \WC_Order_Item_Product::class );
+		$item->allows( 'get_quantity' )->andReturn( 1 );
+		$item->allows( 'get_meta' )->with( \Linker\Commerce\Gating\PriceDisplay::ITEM_REASON_META )->andReturn( 'approval' );
+		$item->allows( 'get_total' )->andReturn( '0' );
+		$row = ( new AccountTemplates() )->inquiry_row( $this->inquiry( Statuses::RECEIVED, '', array( $item ) ) );
+		$this->assertSame( '', $row['total'] );
+	}
+
+	/** The pending inquiry summary omits its monetary field, including its label. */
+	public function test_pending_summary_has_no_empty_amount_label(): void {
+		$this->plain_text();
+		$this->visible_prices( false );
+		WP_Mock::userFunction( 'add_shortcode' );
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => 'Inquiry received' ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => '0' ) );
+		$adapter = new AccountTemplates();
+		WP_Mock::expectFilterAdded( 'wc_get_template', array( $adapter, 'template' ), 20, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $adapter, 'orders_query' ) );
+		$adapter->register();
+		$this->expand_fields( $adapter );
+		ob_start();
+		AccountTemplates::output(
+			array(
+				'template_name' => 'myaccount/view-order.php',
+				'args'          => array( 'order' => $this->inquiry( Statuses::RECEIVED, '' ) ),
+			)
+		);
+		$html = (string) ob_get_clean();
+		$this->assertStringNotContainsString( 'Amount', $html );
+		$this->assertStringNotContainsString( '€', $html );
 	}
 
 	/** Shortcode attributes cannot choose an arbitrary PHP action. */
@@ -168,6 +222,7 @@ final class AccountTemplatesTest extends TestCase {
 	 * A received inquiry renders neither. The number is the order meta, never invented.
 	 */
 	public function test_proforma_issued_renders_the_download_and_the_number(): void {
+		$this->visible_prices( true );
 		$this->plain_text();
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
@@ -207,6 +262,7 @@ final class AccountTemplatesTest extends TestCase {
 		 * German labels are the formal catalogue strings, not a translation invented in this test.
 		 */
 	public function test_detail_and_documents_both_carry_the_number_and_the_link(): void {
+		$this->visible_prices( true );
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
@@ -263,24 +319,46 @@ final class AccountTemplatesTest extends TestCase {
 			);
 	}
 
-	/** Guests and pending accounts get no sidebar navigation. */
-	public function test_nav_is_empty_for_guests_and_pending_accounts(): void {
-		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
-		$this->signed_in( 0 );
+	/** Guests get no private account navigation. */
+	public function test_nav_is_empty_for_guests(): void {
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		$adapter = new AccountTemplates();
 		$this->assertSame( '', $adapter->nav() );
+	}
+
+	/**
+	 * Account states that retain the complete workspace.
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public static function workspace_states(): array {
+		return array(
+			'pending'    => array( Approval::PENDING ),
+			'approved'   => array( Approval::APPROVED ),
+			'restricted' => array( Approval::RESTRICTED ),
+		);
+	}
+
+	/** Pending customers keep the contact slot as well as the endpoint content. */
+	public function test_pending_account_keeps_its_contact_slot(): void {
+		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
 		$this->signed_in( 5 );
-		$this->assertSame( '', $adapter->nav() );
+		WP_Mock::expectAction( 'linker_account_after_content' );
+		( new AccountTemplates() )->hook( array( 'name' => 'after-content' ) );
+		$this->assertConditionsMet();
 	}
 
 	/**
 	 * An approved account's navigation groups the same menu the header dropdown
 	 * reads: the workplace, then the account records with sign-out last. The
 	 * dashboard is current when no endpoint is being read.
+	 *
+	 * @dataProvider workspace_states
+	 * @param string $status Account state.
 	 */
-	public function test_nav_groups_the_account_menu_for_an_approved_account(): void {
+	public function test_nav_groups_the_account_menu_for_a_signed_in_account( string $status ): void {
 		$this->plain_text();
-		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
+		$this->approval_meta( array( Approval::STATUS_META => $status ) );
 		WP_Mock::userFunction(
 			'wc_get_account_menu_items',
 			array(
@@ -330,6 +408,7 @@ final class AccountTemplatesTest extends TestCase {
 	 * fall back to the empty row, never to nothing.
 	 */
 	public function test_dashboard_tiles_rows_and_documents_entry(): void {
+		$this->visible_prices( true );
 		$this->plain_text();
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
@@ -375,6 +454,17 @@ final class AccountTemplatesTest extends TestCase {
 	}
 
 	/**
+	 * The canonical price filter is a WordPress boundary, not a second rule.
+	 *
+	 * @param bool $visible The shared rule's answer.
+	 */
+	private function visible_prices( bool $visible ): void {
+		$this->approval_meta( array( Approval::STATUS_META => $visible ? Approval::APPROVED : Approval::PENDING ) );
+		$this->signed_in( 5 );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+	}
+
+	/**
 	 * Lets do_shortcode expand the field tags through the adapter's own field(),
 	 * so a fragment's substituted values can be asserted; the other shortcodes
 	 * stay as tags.
@@ -387,8 +477,8 @@ final class AccountTemplatesTest extends TestCase {
 			array(
 				'return' => static function ( string $content ) use ( $adapter ): string {
 					return (string) preg_replace_callback(
-						'/\[linker_account_field key=["\']([a-z-]+)["\']\]/',
-						static fn ( array $m ): string => $adapter->field( array( 'key' => $m[1] ) ),
+						'/\[linker_account_(field|rows|text) (key|type)=["\']([a-z-]+)["\']\]/',
+						static fn ( array $m ): string => $adapter->{$m[1]}( array( $m[2] => $m[3] ) ),
 						$content
 					);
 				},
@@ -399,17 +489,20 @@ final class AccountTemplatesTest extends TestCase {
 	/**
 	 * An inquiry for the account-row assertions.
 	 *
-	 * @param string $status Status slug.
-	 * @param string $number Stored Proforma number.
+	 * @param string                        $status Status slug.
+	 * @param string                        $number Stored Proforma number.
+	 * @param array<\WC_Order_Item_Product> $items Inquiry product lines.
 	 */
-	private function inquiry( string $status, string $number ): WC_Order {
+	private function inquiry( string $status, string $number, array $items = array() ): WC_Order {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
 		$order->allows( 'get_status' )->andReturn( $status );
 		$order->allows( 'has_status' )->andReturnUsing( static fn ( string $asked ): bool => $asked === $status );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( $number );
-		$order->allows( 'get_items' )->andReturn( array() );
+		$order->allows( 'get_items' )->andReturn( $items );
+		$order->allows( 'get_item_count' )->andReturn( count( $items ) );
+		$order->allows( 'get_meta' )->with( '_linker_inquiry_source' )->andReturn( '' );
 		$order->allows( 'get_date_created' )->andReturn( null );
 		$order->allows( 'get_formatted_order_total' )->andReturn( '€1.00' );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );

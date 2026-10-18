@@ -1,0 +1,10 @@
+{
+  "base": "c2106969d19be6797107fa50b35d4c8a58ad5d5f",
+  "removed": {
+    "Prices after approval": "Preise nach Freigabe"
+  },
+  "changed": {},
+  "added": {
+    "Account under review. Prices after approval.": "Ihr Konto wird geprüft. Preise nach Freigabe."
+  }
+}
