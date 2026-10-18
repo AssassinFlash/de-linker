@@ -25,6 +25,27 @@ final class GermanUrlsTest extends SiteTestCase {
 	 */
 	private mixed $migration_state = null;
 
+	/** SEOPress filters receive complete tags; endpoint URLs must remain inside them. */
+	public function test_german_endpoint_metadata_is_valid_html_not_visible_url_text(): void {
+		$applied = false;
+		try {
+			self::wp( array( 'linker-i18n', 'german-urls', '--apply' ) );
+			$applied = true;
+			foreach ( array( '/de/mein-konto/registrieren/', '/de/mein-konto/passwort-zuruecksetzen/' ) as $path ) {
+				$page = self::get( $path );
+				self::assertSame( 200, $page['status'] );
+				$url = preg_quote( self::$site . $path, '#' );
+				self::assertMatchesRegularExpression( '#<link rel="canonical" href="' . $url . '"\s*/?>#', $page['body'], $path );
+				self::assertMatchesRegularExpression( '#<meta property="og:url" content="' . $url . '"\s*/?>#', $page['body'], $path );
+				self::assertStringNotContainsString( "\n" . self::$site . $path . "\n", $page['body'], 'Head metadata cannot become visible body text.' );
+			}
+		} finally {
+			if ( $applied ) {
+				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) );
+			}
+		}
+	}
+
 	/** A first deployment must not overwrite independently edited German names or SEO copy. */
 	public function test_first_apply_rejects_unreviewed_titles_before_writing(): void {
 		$fixture = self::php( '$en = get_page_by_path( "faq-download" ); $id = (int) pll_get_post( $en->ID, "de" ); $term = get_term_by( "slug", "ems-monitoring", "product_cat" ); $term_id = (int) pll_get_term( $term->term_id, "de" ); delete_option( "linker_i18n_german_urls_backup" ); return array( "id" => $id, "title" => get_post_field( "post_title", $id ), "seo" => get_post_meta( $id, "_seopress_titles_title", true ), "seo_exists" => metadata_exists( "post", $id, "_seopress_titles_title" ), "term" => $term_id, "name" => get_term( $term_id )->name );' );

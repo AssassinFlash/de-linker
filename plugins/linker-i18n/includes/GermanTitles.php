@@ -122,14 +122,25 @@ final class GermanTitles {
 	/**
 	 * Account forms retain the site's noindex policy and canonicalise to themselves.
 	 *
-	 * @param string $url Existing canonical URL.
+	 * SEOPress passes complete canonical/Open Graph tags through both filters.
+	 * Keep their markup and update the URL with WordPress's native HTML processor.
+	 *
+	 * @param string $tag Existing metadata tag.
 	 */
-	public function canonical( string $url ): string {
+	public function canonical( string $tag ): string {
 		if ( ! get_option( GermanUrlMigration::ACTIVE ) || 'de' !== pll_current_language() || ( ! is_account_page() && ! is_wc_endpoint_url( 'order-received' ) ) ) {
-			return $url;
+			return $tag;
 		}
 		$key  = WC()->query->get_current_endpoint();
 		$base = 'order-received' === $key ? 'checkout' : 'myaccount';
-		return '' === $key ? $url : wc_get_endpoint_url( $key, (string) get_query_var( $key ), wc_get_page_permalink( $base ) );
+		if ( '' === $key ) {
+			return $tag;
+		}
+		$html = new \WP_HTML_Tag_Processor( $tag );
+		if ( ! $html->next_tag() || ! in_array( $html->get_tag(), array( 'LINK', 'META' ), true ) ) {
+			return $tag;
+		}
+		$html->set_attribute( 'LINK' === $html->get_tag() ? 'href' : 'content', wc_get_endpoint_url( $key, (string) get_query_var( $key ), wc_get_page_permalink( $base ) ) );
+		return $html->get_updated_html();
 	}
 }
