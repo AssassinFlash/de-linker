@@ -1,0 +1,1061 @@
+{
+  "source": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+  "cacheGenerated": "2026-10-18 18:36:14 Asia/Shanghai",
+  "sidebar": [
+    {
+      "language": "en",
+      "background": "rgb(241, 249, 248)",
+      "labels": [
+        {
+          "lines": 0.9997605363984674,
+          "text": "Hybrid inverter or AC storage?"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Pairing inverters and batteries"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Sizing home storage for backup"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Battery storage: indoors or outdoors?"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Commissioning solar and storage"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Documents for project handover"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Remote monitoring after installation"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Gateways, meters and cloud monitoring"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Home storage: backup and expansion"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Planning commercial battery storage"
+        }
+      ],
+      "leftInset": 17,
+      "links": [
+        {
+          "left": 17,
+          "name": "All topics",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Applications",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Battery Storage",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Installation & Commissioning",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Monitoring & Energy Management",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "System Design",
+          "right": 17
+        }
+      ],
+      "overflow": false,
+      "rightInset": 17
+    },
+    {
+      "language": "de",
+      "background": "rgb(241, 249, 248)",
+      "labels": [
+        {
+          "lines": 0.9997605363984674,
+          "text": "Hybridwechselrichter oder AC-Speicher?"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Wechselrichter und Batterie kombinieren"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Heimspeicher für Notstrom auslegen"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Batteriespeicher: innen oder außen?"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "PV und Speicher in Betrieb nehmen"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Dokumente für die Projektübergabe"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Fernüberwachung nach der Installation"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Gateway, Zähler und Fernüberwachung"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Heimspeicher: Notstrom und Ausbau"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Gewerbespeicher planen"
+        }
+      ],
+      "leftInset": 17,
+      "links": [
+        {
+          "left": 17,
+          "name": "Alle Themen",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Anwendungen",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Batteriespeicher",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Installation & Inbetriebnahme",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Systemauslegung",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Überwachung & Energiemanagement",
+          "right": 17
+        }
+      ],
+      "overflow": false,
+      "rightInset": 17
+    }
+  ],
+  "records": [
+    {
+      "face": "discovery",
+      "language": "en",
+      "width": 1440,
+      "background": "rgb(241, 249, 248)",
+      "labels": [
+        {
+          "lines": 0.9997605363984674,
+          "text": "Hybrid inverter or AC storage?"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Pairing inverters and batteries"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Sizing home storage for backup"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Battery storage: indoors or outdoors?"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Commissioning solar and storage"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Documents for project handover"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Remote monitoring after installation"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Gateways, meters and cloud monitoring"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Home storage: backup and expansion"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Planning commercial battery storage"
+        }
+      ],
+      "leftInset": 17,
+      "links": [
+        {
+          "left": 17,
+          "name": "All topics",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Applications",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Battery Storage",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Installation & Commissioning",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Monitoring & Energy Management",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "System Design",
+          "right": 17
+        }
+      ],
+      "overflow": false,
+      "rightInset": 17
+    },
+    {
+      "face": "native-category-navigation",
+      "language": "en",
+      "leftInset": 17,
+      "overflow": false,
+      "rightInset": 17,
+      "selected": 1,
+      "url": "http://127.0.0.1:9129/category/applications-blog/"
+    },
+    {
+      "face": "discovery",
+      "language": "de",
+      "width": 1440,
+      "background": "rgb(241, 249, 248)",
+      "labels": [
+        {
+          "lines": 0.9997605363984674,
+          "text": "Hybridwechselrichter oder AC-Speicher?"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Wechselrichter und Batterie kombinieren"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Heimspeicher für Notstrom auslegen"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Batteriespeicher: innen oder außen?"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "PV und Speicher in Betrieb nehmen"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Dokumente für die Projektübergabe"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Fernüberwachung nach der Installation"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Gateway, Zähler und Fernüberwachung"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Heimspeicher: Notstrom und Ausbau"
+        },
+        {
+          "lines": 0.9997605363984674,
+          "text": "Gewerbespeicher planen"
+        }
+      ],
+      "leftInset": 17,
+      "links": [
+        {
+          "left": 17,
+          "name": "Alle Themen",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Anwendungen",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Batteriespeicher",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Installation & Inbetriebnahme",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Systemauslegung",
+          "right": 17
+        },
+        {
+          "left": 17,
+          "name": "Überwachung & Energiemanagement",
+          "right": 17
+        }
+      ],
+      "overflow": false,
+      "rightInset": 17
+    },
+    {
+      "face": "native-category-navigation",
+      "language": "de",
+      "leftInset": 17,
+      "overflow": false,
+      "rightInset": 17,
+      "selected": 1,
+      "url": "http://127.0.0.1:9129/de/kategorie/anwendungen/"
+    },
+    {
+      "face": "discovery",
+      "language": "en",
+      "width": 390,
+      "labels": [
+        {
+          "lines": 1,
+          "text": "Hybrid inverter or AC storage?"
+        },
+        {
+          "lines": 1,
+          "text": "Pairing inverters and batteries"
+        },
+        {
+          "lines": 1,
+          "text": "Sizing home storage for backup"
+        },
+        {
+          "lines": 2,
+          "text": "Battery storage: indoors or outdoors?"
+        },
+        {
+          "lines": 1,
+          "text": "Commissioning solar and storage"
+        },
+        {
+          "lines": 1,
+          "text": "Documents for project handover"
+        },
+        {
+          "lines": 2,
+          "text": "Remote monitoring after installation"
+        },
+        {
+          "lines": 2,
+          "text": "Gateways, meters and cloud monitoring"
+        },
+        {
+          "lines": 2,
+          "text": "Home storage: backup and expansion"
+        },
+        {
+          "lines": 2,
+          "text": "Planning commercial battery storage"
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "face": "reader-chapter",
+      "language": "en",
+      "width": 390,
+      "initiallyOpen": false,
+      "hash": "#article-hybrid-inverter",
+      "overflow": false,
+      "targetTop": 103.765625
+    },
+    {
+      "face": "service",
+      "language": "en",
+      "width": 390,
+      "flow": "row",
+      "overflow": false,
+      "rows": [
+        {
+          "height": 195.09375,
+          "top": 1828.28125,
+          "width": 390
+        },
+        {
+          "height": 195.09375,
+          "top": 2023.375,
+          "width": 390
+        },
+        {
+          "height": 195.09375,
+          "top": 2218.46875,
+          "width": 390
+        },
+        {
+          "height": 195.09375,
+          "top": 2413.5625,
+          "width": 390
+        }
+      ]
+    },
+    {
+      "face": "discovery",
+      "language": "de",
+      "width": 390,
+      "labels": [
+        {
+          "lines": 2,
+          "text": "Hybridwechselrichter oder AC-Speicher?"
+        },
+        {
+          "lines": 2,
+          "text": "Wechselrichter und Batterie kombinieren"
+        },
+        {
+          "lines": 2,
+          "text": "Heimspeicher für Notstrom auslegen"
+        },
+        {
+          "lines": 2,
+          "text": "Batteriespeicher: innen oder außen?"
+        },
+        {
+          "lines": 2,
+          "text": "PV und Speicher in Betrieb nehmen"
+        },
+        {
+          "lines": 2,
+          "text": "Dokumente für die Projektübergabe"
+        },
+        {
+          "lines": 2,
+          "text": "Fernüberwachung nach der Installation"
+        },
+        {
+          "lines": 2,
+          "text": "Gateway, Zähler und Fernüberwachung"
+        },
+        {
+          "lines": 2,
+          "text": "Heimspeicher: Notstrom und Ausbau"
+        },
+        {
+          "lines": 1,
+          "text": "Gewerbespeicher planen"
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "face": "reader-chapter",
+      "language": "de",
+      "width": 390,
+      "initiallyOpen": false,
+      "hash": "#article-hybrid-inverter",
+      "overflow": false,
+      "targetTop": 103.765625
+    },
+    {
+      "face": "service",
+      "language": "de",
+      "width": 390,
+      "flow": "row",
+      "overflow": false,
+      "rows": [
+        {
+          "height": 195.09375,
+          "top": 1847.8359375,
+          "width": 390
+        },
+        {
+          "height": 246.09375,
+          "top": 2042.9296875,
+          "width": 390
+        },
+        {
+          "height": 220.59375,
+          "top": 2289.0234375,
+          "width": 390
+        },
+        {
+          "height": 195.09375,
+          "top": 2509.6171875,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "extras": [
+    {
+      "face": "reader",
+      "language": "en",
+      "compatibilityBounds": null,
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792319774"
+      ],
+      "h": 900,
+      "imageDecodeReady": "ready",
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-768x979.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter-300x300.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en-US",
+      "path": "/hybrid-inverter-vs-ac-coupled-storage/",
+      "title": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup | Linker",
+      "total": 3394,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false,
+      "overflow": false,
+      "sharing": [
+        {
+          "href": "https://www.facebook.com/sharer.php?u=http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/",
+          "name": "Facebook",
+          "title": "Facebook"
+        },
+        {
+          "href": "https://api.whatsapp.com/send?text=http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/",
+          "name": "Whatsapp",
+          "title": "Whatsapp"
+        },
+        {
+          "href": "https://telegram.me/share/url?url=http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/&text=",
+          "name": "Telegram",
+          "title": "Telegram"
+        },
+        {
+          "href": "https://twitter.com/share?url=http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/&text=How%20to%20Choose%20Between%20a%20Hybrid%20Inverter%20and%20an%20AC-Coupled%20Storage%20Setup&via=",
+          "name": "Twitter",
+          "title": "Twitter"
+        }
+      ],
+      "tocOpen": true
+    },
+    {
+      "face": "reader",
+      "language": "de",
+      "compatibilityBounds": null,
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792319774"
+      ],
+      "h": 900,
+      "imageDecodeReady": "ready",
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-768x979.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter-300x300.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de-DE",
+      "path": "/de/hybridwechselrichter-vs-ac-speicher/",
+      "title": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung | Linker",
+      "total": 3577,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false,
+      "overflow": false,
+      "sharing": [
+        {
+          "href": "https://www.facebook.com/sharer.php?u=http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/",
+          "name": "Facebook",
+          "title": "Facebook"
+        },
+        {
+          "href": "https://api.whatsapp.com/send?text=http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/",
+          "name": "Whatsapp",
+          "title": "Whatsapp"
+        },
+        {
+          "href": "https://telegram.me/share/url?url=http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/&text=",
+          "name": "Telegram",
+          "title": "Telegram"
+        },
+        {
+          "href": "https://twitter.com/share?url=http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/&text=So%20w%C3%A4hlen%20Sie%20zwischen%20einem%20Hybrid-Wechselrichter%20und%20einer%20AC-gekoppelten%20Speicherl%C3%B6sung&via=",
+          "name": "Twitter",
+          "title": "Twitter"
+        }
+      ],
+      "tocOpen": true
+    },
+    {
+      "face": "reader",
+      "language": "en",
+      "compatibilityBounds": null,
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792319774"
+      ],
+      "h": 844,
+      "imageDecodeReady": "ready",
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter-300x300.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en-US",
+      "path": "/hybrid-inverter-vs-ac-coupled-storage/",
+      "title": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup | Linker",
+      "total": 4219,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false,
+      "overflow": false,
+      "sharing": [
+        {
+          "href": "https://www.facebook.com/sharer.php?u=http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/",
+          "name": "Facebook",
+          "title": "Facebook"
+        },
+        {
+          "href": "https://api.whatsapp.com/send?text=http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/",
+          "name": "Whatsapp",
+          "title": "Whatsapp"
+        },
+        {
+          "href": "https://telegram.me/share/url?url=http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/&text=",
+          "name": "Telegram",
+          "title": "Telegram"
+        },
+        {
+          "href": "https://twitter.com/share?url=http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/&text=How%20to%20Choose%20Between%20a%20Hybrid%20Inverter%20and%20an%20AC-Coupled%20Storage%20Setup&via=",
+          "name": "Twitter",
+          "title": "Twitter"
+        }
+      ],
+      "tocOpen": false
+    },
+    {
+      "face": "reader",
+      "language": "de",
+      "compatibilityBounds": null,
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792319774"
+      ],
+      "h": 844,
+      "imageDecodeReady": "ready",
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter-300x300.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de-DE",
+      "path": "/de/hybridwechselrichter-vs-ac-speicher/",
+      "title": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung | Linker",
+      "total": 4653,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false,
+      "overflow": false,
+      "sharing": [
+        {
+          "href": "https://www.facebook.com/sharer.php?u=http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/",
+          "name": "Facebook",
+          "title": "Facebook"
+        },
+        {
+          "href": "https://api.whatsapp.com/send?text=http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/",
+          "name": "Whatsapp",
+          "title": "Whatsapp"
+        },
+        {
+          "href": "https://telegram.me/share/url?url=http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/&text=",
+          "name": "Telegram",
+          "title": "Telegram"
+        },
+        {
+          "href": "https://twitter.com/share?url=http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/&text=So%20w%C3%A4hlen%20Sie%20zwischen%20einem%20Hybrid-Wechselrichter%20und%20einer%20AC-gekoppelten%20Speicherl%C3%B6sung&via=",
+          "name": "Twitter",
+          "title": "Twitter"
+        }
+      ],
+      "tocOpen": false
+    },
+    {
+      "face": "search",
+      "language": "en",
+      "empty": false,
+      "emptyVisible": false,
+      "h": 844,
+      "imageDecodeReady": "ready",
+      "lang": "en-US",
+      "overflow": false,
+      "path": "/",
+      "resultLinks": [
+        "http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/",
+        "http://127.0.0.1:9129/installer-checklist-inverter-battery-pairing/",
+        "http://127.0.0.1:9129/size-battery-storage-residential-backup/",
+        "http://127.0.0.1:9129/indoor-vs-outdoor-battery-storage-planning/",
+        "http://127.0.0.1:9129/solar-plus-storage-commissioning-checklist/",
+        "http://127.0.0.1:9129/residential-storage-backup-self-consumption/",
+        "http://127.0.0.1:9129/ci-storage-peak-shaving-backup-scalability/",
+        "http://127.0.0.1:9129/remote-monitoring-after-installation/",
+        "http://127.0.0.1:9129/gateway-meter-cloud-monitoring-data-layer/"
+      ],
+      "title": "\"storage\" | Linker",
+      "total": 2275,
+      "url": "http://127.0.0.1:9129/?post_type=post&s=storage",
+      "w": 390,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false
+    },
+    {
+      "face": "search",
+      "language": "en",
+      "empty": true,
+      "emptyVisible": true,
+      "h": 844,
+      "imageDecodeReady": "ready",
+      "lang": "en-US",
+      "overflow": false,
+      "path": "/",
+      "resultLinks": [],
+      "title": "\"i254keintreffer\" | Linker",
+      "total": 1336,
+      "url": "http://127.0.0.1:9129/?post_type=post&s=i254keintreffer",
+      "w": 390,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false
+    },
+    {
+      "face": "search",
+      "language": "de",
+      "empty": false,
+      "emptyVisible": false,
+      "h": 844,
+      "imageDecodeReady": "ready",
+      "lang": "de-DE",
+      "overflow": false,
+      "path": "/de/",
+      "resultLinks": [
+        "http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/",
+        "http://127.0.0.1:9129/de/installateur-checkliste-wechselrichter-akku/",
+        "http://127.0.0.1:9129/de/batteriegroesse-heimspeicher-notstrom/",
+        "http://127.0.0.1:9129/de/innen-vs-aussen-akku-planung/",
+        "http://127.0.0.1:9129/de/solar-speicher-inbetriebnahme-checkliste/",
+        "http://127.0.0.1:9129/de/heimspeicher-notstrom-eigenverbrauch/",
+        "http://127.0.0.1:9129/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/",
+        "http://127.0.0.1:9129/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/"
+      ],
+      "title": "Suchergebnisse für „Speicher“ | Linker",
+      "total": 2210,
+      "url": "http://127.0.0.1:9129/de/?post_type=post&lang=de&s=Speicher",
+      "w": 390,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false
+    },
+    {
+      "face": "search",
+      "language": "de",
+      "empty": true,
+      "emptyVisible": true,
+      "h": 844,
+      "imageDecodeReady": "ready",
+      "lang": "de-DE",
+      "overflow": false,
+      "path": "/de/",
+      "resultLinks": [],
+      "title": "Suchergebnisse für „i254keintreffer“ | Linker",
+      "total": 1424,
+      "url": "http://127.0.0.1:9129/de/?post_type=post&lang=de&s=i254keintreffer",
+      "w": 390,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false
+    },
+    {
+      "face": "search",
+      "language": "en",
+      "empty": false,
+      "emptyVisible": false,
+      "h": 900,
+      "imageDecodeReady": "ready",
+      "lang": "en-US",
+      "overflow": false,
+      "path": "/",
+      "resultLinks": [
+        "http://127.0.0.1:9129/hybrid-inverter-vs-ac-coupled-storage/",
+        "http://127.0.0.1:9129/installer-checklist-inverter-battery-pairing/",
+        "http://127.0.0.1:9129/size-battery-storage-residential-backup/",
+        "http://127.0.0.1:9129/indoor-vs-outdoor-battery-storage-planning/",
+        "http://127.0.0.1:9129/solar-plus-storage-commissioning-checklist/",
+        "http://127.0.0.1:9129/residential-storage-backup-self-consumption/",
+        "http://127.0.0.1:9129/ci-storage-peak-shaving-backup-scalability/",
+        "http://127.0.0.1:9129/remote-monitoring-after-installation/",
+        "http://127.0.0.1:9129/gateway-meter-cloud-monitoring-data-layer/"
+      ],
+      "title": "\"storage\" | Linker",
+      "total": 3446,
+      "url": "http://127.0.0.1:9129/?post_type=post&s=storage",
+      "w": 1440,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false
+    },
+    {
+      "face": "search",
+      "language": "en",
+      "empty": true,
+      "emptyVisible": true,
+      "h": 900,
+      "imageDecodeReady": "ready",
+      "lang": "en-US",
+      "overflow": false,
+      "path": "/",
+      "resultLinks": [],
+      "title": "\"i254keintreffer\" | Linker",
+      "total": 1378,
+      "url": "http://127.0.0.1:9129/?post_type=post&s=i254keintreffer",
+      "w": 1440,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false
+    },
+    {
+      "face": "search",
+      "language": "de",
+      "empty": false,
+      "emptyVisible": false,
+      "h": 900,
+      "imageDecodeReady": "ready",
+      "lang": "de-DE",
+      "overflow": false,
+      "path": "/de/",
+      "resultLinks": [
+        "http://127.0.0.1:9129/de/hybridwechselrichter-vs-ac-speicher/",
+        "http://127.0.0.1:9129/de/installateur-checkliste-wechselrichter-akku/",
+        "http://127.0.0.1:9129/de/batteriegroesse-heimspeicher-notstrom/",
+        "http://127.0.0.1:9129/de/innen-vs-aussen-akku-planung/",
+        "http://127.0.0.1:9129/de/solar-speicher-inbetriebnahme-checkliste/",
+        "http://127.0.0.1:9129/de/heimspeicher-notstrom-eigenverbrauch/",
+        "http://127.0.0.1:9129/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/",
+        "http://127.0.0.1:9129/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/"
+      ],
+      "title": "Suchergebnisse für „Speicher“ | Linker",
+      "total": 2942,
+      "url": "http://127.0.0.1:9129/de/?post_type=post&lang=de&s=Speicher",
+      "w": 1440,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false
+    },
+    {
+      "face": "search",
+      "language": "de",
+      "empty": true,
+      "emptyVisible": true,
+      "h": 900,
+      "imageDecodeReady": "ready",
+      "lang": "de-DE",
+      "overflow": false,
+      "path": "/de/",
+      "resultLinks": [],
+      "title": "Suchergebnisse für „i254keintreffer“ | Linker",
+      "total": 1378,
+      "url": "http://127.0.0.1:9129/de/?post_type=post&lang=de&s=i254keintreffer",
+      "w": 1440,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false
+    }
+  ],
+  "restoredCssByteIdentical": true
+}

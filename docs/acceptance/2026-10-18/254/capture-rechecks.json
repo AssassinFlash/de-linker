@@ -1,0 +1,26 @@
+{
+  "superseded": "All default browser API JPEG pixel comparisons, including misleading .png filenames, are rejected as strict zero-pixel evidence.",
+  "accepted_protocol": "Same IAB tab, explicit viewport override re-applied to ensure devicePixelRatio=1, native CDP Page.captureScreenshot format png / scale 1 / measured CSS dimensions. The local fixture eagerly decodes images and awaits fonts, two paint frames and paused loaded video; no preparatory scrolling.",
+  "masks": [],
+  "tolerance": 0,
+  "final_unaffected_comparisons": 18,
+  "changed_pixels_each": 0,
+  "owner_authorized_faces": [
+    "product",
+    "inquiry",
+    "journal index",
+    "journal category",
+    "service introduction",
+    "additional reader/search states"
+  ],
+  "baseline_source": "1f271843c0e65d0cbdc59f52fd8be120211be87b",
+  "final_source": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+  "baseline_cache_generated": "2026-10-18 18:33:23 Asia/Shanghai",
+  "final_capture_cache_generated": "2026-10-18 18:22:02 Asia/Shanghai",
+  "restored_final_cache_generated": "2026-10-18 18:36:14 Asia/Shanghai",
+  "restored_final_css_byte_identical": true,
+  "refreshed_baseline_frames": 28,
+  "refreshed_final_frames": 56,
+  "refreshed_native_action_records": 10,
+  "refreshed_reader_search_states": 12
+}
