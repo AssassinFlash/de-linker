@@ -26,6 +26,7 @@ from pathlib import Path
 
 from linker_cutover import atomic, plan
 from linker_cutover import backup as backup_module
+from linker_cutover import snapshot as snapshot_module
 from linker_cutover.target import HOST_URL, CutoverError, Target, wp_prefix_for
 
 
@@ -169,6 +170,26 @@ def deployment_id(repository: Path) -> str:
     return datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ") + "-" + git.stdout.strip()
 
 
+# The full backup is weekly (AGENTS.md §5, #305); nothing schedules it, so each
+# deploy says when the newest one is older than this.
+FULL_BACKUP_DAYS = 7
+
+
+def full_backup_reminder(home: Path, *, now: datetime | None = None) -> str | None:
+    """A line for the deploy log when the weekly full backup is due, else None."""
+    latest = backup_module.latest_complete(home)
+    if latest is None:
+        return "reminder: there is no complete full backup; run `just cutover backup`"
+    taken = datetime.strptime(latest.name, "cutover-%Y%m%d-%H%M").replace(tzinfo=UTC)
+    age = (now or datetime.now(UTC)) - taken
+    if age.days < FULL_BACKUP_DAYS:
+        return None
+    return (
+        f"reminder: the newest full backup ({latest.name}) is {age.days} days old; "
+        "run `just cutover backup` (weekly)"
+    )
+
+
 def deploy(
     target: Target,
     *,
@@ -176,13 +197,21 @@ def deploy(
     staging: Path,
     deploy_id: str | None = None,
     on_switch: Callable[[], None] | None = None,
+    snapshot_home: Path | None = None,
+    now: datetime | None = None,
 ) -> Result:
-    """Build all trees, upload all artifacts, then switch the complete batch.
+    """Snapshot the database, build all trees, upload all artifacts, then switch the batch.
 
-    Verification and private archiving follow in `finish_deploy`. Keeping that
-    phase separate lets the first-cutover drill complete its data steps and
-    leave maintenance mode before the same verification runs.
+    The snapshot comes first and a failed one stops the deploy before anything
+    is uploaded: the database is the part of the site a code deploy can change
+    that the atomic switch does not keep (#305). Verification and private
+    archiving follow in `finish_deploy`. Keeping that phase separate lets the
+    first-cutover drill complete its data steps and leave maintenance mode
+    before the same verification runs.
     """
+    home = snapshot_home or backup_module.DATA_HOME
+    taken = snapshot_module.take(target, home)
+    reminder = full_backup_reminder(home, now=now)
     artifacts = deployment_artifacts(repository)
     # Finish every local Composer build before starting any remote upload.
     prepared = [
@@ -200,7 +229,14 @@ def deploy(
         on_switch=on_switch,
     )
     assert receipt.switch_seconds is not None
-    actions = [f"deployed {item.relative} by rename" for item in artifacts]
+    actions = [
+        f"database snapshot {taken.path} ({taken.size} bytes, sha256 {taken.sha256[:16]}…, "
+        f"{', '.join(snapshot_module.SKIPPED_TABLES)} left out); "
+        f"restore with `just cutover restore-snapshot {taken.name}`"
+    ]
+    if reminder:
+        actions.append(reminder)
+    actions += [f"deployed {item.relative} by rename" for item in artifacts]
     actions += [
         f"deploy id: {receipt.deploy_id}",
         f"total switch duration: {receipt.switch_seconds:.3f} s",

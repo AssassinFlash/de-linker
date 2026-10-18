@@ -21,11 +21,24 @@ PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live
 
 `just cutover rollback-deploy` 从同一发布检出版本读取同一个库存函数。预检逐项比较 manifest 的 deploy ID、库存与实际备份 inode，明确列出混批、缺失、被替换的备份，任一不符则零写入；还拒绝 live 在发布后发生未登记变更。回滚从 pending 同目录或 archived 站外目录把整批文件 rename 回来，可捕获失败时恢复整批当前版本。完成后逐路径读回恢复的 device/inode（原先不存在则确认不存在），用 `wp plugin list --fields=name,status` 确认三个插件 active，再运行与部署相同的 verify；输出实际读回结果，任何检查不通过均非零。回滚会消耗上一版，不提供 redo，不导入数据库，也不改插件激活状态。原完整备份回滚入口不变。
 
+### 部署前快照与完整备份（#305）
+
+业主 2026-10-18 问：每次部署前都做一次完整备份是否必要（4.6 GB，30–60 分钟）。结论按"部署能改动什么"分层：
+
+- **代码**（三个插件、mu-plugin、子主题文件）：原子切换保留上一版，`just cutover rollback-deploy` 一条命令改回（上文）。
+- **数据库**（插件激活、选项、语言包会改）：`just cutover deploy` 的**第一步**是数据库快照，在构建与上传之前；快照失败则部署在切换前停止。快照由主机上的 mysqldump 经标准流**直接传到本机** `~/de-linker-data/snapshots/db-<UTC>.sql.gz`，主机上不写任何文件（业主 2026-10-18：服务器空间留给站点）；先写隐藏的 partial 文件，gzip 读到结尾才改名，失败不留残件；本机保留最新 20 份。快照**不含** `wp_genie_chunks`：它占数据库 817.9 MB（2026-10-18 线上实测，其余表合计约 110 MB），是已退役的库内知识索引（Genie 读 VPS 上的 SQLite 索引，#257），站点代码不读不写，部署改不到它；完整备份仍包含它。实测（2026-10-18 线上）：快照 6,200,721 字节，用时 14 秒；导入本机空库得到 61 张表（线上 62 张减去该表）、`siteurl` 为 https://de-linker.com。还原：`just cutover snapshots` 列出；`just cutover restore-snapshot <名称>` 只预览并校验名称与文件，加 `--write` 才执行：先把**当前**数据库再存一份快照（还原本身是数据写入，还原错了也能一条命令撤回；该次修剪不会删掉正要读取的那份），再导入并清缓存。导入只替换快照里有的表：被排除的那张不动，快照之后才建的表（例如新插件激活时建的）连同数据保留。代码与数据库要一起回到同一时刻时，与 `just cutover rollback-deploy` 一起用。
+- **uploads**：代码部署碰不到，不随部署复制。
+
+主机上唯一保留的是原子切换的上一版代码（`~/deploy-prev/`，只留最近一批，约 28 MB：三个插件实测 22 + 4.2 + 2.1 MB），供 `rollback-deploy` 同盘改名即时回滚；它是部署机制的一部分，不是备份。备份（快照与完整备份）只存本机。
+
+**完整备份**（`just cutover backup`）用于数据写入之前（导入、批量修改、迁移；`data`、`hygiene`、`plugins` 三步本就先自取完整备份，`schema --write` 现在也先取）与**每周一次**，不再是每次代码部署的前提。没有定时任务替你做每周那一次：每次部署在最新一份完整备份超过 7 天（或一份都没有）时在日志里提醒。它改为**增量**：与最新一份完整备份相同的文件用 `rsync --link-dest` 硬链接而不重新下载，每份仍是可独立还原的完整目录树；只有带 manifest 的完整备份才被当作链接来源。
+
+
 普通更新需让 verify 看到真实站点；本票生产探针不启用维护页。完整首次切换的 `Drill` 使用同一 `deploy()` 阶段，在数据步骤完成且维护关闭之后调用同一 `finish_deploy()`，因此不会拿维护响应作为归档依据。下文“就地替换”只指 URL / 插件 slug 不变。
 
 生产实走用 `just cutover probe`，端点来自 `plan.DEPLOY_PROBE_ENDPOINTS`，root / URL 来自 `Target`，插件来自 `plan.NEW_PLUGINS`。探针与部署同时运行，用单一 worker 轮询首页、联系页、Proforma 请求页、产品页，以及 commerce 的产品搜索、i18n 的德语 REST 过滤、tools 的只读会话路由。按第 3 轮决定 5 降载：构建和上传期每次响应后等 **1 s**（总流量至多约 1 GET/s），即将调用切换 shell 时由部署进程刷新 `LINKER_CUTOVER_SWITCH_START` 行，观察进程收到后改为每次响应后等 **0.1 s**（总流量至多约 10 GET/s），直到 verify / archive 读回完成，且至少采完一轮全部端点。两个频率均为本票选定的验收配置：保留原来用于约 30 s 故障窗的 0.1 s 间隔，但从“每端点”改为“全体合计”；构建上传再降十倍。它们不是实测主机容量或 Hostinger 许可上限；任意时刻最多一个探针 GET 在途，慢响应自然继续降速。前后快照依次请求，最终 fatal 元数据读取在所有请求结束之后。同时记录目录 rename 的 inode 证据与每次采样的 cadence。具体命令、回滚边界及 Claude 的未完成生产验收见 [2026-10-18 部署记录](../acceptance/2026-10-18/deploy/README.md)。
 
-1. **备份**：mysqldump 导出数据库（`wp db export` 在生产主机不可用：WP-CLI 的 export 先调 `exec()`，而主机的 `disable_functions` 含 `exec`——理由与出处见变更记录 2026-10-11（#81））、`wp-content/uploads`、`wp-content/plugins`、`.htaccess`、选项导出 → 本地 `~/de-linker-data/cutover-<date>/`，sha256 清单。
+1. **备份**（完整、增量，见上文“部署前快照与完整备份”）：mysqldump 导出数据库（`wp db export` 在生产主机不可用：WP-CLI 的 export 先调 `exec()`，而主机的 `disable_functions` 含 `exec`——理由与出处见变更记录 2026-10-11（#81））、`wp-content/uploads`、`wp-content/plugins`、`.htaccess`、选项导出 → 本地 `~/de-linker-data/cutover-<date>/`，sha256 清单。
 2. **维护模式开**（`wp maintenance-mode activate`）。
 3. **部署**：rsync 三个新插件（含 `vendor/` 与 `build/`；`linker-i18n` 同 slug 就地替换；`.po/.mo` 随各插件自己的 `languages/` 走，不单独复制）；Polylang 用 WP-CLI 从 wordpress.org 原生安装并激活（已装则只补激活）；**WP 核心与 WooCommerce 的 de_DE_formal 语言包同样用 WP-CLI 原生安装（只装不激活，全站默认语言保持英文、前台语言由 Polylang 逐页切换；2026-10-15 事故：切换后线上没有任何语言包，德语页的 Woo/WP 核心字符串全部回退英文——本地栈在实例创建时就装这两份包，tools/local `install_language_packs`，所以缺陷只在线上可见）**；`mu-plugins/*.php`（含新错误记录件）装入 `wp-content/mu-plugins/`。停用并删除 `terravolt-b2b-core`、`linker-ai-assistant`、`woocommerce-gateway-stripe`、`code-snippets`（先按**当时的活动行**把代码导出到备份目录——本仓库不携带旧树的自定义代码，仓库里只留"活动行的功能已由新插件承接"的确认记录；2026-10-11 盘点活动行为 2 条）、`terravolt-b2b-core-broken-20260704/` 与两个备份压缩包、以及插件与 mu 目录里的 `*.bak-*`。
    - **mu 目录**：把 `mu-plugins/linker-error-recorder.php` 装到 `wp-content/mu-plugins/`（新记录件，替换线上同名文件：主机 `log_errors=OFF` 且没有可读的错误日志，记录件是唯一能回答"站点为什么坏了"的面；文件写进 `wp-content/linker-errors/php.log`，256 KB 轮转，目录带 `.htaccess` 拒绝与空 `index.html`）。
@@ -46,6 +59,7 @@ PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live
 - [ ] 视觉验收：首页、产品页、配置器、Genie、账户 × EN/DE × 1440/390（线上）。
 
 ## 变更记录
+- 2026-10-18（#305，部署前快照与增量完整备份）：部署第一步改为数据库快照（流到本机、主机不留文件、排除已退役的 `wp_genie_chunks`、失败即不切换）；`snapshot` / `snapshots` / `restore-snapshot` 三个命令；完整备份改增量（`--link-dest`），只在数据写入前与每周做。依据：业主 2026-10-18 的时间与服务器空间要求，及代码由原子切换保留上一版。
 - 2026-10-14（#145）：`just cutover verify` 之后再跑 `search-console` 段（`steps.search_console`）：Site Kit 启用、已连接 `https://de-linker.com/`、验证文件不带 cache-buster 可取；任一不成立退出码 1。只对生产主机跑（`--target local:…` 与 `drill` 都不跑：本地实例不连 Google）。规格 `docs/specs/145-search-console.md`。
 - 2026-10-14（#17 首跑生产）：预检把工具从没有跑过的生产路径都跑了一遍；六处修复，逐条有理由：
   - **远程 shell 的引用**：脚本现在以单个 shlex 引用词随 ssh 出发（`Target.shell_command`，唯一实现，备份的 `_stream` 同用）。`ssh host 'bash -c' 'script'` 会被登录 shell 重新按空格拆分——实测两次：hygiene 的第一个探针死于 `then`，备份的 dump 收到裸 `set`（落地的"db.sql.gz"是环境清单）。本地演练从不走远程分支。

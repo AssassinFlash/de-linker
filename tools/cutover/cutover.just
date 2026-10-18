@@ -24,9 +24,28 @@ drill instance *options:
     PHP={{ php }} {{ linker_cutover }} drill --instance "$@"
 
 # Step 1: the complete backup of the site into ~/de-linker-data/cutover-<date>/.
+# Incremental: unchanged files are hard-linked from the newest complete backup.
+# Needed before data writes and weekly; a code deploy takes its own snapshot (#305).
 [positional-arguments]
 backup *options:
     PHP={{ php }} {{ linker_cutover }} backup "$@"
+
+# A database snapshot streamed to ~/de-linker-data/snapshots/ (deploy takes one
+# itself before switching; #305). Nothing is written on the host.
+[positional-arguments]
+snapshot *options:
+    PHP={{ php }} {{ linker_cutover }} snapshot "$@"
+
+# The database snapshots on this Mac, newest first.
+[positional-arguments]
+snapshots *options:
+    PHP={{ php }} {{ linker_cutover }} snapshots "$@"
+
+# Put a database snapshot back (the current database is snapshotted first):
+# `just cutover restore-snapshot db-…sql.gz` previews, add `--write` to restore.
+[positional-arguments]
+restore-snapshot name *options:
+    PHP={{ php }} {{ linker_cutover }} restore-snapshot "$@"
 
 # Steps 2 and 7: the maintenance window. `just cutover maintenance on|off`.
 [positional-arguments]

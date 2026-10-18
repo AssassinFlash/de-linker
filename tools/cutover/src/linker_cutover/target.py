@@ -247,8 +247,15 @@ class Target:
         host = self.rsync_remote.split(":", 1)[0]
         return f"{host}:{path}"
 
-    def copy_out(self, relative: str, destination: Path) -> None:
-        """Copy a WordPress-root-relative directory off the target into `destination`."""
+    def copy_out(
+        self, relative: str, destination: Path, *, link_dest: Path | None = None
+    ) -> None:
+        """Copy a WordPress-root-relative directory off the target into `destination`.
+
+        `link_dest` is the same directory in an earlier backup: rsync hard-links
+        every file that has not changed instead of copying it again (#305), so
+        a full backup only transfers what changed since the last one.
+        """
         destination.parent.mkdir(parents=True, exist_ok=True)
         source = self.address(relative)
         if self.rsync_remote is None and not Path(self.path_of(relative)).is_dir():
@@ -293,17 +300,30 @@ class Target:
             for path, is_dir in chunks:
                 local = destination / path
                 local.parent.mkdir(parents=True, exist_ok=True)
+                earlier = None
+                if link_dest is not None:
+                    earlier = link_dest / path if is_dir else (link_dest / path).parent
                 self._pull_entry(
                     f"{base}/{path}",
                     local if is_dir else local.parent,
                     is_dir=is_dir,
+                    link_dest=earlier,
                 )
             return
         # A trailing slash on the source copies the directory's contents, the
         # same thing rsync does with `<host>:<dir>`.
-        self.rsync(f"{source.rstrip('/')}/", f"{destination}/")
+        self.rsync(
+            f"{source.rstrip('/')}/", f"{destination}/", extra=_link_dest(link_dest)
+        )
 
-    def _pull_entry(self, source: str, destination: Path, *, is_dir: bool) -> None:
+    def _pull_entry(
+        self,
+        source: str,
+        destination: Path,
+        *,
+        is_dir: bool,
+        link_dest: Path | None = None,
+    ) -> None:
         """One chunk of a remote tree, retried.
 
         The host drops a long transfer (measured 2026-10-14 on 2.6 GB and
@@ -321,6 +341,7 @@ class Target:
                     "--delete",
                     "-e",
                     "ssh -o BatchMode=yes",
+                    *_link_dest(link_dest),
                     source_arg,
                     f"{destination}/",
                 ],
@@ -506,3 +527,14 @@ def local_target(name: str) -> Target:
 def wp_prefix_for(target: Target) -> str:
     """The target's WP-CLI command as a string, for `--wp` of tools/migrate."""
     return " ".join(shlex.quote(part) for part in target.prefix)
+
+
+def _link_dest(earlier: Path | None) -> list[str]:
+    """rsync's `--link-dest` for an earlier copy of the same directory, when there is one.
+
+    The path is absolute: rsync reads a relative `--link-dest` against the
+    destination, not against where it was started.
+    """
+    if earlier is None or not earlier.is_dir():
+        return []
+    return [f"--link-dest={earlier.resolve()}"]

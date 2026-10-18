@@ -11,6 +11,7 @@ import gzip
 import json
 from argparse import Namespace
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -250,3 +251,35 @@ def test_resume_deploy_finishes_pending_batch_without_republishing(
         (Path(directory) / "files" / item.relative).exists() for item in artifacts
     )
     assert not list(Path(target.root).rglob("*.prev"))
+
+
+def test_schema_takes_a_full_backup_before_it_writes(
+    tmp_path: Path, data_home: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Drafting SEO rows is a data write: a full backup first (AGENTS.md §5, #305)."""
+    order: list[str] = []
+    site = Target("local:test", str(tmp_path), "http://127.0.0.1:9999", (), None, None)
+    monkeypatch.setattr(cli, "_target", lambda name: site)
+
+    def backed_up(target: Target, home: Path) -> SimpleNamespace:
+        order.append("backup")
+        return SimpleNamespace(directory=_dump(home / "cutover-20261018-0300"))
+
+    def schema(target: Target, *, writes: bool) -> steps.Result:
+        order.append(f"schema writes={writes}")
+        return steps.Result("schema", [], [])
+
+    monkeypatch.setattr(backup, "create", backed_up)
+    monkeypatch.setattr(steps, "retire_stale_schema", schema)
+
+    assert cli.main(["schema"]) == 0
+    assert order == ["schema writes=False"]
+    assert cli.main(["schema", "--write"]) == 0
+    assert order[1:] == ["backup", "schema writes=True"]
+
+
+def test_a_restore_preview_refuses_a_name_that_is_not_a_snapshot(
+    data_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert cli.main(["restore-snapshot", "../db.sql.gz"]) == 1
+    assert "not a snapshot name" in capsys.readouterr().err

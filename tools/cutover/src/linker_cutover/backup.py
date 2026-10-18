@@ -47,6 +47,10 @@ from linker_cutover.target import (
     Target,
 )
 
+# The data root on this Mac: full backups (`cutover-*`), deploy snapshots
+# (`snapshots/`) and the cutover workspace, all outside the repository.
+DATA_HOME = Path.home() / "de-linker-data"
+
 MANIFEST = "manifest.json"
 DUMP = "db.sql.gz"
 OPTIONS = "options.json"
@@ -121,9 +125,18 @@ def _wp_array(target: Target) -> str:
     return "(" + " ".join(shlex.quote(part) for part in target.wp_on_target()) + ")"
 
 
-def dump_script(target: Target) -> str:
-    """The shell script that writes the database, gzip-compressed, to standard output."""
+def dump_script(target: Target, *, skip: tuple[str, ...] = ()) -> str:
+    """The shell script that writes the database, gzip-compressed, to standard output.
+
+    `skip` names tables, without the WordPress prefix, to leave out; the prefix
+    and database name are read on the machine the site runs on, so the same
+    script serves both targets. The full backup skips nothing.
+    """
     wp = _wp_array(target)
+    skipping = "".join(
+        f'SKIP+=(--ignore-table="$name.$prefix"{shlex.quote(table)})\n'
+        for table in skip
+    )
     return f"""set -euo pipefail
 cd {shlex.quote(target.root)}
 wp={wp}
@@ -131,12 +144,16 @@ wp={wp}
 {_DUMP_FLAGS}
 db_target
 dump_extra
-MYSQL_PWD="$("${{wp[@]}}" config get DB_PASSWORD)" mysqldump \\
+name="$("${{wp[@]}}" config get DB_NAME)"
+prefix="$("${{wp[@]}}" config get table_prefix)"
+SKIP=()
+{skipping}MYSQL_PWD="$("${{wp[@]}}" config get DB_PASSWORD)" mysqldump \\
   --single-transaction --quick --skip-dump-date --order-by-primary \\
   --default-character-set=utf8mb4 --no-tablespaces \\
   {_expansion("DUMP_EXTRA")} \\
+  {_expansion("SKIP")} \\
   {_expansion("DB_ARGS")} \\
-  "$("${{wp[@]}}" config get DB_NAME)" | gzip
+  "$name" | gzip
 """
 
 
@@ -221,9 +238,42 @@ def _prove_the_tree_arrived(target: Target, relative: str, local: Path) -> None:
         )
 
 
+def dump_to(target: Target, path: Path, *, skip: tuple[str, ...] = ()) -> None:
+    """Stream the database into `path` and refuse a dump that does not read to its end."""
+    with path.open("wb") as handle:
+        stream(target, dump_script(target, skip=skip), stdout=handle)
+    if path.stat().st_size == 0 or not readable_gzip(path):
+        raise CutoverError(f"{path} is not a readable gzip — the dump is not usable")
+
+
+def restore_database(target: Target, dump: Path) -> None:
+    """Import a dump into the site's database (the tables in the dump are replaced)."""
+    with dump.open("rb") as handle:
+        stream(target, restore_script(target), stdin=handle)
+
+
+def latest_complete(home: Path, *, exclude: Path | None = None) -> Path | None:
+    """The newest `cutover-*` backup under `home` that finished (has its manifest)."""
+    candidates = sorted(
+        (
+            path
+            for path in home.glob("cutover-2*")
+            if path.is_dir() and (path / MANIFEST).is_file() and path != exclude
+        ),
+        key=lambda path: path.name,
+    )
+    return candidates[-1] if candidates else None
+
+
 def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup:
-    """Take the backup: database, uploads, plugins, .htaccess, options, manifest."""
+    """Take the backup: database, uploads, plugins, .htaccess, options, manifest.
+
+    Files unchanged since the newest complete backup are hard-linked to it,
+    not copied again (#305): every backup is still a whole, restorable tree on
+    its own, and only what changed travels.
+    """
     directory = destination(home, now=now)
+    previous = latest_complete(home, exclude=directory)
     # An empty directory is a run that died before it wrote anything (the
     # window would otherwise be blocked for the rest of that minute); anything
     # in it is somebody's backup, and a second one must not merge into it.
@@ -245,16 +295,19 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
 
     print("backup: database")
     dump = directory / DUMP
-    with dump.open("wb") as handle:
-        _stream(target, dump_script(target), stdout=handle)
-    if not readable_gzip(dump):
-        raise CutoverError(f"{dump} is not a readable gzip — the backup is not usable")
+    dump_to(target, dump)
     dump_sha = sha256(dump)
     print(f"backup: database {dump.stat().st_size} bytes, sha256 {dump_sha[:16]}…")
 
+    if previous is not None:
+        print(f"backup: unchanged files are hard-linked from {previous}")
     for relative in (UPLOADS, PLUGINS):
         print(f"backup: {relative}")
-        target.copy_out(relative, directory / relative)
+        target.copy_out(
+            relative,
+            directory / relative,
+            link_dest=None if previous is None else previous / relative,
+        )
         _prove_the_tree_arrived(target, relative, directory / relative)
 
     # The switch writes the mu directory too — the recorder is installed over
@@ -267,7 +320,11 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
     print(f"backup: {MU_PLUGINS}")
     present = True
     try:
-        target.copy_out(MU_PLUGINS, directory / MU_PLUGINS)
+        target.copy_out(
+            MU_PLUGINS,
+            directory / MU_PLUGINS,
+            link_dest=None if previous is None else previous / MU_PLUGINS,
+        )
     except CutoverError as error:
         present = False
         print(f"backup: no {MU_PLUGINS} ({error})")
@@ -317,8 +374,7 @@ def restore(target: Target, directory: Path) -> None:
         raise CutoverError(f"{dump} was modified since the backup was taken")
 
     print("rollback: database")
-    with dump.open("rb") as handle:
-        _stream(target, restore_script(target), stdin=handle)
+    restore_database(target, dump)
     print(f"rollback: {PLUGINS}")
     target.copy_in(directory / PLUGINS, PLUGINS)
     print(f"rollback: {UPLOADS}")
@@ -369,14 +425,18 @@ def readable_gzip(path: Path) -> bool:
     return True
 
 
-def _stream(
+def stream(
     target: Target,
     script: str,
     *,
     stdin: IO[bytes] | None = None,
     stdout: IO[bytes] | None = None,
 ) -> None:
-    """Run a script on the target with the given standard streams."""
+    """Run a script on the target with the given standard streams.
+
+    Public because the deploy's database snapshot (`snapshot.py`) streams the
+    same dump the same way.
+    """
     command = target.shell_command(script)
     with tempfile.TemporaryFile() as error:
         completed = subprocess.run(

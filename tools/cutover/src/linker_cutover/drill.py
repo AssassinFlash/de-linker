@@ -167,7 +167,10 @@ class Drill:
         )
         self._record(cutover.maintenance(self.target, on=True))
         deployed = cutover.deploy(
-            self.target, repository=self.repository, staging=self.staging
+            self.target,
+            repository=self.repository,
+            staging=self.staging,
+            snapshot_home=self.home,
         )
         self._record(deployed)
         self._record(
