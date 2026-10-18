@@ -1,0 +1,42 @@
+{
+  "sourceCommit": "15234521",
+  "baseCommit": "0fddf100",
+  "justCheck": {
+    "exit": 0,
+    "log": ".scratch/check-222-post-rebase.log"
+  },
+  "justTest": {
+    "exit": 0,
+    "log": ".scratch/test-222-post-rebase-final.log"
+  },
+  "rebootBrowserMatrices": {
+    "reboot15": "4/4",
+    "reboot16": "4/4"
+  },
+  "realWordPressAfterReboot": {
+    "exit": 0,
+    "tests": 133,
+    "assertions": 1386,
+    "skipped": 9,
+    "skipReason": "blog fixtures absent in snapshot"
+  },
+  "geniePricesHttp": {
+    "exit": 0,
+    "tests": 10,
+    "assertions": 124
+  },
+  "redisErrorsSinceRestart": [],
+  "cleanup": {
+    "instance": "c222",
+    "url": "http://127.0.0.1:9120",
+    "fixtureOptionAbsent": true,
+    "fixtureSqlAbsent": true,
+    "ownedCustomersRemaining": 0,
+    "ownedMailJobsRemaining": 0,
+    "testMailRecipientOptionAbsent": true,
+    "testMailRecipientSqlAbsent": true,
+    "localMailIsolation": true,
+    "temporaryProbeAbsent": true,
+    "redisConnected": true
+  }
+}

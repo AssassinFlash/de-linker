@@ -1,0 +1,78 @@
+{
+  "user": 340,
+  "status": "approved",
+  "stored_status": "approved",
+  "orders": [
+    {
+      "customer": 340,
+      "status": "inquiry-received",
+      "items": 1
+    }
+  ],
+  "mail": [
+    {
+      "to": [
+        "sales@sunriverinverter.com"
+      ],
+      "subject": "New customer: 222 Browser Solar GmbH",
+      "headers": [
+        "X-Linker-Internal: yes",
+        "Reply-to: Maria Beispiel <tester222-de-390-1792294195323@example.test>",
+        "Bcc: chester@de-linker.com",
+        "From: Linker <sales@sunriverinverter.com>",
+        "Content-Type: text/html; charset=UTF-8"
+      ]
+    },
+    {
+      "to": [
+        "tester222-de-390-1792294195323@example.test"
+      ],
+      "subject": "Wir haben Ihre Partner-Registrierung erhalten",
+      "headers": [
+        "Reply-to: Linker <sales@de-linker.com>",
+        "From: Linker <sales@de-linker.com>",
+        "Content-Type: text/html; charset=UTF-8"
+      ]
+    },
+    {
+      "to": [
+        "tester222-de-390-1792294195323@example.test"
+      ],
+      "subject": "Ihre Anfrage #8378 ist eingegangen",
+      "headers": [
+        "Reply-to: Linker <sales@de-linker.com>",
+        "From: Linker <sales@de-linker.com>",
+        "Content-Type: text/html; charset=UTF-8"
+      ]
+    },
+    {
+      "to": [
+        "sales@sunriverinverter.com"
+      ],
+      "subject": "New inquiry #8378 from 222 Browser Solar GmbH",
+      "headers": [
+        "X-Linker-Internal: yes",
+        "Reply-to: Maria Beispiel <tester222-de-390-1792294195323@example.test>",
+        "Bcc: chester@de-linker.com",
+        "From: Linker <sales@sunriverinverter.com>",
+        "Content-Type: text/html; charset=UTF-8"
+      ]
+    },
+    {
+      "to": [
+        "tester222-de-390-1792294195323@example.test"
+      ],
+      "subject": "Ihr Partner-Konto ist freigegeben",
+      "headers": [
+        "Reply-to: Linker <sales@de-linker.com>",
+        "From: Linker <sales@de-linker.com>",
+        "Content-Type: text/html; charset=UTF-8"
+      ]
+    }
+  ],
+  "responseStatus": 200,
+  "fromServiceWorker": false,
+  "cacheControl": "no-cache, must-revalidate, max-age=0, no-store, private",
+  "responseHasPendingNotice": false,
+  "pendingNoticeCount": 0
+}

@@ -21,3 +21,11 @@ LC/WindPress 归属、PHP 数据装配、CommerceState 唯一价格规则均符�
 ## 真实视觉发现后的补充评审
 
 `06957bad`：待审工作台新开放后暴露原有询盘 €0.00 金额。浏览器断言先复现，再让账户行数据读取既有 `linker_commerce_visitor_sees_prices` 答案；新增单测验证隐藏输出。Spec 与 Standards 分别复核通过：没有第二条价格政策，LC/WindPress 归属不变，邮件输出不受影响。
+
+## 最终测试差异复核
+
+两位独立评审均确认 fixture 的三个 option 键只恢复测试自身状态，不触及审批、用户或会话缓存；account-readback 不保存响应正文、Cookie、nonce 或密码，不重登、不重试。没有新增可执行问题。两者均要求 run10 旧提示异常继续标为“根因未确定、未修复”。
+
+## rebase 后全量复核
+
+最终基线 `0fddf100`，复核 HEAD `15234521`。Spec 与 Standards 均重新只读检查全量 diff，无新增发现。POT/PO 逐字保留主线全文，仅追加本票一个新词条；MO 与重新编译结果逐字节一致，主线译文不变。运行时代码与此前已评审版本一致。

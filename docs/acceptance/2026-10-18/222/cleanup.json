@@ -1,0 +1,13 @@
+{
+    "instance": "c222",
+    "url": "http:\/\/127.0.0.1:9120",
+    "fixtureOptionAbsent": true,
+    "fixtureSqlAbsent": true,
+    "ownedCustomersRemaining": 0,
+    "ownedMailJobsRemaining": 0,
+    "testMailRecipientOptionAbsent": true,
+    "testMailRecipientSqlAbsent": true,
+    "localMailIsolation": true,
+    "temporaryProbeAbsent": true,
+    "redisConnected": true
+}

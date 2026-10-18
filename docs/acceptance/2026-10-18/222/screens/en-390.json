@@ -4,7 +4,7 @@
   "registered": "pending",
   "inquiry": [
     {
-      "customer": 120,
+      "customer": 414,
       "status": "inquiry-received",
       "items": 1
     }
@@ -19,7 +19,7 @@
       "subject": "New customer: 222 Browser Solar GmbH",
       "headers": [
         "X-Linker-Internal: yes",
-        "Reply-to: Maria Beispiel <tester222-en-390-1792292698293@example.test>",
+        "Reply-to: Maria Beispiel <tester222-en-390-1792295514712@example.test>",
         "Bcc: chester@de-linker.com",
         "From: Linker <sales@sunriverinverter.com>",
         "Content-Type: text/html; charset=UTF-8"
@@ -27,7 +27,7 @@
     },
     {
       "to": [
-        "tester222-en-390-1792292698293@example.test"
+        "tester222-en-390-1792295514712@example.test"
       ],
       "subject": "We received your partner registration",
       "headers": [
@@ -38,9 +38,9 @@
     },
     {
       "to": [
-        "tester222-en-390-1792292698293@example.test"
+        "tester222-en-390-1792295514712@example.test"
       ],
-      "subject": "Your inquiry #7523 has been received",
+      "subject": "Your inquiry #8699 has been received",
       "headers": [
         "Reply-to: Linker <sales@de-linker.com>",
         "From: Linker <sales@de-linker.com>",
@@ -51,10 +51,10 @@
       "to": [
         "sales@sunriverinverter.com"
       ],
-      "subject": "New inquiry #7523 from 222 Browser Solar GmbH",
+      "subject": "New inquiry #8699 from 222 Browser Solar GmbH",
       "headers": [
         "X-Linker-Internal: yes",
-        "Reply-to: Maria Beispiel <tester222-en-390-1792292698293@example.test>",
+        "Reply-to: Maria Beispiel <tester222-en-390-1792295514712@example.test>",
         "Bcc: chester@de-linker.com",
         "From: Linker <sales@sunriverinverter.com>",
         "Content-Type: text/html; charset=UTF-8"
@@ -62,7 +62,7 @@
     },
     {
       "to": [
-        "tester222-en-390-1792292698293@example.test"
+        "tester222-en-390-1792295514712@example.test"
       ],
       "subject": "Your partner account is approved",
       "headers": [
