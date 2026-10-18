@@ -47,7 +47,19 @@ export function VoteButtons( {
 				disabled={ voted !== null && voted !== 1 }
 				onClick={ () => vote( 1 ) }
 			>
-				👍
+				<svg
+					viewBox="0 0 24 24"
+					width="18"
+					height="18"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="1.65"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M7 10h3l3-7c2 0 3 1 2 4l-1 3h5a2 2 0 0 1 2 2l-1 7a2 2 0 0 1-2 2H7zM3 10h4v11H3z" />
+				</svg>
 			</button>
 			<button
 				type="button"
@@ -57,7 +69,19 @@ export function VoteButtons( {
 				disabled={ voted !== null && voted !== -1 }
 				onClick={ () => vote( -1 ) }
 			>
-				👎
+				<svg
+					viewBox="0 0 24 24"
+					width="18"
+					height="18"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="1.65"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M7 14h3l3 7c2 0 3-1 2-4l-1-3h5a2 2 0 0 0 2-2l-1-7a2 2 0 0 0-2-2H7zM3 3h4v11H3z" />
+				</svg>
 			</button>
 		</div>
 	);

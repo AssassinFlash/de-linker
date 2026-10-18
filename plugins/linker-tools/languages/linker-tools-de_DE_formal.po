@@ -1982,3 +1982,30 @@ msgstr "Die Anfrage konnte nicht gesendet werden. Prüfen Sie Ihren Lösungsentw
 #: build/genie.js
 msgid "Sending did not work. Please try again, or use the inquiry page."
 msgstr "Das Senden ist fehlgeschlagen. Bitte versuchen Sie es erneut oder nutzen Sie die Anfrageseite."
+#: src/genie/components/HelperFooter.tsx build/genie.js
+msgid "Genie is an AI assistant."
+msgstr "Genie ist ein KI-Assistent."
+
+#: src/genie/components/HelperFooter.tsx build/genie.js
+msgid "Help & privacy"
+msgstr "Hilfe & Datenschutz"
+
+#: src/genie/components/Reply.tsx build/genie.js
+msgid "Show full response"
+msgstr "Vollständige Antwort anzeigen"
+
+#: src/genie/components/Transcript.tsx build/genie.js
+msgid "Jump to latest"
+msgstr "Zur neuesten Nachricht"
+
+#: src/genie/components/CopyReply.tsx build/genie.js
+msgid "Copy response"
+msgstr "Antwort kopieren"
+
+#: src/genie/components/CopyReply.tsx build/genie.js
+msgid "Copied"
+msgstr "Kopiert"
+
+#: src/genie/components/CopyReply.tsx build/genie.js
+msgid "Copy failed. Select the text and copy it manually."
+msgstr "Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell."

@@ -67,6 +67,10 @@ test.describe('the Genie dock', () => {
 	}) => {
 		await page.goto(`${instance().url}${PRODUCT}`);
 		await openDock(page);
+		await expect(page.locator('.linker-genie-footnote')).toContainText(
+			'Genie is an AI assistant.'
+		);
+		await page.locator('.linker-genie-help>summary').click();
 		const disclosure = page.locator('.linker-genie-app__disclosure');
 		await expect(disclosure, 'the AI disclosure is there').toHaveCount(1);
 		expect(

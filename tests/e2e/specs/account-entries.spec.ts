@@ -33,10 +33,55 @@ for (const locale of ['en', 'de'] as const) {
 								: '.linker-genie-open'
 						)
 						.click();
+				if (surface === 'dock') {
+					// The sheet is opaque; its own scrim must only dim the page behind it.
+					await expect(
+						page.locator('.linker-genie-app__main')
+					).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+					await page.locator('.linker-genie-app__input').click();
+					await expect(
+						page.locator('.linker-genie-app__input')
+					).toBeFocused();
+				}
 				const entries = page.locator(
 					'.linker-genie-panel>.linker-guest-account-links'
 				);
 				await expect(entries).toBeVisible();
+				// OpenAI reference A2: the two account actions are 44px pills.
+				await expect(entries.locator('a').first()).toHaveCSS(
+					'background-color',
+					'rgb(13, 13, 13)'
+				);
+				await expect(entries.locator('a').first()).toHaveCSS(
+					'border-radius',
+					'999px'
+				);
+				if (surface === 'dock') {
+					await expect(
+						page.locator('.linker-genie-app__welcome-greeting')
+					).toHaveCSS('font-weight', '400');
+					const main = await page
+						.locator('.linker-genie-app__main')
+						.boundingBox();
+					const links = await page
+						.locator('.linker-genie-footnote')
+						.boundingBox();
+					// The legal/support footer finishes at the sheet bottom (A7, 16px rhythm).
+					const bottomGap =
+						main!.y + main!.height - (links!.y + links!.height);
+					expect(bottomGap).toBeGreaterThanOrEqual(0);
+					expect(bottomGap).toBeLessThanOrEqual(16);
+					const support = page.locator('.linker-genie-help');
+					await expect(support.locator('a').first()).toBeHidden();
+					await support.locator('summary').click();
+					await expect(support.locator('a')).toHaveCount(3);
+					for (const link of await support.locator('a').all())
+						await expect(link).toBeVisible();
+					await support.locator('a').last().focus();
+					await page.keyboard.press('Escape');
+					await expect(support).not.toHaveAttribute('open');
+					await expect(support.locator('summary')).toBeFocused();
+				}
 				await expect(entries.locator('a').first()).toHaveAttribute(
 					'href',
 					instance().url + account
@@ -270,6 +315,12 @@ for (const locale of ['en', 'de'] as const) {
 				const response = await page.goto(instance().url + route);
 				if (surface === 'document')
 					expect(response?.status()).toBe(403);
+				if (surface === 'draft' && locale === 'de' && width === 390) {
+					// Live reference: 45px primary row + 12px gap + 47px secondary row.
+					await expect(
+						page.locator('.sf-cart-empty__actions')
+					).toHaveCSS('height', '104px');
+				}
 				const create = page
 					.locator(selector!)
 					.locator('.linker-create-account');

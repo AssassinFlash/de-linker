@@ -672,6 +672,7 @@ test( 'the dock footer carries the site links, locale-aware', () => {
 	} );
 	const { unmount } = render( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.click( screen.getByText( 'Help & privacy' ) );
 	expect(
 		screen.getByRole( 'link', { name: 'FAQ & Downloads' } )
 	).toHaveAttribute( 'href', '/faq-download/' );
@@ -684,6 +685,7 @@ test( 'the dock footer carries the site links, locale-aware', () => {
 	unmount();
 	render( <App config={ config( 'de' ) } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.click( screen.getByText( 'Help & privacy' ) );
 	expect(
 		screen.getByRole( 'link', { name: 'FAQ & Downloads' } )
 	).toHaveAttribute( 'href', '/de/faq-download/' );
@@ -1833,4 +1835,64 @@ test( 'a reload shows the sent inquiry in the history, once', async () => {
 	expect(
 		screen.queryByRole( 'button', { name: 'Send inquiry' } )
 	).toBeNull();
+} );
+
+test( 'an assistant reply renders its semantic Markdown instead of raw markers', async () => {
+	resetTurnLane();
+	vi.mocked( sendTurn ).mockResolvedValueOnce( {
+		meta: null,
+		blocks: [
+			{
+				type: 'text',
+				text: 'Choose the **hybrid inverter**.\n\n- Check phase\n- Check battery compatibility',
+				refs: [],
+			},
+		],
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', {
+				name: 'I need a three-phase hybrid inverter for a home.',
+			} )
+		);
+	} );
+	expect( ( await screen.findByText( 'hybrid inverter' ) ).tagName ).toBe(
+		'STRONG'
+	);
+	expect(
+		screen.getByText( 'Check battery compatibility' ).closest( 'ul' )
+	).not.toBeNull();
+} );
+
+test( 'waiting for the unchanged turn request gives an accessible thinking status', async () => {
+	let finish!: ( value: Awaited< ReturnType< typeof sendTurn > > ) => void;
+	vi.mocked( sendTurn ).mockImplementation(
+		() =>
+			new Promise( ( resolve ) => {
+				finish = resolve;
+			} )
+	);
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Ask Genie' } ) );
+	expect( await screen.findByRole( 'status' ) ).toHaveTextContent(
+		'Genie is thinking…'
+	);
+	expect( screen.getByRole( 'button', { name: 'Send' } ) ).toBeDisabled();
+	await act( async () =>
+		finish( {
+			meta: {
+				grounded: true,
+				fallback: false,
+				attempts: 1,
+				failures: [],
+				language: 'en',
+			},
+			blocks: [ { type: 'text', text: 'A complete answer.', refs: [] } ],
+		} )
+	);
+	expect( screen.queryByRole( 'status' ) ).toBeNull();
+	expect( screen.getByText( 'A complete answer.' ) ).toBeInTheDocument();
 } );

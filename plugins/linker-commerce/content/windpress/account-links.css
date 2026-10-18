@@ -30,6 +30,11 @@
 body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account){grid-template-columns:repeat(3,minmax(0,1fr))}
 body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>a{min-width:0;min-height:44px;padding:8px 4px;font-size:11px;line-height:1.1;text-align:center}
 
+/* The mobile dock scrim is a fixed child before the relative main column.
+   Give that column the app's opaque sheet background so only the page behind
+   the sheet is dimmed (owner visual report, 223/computer-use/*-rejected.png). */
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__main{background:inherit}
+
 /* Reserve a visible LC account row outside the conversation's React root. */
 .linker-genie-panel:has(>.linker-guest-account-links){display:flex;flex-direction:column}
 .linker-genie-panel:has(>.linker-guest-account-links)>[data-linker-app="genie"]{flex:1;min-height:0;overflow:auto}
@@ -38,6 +43,10 @@ body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>
 .linker-auth-links:has(>.linker-create-account){flex-direction:row;flex-wrap:wrap;justify-content:center;gap:10px 20px}
 .sf-cart-empty__actions:has(>.linker-create-account){gap:8px}
 #tv-storefront-cart .sf-cart-empty__actions:has(>.linker-create-account)>.sf-cart-btn,.sf-cart-empty__actions>.linker-create-account{padding-inline:4px;font-size:.875rem}
+/* The DE 390px reference wraps the original primary/secondary actions into
+   45px and 47px rows with a 12px gap. Deduct the ghost border from its padding
+   when it shares the primary row, preserving that measured 104px total. */
+#tv-storefront-cart .sf-cart-empty__actions:has(>.linker-create-account)>.sf-cart-btn--ghost{padding-block:11px}
 
 /* Comparison uses the existing storefront comparison's 600px narrow-table
    boundary and 7rem row labels. A 14rem product column shows one full model
@@ -71,3 +80,155 @@ body .sf-compare .sf-compare-crumbs{text-transform:uppercase}
 body .sf-compare .sf-compare-note{margin-bottom:0}
 body .sf-compare .linker-compare-scroll{background:#fff;border-radius:12px}
 body .sf-compare .linker-compare-name{font-weight:600}
+
+/* Owner's 223 visual correction: use the recorded OpenAI surface language.
+   Source: 2026-10-12-genie-openai-design/DOSSIER.md A2 (44px account pills),
+   A4/A5 (24/28 regular heading, rounded composer), B4 (top account nudge).
+   The compact composer footer uses that dossier's 4px spacing rhythm.
+   The latest owner correction keeps that footer at the bottom of the sheet.
+   LC remains the account markup owner; the conversation tree is unchanged. */
+.linker-genie-panel>.linker-guest-account-links {
+  order:-1;
+  justify-content:flex-end;
+  gap:8px;
+  padding:12px 16px;
+  border-top:0;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  background:#fcfcfc;
+  color:#0d0d0d;
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+.linker-genie-panel>.linker-guest-account-links>a {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  min-height:44px;
+  padding:0 16px;
+  border:1px solid rgba(0,0,0,.2);
+  border-radius:999px;
+  background:#fff;
+  color:#0d0d0d;
+  font-size:14px;
+  font-weight:600;
+  line-height:20px;
+  text-decoration:none;
+}
+.linker-genie-panel>.linker-guest-account-links>a:first-child {
+  border-color:#0d0d0d;
+  background:#0d0d0d;
+  color:#fff;
+}
+.linker-genie-panel>.linker-guest-account-links>a:hover {background:#ededed;color:#0d0d0d}
+.linker-genie-panel>.linker-guest-account-links>a:focus-visible {outline:2px solid #0d0d0d;outline-offset:3px}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__bar {gap:8px;padding-inline:16px}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__bar-lead {flex:1;overflow:hidden}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__title {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__bar-actions {flex-shrink:0;gap:0}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__panel:has(>.linker-genie-app__welcome) {padding:0;overflow:hidden}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__welcome {flex:1 1 auto;padding:24px;overflow:auto}
+.linker-genie-panel .linker-genie-app .linker-genie-app__welcome-greeting {font-size:24px;line-height:28px;font-weight:400;letter-spacing:.07px}
+.linker-genie-panel .linker-genie-app .linker-genie-app__welcome-sub {margin-top:12px;font-size:13px;line-height:20px}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__welcome .linker-genie-app__prompts {gap:8px;margin-top:24px}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__links {justify-content:center;gap:4px 12px;padding:4px 16px 12px;font-size:11px;line-height:16px;color:#5d5d5d}
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__links-contact {margin-left:0}
+@media(max-width:860px) {
+  .linker-genie-panel:not(.linker-genie-panel--workspace)>.linker-guest-account-links {padding-top:20px}
+}
+
+/* The outer sheet owns its two top corners, including the account nudge. */
+#linker-genie-mount:has(>.linker-guest-account-links) .linker-genie-app:not(.linker-genie-app--workspace){border-radius:0}
+
+/* A7: the disclosure and support links form one quiet composer footer.
+   They finish at the sheet bottom; no free space follows this group. */
+.linker-genie-panel:not(.linker-genie-panel--workspace) .linker-genie-app__disclosure{padding:8px 16px 0;font-size:12px;line-height:16px;color:#5d5d5d}
+
+/* A7 quiet AI disclosure + A6 compact support menu. Existing support routes
+   remain reachable without a separate navigation strip below the input. */
+.linker-genie-footnote{display:flex;flex:0 0 auto;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 12px;position:relative;margin:0;padding:8px 16px 12px;font-size:11px;line-height:16px;color:#6b6b6b}
+.linker-genie-help{position:relative}
+.linker-genie-help>summary{display:flex;align-items:center;gap:4px;min-height:28px;padding:0 4px;list-style:none;border-radius:6px;color:#5d5d5d;cursor:pointer}
+.linker-genie-help>summary::-webkit-details-marker{display:none}
+.linker-genie-help>summary:hover{background:#f5f5f5;color:#0d0d0d}
+.linker-genie-help>summary:focus-visible{outline:2px solid #181818;outline-offset:2px}
+.linker-genie-help[open]>summary svg{transform:rotate(180deg)}
+.linker-genie-help-menu{position:absolute;right:0;bottom:calc(100% + 8px);z-index:3;box-sizing:border-box;width:280px;max-width:calc(100vw - 48px);padding:8px;border:1px solid rgba(0,0,0,.1);border-radius:12px;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,.12);text-align:left}
+#linker-genie-mount .linker-genie-help-menu>.linker-genie-app__disclosure{margin:0;padding:8px 10px 12px;font-size:12px;line-height:18px;text-align:left}
+#linker-genie-mount .linker-genie-help-menu>.linker-genie-app__links{display:grid;gap:0;margin:0;padding:0;font-size:13px;line-height:20px}
+.linker-genie-help-menu a{display:flex;align-items:center;min-height:44px;padding:8px 10px;border-radius:8px;color:#282828;text-decoration:none}
+.linker-genie-help-menu a:hover,.linker-genie-help-menu a:focus-visible{background:#f5f5f5;color:#0d0d0d;text-decoration:none}
+
+/* #223 owner-expanded tool redesign. ChatKit behavior sources and the boundary
+   between observations/design choices: 2026-10-18-genie-reply-design/REFERENCES.md.
+   Dock: compact help conversation; workspace: quiet, readable answer column. */
+.linker-genie-transcript-content{flex:0 0 auto;min-width:0}
+.linker-genie-app .linker-genie-message-body{font-family:inherit;line-height:1.7;color:#202020;white-space:normal;overflow-wrap:anywhere}
+.linker-genie-app .linker-genie-message-body :is(p,ul,ol,blockquote,pre,table){margin:0 0 16px;font-size:inherit;line-height:inherit}
+.linker-genie-app .linker-genie-message-body>:last-child{margin-bottom:0}
+.linker-genie-app .linker-genie-message-body :is(h1,h2,h3,h4,h5,h6){margin:24px 0 12px;font-family:inherit;font-size:1.125em;font-weight:600;line-height:1.4;letter-spacing:0;color:inherit}
+.linker-genie-app .linker-genie-message-body>:first-child{margin-top:0}
+.linker-genie-app .linker-genie-message-body :is(ul,ol){padding-left:24px;list-style-position:outside}
+.linker-genie-app .linker-genie-message-body ul{list-style-type:disc}
+.linker-genie-app .linker-genie-message-body ol{list-style-type:decimal}
+.linker-genie-app .linker-genie-message-body li{margin:6px 0;padding-left:2px}
+.linker-genie-app .linker-genie-message-body strong{font-weight:600}
+.linker-genie-app .linker-genie-message-body blockquote{padding-left:16px;border-left:3px solid #dedede;color:#5d5d5d}
+.linker-genie-app .linker-genie-message-body pre{overflow:auto;padding:16px;border-radius:12px;background:#f5f5f5;font-size:.875em}
+.linker-genie-app .linker-genie-message-body code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.875em}
+.linker-genie-app .linker-genie-message-body :not(pre)>code{padding:2px 4px;border-radius:4px;background:#f2f2f2}
+.linker-genie-app .linker-genie-message-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;text-align:left}
+.linker-genie-app .linker-genie-message-body :is(th,td){padding:10px 12px;border-bottom:1px solid #e5e5e5;min-width:100px}
+.linker-genie-app .linker-genie-message-body hr{margin:24px 0;border:0;border-top:1px solid #e5e5e5}
+.linker-genie-answer-actions{display:flex;align-items:center;gap:2px;min-height:36px;margin:8px 0 0;color:#737373}
+.linker-genie-answer-actions .linker-genie-app__votes{gap:2px;margin:0}
+.linker-genie-app .linker-genie-answer-actions .linker-genie-app__vote{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;border-radius:8px;opacity:1;color:#737373}
+.linker-genie-app .linker-genie-answer-actions .linker-genie-app__vote:hover{color:#202020;background:#f0f0f0}
+.linker-genie-app .linker-genie-answer-actions .linker-genie-app__vote[aria-pressed=true]{background:#eee;color:#181818}
+.linker-genie-app .linker-genie-answer-actions .linker-genie-app__vote:disabled{opacity:.4;cursor:default}
+.linker-genie-copy-status{font-size:12px;line-height:18px}
+.linker-genie-app .linker-genie-reply__show{margin-top:8px;padding:4px 8px;border-radius:6px;color:#686868;font-size:12px;line-height:20px}
+.linker-genie-wait{padding-block:8px;min-height:128px}
+.linker-genie-wait__status{display:flex;align-items:center;gap:10px;font-size:13px;color:#686868;line-height:24px}
+.linker-genie-wait__dot{width:8px;height:8px;border-radius:50%;background:#282828;animation:linker-genie-breathe 1.5s ease-in-out infinite}
+.linker-genie-wait__lines{display:grid;gap:10px;max-width:520px;margin-top:18px}
+.linker-genie-wait__lines>span{height:10px;border-radius:6px;background:#f0f0f0;animation:linker-genie-breathe 1.5s ease-in-out infinite}
+.linker-genie-wait__lines>span:nth-child(2){width:88%;animation-delay:.12s}
+.linker-genie-wait__lines>span:nth-child(3){width:64%;animation-delay:.24s}
+@keyframes linker-genie-breathe{0%,100%{opacity:.45}50%{opacity:1}}
+.linker-genie-app .linker-genie-jump{display:flex;align-items:center;justify-content:center;position:absolute;bottom:130px;left:calc(50% - 20px);z-index:2;width:40px;height:40px;border:1px solid #dedede;border-radius:50%;background:#fff;box-shadow:0 2px 6px #0000000d;color:#202020}
+.linker-genie-app--workspace .linker-genie-app__message--assistant{padding:0}
+.linker-genie-app--workspace .linker-genie-app__answer-brand{margin-bottom:16px}
+.linker-genie-app--workspace .linker-genie-app__message{margin-bottom:32px}
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message--assistant{padding:0}
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message--user{max-width:88%;padding:10px 14px;border-radius:18px 18px 4px 18px;background:#f1f1f1}
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message{font-size:14px;line-height:1.65;margin-bottom:24px}
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__answer-brand{gap:8px;margin-bottom:12px;font-size:12px;color:#686868}
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__answer-brand .linker-genie-app__monogram{width:24px;height:24px;font-size:12px}
+.linker-genie-app .linker-genie-app__error{padding:12px 16px;border:1px solid #e5d4d4;border-radius:12px;background:#fff8f8;color:#813c3c;font-size:14px;line-height:1.5}
+@media(max-width:767px){.linker-genie-app .linker-genie-answer-actions .linker-genie-app__vote{width:44px;height:44px}.linker-genie-app .linker-genie-jump{bottom:132px}}
+@media(prefers-reduced-motion:reduce){.linker-genie-wait__dot,.linker-genie-wait__lines>span{animation:none}}
+
+/* The waiting effect is deliberately simulated in the browser (#223 owner
+   clarification). It runs for the whole request, without fabricated tool steps. */
+.linker-genie-wait__status{width:fit-content;color:#767676;background:linear-gradient(110deg,#999 20%,#171717 42%,#999 64%);background-size:220% 100%;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:linker-genie-thinking 2s linear infinite}
+.linker-genie-wait__dot{-webkit-text-fill-color:initial}
+.linker-genie-wait__lines>span{background:linear-gradient(100deg,#f1f1f1 20%,#e4e4e4 45%,#f1f1f1 70%);background-size:220% 100%;animation:linker-genie-thinking 2s linear infinite}
+@keyframes linker-genie-thinking{0%{background-position:100% 0}100%{background-position:-100% 0}}
+@media(prefers-reduced-motion:reduce){.linker-genie-wait__status,.linker-genie-wait__lines>span{animation:none}.linker-genie-wait__status{background:none;-webkit-text-fill-color:currentColor}}
+
+/* Owner's rendered typography correction: 14px/23.8px and 495 characters in
+   one paragraph were too dense at 390px. Local reading choices: 16px/26px,
+   20px text inset, 20px paragraph rhythm; no model words or emphasis changed. */
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__transcript{padding:20px}
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__message--assistant{font-size:16px;line-height:26px}
+.linker-genie-app .linker-genie-message-body{line-height:1.625;letter-spacing:.005em}
+.linker-genie-app .linker-genie-message-body :is(p,ul,ol,blockquote,pre,table){margin-bottom:20px}
+.linker-genie-app .linker-genie-message-body>:last-child{margin-bottom:0}
+.linker-genie-app--workspace .linker-genie-message-body{font-size:16px;line-height:28px}
+.linker-genie-app .linker-genie-app__thread>.linker-genie-app__message--assistant:last-child{margin-bottom:12px}
+.linker-genie-app .linker-genie-app__ask{gap:8px;margin:8px 0 16px}
+.linker-genie-app .linker-genie-app__chip{min-height:40px;padding:8px 14px;font-size:14px;line-height:20px;color:#444}
+@media(max-width:767px){.linker-genie-app .linker-genie-app__chip{min-height:44px}}
+.linker-genie-transcript-content{display:flow-root}
+.linker-genie-app .linker-genie-app__email-start{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 4px;border:0;border-radius:6px;background:transparent;color:#686868;font-size:13px;line-height:20px}
+.linker-genie-app .linker-genie-app__email-start:hover{background:#f5f5f5;color:#202020}
