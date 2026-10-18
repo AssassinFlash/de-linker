@@ -1,0 +1,146 @@
+{
+  "source_commit": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+  "runtime_and_visual_source": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+  "source_delta": "Rebased onto 1f271843; all 63 feature code/data/test files are byte-identical to pre-rebase 278704ce. Final checks, 28 main-baseline frames, 56 final frames and native-action/layout evidence were regenerated.",
+  "base_origin_main": "1f271843c0e65d0cbdc59f52fd8be120211be87b",
+  "instance": "c254 http://127.0.0.1:9129",
+  "snapshot": {
+    "name": "20261018-1043",
+    "taken": "2026-10-18T02:52:16+00:00",
+    "loaded": "2026-10-18T02:54:26+00:00"
+  },
+  "completed_at_utc": "2026-10-18T11:09:38.077309+00:00",
+  "standard_checks": {
+    "just check": {
+      "exit_code": 0,
+      "output": "checks/just-check.log"
+    },
+    "just test": {
+      "exit_code": 0,
+      "output": "checks/just-test.log"
+    },
+    "default_skipped_integration_tests_are_acceptance": false
+  },
+  "explicit_current_source_integration": {
+    "GermanUrlsTest_and_JournalTitlesTest": [
+      {
+        "tests": 29,
+        "assertions": 35581,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0,
+        "seconds": 756.416238,
+        "file": "integration-1.xml"
+      },
+      {
+        "tests": 29,
+        "assertions": 35581,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0,
+        "seconds": 753.497224,
+        "file": "integration-2.xml"
+      }
+    ],
+    "OpenInquiryTest_and_BlogSingleFaceTest": [
+      {
+        "tests": 24,
+        "assertions": 195,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0,
+        "seconds": 4.838093,
+        "file": "inquiry-reader-integration-1.xml"
+      },
+      {
+        "tests": 24,
+        "assertions": 195,
+        "errors": 0,
+        "warnings": 0,
+        "failures": 0,
+        "skipped": 0,
+        "seconds": 4.581315,
+        "file": "inquiry-reader-integration-2.xml"
+      }
+    ],
+    "native_mail_encoding": {
+      "tests": 1,
+      "assertions": 22,
+      "errors": 0,
+      "warnings": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 21.575515,
+      "file": "mail-encoding-integration.xml"
+    },
+    "seams": [
+      "HTTP",
+      "WP-CLI",
+      "local captured mail"
+    ]
+  },
+  "routes": {
+    "reviewed": 184,
+    "changed_first_hop_301": 97,
+    "distinct_canonical_titles": 175,
+    "defects": 0,
+    "sitemap": {
+      "german": 149,
+      "english": 148,
+      "english_unchanged": true,
+      "german_expected": true
+    },
+    "full_table": "completion.md",
+    "response_report": "route-results.json"
+  },
+  "visual": {
+    "languages": [
+      "en",
+      "de"
+    ],
+    "widths": [
+      1440,
+      390
+    ],
+    "unaffected_english_whole_page_comparisons": 18,
+    "changed_pixels_each": 0,
+    "masks": [],
+    "tolerance": 0,
+    "approved_changes": [
+      "product",
+      "inquiry",
+      "journal index",
+      "journal category",
+      "service introduction",
+      "additional reader/search states"
+    ],
+    "metric_report": "pixel-results.json",
+    "native_action_geometry": "design-layouts.json",
+    "provenance": "All 28 baseline frames were freshly captured on 1f271843; all 56 final frames on aa552bdf. Native chapter/search/category actions and product geometry were repeated on aa552bdf. The restored final CSS is byte-identical to the final-frame CSS."
+  },
+  "reviews": {
+    "fixed_source": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+    "spec_blockers": 0,
+    "standards_hard_issues": 0,
+    "nonblocking_heuristics": 2,
+    "report": "review.md"
+  },
+  "cleanup": {
+    "owned_test_users": 0,
+    "owned_test_posts": 0,
+    "owned_functional_orders_remaining": [],
+    "functional_orders_checked": 3,
+    "visual_mu_present": false,
+    "test_mail_override_present": false,
+    "migration_active": true,
+    "migration_backup_present": true,
+    "site": "http://127.0.0.1:9129"
+  },
+  "final_cli_readback": "migration-final-state.txt",
+  "production_write_deploy_merge_or_real_test_mail": false,
+  "production_handoff": "production.md",
+  "ci_evidence_location": "GitHub pull request checks for the delivery commit; recorded in the PR and final handoff."
+}

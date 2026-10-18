@@ -1,0 +1,11 @@
+{
+  "owned_test_users": 0,
+  "owned_test_posts": 0,
+  "owned_functional_orders_remaining": [],
+  "functional_orders_checked": 3,
+  "visual_mu_present": false,
+  "test_mail_override_present": false,
+  "migration_active": true,
+  "migration_backup_present": true,
+  "site": "http://127.0.0.1:9129"
+}

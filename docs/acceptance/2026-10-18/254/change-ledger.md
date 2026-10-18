@@ -46,3 +46,7 @@ The owner subsequently rejected the small three-column feed cards and default sh
 ### Concise labels and dashboard navigation
 
 The owner then identified full discovery headings as too dense and asked for the same app-dashboard feeling on desktop. Reviewed short EN/DE labels now appear only in discovery/related navigation; complete native titles remain on the reading page and in browser/SEO metadata. Topic navigation gains decorative line icons, a stronger current-topic surface, an integrated desktop sidebar panel, and a mobile position after heading/search. These supersede the intermediate full-title discovery screenshots; final captures are refreshed after the source change.
+
+### Sidebar inset correction
+
+The owner identified the selected desktop topic as protruding toward the panel edge. The native grid's implicit minimum track was wider than its content box when accommodating a long German category. The final WindPress rule uses `minmax(0,1fr)`, a 224px desktop rail and explicit zero minimums/wrapping on its internal links/list. The desktop current state is a quieter teal tint; mobile keeps its filled selected pill. Geometry readback verifies equal panel insets in both languages.

@@ -93,6 +93,10 @@ def main():
     for path, page in pages.items():
         if not page.title:
             defects.append(f"Missing title: {path}")
+        if path in ('/de/mein-konto/registrieren/', '/de/mein-konto/passwort-zuruecksetzen/'):
+            for label, url in [('canonical', page.canonical), ('share', page.share)]:
+                if url != SITE + path:
+                    defects.append(f'Missing or incorrect {label} tag: {path}: {url}')
         titles[page.title].append(path)
         for label, url in [("canonical", page.canonical), ("share", page.share), *page.hreflang.items()]:
             if not url:

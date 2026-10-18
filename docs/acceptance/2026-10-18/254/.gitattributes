@@ -1,0 +1,3 @@
+# Preserve native MIME line endings and terminal-output alignment in evidence.
+mail/*.eml -text whitespace=cr-at-eol
+checks/*.log -whitespace

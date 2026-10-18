@@ -1,12 +1,12 @@
 # Live discovery and English segments
 
-Read-only Apify evidence, 2026-10-18. Sitemap run `7h540xcedbJaZbP1t`, dataset `QfBRrNIaDX8wp97dE`; crawl run `lmsSlRuDxc2Kc8uTa`, dataset `RNBfC286NwNzP0ZEn`. All five XML responses and all 165 crawl responses returned 200. Query strings were excluded from crawl deduplication.
+Read-only Apify evidence, 2026-10-18. Exact actor inputs are `discovery-input.json` and `sitemap-input.json`. Sitemap run `7h540xcedbJaZbP1t`, dataset `QfBRrNIaDX8wp97dE`; crawl run `lmsSlRuDxc2Kc8uTa`, dataset `RNBfC286NwNzP0ZEn`. All five XML responses and all 165 crawl responses returned 200. Query strings were excluded from crawl deduplication.
 
 Sitemap: 149 German URLs; crawl: 165; union: 166. Supplementary entries cover native account functions, reset, paging and historical category aliases. Confirmation and inquiry detail use owned ephemeral records in integration tests rather than publishing a real customer record.
 
 Descriptive English segments found: `category`, `applications-blog`, `battery-storage-blog`, `installation-commissioning`, `monitoring-energy-management`, `system-design`, `compare-products`, `faq-download`, `gateway`, `cloud`, `register`, `lost-password`, `service-support`, `ems-monitoring`, `all-in-one-systeme`, `page`; product phrases `battery`, `battery-module`, `battery-stack-bridge`, `lfp-battery-base`, `single-phase-hybrid`, `three-phase-hybrid`, `hybrid-inverter`, `power-module`, `all-in-one`, `flagship`, `ev-charger`, `smart-energy-controller`, `residential-energy-manager`, `data-collector`. Supplementary functional segments: `inquiries`, `inquiry`, `saved-solutions`, `documents`, `company`, `billing`, `shipping`, `edit-account`, `customer-logout`, `inquiry-received`.
 
-The German old draft word is prohibited customer vocabulary and is replaced by `loesungsentwurf`. Proper names EcoFlow, Ocean, GoodWe, SAJ, eManager, eSolar, EZManager and model/SKU tokens remain; technical abbreviations LFP, EMS, HEMS, EV, WiFi, LAN, Bluetooth, NFC, CT, AC/DC, kW/kWh, V and HV remain. `Blog`, `FAQ`, `Hybrid`, `Manager` and `Monitoring` in German copy are established loanwords, but descriptive English URL phrases above receive the explicit German forms in the table. No remaining segment is silently exempted as a product description.
+The German old draft word is prohibited customer vocabulary and is replaced by `loesungsentwurf`. Proper names EcoFlow, Ocean, GoodWe, SAJ, eManager, eSolar, EZManager and model/SKU tokens remain; technical abbreviations LFP, EMS, HEMS, C&I/CI, EV, WiFi, LAN, Bluetooth, NFC, CT, AC/DC, kW/kWh, V and HV remain. `Blog`, `FAQ`, `Hybrid`, `Manager` and `Monitoring` in German copy are established loanwords, but descriptive English URL phrases above receive the explicit German forms in the table. No remaining segment is silently exempted as a product description.
 
 | Previous German URL | Discovery | New canonical URL |
 |---|---|---|

@@ -1,0 +1,23 @@
+[
+    {
+        "old": "/de/mein-konto/inquiry/22672/",
+        "new": "/de/mein-konto/anfrage/22672/",
+        "first": 301,
+        "final": 200,
+        "title": "Anfrage 22672 | Linker"
+    },
+    {
+        "old": "/de/mein-konto/inquiry/22675/",
+        "new": "/de/mein-konto/anfrage/22675/",
+        "first": 301,
+        "final": 200,
+        "title": "Anfrage 22675 | Linker"
+    },
+    {
+        "old": "/de/mein-konto/customer-logout/?_wpnonce=LOCAL_NONCE",
+        "new": "/de/mein-konto/abmelden/?_wpnonce=LOCAL_NONCE",
+        "first": 301,
+        "transition": 302,
+        "final": 200
+    }
+]

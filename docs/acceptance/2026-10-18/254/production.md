@@ -15,7 +15,7 @@ wp254() {
 just cutover backup
 just cutover deploy
 
-# Review the complete dry run before applying the data changes.
+# Review the complete dry run before applying the data changes. Slugs and the seven curated title/name/SEO sets accept only their reviewed old or new values; resolve any reported drift before retrying.
 wp254 linker-i18n german-urls --dry-run --user=1
 wp254 linker-i18n german-urls --apply --user=1
 wp254 linker-commerce present --allow-stale --user=1
@@ -23,6 +23,8 @@ wp254 rewrite flush --user=1
 ```
 
 In the native WindPress admin, open Settings → Performance → Generate. Wait for the generated timestamp and cache size to update, then clear the site's page cache. Do not run cache compilation alongside the acceptance fixtures. The migration invalidates only this WordPress site's option-cache keys before rebuilding native rewrite rules; no shared Redis database flush is needed.
+
+If dry run reports unreviewed drift, stop application and represent the resolution in reviewed repeatable migration code/manifest before retrying. Do not adjust production fields by hand merely to satisfy the preflight.
 
 ```bash
 wp254 linker-commerce check --user=1
