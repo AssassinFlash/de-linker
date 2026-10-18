@@ -7,7 +7,8 @@ files first, attachments.py), the agent writes it. The stream is `meta`, an
 with the conversation and takes them out of what the browser gets), a `block` per
 block, `done`.
 POST /turn/{id}/vote and POST /assistant/turn/{id}/vote store a customer's
-thumbs-up or thumbs-down for a logged turn. POST
+thumbs-up or thumbs-down for a logged turn. POST /summary writes the checked summary
+of a conversation an inquiry carries (summary.py, #244). POST
 /assistant/conversation/{id}/forget takes a deleted conversation's file readings out
 of the turn log. Every POST carries the shell's shared token and a capped body
 (gate.py). GET /health reports that the process is up.
@@ -16,15 +17,16 @@ of the turn log. Every POST carries the shell's shared token and a capped body
 from __future__ import annotations
 
 import json
+import logging
 import os
 import time
 from collections.abc import Iterator
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
-from linker_genie import contact, ground, jev, page
+from linker_genie import contact, ground, jev, page, summary
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import (
     deepseek_access,
@@ -43,6 +45,7 @@ from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 
 app = FastAPI(title="Genie - Linker's AI assistant")
+logger = logging.getLogger(__name__)
 # The shell's shared token and the body cap, before anything is parsed (gate.py).
 app.add_middleware(Gate, limit=MAX_REQUEST_BYTES)
 
@@ -214,6 +217,24 @@ def turn_vote(turn_id: int, body: VoteRequest) -> dict[str, bool]:
     if not turn_log().vote(turn_id, body.vote):
         raise HTTPException(status_code=404, detail="unknown turn")
     return {"ok": True}
+
+
+@app.post("/summary")
+def conversation_summary(
+    body: summary.SummaryRequest, request: Request
+) -> JSONResponse:
+    """The checked summary of a conversation for an inquiry (#244), or 422 with the
+    reason it was refused; WordPress then assembles its own by rule."""
+    complete = getattr(request.app.state, "summary_model", None) or summary.deepseek()
+    try:
+        result = summary.summarise(body, complete)
+    except summary.SummaryError as error:
+        # Never silent: the reason is logged here and recorded with the inquiry.
+        logger.warning("summary refused: %s", error.reason)
+        return JSONResponse(status_code=422, content={"error": error.reason})
+    if result.dropped:
+        logger.info("summary dropped quantities: %s", ", ".join(result.dropped))
+    return JSONResponse(content={**result.model_dump(), "model": model_name()})
 
 
 @app.post("/assistant/conversation/{conversation_id}/forget")

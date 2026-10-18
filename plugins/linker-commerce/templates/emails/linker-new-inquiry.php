@@ -63,6 +63,12 @@ if ( is_array( $linker_handoff ) ) {
 	// A contact message through Genie (#243): its hand-off.
 	wc_get_template( 'emails/linker-genie-handoff.php', array( 'handoff' => $linker_handoff ), '', $email->template_base );
 }
+// The inquiry carries the customer's Genie conversation (#244): the team reads
+// where the request came from.
+$linker_summary = $order->get_meta( \Linker\Commerce\Inquiry\Sender::SUMMARY_META );
+if ( is_array( $linker_summary ) ) {
+	wc_get_template( 'emails/linker-inquiry-summary.php', array( 'summary' => $linker_summary ), '', $email->template_base );
+}
 /**
  * This action is documented in woocommerce/templates/emails/customer-on-hold-order.php
  */

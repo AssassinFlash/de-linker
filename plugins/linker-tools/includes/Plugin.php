@@ -15,6 +15,7 @@ use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\InquirySummary;
 use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\QualityPage;
@@ -49,6 +50,7 @@ final class Plugin {
 	 * @param Preview          $preview       Genie's preview card (ticket #249).
 	 * @param ConversationMail $mail        "Email me this conversation" and its confirmation link (ticket #235).
 	 * @param ContactRequest   $contact       "Let Linker contact me": the contact card's route (#243).
+	 * @param InquirySummary   $inquiry       The conversation summary an inquiry carries (#244).
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -67,7 +69,8 @@ final class Plugin {
 		private readonly QualityPage $quality_page,
 		private readonly Preview $preview,
 		private readonly ConversationMail $mail,
-		private readonly ContactRequest $contact
+		private readonly ContactRequest $contact,
+		private readonly InquirySummary $inquiry
 	) {}
 
 	/**
@@ -96,5 +99,6 @@ final class Plugin {
 		$this->quality_page->register();
 		$this->preview->register();
 		$this->mail->register();
+		$this->inquiry->register();
 	}
 }

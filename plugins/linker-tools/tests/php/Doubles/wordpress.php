@@ -37,6 +37,10 @@ if ( ! class_exists( 'WP_Error' ) ) {
 		public function get_error_data( $code = '' ) {
 			return $this->error_data[ '' === $code ? $this->get_error_code() : $code ] ?? null;
 		}
+		public function get_error_message( $code = '' ) {
+			$code = '' === $code ? $this->get_error_code() : $code;
+			return $this->errors[ $code ][0] ?? '';
+		}
 		public function has_errors() {
 			return array() !== $this->errors;
 		}

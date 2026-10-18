@@ -63,6 +63,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'manage_woocommerce_page_wc-orders_columns', array( $admin, 'columns' ) );
 		WP_Mock::expectActionAdded( 'manage_shop_order_posts_custom_column', array( $admin, 'source' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'manage_woocommerce_page_wc-orders_custom_column', array( $admin, 'source' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'add_meta_boxes', array( $admin, 'register_summary_box' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_register_post_type_shop_order', array( $admin, 'labels' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_actions', array( $module, 'email_actions' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $module, 'add_emails' ) );

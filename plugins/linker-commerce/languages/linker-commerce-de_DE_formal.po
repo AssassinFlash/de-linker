@@ -4725,3 +4725,31 @@ msgstr "Sie können diesen Lösungsentwurf senden. Ihr Konto wird geprüft; Nett
 #: includes/Gating/DraftSummary.php
 msgid "You can send this solution draft. Net prices are not available for your account."
 msgstr "Sie können diesen Lösungsentwurf senden. Nettopreise sind für Ihr Konto nicht verfügbar."
+
+#: templates/emails/linker-inquiry-summary.php
+msgid "Conversation with Genie"
+msgstr "Gespräch mit Genie"
+
+#: templates/emails/linker-inquiry-summary.php
+msgid "Quantities from the conversation"
+msgstr "Mengen aus dem Gespräch"
+
+#: templates/emails/linker-inquiry-summary.php
+msgid "Conditions from the conversation"
+msgstr "Projektbedingungen aus dem Gespräch"
+
+#: templates/emails/linker-inquiry-summary.php
+msgid "Latest message"
+msgstr "Letzte Nachricht"
+
+#: templates/emails/linker-inquiry-summary.php
+msgid "Assembled from the customer's messages (%s)."
+msgstr "Aus den Nachrichten des Kunden zusammengestellt (%s)."
+
+#: templates/emails/linker-inquiry-summary.php
+msgid "Quantities"
+msgstr "Mengen"
+
+#: templates/emails/linker-inquiry-summary.php
+msgid "Conditions"
+msgstr "Projektbedingungen"

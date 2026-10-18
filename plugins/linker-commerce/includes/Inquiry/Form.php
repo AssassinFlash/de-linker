@@ -26,6 +26,13 @@ final class Form {
 	private array $flash = array();
 
 	/**
+	 * The conversation's note, resolved once per render (#244).
+	 *
+	 * @var string|null
+	 */
+	private ?string $note = null;
+
+	/**
 	 * Registers the form and its escaped data tags.
 	 */
 	public function register(): void {
@@ -81,7 +88,10 @@ final class Form {
 			'name'               => $name,
 			'email'              => $email,
 			'company'            => $customer->get_billing_company(),
-			'message'            => '',
+			// A customer who talked with Genie starts from the note of that
+			// conversation (#244): the team sees the whole summary with the
+			// inquiry, and nothing already said is typed again.
+			'message'            => $this->summary_note(),
 			'action'             => admin_url( 'admin-post.php' ),
 			'draft-url'          => wc_get_cart_url(),
 			'login-url'          => wc_get_page_permalink( 'myaccount' ),
@@ -112,6 +122,23 @@ final class Form {
 	 */
 	public function draft_nonce(): string {
 		return wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce', true, false );
+	}
+
+	/**
+	 * The latest message of the visitor's Genie conversation, or ''.
+	 *
+	 * Linker\Tools\Genie\InquirySummary answers the filter once per thread
+	 * state and caches it, so the form's render and the inquiry's submit share
+	 * one summary (#244). Without linker-tools or a conversation the filter
+	 * stays unanswered and the form starts empty.
+	 */
+	private function summary_note(): string {
+		if ( null !== $this->note ) {
+			return $this->note;
+		}
+		$summary    = apply_filters( 'linker_genie_inquiry_summary', null, 0 ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- linker-tools' filter (Linker\Tools\Genie\InquirySummary::FILTER): the plugin answers with the conversation's summary.
+		$this->note = is_array( $summary ) && isset( $summary['note'] ) && is_string( $summary['note'] ) ? $summary['note'] : '';
+		return $this->note;
 	}
 
 	/**

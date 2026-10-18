@@ -80,6 +80,7 @@ final class PluginTest extends TestCase {
 		$preview       = new Preview();
 		$mail          = new ConversationMail( $conversations, new Thread(), new RateLimit( 'a', 1, 1 ), new RateLimit( 'b', 1, 1 ) );
 		$contact       = new ContactRequest( $conversations, new Thread(), new PageContext() );
+		$inquiry       = new \Linker\Tools\Genie\InquirySummary( $conversations, new Thread() );
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
@@ -115,8 +116,10 @@ final class PluginTest extends TestCase {
 		// The confirmation link of a guest's "email me" (ticket #235).
 		WP_Mock::expectActionAdded( 'admin_post_nopriv_' . ConversationMail::CONFIRM_ACTION, array( $mail, 'handle_link' ) );
 		WP_Mock::expectActionAdded( 'admin_post_' . ConversationMail::CONFIRM_ACTION, array( $mail, 'handle_link' ) );
+		// The inquiry's conversation summary (#244).
+		WP_Mock::expectFilterAdded( \Linker\Tools\Genie\InquirySummary::FILTER, array( $inquiry, 'answer' ), 10, 2 );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );
