@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-18T16:05:58+00:00\n"
+"POT-Creation-Date: 2026-10-18T17:59:15+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -371,7 +371,7 @@ msgstr ""
 msgid "Go to my account"
 msgstr ""
 
-#: includes/Account/AuthTemplates.php:152
+#: includes/Account/AuthTemplates.php:153
 msgid "You have been signed out."
 msgstr ""
 
@@ -496,8 +496,6 @@ msgstr ""
 
 #: includes/Account/Menu.php:52 includes/Account/Menu.php:88
 #: includes/Contact/Form.php:157 includes/Registration/AccountsTable.php:43
-#: templates/emails/linker-new-customer.php:24
-#: templates/myaccount/auth/form-register.php:72
 msgid "Company"
 msgstr ""
 
@@ -686,7 +684,6 @@ msgstr ""
 
 #: includes/Contact/Form.php:152 includes/Inquiry/Form.php:156
 #: includes/Settings/SettingsTab.php:137
-#: templates/emails/linker-new-customer.php:26
 msgid "Name"
 msgstr ""
 
@@ -707,7 +704,7 @@ msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 
 #: includes/Contact/Form.php:167 includes/Inquiry/Form.php:160
-#: templates/myaccount/auth/form-register.php:125
+#: templates/myaccount/auth/form-register.php:144
 msgid "Privacy"
 msgstr ""
 
@@ -1291,7 +1288,7 @@ msgid ""
 "inquiry. Always on: it is the only way to send an inquiry."
 msgstr ""
 
-#: includes/Inquiry/PublicGuard.php:40
+#: includes/Inquiry/PublicGuard.php:46
 msgid "Website"
 msgstr ""
 
@@ -1365,7 +1362,7 @@ msgstr ""
 #: includes/Presentation/ProductShortcodes.php:1925
 #: includes/Presentation/Shortcodes.php:370
 #: templates/myaccount/auth/form-login.php:69
-#: templates/myaccount/auth/form-register.php:134
+#: templates/myaccount/auth/form-register.php:102
 msgid "Sign in"
 msgstr ""
 
@@ -2848,7 +2845,7 @@ msgstr ""
 msgid "No suspicious company-name pattern found. Please verify the company."
 msgstr ""
 
-#: includes/Registration/Accounts.php:162
+#: includes/Registration/Accounts.php:162 includes/Registration/Fields.php:106
 msgid "Company website"
 msgstr ""
 
@@ -2959,9 +2956,8 @@ msgstr ""
 #: includes/Registration/BillingVatField.php:39
 #: includes/Registration/BillingVatField.php:55
 #: includes/Registration/BillingVatField.php:86
-#: includes/Registration/Fields.php:73
-#: templates/emails/linker-new-customer.php:29
-#: templates/proforma/proforma.php:87 templates/proforma/proforma.php:102
+#: includes/Registration/Fields.php:118 templates/proforma/proforma.php:87
+#: templates/proforma/proforma.php:102
 msgid "VAT ID"
 msgstr ""
 
@@ -2974,8 +2970,7 @@ msgid "Customer check"
 msgstr ""
 
 #: includes/Registration/BillingVatField.php:94
-#: includes/Registration/Fields.php:67
-#: templates/emails/linker-new-customer.php:25
+#: includes/Registration/Fields.php:91
 msgid "Business type"
 msgstr ""
 
@@ -2986,6 +2981,26 @@ msgstr ""
 
 #: includes/Registration/BillingVatField.php:108
 msgid "Set by the VIES check; change it after a manual check."
+msgstr ""
+
+#: includes/Registration/BotGuard.php:71
+msgid ""
+"We could not process this registration. Please check your entries and try "
+"again."
+msgstr ""
+
+#: includes/Registration/BotGuard.php:79
+msgid ""
+"We received several registrations from this connection. Please try again "
+"later or write to sales@de-linker.com."
+msgstr ""
+
+#: includes/Registration/CountryField.php:75
+msgid "Europe"
+msgstr ""
+
+#: includes/Registration/CountryField.php:76
+msgid "Other countries"
 msgstr ""
 
 #: includes/Registration/CustomerRole.php:31
@@ -3016,19 +3031,19 @@ msgstr ""
 msgid "Partner account approved"
 msgstr ""
 
-#: includes/Registration/Emails/NewCustomerEmail.php:37
-#: includes/Registration/Emails/NewCustomerEmail.php:71
+#: includes/Registration/Emails/NewCustomerEmail.php:39
+#: includes/Registration/Emails/NewCustomerEmail.php:73
 msgid "New customer"
 msgstr ""
 
-#: includes/Registration/Emails/NewCustomerEmail.php:38
+#: includes/Registration/Emails/NewCustomerEmail.php:40
 msgid ""
 "Sent to the internal notification address, with blind copies, when a "
 "customer registers."
 msgstr ""
 
 #. translators: {company}: the customer's company.
-#: includes/Registration/Emails/NewCustomerEmail.php:64
+#: includes/Registration/Emails/NewCustomerEmail.php:66
 msgid "New customer: {company}"
 msgstr ""
 
@@ -3096,36 +3111,39 @@ msgstr ""
 msgid "VAT check changed: {company}"
 msgstr ""
 
-#: includes/Registration/Fields.php:60
+#: includes/Registration/Fields.php:84
 msgid "Company name"
 msgstr ""
 
-#: includes/Registration/Fields.php:69
-msgid "Please choose"
+#: includes/Registration/Fields.php:98
+msgid "Country / Region"
 msgstr ""
 
-#: includes/Registration/Fields.php:75
-msgid ""
-"We check EU VAT IDs in the European Commission's VIES system. You can "
-"register without one."
+#: includes/Registration/Fields.php:120
+msgid "We check EU VAT IDs in the European Commission's VIES system."
 msgstr ""
 
 #. translators: %s: field name.
-#: includes/Registration/Fields.php:112
+#: includes/Registration/Fields.php:157
 #, php-format
 msgid "%s is a required field."
 msgstr ""
 
-#: includes/Registration/Fields.php:116
+#: includes/Registration/Fields.php:161
 msgid "Please choose a business type."
 msgstr ""
 
-#: includes/Registration/Fields.php:119
+#: includes/Registration/Fields.php:164
 msgid "Please choose a country from the list."
 msgstr ""
 
-#: includes/Registration/Fields.php:123
-msgid "Please enter a valid postcode."
+#: includes/Registration/Fields.php:167
+#: templates/myaccount/auth/form-register.php:97
+msgid "Enter your company website or VAT ID, so we can verify your company."
+msgstr ""
+
+#: includes/Registration/Fields.php:169
+msgid "Enter a web address such as example.com."
 msgstr ""
 
 #: includes/Registration/PendingApprovals.php:72
@@ -3147,7 +3165,7 @@ msgid "No account is waiting for approval."
 msgstr ""
 
 #: includes/Registration/PendingApprovals.php:150
-#: templates/emails/linker-new-customer.php:45
+#: templates/emails/linker-new-customer.php:44
 #: templates/emails/linker-vat-review.php:45
 msgid "Open the customer"
 msgstr ""
@@ -3248,7 +3266,6 @@ msgid ""
 msgstr ""
 
 #: includes/Settings/SettingsTab.php:143
-#: templates/emails/linker-new-customer.php:27
 msgid "Email"
 msgstr ""
 
@@ -3931,10 +3948,6 @@ msgstr ""
 msgid "Conditions from the conversation"
 msgstr ""
 
-#: templates/emails/linker-new-customer.php:28
-msgid "Address"
-msgstr ""
-
 #. translators: 1: inquiry number, 2: company or reply email when no name was given.
 #: templates/emails/linker-new-inquiry.php:30
 #, php-format
@@ -4010,7 +4023,7 @@ msgid "New password"
 msgstr ""
 
 #: templates/myaccount/account/form-edit-account.php:83
-#: templates/myaccount/auth/form-register.php:105
+#: templates/myaccount/auth/form-register.php:131
 #: templates/myaccount/auth/form-reset-password.php:41
 msgid "Use at least 8 characters with a mix of letters, numbers and symbols."
 msgstr ""
@@ -4041,7 +4054,7 @@ msgid "Every inquiry and document in one place"
 msgstr ""
 
 #: templates/myaccount/auth/form-login.php:62
-#: templates/myaccount/auth/form-register.php:51
+#: templates/myaccount/auth/form-register.php:57
 msgid "We answer inquiries within one working day"
 msgstr ""
 
@@ -4050,7 +4063,7 @@ msgid "Your inquiries, documents and prices in one place."
 msgstr ""
 
 #: templates/myaccount/auth/form-login.php:122
-#: templates/myaccount/auth/form-register.php:58
+#: templates/myaccount/auth/form-register.php:64
 msgid "Create your business account"
 msgstr ""
 
@@ -4068,42 +4081,74 @@ msgstr ""
 msgid "Back to sign in"
 msgstr ""
 
-#: templates/myaccount/auth/form-register.php:46
+#: templates/myaccount/auth/form-register.php:52
 msgid "Create your partner account"
 msgstr ""
 
-#: templates/myaccount/auth/form-register.php:47
+#: templates/myaccount/auth/form-register.php:53
 msgid ""
 "For installers, EPCs and distributors: net prices, documents and inquiries "
 "in one workspace."
 msgstr ""
 
-#: templates/myaccount/auth/form-register.php:50
+#: templates/myaccount/auth/form-register.php:56
 msgid "You see net prices on every product after approval"
 msgstr ""
 
-#: templates/myaccount/auth/form-register.php:52
+#: templates/myaccount/auth/form-register.php:58
 msgid "We run the VAT ID check in VIES for you"
 msgstr ""
 
-#: templates/myaccount/auth/form-register.php:59
+#: templates/myaccount/auth/form-register.php:65
 msgid "We review every new account before activation."
 msgstr ""
 
-#: templates/myaccount/auth/form-register.php:78
-msgid "Contact and address"
+#: templates/myaccount/auth/form-register.php:76
+msgid "Registration step"
 msgstr ""
 
-#: templates/myaccount/auth/form-register.php:84
-msgid "Sign-in details"
+#: templates/myaccount/auth/form-register.php:81
+msgid "Step 1 of 2 · Your company"
 msgstr ""
 
-#: templates/myaccount/auth/form-register.php:122
+#: templates/myaccount/auth/form-register.php:82
+msgid "Step 2 of 2 · You and your sign-in"
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:86
+msgid "Your company"
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:91
+msgid "We use one of these to verify your company. Enter at least one."
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:98
+msgid "Please complete the required fields."
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:100
+msgid "Continue"
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:102
+msgid "Already have a partner account?"
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:107
+msgid "You and your sign-in"
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:123
+msgid "You sign in with it. We send the approval to this address."
+msgstr ""
+
+#: templates/myaccount/auth/form-register.php:141
 msgid "Terms of Sale"
 msgstr ""
 
-#: templates/myaccount/auth/form-register.php:134
-msgid "Already have a partner account?"
+#: templates/myaccount/auth/form-register.php:152
+msgid "Back"
 msgstr ""
 
 #: templates/myaccount/auth/form-reset-password.php:31
