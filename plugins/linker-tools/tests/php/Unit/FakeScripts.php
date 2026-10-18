@@ -49,6 +49,7 @@ final class FakeScripts {
 		$deps = array(
 			'linker-tools-genie' => array(
 				'src'  => 'https://de-linker.test/wp-content/plugins/linker-tools/build/genie.js',
+				'ver'  => 'abc123',
 				'deps' => array( 'react-jsx-runtime', 'wp-element', 'wp-i18n' ),
 			),
 			'react-jsx-runtime'  => array(

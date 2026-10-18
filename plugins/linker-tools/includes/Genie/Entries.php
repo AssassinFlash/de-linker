@@ -793,7 +793,19 @@ JS,
 	 */
 	private function script_src(): string {
 		$script = wp_scripts()->query( self::HANDLE );
-		return ( $script && is_string( $script->src ) ) ? $script->src : '';
+		if ( ! $script || ! is_string( $script->src ) ) {
+			return '';
+		}
+		// The loader inserts the script itself, so WordPress never appends the
+		// registered version the way wp_enqueue_script would: the bare URL is
+		// cached for 7 days by the host, and a returning visitor kept the old
+		// bundle after a deploy (the #250 card did not appear, 2026-10-18).
+		$version = is_scalar( $script->ver ?? null ) ? (string) $script->ver : '';
+		if ( '' === $version ) {
+			return $script->src;
+		}
+		$separator = str_contains( $script->src, '?' ) ? '&' : '?';
+		return $script->src . $separator . 'ver=' . rawurlencode( $version );
 	}
 
 	/**

@@ -6,6 +6,7 @@ import json
 import math
 import re
 import shlex
+import time
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -89,6 +90,24 @@ def _switch_seconds(output: str, deploy_id: str) -> float:
         f"invalid switch timing for deployment {deploy_id}; inspect the manifest; "
         "use resume-deploy to verify/archive a pending deploy"
     )
+
+
+def _source_bytes(source: Path) -> int:
+    """Every regular file's size under a source tree (0 for a single file)."""
+    return (
+        sum(item.stat().st_size for item in source.rglob("*") if item.is_file())
+        if source.is_dir()
+        else source.stat().st_size
+    )
+
+
+def _human(size: int) -> str:
+    """A byte count for the deploy log: 23.4 MB."""
+    if size >= 1024 * 1024:
+        return f"{size / (1024 * 1024):.1f} MB"
+    if size >= 1024:
+        return f"{size / 1024:.0f} kB"
+    return f"{size} B"
 
 
 def _siblings(relative: str) -> Siblings:
@@ -228,10 +247,20 @@ def publish(
         target.shell(
             f"set -eu\nmkdir -p {parent}\nrm -rf {_quoted(target, names.next)}"
         )
+        # The deploy used to say nothing until the very end: the upload is the
+        # long part, so each artifact names itself as it starts and ends.
+        size = _source_bytes(artifact.source)
+        print(f"uploading {artifact.relative} ({_human(size)})", flush=True)
+        started = time.monotonic()
         if artifact.source.is_dir():
             target.copy_in(artifact.source, names.next)
         else:
             target.copy_file_in(artifact.source, names.next)
+        print(
+            f"uploaded {artifact.relative} in "
+            f"{time.monotonic() - started:.1f}s",
+            flush=True,
+        )
     _same_filesystem(
         target,
         root,

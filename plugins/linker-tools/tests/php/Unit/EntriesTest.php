@@ -65,7 +65,7 @@ final class EntriesTest extends TestCase {
 		$this->assertStringContainsString( 'data-retention-days="90"', $html );
 		$inline = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
 		$this->assertArrayHasKey( 'data-linker-genie-loader', $inline );
-		$this->assertStringContainsString( 'genie.js', (string) $inline['data-linker-genie-boot-payload'] );
+		$this->assertStringContainsString( 'genie.js?ver=abc123', (string) $inline['data-linker-genie-boot-payload'], 'the loader busts the host cache with the registered version' );
 		$payload = json_decode( (string) $inline['data-linker-genie-boot-payload'], true );
 		$this->assertSame( 'Genie could not load.', $payload['error'] );
 		$this->assertSame( 'Try again', $payload['retry'] );

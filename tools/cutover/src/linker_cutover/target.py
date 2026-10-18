@@ -33,6 +33,12 @@ from typing import IO, Any
 # The production host and its WordPress root, as tools/pull/src/linker_pull/live.py
 # records them (both read from the host on 2026-10-09).
 HOST = "hostinger-de-linker"
+
+# A payload this small goes in one rsync leg: the per-entry connections exist
+# for the multi-GB backups the host drops mid-transfer (measured 2026-10-14:
+# 2.6 GB cut at ~8 min), and paying one handshake per file made a 23 MB
+# deployment take 22 minutes (2026-10-18). Above the cap the entry walk stays.
+SMALL_UPLOAD_BYTES = 64 * 1024 * 1024
 WP_ROOT = "/home/u388076051/domains/de-linker.com/public_html"
 WP_CLI = "/usr/local/bin/wp"
 HOST_URL = "https://de-linker.com"
@@ -116,6 +122,11 @@ def remote_entries_command(host: str, source: str) -> list[str]:
         "find . -mindepth 2 -maxdepth 2 -type d -printf 'D %p\n'; "
         "find . -mindepth 1 -maxdepth 1 -type d -printf 'd %p\n'; } | sort",
     ]
+
+
+def _tree_bytes(source: Path) -> int:
+    """Every regular file's size under `source`, for the upload-leg choice."""
+    return sum(item.stat().st_size for item in source.rglob("*") if item.is_file())
 
 
 def _local_entries(source: Path) -> list[Path]:
@@ -356,6 +367,31 @@ class Target:
             f"reading {source} from {HOST} failed after 4 attempts: {last}"
         )
 
+    def _push_tree(self, source: Path, destination: str) -> None:
+        """The whole small tree in one rsync leg, retried like `_push_entry`."""
+        last = ""
+        for _attempt in range(4):
+            completed = subprocess.run(
+                [
+                    "rsync",
+                    "-az",
+                    "--delete",
+                    "-e",
+                    "ssh -o BatchMode=yes",
+                    f"{source}/",
+                    f"{HOST}:{destination}/",
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if completed.returncode == 0:
+                return
+            last = completed.stderr.strip()[:200]
+        raise CutoverError(
+            f"writing {source} to {HOST}:{destination} failed after 4 attempts: {last}"
+        )
+
     def _push_entry(self, source: Path, destination: str) -> None:
         """One chunk of a local tree onto the target, retried like copy_out."""
         source_arg = f"{source}/" if source.is_dir() else str(source)
@@ -430,6 +466,12 @@ class Target:
         # is made first, in one shell; the local branch above creates the
         # directory the same way.
         base = self.path_of(relative).rstrip("/")
+        if _tree_bytes(source) <= SMALL_UPLOAD_BYTES:
+            # One leg for a small tree; `--delete` keeps the target a mirror of
+            # `base` exactly as the per-entry walk does.
+            self.shell(f"mkdir -p {shlex.quote(base)}")
+            self._push_tree(source, base)
+            return
         entries = _local_entries(source)
         directories = {base}
         for entry in entries:
