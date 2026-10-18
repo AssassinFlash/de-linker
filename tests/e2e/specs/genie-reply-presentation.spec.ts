@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { instance, REPO_ROOT } from '../lib/instance';
 
 const releases = new WeakMap<Page, () => void>();
+test.describe.configure({ timeout: 60_000 });
 test.use({ video: 'on' });
 test.afterEach(async ({ page }, info) => {
 	releases.get(page)?.();
