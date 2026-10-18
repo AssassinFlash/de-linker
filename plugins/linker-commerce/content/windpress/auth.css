@@ -995,6 +995,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	margin: 0;
 	color: var(--proto-ink-muted-deep);
 	font-size: var(--proto-size-xs);
+	font-weight: normal;
 	line-height: var(--proto-leading-body);
 }
 .linker-inquiry .linker-form-consent input { flex: 0 0 auto; margin-top: var(--proto-space-1); accent-color: var(--proto-accent); }
