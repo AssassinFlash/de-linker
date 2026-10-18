@@ -1,0 +1,128 @@
+/* Owner's 2026-10-18 content-platform references: topic rail, native search,
+ * featured cover and an uninterrupted thumbnail feed. Colours, spacing and named
+ * journal geometry use tokens.css; its geometry keeps the owner-approved values.
+ * Typography retains the approved type scale. 640/1000/1280px follow the existing responsive bands;
+ * 16:9 covers follow the owner's video-platform reference, without implying
+ * that written posts are videos. No component escapes the three journal faces.
+ */
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) {
+  color: var(--proto-ink-deep); background: var(--proto-neutral-50);
+  font-family: var(--proto-font-sans); font-weight: 400;
+}
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) :is(h1,h2,h3,p,ul) { margin: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) a { color: inherit; text-decoration: none; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) a:focus-visible,
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) button:focus-visible { outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-shell {
+  display: grid; grid-template-columns: var(--journal-topic-rail) minmax(0,1fr); gap: var(--proto-space-7);
+  max-width: var(--journal-shell-max); margin-inline: auto; padding: var(--proto-space-6);
+}
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-sidebar {
+  position: sticky; top: calc(var(--lk-header-h) + var(--proto-space-5)); align-self: start;
+  max-height: calc(100dvh - var(--lk-header-h) - var(--proto-space-7)); overflow-y: auto; padding: var(--proto-space-4); border: var(--journal-hairline) solid var(--proto-neutral-200); border-radius: var(--proto-radius-panel); background: #fff;
+}
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-home { display: flex; gap: var(--proto-space-3); align-items: center; font-size: .9375rem; font-weight: 600; padding-block: var(--proto-space-3); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-mark { display: grid; place-items: center; width: var(--journal-brand-mark); height: var(--journal-brand-mark); border-radius: var(--proto-radius-md); background: var(--proto-teal-700); color: #fff; font-weight: 700; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics { display: grid; min-width: 0; grid-template-columns: minmax(0,1fr); gap: var(--proto-space-5); margin-top: var(--proto-space-5); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics ul { min-width: 0; list-style: none; padding: 0; margin: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .categories { font-size: .6875rem; font-weight: 600; letter-spacing: .08em; color: var(--proto-neutral-500); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .categories > ul { display: grid; gap: var(--proto-space-1); margin-top: var(--proto-space-3); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics :is(.journal-all,.cat-item > a) { display: flex; min-width: 0; overflow-wrap: anywhere; align-items: center; min-height: var(--proto-control-height); padding: var(--proto-space-3); border-radius: var(--proto-radius-lg); font-size: .8125rem; font-weight: 400; line-height: 1.5; letter-spacing: 0; color: var(--proto-ink-muted-deep); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics :is(a[aria-current="page"],.current-cat > a) { background: var(--proto-teal-50); color: var(--proto-teal-800); font-weight: 600; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics a:not([aria-current="page"]):hover { background: var(--proto-teal-50); color: var(--proto-teal-700); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-resources { display: grid; gap: var(--proto-space-2); margin-top: var(--proto-space-6); padding-top: var(--proto-space-5); border-top: var(--journal-hairline) solid var(--proto-neutral-200); font-size: .8125rem; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-resources > p { margin-bottom: var(--proto-space-2); color: var(--proto-neutral-500); font-size: .6875rem; font-weight: 600; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-resources > a { display: flex; justify-content: space-between; gap: var(--proto-space-2); padding-block: var(--proto-space-2); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-main { min-width: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topbar { display: flex; align-items: center; justify-content: space-between; gap: var(--proto-space-6); margin-bottom: var(--proto-space-6); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-intro { min-width: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-eyebrow { color: var(--proto-teal-700); font-size: .6875rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; margin-bottom: var(--proto-space-2); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) h1 { max-width: 28ch; font-family: var(--proto-font-display); font-size: clamp(1.5rem,2.2vw,2rem); font-weight: 600; line-height: 1.25; letter-spacing: -.025em; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-intro > p:last-child:not(.journal-eyebrow) { margin-top: var(--proto-space-3); max-width: 60ch; color: var(--proto-ink-muted-deep); font-size: .875rem; line-height: 1.65; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search { display: flex; flex-shrink: 0; align-items: center; width: var(--journal-search-width); min-height: var(--proto-control-height); border: var(--journal-hairline) solid var(--proto-neutral-300); border-radius: var(--proto-radius-lg); background: #fff; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search input[type="search"] { min-width: 0; width: 100%; padding: var(--proto-space-3) var(--proto-space-4); border: 0; border-radius: inherit; background: transparent; color: var(--proto-ink-deep); font: 400 .8125rem/1.5 var(--proto-font-sans); box-shadow: none; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search:focus-within { outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search input:focus-visible { outline: none; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search button { display: grid; place-items: center; flex-shrink: 0; width: var(--proto-control-height); height: var(--proto-control-height); padding: 0; border: 0; border-left: var(--journal-hairline) solid var(--proto-neutral-200); border-radius: 0 var(--proto-radius-lg) var(--proto-radius-lg) 0; background: transparent; color: var(--proto-ink-deep); cursor: pointer; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search svg { width: var(--journal-search-icon); height: var(--journal-search-icon); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-content { display: grid; grid-template-columns: minmax(0,1fr); gap: var(--proto-space-6); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-stream { min-width: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-feed { margin-top: var(--proto-space-6); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-feed > h2 { margin-bottom: var(--proto-space-5); font-size: 1.125rem; font-weight: 600; line-height: 1.5; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--proto-space-6) var(--proto-space-5); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card { min-width: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card > a:hover { border-color: var(--proto-teal-600); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card > a { display: flex; flex-direction: column; height: 100%; overflow: hidden; border: var(--journal-hairline) solid var(--proto-neutral-200); border-radius: var(--proto-radius-lg); background: #fff; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) :is(.journal-card-image,.journal-suggestion-image) { aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--proto-radius-lg); background: var(--proto-neutral-200); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) :is(.journal-card-image,.journal-suggestion-image) img { display: block; width: 100%; height: 100%; object-fit: contain; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-image-fallback { display: block; width: 100%; height: 100%; background: var(--proto-neutral-200); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card h3 { margin-top: var(--proto-space-2); color: var(--proto-ink-deep); font-size: 1.125rem; font-weight: 600; line-height: 1.45; letter-spacing: -.015em; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-image { aspect-ratio: 16 / 10; padding: var(--proto-space-5); border-radius: 0; background: var(--proto-neutral-100); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-copy { display: flex; flex-direction: column; flex: 1; padding: var(--proto-space-5); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-category { color: var(--proto-teal-700); font-size: .75rem; font-weight: 500; line-height: 1.5; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-date { margin-top: auto; padding-top: var(--proto-space-4); color: var(--proto-neutral-500); font-size: .75rem; line-height: 1.5; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card a:hover h3 { color: var(--proto-teal-700); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-meta { display: flex; flex-wrap: wrap; gap: var(--proto-space-1) var(--proto-space-3); margin-top: var(--proto-space-2); color: var(--proto-neutral-500); font-size: .6875rem; line-height: 1.6; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestions { display: none; align-self: start; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestions > h2 { margin-bottom: var(--proto-space-5); font-size: 1rem; font-weight: 600; line-height: 1.5; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestion { display: grid; grid-template-columns: var(--journal-related-thumb) minmax(0,1fr); gap: var(--proto-space-3); align-items: start; padding-bottom: var(--proto-space-5); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestion h3 { font-size: .8125rem; font-weight: 500; line-height: 1.5; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestion-date { display: block; margin-top: var(--proto-space-2); color: var(--proto-neutral-500); font-size: .6875rem; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination { margin-top: var(--proto-space-7); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination :is(.page-numbers,.pagination) { display: flex; flex-wrap: wrap; gap: var(--proto-space-2); padding: 0; list-style: none; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination :is(a,span.page-numbers) { display: inline-flex; align-items: center; justify-content: center; min-width: var(--proto-control-height); min-height: var(--proto-control-height); padding: var(--proto-space-2) var(--proto-space-3); border: var(--journal-hairline) solid var(--proto-neutral-300); border-radius: var(--proto-radius-lg); background: #fff; font-size: .8125rem; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination .current { background: var(--proto-teal-700); color: #fff; border-color: var(--proto-teal-700); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty { padding: var(--proto-space-7) 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty h3 { font-size: 1.125rem; font-weight: 600; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty p { margin-block: var(--proto-space-3); color: var(--proto-ink-muted-deep); font-size: .9375rem; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty a { color: var(--proto-teal-700); text-decoration: underline; }
+/* Existing site wide-layout band; keep the approved three-column composition. */
+@media (min-width:1280px) {
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-content-with-rail { grid-template-columns: minmax(0,1fr) var(--journal-reading-rail); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestions { display: block; }
+}
+/* Below the existing 1000px desktop band, topics use the approved horizontal rail. */
+@media (max-width:999px) {
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-shell { display: flex; flex-direction: column; gap: 0; padding: var(--proto-space-5); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-main { display: contents; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topbar { order: 0; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-sidebar { order: 1; width: 100%; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-content { order: 2; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-sidebar { position: static; max-height: none; overflow: visible; margin-bottom: var(--proto-space-5); padding: 0; border: 0; border-radius: 0; background: transparent; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) :is(.journal-home,.journal-resources) { display: none; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics { display: flex; gap: var(--proto-space-2); align-items: center; margin: 0; padding-bottom: var(--proto-space-2); overflow-x: auto; scrollbar-width: none; mask-image: linear-gradient(90deg,#000 calc(100% - var(--journal-topic-fade)),transparent); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics > ul { display: contents; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .categories { display: contents; font-size: 0; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .categories > ul { display: flex; gap: var(--proto-space-2); margin: 0; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics :is(.journal-all,.cat-item > a) { flex-shrink: 0; white-space: nowrap; padding: var(--proto-space-2) var(--proto-space-3); gap: var(--proto-space-2); background: #fff; border: 0; border-radius: var(--proto-radius-round); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics a[aria-current="page"] { background: var(--proto-teal-700); color: #fff; }
+}
+/* Existing 640px mobile band; the owner's compact mobile browsing reference. */
+@media (max-width:639px) {
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-shell { padding: var(--proto-space-4); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topbar { align-items: stretch; flex-direction: column; gap: var(--proto-space-5); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search { width: 100%; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-grid { grid-template-columns: minmax(0,1fr); }
+}
+/* Mobile reference: compact recommendations below the lead cover. */
+/* Existing 640px mobile band; the owner's compact mobile browsing reference. */
+@media (max-width:639px) {
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-grid { gap: var(--proto-space-5); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card > a { display: grid; grid-template-columns: var(--journal-mobile-thumb) minmax(0,1fr); gap: var(--proto-space-4); align-items: start; border: 0; border-radius: 0; background: transparent; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-image { aspect-ratio: 1; padding: var(--proto-space-2); border-radius: var(--proto-radius-lg); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-copy { min-width: 0; padding: 0; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card h3 { margin-top: var(--proto-space-1); font-size: .9375rem; line-height: 1.45; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-category { font-size: .6875rem; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-date { padding-top: var(--proto-space-2); font-size: .6875rem; }
+}
+
+/* The owner's app-dashboard navigation: native category links gain the same
+ * small geometric icon vocabulary in the desktop rail and mobile pills.
+ * SVG masks are decorative; the existing text/current-page semantics remain. */
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics :is(.journal-all,.cat-item > a) { gap: var(--proto-space-3); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics :is(.journal-all,.cat-item > a)::before { content: ""; flex-shrink: 0; width: var(--journal-topic-icon); height: var(--journal-topic-icon); background: currentColor; mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%226%22%20height%3D%226%22%20rx%3D%221%22%2F%3E%3Crect%20x%3D%2215%22%20y%3D%223%22%20width%3D%226%22%20height%3D%226%22%20rx%3D%221%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%2215%22%20width%3D%226%22%20height%3D%226%22%20rx%3D%221%22%2F%3E%3Crect%20x%3D%2215%22%20y%3D%2215%22%20width%3D%226%22%20height%3D%226%22%20rx%3D%221%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .cat-item > a:is([href$="/applications-blog/"],[href$="/anwendungen/"])::before { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%2021V8l6-4v17M9%2012l6-4%206%204v9H3M15%2014v7M6%2010v2M6%2016v2%22%2F%3E%3C%2Fsvg%3E"); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .cat-item > a:is([href$="/battery-storage-blog/"],[href$="/batteriespeicher/"])::before { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%2217%22%20height%3D%2212%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M23%2010v4M7%2010v4M11%2010v4M15%2010v4%22%2F%3E%3C%2Fsvg%3E"); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .cat-item > a:is([href$="/installation-commissioning/"],[href$="/installation-inbetriebnahme/"])::before { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m14%206%204%204%204-4a6%206%200%200%201-8%208l-7%207a3%203%200%200%201-4-4l7-7a6%206%200%200%201%208-8z%22%2F%3E%3C%2Fsvg%3E"); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .cat-item > a:is([href$="/monitoring-energy-management/"],[href$="/ueberwachung-energiemanagement/"])::before { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M3%203v18h18M6%2015l4-5%204%203%206-8%22%2F%3E%3C%2Fsvg%3E"); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .cat-item > a:is([href$="/system-design/"],[href$="/systemauslegung/"])::before { mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%226%22%20height%3D%228%22%20rx%3D%221%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%222%22%20width%3D%226%22%20height%3D%226%22%20rx%3D%221%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2216%22%20width%3D%226%22%20height%3D%226%22%20rx%3D%221%22%2F%3E%3Cpath%20d%3D%22M8%2012h4M12%205h4M12%2019h4M12%205v14%22%2F%3E%3C%2Fsvg%3E"); }

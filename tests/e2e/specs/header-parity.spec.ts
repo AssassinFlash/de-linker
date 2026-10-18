@@ -238,8 +238,8 @@ test('EN/DE follow the ruled header fold boundaries', async ({
 			expect
 				.soft(german!.registration, `${width}px: DE guest entries`)
 				.toEqual([
-					'/de/mein-konto/register/',
-					'/de/mein-konto/register/',
+					'/de/mein-konto/registrieren/',
+					'/de/mein-konto/registrieren/',
 				]);
 			rows.push({ width, en: english, de: german });
 			if (expectedMismatches.includes(width)) {

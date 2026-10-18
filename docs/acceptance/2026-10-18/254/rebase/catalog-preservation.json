@@ -1,0 +1,39 @@
+{
+  "source": "103a70ee4b2c68065e9d83a6fac583545583bdbd",
+  "base": "4cf4936355f93c8b1ca38747985c7373873b7b31",
+  "native_commerce_extraction_and_regeneration": true,
+  "isolated_generated_outputs": true,
+  "commerce_active_translations": 836,
+  "missing_or_changed_active_translations": [],
+  "tools_native_make_json_matches_published_files": 2,
+  "main_catalogs_preserved": true,
+  "old_delivery_obsolete_entry": {
+    "msgid": "Prices after approval",
+    "msgstr": "Preise nach Freigabe",
+    "retained_in_PO_as_obsolete": true,
+    "reason": "Upstream pending-account implementation replaced the English source; no feature translation was removed."
+  },
+  "catalogs_against_current_main": [
+    {
+      "file": "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.mo",
+      "main_translations": 836,
+      "feature_translations": 836,
+      "lost": [],
+      "changed_existing": []
+    },
+    {
+      "file": "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+      "main_translations": 413,
+      "feature_translations": 413,
+      "lost": [],
+      "changed_existing": []
+    },
+    {
+      "file": "plugins/linker-i18n/languages/linker-i18n-de_DE_formal.mo",
+      "main_translations": 28,
+      "feature_translations": 50,
+      "lost": [],
+      "changed_existing": []
+    }
+  ]
+}

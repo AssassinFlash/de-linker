@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="1" assertions="14" errors="0" warnings="0" failures="1" skipped="0" time="25.712216">
+    <testsuite name="integration" tests="1" assertions="14" errors="0" warnings="0" failures="1" skipped="0" time="25.712216">
+      <testsuite name="Linker\I18n\Tests\Integration\GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" tests="1" assertions="14" errors="0" warnings="0" failures="1" skipped="0" time="25.712216">
+        <testcase name="test_changed_category_has_matching_canonical_and_hreflang" class="Linker\I18n\Tests\Integration\GermanUrlsTest" classname="Linker.I18n.Tests.Integration.GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" line="29" assertions="14" time="25.712216">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Linker\I18n\Tests\Integration\GermanUrlsTest::test_changed_category_has_matching_canonical_and_hreflang
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'http://127.0.0.1:9129/de/kategorie/systemauslegung/'
++''
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php:37</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

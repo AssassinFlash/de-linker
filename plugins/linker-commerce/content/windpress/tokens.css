@@ -187,4 +187,19 @@
   --proto-shadow-3: 0 18px 45px rgba(21, 53, 47, 0.07);
 --proto-measure-narrow: 34rem;     /* captions, subtexts */
   --proto-measure-wide: 56rem;       /* hero leads */
+  /* Owner-approved journal geometry, retained from source 0a7cb501 (2026-10-18).
+     These are the existing accepted dimensions, now named for WindPress reuse;
+     native 1440/390 readback: docs/acceptance/2026-10-18/254/round2/visual-readback.json. */
+  --journal-topic-rail: 224px;
+  --journal-reading-rail: 220px;
+  --journal-shell-max: 1600px;
+  --journal-search-width: 280px;
+  --journal-search-icon: 19px;
+  --journal-brand-mark: 28px;
+  --journal-related-thumb: 80px;
+  --journal-mobile-thumb: 104px;
+  --journal-topic-icon: 18px;
+  --journal-topic-fade: 20px;
+  --journal-hairline: 1px;
+
 }

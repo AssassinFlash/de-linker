@@ -107,7 +107,8 @@ final class InquirySummary {
 	 * @return array<string, mixed>|null
 	 */
 	public function answer( $value, int $conversation = 0 ): ?array {
-		$id = $conversation > 0 ? $conversation : $this->conversations->current_id();
+		// Reading the form's existing context must not open a thread or write cookies.
+		$id = $conversation > 0 ? $conversation : $this->conversations->existing_id();
 		return $this->for_conversation( $id );
 	}
 

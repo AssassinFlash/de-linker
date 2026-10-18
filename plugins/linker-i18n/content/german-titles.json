@@ -1,0 +1,82 @@
+[
+  {
+    "type": "product",
+    "source": "ecoflow-battery-stack-bridge",
+    "before": {
+      "post_title": "EcoFlow Battery Stack Bridge",
+      "meta:_seopress_titles_title": ""
+    },
+    "after": {
+      "post_title": "EcoFlow Verbinder für Batteriestapel",
+      "meta:_seopress_titles_title": "EcoFlow Verbinder für Batteriestapel | Linker"
+    }
+  },
+  {
+    "type": "page",
+    "source": "services-support",
+    "before": {
+      "post_title": "Service & Support",
+      "meta:_seopress_titles_title": "Technische Unterstützung, Dokumente und Garantie | Linker"
+    },
+    "after": {
+      "post_title": "Kundendienst",
+      "meta:_seopress_titles_title": "Kundendienst | Linker"
+    }
+  },
+  {
+    "type": "page",
+    "source": "products",
+    "before": {
+      "post_title": "Produkte",
+      "meta:_seopress_titles_title": "Wechselrichter, Batterien und Systeme durchsuchen | Linker"
+    },
+    "after": {
+      "post_title": "Wechselrichter, Speicher und Systeme",
+      "meta:_seopress_titles_title": "Wechselrichter, Speicher und Systeme | Linker"
+    }
+  },
+  {
+    "type": "page",
+    "source": "cart",
+    "before": {
+      "post_title": "Warenkorb",
+      "meta:_seopress_titles_title": "Ihr Warenkorb | Linker"
+    },
+    "after": {
+      "post_title": "Lösungsentwurf",
+      "meta:_seopress_titles_title": "Lösungsentwurf | Linker"
+    }
+  },
+  {
+    "type": "page",
+    "source": "faq-download",
+    "before": {
+      "post_title": "FAQ-Download",
+      "meta:_seopress_titles_title": "Datenblätter, Handbücher und Kompatibilitätslisten | Linker"
+    },
+    "after": {
+      "post_title": "FAQ & Dokumente",
+      "meta:_seopress_titles_title": "FAQ & Dokumente | Linker"
+    }
+  },
+  {
+    "type": "product_cat",
+    "source": "all-in-one-systems",
+    "before": {
+      "name": "All-in-One-Systeme"
+    },
+    "after": {
+      "name": "Komplettsysteme"
+    }
+  },
+  {
+    "type": "product_cat",
+    "source": "ems-monitoring",
+    "before": {
+      "name": "EMS &amp; Monitoring"
+    },
+    "after": {
+      "name": "EMS und Überwachung"
+    }
+  }
+]

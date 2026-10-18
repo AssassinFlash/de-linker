@@ -160,6 +160,7 @@ final class ProductShortcodesTest extends TestCase {
 		$_SERVER['REQUEST_URI'] = $request;
 		$_GET                   = array();
 
+		$this->filter_returns( 'pll_translation_url', $expected, array( $expected, 'de' ) );
 		$this->assertSame( $expected, $this->url( 'de' ) );
 		$this->assertSame( 'http://linker.test' . $request, $this->url( 'en' ) );
 	}
@@ -195,6 +196,7 @@ final class ProductShortcodesTest extends TestCase {
 
 		// Woo needs the order key on the confirmation page — without it the
 		// thank-you page renders without the order's details.
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k', array( 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k', 'de' ) );
 		$this->assertSame( 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k', $this->url( 'de' ) );
 		$this->assertStringNotContainsString( 'mein-konto', $this->url( 'de' ) );
 	}
@@ -243,6 +245,7 @@ final class ProductShortcodesTest extends TestCase {
 			)
 		);
 
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/produkt-kategorie/wechselrichter/page/2/?step=roof', array( 'http://linker.test/de/produkt-kategorie/wechselrichter/page/2/?step=roof', 'de' ) );
 		$this->assertSame( 'http://linker.test/de/produkt-kategorie/wechselrichter/page/2/?step=roof', $this->url( 'de' ) );
 		$this->assertSame( 'http://linker.test/product-category/inverters/page/2/?step=roof', $this->url( 'en' ) );
 	}
@@ -265,6 +268,7 @@ final class ProductShortcodesTest extends TestCase {
 		$_SERVER['REQUEST_URI'] = '/?s=inverter';
 		$_GET                   = array( 's' => 'inverter' );
 
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/?s=inverter', array( 'http://linker.test/de/?s=inverter', 'de' ) );
 		$this->assertSame( 'http://linker.test/de/?s=inverter', $this->url( 'de' ) );
 		$this->assertSame( 'http://linker.test/?s=inverter', $this->url( 'en' ) );
 	}
@@ -296,6 +300,7 @@ final class ProductShortcodesTest extends TestCase {
 			'cbq'  => '1',
 		);
 
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/loesungskonfigurator/?step=roof', array( 'http://linker.test/de/loesungskonfigurator/?step=roof', 'de' ) );
 		$this->assertSame( 'http://linker.test/de/loesungskonfigurator/?step=roof', $this->url( 'de' ) );
 		$this->assertSame( 'http://linker.test/solution-configurator/?step=roof', $this->url( 'en' ) );
 	}

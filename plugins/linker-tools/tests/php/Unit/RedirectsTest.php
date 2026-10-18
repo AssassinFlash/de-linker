@@ -135,6 +135,10 @@ final class RedirectsTest extends TestCase {
 	 * properties above.
 	 */
 	private function wordpress(): void {
+		$responder = WP_Mock::onFilter( 'linker_tools_retired_url' )->withAnyArgs();
+		if ( $responder instanceof \WP_Mock\Filter_Responder ) {
+			$responder->reply( null );
+		}
 		WP_Mock::userFunction( 'home_url' )->andReturnUsing(
 			static fn( string $path = '' ): string => self::HOME . $path
 		);

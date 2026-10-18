@@ -223,8 +223,8 @@ MANUAL = (
 # instead of two, one of which says this company manufactures it — and a page
 # that answers 200 looks exactly the same either way (#81, GAP-7).
 VERIFY_PRODUCT_PATHS = (
-    "/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/",
-    "/de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/",
+    "/product/saj-b2-10-0-hv1/",
+    "/de/produkt/saj-b2-10-0-hv1/",
 )
 VERIFY_PATHS = (
     "/",

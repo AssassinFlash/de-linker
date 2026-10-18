@@ -101,7 +101,26 @@ final class Plugin {
 		add_filter( 'pll_translation_url', array( $segments, 'link' ) );
 
 		// hreflang and 404.
-		$seo = new Seo();
+		$seo           = new Seo();
+		$german_titles = new GermanTitles( $languages );
+		add_filter( 'seopress_titles_title', array( $german_titles, 'title' ), 40 );
+		add_filter( 'pre_get_document_title', array( $german_titles, 'title' ), 40 );
+		add_filter( 'seopress_titles_canonical', array( $german_titles, 'canonical' ), 40 );
+		add_filter( 'seopress_social_og_url', array( $german_titles, 'canonical' ), 40 );
+		add_filter( 'seopress_titles_canonical_on_noindex', array( $german_titles, 'category_canonical' ) );
+		$german_urls   = new GermanUrlMigration( $languages );
+		$german_routes = new GermanRoutes( $languages );
+		add_action( 'wp', array( $german_routes, 'pagination' ) );
+		add_filter( 'rewrite_rules_array', array( $german_routes, 'rules' ), 40 );
+		add_filter( 'term_link', array( $german_routes, 'link' ), 40 );
+		add_filter( 'get_pagenum_link', array( $german_routes, 'link' ) );
+		add_filter( 'woocommerce_get_endpoint_url', array( $german_routes, 'link' ), 40 );
+		add_filter( 'woocommerce_edit_address_slugs', array( $german_routes, 'addresses' ) );
+		add_filter( 'pll_translation_url', array( $german_routes, 'translation_url' ), 40 );
+		add_filter( 'pll_rel_hreflang_attributes', array( $german_routes, 'hreflangs' ), 40 );
+		add_filter( 'old_slug_redirect_post_id', array( $german_urls, 'old_post' ) );
+		add_filter( 'old_slug_redirect_url', array( $german_urls, 'old_url' ) );
+		add_filter( 'linker_tools_retired_url', array( $german_urls, 'retired_url' ), 10, 2 );
 		add_filter( 'pll_rel_hreflang_attributes', array( $seo, 'hreflangs' ) );
 		add_filter( 'do_redirect_guess_404_permalink', array( $seo, 'guess_404' ) );
 		add_filter( 'seopress_titles_title', array( $seo, 'not_found_title' ) );
@@ -165,6 +184,7 @@ final class Plugin {
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'linker-i18n', new Command( $languages, new Setup(), $translator, $jobs, $state, $links, $twins ) );
+			\WP_CLI::add_command( 'linker-i18n german-urls', new \Linker\I18n\Cli\GermanUrlsCommand() );
 		}
 	}
 	/**

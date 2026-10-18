@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="1" assertions="27" errors="0" warnings="0" failures="1" skipped="0" time="26.798915">
+    <testsuite name="integration" tests="1" assertions="27" errors="0" warnings="0" failures="1" skipped="0" time="26.798915">
+      <testsuite name="Linker\I18n\Tests\Integration\GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" tests="1" assertions="27" errors="0" warnings="0" failures="1" skipped="0" time="26.798915">
+        <testcase name="test_inquiry_receipt_mail_links_to_the_german_registration_page" class="Linker\I18n\Tests\Integration\GermanUrlsTest" classname="Linker.I18n.Tests.Integration.GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" line="674" assertions="27" time="26.798915">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Linker\I18n\Tests\Integration\GermanUrlsTest::test_inquiry_receipt_mail_links_to_the_german_registration_page
+Failed asserting that actual size 0 matches expected size 1.
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php:712</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

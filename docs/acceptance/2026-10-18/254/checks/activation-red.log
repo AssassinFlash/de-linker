@@ -1,0 +1,16 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+F                                                                   1 / 1 (100%)
+
+Time: 00:18.482, Memory: 10.00 MB
+
+There was 1 failure:
+
+1) Linker\I18n\Tests\Integration\GermanUrlsTest::test_activation_recovers_from_a_stale_individual_option_cache
+Rollback must remove the observed cached activation without a database row.
+Failed asserting that '1' is null.
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php:270
+
+FAILURES!
+Tests: 1, Assertions: 17, Failures: 1.

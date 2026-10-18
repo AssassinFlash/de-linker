@@ -1,0 +1,9 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/c254/tools/cutover
+configfile: pyproject.toml
+collected 47 items / 46 deselected / 1 selected
+
+tests/test_steps.py .                                                    [100%]
+
+======================= 1 passed, 46 deselected in 4.97s =======================

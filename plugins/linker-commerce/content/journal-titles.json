@@ -1,0 +1,102 @@
+{
+  "hybrid-inverter-vs-ac-coupled-storage": {
+    "full": {
+      "en": "How to Choose Between a Hybrid Inverter and an AC-Coupled Storage Setup",
+      "de": "So wählen Sie zwischen einem Hybrid-Wechselrichter und einer AC-gekoppelten Speicherlösung"
+    },
+    "label": {
+      "en": "Hybrid inverter or AC storage?",
+      "de": "Hybridwechselrichter oder AC-Speicher?"
+    }
+  },
+  "installer-checklist-inverter-battery-pairing": {
+    "full": {
+      "en": "What Installers Should Check Before Pairing an Inverter with Battery Storage",
+      "de": "Was Installateure vor der Kombination eines Wechselrichters mit Batteriespeicher prüfen sollten"
+    },
+    "label": {
+      "en": "Pairing inverters and batteries",
+      "de": "Wechselrichter und Batterie kombinieren"
+    }
+  },
+  "size-battery-storage-residential-backup": {
+    "full": {
+      "en": "How to Size Battery Storage for a Residential Backup System",
+      "de": "So dimensionieren Sie einen Heimspeicher für die Notstromversorgung"
+    },
+    "label": {
+      "en": "Sizing home storage for backup",
+      "de": "Heimspeicher für Notstrom auslegen"
+    }
+  },
+  "indoor-vs-outdoor-battery-storage-planning": {
+    "full": {
+      "en": "Indoor vs Outdoor Battery Storage: What Changes in System Planning",
+      "de": "Innen- vs. Außenbatteriespeicher: Was sich bei der Systemplanung ändert"
+    },
+    "label": {
+      "en": "Battery storage: indoors or outdoors?",
+      "de": "Batteriespeicher: innen oder außen?"
+    }
+  },
+  "solar-plus-storage-commissioning-checklist": {
+    "full": {
+      "en": "Commissioning Checklist for a Solar-Plus-Storage System",
+      "de": "Inbetriebnahme-Checkliste für ein Solar-Plus-Speicher-System"
+    },
+    "label": {
+      "en": "Commissioning solar and storage",
+      "de": "PV und Speicher in Betrieb nehmen"
+    }
+  },
+  "installer-handover-documentation-checklist": {
+    "full": {
+      "en": "What Documentation Installers Need Before Project Handover",
+      "de": "Welche Dokumentation Installateure vor der Projektübergabe benötigen"
+    },
+    "label": {
+      "en": "Documents for project handover",
+      "de": "Dokumente für die Projektübergabe"
+    }
+  },
+  "remote-monitoring-after-installation": {
+    "full": {
+      "en": "Why Remote Monitoring Matters After Installation",
+      "de": "Warum Fernüberwachung nach der Installation wichtig ist"
+    },
+    "label": {
+      "en": "Remote monitoring after installation",
+      "de": "Fernüberwachung nach der Installation"
+    }
+  },
+  "gateway-meter-cloud-monitoring-data-layer": {
+    "full": {
+      "en": "Gateway, Meter, and Cloud Monitoring: How the Data Layer Fits Together",
+      "de": "Gateway-, Zähler- und Cloud-Überwachung: Wie die Datenschicht zusammenpasst"
+    },
+    "label": {
+      "en": "Gateways, meters and cloud monitoring",
+      "de": "Gateway, Zähler und Fernüberwachung"
+    }
+  },
+  "residential-storage-backup-self-consumption": {
+    "full": {
+      "en": "Residential Storage: Backup Power, Self-Consumption, and System Expansion",
+      "de": "Heimspeicher: Notstrom, Eigenverbrauch und Systemerweiterung"
+    },
+    "label": {
+      "en": "Home storage: backup and expansion",
+      "de": "Heimspeicher: Notstrom und Ausbau"
+    }
+  },
+  "ci-storage-peak-shaving-backup-scalability": {
+    "full": {
+      "en": "C&I Storage Planning: Peak Shaving, Backup Loads, and Scalability",
+      "de": "C&I-Speicherplanung: Lastspitzenkappung, Notstromlasten und Skalierbarkeit"
+    },
+    "label": {
+      "en": "Planning commercial battery storage",
+      "de": "Gewerbespeicher planen"
+    }
+  }
+}

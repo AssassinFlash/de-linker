@@ -1,0 +1,13 @@
+{
+  "run": "L8w446Dj295C2u3n1",
+  "dataset": "KuJ8S5yjtvuWAU668",
+  "phase": "read-only before deployment; new addresses are not expected to be published yet",
+  "records": 258,
+  "statuses": {"200": 172, "301": 10, "404": 76},
+  "completeness": "Every expected public old/new path and all five sitemap XML documents returned a record",
+  "transport": "Apify sendRequest HTTP/1.1; explicit status capture; ten-path batches; native read-only retries",
+  "rejected_attempts": [
+    {"run": "f7NM1dcWw2S3ik1Fi", "reason": "One oversized page function exceeded the Actor's native 60-second handler limit; no successful records"},
+    {"run": "IbDlCERBhRCi7FvVA", "reason": "HTTP/2 sessions closed without a SETTINGS frame; incomplete results rejected"}
+  ]
+}

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-18T13:07:45+00:00\n"
+"POT-Creation-Date: 2026-10-18T16:05:58+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -120,21 +120,12 @@ msgstr ""
 msgid "Product filters"
 msgstr ""
 
-#: content/livecanvas/blog_index.html:343
-#: content/livecanvas/category_archive.html:159
-#: content/livecanvas/search.html:155 content/livecanvas/single_product.html:55
-msgid "Applications"
-msgstr ""
-
-#: content/livecanvas/blog_single.html:29
-#: content/livecanvas/de/blog_single.html:20
-#: content/livecanvas/de/search.html:19 content/livecanvas/search.html:27
-#: content/livecanvas/single_product.html:6
-msgid "Breadcrumb"
-msgstr ""
-
 #: content/livecanvas/faq_page.html:13
 msgid "Clear search"
+msgstr ""
+
+#: content/livecanvas/single_product.html:6
+msgid "Breadcrumb"
 msgstr ""
 
 #: content/livecanvas/single_product.html:33
@@ -153,6 +144,10 @@ msgstr ""
 #: content/livecanvas/single_product.html:54
 #: content/livecanvas/single_product.html:70
 msgid "Technical data"
+msgstr ""
+
+#: content/livecanvas/single_product.html:55
+msgid "Applications"
 msgstr ""
 
 #: content/livecanvas/single_product.html:89
@@ -1071,7 +1066,7 @@ msgid ""
 "on every failure."
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:139
+#: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:143
 msgid "Please use the inquiry form to send your inquiry."
 msgstr ""
 
@@ -1180,7 +1175,8 @@ msgstr ""
 msgid "Edit solution draft"
 msgstr ""
 
-#: includes/Inquiry/Form.php:167 includes/Vocabulary/Terms.php:65
+#: includes/Inquiry/Form.php:167 includes/Inquiry/Form.php:197
+#: includes/Vocabulary/Terms.php:65
 #: templates/emails/linker-genie-handoff.php:65
 msgid "Quantity"
 msgstr ""
@@ -1190,12 +1186,12 @@ msgid "Update solution draft"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/Inquiry/Form.php:189
+#: includes/Inquiry/Form.php:199
 #, php-format
 msgid "Quantity for %s"
 msgstr ""
 
-#: includes/Inquiry/Form.php:196
+#: includes/Inquiry/Form.php:206
 msgid "You can send a message without products."
 msgstr ""
 
@@ -1299,11 +1295,11 @@ msgstr ""
 msgid "Website"
 msgstr ""
 
-#: includes/Inquiry/Sender.php:48
+#: includes/Inquiry/Sender.php:52
 msgid "Please add a product or write a message."
 msgstr ""
 
-#: includes/Inquiry/Sender.php:73
+#: includes/Inquiry/Sender.php:77
 msgid "Please try sending your inquiry again."
 msgstr ""
 
@@ -1486,7 +1482,7 @@ msgid_plural "%s products"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Presentation/BlogShortcodes.php:157
+#: includes/Presentation/BlogShortcodes.php:158
 msgid "Read article"
 msgstr ""
 
@@ -2313,10 +2309,6 @@ msgstr ""
 msgid ""
 "Browse products and add them to your solution draft. You can send an inquiry "
 "without an account."
-msgstr ""
-
-#: includes/Presentation/Shortcodes.php:370
-msgid "Sign in or register"
 msgstr ""
 
 #: includes/Products/Comparison.php:224 includes/Storefront/ProductView.php:305

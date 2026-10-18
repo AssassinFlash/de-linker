@@ -59,6 +59,7 @@ final class BlogShortcodes {
 	 * Registers the shortcodes.
 	 */
 	public function register(): void {
+		add_action( 'init', array( JournalTitles::class, 'register' ) );
 		add_shortcode( 'linker_blog_post_categories', array( $this, 'post_categories' ) );
 		add_shortcode( 'linker_blog_related_posts', array( $this, 'related_posts' ) );
 	}
@@ -152,7 +153,7 @@ final class BlogShortcodes {
 		$html     .= '<time datetime="' . esc_attr( (string) get_the_date( 'c', $post ) ) . '">' . esc_html( $this->card_date( $post ) ) . '</time>';
 		$html     .= '<span aria-hidden="true">&middot;</span>';
 		$html     .= '</div>';
-		$html     .= '<h3 class="tv-blog-single-related-card-title">' . esc_html( get_the_title( $post ) ) . '</h3>';
+		$html     .= '<h3 class="tv-blog-single-related-card-title">' . esc_html( JournalTitles::label( $post ) ) . '</h3>';
 		$html     .= '<div class="tv-blog-single-related-excerpt">' . esc_html( get_the_excerpt( $post ) ) . '</div>';
 		$html     .= '<span class="tv-blog-single-related-arrow">' . esc_html__( 'Read article', 'linker-commerce' );
 		$html     .= '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">';

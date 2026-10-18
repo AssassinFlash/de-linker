@@ -1,0 +1,40 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+FF                                                                  2 / 2 (100%)
+
+Time: 00:00.588, Memory: 131.00 MB
+
+There were 2 failures:
+
+1) Linker\Commerce\Tests\Integration\OpenInquiryTest::test_public_request_page_in_both_languages with data set "en" ('/proforma-request/', 'Send an inquiry', 'Message (optional)')
+Reading the inquiry form must not create a Genie conversation.
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 ()
++Array &0 (
++    0 => 26142
++)
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php:70
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+2) Linker\Commerce\Tests\Integration\OpenInquiryTest::test_public_request_page_in_both_languages with data set "de" ('/de/proforma-anfrage/', 'Anfrage senden', 'Nachricht (optional)')
+Reading the inquiry form must not create a Genie conversation.
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 ()
++Array &0 (
++    0 => 26143
++)
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php:70
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 2, Assertions: 2, Failures: 2.

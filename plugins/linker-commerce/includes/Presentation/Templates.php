@@ -912,9 +912,8 @@ final class Templates {
 	}
 
 	/**
-	 * The page a template renders: its slug in that page's language. The
-	 * language layer (Polylang) answers which of the pages of that slug is
-	 * the language's; without it, there is only one.
+	 * Resolves the English source slug, then its native translation pair.
+	 * German page renames must not detach the template that present owns.
 	 *
 	 * @param string $page_slug Page slug.
 	 * @param string $language  `en` or `de`.
@@ -933,6 +932,12 @@ final class Templates {
 			return isset( $posts[0] ) ? (int) $posts[0]->ID : 0;
 		}
 		foreach ( $posts as $post ) {
+			if ( 'en' === pll_get_post_language( $post->ID ) && 'en' !== $language && function_exists( 'pll_get_post' ) ) {
+				$id = pll_get_post( $post->ID, $language );
+				if ( $id > 0 && get_post( $id ) instanceof WP_Post ) {
+					return $id;
+				}
+			}
 			if ( pll_get_post_language( $post->ID ) === $language ) {
 				return (int) $post->ID;
 			}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="1" assertions="18" errors="0" warnings="0" failures="0" skipped="0" time="0.573432">
+    <testsuite name="integration" tests="1" assertions="18" errors="0" warnings="0" failures="0" skipped="0" time="0.573432">
+      <testsuite name="Linker\I18n\Tests\Integration\JournalTitlesTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/JournalTitlesTest.php" tests="1" assertions="18" errors="0" warnings="0" failures="0" skipped="0" time="0.573432">
+        <testcase name="test_discovery_is_concise_and_the_reader_keeps_the_full_title" class="Linker\I18n\Tests\Integration\JournalTitlesTest" classname="Linker.I18n.Tests.Integration.JournalTitlesTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/JournalTitlesTest.php" line="22" assertions="18" time="0.573432"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

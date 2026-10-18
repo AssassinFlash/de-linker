@@ -1,0 +1,66 @@
+{
+  "base": "9783e639c49e07f99dca8b9f63fc8137586a1957",
+  "stage": "Actual c254 immediately before the hero br fix and native recompilation; approved service-intro.css is unchanged from 0a7cb501.",
+  "records": [
+    {
+      "lang": "en",
+      "path": "/services-support/",
+      "width": 1440,
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792322854",
+      "cardTops": [
+        490,
+        590,
+        690,
+        790
+      ],
+      "height": 7732,
+      "overflow": false,
+      "file": "service-before-en-1440.png"
+    },
+    {
+      "lang": "de",
+      "path": "/de/kundendienst/",
+      "width": 1440,
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792322854",
+      "cardTops": [
+        490,
+        590,
+        690,
+        790
+      ],
+      "height": 7791,
+      "overflow": false,
+      "file": "service-before-de-1440.png"
+    },
+    {
+      "lang": "en",
+      "path": "/services-support/",
+      "width": 390,
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792322854",
+      "cardTops": [
+        870.890625,
+        970.890625,
+        1070.890625,
+        1170.890625
+      ],
+      "height": 10707,
+      "overflow": false,
+      "file": "service-before-en-390.png"
+    },
+    {
+      "lang": "de",
+      "path": "/de/kundendienst/",
+      "width": 390,
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792322854",
+      "cardTops": [
+        890.4453125,
+        990.4453125,
+        1090.4453125,
+        1190.4453125
+      ],
+      "height": 11422,
+      "overflow": false,
+      "file": "service-before-de-390.png"
+    }
+  ]
+}

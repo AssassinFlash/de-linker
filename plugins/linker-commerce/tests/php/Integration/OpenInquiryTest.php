@@ -56,7 +56,24 @@ final class OpenInquiryTest extends IntegrationTestCase {
 	 * @param string $message Message field label.
 	 */
 	public function test_public_request_page_in_both_languages( string $path, string $title, string $message ): void {
+		$query    = array(
+			'post_type'     => 'linker_conversation',
+			'post_status'   => 'private',
+			'numberposts'   => -1,
+			'fields'        => 'ids',
+			'cache_results' => false,
+		);
+		$existing = get_posts( $query );
 		$response = wp_remote_get( home_url( $path ) );
+		$created  = array_diff( get_posts( $query ), $existing );
+		$this->later(
+			static function () use ( $created ): void {
+				foreach ( $created as $id ) {
+					wp_delete_post( $id, true );
+				}
+			}
+		);
+		$this->assertSame( array(), $created, 'Reading the inquiry form must not create a Genie conversation.' );
 		$this->assertIsArray( $response );
 		$this->assertSame( 200, wp_remote_retrieve_response_code( $response ) );
 		$html = wp_remote_retrieve_body( $response );

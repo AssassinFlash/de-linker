@@ -1,187 +1,35 @@
-<!--
-  Blog search results, English.
-
-  LiveCanvas assigns this template with the `is_search` meta and `present`
-  installs it (Templates::FILES); the German twin carries
-  content/livecanvas/de/search.html (Templates::DE_FILES). Composition is this
-  file — styling is the WindPress volume file blog-search.css, installed by the
-  same run; no style block belongs here.
-
-  The face is the live search results page as the 2026-10-15 captures render
-  it. The result cards link `{Field url}`, the post's own permalink, so a
-  German result points inside the German tree; the live template wrote the
-  slug under the site root (`{Field name}` inside a root-relative href) and
-  sent every German result to a 404 (#175).
--->
+<!-- Journal discovery layout, owner reference 2026-10-18.
+     LiveCanvas owns composition; present owns this file and its German twin.
+     LC category links and the contextual native post loop retain routing,
+     current-topic semantics and pagination. Styling uses the WindPress volume. -->
 <tangible class="live-refresh">
-	<section id="tv-blog-search-v1">
+<section id="tv-blog-search-v1" class="linker-journal">
+  <div class="journal-shell">
+    <aside class="journal-sidebar">
+      <a class="journal-home" href="/blog/"><span class="journal-mark" aria-hidden="true">L</span>Linker Journal</a>
+      <nav class="tv-blog-cat-nav-inner journal-topics" aria-label="Journal topics">
+        <a href="/blog/" class="journal-all">All topics</a>
+        [lc_get_cats title_li="Topics" taxonomy="category" orderby="name" order="ASC" depth="1" use_desc_for_title="0"]
+      </nav>
+      <div class="journal-resources"><p>Resources</p>
+        <a href="/faq-download/">FAQ & documents<span aria-hidden="true">↗</span></a>
+        <a href="/products/">Products<span aria-hidden="true">↗</span></a>
+      </div>
+    </aside>
+    <div class="journal-main">
+      <div class="journal-topbar"><div class="journal-intro"><p class="journal-eyebrow">Search results</p><h1><escape><url query="s" /></escape></h1></div><form role="search" method="get" action="/" class="journal-search">
+        <input type="hidden" name="post_type" value="post">
+        <label for="journal-search" class="sr-only">Search the journal</label>
+        <input id="journal-search" type="search" name="s" placeholder="Search the journal">
+        <button type="submit" aria-label="Search"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg></button>
+      </form></div>
+      <div class="journal-content "><div class="journal-stream"><section id="tv-blog-browse" class="journal-feed" aria-label="All posts">
+            <h2>All posts</h2><div class="journal-grid"><loop class="contents"><article class="journal-card"><a href="{Field url}"><div class="journal-card-image"><if field="image"><img src="{Field image_url size='medium_large'}" srcset="{Field image_srcset}" sizes="(min-width: 1280px) 360px, (min-width: 800px) 45vw, 100vw" loading="lazy" alt="{Field image_alt}"><else><span class="journal-image-fallback" aria-hidden="true"></span></else></if></div><div class="journal-card-copy"><div class="journal-card-category"><loop type="taxonomy_term" taxonomy="category" post="current" count="1"><span><field name="title"></field></span></loop></div><h3><field name="journal_title"></field></h3><span class="journal-card-date"><field name="publish_date" date_format="M j, Y"></field></span></div></a></article></loop></div>
+            <if previous_total="" value="0"><div class="journal-empty"><h3>No matching posts found.</h3><p>Try another search term or choose a topic.</p><a href="/blog/">All topics <span aria-hidden="true">↗</span></a></div></if>
+            <div class="tv-blog-pagination journal-pagination">[lc_the_pagination]</div>
+          </section></div></div>
+    </div>
+  </div>
 
-		<!-- ============================================================
-       MODULE 1 — SEARCH MASTHEAD
-  ============================================================ -->
-		<section id="tv-blog-search-masthead">
-			<div class="tv-blog-search-container">
-				<div class="tv-blog-search-masthead-grid">
-					<div>
-						<div class="lc-block">
-							<nav aria-label="Breadcrumb" class="tv-blog-search-breadcrumb">
-								<a href="/blog/">Blog</a>
-								<span aria-hidden="true">/</span>
-								<span>Search</span>
-							</nav>
-						</div>
-
-						<div class="lc-block">
-							<h1 class="tv-blog-search-query">
-								<escape>
-									<url query="s" />
-								</escape>
-							</h1>
-						</div>
-
-						<form role="search" method="get" action="/" class="lc-block tv-blog-search-form">
-							<input type="hidden" name="post_type" value="post">
-							<label for="tv-blog-search-input" class="sr-only">Search articles</label>
-							<input id="tv-blog-search-input" type="search" name="s" placeholder="Search again">
-							<button type="submit" aria-label="Search">
-								<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-									<path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-								</svg>
-							</button>
-						</form>
-
-						<div class="lc-block">
-							<p class="tv-blog-search-masthead-lead">
-								Search technical articles by system sizing, installation, monitoring, or application topic.
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================
-       MODULE 2 — CATEGORY FILTER RAIL
-  ============================================================ -->
-		<section id="tv-blog-search-filters">
-			<div class="tv-blog-search-container">
-				<div class="lc-block tv-blog-search-filter-inner">
-					<a href="/blog/" class="tv-blog-search-filter-all">All articles</a>
-					<loop type="taxonomy_term" taxonomy="category" count="8" orderby="name" order="asc">
-						<a href="{Field url}" class="tv-blog-search-filter-item">
-							<field name="title"></field>
-						</a>
-					</loop>
-					<a href="/blog/" class="tv-blog-search-reset">Reset filters</a>
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================
-       MODULE 3 — SEARCH RESULTS GRID
-  ============================================================ -->
-		<section id="tv-blog-search-results">
-			<div class="tv-blog-search-container">
-				<div class="tv-blog-search-results-grid">
-					<loop class="contents">
-						<article class="lc-block">
-							<a href="{Field url}" class="tv-blog-search-result-card">
-								<div class="tv-blog-search-result-img">
-									<if field="image">
-										<img src="{Field image_url size='medium_large'}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="lazy" alt="{Field image_alt}">
-										<else>
-											<div class="tv-blog-search-img-fallback">
-												<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-													<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-												</svg>
-											</div>
-										</else>
-									</if>
-								</div>
-								<div class="tv-blog-search-result-body">
-									<div class="tv-blog-search-result-meta">
-										<field name="publish_date" date_format="M j, Y"></field>
-										<span aria-hidden="true">&middot;</span>
-										<loop type="taxonomy_term" taxonomy="category" post="current" count="1">
-											<span class="tv-blog-search-result-cat">
-												<field name="title"></field>
-											</span>
-										</loop>
-									</div>
-									<h3 class="tv-blog-search-result-title">
-										<field name="title"></field>
-									</h3>
-									<div class="tv-blog-search-result-excerpt">
-										<field name="excerpt" auto="true" words="20" more="..."></field>
-									</div>
-									<div class="tv-blog-search-result-author">
-										By <field name="author_full_name"></field>
-									</div>
-								</div>
-							</a>
-						</article>
-					</loop>
-				</div>
-
-				<!-- Empty state -->
-				<if previous_total="" value="0">
-					<div class="lc-block tv-blog-search-empty">
-						<h2>No matching articles found.</h2>
-						<p>Try another search term, browse all articles, or send your project parameters for a quote.</p>
-						<div class="tv-blog-search-empty-actions">
-							<a href="/blog/" class="tv-blog-search-btn-secondary">View all articles</a>
-							[linker_contact_link intent="project" class="tv-blog-search-btn-primary" label="Request a project quote" label_de="Projektangebot anfragen"]
-						</div>
-					</div>
-				</if>
-
-				<!-- Pagination -->
-				<div class="lc-block tv-blog-search-pagination">
-					[lc_the_pagination]
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================
-       MODULE 6 — READER CHECKPOINTS STRIP
-  ============================================================ -->
-		<section id="tv-blog-search-checkpoints">
-			<div class="tv-blog-search-container">
-				<div class="tv-blog-search-checkpoints-grid">
-					<div class="tv-blog-search-checkpoint">System sizing</div>
-					<div class="tv-blog-search-checkpoint">Battery storage</div>
-					<div class="tv-blog-search-checkpoint">Installation</div>
-					<div class="tv-blog-search-checkpoint">Monitoring</div>
-					<div class="tv-blog-search-checkpoint">Applications</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================
-       MODULE 7 — SEARCH-TO-CONTACT CTA
-  ============================================================ -->
-		<section id="tv-blog-search-cta">
-			<div class="tv-blog-search-container">
-				<div class="tv-blog-search-cta-inner">
-					<div class="lc-block">
-						<h2 class="tv-blog-search-cta-title">
-							Found a topic and ready to price a project?
-						</h2>
-						<p class="tv-blog-search-cta-body">
-							Share your project parameters and a colleague replies with availability, price and the next step.
-						</p>
-					</div>
-					<div class="lc-block tv-blog-search-cta-row">
-						[linker_contact_link intent="project" class="tv-blog-search-btn-cta-primary" label="Request a project quote →" label_de="Projektangebot anfragen →"]
-						<a href="/blog/" class="tv-blog-search-btn-cta-secondary">
-							Back to blog
-							<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-							</svg>
-						</a>
-					</div>
-				</div>
-			</div>
-		</section>
-	</section>
+</section>
 </tangible>

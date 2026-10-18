@@ -21,6 +21,12 @@ use WP_User;
  */
 abstract class TestCase extends WP_Mock\Tools\TestCase {
 
+	/** The optional language companion is unconfigured unless a fixture opts in. */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'pll_languages_list' )->andReturn( array() )->byDefault();
+	}
+
 	/**
 	 * The meta store of approval_meta().
 	 *

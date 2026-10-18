@@ -1,0 +1,55 @@
+[
+  {
+    "command": [
+      "eval-file",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/c254/.scratch/254/activation-probe.php"
+    ],
+    "status": 0,
+    "output": "{\"cached\":\"1\",\"individual\":\"1\",\"alloptions\":null,\"notoptions\":false,\"database\":null,\"error\":\"\"}\n"
+  },
+  {
+    "command": [
+      "linker-i18n",
+      "german-urls",
+      "--rollback",
+      "--apply"
+    ],
+    "status": 0,
+    "output": "Success: 77 changes.\n"
+  },
+  {
+    "command": [
+      "eval-file",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/c254/.scratch/254/activation-probe.php"
+    ],
+    "status": 0,
+    "output": "{\"cached\":\"1\",\"individual\":\"1\",\"alloptions\":null,\"notoptions\":false,\"database\":null,\"error\":\"\"}\n"
+  },
+  {
+    "command": [
+      "cache",
+      "delete",
+      "linker_i18n_german_urls_active",
+      "options"
+    ],
+    "status": 0,
+    "output": "Success: Object deleted.\n"
+  },
+  {
+    "command": [
+      "linker-i18n",
+      "german-urls",
+      "--apply"
+    ],
+    "status": 0,
+    "output": "Success: 77 changes.\n"
+  },
+  {
+    "command": [
+      "eval-file",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/c254/.scratch/254/activation-probe.php"
+    ],
+    "status": 0,
+    "output": "{\"cached\":\"1\",\"individual\":\"1\",\"alloptions\":null,\"notoptions\":false,\"database\":{\"option_value\":\"1\",\"autoload\":\"off\"},\"error\":\"\"}\n"
+  }
+]

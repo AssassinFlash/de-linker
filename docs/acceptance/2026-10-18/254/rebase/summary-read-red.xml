@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="2" assertions="2" errors="0" warnings="0" failures="2" skipped="0" time="0.573483">
+    <testsuite name="integration" tests="2" assertions="2" errors="0" warnings="0" failures="2" skipped="0" time="0.573483">
+      <testsuite name="Linker\Commerce\Tests\Integration\OpenInquiryTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php" tests="2" assertions="2" errors="0" warnings="0" failures="2" skipped="0" time="0.573483">
+        <testsuite name="Linker\Commerce\Tests\Integration\OpenInquiryTest::test_public_request_page_in_both_languages" tests="2" assertions="2" errors="0" warnings="0" failures="2" skipped="0" time="0.573483">
+          <testcase name="test_public_request_page_in_both_languages with data set &quot;en&quot;" class="Linker\Commerce\Tests\Integration\OpenInquiryTest" classname="Linker.Commerce.Tests.Integration.OpenInquiryTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php" line="58" assertions="1" time="0.325616">
+            <failure type="PHPUnit\Framework\ExpectationFailedException">Linker\Commerce\Tests\Integration\OpenInquiryTest::test_public_request_page_in_both_languages with data set "en" ('/proforma-request/', 'Send an inquiry', 'Message (optional)')
+Reading the inquiry form must not create a Genie conversation.
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &amp;0 ()
++Array &amp;0 (
++    0 =&gt; 26142
++)
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php:70
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99</failure>
+          </testcase>
+          <testcase name="test_public_request_page_in_both_languages with data set &quot;de&quot;" class="Linker\Commerce\Tests\Integration\OpenInquiryTest" classname="Linker.Commerce.Tests.Integration.OpenInquiryTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php" line="58" assertions="1" time="0.247867">
+            <failure type="PHPUnit\Framework\ExpectationFailedException">Linker\Commerce\Tests\Integration\OpenInquiryTest::test_public_request_page_in_both_languages with data set "de" ('/de/proforma-anfrage/', 'Anfrage senden', 'Nachricht (optional)')
+Reading the inquiry form must not create a Genie conversation.
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &amp;0 ()
++Array &amp;0 (
++    0 =&gt; 26143
++)
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php:70
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99</failure>
+          </testcase>
+        </testsuite>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

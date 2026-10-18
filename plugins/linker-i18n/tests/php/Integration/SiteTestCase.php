@@ -71,6 +71,7 @@ abstract class SiteTestCase extends TestCase {
 	 * @param array<string, string> $headers Request headers.
 	 * @param string|null           $body    Request body.
 	 * @return array{status: int, headers: array<string, string>, body: string} Header names in lower case.
+	 * @phpstan-impure HTTP observes the site's current database state.
 	 */
 	protected static function request( string $method, string $path, array $headers = array(), ?string $body = null ): array {
 		$lines = array();
@@ -115,6 +116,7 @@ abstract class SiteTestCase extends TestCase {
 	 * @param string                $path    Path and query from the site root.
 	 * @param array<string, string> $headers Request headers.
 	 * @return array{status: int, headers: array<string, string>, body: string}
+	 * @phpstan-impure HTTP observes the site's current database state.
 	 */
 	protected static function get( string $path, array $headers = array() ): array {
 		return self::request( 'GET', $path, $headers );

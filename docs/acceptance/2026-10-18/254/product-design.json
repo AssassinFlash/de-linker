@@ -1,0 +1,528 @@
+{
+  "source": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+  "cacheGenerated": "2026-10-18 18:36:14 Asia/Shanghai",
+  "captures": [
+    {
+      "compatibilityBounds": {
+        "bottom": 4880,
+        "top": 3336
+      },
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792319774"
+      ],
+      "h": 900,
+      "imageDecodeReady": "ready",
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928-300x225.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/goodwe-lynx-d-g2-bat-d-modules-20261007-01-300x208.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/our-brand-goodwe-mono-light.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/goodwe-lynx-d-g2-bat-d-modules-20261007-01.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en-US",
+      "path": "/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/",
+      "title": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh) | Linker",
+      "total": 5534,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false,
+      "compatibility": {
+        "columns": "620px 620px",
+        "count": 11
+      },
+      "overflow": false
+    },
+    {
+      "compatibilityBounds": {
+        "bottom": 4970,
+        "top": 3402
+      },
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792319774"
+      ],
+      "h": 900,
+      "imageDecodeReady": "ready",
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928-300x225.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/goodwe-lynx-d-g2-bat-d-modules-20261007-01-300x208.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/our-brand-goodwe-mono-light.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/goodwe-lynx-d-g2-bat-d-modules-20261007-01.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-150x150.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de-DE",
+      "path": "/de/produkt/goodwe-gw5-1-bat-d-g21-esa-batteriemodul-5-12-kwh/",
+      "title": "GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh) | Linker",
+      "total": 5625,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false,
+      "compatibility": {
+        "columns": "620px 620px",
+        "count": 11
+      },
+      "overflow": false
+    },
+    {
+      "compatibilityBounds": {
+        "bottom": 7033,
+        "top": 4673
+      },
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792319774"
+      ],
+      "h": 844,
+      "imageDecodeReady": "ready",
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/our-brand-goodwe-mono-light-600x117.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/goodwe-lynx-d-g2-bat-d-modules-20261007-01-600x417.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en-US",
+      "path": "/product/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/",
+      "title": "GoodWe GW5.1-BAT-D-G21 (ESA battery module, 5.12 kWh) | Linker",
+      "total": 7822,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false,
+      "compatibility": {
+        "columns": "350px",
+        "count": 11
+      },
+      "overflow": false
+    },
+    {
+      "compatibilityBounds": {
+        "bottom": 7346,
+        "top": 4750
+      },
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792319774"
+      ],
+      "h": 844,
+      "imageDecodeReady": "ready",
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-6-battery-module-studio-logo-20260928.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/our-brand-goodwe-mono-light-600x117.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/goodwe-lynx-d-g2-bat-d-modules-20261007-01-600x417.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/goodwe-esa-power-module-20260928-100x100.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de-DE",
+      "path": "/de/produkt/goodwe-gw5-1-bat-d-g21-esa-batteriemodul-5-12-kwh/",
+      "title": "GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh) | Linker",
+      "total": 8214,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "format": "native PNG",
+      "scale": 1,
+      "scrollPreparation": false,
+      "compatibility": {
+        "columns": "350px",
+        "count": 11
+      },
+      "overflow": false
+    }
+  ]
+}

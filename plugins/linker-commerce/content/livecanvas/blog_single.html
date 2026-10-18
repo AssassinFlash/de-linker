@@ -1,275 +1,45 @@
-<!--
-  Blog single post, English.
-
-  LiveCanvas assigns this template with the `is_single_post` meta and `present`
-  installs it (Templates::FILES); the German twin carries
-  content/livecanvas/de/blog_single.html (Templates::DE_FILES). Composition is
-  this file — styling is the WindPress volume file blog.css, installed by the
-  same run; no style block belongs here.
-
-  The face is the live article page as the 2026-10-12/13 captures render it,
-  markup unchanged. Two areas are rendered by the plugin's own shortcodes
-  instead of the template loop the live page used, so both are pinned by tests
-  rather than by the template engine: the meta Category links
-  ([linker_blog_post_categories]) and the related grid
-  ([linker_blog_related_posts], posts sharing a category, never a fallback to
-  the latest posts).
--->
+<!-- Reader workspace, owner references 2026-10-18.
+     LC owns composition and native post/share/navigation fields. The existing
+     category and related-post shortcodes supply data; WindPress owns design.
+     A single native disclosure serves the desktop and mobile contents map. -->
 <tangible class="live-refresh">
-	<article id="tv-blog-single-v1">
-
-		<!-- ============================================================
-       MODULE 1 — ARTICLE SPLIT HERO
-  ============================================================ -->
-		<section id="tv-blog-single-hero">
-			<div class="tv-blog-single-container">
-				<div class="tv-blog-single-hero-grid">
-					<div>
-						<div class="lc-block">
-							<nav aria-label="Breadcrumb" class="tv-blog-single-breadcrumb">
-								<a href="/blog/">Blog</a>
-								<span aria-hidden="true">/</span>
-								<loop type="taxonomy_term" taxonomy="category" post="current" count="1">
-									<a href="{Field url}">
-										<field name="title"></field>
-									</a>
-								</loop>
-							</nav>
-						</div>
-
-						<div class="lc-block">
-							<h1 class="tv-blog-single-hero-title">
-								<field name="title"></field>
-							</h1>
-						</div>
-
-						<div class="lc-block">
-							<p class="tv-blog-single-hero-excerpt">
-								<field name="excerpt" words="34" auto="true"></field>
-							</p>
-						</div>
-					</div>
-
-					<div>
-						<div class="lc-block tv-blog-single-hero-figure">
-							<if field="image">
-								<img src="{Field image_url}" srcset="{Field image_srcset}" sizes="{Field image_sizes}" loading="eager" alt="{Field image_alt}">
-								<else>
-									<div class="tv-blog-single-img-fallback">
-										<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-											<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-										</svg>
-									</div>
-								</else>
-							</if>
-
-							<div class="tv-blog-single-context-card">
-								<p class="tv-blog-single-context-label">Article context</p>
-								<div class="tv-blog-single-context-list">
-									<loop type="taxonomy_term" taxonomy="category" post="current" count="3">
-										<span class="tv-blog-single-context-item">
-											<field name="title"></field>
-										</span>
-									</loop>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================
-       MODULE 2 — READER BODY
-  ============================================================ -->
-		<section id="tv-blog-single-body">
-			<div class="tv-blog-single-container">
-				<div class="tv-blog-single-body-grid">
-					<!-- Left rail -->
-					<aside class="tv-blog-single-rail">
-						<!-- Author card -->
-						<div class="lc-block tv-blog-single-author-card">
-							<div class="tv-blog-single-author-row">
-								<if field="author_avatar">
-									<img src="{Field author_avatar_url size='96'}" class="tv-blog-single-author-avatar" alt="{Field author_full_name}">
-									<else>
-										<span class="tv-blog-single-author-fallback">
-											<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-												<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 7.5a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0" />
-											</svg>
-										</span>
-									</else>
-								</if>
-								<div>
-									<p class="tv-blog-single-author-name">
-										<field name="author_full_name"></field>
-									</p>
-									<p class="tv-blog-single-author-label">Article author</p>
-								</div>
-							</div>
-						</div>
-
-						<!-- Article map -->
-						<div class="tv-blog-single-map-card">
-							<p class="tv-blog-single-map-title">Table of contents</p>
-							<nav class="tv-blog-single-map-nav" aria-label="Article sections">
-								<a href="#tv-blog-single-body">
-									<span class="tv-blog-single-map-line" aria-hidden="true"></span>
-									<span>Main article</span>
-								</a>
-								<a href="#tv-blog-single-meta">
-									<span class="tv-blog-single-map-line" aria-hidden="true"></span>
-									<span>Article details</span>
-								</a>
-								<a href="#tv-blog-single-related">
-									<span class="tv-blog-single-map-line" aria-hidden="true"></span>
-									<span>Related reading</span>
-								</a>
-							</nav>
-						</div>
-
-						<!-- Share -->
-						<div class="tv-blog-single-share-card">
-							<p class="tv-blog-single-share-title">Share</p>
-							<div class="tv-blog-single-share-buttons">
-								[lc_the_sharing]
-							</div>
-						</div>
-					</aside>
-
-					<!-- Main article -->
-					<main class="tv-blog-single-main-card">
-						<div class="lc-block">
-							<div class="tv-blog-single-content">
-								<field name="content"></field>
-[linker_contact_invitation surface="article"]
-</div>
-						</div>
-
-						<div class="lc-block">
-							<if user_role="" includes="" value="administrator, editor, author">
-								<a href="{Field edit_url}" class="tv-blog-single-edit-link">
-									Edit this post <span>-&gt;</span>
-								</a>
-							</if>
-						</div>
-
-						<!-- Inline callout -->
-
-
-						<!-- Article meta -->
-						<div id="tv-blog-single-meta" class="lc-block">
-							<div class="tv-blog-single-meta-grid">
-								<div>
-									<p class="tv-blog-single-meta-label">Published</p>
-									<p class="tv-blog-single-meta-value">
-										<field name="publish_date" date_format="M j, Y"></field>
-									</p>
-								</div>
-								<div>
-									<p class="tv-blog-single-meta-label">Category</p>
-									<div class="tv-blog-single-meta-cats">
-										[linker_blog_post_categories]
-									</div>
-								</div>
-							</div>
-						</div>
-					</main>
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================
-       MODULE 4 — READER CHECKPOINTS STRIP
-  ============================================================ -->
-		<section id="tv-blog-single-checkpoints">
-			<div class="tv-blog-single-container">
-				<div class="tv-blog-single-checkpoints-grid">
-					<div class="tv-blog-single-checkpoint">System sizing</div>
-					<div class="tv-blog-single-checkpoint">Installation notes</div>
-					<div class="tv-blog-single-checkpoint">Monitoring context</div>
-					<div class="tv-blog-single-checkpoint">Application fit</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================
-       MODULE 5 — MINIMAL CTA BAND
-  ============================================================ -->
-		<section id="tv-blog-single-cta">
-			<div class="tv-blog-single-container">
-				<div class="tv-blog-single-cta-inner">
-					<div class="lc-block">
-						<h2 class="tv-blog-single-cta-title">
-							Turn article notes into a project quote.
-						</h2>
-						<p class="tv-blog-single-cta-body">
-							Share your project parameters and a colleague replies with availability, price and the next step.
-						</p>
-					</div>
-					<div class="lc-block tv-blog-single-cta-row">
-						[linker_contact_link intent="project" class="tv-blog-single-btn-primary-lg" label="Request a project quote →" label_de="Projektangebot anfragen →"]
-						<a href="/blog/" class="tv-blog-single-btn-secondary-lg">
-							Back to blog
-							<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-							</svg>
-						</a>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================
-       MODULE 6 — PREVIOUS / NEXT NAVIGATION
-       Reverted to LiveCanvas shortcodes because Tangible previous/next
-       loops do not resolve correctly in a single-post dynamic template.
-  ============================================================ -->
-		<section id="tv-blog-single-nav">
-			<div class="tv-blog-single-container">
-				<div class="tv-blog-single-nav-grid">
-					<div class="lc-block tv-blog-single-nav-cell">
-						<p class="tv-blog-single-nav-label">Previous</p>
-						<div class="tv-blog-single-nav-link">
-							[lc_the_previous_post_link class="tv-blog-single-nav-link"]
-						</div>
-					</div>
-					<div class="lc-block tv-blog-single-nav-cell">
-						<p class="tv-blog-single-nav-label">Next</p>
-						<div class="tv-blog-single-nav-link">
-							[lc_the_next_post_link class="tv-blog-single-nav-link"]
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ============================================================
-       MODULE 7 — RELATED ARTICLES
-  ============================================================ -->
-		<section id="tv-blog-single-related">
-			<div class="tv-blog-single-container">
-				<div class="tv-blog-single-related-header">
-					<div class="lc-block">
-						<p class="tv-blog-single-mono-muted">Related articles</p>
-						<h2 class="tv-blog-single-related-title">More from the blog</h2>
-					</div>
-					<a href="/blog/" class="tv-blog-single-related-all">View all articles</a>
-				</div>
-
-				<div class="tv-blog-single-related-grid">
-					[linker_blog_related_posts]
-				</div>
-			</div>
-		</section>
+<article id="tv-blog-single-v1">
+  <div class="reader-topbar"><a class="reader-back" href="/blog/"><span aria-hidden="true">←</span>Back to blog</a>
+    <form role="search" method="get" action="/" class="reader-search"><input type="hidden" name="post_type" value="post"><label class="sr-only" for="reader-search">Search the journal</label><input id="reader-search" type="search" name="s" placeholder="Search the journal"><button type="submit" aria-label="Search"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg></button></form>
+  </div>
+  <div class="reader-layout">
+    <aside class="reader-left"><details class="reader-toc" open><summary>On this page</summary><nav class="tv-blog-single-map-nav" aria-label="Post sections"><a href="#tv-blog-single-body">Overview</a><a href="#tv-blog-single-meta">Post details</a><a href="#tv-blog-single-related">Related reading</a></nav></details></aside>
+    <div class="tv-blog-single-main-card">
+      <header id="tv-blog-single-hero" class="reader-head">
+        <div class="reader-title"><div class="tv-blog-single-meta-cats">[linker_blog_post_categories]</div><h1 class="tv-blog-single-hero-title"><field name="title"></field></h1><div class="reader-byline"><span><field name="author_full_name"></field></span><span><field name="publish_date" date_format="M j, Y"></field></span></div></div>
+        <div class="reader-cover"><if field="image"><img src="{Field image_url}" srcset="{Field image_srcset}" sizes="(min-width: 1000px) 720px, 100vw" loading="eager" alt="{Field image_alt}"><else><div class="tv-blog-single-img-fallback" aria-hidden="true"></div></else></if></div>
+      </header>
+      <section id="tv-blog-single-body" class="reader-body"><div class="lc-block tv-blog-single-content"><field name="content"></field>[linker_contact_invitation surface="article"]</div>
+        <div id="tv-blog-single-meta" class="reader-meta"><span>Published: <field name="publish_date" date_format="M j, Y"></field></span><div class="tv-blog-single-meta-cats">[linker_blog_post_categories]</div></div>
+        <section id="tv-blog-single-cta" class="reader-actions">[linker_contact_link intent="project" class="tv-blog-single-btn-primary-lg" label="Request a project quote →" label_de="Projektangebot anfragen →"]<a href="/blog/">Back to blog</a></section>
+        <nav class="reader-adjacent" aria-label="More posts"><div><span>Previous post</span>[lc_the_previous_post_link class="tv-blog-single-nav-link"]</div><div><span>Next post</span>[lc_the_next_post_link class="tv-blog-single-nav-link"]</div></nav>
+      </section>
+    </div>
+    <aside class="reader-right"><div class="reader-share"><h2>Share</h2>[lc_the_sharing class="reader-share-links"]</div><section id="tv-blog-single-related"><h2>Related reading</h2><div class="tv-blog-single-related-grid">[linker_blog_related_posts]</div><a class="reader-all" href="/blog/">All posts <span aria-hidden="true">↗</span></a></section></aside>
+  </div>
 		<script>
 		(function () {
 			function buildArticleMap() {
 				var root = document.getElementById('tv-blog-single-v1');
 				if (!root) return;
+				root.querySelectorAll('.reader-share-links a').forEach(function (link) {
+					var name = link.textContent.trim();
+					if (name) { link.setAttribute('aria-label', name); link.setAttribute('title', name); }
+				});
+				var disclosure = root.querySelector('.reader-toc');
+				var desktop = window.matchMedia('(min-width:1000px)');
+				function sizeDisclosure() { disclosure.open = desktop.matches; }
+				if (disclosure) { sizeDisclosure(); desktop.addEventListener('change', sizeDisclosure); }
 				var content = root.querySelector('.tv-blog-single-content');
 				var map = root.querySelector('.tv-blog-single-map-nav');
 				var first = map && map.querySelector('a[href="#tv-blog-single-body"]');
+				var relatedLink = map && map.querySelector('a[href="#tv-blog-single-related"]');
+				if (relatedLink && !root.querySelector('.tv-blog-single-related-card')) relatedLink.remove();
 				if (!content || !first) return;
 				var headings = Array.prototype.filter.call(content.querySelectorAll('h2'), function (heading) {
 					return !heading.closest('.linker-contact-invitation');
@@ -305,6 +75,5 @@
 			else buildArticleMap();
 		})();
 		</script>
-	</article>
+</article>
 </tangible>
-

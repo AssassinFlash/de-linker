@@ -443,6 +443,34 @@ def test_the_deploy_installs_the_recorder_over_the_live_file(tmp_path: Path) -> 
     assert result.actions[1] == (f"deployed {plan.MU_PLUGINS_DIR}/{recorder} by rename")
 
 
+def test_deploy_publishes_the_volume_before_native_cache_generation(
+    tmp_path: Path,
+) -> None:
+    """A fresh volume needs WindPress's browser compilation before final verify."""
+
+    class UncompiledVolume(FilesystemTarget):
+        """The native present command rejects a cache older than its new sources."""
+
+        def wp(self, *args: str, check: bool = True) -> str:
+            if (
+                args[:2] == ("linker-commerce", "present")
+                and "--allow-stale" not in args
+            ):
+                raise CutoverError("WindPress cache is stale: generate it in its admin")
+            return super().wp(*args, check=check)
+
+    target = UncompiledVolume(tmp_path / "site")
+    result = steps.deploy(
+        target,
+        repository=_repository(tmp_path),
+        staging=tmp_path / "staging",
+        deploy_id="20261018T000000Z-fixture",
+    )
+
+    assert result.publication is not None
+    assert any(call[:2] == ("linker-commerce", "present") for call in target.calls)
+
+
 def test_deploy_and_rollback_use_real_filesystem_on_local_stand_in(
     tmp_path: Path,
 ) -> None:

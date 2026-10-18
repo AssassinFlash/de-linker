@@ -603,6 +603,14 @@ def main() -> int:
     args = parser.parse_args()
 
     migration = Migration(WP(args.wp, args.user))
+    # The newer migration owns the reviewed native German addresses and titles.
+    # Replaying this bootstrap's historical payload would overwrite those values
+    # and present-owned links. Its public entry becomes read-only after #254.
+    if args.command in ("plan", "apply") and migration.option(
+        "linker_i18n_german_urls_active"
+    ):
+        print("German URL migration is active; bootstrap import retired; 0 changes.")
+        return 0
     if args.command == "verify":
         with open(args.urls, encoding="utf-8") as handle:
             urls = json.load(handle)

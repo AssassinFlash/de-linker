@@ -462,9 +462,8 @@ final class TwinsTest extends TestCase {
 	 * An existing German category is written again, not only when it is
 	 * created. The English relationships are already gone, so the write
 	 * still has to put 551 back on term 10 and 6893 on the German term,
-	 * and a named slug must rename the German term (the live German
-	 * archive is /de/category/system-design/, not
-	 * /de/category/systemauslegung/; docs/debt/DE-PARITY-2026-10-13.md §4.1).
+	 * and a repeat import of its English slug preserves the established
+	 * German address under the owner's German-address ruling (#254).
 	 * The runtime write is fill-only (docs/specs/9-i18n.md, 2026-10-15 修订): both
 	 * posts carry no category yet, which is the state the write may fill.
 	 */
@@ -502,7 +501,7 @@ final class TwinsTest extends TestCase {
 					557,
 					'category',
 					Mockery::on(
-						static fn( array $args ): bool => 'system-design' === ( $args['slug'] ?? '' )
+						static fn( array $args ): bool => ! isset( $args['slug'] )
 							&& 'Systemauslegung' === ( $args['name'] ?? '' )
 					),
 				),
@@ -897,7 +896,7 @@ final class TwinsTest extends TestCase {
 					557,
 					'category',
 					Mockery::on(
-						static fn( array $args ): bool => 'system-design' === ( $args['slug'] ?? '' )
+						static fn( array $args ): bool => ! isset( $args['slug'] )
 							&& 'Systemauslegung' === ( $args['name'] ?? '' )
 					),
 				),

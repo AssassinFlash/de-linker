@@ -1,0 +1,377 @@
+{
+  "captures": [
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "en-US",
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 1547,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "en-inquiry-product-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "en-US",
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 1628,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "en-inquiry-error-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 1611,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "de-inquiry-product-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 1693,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "de-inquiry-error-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "en-US",
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 2127,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "en-inquiry-product-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "en-US",
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 2231,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "en-inquiry-error-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 2230,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "de-inquiry-product-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 2335,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "de-inquiry-error-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "en-US",
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 1343,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "en-inquiry-customer-collapsed-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "file": "en-inquiry-customer-expanded-1440.png",
+      "bad": [],
+      "expanded": true,
+      "h": 900,
+      "lang": "en-US",
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 2391,
+      "w": 1440,
+      "y": 0,
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 1366,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "de-inquiry-customer-collapsed-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "file": "de-inquiry-customer-expanded-1440.png",
+      "bad": [],
+      "expanded": true,
+      "h": 900,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 2415,
+      "w": 1440,
+      "y": 0,
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "en-US",
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 1747,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "en-inquiry-customer-collapsed-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "file": "en-inquiry-customer-expanded-390.png",
+      "bad": [],
+      "expanded": true,
+      "h": 844,
+      "lang": "en-US",
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 2926,
+      "w": 390,
+      "y": 0,
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 1810,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "de-inquiry-customer-collapsed-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "file": "de-inquiry-customer-expanded-390.png",
+      "bad": [],
+      "expanded": true,
+      "h": 844,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 2989,
+      "w": 390,
+      "y": 0,
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "en-US",
+      "path": "/proforma-request/inquiry-received/13755/",
+      "title": "Inquiry received | Linker",
+      "total": 1483,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "en-inquiry-confirmation-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "en-US",
+      "path": "/my-account/inquiry/13755/",
+      "title": "Partner Account: Sign In or Register | Linker",
+      "total": 1960,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "en-inquiry-detail-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/anfrage-eingegangen/13756/",
+      "title": "Anfrage eingegangen \u2013 13756 | Linker",
+      "total": 1483,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "de-inquiry-confirmation-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 900,
+      "lang": "de-DE",
+      "path": "/de/mein-konto/anfrage/13756/",
+      "title": "Anfrage 13756 | Linker",
+      "total": 1960,
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "file": "de-inquiry-detail-1440.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "en-US",
+      "path": "/proforma-request/inquiry-received/13755/",
+      "title": "Inquiry received | Linker",
+      "total": 1520,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "en-inquiry-confirmation-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "en-US",
+      "path": "/my-account/inquiry/13755/",
+      "title": "Partner Account: Sign In or Register | Linker",
+      "total": 2139,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "en-inquiry-detail-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "de-DE",
+      "path": "/de/proforma-anfrage/anfrage-eingegangen/13756/",
+      "title": "Anfrage eingegangen \u2013 13756 | Linker",
+      "total": 1583,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "de-inquiry-confirmation-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    },
+    {
+      "bad": [],
+      "css": [
+        "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792303957"
+      ],
+      "h": 844,
+      "lang": "de-DE",
+      "path": "/de/mein-konto/anfrage/13756/",
+      "title": "Anfrage 13756 | Linker",
+      "total": 2202,
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "file": "de-inquiry-detail-390.png",
+      "format": "PNG re-encoding of presentation-only JPEG capture; excluded from pixel metrics"
+    }
+  ],
+  "metric_evidence": false
+}

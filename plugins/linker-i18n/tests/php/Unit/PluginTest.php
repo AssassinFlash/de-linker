@@ -13,6 +13,9 @@ use Linker\I18n\DynamicTemplates;
 use Linker\I18n\Plugin;
 use Linker\I18n\Admin\StatusColumn;
 use Linker\I18n\Jobs;
+use Linker\I18n\GermanTitles;
+use Linker\I18n\GermanRoutes;
+use Linker\I18n\GermanUrlMigration;
 use Linker\I18n\Rest\RestLang;
 use Linker\I18n\SameSlug\Lookup;
 use Linker\I18n\SameSlug\PostSlugs;
@@ -56,6 +59,22 @@ final class PluginTest extends TestCase {
 		array( 'filter', 'term_link', UrlSegments::class, 'link', 30, 1 ),
 		array( 'filter', 'post_type_archive_link', UrlSegments::class, 'link', 30, 1 ),
 		array( 'filter', 'pll_translation_url', UrlSegments::class, 'link', 10, 1 ),
+		array( 'filter', 'seopress_titles_title', GermanTitles::class, 'title', 40, 1 ),
+		array( 'filter', 'pre_get_document_title', GermanTitles::class, 'title', 40, 1 ),
+		array( 'filter', 'seopress_titles_canonical', GermanTitles::class, 'canonical', 40, 1 ),
+		array( 'filter', 'seopress_social_og_url', GermanTitles::class, 'canonical', 40, 1 ),
+		array( 'filter', 'seopress_titles_canonical_on_noindex', GermanTitles::class, 'category_canonical', 10, 1 ),
+		array( 'action', 'wp', GermanRoutes::class, 'pagination', 10, 1 ),
+		array( 'filter', 'rewrite_rules_array', GermanRoutes::class, 'rules', 40, 1 ),
+		array( 'filter', 'term_link', GermanRoutes::class, 'link', 40, 1 ),
+		array( 'filter', 'get_pagenum_link', GermanRoutes::class, 'link', 10, 1 ),
+		array( 'filter', 'woocommerce_get_endpoint_url', GermanRoutes::class, 'link', 40, 1 ),
+		array( 'filter', 'woocommerce_edit_address_slugs', GermanRoutes::class, 'addresses', 10, 1 ),
+		array( 'filter', 'pll_translation_url', GermanRoutes::class, 'translation_url', 40, 1 ),
+		array( 'filter', 'pll_rel_hreflang_attributes', GermanRoutes::class, 'hreflangs', 40, 1 ),
+		array( 'filter', 'old_slug_redirect_post_id', GermanUrlMigration::class, 'old_post', 10, 1 ),
+		array( 'filter', 'old_slug_redirect_url', GermanUrlMigration::class, 'old_url', 10, 1 ),
+		array( 'filter', 'linker_tools_retired_url', GermanUrlMigration::class, 'retired_url', 10, 2 ),
 		array( 'filter', 'pll_rel_hreflang_attributes', Seo::class, 'hreflangs', 10, 1 ),
 		array( 'filter', 'do_redirect_guess_404_permalink', Seo::class, 'guess_404', 10, 1 ),
 		array( 'filter', 'seopress_titles_title', Seo::class, 'not_found_title', 10, 1 ),

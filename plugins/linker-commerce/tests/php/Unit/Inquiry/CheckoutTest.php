@@ -100,6 +100,7 @@ final class CheckoutTest extends TestCase {
 	 */
 	public function test_received_url_of_a_german_inquiry(): void {
 		$order = Mockery::mock( WC_Order::class );
+		$order->shouldReceive( 'get_id' )->andReturn( 7021 );
 		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'de_DE_formal' );
 		WP_Mock::userFunction(
 			'pll_get_post',
@@ -130,6 +131,7 @@ final class CheckoutTest extends TestCase {
 			)
 		);
 
+		$this->filter_returns( 'woocommerce_get_endpoint_url', 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k', array( 'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k', 'order-received', '7021', 'http://linker.test/de/proforma-anfrage/' ) );
 		$this->assertSame(
 			'http://linker.test/de/proforma-anfrage/inquiry-received/7021/?key=k',
 			( new Checkout() )->received_url( 'http://linker.test/proforma-request/inquiry-received/7021/?key=k', $order )
