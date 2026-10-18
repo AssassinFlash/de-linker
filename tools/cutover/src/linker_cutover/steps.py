@@ -455,8 +455,6 @@ def ensure_plugins(target: Target, slugs: tuple[str, ...]) -> list[str]:
     instances have one, and their isolation layer blocks wordpress.org on
     purpose), and stay silent about which of the two it did.
     """
-    print("deploy: plugin activation and language packs", flush=True)
-    started = time.monotonic()
     installed = {
         str(entry["name"])
         for entry in target.wp_json("plugin", "list", "--fields=name")
@@ -520,8 +518,6 @@ def remove_legacy(target: Target, *, snippets: Path, acceptance: Path) -> Result
         raise CutoverError(
             f"{snippets} is missing — export the snippets before deleting the plugin"
         )
-    print("deploy: plugin activation and language packs", flush=True)
-    started = time.monotonic()
     installed = {
         str(entry["name"])
         for entry in target.wp_json("plugin", "list", "--fields=name")
