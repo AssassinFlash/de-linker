@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Point product 2003's L260-OMNI portfolio entry at the two-page excerpt (#285 C2).
 
-The full 44-page portfolio stays in the media library. The product's document
-list is the one row that changes; the excerpt is a new media item (ID 7367),
-the same pattern as the pp. 17-18 excerpt beside the full datasheet.
+The full 44-page portfolio stays in the media library. Two product document
+sources change: `_linker_documents` (the site's list) and the ACF `downloads`
+rows (`_tv_legacy_acf_json`, `_linker_de_acf_json`) that the knowledge index
+reads for model tags. The excerpt is media item 7367, the same pattern as the
+pp. 17-18 excerpt beside the full datasheet.
 
-    python3 tools/migrate/285-l260-documents.py --wp "just wp c223"
-    python3 tools/migrate/285-l260-documents.py --wp "just wp c223" \
+    python3 tools/migrate/285-l260-documents.py --wp "just wp c254"
+    python3 tools/migrate/285-l260-documents.py --wp "just wp c254" \
         --write --backup-dir /tmp/285-l260
 
 Production needs the SSH WP-CLI command and --production:
@@ -15,11 +17,12 @@ Production needs the SSH WP-CLI command and --production:
         "ssh hostinger-de-linker /usr/local/bin/wp --path=/home/u388076051/domains/de-linker.com/public_html" \
         --write --production --backup-dir ~/de-linker-data/285-l260
 
-Without --write it only reports apply / done / drift. With --write it refuses
-on drift, saves the current product state outside the repository, writes, reads
-back and fails unless the document list is the reviewed target and the product's
-name, SKU, status, prices and stock fields are unchanged. Rollback is the saved
-JSON: run the same script with a plan whose `to` is the saved documents list.
+Without --write it only reports apply / done / drift per field. With --write
+it refuses on drift, saves the current product state outside the repository,
+writes the applying fields, reads back and fails unless every field holds the
+reviewed target and the product's name, SKU, status, prices and stock fields
+are unchanged. Rollback is the saved JSON: run the same script with a plan
+whose `to` values are the saved lists.
 """
 
 from __future__ import annotations
@@ -81,12 +84,57 @@ def run(wp: list[str], request: dict[str, Any]) -> dict[str, Any]:
     return {str(key): value for key, value in answer.items()}
 
 
+def read_request(plan: dict[str, Any]) -> dict[str, Any]:
+    """The PHP read request naming the document list and every downloads array."""
+    return {
+        "action": "read",
+        "product": plan["product"],
+        "meta_key": plan["meta_key"],
+        "download_keys": [spec["meta_key"] for spec in plan.get("downloads", [])],
+    }
+
+
+def checks(plan: dict[str, Any], state: dict[str, Any]) -> list[dict[str, Any]]:
+    """Every reviewed field with its current, before and after values."""
+    items = [
+        {
+            "label": plan["meta_key"],
+            "kind": "documents",
+            "meta_key": plan["meta_key"],
+            "current": state["documents"],
+            "from": plan["from"],
+            "to": plan["to"],
+        }
+    ]
+    for spec in plan.get("downloads", []):
+        items.append(
+            {
+                "label": spec["meta_key"],
+                "kind": "downloads",
+                "meta_key": spec["meta_key"],
+                "current": state["downloads"].get(spec["meta_key"]),
+                "from": spec["from"],
+                "to": spec["to"],
+            }
+        )
+    return items
+
+
+def status(check: dict[str, Any]) -> str:
+    """done, apply or drift for one field."""
+    if check["current"] == check["to"]:
+        return "done"
+    if check["current"] == check["from"]:
+        return "apply"
+    return "drift"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
     parser.add_argument(
         "--wp",
         required=True,
-        help='WP-CLI command of the target site, e.g. "just wp c223"',
+        help='WP-CLI command of the target site, e.g. "just wp c254"',
     )
     parser.add_argument(
         "--plan",
@@ -112,14 +160,7 @@ def main(argv: list[str] | None = None) -> int:
 
     plan = json.loads(args.plan.read_text(encoding="utf-8"))
     wp = shlex.split(args.wp)
-    state = run(
-        wp,
-        {
-            "action": "read",
-            "product": plan["product"],
-            "meta_key": plan["meta_key"],
-        },
-    )
+    state = run(wp, read_request(plan))
 
     host = state["site"].split("://", 1)[-1].split("/", 1)[0]
     print(f"Site: {state['site']}")
@@ -127,21 +168,27 @@ def main(argv: list[str] | None = None) -> int:
         f"Product {state['product']}: {state['fields']['name']} "
         f"({state['fields']['sku']})"
     )
-    current = state["documents"]
 
-    if current == plan["to"]:
-        print("done: the document list already points at the excerpt.")
-        return 0
-    if current != plan["from"]:
-        print(
-            "drift: the current document list is neither the reviewed before "
-            "nor the reviewed after state."
-        )
-        print("current:", json.dumps(current, ensure_ascii=False, indent=1))
-        print("from:", json.dumps(plan["from"], ensure_ascii=False, indent=1))
+    reviewed = checks(plan, state)
+    drifted = [check for check in reviewed if status(check) == "drift"]
+    if drifted:
+        for check in drifted:
+            print(
+                f"drift: {check['label']} is neither the reviewed before nor "
+                "the reviewed after state."
+            )
+            print(
+                "current:", json.dumps(check["current"], ensure_ascii=False, indent=1)
+            )
+            print("from:", json.dumps(check["from"], ensure_ascii=False, indent=1))
         return 1
 
-    print("apply: the document list holds the reviewed before state.")
+    pending = [check for check in reviewed if status(check) == "apply"]
+    if not pending:
+        print("done: every reviewed field already holds the target.")
+        return 0
+
+    print("apply: " + ", ".join(str(check["label"]) for check in pending))
     if not args.write:
         print("dry run; add --write to apply.")
         return 0
@@ -156,25 +203,29 @@ def main(argv: list[str] | None = None) -> int:
     backup.write_text(json.dumps(state, ensure_ascii=False, indent=1) + "\n")
     print(f"backup: {backup}")
 
+    fields = [
+        {
+            "kind": check["kind"],
+            "meta_key": check["meta_key"],
+            "value": check["to"],
+        }
+        for check in pending
+    ]
     run(
         wp,
         {
             "action": "write",
             "product": plan["product"],
-            "meta_key": plan["meta_key"],
-            "documents": plan["to"],
+            "fields": fields,
         },
     )
-    after = run(
-        wp,
-        {
-            "action": "read",
-            "product": plan["product"],
-            "meta_key": plan["meta_key"],
-        },
-    )
-    if after["documents"] != plan["to"]:
-        sys.exit("readback mismatch: the document list did not take the target value.")
+    after = run(wp, read_request(plan))
+    remaining = [check for check in checks(plan, after) if status(check) != "done"]
+    if remaining:
+        sys.exit(
+            "readback mismatch: "
+            + ", ".join(str(check["label"]) for check in remaining)
+        )
     changed = [
         key for key in PROTECTED if after["fields"].get(key) != state["fields"].get(key)
     ]
