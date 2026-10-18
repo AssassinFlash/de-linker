@@ -70,7 +70,12 @@ final class LocaleSwitch {
 		$this->switched = switch_to_locale( $locale );
 		add_filter( 'plugin_locale', array( $this, 'plugin_locale' ) );
 		$this->reload_domain();
-		WC()->load_plugin_textdomain();
+		// The companion plugin's enter() already switched WordPress to the
+		// same locale, so switch_to_locale() above is a no-op and WordPress
+		// does not reload the loaded text domains. WooCommerce's own domain
+		// would stay in the previous language; its country list would render
+		// English names inside a German card. Reload that domain here.
+		$this->reload_woocommerce_domain();
 		$this->countries = WC()->countries;
 		WC()->countries  = new \WC_Countries();
 	}
@@ -90,11 +95,36 @@ final class LocaleSwitch {
 		remove_filter( 'plugin_locale', array( $this, 'plugin_locale' ) );
 		$this->locale = '';
 		$this->reload_domain();
-		WC()->load_plugin_textdomain();
+		$this->reload_woocommerce_domain();
 		if ( null !== $this->countries ) {
 			WC()->countries  = $this->countries;
 			$this->countries = null;
 		}
+	}
+
+	/**
+	 * Loads WooCommerce's own translations for the active locale. The caller
+	 * may already have switched WordPress to this locale through the companion
+	 * plugin, so WordPress's own switch is a no-op and does not reload loaded
+	 * domains; the file is read directly, as this plugin's own domain is.
+	 */
+	private function reload_woocommerce_domain(): void {
+		$locale = '' === $this->locale ? determine_locale() : $this->locale;
+		unload_textdomain( 'woocommerce' );
+		$files = array();
+		if ( defined( 'WP_LANG_DIR' ) ) {
+			$files[] = WP_LANG_DIR . '/plugins/woocommerce-' . $locale . '.mo';
+		}
+		if ( defined( 'WP_PLUGIN_DIR' ) ) {
+			$files[] = WP_PLUGIN_DIR . '/woocommerce/i18n/languages/woocommerce-' . $locale . '.mo';
+		}
+		foreach ( $files as $mofile ) {
+			if ( is_readable( $mofile ) ) {
+				load_textdomain( 'woocommerce', $mofile );
+				return;
+			}
+		}
+		WC()->load_plugin_textdomain();
 	}
 
 	/**
