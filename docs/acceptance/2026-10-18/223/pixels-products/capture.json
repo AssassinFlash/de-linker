@@ -1,0 +1,2302 @@
+{
+  "cases": [
+    {
+      "path": "/products/",
+      "stem": "en-shop",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "shop guest entries:0",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            1033,
+            809,
+            1078
+          ]
+        },
+        {
+          "name": "shop guest entries:1",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            1033,
+            1379,
+            1078
+          ]
+        },
+        {
+          "name": "shop guest entries:2",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            1685,
+            809,
+            1730
+          ]
+        },
+        {
+          "name": "shop guest entries:3",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            1685,
+            1379,
+            1730
+          ]
+        },
+        {
+          "name": "shop guest entries:4",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            2337,
+            809,
+            2382
+          ]
+        },
+        {
+          "name": "shop guest entries:5",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            2337,
+            1379,
+            2382
+          ]
+        },
+        {
+          "name": "shop guest entries:6",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            2989,
+            809,
+            3034
+          ]
+        },
+        {
+          "name": "shop guest entries:7",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            2989,
+            1379,
+            3034
+          ]
+        },
+        {
+          "name": "shop guest entries:8",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            3641,
+            809,
+            3686
+          ]
+        },
+        {
+          "name": "shop guest entries:9",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            3641,
+            1379,
+            3686
+          ]
+        },
+        {
+          "name": "shop guest entries:10",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            4293,
+            809,
+            4338
+          ]
+        },
+        {
+          "name": "shop guest entries:11",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            4293,
+            1379,
+            4338
+          ]
+        },
+        {
+          "name": "shop guest entries:12",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            4945,
+            809,
+            4990
+          ]
+        },
+        {
+          "name": "shop guest entries:13",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            4945,
+            1379,
+            4990
+          ]
+        },
+        {
+          "name": "shop guest entries:14",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            5596,
+            809,
+            5641
+          ]
+        },
+        {
+          "name": "shop guest entries:15",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            5596,
+            1379,
+            5641
+          ]
+        },
+        {
+          "name": "shop guest entries:16",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            6248,
+            809,
+            6293
+          ]
+        },
+        {
+          "name": "shop guest entries:17",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            6248,
+            1379,
+            6293
+          ]
+        },
+        {
+          "name": "shop guest entries:18",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            6900,
+            809,
+            6945
+          ]
+        },
+        {
+          "name": "shop guest entries:19",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            6900,
+            1379,
+            6945
+          ]
+        },
+        {
+          "name": "shop guest entries:20",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            7552,
+            809,
+            7597
+          ]
+        },
+        {
+          "name": "shop guest entries:21",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            7552,
+            1379,
+            7597
+          ]
+        },
+        {
+          "name": "shop guest entries:22",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            8204,
+            809,
+            8249
+          ]
+        },
+        {
+          "name": "shop guest entries:23",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            8204,
+            1379,
+            8249
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/product-category/inverters/",
+      "stem": "en-category",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "category guest entries:0",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            1059,
+            809,
+            1104
+          ]
+        },
+        {
+          "name": "category guest entries:1",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            1059,
+            1379,
+            1104
+          ]
+        },
+        {
+          "name": "category guest entries:2",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            1711,
+            809,
+            1756
+          ]
+        },
+        {
+          "name": "category guest entries:3",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            1711,
+            1379,
+            1756
+          ]
+        },
+        {
+          "name": "category guest entries:4",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            2363,
+            809,
+            2408
+          ]
+        },
+        {
+          "name": "category guest entries:5",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            2363,
+            1379,
+            2408
+          ]
+        },
+        {
+          "name": "category guest entries:6",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            3015,
+            809,
+            3060
+          ]
+        },
+        {
+          "name": "category guest entries:7",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            3015,
+            1379,
+            3060
+          ]
+        },
+        {
+          "name": "category guest entries:8",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            3667,
+            809,
+            3711
+          ]
+        },
+        {
+          "name": "category guest entries:9",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            3667,
+            1379,
+            3711
+          ]
+        },
+        {
+          "name": "category guest entries:10",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            4318,
+            809,
+            4363
+          ]
+        },
+        {
+          "name": "category guest entries:11",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            4318,
+            1379,
+            4363
+          ]
+        },
+        {
+          "name": "category guest entries:12",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            4970,
+            809,
+            5015
+          ]
+        },
+        {
+          "name": "category guest entries:13",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            4970,
+            1379,
+            5015
+          ]
+        },
+        {
+          "name": "category guest entries:14",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            5622,
+            809,
+            5667
+          ]
+        },
+        {
+          "name": "category guest entries:15",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            5622,
+            1379,
+            5667
+          ]
+        },
+        {
+          "name": "category guest entries:16",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            6274,
+            809,
+            6319
+          ]
+        },
+        {
+          "name": "category guest entries:17",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            6274,
+            1379,
+            6319
+          ]
+        },
+        {
+          "name": "category guest entries:18",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            6904,
+            809,
+            6949
+          ]
+        },
+        {
+          "name": "category guest entries:19",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            6926,
+            1379,
+            6971
+          ]
+        },
+        {
+          "name": "category guest entries:20",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            7578,
+            809,
+            7623
+          ]
+        },
+        {
+          "name": "category guest entries:21",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            7578,
+            1379,
+            7623
+          ]
+        },
+        {
+          "name": "category guest entries:22",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            8229,
+            809,
+            8274
+          ]
+        },
+        {
+          "name": "category guest entries:23",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            8229,
+            1379,
+            8274
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/product/saj-h2-10k-t3/",
+      "stem": "en-product",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "product guest entries:0",
+          "selector": ".pdp-price",
+          "bounds": [
+            952,
+            296,
+            1360,
+            321
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/compare-products/?ids=4107,4108",
+      "stem": "en-compare",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "owner-rejected comparison design layer restored:0",
+          "selector": ".sf-compare",
+          "bounds": [
+            0,
+            89,
+            1440,
+            3405
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "stem": "en-genie-dock",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries:0",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            1020,
+            7562,
+            1420,
+            8162
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/genie/",
+      "stem": "en-genie-workspace",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "genie-workspace guest entries:0",
+          "selector": ".linker-genie-panel--workspace",
+          "bounds": [
+            0,
+            89,
+            1440,
+            1475
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/produkte/",
+      "stem": "de-shop",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "shop guest entries:0",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            1033,
+            809,
+            1078
+          ]
+        },
+        {
+          "name": "shop guest entries:1",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            1033,
+            1379,
+            1078
+          ]
+        },
+        {
+          "name": "shop guest entries:2",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            1685,
+            809,
+            1730
+          ]
+        },
+        {
+          "name": "shop guest entries:3",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            1685,
+            1379,
+            1730
+          ]
+        },
+        {
+          "name": "shop guest entries:4",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            2337,
+            809,
+            2382
+          ]
+        },
+        {
+          "name": "shop guest entries:5",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            2337,
+            1379,
+            2382
+          ]
+        },
+        {
+          "name": "shop guest entries:6",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            2989,
+            809,
+            3034
+          ]
+        },
+        {
+          "name": "shop guest entries:7",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            2989,
+            1379,
+            3034
+          ]
+        },
+        {
+          "name": "shop guest entries:8",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            3641,
+            809,
+            3686
+          ]
+        },
+        {
+          "name": "shop guest entries:9",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            3641,
+            1379,
+            3686
+          ]
+        },
+        {
+          "name": "shop guest entries:10",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            4293,
+            809,
+            4338
+          ]
+        },
+        {
+          "name": "shop guest entries:11",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            4293,
+            1379,
+            4338
+          ]
+        },
+        {
+          "name": "shop guest entries:12",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            4945,
+            809,
+            4990
+          ]
+        },
+        {
+          "name": "shop guest entries:13",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            4945,
+            1379,
+            4990
+          ]
+        },
+        {
+          "name": "shop guest entries:14",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            5596,
+            809,
+            5641
+          ]
+        },
+        {
+          "name": "shop guest entries:15",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            5596,
+            1379,
+            5641
+          ]
+        },
+        {
+          "name": "shop guest entries:16",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            6248,
+            809,
+            6293
+          ]
+        },
+        {
+          "name": "shop guest entries:17",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            6248,
+            1379,
+            6293
+          ]
+        },
+        {
+          "name": "shop guest entries:18",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            6900,
+            809,
+            6945
+          ]
+        },
+        {
+          "name": "shop guest entries:19",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            6900,
+            1379,
+            6945
+          ]
+        },
+        {
+          "name": "shop guest entries:20",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            7552,
+            809,
+            7597
+          ]
+        },
+        {
+          "name": "shop guest entries:21",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            7552,
+            1379,
+            7597
+          ]
+        },
+        {
+          "name": "shop guest entries:22",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            8204,
+            809,
+            8249
+          ]
+        },
+        {
+          "name": "shop guest entries:23",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            8204,
+            1379,
+            8249
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/produkt-kategorie/wechselrichter/",
+      "stem": "de-category",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "category guest entries:0",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            1059,
+            809,
+            1104
+          ]
+        },
+        {
+          "name": "category guest entries:1",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            1059,
+            1379,
+            1104
+          ]
+        },
+        {
+          "name": "category guest entries:2",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            1711,
+            809,
+            1756
+          ]
+        },
+        {
+          "name": "category guest entries:3",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            1711,
+            1379,
+            1756
+          ]
+        },
+        {
+          "name": "category guest entries:4",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            2363,
+            809,
+            2408
+          ]
+        },
+        {
+          "name": "category guest entries:5",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            2363,
+            1379,
+            2408
+          ]
+        },
+        {
+          "name": "category guest entries:6",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            3015,
+            809,
+            3060
+          ]
+        },
+        {
+          "name": "category guest entries:7",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            3015,
+            1379,
+            3060
+          ]
+        },
+        {
+          "name": "category guest entries:8",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            3667,
+            809,
+            3711
+          ]
+        },
+        {
+          "name": "category guest entries:9",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            3667,
+            1379,
+            3711
+          ]
+        },
+        {
+          "name": "category guest entries:10",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            4318,
+            809,
+            4363
+          ]
+        },
+        {
+          "name": "category guest entries:11",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            4318,
+            1379,
+            4363
+          ]
+        },
+        {
+          "name": "category guest entries:12",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            4970,
+            809,
+            5015
+          ]
+        },
+        {
+          "name": "category guest entries:13",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            4970,
+            1379,
+            5015
+          ]
+        },
+        {
+          "name": "category guest entries:14",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            5622,
+            809,
+            5667
+          ]
+        },
+        {
+          "name": "category guest entries:15",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            5622,
+            1379,
+            5667
+          ]
+        },
+        {
+          "name": "category guest entries:16",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            6274,
+            809,
+            6319
+          ]
+        },
+        {
+          "name": "category guest entries:17",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            6274,
+            1379,
+            6319
+          ]
+        },
+        {
+          "name": "category guest entries:18",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            6904,
+            809,
+            6949
+          ]
+        },
+        {
+          "name": "category guest entries:19",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            6926,
+            1379,
+            6971
+          ]
+        },
+        {
+          "name": "category guest entries:20",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            7578,
+            809,
+            7623
+          ]
+        },
+        {
+          "name": "category guest entries:21",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            7578,
+            1379,
+            7623
+          ]
+        },
+        {
+          "name": "category guest entries:22",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            303,
+            8229,
+            809,
+            8274
+          ]
+        },
+        {
+          "name": "category guest entries:23",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            873,
+            8229,
+            1379,
+            8274
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/produkt/saj-h2-10k-t3/",
+      "stem": "de-product",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "product guest entries:0",
+          "selector": ".pdp-price",
+          "bounds": [
+            952,
+            296,
+            1360,
+            321
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/compare-products/?ids=4107,4108",
+      "stem": "de-compare",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "owner-rejected comparison design layer restored:0",
+          "selector": ".sf-compare",
+          "bounds": [
+            0,
+            89,
+            1440,
+            3427
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/",
+      "stem": "de-genie-dock",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries:0",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            1020,
+            7875,
+            1420,
+            8475
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/genie/",
+      "stem": "de-genie-workspace",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "genie-workspace guest entries:0",
+          "selector": ".linker-genie-panel--workspace",
+          "bounds": [
+            0,
+            89,
+            1440,
+            1475
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/products/",
+      "stem": "en-shop",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "shop guest entries:0",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            770,
+            357,
+            815
+          ]
+        },
+        {
+          "name": "shop guest entries:1",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            1207,
+            357,
+            1252
+          ]
+        },
+        {
+          "name": "shop guest entries:2",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            1658,
+            357,
+            1703
+          ]
+        },
+        {
+          "name": "shop guest entries:3",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2095,
+            357,
+            2140
+          ]
+        },
+        {
+          "name": "shop guest entries:4",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2532,
+            357,
+            2577
+          ]
+        },
+        {
+          "name": "shop guest entries:5",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2969,
+            357,
+            3014
+          ]
+        },
+        {
+          "name": "shop guest entries:6",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3421,
+            357,
+            3466
+          ]
+        },
+        {
+          "name": "shop guest entries:7",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3858,
+            357,
+            3903
+          ]
+        },
+        {
+          "name": "shop guest entries:8",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            4295,
+            357,
+            4340
+          ]
+        },
+        {
+          "name": "shop guest entries:9",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            4732,
+            357,
+            4777
+          ]
+        },
+        {
+          "name": "shop guest entries:10",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            5183,
+            357,
+            5228
+          ]
+        },
+        {
+          "name": "shop guest entries:11",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            5620,
+            357,
+            5665
+          ]
+        },
+        {
+          "name": "shop guest entries:12",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            6071,
+            357,
+            6116
+          ]
+        },
+        {
+          "name": "shop guest entries:13",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            6546,
+            357,
+            6591
+          ]
+        },
+        {
+          "name": "shop guest entries:14",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            6983,
+            357,
+            7028
+          ]
+        },
+        {
+          "name": "shop guest entries:15",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            7434,
+            357,
+            7479
+          ]
+        },
+        {
+          "name": "shop guest entries:16",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            7886,
+            357,
+            7931
+          ]
+        },
+        {
+          "name": "shop guest entries:17",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            8323,
+            357,
+            8368
+          ]
+        },
+        {
+          "name": "shop guest entries:18",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            8760,
+            357,
+            8805
+          ]
+        },
+        {
+          "name": "shop guest entries:19",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            9211,
+            357,
+            9256
+          ]
+        },
+        {
+          "name": "shop guest entries:20",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            9648,
+            357,
+            9693
+          ]
+        },
+        {
+          "name": "shop guest entries:21",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            10100,
+            357,
+            10145
+          ]
+        },
+        {
+          "name": "shop guest entries:22",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            10551,
+            357,
+            10596
+          ]
+        },
+        {
+          "name": "shop guest entries:23",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            10988,
+            357,
+            11033
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/product-category/inverters/",
+      "stem": "en-category",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "category guest entries:0",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            785,
+            357,
+            830
+          ]
+        },
+        {
+          "name": "category guest entries:1",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            1222,
+            357,
+            1267
+          ]
+        },
+        {
+          "name": "category guest entries:2",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            1658,
+            357,
+            1703
+          ]
+        },
+        {
+          "name": "category guest entries:3",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2095,
+            357,
+            2140
+          ]
+        },
+        {
+          "name": "category guest entries:4",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2547,
+            357,
+            2592
+          ]
+        },
+        {
+          "name": "category guest entries:5",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2984,
+            357,
+            3029
+          ]
+        },
+        {
+          "name": "category guest entries:6",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3435,
+            357,
+            3480
+          ]
+        },
+        {
+          "name": "category guest entries:7",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3910,
+            357,
+            3955
+          ]
+        },
+        {
+          "name": "category guest entries:8",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            4347,
+            357,
+            4392
+          ]
+        },
+        {
+          "name": "category guest entries:9",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            4798,
+            357,
+            4843
+          ]
+        },
+        {
+          "name": "category guest entries:10",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            5250,
+            357,
+            5295
+          ]
+        },
+        {
+          "name": "category guest entries:11",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            5687,
+            357,
+            5732
+          ]
+        },
+        {
+          "name": "category guest entries:12",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            6124,
+            357,
+            6169
+          ]
+        },
+        {
+          "name": "category guest entries:13",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            6575,
+            357,
+            6620
+          ]
+        },
+        {
+          "name": "category guest entries:14",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            7012,
+            357,
+            7057
+          ]
+        },
+        {
+          "name": "category guest entries:15",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            7464,
+            357,
+            7509
+          ]
+        },
+        {
+          "name": "category guest entries:16",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            7915,
+            357,
+            7960
+          ]
+        },
+        {
+          "name": "category guest entries:17",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            8352,
+            357,
+            8397
+          ]
+        },
+        {
+          "name": "category guest entries:18",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            8793,
+            357,
+            8838
+          ]
+        },
+        {
+          "name": "category guest entries:19",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            9230,
+            357,
+            9275
+          ]
+        },
+        {
+          "name": "category guest entries:20",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            9682,
+            357,
+            9727
+          ]
+        },
+        {
+          "name": "category guest entries:21",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            10118,
+            357,
+            10163
+          ]
+        },
+        {
+          "name": "category guest entries:22",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            10555,
+            357,
+            10600
+          ]
+        },
+        {
+          "name": "category guest entries:23",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            11007,
+            357,
+            11052
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/product/saj-h2-10k-t3/",
+      "stem": "en-product",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "product guest entries:0",
+          "selector": ".pdp-price",
+          "bounds": [
+            29,
+            11718,
+            193,
+            11752
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/compare-products/?ids=4107,4108",
+      "stem": "en-compare",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "owner-rejected comparison design layer restored:0",
+          "selector": ".sf-compare",
+          "bounds": [
+            0,
+            81,
+            390,
+            4795
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/genie/",
+      "stem": "en-genie-workspace",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-workspace guest entries:0",
+          "selector": ".linker-genie-panel--workspace",
+          "bounds": [
+            0,
+            81,
+            390,
+            1569
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/produkte/",
+      "stem": "de-shop",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "shop guest entries:0",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            789,
+            357,
+            834
+          ]
+        },
+        {
+          "name": "shop guest entries:1",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            1226,
+            357,
+            1271
+          ]
+        },
+        {
+          "name": "shop guest entries:2",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            1701,
+            357,
+            1746
+          ]
+        },
+        {
+          "name": "shop guest entries:3",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2138,
+            357,
+            2183
+          ]
+        },
+        {
+          "name": "shop guest entries:4",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2574,
+            357,
+            2619
+          ]
+        },
+        {
+          "name": "shop guest entries:5",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3011,
+            357,
+            3056
+          ]
+        },
+        {
+          "name": "shop guest entries:6",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3486,
+            357,
+            3531
+          ]
+        },
+        {
+          "name": "shop guest entries:7",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3923,
+            357,
+            3968
+          ]
+        },
+        {
+          "name": "shop guest entries:8",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            4374,
+            357,
+            4419
+          ]
+        },
+        {
+          "name": "shop guest entries:9",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            4811,
+            357,
+            4856
+          ]
+        },
+        {
+          "name": "shop guest entries:10",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            5263,
+            357,
+            5308
+          ]
+        },
+        {
+          "name": "shop guest entries:11",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            5714,
+            357,
+            5759
+          ]
+        },
+        {
+          "name": "shop guest entries:12",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            6189,
+            357,
+            6234
+          ]
+        },
+        {
+          "name": "shop guest entries:13",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            6663,
+            357,
+            6708
+          ]
+        },
+        {
+          "name": "shop guest entries:14",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            7138,
+            357,
+            7183
+          ]
+        },
+        {
+          "name": "shop guest entries:15",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            7612,
+            357,
+            7657
+          ]
+        },
+        {
+          "name": "shop guest entries:16",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            8086,
+            357,
+            8131
+          ]
+        },
+        {
+          "name": "shop guest entries:17",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            8523,
+            357,
+            8568
+          ]
+        },
+        {
+          "name": "shop guest entries:18",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            8960,
+            357,
+            9005
+          ]
+        },
+        {
+          "name": "shop guest entries:19",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            9435,
+            357,
+            9480
+          ]
+        },
+        {
+          "name": "shop guest entries:20",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            9886,
+            357,
+            9931
+          ]
+        },
+        {
+          "name": "shop guest entries:21",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            10338,
+            357,
+            10383
+          ]
+        },
+        {
+          "name": "shop guest entries:22",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            10789,
+            357,
+            10834
+          ]
+        },
+        {
+          "name": "shop guest entries:23",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            11241,
+            357,
+            11286
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/produkt-kategorie/wechselrichter/",
+      "stem": "de-category",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "category guest entries:0",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            827,
+            357,
+            872
+          ]
+        },
+        {
+          "name": "category guest entries:1",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            1264,
+            357,
+            1309
+          ]
+        },
+        {
+          "name": "category guest entries:2",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            1701,
+            357,
+            1746
+          ]
+        },
+        {
+          "name": "category guest entries:3",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2138,
+            357,
+            2183
+          ]
+        },
+        {
+          "name": "category guest entries:4",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            2612,
+            357,
+            2657
+          ]
+        },
+        {
+          "name": "category guest entries:5",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3049,
+            357,
+            3094
+          ]
+        },
+        {
+          "name": "category guest entries:6",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3523,
+            357,
+            3568
+          ]
+        },
+        {
+          "name": "category guest entries:7",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            3998,
+            357,
+            4043
+          ]
+        },
+        {
+          "name": "category guest entries:8",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            4472,
+            357,
+            4517
+          ]
+        },
+        {
+          "name": "category guest entries:9",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            4947,
+            357,
+            4992
+          ]
+        },
+        {
+          "name": "category guest entries:10",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            5421,
+            357,
+            5466
+          ]
+        },
+        {
+          "name": "category guest entries:11",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            5858,
+            357,
+            5903
+          ]
+        },
+        {
+          "name": "category guest entries:12",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            6295,
+            357,
+            6340
+          ]
+        },
+        {
+          "name": "category guest entries:13",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            6769,
+            357,
+            6814
+          ]
+        },
+        {
+          "name": "category guest entries:14",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            7221,
+            357,
+            7266
+          ]
+        },
+        {
+          "name": "category guest entries:15",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            7673,
+            357,
+            7717
+          ]
+        },
+        {
+          "name": "category guest entries:16",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            8124,
+            357,
+            8169
+          ]
+        },
+        {
+          "name": "category guest entries:17",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            8576,
+            357,
+            8621
+          ]
+        },
+        {
+          "name": "category guest entries:18",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            9033,
+            357,
+            9078
+          ]
+        },
+        {
+          "name": "category guest entries:19",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            9470,
+            357,
+            9515
+          ]
+        },
+        {
+          "name": "category guest entries:20",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            9922,
+            357,
+            9967
+          ]
+        },
+        {
+          "name": "category guest entries:21",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            10359,
+            357,
+            10403
+          ]
+        },
+        {
+          "name": "category guest entries:22",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            10795,
+            357,
+            10840
+          ]
+        },
+        {
+          "name": "category guest entries:23",
+          "selector": ".sf-card-actions",
+          "bounds": [
+            33,
+            11270,
+            357,
+            11315
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/produkt/saj-h2-10k-t3/",
+      "stem": "de-product",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "product guest entries:0",
+          "selector": ".pdp-price",
+          "bounds": [
+            29,
+            12490,
+            193,
+            12524
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/compare-products/?ids=4107,4108",
+      "stem": "de-compare",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "owner-rejected comparison design layer restored:0",
+          "selector": ".sf-compare",
+          "bounds": [
+            0,
+            81,
+            390,
+            5275
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/genie/",
+      "stem": "de-genie-workspace",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-workspace guest entries:0",
+          "selector": ".linker-genie-panel--workspace",
+          "bounds": [
+            0,
+            81,
+            390,
+            1632
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/products/",
+      "stem": "en-genie-dock-mobile",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries:0",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            0,
+            48,
+            390,
+            12252
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/produkte/",
+      "stem": "de-genie-dock-mobile",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries:0",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            0,
+            48,
+            390,
+            12590
+          ]
+        }
+      ]
+    }
+  ],
+  "allowedHeaderChanges": [],
+  "networkRoute": "direct browser connection"
+}

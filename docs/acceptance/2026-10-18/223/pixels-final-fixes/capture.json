@@ -1,0 +1,238 @@
+{
+  "cases": [
+    {
+      "path": "/cart/",
+      "stem": "en-draft",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "draft account entries:0",
+          "selector": ".sf-cart-empty__actions",
+          "padding": 0,
+          "bounds": [
+            416,
+            417,
+            1024,
+            465
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/warenkorb/",
+      "stem": "de-draft",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "draft account entries:0",
+          "selector": ".sf-cart-empty__actions",
+          "padding": 0,
+          "bounds": [
+            416,
+            417,
+            1024,
+            465
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "stem": "en-genie-dock",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries:0",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            1020,
+            7562,
+            1420,
+            8162
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/genie/",
+      "stem": "en-genie-workspace",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "genie-workspace guest entries:0",
+          "selector": ".linker-genie-panel--workspace",
+          "bounds": [
+            0,
+            89,
+            1440,
+            1475
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/",
+      "stem": "de-genie-dock",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries:0",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            1020,
+            7875,
+            1420,
+            8475
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/genie/",
+      "stem": "de-genie-workspace",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "genie-workspace guest entries:0",
+          "selector": ".linker-genie-panel--workspace",
+          "bounds": [
+            0,
+            89,
+            1440,
+            1475
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/cart/",
+      "stem": "en-draft",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "draft account entries:0",
+          "selector": ".sf-cart-empty__actions",
+          "padding": 0,
+          "bounds": [
+            32,
+            416,
+            358,
+            464
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/warenkorb/",
+      "stem": "de-draft",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "draft account entries:0",
+          "selector": ".sf-cart-empty__actions",
+          "padding": 0,
+          "bounds": [
+            32,
+            416,
+            358,
+            521
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/genie/",
+      "stem": "en-genie-workspace",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-workspace guest entries:0",
+          "selector": ".linker-genie-panel--workspace",
+          "bounds": [
+            0,
+            81,
+            390,
+            1569
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/genie/",
+      "stem": "de-genie-workspace",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-workspace guest entries:0",
+          "selector": ".linker-genie-panel--workspace",
+          "bounds": [
+            0,
+            81,
+            390,
+            1632
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/products/",
+      "stem": "en-genie-dock-mobile",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries:0",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            0,
+            48,
+            390,
+            12252
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/produkte/",
+      "stem": "de-genie-dock-mobile",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries:0",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            0,
+            48,
+            390,
+            12590
+          ]
+        }
+      ]
+    }
+  ],
+  "allowedHeaderChanges": [],
+  "networkRoute": "direct browser connection"
+}

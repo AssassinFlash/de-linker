@@ -1,0 +1,3 @@
+Browser tab: 1, Title: "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) | Linker", URL: "http://127.0.0.1:9126/product/saj-h2-10k-t3/".
+There has been no change in the accessibility tree.
+The focused UI element is 1 AXWebArea SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) | Linker, URL: 127.0.0.1:9126/product/saj-h2-10k-t3/

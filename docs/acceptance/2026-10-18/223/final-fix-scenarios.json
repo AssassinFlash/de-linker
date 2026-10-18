@@ -1,0 +1,128 @@
+[
+  {
+    "name": "en-draft",
+    "path": "/cart/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "draft account entries",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-draft",
+    "path": "/de/warenkorb/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "draft account entries",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "en-genie-dock",
+    "path": "/",
+    "actions": [
+      {
+        "click": "[data-linker-genie-open]"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      1440
+    ]
+  },
+  {
+    "name": "en-genie-workspace",
+    "path": "/genie/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "genie-workspace guest entries",
+        "selector": ".linker-genie-panel--workspace"
+      }
+    ]
+  },
+  {
+    "name": "de-genie-dock",
+    "path": "/de/",
+    "actions": [
+      {
+        "click": "[data-linker-genie-open]"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      1440
+    ]
+  },
+  {
+    "name": "de-genie-workspace",
+    "path": "/de/genie/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "genie-workspace guest entries",
+        "selector": ".linker-genie-panel--workspace"
+      }
+    ]
+  },
+  {
+    "name": "en-genie-dock-mobile",
+    "path": "/products/",
+    "actions": [
+      {
+        "click": ".product-mobile-actions .linker-genie-chip"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      390
+    ]
+  },
+  {
+    "name": "de-genie-dock-mobile",
+    "path": "/de/produkte/",
+    "actions": [
+      {
+        "click": ".product-mobile-actions .linker-genie-chip"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      390
+    ]
+  }
+]

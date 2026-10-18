@@ -1,0 +1,38 @@
+[
+  {
+    "name": "en-genie-dock-mobile",
+    "path": "/products/",
+    "actions": [
+      {
+        "click": ".product-mobile-actions .linker-genie-chip"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      390
+    ]
+  },
+  {
+    "name": "de-genie-dock-mobile",
+    "path": "/de/produkte/",
+    "actions": [
+      {
+        "click": ".product-mobile-actions .linker-genie-chip"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      390
+    ]
+  }
+]

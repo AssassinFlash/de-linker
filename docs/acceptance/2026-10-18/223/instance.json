@@ -1,0 +1,15 @@
+{
+  "instance": "c223",
+  "url": "http://127.0.0.1:9126",
+  "worktree": "/Users/chesterjohn/Documents/de-linker-worktrees/c223",
+  "branch": "feat/223-create-account-links",
+  "snapshot": "20261018-0923",
+  "snapshot_at": "2026-10-18T01:34:35+00:00",
+  "mail": "local files via linker-local isolation MU plugin; sendmail disabled",
+  "mail_directory": "/Users/chesterjohn/de-linker-local/c223/mail",
+  "production_writes": false,
+  "deploy": false,
+  "merge": false,
+  "missing_required_doc": "docs/agents/codex-queue.md",
+  "rebase_base": "c2106969d19be6797107fa50b35d4c8a58ad5d5f"
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "en-draft",
+    "path": "/cart/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "draft account entries",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-draft",
+    "path": "/de/warenkorb/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "draft account entries",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0
+      }
+    ]
+  }
+]

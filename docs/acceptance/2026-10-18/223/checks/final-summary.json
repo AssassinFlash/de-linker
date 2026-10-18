@@ -1,0 +1,44 @@
+{
+  "instance": "c223",
+  "url": "http://127.0.0.1:9126",
+  "source_head": "9db0d0eea6e2b41e708cb67bbca39e66deb880b2",
+  "rebase_base": "c2106969d19be6797107fa50b35d4c8a58ad5d5f",
+  "just_check": "passed",
+  "just_test": "passed",
+  "account_browser": {
+    "cases": 63,
+    "repeats": 2,
+    "passed": 126
+  },
+  "reply_presentation_browser": {
+    "cases": 10,
+    "repeats": 2,
+    "passed": 20
+  },
+  "header": {
+    "widths_per_engine": 95,
+    "chromium_mismatch": [],
+    "webkit_mismatch": [],
+    "firefox_mismatch": [
+      1283,
+      1284,
+      1285,
+      1286,
+      1287
+    ],
+    "firefox_direction": "EN expanded, DE folded"
+  },
+  "pixel_gate": {
+    "status": "未完成",
+    "outside_zero": 34,
+    "outside_nonzero": 10,
+    "dimension_fail": 8,
+    "total": 52
+  },
+  "filled_draft_live_parity": "未完成",
+  "inline_hero_wiring": "未完成; independent open issue232",
+  "backend_changes_to_genie_answer_or_transport": false,
+  "production_writes": false,
+  "deploy": false,
+  "merge": false
+}

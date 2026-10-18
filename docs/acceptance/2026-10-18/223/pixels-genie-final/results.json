@@ -1,0 +1,242 @@
+[
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      8278
+    ],
+    "unmasked_different_pixels": 103318,
+    "difference_bounds": [
+      1020,
+      7562,
+      1420,
+      8162
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-dock guest entries:0",
+        "selector": ".linker-genie-panel",
+        "bounds": [
+          1020,
+          7562,
+          1420,
+          8162
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      2050
+    ],
+    "unmasked_different_pixels": 175355,
+    "difference_bounds": [
+      0,
+      89,
+      1440,
+      896
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-workspace guest entries:0",
+        "selector": ".linker-genie-panel--workspace",
+        "bounds": [
+          0,
+          89,
+          1440,
+          1475
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      8591
+    ],
+    "unmasked_different_pixels": 119910,
+    "difference_bounds": [
+      188,
+      21,
+      1420,
+      8475
+    ],
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [
+      {
+        "name": "genie-dock guest entries:0",
+        "selector": ".linker-genie-panel",
+        "bounds": [
+          1020,
+          7875,
+          1420,
+          8475
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 13059
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      2050
+    ],
+    "unmasked_different_pixels": 193416,
+    "difference_bounds": [
+      0,
+      21,
+      1440,
+      896
+    ],
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [
+      {
+        "name": "genie-workspace guest entries:0",
+        "selector": ".linker-genie-panel--workspace",
+        "bounds": [
+          0,
+          89,
+          1440,
+          1475
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 13059
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      2238
+    ],
+    "unmasked_different_pixels": 76955,
+    "difference_bounds": [
+      0,
+      93,
+      390,
+      962
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-workspace guest entries:0",
+        "selector": ".linker-genie-panel--workspace",
+        "bounds": [
+          0,
+          81,
+          390,
+          1569
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      2364
+    ],
+    "unmasked_different_pixels": 80375,
+    "difference_bounds": [
+      0,
+      93,
+      390,
+      993
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-workspace guest entries:0",
+        "selector": ".linker-genie-panel--workspace",
+        "bounds": [
+          0,
+          81,
+          390,
+          1632
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      12252
+    ],
+    "unmasked_different_pixels": 4745421,
+    "difference_bounds": [
+      0,
+      48,
+      390,
+      12252
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-dock guest entries:0",
+        "selector": ".linker-genie-panel",
+        "bounds": [
+          0,
+          48,
+          390,
+          12252
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      12590
+    ],
+    "unmasked_different_pixels": 4882412,
+    "difference_bounds": [
+      0,
+      48,
+      390,
+      12590
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-dock guest entries:0",
+        "selector": ".linker-genie-panel",
+        "bounds": [
+          0,
+          48,
+          390,
+          12590
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  }
+]

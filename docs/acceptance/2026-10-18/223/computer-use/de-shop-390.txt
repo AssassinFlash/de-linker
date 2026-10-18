@@ -1,0 +1,17 @@
+Browser tab: 1, Title: "Browse Inverters, Batteries and Systems | Linker", URL: "http://127.0.0.1:9126/de/produkte/#product-grid".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 42-93, 710-713
+~						354 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/
+~						355 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
+~						358 link Description: GoodWe GW5.1-BAT-D-G20 (ESA-Batteriemodul, 5,12 kWh), Value: 127.0.0.1:9126/de/produkt/goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh/
+~						360 link Description: GoodWe GW5.1-BAT-D-G20 (ESA-Batteriemodul, 5,12 kWh), Value: 127.0.0.1:9126/de/produkt/goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh/
+~						376 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh/
+~						377 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/
+~						378 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
+~						381 link Description: GoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/
+~						383 link Description: GoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/
+~						399 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/
+~						400 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/
+~						401 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
+~						404 link Description: GoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/
+The focused UI element is 1 AXWebArea Browse Inverters, Batteries and Systems | Linker, URL: 127.0.0.1:9126/de/produkte/

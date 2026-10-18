@@ -1,0 +1,34 @@
+Browser tab: 1, Title: "PV- & Speicherlösungen für Installateure und EPCs | Linker", URL: "http://127.0.0.1:9126/de/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 3-10
++		179 container tv-header-v2
++			180 container Primäre Navigation
++				181 link Description: Linker-Startseite, Value: 127.0.0.1:9126/de/
++				182 link Description: Produkte suchen, Value: 127.0.0.1:9126/de/produkte/#search-box
++				183 container Sprache
++					184 link Description: EN, Help: English, Value: 127.0.0.1:9126/
++					185 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9126/de/
++				186 button (expanded) Description: Menü schließen, ID: tv-mobile-toggle, Secondary Actions: Collapse
++					187 image
++			188 container tv-mobile-panel
++				189 button (collapsed) Lösungen, Secondary Actions: Expand
++					190 text Lösungen
++					191 image
++				192 button (collapsed) Produkte, Secondary Actions: Expand
++					193 text Produkte
++					194 image
++				195 button (collapsed) Planen mit Linker, Secondary Actions: Expand
++					196 text Planen mit Linker
++					197 image
++				198 link Description: Dienstleistungen, Value: 127.0.0.1:9126/de/service-support/
++				199 button (collapsed) Für Partner, Secondary Actions: Expand
++					200 text Für Partner
++					201 image
++				202 button (collapsed) Über uns, Secondary Actions: Expand
++					203 text Über uns
++					204 image
++				205 link Description: Lösungsentwurf, Value: 127.0.0.1:9126/de/warenkorb/
++				206 link Description: Anmelden, Value: 127.0.0.1:9126/de/mein-konto/
++				207 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
++				208 link Description: Linker kontaktieren, Value: 127.0.0.1:9126/de/kontakt/
+The focused UI element is 186 button (expanded) Description: Menü schließen, ID: tv-mobile-toggle, Secondary Actions: Collapse

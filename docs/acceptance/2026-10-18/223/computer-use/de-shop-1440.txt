@@ -1,0 +1,31 @@
+Browser tab: 1, Title: "Browse Inverters, Batteries and Systems | Linker", URL: "http://127.0.0.1:9126/de/produkte/#product-grid".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~						151 link Description: GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/
+~						153 link Description: GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/
+~						169 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/
+~						174 link Description: GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/
+~						176 link Description: GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/
+~						192 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/
+~						197 link Description: GoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/
+~						199 link Description: GoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/
+~						215 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/
+~						220 link Description: GoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/
+~						222 link Description: GoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/
+~						238 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/
+~						243 link Description: GoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/
+~						245 link Description: GoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/
+~						261 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/
+~						266 link Description: GoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/
+~						268 link Description: GoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/
+~						284 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/
+~						289 link Description: GoodWe GW8.3-BAT-D-G21 (ESA-Batteriemodul, 8,32 kWh), Value: 127.0.0.1:9126/de/produkt/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/
+~						291 link Description: GoodWe GW8.3-BAT-D-G21 (ESA-Batteriemodul, 8,32 kWh), Value: 127.0.0.1:9126/de/produkt/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/
+~						307 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/
+~						312 link Description: GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh), Value: 127.0.0.1:9126/de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/
+~						314 link Description: GoodWe GW5.1-BAT-D-G21 (ESA-Batteriemodul, 5,12 kWh), Value: 127.0.0.1:9126/de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/
+~						330 link Description: Produkt ansehen, Value: …
+~						331 link Description: Für Preise anmelden, Value: …
+~						332 link Description: Konto erstellen, Value: …
+~						335 link Description: GoodWe GW8.3-BAT-D-G20 (ESA-Batteriemodul, 8,32 kWh), Value: …
+~						354 link Description: Für Preise anmelden, Value: …
+The focused UI element is 1 AXWebArea Browse Inverters, Batteries and Systems | Linker, URL: 127.0.0.1:9126/de/produkte/

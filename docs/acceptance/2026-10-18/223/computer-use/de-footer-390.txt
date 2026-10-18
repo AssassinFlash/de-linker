@@ -1,0 +1,15 @@
+Browser tab: 1, Title: "PV- & Speicherlösungen für Installateure und EPCs | Linker", URL: "http://127.0.0.1:9126/de/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 158-164
++			179 container Description: Konto, ID: footer-panel-account
++				180 heading Konto, Value: 2
++					181 text Konto
++				182 content list
++					183 container
++						184 link Description: Anmelden, Value: 127.0.0.1:9126/de/mein-konto/
++						185 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
++					186 link Description: Lösungsentwurf, Value: 127.0.0.1:9126/de/warenkorb/
++					187 link Description: FAQ & Downloads, Value: 127.0.0.1:9126/de/faq-download/
+~				166 tab (selectable, settable, boolean) Lösungen, Value: 0, ID: footer-tab-solutions
+~				169 tab (selected, settable, boolean) Konto, Value: 1, ID: footer-tab-account
+The focused UI element is 169 tab (selected, settable, boolean) Konto, Value: 1, ID: footer-tab-account

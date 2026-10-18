@@ -1,0 +1,16 @@
+[
+  {
+    "crawl": {
+      "httpStatusCode": 500,
+      "httpStatusMessage": "Request blocked - received 403 status code.",
+      "loadedAt": "2026-10-18T04:17:01.413Z",
+      "uniqueKey": "sV5eaXrRey",
+      "requestStatus": "failed"
+    },
+    "metadata": {
+      "url": "https://help.openai.com/en/articles/6614161-how-can-i-contact-support",
+      "title": ""
+    },
+    "text": ""
+  }
+]

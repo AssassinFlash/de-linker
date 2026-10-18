@@ -1,0 +1,18 @@
+{
+  "source": "https://github.com/openai/openai-chatkit-advanced-samples",
+  "capturedAt": "2026-10-18T04:17:37.660668+00:00",
+  "actor": "apify/rag-web-browser",
+  "runId": "4rGzTPRiB2BvGOQED",
+  "datasetId": "omEqzXx4mYyCkz3xr",
+  "status": "SUCCEEDED",
+  "input": {
+    "query": "https://github.com/openai/openai-chatkit-advanced-samples",
+    "maxResults": 1,
+    "outputFormats": [
+      "markdown",
+      "html"
+    ]
+  },
+  "usageTotalUsd": 0.0009,
+  "statusMessage": "Finished! Scraped 1 pages, 0 failed."
+}

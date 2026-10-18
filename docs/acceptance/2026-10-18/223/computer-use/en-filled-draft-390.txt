@@ -1,0 +1,12 @@
+Browser tab: 2, Title: "Solution draft | Linker", URL: "http://127.0.0.1:9126/cart/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 5-14, 16-21, 48-51, 83
++			83 container Language
++				84 link Description: EN, Help: English, Value: 127.0.0.1:9126/cart/
++				85 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9126/de/warenkorb/
++			86 button (collapsed) Description: Open menu, ID: tv-mobile-toggle, Secondary Actions: Expand
++				87 image
++			88 text You can send this solution draft without an account. Net prices are available after account approval.
++			89 link Description: Send inquiry, Value: 127.0.0.1:9126/proforma-request/
++			90 link Description: Create account, Value: 127.0.0.1:9126/my-account/register/
+The focused UI element is 1 AXWebArea Solution draft | Linker, URL: 127.0.0.1:9126/cart/

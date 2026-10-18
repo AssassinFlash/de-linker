@@ -1,0 +1,18 @@
+{
+  "source": "https://raw.githubusercontent.com/openai/openai-chatkit-advanced-samples/main/examples/customer-support/frontend/src/components/ChatKitPanel.tsx",
+  "capturedAt": "2026-10-18T04:18:29.781207+00:00",
+  "actor": "apify/rag-web-browser",
+  "runId": "qenMbObhz3977df8y",
+  "datasetId": "U65P5DSsIGM7SXS4S",
+  "status": "SUCCEEDED",
+  "input": {
+    "query": "https://raw.githubusercontent.com/openai/openai-chatkit-advanced-samples/main/examples/customer-support/frontend/src/components/ChatKitPanel.tsx",
+    "maxResults": 1,
+    "outputFormats": [
+      "markdown",
+      "html"
+    ]
+  },
+  "usageTotalUsd": 0.0031799999999999997,
+  "statusMessage": "Finished! Scraped 1 pages, 0 failed."
+}

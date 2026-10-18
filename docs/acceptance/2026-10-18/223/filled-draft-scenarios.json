@@ -1,0 +1,20 @@
+[
+  {
+    "name": "en-filled-draft",
+    "path": "/cart/?add-to-cart=4107",
+    "widths": [
+      1440,
+      390
+    ],
+    "ruledRegions": []
+  },
+  {
+    "name": "de-filled-draft",
+    "path": "/de/warenkorb/?add-to-cart=4107",
+    "widths": [
+      1440,
+      390
+    ],
+    "ruledRegions": []
+  }
+]

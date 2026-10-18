@@ -1,0 +1,47 @@
+[
+  {
+    "crawl": {
+      "httpStatusCode": 200,
+      "httpStatusMessage": "OK",
+      "loadedAt": "2026-10-18T04:17:04.619Z",
+      "uniqueKey": "QriVd6Fefv",
+      "requestStatus": "handled"
+    },
+    "metadata": {
+      "title": "ChatKit.js | OpenAI ChatKit",
+      "description": "Embed ChatKit in your app using React or the Web Component.",
+      "languageCode": "en",
+      "url": "https://openai.github.io/chatkit-js/",
+      "redirectedUrl": "https://openai.github.io/chatkit-js/",
+      "canonicalUrl": "https://openai.github.io/chatkit-js/",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "ChatKit.js"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:url",
+          "content": "https://openai.github.io/chatkit-js/"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Embed ChatKit in your app using React or the Web Component."
+        },
+        {
+          "property": "og:site_name",
+          "content": "OpenAI ChatKit"
+        }
+      ]
+    },
+    "query": "https://openai.github.io/chatkit-js/",
+    "markdown": "ChatKit.js | OpenAI ChatKit [Skip to content](https://openai.github.io/chatkit-js/#_top)\n\n[ChatKit](https://openai.github.io/chatkit-js/)\n\nSearch CtrlK\n\nCancel\n\n[ChatKit.js](https://github.com/openai/chatkit-js)\n\nSelect theme DarkLightAuto\n\n# ChatKit.js\n\n## Quickstart\n\nBuild your first chat application in minutes.\n\n[Let’s build](https://openai.github.io/chatkit-js/quickstart)\n\n*   [React](https://openai.github.io/chatkit-js/#tab-panel-2)\n*   [Vanilla JS](https://openai.github.io/chatkit-js/#tab-panel-3)\n\n```\nfunction MyChat({ clientToken }) {  const { control } = useChatKit({    api: { url, domainKey }  });\n  return (    <ChatKit      control={control}      className=\"h-[600px] w-[320px]\"    />  );}\n```\n\n```\nfunction InitChatkit({ clientToken }) {  const chatkit = document.createElement('openai-chatkit');  chatkit.setOptions({ api: { url, domainKey } });  chatkit.classList.add('h-[600px]', 'w-[320px]');  document.body.appendChild(chatkit);}\n```\n\n## Overview\n\n[Section titled “Overview”](https://openai.github.io/chatkit-js/#overview)\n\nChatKit is a framework for building high-quality, AI-powered chat experiences. It’s designed for developers who want to add advanced conversational intelligence to their apps fast—with minimal setup and no reinventing the wheel. ChatKit delivers a complete, production-ready chat interface out of the box.\n\n**Key features**\n\n*   **Deep UI customization** so that ChatKit feels like a first-class part of your app\n*   **Built-in response streaming** for interactive, natural conversations\n*   **Tool and workflow integration** for visualizing agentic actions and chain-of-thought reasoning\n*   **Rich interactive widgets** rendered directly inside the chat\n*   **Attachment handling** with support for file and image uploads\n*   **Thread and message management** for organizing complex conversations\n*   **Source annotations and entity tagging** for transparency and references\n\nSimply drop the ChatKit component into your app, configure a few options, and you’re good to go.\n\n## What makes ChatKit different?\n\n[Section titled “What makes ChatKit different?”](https://openai.github.io/chatkit-js/#what-makes-chatkit-different)\n\nChatKit is a framework-agnostic, drop-in chat solution. You don’t need to build custom UIs, manage low-level chat state, or patch together various features yourself. Just add the ChatKit component, give it a client token, and customize the chat experience as needed, no extra work needed.\n\n## Managed vs. self-hosted backend\n\n[Section titled “Managed vs. self-hosted backend”](https://openai.github.io/chatkit-js/#managed-vs-self-hosted-backend)\n\nUse ChatKit with an OpenAI-hosted backend (workflows built in Agent Builder) or with your own backend running on your infrastructure and inference stack using the ChatKit Python SDK.\n\n|     | OpenAI-hosted backend | Self-hosted backend |\n| --- | --- | --- |\n| Best for | Fastest setup with OpenAI-managed infra | Maximum control, custom workflows, and proprietary data paths |\n| Who runs the chat server? | OpenAI | You |\n| Who stores messages and attachments? | OpenAI | You |\n| Who hosts the iframe that renders Chat UI? | OpenAI | OpenAI |\n| Inference pipeline | Workflow published with Agent Builder | Use Agents SDK or roll your own |\n| User authentication | Handle authentication in your own server before minting short-lived ChatKit client secrets with the ChatKit API | Inject your auth headers for ChatKit requests made to your server by providing a custom fetch method to ChatKit |\n| Chat UI customization | ✓   | ✓   |\n| Attachments | ✓   | ✓   |\n| Conversation history | ✓   | ✓   |\n| Widgets | ✓   | ✓   |\n| Client tool calls | ✓   | ✓   |\n| File and url annotations | ✓   | ✓   |\n| Composer @-mentions, tool menu, model picker |     | ✓   |\n| Response cancelling |     | ✓   |\n| Pushing client effects from server |     | ✓   |\n| Injecting user context or app data as model input with user messages | With client tool calls (can be slow) or MCP server tools | With data retrieval tools or directly when composing model input in your server |\n\n## See working examples\n\n[Section titled “See working examples”](https://openai.github.io/chatkit-js/#see-working-examples)\n\n*   [Starter app](https://github.com/openai/openai-chatkit-starter-app) - Clone a repo to start with a fully working template\n*   [Samples](https://github.com/openai/openai-chatkit-advanced-samples) - See working examples of ChatKit and get inspired"
+  }
+]

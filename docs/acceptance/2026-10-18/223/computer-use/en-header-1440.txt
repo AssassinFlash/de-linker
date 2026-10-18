@@ -1,0 +1,9 @@
+Browser tab: 1, Title: "PV & Storage Solutions for Installers and EPCs | Linker", URL: "http://127.0.0.1:9126/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 17
++			187 container
++				188 pop up button (expanded) Description: Sign in, Secondary Actions: Collapse
++				189 container linker-header-account-menu
++					190 link Description: Sign in, Value: 127.0.0.1:9126/my-account/
++					191 link Description: Create account, Value: 127.0.0.1:9126/my-account/register/
+The focused UI element is 188 pop up button (expanded) Description: Sign in, Secondary Actions: Collapse

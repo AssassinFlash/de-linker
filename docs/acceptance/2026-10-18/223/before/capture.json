@@ -1,0 +1,565 @@
+{
+  "cases": [
+    {
+      "path": "/",
+      "stem": "en-header",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "header account entries",
+          "selector": ".tv-b2b-acct-menu",
+          "padding": 50,
+          "bounds": [
+            822,
+            26,
+            1215,
+            193
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "stem": "en-footer",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "footer account entries",
+          "selector": "#footer-panel-account",
+          "padding": 0,
+          "bounds": [
+            470,
+            7779,
+            1308,
+            8050
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/cart/",
+      "stem": "en-draft",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "draft account entries",
+          "selector": ".sf-cart-empty",
+          "padding": 0,
+          "bounds": [
+            400,
+            241,
+            1040,
+            465
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/proforma-request/",
+      "stem": "en-inquiry",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "inquiry account entries",
+          "selector": ".linker-inquiry-guest",
+          "padding": 0,
+          "bounds": [
+            156,
+            615,
+            1284,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/my-account/lost-password/",
+      "stem": "en-lost",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "lost account entries",
+          "selector": ".linker-auth-links",
+          "padding": 0,
+          "bounds": [
+            521,
+            541,
+            919,
+            565
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/my-account/lost-password/?reset-link-sent=true",
+      "stem": "en-lost-confirmation",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "lost-confirmation account entries",
+          "selector": ".linker-auth-links",
+          "padding": 0,
+          "bounds": [
+            521,
+            461,
+            919,
+            485
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/?linker-document=proforma&id=1",
+      "stem": "en-document",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": [
+        {
+          "name": "document account entries",
+          "selector": "#error-page",
+          "padding": 0,
+          "bounds": [
+            337,
+            50,
+            1103,
+            196
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/",
+      "stem": "de-header",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "header account entries",
+          "selector": ".tv-b2b-acct-menu",
+          "padding": 50,
+          "bounds": [
+            919,
+            26,
+            1312,
+            193
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/",
+      "stem": "de-footer",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "footer account entries",
+          "selector": "#footer-panel-account",
+          "padding": 0,
+          "bounds": [
+            470,
+            8091,
+            1308,
+            8362
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/warenkorb/",
+      "stem": "de-draft",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "draft account entries",
+          "selector": ".sf-cart-empty",
+          "padding": 0,
+          "bounds": [
+            400,
+            241,
+            1040,
+            465
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/proforma-anfrage/",
+      "stem": "de-inquiry",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "inquiry account entries",
+          "selector": ".linker-inquiry-guest",
+          "padding": 0,
+          "bounds": [
+            156,
+            615,
+            1284,
+            666
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/mein-konto/lost-password/",
+      "stem": "de-lost",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "lost account entries",
+          "selector": ".linker-auth-links",
+          "padding": 0,
+          "bounds": [
+            521,
+            566,
+            919,
+            590
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/mein-konto/lost-password/?reset-link-sent=true",
+      "stem": "de-lost-confirmation",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "lost-confirmation account entries",
+          "selector": ".linker-auth-links",
+          "padding": 0,
+          "bounds": [
+            521,
+            481,
+            919,
+            505
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/?linker-document=proforma&id=1",
+      "stem": "de-document",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 0,
+      "ruledRegions": [
+        {
+          "name": "document account entries",
+          "selector": "#error-page",
+          "padding": 0,
+          "bounds": [
+            337,
+            50,
+            1103,
+            217
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "stem": "en-mobile",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 526,
+      "ruledRegions": [
+        {
+          "name": "mobile account entries",
+          "selector": "#tv-mobile-panel",
+          "padding": 0,
+          "bounds": [
+            16,
+            80,
+            374,
+            525
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "stem": "en-footer",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "footer account entries",
+          "selector": "#footer-panel-account",
+          "padding": 0,
+          "bounds": [
+            33,
+            8338,
+            357,
+            8596
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/cart/",
+      "stem": "en-draft",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "draft account entries",
+          "selector": ".sf-cart-empty",
+          "padding": 0,
+          "bounds": [
+            16,
+            217,
+            374,
+            464
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/proforma-request/",
+      "stem": "en-inquiry",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "inquiry account entries",
+          "selector": ".linker-inquiry-guest",
+          "padding": 0,
+          "bounds": [
+            16,
+            622,
+            374,
+            697
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/my-account/lost-password/",
+      "stem": "en-lost",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "lost account entries",
+          "selector": ".linker-auth-links",
+          "padding": 0,
+          "bounds": [
+            33,
+            434,
+            357,
+            458
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/my-account/lost-password/?reset-link-sent=true",
+      "stem": "en-lost-confirmation",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "lost-confirmation account entries",
+          "selector": ".linker-auth-links",
+          "padding": 0,
+          "bounds": [
+            33,
+            378,
+            357,
+            402
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/?linker-document=proforma&id=1",
+      "stem": "en-document",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": [
+        {
+          "name": "document account entries",
+          "selector": "#error-page",
+          "padding": 0,
+          "bounds": [
+            0,
+            50,
+            390,
+            217
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/",
+      "stem": "de-mobile",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 526,
+      "ruledRegions": [
+        {
+          "name": "mobile account entries",
+          "selector": "#tv-mobile-panel",
+          "padding": 0,
+          "bounds": [
+            16,
+            80,
+            374,
+            525
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/",
+      "stem": "de-footer",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "footer account entries",
+          "selector": "#footer-panel-account",
+          "padding": 0,
+          "bounds": [
+            33,
+            8753,
+            357,
+            9011
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/warenkorb/",
+      "stem": "de-draft",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "draft account entries",
+          "selector": ".sf-cart-empty",
+          "padding": 0,
+          "bounds": [
+            16,
+            217,
+            374,
+            521
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/proforma-anfrage/",
+      "stem": "de-inquiry",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "inquiry account entries",
+          "selector": ".linker-inquiry-guest",
+          "padding": 0,
+          "bounds": [
+            16,
+            643,
+            374,
+            766
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/mein-konto/lost-password/",
+      "stem": "de-lost",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "lost account entries",
+          "selector": ".linker-auth-links",
+          "padding": 0,
+          "bounds": [
+            33,
+            483,
+            357,
+            507
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/mein-konto/lost-password/?reset-link-sent=true",
+      "stem": "de-lost-confirmation",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "lost-confirmation account entries",
+          "selector": ".linker-auth-links",
+          "padding": 0,
+          "bounds": [
+            33,
+            444,
+            357,
+            468
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/?linker-document=proforma&id=1",
+      "stem": "de-document",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 0,
+      "ruledRegions": [
+        {
+          "name": "document account entries",
+          "selector": "#error-page",
+          "padding": 0,
+          "bounds": [
+            0,
+            50,
+            390,
+            238
+          ]
+        }
+      ]
+    }
+  ],
+  "allowedHeaderChanges": []
+}

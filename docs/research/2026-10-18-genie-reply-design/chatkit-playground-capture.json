@@ -1,0 +1,39 @@
+[
+  {
+    "crawl": {
+      "httpStatusCode": 200,
+      "httpStatusMessage": "OK",
+      "loadedAt": "2026-10-18T04:18:38.680Z",
+      "uniqueKey": "4EzAghoaWH",
+      "requestStatus": "handled"
+    },
+    "metadata": {
+      "title": "ChatKit Studio",
+      "description": "Explore and build embeddable chat experiences",
+      "languageCode": "en",
+      "url": "https://chatkit.studio/playground",
+      "redirectedUrl": "https://chatkit.studio/playground",
+      "openGraph": [
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:title",
+          "content": "ChatKit Studio"
+        },
+        {
+          "property": "og:description",
+          "content": "Explore and build embeddable chat experiences"
+        },
+        {
+          "property": "og:image",
+          "content": "/social-chatkit-studio.png"
+        }
+      ]
+    },
+    "query": "https://chatkit.studio/playground",
+    "markdown": "ChatKit Studio",
+    "html": "<html lang=\"\">\n        <head>\n            <title>\n                ChatKit Studio\n            </title>\n        </head>\n        <body>\n            <div id=\"root\"></div>\n        </body>\n    </html>"
+  }
+]

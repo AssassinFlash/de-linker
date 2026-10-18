@@ -1,0 +1,27 @@
+Browser tab: 1, Title: "Browse Inverters, Batteries and Systems | Linker", URL: "http://127.0.0.1:9126/products/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~				26 button (expanded) Ask Genie, Secondary Actions: Collapse
++		632 container linker-genie-mount
++			633 container Genie - Linker's AI assistant
++				634 button Hide
++				635 container
++					636 text Genie - Linker's AI assistant
++					637 button New conversation
++					638 link Description: Open full page, Value: …
++					639 button (collapsed) Description: Conversations, Secondary Actions: Expand
++					640 button Close
++					641 text Get help with your solar project Products, documents and your next step.
++					642 button Which model fits my project?
++					643 button Compare SAJ and GoodWe hybrid inverters
++					644 button Attach a file
++					645 text Ask Genie
++					646 text field (settable) Ask Genie, ID: linker-genie-input
++					647 checkbox Description: Dictate, Value: 0
++					648 button (disabled) Send
++					649 text Genie is an AI assistant.
++					650 button (collapsed) Help & privacy, Secondary Actions: Expand
++						651 text Help & privacy
++			652 container
++				653 link Description: Sign in, Value: …
++				654 link Description: Create account, Value: …
+The focused UI element is 26 button (expanded) Ask Genie, Secondary Actions: Collapse

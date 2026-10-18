@@ -1,0 +1,15 @@
+Browser tab: 1, Title: "PV & Storage Solutions for Installers and EPCs | Linker", URL: "http://127.0.0.1:9126/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 158-164
++			179 container Description: Account, ID: footer-panel-account
++				180 heading Account, Value: 2
++					181 text Account
++				182 content list
++					183 container
++						184 link Description: Sign in, Value: 127.0.0.1:9126/my-account/
++						185 link Description: Create account, Value: 127.0.0.1:9126/my-account/register/
++					186 link Description: Solution draft, Value: 127.0.0.1:9126/cart/
++					187 link Description: FAQ & Downloads, Value: 127.0.0.1:9126/faq-download/
+~				166 tab (selectable, settable, boolean) Solutions, Value: 0, ID: footer-tab-solutions
+~				169 tab (selected, settable, boolean) Account, Value: 1, ID: footer-tab-account
+The focused UI element is 169 tab (selected, settable, boolean) Account, Value: 1, ID: footer-tab-account
