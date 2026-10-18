@@ -86,3 +86,12 @@ uv run --locked python eval/attachments/nameplates.py --wp http://127.0.0.1:9121
 | 14 hero 交接 | 已记录在 #232 | #232 评论 |
 
 本轮验证（含评审修复）：服务端 `pytest` **912 passed**、`ruff`、`mypy` 全过；壳 `vitest` **178 passed**、`tsc`、`eslint` 全过；PHP 单元 **230 passed**。端到端评测与截屏重跑待本地栈（与合并前一致的门）。
+
+## 评审修复后的重跑（2026-10-18，本地实例 g236 + 真实 deepseek-flash）
+
+服务与实例：`just serve g236`（Genie 127.0.0.1:9124，令牌由实例的 `LINKER_GENIE_SERVICE_TOKEN` 提供）。评测命令加 `GENIE_SERVICE_TOKEN`，其余同 README 开头。
+
+- **读图**：15/15 读得与标签一致、15/15 分级正确（含 3 张自托管文档抽出的铭牌：GoodWe GW112.6-BAT-AC-G10 ×2 exact、GW5KN-ET ×1 none）。结果 `eval/readings.json`。
+- **问答**：22/22 通过（11 个用例 × EN/DE）。其中价格表与交货条款各 2 例：答案不含金额、不含时效；交货走 handoff 块。结果 `eval/turns.json`。
+- **截屏**：`tests/e2e/specs/genie-attachments.spec.ts` 4/4 通过（EN/DE × 1440/390），`shots/` 全部重拍：新增 `*-0-card.png`（首页卡片第 4 条建议，桌面按真实点击进入）；`de-390-6-nameplate-unreadable.png` 已不再出现"der Dienst"。
+- 数字：服务 `pytest` **912 passed**、`ruff`、`mypy`；壳 `vitest` 178 passed；PHP 单元 230 / 1054 passed（两个插件）；`i18n-coverage` clean。

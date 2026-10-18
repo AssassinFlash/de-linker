@@ -257,8 +257,7 @@
    "no_money": true,
    "no_lead_time": true,
    "handoff": true,
-   "cites_reading": true,
-   "note": "Freight and lead times are logistics: the handoff block, never the file's figures."
+   "note": "Freight and lead times are logistics: the handoff block, never the file's figures. The answer need not cite the file (the rule sends delivery to the handoff)."
   }
  ]
 }

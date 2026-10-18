@@ -2,7 +2,7 @@
  {
   "id": "plate-exact",
   "locale": "en",
-  "seconds": 8.88,
+  "seconds": 5.45,
   "route": "nameplate",
   "attachment": [
    {
@@ -22,7 +22,7 @@
     ]
    }
   ],
-  "answer": "The nameplate on your photo reads SAJ H2-10K-T3, a hybrid inverter, with a rated power of 10000 W and a rated AC voltage of 230/400 V. Please confirm that this is your device so we can go on from there.",
+  "answer": "Your photo shows a nameplate for the SAJ H2-10K-T3, a hybrid inverter with a rated power of 10000 W. Please confirm that this is the device you are working with. Approved partner accounts see net prices on the product cards.",
   "refs": [
    "4107",
    "att1"
@@ -36,7 +36,7 @@
  {
   "id": "plate-exact",
   "locale": "de",
-  "seconds": 4.15,
+  "seconds": 4.12,
   "route": "nameplate",
   "attachment": [
    {
@@ -56,7 +56,7 @@
     ]
    }
   ],
-  "answer": "Auf dem Typenschild steht ein Hybrid-Wechselrichter der Marke SAJ, Modell H2-10K-T3, mit einer Nennleistung von 10000 W – das passt zu dem Produkt, das ich Ihnen hier zeige. Bitte bestätigen Sie kurz, dass dies Ihr Gerät ist. Freigegebene Partnerkonten sehen auf der Karte Nettopreise.",
+  "answer": "Auf Ihrem Foto ist das Typenschild eines Wechselrichters der Marke SAJ zu sehen: Modell H2-10K-T3, ein Hybrid-Wechselrichter mit einer Nennleistung von 10000 W. Ich habe Ihnen das passende Produkt als Karte beigefügt — freigegebene Partnerkonten sehen darauf Nettopreise. Bitte bestätigen Sie kurz, dass dies Ihr Gerät ist.",
   "refs": [
    "4107",
    "att1"
@@ -70,7 +70,7 @@
  {
   "id": "plate-none-saj",
   "locale": "en",
-  "seconds": 9.82,
+  "seconds": 8.23,
   "route": "nameplate",
   "attachment": [
    {
@@ -85,7 +85,7 @@
     "products": []
    }
   ],
-  "answer": "Thank you for the nameplate photo. It reads: brand SAJ, model Sununo Plus 4K-M, product type PV Grid-connected Inverter, with a rated power of 4000 W printed on the label, along with its PV input and AC output ratings, protection class and ingress protection. This model is a grid-connected inverter without battery connection, and we do not carry it in our range; please treat the SAJ units below as our current SAJ inverters, not as this device or a drop-in replacement for it.\n\nSo that I can point you to the right thing, what do you need for the existing unit — a battery to add storage, or a replacement inverter? Approved partner accounts see net prices on the product cards.",
+  "answer": "Thank you for the photo of the nameplate. It shows a SAJ Sununo Plus 4K-M, a PV grid-connected inverter, with a rated power of 4000 W and a maximum power of 4400 VA. The DC input is specified up to 500 Vdc, the MPPT range runs from 90 Vdc to 550 Vdc, and the AC side is rated at 230 Vac with a rated current of 17.4. This model is not part of our product range, so we cannot supply it. We do carry SAJ inverters from the HS2 and HS3 series, listed below — they are different devices, not a direct equivalent of the Sununo Plus. Approved partner accounts see net prices on the product cards. What do you need for this installation: a battery to add, or a replacement inverter?",
   "refs": [
    "1182",
    "1183",
@@ -109,7 +109,7 @@
  {
   "id": "plate-none-saj",
   "locale": "de",
-  "seconds": 9.99,
+  "seconds": 10.18,
   "route": "nameplate",
   "attachment": [
    {
@@ -124,13 +124,11 @@
     "products": []
    }
   ],
-  "answer": "Vielen Dank für das Typenschild. Darauf steht als Marke SAJ, als Modell Sununo Plus 4K-M, als Produktart ein netzgeführter PV-Wechselrichter, mit einer Nennleistung von 4000 W, einer maximalen Leistung von 4400 VA und einer Nennspannung von 230 Vac. Dieses Modell führen wir nicht; es ist in unserem Produktprogramm nicht enthalten.\n\nVon SAJ haben wir jedoch Wechselrichter der Serien HS2 und HS3 im Programm. Das sind andere Geräte als Ihr Sununo Plus 4K-M, also kein Ersatz für genau dieses Modell, sondern eigenständige Produkte – die Karten zeigen sie Ihnen. Freigegebene Partnerkonten sehen in den Karten Nettopreise.\n\nWas benötigen Sie für das Gerät – eine passende Batterie zur Ergänzung oder einen Ersatz für den Wechselrichter? Dann sehe ich gezielt nach, was wir dazu anbieten können.",
+  "answer": "Ihr Foto zeigt das Typenschild eines SAJ Sununo Plus 4K-M, eines netzgekoppelten PV-Wechselrichters mit einer Nennleistung von 4000 W und einer maximalen Ausgangsleistung von 4400 VA; als AC-Nennspannung sind 230Vac aufgedruckt, der MPPT-Bereich reicht von 90V bis 550Vdc. Dieses Modell führen wir nicht, es gehört nicht zu unserem Produktprogramm. Von SAJ haben wir Hybrid-Wechselrichter der Serien HS2 und HS3 im Programm – durchweg dreiphasige Geräte für den Heimbereich –, die ich Ihnen als Alternative zeige; das sind andere Geräte als das auf Ihrem Typenschild. Freigegebene Partnerkonten sehen auf den Produktkarten Nettopreise. Was benötigen Sie für das vorhandene Gerät – eine passende Batterie oder eher einen Ersatz dafür?",
   "refs": [
    "1182",
    "1183",
    "1184",
-   "1186",
-   "2198",
    "4109",
    "att1"
   ],
@@ -138,8 +136,6 @@
    4109,
    1183,
    1184,
-   2198,
-   1186,
    1182
   ],
   "pass": true,
@@ -148,7 +144,7 @@
  {
   "id": "plate-none-goodwe",
   "locale": "en",
-  "seconds": 8.54,
+  "seconds": 8.68,
   "route": "nameplate",
   "attachment": [
    {
@@ -163,7 +159,7 @@
     "products": []
    }
   ],
-  "answer": "Thank you for the nameplate photo. It reads as a GOODWE hybrid inverter, model GW10K-ET — a three-phase machine for a Li-ion battery, with a maximum PV-generator power of 13000 W, a PV maximum voltage of 1000 Vdc, an MPPT voltage range of 200 to 850 Vdc, and a battery voltage range of 180 to 600 Vdc; the maximum apparent power fed to the grid is given as 11000 VA.\n\nWe do not carry the GW10K-ET, so this exact model is not part of our range. From the same brand we do have the GoodWe ESA power modules shown below — they are a different product line, not the device on your nameplate. Approved partner accounts see net prices on the cards.\n\nWhat do you need for the existing inverter: a matching battery, or a replacement unit?",
+  "answer": "Your photo shows the nameplate of a GoodWe hybrid inverter, type GW10K-ET, rated with a maximum PV generator power of 13000 W, a battery voltage range of 180 Vdc to 600 Vdc and a Li-Ion battery type, with a grid/back-up rated voltage of 380 V. This model is not part of our product range, so we cannot supply it as such. From the same brand we do carry the GoodWe ESA power modules shown below; they are different devices, not a substitute for the inverter on your nameplate. Approved partner accounts see net prices on the product cards. What are you looking for with this device: a battery to go with it, or a replacement inverter?",
   "refs": [
    "6523",
    "6524",
@@ -187,7 +183,7 @@
  {
   "id": "plate-none-goodwe",
   "locale": "de",
-  "seconds": 13.46,
+  "seconds": 9.43,
   "route": "nameplate",
   "attachment": [
    {
@@ -202,7 +198,7 @@
     "products": []
    }
   ],
-  "answer": "Auf dem angehängten Typenschild lese ich: Marke GOODWE, Modell GW10K-ET, ein Hybrid-Wechselrichter mit einer maximalen PV-Generatorleistung von 13000 W, einem MPPT-Spannungsbereich von 200 bis 850 Vdc und einem Batteriespannungsbereich von 180 bis 600 Vdc für Lithium-Ionen-Batterien. Dieses Modell führen wir nicht, es gehört nicht zu unserem Produktprogramm.\n\nWenn Sie ein Ersatz- oder Vergleichsgerät suchen, finden Sie unten die GoodWe-Leistungsmodule aus unserem Programm – das sind eigenständige Produkte und nicht das Gerät von Ihrem Typenschild. Freigegebene Partnerkonten sehen auf den Karten die Nettopreise.\n\nWas benötigen Sie für dieses Gerät: eine passende Batterie oder ein Ersatzgerät?",
+  "answer": "Auf Ihrem Foto ist das Typenschild eines Hybrid-Wechselrichters von GOODWE zu sehen, Typ GW10K-ET: die maximale PV-Generatorleistung ist dort mit 13000 W angegeben, der MPPT-Spannungsbereich reicht von 200 Vdc bis 850 Vdc, und für die Batterie nennt das Schild einen Spannungsbereich von 180 Vdc bis 600 Vdc bei Li-Ion-Batterien. Dieses Modell führen wir nicht. Aus unserem Programm zu GOODWE können wir Ihnen die folgenden Leistungsmodule der ESA-Serie anbieten – das sind eigenständige Geräte, nicht Ihr GW10K-ET. Freigegebene Partnerkonten sehen auf der Karte den Nettopreis.",
   "refs": [
    "6523",
    "6524",
@@ -226,7 +222,7 @@
  {
   "id": "plate-none-pylontech",
   "locale": "en",
-  "seconds": 13.37,
+  "seconds": 6.33,
   "route": "nameplate",
   "attachment": [
    {
@@ -241,7 +237,7 @@
     "products": []
    }
   ],
-  "answer": "Thank you for the photo. The reading gives the brand PYLONTECH, the product type Rechargeable Li-ion Battery and the part number US3000, but the model line itself could not be read, so I cannot yet tell whether this device is one we carry. Please send a sharp, straight photo of the whole label in good light, or simply type the exact model for me, and I will check it against our products.",
+  "answer": "Thank you for the photo. What can be made out on the label is the manufacturer PYLONTECH and the product type, a rechargeable lithium-ion battery, together with a capacity and voltage rating, a charge voltage window, a voltage range, a nominal current, a protection rating of IP20 and a production date. The model line itself is not readable, so I cannot tell yet whether we carry that exact device.\n\nPlease send a sharp, straight photo of the whole label in good light, with the model line in focus, or simply type the model in and I will check it against our range.",
   "refs": [
    "att1"
   ],
@@ -252,7 +248,7 @@
  {
   "id": "plate-none-pylontech",
   "locale": "de",
-  "seconds": 9.79,
+  "seconds": 6.62,
   "route": "nameplate",
   "attachment": [
    {
@@ -267,7 +263,7 @@
     "products": []
    }
   ],
-  "answer": "Vielen Dank für das Foto. Lesen konnten wir darauf die Marke PYLONTECH, die Produktart Rechargeable Li-ion Battery sowie die Angaben zu Kapazität und Spannung mit 3.552 kWh und 48 V. Die Zeilen für Modell, Typ und Teilenummer sind auf dem Etikett leer beziehungsweise nicht lesbar geblieben, deshalb wissen wir noch nicht, ob wir dieses Gerät führen. Bitte senden Sie uns ein scharfes, gerades Foto des gesamten Etiketts bei gutem Licht, oder tippen Sie uns die Modellbezeichnung direkt in den Chat – dann prüfen wir das Gerät und passende Ergänzungen für Sie.",
+  "answer": "Auf dem Foto ist PYLONTECH als Marke und „Rechargeable Li-ion Battery“ als Produktart zu erkennen, dazu Angaben zum Etikett wie die Kapazität mit 3,552 V und die Spannung mit 48 V. Die Modellbezeichnung lässt sich auf dem Etikett nicht sicher ablesen – die Zeilen wirken gegeneinander verschoben, sodass die Bezeichnungen den Werten nicht eindeutig zuzuordnen sind. Ob wir Ihr Gerät führen, kann ich Ihnen deshalb noch nicht sagen: Bitte senden Sie ein scharfes, gerades Foto des gesamten Etiketts bei gutem Licht, oder tippen Sie mir die Modellbezeichnung direkt ein.",
   "refs": [
    "att1"
   ],
@@ -278,7 +274,7 @@
  {
   "id": "plate-unreadable",
   "locale": "en",
-  "seconds": 2.81,
+  "seconds": 3.54,
   "route": "nameplate",
   "attachment": [
    {
@@ -286,14 +282,14 @@
     "name": "IMG_4711.jpg",
     "kind": "nameplate",
     "failed": null,
-    "brand": "PYLON",
+    "brand": null,
     "model": null,
     "product_type": null,
     "match": "unreadable",
     "products": []
    }
   ],
-  "answer": "From the nameplate photo, only the brand was legible: PYLON. The model could not be read, so I cannot yet tell whether we carry the device. Please send a sharp, straight photo of the whole label in good light, or type the exact model in your reply.",
+  "answer": "Thank you for sending the photo of the nameplate. The model cannot be made out on it, so I cannot yet tell whether we carry this device. Please send a sharp, straight-on photo of the whole label in good light, or type the brand and model here in the chat.",
   "refs": [
    "att1"
   ],
@@ -304,7 +300,7 @@
  {
   "id": "plate-unreadable",
   "locale": "de",
-  "seconds": 4.77,
+  "seconds": 4.87,
   "route": "nameplate",
   "attachment": [
    {
@@ -312,14 +308,14 @@
     "name": "IMG_4711.jpg",
     "kind": "nameplate",
     "failed": null,
-    "brand": "PYLON",
+    "brand": null,
     "model": null,
     "product_type": null,
     "match": "unreadable",
     "products": []
    }
   ],
-  "answer": "Vielen Dank für das Foto. Darauf ist die Marke PYLON zu lesen sowie die Kennzeichnung CE – eine Modellbezeichnung ist jedoch nicht erkennbar, und die Datei ließ sich nicht vollständig auswerten. Ob wir das Gerät führen, lässt sich damit noch nicht sagen. Bitte senden Sie ein scharfes, gerades Foto des gesamten Typenschilds in gutem Licht, auf dem auch die Modellbezeichnung lesbar ist – oder tippen Sie mir das Modell einfach ein.",
+  "answer": "Vielen Dank für das Foto Ihres Typenschilds. Es ist als Typenschild zu erkennen, doch Marke und Modellbezeichnung lassen sich darauf nicht sicher entziffern – deshalb kann ich noch nicht sagen, ob das Gerät zu unseren Produkten gehört. Bitte senden Sie ein scharfes, gerades Foto des gesamten Etiketts bei gutem Licht, oder schreiben Sie mir die Modellbezeichnung direkt in den Chat.",
   "refs": [
    "att1"
   ],
@@ -330,7 +326,7 @@
  {
   "id": "datasheet-en",
   "locale": "en",
-  "seconds": 10.62,
+  "seconds": 15.83,
   "route": "documents",
   "attachment": [
    {
@@ -342,18 +338,23 @@
     "pages_read": 2
    }
   ],
-  "answer": "The datasheet lists the maximum PV array power at STC for the H2-10K-T3 as 20000 Wp. The product record carries the same figure, entered as 20 kW of PV input for this model.",
+  "answer": "The datasheet gives the maximum PV array power at STC for the H2-10K-T3 as 20000 Wp, and the English datasheet table states the same value for that model: 20000 Wp. The datasheet you attached lists it in the H2-10K-T3 column as well: 20000 Wp.",
   "refs": [
-   "770ccafa080c-p37-63a0f610"
+   "0f0e75ad3f31-p2-a7d455b1",
+   "4107",
+   "770ccafa080c-p37-63a0f610",
+   "att1"
   ],
-  "cards": [],
+  "cards": [
+   4107
+  ],
   "pass": true,
   "failures": []
  },
  {
   "id": "datasheet-en",
   "locale": "de",
-  "seconds": 10.8,
+  "seconds": 9.85,
   "route": "documents",
   "attachment": [
    {
@@ -365,8 +366,10 @@
     "pages_read": 2
    }
   ],
-  "answer": "Laut dem Datenblatt beträgt die maximale PV-Anlagenleistung (@STC) des H2-10K-T3 20000 Wp. Derselbe Wert steht auch in der von Ihnen angehängten Datenblattdatei 20000. Das Gerät ist dreiphasig und arbeitet mit drei MPPT-Eingängen; die maximale DC-Spannung liegt bei 1000 V.",
+  "answer": "Laut dem Datenblatt liegt die maximale PV-Anlagenleistung (DC-Eingang, @STC) des H2-10K-T3 bei 20000 Wp; derselbe Wert steht in der deutschen Datenblatt-Tabelle des Handbuchs (20000 Wp) und in der englischen Datenblatt-Fassung (20000 Wp). Auch Ihr angehängtes Datenblatt nennt für dieses Modell denselben Wert (20000 Wp). Zum Einordnen: Die maximale DC-Spannung gibt das Datenblatt mit 1000 V an, der MPPT-Spannungsbereich reicht von 180 V bis 900 V.",
   "refs": [
+   "0f0e75ad3f31-p2-a7d455b1",
+   "770ccafa080c-p37-63a0f610",
    "770ccafa080c-p8-fe39c50f",
    "att1"
   ],
@@ -377,7 +380,7 @@
  {
   "id": "datasheet-de",
   "locale": "en",
-  "seconds": 13.1,
+  "seconds": 9.51,
   "route": "documents",
   "attachment": [
    {
@@ -389,7 +392,7 @@
     "pages_read": 2
    }
   ],
-  "answer": "In the attached datasheet (SAJ_H2_15-30K-T3_Datasheet_DE.pdf), the maximum DC voltage is listed as 1000 V. In that table the row is shared across the models listed on the page, so the value applies to the H2-15K-T3 as well as the larger models beside it. The same page gives the MPPT voltage range as 180 to 900 V, the rated DC voltage as 600 V and the start voltage as 180 V. Our hosted German datasheet for this model group states the maximum DC voltage as 1000 V and the MPPT voltage range as 180 V to 900 V.",
+  "answer": "In the datasheet you attached, the DC input table lists the maximum DC voltage for the H2-15K-T3 as 1000 V. Our hosted German datasheet for the same series gives the same figure in its DC input row 1000 V.",
   "refs": [
    "att1",
    "be488dc6630c-p2-0a4a521c"
@@ -401,7 +404,7 @@
  {
   "id": "datasheet-de",
   "locale": "de",
-  "seconds": 13.85,
+  "seconds": 11.02,
   "route": "documents",
   "attachment": [
    {
@@ -413,7 +416,7 @@
     "pages_read": 2
    }
   ],
-  "answer": "Laut dem von Ihnen angehängten Datenblatt gilt für die dort aufgeführten Modelle H2-15K-T3, H2-20K-T3, H2-25K-T3, H2-30K-T3-DE und H2-30K-T3 ein gemeinsamer Wert für die maximale DC-Spannung: 1000 V. Der MPPT-Spannungsbereich liegt bei 180 V bis 900 V, die DC-Nennspannung bei 600 V. Dieselben Angaben stehen auch in Ihrem PDF; dort sind die Werte als gemeinsame Zeile über alle Modellspalten geführt.",
+  "answer": "In Ihrem angehängten Datenblatt steht als maximale DC-Spannung 1000 V; der Wert ist in der Zeile „Max. DC-Spannung [V]“ für die dort aufgeführten Modelle der H2-Reihe angegeben. Derselbe Wert findet sich auch in unserem gehosteten Datenblatt zur H2-Reihe: 1000 V.",
   "refs": [
    "att1",
    "be488dc6630c-p2-0a4a521c"
@@ -425,7 +428,7 @@
  {
   "id": "drawings",
   "locale": "en",
-  "seconds": 30.83,
+  "seconds": 30.59,
   "route": "documents",
   "attachment": [
    {
@@ -437,11 +440,9 @@
     "pages_read": 4
    }
   ],
-  "answer": "The attached file is GoodWe's quick installation guide for the ETR series hybrid inverters and the BTR series AC-coupled inverters. It opens with the delivered parts and the clearances to keep around the unit, then shows wall-mounting and cabinet side mounting with the drilling and torque figures, installing the inverter — weight 98kg, maximum tilt 15° — and fitting the optional inverter protective cover. The electrical connection section covers the DC MPPT inputs, which apply to the hybrid models only and whose open-circuit voltage must stay at or below 1100V, the battery input with its maximum voltage per model group, the AC output cable and lug sizes, and the COM1/COM2/STS wiring including the protective earth connection. It ends with commissioning and monitoring: the power-on and power-off order of the DC switches, the smart meter and CT wiring, and bringing the system into service through the SEMS+ app or the web portal. The multilingual safety notices and the section-title translation table are on the later pages, and part of that content was not captured in the reading, so please send those pages again if you need them.",
+  "answer": "The file is GoodWe's quick installation guide for the ETR Series hybrid inverters and the BTR Series AC-coupled inverters. It is a procedure document, so it shows how the units are mounted and wired rather than full technical data. In order, it contains the safety and scope notices, the packing list with the delivered parts, the wall-mounting and cabinet-side mounting steps (including the required clearances and the maximum tilt of 15°), the step of lifting the inverter onto the mount for a unit weighing 985kg, and the optional inverter protective cover. The electrical connection part covers the DC inputs, which the guide marks as applying to the hybrid models only, with an input voltage limit of 1100V for the first connector type and 1100V for the second; the battery connection, where the battery voltage limit is 700V for GW75K-ETR-LG10 and 1000V for the other models; the AC output with its cable, lug and torque tables; and the wiring and communication layout. The last page is a translation table of the section titles, which also names the sections on technical parameters and on commissioning and monitoring — those two sections are listed there, not reproduced in this guide. The third page was only partly legible when the file was read, so part of its text is missing; if you need details from that page, a sharper copy of it would help. Our own hosted copy of the same guide is linked below.",
   "refs": [
    "307b704c87f2-p1-85ed6962",
-   "307b704c87f2-p1-915ecb60",
-   "307b704c87f2-p4-70a87f9e",
    "att1"
   ],
   "cards": [],
@@ -451,7 +452,7 @@
  {
   "id": "drawings",
   "locale": "de",
-  "seconds": 35.65,
+  "seconds": 31.8,
   "route": "documents",
   "attachment": [
    {
@@ -463,10 +464,8 @@
     "pages_read": 4
    }
   ],
-  "answer": "Die angehängte Datei ist die Schnellinstallationsanleitung von GoodWe für die ETR-Serie (Hybrid-Wechselrichter) und die BTR-Serie (AC-gekoppelte Wechselrichter). Die erste Seite nennt die abgedeckten Modelle beider Serien und weist darauf hin, dass alle Arbeiten von geschulten Technikern ausgeführt werden müssen, die die lokalen Normen und Sicherheitsvorschriften kennen; die Anleitung ersetzt weder die Produktaufkleber noch die Sicherheitshinweise im Handbuch.\n\nDer Ablauf „Procedure“ führt durch den Lieferumfang, die Wandmontage und die Montage an der Schaltschrankseite, das Anbringen des Geräts und einen optionalen Schutzschild. Für die Wandmontage nennt die Anleitung Mindestabstände rings um das Gerät, eine zulässige Neigung von 15 und ein Gerätegewicht von 158kg.\n\nDer Abschnitt „Electrical Connection“ behandelt den DC-Eingang (MPPT), der laut Anleitung nur beim Hybrid-Wechselrichter vorhanden ist und dessen Leerlaufspannung 1100V nicht überschreiten darf, den DC-Batterieanschluss – dort ist der Eingang beim Modell GW75K-ETR-G10 auf 700V begrenzt, bei den übrigen Modellen auf 1000V –, den AC-Ausgang mit den Querschnittsangaben für mehradrige und einadrige Kabel, die Kommunikationsanschlüsse COM1, COM2 und STS einschließlich der Rapid-Shutdown-Verkabelung, das Verkabelungssystem mit Smart Meter, Batterie und der Parallelschaltung mehrerer Wechselrichter sowie die Inbetriebnahme über SEMS+ App oder SEMS+ Web.\n\nDie Abschnitte „Technical Parameters“ und „Commissioning and Monitoring“ erscheinen im gelesenen Text nur in der Übersicht der Abschnittstitel; die zugehörigen Werte wurden aus Ihrer Datei nicht gelesen, ebenso fehlt jeweils der hintere Teil der letzten Seiten. Bitte senden Sie diese Seiten nach, dann sehe ich die Kennwerte gezielt nach.",
+  "answer": "Ihr angehängtes PDF ist die Schnellinstallationsanleitung von GoodWe für die ETR-Serie (Hybrid-Wechselrichter) und die BTR-Serie (AC-gekoppelte Wechselrichter). Auf dem Deckblatt sind die abgedeckten Modelle aufgeführt, von GW50K-ETR-L-G10 über GW75K-ETR-G10, GW100K-ETR-G10 und GW125K-ETR-G10 bis zu den entsprechenden BTR-Ausführungen; die Anleitung richtet sich ausdrücklich an geschulte Techniker, die die örtlichen Normen kennen.\n\nInhaltlich zeigt die Anleitung den Ablauf der Montage und des Anschlusses: die Wandmontage mit einer Neigung bis 15 und den erforderlichen Abständen, die seitliche Montage am Gehäuse, das Einhängen des Wechselrichters und den optionalen Schutzdeckel. Danach folgt der elektrische Anschluss: Schutzleiter, die beiden Ausführungen des DC-MPPT-Eingangs (Typ I und Typ II) mit einer zulässigen Leerlaufspannung bis 1100V, der DC-Batterieanschluss mit einer Spannungsgrenze von 700V beim GW75K-ETR-G10 und 1000V bei den übrigen Modellen sowie der AC-Ausgang mit Anschlussbildern und Querschnittstabellen für Kupfer- und Aluminiumleiter. Anschließend werden das Verdrahtungsschema mit dem RCR-Board und den digitalen Eingängen, die technischen Parameter sowie Inbetriebnahme und Monitoring behandelt.\n\nHinweis zu Ihrer Datei: Von den späteren Seiten konnten nur Teile gelesen werden, die Abschnitte zu technischen Parametern und zur Inbetriebnahme liegen daher nur lückenhaft vor. Wenn Sie diese Angaben brauchen, senden Sie mir bitte die betreffenden Seiten noch einmal in besserer Qualität.",
   "refs": [
-   "307b704c87f2-p1-80b6f14f",
-   "307b704c87f2-p1-8de90b76",
    "att1"
   ],
   "cards": [],
@@ -476,12 +475,13 @@
  {
   "id": "follow-up",
   "locale": "en",
-  "seconds": 10.49,
+  "seconds": 10.2,
   "route": "documents",
   "attachment": [],
-  "answer": "Your nameplate states a maximum PV input voltage (Vmax PV) of 1000 Vdc. The same reading lists the MPPT voltage range as 200 to 850 Vdc, so the array voltage has to stay inside that window during operation while never exceeding the maximum input voltage. The readings come from the nameplate photo you attached for the GoodWe GW10K-ET.",
+  "answer": "Your nameplate states a maximum PV input voltage of 1000 Vdc. It also shows the MPPT voltage range as 200 Vdc to 850 Vdc, the maximum input current per tracker as 12.5, and the maximum PV-generator power as 13000 W. The nameplate does not state it, but the ET series manual on file also carries a nameplate section you can compare against.",
   "refs": [
-   "att1"
+   "att1",
+   "faa57c55caf7-p25-7aa5a126"
   ],
   "cards": [],
   "pass": true,
@@ -490,13 +490,116 @@
  {
   "id": "follow-up",
   "locale": "de",
-  "seconds": 10.04,
+  "seconds": 10.53,
   "route": "documents",
   "attachment": [],
-  "answer": "Auf dem von Ihnen angehängten Typenschild des GOODWE GW10K-ET ist die maximale PV-Eingangsspannung mit 1000 Vdc angegeben (Feld „Vmax PV“). Der MPPT-Spannungsbereich liegt laut Etikett bei 200 bis 850 Vdc, der maximale Eingangsstrom je Eingang bei 12.5. Der Wert ist die absolute Obergrenze der PV-Gleichspannung; die Leerlaufspannung Ihrer Strings sollte bei tiefen Temperaturen darunter bleiben. Grundlage ist das von Ihnen hochgeladene Etikett, nicht unsere Produktdatenbank – bitte gleichen Sie den Wert bei der Auslegung zusätzlich mit dem Datenblatt des Geräts ab.",
+  "answer": "Auf dem Foto Ihres Typenschilds steht als maximale PV-Eingangsspannung (Vmax PV) 1000 Vdc für den Hybrid-Wechselrichter GW10K-ET. Dort sind außerdem der MPPT-Spannungsbereich von 200 Vdc bis 850 Vdc, der maximale PV-Eingangsstrom von 12,5 und die maximale PV-Generatorleistung von 13000 W aufgedruckt. Dieselbe Angabe zur maximalen DC-Eingangsspannung findet sich in der Nameplate-Sektion des GoodWe-Handbuchs zur ET-Serie, das ich Ihnen unten verlinke.",
   "refs": [
+   "att1",
+   "faa57c55caf7-p25-7aa5a126"
+  ],
+  "cards": [],
+  "pass": true,
+  "failures": []
+ },
+ {
+  "id": "price-list",
+  "locale": "en",
+  "seconds": 13.41,
+  "route": "model",
+  "attachment": [
+   {
+    "id": "att1",
+    "name": "Price list.pdf",
+    "kind": "document",
+    "failed": null,
+    "pages": 1,
+    "pages_read": 1
+   }
+  ],
+  "answer": "Thank you for sharing your supplier's list. I can see the models you buy today, and I do not quote from a supplier's document — our prices come from our own product data and are shown on the product cards for your account. The SAJ H2-10K-T3 hybrid inverter and the SAJ B2-10.0-HV1 battery from your list are both in our range. The GoodWe model your list names, GW10K-ET, we do not carry; the GoodWe item we do have is the GW10K-ETA-G20, an all-in-one power module rather than the hybrid inverter on your list, so please check whether that one fits your project. Approved partner accounts see net prices on the cards.",
+  "refs": [
+   "2067",
+   "3556",
+   "4107",
    "att1"
   ],
+  "cards": [
+   4107,
+   2067,
+   3556
+  ],
+  "pass": true,
+  "failures": []
+ },
+ {
+  "id": "price-list",
+  "locale": "de",
+  "seconds": 13.54,
+  "route": "model",
+  "attachment": [
+   {
+    "id": "att1",
+    "name": "Preisliste.pdf",
+    "kind": "document",
+    "failed": null,
+    "pages": 1,
+    "pages_read": 1
+   }
+  ],
+  "answer": "Danke für Ihre Preisliste – die Beträge darin können wir nicht als unsere Preise übernehmen; unsere Preise stehen direkt am jeweiligen Produkt und sind bei den Karten hinterlegt. Zwei der dort genannten Modelle führen wir: den Hybrid-Wechselrichter H2-10K-T3 und die Batterie B2-10.0-HV1. Das GoodWe-Gerät GW10K-ET führen wir unter dieser Bezeichnung nicht; das nächstliegende GoodWe-Gerät in unserem Produktprogramm ist das dreiphasige Leistungsmodul GW10K-ETA-G20, das ich zur Orientierung mit dazustelle. Freigegebene Partnerkonten sehen die Nettopreise auf den Karten.",
+  "refs": [
+   "2067",
+   "3556",
+   "4107",
+   "att1"
+  ],
+  "cards": [
+   4107,
+   2067,
+   3556
+  ],
+  "pass": true,
+  "failures": []
+ },
+ {
+  "id": "delivery-terms",
+  "locale": "en",
+  "seconds": 4.28,
+  "route": "service",
+  "attachment": [
+   {
+    "id": "att1",
+    "name": "Delivery terms.pdf",
+    "kind": "document",
+    "failed": null,
+    "pages": 1,
+    "pages_read": 1
+   }
+  ],
+  "answer": "",
+  "refs": [],
+  "cards": [],
+  "pass": true,
+  "failures": []
+ },
+ {
+  "id": "delivery-terms",
+  "locale": "de",
+  "seconds": 1.89,
+  "route": "service",
+  "attachment": [
+   {
+    "id": "att1",
+    "name": "Lieferbedingungen.pdf",
+    "kind": "document",
+    "failed": null,
+    "pages": 1,
+    "pages_read": 1
+   }
+  ],
+  "answer": "",
+  "refs": [],
   "cards": [],
   "pass": true,
   "failures": []
