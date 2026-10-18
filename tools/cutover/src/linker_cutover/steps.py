@@ -301,9 +301,14 @@ def deploy(
     # Templates and the WindPress volume are data, not files: without present a
     # deploy keeps the previous volume, and a page whose fragment changed (the
     # inquiry form on 2026-10-18) renders unstyled. Idempotent; present keeps its
-    # own rollback copy.
-    target.wp("linker-commerce", "present", "--user=1")
-    actions.append("wp linker-commerce present --user=1")
+    # own rollback copy. --allow-stale because a stylesheet change makes the
+    # cache stale by definition and present would refuse after the switch; the
+    # browser-side WindPress compile that follows is the step that clears it.
+    target.wp("linker-commerce", "present", "--user=1", "--allow-stale")
+    actions.append(
+        "wp linker-commerce present --user=1 --allow-stale (now run the WindPress "
+        "admin compile: npm tools/windpress-compile.mjs with an admin login)"
+    )
     if reminder:
         # Last, so it is the line the log ends on and never shifts the others.
         actions.append(reminder)
