@@ -1,4 +1,4 @@
-== linker-commerce
+== linker-commerce (against origin/main 0a239ae2)
 main 797 · branch 807 · lost 0 · changed 0 · added 10
 added "A contact request came in through Genie. Genie promised a reply within one business day."
 added "A reply to this email goes straight to the customer."
@@ -10,7 +10,7 @@ added "New contact request via Genie"
 added "Open the conversation"
 added "Sent to the internal notification address, with blind copies, when a customer sends a contact request from Genie."
 added "The customer's last messages, newest first"
-== linker-tools
+== linker-tools (against origin/main 0a239ae2)
 main 346 · branch 362 · lost 0 · changed 0 · added 16
 added "%1$s · Reply address: %2$s · Reason: %3$s"
 added "Asked about the company, delivery or service"
