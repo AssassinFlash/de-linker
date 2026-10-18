@@ -16,7 +16,9 @@ for (const language of ['en', 'de']) {
 				test(`${language} ${width} ${door} ${capped ? 'capped' : 'receipt'}: fresh guest can submit after Woo creates its cookie`, async ({
 					browser,
 				}) => {
-					expect(instance().name).toBe('c246');
+					expect(instance().url).toMatch(
+						/^http:\/\/127\.0\.0\.1:\d+$/
+					);
 					const email = `tester246-${language}-${width}-${door}-${Date.now()}@example.test`;
 					const setup = JSON.parse(
 						run('setup', email, capped ? 'capped' : 'receipt')
