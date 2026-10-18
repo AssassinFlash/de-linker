@@ -1,0 +1,162 @@
+[
+ {
+  "locale": "en",
+  "message": "Yes, it's the SAJ H2-10K-T3. Show me its documents.",
+  "route": "documents",
+  "intent": "documents_specs",
+  "fallback": false,
+  "blocks": [
+   "text",
+   "cards",
+   "document",
+   "document",
+   "document"
+  ],
+  "documents": [
+   "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+   "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)",
+   "SAJ H2 10-30K user manual, German and English (covers the H2-10K-T3) · p. 4"
+  ],
+  "cards": [
+   [
+    4107
+   ]
+  ],
+  "answer": "Here are the documents for the SAJ H2-10K-T3. The H2 series datasheet (EN, BEU) carries the technical data for this model, and the hybrid inverter user manual (DE/EN) states in its application scope that it covers this model and describes installation, operation, maintenance and troubleshooting; it "
+ },
+ {
+  "locale": "en",
+  "message": "Yes, it's the SAJ H2-10K-T3. What works with it?",
+  "route": "pairing",
+  "intent": "pairing_compatibility",
+  "fallback": false,
+  "blocks": [
+   "text",
+   "cards",
+   "document",
+   "document",
+   "document",
+   "document"
+  ],
+  "documents": [
+   "H2 HS2 HS3 AS2 AS3 Configuration Instructions V1.0 en",
+   "B2 5.0 HV1 HV5 user manual EN EU",
+   "B2 5 25K HV1HV5 datasheet EN BEU",
+   "SAJ H2 10 30K User Manual DE EN EU"
+  ],
+  "cards": [
+   [
+    4107,
+    1832,
+    2067,
+    2068,
+    2069,
+    2070,
+    2090,
+    2092
+   ]
+  ],
+  "answer": "For the SAJ H2-10K-T3, these batteries have a documented pairing, and every one of them is released with a matching accessory. The condition is the same throughout: the B2 storage works only as a set of BU2-5.0 modules together with a BC2-HV1 control module, which is a separate product, and SAJ's co"
+ },
+ {
+  "locale": "en",
+  "message": "It's the SAJ H2-15K-T3.",
+  "route": "products",
+  "intent": "find_products",
+  "fallback": false,
+  "blocks": [
+   "text",
+   "cards",
+   "document",
+   "document"
+  ],
+  "documents": [
+   "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+   "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)"
+  ],
+  "cards": [
+   [
+    2063
+   ]
+  ],
+  "answer": "Understood — the SAJ H2-15K-T3 from the SAJ H2 series, a three-phase hybrid inverter for home use with 15 kW rated AC output and up to 30 kW of PV input. Its datasheet and user manual are linked below. Approved partner accounts see net prices on the product card. Shall I check which batteries have a"
+ },
+ {
+  "locale": "de",
+  "message": "Ja, es ist das Modell SAJ H2-10K-T3. Bitte zeigen Sie mir die Unterlagen dazu.",
+  "route": "documents",
+  "intent": "documents_specs",
+  "fallback": false,
+  "blocks": [
+   "text",
+   "cards",
+   "document",
+   "document"
+  ],
+  "documents": [
+   "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+   "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)"
+  ],
+  "cards": [
+   [
+    4107
+   ]
+  ],
+  "answer": "Gern. Zum SAJ H2-10K-T3 liegen uns ein Datenblatt und die Bedienungsanleitung vor; beide sind unten als Dokument verlinkt. Das Produkt selbst finden Sie in der Karte – freigegebene Partnerkonten sehen dort Nettopreise."
+ },
+ {
+  "locale": "de",
+  "message": "Ja, es ist das Modell SAJ H2-10K-T3. Was passt dazu?",
+  "route": "pairing",
+  "intent": "pairing_compatibility",
+  "fallback": false,
+  "blocks": [
+   "text",
+   "cards",
+   "document",
+   "document",
+   "document"
+  ],
+  "documents": [
+   "H2 HS2 HS3 AS2 AS3 Configuration Instructions V1.0 en",
+   "B2 5.0 HV1 HV5 user manual EN EU",
+   "B2 5 25K HV1HV5 datasheet EN BEU"
+  ],
+  "cards": [
+   [
+    4107,
+    1832,
+    2067,
+    2068,
+    2069,
+    2070,
+    2090,
+    2092
+   ]
+  ],
+  "answer": "Für den SAJ H2-10K-T3 sind mehrere Batterien der B2-Reihe dokumentiert; alle aufgeführten Paare sind freigegeben, jeweils mit dem passenden Zubehör. Zwei Bedingungen gelten dabei: Die Batterie wird nur als Set aus Speichermodulen mit einem eigenen Steuermodul BC2-HV1 eingesetzt, und die Spannung des"
+ },
+ {
+  "locale": "de",
+  "message": "Es ist das Modell SAJ H2-15K-T3.",
+  "route": "products",
+  "intent": "find_products",
+  "fallback": false,
+  "blocks": [
+   "text",
+   "cards",
+   "document",
+   "document"
+  ],
+  "documents": [
+   "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+   "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)"
+  ],
+  "cards": [
+   [
+    2063
+   ]
+  ],
+  "answer": "Danke, damit ist das Produkt eindeutig. Der SAJ H2-15K-T3 ist ein dreiphasiger Hybrid-Wechselrichter für den Heimbetrieb aus der H2-Serie von SAJ; er arbeitet mit LiFePO4-Batterien zusammen und lässt sich über WLAN, Ethernet oder optional per Mobilfunk anbinden. Datenblatt und Handbuch habe ich dire"
+ }
+]

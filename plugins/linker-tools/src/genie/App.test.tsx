@@ -845,6 +845,8 @@ test( 'a refusal of the proxy names its reason', async () => {
 	expect(
 		screen.queryByText( 'Genie did not answer. Please try again.' )
 	).toBeNull();
+	// Nothing was sent: the question is not in the thread.
+	expect( screen.queryByText( 'Attached: ds.pdf' ) ).toBeNull();
 } );
 
 // A nameplate the service matched exactly: the card offers the product

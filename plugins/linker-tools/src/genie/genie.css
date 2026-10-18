@@ -1500,6 +1500,16 @@ body:has(.pdp-buy-inner)
 		pointer-events: none;
 	}
 
+	/* The sheet's column carries its own white: the app's background sits
+	 * under the fixed backdrop (the app box is not positioned), and without
+	 * this the whole sheet showed through the 30% scrim, grey on grey (seen
+	 * on the 390 px screenshots of #236, on every dock entry). */
+	.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+		.linker-genie-app__main {
+		background: #fff;
+		border-radius: 16px 16px 0 0;
+	}
+
 	/* The backdrop under the sheet; a tap on it folds the dock away. */
 	.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
 		.linker-genie-dock-mask {

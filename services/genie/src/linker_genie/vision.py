@@ -99,12 +99,12 @@ class Vision:
                     ],
                 }
             ],
-            # Transcription needs no reasoning: with thinking on, a nameplate took
-            # 6.5–25 s and one hard photo timed out twice (eval/attachments,
-            # 2026-10-18); with thinking disabled the same photos took 2.2–3.5 s and
-            # read the same model (docs/acceptance/2026-10-18/236/thinking.md). The
-            # switch is the official API's (research S16, "thinking"); the turn's
-            # agent keeps thinking on (agent.py).
+            # Transcription needs no reasoning: on the 11 photos of eval/attachments a
+            # read took 2.9–31.4 s with thinking on (the default) and 0.9–4.0 s with
+            # it off, the models read the same or left null (never another model);
+            # one photo timed out twice with it on (docs/acceptance/2026-10-18/236/
+            # thinking.md). The switch is the official API's (research S16,
+            # "thinking"); the turn's agent keeps thinking on (agent.py).
             "thinking": {"type": "disabled"},
         }
         if instruction.json:

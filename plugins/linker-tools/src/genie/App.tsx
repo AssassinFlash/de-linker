@@ -289,11 +289,12 @@ export function App( { config }: { config: GenieConfig } ) {
 				// Setting it before the queue would drop a history click that
 				// arrives while a switch is still resolving.
 				sending.current = true;
+				// The lane already ran the mount restore and any switch, so the
+				// ref is the conversation this ask belongs to.
+				const before = currentThread.current;
 				try {
-					// The lane already ran the mount restore and any switch,
-					// so the ref is the conversation this ask belongs to.
 					const next: TurnMessage[] = [
-						...currentThread.current,
+						...before,
 						{ role: 'user', content: question },
 					];
 					currentThread.current = next;
@@ -327,6 +328,12 @@ export function App( { config }: { config: GenieConfig } ) {
 								)
 							: '';
 					if ( reason ) {
+						// Nothing was sent: the question leaves the thread and
+						// goes back into the field, to send again without
+						// the file or later.
+						currentThread.current = before;
+						setThread( before );
+						setInput( text );
 						setRefused(
 							refusalText(
 								reason === 'throttled' ||
