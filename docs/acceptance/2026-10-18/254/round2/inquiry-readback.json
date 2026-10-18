@@ -1,0 +1,220 @@
+[
+  {
+    "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+    "display": "flex",
+    "fontWeight": "400",
+    "fonts": "loaded",
+    "gap": "12px",
+    "h": 1120,
+    "images": [
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+      }
+    ],
+    "lang": "en",
+    "margin": "0px",
+    "overflow": false,
+    "path": "/proforma-request/",
+    "title": "Send an inquiry | Linker",
+    "total": 1610,
+    "unreadyImages": [],
+    "url": "http://127.0.0.1:9129/proforma-request/?i254-visual=1",
+    "videos": [],
+    "w": 1440,
+    "y": 0,
+    "face": "inquiry",
+    "width": 1440,
+    "height": 1120,
+    "file": "inquiry-en-1440.png",
+    "capturedAt": "2026-10-18T17:59:51.382Z",
+    "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+  },
+  {
+    "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+    "display": "flex",
+    "fontWeight": "400",
+    "fonts": "loaded",
+    "gap": "12px",
+    "h": 1120,
+    "images": [
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+      }
+    ],
+    "lang": "de",
+    "margin": "0px",
+    "overflow": false,
+    "path": "/de/proforma-anfrage/",
+    "title": "Anfrage senden | Linker",
+    "total": 1675,
+    "unreadyImages": [],
+    "url": "http://127.0.0.1:9129/de/proforma-anfrage/?i254-visual=1",
+    "videos": [],
+    "w": 1440,
+    "y": 0,
+    "face": "inquiry",
+    "width": 1440,
+    "height": 1120,
+    "file": "inquiry-de-1440.png",
+    "capturedAt": "2026-10-18T18:00:06.045Z",
+    "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+  },
+  {
+    "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+    "display": "flex",
+    "fontWeight": "400",
+    "fonts": "loaded",
+    "gap": "12px",
+    "h": 1120,
+    "images": [
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+      }
+    ],
+    "lang": "en",
+    "margin": "0px",
+    "overflow": false,
+    "path": "/proforma-request/",
+    "title": "Send an inquiry | Linker",
+    "total": 2075,
+    "unreadyImages": [],
+    "url": "http://127.0.0.1:9129/proforma-request/?i254-visual=1",
+    "videos": [],
+    "w": 390,
+    "y": 0,
+    "face": "inquiry",
+    "width": 390,
+    "height": 1120,
+    "file": "inquiry-en-390.png",
+    "capturedAt": "2026-10-18T18:00:23.142Z",
+    "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+  },
+  {
+    "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+    "display": "flex",
+    "fontWeight": "400",
+    "fonts": "loaded",
+    "gap": "12px",
+    "h": 1120,
+    "images": [
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+      },
+      {
+        "complete": true,
+        "loaded": true,
+        "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+      }
+    ],
+    "lang": "de",
+    "margin": "0px",
+    "overflow": false,
+    "path": "/de/proforma-anfrage/",
+    "title": "Anfrage senden | Linker",
+    "total": 2202,
+    "unreadyImages": [],
+    "url": "http://127.0.0.1:9129/de/proforma-anfrage/?i254-visual=1",
+    "videos": [],
+    "w": 390,
+    "y": 0,
+    "face": "inquiry",
+    "width": 390,
+    "height": 1120,
+    "file": "inquiry-de-390.png",
+    "capturedAt": "2026-10-18T18:00:37.590Z",
+    "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+  }
+]

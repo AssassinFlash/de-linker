@@ -1,0 +1,155 @@
+{
+  "baseline_source": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+  "current_source": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c",
+  "capture_protocol": "../../capture-protocol.js (native CUA/CDP PNG, same tab, original exact viewports, fonts/images decoded, videos paused at loaded first frame)",
+  "baseline_directory": "../../en-final",
+  "current_directory": ".",
+  "note": "Immutable accepted prior frames compared with fresh current frames. Comparator live/local names are slots, not a claim of production capture. No shared source or database switching.",
+  "allowedHeaderChanges": [],
+  "cases": [
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/products/",
+      "stem": "products",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/product-category/commercial-storage/all-in-one-systems/",
+      "stem": "category",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/my-account/",
+      "stem": "login",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/my-account/register/",
+      "stem": "register",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/my-account/lost-password/",
+      "stem": "password",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/faq-download/",
+      "stem": "faq",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/compare-products/",
+      "stem": "compare",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/cart/",
+      "stem": "draft",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/products/",
+      "stem": "products",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/product-category/commercial-storage/all-in-one-systems/",
+      "stem": "category",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/my-account/",
+      "stem": "login",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/my-account/register/",
+      "stem": "register",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/my-account/lost-password/",
+      "stem": "password",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/faq-download/",
+      "stem": "faq",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/compare-products/",
+      "stem": "compare",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    },
+    {
+      "path": "/cart/",
+      "stem": "draft",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 0,
+      "ruledRegions": []
+    }
+  ]
+}

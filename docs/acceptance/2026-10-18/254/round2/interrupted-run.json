@@ -1,0 +1,23 @@
+{
+  "first_run": {
+    "snapshot": "20261018-1043",
+    "tests": 33,
+    "assertions": 35728,
+    "result": "passed",
+    "evidence": "before-resync-integration.xml"
+  },
+  "interrupted_second_run": {
+    "tests": 33,
+    "assertions": 35640,
+    "failures": 8,
+    "evidence": "rejected-external-resync.xml",
+    "accepted": false
+  },
+  "external_re_sync": {
+    "name": "20261019-0102",
+    "taken": "2026-10-18T17:10:18+00:00",
+    "loaded": "2026-10-18T17:12:26+00:00"
+  },
+  "diagnosis": "During the second suite, native PHP error logs at 17:11 UTC record wp_options/wp_users/wp_usermeta absent and SEOPress plugin files temporarily absent. The snapshot identity/load time changed while this suite was running. Full repeat evidence must be regenerated on the new stable snapshot.",
+  "external_fixture": "Existing i254-visual belongs to the other active session and is preserved."
+}

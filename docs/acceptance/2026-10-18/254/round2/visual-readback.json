@@ -1,0 +1,1193 @@
+{
+  "source": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c",
+  "base": "1a277c1e51e3f6acb04771a3277b7960f2f36d3b",
+  "capture_scope": "Native c254 CUA; scoped ?i254-visual=1 readiness fixture, removed after capture",
+  "records": [
+    {
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "cardTops": [
+        690,
+        690,
+        790,
+        790
+      ],
+      "fonts": "loaded",
+      "h": 1000,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/linker-technical-support-and-documents.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/linker-grid-documents-for-the-order.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-the-kit-arrives-together-scaled.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-warranty-handled-in-germany-scaled.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-support-for-solar-installers.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-partners-on-bess-support.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-partners-on-microgrid-support.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en",
+      "overflow": false,
+      "path": "/services-support/",
+      "title": "Technical Support, Documents and Warranty | Linker",
+      "total": 7732,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/services-support/?i254-visual=1",
+      "videos": [
+        {
+          "paused": true,
+          "ready": 4,
+          "time": 0
+        },
+        {
+          "paused": true,
+          "ready": 4,
+          "time": 0
+        }
+      ],
+      "w": 1440,
+      "y": 0,
+      "face": "service",
+      "width": 1440,
+      "height": 1000,
+      "file": "service-en-1440.png",
+      "capturedAt": "2026-10-18T17:56:30.376Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "cardTops": [
+        690,
+        690,
+        790,
+        790
+      ],
+      "fonts": "loaded",
+      "h": 1000,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/linker-technical-support-and-documents.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/linker-grid-documents-for-the-order.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-the-kit-arrives-together-scaled.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-warranty-handled-in-germany-scaled.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-support-for-solar-installers.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-partners-on-bess-support.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-partners-on-microgrid-support.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de",
+      "overflow": false,
+      "path": "/de/kundendienst/",
+      "title": "Kundendienst | Linker",
+      "total": 7791,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/de/kundendienst/?i254-visual=1",
+      "videos": [
+        {
+          "paused": true,
+          "ready": 4,
+          "time": 0
+        },
+        {
+          "paused": true,
+          "ready": 4,
+          "time": 0
+        }
+      ],
+      "w": 1440,
+      "y": 0,
+      "face": "service",
+      "width": 1440,
+      "height": 1000,
+      "file": "service-de-1440.png",
+      "capturedAt": "2026-10-18T17:58:00.106Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "cardTops": [
+        835.296875,
+        835.296875,
+        935.296875,
+        935.296875
+      ],
+      "fonts": "loaded",
+      "h": 1000,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/linker-technical-support-and-documents.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/linker-grid-documents-for-the-order.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-the-kit-arrives-together-scaled.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-warranty-handled-in-germany-scaled.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-support-for-solar-installers.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-partners-on-bess-support.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-partners-on-microgrid-support.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en",
+      "overflow": false,
+      "path": "/services-support/",
+      "title": "Technical Support, Documents and Warranty | Linker",
+      "total": 10387,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/services-support/?i254-visual=1",
+      "videos": [
+        {
+          "paused": true,
+          "ready": 4,
+          "time": 0
+        },
+        {
+          "paused": true,
+          "ready": 4,
+          "time": 0
+        }
+      ],
+      "w": 390,
+      "y": 0,
+      "face": "service",
+      "width": 390,
+      "height": 1000,
+      "file": "service-en-390.png",
+      "capturedAt": "2026-10-18T17:58:15.755Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "cardTops": [
+        854.8515625,
+        854.8515625,
+        954.8515625,
+        954.8515625
+      ],
+      "fonts": "loaded",
+      "h": 1000,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/linker-technical-support-and-documents.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/10/linker-grid-documents-for-the-order.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-the-kit-arrives-together-scaled.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-warranty-handled-in-germany-scaled.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-support-for-solar-installers.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-partners-on-bess-support.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-partners-on-microgrid-support.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commissioning-guidance-from-linker.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de",
+      "overflow": false,
+      "path": "/de/kundendienst/",
+      "title": "Kundendienst | Linker",
+      "total": 10949,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/de/kundendienst/?i254-visual=1",
+      "videos": [
+        {
+          "paused": true,
+          "ready": 4,
+          "time": 0
+        },
+        {
+          "paused": true,
+          "ready": 4,
+          "time": 0
+        }
+      ],
+      "w": 390,
+      "y": 0,
+      "face": "service",
+      "width": 390,
+      "height": 1000,
+      "file": "service-de-390.png",
+      "capturedAt": "2026-10-18T17:58:34.415Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "activeCount": 1,
+      "background": "rgb(241, 249, 248)",
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "fonts": "loaded",
+      "geometryTokens": {
+        "--journal-brand-mark": "28px",
+        "--journal-mobile-thumb": "104px",
+        "--journal-reading-rail": "220px",
+        "--journal-related-thumb": "80px",
+        "--journal-search-icon": "19px",
+        "--journal-search-width": "280px",
+        "--journal-topic-rail": "224px"
+      },
+      "h": 1120,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-lynx-home-f-battery-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/scene-goodwe-lynx-home-600x364.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/delinker-inverter-battery-system-600x400.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/pylontech-force-h2-battery-600x600.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/ecoflow-stream-home-battery-600x600.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/our-cat-meters-accessories-v2-600x400.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-768x1024.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65-768x1024.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-lynx-home-f-battery-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/scene-goodwe-lynx-home-600x364.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/delinker-inverter-battery-system-600x400.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en",
+      "leftInset": 17,
+      "overflow": false,
+      "panelWidth": 224,
+      "path": "/blog/",
+      "rightInset": 17,
+      "title": "Journal: Sizing, Pairing and Commissioning | Linker",
+      "total": 3562,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/blog/?i254-visual=1",
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "face": "journal",
+      "width": 1440,
+      "height": 1120,
+      "file": "journal-en-1440.png",
+      "capturedAt": "2026-10-18T17:58:50.457Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "activeCount": 1,
+      "background": "rgb(241, 249, 248)",
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "fonts": "loaded",
+      "geometryTokens": {
+        "--journal-brand-mark": "28px",
+        "--journal-mobile-thumb": "104px",
+        "--journal-reading-rail": "220px",
+        "--journal-related-thumb": "80px",
+        "--journal-search-icon": "19px",
+        "--journal-search-width": "280px",
+        "--journal-topic-rail": "224px"
+      },
+      "h": 1120,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-lynx-home-f-battery-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/scene-goodwe-lynx-home-600x364.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/delinker-inverter-battery-system-600x400.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/pylontech-force-h2-battery-600x600.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/ecoflow-stream-home-battery-600x600.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/our-cat-meters-accessories-v2-600x400.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-768x1024.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65-768x1024.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-lynx-home-f-battery-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/scene-goodwe-lynx-home-600x364.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/delinker-inverter-battery-system-600x400.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de",
+      "leftInset": 17,
+      "overflow": false,
+      "panelWidth": 224,
+      "path": "/de/blog/",
+      "rightInset": 17,
+      "title": "Journal: Auslegung, Kombination und Inbetriebnahme | Linker",
+      "total": 3562,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/de/blog/?i254-visual=1",
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "face": "journal",
+      "width": 1440,
+      "height": 1120,
+      "file": "journal-de-1440.png",
+      "capturedAt": "2026-10-18T17:59:06.180Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "activeCount": 1,
+      "background": "rgb(10, 102, 92)",
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "fonts": "loaded",
+      "geometryTokens": {
+        "--journal-brand-mark": "28px",
+        "--journal-mobile-thumb": "104px",
+        "--journal-reading-rail": "220px",
+        "--journal-related-thumb": "80px",
+        "--journal-search-icon": "19px",
+        "--journal-search-width": "280px",
+        "--journal-topic-rail": "224px"
+      },
+      "h": 1120,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-lynx-home-f-battery-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/scene-goodwe-lynx-home-600x364.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/delinker-inverter-battery-system-600x400.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/pylontech-force-h2-battery-600x600.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/ecoflow-stream-home-battery-600x600.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/our-cat-meters-accessories-v2-600x400.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-768x1024.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65-768x1024.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en",
+      "leftInset": 0,
+      "overflow": false,
+      "panelWidth": 358,
+      "path": "/blog/",
+      "rightInset": 246.3046875,
+      "title": "Journal: Sizing, Pairing and Commissioning | Linker",
+      "total": 2937,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/blog/?i254-visual=1",
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "face": "journal",
+      "width": 390,
+      "height": 1120,
+      "file": "journal-en-390.png",
+      "capturedAt": "2026-10-18T17:59:20.469Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "activeCount": 1,
+      "background": "rgb(10, 102, 92)",
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "fonts": "loaded",
+      "geometryTokens": {
+        "--journal-brand-mark": "28px",
+        "--journal-mobile-thumb": "104px",
+        "--journal-reading-rail": "220px",
+        "--journal-related-thumb": "80px",
+        "--journal-search-icon": "19px",
+        "--journal-search-width": "280px",
+        "--journal-topic-rail": "224px"
+      },
+      "h": 1120,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-bt-ac-coupled-inverter-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/saj-h2-hs2-hybrid-inverter.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/goodwe-lynx-home-f-battery-600x765.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/scene-goodwe-lynx-home-600x364.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/delinker-inverter-battery-system-600x400.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/pylontech-force-h2-battery-600x600.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/ecoflow-stream-home-battery-600x600.png"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/our-cat-meters-accessories-v2-600x400.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/05/6b86cffac875a2ed_962a9ca0-9b53-48b4-98c2-50b3798519b1-768x1024.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/05/0b10b1e5d05f9d4e_5aa6a47f-a81e-483a-9aff-0e173c4a7e65-768x1024.jpg"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de",
+      "leftInset": 0,
+      "overflow": false,
+      "panelWidth": 358,
+      "path": "/de/blog/",
+      "rightInset": 228.3515625,
+      "title": "Journal: Auslegung, Kombination und Inbetriebnahme | Linker",
+      "total": 2998,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/de/blog/?i254-visual=1",
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "face": "journal",
+      "width": 390,
+      "height": 1120,
+      "file": "journal-de-390.png",
+      "capturedAt": "2026-10-18T17:59:36.500Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "display": "flex",
+      "fontWeight": "400",
+      "fonts": "loaded",
+      "gap": "12px",
+      "h": 1120,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en",
+      "margin": "0px",
+      "overflow": false,
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 1610,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/proforma-request/?i254-visual=1",
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "face": "inquiry",
+      "width": 1440,
+      "height": 1120,
+      "file": "inquiry-en-1440.png",
+      "capturedAt": "2026-10-18T17:59:51.382Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "display": "flex",
+      "fontWeight": "400",
+      "fonts": "loaded",
+      "gap": "12px",
+      "h": 1120,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de",
+      "margin": "0px",
+      "overflow": false,
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 1675,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/de/proforma-anfrage/?i254-visual=1",
+      "videos": [],
+      "w": 1440,
+      "y": 0,
+      "face": "inquiry",
+      "width": 1440,
+      "height": 1120,
+      "file": "inquiry-de-1440.png",
+      "capturedAt": "2026-10-18T18:00:06.045Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "display": "flex",
+      "fontWeight": "400",
+      "fonts": "loaded",
+      "gap": "12px",
+      "h": 1120,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "en",
+      "margin": "0px",
+      "overflow": false,
+      "path": "/proforma-request/",
+      "title": "Send an inquiry | Linker",
+      "total": 2075,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/proforma-request/?i254-visual=1",
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "face": "inquiry",
+      "width": 390,
+      "height": 1120,
+      "file": "inquiry-en-390.png",
+      "capturedAt": "2026-10-18T18:00:23.142Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    },
+    {
+      "cache": "http://127.0.0.1:9129/wp-content/uploads/windpress/cache/tailwind.css?ver=1792345402",
+      "display": "flex",
+      "fontWeight": "400",
+      "fonts": "loaded",
+      "gap": "12px",
+      "h": 1120,
+      "images": [
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+        },
+        {
+          "complete": true,
+          "loaded": true,
+          "src": "http://127.0.0.1:9129/wp-content/uploads/2026/07/linker-logo-wordmark.png"
+        }
+      ],
+      "lang": "de",
+      "margin": "0px",
+      "overflow": false,
+      "path": "/de/proforma-anfrage/",
+      "title": "Anfrage senden | Linker",
+      "total": 2202,
+      "unreadyImages": [],
+      "url": "http://127.0.0.1:9129/de/proforma-anfrage/?i254-visual=1",
+      "videos": [],
+      "w": 390,
+      "y": 0,
+      "face": "inquiry",
+      "width": 390,
+      "height": 1120,
+      "file": "inquiry-de-390.png",
+      "capturedAt": "2026-10-18T18:00:37.590Z",
+      "currentSource": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c"
+    }
+  ]
+}

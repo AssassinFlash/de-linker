@@ -1,0 +1,2 @@
+usage: audit.py [-h] --cookie-file COOKIE_FILE
+audit.py: error: unrecognized arguments: --output /tmp/254-round2-negative-output.json

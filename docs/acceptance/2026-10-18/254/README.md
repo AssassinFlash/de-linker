@@ -1,8 +1,8 @@
 # #254 acceptance on c254
 
-## Latest main integration
+## Latest review-fix acceptance
 
-The final delivery is rebased onto fixed `2789721a`, with source `90089f11`. Fresh root checks, repeated real fixtures, native inquiry/sidebar readback and complete provenance are in the [final fixed-main addendum](current/README.md), with the [latest full table](current/completion.md) and [verification](current/verification.json). Earlier reports below retain their actual source pins.
+PR #316's six review items and the owner-reported service hero overlap are resolved. Current source `bd862bdd`, fixed main `1a277c1e`: [second-review evidence](round2/README.md), [complete current table](round2/completion.md), [verification](round2/verification.json). Historical reports below retain their true source pins. The fresh comparison against the older accepted baseline is9zero/9nonzero; current strict latest-main pixel acceptance remains open and is not covered by green local checks or CI.
 
 Implementation only: `/Users/chesterjohn/Documents/de-linker-worktrees/c254`, branch `feat/254-german-urls`, instance **http://127.0.0.1:9129**. The main checkout was not used for edits. No merge, deploy, production write or real test email was performed. Claude owns the production handoff.
 

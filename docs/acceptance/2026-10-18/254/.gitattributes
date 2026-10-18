@@ -6,3 +6,6 @@ current/mail/*.eml -text whitespace=cr-at-eol
 
 # Preserve native second-review captured mail bytes.
 round2/mail/*.eml -text whitespace=cr-at-eol
+
+# Second-review raw command output preserves terminal alignment.
+round2/*.log -whitespace

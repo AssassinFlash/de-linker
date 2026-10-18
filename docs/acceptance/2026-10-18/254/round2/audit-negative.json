@@ -1,0 +1,16 @@
+{
+  "exit_code": 1,
+  "defects": [
+    "Canonical is not the final address: /de/mein-konto/dokumente/: ",
+    "German alternate is not the final address: /de/mein-konto/anfragen/2/: http://127.0.0.1:9129/de/mein-konto/",
+    "German alternate is not the final address: /de/mein-konto/anfragen/: http://127.0.0.1:9129/de/mein-konto/",
+    "German alternate is not the final address: /de/mein-konto/dokumente/: ",
+    "German alternate is not the final address: /de/mein-konto/gespeicherte-loesungen/: http://127.0.0.1:9129/de/mein-konto/",
+    "German alternate is not the final address: /de/mein-konto/kontodaten/: http://127.0.0.1:9129/de/mein-konto/",
+    "German alternate is not the final address: /de/mein-konto/unternehmen/: http://127.0.0.1:9129/de/mein-konto/",
+    "German alternate is not the final address: /de/mein-konto/unternehmen/lieferadresse/: http://127.0.0.1:9129/de/mein-konto/",
+    "German alternate is not the final address: /de/mein-konto/unternehmen/rechnungsadresse/: http://127.0.0.1:9129/de/mein-konto/"
+  ],
+  "injection": "Native filters scoped to this run's unique authenticated customer: account alternate to root; documents canonical and hreflang omitted. Other sessions are unaffected.",
+  "cleanup": "Temporary MU removed in finally before positive audit."
+}

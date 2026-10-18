@@ -1,0 +1,10 @@
+Plugin file detected.
+Success: POT file successfully generated.
+LC fragments: 25 live catalog messages -> /var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/tmp.tSGyjrAK7i/fragments.pot
+........................................................................................ done.
+/opt/homebrew/opt/php@8.3/bin/php "$(command -v wp)" i18n make-json "/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-tools/languages/linker-tools-de_DE_formal.po" --no-purge
+Success: Created 2 files.
+msgfmt --check "/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-tools/languages/linker-tools-de_DE_formal.po" -o "/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-tools/languages/linker-tools-de_DE_formal.mo"
+Plugin file detected.
+Success: POT file successfully generated.
+..... done.

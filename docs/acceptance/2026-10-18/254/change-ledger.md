@@ -50,3 +50,12 @@ The owner then identified full discovery headings as too dense and asked for the
 ### Sidebar inset correction
 
 The owner identified the selected desktop topic as protruding toward the panel edge. The native grid's implicit minimum track was wider than its content box when accommodating a long German category. The final WindPress rule uses `minmax(0,1fr)`, a 224px desktop rail and explicit zero minimums/wrapping on its internal links/list. The desktop current state is a quieter teal tint; mobile keeps its filled selected pill. Geometry readback verifies equal panel insets in both languages.
+
+
+### Owner-reported service hero overlap, 2026-10-19
+
+The new [owner screenshot](round2/owner-service-hero-feedback.png) shows four capability cards stacked over hero copy and actions. The [actual pre-fix c254 captures](round2/service-before.json) record desktop card tops 490/590/690/790: native wpautop br siblings consume alternate grid cells. This is distinct from the older byte-identical desktop pair disclosed above.
+
+WindPress hides only the formatting br direct children of the proof/actions groups. The approved copy, two actions, imagery and composition remain; the four desktop cards occupy two rows and clear the copy/actions. [New current-source captures](round2/service-readback.json), [actual final hero](round2/service-hero-en-1440.png) and the public service/header regression cover EN/DE at 390/768/1000/1280/1440/1490. The native header end-padding correction retains its content width and ruled cross-engine fold budget. These bounded repairs are explicit visual bug fixes. The previous desktop pair is still retention evidence and is never relabelled as this repair's before/after proof.
+
+Another active session re-synced c254 while the second acceptance suite ran. That interrupted run is rejected in [interrupted-run.json](round2/interrupted-run.json); final results use the separately recorded new snapshot and complete repeated fixtures. The final screenshot readback and native PNG comparisons avoid switching shared source or database state. Existing fixtures owned by the other session are disclosed and preserved.

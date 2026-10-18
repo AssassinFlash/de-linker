@@ -1,0 +1,14 @@
+{
+  "base": "1a277c1e51e3f6acb04771a3277b7960f2f36d3b",
+  "source": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c",
+  "added_legacy_identifier_hits": [],
+  "changed_engine_or_nlu_files": [],
+  "reviewed_boundaries": [
+    "Polylang pairing through Languages",
+    "Native Woo endpoint and mail generation",
+    "LC composition and native loop fields",
+    "WindPress volumes, native Generate",
+    "No replacement engine/NLU channel"
+  ],
+  "note": "Existing metadata keys/removal hooks are not copied executable legacy implementations; independent full-diff review is recorded separately."
+}

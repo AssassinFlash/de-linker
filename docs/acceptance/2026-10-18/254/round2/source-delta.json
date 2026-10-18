@@ -1,0 +1,30 @@
+{
+  "base": "1a277c1e51e3f6acb04771a3277b7960f2f36d3b",
+  "source": "bd862bdd5253ed246ab0fa5267f2b5defd6a8c4c",
+  "previous_delivery": "0a7cb50186bff88b575484b41ae820377ea6e4d6",
+  "validation_cutoff": "origin/main fetched and rebased before final source freeze on 2026-10-19 Asia/Shanghai",
+  "feature_code_data_test_files": 75,
+  "presentation_files_changed_since_previous_delivery": [
+    "plugins/linker-commerce/content/livecanvas/inquiry/form.html",
+    "plugins/linker-commerce/content/livecanvas/partials/de/footer.html",
+    "plugins/linker-commerce/content/windpress/chrome.css",
+    "plugins/linker-commerce/content/windpress/journal.css",
+    "plugins/linker-commerce/content/windpress/service-intro.css",
+    "plugins/linker-commerce/content/windpress/tokens.css"
+  ],
+  "retained_design": "Approved journal dashboard, mobile labels, sidebar active inset, reading design, compatibility group, inquiry and service composition. Journal tokens retain identical numeric geometry. Service hero formatting br bug and header transparent end padding are bounded fixes. Latest main account/create-account and footer native data mechanisms are retained.",
+  "strict_pixels": {
+    "report": "../pixel-results.json",
+    "actual_capture_source": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+    "actual_capture_base": "1f271843c0e65d0cbdc59f52fd8be120211be87b",
+    "fresh_round2_strict_18_comparisons": {
+      "zero": 9,
+      "nonzero": 9,
+      "exit_code": 1,
+      "current_main_parity_proven": false,
+      "report": "pixels/results.json",
+      "disclosure": "pixels/README.md"
+    },
+    "note": "Historical full feature/main captures keep actual pins. Fresh native CUA frames compare current source against immutable older accepted EN frames. No source/database switching, masks, tolerance or input modification. Latest-main strict pixel gate remains open."
+  }
+}
