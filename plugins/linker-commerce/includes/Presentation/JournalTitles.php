@@ -54,6 +54,6 @@ final class JournalTitles {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reviewed, checked-in presentation copy.
 		$labels = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/content/journal-titles.json' ), true, 512, JSON_THROW_ON_ERROR );
 		$entry  = $labels[ $source->post_name ] ?? null;
-		return is_array( $entry ) && ( $entry['full'][ $language ] ?? '' ) === $title ? (string) $entry['label'][ $language ] : $title;
+		return is_array( $entry ) && ( $entry['full'][ $language ] ?? '' ) === $post->post_title ? (string) $entry['label'][ $language ] : $title;
 	}
 }
