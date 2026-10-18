@@ -22,8 +22,10 @@ tests/e2e/node_modules/.bin/playwright install chromium webkit firefox
 LINKER_E2E_SKIP_SERVICES=1 just e2e c229 header-parity.spec.ts
 ```
 
-The sweep keeps reporting any unresolved fold mismatch. Its three-engine
-tables and the reviewer's boundary decision are in
+The sweep asserts both fold and visibility mismatch sets exactly: Firefox
+must equal `{1283, 1284, 1285, 1286, 1287}` (EN expanded, DE folded), while
+Chromium and WebKit must equal the empty set. Any addition or removal fails;
+there are no expected failures. Its three-engine tables and round 3 ruling are in
 `docs/acceptance/2026-10-18/229/`.
 
 The instance must be a real one: `just up` + a snapshot (`just pull load <name>

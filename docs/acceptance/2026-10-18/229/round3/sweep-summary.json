@@ -1,0 +1,53 @@
+{
+  "instance": "c229",
+  "url": "http://127.0.0.1:9099",
+  "stats": {
+    "startTime": "2026-10-18T01:25:33.305Z",
+    "duration": 56861.526,
+    "expected": 24,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "engines": {
+    "chromium": {
+      "widths": 90,
+      "expectedMismatchWidths": [],
+      "foldMismatchWidths": [],
+      "visibilityMismatchWidths": [],
+      "passed": true
+    },
+    "webkit": {
+      "widths": 90,
+      "expectedMismatchWidths": [],
+      "foldMismatchWidths": [],
+      "visibilityMismatchWidths": [],
+      "passed": true
+    },
+    "firefox": {
+      "widths": 90,
+      "expectedMismatchWidths": [
+        1283,
+        1284,
+        1285,
+        1286,
+        1287
+      ],
+      "foldMismatchWidths": [
+        1283,
+        1284,
+        1285,
+        1286,
+        1287
+      ],
+      "visibilityMismatchWidths": [
+        1283,
+        1284,
+        1285,
+        1286,
+        1287
+      ],
+      "passed": true
+    }
+  }
+}

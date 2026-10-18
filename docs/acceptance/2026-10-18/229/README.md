@@ -1,6 +1,33 @@
-# #229 页头 EN/DE 同构 · PR #294 第 2 轮
+# #229 页头 EN/DE 同构 · PR #294 第 3 轮
 
-## 当前判据及边界异常
+## 第 3 轮当前判据
+
+[Claude 第 3 轮裁定](https://github.com/AssassinFlash/de-linker/pull/294#issuecomment-6244186438) 已接受第 2 轮实现，并把仅 Firefox 1283–1287px 的 EN 展开、DE 折叠作为裁定变更；理由、精确宽度及 Firefox 1285 EN/DE 截图已登记 [变更台账](change-ledger.md)。
+
+扫描分别严格核对 folded 与实际可见性的差异集合：Firefox 必须等于 `{1283, 1284, 1285, 1286, 1287}`，Chromium/WebKit 必须为空。集合增加或减少均失败；五个裁定宽度逐行验证 EN 展开、DE 折叠方向。其余入口、CTA、菜单按钮、无重叠及安全余量断言保留，无 `xfail`。
+
+```sh
+just up c229
+LINKER_E2E_SKIP_SERVICES=1 \
+  LINKER_HEADER_CAPTURE="$PWD/.scratch/e2e-shots/header-round3" \
+  just e2e c229 header-parity.spec.ts
+just check
+just test
+```
+
+第 3 轮矩阵 **24 passed，56.9s**；0 failed、0 skipped、0 flaky，所有测试的 expectedStatus 均为 passed，无 `xfail`。[三引擎完整日志](round3/e2e.log)、[集合汇总](round3/sweep-summary.json)；[Firefox EN 1285](round3/firefox-en-1285.png)、[Firefox DE 1285](round3/firefox-de-1285.png) 已读图确认展开／折叠方向。
+
+| 引擎 | 扫描宽度数 | folded 差异集合 | 可见性差异集合 | 结果 |
+|---|---:|---|---|---|
+| Chromium | 90 | `{}` | `{}` | PASS |
+| WebKit | 90 | `{}` | `{}` | PASS |
+| Firefox | 90 | `{1283, 1284, 1285, 1286, 1287}` | `{1283, 1284, 1285, 1286, 1287}` | PASS |
+
+完整行表与原始 JSON：[Chromium](round3/chromium-sweep.md)、[WebKit](round3/webkit-sweep.md)、[Firefox](round3/firefox-sweep.md)。
+
+以下为第 2 轮历史取证；当时的 Firefox 失败已由第 3 轮裁定及上述严格集合契约取代。
+
+## 第 2 轮记录（历史）：当时判据及边界异常
 
 德语保留原文、六个入口与联系按钮。英语 1280/1440/1920/390 与线上同机、同 Chromium、同视口的全页精确 RGB 差异须为 0，无掩膜、无容差。
 
@@ -92,4 +119,4 @@ Firefox 的 viewport-aligned DOMRect.right 会读成 1283.0000305175781；[原�
 
 执行会话只使用 **c229**，`http://127.0.0.1:9099`，专用工作树 `de-linker-worktrees/c229`。本轮重新同步线上快照并用本地密钥，邮件留在文件；没有提交表单或发信。
 
-全部原词及 .po 术语保留，见 [文案复核](copy-review.md)。首轮延迟焦点修复及局部 `isOpen()` 不变。新增代码不引入旧标识符；`.tv-*` 是当前 LC 的公共接口。登录／创建账户链接属于 #223，未修改。未部署、未合并、未写生产。独立 Spec/Standards 复评交 Claude；Firefox 1283–1287 的例外必须由评审决定，本轮不自行批准。
+全部原词及 .po 术语保留，见 [文案复核](copy-review.md)。首轮延迟焦点修复及局部 `isOpen()` 不变。新增代码不引入旧标识符；`.tv-*` 是当前 LC 的公共接口。登录／创建账户链接属于 #223，未修改。未部署、未合并、未写生产。Firefox 1283–1287 已按第 3 轮 Claude 裁定登记，见上方当前判据及变更台账。

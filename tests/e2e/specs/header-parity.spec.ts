@@ -105,9 +105,17 @@ test('German desktop retains cross-engine safety headroom', async ({
 	});
 });
 
-test('EN/DE share every header fold boundary', async ({ browser }, info) => {
+test('EN/DE follow the ruled header fold boundaries', async ({
+	browser,
+	browserName,
+}, info) => {
 	const en = await browser.newPage();
 	const de = await browser.newPage();
+	// PR #294 round 3 rules exactly these Firefox widths: EN stays expanded,
+	// DE folds. Both the fold and visibility mismatch sets must match exactly.
+	// https://github.com/AssassinFlash/de-linker/pull/294#issuecomment-6244186438
+	const expectedMismatches =
+		browserName === 'firefox' ? [1283, 1284, 1285, 1286, 1287] : [];
 	// Review round 1: every pixel around the 1282 fold boundary, then every
 	// 10px through 1940, plus mobile. 1300 is included once: 90 widths total.
 	const widths = [
@@ -213,12 +221,26 @@ test('EN/DE share every header fold boundary', async ({ browser }, info) => {
 			);
 			const [english, german] = states;
 			rows.push({ width, en: english, de: german });
-			expect
-				.soft(german!.folded, `${width}px: DE fold matches EN`)
-				.toBe(english!.folded);
-			expect
-				.soft(german!.desktop, `${width}px: DE visibility matches EN`)
-				.toBe(english!.desktop);
+			if (expectedMismatches.includes(width)) {
+				expect
+					.soft(
+						english!.folded,
+						`${width}px: ruled EN stays unfolded`
+					)
+					.toBe(false);
+				expect
+					.soft(
+						english!.desktop,
+						`${width}px: ruled EN stays visible`
+					)
+					.toBe(true);
+				expect
+					.soft(german!.folded, `${width}px: ruled DE folds`)
+					.toBe(true);
+				expect
+					.soft(german!.desktop, `${width}px: ruled DE hides the row`)
+					.toBe(false);
+			}
 			if (width >= 1288) {
 				// Independent measured spread + six links' 12px pressure reserve;
 				// round2/safety-margin.json records the precise source calculation.
@@ -246,6 +268,21 @@ test('EN/DE share every header fold boundary', async ({ browser }, info) => {
 					.soft(state.overlap, `${width}px: no painted boxes overlap`)
 					.toBe(false);
 			}
+			if (
+				browserName === 'firefox' &&
+				width === 1285 &&
+				process.env.LINKER_HEADER_CAPTURE
+			) {
+				for (const [locale, page] of [
+					['en', en],
+					['de', de],
+				] as const) {
+					await page.screenshot({
+						path: `${process.env.LINKER_HEADER_CAPTURE}/${info.project.name}/${locale}-1285-boundary.png`,
+						animations: 'disabled',
+					});
+				}
+			}
 		}
 		console.log(
 			'| Width | EN folded | DE folded | EN desktop | DE desktop | DE padding | DE headroom |'
@@ -260,6 +297,18 @@ test('EN/DE share every header fold boundary', async ({ browser }, info) => {
 			body: JSON.stringify(rows, null, 2),
 			contentType: 'application/json',
 		});
+		expect(
+			rows
+				.filter((row) => row.en!.folded !== row.de!.folded)
+				.map((row) => row.width),
+			`${browserName}: exact ruled fold mismatch set`
+		).toEqual(expectedMismatches);
+		expect(
+			rows
+				.filter((row) => row.en!.desktop !== row.de!.desktop)
+				.map((row) => row.width),
+			`${browserName}: exact ruled visibility mismatch set`
+		).toEqual(expectedMismatches);
 	} finally {
 		await en.close();
 		await de.close();
