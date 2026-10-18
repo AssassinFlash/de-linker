@@ -167,6 +167,10 @@ def run_deployment(
         for line in process.stdout:
             output.write(line)
             output.flush()
+            # The deploy prints each phase and artifact as it starts; without
+            # this the terminal showed nothing until the end (measured
+            # 2026-10-18: a 26-minute deploy looked like a hang).
+            print(line, end="", flush=True)
             if line.rstrip("\n") == SWITCH_MARKER:
                 on_switch()
         return process.wait()
