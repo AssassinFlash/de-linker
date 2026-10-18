@@ -48,7 +48,9 @@ final class GenieContactTest extends IntegrationTestCase {
 	 * receipts (ReceiptLimit). Their rows are put back as they were.
 	 */
 	private const LIMITS = array(
-		RateLimit::PREFIX . 'genie_contact',
+		// Linker\Tools\Genie\RateLimit::PREFIX . 'genie_contact': written out,
+		// because the unit run (no WordPress, no linker-tools) loads this class.
+		'linker_tools_limit_genie_contact',
 		\Linker\Commerce\Inquiry\RateLimit::PREFIX . 'public_receipts',
 	);
 
