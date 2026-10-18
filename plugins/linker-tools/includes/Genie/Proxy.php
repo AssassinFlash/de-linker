@@ -58,6 +58,7 @@ class Proxy {
 	 * @param UserContext|null                                                     $user_context  Identity handed to the service; a default one is built when omitted.
 	 * @param PageContext|null                                                     $pages         The page a turn comes from; a default one is built when omitted.
 	 * @param ConversationMail|null                                                $mail          Sends a conversation to the visitor; a default one is built when omitted.
+	 * @param Attachments|null                                                     $attachments   Checks a turn's files; a default one is built when omitted.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
@@ -65,13 +66,22 @@ class Proxy {
 		?Thread $thread = null,
 		?UserContext $user_context = null,
 		?PageContext $pages = null,
-		?ConversationMail $mail = null
+		?ConversationMail $mail = null,
+		?Attachments $attachments = null
 	) {
 		$this->thread       = $thread ?? new Thread();
 		$this->user_context = $user_context ?? new UserContext();
 		$this->pages        = $pages ?? new PageContext();
 		$this->mail         = $mail ?? new ConversationMail( $conversations, $this->thread );
+		$this->attachments  = $attachments ?? new Attachments();
 	}
+
+	/**
+	 * Checks a turn's files (#236).
+	 *
+	 * @var Attachments
+	 */
+	private readonly Attachments $attachments;
 
 	/**
 	 * The page-context seam (ticket #234).
@@ -113,16 +123,21 @@ class Proxy {
 				'callback'            => array( $this, 'turn' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
-					'messages' => array(
+					'messages'    => array(
 						'type'     => 'array',
 						'required' => true,
 					),
-					'locale'   => array(
+					'locale'      => array(
 						'type' => 'string',
 						'enum' => array( 'en', 'de' ),
 					),
-					'page'     => array(
+					'page'        => array(
 						'type' => 'object',
+					),
+					// The turn's files, apart from its messages (#236): checked
+					// by Attachments, sent once, never stored.
+					'attachments' => array(
+						'type' => 'array',
 					),
 				),
 			)
@@ -386,6 +401,12 @@ class Proxy {
 		if ( '' === $base ) {
 			return new WP_Error( 'linker_genie_unconfigured', 'Genie is not configured.', array( 'status' => 503 ) );
 		}
+		// The files are checked before anything else happens, so a refused
+		// upload opens no conversation and reaches no service.
+		$files = $this->attachments->check( $request->get_param( 'attachments' ) );
+		if ( is_wp_error( $files ) ) {
+			return $files;
+		}
 		$conversation = $this->conversations->current_id();
 		if ( $conversation < 1 ) {
 			return new WP_Error( 'linker_genie_conversation', 'Could not open a conversation.', array( 'status' => 500 ) );
@@ -427,7 +448,16 @@ class Proxy {
 				'context'   => $this->user_context->mint(),
 			),
 		);
-		$stream  = $this->post( rtrim( $base, '/' ) . '/assistant/turn', $body );
+		if ( array() !== $files ) {
+			$body['attachments'] = $files;
+		}
+		// What earlier turns read from their files: the conversation's, never
+		// the browser's (#236).
+		$readings = $this->thread->readings( $conversation );
+		if ( array() !== $readings ) {
+			$body['readings'] = $readings;
+		}
+		$stream = $this->post( rtrim( $base, '/' ) . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}
@@ -448,10 +478,12 @@ class Proxy {
 			$messages,
 			(string) $stream
 		);
+		// The readings are the conversation's store (Thread::split); the
+		// browser gets what each file is, not its whole text again.
 		return new WP_REST_Response(
 			array(
 				'conversation_id' => $conversation,
-				'stream'          => $stream,
+				'stream'          => Thread::split( (string) $stream )['stream'],
 			)
 		);
 	}

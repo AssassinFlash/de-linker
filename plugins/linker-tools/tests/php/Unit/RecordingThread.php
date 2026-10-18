@@ -34,6 +34,24 @@ final class RecordingThread extends Thread {
 	);
 
 	/**
+	 * The readings `readings()` answers with.
+	 *
+	 * @var list<array<string, mixed>>
+	 */
+	public array $kept_readings = array();
+
+	/**
+	 * Answers with what the test installed.
+	 *
+	 * @param int $conversation Conversation post ID.
+	 * @return list<array<string, mixed>>
+	 */
+	public function readings( int $conversation ): array {
+		unset( $conversation );
+		return $this->kept_readings;
+	}
+
+	/**
 	 * Keeps the turn instead of writing post meta.
 	 *
 	 * @param int                     $conversation Conversation post ID.

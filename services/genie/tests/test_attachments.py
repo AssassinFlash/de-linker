@@ -329,3 +329,26 @@ def test_an_answer_that_is_not_json_is_an_error() -> None:
 
     with pytest.raises(VisionError, match="unreadable answer"):
         _vision(handle)(b"jpeg", "read it")
+
+
+def test_the_proxy_checks_the_same_limits_as_the_service() -> None:
+    """The shell's proxy refuses first (Attachments.php), the service again here."""
+    import re
+
+    from linker_genie import schema
+
+    tools = Path(__file__).resolve().parents[3] / "plugins/linker-tools/includes/Genie"
+    proxy = (tools / "Attachments.php").read_text()
+    thread = (tools / "Thread.php").read_text()
+
+    def constant(source: str, name: str) -> int:
+        found = re.search(rf"const {name}\s*=\s*(\d+);", source)
+        assert found, name
+        return int(found.group(1))
+
+    assert constant(proxy, "MAX_FILES") == schema.MAX_FILES
+    assert constant(proxy, "MAX_IMAGE_BYTES") == schema.MAX_IMAGE_BYTES
+    assert constant(proxy, "MAX_PDF_BYTES") == schema.MAX_PDF_BYTES
+    assert constant(proxy, "MAX_TURN_BYTES") == schema.MAX_TURN_BYTES
+    assert constant(proxy, "NAME_LENGTH") == schema.NAME_LENGTH
+    assert constant(thread, "READINGS_LIMIT") == schema.MAX_READINGS
