@@ -12,6 +12,7 @@ about the command line itself rather than about the step's prose.
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -30,12 +31,12 @@ def _no_database(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     """
     taken: list[str] = []
 
-    def fake(target: Target, home: Path) -> snapshot.Snapshot:
+    def fake(target: Target, home: Path, **_: object) -> snapshot.Snapshot:
         taken.append(target.label)
         return snapshot.Snapshot(
             name="db-20261018T000000Z.sql.gz",
             path=home / "snapshots" / "db-20261018T000000Z.sql.gz",
-            bytes=1,
+            size=1,
             sha256="0" * 64,
         )
 
@@ -1165,23 +1166,24 @@ def test_a_unit_that_does_not_come_up_fails_the_step(
 
 
 def test_the_deploy_snapshots_the_database_before_anything_is_uploaded(
-    tmp_path: Path, _no_database: list[str]
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """The snapshot is the deploy's backup (#305): it must exist before the first upload."""
     target = FilesystemTarget(tmp_path / "site")
     repository = _repository(tmp_path)
     uploads_when_snapshot_ran: list[int] = []
 
-    def recording(site: Target, home: Path) -> snapshot.Snapshot:
+    def recording(site: Target, home: Path, **_: object) -> snapshot.Snapshot:
         uploads_when_snapshot_ran.append(len(target.rsyncs))
         return snapshot.Snapshot("db-20261018T000000Z.sql.gz", home / "x", 1, "0" * 64)
 
+    monkeypatch.setattr(snapshot, "take", recording)
     result = steps.deploy(
         target,
         repository=repository,
         staging=tmp_path / "staging",
         deploy_id="20261018T000000Z-fixture",
-        take_snapshot=recording,
+        snapshot_home=tmp_path / "home",
     )
 
     assert uploads_when_snapshot_ran == [0]
@@ -1189,23 +1191,41 @@ def test_the_deploy_snapshots_the_database_before_anything_is_uploaded(
     assert "restore-snapshot db-20261018T000000Z.sql.gz" in result.actions[0]
 
 
-def test_a_failed_snapshot_stops_the_deploy_before_any_upload(tmp_path: Path) -> None:
+def test_a_failed_snapshot_stops_the_deploy_before_any_upload(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """No snapshot, no switch: a deploy without its backup must not touch the live site."""
     target = FilesystemTarget(tmp_path / "site")
     repository = _repository(tmp_path)
 
-    def failing(site: Target, home: Path) -> snapshot.Snapshot:
-        raise CutoverError(
-            "the snapshot did not report a verified file; nothing was switched"
-        )
+    def failing(site: Target, home: Path, **_: object) -> snapshot.Snapshot:
+        raise CutoverError("db.sql.gz is not a readable gzip — the dump is not usable")
 
-    with pytest.raises(CutoverError, match="snapshot"):
+    monkeypatch.setattr(snapshot, "take", failing)
+    with pytest.raises(CutoverError, match="not a readable gzip"):
         steps.deploy(
             target,
             repository=repository,
             staging=tmp_path / "staging",
             deploy_id="20261018T000000Z-fixture",
-            take_snapshot=failing,
+            snapshot_home=tmp_path / "home",
         )
 
     assert target.rsyncs == []
+
+
+def test_the_deploy_reminds_when_the_weekly_full_backup_is_due(tmp_path: Path) -> None:
+    """Nothing schedules the weekly full backup, so every deploy says when it is due."""
+    home = tmp_path / "home"
+    now = datetime(2026, 10, 18, 2, 0, tzinfo=UTC)
+    assert "no complete full backup" in (
+        steps.full_backup_reminder(home, now=now) or ""
+    )
+
+    recent = home / "cutover-20261015-0100"
+    recent.mkdir(parents=True)
+    (recent / "manifest.json").write_text("{}", encoding="utf-8")
+    assert steps.full_backup_reminder(home, now=now) is None
+
+    later = datetime(2026, 10, 23, 2, 0, tzinfo=UTC)
+    assert "8 days old" in (steps.full_backup_reminder(home, now=later) or "")

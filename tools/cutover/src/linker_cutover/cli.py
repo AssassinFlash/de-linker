@@ -31,13 +31,14 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 
+from linker_cutover import backup as backup_module
 from linker_cutover import drill as drill_module
 from linker_cutover import plan, probe, steps
 from linker_cutover import snapshot as snapshot_module
 from linker_cutover.target import CutoverError, Target, local_target, remote_target
 
-# The data root the local stack and tools/pull share (docs/local-stack.md).
-DATA_HOME = snapshot_module.DEFAULT_HOME
+# The data root on this Mac (backups, snapshots, workspace); one definition in backup.py.
+DATA_HOME = backup_module.DATA_HOME
 
 
 def repository_root() -> Path:
@@ -167,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "snapshot":
             taken = snapshot_module.take(target, DATA_HOME)
             print(
-                f"snapshot: {taken.path} ({taken.bytes} bytes, sha256 {taken.sha256[:16]}…)"
+                f"snapshot: {taken.path} ({taken.size} bytes, sha256 {taken.sha256[:16]}…)"
             )
             return 0
         if args.command == "snapshots":
@@ -175,8 +176,12 @@ def main(argv: list[str] | None = None) -> int:
                 print(name)
             return 0
         if args.command == "restore-snapshot":
+            path = snapshot_module.existing(DATA_HOME, args.name)
             if not args.write:
-                print(f"restore-snapshot: would replace the database with {args.name}")
+                print(
+                    f"restore-snapshot: would keep the current database as a snapshot, "
+                    f"then replace it with {path}"
+                )
                 return 0
             for line in snapshot_module.restore(target, DATA_HOME, args.name):
                 print(f"restore-snapshot: {line}")
@@ -301,6 +306,9 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
         if args.command == "schema":
+            if args.write:
+                # Drafting SEO rows is a data write: a full backup first (AGENTS.md §5).
+                print(f"schema: full backup at {_backup(target, args)}")
             _print(steps.retire_stale_schema(target, writes=args.write))
             return 0
         if args.command == "hygiene":
@@ -367,7 +375,6 @@ def _backup(target: Target, args: argparse.Namespace) -> Path:
     one instead, which is what the drill and the rollback use — the rollback
     must restore the state the switch started from, not the state it created.
     """
-    from linker_cutover import backup as backup_module  # noqa: PLC0415 - config, not a dependency
 
     if args.backup is not None:
         directory = Path(args.backup)
@@ -398,7 +405,6 @@ def _newest() -> Path | None:
     backup" used to be the workspace, which holds no backup at all. A candidate
     is a directory that holds the dump, and nothing else is one.
     """
-    from linker_cutover import backup as backup_module  # noqa: PLC0415 - config, not a dependency
 
     candidates = [
         path

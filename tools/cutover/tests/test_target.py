@@ -302,6 +302,50 @@ def test_copy_out_pulls_the_four_chunk_kinds(
     assert f"{HOST}:{base}/assets/" not in pulls, "its children carry it"
 
 
+def test_copy_out_links_each_remote_chunk_to_the_same_place_in_the_earlier_backup(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#305's incremental full backup: every chunk names its own earlier copy.
+
+    A directory chunk links against the same directory in the earlier backup;
+    a file chunk is pulled into its parent, so it links against the parent. A
+    chunk the earlier backup does not have gets no `--link-dest` (rsync would
+    warn and copy anyway).
+    """
+    listing = "\n".join(
+        ["D ./assets/fonts", "F ./root.txt", "d ./templates", "d ./assets", "d ./new"]
+    )
+    seen: list[list[str]] = []
+
+    def capture(command: list[str], *args: object, **kwargs: object) -> object:
+        del args, kwargs
+        seen.append(command)
+        if command[0] == "ssh":
+            return SimpleNamespace(returncode=0, stdout=listing, stderr="")
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("linker_cutover.target.subprocess.run", capture)
+    earlier = tmp_path / "earlier" / "demo"
+    for kept in ("assets/fonts", "templates"):
+        (earlier / kept).mkdir(parents=True)
+    target = remote_target()
+    target.copy_out(f"{PLUGINS}/demo", tmp_path / "demo", link_dest=earlier)
+
+    links = {
+        command[-2].rsplit("/demo/", 1)[1]: next(
+            (part for part in command if part.startswith("--link-dest=")), None
+        )
+        for command in seen
+        if command[0] == "rsync"
+    }
+    assert links == {
+        "root.txt": f"--link-dest={earlier.resolve()}",
+        "assets/fonts/": f"--link-dest={(earlier / 'assets' / 'fonts').resolve()}",
+        "templates/": f"--link-dest={(earlier / 'templates').resolve()}",
+        "new/": None,
+    }
+
+
 def test_copy_in_sends_each_chunk_to_one_host_prefix(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

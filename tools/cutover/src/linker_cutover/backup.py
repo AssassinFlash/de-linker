@@ -47,6 +47,10 @@ from linker_cutover.target import (
     Target,
 )
 
+# The data root on this Mac: full backups (`cutover-*`), deploy snapshots
+# (`snapshots/`) and the cutover workspace, all outside the repository.
+DATA_HOME = Path.home() / "de-linker-data"
+
 MANIFEST = "manifest.json"
 DUMP = "db.sql.gz"
 OPTIONS = "options.json"
@@ -234,6 +238,20 @@ def _prove_the_tree_arrived(target: Target, relative: str, local: Path) -> None:
         )
 
 
+def dump_to(target: Target, path: Path, *, skip: tuple[str, ...] = ()) -> None:
+    """Stream the database into `path` and refuse a dump that does not read to its end."""
+    with path.open("wb") as handle:
+        stream(target, dump_script(target, skip=skip), stdout=handle)
+    if path.stat().st_size == 0 or not readable_gzip(path):
+        raise CutoverError(f"{path} is not a readable gzip — the dump is not usable")
+
+
+def restore_database(target: Target, dump: Path) -> None:
+    """Import a dump into the site's database (the tables in the dump are replaced)."""
+    with dump.open("rb") as handle:
+        stream(target, restore_script(target), stdin=handle)
+
+
 def latest_complete(home: Path, *, exclude: Path | None = None) -> Path | None:
     """The newest `cutover-*` backup under `home` that finished (has its manifest)."""
     candidates = sorted(
@@ -277,10 +295,7 @@ def create(target: Target, home: Path, *, now: datetime | None = None) -> Backup
 
     print("backup: database")
     dump = directory / DUMP
-    with dump.open("wb") as handle:
-        _stream(target, dump_script(target), stdout=handle)
-    if not readable_gzip(dump):
-        raise CutoverError(f"{dump} is not a readable gzip — the backup is not usable")
+    dump_to(target, dump)
     dump_sha = sha256(dump)
     print(f"backup: database {dump.stat().st_size} bytes, sha256 {dump_sha[:16]}…")
 
@@ -359,8 +374,7 @@ def restore(target: Target, directory: Path) -> None:
         raise CutoverError(f"{dump} was modified since the backup was taken")
 
     print("rollback: database")
-    with dump.open("rb") as handle:
-        _stream(target, restore_script(target), stdin=handle)
+    restore_database(target, dump)
     print(f"rollback: {PLUGINS}")
     target.copy_in(directory / PLUGINS, PLUGINS)
     print(f"rollback: {UPLOADS}")
@@ -411,14 +425,18 @@ def readable_gzip(path: Path) -> bool:
     return True
 
 
-def _stream(
+def stream(
     target: Target,
     script: str,
     *,
     stdin: IO[bytes] | None = None,
     stdout: IO[bytes] | None = None,
 ) -> None:
-    """Run a script on the target with the given standard streams."""
+    """Run a script on the target with the given standard streams.
+
+    Public because the deploy's database snapshot (`snapshot.py`) streams the
+    same dump the same way.
+    """
     command = target.shell_command(script)
     with tempfile.TemporaryFile() as error:
         completed = subprocess.run(

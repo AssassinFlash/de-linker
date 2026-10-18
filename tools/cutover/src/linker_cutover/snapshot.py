@@ -30,8 +30,6 @@ from pathlib import Path
 from linker_cutover import backup
 from linker_cutover.target import CutoverError, Target
 
-# The data root this Mac keeps every backup under (outside the repository).
-DEFAULT_HOME = Path.home() / "de-linker-data"
 DIRECTORY = "snapshots"
 
 # Tables a code deploy never writes and the snapshot leaves out (see the module
@@ -43,7 +41,7 @@ SKIPPED_TABLES = ("genie_chunks",)
 # 125 MB of this Mac: every deploy of the last weeks stays one command away.
 KEEP = 20
 
-NAME = re.compile(r"^db-\d{8}T\d{6}Z\.sql\.gz$")
+NAME = re.compile(r"db-\d{8}T\d{6}Z\.sql\.gz")
 
 
 @dataclass(frozen=True)
@@ -52,7 +50,7 @@ class Snapshot:
 
     name: str
     path: Path
-    bytes: int
+    size: int
     sha256: str
 
 
@@ -66,20 +64,33 @@ def name_at(now: datetime | None = None) -> str:
     return (now or datetime.now(UTC)).strftime("db-%Y%m%dT%H%M%SZ.sql.gz")
 
 
-def _checked(name: str) -> str:
-    if not NAME.match(name):
+def existing(home: Path, name: str) -> Path:
+    """The path of a snapshot by name, refusing anything that is not one."""
+    if not NAME.fullmatch(name):
         raise CutoverError(
             f"{name!r} is not a snapshot name (db-YYYYMMDDTHHMMSSZ.sql.gz)"
         )
-    return name
+    path = directory(home) / name
+    if not path.is_file():
+        raise CutoverError(f"{path} does not exist")
+    return path
 
 
-def take(target: Target, home: Path, *, now: datetime | None = None) -> Snapshot:
+def take(
+    target: Target,
+    home: Path,
+    *,
+    now: datetime | None = None,
+    protect: frozenset[str] = frozenset(),
+) -> Snapshot:
     """Stream the database here, verify it, keep the newest KEEP.
 
     The dump is written to a hidden partial file and renamed only after it
     reads to the end as gzip, so the directory never holds a snapshot that
-    would not restore. A failed dump leaves nothing behind.
+    would not restore. A failed dump leaves nothing behind. Pruning never
+    removes the snapshot just taken (even when a clock skew put a newer name
+    on an older file) nor any name in `protect` (the one a restore is about
+    to read).
     """
     folder = directory(home)
     folder.mkdir(parents=True, exist_ok=True)
@@ -89,38 +100,40 @@ def take(target: Target, home: Path, *, now: datetime | None = None) -> Snapshot
         raise CutoverError(f"{final} already exists; take the snapshot again")
     partial = folder / f".{name}.partial"
     try:
-        with partial.open("wb") as handle:
-            backup._stream(  # noqa: SLF001 - the full backup's own transport
-                target, backup.dump_script(target, skip=SKIPPED_TABLES), stdout=handle
-            )
-        if partial.stat().st_size == 0 or not backup.readable_gzip(partial):
-            raise CutoverError(
-                "the database dump is not a readable gzip; nothing was switched"
-            )
+        backup.dump_to(target, partial, skip=SKIPPED_TABLES)
         partial.rename(final)
     finally:
         partial.unlink(missing_ok=True)
-    for old in available(home)[KEEP:]:
+    others = [old for old in available(home) if old != name and old not in protect]
+    for old in others[KEEP - 1 - len(protect) :]:
         (folder / old).unlink(missing_ok=True)
     return Snapshot(
-        name=name,
-        path=final,
-        bytes=final.stat().st_size,
-        sha256=backup.sha256(final),
+        name=name, path=final, size=final.stat().st_size, sha256=backup.sha256(final)
     )
 
 
-def restore(target: Target, home: Path, name: str) -> list[str]:
-    """Put a snapshot back into the site's database, then flush the caches."""
-    path = directory(home) / _checked(name)
-    if not path.is_file():
-        raise CutoverError(f"{path} does not exist")
+def restore(
+    target: Target, home: Path, name: str, *, now: datetime | None = None
+) -> list[str]:
+    """Put a snapshot back, after snapshotting the database it replaces.
+
+    The import is a data write like any other (AGENTS.md §5): the state being
+    overwritten is kept first, so a restore of the wrong snapshot is itself
+    one command away from undone. Only the tables in the snapshot are
+    replaced; a table created after it (a new plugin's) keeps its rows, and
+    the code is put back separately with `rollback-deploy`.
+    """
+    path = existing(home, name)
     if not backup.readable_gzip(path):
         raise CutoverError(f"{path} is not a readable gzip")
-    with path.open("rb") as handle:
-        backup._stream(target, backup.restore_script(target), stdin=handle)  # noqa: SLF001
+    before = take(target, home, now=now, protect=frozenset({path.name}))
+    backup.restore_database(target, path)
     target.wp("cache", "flush")
-    return [f"restored {path}", "wp cache flush"]
+    return [
+        f"kept the replaced database as {before.name}",
+        f"restored {path}",
+        "wp cache flush",
+    ]
 
 
 def available(home: Path) -> list[str]:
@@ -129,5 +142,6 @@ def available(home: Path) -> list[str]:
     if not folder.is_dir():
         return []
     return sorted(
-        (path.name for path in folder.iterdir() if NAME.match(path.name)), reverse=True
+        (path.name for path in folder.iterdir() if NAME.fullmatch(path.name)),
+        reverse=True,
     )

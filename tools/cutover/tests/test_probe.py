@@ -219,9 +219,11 @@ def test_probe_samples_slowly_until_switch_then_densely_through_readback(
             deploy_id="20261018T000000Z-cadence",
             on_switch=switch_started,
         )
-        # At 0.1 s aggregate spacing, a full seven-endpoint sweep fits before
-        # this verify/readback stand-in ends, even with local HTTP overhead.
-        time.sleep(1.2)
+        # At 0.1 s aggregate spacing a seven-endpoint sweep needs 0.7 s plus
+        # local HTTP time; 1.2 s did not always fit under a loaded machine
+        # (the #306 review saw it fail once, pass on rerun), so the window is
+        # 3 s: the assertions below are about cadence, not about how fast.
+        time.sleep(3.0)
         atomic.archive(target, receipt)
         return 0
 

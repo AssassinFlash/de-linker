@@ -69,7 +69,7 @@ def _streams_a_stand_in_dump(monkeypatch: pytest.MonkeyPatch) -> None:
         if stdin is not None:
             stdin.read()
 
-    monkeypatch.setattr(backup, "_stream", fake)
+    monkeypatch.setattr(backup, "stream", fake)
 
 
 def _site(tmp_path: Path, *, must_use: bool = True) -> tuple[_Site, Path]:

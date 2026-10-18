@@ -59,7 +59,7 @@ def _dump(monkeypatch: pytest.MonkeyPatch, payload: bytes) -> list[str]:
         if stdin is not None:
             stdin.read()
 
-    monkeypatch.setattr(backup, "_stream", fake)
+    monkeypatch.setattr(backup, "stream", fake)
     return scripts
 
 
@@ -72,7 +72,7 @@ def test_a_snapshot_is_written_here_and_verified(
 
     assert taken.name == "db-20261018T020000Z.sql.gz"
     assert taken.path == tmp_path / "snapshots" / taken.name
-    assert taken.path.is_file() and taken.bytes == taken.path.stat().st_size
+    assert taken.path.is_file() and taken.size == taken.path.stat().st_size
     assert len(taken.sha256) == 64
     # The retired index is left out; nothing is written on the host.
     assert '--ignore-table="$name.$prefix"genie_chunks' in scripts[0]
@@ -98,7 +98,7 @@ def test_a_failed_transport_leaves_no_partial_file(
     def failing(target: Target, script: str, **_: object) -> None:
         raise CutoverError("set -euo pipefail: mysqldump: access denied")
 
-    monkeypatch.setattr(backup, "_stream", failing)
+    monkeypatch.setattr(backup, "stream", failing)
 
     with pytest.raises(CutoverError, match="access denied"):
         snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT)
@@ -125,7 +125,14 @@ def test_only_the_newest_keep_snapshots_stay(
 
 
 @pytest.mark.parametrize(
-    "name", ["../db-20261018T020000Z.sql.gz", "db-latest.sql.gz", "x.sql.gz", ""]
+    "name",
+    [
+        "../db-20261018T020000Z.sql.gz",
+        "db-latest.sql.gz",
+        "x.sql.gz",
+        "",
+        "db-20261018T020000Z.sql.gz\n",
+    ],
 )
 def test_restore_takes_only_snapshot_names(tmp_path: Path, name: str) -> None:
     with pytest.raises(CutoverError, match="not a snapshot name"):
@@ -139,11 +146,15 @@ def test_restore_streams_the_file_back_and_flushes_the_cache(
     site = _site(tmp_path / "site")
     taken = snapshot.take(site, tmp_path, now=AT)
 
-    lines = snapshot.restore(site, tmp_path, taken.name)
+    later = datetime(2026, 10, 18, 3, 0, 0, tzinfo=UTC)
+    lines = snapshot.restore(site, tmp_path, taken.name, now=later)
 
+    # The database being replaced is kept first, then the snapshot goes back.
+    assert "mysqldump" in scripts[-2]
     assert "gunzip -c |" in scripts[-1]
     assert site.calls == [("cache", "flush")]
-    assert lines[0] == f"restored {taken.path}"
+    assert lines[0] == "kept the replaced database as db-20261018T030000Z.sql.gz"
+    assert lines[1] == f"restored {taken.path}"
 
 
 def test_the_dump_script_names_the_left_out_table_with_the_sites_prefix(
@@ -192,3 +203,37 @@ def test_the_dump_script_names_the_left_out_table_with_the_sites_prefix(
 def test_the_full_backup_leaves_nothing_out() -> None:
     script = backup.dump_script(_site(Path("/srv/site")))
     assert "SKIP+=" not in script
+
+
+def test_pruning_never_removes_the_snapshot_just_taken(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A clock skew can give older files newer names; the new snapshot still stays."""
+    folder = tmp_path / "snapshots"
+    folder.mkdir()
+    for day in range(1, snapshot.KEEP + 2):
+        (folder / f"db-209910{day:02d}T000000Z.sql.gz").write_bytes(b"from the future")
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+
+    taken = snapshot.take(_site(tmp_path / "site"), tmp_path, now=AT)
+
+    assert taken.path.is_file()
+    assert len(snapshot.available(tmp_path)) == snapshot.KEEP
+
+
+def test_a_restore_keeps_its_source_when_the_folder_is_full(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The pre-restore snapshot must not prune the file the restore is about to read."""
+    _dump(monkeypatch, gzip.compress(b"select 1;\n"))
+    site = _site(tmp_path / "site")
+    oldest = snapshot.take(site, tmp_path, now=datetime(2026, 9, 1, tzinfo=UTC))
+    for day in range(2, snapshot.KEEP + 1):
+        snapshot.take(site, tmp_path, now=datetime(2026, 9, day, tzinfo=UTC))
+    assert len(snapshot.available(tmp_path)) == snapshot.KEEP
+
+    lines = snapshot.restore(site, tmp_path, oldest.name, now=AT)
+
+    assert lines[1] == f"restored {oldest.path}"
+    assert oldest.path.is_file()
+    assert len(snapshot.available(tmp_path)) == snapshot.KEEP

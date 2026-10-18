@@ -41,10 +41,11 @@ snapshot *options:
 snapshots *options:
     PHP={{ php }} {{ linker_cutover }} snapshots "$@"
 
-# Put a database snapshot back: `just cutover restore-snapshot db-…sql.gz`.
+# Put a database snapshot back (the current database is snapshotted first):
+# `just cutover restore-snapshot db-…sql.gz` previews, add `--write` to restore.
 [positional-arguments]
 restore-snapshot name *options:
-    PHP={{ php }} {{ linker_cutover }} restore-snapshot "$@" --write
+    PHP={{ php }} {{ linker_cutover }} restore-snapshot "$@"
 
 # Steps 2 and 7: the maintenance window. `just cutover maintenance on|off`.
 [positional-arguments]
