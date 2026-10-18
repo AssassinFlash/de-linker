@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS turns (
     question TEXT,
     page TEXT,
     understanding TEXT,
-    approved INTEGER
+    approved INTEGER,
+    contact TEXT
 );
 """
 
@@ -45,6 +46,8 @@ ADDED_COLUMNS = (
     ("page", "TEXT"),
     ("understanding", "TEXT"),
     ("approved", "INTEGER"),
+    # Why the turn offered the team's contact (contact.py, #243), NULL when it did not.
+    ("contact", "TEXT"),
 )
 
 
@@ -82,14 +85,15 @@ class TurnLog:
         page: dict[str, Any] | None = None,
         understanding: dict[str, Any] | None = None,
         approved: bool = False,
+        contact: str | None = None,
     ) -> int:
         cursor = self._db.execute(
             """
             INSERT INTO turns (
                 conversation_id, locale, grounded, failures, fallback,
                 provider, model, tool_calls, output, question, page,
-                understanding, approved
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                understanding, approved, contact
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 conversation_id,
@@ -105,10 +109,20 @@ class TurnLog:
                 json.dumps(page or {}),
                 json.dumps(understanding or {}, ensure_ascii=False),
                 int(approved),
+                contact,
             ),
         )
         self._db.commit()
         return int(cursor.lastrowid or 0)
+
+    def offers(self, conversation_id: str, limit: int) -> list[bool]:
+        """Whether each of the conversation's last `limit` turns carried the contact
+        offer, newest first (contact.decide: never twice in a row, once a question)."""
+        rows = self._db.execute(
+            "SELECT contact FROM turns WHERE conversation_id = ? ORDER BY id DESC LIMIT ?",
+            (conversation_id, max(0, limit)),
+        ).fetchall()
+        return [row[0] is not None for row in rows]
 
     def vote(self, turn_id: int, value: int) -> bool:
         """Record a vote; False when the turn id is unknown."""

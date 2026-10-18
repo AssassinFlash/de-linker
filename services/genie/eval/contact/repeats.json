@@ -1,0 +1,208 @@
+{
+  "about": "When two customer messages ask the same question (#243, docs/specs/13-genie.md goal 6: 'the same question repeated three rounds'). Written 2026-10-18 from the shapes customers repeat in: case, punctuation, a dropped article or 'please', a model code typed with spaces instead of hyphens, a shortened restatement. The 'different' pairs keep most words and change what is asked (another model, another document, another value); the pairs marked follow_up are real follow-ups a customer sends after an answer: the same question refined with a feature or a quantity, or asked for a sibling model (review round 1 of #243). `a` is the earlier message, `b` the later one. contact.SAME is the Jaccard cut these pairs are measured against (tests/test_contact.py).",
+  "pairs": [
+    {
+      "a": "Which battery fits the SAJ H2-10K-T3?",
+      "b": "which battery fits SAJ H2-10K-T3",
+      "same": true
+    },
+    {
+      "a": "Which battery fits the SAJ H2-10K-T3?",
+      "b": "Which battery fits the SAJ H2 10K T3??",
+      "same": true
+    },
+    {
+      "a": "Which battery fits the SAJ H2-10K-T3?",
+      "b": "WHICH BATTERY FITS THE SAJ H2-10K-T3",
+      "same": true
+    },
+    {
+      "a": "Which battery fits the SAJ H2-10K-T3?",
+      "b": "Which battery fits the SAJ H2-10K-T3 please?",
+      "same": true
+    },
+    {
+      "a": "What is the warranty of the GoodWe ET?",
+      "b": "warranty GoodWe ET?",
+      "same": true
+    },
+    {
+      "a": "Does the Sungrow SH10RT work with the Pylontech Force H2?",
+      "b": "does sungrow SH10RT work with pylontech force h2",
+      "same": true
+    },
+    {
+      "a": "How do I set the export limit on an SAJ H2 inverter?",
+      "b": "how to set the export limit on the SAJ H2",
+      "same": true
+    },
+    {
+      "a": "Is the GoodWe ET three-phase?",
+      "b": "Is GoodWe ET three phase?",
+      "same": true
+    },
+    {
+      "a": "Is there a datasheet for the Deye SUN-12K?",
+      "b": "datasheet for the Deye SUN-12K?",
+      "same": true
+    },
+    {
+      "a": "What does the EcoFlow OCEAN 2 cost?",
+      "b": "what does the ecoflow ocean 2 cost???",
+      "same": true
+    },
+    {
+      "a": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+      "b": "welcher speicher passt zu SAJ H2-10K-T3",
+      "same": true
+    },
+    {
+      "a": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+      "b": "Welcher Speicher passt zum SAJ H2 10K T3 bitte?",
+      "same": true
+    },
+    {
+      "a": "Wie lange ist die Garantie beim GoodWe ET?",
+      "b": "Garantie GoodWe ET?",
+      "same": true
+    },
+    {
+      "a": "Ist der GoodWe ET dreiphasig?",
+      "b": "ist der goodwe et dreiphasig",
+      "same": true
+    },
+    {
+      "a": "Gibt es ein Datenblatt für den Deye SUN-12K?",
+      "b": "Datenblatt für den Deye SUN-12K?",
+      "same": true
+    },
+    {
+      "a": "Funktioniert der Sungrow SH10RT mit dem Pylontech Force H2?",
+      "b": "funktioniert sungrow SH10RT mit pylontech force h2?",
+      "same": true
+    },
+    {
+      "a": "Which battery fits the SAJ H2-10K-T3?",
+      "b": "Which battery fits the GoodWe ET 10?",
+      "same": false
+    },
+    {
+      "a": "Datasheet for the SAJ H2-10K-T3",
+      "b": "Manual for the SAJ H2-10K-T3",
+      "same": false
+    },
+    {
+      "a": "Is the GoodWe ET three-phase?",
+      "b": "Is the GoodWe EH three-phase?",
+      "same": false
+    },
+    {
+      "a": "What is the warranty of the GoodWe ET?",
+      "b": "What is the efficiency of the GoodWe ET?",
+      "same": false
+    },
+    {
+      "a": "Does the Sungrow SH10RT work with the Pylontech Force H2?",
+      "b": "Does the Sungrow SH10RT work with the BYD HVS?",
+      "same": false
+    },
+    {
+      "a": "Which battery fits the SAJ H2-10K-T3?",
+      "b": "Which inverter fits the SAJ B2 battery?",
+      "same": false
+    },
+    {
+      "a": "How do I set the export limit on an SAJ H2 inverter?",
+      "b": "How do I update the firmware on an SAJ H2 inverter?",
+      "same": false
+    },
+    {
+      "a": "Can I talk to a person?",
+      "b": "Which battery fits the SAJ H2-10K-T3?",
+      "same": false
+    },
+    {
+      "a": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+      "b": "Welcher Speicher passt zum GoodWe ET 10?",
+      "same": false
+    },
+    {
+      "a": "Datenblatt für den SAJ H2-10K-T3",
+      "b": "Handbuch für den SAJ H2-10K-T3",
+      "same": false
+    },
+    {
+      "a": "Ist der GoodWe ET dreiphasig?",
+      "b": "Ist der GoodWe EH dreiphasig?",
+      "same": false
+    },
+    {
+      "a": "Wie lange ist die Garantie beim GoodWe ET?",
+      "b": "Wie hoch ist der Wirkungsgrad beim GoodWe ET?",
+      "same": false
+    },
+    {
+      "a": "Funktioniert der Sungrow SH10RT mit dem Pylontech Force H2?",
+      "b": "Funktioniert der Sungrow SH10RT mit dem BYD HVS?",
+      "same": false
+    },
+    {
+      "a": "ok",
+      "b": "ok",
+      "same": false
+    },
+    {
+      "a": "Danke",
+      "b": "danke!",
+      "same": false
+    },
+    {
+      "a": "Which battery fits the SAJ H2-10K-T3?",
+      "b": "Which battery fits the SAJ H2-10K-T3 with backup?",
+      "same": false,
+      "follow_up": true
+    },
+    {
+      "a": "Which battery fits the SAJ H2-10K-T3?",
+      "b": "Which battery fits the SAJ H2-10K-T3 for 15 kWh?",
+      "same": false,
+      "follow_up": true
+    },
+    {
+      "a": "Which battery fits the SAJ H2-10K-T3?",
+      "b": "Which battery fits the SAJ H2-8K-T3?",
+      "same": false,
+      "follow_up": true
+    },
+    {
+      "a": "Is there a datasheet for the Deye SUN-12K?",
+      "b": "Is there a datasheet for the Deye SUN-10K?",
+      "same": false,
+      "follow_up": true
+    },
+    {
+      "a": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+      "b": "Welcher Speicher passt zum SAJ H2-10K-T3 mit Notstrom?",
+      "same": false,
+      "follow_up": true
+    },
+    {
+      "a": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+      "b": "Welcher Speicher passt zum SAJ H2-10K-T3 für 15 kWh?",
+      "same": false,
+      "follow_up": true
+    },
+    {
+      "a": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+      "b": "Welcher Speicher passt zum SAJ H2-8K-T3?",
+      "same": false,
+      "follow_up": true
+    },
+    {
+      "a": "Gibt es ein Datenblatt für den Deye SUN-12K?",
+      "b": "Gibt es ein Datenblatt für den Deye SUN-10K?",
+      "same": false,
+      "follow_up": true
+    }
+  ]
+}

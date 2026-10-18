@@ -43,9 +43,19 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendVote: vi.fn( async () => true ),
 	};
 } );
+vi.mock( './api/contact', () => ( {
+	readContact: vi.fn( async () => ( {
+		started: '100.sig',
+		email: null,
+		sent: null,
+		mailbox: 'sales@de-linker.com',
+	} ) ),
+	sendContact: vi.fn(),
+} ) );
 vi.mock( './api/product', () => ( {
 	productModel: vi.fn( async () => 'GW10K-ETA' ),
 } ) );
+import { readContact, sendContact } from './api/contact';
 import {
 	deleteConversation,
 	emailConversation,
@@ -87,6 +97,7 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 		retentionDays: 90,
 		mailStarted: '1800000000',
 		mailStartedNonce: 'stamp-nonce',
+		contactUrl: '/wp-json/linker-ai/v1/genie/contact',
 		prompts: [
 			'Ask Genie',
 			'I need a three-phase hybrid inverter for a home.',
@@ -279,7 +290,11 @@ test( 'a reload opens with the thread and the last answer restored', async () =>
 } );
 
 test( 'a first visit with no stored conversation opens empty', async () => {
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	render( <App config={ config() } /> );
 	await act( async () => {
 		fireEvent.click(
@@ -293,7 +308,11 @@ test( 'a first visit with no stored conversation opens empty', async () => {
 // It belongs to the empty state and leaves with the first turn.
 test( 'the empty column carries the welcome title until a turn lands', async () => {
 	resetTurnLane();
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	vi.mocked( sendTurn )
 		.mockClear()
 		.mockResolvedValue( {
@@ -322,7 +341,11 @@ test( 'the empty column carries the welcome title until a turn lands', async () 
 // a question is not.
 test( 'an answer carries the answer label and a question does not', async () => {
 	resetTurnLane();
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	vi.mocked( sendTurn )
 		.mockClear()
 		.mockResolvedValue( {
@@ -350,7 +373,11 @@ test( 'an answer carries the answer label and a question does not', async () => 
 } );
 
 test( 'the ready handshake opens once and Close/reopen reports the same state', async () => {
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	vi.mocked( sendTurn ).mockClear();
 	const states: boolean[] = [];
 	let ready = 0;
@@ -548,7 +575,11 @@ test( 'the workspace lists real conversations and loads the selected one', async
 // full page, the history, closing — as named icon buttons.
 test( 'the open dock head carries the icon group', () => {
 	resetTurnLane();
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	render( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect(
@@ -568,7 +599,11 @@ test( 'the open dock head carries the icon group', () => {
 // first turn.
 test( 'the dock opens on the welcome and loses it with the first turn', async () => {
 	resetTurnLane();
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	vi.mocked( sendTurn )
 		.mockClear()
 		.mockResolvedValue( {
@@ -600,7 +635,11 @@ test( 'the dock opens on the welcome and loses it with the first turn', async ()
 // page, the contact page, the privacy policy — German twins on German pages.
 test( 'the dock footer carries the site links, locale-aware', () => {
 	resetTurnLane();
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	const { unmount } = render( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect(
@@ -646,7 +685,11 @@ test( 'the dock history view lists conversations and continues one', async () =>
 			{ id: 8, title: 'Document question', updated: '2026-10-11' },
 		],
 	} );
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	render( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	// The list stays behind the header's clock until asked for.
@@ -692,7 +735,11 @@ test( 'the dock history view lists conversations and continues one', async () =>
 // question, and the chip takes it back out before sending.
 test( 'an attached file rides in the question by name', async () => {
 	resetTurnLane();
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	vi.mocked( sendTurn )
 		.mockClear()
 		.mockResolvedValue( {
@@ -734,7 +781,11 @@ test( 'an attached file rides in the question by name', async () => {
 // what it hears into the field and stops cleanly.
 test( 'the dictation button writes what the browser hears', () => {
 	resetTurnLane();
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	const sessions: Dictation[] = [];
 	class FakeDictation implements Dictation {
 		lang = '';
@@ -782,7 +833,11 @@ test( 'the dictation button writes what the browser hears', () => {
 // A browser without speech recognition carries no dead button.
 test( 'no speech recognition, no dictation button', () => {
 	resetTurnLane();
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	render( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect( screen.queryByRole( 'button', { name: 'Dictate' } ) ).toBeNull();
@@ -791,7 +846,11 @@ test( 'no speech recognition, no dictation button', () => {
 // The mobile sheet's backdrop: a tap off the card folds the dock away.
 test( 'the dock mask folds the sheet', () => {
 	resetTurnLane();
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	const states: boolean[] = [];
 	const onState = ( event: Event ) => {
 		states.push(
@@ -832,7 +891,11 @@ test( 'a new conversation and a switch keep the wide workspace rail open', async
 			...THREE,
 		],
 	} );
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	render( <App config={ { ...config(), surface: 'workspace' } } /> );
 	const rail = screen.getByRole( 'complementary', {
 		name: 'Conversations',
@@ -916,7 +979,11 @@ test( 'a conversation is deleted from the list once the visitor confirms', async
 		ok: true,
 		conversations: [ THREE[ 0 ], THREE[ 2 ] ],
 	} );
-	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
 	render( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Conversations' } ) );
@@ -1094,6 +1161,7 @@ test( 'the limit is named with the number the server counts to', async () => {
 			{ role: 'assistant', content: 'An answer.' },
 		],
 		turn: null,
+		contacts: [],
 	} );
 	vi.mocked( emailConversation ).mockResolvedValue( {
 		outcome: 'throttled',
@@ -1126,6 +1194,7 @@ test( 'at the daily cap the panel says when emailing works again', async () => {
 			{ role: 'assistant', content: 'An answer.' },
 		],
 		turn: null,
+		contacts: [],
 	} );
 	vi.mocked( emailConversation ).mockResolvedValue( {
 		outcome: 'capped',
@@ -1159,4 +1228,216 @@ test( 'the page a confirmation link opens says how it went, once', async () => {
 	} finally {
 		window.history.replaceState( null, '', '/' );
 	}
+} );
+test( 'a request for a person shows the contact card, and Genie keeps answering', async () => {
+	// A fresh guest: no stored thread or history from the tests above.
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 0,
+		conversations: [],
+		ok: true,
+	} );
+	vi.mocked( sendTurn ).mockResolvedValueOnce( {
+		meta: {
+			grounded: true,
+			fallback: false,
+			attempts: 0,
+			failures: [],
+			language: 'en',
+		},
+		blocks: [
+			{
+				type: 'text',
+				text: 'Someone from the Linker team can get in touch with you by email.',
+				refs: [],
+			},
+			{ type: 'contact', reason: 'asked' },
+		],
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const input = screen.getByLabelText( 'Ask Genie' );
+	await act( async () => {
+		fireEvent.change( input, {
+			target: { value: 'Can I talk to a person?' },
+		} );
+		fireEvent.submit( input.closest( 'form' ) as HTMLFormElement );
+	} );
+	expect(
+		await screen.findByText( 'Let the Linker team contact you' )
+	).toBeInTheDocument();
+	expect(
+		await screen.findByLabelText( 'Your email address' )
+	).toBeInTheDocument();
+	// The offer does not mute Genie: the next question is a turn as usual.
+	vi.mocked( sendTurn ).mockResolvedValueOnce( {
+		meta: {
+			grounded: true,
+			fallback: false,
+			attempts: 1,
+			failures: [],
+			language: 'en',
+		},
+		blocks: [ { type: 'text', text: 'The SAJ B2 fits it.', refs: [] } ],
+	} );
+	await act( async () => {
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Which battery fits the SAJ H2?' },
+		} );
+		fireEvent.submit(
+			screen
+				.getByLabelText( 'Ask Genie' )
+				.closest( 'form' ) as HTMLFormElement
+		);
+	} );
+	expect(
+		await screen.findByText( 'The SAJ B2 fits it.' )
+	).toBeInTheDocument();
+	expect( sendTurn ).toHaveBeenLastCalledWith(
+		'/wp-json/linker-ai/v1/genie/turn',
+		'n',
+		'en',
+		[
+			{ role: 'user', content: 'Can I talk to a person?' },
+			{
+				role: 'assistant',
+				content:
+					'Someone from the Linker team can get in touch with you by email.',
+				turnId: undefined,
+			},
+			{ role: 'user', content: 'Which battery fits the SAJ H2?' },
+		],
+		{ type: 'category' }
+	);
+} );
+
+const CONTACT_TURN = {
+	meta: {
+		turn_id: 31,
+		grounded: true,
+		fallback: false,
+		attempts: 0,
+		failures: [],
+		language: 'en' as const,
+	},
+	blocks: [
+		{
+			type: 'text' as const,
+			text: 'Someone from the Linker team can get in touch with you by email.',
+			refs: [],
+		},
+		{ type: 'contact' as const, reason: 'asked' as const },
+	],
+};
+
+// Review round 1 of #243: the sent card is the confirmation, so it stays in
+// the conversation on the next turns, not only under the latest answer.
+test( 'the sent contact card stays in the history on the next turn', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 0,
+		conversations: [],
+		ok: true,
+	} );
+	vi.mocked( sendContact ).mockResolvedValue( {
+		ok: true,
+		email: 'maria@example.test',
+	} );
+	vi.mocked( sendTurn ).mockResolvedValueOnce( CONTACT_TURN );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await act( async () => {
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Can I talk to a person?' },
+		} );
+		fireEvent.submit(
+			screen
+				.getByLabelText( 'Ask Genie' )
+				.closest( 'form' ) as HTMLFormElement
+		);
+	} );
+	fireEvent.change( await screen.findByLabelText( 'Your email address' ), {
+		target: { value: 'maria@example.test' },
+	} );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Contact me' } ) );
+	} );
+	expect(
+		await screen.findByText( 'Your request is with the Linker team' )
+	).toBeInTheDocument();
+	// From now on the route says this conversation's request is sent: a card
+	// that mounts again while the next turn runs reports it once more.
+	vi.mocked( readContact ).mockResolvedValue( {
+		started: '100',
+		startedNonce: 'sig',
+		email: null,
+		sent: { email: 'maria@example.test' },
+		mailbox: 'sales@de-linker.com',
+	} );
+	vi.mocked( sendTurn ).mockResolvedValueOnce( {
+		meta: { ...CONTACT_TURN.meta, turn_id: 32, attempts: 1 },
+		blocks: [ { type: 'text', text: 'The SAJ B2 fits it.', refs: [] } ],
+	} );
+	await act( async () => {
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Which battery fits the SAJ H2?' },
+		} );
+		fireEvent.submit(
+			screen
+				.getByLabelText( 'Ask Genie' )
+				.closest( 'form' ) as HTMLFormElement
+		);
+	} );
+	expect(
+		await screen.findByText( 'The SAJ B2 fits it.' )
+	).toBeInTheDocument();
+	expect(
+		screen.getAllByText( 'Your request is with the Linker team' )
+	).toHaveLength( 1 );
+	expect( screen.queryByRole( 'button', { name: 'Contact me' } ) ).toBeNull();
+} );
+
+test( 'a reload shows the sent card in the history, once', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [
+			{ role: 'user', content: 'Can I talk to a person?' },
+			{
+				role: 'assistant',
+				content:
+					'Someone from the Linker team can get in touch with you by email.',
+			},
+		],
+		turn: CONTACT_TURN,
+		contacts: [ { after: 1, email: 'maria@example.test' } ],
+	} );
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 5,
+		conversations: [],
+		ok: true,
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	expect(
+		await screen.findByText( 'Your request is with the Linker team' )
+	).toBeInTheDocument();
+	expect(
+		screen.getAllByText( 'Your request is with the Linker team' )
+	).toHaveLength( 1 );
+	expect(
+		screen.getByText(
+			'The team replies to maria@example.test within one business day.'
+		)
+	).toBeInTheDocument();
+	expect( screen.queryByRole( 'button', { name: 'Contact me' } ) ).toBeNull();
 } );

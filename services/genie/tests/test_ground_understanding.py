@@ -254,7 +254,7 @@ def test_a_handoff_turn_is_the_handoff_block_alone() -> None:
     facts.add(
         Fact(id="handoff.sentence_de", value="Unser Team …", source="handoff-team")
     )
-    person = Route("person", (Call("linker/handoff-team", {}),))
+    service = Route("service", (Call("linker/handoff-team", {}),))
     doubled = TurnOutput(
         language="de",
         blocks=[
@@ -264,12 +264,12 @@ def test_a_handoff_turn_is_the_handoff_block_alone() -> None:
     )
     assert (
         "a handoff turn is the handoff block alone"
-        in check(doubled, facts, person).failures
+        in check(doubled, facts, service).failures
     )
     alone = TurnOutput(
         language="de", blocks=[HandoffBlock(summary="{fact:handoff.sentence_de}")]
     )
-    assert check(alone, facts, person).ok
+    assert check(alone, facts, service).ok
 
 
 def test_datasheet_figures_become_facts_in_the_turns_language() -> None:
@@ -394,3 +394,31 @@ def test_numbers_beside_codes_are_still_refused(text: str) -> None:
 def test_a_document_of_this_turn_may_be_cited_in_refs() -> None:
     output = _turn(TextBlock(text="See the datasheet.", refs=["compat.document.0"]))
     assert check(output, _facts()).ok
+
+
+def test_the_shipped_company_turn_is_the_mailbox_sentence_and_the_card() -> None:
+    from linker_genie.ground import shipped
+
+    handoff = {"type": "handoff", "summary": "Our team will answer that at x."}
+    card = {"type": "contact", "reason": "service"}
+    assert shipped({"blocks": [handoff, card]}, Route("service"), "service") == []
+    assert shipped({"blocks": [handoff]}, Route("service"), None) == []
+    assert shipped(
+        {"blocks": [handoff, {"type": "cards", "product_ids": [1]}, card]},
+        Route("service"),
+        "service",
+    )
+
+
+def test_the_contact_card_is_the_offer_the_service_decided() -> None:
+    from linker_genie.ground import shipped
+
+    text = {"type": "text", "text": "An answer.", "refs": []}
+    card = {"type": "contact", "reason": "repeat"}
+    assert shipped({"blocks": [text, card]}, Route("model"), "repeat") == []
+    # No offer, no card; one card, last, of the decided reason.
+    assert shipped({"blocks": [text, card]}, Route("model"), None)
+    assert shipped({"blocks": [card, text]}, Route("model"), "repeat")
+    assert shipped({"blocks": [text, card, card]}, Route("model"), "repeat")
+    assert shipped({"blocks": [text, card]}, Route("model"), "dissatisfied")
+    assert shipped({"blocks": [text]}, Route("model"), "repeat")

@@ -121,6 +121,22 @@ class DocumentBlock(Strict):
     url: str | None = None
 
 
+# Why Genie offers the team's contact (#243, contact.py): the customer asked for a
+# person, a company or service question, frustration, or the third round of one question.
+ContactReason = Literal["asked", "service", "dissatisfied", "repeat"]
+
+
+class ContactBlock(Strict):
+    """The offer "Let Linker contact me", rendered by the shell as the contact card.
+
+    The service adds it after the answer (contact.decide); it is not one of the blocks
+    the model may write, so no model output can offer or send a contact request.
+    """
+
+    type: Literal["contact"] = "contact"
+    reason: ContactReason
+
+
 Block = Annotated[
     TextBlock
     | AskBlock

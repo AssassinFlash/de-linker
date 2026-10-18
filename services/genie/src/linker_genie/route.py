@@ -196,10 +196,10 @@ def plan(
         shown = named or matches
         reasons.append("product words: " + ", ".join(m.words for m in shown))
 
-    if intent == "talk_to_person" or (
-        intent is None and reading is not None and reading.wants_person >= LIKELY
-    ):
-        return person(message, reasons)
+    if intent == "talk_to_person":
+        # Frustration on another intent is answered as routed, with the contact
+        # offer beside it (contact.decide).
+        return person(reasons)
     if intent == "company_logistics_service":
         return service(message, reasons)
     if intent == "inquiry_status":
@@ -391,19 +391,13 @@ def _family_hint(matches: list[Match]) -> str:
     )
 
 
-def person(message: str, reasons: list[str]) -> Route:
-    """The customer asks for a person.
+def person(reasons: list[str]) -> Route:
+    """The customer asks for a person: "Let Linker contact me" (#243).
 
-    The seam for "Let Linker contact me" (#243): today the route hands the turn to the
-    team mailbox through handoff-team, as before; #243 replaces this function's calls
-    and hint with its contact request, and the router needs no other change.
+    The route makes no call and the model does not run: the turn is the service's own
+    sentence and the contact card (contact.answer, app.assistant_turn).
     """
-    return Route(
-        "person",
-        (Call("linker/handoff-team", {"summary": message}),),
-        hint="The customer asks for a person: answer with the handoff block.",
-        reasons=tuple(reasons),
-    )
+    return Route("person", reasons=tuple(reasons))
 
 
 def sizing_input(message: str) -> dict[str, Any]:

@@ -30,6 +30,7 @@ import { App, resetTurnLane } from './App';
 type Read = {
 	messages: { role: 'user' | 'assistant'; content: string }[];
 	turn: null;
+	contacts: [];
 };
 
 function deferred< T >() {
@@ -130,6 +131,7 @@ function config(): GenieConfig {
 		disclosure: 'AI.',
 		accountUrl: '/my-account/',
 		workspaceUrl: '/genie/',
+		contactUrl: '/wp-json/linker-ai/v1/genie/contact',
 		prompts: [ 'Ask Genie' ],
 		signedIn: false,
 		retentionDays: 90,
@@ -152,6 +154,7 @@ test( 'an ask that starts after select resolves still waits for the target threa
 	reads[ 0 ].resolve( {
 		messages: [ { role: 'user', content: 'seven' } ],
 		turn: null,
+		contacts: [],
 	} );
 
 	fireEvent.click( await screen.findByRole( 'button', { name: 'Eight' } ) );
@@ -165,6 +168,7 @@ test( 'an ask that starts after select resolves still waits for the target threa
 	reads[ 1 ].resolve( {
 		messages: [ { role: 'user', content: 'eight' } ],
 		turn: null,
+		contacts: [],
 	} );
 
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
@@ -181,6 +185,7 @@ test( 'control: an ask after the switch settles carries the new thread', async (
 	reads[ 0 ].resolve( {
 		messages: [ { role: 'user', content: 'seven' } ],
 		turn: null,
+		contacts: [],
 	} );
 
 	fireEvent.click( await screen.findByRole( 'button', { name: 'Eight' } ) );
@@ -191,6 +196,7 @@ test( 'control: an ask after the switch settles carries the new thread', async (
 	reads[ 1 ].resolve( {
 		messages: [ { role: 'user', content: 'eight' } ],
 		turn: null,
+		contacts: [],
 	} );
 
 	const input = await screen.findByRole( 'textbox' );
@@ -218,6 +224,7 @@ test( 'two history clicks in a row continue the last one, not the first', async 
 	reads[ 0 ].resolve( {
 		messages: [ { role: 'user', content: 'seven' } ],
 		turn: null,
+		contacts: [],
 	} );
 
 	fireEvent.click( await screen.findByRole( 'button', { name: 'Eight' } ) );
@@ -229,6 +236,7 @@ test( 'two history clicks in a row continue the last one, not the first', async 
 	reads[ 1 ].resolve( {
 		messages: [ { role: 'user', content: 'eight' } ],
 		turn: null,
+		contacts: [],
 	} );
 	await waitFor( () => expect( selects.length ).toBe( 2 ) );
 	selects[ 1 ].resolve( {
@@ -240,6 +248,7 @@ test( 'two history clicks in a row continue the last one, not the first', async 
 	reads[ 2 ].resolve( {
 		messages: [ { role: 'user', content: 'seven' } ],
 		turn: null,
+		contacts: [],
 	} );
 
 	const input = await screen.findByRole( 'textbox' );
@@ -283,7 +292,7 @@ test( 'a history refresh started by an ask cannot put the old conversation back'
 	render( <App config={ config() } /> );
 	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 1 ) );
 	await act( async () => {
-		reads[ 0 ].resolve( { messages: [], turn: null } );
+		reads[ 0 ].resolve( { messages: [], turn: null, contacts: [] } );
 	} );
 	await waitFor( () =>
 		expect( listConversations ).toHaveBeenCalledTimes( 1 )
@@ -341,7 +350,7 @@ test( 'a history refresh started by an ask cannot put the old conversation back'
 		],
 	} );
 	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 2 ) );
-	reads[ 1 ].resolve( { messages: [], turn: null } );
+	reads[ 1 ].resolve( { messages: [], turn: null, contacts: [] } );
 	expect(
 		await screen.findByRole( 'button', { name: 'Nine' } )
 	).toHaveAttribute( 'aria-current', 'true' );

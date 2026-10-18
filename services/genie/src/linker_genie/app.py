@@ -18,13 +18,14 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
-from linker_genie import jev, page
+from linker_genie import contact, ground, jev, page
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import make_generate, model_name, provider_name
 from linker_genie.cycle import TurnResult, run
+from linker_genie.facts import TurnFacts
 from linker_genie.log import TurnLog
-from linker_genie.prices import LOOKUP_DEADLINE, commerce_lookup
-from linker_genie.schema import TurnRequest, VoteRequest
+from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup
+from linker_genie.schema import TurnOutput, TurnRequest, VoteRequest
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.understand import Prepared, Understander
 
@@ -100,8 +101,10 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         if prepare is not None
         else understander().prepare(body, ability_client())
     )
-    generate = getattr(request.app.state, "generate", None) or make_generate(
-        ability_client(), prepared=prepared, pages=page_reader().read
+    # Which earlier turns of this conversation offered the team's contact, newest
+    # first: one per customer message is all the repeat rule can look back on.
+    offers = turn_log().offers(
+        body.conversation_id, sum(1 for m in body.messages if m.role == "user")
     )
     # The cards' price lookups end LOOKUP_DEADLINE s after the turn began, so the
     # turn stays inside the shell's timeout (prices.py).
@@ -109,7 +112,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         ability_client(), body, started + LOOKUP_DEADLINE
     )
     try:
-        result = run(body, generate, prepared.route, prepared.facts, commerce)
+        result = _answer(body, prepared, request, commerce)
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
         turn_log().record(
             conversation_id=body.conversation_id,
@@ -133,23 +136,42 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         # A card whose price line could not be read shows none; the cause is
         # logged with the turn, never swallowed (prices.fill).
         prepared.log["price_failures"] = list(result.price_failures)
+    shipped = result.output.model_dump()
+    offer = contact.decide(prepared.route, prepared.reading, body.messages, offers)
+    if offer is not None:
+        # The offer follows the answer; the model never writes it (contact.py).
+        shipped["blocks"].append(offer.block().model_dump())
+        problems = ground.shipped(shipped, prepared.route, offer.reason)
+        if problems:
+            # The service's own mistake: the answer ships without the card.
+            shipped["blocks"] = [
+                b for b in shipped["blocks"] if b.get("type") != "contact"
+            ]
+            prepared.log["contact_failures"] = problems
+            offer = None
+        else:
+            prepared.log["contact"] = offer.reason
+    code_made = prepared.route.name == "person"
     turn_id = turn_log().record(
         conversation_id=body.conversation_id,
         locale=body.locale,
         grounded=result.grounded,
         failures=result.failures,
         fallback=result.fallback,
-        provider=provider_name(),
-        model=model_name(),
+        # A request for a person is answered by the service alone: no model ran.
+        provider="service" if code_made else provider_name(),
+        # "none": no model wrote this turn (model-routing audits read the field).
+        model="none" if code_made else model_name(),
         tool_calls=result.facts.tool_calls,
-        output=result.output.model_dump(),
+        output=shipped,
         question=_question(body),
         page=body.page_context.model_dump(),
         understanding=prepared.log,
         approved=body.user.partner,
+        contact=offer.reason if offer is not None else None,
     )
     return StreamingResponse(
-        _sse(result, turn_id, prepared),
+        _sse(result, shipped, turn_id, prepared),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache"},
     )
@@ -164,6 +186,28 @@ def turn_vote(turn_id: int, body: VoteRequest) -> dict[str, bool]:
     return {"ok": True}
 
 
+def _answer(
+    body: TurnRequest, prepared: Prepared, request: Request, commerce: Lookup
+) -> TurnResult:
+    """The turn's answer: the model's, or the service's own for a request for a person
+    (contact.answer; #243 — no model runs, and none can claim it sent anything)."""
+    if prepared.route.name == "person":
+        return TurnResult(
+            output=TurnOutput(
+                language=body.locale, blocks=[contact.answer(body.locale)]
+            ),
+            facts=TurnFacts(),
+            grounded=True,
+            failures=(),
+            fallback=False,
+            attempts=0,
+        )
+    generate = getattr(request.app.state, "generate", None) or make_generate(
+        ability_client(), prepared=prepared, pages=page_reader().read
+    )
+    return run(body, generate, prepared.route, prepared.facts, commerce)
+
+
 def _question(body: TurnRequest) -> str:
     """The customer message this turn answers: the thread's last user message."""
     for message in reversed(body.messages):
@@ -172,7 +216,9 @@ def _question(body: TurnRequest) -> str:
     return ""
 
 
-def _sse(result: TurnResult, turn_id: int, prepared: Prepared) -> Iterator[str]:
+def _sse(
+    result: TurnResult, shipped: dict[str, object], turn_id: int, prepared: Prepared
+) -> Iterator[str]:
     meta = {
         "turn_id": turn_id,
         "grounded": result.grounded,
@@ -187,8 +233,9 @@ def _sse(result: TurnResult, turn_id: int, prepared: Prepared) -> Iterator[str]:
         "jev_error": prepared.log.get("jev_error"),
     }
     yield _event("meta", meta)
-    for block in result.output.blocks:
-        yield _event("block", block.model_dump())
+    blocks = shipped.get("blocks")
+    for block in blocks if isinstance(blocks, list) else []:
+        yield _event("block", block)
     yield _event("done", {"ok": True})
 
 

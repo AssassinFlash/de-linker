@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Tests\Unit;
 
+use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Proxy;
 use WP_Mock;
@@ -593,11 +594,34 @@ final class ProxyTest extends TestCase {
 			),
 			'stream'   => 'event: done\ndata: {}\n\n',
 		);
-		$response       = $this->proxy( null, $thread )->conversation();
-		$data           = $response->get_data();
+		// One contact request was sent after the first answer (#243).
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 51, ContactRequest::NOTE, false ),
+				'return' => array(
+					array(
+						'messages' => 1,
+						'email'    => 'maria@example.test',
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction( 'is_email', array( 'return' => static fn( $value ) => str_contains( (string) $value, '@' ) ) );
+		$response = $this->proxy( null, $thread )->conversation();
+		$data     = $response->get_data();
 		$this->assertSame( 51, $data['conversation_id'] );
 		$this->assertSame( $thread->stored['messages'], $data['messages'] );
 		$this->assertSame( $thread->stored['stream'], $data['stream'] );
+		$this->assertSame(
+			array(
+				array(
+					'after' => 1,
+					'email' => 'maria@example.test',
+				),
+			),
+			$data['contacts']
+		);
 		// The answer depends on the visitor's cookie: it is never cacheable.
 		$this->assertStringContainsString(
 			'no-store',
@@ -739,6 +763,7 @@ final class ProxyTest extends TestCase {
 			$this->assertSame( 52, $selected->get_data()['conversation_id'] );
 			$this->assertContains( 52, array_column( $selected->get_data()['conversations'], 'id' ) );
 			$this->assertSame( 52, $conversations->existing_id() );
+			WP_Mock::userFunction( 'get_post_meta', array( 'return' => array() ) );
 			$this->assertSame( 52, $proxy->conversation()->get_data()['conversation_id'] );
 			$this->assertConditionsMet();
 	}

@@ -11,6 +11,7 @@ namespace Linker\Tools\Tests\Integration;
 
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\ConversationMail;
+use Linker\Tools\Genie\FormGuard;
 use Linker\Tools\Genie\RateLimit;
 use Linker\Tools\Genie\Thread;
 use PHPUnit\Framework\TestCase;
@@ -272,7 +273,7 @@ final class ConversationRoutesTest extends TestCase {
 					'started'       => (string) ( time() - 60 ),
 					'started_nonce' => 'forged',
 				),
-				self::guard( ConversationMail::STAMP_LIFETIME + 60 ),
+				self::guard( FormGuard::STAMP_LIFETIME + 60 ),
 				array(),
 			) as $guard
 		) {

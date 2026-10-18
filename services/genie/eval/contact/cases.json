@@ -1,0 +1,278 @@
+{
+ "about": "When Genie offers 'Let Linker contact me' (#243, docs/specs/13-genie.md goal 6, A5), EN and DE, against the real service: the phrase table, Jev (typesafe/jev-1.13 on OpenRouter) and deepseek-flash on the official API. `offer` is the contact block's reason the turn must carry, null for none. `thread` cases post their customer messages one turn after another in one conversation; `offers` lists the reason expected on each of those turns. Review round 1 of #243 added five frustrated and two neutral messages per language, the phrase-table negatives (team portal, expert mode, engineer's guide), a company thread (the card not on two turns in a row; the mailbox sentence every time) and a follow-up thread (refinements and a sibling model are no repeat).",
+ "cases": [
+  {
+   "id": "ask-en",
+   "locale": "en",
+   "message": "Can I talk to a person?",
+   "offer": "asked",
+   "by": "phrase"
+  },
+  {
+   "id": "ask-de",
+   "locale": "de",
+   "message": "Ich möchte mit einem Mitarbeiter sprechen",
+   "offer": "asked",
+   "by": "phrase"
+  },
+  {
+   "id": "ask-en-2",
+   "locale": "en",
+   "message": "Could somebody from your sales team give me a ring tomorrow?",
+   "offer": "asked",
+   "by": "jev"
+  },
+  {
+   "id": "ask-de-2",
+   "locale": "de",
+   "message": "Gibt es bei Ihnen einen Ansprechpartner, der sich mit Gewerbespeichern auskennt?",
+   "offer": "asked",
+   "by": "jev"
+  },
+  {
+   "id": "service-en",
+   "locale": "en",
+   "message": "Do you deliver to Austria?",
+   "offer": "service",
+   "by": "jev"
+  },
+  {
+   "id": "service-de",
+   "locale": "de",
+   "message": "Wie hoch sind die Versandkosten nach Österreich?",
+   "offer": "service",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-en-1",
+   "locale": "en",
+   "message": "This is useless, you keep giving me the wrong products.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-en-2",
+   "locale": "en",
+   "message": "You are not helping at all.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-en-3",
+   "locale": "en",
+   "message": "That's the third wrong answer, this is frustrating.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-en-4",
+   "locale": "en",
+   "message": "Your answers make no sense, I give up.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-en-5",
+   "locale": "en",
+   "message": "This bot is a waste of my time.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-de-1",
+   "locale": "de",
+   "message": "Das hilft mir überhaupt nicht weiter, Ihre Antworten sind falsch.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-de-2",
+   "locale": "de",
+   "message": "Sie verstehen meine Frage einfach nicht.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-de-3",
+   "locale": "de",
+   "message": "Das ist jetzt schon die dritte falsche Antwort, das nervt.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-de-4",
+   "locale": "de",
+   "message": "Mit diesem Chat komme ich nicht weiter.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "unhappy-de-5",
+   "locale": "de",
+   "message": "Das ist reine Zeitverschwendung.",
+   "offer": "dissatisfied",
+   "by": "jev"
+  },
+  {
+   "id": "neutral-en-1",
+   "locale": "en",
+   "message": "Thanks, that helps.",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "neutral-en-2",
+   "locale": "en",
+   "message": "OK, and which cable do I need for the SAJ H2-10K-T3?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "neutral-de-1",
+   "locale": "de",
+   "message": "Danke, das hilft mir.",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "neutral-de-2",
+   "locale": "de",
+   "message": "Gut, und welches Kabel brauche ich für den SAJ H2-10K-T3?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "portal-en",
+   "locale": "en",
+   "message": "Can the inverter talk to the team portal?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "expert-en",
+   "locale": "en",
+   "message": "Does the GoodWe app have an expert mode?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "engineer-en",
+   "locale": "en",
+   "message": "Where is the engineer's guide for the SAJ H2?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "portal-de",
+   "locale": "de",
+   "message": "Kann der Wechselrichter mit dem Team-Portal sprechen?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "expert-de",
+   "locale": "de",
+   "message": "Hat die GoodWe-App einen Expertenmodus?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "engineer-de",
+   "locale": "de",
+   "message": "Wo finde ich die Techniker-Anleitung für den SAJ H2?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "plain-en",
+   "locale": "en",
+   "message": "Which battery fits the SAJ H2-10K-T3?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "plain-de",
+   "locale": "de",
+   "message": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "talk-en",
+   "locale": "en",
+   "message": "Can the SAJ inverter talk to a Pylontech battery?",
+   "offer": null,
+   "by": "jev"
+  },
+  {
+   "id": "talk-de",
+   "locale": "de",
+   "message": "Kann der Wechselrichter mit dem Speicher sprechen?",
+   "offer": null,
+   "by": "jev"
+  }
+ ],
+ "threads": [
+  {
+   "id": "repeat-en",
+   "locale": "en",
+   "messages": [
+    "Which battery fits the SAJ H2-10K-T3?",
+    "which battery fits SAJ H2-10K-T3",
+    "Which battery fits the SAJ H2 10K T3??",
+    "WHICH BATTERY FITS THE SAJ H2-10K-T3"
+   ],
+   "offers": [
+    null,
+    null,
+    "repeat",
+    null
+   ]
+  },
+  {
+   "id": "repeat-de",
+   "locale": "de",
+   "messages": [
+    "Welcher Speicher passt zum SAJ H2-10K-T3?",
+    "welcher speicher passt zu SAJ H2-10K-T3",
+    "Welcher Speicher passt zum SAJ H2 10K T3 bitte?",
+    "WELCHER SPEICHER PASST ZUM SAJ H2-10K-T3"
+   ],
+   "offers": [
+    null,
+    null,
+    "repeat",
+    null
+   ]
+  },
+  {
+   "id": "service-en",
+   "locale": "en",
+   "messages": [
+    "Do you deliver to Austria?",
+    "And how long does delivery to Vienna take?",
+    "What does shipping to Austria cost?"
+   ],
+   "offers": [
+    "service",
+    null,
+    "service"
+   ],
+   "mailbox": true
+  },
+  {
+   "id": "followup-en",
+   "locale": "en",
+   "messages": [
+    "Which battery fits the SAJ H2-10K-T3?",
+    "Which battery fits the SAJ H2-10K-T3 with backup?",
+    "Which battery fits the SAJ H2-8K-T3?"
+   ],
+   "offers": [
+    null,
+    null,
+    null
+   ]
+  }
+ ]
+}

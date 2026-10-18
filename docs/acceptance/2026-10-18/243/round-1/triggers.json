@@ -1,0 +1,736 @@
+[
+ {
+  "id": "ask-en",
+  "locale": "en",
+  "message": "Can I talk to a person?",
+  "offer": "asked",
+  "by": "phrase",
+  "got": {
+   "offer": "asked",
+   "route": "person",
+   "intent": null,
+   "jev_error": null,
+   "text": "Someone from the Linker team can get in touch with you by email.",
+   "handoff": "",
+   "seconds": 0.2
+  },
+  "ok": true
+ },
+ {
+  "id": "ask-de",
+  "locale": "de",
+  "message": "Ich möchte mit einem Mitarbeiter sprechen",
+  "offer": "asked",
+  "by": "phrase",
+  "got": {
+   "offer": "asked",
+   "route": "person",
+   "intent": null,
+   "jev_error": null,
+   "text": "Jemand aus dem Linker-Team kann sich per E-Mail bei Ihnen melden.",
+   "handoff": "",
+   "seconds": 0.0
+  },
+  "ok": true
+ },
+ {
+  "id": "ask-en-2",
+  "locale": "en",
+  "message": "Could somebody from your sales team give me a ring tomorrow?",
+  "offer": "asked",
+  "by": "jev",
+  "got": {
+   "offer": "asked",
+   "route": "person",
+   "intent": "talk_to_person",
+   "jev_error": null,
+   "text": "Someone from the Linker team can get in touch with you by email.",
+   "handoff": "",
+   "seconds": 5.3
+  },
+  "ok": true
+ },
+ {
+  "id": "ask-de-2",
+  "locale": "de",
+  "message": "Gibt es bei Ihnen einen Ansprechpartner, der sich mit Gewerbespeichern auskennt?",
+  "offer": "asked",
+  "by": "jev",
+  "got": {
+   "offer": "asked",
+   "route": "person",
+   "intent": "talk_to_person",
+   "jev_error": null,
+   "text": "Jemand aus dem Linker-Team kann sich per E-Mail bei Ihnen melden.",
+   "handoff": "",
+   "seconds": 0.7
+  },
+  "ok": true
+ },
+ {
+  "id": "service-en",
+  "locale": "en",
+  "message": "Do you deliver to Austria?",
+  "offer": "service",
+  "by": "jev",
+  "got": {
+   "offer": "service",
+   "route": "service",
+   "intent": "company_logistics_service",
+   "jev_error": null,
+   "text": "",
+   "handoff": "Our team will answer that at sales@de-linker.com.",
+   "seconds": 2.7
+  },
+  "ok": true
+ },
+ {
+  "id": "service-de",
+  "locale": "de",
+  "message": "Wie hoch sind die Versandkosten nach Österreich?",
+  "offer": "service",
+  "by": "jev",
+  "got": {
+   "offer": "service",
+   "route": "service",
+   "intent": "company_logistics_service",
+   "jev_error": null,
+   "text": "",
+   "handoff": "Unser Team beantwortet das unter sales@de-linker.com.",
+   "seconds": 2.0
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-en-1",
+  "locale": "en",
+  "message": "This is useless, you keep giving me the wrong products.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "I am sorry the results so far did not match what you need. Tell me how the system is used and I will search again with that in mind, so the products fit your case from the start. If the open point is the size of the system rather than the product, the Solution Configurator is the right place to work it out.",
+   "handoff": "",
+   "seconds": 3.8
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-en-2",
+  "locale": "en",
+  "message": "You are not helping at all.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "I am sorry the answers so far did not get you anywhere. Let me be concrete about what this page offers. The home page presents Linker as a trade supplier for solar and battery storage in Germany: complete storage packages with the compatibility lists on file, net pricing and project quotations for trade partners, stock and RMA handling from the German hub, and a five-stage path from project brief through compatibility check, trade quote and fulfillment to after-sales support. The storage ranges it names are residential hybrid inverter and battery packages, commercial and industrial outdoor storage, and containerized utility-scale systems. Everything technical — datasheets, manuals, compatibility between an inverter and a battery, settings and wiring — I can look up for you here and show you the documents. Sizing a system is the job of the Solution Configurator, which I can open for you. Tell me what you are working on and I will work from that.",
+   "handoff": "",
+   "seconds": 4.8
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-en-3",
+  "locale": "en",
+  "message": "That's the third wrong answer, this is frustrating.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "I'm sorry for the run of unhelpful replies. Let me start fresh: please tell me what you were trying to find out, and I will look it up in our product data and documents rather than guess. If your question is about the right system or battery size, I can open the Solution Configurator for you instead.",
+   "handoff": "",
+   "seconds": 2.6
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-en-4",
+  "locale": "en",
+  "message": "Your answers make no sense, I give up.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "I am sorry the previous answers were not useful. Let us start fresh and keep it simple: tell me what you are working on, and I will answer from our product data and documents only, with no detours.\n\nI can help with product data and specifications, which batteries pair with an inverter you already own, datasheets and manuals, and building a solution draft with its bill of materials. If you need a system sized for your home or a commercial site, the Solution Configurator does that work and I can open it for you.",
+   "handoff": "",
+   "seconds": 3.8
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-en-5",
+  "locale": "en",
+  "message": "This bot is a waste of my time.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "Understood — let me keep this short and useful. I can answer questions about Linker's products and model ranges, check which battery is documented for an inverter you already have, pull up datasheets, manuals and pairing documents, and help you put a solution draft together. Tell me the model you are working with or what you need to check, and you will get a direct answer; if the requirement is a system size, the Solution Configurator handles that in a few steps.",
+   "handoff": "",
+   "seconds": 3.8
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-de-1",
+  "locale": "de",
+  "message": "Das hilft mir überhaupt nicht weiter, Ihre Antworten sind falsch.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "Das tut mir leid. Sagen Sie mir bitte kurz, worum es geht, dann gehe ich es neu und gezielt an: Suchen Sie ein Produkt oder eine Produktkategorie, möchten Sie wissen, ob ein Wechselrichter und eine Batterie zusammenpassen, brauchen Sie eine Angabe oder Unterlage aus einem Dokument, oder soll die Anlage bzw. der Speicher ausgelegt werden? Wenn Sie eine Anlage planen, nennen Sie mir gern die von Ihnen genannte PV-Größe und die gewünschte Kapazität.",
+   "handoff": "",
+   "seconds": 4.1
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-de-2",
+  "locale": "de",
+  "message": "Sie verstehen meine Frage einfach nicht.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "Das tut mir leid. Damit ich Ihre Frage richtig verstehe: Nennen Sie mir bitte kurz das Produkt oder Modell, um das es geht, und was Sie dazu wissen möchten – zum Beispiel eine Batterieergänzung, ein Datenblatt oder ein technischer Wert. Dann kann ich gezielt nachsehen und Ihnen eine passende Antwort geben.",
+   "handoff": "",
+   "seconds": 3.2
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-de-3",
+  "locale": "de",
+  "message": "Das ist jetzt schon die dritte falsche Antwort, das nervt.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "Entschuldigen Sie bitte die vorherigen Antworten – sagen Sie mir gern kurz, worum es gehen soll, dann bleibe ich beim Thema.\n\nDie Seite, auf der Sie sich befinden, stellt Linker als Lieferanten für Solartechnik und Speicher für gewerbliche Partner in Europa vor: komplette Speicherpakete aus Hybridwechselrichtern, Batterien und Zubehör, den direkten Handel mit Netto-Konditionen, ein Lager und RMA-Abwicklung in Deutschland sowie Kompatibilitätslisten und Unterlagen für die Inbetriebnahme. Beschrieben wird außerdem der Ablauf vom Projektbrief über die Kompatibilitätsprüfung und das Angebot bis zur Lieferung aus dem Lager und zur Betreuung nach der Inbetriebnahme; für die Auslegung wird auf den Lösungskonfigurator verwiesen.\n\nWoran arbeiten Sie gerade – an einem bestimmten Gerät, einer Kompatibilitätsfrage oder einer Auslegung?",
+   "handoff": "",
+   "seconds": 5.1
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-de-4",
+  "locale": "de",
+  "message": "Mit diesem Chat komme ich nicht weiter.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "Die Seite beschreibt Linker als Handelslieferant für Solar- und Speichertechnik: komplette Pakete aus Hybridwechselrichtern, Batterien und Zubehör für Wohn- und Gewerbeprojekte, dazu Kompatibilitätslisten und Unterlagen für die Inbetriebnahme, Lagerbestand und RMA-Abwicklung in Deutschland. Der Weg führt dort vom Projektbrief über die Kompatibilitätsprüfung und das Angebot bis zur Lieferung aus dem Lager und zur Betreuung nach der Inbetriebnahme.\n\nIch helfe Ihnen gern beim Konkreten weiter: Produkte und Produktkategorien ansehen, prüfen, welche Batterie zu einem Wechselrichter passt, technische Angaben und Bedingungen aus Datenblättern und Handbüchern nachlesen, einen Lösungsentwurf aufbauen oder den Status einer Anfrage ansehen. Wenn es um die Auslegung geht — wie groß Speicher oder Anlage sein sollen —, ermittelt das der Lösungskonfigurator.",
+   "handoff": "",
+   "seconds": 5.6
+  },
+  "ok": true
+ },
+ {
+  "id": "unhappy-de-5",
+  "locale": "de",
+  "message": "Das ist reine Zeitverschwendung.",
+  "offer": "dissatisfied",
+  "by": "jev",
+  "got": {
+   "offer": "dissatisfied",
+   "route": "model",
+   "intent": "other",
+   "jev_error": null,
+   "text": "Schade, dass dieser Eindruck entstanden ist. Die Seite beschreibt, worauf Linker ausgelegt ist: komplette Speicherpakete aus Hybrid-Wechselrichtern, Batterien und Zubehör samt Kompatibilitätslisten und Unterlagen für die Inbetriebnahme, dazu Handelskonditionen mit Netto-Preisen und Projektangeboten sowie Lager und RMA-Abwicklung in Deutschland. Sagen Sie mir gern, was Sie konkret brauchen – ein Produkt, eine Batterie zu einem vorhandenen Wechselrichter oder eine Auslegung –, dann liefere ich Ihnen die passenden Angaben.",
+   "handoff": "",
+   "seconds": 4.7
+  },
+  "ok": true
+ },
+ {
+  "id": "neutral-en-1",
+  "locale": "en",
+  "message": "Thanks, that helps.",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "model",
+   "intent": "small_talk",
+   "jev_error": null,
+   "text": "You are welcome. If you would like to look at product categories, check the documents of a specific model or put together a solution draft, just let me know.",
+   "handoff": "",
+   "seconds": 7.8
+  },
+  "ok": true
+ },
+ {
+  "id": "neutral-en-2",
+  "locale": "en",
+  "message": "OK, and which cable do I need for the SAJ H2-10K-T3?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "products",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "For the AC grid connection, the manual for the H2 series gives the conductor cross-section for the H2-(10K-30K)-(T2,T3) group as 10 to 16 mm², with 16 mm² recommended; the manual notes that you may choose a larger AC cable diameter for a long grid-connection distance. The same table specifies an additional grounding cable of 8 mm². A circuit breaker must be installed between the grid and the inverter, with 50A recommended for this inverter group, and several inverters must not share one AC circuit breaker. An external RCD is not required because the inverter has an integrated residual current monitoring unit, but where local regulations call for one, type A or B with 300 mA action current can be used. On the DC side, the manual specifies an outdoor multi-core copper cable with a conductor cross-section of 4.0 to 6.0 mm² (4.0 mm² recommended) rated for 1000 VDC.",
+   "handoff": "",
+   "seconds": 21.0
+  },
+  "ok": true
+ },
+ {
+  "id": "neutral-de-1",
+  "locale": "de",
+  "message": "Danke, das hilft mir.",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "model",
+   "intent": "small_talk",
+   "jev_error": null,
+   "text": "Gern geschehen. Wenn Sie zu einem Produkt Passendes suchen, eine Pairing-Unterlage oder ein Datenblatt brauchen oder eine Anlage auslegen möchten, sagen Sie einfach Bescheid — ich helfe Ihnen weiter.",
+   "handoff": "",
+   "seconds": 9.8
+  },
+  "ok": true
+ },
+ {
+  "id": "neutral-de-2",
+  "locale": "de",
+  "message": "Gut, und welches Kabel brauche ich für den SAJ H2-10K-T3?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "products",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Für den SAJ H2-10K-T3 nennt das Handbuch getrennte Querschnitte für Netz-, Batterie- und PV-Seite. Für das Wechselstromkabel (AC) zum Netz gilt ein Bereich von 10 bis 16 mm², empfohlen sind 16 mm²; das zusätzliche Erdungskabel hat 8 mm². Bei einer langen Netzanschlussstrecke dürfen Sie den AC-Querschnitt verstärken. Für die Batteriekabel sind 8 bis 10 mm² vorgesehen, empfohlen 8 mm². Auf der PV-Seite nennt das Handbuch einen Leiterquerschnitt von 4,0 bis 6,0 mm², empfohlen 4,0 mm² als mehradriges Kupferkabel für den Außenbereich, ausgelegt für 1.000 V DC. Bei langen DC-Leitungen prüfen Sie zusätzlich den Spannungsfall; die Auswahl des Durchmessers für die Netzanschlussstrecke können Sie laut Handbuch verstärken.",
+   "handoff": "",
+   "seconds": 26.5
+  },
+  "ok": true
+ },
+ {
+  "id": "portal-en",
+  "locale": "en",
+  "message": "Can the inverter talk to the team portal?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "model",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "The Trade Portal on this page is described as Linker's channel for wholesale orders and project quotes, and the page does not say that inverters connect to it. Our documents likewise do not state any data link between an inverter and the Linker team portal; a portal connection is not part of what they describe.\n\nWhat the documents do cover is inverter communication for monitoring and control: GoodWe units reach the SEMS Portal monitoring platform over WiFi, LAN, 4G or GPRS; the H1 series uploads its operating data to a server through a Wi-Fi module on its RS232 interface, with RS485 reserved for the battery management system; and a separate Modbus RTU protocol document covers the communication between GoodWe hybrid inverters and a third-party monitoring device or EMS, including reading live data and remote control. If you tell me which model you are working with, I can check the documents for that unit.",
+   "handoff": "",
+   "seconds": 19.9
+  },
+  "ok": true
+ },
+ {
+  "id": "expert-en",
+  "locale": "en",
+  "message": "Does the GoodWe app have an expert mode?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "products",
+   "intent": "other",
+   "jev_error": null,
+   "text": "Our documents do not describe a section named expert mode in the GoodWe app. What they do describe is an Advanced Settings area in SolarGo: from the Home screen you open Settings and then Advanced Settings, and that area holds the installer-level functions, such as the safety parameter settings, the active power mode settings, the AFCI detection, the power limit parameters and the parameter export. Treat that as the related passage rather than as an expert mode, since the documents do not state an expert mode under that name.",
+   "handoff": "",
+   "seconds": 13.7
+  },
+  "ok": true
+ },
+ {
+  "id": "engineer-en",
+  "locale": "en",
+  "message": "Where is the engineer's guide for the SAJ H2?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "documents",
+   "intent": "documents_specs",
+   "jev_error": null,
+   "text": "The guide you are looking for is our SAJ configuration instructions for H2, HS2 and HS3 systems (English, V1.0). It covers the H2 series together with HS2/AS2 and HS3/AS3, and walks through the required devices, the system connections, the meter address settings and commissioning with the elekeeper app. Its connection chapters are split by grid type: one set for single-phase hybrid inverters, including parallel operation with one EMS over RS485 or LAN and AC-coupling with a solar inverter, and another set for three-phase hybrid inverters, likewise for a single unit, for parallel operation and for AC coupling, plus the CT connection variants. Which chapter applies therefore depends on the model and the grid type. The H2 models shown here are all three-phase, and they differ in their ratings: the H2-10K-T3 at 10 kW, the H2-12K-T3 at 12 kW, the H2-15K-T3 at 15 kW, the H2-20K-T3 at 20 kW, the H2-25K-T3 at 25 kW and the H2-30K-T3-DE at 29.999 kW of rated AC power.",
+   "handoff": "",
+   "seconds": 14.4
+  },
+  "ok": true
+ },
+ {
+  "id": "portal-de",
+  "locale": "de",
+  "message": "Kann der Wechselrichter mit dem Team-Portal sprechen?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "model",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Ein „Team-Portal“ als Kommunikationspartner für einen Wechselrichter kennen unsere Unterlagen nicht. Die Startseite nennt ein Trade-Portal für Bestellungen und Projektangebote – das ist ein Bestellzugang für den Handel, keine Geräteschnittstelle. Technisch beschreiben unsere Handbücher die Anbindung der Geräte an eine Fernüberwachungsplattform oder an ein Energiemanagement-Gerät, etwa über einen Kommunikationsstick oder über RS485- bzw. LAN-Anschlüsse; welche Schnittstelle gilt, hängt von Marke und Modell ab. Nennen Sie mir gern Marke oder Modell Ihres Wechselrichters, dann prüfe ich die passenden Unterlagen für Sie.",
+   "handoff": "",
+   "seconds": 15.6
+  },
+  "ok": true
+ },
+ {
+  "id": "expert-de",
+  "locale": "de",
+  "message": "Hat die GoodWe-App einen Expertenmodus?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "products",
+   "intent": "other",
+   "jev_error": null,
+   "text": "Einen eigenen „Expertenmodus“ nennen unsere Dokumente für die GoodWe-App nicht. Beschrieben wird der Bereich „Advanced Settings“ (erweiterte Einstellungen), den Sie in der App über Home > Settings > Advanced Settings erreichen; dort finden sich unter anderem der Parameter-Export mit Auswahl von Geräte- und Log-Typ, der AFCI-Test mit Freigabe, Alarmlöschung und Selbsttest sowie die Sicherheitsparameter- und Leistungsbegrenzungseinstellungen. Beim Wechselrichter der ETR-Reihe gelangen Sie über einen langen Druck auf den Hauptbildschirm in die System-Setup-Oberfläche und von dort mit Passworteingabe in „Advanced Settings“, um erweiterte Parameter zu setzen. Diese Stellen sind mit dem gemeinten Punkt verwandt, einen Modus mit der Bezeichnung Expertenmodus führen die geprüften Abschnitte nicht.",
+   "handoff": "",
+   "seconds": 38.5
+  },
+  "ok": true
+ },
+ {
+  "id": "engineer-de",
+  "locale": "de",
+  "message": "Wo finde ich die Techniker-Anleitung für den SAJ H2?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "documents",
+   "intent": "documents_specs",
+   "jev_error": null,
+   "text": "Die Installations- und Techniker-Anleitung für die H2-Serie liegt als „SAJ H2 10-30K Handbuch, Deutsch und Englisch“ vor; laut Titel gilt es für den H2-10K-T3 und deckt Sicherheitsmaßnahmen, Produktübersicht, Aufstellung, elektrischen Anschluss, Starten und Herunterfahren, Inbetriebnahme über die eSAJ Home App, Fehlerbehebung sowie den Anhang mit Garantie und Recycling ab. Ergänzend gibt es die „SAJ Konfigurationsanleitung für H2-, HS2- und HS3-Systeme“ (englisch), die benötigte Geräte, Systemverbindungen, Zählereinstellungen und die Inbetriebnahme über die App beschreibt; sie gilt für die H2-, HS2/AS2- und HS3/AS3-Serien, wobei die AS-Modelle ohne PV-Anschluss betrieben werden. Beide Unterlagen hängen unten als Dokument an.\n\nDie Suchtreffer zeigen nur die dreiphasigen Modelle der H2-Serie: H2-10K-T3 mit 10 kW, H2-12K-T3 mit 12 kW, H2-15K-T3 mit 15 kW, H2-20K-T3 mit 20 kW, H2-25K-T3 mit 25 kW und H2-30K-T3-DE mit 29.999 kW AC-Leistung. Welches Modell der H2-Serie möchten Sie einsetzen?",
+   "handoff": "",
+   "seconds": 18.8
+  },
+  "ok": true
+ },
+ {
+  "id": "plain-en",
+  "locale": "en",
+  "message": "Which battery fits the SAJ H2-10K-T3?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "These SAJ B2 batteries have a documented pairing with the SAJ H2-10K-T3, and each pair is released with the matching accessory. The B2 storage is used as a set of BU2-5.0 modules together with a BC2-HV1 control module, which is a product of its own, and the smallest single-module configuration lies below this inverter's battery voltage range. The exact conditions and voltage figures stand in the pairing documents below.",
+   "handoff": "",
+   "seconds": 8.5
+  },
+  "ok": true
+ },
+ {
+  "id": "plain-de",
+  "locale": "de",
+  "message": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Zum H2-10K-T3 sind diese Batterien der B2-Serie als dokumentiertes Pairing freigegeben, jeweils mit dem passenden Zubehör. Bedingung ist der Aufbau als Set aus Speichermodulen und dem Steuermodul BC2-HV1, das eigens geführt wird; die Konfigurationsanleitung beschreibt das H2-System entsprechend. Die kleinste Ausbaustufe mit nur einem Speichermodul liegt mit ihrer Spannung unterhalb des Batteriespannungsbereichs des H2 T3 und ist in der Listung nicht enthalten, erst der Verbund mehrerer Module erreicht den Bereich. Die genauen Werte und Bedingungen finden Sie in den Pairing-Unterlagen.",
+   "handoff": "",
+   "seconds": 14.7
+  },
+  "ok": true
+ },
+ {
+  "id": "talk-en",
+  "locale": "en",
+  "message": "Can the SAJ inverter talk to a Pylontech battery?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "products",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Pylontech compatibility is documented in Pylontech's own compatibility lists, and neither list names a Pylontech battery for the SAJ inverters we carry. Our pairing data for the SAJ hybrid inverters in our range — HS2, HS3 and H2-T3 — covers SAJ's own battery modules only. Pylontech's high-voltage list does name SAJ inverter types H2-3K~6K-S2 and H2-5K~10K-T2, series that are outside our range, so that entry does not settle the question for your unit either. From our documents I therefore cannot confirm a Pylontech battery on an SAJ inverter from our range. Which voltage class is your Pylontech battery?",
+   "handoff": "",
+   "seconds": 20.5
+  },
+  "ok": true
+ },
+ {
+  "id": "talk-de",
+  "locale": "de",
+  "message": "Kann der Wechselrichter mit dem Speicher sprechen?",
+  "offer": null,
+  "by": "jev",
+  "got": {
+   "offer": null,
+   "route": "model",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Die Kommunikation zwischen Wechselrichter und Speicher prüfen wir am schnellsten über die Kompatibilitätslisten zu genau diesem Paar – die Seite verweist dafür auf die hinterlegten Unterlagen zu BMS-Protokollen, Firmware und Kommunikationsverdrahtung. Damit ich das Paar für Sie prüfen kann: Von welcher Marke und welchem Modell sprechen Sie beim Wechselrichter und beim Speicher?",
+   "handoff": "",
+   "seconds": 8.8
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-en#1",
+  "locale": "en",
+  "message": "Which battery fits the SAJ H2-10K-T3?",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "These batteries have a documented pairing with the SAJ H2-10K-T3, and every pair is released with the matching accessory: the configuration instructions give the H2 system as H2 + BC2 + BU2, and the B2 units can only be used as such a set, with the BC2-HV1 control module as a product of its own. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the battery voltage range of the H2 T3. The conditions for each pair stand in the pairing documents.",
+   "handoff": "",
+   "seconds": 8.0
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-en#2",
+  "locale": "en",
+  "message": "which battery fits SAJ H2-10K-T3",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "These batteries have a documented pairing with the SAJ H2-10K-T3, and each pair is released with the matching accessory. The configuration instructions give the H2 system as H2 plus BC2 plus BU2, and the B2 units can only be operated as such a set, with the BC2-HV1 control module as a product of its own. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the battery voltage range of the H2 T3. Please note the voltage conditions stated for each pair in the pairing documents.",
+   "handoff": "",
+   "seconds": 5.4
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-en#3",
+  "locale": "en",
+  "message": "Which battery fits the SAJ H2 10K T3??",
+  "offer": "repeat",
+  "got": {
+   "offer": "repeat",
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "The SAJ H2-10K-T3 has a documented pairing with these batteries, and every pair is released with the matching accessory. The configuration instructions give the H2 system as H2 plus BC2 plus BU2, and the B2 units can only be operated as such a set, with the BC2-HV1 control module as a product of its own. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the battery voltage range of the H2 T3. Please note the voltage conditions stated for each pair in the pairing documents.",
+   "handoff": "",
+   "seconds": 2.9
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-en#4",
+  "locale": "en",
+  "message": "WHICH BATTERY FITS THE SAJ H2-10K-T3",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "These batteries have a documented pairing with the SAJ H2-10K-T3, and each pair is released with the matching accessory. The configuration instructions give the H2 system as H2 plus BC2 plus BU2, and the B2 units can only be operated as such a set, with the BC2-HV1 control module as a product of its own. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the battery voltage range of the H2 T3. Please note the voltage conditions stated for each pair in the pairing documents.",
+   "handoff": "",
+   "seconds": 2.2
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-de#1",
+  "locale": "de",
+  "message": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Zum SAJ H2-10K-T3 sind die Speicher der SAJ-B2-Reihe dokumentiert. Jedes dieser Paare ist mit Zubehör freigegeben: Die B2 wird ausschließlich als Set aus Speichermodulen BU2-5.0 mit einem eigenen Steuermodul BC2-HV1 eingesetzt, und die SAJ-Konfigurationsanleitung führt das System der H2-Serie als H2 mit BC2 und BU2. Ein einzelnes BU2-5.0-Modul arbeitet unterhalb des Batteriespannungsbereichs des H2-10K-T3; erst der Verbund mehrerer Module erreicht diesen Bereich. Die B2-5.0 mit nur einem Modul ist in dieser Listung nicht enthalten und daher für dieses Gerät nicht dokumentiert — ich empfehle sie nicht. Die genauen Werte und Bedingungen stehen in den Pairing-Unterlagen.",
+   "handoff": "",
+   "seconds": 7.2
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-de#2",
+  "locale": "de",
+  "message": "welcher speicher passt zu SAJ H2-10K-T3",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Zum SAJ H2-10K-T3 sind die Speicher der SAJ-B2-Reihe mit dokumentiertem Pairing hinterlegt; jedes aufgeführte Paar ist mit Zubehör freigegeben. Die B2 wird ausschließlich als Set aus Speichermodulen BU2-5.0 mit einem eigenen Steuermodul BC2-HV1 eingesetzt, und die SAJ-Konfigurationsanleitung führt das System der H2-Serie als H2 mit BC2 und BU2. Die B2-5.0 mit nur einem Modul arbeitet unterhalb des Batteriespannungsbereichs des H2-10K-T3 und ist für dieses Gerät nicht dokumentiert; ich empfehle sie nicht, erst der Verbund mehrerer Module erreicht den Bereich. Die Einzelheiten und Bedingungen stehen in den Pairing-Unterlagen.",
+   "handoff": "",
+   "seconds": 9.0
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-de#3",
+  "locale": "de",
+  "message": "Welcher Speicher passt zum SAJ H2 10K T3 bitte?",
+  "offer": "repeat",
+  "got": {
+   "offer": "repeat",
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Zum SAJ H2-10K-T3 sind die Speicher der SAJ-B2-Reihe mit dokumentiertem Pairing hinterlegt; jedes aufgeführte Paar ist mit Zubehör freigegeben. Die B2 wird ausschließlich als Set aus Speichermodulen BU2-5.0 mit einem eigenen Steuermodul BC2-HV1 eingesetzt, und die SAJ-Konfigurationsanleitung führt das System der H2-Serie als H2 mit BC2 und BU2. Die B2-5.0 mit nur einem Modul liegt mit ihrer Betriebsspannung unterhalb des Batteriespannungsbereichs des H2-10K-T3 und ist für dieses Gerät nicht dokumentiert; ich empfehle sie nicht. Die genauen Werte und Bedingungen stehen in den Pairing-Unterlagen, die ich Ihnen unten verlinke.",
+   "handoff": "",
+   "seconds": 6.1
+  },
+  "ok": true
+ },
+ {
+  "id": "repeat-de#4",
+  "locale": "de",
+  "message": "WELCHER SPEICHER PASST ZUM SAJ H2-10K-T3",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Zum SAJ H2-10K-T3 sind die Speicher der SAJ-B2-Reihe dokumentiert; jedes dieser Paare ist mit Zubehör freigegeben. Die B2 wird ausschließlich als Set aus Speichermodulen BU2-5.0 mit einem eigenen Steuermodul BC2-HV1 eingesetzt, und die SAJ-Konfigurationsanleitung führt das System der H2-Serie als H2 mit BC2 und BU2. Ein einzelnes BU2-5.0-Modul arbeitet unterhalb des Batteriespannungsbereichs des H2-10K-T3; erst der Verbund mehrerer Module erreicht diesen Bereich, deshalb ist die B2-5.0 als Einzelmodul für dieses Gerät nicht zu empfehlen. Die genauen Werte und Bedingungen stehen in den Pairing-Unterlagen, die ich Ihnen unten verlinke.",
+   "handoff": "",
+   "seconds": 7.5
+  },
+  "ok": true
+ },
+ {
+  "id": "service-en#1",
+  "locale": "en",
+  "message": "Do you deliver to Austria?",
+  "offer": "service",
+  "got": {
+   "offer": "service",
+   "route": "service",
+   "intent": "company_logistics_service",
+   "jev_error": null,
+   "text": "",
+   "handoff": "Our team will answer that at sales@de-linker.com.",
+   "seconds": 4.6
+  },
+  "ok": true
+ },
+ {
+  "id": "service-en#2",
+  "locale": "en",
+  "message": "And how long does delivery to Vienna take?",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "service",
+   "intent": "company_logistics_service",
+   "jev_error": null,
+   "text": "",
+   "handoff": "Our team will answer that at sales@de-linker.com.",
+   "seconds": 2.3
+  },
+  "ok": true
+ },
+ {
+  "id": "service-en#3",
+  "locale": "en",
+  "message": "What does shipping to Austria cost?",
+  "offer": "service",
+  "got": {
+   "offer": "service",
+   "route": "service",
+   "intent": "company_logistics_service",
+   "jev_error": null,
+   "text": "",
+   "handoff": "Our team will answer that at sales@de-linker.com.",
+   "seconds": 2.8
+  },
+  "ok": true
+ },
+ {
+  "id": "followup-en#1",
+  "locale": "en",
+  "message": "Which battery fits the SAJ H2-10K-T3?",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "The documented batteries for the SAJ H2-10K-T3 come from the SAJ B2 series. Each of these pairs is released with the matching accessory: the B2 batteries are used as a set of BU2-5.0 modules together with the BC2-HV1 control module, and SAJ's configuration instructions give the H2 series system as H2 + BC2 + BU2. One point to keep in mind is the voltage window: the one-module B2-5.0 is not covered, as its operating voltage lies below the battery voltage range of the H2-10K-T3, and the smallest listed set reaches that range only just. The exact conditions for each pair stand in the pairing documents below.",
+   "handoff": "",
+   "seconds": 5.5
+  },
+  "ok": true
+ },
+ {
+  "id": "followup-en#2",
+  "locale": "en",
+  "message": "Which battery fits the SAJ H2-10K-T3 with backup?",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "pairing",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "For backup operation the documented batteries do not change: the SAJ B2 series remains the pairing partner, and each pair is released with the matching accessory. SAJ's configuration instructions name the required devices of an H2 system as the H2 series storage inverter with a BU2 series battery, together with the BC2 battery control unit, and backup appears there as a working mode of the inverter with its own backup SOC setting rather than as a different battery. The conditions for each pair are given in the pairing documents, and the one-module B2-5.0 stays uncovered because its operating voltage lies below the battery voltage range of the H2-10K-T3.",
+   "handoff": "",
+   "seconds": 14.3
+  },
+  "ok": true
+ },
+ {
+  "id": "followup-en#3",
+  "locale": "en",
+  "message": "Which battery fits the SAJ H2-8K-T3?",
+  "offer": null,
+  "got": {
+   "offer": null,
+   "route": "products",
+   "intent": "pairing_compatibility",
+   "jev_error": null,
+   "text": "Our product range does not contain an SAJ H2-8K-T3: the H2-T3 series we list begins with the H2-10K-T3, so for the model you named we have no product entry and therefore no documented battery pairing either. For the H2-T3 series itself the documented partner is the SAJ B2 series, used as BU2 modules together with the BC2-HV1 control module and released with that matching accessory; the conditions and the voltage window stand in the pairing document. If your project needs that power class as a three-phase hybrid inverter from SAJ, our range holds the HS2-8K-T2-X and the HS3-8K-T2-W/G-PX, and I can check the documented battery pairing for either of them on request.",
+   "handoff": "",
+   "seconds": 19.3
+  },
+  "ok": true
+ }
+]

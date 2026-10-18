@@ -58,6 +58,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from typing import Any
 
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.figures import is_code
@@ -225,7 +226,7 @@ def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
             failures.append(f"a {route.name} turn carries the {route.action} action")
     if route.no_handoff and any(isinstance(b, HandoffBlock) for b in output.blocks):
         failures.append(f"a {route.name} turn is not a question for the team")
-    if route.name in ("person", "service") and any(
+    if route.name == "service" and any(
         isinstance(b, HandoffBlock) for b in output.blocks
     ):
         if any(not isinstance(b, HandoffBlock) for b in output.blocks):
@@ -399,4 +400,30 @@ def _no_bare_numbers(output: TurnOutput, facts: TurnFacts) -> list[str]:
                         failures.append(
                             f"number in {fact_id!r} does not appear in a cited chunk"
                         )
+    return failures
+
+
+def shipped(output: dict[str, Any], route: Route, offer: str | None) -> list[str]:
+    """Checks of the answer as it ships, the contact card included (#243).
+
+    The service adds the card after `check()` held the model's answer to the route
+    (contact.decide); this holds the shipped whole: one card at most, last, and only
+    the one the service decided; a company turn is its mailbox sentence and, when
+    offered, the card. A failure is the service's own mistake: the card is dropped.
+    """
+    blocks = [b for b in output.get("blocks") or [] if isinstance(b, dict)]
+    cards = [b for b in blocks if b.get("type") == "contact"]
+    failures: list[str] = []
+    if len(cards) > 1:
+        failures.append("one contact card at most")
+    if cards and blocks[-1].get("type") != "contact":
+        failures.append("the contact card comes last")
+    if offer is None and cards:
+        failures.append("a contact card without an offer")
+    if offer is not None and [c.get("reason") for c in cards] != [offer]:
+        failures.append(f"the contact card is the {offer} offer")
+    if route.name == "service" and any(
+        b.get("type") not in ("handoff", "contact") for b in blocks
+    ):
+        failures.append("a company turn is the handoff block and the contact card")
     return failures
