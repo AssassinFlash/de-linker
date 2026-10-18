@@ -112,6 +112,20 @@ abstract class TestCase extends WP_Mock\Tools\TestCase {
 	}
 
 	/**
+	 * The language layer's answer to `linker_commerce_facts_product_id` for the
+	 * products a test reads: each ID maps to the English product whose data
+	 * answers for it (itself for an English product). linker-i18n answers the
+	 * filter on the site; CommerceState and SelectionFacts ask it.
+	 *
+	 * @param array<int, int> $sources Product ID → English product ID.
+	 */
+	protected function english_products( array $sources ): void {
+		foreach ( $sources as $id => $source ) {
+			$this->filter_returns( 'linker_commerce_facts_product_id', $source, array( $id ) );
+		}
+	}
+
+	/**
 	 * The meta of the signed-in customer 5 (user 6 is staff), read and written
 	 * by the Approval class for real.
 	 *

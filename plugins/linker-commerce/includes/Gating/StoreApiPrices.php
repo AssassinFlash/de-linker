@@ -62,7 +62,7 @@ final class StoreApiPrices {
 	 */
 	private function null_prices( array $item ): array {
 		$product = isset( $item['id'] ) ? wc_get_product( (int) $item['id'] ) : null;
-		if ( $product instanceof \WC_Product && null !== $this->state->reason( $product ) ) {
+		if ( $product instanceof \WC_Product && null !== $this->state->reason( $product, CommerceState::CARD ) ) {
 			$item['prices'] = null;
 		}
 		return $item;

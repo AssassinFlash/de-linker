@@ -30,6 +30,13 @@ final class DraftSummaryTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		// English products: each answers for itself (CommerceState::is_rfq_only asks the language layer).
+		$this->english_products(
+			array(
+				1 => 1,
+				2 => 2,
+			)
+		);
 		$this->plain_text();
 	}
 

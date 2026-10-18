@@ -11,13 +11,16 @@ model code written whole (BU2-5.0-HV1, CB2-100.3-HV5, GW125/261-ESA-LCN-G10)
 is a name, not the numbers inside it (#258: turn 27 on production was flagged
 for the "5.0" of BU2-5.0-HV1), while a number written beside a code is checked.
 
-A price is a number with one more gate (#258 review; the remit's price rule):
-the tool must have returned it as visible and the account must be approved.
+A price is never in the text (#242, the remit's price rule): a number equal to a
+price the turn's tools returned is flagged in any account's answer. The product
+card carries the price, and the card's price passes two gates (`_card_prices`):
+the tool returned it as visible, and the account is approved.
 """
 
 from __future__ import annotations
 
 import re
+from typing import Any
 
 from linker_genie.facts import TurnFacts, collect, merge
 from linker_genie.ground import bare_numbers
@@ -49,30 +52,58 @@ def verify(turn: LoggedTurn) -> list[str]:
             for pid in block.get("product_ids") or []:
                 if pid not in facts.product_ids:
                     failures.append(f"shows product {pid}, which no tool returned")
+        if kind == "cards":
+            failures.extend(_card_prices(block, facts, turn.approved))
         if kind in ("text", "handoff"):
             text = str(block.get("text" if kind == "text" else "summary", ""))
             for number in bare_numbers(text):
                 if not _occurs(number, sources):
                     failures.append(f"states {number}, which no tool result contains")
-                elif not turn.approved:
+                else:
                     failures.extend(
-                        f"states the price of product {pid}, and the account is "
-                        "not approved"
+                        f"states the price of product {pid} in the text; prices "
+                        "appear only on the product card"
                         for pid, price in prices.items()
                         if _same_amount(number, price)
                     )
     return failures
 
 
+def _card_prices(block: dict[str, Any], facts: TurnFacts, approved: bool) -> list[str]:
+    """A card's price passes the same two gates as a price in the text (#242): the
+    turn's tool returned this line for this product as a visible price (a
+    `price_line` with `price_visible` and no `price_reason`), and the account is an
+    approved one. A line that carries a reason is the page's sentence, not a price.
+    """
+    failures: list[str] = []
+    for line in block.get("prices") or []:
+        if not isinstance(line, dict) or line.get("reason"):
+            continue
+        pid = line.get("product_id")
+        returned = facts.commerce.get(pid) if isinstance(pid, int) else None
+        if (
+            not returned
+            or not returned.get("price_visible")
+            or returned.get("price_reason")
+            or returned.get("price_line") != line.get("text")
+        ):
+            failures.append(
+                f"shows a price of product {pid} on its card that no tool returned"
+            )
+        elif not approved:
+            failures.append(
+                f"shows the price of product {pid} on its card, and the account is "
+                "not approved"
+            )
+    return failures
+
+
 def _visible_prices(facts: TurnFacts) -> dict[str, str]:
     """Product id → price, for the prices the turn's tools returned as visible.
 
-    `facts.collect` keeps a price only when the ability said `price_visible`,
-    so these are exactly the prices the site let this turn see. The remit
-    (`linker_judges.rubric.REMIT`, #242) allows one in the answer only when the
-    account is approved as well: the tool output is the ground truth, the
-    account the second gate. A price the tools did not return fails as any
-    unbacked number does.
+    `facts.collect` keeps a price only when the ability said `price_visible`, so
+    these are exactly the prices the site let this turn see; none of them belongs
+    in the text (`linker_judges.rubric.REMIT`, #242).
     """
     return {
         fact.id.removeprefix("p").removesuffix(".price"): fact.value

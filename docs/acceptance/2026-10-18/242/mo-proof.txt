@@ -1,0 +1,5 @@
+# Compiled .mo of this branch vs origin/main (71d950db), 2026-10-18.
+# msgunfmt both files, compare (msgctxt, msgid) -> msgstr; header excluded.
+# Catalogs regenerated with: just i18n-commerce g242; wp i18n make-json plugins/linker-tools/languages --no-purge (no change).
+linker-commerce: main 815 entries, branch 815; lost 0, changed 0, added 0
+linker-tools: main 356 entries, branch 356; lost 0, changed 0, added 0

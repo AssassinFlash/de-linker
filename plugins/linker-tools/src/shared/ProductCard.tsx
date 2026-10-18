@@ -37,6 +37,11 @@ export interface ProductCardProps {
 	image?: { src: string; alt: string };
 	/** Already worded, for example "2 pcs". */
 	quantity?: string;
+	/**
+	 * The price line, already worded: the net price (`net`) or the sentence
+	 * that stands where a price is hidden (`note`).
+	 */
+	price?: { text: string; kind: 'net' | 'note' };
 	facts?: { label: string; value: string }[];
 	badges?: CardBadge[];
 	/** Feedback of the last action; the region keeps its height when empty. */
@@ -53,6 +58,7 @@ export function ProductCard( {
 	url,
 	image,
 	quantity,
+	price,
 	facts = [],
 	badges = [],
 	status,
@@ -85,6 +91,13 @@ export function ProductCard( {
 								{ quantity }
 							</span>
 						) : null }
+					</p>
+				) : null }
+				{ price ? (
+					<p
+						className={ `linker-card__price linker-card__price--${ price.kind }` }
+					>
+						{ price.text }
 					</p>
 				) : null }
 				{ badges.length > 0 ? (

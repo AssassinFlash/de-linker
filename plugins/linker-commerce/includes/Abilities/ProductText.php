@@ -27,6 +27,16 @@ final class ProductText {
 	}
 
 	/**
+	 * The WordPress locale of a language: German is the Sie form
+	 * (linker-i18n's Setup, AGENTS.md §3), English the site's own.
+	 *
+	 * @param 'en'|'de' $lang Language.
+	 */
+	public static function locale( string $lang ): string {
+		return 'de' === $lang ? 'de_DE_formal' : 'en_US';
+	}
+
+	/**
 	 * The product shown for `$lang`: the Polylang translation when there is one.
 	 *
 	 * @param int       $product_id Product ID.

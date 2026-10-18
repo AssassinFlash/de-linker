@@ -26,6 +26,7 @@ import {
 	selectConversation,
 	sendTurn,
 	type Block,
+	type CardPrice,
 	type CardsBlock,
 	type CompareBlock,
 	type ConversationSummary,
@@ -461,6 +462,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	useEffect( () => () => recognition.current?.stop(), [] );
 
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
+	const cardPrices = pricesOf( turn?.blocks ?? [] );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
 
 	// All page entries go through the dock loader. Ready is emitted only after
@@ -949,6 +951,11 @@ export function App( { config }: { config: GenieConfig } ) {
 														text: '',
 													}
 												}
+												price={ cardPrices.find(
+													( line ) =>
+														line.product_id ===
+														productId
+												) }
 												onAdd={ addCardToDraft }
 												onSave={ saveCardSolution }
 											/>
@@ -1456,6 +1463,20 @@ function HistoryList( {
 			) : null }
 		</>
 	);
+}
+
+/**
+ * The price lines of the turn's cards, as the service filled them (#242).
+ *
+ * @param blocks The turn's blocks.
+ */
+function pricesOf( blocks: Block[] ): CardPrice[] {
+	for ( const block of blocks ) {
+		if ( 'cards' === block.type ) {
+			return block.prices ?? [];
+		}
+	}
+	return [];
 }
 
 function idsOf( blocks: Block[], kind: 'cards' | 'compare' ): number[] {

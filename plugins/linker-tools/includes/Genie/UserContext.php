@@ -3,19 +3,22 @@
  * The customer's identity, carried from the browser's turn to the service's
  * ability calls — and nowhere else.
  *
- * The service calls the read-only abilities anonymously; `linker/inquiry-status`
- * is the one that answers about *this* customer, and the service holds no
- * WordPress session (docs/specs/13-genie.md §B). The shell therefore mints a
- * short-lived, signed token for the signed-in customer, hands it to the
- * service with the turn, and the service sends it back on that one ability
- * call as `X-Linker-User-Context`; this class accepts it — on requests to
- * `/wp-abilities/` and no other route, and only while it is valid.
+ * The service holds no WordPress session (docs/specs/13-genie.md §B). Some
+ * abilities answer for *this* customer: `linker/inquiry-status` lists their
+ * inquiries, and `linker/search-products` / `linker/get-product` carry the
+ * prices their account sees (#242). The shell therefore mints a short-lived,
+ * signed token for the signed-in customer, hands it to the service with the
+ * turn, and the service sends it back on those calls as `X-Linker-User-Context`.
+ * This class signs the request in as that customer only while WordPress
+ * dispatches one of those three abilities (`ABILITIES`, matched against the
+ * route WordPress parsed, never the address text), and signs it out again
+ * after the answer, which it marks `no-store, private`.
  *
- * The token is not a capability: it names a user, is valid for 120 seconds
- * after it is minted (`TTL`; nothing marks it used — the window is the whole
- * of its life), and grants nothing the ability itself does not already allow
- * (every ability here is read-only; the write actions are the browser's own
- * REST calls, which carry the customer's cookie).
+ * The token is not a capability: it names a user, is valid for `TTL` seconds
+ * after it is minted (nothing marks it used — the window is the whole of its
+ * life), and grants nothing the ability itself does not already allow (every
+ * ability here is read-only; the write actions are the browser's own REST
+ * calls, which carry the customer's cookie).
  *
  * @package Linker\Tools
  */
@@ -23,6 +26,9 @@
 declare( strict_types = 1 );
 
 namespace Linker\Tools\Genie;
+
+use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Mints and accepts the user-context token.
@@ -35,20 +41,35 @@ class UserContext {
 	public const HEADER = 'X-Linker-User-Context';
 
 	/**
-	 * Seconds a token stays valid.
+	 * Seconds a token stays valid: twice the shell's 60 s turn timeout
+	 * (Proxy::post, 'timeout' => 60.0). The token is minted when the turn is
+	 * sent and must outlive the longest turn the shell waits for, the
+	 * service's post-run price lookups included (their deadline keeps the turn
+	 * under the same 60 s, services/genie prices.LOOKUP_DEADLINE); measured
+	 * turns on g242 took 4–10 s (tests/e2e genie-prices.spec.ts, 2026-10-18).
 	 */
 	public const TTL = 120;
 
 	/**
-	 * The route family the token is accepted on.
+	 * The abilities whose answer depends on the customer: the only ones a
+	 * token signs in (the service's abilities.USER_CONTEXT_ABILITIES).
 	 */
-	public const ROUTE = '/wp-abilities/';
+	public const ABILITIES = array( 'linker/inquiry-status', 'linker/search-products', 'linker/get-product' );
 
 	/**
-	 * Registers the authentication seam; runs during plugin registration.
+	 * Whether this request was signed in by a token (and must be signed out
+	 * again after the answer).
+	 *
+	 * @var bool
+	 */
+	private bool $entered = false;
+
+	/**
+	 * Registers the dispatch seam; runs during plugin registration.
 	 */
 	public function register(): void {
-		add_filter( 'determine_current_user', array( $this, 'determine' ), 20 );
+		add_filter( 'rest_pre_dispatch', array( $this, 'enter' ), 10, 3 );
+		add_filter( 'rest_post_dispatch', array( $this, 'leave' ), 10, 3 );
 	}
 
 	/**
@@ -90,31 +111,69 @@ class UserContext {
 	}
 
 	/**
-	 * The current user for this request: the cookie's own, or the token's when
-	 * the request is an ability call that carries one.
+	 * Signs the request in as the token's customer when WordPress dispatches
+	 * one of `ABILITIES` as a read; runs on `rest_pre_dispatch`, before the
+	 * ability's permission check and callback. A session WordPress already
+	 * established (the cookie) always wins.
 	 *
-	 * @param int|false $user_id The user WordPress determined so far.
-	 * @return int|false
+	 * @param mixed $result  The answer another filter already decided, or null.
+	 * @param mixed $server  The REST server.
+	 * @param mixed $request The request, its route parsed by WordPress.
+	 * @return mixed
 	 */
-	public function determine( $user_id ) {
-		if ( $user_id || ! $this->is_ability_request() ) {
-			return $user_id;
+	public function enter( $result, $server, $request ) {
+		unset( $server );
+		if ( null !== $result || ! $request instanceof WP_REST_Request || ! $this->in_scope( $request ) || is_user_logged_in() ) {
+			return $result;
 		}
-		if ( ! isset( $_SERVER['HTTP_X_LINKER_USER_CONTEXT'] ) ) {
-			return $user_id;
+		$header = $request->get_header( 'x_linker_user_context' );
+		$user   = is_string( $header ) ? $this->user_id( sanitize_text_field( wp_unslash( $header ) ) ) : 0;
+		if ( $user > 0 ) {
+			$this->entered = true;
+			wp_set_current_user( $user );
 		}
-		$token = sanitize_text_field( wp_unslash( (string) $_SERVER['HTTP_X_LINKER_USER_CONTEXT'] ) );
-		$user  = $this->user_id( $token );
-		return $user > 0 ? $user : $user_id;
+		return $result;
 	}
 
 	/**
-	 * Whether this request is one the token may authenticate.
+	 * Signs the token's customer out again after the answer, and keeps that
+	 * answer out of every cache; runs on `rest_post_dispatch`. WordPress
+	 * decides its own no-cache headers before dispatch, when this request was
+	 * still a guest's.
+	 *
+	 * @param mixed $response The answer.
+	 * @param mixed $server   The REST server.
+	 * @param mixed $request  The request.
+	 * @return mixed
 	 */
-	protected function is_ability_request(): bool {
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- the URI is only searched for the abilities route, never stored or echoed.
-		$uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( (string) $_SERVER['REQUEST_URI'] ) : '';
-		return str_contains( $uri, self::ROUTE );
+	public function leave( $response, $server, $request ) {
+		unset( $server, $request );
+		if ( ! $this->entered ) {
+			return $response;
+		}
+		$this->entered = false;
+		wp_set_current_user( 0 );
+		if ( $response instanceof WP_REST_Response ) {
+			$response->header( 'Cache-Control', 'no-store, private' );
+		}
+		return $response;
+	}
+
+	/**
+	 * Whether WordPress is dispatching a read of one of `ABILITIES`.
+	 *
+	 * @param WP_REST_Request $request The request.
+	 *
+	 * @phpstan-param WP_REST_Request<array<string, mixed>> $request
+	 */
+	private function in_scope( WP_REST_Request $request ): bool {
+		if ( 'GET' !== $request->get_method() ) {
+			return false;
+		}
+		if ( 1 !== preg_match( '#^/wp-abilities/v1/abilities/(.+)/run$#', (string) $request->get_route(), $match ) ) {
+			return false;
+		}
+		return in_array( $match[1], self::ABILITIES, true );
 	}
 
 	/**

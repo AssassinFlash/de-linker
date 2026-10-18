@@ -89,6 +89,13 @@ final class ComparePageTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		// English products: each answers for itself (CommerceState::is_rfq_only asks the language layer).
+		$this->english_products(
+			array(
+				4107 => 4107,
+				1832 => 1832,
+			)
+		);
 		$this->plain_text();
 		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn ( string $value ): string => rtrim( $value, '/' ) . '/' ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( $value ) => $value ) );

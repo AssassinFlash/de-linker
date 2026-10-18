@@ -47,9 +47,32 @@ trait MocksLiveProducts {
 	 *
 	 * @param int[] $ids      Product IDs.
 	 * @param bool  $migrated Whether tools/migrate/7-facts.json is applied.
+	 * @throws \LogicException When WP_Mock answers with another responder.
 	 */
 	protected function mock_live_products( array $ids, bool $migrated = false ): void {
 		$products = LiveProducts::products( $migrated );
+		// No language layer swaps a product: SelectionFacts asks has_filter()
+		// first, and a test class earlier in the run may already have made
+		// WP_Mock define the function for the rest of the process
+		// (ComparisonLiveProductsTest has the same guard); CommerceState asks
+		// the filter itself, and each fixture product answers for itself.
+		WP_Mock::userFunction(
+			'has_filter',
+			array(
+				'return' => false,
+				'times'  => '0+',
+			)
+		);
+		foreach ( $ids as $id ) {
+			$responder = WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( $id );
+			if ( ! $responder instanceof \WP_Mock\Filter_Responder ) {
+				throw new \LogicException( 'WP_Mock::onFilter() answers with a Filter_Responder.' );
+			}
+			$responder->reply( $id );
+		}
+		// An English request: the price line needs no locale switch.
+		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'en_US' ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => static fn ( string $html ): string => strip_tags( $html ) ) );
 		WP_Mock::userFunction(
 			'get_the_terms',
 			array(

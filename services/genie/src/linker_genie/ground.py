@@ -38,6 +38,11 @@ Beside the five, the checks of the understanding layer (#233):
    sizing turn carries the configurator action and no cards; a product, document,
    pairing, comparison or sizing turn is never the team handoff.
 
+And the price rule (#242):
+
+9. No text writes a price, not even through a price placeholder; the product card
+   carries it (prices.fill).
+
 Registered reading of guarantee 2: "推荐 ⊆ search-products 的 qualified"
 means qualified by this turn's tool results. That is search-products'
 `qualified` list, plus the batteries its own `pairings` released (verdict
@@ -140,6 +145,7 @@ def check(
     failures.extend(_login_required_is_a_login_request(output, facts))
     failures.extend(_documents(output, facts))
     failures.extend(_domain_words(output))
+    failures.extend(_no_price_in_text(output))
     if route is not None:
         failures.extend(_route(output, facts, route))
     return CheckResult(ok=not failures, failures=tuple(failures))
@@ -175,6 +181,18 @@ def _documents(output: TurnOutput, facts: TurnFacts) -> list[str]:
                     f"placeholder {fact_id!r} would print a URL; use a document block"
                 )
     return failures
+
+
+def _no_price_in_text(output: TurnOutput) -> list[str]:
+    """Check 9. The price is the card's (#242): the service fills it there from the
+    customer's own tool result, so no text names it, not even as a placeholder."""
+    return [
+        f"placeholder {fact_id!r} writes a price; the product card shows it, "
+        "show the product as a card instead"
+        for text in _model_texts(output)
+        for fact_id in leftover_placeholders(text)
+        if fact_id.endswith(".price")
+    ]
 
 
 def _domain_words(output: TurnOutput) -> list[str]:

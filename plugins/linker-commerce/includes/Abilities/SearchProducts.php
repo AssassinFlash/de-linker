@@ -546,7 +546,7 @@ final class SearchProducts {
 			'url'        => ProductText::url( $id, $lang ),
 			'why'        => $this->why( $row['facts'], $id, $input, $want_future, $batteries ),
 			'facts'      => $row['facts']->to_array(),
-			'commerce'   => ProductCommerce::of( $id, $row['product'] ),
+			'commerce'   => ProductCommerce::of( $id, $row['product'], $lang ),
 		);
 		if ( $want_pairings ) {
 			$card['pairings'] = $this->pairings( $id, $row['facts']->device_class, $batteries );

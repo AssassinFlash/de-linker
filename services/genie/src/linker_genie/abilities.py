@@ -1,9 +1,9 @@
 """HTTP client for WordPress Abilities (`wp-abilities/v1`).
 
-Every ability is called anonymously, with no token and no Authorization
-header. A login-gated ability answers 401 and that maps to the
-`login_required` fact, so the model asks the customer to log in instead of
-failing the turn (docs/specs/13-genie.md R7).
+The service holds no WordPress identity of its own: no service token, no
+Authorization header. A login-gated ability asked without a customer answers
+401 and that maps to the `login_required` fact, so the model asks the customer
+to log in instead of failing the turn (docs/specs/13-genie.md R7).
 
 A call that fails transiently - a 5xx, or the connection itself dropping -
 is retried before the turn gives up on it. The WordPress side reads through
@@ -16,13 +16,17 @@ ride the blip out; a call that still fails raises `AbilityError`, which the
 turn cycle turns into the deterministic fallback - the failure is logged in
 the turn's meta, never swallowed.
 
-The one exception is the customer's own inquiry list: the turn carries the
-shell's short-lived identity token (valid 120 seconds after it is minted; the
-browser never sees it, the service never stores it), and the service sends it
-on exactly one ability call — `linker/inquiry-status` — as
-`USER_CONTEXT_HEADER`. WordPress accepts it on `/wp-abilities/` requests only,
-verifies the signature and the expiry, and nothing else in the service can
-use it.
+The customer's identity rides only where the answer depends on the customer: a
+signed-in customer's turn carries the shell's short-lived identity token (valid
+`UserContext::TTL` seconds after it is minted, plugins/linker-tools; the browser
+never sees it, the service never stores or logs it), and the service sends it as
+`USER_CONTEXT_HEADER` on the abilities in `USER_CONTEXT_ABILITIES` — the
+customer's own inquiry list, and the product abilities whose prices follow the
+account (#242: CommerceState shows an approved account its net prices and nobody
+else). WordPress signs the request in only while it dispatches one of those same
+three abilities (`UserContext::ABILITIES`, matched against the parsed route),
+after checking the signature and the expiry; an expired or forged token, or any
+other route, answers as a guest.
 """
 
 from __future__ import annotations
@@ -38,8 +42,20 @@ from linker_genie.facts import TurnFacts, collect, merge
 
 # The header the shell's token travels in; WordPress' UserContext accepts it.
 USER_CONTEXT_HEADER = "X-Linker-User-Context"
-# The one ability that answers about the browsing customer.
+# The ability that answers about the browsing customer's own inquiries.
 USER_CONTEXT_ABILITY = "linker/inquiry-status"
+# Every ability whose answer depends on the browsing customer: the inquiry list,
+# and the two product abilities whose commerce object carries the customer's
+# prices (ProductCommerce in linker-commerce). compare-products returns no price,
+# and check-compatibility, size-hint and handoff-team answer the same for
+# everybody: they never see the token.
+USER_CONTEXT_ABILITIES = frozenset(
+    {
+        USER_CONTEXT_ABILITY,
+        "linker/search-products",
+        "linker/get-product",
+    }
+)
 
 ABILITY_NAMES = (
     "linker/search-products",
@@ -63,7 +79,7 @@ class AbilityError(RuntimeError):
 
 
 class AbilityClient:
-    """GET `/wp-json/wp-abilities/v1/abilities/{name}/run`, anonymously."""
+    """GET `/wp-json/wp-abilities/v1/abilities/{name}/run`, as the customer or a guest."""
 
     def __init__(
         self,
@@ -113,14 +129,16 @@ class AbilityClient:
                 params[f"input[{key}]"] = value
         headers = (
             {USER_CONTEXT_HEADER: user_context}
-            if user_context and name == USER_CONTEXT_ABILITY
+            if user_context and name in USER_CONTEXT_ABILITIES
             else None
         )
         response = self._get(name, path, params, headers)
         if response.status_code == 401:
             # A login-gated ability asked without a user: the caller must ask
             # for a login, not fail the turn (docs/specs/13-genie.md R7).
-            # Every 401 maps here; without a token there is no other meaning.
+            # Every 401 maps here: the product abilities are open to guests,
+            # so only the inquiry list answers 401, and only without a valid
+            # customer.
             return {"error": "login_required"}
         if response.status_code >= 400:
             raise AbilityError(
