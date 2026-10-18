@@ -1,0 +1,34 @@
+{
+  "source": "90089f1177ad7132b11ab0b44851acab2ec127b5",
+  "base": "2789721a37de66274a6b359050d706c3420d4f6e",
+  "native_commerce_extraction_and_regeneration": true,
+  "isolated_generated_outputs": true,
+  "commerce_active_translations": 836,
+  "missing_or_changed_active_translations": [],
+  "tools_native_make_json_matches_published_files": 2,
+  "main_catalogs_preserved": true,
+  "catalogs_against_current_main": [
+    {
+      "file": "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.mo",
+      "main_translations": 836,
+      "feature_translations": 836,
+      "lost": [],
+      "changed_existing": []
+    },
+    {
+      "file": "plugins/linker-i18n/languages/linker-i18n-de_DE_formal.mo",
+      "main_translations": 28,
+      "feature_translations": 50,
+      "lost": [],
+      "changed_existing": []
+    },
+    {
+      "file": "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+      "main_translations": 443,
+      "feature_translations": 443,
+      "lost": [],
+      "changed_existing": []
+    }
+  ],
+  "output": "../checks/latest-catalog-regeneration.log"
+}

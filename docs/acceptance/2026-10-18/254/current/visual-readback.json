@@ -1,0 +1,108 @@
+{
+  "source": "90089f1177ad7132b11ab0b44851acab2ec127b5",
+  "base": "2789721a37de66274a6b359050d706c3420d4f6e",
+  "cacheGenerated": "2026-10-18 19:27:34 Asia/Shanghai",
+  "cacheSize": "645 kB",
+  "records": [
+    {
+      "activeCount": 1,
+      "background": "rgb(241, 249, 248)",
+      "fonts": "loaded",
+      "height": 1120,
+      "leftInset": 17,
+      "overflow": false,
+      "panelWidth": 224,
+      "rightInset": 17,
+      "url": "http://127.0.0.1:9129/de/blog/",
+      "width": 1440,
+      "file": "journal-de-1440.png"
+    },
+    {
+      "activeCount": 1,
+      "background": "rgb(241, 249, 248)",
+      "fonts": "loaded",
+      "height": 1120,
+      "leftInset": 17,
+      "overflow": false,
+      "panelWidth": 224,
+      "rightInset": 17,
+      "url": "http://127.0.0.1:9129/blog/",
+      "width": 1440,
+      "file": "journal-en-1440.png"
+    },
+    {
+      "activeCount": 1,
+      "background": "rgb(10, 102, 92)",
+      "fonts": "loaded",
+      "height": 1120,
+      "leftInset": 0,
+      "overflow": false,
+      "panelWidth": 343,
+      "rightInset": 213.3515625,
+      "url": "http://127.0.0.1:9129/de/blog/",
+      "width": 390,
+      "file": "journal-de-390.png"
+    },
+    {
+      "activeCount": 1,
+      "background": "rgb(10, 102, 92)",
+      "fonts": "loaded",
+      "height": 1120,
+      "leftInset": 0,
+      "overflow": false,
+      "panelWidth": 343,
+      "rightInset": 231.3046875,
+      "url": "http://127.0.0.1:9129/blog/",
+      "width": 390,
+      "file": "journal-en-390.png"
+    },
+    {
+      "display": "flex",
+      "fontWeight": "400",
+      "fonts": "loaded",
+      "gap": "12px",
+      "height": 1120,
+      "margin": "0px",
+      "overflow": false,
+      "url": "http://127.0.0.1:9129/de/proforma-anfrage/",
+      "width": 1440,
+      "file": "inquiry-de-1440.png"
+    },
+    {
+      "display": "flex",
+      "fontWeight": "400",
+      "fonts": "loaded",
+      "gap": "12px",
+      "height": 1120,
+      "margin": "0px",
+      "overflow": false,
+      "url": "http://127.0.0.1:9129/proforma-request/",
+      "width": 1440,
+      "file": "inquiry-en-1440.png"
+    },
+    {
+      "display": "flex",
+      "fontWeight": "400",
+      "fonts": "loaded",
+      "gap": "12px",
+      "height": 1120,
+      "margin": "0px",
+      "overflow": false,
+      "url": "http://127.0.0.1:9129/de/proforma-anfrage/",
+      "width": 390,
+      "file": "inquiry-de-390.png"
+    },
+    {
+      "display": "flex",
+      "fontWeight": "400",
+      "fonts": "loaded",
+      "gap": "12px",
+      "height": 1120,
+      "margin": "0px",
+      "overflow": false,
+      "url": "http://127.0.0.1:9129/proforma-request/",
+      "width": 390,
+      "file": "inquiry-en-390.png"
+    }
+  ]
+}

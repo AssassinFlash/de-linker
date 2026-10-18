@@ -1,0 +1,31 @@
+{
+  "previous_source": "103a70ee4b2c68065e9d83a6fac583545583bdbd",
+  "source": "90089f1177ad7132b11ab0b44851acab2ec127b5",
+  "base": "2789721a37de66274a6b359050d706c3420d4f6e",
+  "validation_cutoff": "origin/main fetched before the final complete checks, 2026-10-18",
+  "cumulative_ticket_code_data_test_files": 67,
+  "byte_identical_to_previous_source": 65,
+  "changed_by_upstream_integration": [
+    "plugins/linker-tools/includes/Genie/InquirySummary.php",
+    "plugins/linker-tools/tests/php/Unit/InquirySummaryTest.php"
+  ],
+  "preserved_native_changes": [
+    "Genie inquiry card and its callbacks",
+    "Sender optional summary argument",
+    "Language-aware summary cache",
+    "Customer verbatim note",
+    "Native plugin autoloaders",
+    "After-present OPcache reset and allow-stale publication"
+  ],
+  "feature_summary_delta": "Only the existing_id() read-only resolver and unit fixture override differ from fixed main in the two summary files.",
+  "unchanged_surfaces": [
+    "entire linker-i18n plugin",
+    "LiveCanvas and WindPress presentation",
+    "Inquiry form",
+    "Ticket email implementation",
+    "Migration scripts"
+  ],
+  "previous_complete_evidence": "../rebase/README.md",
+  "strict_pixel_capture_source": "aa552bdf3ba4423ff34d032e116dadb1af8fd615",
+  "strict_pixel_capture_main": "1f271843c0e65d0cbdc59f52fd8be120211be87b"
+}

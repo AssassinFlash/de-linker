@@ -2,3 +2,4 @@
 mail/*.eml -text whitespace=cr-at-eol
 checks/*.log -whitespace
 rebase/mail/*.eml -text whitespace=cr-at-eol
+current/mail/*.eml -text whitespace=cr-at-eol

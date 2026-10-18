@@ -1,0 +1,32 @@
+{
+  "base": "2789721a37de66274a6b359050d706c3420d4f6e",
+  "head": "90089f1177ad7132b11ab0b44851acab2ec127b5",
+  "added_legacy_identifier_hits": [],
+  "changed_engine_or_nlu_files": [],
+  "existing_hits": [
+    "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php:833:\t * The three product tools and the comparison chip (`tv_b2b_pdp_tools`):",
+    "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php:1404:\t * (tv_b2b_pdp_pairing_status).",
+    "tools/migrate/8-engineering.php:24:\t$figures_key   = '_tv_b2b_figures';",
+    "tools/migrate/7-facts.py:6:(_tv_b2b_figures entries) and product page copy (one string of a legacy ACF",
+    "tools/migrate/7-facts.py:52:FIGURES_META_KEY = \"_tv_b2b_figures\"",
+    "tools/migrate/8-engineering.py:209:                field = f\"_tv_b2b_figures.{change['key']}\"",
+    "plugins/linker-commerce/includes/Plugin.php:99:\t * commerce renderer (terravolt-b2b-core's tv_b2b_template_include) still",
+    "plugins/linker-commerce/includes/Plugin.php:109:\t\tremove_filter( 'template_include', 'tv_b2b_template_include', PHP_INT_MAX );",
+    "tools/migrate/tests/test_7_facts_wordpress.py:68:        str(p[\"id\"]): p[\"meta\"][\"_tv_b2b_figures\"]",
+    "plugins/linker-commerce/includes/Gating/CommerceState.php:29:\tpublic const MODE_META = 'tv_b2b_product_mode';",
+    "plugins/linker-commerce/includes/Settings/Options.php:65:\t * (tv_b2b_document_reference); this site counts within the year instead of",
+    "plugins/linker-commerce/includes/Products/SelectionFacts.php:15: * figures in the product meta _tv_b2b_figures, a JSON object of",
+    "plugins/linker-commerce/includes/Products/SelectionFacts.php:24:\tpublic const FIGURES_META_KEY = '_tv_b2b_figures';",
+    "plugins/linker-commerce/includes/Admin/FiguresMetaBox.php:16: * One row per figure of the product's _tv_b2b_figures: the key (read-only),",
+    "plugins/linker-commerce/includes/Products/Materials.php:196:\t\t$own_figures = \\is_array( \\json_decode( (string) \\get_post_meta( $id, '_tv_b2b_figures', true ), true ) );",
+    "plugins/linker-commerce/includes/Products/Materials.php:257:\t\t$own = \\json_decode( (string) \\get_post_meta( $id, '_tv_b2b_figures', true ), true );",
+    "plugins/linker-commerce/includes/Products/Materials.php:260:\t\t\t$own    = $source === $id ? null : \\json_decode( (string) \\get_post_meta( $source, '_tv_b2b_figures', true ), true );",
+    "plugins/linker-commerce/includes/Products/Materials.php:530:\t * pages, label-like units dropped (tv_b2b_material_unit_label).",
+    "plugins/linker-commerce/includes/Products/Materials.php:616:\t * (tv_b2b_material_value_with_unit).",
+    "plugins/linker-commerce/includes/Products/Materials.php:1009:\t * product's own shipping meta (tv_b2b_shipping_product_logistics).",
+    "plugins/linker-commerce/includes/Products/Materials.php:1051:\t * outcome the live page prints (tv_b2b_shipping_product_guidance \u2192",
+    "plugins/linker-commerce/includes/Products/Materials.php:1152:\t * (tv_b2b_shipping_money: wc_price()'s text, entities decoded).",
+    "plugins/linker-commerce/includes/Storefront/ProductView.php:421:\t\t$raw     = (string) get_post_meta( $product_id, '_tv_b2b_figures', true );"
+  ],
+  "structural_review": "Final Spec and Standards reviewers confirmed all native language, email and LC/WindPress boundaries and preservation of upstream account/summary paths. Existing identifiers are unchanged data/meta readers or removals, not newly introduced executable dependencies. The existing Genie summary now reads its native existing conversation rather than opening one; model routes, summary generation/cache and explicit-ID behavior are unchanged."
+}

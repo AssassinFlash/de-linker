@@ -2,7 +2,7 @@
 
 ## Latest main integration
 
-The final delivery is rebased onto `4cf49363`, with source `103a70ee`. Its fresh root checks, repeated fixtures, native inquiry/sidebar readback and source provenance are in the [current-main addendum](rebase/README.md), with the [latest full table](rebase/completion.md) and [verification](rebase/verification.json). Earlier reports below retain their actual source pins.
+The final delivery is rebased onto fixed `2789721a`, with source `90089f11`. Fresh root checks, repeated real fixtures, native inquiry/sidebar readback and complete provenance are in the [final fixed-main addendum](current/README.md), with the [latest full table](current/completion.md) and [verification](current/verification.json). Earlier reports below retain their actual source pins.
 
 Implementation only: `/Users/chesterjohn/Documents/de-linker-worktrees/c254`, branch `feat/254-german-urls`, instance **http://127.0.0.1:9129**. The main checkout was not used for edits. No merge, deploy, production write or real test email was performed. Claude owns the production handoff.
 
