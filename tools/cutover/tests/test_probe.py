@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from linker_cutover import atomic, plan, probe
-from linker_cutover.target import Target
+from linker_cutover.target import CutoverError, Target
 
 
 @pytest.fixture
@@ -315,3 +315,23 @@ def test_probe_reports_failed_worker_instead_of_waiting_forever(
     assert not results[0].successful
     assert "IncompleteRead" in " ".join(results[0].notes)
     assert (evidence / "proof.json").is_file()
+
+
+def test_sample_keeps_the_exception_message_for_acceptance(tmp_path: Path) -> None:
+    """A failed sample names what went wrong, not only the exception class."""
+
+    class Failing(Target):
+        def http(
+            self, path: str, *, cache_buster: str | None = None
+        ) -> tuple[int, str]:
+            raise CutoverError(f"GET https://example.test{path}: connection reset")
+
+    sample = probe._sample(
+        Failing("fixture", str(tmp_path), "https://example.test", (), None, None),
+        plan.ProbeEndpoint("home", "/", "html"),
+        "during",
+    )
+
+    assert not sample.valid
+    assert sample.error.startswith("CutoverError: ")
+    assert "connection reset" in sample.error

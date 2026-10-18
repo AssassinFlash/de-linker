@@ -27,7 +27,7 @@ SWITCH_MARKER = "LINKER_CUTOVER_SWITCH_START"
 
 @dataclass(frozen=True)
 class Sample:
-    """Only timing/status are saved; response bodies never enter the evidence."""
+    """Only timing/status and the exception text are saved; response bodies never enter the evidence."""
 
     endpoint: str
     phase: str
@@ -35,7 +35,7 @@ class Sample:
     elapsed_seconds: float
     status: int | None
     valid: bool
-    error_type: str = ""
+    error: str = ""
     cadence: str = "snapshot"
 
 
@@ -100,7 +100,9 @@ def _sample(
         valid = status == 200 and _valid(endpoint, body, target)
         error = ""
     except (CutoverError, ValueError) as error_object:
-        valid, error = False, type(error_object).__name__
+        # The class alone cannot tell a refused connection from a bad body;
+        # keep the message (URL and OS error, never a response body).
+        valid, error = False, f"{type(error_object).__name__}: {error_object}"
     return Sample(
         endpoint.name,
         phase,
