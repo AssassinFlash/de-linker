@@ -19,7 +19,7 @@
 			<label class="linker-form-consent" {{guest-hide}}><input type="checkbox" name="consent" value="1" {{consent-attributes}} /><span>[linker_inquiry_text key="consent"] <a href="{{privacy}}">[linker_inquiry_text key="privacy"]</a></span></label>
 			<button class="linker-form-primary" type="submit">[linker_inquiry_text key="send"] <span aria-hidden="true">↗</span></button>
 			<p class="linker-inquiry-promise">[linker_inquiry_text key="promise"]</p>
-			<div class="linker-inquiry-guest" {{guest-hide}}><p>[linker_inquiry_text key="no-account"]</p><a href="{{login-url}}">[linker_inquiry_text key="partner"]</a>[linker_create_account]</div>
+			<div class="linker-inquiry-guest" {{guest-hide}}><p>[linker_inquiry_text key="no-account"]</p><a href="{{login-url}}">[linker_inquiry_text key="partner"]</a> [linker_create_account]</div>
 		</form>
 		<aside class="linker-inquiry-draft"><form method="post" action="{{draft-url}}"><div class="linker-inquiry-draft-head"><h2>[linker_inquiry_text key="draft"]</h2><a href="{{draft-url}}">[linker_inquiry_text key="edit"]</a></div><div class="linker-inquiry-lines">[linker_inquiry_lines]</div>[linker_inquiry_draft_nonce]<button class="linker-inquiry-update" type="submit" name="update_cart" value="1" {{draft-empty}}>[linker_inquiry_text key="update"]</button></form></aside>
 	</div>

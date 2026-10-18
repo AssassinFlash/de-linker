@@ -16,7 +16,9 @@
 #tv-footer-v2 .footer-route-list .footer-account-entries>a:hover{color:#087f79;background:none;border:0}
 @media(max-width:1000px){#tv-footer-v2 .footer-account-tile{min-height:50px}}
 @media(max-width:760px){#tv-footer-v2 .footer-account-tile{padding:9px 10px;min-height:47px;border-radius:12px}}
-.linker-inquiry-guest>.linker-create-account{display:inline-block;margin-top:8px}
+/* The sentence and its link are two lines: inline-block left "details.Create
+   account" glued (review round 1, owner-reported class of defect). */
+.linker-inquiry-guest>.linker-create-account{display:block;margin-top:8px}
 .sf-card-price>.linker-create-account{display:inline-block;margin-left:8px;font-size:12px}
 .pdp-price .linker-create-account,.pdp-app-price .linker-create-account{display:inline-block;margin-left:12px;font-size:13px}
 .sf-cart-empty__actions>.linker-create-account{display:inline-flex;align-items:center;min-height:44px;padding:12px 4px;border:1px solid transparent}
