@@ -90,10 +90,16 @@ def main():
         row.update(canonical=page.canonical, hreflang=page.hreflang, share=page.share)
         if not action:
             if row['old'] != row['new']:
-                if page.hreflang.get('de', '') != page.canonical:
-                    defects.append(f"German alternate differs from canonical: {row['new']}: {page.hreflang.get('de', '')} != {page.canonical}")
-                if page.canonical and page.canonical != SITE + row['new']:
-                    defects.append(f"Canonical is not the final address: {row['new']}: {page.canonical}")
+                # Polylang/SEOPress deliberately omit both tags on the nine
+                # reviewed paginated archives (spec: native pagination policy).
+                paged_archive = re.fullmatch(r"/de/(?:produkte|produkt-kategorie/[^/]+)/seite/[0-9]+/", row['new'])
+                native_omission = paged_archive and not page.canonical and not page.hreflang
+                if not native_omission:
+                    expected = SITE + row['new']
+                    if page.hreflang.get('de', '') != expected:
+                        defects.append(f"German alternate is not the final address: {row['new']}: {page.hreflang.get('de', '')}")
+                    if page.canonical != expected:
+                        defects.append(f"Canonical is not the final address: {row['new']}: {page.canonical}")
             pages[row["new"]] = page
     for path, page in pages.items():
         if not page.title:
