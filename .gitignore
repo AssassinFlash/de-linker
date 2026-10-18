@@ -38,3 +38,14 @@ __pycache__/
 # they belong in the working area and never in a commit (they used to land in
 # the acceptance docs and rewrote committed PNGs on every run — ledger H10).
 .scratch/e2e-shots/
+
+# Root-level captures and session exports stay outside the repository; ticket
+# evidence belongs under docs/acceptance/. A 2026-10-18 sweep committed a
+# session transcript, live-site captures and a Playwright admin snapshot.
+/*.png
+/*.txt
+wp-snapshot.yml
+
+# Local tool state never ships (same sweep).
+.v2c/
+.video_agent/
