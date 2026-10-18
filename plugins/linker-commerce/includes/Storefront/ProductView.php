@@ -301,7 +301,7 @@ final class ProductView {
 		}
 		if ( CommerceState::APPROVAL === $reason ) {
 			return Approval::PENDING === $this->state->current_approval_status()
-				? __( 'Prices after approval', 'linker-commerce' )
+				? __( 'Account under review. Prices after approval.', 'linker-commerce' )
 				: __( 'Not available for your account', 'linker-commerce' );
 		}
 		return __( 'Net price after partner sign-in', 'linker-commerce' );

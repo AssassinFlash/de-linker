@@ -146,7 +146,7 @@ final class PriceDisplayTest extends TestCase {
 	 */
 	public function test_texts_instead_of_prices(): void {
 		$this->assertSame( '<a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a>', $this->visitor( false )->empty_price_html( '', $this->product() ) );
-		$this->assertSame( '<span class="linker-price-note">Prices after approval</span>', $this->visitor( true, 'orderable', false )->empty_price_html( '', $this->product() ) );
+		$this->assertSame( '<span class="linker-price-note">Account under review. Prices after approval.</span>', $this->visitor( true, 'orderable', false )->empty_price_html( '', $this->product() ) );
 		$this->assertSame( '<span class="linker-price-note">Quoted per project</span>', $this->visitor( true, 'rfq_only' )->empty_price_html( '', $this->product( '22350' ) ) );
 		$this->assertSame( '<span class="linker-price-note">Price on request</span>', $this->visitor( true )->empty_price_html( '', $this->product( '' ) ) );
 		$this->assertSame( 'WooCommerce', $this->visitor( true )->empty_price_html( 'WooCommerce', $this->product() ) );
@@ -174,7 +174,7 @@ final class PriceDisplayTest extends TestCase {
 		$guest = $this->visitor( false )->cart_subtotal( '€0.00' );
 		$this->assertSame( '<span class="linker-price-note">Log in for prices</span>', $guest );
 		$this->assertStringNotContainsString( '<a ', $guest, 'No link inside the theme\'s own link to the draft.' );
-		$this->assertSame( '<span class="linker-price-note">Prices after approval</span>', $this->visitor( true, 'orderable', false )->cart_subtotal( '€0.00' ) );
+		$this->assertSame( '<span class="linker-price-note">Account under review. Prices after approval.</span>', $this->visitor( true, 'orderable', false )->cart_subtotal( '€0.00' ) );
 		$this->assertSame( '€3,360.00', $this->visitor( true )->cart_subtotal( '€3,360.00' ) );
 	}
 

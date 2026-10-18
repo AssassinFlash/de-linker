@@ -12,7 +12,7 @@ namespace Linker\Commerce\Account;
 /**
  * The account menu, the contact person, the inquiry list, saved solutions
  * and the route that saves them, documents and their downloads. A pending
- * account sees the review page instead of any of that.
+ * account keeps the workspace with a review status notice.
  */
 final class Module {
 
@@ -26,7 +26,7 @@ final class Module {
 	 * @param Documents         $documents The documents page.
 	 * @param DocumentDownload  $download  The downloads.
 	 * @param SolutionsRoute    $route     The route that saves solutions.
-	 * @param PendingGate       $pending   The review page of an account still under review.
+	 * @param PendingGate       $pending   The status notice of an account still under review.
 	 * @param AuthTemplates     $auth      The guest sign-in, register and lost-password pages.
 	 * @param AdminAccessNotice $admin_access The explanation of Woo's admin protection.
 	 */

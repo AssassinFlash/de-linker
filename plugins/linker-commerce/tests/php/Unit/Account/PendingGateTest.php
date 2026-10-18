@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for the pending-account review page.
+ * Tests for the pending account status notice.
  *
  * @package Linker\Commerce
  */
@@ -15,9 +15,7 @@ use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
 
 /**
- * A pending account is held on the review page. An approved account is not,
- * and neither is a restricted one: that account keeps the workplace and reads
- * its own gate on the Proforma request.
+ * The state notice is local to the account content; approval never takes over a page.
  *
  * @covers \Linker\Commerce\Account\PendingGate
  */
@@ -33,103 +31,7 @@ final class PendingGateTest extends TestCase {
 	}
 
 	/**
-	 * A guest is not held: the account page's own login form stays.
-	 */
-	public function test_a_guest_is_not_held(): void {
-		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
-		$this->assertFalse( ( new PendingGate( new Approval() ) )->holds() );
-	}
-
-	/**
-	 * A pending sign-in is held; an approved one and a restricted one are not.
-	 */
-	public function test_holds_only_a_pending_account(): void {
-		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
-		$this->signed_in( 5 );
-		$this->assertTrue( ( new PendingGate( new Approval() ) )->holds() );
-
-			$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
-			$this->signed_in( 5 );
-			$this->assertFalse( ( new PendingGate( new Approval() ) )->holds(), 'Approved is let through.' );
-
-			$this->approval_meta( array( Approval::STATUS_META => Approval::RESTRICTED ) );
-			$this->signed_in( 5 );
-			$this->assertFalse( ( new PendingGate( new Approval() ) )->holds(), 'Restricted keeps the workplace.' );
-	}
-
-	/**
-	 * Direct requests for an account endpoint are sent back to the account page.
-	 */
-	public function test_an_endpoint_request_is_sent_back(): void {
-		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
-		$this->signed_in( 5 );
-		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
-		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
-		WP_Mock::userFunction(
-			'wc_get_page_permalink',
-			array(
-				'args'   => array( 'myaccount' ),
-				'return' => 'https://example.test/my-account/',
-			)
-		);
-		WP_Mock::userFunction(
-			'wp_safe_redirect',
-			array(
-				'args'   => array( 'https://example.test/my-account/' ),
-				'times'  => 1,
-				'return' => static function (): void {
-					throw new \RuntimeException( 'redirect' );
-				},
-			)
-		);
-
-		try {
-			( new PendingGate( new Approval() ) )->redirect();
-			$this->fail( 'The redirect must exit, the same as the plugin\'s other redirects.' );
-		} catch ( \RuntimeException $stopped ) {
-			$this->assertSame( 'redirect', $stopped->getMessage(), 'exit stops the request after the redirect.' );
-		}
-		$this->assertConditionsMet();
-	}
-
-	/**
-	 * The account page itself is not redirected: there the account template is
-	 * swapped for the review card, and the workplace shell never starts.
-	 */
-	public function test_the_account_page_swaps_its_template(): void {
-		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
-		$this->signed_in( 5 );
-			WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
-			WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
-			// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
-			WP_Mock::expectFilterAdded( 'wc_get_template', array( new WP_Mock\Matcher\AnyInstance( PendingGate::class ), 'template' ), 40, 2 );
-
-			$gate = new PendingGate( new Approval() );
-			$gate->redirect();
-			$this->assertConditionsMet();
-
-			// The account page's own template is the review card; every other
-			// template keeps WooCommerce's path.
-			$this->assertStringEndsWith( '/templates/myaccount/auth/pending.php', $gate->template( '/woo/my-account.php', 'myaccount/my-account.php' ) );
-			$this->assertSame( '/woo/orders.php', $gate->template( '/woo/orders.php', 'myaccount/orders.php' ) );
-	}
-
-	/**
-	 * An approved account is not redirected off an endpoint.
-	 */
-	public function test_an_approved_endpoint_stays(): void {
-		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
-		$this->signed_in( 5 );
-		WP_Mock::userFunction( 'is_account_page', array( 'return' => true ) );
-		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
-
-		( new PendingGate( new Approval() ) )->redirect();
-		$this->assertFalse( ( new PendingGate( new Approval() ) )->holds() );
-	}
-
-	/**
-	 * The review page is one card that names the review rather than the
-	 * inquiries, and its look is auth.css's own (ticket #184).
+	 * The status card names the review and retains the live card design.
 	 */
 	public function test_render_is_the_review_card(): void {
 		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
@@ -142,6 +44,8 @@ final class PendingGateTest extends TestCase {
 		$html = (string) ob_get_clean();
 
 			$this->assertStringContainsString( 'Your account is under review', $html );
+			$this->assertStringContainsString( '<h2>', $html, 'The status belongs within the usable account page.' );
+			$this->assertStringNotContainsString( '<h1>', $html );
 			$this->assertStringContainsString( 'Under review', $html );
 			$this->assertStringContainsString( 'linker-gate-badge is-pending', $html );
 			$this->assertStringContainsString( 'https://example.test/products/', $html );
@@ -154,38 +58,33 @@ final class PendingGateTest extends TestCase {
 	}
 
 	/**
-	 * The account template prints through the gate the module registered
-	 * (PendingGate::output): the instance on the hook is the one that renders,
-	 * and a request that registers nothing prints nothing.
+	 * Other states have no pending status notice.
+	 *
+	 * @dataProvider other_states
+	 * @param int    $id     User id.
+	 * @param string $status Account state.
 	 */
-	public function test_output_prints_through_the_registered_gate(): void {
-		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
-		$this->signed_in( 5 );
-		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
-		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
-		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
-		WP_Mock::expectActionAdded( 'template_redirect', array( new WP_Mock\Matcher\AnyInstance( PendingGate::class ), 'redirect' ) );
-
-		$registered = new PendingGate( new Approval() );
-		$registered->register();
-
-		ob_start();
-		PendingGate::output();
-		$html = (string) ob_get_clean();
-
-		$this->assertStringContainsString( 'Your account is under review', $html );
-		$this->assertConditionsMet();
-	}
-
-	/**
-	 * A restricted account is not replaced by the pending page.
-	 */
-	public function test_a_restricted_account_is_not_replaced(): void {
-		$this->approval_meta( array( Approval::STATUS_META => Approval::RESTRICTED ) );
-		$this->signed_in( 5 );
+	public function test_other_accounts_have_no_pending_notice( int $id, string $status ): void {
+		$this->approval_meta( array( Approval::STATUS_META => $status ) );
+		$this->signed_in( $id );
 
 		ob_start();
 		( new PendingGate( new Approval() ) )->render();
 		$this->assertSame( '', (string) ob_get_clean() );
+	}
+
+	/**
+	 * Accounts that must not see the pending notice.
+	 *
+	 * @return array<string, array{int, string}>
+	 */
+	public static function other_states(): array {
+		return array(
+			'guest'      => array( 0, Approval::PENDING ),
+			'approved'   => array( 5, Approval::APPROVED ),
+			'restricted' => array( 5, Approval::RESTRICTED ),
+			'rejected'   => array( 5, Approval::REJECTED ),
+			'staff'      => array( 6, Approval::APPROVED ),
+		);
 	}
 }

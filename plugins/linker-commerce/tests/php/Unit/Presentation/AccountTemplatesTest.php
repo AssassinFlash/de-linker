@@ -263,24 +263,46 @@ final class AccountTemplatesTest extends TestCase {
 			);
 	}
 
-	/** Guests and pending accounts get no sidebar navigation. */
-	public function test_nav_is_empty_for_guests_and_pending_accounts(): void {
-		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
-		$this->signed_in( 0 );
+	/** Guests get no private account navigation. */
+	public function test_nav_is_empty_for_guests(): void {
+		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		$adapter = new AccountTemplates();
 		$this->assertSame( '', $adapter->nav() );
+	}
+
+	/**
+	 * Account states that retain the complete workspace.
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public static function workspace_states(): array {
+		return array(
+			'pending'    => array( Approval::PENDING ),
+			'approved'   => array( Approval::APPROVED ),
+			'restricted' => array( Approval::RESTRICTED ),
+		);
+	}
+
+	/** Pending customers keep the contact slot as well as the endpoint content. */
+	public function test_pending_account_keeps_its_contact_slot(): void {
+		$this->approval_meta( array( Approval::STATUS_META => Approval::PENDING ) );
 		$this->signed_in( 5 );
-		$this->assertSame( '', $adapter->nav() );
+		WP_Mock::expectAction( 'linker_account_after_content' );
+		( new AccountTemplates() )->hook( array( 'name' => 'after-content' ) );
+		$this->assertConditionsMet();
 	}
 
 	/**
 	 * An approved account's navigation groups the same menu the header dropdown
 	 * reads: the workplace, then the account records with sign-out last. The
 	 * dashboard is current when no endpoint is being read.
+	 *
+	 * @dataProvider workspace_states
+	 * @param string $status Account state.
 	 */
-	public function test_nav_groups_the_account_menu_for_an_approved_account(): void {
+	public function test_nav_groups_the_account_menu_for_a_signed_in_account( string $status ): void {
 		$this->plain_text();
-		$this->approval_meta( array( Approval::STATUS_META => Approval::APPROVED ) );
+		$this->approval_meta( array( Approval::STATUS_META => $status ) );
 		WP_Mock::userFunction(
 			'wc_get_account_menu_items',
 			array(

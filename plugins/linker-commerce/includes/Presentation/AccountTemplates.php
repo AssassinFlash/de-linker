@@ -14,7 +14,6 @@ use Linker\Commerce\Account\InquiryList;
 use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Proforma\Issuer;
-use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Vocabulary\LocaleFormat;
 use WC_Order;
 
@@ -222,10 +221,9 @@ final class AccountTemplates {
 				do_action( 'woocommerce_before_account_orders_pagination' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
 				break;
 			case 'after-content':
-				// The sidebar's own slot (the contact person). Pending accounts
-				// read the review page, so — like nav() — they get nothing here.
+				// Every signed-in customer keeps the workspace's contact person.
 				$user_id = get_current_user_id();
-				if ( $user_id > 0 && Approval::PENDING !== ( new Approval() )->status( $user_id ) ) {
+				if ( $user_id > 0 ) {
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Account module's existing contact slot.
 					do_action( 'linker_account_after_content' );
 				}
@@ -249,14 +247,13 @@ final class AccountTemplates {
 	 * reads (Menu::items), split into the groups a dashboard sidebar shows —
 	 * the workplace, then the account's own records with sign-out last.
 	 * Current page is Woo's own endpoint, so the highlight follows the
-	 * request. A pending account reads the review page instead of the
-	 * workplace, so it gets no navigation.
+	 * request. Pending customers use the same navigation while awaiting prices.
 	 *
 	 * @param array<string, string>|string $atts Optional mobile navigation form.
 	 */
 	public function nav( $atts = array() ): string {
 		$user_id = get_current_user_id();
-		if ( $user_id <= 0 || Approval::PENDING === ( new Approval() )->status( $user_id ) ) {
+		if ( $user_id <= 0 ) {
 			return '';
 		}
 		$items = wc_get_account_menu_items();

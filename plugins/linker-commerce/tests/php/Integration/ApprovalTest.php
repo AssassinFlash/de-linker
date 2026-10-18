@@ -320,13 +320,13 @@ final class ApprovalTest extends IntegrationTestCase {
 	}
 
 		/**
-		 * A pending sign-in is held on the review page, including a direct request
-		 * for the inquiries and the documents. Approving opens those pages again.
+		 * A pending sign-in reads its status without losing inquiry access.
+		 * Approving removes the notice and opens prices in the current session.
 		 * A restricted account keeps the workplace and reads its own gate, with
 		 * the reason, on the Proforma request. A rejection cannot sign in, and
 		 * the reason is in the email.
 		 */
-	public function test_a_pending_sign_in_is_held_until_approval(): void {
+	public function test_a_pending_account_reads_a_status_and_keeps_inquiry_access(): void {
 		delete_option( Throttle::OPTION );
 		$customer = $this->customer();
 		update_user_meta( $customer->get_id(), 'locale', 'en_US' );
@@ -335,7 +335,6 @@ final class ApprovalTest extends IntegrationTestCase {
 		$this->set_state( $customer, Approval::PENDING );
 		$this->as_user( $customer->get_id() );
 		$gate = new PendingGate( new Approval(), new LoginGate( new Approval() ) );
-		$this->assertTrue( $gate->holds(), 'A pending sign-in is held.' );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Pending sees no prices.' );
 		$this->assertArrayHasKey(
 			ProformaGateway::ID,
@@ -345,11 +344,13 @@ final class ApprovalTest extends IntegrationTestCase {
 		ob_start();
 		$gate->render();
 		$review = (string) ob_get_clean();
-		$this->assertStringContainsString( 'Your account is under review', $review, 'The review page is what a pending sign-in reads.' );
+		$this->assertStringContainsString( 'Your account is under review', $review, 'The pending status is rendered inside the usable account.' );
 
 		$this->set_state( $customer, Approval::APPROVED );
 		$this->as_user( $customer->get_id() );
-		$this->assertFalse( $gate->holds(), 'Approved is no longer held.' );
+		ob_start();
+		$gate->render();
+		$this->assertSame( '', (string) ob_get_clean(), 'Approved no longer reads the pending status.' );
 		$this->assertTrue( ( new CommerceState() )->visitor_sees_prices(), 'Approved sees prices.' );
 		$this->assertArrayHasKey(
 			ProformaGateway::ID,
@@ -359,7 +360,9 @@ final class ApprovalTest extends IntegrationTestCase {
 
 		$this->set_state( $customer, Approval::RESTRICTED, 'Net prices are for businesses.' );
 		$this->as_user( $customer->get_id() );
-		$this->assertFalse( $gate->holds(), 'Restricted keeps the workplace.' );
+		ob_start();
+		$gate->render();
+		$this->assertSame( '', (string) ob_get_clean(), 'Restricted never reads the pending status.' );
 		$this->assertFalse( ( new CommerceState() )->visitor_sees_prices(), 'Restricted sees no prices.' );
 		$this->assertStringContainsString( 'Net prices are for businesses.', ( new LoginGate( new Approval() ) )->restricted_notice() );
 

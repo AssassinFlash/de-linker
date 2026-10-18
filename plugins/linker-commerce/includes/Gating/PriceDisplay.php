@@ -220,7 +220,7 @@ final class PriceDisplay {
 			$status = $this->state->current_approval_status();
 			$text   = Approval::APPROVED !== $status && Approval::PENDING !== $status
 				? __( 'Not available for your account', 'linker-commerce' )
-				: __( 'Prices after approval', 'linker-commerce' );
+				: __( 'Account under review. Prices after approval.', 'linker-commerce' );
 			return esc_html( $text );
 		}
 		$text = CommerceState::PROJECT === $reason

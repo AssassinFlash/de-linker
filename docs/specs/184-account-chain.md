@@ -18,7 +18,7 @@
 | 发送成功确认 | Woo 默认 `myaccount/lost-password-confirmation.php`（裸文本落在页底） | **新增覆写** `templates/myaccount/auth/lost-password-confirmation.php`：同一张卡，Woo 的 notice + 过滤后的说明句进卡头 |
 | 重置密码表单 | Woo 默认 `myaccount/form-reset-password.php`（裸模板，链路最差一环） | **新增覆写** `templates/myaccount/auth/form-reset-password.php`：卡 + 双密码字段 + Woo 自带眼睛 + Woo 自带强度计 |
 | 账户细节（改密） | Woo 默认 `myaccount/form-edit-account.php` | **新增覆写** `templates/myaccount/account/form-edit-account.php`：资料卡 + 改密卡（说明行 + 干净标签） |
-| pending 门禁 | `Account/PendingGate.php` 清 workplace hook 后打印 inline 文本 | 换账页模板（`wc_get_template` 优先级 40 → `templates/myaccount/auth/pending.php`），卡片来自 `LoginGate::pending_html()`；workplace 骨架根本不渲染 |
+| pending 状态 | `Account/PendingGate.php` 整页替换审核卡 | 原生 `woocommerce_account_content` 在端点内容前显示 LC 状态卡；完整工作台、导航和联系卡保留（业主 2026-10-17，待审账号保持登录） |
 | restricted / 空 Proforma / guest 带草稿门禁 | `Presentation/LoginGate.php` 的 `sf-checkout-empty` 文本块 | 同文件重写为卡片（badge + 标题 + 正文 + 动作）；guest 门禁两种形态（草稿空 = 取号，草稿有货 = 登录发送） |
 | 工作台骨架 | `content/livecanvas/account/workspace.html` + `mobile-nav.html` | 重写：桌面 = 左侧栏（WORKPLACE/ACCOUNT 两组）；移动 = **只有底部胶囊 tab 栏**（顶部 `details/summary` 折叠菜单删除） |
 | 询盘列表行 | `inquiry-card.html` 行内展开全量商品行 | 重写：`n Produkte` 摘要（`_n` 复数）+ 单号 + 状态胶囊 + 日期 + 金额 + `View` 箭头 |
@@ -53,7 +53,7 @@
 
 | 原型 | 实现 | 触发 |
 | :--- | :--- | :--- |
-| `gates.html?gate=pending` | `/my-account/`（pending 账号）与空的 `/proforma-request/`：同一张卡（badge `Under review`） | `Approval::PENDING` |
+| `gates.html?gate=pending` | 账户各端点内容前的状态卡（badge `Under review`、h2）；Proforma 请求继续开放 | `Approval::PENDING` |
 | `gates.html?gate=restricted` | `/proforma-request/`：badge `Access currently limited` + reason notice（`Our reason:` + 团队理由）+ mailto 链接 | `Approval::RESTRICTED` |
 | `gates.html?gate=empty-proforma` | `/proforma-request/`（guest，草稿空）：`Get your Proforma` + Genie pill + 两个动作 | guest 且草稿空 |
 | `gates.html?gate=guest-draft` | `/proforma-request/`（guest，草稿有货）：`Sign in to request your Proforma` + 草稿正文 + `Lost your password?` | guest 且草稿有货 |
@@ -87,8 +87,8 @@
 
 ## 四、门禁与状态机（与既有实现一致，仅换呈现）
 
-- `Approval` 三态：`pending`（可登录，只见审核卡；任何 endpoint 请求 302 回 `/my-account/`）、`restricted`（工作台在，价格与 Proforma 请求暂停）、`rejected`（登录被拦，登录卡显示拒因）。
-- 空 Proforma 请求：guest 两种门禁（按草稿有无）；approved 空草稿 = 空态卡；无审批账号 = 对应门禁卡。`[linker_checkout]` 在 guest 上**总是**走门禁（访客没有 checkout 资格）。
+- `Approval` 四状态：`pending` 注册后保持登录，工作台及端点照常使用，局部状态卡提示审核中；`approved` 按 `CommerceState` 规则显示价格；`restricted` 保留工作台与询盘入口并显示原因，价格隐藏；`rejected` 登录被拦且现有会话终止。批准后原会话下一次请求显示价格，无需重新登录。
+- 询盘对所有人开放，pending 与 restricted 同样可以发送；空草稿与访客行为依照询盘开放规格。账户状态卡不接管询盘页面，restricted 的保存原因仍显示在可用表单上方。
 - 登出：`customer-logout` 端点 URL 已不在任何菜单/页头链接里（只有 nonce URL）。直接访问端点 URL 时 Woo 仍会要求确认——那是 Woo 的原生行为，站点不再指向它。
 
 ## 五、文案

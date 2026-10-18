@@ -4710,3 +4710,7 @@ msgstr "Verwendungszweck"
 #~ msgstr ""
 #~ "Es wurde keine Bestätigungs-E-Mail versendet. Das Linker-Team antwortet "
 #~ "an die angegebene E-Mail-Adresse."
+
+#: includes/Gating/PriceDisplay.php:223 includes/Storefront/ProductView.php:304
+msgid "Account under review. Prices after approval."
+msgstr "Ihr Konto wird geprüft. Preise nach Freigabe."
