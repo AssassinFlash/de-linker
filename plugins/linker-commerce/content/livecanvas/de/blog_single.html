@@ -20,13 +20,17 @@
         <nav class="reader-adjacent" aria-label="Weitere Beiträge"><div><span>Vorheriger Beitrag</span>[lc_the_previous_post_link class="tv-blog-single-nav-link"]</div><div><span>Nächster Beitrag</span>[lc_the_next_post_link class="tv-blog-single-nav-link"]</div></nav>
       </section>
     </div>
-    <aside class="reader-right"><div class="reader-share"><h2>Teilen</h2>[lc_the_sharing]</div><section id="tv-blog-single-related"><h2>Passende Beiträge</h2><div class="tv-blog-single-related-grid">[linker_blog_related_posts]</div><a class="reader-all" href="/de/blog/">Alle Beiträge <span aria-hidden="true">↗</span></a></section></aside>
+    <aside class="reader-right"><div class="reader-share"><h2>Teilen</h2>[lc_the_sharing class="reader-share-links"]</div><section id="tv-blog-single-related"><h2>Passende Beiträge</h2><div class="tv-blog-single-related-grid">[linker_blog_related_posts]</div><a class="reader-all" href="/de/blog/">Alle Beiträge <span aria-hidden="true">↗</span></a></section></aside>
   </div>
 		<script>
 		(function () {
 			function buildArticleMap() {
 				var root = document.getElementById('tv-blog-single-v1');
 				if (!root) return;
+				root.querySelectorAll('.reader-share-links a').forEach(function (link) {
+					var name = link.textContent.trim();
+					if (name) { link.setAttribute('aria-label', name); link.setAttribute('title', name); }
+				});
 				var disclosure = root.querySelector('.reader-toc');
 				var desktop = window.matchMedia('(min-width:1000px)');
 				function sizeDisclosure() { disclosure.open = desktop.matches; }

@@ -75,6 +75,7 @@ final class GermanUrlsTest extends SiteTestCase {
 				$link = $current->item( 0 );
 				self::assertInstanceOf( \DOMElement::class, $link );
 				self::assertSame( self::$site . $path, $link->getAttribute( 'href' ) );
+				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- Native DOM API property.
 				self::assertStringNotContainsString( 'article', strtolower( $navigation->textContent ) );
 			}
 		} finally {

@@ -38,3 +38,7 @@ The owner's later [light reference](owner-journal-reference-1.png) and [dark ref
 ### Approved service and single-post reading
 
 The owner approved the service screenshot, then supplied [mobile browsing](owner-mobile-reference-1.png), [mobile reading](owner-mobile-reference-2.png), [desktop reading](owner-reader-reference-1.png) and [contents/reading reference](owner-reader-reference-2.png). The final discovery flow uses compact mobile recommendation rows. Single posts use a chapter rail, a measured reading column, related reading and sharing; mobile joins the cover to the reading panel and collapses the contents disclosure. This is an additional explicitly authorized EN visual exception, verified in EN/DE at both widths. No existing written content is reauthored as a consequence of the design change.
+
+### Card and sharing detail feedback
+
+The owner subsequently rejected the small three-column feed cards and default sharing buttons. Desktop cards now use two columns with contained product imagery, category/title/date hierarchy and consistent white surfaces; mobile retains compact reading rows. LC sharing stays native and gains four equal circular targets with accessible platform names. This is within the already authorized journal discovery/reader EN and DE redesign.

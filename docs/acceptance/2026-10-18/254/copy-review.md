@@ -33,3 +33,5 @@ Empty search: **“No matching posts found. Try another search term or choose a 
 ## Reading-page navigation
 
 The reader reference calls for clear reading controls. Final labels: **On this page / Auf dieser Seite**, **Post sections / Abschnitte dieses Beitrags**, **Overview / Überblick**, **Post details / Beitragsdetails**, **Related reading / Passende Beiträge**, **Share / Teilen**, **Published / Veröffentlicht**, **Previous post / Vorheriger Beitrag**, **Next post / Nächster Beitrag**. Existing **Back to blog / Zurück zum Blog** and project-quote labels stay. Review rejected invented watch history, rating, follower, like, read-time or popularity indicators: none has a backing data contract here. Post body, facts and actual author/date remain native.
+
+Sharing detail review: the native LC tooltip “Share on …” is hard-coded English even in the German template. The final toolbar uses the actual platform name for both `title` and `aria-label`, under the localized **Share / Teilen** heading. Brand names and native share destinations are preserved; no new marketing claim or body copy is added.
