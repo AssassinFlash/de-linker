@@ -234,8 +234,6 @@ def deploy(
         f"{', '.join(snapshot_module.SKIPPED_TABLES)} left out); "
         f"restore with `just cutover restore-snapshot {taken.name}`"
     ]
-    if reminder:
-        actions.append(reminder)
     actions += [f"deployed {item.relative} by rename" for item in artifacts]
     actions += [
         f"deploy id: {receipt.deploy_id}",
@@ -260,6 +258,9 @@ def deploy(
     target.wp("plugin", "activate", *plan.NEW_PLUGINS)
     actions.append("wp plugin activate " + " ".join(plan.NEW_PLUGINS))
     actions += deploy_language_packs(target)
+    if reminder:
+        # Last, so it is the line the log ends on and never shifts the others.
+        actions.append(reminder)
     return Result("deploy", actions, [], receipt)
 
 

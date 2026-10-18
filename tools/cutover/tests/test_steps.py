@@ -18,12 +18,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from linker_cutover import plan, snapshot, steps
+from linker_cutover import backup, plan, snapshot, steps
 from linker_cutover.target import CutoverError, Target
 
 
 @pytest.fixture(autouse=True)
-def _no_database(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+def _no_database(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> list[str]:
     """Deploys here run on stand-in sites with no database: record the snapshot instead.
 
     The snapshot itself is tested against a real shell in test_snapshot.py; here
@@ -41,6 +41,9 @@ def _no_database(monkeypatch: pytest.MonkeyPatch) -> list[str]:
         )
 
     monkeypatch.setattr(snapshot, "take", fake)
+    # The weekly reminder reads the data root; the real one on this machine
+    # decided the action list (CI has no backups, this Mac does).
+    monkeypatch.setattr(backup, "DATA_HOME", tmp_path / "data-home")
     return taken
 
 
@@ -1229,3 +1232,17 @@ def test_the_deploy_reminds_when_the_weekly_full_backup_is_due(tmp_path: Path) -
 
     later = datetime(2026, 10, 23, 2, 0, tzinfo=UTC)
     assert "8 days old" in (steps.full_backup_reminder(home, now=later) or "")
+
+
+def test_the_reminder_is_the_last_line_and_shifts_nothing(tmp_path: Path) -> None:
+    """With no full backup in the data root, the deploy ends on the reminder."""
+    target = FilesystemTarget(tmp_path / "site")
+    result = steps.deploy(
+        target,
+        repository=_repository(tmp_path),
+        staging=tmp_path / "staging",
+        deploy_id="20261018T000000Z-fixture",
+    )
+    assert result.actions[0].startswith("database snapshot ")
+    assert result.actions[-1].startswith("reminder: ")
+    assert sum(line.startswith("reminder: ") for line in result.actions) == 1
