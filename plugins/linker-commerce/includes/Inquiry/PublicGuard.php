@@ -31,6 +31,12 @@ final class PublicGuard {
 	 */
 	public const WINDOW = HOUR_IN_SECONDS;
 
+	/**
+	 * Refusal reasons, observable to the registration counter (#225).
+	 */
+	public const REFUSAL_HONEYPOT = 'honeypot';
+	public const REFUSAL_CLOCK    = 'clock';
+	public const REFUSAL_TOO_FAST = 'too_fast';
 
 	/**
 	 * Signed start time; no script is needed to submit the form.
@@ -41,17 +47,31 @@ final class PublicGuard {
 	}
 
 	/**
+	 * Why the request is refused, '' when it passes. The reasons let a refusal
+	 * be counted (#225) without a second copy of these checks.
+	 *
+	 * @param array<string, mixed> $post Unslashed request.
+	 */
+	public function refusal( array $post ): string {
+		$trap = $post['website'] ?? '';
+		if ( ! is_string( $trap ) || '' !== $trap ) {
+			return self::REFUSAL_HONEYPOT;
+		}
+		$stamp = $post['linker_started'] ?? '';
+		$nonce = $post['linker_started_nonce'] ?? '';
+		if ( ! is_string( $stamp ) || ! ctype_digit( $stamp ) || ! is_string( $nonce ) || false === wp_verify_nonce( $nonce, 'linker_inquiry_started_' . $stamp ) ) {
+			return self::REFUSAL_CLOCK;
+		}
+		return time() - (int) $stamp < self::MIN_SECONDS ? self::REFUSAL_TOO_FAST : '';
+	}
+
+	/**
 	 * Reject filled traps, missing/forged clocks, and submissions too soon.
 	 *
 	 * @param array<string, mixed> $post Unslashed request.
 	 */
 	public function allows( array $post ): bool {
-		$stamp = $post['linker_started'] ?? '';
-		$nonce = $post['linker_started_nonce'] ?? '';
-		$trap  = $post['website'] ?? '';
-		return is_string( $stamp ) && ctype_digit( $stamp ) && is_string( $nonce ) && '' === $trap
-		&& time() - (int) $stamp >= self::MIN_SECONDS
-		&& false !== wp_verify_nonce( $nonce, 'linker_inquiry_started_' . $stamp );
+		return '' === $this->refusal( $post );
 	}
 	/**
 	 * Atomically reserves one submission before either door writes an inquiry.

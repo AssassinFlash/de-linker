@@ -14,11 +14,15 @@ use WC_Customer;
 use WP_Error;
 
 /**
- * Adds company, business type, VAT ID, name and address to WooCommerce's own
- * registration form on the account page (docs/specs/11-commerce.md, journey
- * step 2). The account starts pending (Approval); the VAT ID is checked with
- * VIES, and a failed check only flags the account. The team receives a
- * notification.
+ * Adds the registration fields to WooCommerce's own registration form on the
+ * account page. The owner's ruling of 2026-10-17 (AGENTS.md §2) and the field
+ * research (#224) ask the two steps this form renders: the company with a
+ * website or a VAT ID to verify it, and the person with the sign-in details.
+ * The street, postcode and city are collected by the Proforma request page
+ * (WooCommerce's native billing fields), not here.
+ *
+ * The account starts pending (Approval); the VAT ID is checked with VIES, and
+ * a failed check only flags the account. The team receives a notification.
  */
 final class Fields {
 
@@ -27,6 +31,26 @@ final class Fields {
 	 * sends the team notification on it (NewCustomerEmail).
 	 */
 	public const REGISTERED_ACTION = 'linker_commerce_customer_registered';
+
+	/**
+	 * Error code of the "website or VAT ID" pair. The two fields are each
+	 * optional, one of them is required.
+	 */
+	public const ONE_OF = 'linker_website_or_vat';
+
+	/**
+	 * The fields of the first step; an error in one of them opens step 1 again.
+	 *
+	 * @var list<string>
+	 */
+	private const STEP_ONE = array( 'billing_company', CustomerRole::META, 'billing_country', Website::META, VatProfile::VAT_META, self::ONE_OF );
+
+	/**
+	 * The step the register card shows after a refused submission, 1 or 2.
+	 *
+	 * @var int
+	 */
+	private static int $active_step = 1;
 
 	/**
 	 * Values of the current registration, kept between validation and saving.
@@ -48,7 +72,7 @@ final class Fields {
 
 	/**
 	 * The fields, in WooCommerce's form field format. Labels and rules of the
-	 * name and address fields are WooCommerce's own for the chosen country.
+	 * name fields are WooCommerce's own for the chosen country.
 	 *
 	 * @param string $country Country whose address rules apply.
 	 * @return array<string, array<string, mixed>>
@@ -63,20 +87,36 @@ final class Fields {
 				'class'        => array( 'form-row-wide' ),
 			),
 			CustomerRole::META   => array(
-				'type'     => 'select',
+				'type'     => 'radio',
 				'label'    => __( 'Business type', 'linker-commerce' ),
 				'required' => true,
-				'options'  => array( '' => __( 'Please choose', 'linker-commerce' ) ) + CustomerRole::options(),
+				'options'  => CustomerRole::options(),
 				'class'    => array( 'form-row-wide' ),
+			),
+			'billing_country'    => array(
+				'type'         => 'linker_country',
+				'label'        => $address['billing_country']['label'] ?? __( 'Country / Region', 'linker-commerce' ),
+				'required'     => true,
+				'autocomplete' => 'country',
+				'options'      => CountryOptions::all(),
+				'class'        => array( 'form-row-wide' ),
+			),
+			Website::META        => array(
+				'type'         => 'url',
+				'label'        => __( 'Company website', 'linker-commerce' ),
+				'required'     => false,
+				'placeholder'  => 'example.com',
+				'autocomplete' => 'url',
+				'class'        => array( 'form-row-wide' ),
 			),
 			VatProfile::VAT_META => array(
 				'label'       => __( 'VAT ID', 'linker-commerce' ),
 				'required'    => false,
-				'description' => __( 'We check EU VAT IDs in the European Commission\'s VIES system. You can register without one.', 'linker-commerce' ),
+				'description' => __( 'We check EU VAT IDs in the European Commission\'s VIES system.', 'linker-commerce' ),
 				'class'       => array( 'form-row-wide' ),
 			),
 		);
-		foreach ( array( 'billing_first_name', 'billing_last_name', 'billing_country', 'billing_address_1', 'billing_postcode', 'billing_city' ) as $key ) {
+		foreach ( array( 'billing_first_name', 'billing_last_name' ) as $key ) {
 			if ( isset( $address[ $key ] ) && is_array( $address[ $key ] ) ) {
 				$fields[ $key ] = $address[ $key ];
 			}
@@ -89,7 +129,7 @@ final class Fields {
 	 */
 	public function render(): void {
 		$country = $this->posted( 'billing_country' );
-		$country = '' !== $country ? $country : WC()->countries->get_base_country();
+		$country = '' !== $country ? $country : CountryOptions::default_country();
 		foreach ( $this->fields( $country ) as $key => $field ) {
 			woocommerce_form_field( $key, $field, 'billing_country' === $key ? $country : $this->posted( $key ) );
 		}
@@ -115,15 +155,40 @@ final class Fields {
 		if ( '' !== $values[ CustomerRole::META ] && '' === CustomerRole::label( $values[ CustomerRole::META ] ) ) {
 			$errors->add( CustomerRole::META, __( 'Please choose a business type.', 'linker-commerce' ) );
 		}
-		if ( '' !== $country && ! array_key_exists( $country, WC()->countries->get_allowed_countries() ) ) {
+		if ( '' !== $country && ! array_key_exists( $country, CountryOptions::all() ) ) {
 			$errors->add( 'billing_country', __( 'Please choose a country from the list.', 'linker-commerce' ) );
 		}
-		$postcode = $values['billing_postcode'] ?? '';
-		if ( '' !== $postcode && '' !== $country && ! \WC_Validation::is_postcode( $postcode, $country ) ) {
-			$errors->add( 'billing_postcode', __( 'Please enter a valid postcode.', 'linker-commerce' ) );
+		if ( '' === $values[ Website::META ] && '' === $values[ VatProfile::VAT_META ] ) {
+			$errors->add( self::ONE_OF, __( 'Enter your company website or VAT ID, so we can verify your company.', 'linker-commerce' ) );
+		} elseif ( '' !== $values[ Website::META ] && ! Website::valid( $values[ Website::META ] ) ) {
+			$errors->add( Website::META, __( 'Enter a web address such as example.com.', 'linker-commerce' ) );
 		}
-		$this->values = $errors->has_errors() ? null : $values;
+		$this->values      = $errors->has_errors() ? null : $values;
+		self::$active_step = $this->step( $errors );
 		return $errors;
+	}
+
+	/**
+	 * The step the card reopens on. A company error returns to step 1; any
+	 * other refused post stays on the sign-in step.
+	 *
+	 * @param WP_Error $errors Errors of this submission.
+	 */
+	private function step( WP_Error $errors ): int {
+		foreach ( self::STEP_ONE as $key ) {
+			if ( $errors->get_error_message( $key ) ) {
+				return 1;
+			}
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce verified the registration nonce before this runs; the value is a UI hint.
+		return isset( $_POST['register'] ) ? 2 : 1;
+	}
+
+	/**
+	 * The step the register card shows, 1 after a fresh page view.
+	 */
+	public static function active_step(): int {
+		return self::$active_step;
 	}
 
 	/**
@@ -141,7 +206,7 @@ final class Fields {
 		$this->values = null;
 
 		$customer = new WC_Customer( $customer_id );
-		$values  += array_fill_keys( array( 'billing_first_name', 'billing_last_name', 'billing_country', 'billing_address_1', 'billing_postcode', 'billing_city' ), '' );
+		$values  += array_fill_keys( array( 'billing_first_name', 'billing_last_name', 'billing_country' ), '' );
 		$customer->set_first_name( $values['billing_first_name'] );
 		$customer->set_last_name( $values['billing_last_name'] );
 		// WooCommerce greets with the display name, otherwise the username made from the email address.
@@ -150,10 +215,8 @@ final class Fields {
 		$customer->set_billing_last_name( $values['billing_last_name'] );
 		$customer->set_billing_company( $values['billing_company'] );
 		$customer->set_billing_country( $values['billing_country'] );
-		$customer->set_billing_address_1( $values['billing_address_1'] );
-		$customer->set_billing_postcode( wc_format_postcode( $values['billing_postcode'], $values['billing_country'] ) );
-		$customer->set_billing_city( $values['billing_city'] );
 		$customer->set_billing_email( $customer->get_email() );
+		$customer->update_meta_data( Website::META, Website::normalize( $values[ Website::META ] ) );
 		$customer->update_meta_data( VatProfile::VAT_META, VatNumber::normalize( $values[ VatProfile::VAT_META ] ) );
 		$customer->update_meta_data( CustomerRole::META, $values[ CustomerRole::META ] );
 		$customer->save();

@@ -25,6 +25,7 @@ use Linker\Commerce\Registration\PendingApprovals;
 use Linker\Commerce\Registration\RegistrationInformation;
 use Linker\Commerce\Registration\VatProfile;
 use Linker\Commerce\Registration\ViesClient;
+use Linker\Commerce\Registration\Website;
 use Linker\Commerce\Settings\Options;
 use WC_Customer;
 use WP_REST_Request;
@@ -139,6 +140,22 @@ final class AccountsAdminTest extends IntegrationTestCase {
 		} finally {
 			remove_filter( 'woocommerce_billing_fields', $field ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- removes the fixture.
 		}
+	}
+
+	/**
+	 * The website added to the registration form (#225) reaches the review
+	 * card and its link through the same field reader; no card edit.
+	 */
+	public function test_the_registered_website_appears_in_the_review_card(): void {
+		$customer = $this->customer();
+		$customer->update_meta_data( Website::META, 'https://example.com/' );
+		$customer->save();
+
+		$item = $this->accounts->items( $customer->get_id() )[0];
+		$rows = array_column( $item['fields'], 'value', 'key' );
+		$this->assertSame( 'https://example.com/', $rows[ Website::META ] );
+		$this->assertContains( 'https://example.com/', array_column( $item['links'], 'url' ) );
+		$this->assertContains( 'Company website', array_column( $item['links'], 'label' ) );
 	}
 
 	/** Synthetic text, replaceable free-mail providers and saved VAT outcomes are only clues. */

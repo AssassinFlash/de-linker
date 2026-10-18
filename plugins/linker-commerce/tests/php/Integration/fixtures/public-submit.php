@@ -7,9 +7,12 @@
 
 declare( strict_types = 1 );
 require dirname( __DIR__, 2 ) . '/integration-bootstrap.php';
-$linker_commerce_email  = $argv[1];
-$linker_commerce_door   = $argv[2];
-$linker_commerce_start  = (float) $argv[3];
+// $_SERVER['argv'] is the CLI list in every PHP version; $argv is a global
+// only after php.ini's register_argc_argv, so the script reads the former.
+$linker_commerce_args   = $_SERVER['argv'] ?? array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- arguments of the test's own CLI fixture, not a request.
+$linker_commerce_email  = (string) ( $linker_commerce_args[1] ?? '' );
+$linker_commerce_door   = (string) ( $linker_commerce_args[2] ?? '' );
+$linker_commerce_start  = (float) ( $linker_commerce_args[3] ?? 0 );
 $_SERVER['REMOTE_ADDR'] = '127.0.0.246';
 wp_set_current_user( 0 );
 wc_load_cart();

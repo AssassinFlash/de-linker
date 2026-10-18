@@ -1,0 +1,640 @@
+./composer.json is valid
+./composer.json is valid
+./composer.json is valid
+./composer.json is valid
+./composer.json is valid
+== plugins/linker-commerce: PHPUnit
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+.............................................................   61 / 1255 (  4%)
+.............................................................  122 / 1255 (  9%)
+..................wp-cli log: backup: 0 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 18, updated 2, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: No compiled WindPress cache exists (no compiled cache exists (WindPress has never compiled)): the templates would reach the visitor unstyled. Compile from the WindPress admin (admin.php?page=windpress), or rerun with --allow-stale..wp-cli log: backup: 0 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 18, updated 2, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: WindPress cache is stale (cache compiled 2026-10-18 16:10:21 UTC, newer source files: linker-commerce-present-command-source-a.html, linker-commerce-present-command-source-b.css). Compile from the WindPress admin (admin.php?page=windpress), or rerun with --allow-stale..wp-cli log: backup: 0 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 18, updated 2, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: WindPress cache is stale (cache compiled 2026-10-18 16:10:21 UTC, newer source files: linker-commerce-present-command-source-a.html, linker-commerce-present-command-source-b.css). Compile from the WindPress admin (admin.php?page=windpress), or rerun with --allow-stale.wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option..wp-cli log: backup: 0 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 18, updated 2, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: WindPress is not active: the Tailwind classes of the templates will not be compiled. Activate it and compile from its admin (admin.php?page=windpress), or rerun with --allow-stale..wp-cli log: backup: 0 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 18, updated 2, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: WindPress is not active: the Tailwind classes of the templates will not be compiled. Activate it and compile from its admin (admin.php?page=windpress), or rerun with --allow-stale.wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option..wp-cli log: backup: 0 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 18, updated 2, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: Compiled CSS does not contain template classes (py-10, px-4, bg-white, max-w-[1160px], text-[#0c7f73], text-(--proto-accent), overflow-x-auto, object-contain, sf-products, product-grid, sf-card, wb-strip, pdp-purchase, pdp-intro, pdp-section-nav, pdp-disclose, tv-blog-single-v1, tv-blog-index-v1, tv-blog-search-v1, tv-blog-category-v1, linker-library-tabbar, linker-library-card, linker-library-thumb, linker-auth-card, linker-gate, linker-account-welcome, linker-account-pill) — the classes are not compiled; recompile from the WindPress admin (admin.php?page=windpress).wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option..wp-cli log: backup: 0 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 18, updated 2, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: WindPress cache is stale (cache compiled 2026-10-18 16:10:21 UTC, newer source files: linker-commerce-present-command-source-a.html, linker-commerce-present-command-source-b.css). Compile from the WindPress admin (admin.php?page=windpress), or rerun with --allow-stale.wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option..wp-cli log: backup: 1 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 17, updated 1, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: Compiled CSS does not contain template classes (py-10, px-4, bg-white, max-w-[1160px], text-[#0c7f73], text-(--proto-accent), overflow-x-auto, object-contain, tv-blog-single-v1, tv-blog-index-v1, tv-blog-search-v1, tv-blog-category-v1, linker-library-tabbar, linker-library-card, linker-library-thumb, linker-auth-card, linker-gate, linker-account-welcome, linker-account-pill) — the classes are not compiled; recompile from the WindPress admin (admin.php?page=windpress).wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option..wp-cli log: backup: 1 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 17, updated 1, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: Compiled CSS does not contain template classes (py-10, px-4, bg-white, max-w-[1160px], text-[#0c7f73], text-(--proto-accent), overflow-x-auto, object-contain, tv-blog-single-v1, tv-blog-index-v1, tv-blog-search-v1, tv-blog-category-v1, linker-library-tabbar, linker-library-card, linker-library-thumb, linker-auth-card, linker-gate, linker-account-welcome, linker-account-pill) — the classes are not compiled; recompile from the WindPress admin (admin.php?page=windpress).wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option..wp-cli log: backup: 0 templates, additional css, 1 partials staged for rollbackwp-cli log: templates: created 18, updated 0, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli log: partials: stripped tokens from 1wp-cli warning: Compiled CSS does not contain template classes (py-10, px-4, bg-white, max-w-[1160px], text-[#0c7f73], text-(--proto-accent), overflow-x-auto, object-contain, tv-blog-single-v1, tv-blog-index-v1, tv-blog-search-v1, tv-blog-category-v1, linker-library-tabbar, linker-library-card, linker-library-thumb, linker-auth-card, linker-gate, linker-account-welcome, linker-account-pill) — the classes are not compiled; recompile from the WindPress admin (admin.php?page=windpress).wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option..wp-cli log: backup: 0 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 18, updated 0, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: Compiled CSS does not contain template classes (py-10, px-4, bg-white, max-w-[1160px], text-[#0c7f73], text-(--proto-accent), overflow-x-auto, object-contain, tv-blog-single-v1, tv-blog-index-v1, tv-blog-search-v1, tv-blog-category-v1, linker-library-tabbar, linker-library-card, linker-library-thumb, linker-auth-card, linker-gate, linker-account-welcome, linker-account-pill) — the classes are not compiled; recompile from the WindPress admin (admin.php?page=windpress).wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option.wp-cli success: Rolled back 20 writes from the 2026-10-18 17:10:21 UTC run..wp-cli log: backup: 0 templates, additional css, 0 partials staged for rollbackwp-cli log: templates: created 18, updated 0, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: Compiled CSS does not contain template classes (py-10, px-4, bg-white, max-w-[1160px], text-[#0c7f73], text-(--proto-accent), overflow-x-auto, object-contain, tv-blog-single-v1, tv-blog-index-v1, tv-blog-search-v1, tv-blog-category-v1, linker-library-tabbar, linker-library-card, linker-library-thumb, linker-auth-card, linker-gate, linker-account-welcome, linker-account-pill) — the classes are not compiled; recompile from the WindPress admin (admin.php?page=windpress).wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option.wp-cli success: Rolled back 20 writes from the 2026-10-18 17:10:21 UTC run...wp-cli success: Rolled back 3 writes from the 2026-10-10 12:00:00 UTC run..wp-cli success: Rolled back 2 writes from the 2026-10-10 12:00:00 UTC run....wp-cli log: backup: 0 templates, additional css, 2 partials staged for rollbackwp-cli log: templates: created 18, updated 2, unchanged 0wp-cli log: tokens: no Additional CSS copy to removewp-cli log: windpress volume: storefront styleswp-cli warning: Compiled CSS does not contain template classes (py-10, px-4, bg-white, max-w-[1160px], text-[#0c7f73], text-(--proto-accent), overflow-x-auto, object-contain, tv-blog-single-v1, tv-blog-index-v1, tv-blog-search-v1, tv-blog-category-v1, linker-library-tabbar, linker-library-card, linker-library-thumb, linker-auth-card, linker-gate, linker-account-welcome, linker-account-pill) — the classes are not compiled; recompile from the WindPress admin (admin.php?page=windpress).wp-cli success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option..wp-cli log: backup: 0 templates, additional css, 1 partials staged for rollback..wp-cli success: presentation in sync.wp-cli log: drift: page type is_shop_page — post 501: content differs from shop_page.html.wp-cli log: drift: page assignment linker-compare — compare-products (en): post 930 points at another template (or none)wp-cli log: drift: German twin is_single_product — post 505: the translation group carries no German twin for this page typewp-cli log: drift: header partial — header: German header partial could not be resolved from English partial 17 (pll_get_post de, fallback slug kopfzeile): refusing to report a header sync that skipped a language.wp-cli log: drift: windpress volume — storefront.css: not installed.wp-cli log: drift: page linker-faq — post 513: title "An older title" differs from "FAQ & documents".wp-cli log: drift: page type is_search — search.html: not installed...................  183 / 1255 ( 14%)
+.............................................................  244 / 1255 ( 19%)
+.............................................................  305 / 1255 ( 24%)
+.............................................................  366 / 1255 ( 29%)
+.............................................................  427 / 1255 ( 34%)
+.............................................................  488 / 1255 ( 38%)
+.............................................................  549 / 1255 ( 43%)
+.............................................................  610 / 1255 ( 48%)
+.............................................................  671 / 1255 ( 53%)
+.............................................................  732 / 1255 ( 58%)
+.............................................................  793 / 1255 ( 63%)
+.............................................................  854 / 1255 ( 68%)
+.............................................................  915 / 1255 ( 72%)
+.............................................................  976 / 1255 ( 77%)
+............................................................. 1037 / 1255 ( 82%)
+...........................................................SS 1098 / 1255 ( 87%)
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS 1159 / 1255 ( 92%)
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS 1220 / 1255 ( 97%)
+SSSSSSSSSSSSSSSSSSSS
+
+Time: 00:01.677, Memory: 72.00 MB
+
+OK, but incomplete, skipped, or risky tests!
+Tests: 1255, Assertions: 5723, Skipped: 144.
+== plugins/linker-i18n: PHPUnit
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+...............................................................  63 / 190 ( 33%)
+............................................................... 126 / 190 ( 66%)
+............................................................... 189 / 190 ( 99%)
+.                                                               190 / 190 (100%)
+
+Time: 00:00.193, Memory: 16.00 MB
+
+OK (190 tests, 432 assertions)
+== plugins/linker-tools: PHPUnit
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+...............................................................  63 / 238 ( 26%)
+............................................................... 126 / 238 ( 52%)
+............................................................... 189 / 238 ( 79%)
+.................................................               238 / 238 (100%)
+
+Time: 00:00.208, Memory: 60.03 MB
+
+OK (238 tests, 2182 assertions)
+== mu-plugins: PHPUnit
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+............                                                      12 / 12 (100%)
+
+Time: 00:00.007, Memory: 6.00 MB
+
+OK (12 tests, 40 assertions)
+npm run test:unit
+
+> linker-tools@0.1.0 test:unit
+> wp-scripts test-unit-js
+
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c225/plugins/linker-tools
+
+
+ Test Files  29 passed (29)
+      Tests  199 passed (199)
+   Start at  01:10:23
+   Duration  7.14s (tests 37%, environment 36%, setup 14%, transform 7%, import 5%)
+
+Environment  jsdom was created 29 times · 21.97s total, 36% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+cd "/Users/chesterjohn/Documents/de-linker-worktrees/c225/plugins/linker-commerce" && npm run test:unit
+
+> linker-commerce@0.1.0 test:unit
+> wp-scripts test-unit-js
+
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c225/plugins/linker-commerce
+
+
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+   Start at  01:10:32
+   Duration  1.34s (environment 49%, setup 35%, tests 7%, transform 5%, import 5%)
+
+# The commerce plugins' script tests are plain node:test files (jsdom
+# resolves through this project's node_modules); this gate is what runs
+# them in CI.
+node --test "../../plugins/linker-commerce/tests/js/*.test.mjs"
+TAP version 13
+# Subtest: a submitted account form marks its button as loading, and never disables it
+ok 1 - a submitted account form marks its button as loading, and never disables it
+  ---
+  duration_ms: 80.365
+  type: 'test'
+  ...
+# Subtest: a second submit while the first is in flight does not post again
+ok 2 - a second submit while the first is in flight does not post again
+  ---
+  duration_ms: 15.388875
+  type: 'test'
+  ...
+# Subtest: a form the browser reports invalid keeps its button untouched
+ok 3 - a form the browser reports invalid keeps its button untouched
+  ---
+  duration_ms: 8.921375
+  type: 'test'
+  ...
+# Subtest: two different passwords keep the form on the page and name the mismatch
+ok 4 - two different passwords keep the form on the page and name the mismatch
+  ---
+  duration_ms: 18.7145
+  type: 'test'
+  ...
+# Subtest: a blocked mismatch clears the disabled state WooCommerce's own script leaves
+ok 5 - a blocked mismatch clears the disabled state WooCommerce's own script leaves
+  ---
+  duration_ms: 17.226125
+  type: 'test'
+  ...
+# Subtest: the mismatch line follows the typing and clears when they agree
+ok 6 - the mismatch line follows the typing and clears when they agree
+  ---
+  duration_ms: 9.469084
+  type: 'test'
+  ...
+# Subtest: agreeing passwords post the form
+ok 7 - agreeing passwords post the form
+  ---
+  duration_ms: 14.721583
+  type: 'test'
+  ...
+# Subtest: a public inquiry cannot submit twice while navigation is in flight
+ok 8 - a public inquiry cannot submit twice while navigation is in flight
+  ---
+  duration_ms: 10.576167
+  type: 'test'
+  ...
+# Subtest: the register card opens on the company step and disables the hidden sign-in step
+ok 9 - the register card opens on the company step and disables the hidden sign-in step
+  ---
+  duration_ms: 22.780958
+  type: 'test'
+  ...
+# Subtest: continue refuses an incomplete company step and names the missing verification value
+ok 10 - continue refuses an incomplete company step and names the missing verification value
+  ---
+  duration_ms: 79.907334
+  type: 'test'
+  ...
+# Subtest: a complete company step opens the sign-in step and enables its controls
+ok 11 - a complete company step opens the sign-in step and enables its controls
+  ---
+  duration_ms: 42.890959
+  type: 'test'
+  ...
+# Subtest: back returns to the company step and disables the sign-in controls again
+ok 12 - back returns to the company step and disables the sign-in controls again
+  ---
+  duration_ms: 42.683959
+  type: 'test'
+  ...
+# Subtest: submitting on the company step opens the sign-in step instead of posting
+ok 13 - submitting on the company step opens the sign-in step instead of posting
+  ---
+  duration_ms: 19.228666
+  type: 'test'
+  ...
+# Subtest: a malformed website keeps the company step open; a VAT ID alone satisfies the pair
+ok 14 - a malformed website keeps the company step open; a VAT ID alone satisfies the pair
+  ---
+  duration_ms: 57.3655
+  type: 'test'
+  ...
+# Subtest: the Filters button opens the drawer panel over the page
+ok 15 - the Filters button opens the drawer panel over the page
+  ---
+  duration_ms: 161.237375
+  type: 'test'
+  ...
+# Subtest: close, apply and Escape hide the drawer again
+ok 16 - close, apply and Escape hide the drawer again
+  ---
+  duration_ms: 22.0855
+  type: 'test'
+  ...
+# Subtest: every header image resolves through its own src in both languages
+ok 17 - every header image resolves through its own src in both languages
+  ---
+  duration_ms: 207.455583
+  type: 'test'
+  ...
+# Subtest: no header image defers through data-src or data-srcset
+ok 18 - no header image defers through data-src or data-srcset
+  ---
+  duration_ms: 138.000709
+  type: 'test'
+  ...
+# Subtest: menu image sources are site-absolute uploads paths
+ok 19 - menu image sources are site-absolute uploads paths
+  ---
+  duration_ms: 105.282375
+  type: 'test'
+  ...
+# Subtest: both language headers ship the same set of photos
+ok 20 - both language headers ship the same set of photos
+  ---
+  duration_ms: 66.588083
+  type: 'test'
+  ...
+# Subtest: the loading distribution is the live checkpoint's
+ok 21 - the loading distribution is the live checkpoint's
+  ---
+  duration_ms: 52.769958
+  type: 'test'
+  ...
+# Subtest: the first ArrowDown opens the mega menu and focuses after visibility
+ok 22 - the first ArrowDown opens the mega menu and focuses after visibility
+  ---
+  duration_ms: 123.26075
+  type: 'test'
+  ...
+# Subtest: the fallback focuses when the visibility transition never ends
+ok 23 - the fallback focuses when the visibility transition never ends
+  ---
+  duration_ms: 28.222583
+  type: 'test'
+  ...
+# Subtest: a later ArrowDown on an open menu focuses in the same turn
+ok 24 - a later ArrowDown on an open menu focuses in the same turn
+  ---
+  duration_ms: 13.49725
+  type: 'test'
+  ...
+# Subtest: closing a menu cancels its delayed keyboard focus
+ok 25 - closing a menu cancels its delayed keyboard focus
+  ---
+  duration_ms: 18.871667
+  type: 'test'
+  ...
+# Subtest: completed opening focus does not undo the next keyboard selection
+ok 26 - completed opening focus does not undo the next keyboard selection
+  ---
+  duration_ms: 6.248583
+  type: 'test'
+  ...
+# Subtest: an account menu served without hidden is closed on load
+ok 27 - an account menu served without hidden is closed on load
+  ---
+  duration_ms: 7.590666
+  type: 'test'
+  ...
+# Subtest: search matches fold case and accents, and require every word
+ok 28 - search matches fold case and accents, and require every word
+  ---
+  duration_ms: 2.36875
+  type: 'test'
+  ...
+# Subtest: ranking prefers a title match over a body match
+ok 29 - ranking prefers a title match over a body match
+  ---
+  duration_ms: 0.34825
+  type: 'test'
+  ...
+# Subtest: highlight ranges cover every term once and merge overlaps
+ok 30 - highlight ranges cover every term once and merge overlaps
+  ---
+  duration_ms: 1.970709
+  type: 'test'
+  ...
+# Subtest: pagination windows the first page, the last and the current one
+ok 31 - pagination windows the first page, the last and the current one
+  ---
+  duration_ms: 0.132625
+  type: 'test'
+  ...
+# Subtest: a page slice clamps out-of-range pages and keeps 20 rows a page
+ok 32 - a page slice clamps out-of-range pages and keeps 20 rows a page
+  ---
+  duration_ms: 0.168375
+  type: 'test'
+  ...
+# Subtest: the tab round-trips through the URL, documents named and faq the default
+ok 33 - the tab round-trips through the URL, documents named and faq the default
+  ---
+  duration_ms: 0.711791
+  type: 'test'
+  ...
+# Subtest: the script reveals the search field and the filters, and hides the inactive tab
+ok 34 - the script reveals the search field and the filters, and hides the inactive tab
+  ---
+  duration_ms: 344.68675
+  type: 'test'
+  ...
+# Subtest: the documents tab is named in the URL and the panels follow it
+ok 35 - the documents tab is named in the URL and the panels follow it
+  ---
+  duration_ms: 148.506375
+  type: 'test'
+  ...
+# Subtest: a card paginates its rows 20 at a time and the pager clamps
+ok 36 - a card paginates its rows 20 at a time and the pager clamps
+  ---
+  duration_ms: 43.631625
+  type: 'test'
+  ...
+# Subtest: the type chips own aria-pressed, and the rows never get one
+ok 37 - the type chips own aria-pressed, and the rows never get one
+  ---
+  duration_ms: 37.794334
+  type: 'test'
+  ...
+# Subtest: a type chip filters the rows, the card count and the rail link together
+ok 38 - a type chip filters the rows, the card count and the rail link together
+  ---
+  duration_ms: 55.001208
+  type: 'test'
+  ...
+# Subtest: a document row keeps its tile slot in the flat result list, thumbnail or not
+ok 39 - a document row keeps its tile slot in the flat result list, thumbnail or not
+  ---
+  duration_ms: 65.8055
+  type: 'test'
+  ...
+# Subtest: the rail marks the zone of the card the reader is in
+ok 40 - the rail marks the zone of the card the reader is in
+  ---
+  duration_ms: 43.480041
+  type: 'test'
+  ...
+# Subtest: the search lists the active tab's hits, marked and paginated, and splits the counts
+ok 41 - the search lists the active tab's hits, marked and paginated, and splits the counts
+  ---
+  duration_ms: 77.011792
+  type: 'test'
+  ...
+# Subtest: a question searched in the answer shows where it matched
+ok 42 - a question searched in the answer shows where it matched
+  ---
+  duration_ms: 37.308833
+  type: 'test'
+  ...
+# Subtest: a tab switch re-halves the search results, not just the counts
+ok 43 - a tab switch re-halves the search results, not just the counts
+  ---
+  duration_ms: 115.773708
+  type: 'test'
+  ...
+# Subtest: an empty result offers Genie, and clearing restores the tabs
+ok 44 - an empty result offers Genie, and clearing restores the tabs
+  ---
+  duration_ms: 44.944709
+  type: 'test'
+  ...
+# Subtest: the suggestions list questions and documents, and a click outside closes them
+ok 45 - the suggestions list questions and documents, and a click outside closes them
+  ---
+  duration_ms: 56.183708
+  type: 'test'
+  ...
+# Subtest: arrow keys walk the suggestions and Enter opens a question in its card
+ok 46 - arrow keys walk the suggestions and Enter opens a question in its card
+  ---
+  duration_ms: 40.4505
+  type: 'test'
+  ...
+# Subtest: a document suggestion opens the file, not the page
+ok 47 - a document suggestion opens the file, not the page
+  ---
+  duration_ms: 40.403542
+  type: 'test'
+  ...
+# Subtest: a question the reader opened keeps its state, and a zone link scrolls to its zone
+ok 48 - a question the reader opened keeps its state, and a zone link scrolls to its zone
+  ---
+  duration_ms: 29.758625
+  type: 'test'
+  ...
+# Subtest: the enhancement never writes customer-visible words of its own
+ok 49 - the enhancement never writes customer-visible words of its own
+  ---
+  duration_ms: 0.094208
+  type: 'test'
+  ...
+# Subtest: thumbnail and keyboard keep main image and viewer in sync
+ok 50 - thumbnail and keyboard keep main image and viewer in sync
+  ---
+  duration_ms: 106.179166
+  type: 'test'
+  ...
+# Subtest: horizontal swipe selects without opening viewer, vertical scroll does not select
+ok 51 - horizontal swipe selects without opening viewer, vertical scroll does not select
+  ---
+  duration_ms: 13.2825
+  type: 'test'
+  ...
+# Subtest: swipe without a synthetic click does not swallow a later activation
+ok 52 - swipe without a synthetic click does not swallow a later activation
+  ---
+  duration_ms: 5.537458
+  type: 'test'
+  ...
+# Subtest: the viewer closes on a backdrop click and hands focus back to the picture
+ok 53 - the viewer closes on a backdrop click and hands focus back to the picture
+  ---
+  duration_ms: 28.323041
+  type: 'test'
+  ...
+# Subtest: the section nav marks the section in view and measures the chrome
+ok 54 - the section nav marks the section in view and measures the chrome
+  ---
+  duration_ms: 16.736041
+  type: 'test'
+  ...
+# Subtest: the project choices ask Genie and the retired nameplate entry is gone
+ok 55 - the project choices ask Genie and the retired nameplate entry is gone
+  ---
+  duration_ms: 10.272167
+  type: 'test'
+  ...
+1..55
+# tests 55
+# suites 0
+# pass 55
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1958.5505
+npx playwright install --only-shell chromium
+npm run test:e2e
+
+> linker-tools@0.1.0 test:e2e
+> playwright test
+
+
+Running 9 tests using 1 worker
+
+  ✓  1 [chromium] › tests/e2e/configurator.spec.ts:23:5 › a household becomes a released system with its report (4.6s)
+  ✓  2 [chromium] › tests/e2e/configurator.spec.ts:41:5 › adding all shows the outcome in every card without moving it (3.2s)
+  ✓  3 [chromium] › tests/e2e/configurator.spec.ts:61:5 › the roof step reads the official building at a click and counts modules (4.7s)
+  ✓  4 [chromium] › tests/e2e/configurator.spec.ts:88:5 › German throughout (3.1s)
+  ✓  5 [chromium] › tests/e2e/configurator.spec.ts:103:5 › commercial: a load profile gives power, energy and the options (3.6s)
+  ✓  6 [chromium] › tests/e2e/configurator.spec.ts:117:5 › nothing overflows the phone width (4.2s)
+  ✓  7 [chromium] › tests/e2e/configurator.spec.ts:138:5 › a select never draws its text past its border on the phone (3.3s)
+  ✓  8 [chromium] › tests/e2e/configurator.spec.ts:175:5 › the keyboard reaches every input in reading order, each with a visible focus ring (3.0s)
+  ✓  9 [chromium] › tests/e2e/configurator.spec.ts:212:5 › the roof step fills the PV array of the inputs (3.8s)
+
+  9 passed (39.4s)
+== services/genie: pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/c225/services/genie
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collected 980 items
+
+tests/test_abilities.py ...........                                      [  1%]
+tests/test_activate.py ....                                              [  1%]
+tests/test_agent.py ..............                                       [  2%]
+tests/test_attachments.py ...................................            [  6%]
+tests/test_bakeoff.py .....                                              [  7%]
+tests/test_build.py .....                                                [  7%]
+tests/test_chunking.py ..........                                        [  8%]
+tests/test_contact.py .................................................. [ 13%]
+.......................................                                  [ 17%]
+tests/test_cycle.py .........                                            [ 18%]
+tests/test_embedding.py ......................                           [ 20%]
+tests/test_eval_gate.py .......                                          [ 21%]
+tests/test_extract.py ........                                           [ 22%]
+tests/test_figures.py ........................                           [ 24%]
+tests/test_goldset.py ..........                                         [ 25%]
+tests/test_ground.py ...................                                 [ 27%]
+tests/test_ground_understanding.py ..................................... [ 31%]
+                                                                         [ 31%]
+tests/test_health.py .                                                   [ 31%]
+tests/test_hydrate.py ...............                                    [ 33%]
+tests/test_input_docs.py ...........                                     [ 34%]
+tests/test_inquiry.py .........................................          [ 38%]
+tests/test_inventory.py ....                                             [ 38%]
+tests/test_jev.py .......                                                [ 39%]
+tests/test_knowledge.py ...........                                      [ 40%]
+tests/test_lexicon.py .................................................. [ 45%]
+........................................................................ [ 53%]
+........................................................................ [ 60%]
+........................................................................ [ 67%]
+...............................................                          [ 72%]
+tests/test_mariadb.py ....                                               [ 73%]
+tests/test_nameplate.py .........................                        [ 75%]
+tests/test_page.py ..............................                        [ 78%]
+tests/test_page_turn.py ...............                                  [ 80%]
+tests/test_parse.py ..                                                   [ 80%]
+tests/test_prices.py ............................                        [ 83%]
+tests/test_publish.py ......                                             [ 83%]
+tests/test_quality.py ................................................   [ 88%]
+tests/test_release.py ..                                                 [ 88%]
+tests/test_retrieval.py ..............................                   [ 92%]
+tests/test_route.py ......................                               [ 94%]
+tests/test_summary.py ...........................                        [ 97%]
+tests/test_tokenizer.py ...                                              [ 97%]
+tests/test_turn.py ...............                                       [ 98%]
+tests/test_understand.py ...........                                     [100%]
+
+============================= 980 passed in 46.60s =============================
+== services/engine: pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/c225/services/engine
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collected 112 items
+
+tests/test_api.py ......                                                 [  5%]
+tests/test_commercial.py ......                                          [ 10%]
+tests/test_compatibility.py .......                                      [ 16%]
+tests/test_health.py .                                                   [ 17%]
+tests/test_htw.py .....                                                  [ 22%]
+tests/test_products.py ......                                            [ 27%]
+tests/test_report.py ...........                                         [ 37%]
+tests/test_residential.py .................                              [ 52%]
+tests/test_roof.py ..........                                            [ 61%]
+tests/test_schemas.py .                                                  [ 62%]
+tests/test_strings.py ......                                             [ 67%]
+tests/test_ui_fixtures.py ............                                   [ 78%]
+tests/test_units.py ........................                             [100%]
+
+============================= 112 passed in 6.51s ==============================
+== tools/local: pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/c225/tools/local
+configfile: pyproject.toml
+testpaths: tests
+collected 98 items
+
+tests/test_checkout.py .                                                 [  1%]
+tests/test_cli.py ..........                                             [ 11%]
+tests/test_downloads.py ...                                              [ 14%]
+tests/test_instance.py ..............                                    [ 28%]
+tests/test_mysql.py .                                                    [ 29%]
+tests/test_objectcache.py .....                                          [ 34%]
+tests/test_processes.py ........                                         [ 42%]
+tests/test_registry.py .......                                           [ 50%]
+tests/test_secret.py .                                                   [ 51%]
+tests/test_server.py ..                                                  [ 53%]
+tests/test_services.py ......                                            [ 59%]
+tests/test_snapshot.py ..........                                        [ 69%]
+tests/test_stack.py ...................                                  [ 88%]
+tests/test_wordpress.py .......                                          [ 95%]
+tests/test_wpcli.py ....                                                 [100%]
+
+======================== 98 passed in 156.15s (0:02:36) ========================
+== tools/migrate: pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/c225/tools/migrate
+configfile: pyproject.toml
+testpaths: tests
+collected 116 items
+
+tests/test_12_site_chrome_menu_images.py ........                        [  6%]
+tests/test_12_site_chrome_pairs.py ...................                   [ 23%]
+tests/test_12_site_chrome_quoting.py .....                               [ 27%]
+tests/test_68_contact_form.py .....                                      [ 31%]
+tests/test_69_seopress_schema.py ....                                    [ 35%]
+tests/test_7_facts.py .............................                      [ 60%]
+tests/test_7_facts_wordpress.py sss                                      [ 62%]
+tests/test_80_customers_wordpress.py sss                                 [ 65%]
+tests/test_8_engineering.py ..........                                   [ 74%]
+tests/test_8_engineering_wordpress.py sss                                [ 76%]
+tests/test_9_i18n_quoting.py ........                                    [ 83%]
+tests/test_i18n_coverage.py .............                                [ 94%]
+tests/test_page_template_empty.py ......                                 [100%]
+
+======================== 107 passed, 9 skipped in 5.29s ========================
+== tools/faq: pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.14.6, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/c225/tools/faq
+configfile: pyproject.toml
+testpaths: .
+collected 20 items
+
+test_generate.py .........                                               [ 45%]
+test_thumbs.py ...........                                               [100%]
+
+============================== 20 passed in 0.07s ==============================
+cd /Users/chesterjohn/Documents/de-linker-worktrees/c225/tools/pull && PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/c225/tools/pull
+configfile: pyproject.toml
+testpaths: tests
+collected 113 items
+
+tests/test_anonymize.py ..................                               [ 15%]
+tests/test_cli.py ......                                                 [ 21%]
+tests/test_licenses.py ....                                              [ 24%]
+tests/test_live.py .........................                             [ 46%]
+tests/test_load.py .............                                         [ 58%]
+tests/test_manifest.py .....                                             [ 62%]
+tests/test_phpserial.py ............                                     [ 73%]
+tests/test_scan.py ...                                                   [ 76%]
+tests/test_snapshot.py .....                                             [ 80%]
+tests/test_sqldump.py ......................                             [100%]
+
+============================= 113 passed in 50.51s =============================
+cd /Users/chesterjohn/Documents/de-linker-worktrees/c225/tools/cutover && uv run --locked pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/c225/tools/cutover
+configfile: pyproject.toml
+testpaths: tests
+collected 150 items
+
+tests/test_atomic.py ........................                            [ 16%]
+tests/test_backup.py .................                                   [ 27%]
+tests/test_cli.py ...........                                            [ 34%]
+tests/test_opcache_reset.py ...                                          [ 36%]
+tests/test_plan.py .........                                             [ 42%]
+tests/test_probe.py ........                                             [ 48%]
+tests/test_snapshot.py ..............                                    [ 57%]
+tests/test_steps.py ...............................................      [ 88%]
+tests/test_target.py .................                                   [100%]
+
+============================= 150 passed in 27.92s =============================
+EXIT:0

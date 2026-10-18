@@ -42,7 +42,7 @@
 | `login.html?state=reset-success` | 同页，Woo 的 `.woocommerce-message`（`password-reset=true`） | 重置成功 |
 | `login.html?state=signed-out` | 同页，Woo 的 `.woocommerce-info`（`signed-out=true`） | 一键登出后 |
 | `login.html?state=loading` | 提交瞬时（`account-ui.js` 给按钮 `.is-loading`） | 提交 |
-| `register.html?state=default/errors/loading/password-shown` | 注册卡（三步、法务链接、Privacy 链接按 `get_privacy_policy_url()` 存在时出）；自 2026-10-16 起在 `/my-account/register/`（DE `/de/mein-konto/register/`） | 访客 |
+| `register.html?state=default/errors/loading/password-shown` | 注册卡（#225 两步：进度条 `Step 1 of 2 · Your company` / `Step 2 of 2 · You and your sign-in`；第 1 步公司名、业务类型三单选、国家、网站或 VAT ID，第 2 步名/姓/邮箱/密码；法务链接、Privacy 链接按 `get_privacy_policy_url()` 存在时出）；自 2026-10-16 起在 `/my-account/register/`（DE `/de/mein-konto/register/`） | 访客 |
 | `lost-password.html?state=default` | `/my-account/lost-password/` 单卡 | 访客 |
 | `lost-password.html?state=sent` | 同路径 `?reset-link-sent=true` → 确认卡 | 发送成功 |
 | `lost-password.html?state=invalid-key` | 同路径，Woo 的错误条在卡内 | 无效/已用 key |
@@ -160,3 +160,14 @@
 - **run10 稳定性：已关闭，非代码缺陷。** [Claude 第一轮评审](https://github.com/AssassinFlash/de-linker/pull/310#issuecomment-6245533011) 确认：本地共享 Redis DB 0 在审批秒发生 Predis 读错误，graceful 模式使一次请求回退数据库、下一次读取旧缓存。产品与卡片均经 `Approval::status()` → `get_user_meta`，原生 `update_user_meta` 负责失效，并无第二个审批来源。线上只读核实没有 object-cache drop-in（`wp cache type` 为 Default），LiteSpeed Cache 不活跃，账户响应为 `private, no-cache`，因此当前线上配置不具有该故障路径。原始时间线与日志见 `docs/acceptance/2026-10-18/222/diagnostics/cache-availability.json`、`run10-failure.txt` 和 `readback.json`。不新增审批缓存、轮询或会话机制；未来启用 Redis 必须通过规格 17 的一致性条件。
 
 前文 St3 的 `PendingGate::output()` 记录为当时实现；现已由上述原生 Woo 内容 hook 取代，无模板替换器。
+
+## #225 注册表单两步（2026-10-19）
+
+业主 2026-10-17 裁定变体 B（AGENTS.md §2），取代 2026-10-15 验收版的三段编号单页。
+
+- **字段与两步**：`Registration\Fields` 定义第 1 步（`billing_company`、`linker_customer_role` 三单选、`billing_country`、`linker_company_website`、`billing_vat_id`，网站与 VAT 至少一项）和第 2 步（`billing_first_name`、`billing_last_name`；邮箱与密码仍是 Woo 模板自己的字段）。街道、邮编、城市移出注册，由 Proforma 请求页原生账单字段收；电话不收。`Account\AuthTemplates::split_field_blocks()` 把缓冲的字段切成 `company`/`verify`/`you` 三块，未知布局不丢字段。
+- **呈现**：`templates/myaccount/auth/form-register.php` 一个 Woo 表单两个 pane；`account-ui.js` 加 `.is-split` 后隐藏非当前 pane、禁用隐藏 pane 的控件（浏览器不会校验看不见的必填项），Continue 先校验第 1 步；没有 JS 时两个 pane 都显示、单个 Register 提交整张表单。服务端拒绝时 `Fields::active_step()` 决定重新打开哪一步：第 1 步字段有错回第 1 步，否则停留第 2 步。
+- **国家**：`CountryOptions` 用 Woo 国家表与 Europe 大洲：德国置顶、欧洲其余、其余按名排序；`CountryField` 经 `woocommerce_form_field_linker_country` 输出两个 `<optgroup>`，`account-ui.js` 初始化 Woo 的 selectWoo（`wc-country-select` 提供译名）。全部国家开放，默认德国。
+- **防机器人**：`BotGuard` 在 `woocommerce_register_form` 打印 `Inquiry\PublicGuard` 的蜜罐与签名起始时间，在 `woocommerce_process_registration_errors`（优先级 20，字段校验之后、建号与发信之前）复用同一个守卫：蜜罐、时钟、过短被拒，并共用每连接每小时 3 次的原子限额。被拒计数写入 `linker_commerce_registration_blocked`（不 autoload，按原因分桶 + 最后时间），`wp linker-commerce registration-blocks [--reset]` 可读，`linker_commerce_registration_blocked` action 可接监控。
+- **通知与后台**：`NewCustomerEmail` 与后台账户页都通过 `RegistrationInformation::rows()` 读同一套字段定义，网站自动出现在新客户通知与审核卡（以及卡片上的 Company website 链接）；VAT 检查与审批状态行仍附在后面。
+- **验收**：`docs/acceptance/2026-10-19/225/`（EN/DE × 1440/390 两步与错误态、线上 before、机器人拦截/成功实走、Outbox 断言、文案对抗评审、变更台账）。注册卡属裁定重设计，不做整页像素相等声明。

@@ -1,0 +1,28 @@
+{
+  "tag": "225-1792342001",
+  "register_url": "http://127.0.0.1:9138/my-account/register/",
+  "bot": {
+    "status": 200,
+    "location": "",
+    "error_notice": true,
+    "account_exists": false,
+    "mail_added": 0
+  },
+  "counter_before": "No blocked registrations.",
+  "counter_after": "honeypot: 1\ntotal: 1 · last: 2026-10-18 16:46:46",
+  "human": {
+    "status": 302,
+    "location": "http://127.0.0.1:9138/my-account/",
+    "user_id": "116",
+    "website_meta": "https://example.com",
+    "approval_meta": "pending",
+    "new_mail_files": 2,
+    "mail_names": [
+      "20261018-164652-1dbe0848-72a9-4a82-95b7-27ae979a01c2.eml",
+      "20261018-164652-80a3d319-a72f-4a16-94fe-cea2d31c0318.eml"
+    ],
+    "team_mail_has_website": true
+  },
+  "human_email": "tester225-human-225-1792342001@example.test",
+  "cleanup": "Test customer 116 removed after the run; the shared connection allowance was cleared. Test mail stayed in ~/de-linker-local/c225/mail."
+}

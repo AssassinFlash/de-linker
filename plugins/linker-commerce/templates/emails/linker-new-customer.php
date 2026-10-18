@@ -7,6 +7,7 @@
  * @package Linker\Commerce
  *
  * @var WP_User  $customer           The customer.
+ * @var list<array{key: string, label: string, value: string, website: bool}> $registration_rows The same rows the accounts page reads.
  * @var string   $email_heading      Heading.
  * @var string   $additional_content Closing paragraph from the email settings.
  * @var WC_Email $email              The email.
@@ -14,22 +15,20 @@
 
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Registration\AccountsAdmin;
-use Linker\Commerce\Registration\CustomerRole;
 use Linker\Commerce\Registration\VatProfile;
 
 defined( 'ABSPATH' ) || exit;
 
-$linker_customer = new WC_Customer( $customer->ID );
-$linker_rows     = array(
-	__( 'Company', 'linker-commerce' )       => $linker_customer->get_billing_company(),
-	__( 'Business type', 'linker-commerce' ) => CustomerRole::label( (string) $linker_customer->get_meta( CustomerRole::META ) ),
-	__( 'Name', 'linker-commerce' )          => trim( $linker_customer->get_billing_first_name() . ' ' . $linker_customer->get_billing_last_name() ),
-	__( 'Email', 'linker-commerce' )         => $linker_customer->get_email(),
-	__( 'Address', 'linker-commerce' )       => wp_strip_all_tags( str_replace( '<br/>', ', ', WC()->countries->get_formatted_address( $linker_customer->get_billing() ) ) ),
-	__( 'VAT ID', 'linker-commerce' )        => (string) $linker_customer->get_meta( VatProfile::VAT_META ),
-	__( 'VAT check', 'linker-commerce' )     => VatProfile::label( (string) get_user_meta( $customer->ID, VatProfile::STATUS_META, true ) ),
-	__( 'Approval', 'linker-commerce' )      => Approval::label( Approval::PENDING ),
-);
+// One reader for the notification and the staff accounts page (ticket #225):
+// RegistrationInformation reads the field definitions, so the website added to
+// the form appears in both without a second list. The VAT verdict and the
+// approval state are not registration fields; they follow the fields.
+$linker_rows = array();
+foreach ( $registration_rows as $linker_row ) {
+	$linker_rows[ $linker_row['label'] ] = $linker_row['value'];
+}
+$linker_rows[ __( 'VAT check', 'linker-commerce' ) ] = VatProfile::label( (string) get_user_meta( $customer->ID, VatProfile::STATUS_META, true ) );
+$linker_rows[ __( 'Approval', 'linker-commerce' ) ]  = Approval::label( Approval::PENDING );
 
 /** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
 do_action( 'woocommerce_email_header', $email_heading, $email );

@@ -11,6 +11,7 @@ namespace Linker\Commerce\Registration\Emails;
 
 use Linker\Commerce\Mail\TeamEmail;
 use Linker\Commerce\Registration\Fields;
+use Linker\Commerce\Registration\RegistrationInformation;
 use Linker\Commerce\Settings\Options;
 use WP_User;
 
@@ -29,10 +30,11 @@ final class NewCustomerEmail extends TeamEmail {
 	/**
 	 * Sets up the email.
 	 *
-	 * @param string  $plugin_file Absolute path of the main plugin file.
-	 * @param Options $options     The plugin settings.
+	 * @param string                       $plugin_file Absolute path of the main plugin file.
+	 * @param Options                      $options     The plugin settings.
+	 * @param RegistrationInformation|null $information The same field reader as the accounts page.
 	 */
-	public function __construct( string $plugin_file, Options $options ) {
+	public function __construct( string $plugin_file, Options $options, private readonly ?RegistrationInformation $information = null ) {
 		$this->id            = self::ID;
 		$this->title         = __( 'New customer', 'linker-commerce' );
 		$this->description   = __( 'Sent to the internal notification address, with blind copies, when a customer registers.', 'linker-commerce' );
@@ -72,11 +74,15 @@ final class NewCustomerEmail extends TeamEmail {
 	}
 
 	/**
-	 * The customer for the template.
+	 * The customer for the template, with the same registration rows the
+	 * accounts page shows (RegistrationInformation, ticket #225).
 	 *
 	 * @return array<string, mixed>
 	 */
 	protected function template_args(): array {
-		return array( 'customer' => $this->object );
+		return array(
+			'customer'          => $this->object,
+			'registration_rows' => $this->object instanceof WP_User && null !== $this->information ? $this->information->rows( $this->object ) : array(),
+		);
 	}
 }
