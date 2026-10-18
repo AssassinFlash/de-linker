@@ -497,8 +497,16 @@ def test_a_pdf_worker_that_crashes_fails_that_file_with_the_cause_logged(
 
     from linker_genie import pdfwork
 
+    # SIGKILL, not os.abort(): an aborting interpreter is a GUI crash on macOS,
+    # which pops a "Python quit unexpectedly" dialog on every test run.
     monkeypatch.setattr(
-        pdfwork, "COMMAND", (sys.executable, "-c", "import os; os.abort()")
+        pdfwork,
+        "COMMAND",
+        (
+            sys.executable,
+            "-c",
+            "import os, signal; os.kill(os.getpid(), signal.SIGKILL)",
+        ),
     )
     with caplog.at_level(logging.ERROR, logger="linker_genie.pdfwork"):
         [reading] = attachments.read(
