@@ -29,13 +29,13 @@ final class Autoload {
 	/**
 	 * Loads a class of this plugin; false when the name is not ours or the file is absent.
 	 *
-	 * @param string $class Fully qualified class name.
+	 * @param string $name Fully qualified class name.
 	 */
-	public static function load( string $class ): bool {
-		if ( ! str_starts_with( $class, self::PREFIX ) ) {
+	public static function load( string $name ): bool {
+		if ( ! str_starts_with( $name, self::PREFIX ) ) {
 			return false;
 		}
-		$relative = str_replace( '\\', '/', substr( $class, strlen( self::PREFIX ) ) );
+		$relative = str_replace( '\\', '/', substr( $name, strlen( self::PREFIX ) ) );
 		$file     = dirname( __DIR__ ) . '/includes/' . $relative . '.php';
 		if ( ! is_readable( $file ) ) {
 			return false;
