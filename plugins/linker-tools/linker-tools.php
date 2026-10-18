@@ -25,6 +25,7 @@ use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\InquirySummary;
 use Linker\Tools\Genie\PageContext;
 use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
@@ -63,5 +64,6 @@ $genie_preview = new Preview( $page_context ); // phpcs:ignore WordPress.NamingC
 	new QualityPage( $quality, $thread ),
 	$genie_preview,
 	$mail,
-	new ContactRequest( $conversations, $thread, $page_context )
+	new ContactRequest( $conversations, $thread, $page_context ),
+	new InquirySummary( $conversations, $thread )
 ) )->register();

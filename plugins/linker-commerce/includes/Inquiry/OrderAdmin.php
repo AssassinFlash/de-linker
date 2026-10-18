@@ -76,4 +76,82 @@ final class OrderAdmin {
 			echo ' · ' . esc_html( \Linker\Commerce\Contact\Form::intent_label( (string) $order->get_meta( '_linker_inquiry_topic' ) ) );
 		}
 	}
+
+	/**
+	 * Adds the conversation summary box to both order screens (#244).
+	 */
+	public function register_summary_box(): void {
+		$screen = get_current_screen();
+		if ( ! $screen instanceof \WP_Screen ) {
+			return;
+		}
+		if ( ! in_array( $screen->id, array( 'shop_order', 'woocommerce_page_wc-orders' ), true ) ) {
+			return;
+		}
+		add_meta_box(
+			'linker-genie-summary',
+			__( 'Conversation with Genie', 'linker-commerce' ),
+			array( $this, 'summary_box' ),
+			$screen->id,
+			'side',
+			'default'
+		);
+	}
+
+	/**
+	 * Shows what the customer and Genie settled on, with the cause when the
+	 * summary was assembled by rule instead of by the model.
+	 *
+	 * @param int|\WC_Order $post Inquiry.
+	 */
+	public function summary_box( $post ): void {
+		$order = $post instanceof \WC_Order ? $post : wc_get_order( (int) $post );
+		if ( ! $order instanceof \WC_Order ) {
+			return;
+		}
+		$summary = $order->get_meta( Sender::SUMMARY_META );
+		if ( ! is_array( $summary ) || '' === trim( (string) ( $summary['summary'] ?? '' ) ) ) {
+			return;
+		}
+		?>
+		<div class="linker-genie-summary">
+			<p><?php echo nl2br( esc_html( (string) $summary['summary'] ) ); ?></p>
+			<?php if ( array() !== (array) ( $summary['quantities'] ?? array() ) ) : ?>
+				<p><strong><?php esc_html_e( 'Quantities', 'linker-commerce' ); ?></strong><br />
+					<?php
+					$lines = array();
+					foreach ( (array) $summary['quantities'] as $line ) {
+						$id = (int) ( $line['product_id'] ?? 0 );
+						if ( $id > 0 ) {
+							$lines[] = sprintf( '%1$s × %2$d', get_the_title( $id ), (int) ( $line['quantity'] ?? 0 ) );
+						}
+					}
+					echo esc_html( implode( ', ', $lines ) );
+					?>
+				</p>
+			<?php endif; ?>
+			<?php if ( array() !== (array) ( $summary['conditions'] ?? array() ) ) : ?>
+				<p><strong><?php esc_html_e( 'Conditions', 'linker-commerce' ); ?></strong><br />
+					<?php echo esc_html( implode( ' · ', array_map( 'strval', (array) $summary['conditions'] ) ) ); ?>
+				</p>
+			<?php endif; ?>
+			<?php if ( '' !== (string) ( $summary['note'] ?? '' ) ) : ?>
+				<p><strong><?php esc_html_e( 'Latest message', 'linker-commerce' ); ?></strong><br />
+					<?php echo esc_html( (string) $summary['note'] ); ?>
+				</p>
+			<?php endif; ?>
+			<?php if ( 'rule' === ( $summary['source'] ?? '' ) ) : ?>
+				<p><em>
+					<?php
+					printf(
+						/* translators: %s: why the model summary was not used (a short cause). */
+						esc_html__( 'Assembled from the customer\'s messages (%s).', 'linker-commerce' ),
+						esc_html( (string) ( $summary['reason'] ?? '' ) )
+					);
+					?>
+				</em></p>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
 }

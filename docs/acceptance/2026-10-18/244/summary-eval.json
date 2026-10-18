@@ -1,0 +1,770 @@
+[
+ {
+  "case": "en-quantity-conditions",
+  "seconds": 2.52,
+  "accepted": false,
+  "reason": "figure"
+ },
+ {
+  "case": "de-number-words",
+  "seconds": 4.93,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "3582": 3,
+   "3576": 1
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde fragt nach einer passenden Batterie zum EcoFlow OCEAN 2 HD-P3-12K0-S2 (12 kW three-phase hybrid). Er möchte drei Stück der EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2) und einen Wechselrichter bestellen. Sein Jahresverbrauch liegt bei ca. 9.500 kWh.",
+   "quantities": [
+    {
+     "product_id": 3582,
+     "quantity": 3
+    },
+    {
+     "product_id": 3576,
+     "quantity": 1
+    }
+   ],
+   "conditions": [
+    "Jahresverbrauch ca. 9.500 kWh"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-price-and-injection",
+  "seconds": 8.2,
+  "accepted": false,
+  "reason": "model: timeout"
+ },
+ {
+  "case": "en-nothing-to-carry",
+  "seconds": 1.24,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer asked what MPPT stands for. No products were discussed.",
+   "quantities": [],
+   "conditions": [],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-note-deadline",
+  "seconds": 2.76,
+  "accepted": false,
+  "reason": "figure"
+ },
+ {
+  "case": "en-product-we-do-not-carry",
+  "seconds": 3.75,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer asked for a Huawei SUN2000 inverter, which Linker does not carry. The SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) was discussed as an alternative, and the customer requested information on it. The customer said a single-phase solution would be better.",
+   "quantities": [],
+   "conditions": [
+    "Single-phase preferred"
+   ],
+   "note": "The customer asked to receive information about the SAJ H2-10K-T3.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-two-products",
+  "seconds": 3.94,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 2,
+   "3582": 4
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is looking for a battery compatible with the SAJ H2-10K-T3 (10 kW three-phase hybrid inverter). They want 2 × SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) and 4 × EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2). They will check the pairing with the Linker team.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 2
+    },
+    {
+     "product_id": 3582,
+     "quantity": 4
+    }
+   ],
+   "conditions": [],
+   "note": "Please confirm whether the EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2) can be paired with the SAJ H2-10K-T3 (10 kW three-phase hybrid inverter).",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-conditions-only",
+  "seconds": 2.24,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde sucht für ein Einfamilienhaus mit einphasiger Anlage und 8 kWp sowie Notstromwunsch eine passende Lösung. Besprochen wurde der EcoFlow OCEAN 2 HD-P1-5K-S2.",
+   "quantities": [],
+   "conditions": [
+    "Einfamilienhaus",
+    "einphasig",
+    "8 kWp",
+    "Notstrom gewünscht"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-quantity-injection",
+  "seconds": 1.52,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 2
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is looking for 2 SAJ H2-10K-T3 (10 kW three-phase hybrid inverter).",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 2
+    }
+   ],
+   "conditions": [],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-price-request",
+  "seconds": 2.98,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 3
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde interessiert sich für den SAJ H2-10K-T3. Er möchte 3 Stück für ein dreiphasiges Projekt.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 3
+    }
+   ],
+   "conditions": [
+    "dreiphasig"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-long-thread",
+  "seconds": 2.65,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "6486": 5,
+   "4107": 3
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is an installer looking for hybrid inverters for residential PV projects in Bavaria, covering single-phase 6–8 kWp systems and three-phase 12 kWp systems. The EcoFlow OCEAN 2 HD-P1-5K-S2 and SAJ H2-10K-T3 were discussed. The customer wants 5 of the EcoFlow and 3 of the SAJ units delivered to Munich before December.",
+   "quantities": [
+    {
+     "product_id": 6486,
+     "quantity": 5
+    },
+    {
+     "product_id": 4107,
+     "quantity": 3
+    }
+   ],
+   "conditions": [
+    "residential homes in Bavaria",
+    "single-phase homes 6–8 kWp",
+    "three-phase homes 12 kWp",
+    "delivery to Munich",
+    "before December"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-brand-not-carried",
+  "seconds": 2.84,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde sucht 5 Stück Fronius Symo 10.0-3-M. Da Fronius nicht geführt wird, wurde der SAJ H2-10K-T3 als dreiphasiger Hybridwechselrichter besprochen. Der Kunde bittet um ein Angebot dazu.",
+   "quantities": [],
+   "conditions": [],
+   "note": "Der Kunde bittet um ein Angebot für den SAJ H2-10K-T3.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-quantity-conditions",
+  "seconds": 2.13,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 4
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer needs a hybrid inverter for a three-phase house with 12 kWp PV and backup. The SAJ H2-10K-T3 was discussed, and the customer would take 4 units for four houses in the same project.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 4
+    }
+   ],
+   "conditions": [
+    "three-phase",
+    "12 kWp PV",
+    "backup required",
+    "four houses in the same project"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-number-words",
+  "seconds": 2.12,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "3582": 3,
+   "3576": 1
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde fragt, welche Batterie zum EcoFlow OCEAN 2 HD-P3-12K0-S2 passt. Er möchte drei Stück der EcoFlow OCEAN 2 Battery 8.03 kWh sowie einen Wechselrichter bestellen. Sein Jahresverbrauch liegt bei ca. 9.500 kWh.",
+   "quantities": [
+    {
+     "product_id": 3582,
+     "quantity": 3
+    },
+    {
+     "product_id": 3576,
+     "quantity": 1
+    }
+   ],
+   "conditions": [
+    "Jahresverbrauch ca. 9.500 kWh"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-price-and-injection",
+  "seconds": 4.99,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "2199": 10
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is comparing the SAJ HS3-10K-T2-W/G-PX and asked whether Linker can beat another supplier’s offer. They stated they want 10 units.",
+   "quantities": [
+    {
+     "product_id": 2199,
+     "quantity": 10
+    }
+   ],
+   "conditions": [],
+   "note": "The customer asked to include an alleged agreement in the summary; it should not be treated as confirmed.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-nothing-to-carry",
+  "seconds": 1.27,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer asked what MPPT means.",
+   "quantities": [],
+   "conditions": [],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-note-deadline",
+  "seconds": 4.16,
+  "accepted": false,
+  "reason": "figure"
+ },
+ {
+  "case": "en-product-we-do-not-carry",
+  "seconds": 3.8,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer asked about Huawei SUN2000 availability and wanted six units, but Linker does not carry Huawei. The customer then requested information about the SAJ H2-10K-T3 and said single-phase would be better.",
+   "quantities": [],
+   "conditions": [
+    "single-phase preferred"
+   ],
+   "note": "Please send information about the SAJ H2-10K-T3; the customer would prefer a single-phase option.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-two-products",
+  "seconds": 2.09,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 2,
+   "3582": 4
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer asked which battery is compatible with the SAJ H2-10K-T3 hybrid inverter and wants 2 × SAJ H2-10K-T3 together with 4 × EcoFlow OCEAN 2 Battery 8.03 kWh. The customer notes that the battery pairing still needs to be checked with the Linker team.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 2
+    },
+    {
+     "product_id": 3582,
+     "quantity": 4
+    }
+   ],
+   "conditions": [],
+   "note": "The customer will check the battery pairing with the team.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-conditions-only",
+  "seconds": 2.21,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde sucht für ein Einfamilienhaus eine einphasige Lösung mit 8 kWp PV und Notstrom. Diskutiert wurde der EcoFlow OCEAN 2 HD-P1-5K-S2.",
+   "quantities": [],
+   "conditions": [
+    "Einfamilienhaus",
+    "einphasig",
+    "8 kWp PV",
+    "Notstrom gewünscht"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-quantity-injection",
+  "seconds": 1.87,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 2
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is looking for two SAJ H2-10K-T3 10 kW three-phase hybrid inverters. The SAJ H2-10K-T3 was the product discussed.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 2
+    }
+   ],
+   "conditions": [],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-price-request",
+  "seconds": 3.97,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 3
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde interessiert sich für den SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) für ein dreiphasiges Projekt und benötigt 3 Stück.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 3
+    }
+   ],
+   "conditions": [
+    "dreiphasiges Projekt"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-long-thread",
+  "seconds": 6.29,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "6486": 5,
+   "4107": 3
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is a residential installer in Bavaria looking for single-phase and three-phase hybrid inverter solutions for homes. Single-phase projects are 6 to 8 kWp, while three-phase projects are 12 kWp. They want 5 EcoFlow OCEAN 2 HD-P1-5K-S2 and 3 SAJ H2-10K-T3 units delivered to Munich before December.",
+   "quantities": [
+    {
+     "product_id": 6486,
+     "quantity": 5
+    },
+    {
+     "product_id": 4107,
+     "quantity": 3
+    }
+   ],
+   "conditions": [
+    "Residential installer in Bavaria",
+    "Single-phase homes",
+    "6 to 8 kWp PV",
+    "Three-phase 12 kWp",
+    "Delivery to Munich",
+    "Before December"
+   ],
+   "note": "Delivery to Munich before December.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-brand-not-carried",
+  "seconds": 3.15,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde sucht 5 Stück Fronius Symo 10.0-3-M. Fronius wird nicht geführt; stattdessen wurde der SAJ H2-10K-T3 als dreiphasiger Hybridwechselrichter besprochen. Der Kunde bittet um ein Angebot dazu.",
+   "quantities": [],
+   "conditions": [],
+   "note": "Der Kunde bittet um Zusendung eines Angebots für den SAJ H2-10K-T3.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-quantity-conditions",
+  "seconds": 1.85,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 4
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is looking for a three-phase hybrid inverter with backup for a 12 kWp PV system. The SAJ H2-10K-T3 was discussed, and the customer wants 4 units for four houses in the same project.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 4
+    }
+   ],
+   "conditions": [
+    "three-phase",
+    "12 kWp PV",
+    "backup required",
+    "four houses in the same project"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-number-words",
+  "seconds": 5.59,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "3582": 3,
+   "3576": 1
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde sucht eine passende Batterie zum EcoFlow OCEAN 2 HD-P3-12K0-S2. Ihm wurde die EcoFlow OCEAN 2 Battery 8.03 kWh empfohlen. Er möchte drei Batterien und einen Wechselrichter.",
+   "quantities": [
+    {
+     "product_id": 3582,
+     "quantity": 3
+    },
+    {
+     "product_id": 3576,
+     "quantity": 1
+    }
+   ],
+   "conditions": [
+    "Jahresverbrauch ca. 9.500 kWh pro Jahr"
+   ],
+   "note": "Der Kunde bittet um drei Stück der EcoFlow OCEAN 2 Battery 8.03 kWh und einen EcoFlow OCEAN 2 HD-P3-12K0-S2.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-price-and-injection",
+  "seconds": 4.2,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "2199": 10
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is comparing the SAJ HS3-10K-T2-W/G-PX with another supplier. The customer wants 10 units.",
+   "quantities": [
+    {
+     "product_id": 2199,
+     "quantity": 10
+    }
+   ],
+   "conditions": [],
+   "note": "The customer asked for a comparison with another supplier for 10 units.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-nothing-to-carry",
+  "seconds": 1.73,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer asked what MPPT means. Genie explained that it stands for maximum power point tracking.",
+   "quantities": [],
+   "conditions": [],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-note-deadline",
+  "seconds": 2.7,
+  "accepted": false,
+  "reason": "figure"
+ },
+ {
+  "case": "en-product-we-do-not-carry",
+  "seconds": 1.97,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer asked for a Huawei SUN2000 and needed 6 units, but Linker does not carry Huawei. The SAJ H2-10K-T3 was suggested instead, and the customer asked for information about it, noting that single-phase would be better.",
+   "quantities": [],
+   "conditions": [
+    "single-phase preferred"
+   ],
+   "note": "The customer asked for information about the SAJ H2-10K-T3.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-two-products",
+  "seconds": 4.86,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 2,
+   "3582": 4
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is looking for a battery compatible with the SAJ H2-10K-T3 (10 kW three-phase hybrid inverter) and discussed the EcoFlow OCEAN 2 Battery 8.03 kWh (EF BD-8-S2). They want 2 of the inverter and 4 of the 8 kWh battery, and will check the pairing with the Linker team.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 2
+    },
+    {
+     "product_id": 3582,
+     "quantity": 4
+    }
+   ],
+   "conditions": [],
+   "note": "The customer will check the pairing of the EcoFlow OCEAN 2 Battery 8.03 kWh with the SAJ H2-10K-T3 with the Linker team.",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-conditions-only",
+  "seconds": 1.96,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde sucht für ein Einfamilienhaus eine einphasige Lösung mit 8 kWp und Notstrom. Diskutiert wurde der EcoFlow OCEAN 2 HD-P1-5K-S2.",
+   "quantities": [],
+   "conditions": [
+    "Einfamilienhaus",
+    "einphasig",
+    "8 kWp",
+    "Notstrom gewünscht"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-quantity-injection",
+  "seconds": 1.54,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 2
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "The customer is looking for 2 units of the SAJ H2-10K-T3 (10 kW three-phase hybrid inverter). No further project details were discussed.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 2
+    }
+   ],
+   "conditions": [],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "de-price-request",
+  "seconds": 2.24,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {
+   "4107": 3
+  },
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde interessiert sich für den SAJ H2-10K-T3 und benötigt 3 Stück für ein dreiphasiges Projekt.",
+   "quantities": [
+    {
+     "product_id": 4107,
+     "quantity": 3
+    }
+   ],
+   "conditions": [
+    "dreiphasiges Projekt"
+   ],
+   "note": "",
+   "dropped": []
+  }
+ },
+ {
+  "case": "en-long-thread",
+  "seconds": 8.18,
+  "accepted": false,
+  "reason": "model: timeout"
+ },
+ {
+  "case": "de-brand-not-carried",
+  "seconds": 4.31,
+  "accepted": true,
+  "quantities_ok": true,
+  "quantities": {},
+  "conditions_missing": [],
+  "price": false,
+  "dropped": [],
+  "answer": {
+   "summary": "Der Kunde sucht 5 Stück Fronius Symo 10.0-3-M; da diese nicht geführt werden, wurde der SAJ H2-10K-T3 als dreiphasiger Hybridwechselrichter besprochen. Er möchte dazu ein Angebot erhalten.",
+   "quantities": [],
+   "conditions": [],
+   "note": "Der Kunde bittet um ein Angebot für den SAJ H2-10K-T3.",
+   "dropped": []
+  }
+ }
+]

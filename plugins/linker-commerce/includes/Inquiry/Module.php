@@ -69,6 +69,8 @@ final class Module {
 		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this->admin, 'columns' ) );
 		add_action( 'manage_shop_order_posts_custom_column', array( $this->admin, 'source' ), 10, 2 );
 		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this->admin, 'source' ), 10, 2 );
+		// The inquiry's Genie conversation (#244), on both order screens.
+		add_action( 'add_meta_boxes', array( $this->admin, 'register_summary_box' ) );
 
 		add_filter( 'woocommerce_email_actions', array( $this, 'email_actions' ) );
 		add_filter( 'woocommerce_email_classes', array( $this, 'add_emails' ) );

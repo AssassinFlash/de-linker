@@ -3,22 +3,24 @@
 POST /assistant/turn and POST /turn (alias) stream one grounded turn as SSE: the
 understanding layer prepares the turn (understand.py), the agent writes it.
 POST /turn/{id}/vote and POST /assistant/turn/{id}/vote store a customer's
-thumbs-up or thumbs-down for a logged turn. GET /health reports that the
-process is up.
+thumbs-up or thumbs-down for a logged turn. POST /summary writes the checked summary
+of a conversation an inquiry carries (summary.py, #244). GET /health reports that
+the process is up.
 """
 
 from __future__ import annotations
 
 import json
+import logging
 import os
 import time
 from collections.abc import Iterator
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
-from linker_genie import contact, ground, jev, page
+from linker_genie import contact, ground, jev, page, summary
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import make_generate, model_name, provider_name
 from linker_genie.cycle import TurnResult, run
@@ -30,6 +32,7 @@ from linker_genie.storeapi import StoreVocabulary
 from linker_genie.understand import Prepared, Understander
 
 app = FastAPI(title="Genie - Linker's AI assistant")
+logger = logging.getLogger(__name__)
 
 _log: TurnLog | None = None
 _client: AbilityClient | None = None
@@ -184,6 +187,24 @@ def turn_vote(turn_id: int, body: VoteRequest) -> dict[str, bool]:
     if not turn_log().vote(turn_id, body.vote):
         raise HTTPException(status_code=404, detail="unknown turn")
     return {"ok": True}
+
+
+@app.post("/summary")
+def conversation_summary(
+    body: summary.SummaryRequest, request: Request
+) -> JSONResponse:
+    """The checked summary of a conversation for an inquiry (#244), or 422 with the
+    reason it was refused; WordPress then assembles its own by rule."""
+    complete = getattr(request.app.state, "summary_model", None) or summary.deepseek()
+    try:
+        result = summary.summarise(body, complete)
+    except summary.SummaryError as error:
+        # Never silent: the reason is logged here and recorded with the inquiry.
+        logger.warning("summary refused: %s", error.reason)
+        return JSONResponse(status_code=422, content={"error": error.reason})
+    if result.dropped:
+        logger.info("summary dropped quantities: %s", ", ".join(result.dropped))
+    return JSONResponse(content={**result.model_dump(), "model": model_name()})
 
 
 def _answer(

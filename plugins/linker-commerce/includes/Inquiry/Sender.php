@@ -23,6 +23,19 @@ final class Sender {
 
 
 	/**
+	 * The filter Linker\Tools\Genie\InquirySummary answers with the conversation
+	 * summary (#244). The literal is kept here so this plugin needs no class of
+	 * the other: an inactive linker-tools simply leaves the filter unanswered.
+	 */
+	private const SUMMARY_FILTER = 'linker_genie_inquiry_summary';
+
+	/**
+	 * Order meta the summary array is stored under; the new-inquiry mail and
+	 * the inquiry screen read it (Linker\Tools\Genie\InquirySummary::META).
+	 */
+	public const SUMMARY_META = '_linker_genie_summary';
+
+	/**
 	 * Sends validated details with the current solution draft.
 	 * Products, prices and customer identity always come from Woo's session.
 	 *
@@ -59,6 +72,7 @@ final class Sender {
 		if ( ! $order instanceof WC_Order ) {
 			return new WP_Error( 'linker_inquiry_create', __( 'Please try sending your inquiry again.', 'linker-commerce' ) );
 		}
+		$this->attach_summary( $order );
 		$this->receive( $order, $details, 'proforma' );
 		WC()->cart->empty_cart();
 		return $order;
@@ -89,6 +103,23 @@ final class Sender {
 		}
 		$this->receive( $order, $details, 'contact' );
 		return $order;
+	}
+
+	/**
+	 * Stores the conversation summary the team reads with the inquiry (#244).
+	 *
+	 * The browser's own conversation is summarized (never an id from the form);
+	 * an unanswered filter, no conversation or a refused answer leaves the
+	 * inquiry without the block — it is never held up (InquirySummary::META).
+	 *
+	 * @param WC_Order $order The inquiry just created.
+	 */
+	private function attach_summary( WC_Order $order ): void {
+		// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- linker-tools' filter (Linker\Tools\Genie\InquirySummary::FILTER) answers with the browser's conversation summary.
+		$summary = apply_filters( self::SUMMARY_FILTER, null, 0 );
+		if ( is_array( $summary ) && isset( $summary['summary'] ) && '' !== (string) $summary['summary'] ) {
+			$order->update_meta_data( self::SUMMARY_META, $summary );
+		}
 	}
 
 	/**

@@ -97,6 +97,16 @@ def _env_with_credentials() -> dict[str, str]:
     return values
 
 
+def chat_endpoint() -> tuple[str, str]:
+    """The DeepSeek base URL and key every deepseek-flash call uses: the chat agent
+    and the inquiry summary (summary.py). GENIE_* override DEEPSEEK_*; the base is
+    the official API unless one of them points elsewhere."""
+    env = _env_with_credentials()
+    key = env.get("GENIE_API_KEY") or env.get("DEEPSEEK_API_KEY") or ""
+    base = env.get("GENIE_BASE_URL") or env.get("DEEPSEEK_BASE_URL") or DEFAULT_BASE_URL
+    return base, key
+
+
 class ToolBudget:
     """Counts ability calls in one turn; the fifth is refused."""
 
@@ -159,9 +169,7 @@ def build_model() -> Any:
     from pydantic_ai.models.openai import OpenAIChatModel
     from pydantic_ai.providers.deepseek import DeepSeekProvider
 
-    env = _env_with_credentials()
-    key = env.get("GENIE_API_KEY") or env.get("DEEPSEEK_API_KEY") or ""
-    base = env.get("GENIE_BASE_URL") or env.get("DEEPSEEK_BASE_URL") or DEFAULT_BASE_URL
+    base, key = chat_endpoint()
     return OpenAIChatModel(
         model_name(),
         provider=DeepSeekProvider(
