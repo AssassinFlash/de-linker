@@ -1516,7 +1516,9 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 			},
 			{ role: 'user', content: 'Which battery fits the SAJ H2?' },
 		],
-		{ type: 'category' }
+		{ type: 'category' },
+		// No file was picked (#236): the turn carries none.
+		[]
 	);
 } );
 
