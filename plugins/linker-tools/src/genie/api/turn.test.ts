@@ -134,6 +134,7 @@ test( 'a reload without a conversation answers empty, and a truncated stream kee
 	expect( await readThread( '/thread', 'n', empty ) ).toEqual( {
 		messages: [],
 		turn: null,
+		inquiries: [],
 		contacts: [],
 	} );
 
@@ -156,6 +157,7 @@ test( 'a reload without a conversation answers empty, and a truncated stream kee
 		messages: [],
 		turn: null,
 		contacts: [],
+		inquiries: [],
 	} );
 } );
 

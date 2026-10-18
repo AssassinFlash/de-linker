@@ -15,6 +15,7 @@ use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\InquirySummary;
 use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
@@ -51,6 +52,7 @@ final class Plugin {
 	 * @param ConversationMail $mail        "Email me this conversation" and its confirmation link (ticket #235).
 	 * @param ContactRequest   $contact       "Let Linker contact me": the contact card's route (#243).
 	 * @param InquirySummary   $inquiry       The conversation summary an inquiry carries (#244).
+	 * @param InquiryRequest   $inquiry_card  The inquiry confirmation card's route (#250).
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -70,7 +72,8 @@ final class Plugin {
 		private readonly Preview $preview,
 		private readonly ConversationMail $mail,
 		private readonly ContactRequest $contact,
-		private readonly InquirySummary $inquiry
+		private readonly InquirySummary $inquiry,
+		private readonly InquiryRequest $inquiry_card
 	) {}
 
 	/**
@@ -86,6 +89,7 @@ final class Plugin {
 		add_action( 'rest_api_init', array( $this->engine_proxy, 'register' ) );
 		add_action( 'rest_api_init', array( $this->quality_route, 'register' ) );
 		add_action( 'rest_api_init', array( $this->contact, 'register' ) );
+		add_action( 'rest_api_init', array( $this->inquiry_card, 'register' ) );
 		$this->redirects->register();
 		$this->site_chrome->register();
 		$this->entries->register();

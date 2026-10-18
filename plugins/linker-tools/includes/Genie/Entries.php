@@ -486,7 +486,7 @@ JS,
 		// page was made, signed (ConversationMail::stamp()).
 		$stamp = ConversationMail::stamp();
 		return sprintf(
-			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-mail-started="%18$s" data-mail-started-nonce="%19$s" data-contact-url="%20$s"></div>',
+			'<div data-linker-app="genie" data-surface="%1$s" data-locale="%2$s" data-page-type="%3$s" data-product-id="%4$s" data-turn-url="%5$s" data-thread-url="%6$s" data-conversations-url="%7$s" data-vote-url="%8$s" data-rest-url="%9$s" data-rest-nonce="%10$s" data-disclosure="%11$s" data-account-url="%12$s" data-workspace-url="%13$s" data-prompts=\'%14$s\' data-page=\'%15$s\' data-signed-in="%16$s" data-retention-days="%17$s" data-mail-started="%18$s" data-mail-started-nonce="%19$s" data-contact-url="%20$s" data-inquiry-url="%21$s"></div>',
 			esc_attr( $surface ),
 			esc_attr( $locale ),
 			esc_attr( $page['type'] ),
@@ -508,7 +508,9 @@ JS,
 			esc_attr( $stamp['started'] ),
 			esc_attr( $stamp['nonce'] ),
 			// The contact card's route, "Let Linker contact me" (#243).
-			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . ContactRequest::ROUTE ) ) )
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . ContactRequest::ROUTE ) ) ),
+			// The inquiry confirmation card's route (#250).
+			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . InquiryRequest::ROUTE ) ) )
 		);
 	}
 

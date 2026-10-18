@@ -29,6 +29,8 @@
  *   was made, a guest's bot guard for "email me" (ConversationMail::stamp()).
  * - `data-contact-url`: the contact card's route
  *   (linker-ai/v1/genie/contact, #243).
+ * - `data-inquiry-url`: the inquiry confirmation card's route
+ *   (linker-ai/v1/genie/inquiry, #250).
  *
  * Opening and pending questions use the dock loader's ready/open handshake,
  * not configuration read from the mount.
@@ -63,6 +65,8 @@ export interface GenieConfig {
 	mailStartedNonce: string;
 	/** The contact card's route ("Let Linker contact me", #243). */
 	contactUrl: string;
+	/** The inquiry confirmation card's route (#250). */
+	inquiryUrl: string;
 }
 
 function readPage(
@@ -116,5 +120,6 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		mailStarted: data.mailStarted ?? '',
 		mailStartedNonce: data.mailStartedNonce ?? '',
 		contactUrl: data.contactUrl ?? '/wp-json/linker-ai/v1/genie/contact',
+		inquiryUrl: data.inquiryUrl ?? '/wp-json/linker-ai/v1/genie/inquiry',
 	};
 }

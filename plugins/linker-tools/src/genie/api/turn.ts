@@ -13,6 +13,7 @@
  */
 import type { Locale } from '../../configurator/types';
 import type { Upload } from '../attachments/prepare';
+import type { SentInquiry } from './inquiry';
 
 type Fetch = typeof fetch;
 
@@ -66,7 +67,12 @@ export interface CompareBlock {
 export interface ActionBlock {
 	type: 'action';
 	name:
-		'open_configurator' | 'add_to_draft' | 'save_solution' | 'view_inquiry';
+		| 'open_configurator'
+		| 'add_to_draft'
+		| 'save_solution'
+		| 'view_inquiry'
+		// The inquiry confirmation card (#250); the shell renders the card.
+		| 'send_inquiry';
 	args: Record< string, unknown >;
 }
 
@@ -193,6 +199,17 @@ export interface SentContact {
 	receipt?: boolean;
 }
 
+/**
+ * An inquiry sent from the confirmation card (#250): it stays in the history
+ * after the answer that showed the card, with the record's number and status.
+ */
+export interface SentInquiryCard extends SentInquiry {
+	/** The message index of the answer that showed the card. */
+	after: number;
+}
+
+export type { SentInquiry };
+
 /** One row of the history rail. */
 export interface ConversationSummary {
 	id: number;
@@ -283,7 +300,7 @@ export function assistantMessage( turn: Turn ): TurnMessage {
  * answered turn and that turn's stream on the conversation post, and this
  * reads them back in the same shapes a live turn uses.
  *
- * @param threadUrl Proxy route that answers `{ conversation_id, messages, stream, contacts }`.
+ * @param threadUrl Proxy route that answers `{ conversation_id, messages, stream, contacts, inquiries }`.
  * @param nonce     wp_rest nonce.
  * @param fetcher   Fetch for tests.
  */
@@ -296,8 +313,10 @@ export async function readThread(
 	turn: Turn | null;
 	/** Always set here; optional for the callers' own stand-ins. */
 	contacts?: SentContact[];
+	/** Always set here; optional for the callers' own stand-ins. */
+	inquiries?: SentInquiryCard[];
 } > {
-	const empty = { messages: [], turn: null, contacts: [] };
+	const empty = { messages: [], turn: null, contacts: [], inquiries: [] };
 	try {
 		const response = await fetcher( threadUrl, {
 			credentials: 'same-origin',
@@ -312,6 +331,7 @@ export async function readThread(
 			messages?: TurnMessage[];
 			stream?: string;
 			contacts?: Array< Partial< SentContact > >;
+			inquiries?: Array< Partial< SentInquiryCard > >;
 		};
 		const messages = ( stored.messages ?? [] )
 			.filter(
@@ -347,6 +367,13 @@ export async function readThread(
 				( card ): card is SentContact =>
 					Number.isInteger( card?.after ) &&
 					typeof card?.email === 'string'
+			),
+			inquiries: ( stored.inquiries ?? [] ).filter(
+				( card ): card is SentInquiryCard =>
+					Number.isInteger( card?.after ) &&
+					Number.isInteger( card?.order ) &&
+					typeof card?.number === 'string' &&
+					typeof card?.status === 'string'
 			),
 		};
 	} catch {

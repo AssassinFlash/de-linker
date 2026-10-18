@@ -132,6 +132,7 @@ function config(): GenieConfig {
 		accountUrl: '/my-account/',
 		workspaceUrl: '/genie/',
 		contactUrl: '/wp-json/linker-ai/v1/genie/contact',
+		inquiryUrl: '/wp-json/linker-ai/v1/genie/inquiry',
 		prompts: [ 'Ask Genie' ],
 		signedIn: false,
 		retentionDays: 90,

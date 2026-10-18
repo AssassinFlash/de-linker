@@ -1857,3 +1857,128 @@ msgstr[1] "Sie können bis zu %d Dateien auf einmal anhängen."
 #: includes/Genie/Preview.php
 msgid "Look up my device from a nameplate photo"
 msgstr "Welches Modell steht auf meinem Typenschild?"
+
+# "The inquiry confirmation card" (#250): copy review docs/acceptance/2026-10-18/250/copy-review.md.
+
+#. translators: 1: inquiry number, 2: the inquiry's status.
+#: build/genie.js
+msgid "Inquiry #%1$s · %2$s"
+msgstr "Anfrage Nr. %1$s · %2$s"
+
+#. translators: %s: inquiry number.
+#: build/genie.js
+msgid "Inquiry #%s"
+msgstr "Anfrage Nr. %s"
+
+#. translators: %d: quantity of a product in the solution draft.
+#: build/genie.js
+msgid "× %d"
+msgstr "× %d"
+
+#: build/genie.js
+msgid "Your inquiry"
+msgstr "Ihre Anfrage"
+
+#: build/genie.js
+msgid "Check the details and send the inquiry to the Linker team."
+msgstr "Prüfen Sie die Angaben und senden Sie die Anfrage an das Linker-Team."
+
+#: build/genie.js
+msgid "Products and quantities"
+msgstr "Produkte und Mengen"
+
+#: build/genie.js
+msgid "No products in your solution draft."
+msgstr "Keine Produkte im Lösungsentwurf."
+
+#: build/genie.js
+msgid "Message"
+msgstr "Nachricht"
+
+#: build/genie.js
+msgid "Attach the conversation summary"
+msgstr "Zusammenfassung des Gesprächs anhängen"
+
+#: build/genie.js
+msgid "Read the summary"
+msgstr "Zusammenfassung lesen"
+
+#: build/genie.js
+msgid "Name"
+msgstr "Name"
+
+#: build/genie.js
+msgid "Reply email"
+msgstr "E-Mail für die Antwort"
+
+#: build/genie.js
+msgid "Company (optional)"
+msgstr "Unternehmen (optional)"
+
+#: build/genie.js
+msgid "Send inquiry"
+msgstr "Anfrage senden"
+
+#: build/genie.js
+msgid "We reply within one business day."
+msgstr "Wir antworten innerhalb eines Arbeitstags."
+
+#: build/genie.js
+msgid "Open the inquiry page"
+msgstr "Anfrageseite öffnen"
+
+#: build/genie.js
+msgid "Your inquiry is with the Linker team"
+msgstr "Ihre Anfrage liegt beim Linker-Team"
+
+#: build/genie.js
+msgid "Inquiry received"
+msgstr "Anfrage eingegangen"
+
+#: build/genie.js
+msgid "Proforma invoice issued"
+msgstr "Proformarechnung ausgestellt"
+
+#: build/genie.js
+msgid "Completed"
+msgstr "Abgeschlossen"
+
+#: build/genie.js
+msgid "Cancelled"
+msgstr "Storniert"
+
+#: build/genie.js
+msgid "Not sent"
+msgstr "Nicht gesendet"
+
+#: build/genie.js
+msgid "The team replies within one business day."
+msgstr "Das Team schreibt Ihnen innerhalb eines Arbeitstags."
+
+#: build/genie.js
+msgid "Please add your name."
+msgstr "Bitte geben Sie Ihren Namen an."
+
+#: build/genie.js
+msgid "Please add an email address we can reply to."
+msgstr "Bitte geben Sie eine E-Mail-Adresse an, an die wir antworten können."
+
+#: build/genie.js
+msgid "Your solution draft changed. Check the lines and send the inquiry again."
+msgstr "Ihr Lösungsentwurf hat sich geändert. Prüfen Sie die Angaben und senden Sie die Anfrage erneut."
+
+#: build/genie.js
+msgid "Add a product to your solution draft or write a message."
+msgstr "Fügen Sie Ihrem Lösungsentwurf ein Produkt hinzu oder schreiben Sie eine Nachricht."
+
+#: build/genie.js
+msgid "Genie cannot send an inquiry right now. Please use the inquiry page."
+msgstr "Genie kann gerade keine Anfrage senden. Bitte nutzen Sie die Anfrageseite."
+
+#: build/genie.js
+msgid "The inquiry could not be sent. Please check your solution draft on the inquiry page."
+msgstr "Die Anfrage konnte nicht gesendet werden. Prüfen Sie Ihren Lösungsentwurf auf der Anfrageseite."
+
+#: build/genie.js
+msgid "Sending did not work. Please try again, or use the inquiry page."
+msgstr "Das Senden ist fehlgeschlagen. Bitte versuchen Sie es erneut oder nutzen Sie die Anfrageseite."
