@@ -1,0 +1,45 @@
+{
+ "description": "Ticket #285 C2: point product 2003's L260-OMNI portfolio entry at the two-page excerpt (PDF pp. 20-21). The full 44-page portfolio stays in the media library; the excerpt is a new media item (ID 7367). Precedent: the pp. 17-18 excerpt already listed beside the full datasheet. No competitor evidence covers page-range pinning; the data-side excerpt is the established pattern.",
+ "product": 2003,
+ "meta_key": "_linker_documents",
+ "from": [
+  {
+   "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+   "title": "Pylontech OPTIM US L260-OMNI Datasheet",
+   "type": "datasheet",
+   "lang": "en"
+  },
+  {
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf",
+   "title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet excerpt, printed pp. 17-18 (EN)",
+   "type": "datasheet",
+   "lang": "en"
+  },
+  {
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-utility-ci-ess-product-portfolio-py2412en-sd.pdf",
+   "title": "Pylontech Utility, C&I ESS product portfolio PY2412EN-SD - L260-OMNI: PDF pp. 20-21 (EN)",
+   "type": "document",
+   "lang": "en"
+  }
+ ],
+ "to": [
+  {
+   "url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+   "title": "Pylontech OPTIM US L260-OMNI Datasheet",
+   "type": "datasheet",
+   "lang": "en"
+  },
+  {
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf",
+   "title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet excerpt, printed pp. 17-18 (EN)",
+   "type": "datasheet",
+   "lang": "en"
+  },
+  {
+   "url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-pp20-21.pdf",
+   "title": "Pylontech Utility, C&I ESS product portfolio PY2412EN-SD - L260-OMNI: PDF pp. 20-21 (EN)",
+   "type": "document",
+   "lang": "en"
+  }
+ ]
+}
