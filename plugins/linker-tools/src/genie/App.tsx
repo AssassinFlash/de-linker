@@ -25,6 +25,7 @@ import {
 	readThread,
 	selectConversation,
 	sendTurn,
+	TurnError,
 	type Block,
 	type CardPrice,
 	type CardsBlock,
@@ -36,6 +37,10 @@ import {
 	type Turn,
 	type TurnMessage,
 } from './api/turn';
+import { ACCEPT } from './attachments/prepare';
+import { useAttachments } from './attachments/useAttachments';
+import { AttachmentCard } from './components/AttachmentCard';
+import { AttachmentChips, refusalText } from './components/AttachmentChips';
 import { BlockView } from './components/BlockView';
 import { Compare } from './components/Compare';
 import { ContactCard, ContactSent } from './components/ContactCard';
@@ -176,13 +181,19 @@ export function App( { config }: { config: GenieConfig } ) {
 	// from the header's clock): it replaces the thread, and the header's
 	// mark becomes the way back. The workspace keeps its rail instead.
 	const [ dockHistory, setDockHistory ] = useState( false );
-	// What the visitor attached this turn, and what the dictation heard.
-	// Both are the browser's own: the turn route carries text only
-	// (docs/specs/13-genie.md), so the name rides in the question and the
-	// words land in the field.
+	// What the visitor attached for the next turn (#236): each file is
+	// prepared as it is picked and rides apart from the messages; its name
+	// rides in the question, so the thread says what was sent. What the
+	// dictation heard lands in the field.
 	const attachInput = useRef< HTMLInputElement >( null );
+	const field = useRef< HTMLInputElement >( null );
 	const recognition = useRef< Dictation | null >( null );
-	const [ attached, setAttached ] = useState< string[] >( [] );
+	const files = useAttachments();
+	// Why the last turn's files were refused by the proxy, if they were.
+	const [ refused, setRefused ] = useState( '' );
+	// Opened to send a nameplate photo (the preview card's suggestion): the
+	// panel offers the picker, which only a click may open.
+	const [ photoPrompt, setPhotoPrompt ] = useState( false );
 	const [ dictating, setDictating ] = useState( false );
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
@@ -250,23 +261,29 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const ask = useCallback(
 		async ( text: string ) => {
+			const uploads = files.uploads;
 			const question = [
 				text.trim(),
-				...attached.map( ( name ) =>
+				...uploads.map( ( upload ) =>
 					// translators: %s is the name of a file the visitor attached.
-					__( 'Attached: %s', 'linker-tools' ).replace( '%s', name )
+					__( 'Attached: %s', 'linker-tools' ).replace(
+						'%s',
+						upload.name
+					)
 				),
 			]
 				.filter( ( part ) => part !== '' )
 				.join( '\n' );
-			if ( ! question || sending.current ) {
+			if ( ! question || sending.current || files.busy ) {
 				return;
 			}
 			setOpen( true );
 			setDockHistory( false );
 			setPhase( 'waiting' );
 			setInput( '' );
-			setAttached( [] );
+			setRefused( '' );
+			setPhotoPrompt( false );
+			files.clear();
 			return enqueue( async () => {
 				// Claim the composer only once this ask is the lane's head.
 				// Setting it before the queue would drop a history click that
@@ -286,7 +303,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						config.restNonce,
 						config.locale,
 						next,
-						config.page
+						config.page,
+						uploads
 					);
 					const assistant = assistantMessage( answer );
 					currentThread.current = next.concat( assistant );
@@ -298,15 +316,53 @@ export function App( { config }: { config: GenieConfig } ) {
 					// turn, but holding the lane until it returns would
 					// block a switch the visitor starts while it is in flight.
 					void refreshHistory();
-				} catch {
-					setPhase( 'error' );
+				} catch ( error ) {
+					// A file the proxy refused (Attachments.php) is said as
+					// such; anything else is Genie not answering.
+					const reason =
+						error instanceof TurnError &&
+						error.code.startsWith( 'linker_genie_attachment_' )
+							? error.code.slice(
+									'linker_genie_attachment_'.length
+								)
+							: '';
+					if ( reason ) {
+						setRefused(
+							refusalText(
+								reason === 'throttled' ||
+									reason === 'count' ||
+									reason === 'size' ||
+									reason === 'type'
+									? reason
+									: 'unreadable'
+							)
+						);
+						setPhase( 'ask' );
+					} else {
+						setPhase( 'error' );
+					}
 				} finally {
 					sending.current = false;
 				}
 			} );
 		},
-		[ config, refreshHistory, attached ]
+		[ config, refreshHistory, files ]
 	);
+
+	// "Type the model": the way out of a nameplate the customer does not
+	// confirm, or one that could not be read.
+	const typeModel = useCallback( () => {
+		// The model goes where the placeholder stands; the field opens with
+		// the words before it, ready for the customer to type the name.
+		setInput(
+			sprintf(
+				// translators: %s stays empty: the customer types the model after the words.
+				__( 'My device is the %s', 'linker-tools' ),
+				''
+			)
+		);
+		field.current?.focus();
+	}, [] );
 
 	// The conversation the browser already has comes back on mount: a reload,
 	// or opening Genie on another page of the site, shows the thread instead
@@ -498,10 +554,17 @@ export function App( { config }: { config: GenieConfig } ) {
 		function onOpen( event: Event ) {
 			setOpen( true );
 			setDockHistory( false );
-			const detail = ( event as CustomEvent< { message?: unknown } > )
-				.detail;
-			if ( detail && typeof detail.message === 'string' ) {
+			const detail = (
+				event as CustomEvent< { message?: unknown; attach?: unknown } >
+			 ).detail;
+			if (
+				detail &&
+				typeof detail.message === 'string' &&
+				detail.message
+			) {
 				void ask( detail.message );
+			} else if ( detail && true === detail.attach ) {
+				setPhotoPrompt( true );
 			}
 		}
 		window.addEventListener( 'linker-genie-open', onOpen );
@@ -960,6 +1023,21 @@ export function App( { config }: { config: GenieConfig } ) {
 								 * and in production alike (seen 2026-10-14).
 								 * The blocks own what the thread item cannot
 								 * carry: chips, cards, compare, handoff. */ }
+								{ /* What Genie read from this turn's files
+								 * (#236), with the nameplate's confirmation. */ }
+								{ 'waiting' !== phase
+									? turn?.attachments?.map( ( card ) => (
+											<AttachmentCard
+												key={ card.id }
+												card={ card }
+												onAsk={ ask }
+												onTypeModel={ typeModel }
+												onPhoto={ () =>
+													attachInput.current?.click()
+												}
+											/>
+										) )
+									: null }
 								{ turn?.blocks
 									.filter(
 										( block ) =>
@@ -1063,44 +1141,43 @@ export function App( { config }: { config: GenieConfig } ) {
 									) ) }
 							</div>
 						) : null }
-						{ /* The picked files' names, over the composer; each
-						 * rides in the question's text (see ask()). */ }
+						{ /* The picked files, over the composer (#236). */ }
+						{ ! workspace && ! historyView ? (
+							<AttachmentChips
+								picked={ files.picked }
+								onRemove={ files.remove }
+							/>
+						) : null }
+						{ ! workspace && ! historyView && refused ? (
+							<p
+								role="alert"
+								className="linker-genie-app__refused"
+							>
+								{ refused }
+							</p>
+						) : null }
 						{ ! workspace &&
 						! historyView &&
-						attached.length > 0 ? (
-							<ul className="linker-genie-app__attachments">
-								{ attached.map( ( name ) => (
-									<li
-										key={ name }
-										className="linker-genie-app__attachment"
-									>
-										<span className="linker-genie-app__attachment-name">
-											{ name }
-										</span>
-										<button
-											type="button"
-											className="linker-genie-app__attachment-remove"
-											aria-label={
-												// translators: %s is the attached file's name.
-												__(
-													'Remove attachment %s',
-													'linker-tools'
-												).replace( '%s', name )
-											}
-											onClick={ () =>
-												setAttached( ( current ) =>
-													current.filter(
-														( item ) =>
-															item !== name
-													)
-												)
-											}
-										>
-											<CloseIcon size={ 14 } />
-										</button>
-									</li>
-								) ) }
-							</ul>
+						photoPrompt &&
+						files.picked.length === 0 ? (
+							<div className="linker-genie-app__photo-prompt">
+								<p>
+									{ __(
+										'Genie reads the brand and model from a nameplate photo and checks them against our range.',
+										'linker-tools'
+									) }
+								</p>
+								<button
+									type="button"
+									className="linker-genie-app__prompt"
+									onClick={ () =>
+										attachInput.current?.click()
+									}
+								>
+									<AttachIcon />
+									{ __( 'Choose a photo', 'linker-tools' ) }
+								</button>
+							</div>
 						) : null }
 						{ ! historyView ? (
 							<form
@@ -1113,11 +1190,9 @@ export function App( { config }: { config: GenieConfig } ) {
 								{ ! workspace ? (
 									/*
 									 * The Advisor composer's `.lia-vision-button`:
-									 * the attach entry. The turn route carries text
-									 * only (docs/specs/13-genie.md), so a pick lists
-									 * the file's name over the composer and the name
-									 * rides in the question — nothing claims the
-									 * file's bytes went anywhere.
+									 * the attach entry. A photo (HEIC too) or a PDF
+									 * is prepared as it is picked and sent with the
+									 * turn; Genie reads it (#236).
 									 */
 									<>
 										<button
@@ -1136,25 +1211,15 @@ export function App( { config }: { config: GenieConfig } ) {
 										<input
 											ref={ attachInput }
 											type="file"
+											accept={ ACCEPT }
 											multiple
 											hidden
 											onChange={ ( event ) => {
-												const files =
+												const picked =
 													event.target.files;
-												if ( files ) {
-													setAttached(
-														( current ) => [
-															...new Set( [
-																...current,
-																...Array.from(
-																	files
-																).map(
-																	( file ) =>
-																		file.name
-																),
-															] ),
-														]
-													);
+												if ( picked ) {
+													setRefused( '' );
+													files.add( picked );
 												}
 												// Picking the same file again must
 												// fire again.
@@ -1170,6 +1235,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									{ __( 'Ask Genie', 'linker-tools' ) }
 								</label>
 								<input
+									ref={ field }
 									id="linker-genie-input"
 									className="linker-genie-app__input"
 									placeholder={ __(
@@ -1206,7 +1272,9 @@ export function App( { config }: { config: GenieConfig } ) {
 									type="submit"
 									className="linker-genie-app__send"
 									disabled={
-										! input.trim() && attached.length === 0
+										files.busy ||
+										( ! input.trim() &&
+											files.uploads.length === 0 )
 									}
 								>
 									<SendIcon />

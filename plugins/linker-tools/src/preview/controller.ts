@@ -153,13 +153,24 @@ export function startPreview(
 
 	function onCardClick( event: MouseEvent ) {
 		const target = ( event.target as Element | null )?.closest?.(
-			'[data-linker-genie-peek-close], [data-linker-genie-peek-ask]'
+			'[data-linker-genie-peek-close], [data-linker-genie-peek-ask], [data-linker-genie-peek-attach]'
 		);
 		if ( ! target ) {
 			return;
 		}
 		if ( target.hasAttribute( 'data-linker-genie-peek-close' ) ) {
 			dismiss();
+			return;
+		}
+		if ( target.hasAttribute( 'data-linker-genie-peek-attach' ) ) {
+			// The nameplate photo (#236): Genie opens with its photo picker
+			// on offer, through the same loader event.
+			onOpened();
+			win.dispatchEvent(
+				new CustomEvent( 'linker-genie-ask', {
+					detail: { attach: true },
+				} )
+			);
 			return;
 		}
 		const message =

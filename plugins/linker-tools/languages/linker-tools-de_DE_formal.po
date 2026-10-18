@@ -1720,3 +1720,140 @@ msgstr "Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser 
 #: build/genie.js
 msgid "Please agree to the use of your details for the reply."
 msgstr "Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu."
+
+# #236 attachments and nameplates: copy review docs/acceptance/2026-10-18/236/copy-review.md
+
+#. translators: %s is the name of the file the customer attached.
+#: build/genie.js
+msgid "%s could not be read."
+msgstr "%s konnte nicht gelesen werden."
+
+#: build/genie.js
+msgid "Choose another photo"
+msgstr "Anderes Foto auswählen"
+
+#. translators: %s is the name of the file the customer attached.
+#: build/genie.js
+msgid "Read: %s"
+msgstr "Gelesen: %s"
+
+#: build/genie.js
+msgid "Read from your nameplate photo"
+msgstr "Vom Foto Ihres Typenschilds gelesen"
+
+#: build/genie.js
+msgid "Brand"
+msgstr "Marke"
+
+#: build/genie.js
+msgid "Device"
+msgstr "Geräteart"
+
+#. translators: %s is one of our models, e.g. "SAJ H2-10K-T3".
+#: build/genie.js
+msgid "In our range: %s. Is this your device?"
+msgstr "In unserem Sortiment: %s. Ist das Ihr Gerät?"
+
+#: build/genie.js
+msgid "No exact match. Is it one of these?"
+msgstr "Kein genauer Treffer. Ist es eines dieser Modelle?"
+
+#: build/genie.js
+msgid "This model is not in our product range."
+msgstr "Dieses Modell führen wir nicht."
+
+#: build/genie.js
+msgid "The brand and model could not be read."
+msgstr "Marke und Modell konnten nicht gelesen werden."
+
+#. translators: %s is the confirmed model, e.g. "SAJ H2-10K-T3".
+#: build/genie.js
+msgid "Yes, it's the %s. Show me its documents."
+msgstr "Ja, es ist das Modell %s. Bitte zeigen Sie mir die Unterlagen dazu."
+
+#: build/genie.js
+msgid "Yes, show its documents"
+msgstr "Ja, Unterlagen anzeigen"
+
+#. translators: %s is the confirmed model, e.g. "SAJ H2-10K-T3".
+#: build/genie.js
+msgid "Yes, it's the %s. What works with it?"
+msgstr "Ja, es ist das Modell %s. Was passt dazu?"
+
+#: build/genie.js
+msgid "Yes, what works with it?"
+msgstr "Ja, was passt dazu?"
+
+#. translators: %s is the chosen model, e.g. "SAJ H2-10K-T3".
+#: build/genie.js
+msgid "It's the %s."
+msgstr "Es ist das Modell %s."
+
+#. translators: %s is one of our models, e.g. "H2-10K-T3".
+#: build/genie.js
+msgid "It's the %s"
+msgstr "Es ist das Modell %s"
+
+#: build/genie.js
+msgid "No, type the model"
+msgstr "Nein, Modell eingeben"
+
+#: build/genie.js
+msgid "Type the model"
+msgstr "Modell eingeben"
+
+#. translators: %s stays empty: the customer types the model after the words.
+#: build/genie.js
+msgid "My device is the %s"
+msgstr "Mein Gerät ist das Modell %s"
+
+#: build/genie.js
+msgid "This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC) and PDFs."
+msgstr "Dieser Dateityp kann nicht gesendet werden. Genie liest Fotos (JPEG, PNG, WebP oder HEIC) und PDFs."
+
+#. translators: %d is the largest PDF in megabytes.
+#: build/genie.js
+msgid "This file is too large. A PDF can be up to %d MB."
+msgstr "Diese Datei ist zu groß. Ein PDF darf bis zu %d MB groß sein."
+
+#: build/genie.js
+msgid "This browser cannot open HEIC photos. Please attach the photo as a JPEG."
+msgstr "Dieser Browser kann HEIC-Fotos nicht öffnen. Bitte hängen Sie das Foto als JPEG an."
+
+#: build/genie.js
+msgid "This photo could not be opened. Please choose another one."
+msgstr "Dieses Foto konnte nicht geöffnet werden. Bitte wählen Sie ein anderes."
+
+#: build/genie.js
+msgid "You have reached the hourly limit for files. Please try again later; typed questions still work."
+msgstr "Sie haben das stündliche Limit für Dateien erreicht. Bitte versuchen Sie es später erneut. Fragen per Text beantwortet Genie weiterhin."
+
+#: build/genie.js
+msgid "Preparing file…"
+msgstr "Datei wird vorbereitet …"
+
+#: build/genie.js
+msgid "Genie reads the brand and model from a nameplate photo and checks them against our range."
+msgstr "Genie liest Marke und Modell vom Foto des Typenschilds und gleicht sie mit unserem Sortiment ab."
+
+#: build/genie.js
+msgid "Choose a photo"
+msgstr "Foto auswählen"
+
+#. translators: 1: the file's name, 2: pages read, 3: pages in the file.
+#: build/genie.js
+msgid "Read: %1$s (%2$d of %3$d page)"
+msgid_plural "Read: %1$s (%2$d of %3$d pages)"
+msgstr[0] "Gelesen: %1$s (%2$d von %3$d Seite)"
+msgstr[1] "Gelesen: %1$s (%2$d von %3$d Seiten)"
+
+#. translators: %d is the number of files one message can carry.
+#: build/genie.js
+msgid "You can attach up to %d file at a time."
+msgid_plural "You can attach up to %d files at a time."
+msgstr[0] "Sie können bis zu %d Datei auf einmal anhängen."
+msgstr[1] "Sie können bis zu %d Dateien auf einmal anhängen."
+
+#: includes/Genie/Preview.php
+msgid "Look up my device from a nameplate photo"
+msgstr "Welches Modell steht auf meinem Typenschild?"

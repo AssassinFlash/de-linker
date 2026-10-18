@@ -41,6 +41,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		emailConversation: vi.fn(),
 		sendTurn: vi.fn(),
 		sendVote: vi.fn( async () => true ),
+		TurnError: actual.TurnError,
 	};
 } );
 vi.mock( './api/contact', () => ( {
@@ -64,6 +65,7 @@ import {
 	selectConversation,
 	sendTurn,
 	sendVote,
+	TurnError,
 } from './api/turn';
 
 const GERMAN_STREAM =
@@ -149,7 +151,9 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 				content: 'I need a three-phase hybrid inverter for a home.',
 			},
 		],
-		{ type: 'category' }
+		{ type: 'category' },
+		// No file was picked: the turn carries none.
+		[]
 	);
 	expect( await screen.findByText( 'Three-phase' ) ).toBeInTheDocument();
 	// The disclosure is still there exactly once after the turn.
@@ -731,9 +735,9 @@ test( 'the dock history view lists conversations and continues one', async () =>
 	);
 } );
 
-// The turn route carries text only: a picked file's name rides in the
-// question, and the chip takes it back out before sending.
-test( 'an attached file rides in the question by name', async () => {
+// A picked file rides apart from the messages (#236): its name in the
+// question, its bytes in the turn's attachments; the chip takes it back out.
+test( 'an attached file rides with the turn and its name in the question', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( {
 		messages: [],
@@ -751,14 +755,16 @@ test( 'an attached file rides in the question by name', async () => {
 	const fileInput = document.querySelector(
 		'input[type="file"]'
 	) as HTMLInputElement;
-	const datasheet = new File( [ 'x' ], 'gw10k-et-datenblatt.pdf', {
+	expect( fileInput.accept ).toContain( 'image/heic' );
+	expect( fileInput.accept ).toContain( 'application/pdf' );
+	const datasheet = new File( [ '%PDF-1.7' ], 'gw10k-et-datenblatt.pdf', {
 		type: 'application/pdf',
 	} );
 	fireEvent.change( fileInput, { target: { files: [ datasheet ] } } );
-	expect( screen.getByText( 'gw10k-et-datenblatt.pdf' ) ).toBeVisible();
+	await screen.findByText( 'gw10k-et-datenblatt.pdf' );
 	// The send key arms on an attachment alone, and the chip removes it.
 	const send = screen.getByRole( 'button', { name: 'Send' } );
-	expect( send ).toBeEnabled();
+	await waitFor( () => expect( send ).toBeEnabled() );
 	fireEvent.click(
 		screen.getByRole( 'button', {
 			name: 'Remove attachment gw10k-et-datenblatt.pdf',
@@ -767,14 +773,210 @@ test( 'an attached file rides in the question by name', async () => {
 	expect( screen.queryByText( 'gw10k-et-datenblatt.pdf' ) ).toBeNull();
 	expect( send ).toBeDisabled();
 	fireEvent.change( fileInput, { target: { files: [ datasheet ] } } );
+	await waitFor( () => expect( send ).toBeEnabled() );
 	await act( async () => {
 		fireEvent.click( send );
 	} );
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+	const call = vi.mocked( sendTurn ).mock.calls[ 0 ];
+	expect( call[ 3 ] ).toEqual( [
 		{ role: 'user', content: 'Attached: gw10k-et-datenblatt.pdf' },
+	] );
+	expect( call[ 5 ] ).toEqual( [
+		{
+			name: 'gw10k-et-datenblatt.pdf',
+			type: 'application/pdf',
+			data: btoa( '%PDF-1.7' ),
+		},
 	] );
 	// The sent attachment leaves the composer.
 	expect( screen.queryByText( 'gw10k-et-datenblatt.pdf' ) ).toBeNull();
+} );
+
+// A file that is not a photo or a PDF never leaves the browser.
+test( 'a file Genie cannot read is refused before it is sent', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const fileInput = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	fireEvent.change( fileInput, {
+		target: { files: [ new File( [ 'x' ], 'parts.xlsx' ) ] },
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC) and PDFs.'
+	);
+	expect( screen.getByRole( 'button', { name: 'Send' } ) ).toBeDisabled();
+} );
+
+// The proxy's refusal (past the hourly allowance) is said as such, not as
+// Genie failing to answer.
+test( 'a refusal of the proxy names its reason', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockRejectedValue(
+			new TurnError( 429, 'linker_genie_attachment_throttled' )
+		);
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const fileInput = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	fireEvent.change( fileInput, {
+		target: {
+			files: [
+				new File( [ '%PDF-1.7' ], 'ds.pdf', {
+					type: 'application/pdf',
+				} ),
+			],
+		},
+	} );
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	await waitFor( () => expect( send ).toBeEnabled() );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'You have reached the hourly limit for files. Please try again later; typed questions still work.'
+	);
+	expect(
+		screen.queryByText( 'Genie did not answer. Please try again.' )
+	).toBeNull();
+} );
+
+// A nameplate the service matched exactly: the card offers the product
+// and what works with it; each sends a message naming the model, and
+// "No, type the model" hands the field back to the customer.
+test( 'a nameplate card confirms the device by a message naming it', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValueOnce( {
+			meta: null,
+			blocks: [
+				{
+					type: 'text',
+					text: 'Your nameplate reads SAJ H2-10K-T3.',
+					refs: [],
+				},
+			],
+			attachments: [
+				{
+					id: 'att1',
+					name: 'plate.jpg',
+					kind: 'nameplate',
+					brand: 'SAJ',
+					model: 'H2-10K-T3',
+					product_type: 'Hybrid inverter',
+					match: 'exact',
+					products: [ { product_id: 4107, label: 'H2-10K-T3' } ],
+				},
+			],
+		} )
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'These batteries work.', refs: [] },
+			],
+		} );
+	render( <App config={ config() } /> );
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: { message: 'What is this?' },
+			} )
+		);
+	} );
+	expect(
+		await screen.findByText(
+			'In our range: SAJ H2-10K-T3. Is this your device?'
+		)
+	).toBeVisible();
+	expect( screen.getByText( 'Hybrid inverter' ) ).toBeVisible();
+	fireEvent.click(
+		screen.getByRole( 'button', { name: 'No, type the model' } )
+	);
+	expect( screen.getByRole( 'textbox', { name: 'Ask Genie' } ) ).toHaveValue(
+		'My device is the '
+	);
+	expect(
+		screen.getByRole( 'textbox', { name: 'Ask Genie' } )
+	).toHaveFocus();
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Yes, what works with it?' } )
+		);
+	} );
+	const last = vi.mocked( sendTurn ).mock.calls.at( -1 );
+	expect( last?.[ 3 ].at( -1 ) ).toEqual( {
+		role: 'user',
+		content: "Yes, it's the SAJ H2-10K-T3. What works with it?",
+	} );
+} );
+
+// A nameplate that could not be read: another photo, or the model typed.
+test( 'an unreadable nameplate offers another photo or the model typed', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [ { role: 'user', content: 'Attached: plate.jpg' } ],
+		turn: {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'I could not read it.', refs: [] },
+			],
+			attachments: [
+				{
+					id: 'att1',
+					name: 'plate.jpg',
+					kind: 'nameplate',
+					match: 'unreadable',
+					products: [],
+				},
+			],
+		},
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	expect(
+		await screen.findByText( 'The brand and model could not be read.' )
+	).toBeVisible();
+	const picker = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	const click = vi.spyOn( picker, 'click' );
+	fireEvent.click(
+		screen.getByRole( 'button', { name: 'Choose another photo' } )
+	);
+	expect( click ).toHaveBeenCalled();
+	expect(
+		screen.getByRole( 'button', { name: 'Type the model' } )
+	).toBeVisible();
+} );
+
+// The preview card's nameplate suggestion opens Genie with the photo picker
+// on offer: a picker opens only on the visitor's own click.
+test( 'opened for a nameplate photo, the dock offers the picker', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ config() } /> );
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', { detail: { attach: true } } )
+		);
+	} );
+	const choose = await screen.findByRole( 'button', {
+		name: 'Choose a photo',
+	} );
+	const picker = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	const click = vi.spyOn( picker, 'click' );
+	fireEvent.click( choose );
+	expect( click ).toHaveBeenCalled();
 } );
 
 // The dictation button is the browser's own speech recognition: it writes

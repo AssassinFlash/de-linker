@@ -103,6 +103,15 @@ final class Preview {
 				esc_html( $ask )
 			);
 		}
+		if ( isset( $copy['photo'] ) ) {
+			// Opens Genie with the photo picker on offer (#236): a file picker
+			// opens only on the visitor's own click, so the card asks no
+			// question; the dock shows the button that opens it.
+			$asks .= sprintf(
+				'<li><button type="button" class="linker-genie-peek__ask" data-linker-genie-peek-attach>%s</button></li>',
+				esc_html( $copy['photo'] )
+			);
+		}
 		printf(
 			'<aside class="linker-genie-peek" data-linker-genie-peek data-anchor="%1$s" aria-labelledby="linker-genie-peek-title" aria-live="polite" hidden><div class="linker-genie-peek__head"><span class="linker-genie-peek__mark" aria-hidden="true">&#10022;</span><span class="linker-genie-peek__name">Genie</span><button type="button" class="linker-genie-peek__close" data-linker-genie-peek-close aria-label="%2$s"><span aria-hidden="true">&times;</span></button></div><p class="linker-genie-peek__title" id="linker-genie-peek-title">%3$s</p><p class="linker-genie-peek__lead">%4$s</p><ul class="linker-genie-peek__asks">%5$s</ul><p class="linker-genie-peek__ai">%6$s<span aria-hidden="true"> · </span>%7$s</p></aside>',
 			esc_attr( self::ANCHORS[ $context['type'] ] ),
@@ -282,8 +291,11 @@ final class Preview {
 	 * copy review of docs/acceptance/2026-10-18/249/copy-review.md; German is
 	 * written on its own in languages/linker-tools-de_DE_formal.po.
 	 *
+	 * The home page's card also offers a nameplate photo (`photo`, #236): it
+	 * opens Genie with the photo picker on offer instead of asking.
+	 *
 	 * @param array{type: string, name: string} $context The page.
-	 * @return array{title: string, lead: string, asks: list<string>}
+	 * @return array{title: string, lead: string, asks: list<string>, photo?: string}
 	 */
 	public function copy( array $context ): array {
 		$name = $context['name'];
@@ -339,6 +351,7 @@ final class Preview {
 					'title' => __( 'Ask Genie about our products', 'linker-tools' ),
 					'lead'  => __( 'Genie finds any model in our range and checks what works with it.', 'linker-tools' ),
 					'asks'  => $asks,
+					'photo' => __( 'Look up my device from a nameplate photo', 'linker-tools' ),
 				);
 		}
 	}
