@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker i18n 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-i18n\n"
-"POT-Creation-Date: 2026-10-17T13:16:10+00:00\n"
+"POT-Creation-Date: 2026-10-18T16:05:59+00:00\n"
 "PO-Revision-Date: 2026-10-09 23:00+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -78,9 +78,103 @@ msgstr "Diese Inhalte werden über das Repository verwaltet."
 msgid "German sync has been queued."
 msgstr "Die Synchronisierung der deutschen Fassung wurde eingeplant."
 
+#. translators: %s: inquiry number.
+#: includes/GermanTitles.php:54
+#, php-format
+msgid "Inquiry received – %s"
+msgstr "Anfrage eingegangen – %s"
+
+#: includes/GermanTitles.php:59
+msgid "Inverters, storage and systems"
+msgstr "Wechselrichter, Speicher und Systeme"
+
+#. translators: %s: German product category name.
+#: includes/GermanTitles.php:62
+#, php-format
+msgid "Products: %s"
+msgstr "Produkte: %s"
+
+#. translators: %s: German post category name.
+#: includes/GermanTitles.php:65
+#, php-format
+msgid "Posts: %s"
+msgstr "Beiträge: %s"
+
+#. translators: %s: search query.
+#: includes/GermanTitles.php:68
+#, php-format
+msgid "Search results for “%s”"
+msgstr "Suchergebnisse für „%s“"
+
+#. translators: %d: page number.
+#: includes/GermanTitles.php:87
+#, php-format
+msgid "Page %d"
+msgstr "Seite %d"
+
+#: includes/GermanTitles.php:130
+msgid "Create a partner account"
+msgstr "Partnerkonto erstellen"
+
+#: includes/GermanTitles.php:131
+msgid "Reset your password"
+msgstr "Passwort zurücksetzen"
+
+#: includes/GermanTitles.php:132
+msgid "Inquiries"
+msgstr "Anfragen"
+
+#. translators: %s: inquiry number.
+#: includes/GermanTitles.php:134
+#, php-format
+msgid "Inquiry %s"
+msgstr "Anfrage %s"
+
+#: includes/GermanTitles.php:135
+msgid "Saved solutions"
+msgstr "Gespeicherte Lösungen"
+
+#: includes/GermanTitles.php:136
+msgid "Documents"
+msgstr "Dokumente"
+
+#: includes/GermanTitles.php:140
+msgid "Company details"
+msgstr "Unternehmensdaten"
+
+#: includes/GermanTitles.php:142
+msgid "Account details"
+msgstr "Kontodaten"
+
+#: includes/GermanTitles.php:143
+msgid "Sign out"
+msgstr "Abmelden"
+
+#: includes/GermanTitles.php:144
+msgid "Your partner account"
+msgstr "Ihr Partnerkonto"
+
+#: includes/GermanTitles.php:144
+msgid "Sign in to your partner account"
+msgstr "Beim Partnerkonto anmelden"
+
 #: includes/SameSlug/Lookup.php:116
 msgid "Invalid product slug."
 msgstr "Ungültige Produkt-Titelform."
+
+#. translators: %d: number of English sources whose German could not be updated.
+#: includes/Translation/DigestBlock.php:33
+#, php-format
+msgid "German translation exceptions (%d)"
+msgstr "Probleme bei deutschen Übersetzungen (%d)"
+
+#: includes/Translation/DigestBlock.php:48
+msgid "Open English source"
+msgstr "Englischen Inhalt öffnen"
+
+#: includes/Translation/DigestBlock.php:59
+msgid "No German translation exceptions."
+msgstr "Keine Probleme bei deutschen Übersetzungen gemeldet."
 
 #: includes/Translation/State.php:58
 msgid "German out of date: structure differs"
@@ -135,108 +229,17 @@ msgstr "Serie"
 #~ msgid "Needs review"
 #~ msgstr "Prüfung erforderlich"
 
-#: includes/Translation/DigestBlock.php
-msgid "German translation exceptions (%d)"
-msgstr "Probleme bei deutschen Übersetzungen (%d)"
+#~ msgid "Solution draft"
+#~ msgstr "Lösungsentwurf"
 
-#: includes/Translation/DigestBlock.php
-msgid "Open English source"
-msgstr "Englischen Inhalt öffnen"
+#~ msgid "FAQ & documents"
+#~ msgstr "FAQ & Dokumente"
 
-#: includes/Translation/DigestBlock.php
-msgid "No German translation exceptions."
-msgstr "Keine Probleme bei deutschen Übersetzungen gemeldet."
+#~ msgid "Customer service"
+#~ msgstr "Kundendienst"
 
-#: includes/GermanTitles.php
-msgid "Create a partner account"
-msgstr "Partnerkonto erstellen"
+#~ msgid "Complete systems"
+#~ msgstr "Komplettsysteme"
 
-#: includes/GermanTitles.php
-msgid "Reset your password"
-msgstr "Passwort zurücksetzen"
-
-#: includes/GermanTitles.php
-msgid "Sign in to your partner account"
-msgstr "Beim Partnerkonto anmelden"
-
-#: includes/GermanTitles.php
-msgid "Your partner account"
-msgstr "Ihr Partnerkonto"
-
-#: includes/GermanTitles.php
-msgid "Inquiries"
-msgstr "Anfragen"
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Inquiry %s"
-msgstr "Anfrage %s"
-
-#: includes/GermanTitles.php
-msgid "Saved solutions"
-msgstr "Gespeicherte Lösungen"
-
-#: includes/GermanTitles.php
-msgid "Documents"
-msgstr "Dokumente"
-
-#: includes/GermanTitles.php
-msgid "Company details"
-msgstr "Unternehmensdaten"
-
-#: includes/GermanTitles.php
-msgid "Account details"
-msgstr "Kontodaten"
-
-#: includes/GermanTitles.php
-msgid "Sign out"
-msgstr "Abmelden"
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Products: %s"
-msgstr "Produkte: %s"
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Posts: %s"
-msgstr "Beiträge: %s"
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Search results for “%s”"
-msgstr "Suchergebnisse für „%s“"
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Page %d"
-msgstr "Seite %d"
-
-#: includes/GermanTitles.php
-msgid "Solution draft"
-msgstr "Lösungsentwurf"
-
-#: includes/GermanTitles.php
-msgid "FAQ & documents"
-msgstr "FAQ & Dokumente"
-
-#: includes/GermanTitles.php
-msgid "Customer service"
-msgstr "Kundendienst"
-
-#: includes/GermanTitles.php
-msgid "Inverters, storage and systems"
-msgstr "Wechselrichter, Speicher und Systeme"
-
-#: includes/GermanTitles.php
-msgid "Complete systems"
-msgstr "Komplettsysteme"
-
-#: includes/GermanTitles.php
-msgid "EMS and monitoring"
-msgstr "EMS und Überwachung"
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Inquiry received – %s"
-msgstr "Anfrage eingegangen – %s"
+#~ msgid "EMS and monitoring"
+#~ msgstr "EMS und Überwachung"

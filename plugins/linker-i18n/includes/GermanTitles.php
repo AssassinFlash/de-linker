@@ -13,12 +13,38 @@ namespace Linker\I18n;
 final class GermanTitles {
 
 	/**
+	 * Native language access stays behind the shared Polylang door.
+	 *
+	 * @param Languages $languages Shared language and translation access.
+	 */
+	public function __construct( private readonly Languages $languages = new Languages() ) {}
+
+	/**
+	 * Reviewed title data shared by runtime and migration.
+	 *
+	 * @return list<array{type:string,source:string,before:array<string,string>,after:array<string,string>}>
+	 */
+	public function manifest(): array {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Checked-in reviewed title data.
+		return json_decode( (string) file_get_contents( dirname( __DIR__ ) . '/content/german-titles.json' ), true, 512, JSON_THROW_ON_ERROR );
+	}
+
+	/**
+	 * Use the native canonical opt-in for changed, nonpaged German categories.
+	 *
+	 * @param bool $allow Existing canonical-on-noindex policy.
+	 */
+	public function category_canonical( bool $allow ): bool {
+		return $allow || ( get_option( GermanUrlMigration::ACTIVE ) && 'de' === $this->languages->current() && is_category() && ! is_paged() );
+	}
+
+	/**
 	 * The German title after either SEOPress or WordPress has built its title.
 	 *
 	 * @param string $title Existing title, preserved outside German pages.
 	 */
 	public function title( string $title ): string {
-		if ( ! get_option( GermanUrlMigration::ACTIVE ) || 'de' !== pll_current_language() || is_404() ) {
+		if ( ! get_option( GermanUrlMigration::ACTIVE ) || 'de' !== $this->languages->current() || is_404() ) {
 			return $title;
 		}
 		$page  = max( (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ), is_wc_endpoint_url( 'orders' ) ? (int) get_query_var( 'orders' ) : 0 );
@@ -43,7 +69,7 @@ final class GermanTitles {
 		} else {
 			$id   = get_queried_object_id();
 			$post = get_post( $id );
-			if ( $post instanceof \WP_Post && 'de' === pll_get_post_language( $id ) ) {
+			if ( $post instanceof \WP_Post && 'de' === $this->languages->of_post( $id ) ) {
 				// Existing independent German SEO copy remains the native authority.
 				$native = '' !== trim( $title ) ? $title : $this->post_title( $post ) . ' | ' . get_bloginfo( 'name' );
 				if ( $page < 2 ) {
@@ -69,16 +95,14 @@ final class GermanTitles {
 	 * @param \WP_Post $post German post.
 	 */
 	public function post_title( \WP_Post $post ): string {
-		$source = get_post( (int) pll_get_post( $post->ID, 'en' ) );
+		$source = get_post( (int) $this->languages->post_translation( $post->ID, 'en' ) );
 		$slug   = $source instanceof \WP_Post ? $source->post_name : '';
-		return match ( $slug ) {
-			'ecoflow-battery-stack-bridge' => 'EcoFlow Verbinder für Batteriestapel',
-			'cart' => __( 'Solution draft', 'linker-i18n' ),
-			'faq-download' => __( 'FAQ & documents', 'linker-i18n' ),
-			'services-support', 'service-support' => __( 'Customer service', 'linker-i18n' ),
-			'products' => __( 'Inverters, storage and systems', 'linker-i18n' ),
-			default => $post->post_title,
-		};
+		foreach ( $this->manifest() as $entry ) {
+			if ( $entry['type'] === $post->post_type && $entry['source'] === $slug ) {
+				return $entry['after']['post_title'] ?? $post->post_title;
+			}
+		}
+		return $post->post_title;
 	}
 
 	/**
@@ -87,11 +111,13 @@ final class GermanTitles {
 	 * @param \WP_Term $term German category.
 	 */
 	public function term_title( \WP_Term $term ): string {
-		return match ( GermanSlugs::translated( $term->slug ) ) {
-			'komplettsysteme' => __( 'Complete systems', 'linker-i18n' ),
-			'ems-ueberwachung' => __( 'EMS and monitoring', 'linker-i18n' ),
-			default => $term->name,
-		};
+		$source = get_term( (int) $this->languages->term_translation( $term->term_id, 'en' ), $term->taxonomy );
+		foreach ( $this->manifest() as $entry ) {
+			if ( $source instanceof \WP_Term && $entry['type'] === $term->taxonomy && $entry['source'] === $source->slug ) {
+				return $entry['after']['name'] ?? $term->name;
+			}
+		}
+		return $term->name;
 	}
 
 	/**
@@ -128,7 +154,7 @@ final class GermanTitles {
 	 * @param string $tag Existing metadata tag.
 	 */
 	public function canonical( string $tag ): string {
-		if ( ! get_option( GermanUrlMigration::ACTIVE ) || 'de' !== pll_current_language() || ( ! is_account_page() && ! is_wc_endpoint_url( 'order-received' ) ) ) {
+		if ( ! get_option( GermanUrlMigration::ACTIVE ) || 'de' !== $this->languages->current() || ( ! is_account_page() && ! is_wc_endpoint_url( 'order-received' ) ) ) {
 			return $tag;
 		}
 		$key  = WC()->query->get_current_endpoint();

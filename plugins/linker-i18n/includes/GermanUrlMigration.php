@@ -16,6 +16,13 @@ namespace Linker\I18n;
  */
 final class GermanUrlMigration {
 
+	/**
+	 * Native language access stays behind the shared Polylang door.
+	 *
+	 * @param Languages $languages Shared language and translation access.
+	 */
+	public function __construct( private readonly Languages $languages = new Languages() ) {}
+
 	/** First-run originals, retained across repeat applications. */
 	public const BACKUP = 'linker_i18n_german_urls_backup';
 
@@ -38,8 +45,7 @@ final class GermanUrlMigration {
 	 * @return list<array{type:string,source:string,before:array<string,string>,after:array<string,string>}>
 	 */
 	private function title_manifest(): array {
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Checked-in public title migration data.
-		return json_decode( (string) file_get_contents( dirname( __DIR__ ) . '/content/german-titles.json' ), true, 512, JSON_THROW_ON_ERROR );
+		return ( new GermanTitles( $this->languages ) )->manifest();
 	}
 
 	/**
@@ -48,7 +54,7 @@ final class GermanUrlMigration {
 	 * @return list<RouteRow>
 	 */
 	public function plan(): array {
-		$languages = new Languages();
+		$languages = $this->languages;
 		$entered   = $languages->enter( 'de' );
 		try {
 			$rows   = $this->objects();
@@ -114,7 +120,7 @@ final class GermanUrlMigration {
 		$rows   = array();
 		$titles = new GermanTitles();
 		$routes = new GermanRoutes();
-		$front  = (int) pll_get_post( (int) get_option( 'page_on_front' ), 'en' );
+		$front  = (int) $this->languages->post_translation( (int) get_option( 'page_on_front' ), 'en' );
 		foreach ( get_posts(
 			array(
 				'post_type'   => array( 'page', 'post', 'product' ),
@@ -125,8 +131,8 @@ final class GermanUrlMigration {
 				'order'       => 'ASC',
 			)
 		) as $post ) {
-			$source              = (int) pll_get_post( $post->ID, 'en' );
-			$url                 = $source === $front ? ( new Languages() )->home_url( 'de' ) : (string) get_permalink( $post );
+			$source              = (int) $this->languages->post_translation( $post->ID, 'en' );
+			$url                 = $source === $front ? $this->languages->home_url( 'de' ) : (string) get_permalink( $post );
 			$title               = $titles->post_title( $post );
 			$before              = array(
 				'post_name'                   => $post->post_name,
@@ -185,7 +191,7 @@ final class GermanUrlMigration {
 				'new'         => $after['slug'],
 				'url'         => $url,
 				'target_url'  => $routes->desired( $url ),
-				'source'      => (int) pll_get_term( $term->term_id, 'en' ),
+				'source'      => (int) $this->languages->term_translation( $term->term_id, 'en' ),
 				'before'      => $before,
 				'after'       => $after,
 				'seo_existed' => false,
@@ -303,7 +309,7 @@ final class GermanUrlMigration {
 				if ( is_wp_error( $matches ) || 1 !== count( $matches ) ) {
 					throw new \RuntimeException( esc_html( 'Missing reviewed English term: ' . $entry['source'] ) );
 				}
-				$de   = get_term( (int) pll_get_term( $matches[0]->term_id, 'de' ), $entry['type'] );
+				$de   = get_term( (int) $this->languages->term_translation( $matches[0]->term_id, 'de' ), $entry['type'] );
 				$slug = $de instanceof \WP_Term ? $de->slug : '';
 			} else {
 				$matches = get_posts(
@@ -318,7 +324,7 @@ final class GermanUrlMigration {
 				if ( 1 !== count( $matches ) ) {
 					throw new \RuntimeException( esc_html( 'Missing reviewed English post: ' . $entry['source'] ) );
 				}
-				$de   = get_post( (int) pll_get_post( $matches[0]->ID, 'de' ) );
+				$de   = get_post( (int) $this->languages->post_translation( $matches[0]->ID, 'de' ) );
 				$slug = $de instanceof \WP_Post ? $de->post_name : '';
 			}
 			if ( isset( $entry['old'], $entry['new'] ) && ! in_array( $slug, array( $entry['old'], $entry['new'] ), true ) ) {
@@ -446,9 +452,9 @@ final class GermanUrlMigration {
 			$valid = 'nav_menu_item' === get_post_type( $row['id'] );
 		} elseif ( in_array( $row['type'], array( 'category', 'product_cat' ), true ) ) {
 			$term  = get_term( $row['id'], $row['type'] );
-			$valid = $term instanceof \WP_Term && 'de' === pll_get_term_language( $row['id'] ) && 0 < $row['source'] && (int) pll_get_term( $row['id'], 'en' ) === $row['source'];
+			$valid = $term instanceof \WP_Term && 'de' === $this->languages->of_term( $row['id'] ) && 0 < $row['source'] && (int) $this->languages->term_translation( $row['id'], 'en' ) === $row['source'];
 		} else {
-			$valid = get_post_type( $row['id'] ) === $row['type'] && 'de' === pll_get_post_language( $row['id'] ) && 0 < $row['source'] && (int) pll_get_post( $row['id'], 'en' ) === $row['source'];
+			$valid = get_post_type( $row['id'] ) === $row['type'] && 'de' === $this->languages->of_post( $row['id'] ) && 0 < $row['source'] && (int) $this->languages->post_translation( $row['id'], 'en' ) === $row['source'];
 		}
 		if ( ! $valid ) {
 			throw new \RuntimeException( esc_html( 'Missing or changed language pair: ' . $row['type'] . ':' . $row['id'] ) );
@@ -625,7 +631,7 @@ final class GermanUrlMigration {
 	 * @param int $id Candidate from WordPress's old-slug lookup.
 	 */
 	public function old_post( int $id ): int {
-		if ( 'de' !== pll_current_language() || 0 === $id || 'de' === pll_get_post_language( $id ) ) {
+		if ( 'de' !== $this->languages->current() || 0 === $id || 'de' === $this->languages->of_post( $id ) ) {
 			return $id;
 		}
 		// Core's first historical match can belong to English. Query the same
@@ -655,7 +661,7 @@ final class GermanUrlMigration {
 	 * @param string $url Native destination.
 	 */
 	public function old_url( string $url ): string {
-		if ( 'de' !== pll_current_language() ) {
+		if ( 'de' !== $this->languages->current() ) {
 			return $url;
 		}
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- opaque query, appended verbatim to a server-selected local URL.
@@ -687,7 +693,7 @@ final class GermanUrlMigration {
 		}
 		foreach ( $this->manifest() as $entry ) {
 			if ( 'product' !== $entry['type'] && str_starts_with( $path, $entry['old_path'] ) ) {
-				$url = untrailingslashit( ( new Languages() )->home_url( 'en' ) ) . $entry['new_path'] . substr( $path, strlen( $entry['old_path'] ) );
+				$url = untrailingslashit( $this->languages->home_url( 'en' ) ) . $entry['new_path'] . substr( $path, strlen( $entry['old_path'] ) );
 				return $this->old_url( $routes->link( $url ) );
 			}
 		}

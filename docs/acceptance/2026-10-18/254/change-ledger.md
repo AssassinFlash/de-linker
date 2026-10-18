@@ -27,9 +27,9 @@ After seeing stabilized before/after diagnostics, the owner said the designs the
 |---|---|---|
 | Blog archive recommendation and adjacent reading rows | Superseded by the owner-supplied journal references below; native relationships remain unchanged. | The same LC loops, featured image, post title, excerpt and permalink. |
 | Blog category topics | Superseded by the topic sidebar and horizontal mobile rail in the final journal reference below. | LC `lc_get_cats` → WordPress `wp_list_categories` → Polylang term links; “All topics” / “Alle Themen”. |
-| Service introduction | Aligned existing photo group and a continuous capability list; mobile shows all four capabilities with readable type. | The stored LC content remains intact. New WindPress rules replace the visual effect of its photo dock in this region; native contact/navigation remains intact. |
+| Service introduction | Preserve the owner-approved desktop composition; mobile exposes all four capabilities in reading order. | The historical desktop before/final PNG pair is byte-identical and proves retention of that captured composition, not a desktop redesign. The mobile pair differs. Stored LC content and the approved WindPress implementation remain intact; current EN/DE desktop/mobile readback is recorded separately in round2/. |
 
-The zero-pixel gate now applies to the nine unaffected English page types at both viewports (18 comparisons). Product, inquiry, blog index, blog category and service page screenshots carry the owner-authorized region changes; those changes are reviewed visually and listed here. No dynamic mask or colour tolerance is introduced.
+The original strict pixel report covers nine unaffected English page types at both viewports (18 comparisons). Product, inquiry, blog index, blog category and mobile service screenshots carry the owner-authorized region changes. The service desktop pair is unchanged and must not be described as evidence of a desktop visual change. No dynamic mask or colour tolerance is introduced.
 
 ### Final journal reference
 

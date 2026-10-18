@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\I18n\Languages;
+
 /** Only data: LC owns placement and WindPress owns the visual treatment. */
 final class JournalTitles {
 
@@ -40,14 +42,18 @@ final class JournalTitles {
 	 */
 	public static function label( \WP_Post $post ): string {
 		$title = (string) get_the_title( $post );
-		if ( ! function_exists( 'pll_get_post_language' ) || ! function_exists( 'pll_get_post' ) ) {
+		if ( ! class_exists( Languages::class ) ) {
 			return $title;
 		}
-		$language = pll_get_post_language( $post->ID );
+		$languages = new Languages();
+		if ( ! $languages->ready() ) {
+			return $title;
+		}
+		$language = $languages->of_post( $post->ID );
 		if ( ! in_array( $language, array( 'en', 'de' ), true ) ) {
 			return $title;
 		}
-		$source = 'en' === $language ? $post : get_post( (int) pll_get_post( $post->ID, 'en' ) );
+		$source = 'en' === $language ? $post : get_post( (int) $languages->post_translation( $post->ID, 'en' ) );
 		if ( ! $source instanceof \WP_Post ) {
 			return $title;
 		}

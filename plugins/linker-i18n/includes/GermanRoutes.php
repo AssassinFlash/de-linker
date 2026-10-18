@@ -12,6 +12,51 @@ namespace Linker\I18n;
 /** German bases and paging without changing global English settings. */
 final class GermanRoutes {
 
+	/**
+	 * Native language access stays behind the shared Polylang door.
+	 *
+	 * @param Languages $languages Shared language and translation access.
+	 */
+	public function __construct( private readonly Languages $languages = new Languages() ) {}
+
+	/**
+	 * Preserve each translated endpoint in native language alternates.
+	 *
+	 * @param array<string,string> $urls Native language alternates.
+	 * @return array<string,string>
+	 */
+	public function hreflangs( array $urls ): array {
+		if ( get_option( GermanUrlMigration::ACTIVE ) ) {
+			foreach ( $urls as &$url ) {
+				$url = $this->endpoint_url( $url );
+			}
+			unset( $url );
+		}
+		return $urls;
+	}
+
+	/**
+	 * Append the native endpoint only to a translated account or confirmation root.
+	 *
+	 * @param string $url Native translated page URL.
+	 */
+	private function endpoint_url( string $url ): string {
+		if ( ! is_account_page() && ! is_wc_endpoint_url( 'order-received' ) ) {
+			return $url;
+		}
+		$key = WC()->query->get_current_endpoint();
+		if ( '' === $key ) {
+			return $url;
+		}
+		$option = 'order-received' === $key ? 'woocommerce_checkout_page_id' : 'woocommerce_myaccount_page_id';
+		$path   = wp_parse_url( $url, PHP_URL_PATH );
+		// Both Polylang filters can see this link; append only to the page root.
+		if ( ! in_array( $path, array( $this->page_path( $option, 'en' ), $this->page_path( $option, 'de' ) ), true ) ) {
+			return $url;
+		}
+		return wc_get_endpoint_url( $key, (string) get_query_var( $key ), $url );
+	}
+
 	/** Native Woo address types retain their internal names. */
 	private const ADDRESSES = array(
 		'billing'  => 'rechnungsadresse',
@@ -25,7 +70,7 @@ final class GermanRoutes {
 	 * @return array<string,string>
 	 */
 	public function addresses( array $slugs ): array {
-		return get_option( GermanUrlMigration::ACTIVE ) && 'de' === pll_current_language() ? self::ADDRESSES : $slugs;
+		return get_option( GermanUrlMigration::ACTIVE ) && 'de' === $this->languages->current() ? self::ADDRESSES : $slugs;
 	}
 
 	/** Public path vocabulary; Woo's internal query keys are unchanged. */
@@ -44,7 +89,7 @@ final class GermanRoutes {
 
 	/** Native pagination recognises the translated base before building links. */
 	public function pagination(): void {
-		if ( get_option( GermanUrlMigration::ACTIVE ) && 'de' === pll_current_language() ) {
+		if ( get_option( GermanUrlMigration::ACTIVE ) && 'de' === $this->languages->current() ) {
 			global $wp_rewrite;
 			$wp_rewrite->pagination_base = 'seite';
 		}
@@ -59,6 +104,7 @@ final class GermanRoutes {
 		if ( null === $url || ! get_option( GermanUrlMigration::ACTIVE ) ) {
 			return $url;
 		}
+		$url = $this->endpoint_url( $url );
 		// Polylang resolves the translated archive identity without its page number.
 		$page = (int) get_query_var( 'paged' );
 		if ( $page > 1 ) {
@@ -87,7 +133,7 @@ final class GermanRoutes {
 	 * @param string $url Native absolute URL.
 	 */
 	private function translated_link( string $url ): string {
-		$home = untrailingslashit( ( new Languages() )->home_url( 'en' ) );
+		$home = untrailingslashit( $this->languages->home_url( 'en' ) );
 		if ( ! str_starts_with( $url, $home . '/' ) ) {
 			return $url;
 		}
@@ -123,7 +169,7 @@ final class GermanRoutes {
 	 * @param string $url Current absolute or root-relative German URL.
 	 */
 	public function desired( string $url ): string {
-		$home     = untrailingslashit( ( new Languages() )->home_url( 'en' ) );
+		$home     = untrailingslashit( $this->languages->home_url( 'en' ) );
 		$relative = str_starts_with( $url, '/de/' );
 		if ( $relative ) {
 			$url = $home . $url;
@@ -194,7 +240,7 @@ final class GermanRoutes {
 	 * @param string $language Language slug.
 	 */
 	private function page_path( string $option, string $language ): string {
-		$id  = (int) pll_get_post( (int) get_option( $option ), $language );
+		$id  = (int) $this->languages->post_translation( (int) get_option( $option ), $language );
 		$uri = $id > 0 ? get_page_uri( $id ) : false;
 		return is_string( $uri ) ? ( 'de' === $language ? '/de/' : '/' ) . trim( $uri, '/' ) . '/' : '';
 	}
@@ -205,7 +251,7 @@ final class GermanRoutes {
 	 * @param string $path Requested full path.
 	 */
 	public function endpoint_history( string $path ): ?string {
-		$home = untrailingslashit( ( new Languages() )->home_url( 'en' ) );
+		$home = untrailingslashit( $this->languages->home_url( 'en' ) );
 		$url  = $this->link( $home . $path );
 		return $url === $home . $path ? null : ( new GermanUrlMigration() )->old_url( $url );
 	}

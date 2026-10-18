@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-17T13:16:10+00:00\n"
+"POT-Creation-Date: 2026-10-18T16:05:59+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-i18n\n"
@@ -69,8 +69,102 @@ msgstr ""
 msgid "German sync has been queued."
 msgstr ""
 
+#. translators: %s: inquiry number.
+#: includes/GermanTitles.php:54
+#, php-format
+msgid "Inquiry received – %s"
+msgstr ""
+
+#: includes/GermanTitles.php:59
+msgid "Inverters, storage and systems"
+msgstr ""
+
+#. translators: %s: German product category name.
+#: includes/GermanTitles.php:62
+#, php-format
+msgid "Products: %s"
+msgstr ""
+
+#. translators: %s: German post category name.
+#: includes/GermanTitles.php:65
+#, php-format
+msgid "Posts: %s"
+msgstr ""
+
+#. translators: %s: search query.
+#: includes/GermanTitles.php:68
+#, php-format
+msgid "Search results for “%s”"
+msgstr ""
+
+#. translators: %d: page number.
+#: includes/GermanTitles.php:87
+#, php-format
+msgid "Page %d"
+msgstr ""
+
+#: includes/GermanTitles.php:130
+msgid "Create a partner account"
+msgstr ""
+
+#: includes/GermanTitles.php:131
+msgid "Reset your password"
+msgstr ""
+
+#: includes/GermanTitles.php:132
+msgid "Inquiries"
+msgstr ""
+
+#. translators: %s: inquiry number.
+#: includes/GermanTitles.php:134
+#, php-format
+msgid "Inquiry %s"
+msgstr ""
+
+#: includes/GermanTitles.php:135
+msgid "Saved solutions"
+msgstr ""
+
+#: includes/GermanTitles.php:136
+msgid "Documents"
+msgstr ""
+
+#: includes/GermanTitles.php:140
+msgid "Company details"
+msgstr ""
+
+#: includes/GermanTitles.php:142
+msgid "Account details"
+msgstr ""
+
+#: includes/GermanTitles.php:143
+msgid "Sign out"
+msgstr ""
+
+#: includes/GermanTitles.php:144
+msgid "Your partner account"
+msgstr ""
+
+#: includes/GermanTitles.php:144
+msgid "Sign in to your partner account"
+msgstr ""
+
 #: includes/SameSlug/Lookup.php:116
 msgid "Invalid product slug."
+msgstr ""
+
+#. translators: %d: number of English sources whose German could not be updated.
+#: includes/Translation/DigestBlock.php:33
+#, php-format
+msgid "German translation exceptions (%d)"
+msgstr ""
+
+#: includes/Translation/DigestBlock.php:48
+msgid "Open English source"
+msgstr ""
+
+#: includes/Translation/DigestBlock.php:59
+msgid "No German translation exceptions."
 msgstr ""
 
 #: includes/Translation/State.php:58
@@ -115,110 +209,4 @@ msgstr ""
 
 #: includes/Woo/AttributeLabels.php:48
 msgid "Series"
-msgstr ""
-
-#: includes/Translation/DigestBlock.php
-msgid "German translation exceptions (%d)"
-msgstr ""
-
-#: includes/Translation/DigestBlock.php
-msgid "Open English source"
-msgstr ""
-
-#: includes/Translation/DigestBlock.php
-msgid "No German translation exceptions."
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Create a partner account"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Reset your password"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Sign in to your partner account"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Your partner account"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Inquiries"
-msgstr ""
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Inquiry %s"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Saved solutions"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Documents"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Company details"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Account details"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Sign out"
-msgstr ""
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Products: %s"
-msgstr ""
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Posts: %s"
-msgstr ""
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Search results for “%s”"
-msgstr ""
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Page %d"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Solution draft"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "FAQ & documents"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Customer service"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Inverters, storage and systems"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "Complete systems"
-msgstr ""
-
-#: includes/GermanTitles.php
-msgid "EMS and monitoring"
-msgstr ""
-
-#: includes/GermanTitles.php
-#, php-format
-msgid "Inquiry received – %s"
 msgstr ""

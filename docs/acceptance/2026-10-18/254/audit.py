@@ -89,6 +89,11 @@ def main():
         row["title"] = page.title
         row.update(canonical=page.canonical, hreflang=page.hreflang, share=page.share)
         if not action:
+            if row['old'] != row['new']:
+                if page.hreflang.get('de', '') != page.canonical:
+                    defects.append(f"German alternate differs from canonical: {row['new']}: {page.hreflang.get('de', '')} != {page.canonical}")
+                if page.canonical and page.canonical != SITE + row['new']:
+                    defects.append(f"Canonical is not the final address: {row['new']}: {page.canonical}")
             pages[row["new"]] = page
     for path, page in pages.items():
         if not page.title:

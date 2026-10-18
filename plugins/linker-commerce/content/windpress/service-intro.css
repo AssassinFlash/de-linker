@@ -5,6 +5,11 @@
  * Two IDs intentionally outrank the page's retained inline authoring rules.
  * All spacing/type/radii come from the same storefront token scale.
  */
+/* WordPress's native paragraph formatting inserts br siblings between these
+ * existing links/cards. A br must not consume a Grid/Flex cell: the owner's
+ * 2026-10-19 overlap screenshot and the EN/DE service-hero regression expose it. */
+#service-redesign :is(.lk-hero-proof,.lk-hero-actions) > br { display: none; }
+
 #service-redesign #deliverables .service-intro {
 	display: grid;
 	grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);

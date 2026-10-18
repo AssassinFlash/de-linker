@@ -31,7 +31,7 @@ final class TokensTest extends TestCase {
 	 * failure message) and re-pin it in the same diff, so the review sees a
 	 * conscious token-layer change instead of a silent transplant.
 	 */
-	private const NORMALIZED_SHA256 = '3af62481d18d673982dbabb0ab81e629d2bef4496251349a7ced0b3a5c7c54b4';
+	private const NORMALIZED_SHA256 = 'e4a4c296558cdfd4636f7c4829b7eabe2bc1a6c2e34486c711e39d4e998ee5b7';
 
 	/**
 	 * The exported stylesheet names the self-hosted fonts and the live accent,

@@ -25,6 +25,124 @@ final class GermanUrlsTest extends SiteTestCase {
 	 */
 	private mixed $migration_state = null;
 
+	/** Changed category alternates and canonicals identify the same document. */
+	public function test_changed_category_has_matching_canonical_and_hreflang(): void {
+		$applied = false;
+		try {
+			self::wp( array( 'linker-i18n', 'german-urls', '--apply' ) );
+			$applied = true;
+			$page    = self::get( '/de/kategorie/systemauslegung/' );
+			self::assertSame( 200, $page['status'] );
+			preg_match( '#<link rel="canonical" href="([^"]+)"#', $page['body'], $canonical );
+			self::assertSame( self::$site . '/de/kategorie/systemauslegung/', $canonical[1] ?? '' );
+		} finally {
+			if ( $applied ) {
+				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) );
+			}
+		}
+	}
+
+	/** Every account alternate preserves its endpoint and page. */
+	public function test_account_hreflangs_identify_the_current_endpoint(): void {
+		$applied = false;
+		try {
+			self::wp( array( 'linker-i18n', 'german-urls', '--apply' ) );
+			$applied = true;
+			foreach ( array(
+				'registrieren/'                 => 'register/',
+				'passwort-zuruecksetzen/'       => 'lost-password/',
+				'unternehmen/'                  => 'company/',
+				'unternehmen/rechnungsadresse/' => 'company/billing/',
+				'unternehmen/lieferadresse/'    => 'company/shipping/',
+				'dokumente/'                    => 'documents/',
+				'kontodaten/'                   => 'edit-account/',
+				'anfragen/'                     => 'inquiries/',
+				'anfragen/2/'                   => 'inquiries/2/',
+				'gespeicherte-loesungen/'       => 'saved-solutions/',
+			) as $german => $english ) {
+				$page = self::get( '/de/mein-konto/' . $german );
+				self::assertSame( 200, $page['status'] );
+				$document = new \DOMDocument();
+				$previous = libxml_use_internal_errors( true );
+				try {
+					self::assertTrue( $document->loadHTML( $page['body'], LIBXML_NONET ) );
+				} finally {
+					libxml_clear_errors();
+					libxml_use_internal_errors( $previous );
+				}
+				$xpath = new \DOMXPath( $document );
+				foreach ( array(
+					'de'        => '/de/mein-konto/' . $german,
+					'en'        => '/my-account/' . $english,
+					'x-default' => '/my-account/' . $english,
+				) as $language => $path ) {
+					self::assertSame( self::$site . $path, $xpath->evaluate( 'string(//link[@hreflang="' . $language . '"]/@href)' ), $german . ': ' . $language );
+				}
+				self::assertSame( self::$site . '/de/mein-konto/' . $german, $xpath->evaluate( 'string(//link[@rel="canonical"]/@href)' ) );
+			}
+		} finally {
+			if ( $applied ) {
+				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) );
+			}
+		}
+	}
+
+	/** A German guest receipt has a valid localized registration claim. */
+	public function test_inquiry_receipt_mail_links_to_the_german_registration_page(): void {
+		$applied = false;
+		$fixture = null;
+		try {
+			self::wp( array( 'linker-i18n', 'german-urls', '--apply' ) );
+			$applied = true;
+			$fixture = self::php(
+				'$saved = array(); foreach ( array( "linker_commerce_mail_sends", "linker_commerce_test_mail_to", "woocommerce_linker_inquiry_received_settings" ) as $key ) { $saved[$key] = get_option( $key, null ); }
+				$before = glob( LINKER_LOCAL_MAIL_DIR . "/*.eml" ) ?: array(); $jobs_before = get_posts( array( "post_type" => "linker_mail_job", "post_status" => "any", "numberposts" => -1, "fields" => "ids" ) ); $order = null; $jobs = array(); $complete = false;
+				try {
+					update_option( "linker_commerce_mail_sends", array_fill( 0, Linker\Commerce\Mail\Throttle::PER_DAY, time() ) ); update_option( "linker_commerce_test_mail_to", "tester@example.test" ); update_option( "woocommerce_linker_inquiry_received_settings", array( "enabled" => "yes" ) );
+					$order = new WC_Order(); $order->set_billing_email( "i254-receipt@example.test" ); $order->update_meta_data( "_linker_locale", "de_DE_formal" ); $order->save();
+					$language = pll_current_language(); $locale = determine_locale();
+					$email = new Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail( WP_PLUGIN_DIR . "/linker-commerce/linker-commerce.php" ); $email->trigger( $order->get_id(), $order );
+					$jobs = array_diff( get_posts( array( "post_type" => "linker_mail_job", "post_status" => "any", "numberposts" => -1, "fields" => "ids" ) ), $jobs_before ); if ( count( $jobs ) !== 1 ) { throw new RuntimeException( "Expected one queued receipt" ); } $queue = array_values( array_map( static fn( $job ) => json_decode( get_post_meta( $job, "_linker_mail_message", true ), true ), $jobs ) );
+					update_option( "linker_commerce_mail_sends", array() ); do_action( "linker_commerce_mail_attempt", (int) reset( $jobs ) );
+					$files = array_values( array_diff( glob( LINKER_LOCAL_MAIL_DIR . "/*.eml" ) ?: array(), $before ) ); $complete = true;
+					return array( "id" => $order->get_id(), "key" => $order->get_order_key(), "before" => array( $language, $locale ), "after" => array( pll_current_language(), determine_locale() ), "mails" => array_map( "file_get_contents", $files ), "queue" => $queue );
+				} finally {
+					foreach ( array_diff( glob( LINKER_LOCAL_MAIL_DIR . "/*.eml" ) ?: array(), $before ) as $file ) { unlink( $file ); }
+					$jobs = array_unique( array_merge( $jobs, array_diff( get_posts( array( "post_type" => "linker_mail_job", "post_status" => "any", "numberposts" => -1, "fields" => "ids" ) ), $jobs_before ) ) ); foreach ( $jobs as $job ) { foreach ( as_get_scheduled_actions( array( "hook" => "linker_commerce_mail_attempt", "args" => array( $job ), "group" => "linker-commerce", "per_page" => -1 ), "ids" ) as $action ) { ActionScheduler::store()->delete_action( $action ); } wp_delete_post( $job, true ); }
+					if ( ! $complete && $order instanceof WC_Order ) { $order->delete( true ); }
+					foreach ( $saved as $key => $value ) { if ( null === $value ) { delete_option( $key ); } else { update_option( $key, $value ); } }
+				}'
+			);
+			self::assertCount( 1, $fixture['mails'], 'Exactly one local tester delivery.' );
+			$mail = $fixture['mails'][0];
+			self::assertStringContainsString( 'To: tester@example.test', $mail );
+			self::assertStringContainsString( 'Content-Transfer-Encoding: 8bit', $mail );
+			self::assertSame( 1, preg_match( '//u', $mail ) );
+			self::assertStringContainsString( 'Ihre Anfrage', $mail );
+			preg_match( '#href="([^"]*/de/mein-konto/registrieren/\?[^"]+)"#', $mail, $link );
+			self::assertNotEmpty( $link[1] ?? '', 'Receipt registration uses the final German path.' );
+			$url = html_entity_decode( $link[1], ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+			parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $query );
+			self::assertSame( (string) $fixture['id'], $query['linker_inquiry'] ?? '' );
+			self::assertSame( $fixture['key'], $query['linker_key'] ?? '' );
+			$page = self::get( substr( $url, strlen( self::$site ) ) );
+			self::assertSame( 200, $page['status'] );
+			self::assertStringContainsString( 'value="i254-receipt@example.test"', $page['body'] );
+			self::assertCount( 1, $fixture['queue'] );
+			self::assertSame( array( 'i254-receipt@example.test' ), $fixture['queue'][0]['to'] );
+			self::assertSame( $fixture['before'], $fixture['after'] );
+			self::evidence( 'inquiry-received.eml', str_replace( $fixture['key'], 'LOCAL_FIXTURE_KEY', $mail ) );
+			self::evidence( 'inquiry-received-queue.json', str_replace( $fixture['key'], 'LOCAL_FIXTURE_KEY', (string) json_encode( $fixture['queue'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) );
+		} finally {
+			if ( is_array( $fixture ) ) {
+				self::php( '$order = wc_get_order( $input["id"] ); if ( $order instanceof WC_Order ) { $order->delete( true ); }', array( 'id' => $fixture['id'] ) );
+			}
+			if ( $applied ) {
+				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) );
+			}
+		}
+	}
+
 	/** The journal's collection metadata names the document in its own language. */
 	public function test_journal_collection_metadata_uses_its_own_language_url(): void {
 		foreach ( array( '/blog/', '/de/blog/' ) as $path ) {

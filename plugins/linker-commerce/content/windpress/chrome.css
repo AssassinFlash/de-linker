@@ -44,6 +44,11 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2 #tv-mobile-toggle{flex-shrink:0;position:relative;z-index:2}
 }
 @media (min-width:1280px){#tv-header-v2 .tv-nav-frame{min-height:72px}}
+/* The content-box frame already fills its container. Its end padding adds
+   16px outside that width and produces 1px of document overflow at 1280px.
+   Remove only the transparent end padding: the content width, left inset,
+   navigation spacing and native fit() budget remain unchanged. */
+@media (min-width:1280px){#tv-header-v2 .tv-nav-frame{padding-right:0}}
 #tv-header-v2 .tv-desktop-nav{display:none}
 @media (min-width:1280px){#tv-header-v2 .tv-desktop-nav{display:flex;align-items:center;gap:4px;flex:0 0 auto}}
 /* #229: DE must fit beside the contact button AND share EN's fold state.

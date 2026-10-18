@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-18T13:07:45+00:00\n"
+"POT-Creation-Date: 2026-10-18T16:05:58+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -128,22 +128,13 @@ msgstr "Konto prüfen"
 msgid "Product filters"
 msgstr "Produktfilter"
 
-#: content/livecanvas/blog_index.html:343
-#: content/livecanvas/category_archive.html:159
-#: content/livecanvas/search.html:155 content/livecanvas/single_product.html:55
-msgid "Applications"
-msgstr "Anwendungen"
-
-#: content/livecanvas/blog_single.html:29
-#: content/livecanvas/de/blog_single.html:20
-#: content/livecanvas/de/search.html:19 content/livecanvas/search.html:27
-#: content/livecanvas/single_product.html:6
-msgid "Breadcrumb"
-msgstr "Brotkrumen"
-
 #: content/livecanvas/faq_page.html:13
 msgid "Clear search"
 msgstr "Suche leeren"
+
+#: content/livecanvas/single_product.html:6
+msgid "Breadcrumb"
+msgstr "Brotkrumen"
 
 #: content/livecanvas/single_product.html:33
 msgid "Check this model for the project"
@@ -162,6 +153,10 @@ msgstr "Produktbereiche"
 #: content/livecanvas/single_product.html:70
 msgid "Technical data"
 msgstr "Technische Daten"
+
+#: content/livecanvas/single_product.html:55
+msgid "Applications"
+msgstr "Anwendungen"
 
 #: content/livecanvas/single_product.html:89
 msgid "Product questions"
@@ -1141,7 +1136,7 @@ msgstr ""
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
 
-#: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:139
+#: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:143
 msgid "Please use the inquiry form to send your inquiry."
 msgstr "Bitte senden Sie Ihre Anfrage über das Anfrageformular."
 
@@ -1256,7 +1251,8 @@ msgstr "Lösungsentwurf"
 msgid "Edit solution draft"
 msgstr "Lösungsentwurf bearbeiten"
 
-#: includes/Inquiry/Form.php:167 includes/Vocabulary/Terms.php:65
+#: includes/Inquiry/Form.php:167 includes/Inquiry/Form.php:197
+#: includes/Vocabulary/Terms.php:65
 #: templates/emails/linker-genie-handoff.php:65
 msgid "Quantity"
 msgstr "Menge"
@@ -1266,12 +1262,12 @@ msgid "Update solution draft"
 msgstr "Lösungsentwurf aktualisieren"
 
 #. translators: %s: product name.
-#: includes/Inquiry/Form.php:189
+#: includes/Inquiry/Form.php:199
 #, php-format
 msgid "Quantity for %s"
 msgstr "Menge für %s"
 
-#: includes/Inquiry/Form.php:196
+#: includes/Inquiry/Form.php:206
 msgid "You can send a message without products."
 msgstr "Sie können uns auch ohne Produkte eine Nachricht senden."
 
@@ -1378,11 +1374,11 @@ msgstr ""
 msgid "Website"
 msgstr "Website"
 
-#: includes/Inquiry/Sender.php:48
+#: includes/Inquiry/Sender.php:52
 msgid "Please add a product or write a message."
 msgstr "Bitte fügen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht."
 
-#: includes/Inquiry/Sender.php:73
+#: includes/Inquiry/Sender.php:77
 msgid "Please try sending your inquiry again."
 msgstr "Bitte senden Sie Ihre Anfrage erneut."
 
@@ -1569,7 +1565,7 @@ msgid_plural "%s products"
 msgstr[0] "%s Produkt"
 msgstr[1] "%s Produkte"
 
-#: includes/Presentation/BlogShortcodes.php:157
+#: includes/Presentation/BlogShortcodes.php:158
 msgid "Read article"
 msgstr "Artikel lesen"
 
@@ -2448,10 +2444,6 @@ msgid ""
 msgstr ""
 "Wählen Sie Produkte für Ihren Lösungsentwurf aus. Sie können Ihre Anfrage "
 "ohne Konto senden."
-
-#: includes/Presentation/Shortcodes.php:370
-msgid "Sign in or register"
-msgstr "Anmelden oder registrieren"
 
 #: includes/Products/Comparison.php:224 includes/Storefront/ProductView.php:305
 msgid "Net price after partner sign-in"
@@ -4482,6 +4474,9 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#~ msgid "Sign in or register"
+#~ msgstr "Anmelden oder registrieren"
 
 #~ msgid "No account yet? Register"
 #~ msgstr "Noch kein Konto? Registrieren"
