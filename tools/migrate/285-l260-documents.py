@@ -66,7 +66,9 @@ def run(wp: list[str], request: dict[str, Any]) -> dict[str, Any]:
         check=False,
     )
     if result.returncode != 0:
-        sys.exit(f"wp eval-file failed: {result.stderr.strip() or result.stdout.strip()}")
+        sys.exit(
+            f"wp eval-file failed: {result.stderr.strip() or result.stdout.strip()}"
+        )
     line = next(
         (line for line in result.stdout.splitlines() if line.startswith(MARKER)),
         None,
@@ -171,14 +173,10 @@ def main(argv: list[str] | None = None) -> int:
     if after["documents"] != plan["to"]:
         sys.exit("readback mismatch: the document list did not take the target value.")
     changed = [
-        key
-        for key in PROTECTED
-        if after["fields"].get(key) != state["fields"].get(key)
+        key for key in PROTECTED if after["fields"].get(key) != state["fields"].get(key)
     ]
     if changed:
-        sys.exit(
-            "fields the migration must not change changed: " + ", ".join(changed)
-        )
+        sys.exit("fields the migration must not change changed: " + ", ".join(changed))
     print(
         f"done: product {plan['product']} now points at the excerpt; "
         "protected fields unchanged."
