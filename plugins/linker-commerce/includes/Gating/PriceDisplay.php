@@ -160,6 +160,9 @@ final class PriceDisplay {
 	 */
 	public function order_line_subtotal( string $subtotal, WC_Order_Item $item ): string {
 		$reason = $item->get_meta( self::ITEM_REASON_META );
+		if ( $item instanceof WC_Order_Item_Product && ! $this->state->visitor_sees_prices() ) {
+			return $this->label( $this->state->reason( is_string( $reason ) ? $reason : '', CommerceState::CARD ) ?? $this->state->visitor_reason() );
+		}
 		if ( ! $item instanceof WC_Order_Item_Product || ! is_string( $reason ) || '' === $reason || 0.0 !== (float) $item->get_total() ) {
 			return $subtotal;
 		}

@@ -129,7 +129,7 @@ final class CommerceState {
 	 * Either way an approved account on a priced product sees the price, and
 	 * on a product without a stored price reads "on request".
 	 *
-	 * @param WC_Product|string $product Product or the recorded reason of a still-unpriced inquiry line.
+	 * @param WC_Product|string $product Product or the recorded reason of an inquiry line.
 	 * @param string            $surface self::CARD or self::PAGE.
 	 * @return self::LOGIN|self::UNAVAILABLE|self::APPROVAL|self::PROJECT|self::UNPRICED|null
 	 * @throws \InvalidArgumentException For a surface the rule does not know.

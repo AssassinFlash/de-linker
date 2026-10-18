@@ -217,6 +217,26 @@ final class PriceDisplayTest extends TestCase {
 	}
 
 	/**
+	 * Removing account price access also hides previously priced inquiry lines.
+	 *
+	 * @testWith ["pending", "Account under review. Prices after approval."]
+	 *           ["restricted", "Not available for your account"]
+	 *           ["guest", "Log in for prices"]
+	 * @param string $status Account state.
+	 * @param string $note Expected price note.
+	 */
+	public function test_priced_inquiry_line_respects_current_access( string $status, string $note ): void {
+		$this->logged_in = 'guest' !== $status;
+		$this->approval_meta( array( Approval::STATUS_META => $status ) );
+		$item = Mockery::mock( WC_Order_Item_Product::class );
+		$item->allows( 'get_meta' )->with( PriceDisplay::ITEM_REASON_META )->andReturn( '' );
+		$item->allows( 'get_total' )->andReturn( '100' );
+		$html = ( new PriceDisplay( new CommerceState() ) )->order_line_subtotal( '€100.00', $item );
+		$this->assertStringContainsString( $note, $html );
+		$this->assertStringNotContainsString( '€', $html );
+	}
+
+	/**
 	 * All inquiry surfaces share visibility and missing-line checks.
 	 *
 	 * @testWith [true, true, false, true]
