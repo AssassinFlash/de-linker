@@ -260,6 +260,29 @@ final class GermanUrlsTest extends SiteTestCase {
 		}
 	}
 
+	/** A cached activation flag cannot survive rollback or prevent a persisted apply. */
+	public function test_activation_recovers_from_a_stale_individual_option_cache(): void {
+		$ghost   = '$key = "linker_i18n_german_urls_active"; $missing = (array) wp_cache_get( "notoptions", "options" ); unset( $missing[$key] ); wp_cache_set( "notoptions", $missing, "options" ); wp_cache_set( $key, "1", "options" );';
+		$applied = false;
+		try {
+			self::php( $ghost );
+			self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) );
+			self::assertNull( self::php( 'return get_option( "linker_i18n_german_urls_active", null );' ), 'Rollback must remove the observed cached activation without a database row.' );
+			self::assertSame( 200, self::get( '/de/warenkorb/' )['status'] );
+			self::php( $ghost );
+			self::wp( array( 'linker-i18n', 'german-urls', '--apply' ) );
+			$applied = true;
+			self::assertSame( '1', self::php( 'global $wpdb; return $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", "linker_i18n_german_urls_active" ) );' ), 'Apply must persist activation even when a cached value already says active.' );
+			self::assertSame( 301, self::get( '/de/warenkorb/' )['status'] );
+			self::assertSame( 0, self::command( array( '--verify' ) )['status'] );
+		} finally {
+			self::php( 'wp_cache_delete( "linker_i18n_german_urls_active", "options" );' );
+			if ( $applied ) {
+				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) );
+			}
+		}
+	}
+
 	/** A stale autoloaded rules cache cannot hide a deployed German endpoint. */
 	public function test_repeat_apply_repairs_a_stale_native_rewrite_cache(): void {
 		$old_rules = self::php( 'return get_option( "rewrite_rules" );' );

@@ -202,6 +202,8 @@ final class GermanUrlMigration {
 	 * @throws \RuntimeException If a conflict or native write failure occurs.
 	 */
 	public function apply(): int {
+		// A stale nonautoloaded flag must not make native update_option skip its missing SQL row.
+		wp_cache_delete( self::ACTIVE, 'options' );
 		$rows   = array_values( array_filter( $this->preview(), static fn( array $row ): bool => array() !== $row['after'] ) );
 		$backup = $this->backup();
 		$this->check_originals( $backup );
@@ -377,6 +379,8 @@ final class GermanUrlMigration {
 	 * @return int Restored objects.
 	 */
 	public function rollback(): int {
+		// Native delete_option returns early for a missing row without clearing its cached value.
+		wp_cache_delete( self::ACTIVE, 'options' );
 		$backup = $this->backup();
 		$this->preview( true );
 		$changed = 0;
