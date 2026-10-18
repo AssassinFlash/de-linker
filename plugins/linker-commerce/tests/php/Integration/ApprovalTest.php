@@ -129,8 +129,8 @@ final class ApprovalTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * An account without approval cannot get an inquiry in: the draft accepts
-	 * the line, as a guest's does, but no gateway is offered for the send.
+	 * A pending account can add a product and send its inquiry through the
+	 * same public gateway, while approval continues to govern prices.
 	 */
 	public function test_a_pending_account_can_send_an_inquiry(): void {
 		$product  = $this->product( '1680' );

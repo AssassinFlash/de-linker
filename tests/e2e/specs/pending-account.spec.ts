@@ -209,7 +209,30 @@ for (const language of ['en', 'de'] as const) {
 					'Approval preserves the original customer session cookie'
 				).toBe(true);
 				await shot(page, `${prefix}-approved-product`);
-				await page.goto(base + account);
+				const accountResponse = await page.goto(base + account);
+				writeFileSync(
+					join(output, `${prefix}-account-readback.json`),
+					JSON.stringify(
+						{
+							...read(),
+							responseStatus: accountResponse?.status(),
+							fromServiceWorker:
+								accountResponse?.fromServiceWorker(),
+							cacheControl:
+								accountResponse?.headers()['cache-control'],
+							responseHasPendingNotice: (
+								await accountResponse?.text()
+							)?.includes(
+								'class="linker-gate linker-account-status"'
+							),
+							pendingNoticeCount: await page
+								.locator('.linker-account-status')
+								.count(),
+						},
+						null,
+						2
+					)
+				);
 				await expect(
 					page.locator('.linker-account-status')
 				).toHaveCount(0);
