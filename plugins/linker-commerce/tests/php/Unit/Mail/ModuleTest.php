@@ -42,6 +42,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( Outbox::HOOK, array( $outbox, 'retry' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_switching_email_locale', array( $locale, 'allow' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_restoring_email_locale', array( $locale, 'allow' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_email_recipient_customer_reset_password', array( $locale, 'password_recipient' ), 10, 3 );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $policy, 'switch_off_others' ), 1000 );
 
 			( new Module( $outbox, $jobs, $locale, $policy ) )->register();

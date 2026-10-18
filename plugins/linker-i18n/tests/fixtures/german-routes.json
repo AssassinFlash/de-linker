@@ -1,0 +1,923 @@
+[
+  {
+    "old": "/de/",
+    "new": "/de/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/batteriegroesse-heimspeicher-notstrom/",
+    "new": "/de/batteriegroesse-heimspeicher-notstrom/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/blog/",
+    "new": "/de/blog/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/category/anwendungen/",
+    "new": "/de/kategorie/anwendungen/",
+    "kind": "historical category"
+  },
+  {
+    "old": "/de/category/applications-blog/",
+    "new": "/de/kategorie/anwendungen/",
+    "kind": "category"
+  },
+  {
+    "old": "/de/category/batteriespeicher/",
+    "new": "/de/kategorie/batteriespeicher/",
+    "kind": "historical category"
+  },
+  {
+    "old": "/de/category/battery-storage-blog/",
+    "new": "/de/kategorie/batteriespeicher/",
+    "kind": "category"
+  },
+  {
+    "old": "/de/category/installation-commissioning/",
+    "new": "/de/kategorie/installation-inbetriebnahme/",
+    "kind": "category"
+  },
+  {
+    "old": "/de/category/installation-inbetriebnahme/",
+    "new": "/de/kategorie/installation-inbetriebnahme/",
+    "kind": "historical category"
+  },
+  {
+    "old": "/de/category/monitoring-energy-management/",
+    "new": "/de/kategorie/ueberwachung-energiemanagement/",
+    "kind": "category"
+  },
+  {
+    "old": "/de/category/system-design/",
+    "new": "/de/kategorie/systemauslegung/",
+    "kind": "category"
+  },
+  {
+    "old": "/de/category/systemauslegung/",
+    "new": "/de/kategorie/systemauslegung/",
+    "kind": "historical category"
+  },
+  {
+    "old": "/de/category/uberwachung-energiemanagement/",
+    "new": "/de/kategorie/ueberwachung-energiemanagement/",
+    "kind": "historical category"
+  },
+  {
+    "old": "/de/category/ueberwachung-energiemanagement/",
+    "new": "/de/kategorie/ueberwachung-energiemanagement/",
+    "kind": "historical category"
+  },
+  {
+    "old": "/de/compare-products/",
+    "new": "/de/produkte-vergleichen/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/danke/",
+    "new": "/de/danke/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/datenschutz/",
+    "new": "/de/datenschutz/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/faq-download/",
+    "new": "/de/faq-dokumente/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/fernueberwachung-nach-installation/",
+    "new": "/de/fernueberwachung-nach-installation/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/fuer-epc/",
+    "new": "/de/fuer-epc/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/fuer-installateur/",
+    "new": "/de/fuer-installateur/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/gateway-zaehler-cloud-ueberwachung-datenebene/",
+    "new": "/de/kommunikationsschnittstelle-zaehler-fernueberwachung-datenebene/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/genie/",
+    "new": "/de/genie/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/",
+    "new": "/de/gewerbespeicher-lastspitzenkappung-notstrom-skalierbarkeit/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/heimspeicher-notstrom-eigenverbrauch/",
+    "new": "/de/heimspeicher-notstrom-eigenverbrauch/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/hybridwechselrichter-vs-ac-speicher/",
+    "new": "/de/hybridwechselrichter-vs-ac-speicher/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/impressum/",
+    "new": "/de/impressum/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/innen-vs-aussen-akku-planung/",
+    "new": "/de/innen-vs-aussen-akku-planung/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/installateur-checkliste-wechselrichter-akku/",
+    "new": "/de/installateur-checkliste-wechselrichter-akku/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/installateur-uebergabe-dokumentation-checkliste/",
+    "new": "/de/installateur-uebergabe-dokumentation-checkliste/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/kontakt/",
+    "new": "/de/kontakt/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/loesung/",
+    "new": "/de/loesung/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/loesung/gewerbespeicher/",
+    "new": "/de/loesung/gewerbespeicher/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/loesung/grossspeicher/",
+    "new": "/de/loesung/grossspeicher/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/loesung/heimspeicher/",
+    "new": "/de/loesung/heimspeicher/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/loesungskonfigurator/",
+    "new": "/de/loesungskonfigurator/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/mein-konto/",
+    "new": "/de/mein-konto/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/mein-konto/company/",
+    "new": "/de/mein-konto/unternehmen/",
+    "kind": "native Woo endpoint"
+  },
+  {
+    "old": "/de/mein-konto/company/billing/",
+    "new": "/de/mein-konto/unternehmen/rechnungsadresse/",
+    "kind": "native Woo address child"
+  },
+  {
+    "old": "/de/mein-konto/company/shipping/",
+    "new": "/de/mein-konto/unternehmen/lieferadresse/",
+    "kind": "native Woo address child"
+  },
+  {
+    "old": "/de/mein-konto/customer-logout/",
+    "new": "/de/mein-konto/abmelden/",
+    "kind": "native Woo action",
+    "terminal": "/de/mein-konto/"
+  },
+  {
+    "old": "/de/mein-konto/documents/",
+    "new": "/de/mein-konto/dokumente/",
+    "kind": "native Woo endpoint"
+  },
+  {
+    "old": "/de/mein-konto/edit-account/",
+    "new": "/de/mein-konto/kontodaten/",
+    "kind": "native Woo endpoint"
+  },
+  {
+    "old": "/de/mein-konto/inquiries/",
+    "new": "/de/mein-konto/anfragen/",
+    "kind": "native Woo endpoint"
+  },
+  {
+    "old": "/de/mein-konto/inquiries/2/",
+    "new": "/de/mein-konto/anfragen/2/",
+    "kind": "native Woo endpoint"
+  },
+  {
+    "old": "/de/mein-konto/lost-password/",
+    "new": "/de/mein-konto/passwort-zuruecksetzen/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/mein-konto/register/",
+    "new": "/de/mein-konto/registrieren/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/mein-konto/saved-solutions/",
+    "new": "/de/mein-konto/gespeicherte-loesungen/",
+    "kind": "native Woo endpoint"
+  },
+  {
+    "old": "/de/mein-konto/unternehmen/billing/",
+    "new": "/de/mein-konto/unternehmen/rechnungsadresse/",
+    "kind": "native Woo address child"
+  },
+  {
+    "old": "/de/mein-konto/unternehmen/shipping/",
+    "new": "/de/mein-konto/unternehmen/lieferadresse/",
+    "kind": "native Woo address child"
+  },
+  {
+    "old": "/de/produkt-kategorie/ems-monitoring/",
+    "new": "/de/produkt-kategorie/ems-ueberwachung/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt-kategorie/gewerbespeicher/",
+    "new": "/de/produkt-kategorie/gewerbespeicher/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt-kategorie/gewerbespeicher/all-in-one-systeme/",
+    "new": "/de/produkt-kategorie/gewerbespeicher/komplettsysteme/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+    "new": "/de/produkt-kategorie/gewerbespeicher/batteriesysteme/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt-kategorie/heimspeicher/",
+    "new": "/de/produkt-kategorie/heimspeicher/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt-kategorie/ladestationen/",
+    "new": "/de/produkt-kategorie/ladestationen/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt-kategorie/wechselrichter/",
+    "new": "/de/produkt-kategorie/wechselrichter/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt-kategorie/wechselrichter/page/2/",
+    "new": "/de/produkt-kategorie/wechselrichter/seite/2/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/produkt-kategorie/wechselrichter/page/3/",
+    "new": "/de/produkt-kategorie/wechselrichter/seite/3/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/produkt-kategorie/wechselrichter/page/4/",
+    "new": "/de/produkt-kategorie/wechselrichter/seite/4/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/produkt-kategorie/zubehoer/",
+    "new": "/de/produkt-kategorie/zubehoer/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+    "new": "/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt-kategorie/zubehoer/notstrom/",
+    "new": "/de/produkt-kategorie/zubehoer/notstrom/",
+    "kind": "product_cat"
+  },
+  {
+    "old": "/de/produkt/chint-dtsu666/",
+    "new": "/de/produkt/chint-dtsu666/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-battery-stack-bridge/",
+    "new": "/de/produkt/ecoflow-verbinder-fuer-batteriestapel/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-battery-5-02-kwh-ef-bd-5-s2/",
+    "new": "/de/produkt/ecoflow-ocean-2-batterie-5-02-kwh-ef-bd-5-s2/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-battery-8-0-kwh-ef-bd-8-s2/",
+    "new": "/de/produkt/ecoflow-ocean-2-batterie-8-0-kwh-ef-bd-8-s2/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-single-phase-hybrid-2026-flagship/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-10k0-s2-10-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-single-phase-hybrid-2026-flagship/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-12k0-s2-12-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-single-phase-hybrid/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-3k-s2-3-kw-einphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-single-phase-hybrid/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-3k68-s2-3-68-kw-einphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-single-phase-hybrid/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-4k6-s2-4-6-kw-einphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-single-phase-hybrid/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-5k-s2-5-kw-einphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-single-phase-hybrid/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-5k75-s2-5-75-kw-einphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-single-phase-hybrid/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-6k-s2-6-kw-einphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-single-phase-hybrid-2026-flagship/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-6k0-s2-6-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-single-phase-hybrid-2026-flagship/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p1-8k0-s2-8-kw-einphasiger-hybridwechselrichter-2026-spitzenmodell/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-three-phase-hybrid-2026-flagship/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p3-10k0-s2-10-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-three-phase-hybrid-2026-flagship/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p3-12k0-s2-12-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-three-phase-hybrid/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2-15-kw-dreiphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-three-phase-hybrid/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p3-15k-g2f-15-kw-dreiphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-three-phase-hybrid/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p3-5k0-s2-5-kw-dreiphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-three-phase-hybrid-2026-flagship/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p3-6k0-s2-6-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-three-phase-hybrid-2026-flagship/",
+    "new": "/de/produkt/ecoflow-ocean-2-hd-p3-8k0-s2-8-kw-dreiphasiger-hybridwechselrichter-2026-spitzenmodell/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/ecoflow-ocean-2-lfp-battery-base/",
+    "new": "/de/produkt/ecoflow-ocean-2-lfp-batteriesockel/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-einphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+    "new": "/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+    "new": "/de/produkt/goodwe-esa-gw125-261-esa-lcn-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw12k-eta-g20-12-kw-three-phase-all-in-one/",
+    "new": "/de/produkt/goodwe-esa-gw12k-eta-g20-12-kw-dreiphasiges-komplettsystem/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw15k-eta-g20-15-kw-three-phase-all-in-one/",
+    "new": "/de/produkt/goodwe-esa-gw15k-eta-g20-15-kw-dreiphasiges-komplettsystem/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw20k-eta-g20-20-kw-three-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw20k-eta-g20-20-kw-dreiphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw25k-eta-g20-25-kw-dreiphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw29-999k-eta-g20-29-999-kw-dreiphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-einphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-dreiphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-einphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-einphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw5k-eta-g20-5-kw-three-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw5k-eta-g20-5-kw-dreiphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-einphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw6k-eta-g20-6-kw-three-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw6k-eta-g20-6-kw-dreiphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-einphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw8k-eta-g20-8-kw-three-phase-all-in-one/",
+    "new": "/de/produkt/goodwe-esa-gw8k-eta-g20-8-kw-dreiphasiges-komplettsystem/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-esa-gw9-999k-eta-g20-9-999-kw-three-phase-power-module/",
+    "new": "/de/produkt/goodwe-esa-gw9-999k-eta-g20-9-999-kw-dreiphasiges-leistungsmodul/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-etr-125-kw-ci-three-phase-hybrid-inverter-1000v/",
+    "new": "/de/produkt/goodwe-etr-125-kw-ci-dreiphasiger-hybridwechselrichter-1000v/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-ezmanager3000-hems-gateway/",
+    "new": "/de/produkt/goodwe-ezmanager3000-hems-kommunikationsschnittstelle/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gm330/",
+    "new": "/de/produkt/goodwe-gm330/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gmk330/",
+    "new": "/de/produkt/goodwe-gmk330/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw100k-et-g10/",
+    "new": "/de/produkt/goodwe-gw100k-et-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw100k-etr-g10-100-kw-three-phase-hybrid-inverter/",
+    "new": "/de/produkt/goodwe-gw100k-etr-g10-100-kw-dreiphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw110k-etr-g10-110-kw-three-phase-hybrid-inverter/",
+    "new": "/de/produkt/goodwe-gw110k-etr-g10-110-kw-dreiphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw112-6-bat-ac-g10/",
+    "new": "/de/produkt/goodwe-gw112-6-bat-ac-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw124-99k-etr-g10-124-99-kw-three-phase-hybrid-inverter/",
+    "new": "/de/produkt/goodwe-gw124-99k-etr-g10-124-99-kw-dreiphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw125k-sts-g10/",
+    "new": "/de/produkt/goodwe-gw125k-sts-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw208-9-bat-lc-g10/",
+    "new": "/de/produkt/goodwe-gw208-9-bat-lc-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
+    "new": "/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw261-2-bat-lcd-g10/",
+    "new": "/de/produkt/goodwe-gw261-2-bat-lcd-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw30k-sts-g10/",
+    "new": "/de/produkt/goodwe-gw30k-sts-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw5-1-bat-d-g20-esa-battery-module-5-12-kwh/",
+    "new": "/de/produkt/goodwe-gw5-1-bat-d-g20-esa-batteriemodul-5-12-kwh/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw5-1-bat-d-g21-esa-battery-module-5-12-kwh/",
+    "new": "/de/produkt/goodwe-gw5-1-bat-d-g21-esa-batteriemodul-5-12-kwh/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh/",
+    "new": "/de/produkt/goodwe-gw6-0-bat-d-g20-esa-batteriemodul-6-0-kwh/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw60k-sts-g10/",
+    "new": "/de/produkt/goodwe-gw60k-sts-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw61-4-bat-ac-g10/",
+    "new": "/de/produkt/goodwe-gw61-4-bat-ac-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw75k-et-g10/",
+    "new": "/de/produkt/goodwe-gw75k-et-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw8-3-bat-d-g20-esa-battery-module-8-32-kwh/",
+    "new": "/de/produkt/goodwe-gw8-3-bat-d-g20-esa-batteriemodul-8-32-kwh/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw8-3-bat-d-g21-esa-battery-module-8-32-kwh/",
+    "new": "/de/produkt/goodwe-gw8-3-bat-d-g21-esa-batteriemodul-8-32-kwh/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw80k-et-g10/",
+    "new": "/de/produkt/goodwe-gw80k-et-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw80k-etr-g10-80-kw-three-phase-hybrid-inverter/",
+    "new": "/de/produkt/goodwe-gw80k-etr-g10-80-kw-dreiphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw9-0-bat-d-g20-esa-battery-module-9-0-kwh/",
+    "new": "/de/produkt/goodwe-gw9-0-bat-d-g20-esa-batteriemodul-9-0-kwh/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw99-99k-et-g10/",
+    "new": "/de/produkt/goodwe-gw99-99k-et-g10/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-gw99-99k-etr-g10-99-99-kw-three-phase-hybrid-inverter/",
+    "new": "/de/produkt/goodwe-gw99-99k-etr-g10-99-99-kw-dreiphasiger-hybridwechselrichter/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger/",
+    "new": "/de/produkt/goodwe-hca-g2-gw11k-hca-20-11-kw-dreiphasige-ladestation/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-hca-gw22k-hca-22-kw-three-phase-ev-charger/",
+    "new": "/de/produkt/goodwe-hca-gw22k-hca-22-kw-dreiphasige-ladestation/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-hca-gw7k-hca-7-kw-single-phase-ev-charger/",
+    "new": "/de/produkt/goodwe-hca-gw7k-hca-7-kw-einphasige-ladestation/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/goodwe-sec3000c-smart-energy-controller/",
+    "new": "/de/produkt/goodwe-sec3000c-intelligente-energiesteuerung/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/pylontech-optim-us-l260-omni/",
+    "new": "/de/produkt/pylontech-optim-us-l260-omni/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-ats1-t63-a/",
+    "new": "/de/produkt/saj-ats1-t63-a/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-b2-10-0-hv1/",
+    "new": "/de/produkt/saj-b2-10-0-hv1/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-b2-15-0-hv1/",
+    "new": "/de/produkt/saj-b2-15-0-hv1/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-b2-20-0-hv1/",
+    "new": "/de/produkt/saj-b2-20-0-hv1/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-b2-25-0-hv1/",
+    "new": "/de/produkt/saj-b2-25-0-hv1/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-b2-5-0-hv1/",
+    "new": "/de/produkt/saj-b2-5-0-hv1/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-bc2-hv1/",
+    "new": "/de/produkt/saj-bc2-hv1/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-bu2-5-0-hv1/",
+    "new": "/de/produkt/saj-bu2-5-0-hv1/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-bu3-5-0-tv2-pro/",
+    "new": "/de/produkt/saj-bu3-5-0-tv2-pro/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-cb2-100-3-hv5/",
+    "new": "/de/produkt/saj-cb2-100-3-hv5/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-cb2-57-3-hv5/",
+    "new": "/de/produkt/saj-cb2-57-3-hv5/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-cb2-71-6-hv5/",
+    "new": "/de/produkt/saj-cb2-71-6-hv5/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-cb2-85-9-hv5/",
+    "new": "/de/produkt/saj-cb2-85-9-hv5/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-chs2-29-9k-t4-x/",
+    "new": "/de/produkt/saj-chs2-29-9k-t4-x/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-chs2-30k-t4-x/",
+    "new": "/de/produkt/saj-chs2-30k-t4-x/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-chs2-50k-t6-x/",
+    "new": "/de/produkt/saj-chs2-50k-t6-x/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-emanager-c1-pro/",
+    "new": "/de/produkt/saj-emanager-c1-pro/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-emanager-emanager-5-0-residential-energy-manager/",
+    "new": "/de/produkt/saj-emanager-emanager-5-0-heim-energiemanager/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-esolar-aio3-data-collector-wifi-lan-bluetooth/",
+    "new": "/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-h2-10k-t3/",
+    "new": "/de/produkt/saj-h2-10k-t3/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-h2-12k-t3/",
+    "new": "/de/produkt/saj-h2-12k-t3/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-h2-15k-t3/",
+    "new": "/de/produkt/saj-h2-15k-t3/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-h2-20k-t3/",
+    "new": "/de/produkt/saj-h2-20k-t3/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-h2-25k-t3/",
+    "new": "/de/produkt/saj-h2-25k-t3/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-h2-30k-t3-de/",
+    "new": "/de/produkt/saj-h2-30k-t3-de/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-hs2-10k-t2-x/",
+    "new": "/de/produkt/saj-hs2-10k-t2-x/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-hs2-5k-t2-x/",
+    "new": "/de/produkt/saj-hs2-5k-t2-x/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-hs2-6k-t2-x/",
+    "new": "/de/produkt/saj-hs2-6k-t2-x/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-hs2-8k-t2-x/",
+    "new": "/de/produkt/saj-hs2-8k-t2-x/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-hs3-10k-t2-w-p/",
+    "new": "/de/produkt/saj-hs3-10k-t2-w-p/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-hs3-12k-t2-w-p/",
+    "new": "/de/produkt/saj-hs3-12k-t2-w-p/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-hs3-5k-t2-w-p/",
+    "new": "/de/produkt/saj-hs3-5k-t2-w-p/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-hs3-6k-t2-w-p/",
+    "new": "/de/produkt/saj-hs3-6k-t2-w-p/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkt/saj-hs3-8k-t2-w-p/",
+    "new": "/de/produkt/saj-hs3-8k-t2-w-p/",
+    "kind": "product"
+  },
+  {
+    "old": "/de/produkte/",
+    "new": "/de/produkte/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/produkte/page/2/",
+    "new": "/de/produkte/seite/2/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/produkte/page/3/",
+    "new": "/de/produkte/seite/3/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/produkte/page/4/",
+    "new": "/de/produkte/seite/4/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/produkte/page/5/",
+    "new": "/de/produkte/seite/5/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/produkte/page/6/",
+    "new": "/de/produkte/seite/6/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/produkte/page/7/",
+    "new": "/de/produkte/seite/7/",
+    "kind": "crawl/pagination/endpoint"
+  },
+  {
+    "old": "/de/proforma-anfrage/",
+    "new": "/de/proforma-anfrage/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/rueckgabe-erstattung/",
+    "new": "/de/rueckgabe-erstattung/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/service-support/",
+    "new": "/de/kundendienst/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/solar-speicher-inbetriebnahme-checkliste/",
+    "new": "/de/solar-speicher-inbetriebnahme-checkliste/",
+    "kind": "post"
+  },
+  {
+    "old": "/de/ueber-uns/",
+    "new": "/de/ueber-uns/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/ueber-uns/leistungsfaehigkeit/",
+    "new": "/de/ueber-uns/leistungsfaehigkeit/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/verkaufsbedingungen/",
+    "new": "/de/verkaufsbedingungen/",
+    "kind": "page"
+  },
+  {
+    "old": "/de/warenkorb/",
+    "new": "/de/loesungsentwurf/",
+    "kind": "page"
+  }
+]

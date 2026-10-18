@@ -44,6 +44,7 @@ final class Module {
 		add_action( Outbox::HOOK, array( $this->outbox, 'retry' ) );
 		add_filter( 'woocommerce_allow_switching_email_locale', array( $this->locale, 'allow' ), 10, 2 );
 		add_filter( 'woocommerce_allow_restoring_email_locale', array( $this->locale, 'allow' ), 10, 2 );
+		add_filter( 'woocommerce_email_recipient_customer_reset_password', array( $this->locale, 'password_recipient' ), 10, 3 );
 		add_filter( 'woocommerce_email_classes', array( $this->policy, 'switch_off_others' ), 1000 );
 	}
 }

@@ -886,67 +886,190 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	}
 }
 
-/* #246: DECISION.md's two columns and optional account fields. Visual values
- * use tokens.css, as the live commerce fields above do. The column ratio and
- * hairline borders come from docs/prototypes/2026-10-17-inquiry/inquiry-prototype.css:5,22;
- * the 760px stacking breakpoint comes from its line 36. */
-.linker-inquiry { color: var(--proto-ink-deep); padding: var(--proto-space-6) 0 var(--proto-space-8); }
-.linker-inquiry-head { margin-bottom: var(--proto-space-6); }
-.linker-inquiry-head h1 { font-size: var(--proto-size-3xl); font-weight: var(--proto-weight-semibold); margin: 0 0 var(--proto-space-3); }
-.linker-inquiry-head p { color: var(--proto-neutral-500); max-width: var(--proto-measure); margin: 0; }
-.linker-inquiry-columns { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: var(--proto-space-5); align-items: start; }
-.linker-inquiry-form { display: grid; gap: var(--proto-space-5); min-width: 0; }
-.linker-inquiry .linker-form-label { display: grid; gap: var(--proto-space-2); color: var(--proto-ink-deep); font-size: var(--proto-size-sm); font-weight: var(--proto-weight-medium); }
-.linker-inquiry .linker-form-input { width: 100%; min-height: var(--proto-control-height); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-lg); background: var(--proto-canvas-white); padding: var(--proto-control-pad-y) var(--proto-control-pad-x); font: inherit; color: var(--proto-ink-deep); box-shadow: none; }
-.linker-inquiry textarea.linker-form-input { min-height: calc(var(--proto-space-8) + var(--proto-space-9)); resize: vertical; }
-.linker-inquiry .linker-form-input:focus-visible { outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset); }
-.linker-inquiry-details { border-top: 1px solid var(--proto-line-journal); border-bottom: 1px solid var(--proto-line-journal); padding: var(--proto-space-4) 0; }
-.linker-inquiry-details summary { display: flex; justify-content: space-between; gap: var(--proto-space-4); cursor: pointer; font-size: var(--proto-size-sm); }
-.linker-inquiry-details summary small { display: block; color: var(--proto-neutral-500); margin-top: var(--proto-space-1); overflow-wrap: anywhere; }
-.linker-inquiry-details summary > span:last-child { color: var(--proto-accent); text-decoration: underline; }
-.linker-inquiry-details summary[hidden] { display: none; }
-.linker-inquiry-details[open] summary { margin-bottom: var(--proto-space-5); }
-.linker-inquiry-fields { display: grid; gap: var(--proto-space-5); }
-/* The inquiry page renders inside #tv-woo-b2b-checkout (the classic checkout
-   page), whose ID-scoped label rule (storefront.css) made this label
-   display:block with a margin: the checkbox sat flush against the sentence
-   (owner-reported defect, 2026-10-18). The ID in the second selector outranks
-   that rule; the first keeps the row right in any context. */
-.linker-inquiry .linker-form-consent, #tv-woo-b2b-checkout .linker-inquiry .linker-form-consent { display: flex; gap: var(--proto-space-3); align-items: flex-start; margin: 0; font-size: var(--proto-size-sm); font-weight: normal; line-height: var(--proto-leading-caption); }
-.linker-inquiry .linker-form-consent input { margin-top: var(--proto-space-1); accent-color: var(--proto-accent); }
-.linker-inquiry .linker-form-consent[hidden], .linker-inquiry-guest[hidden] { display: none; }
-.linker-inquiry .linker-form-consent a { color: var(--proto-accent); text-decoration: underline; }
-.linker-inquiry .linker-form-primary { min-height: var(--proto-control-height); border: 0; border-radius: var(--proto-radius-lg); background: var(--proto-accent); color: var(--proto-accent-on); padding: var(--proto-control-pad-y) var(--proto-control-pad-x); display: flex; align-items: center; justify-content: space-between; font: inherit; font-weight: var(--proto-weight-medium); cursor: pointer; }
-.linker-inquiry .linker-form-primary:hover { background: var(--proto-teal-700); }
-.linker-inquiry .linker-form-primary:focus-visible { outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset); }
-.linker-inquiry-promise { font-size: var(--proto-size-sm); margin: calc(0rem - var(--proto-space-3)) 0 0; }
-.linker-inquiry-guest { color: var(--proto-neutral-500); font-size: var(--proto-size-sm); }
-.linker-inquiry-guest p { margin: 0 0 var(--proto-space-2); }
-.linker-inquiry-guest a { color: var(--proto-accent); text-decoration: underline; }
-.linker-inquiry-draft { border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-lg); padding: var(--proto-space-5); background: transparent; }
-.linker-inquiry-draft-head { display: grid; gap: var(--proto-space-2); padding-bottom: var(--proto-space-4); border-bottom: 1px solid var(--proto-line-journal); }
-.linker-inquiry-draft-head h2 { font-size: var(--proto-size-lg); margin: 0; font-weight: var(--proto-weight-semibold); }
-.linker-inquiry-draft-head a { font-size: var(--proto-size-sm); color: var(--proto-accent); text-decoration: underline; }
-.linker-inquiry-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--proto-space-3); padding: var(--proto-space-4) 0; border-bottom: 1px solid var(--proto-line-journal); font-size: var(--proto-size-sm); }
-.linker-inquiry-line:last-child { border-bottom: 0; padding-bottom: 0; }
-.linker-inquiry-line > div { grid-column: 1 / -1; font-size: var(--proto-size-sm); }
-.linker-inquiry-line input { width: var(--proto-space-8); padding: var(--proto-space-1); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-md); }
-.linker-inquiry-update { margin-top: var(--proto-space-4); border: 0; padding: 0; color: var(--proto-accent); background: transparent; font-size: var(--proto-size-sm); text-decoration: underline; }
-.linker-inquiry-error { color: var(--proto-sem-danger); margin: 0; }
-.linker-inquiry-error:empty { display: none; }
-@media (max-width: 760px) {
-	.linker-inquiry { padding: var(--proto-space-2) 0 var(--proto-space-7); }
-	.linker-inquiry-head h1 { font-size: var(--proto-size-2xl); }
-	.linker-inquiry-head p { font-size: var(--proto-size-sm); }
-	.linker-inquiry-columns { grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-6); }
-	.linker-inquiry-draft { padding: var(--proto-space-4); }
-	.linker-inquiry-details summary { font-size: var(--proto-size-sm); }
+/* Inquiry composition follows the approved variant B and the contact card:
+ * docs/prototypes/2026-10-17-inquiry/{DECISION.md,inquiry-prototype.css}.
+ * The prototype supplies the 60/40 columns and 760px stacking breakpoint;
+ * spacing, type, control sizes and panel radii use the shared site tokens.
+ * Scoped selectors also outrank the retained checkout field selectors. */
+.linker-inquiry-page #container-content-checkout {
+	padding: var(--proto-space-7) var(--proto-space-4) var(--proto-space-8);
 }
-
-.linker-inquiry-restriction { padding: var(--proto-space-5); margin-bottom: var(--proto-space-6); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-lg); background: var(--proto-neutral-50); }
+.linker-inquiry-page #tv-woo-b2b-checkout { padding: 0; background: transparent; }
+.linker-inquiry { color: var(--proto-ink-deep); font-family: var(--proto-font-sans); }
+.linker-inquiry-columns {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+	gap: var(--proto-space-5);
+	align-items: start;
+}
+.linker-inquiry-form {
+	display: grid;
+	gap: var(--proto-space-5);
+	min-width: 0;
+	padding: var(--proto-space-6);
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-panel);
+	background: var(--proto-canvas-white);
+}
+.linker-inquiry-head { display: grid; gap: var(--proto-space-3); }
+#tv-woo-b2b-checkout .linker-inquiry-back {
+	display: inline-flex;
+	align-items: center;
+	justify-self: start;
+	gap: var(--proto-space-2);
+	color: var(--proto-teal-600);
+	font-size: var(--proto-size-xs);
+	font-weight: var(--proto-weight-medium);
+	text-decoration: none;
+}
+#tv-woo-b2b-checkout .linker-inquiry-back:hover { text-decoration: underline; }
+.linker-inquiry-head h1 {
+	margin: 0;
+	font-family: var(--proto-font-display);
+	font-size: var(--proto-size-3xl);
+	font-weight: var(--proto-weight-semibold);
+	line-height: var(--proto-leading-display);
+	letter-spacing: -.02em;
+	color: var(--proto-ink-deep);
+}
+.linker-inquiry-head p {
+	margin: 0;
+	font-size: var(--proto-size-sm);
+	line-height: var(--proto-leading-body);
+	color: var(--proto-ink-muted-deep);
+}
+#tv-woo-b2b-checkout .linker-inquiry .linker-form-label {
+	display: grid;
+	gap: var(--proto-space-2);
+	margin: 0;
+	color: var(--proto-ink-deep);
+	font-size: var(--proto-size-sm);
+	font-weight: var(--proto-weight-medium);
+	line-height: var(--proto-leading-caption);
+}
+#tv-woo-b2b-checkout .linker-inquiry .linker-form-input {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	min-height: var(--proto-control-height);
+	margin: 0;
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-input-radius);
+	background: var(--proto-canvas-white);
+	padding: var(--proto-control-pad-y) var(--proto-space-3);
+	font: inherit;
+	color: var(--proto-ink-deep);
+	box-shadow: none;
+}
+#tv-woo-b2b-checkout .linker-inquiry textarea.linker-form-input {
+	min-height: calc(var(--proto-space-8) + var(--proto-space-7));
+	resize: vertical;
+}
+#tv-woo-b2b-checkout .linker-inquiry :where(a, button, input, textarea, summary):focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
+.linker-inquiry-details { margin: 0; padding: 0; border: 0; }
+.linker-inquiry-details summary {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--proto-space-4);
+	padding: var(--proto-space-4);
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-lg);
+	background: var(--proto-neutral-50);
+	cursor: pointer;
+	font-size: var(--proto-size-sm);
+	line-height: var(--proto-leading-body);
+}
+.linker-inquiry-details summary small { display: block; color: var(--proto-ink-muted-deep); margin-top: var(--proto-space-1); overflow-wrap: anywhere; }
+.linker-inquiry-details summary > span:last-child { color: var(--proto-teal-600); text-decoration: underline; }
+.linker-inquiry-details summary[hidden] { display: none; }
+.linker-inquiry-details[open] summary:not([hidden]) { margin-bottom: var(--proto-space-5); }
+.linker-inquiry-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--proto-space-5) var(--proto-space-4); }
+.linker-inquiry-company, .linker-inquiry-fields > .form-row { grid-column: 1 / -1; }
+#tv-woo-b2b-checkout .linker-inquiry .linker-form-consent {
+	display: flex;
+	gap: var(--proto-space-3);
+	align-items: flex-start;
+	margin: 0;
+	color: var(--proto-ink-muted-deep);
+	font-size: var(--proto-size-xs);
+	line-height: var(--proto-leading-body);
+}
+.linker-inquiry .linker-form-consent input { flex: 0 0 auto; margin-top: var(--proto-space-1); accent-color: var(--proto-accent); }
+#tv-woo-b2b-checkout .linker-inquiry .linker-form-consent a { color: var(--proto-teal-600); text-decoration: underline; text-underline-offset: 3px; }
+#tv-woo-b2b-checkout .linker-inquiry .linker-form-primary {
+	min-height: var(--proto-control-height);
+	border: 0;
+	border-radius: var(--proto-radius-lg);
+	background: var(--proto-accent);
+	color: var(--proto-accent-on);
+	padding: var(--proto-control-pad-y) var(--proto-control-pad-x);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--proto-space-4);
+	font: inherit;
+	font-size: var(--proto-control-size);
+	font-weight: var(--proto-weight-semibold);
+	cursor: pointer;
+}
+#tv-woo-b2b-checkout .linker-inquiry .linker-form-primary:hover { background: var(--proto-teal-700); }
+.linker-inquiry-reassurance {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--proto-space-1);
+	margin-top: calc(0rem - var(--proto-space-3));
+	color: var(--proto-ink-muted-deep);
+	font-size: var(--proto-size-xs);
+	line-height: var(--proto-leading-body);
+}
+.linker-inquiry-promise { margin: 0; }
+.linker-inquiry-guest { padding-top: var(--proto-space-4); border-top: 1px solid var(--proto-line-journal); font-size: var(--proto-size-xs); line-height: var(--proto-leading-body); }
+#tv-woo-b2b-checkout .linker-inquiry-guest a { color: var(--proto-ink-muted-deep); text-decoration: none; }
+#tv-woo-b2b-checkout .linker-inquiry-guest a:hover { color: var(--proto-teal-600); text-decoration: underline; text-underline-offset: 3px; }
+.linker-inquiry-draft {
+	position: sticky;
+	top: calc(var(--lk-header-h) + var(--proto-space-5));
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-panel);
+	padding: var(--proto-space-6);
+	background: var(--proto-neutral-50);
+}
+.linker-inquiry-draft-head { display: grid; gap: var(--proto-space-3); padding-bottom: var(--proto-space-5); border-bottom: 1px solid var(--proto-line-journal); }
+#tv-woo-b2b-checkout .linker-inquiry-draft-head h2 { margin: 0; font-family: var(--proto-font-display); font-size: var(--proto-size-lg); font-weight: var(--proto-weight-semibold); line-height: var(--proto-leading-title); color: var(--proto-ink-deep); }
+#tv-woo-b2b-checkout .linker-inquiry-draft-head a { justify-self: start; font-size: var(--proto-size-xs); font-weight: var(--proto-weight-medium); color: var(--proto-teal-600); text-decoration: underline; text-underline-offset: 3px; }
+.linker-inquiry-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--proto-space-3); padding: var(--proto-space-5) 0; border-bottom: 1px solid var(--proto-line-journal); font-size: var(--proto-size-sm); line-height: var(--proto-leading-body); }
+.linker-inquiry-line:last-child { border-bottom: 0; padding-bottom: 0; }
+.linker-inquiry-product { display: flex; align-items: center; gap: var(--proto-space-3); min-width: 0; text-decoration: none; }
+.linker-inquiry-product > span:last-child { overflow-wrap: anywhere; }
+.linker-inquiry-image { display: block; flex: 0 0 var(--proto-space-7); width: var(--proto-space-7); height: var(--proto-space-7); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-md); background: var(--proto-canvas-white); padding: var(--proto-space-1); }
+.linker-inquiry-image img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.linker-inquiry-price { grid-column: 1 / -1; color: var(--proto-ink-muted-deep); font-size: var(--proto-size-xs); }
+#tv-woo-b2b-checkout .linker-inquiry-quantity { display: grid; justify-items: center; gap: var(--proto-space-1); margin: 0; color: var(--proto-ink-muted-deep); font-size: var(--proto-size-xs); line-height: var(--proto-leading-caption); }
+.linker-inquiry-line input { box-sizing: border-box; width: var(--proto-space-7); min-height: var(--proto-control-height); padding: var(--proto-space-2); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-md); background: var(--proto-canvas-white); font: inherit; text-align: center; }
+#tv-woo-b2b-checkout .linker-inquiry-update { margin-top: var(--proto-space-5); min-height: var(--proto-control-height); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-lg); padding: var(--proto-space-2) var(--proto-space-4); color: var(--proto-teal-600); background: var(--proto-canvas-white); font-size: var(--proto-size-xs); cursor: pointer; }
+.linker-inquiry-empty { display: grid; justify-items: start; gap: var(--proto-space-3); padding-top: var(--proto-space-5); color: var(--proto-ink-muted-deep); }
+.linker-inquiry-empty svg { color: var(--proto-neutral-400); }
+.linker-inquiry-empty p { margin: 0; font-size: var(--proto-size-sm); line-height: var(--proto-leading-body); }
+.linker-inquiry-error { color: var(--proto-sem-danger); margin: 0; padding: var(--proto-space-4); background: var(--proto-neutral-50); border: 1px solid var(--proto-sem-danger); border-radius: var(--proto-radius-lg); font-size: var(--proto-size-sm); }
+.linker-inquiry-error:empty { display: none; }
+#tv-woo-b2b-checkout .linker-inquiry [hidden] { display: none; }
+.linker-inquiry-restriction { padding: var(--proto-space-5); margin-bottom: var(--proto-space-6); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-panel); background: var(--proto-canvas-white); }
 .linker-inquiry-restriction h2 { font-size: var(--proto-size-lg); }
 .linker-inquiry-restriction .notice { display: flex; align-items: start; gap: var(--proto-space-2); }
 .linker-inquiry-restriction svg { flex-shrink: 0; }
-.linker-inquiry-fields .form-row { margin: 0; }
-.linker-inquiry-fields .form-row label { display: block; margin-bottom: var(--proto-space-2); font-size: var(--proto-size-sm); }
+#tv-woo-b2b-checkout .linker-inquiry-fields .form-row { margin: 0; padding: 0; font-size: var(--proto-size-sm); }
+#tv-woo-b2b-checkout .linker-inquiry-fields .form-row label { display: block; margin: 0 0 var(--proto-space-2); font-size: var(--proto-size-sm); }
+.linker-inquiry-fields > :is(#billing_city_field, #billing_postcode_field, #billing_country_field, #billing_state_field, #billing_phone_field, #billing_vat_id_field) { grid-column: auto; }
 .linker-inquiry-fields .woocommerce-input-wrapper { display: block; }
+@media (max-width: 760px) {
+	.linker-inquiry-page #container-content-checkout { padding: var(--proto-space-5) var(--proto-space-4) var(--proto-space-7); }
+	.linker-inquiry-columns { grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-5); }
+	.linker-inquiry-form, .linker-inquiry-draft { padding: var(--proto-space-5); border-radius: var(--proto-radius-card); }
+	.linker-inquiry-head h1 { font-size: var(--proto-size-2xl); }
+	.linker-inquiry-fields { grid-template-columns: minmax(0, 1fr); }
+	#tv-woo-b2b-checkout .linker-inquiry .linker-form-input { font-size: var(--proto-size-md); }
+	.linker-inquiry-draft { position: static; }
+}

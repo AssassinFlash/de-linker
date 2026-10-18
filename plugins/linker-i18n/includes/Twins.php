@@ -155,7 +155,7 @@ final class Twins {
 	 *
 	 * @param int                   $source_id English post ID.
 	 * @param array<string, string> $values    German values: post_title, post_excerpt, post_content, meta:<key>.
-	 * @param string|null           $slug      Slug of a new German post; the English slug for products, the German title's otherwise.
+	 * @param string|null           $slug      Reviewed German slug; otherwise derived from the German title.
 	 * @param bool                  $localize Whether whole-field link localisation is needed (imports/new content).
 	 * @return int German post ID.
 	 * @throws \RuntimeException When WordPress refuses the post.
@@ -165,7 +165,14 @@ final class Twins {
 		if ( ! $source instanceof \WP_Post ) {
 			throw new \RuntimeException( esc_html( sprintf( 'No post %d.', $source_id ) ) );
 		}
-		$twin          = $this->languages->post_translation( $source_id, Languages::TARGET );
+		$twin = $this->languages->post_translation( $source_id, Languages::TARGET );
+		if ( null !== $slug ) {
+			$german_slug = GermanSlugs::translated( $slug );
+			$current     = null === $twin ? null : get_post( $twin );
+			// Repeat imports can still carry the pre-migration English slug.
+			// Preserve an established German address when that old value returns.
+			$slug = $current instanceof \WP_Post && $german_slug !== $slug && GermanSlugs::translated( $current->post_name ) === $current->post_name ? null : $german_slug;
+		}
 		$postarr       = array(
 			'post_type'      => $source->post_type,
 			'post_status'    => $source->post_status,
@@ -206,7 +213,7 @@ final class Twins {
 				$this->update(
 					array(
 						'ID'        => $twin,
-						'post_name' => $slug ?? ( 'product' === $source->post_type ? $source->post_name : sanitize_title( $postarr['post_title'] ) ),
+						'post_name' => $slug ?? GermanSlugs::from_title( $postarr['post_title'] ),
 					)
 				);
 			} else {
@@ -297,7 +304,7 @@ final class Twins {
 				}
 				$twin = (int) $created['term_id'];
 				$this->ensure_term_pair( $term_id, $twin );
-				$args['slug'] = $slug ?? sanitize_title( $args['name'] );
+				$args['slug'] = null === $slug ? GermanSlugs::from_title( $args['name'] ) : GermanSlugs::translated( $slug );
 			} else {
 				$this->ensure_term_pair( $term_id, $twin );
 				if ( null !== $slug ) {
@@ -305,7 +312,11 @@ final class Twins {
 					// the migration is the authority for it (a re-run after a
 					// slug correction must take, or the first run's slug stays
 					// forever). translate() passes none and keeps the slug.
-					$args['slug'] = $slug;
+					$current     = get_term( $twin, $source->taxonomy );
+					$german_slug = GermanSlugs::translated( $slug );
+					if ( ! $current instanceof \WP_Term || $german_slug === $slug || GermanSlugs::translated( $current->slug ) !== $current->slug ) {
+						$args['slug'] = $german_slug;
+					}
 				}
 			}
 			$updated = wp_update_term( $twin, $source->taxonomy, wp_slash( $args ) );

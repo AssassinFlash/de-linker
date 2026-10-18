@@ -128,3 +128,97 @@ msgstr ""
 #: includes/Translation/DigestBlock.php
 msgid "No German translation exceptions."
 msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Create a partner account"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Reset your password"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Sign in to your partner account"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Your partner account"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Inquiries"
+msgstr ""
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Inquiry %s"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Saved solutions"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Documents"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Company details"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Account details"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Sign out"
+msgstr ""
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Products: %s"
+msgstr ""
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Posts: %s"
+msgstr ""
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Search results for “%s”"
+msgstr ""
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Page %d"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Solution draft"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "FAQ & documents"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Customer service"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Inverters, storage and systems"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "Complete systems"
+msgstr ""
+
+#: includes/GermanTitles.php
+msgid "EMS and monitoring"
+msgstr ""
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Inquiry received – %s"
+msgstr ""

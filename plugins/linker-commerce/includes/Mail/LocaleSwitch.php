@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Mail;
 
+use Linker\I18n\Languages;
+
 /**
  * Switches WordPress, WooCommerce and this plugin to a locale while an email,
  * a Proforma invoice or an account review response is rendered, the way WooCommerce's own
@@ -36,6 +38,13 @@ final class LocaleSwitch {
 	private bool $switched = false;
 
 	/**
+	 * The companion language plugin's current-language scope, when present.
+	 *
+	 * @var array{bool,mixed,string}|null
+	 */
+	private ?array $language_scope = null;
+
+	/**
 	 * WooCommerce's country list from before the switch, while a switch is active.
 	 *
 	 * @var \WC_Countries|null
@@ -48,7 +57,16 @@ final class LocaleSwitch {
 	 * @param string $locale Locale, e.g. de_DE_formal.
 	 */
 	public function to( string $locale ): void {
-		$this->locale   = $locale;
+		$this->locale = $locale;
+		if ( class_exists( Languages::class ) ) {
+			$languages = new Languages();
+			if ( $languages->ready() ) {
+				$slug = $languages->slug_of_locale( $locale );
+				if ( null !== $slug ) {
+					$this->language_scope = $languages->enter( $slug );
+				}
+			}
+		}
 		$this->switched = switch_to_locale( $locale );
 		add_filter( 'plugin_locale', array( $this, 'plugin_locale' ) );
 		$this->reload_domain();
@@ -64,6 +82,10 @@ final class LocaleSwitch {
 		if ( $this->switched ) {
 			restore_previous_locale();
 			$this->switched = false;
+		}
+		if ( null !== $this->language_scope ) {
+			( new Languages() )->leave( $this->language_scope );
+			$this->language_scope = null;
 		}
 		remove_filter( 'plugin_locale', array( $this, 'plugin_locale' ) );
 		$this->locale = '';

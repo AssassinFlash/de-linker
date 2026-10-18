@@ -2028,7 +2028,16 @@ final class ProductShortcodes {
 			}
 			$kept[ $query_key ] = sanitize_text_field( wp_unslash( $_GET[ $query_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
 		}
-		return (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'cbq' ) ), $url ) );
+		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'cbq' ) ), $url ) );
+		/**
+		 * Reapply Polylang's native URL translation after retaining request context.
+		 *
+		 * @since 0.2.0
+		 *
+		 * @param string $url Translated object plus endpoint or pagination.
+		 * @param string $lang Target language.
+		 */
+		return (string) apply_filters( 'pll_translation_url', $url, $lang ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Polylang's existing public translation seam.
 	}
 
 	/**

@@ -135,6 +135,18 @@ final class Redirects {
 	 * @param string $path The request path, with its trailing slash.
 	 */
 	public function target( string $path ): ?string {
+		/**
+		 * Supplies language-owned historical paths that WordPress cannot redirect.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param string|null $target Local destination, or null.
+		 * @param string $path Requested path.
+		 */
+		$localized = apply_filters( 'linker_tools_retired_url', null, $path );
+		if ( is_string( $localized ) ) {
+			return $localized;
+		}
 		$maps = self::maps();
 		if ( null === $maps ) {
 			return null;

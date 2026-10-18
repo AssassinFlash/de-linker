@@ -183,13 +183,23 @@ final class Form {
 			$html .= strtr(
 				Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/line.html' ),
 				array(
-					'{{name}}'     => esc_html( $product->get_name() ),
-					'{{quantity}}' => esc_html( (string) $line['quantity'] ),
-					'{{key}}'      => esc_attr( $key ),
-					'{{label}}'    => esc_attr( sprintf( /* translators: %s: product name. */ __( 'Quantity for %s', 'linker-commerce' ), $product->get_name() ) ),
-					'{{price}}'    => wp_kses_post( $product->get_price_html() ),
+					'{{name}}'           => esc_html( $product->get_name() ),
+					'{{image}}'          => wp_kses_post(
+						$product->get_image(
+							'woocommerce_thumbnail',
+							array(
+								'alt'     => '',
+								'loading' => 'lazy',
+							)
+						)
+					),
+					'{{quantity}}'       => esc_html( (string) $line['quantity'] ),
+					'{{quantity-label}}' => esc_html__( 'Quantity', 'linker-commerce' ),
+					'{{key}}'            => esc_attr( $key ),
+					'{{label}}'          => esc_attr( sprintf( /* translators: %s: product name. */ __( 'Quantity for %s', 'linker-commerce' ), $product->get_name() ) ),
+					'{{price}}'          => wp_kses_post( $product->get_price_html() ),
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.HookCommentWrongStyle, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Woo's native cart link filter resolves the language twin.
-					'{{url}}'      => esc_url( (string) apply_filters( 'woocommerce_cart_item_permalink', $product->get_permalink(), $line, $key ) ),
+					'{{url}}'            => esc_url( (string) apply_filters( 'woocommerce_cart_item_permalink', $product->get_permalink(), $line, $key ) ),
 				)
 			);
 		}

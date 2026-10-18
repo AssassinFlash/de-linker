@@ -146,3 +146,97 @@ msgstr "Englischen Inhalt öffnen"
 #: includes/Translation/DigestBlock.php
 msgid "No German translation exceptions."
 msgstr "Keine Probleme bei deutschen Übersetzungen gemeldet."
+
+#: includes/GermanTitles.php
+msgid "Create a partner account"
+msgstr "Partnerkonto erstellen"
+
+#: includes/GermanTitles.php
+msgid "Reset your password"
+msgstr "Passwort zurücksetzen"
+
+#: includes/GermanTitles.php
+msgid "Sign in to your partner account"
+msgstr "Beim Partnerkonto anmelden"
+
+#: includes/GermanTitles.php
+msgid "Your partner account"
+msgstr "Ihr Partnerkonto"
+
+#: includes/GermanTitles.php
+msgid "Inquiries"
+msgstr "Anfragen"
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Inquiry %s"
+msgstr "Anfrage %s"
+
+#: includes/GermanTitles.php
+msgid "Saved solutions"
+msgstr "Gespeicherte Lösungen"
+
+#: includes/GermanTitles.php
+msgid "Documents"
+msgstr "Dokumente"
+
+#: includes/GermanTitles.php
+msgid "Company details"
+msgstr "Unternehmensdaten"
+
+#: includes/GermanTitles.php
+msgid "Account details"
+msgstr "Kontodaten"
+
+#: includes/GermanTitles.php
+msgid "Sign out"
+msgstr "Abmelden"
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Products: %s"
+msgstr "Produkte: %s"
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Posts: %s"
+msgstr "Beiträge: %s"
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Search results for “%s”"
+msgstr "Suchergebnisse für „%s“"
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Page %d"
+msgstr "Seite %d"
+
+#: includes/GermanTitles.php
+msgid "Solution draft"
+msgstr "Lösungsentwurf"
+
+#: includes/GermanTitles.php
+msgid "FAQ & documents"
+msgstr "FAQ & Dokumente"
+
+#: includes/GermanTitles.php
+msgid "Customer service"
+msgstr "Kundendienst"
+
+#: includes/GermanTitles.php
+msgid "Inverters, storage and systems"
+msgstr "Wechselrichter, Speicher und Systeme"
+
+#: includes/GermanTitles.php
+msgid "Complete systems"
+msgstr "Komplettsysteme"
+
+#: includes/GermanTitles.php
+msgid "EMS and monitoring"
+msgstr "EMS und Überwachung"
+
+#: includes/GermanTitles.php
+#, php-format
+msgid "Inquiry received – %s"
+msgstr "Anfrage eingegangen – %s"

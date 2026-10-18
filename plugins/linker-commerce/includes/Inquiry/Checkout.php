@@ -126,7 +126,11 @@ final class Checkout {
 		if ( '' === $english || 0 === $german || ! str_starts_with( $url, $english ) ) {
 			return $url;
 		}
-		return substr_replace( $url, (string) get_permalink( $german ), 0, strlen( $english ) );
+		$translated = substr_replace( $url, (string) get_permalink( $german ), 0, strlen( $english ) );
+		// The recorded language can differ from the staff/cron request language.
+		// Reuse Woo's native URL seam after resolving that language's page.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks.MissingHookComment -- Woo's native URL seam, after resolving the recorded language's page.
+		return (string) apply_filters( 'woocommerce_get_endpoint_url', $translated, 'order-received', (string) $order->get_id(), (string) get_permalink( $german ) );
 	}
 	/**
 	 * Retire Woo's native AJAX submission; public writes use the shared sender.
