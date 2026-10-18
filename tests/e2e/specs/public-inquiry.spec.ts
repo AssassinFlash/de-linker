@@ -4,7 +4,11 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { instance, REPO_ROOT, wp } from '../lib/instance';
 
-const evidence = join(REPO_ROOT, 'docs/acceptance/2026-10-18/246/round-2');
+const evidence = join(
+	REPO_ROOT,
+	'.scratch/e2e-shots/public-inquiry',
+	process.env.LINKER_246_RUN ?? 'latest'
+);
 const fixture = join(REPO_ROOT, 'tests/e2e/fixtures/public-inquiry.php');
 const run = (...args: string[]) => wp(['eval-file', fixture, ...args]);
 
@@ -16,7 +20,9 @@ for (const language of ['en', 'de']) {
 				test(`${language} ${width} ${door} ${capped ? 'capped' : 'receipt'}: fresh guest can submit after Woo creates its cookie`, async ({
 					browser,
 				}) => {
-					expect(instance().name).toBe('c246');
+					expect(instance().url).toMatch(
+						/^http:\/\/127\.0\.0\.1:\d+$/
+					);
 					const email = `tester246-${language}-${width}-${door}-${Date.now()}@example.test`;
 					const setup = JSON.parse(
 						run('setup', email, capped ? 'capped' : 'receipt')

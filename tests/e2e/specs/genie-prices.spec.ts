@@ -35,7 +35,10 @@ const LINES = {
 		en: 'Net price after partner sign-in',
 		de: 'Nettopreis nach Partner-Anmeldung',
 	},
-	pending: { en: 'Prices after approval', de: 'Preise nach Freigabe' },
+	pending: {
+		en: 'Account under review. Prices after approval.',
+		de: 'Ihr Konto wird geprüft. Preise nach Freigabe.',
+	},
 	restricted: {
 		en: 'Not available for your account',
 		de: 'Für Ihr Konto nicht verfügbar',

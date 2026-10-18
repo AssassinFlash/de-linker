@@ -597,7 +597,8 @@
 	box-shadow: var(--acct-shadow-card);
 }
 
-.linker-gate h1 {
+.linker-gate h1,
+.linker-account-status h2 {
 	margin: 0;
 	font-size: clamp(24px, 2.6vw, 30px);
 	font-weight: 600;
@@ -906,7 +907,12 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 .linker-inquiry-details summary[hidden] { display: none; }
 .linker-inquiry-details[open] summary { margin-bottom: var(--proto-space-5); }
 .linker-inquiry-fields { display: grid; gap: var(--proto-space-5); }
-.linker-inquiry .linker-form-consent { display: flex; gap: var(--proto-space-3); align-items: flex-start; font-size: var(--proto-size-sm); line-height: var(--proto-leading-caption); }
+/* The inquiry page renders inside #tv-woo-b2b-checkout (the classic checkout
+   page), whose ID-scoped label rule (storefront.css) made this label
+   display:block with a margin: the checkbox sat flush against the sentence
+   (owner-reported defect, 2026-10-18). The ID in the second selector outranks
+   that rule; the first keeps the row right in any context. */
+.linker-inquiry .linker-form-consent, #tv-woo-b2b-checkout .linker-inquiry .linker-form-consent { display: flex; gap: var(--proto-space-3); align-items: flex-start; margin: 0; font-size: var(--proto-size-sm); font-weight: normal; line-height: var(--proto-leading-caption); }
 .linker-inquiry .linker-form-consent input { margin-top: var(--proto-space-1); accent-color: var(--proto-accent); }
 .linker-inquiry .linker-form-consent[hidden], .linker-inquiry-guest[hidden] { display: none; }
 .linker-inquiry .linker-form-consent a { color: var(--proto-accent); text-decoration: underline; }

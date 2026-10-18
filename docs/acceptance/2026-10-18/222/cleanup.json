@@ -1,0 +1,28 @@
+{
+  "instance": "c222",
+  "url": "http://127.0.0.1:9120",
+  "options": {
+    "linker_222_browser": {
+      "cachedAbsent": true,
+      "sqlAbsent": true
+    },
+    "linker_246_round2_browser": {
+      "cachedAbsent": true,
+      "sqlAbsent": true
+    },
+    "linker_commerce_test_mail_to": {
+      "cachedAbsent": true,
+      "sqlAbsent": true
+    }
+  },
+  "ownedCustomersRemaining": 0,
+  "ownedMailJobsRemaining": 0,
+  "localMailIsolation": true,
+  "loadedAccountStatusNotice": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce/includes/Account/AccountStatusNotice.php",
+  "commercePlugin": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce",
+  "afterFinalRebase": {
+    "nativeFixtureCustomersRemaining": 0,
+    "nativeFixtureMailJobsRemaining": 0,
+    "testRecipientAbsent": true
+  }
+}

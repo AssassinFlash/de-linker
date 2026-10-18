@@ -1,0 +1,9 @@
+just check after rebase c2106969: exit 0
+just test after rebase c2106969: exit 0
+just i18n-commerce c222: exit 0
+just i18n-coverage: clean; untranslated=51 exempt=51 gap=0
+just i18n-validity: clean (5 catalogs)
+Commerce PHP: 1209 tests / 5493 assertions / 127 skipped; real WP separately: 134 / 1402 / 9 skipped
+Fixtures PHPCS: exit 0
+Build outputs match sources.
+Final main cutover suite: 147 passed; rebased real Approval: 9 tests / 148 assertions.

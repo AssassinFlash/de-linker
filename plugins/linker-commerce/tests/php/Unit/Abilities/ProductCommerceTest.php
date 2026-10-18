@@ -75,7 +75,7 @@ final class ProductCommerceTest extends TestCase {
 	 * reason there is no price.
 	 *
 	 * @testWith ["approved", true, "€1,680.00", null]
-	 *           ["pending", false, "Prices after approval", "pending"]
+	 *           ["pending", false, "Account under review. Prices after approval.", "pending"]
 	 *           ["restricted", false, "Not available for your account", "restricted"]
 	 *           [null, false, "Net price after partner sign-in", "login"]
 	 *
@@ -103,7 +103,7 @@ final class ProductCommerceTest extends TestCase {
 	 * first, as on the page (CommerceState::reason on its PAGE surface).
 	 *
 	 * @testWith ["approved", "project", "Quoted per project"]
-	 *           ["pending", "pending", "Prices after approval"]
+	 *           ["pending", "pending", "Account under review. Prices after approval."]
 	 *           ["restricted", "restricted", "Not available for your account"]
 	 *           [null, "login", "Net price after partner sign-in"]
 	 *

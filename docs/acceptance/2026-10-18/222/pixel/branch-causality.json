@@ -1,0 +1,160 @@
+{
+  "source": "git archive origin/main",
+  "commit": "0fddf100c267581dd8d3e781fa498b5d1471bf47",
+  "runtime": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/.scratch/main-only-222-runtime",
+  "dependencyLocksMatchFeature": true,
+  "scope": "c222 only; worktree branch remains feat/222-pending-signed-in",
+  "featureCssBefore": "e8f373446bac692821dce3f462567d12315969275a65f853da712d211135de01",
+  "mainLoaded": {
+    "priceDisplay": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/.scratch/main-only-222-runtime/plugins/linker-commerce/includes/Gating/PriceDisplay.php",
+    "accountStatusNotice": false
+  },
+  "mainCss": "1fa3f592fb0bf35fbfcd214c83eef81275eae2b7adf63fb0b621b0dee4371905",
+  "restoredLoaded": {
+    "priceDisplay": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce/includes/Gating/PriceDisplay.php",
+    "accountStatusNotice": true
+  },
+  "featureCssRestored": "e8f373446bac692821dce3f462567d12315969275a65f853da712d211135de01",
+  "featureCssByteIdentical": true,
+  "capturePipelineExit": 1,
+  "captureComparatorError": "uv subprocess selected a Python without Pillow after all 32 screenshots completed; official compare.py rerun with /opt/homebrew/bin/python3 on those unchanged screenshots.",
+  "officialComparatorRerunExit": 1,
+  "comparisons": [
+    {
+      "path": "/my-account/",
+      "width": 1440,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/de/mein-konto/",
+      "width": 1440,
+      "featureVsLive": 13061,
+      "mainVsLive": 13061,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/my-account/register/",
+      "width": 1440,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/de/mein-konto/register/",
+      "width": 1440,
+      "featureVsLive": 13061,
+      "mainVsLive": 13061,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/product/saj-h2-10k-t3/",
+      "width": 1440,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/de/produkt/saj-h2-10k-t3/",
+      "width": 1440,
+      "featureVsLive": 13061,
+      "mainVsLive": 13061,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/product-category/inverters/",
+      "width": 1440,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/de/produkt-kategorie/wechselrichter/",
+      "width": 1440,
+      "featureVsLive": 13061,
+      "mainVsLive": 13061,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/my-account/",
+      "width": 390,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/de/mein-konto/",
+      "width": 390,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/my-account/register/",
+      "width": 390,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/de/mein-konto/register/",
+      "width": 390,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/product/saj-h2-10k-t3/",
+      "width": 390,
+      "featureVsLive": 7597,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 7597
+    },
+    {
+      "path": "/de/produkt/saj-h2-10k-t3/",
+      "width": 390,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/product-category/inverters/",
+      "width": 390,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    },
+    {
+      "path": "/de/produkt-kategorie/wechselrichter/",
+      "width": 390,
+      "featureVsLive": 0,
+      "mainVsLive": 0,
+      "featureVsMainLocal": 0,
+      "liveBetweenCaptures": 0
+    }
+  ],
+  "featureVsMainZeroPairs": 16,
+  "mainVsLiveZeroPairs": 12,
+  "featureVsLiveZeroPairs": 11,
+  "liveVariationFinding": "EN 390 product compatibility thumbnails differed by 7597 pixels between the two live captures. Both local builds were identical; the second live capture matched them. No cause beyond observed live image variation is claimed.",
+  "finalMainAfterRebase": "c2106969d19be6797107fa50b35d4c8a58ad5d5f",
+  "frontendPluginTreesIdenticalBetweenCaptureBaseAndFinalMain": true,
+  "mainAdvanceScope": "PR #311 / ticket #308: deployment opcode-cache reset only; no website plugin source changes.",
+  "featureCssAfterFinalRebase": "e8f373446bac692821dce3f462567d12315969275a65f853da712d211135de01"
+}

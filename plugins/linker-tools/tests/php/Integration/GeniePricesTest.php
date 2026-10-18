@@ -46,7 +46,7 @@ final class GeniePricesTest extends SiteTestCase {
 	 */
 	private const SENTENCES = array(
 		'login'      => 'Net price after partner sign-in',
-		'pending'    => 'Prices after approval',
+		'pending'    => 'Account under review. Prices after approval.',
 		'restricted' => 'Not available for your account',
 		'project'    => 'Quoted per project',
 	);

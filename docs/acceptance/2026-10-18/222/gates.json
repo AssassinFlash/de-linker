@@ -1,0 +1,91 @@
+{
+  "instance": "c222",
+  "branch": "feat/222-pending-signed-in",
+  "baseCommit": "c2106969d19be6797107fa50b35d4c8a58ad5d5f",
+  "justCheck": {
+    "exit": 0,
+    "log": ".scratch/round1-rebased-check.log"
+  },
+  "justTest": {
+    "exit": 0,
+    "log": ".scratch/round1-rebased-test.log"
+  },
+  "i18nCommerce": {
+    "exit": 0,
+    "activeTranslationsChanged": 0,
+    "obsoleteRemoved": [
+      "Prices after approval"
+    ],
+    "newTranslations": 1
+  },
+  "commercePhp": {
+    "tests": 1209,
+    "assertions": 5493,
+    "skipped": 127
+  },
+  "realWordPress": {
+    "exit": 0,
+    "tests": 134,
+    "assertions": 1402,
+    "skipped": 9,
+    "skipReason": "blog fixtures absent in snapshot"
+  },
+  "browserMatrices": {
+    "round1-final": "4/4",
+    "round1-repeat": "4/4",
+    "round1-restored": "4/4"
+  },
+  "publicInquirySharedFixture": "16/16",
+  "realGeniePrices": "16/16",
+  "pixels": {
+    "featureVsLiveZero": 11,
+    "mainVsLiveZero": 12,
+    "featureVsMainLocalZero": 16,
+    "totalPairs": 16,
+    "masks": []
+  },
+  "featureRuntimeRestored": {
+    "priceDisplay": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce/includes/Gating/PriceDisplay.php",
+    "accountStatusNotice": true
+  },
+  "featureCssByteIdenticalAfterRestore": true,
+  "restoredRealApproval": {
+    "tests": 9,
+    "assertions": 148,
+    "failures": 0
+  },
+  "cleanup": {
+    "instance": "c222",
+    "url": "http://127.0.0.1:9120",
+    "options": {
+      "linker_222_browser": {
+        "cachedAbsent": true,
+        "sqlAbsent": true
+      },
+      "linker_246_round2_browser": {
+        "cachedAbsent": true,
+        "sqlAbsent": true
+      },
+      "linker_commerce_test_mail_to": {
+        "cachedAbsent": true,
+        "sqlAbsent": true
+      }
+    },
+    "ownedCustomersRemaining": 0,
+    "ownedMailJobsRemaining": 0,
+    "localMailIsolation": true,
+    "loadedAccountStatusNotice": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce/includes/Account/AccountStatusNotice.php",
+    "commercePlugin": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce",
+    "afterFinalRebase": {
+      "nativeFixtureCustomersRemaining": 0,
+      "nativeFixtureMailJobsRemaining": 0,
+      "testRecipientAbsent": true
+    }
+  },
+  "finalRebasedApproval": {
+    "tests": 9,
+    "assertions": 148,
+    "failures": 0
+  },
+  "cutoverTestsAfterRebase": 147
+}

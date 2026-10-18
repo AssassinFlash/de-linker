@@ -12,23 +12,23 @@ namespace Linker\Commerce\Account;
 /**
  * The account menu, the contact person, the inquiry list, saved solutions
  * and the route that saves them, documents and their downloads. A pending
- * account sees the review page instead of any of that.
+ * account keeps the workspace with a review status notice.
  */
 final class Module {
 
 	/**
 	 * Sets up the module.
 	 *
-	 * @param Menu              $menu      The menu.
-	 * @param ContactCard       $contact   The contact person card.
-	 * @param InquiryList       $inquiries The inquiry list.
-	 * @param SavedSolutions    $solutions The saved solutions.
-	 * @param Documents         $documents The documents page.
-	 * @param DocumentDownload  $download  The downloads.
-	 * @param SolutionsRoute    $route     The route that saves solutions.
-	 * @param PendingGate       $pending   The review page of an account still under review.
-	 * @param AuthTemplates     $auth      The guest sign-in, register and lost-password pages.
-	 * @param AdminAccessNotice $admin_access The explanation of Woo's admin protection.
+	 * @param Menu                $menu      The menu.
+	 * @param ContactCard         $contact   The contact person card.
+	 * @param InquiryList         $inquiries The inquiry list.
+	 * @param SavedSolutions      $solutions The saved solutions.
+	 * @param Documents           $documents The documents page.
+	 * @param DocumentDownload    $download  The downloads.
+	 * @param SolutionsRoute      $route     The route that saves solutions.
+	 * @param AccountStatusNotice $status_notice   The pending or restricted account status notice.
+	 * @param AuthTemplates       $auth      The guest sign-in, register and lost-password pages.
+	 * @param AdminAccessNotice   $admin_access The explanation of Woo's admin protection.
 	 */
 	public function __construct(
 		private readonly Menu $menu,
@@ -38,7 +38,7 @@ final class Module {
 		private readonly Documents $documents,
 		private readonly DocumentDownload $download,
 		private readonly SolutionsRoute $route,
-		private readonly PendingGate $pending = new PendingGate(),
+		private readonly AccountStatusNotice $status_notice = new AccountStatusNotice(),
 		private readonly AuthTemplates $auth = new AuthTemplates(),
 		private readonly AdminAccessNotice $admin_access = new AdminAccessNotice()
 	) {}
@@ -52,7 +52,7 @@ final class Module {
 		foreach ( array( 'orders', 'view-order', 'saved-solutions', 'documents', 'edit-address', 'edit-account' ) as $endpoint ) {
 			add_filter( 'woocommerce_endpoint_' . $endpoint . '_title', array( $this->menu, 'title' ), 10, 2 );
 		}
-		$this->pending->register();
+		$this->status_notice->register();
 		add_action( 'linker_account_after_content', array( $this->contact, 'render' ) );
 		$this->auth->register();
 		$this->admin_access->register();

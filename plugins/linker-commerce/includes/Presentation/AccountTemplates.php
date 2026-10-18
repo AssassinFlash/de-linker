@@ -12,9 +12,10 @@ namespace Linker\Commerce\Presentation;
 use Linker\Commerce\Account\DocumentDownload;
 use Linker\Commerce\Account\InquiryList;
 use Linker\Commerce\Account\SavedSolutions;
+use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Proforma\Issuer;
-use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Vocabulary\LocaleFormat;
 use WC_Order;
 
@@ -81,8 +82,9 @@ final class AccountTemplates {
 	 * documents() as its fallback.
 	 *
 	 * @param \Linker\Commerce\Account\Documents|null $documents The shared assembly.
+	 * @param PriceDisplay                            $prices Shared inquiry total visibility.
 	 */
-	public function __construct( ?\Linker\Commerce\Account\Documents $documents = null ) {
+	public function __construct( ?\Linker\Commerce\Account\Documents $documents = null, private readonly PriceDisplay $prices = new PriceDisplay( new CommerceState() ) ) {
 		$this->documents = $documents;
 	}
 
@@ -222,10 +224,9 @@ final class AccountTemplates {
 				do_action( 'woocommerce_before_account_orders_pagination' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Native hook documented in Woo account templates.
 				break;
 			case 'after-content':
-				// The sidebar's own slot (the contact person). Pending accounts
-				// read the review page, so — like nav() — they get nothing here.
+				// Every signed-in customer keeps the workspace's contact person.
 				$user_id = get_current_user_id();
-				if ( $user_id > 0 && Approval::PENDING !== ( new Approval() )->status( $user_id ) ) {
+				if ( $user_id > 0 ) {
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WooCommerce.Commenting.CommentHooks -- Account module's existing contact slot.
 					do_action( 'linker_account_after_content' );
 				}
@@ -249,14 +250,13 @@ final class AccountTemplates {
 	 * reads (Menu::items), split into the groups a dashboard sidebar shows —
 	 * the workplace, then the account's own records with sign-out last.
 	 * Current page is Woo's own endpoint, so the highlight follows the
-	 * request. A pending account reads the review page instead of the
-	 * workplace, so it gets no navigation.
+	 * request. Pending customers use the same navigation while awaiting prices.
 	 *
 	 * @param array<string, string>|string $atts Optional mobile navigation form.
 	 */
 	public function nav( $atts = array() ): string {
 		$user_id = get_current_user_id();
-		if ( $user_id <= 0 || Approval::PENDING === ( new Approval() )->status( $user_id ) ) {
+		if ( $user_id <= 0 ) {
 			return '';
 		}
 		$items = wc_get_account_menu_items();
@@ -505,6 +505,8 @@ final class AccountTemplates {
 				$order = $this->args['order'] ?? null;
 				// phpcs:ignore WordPress.WP.Capabilities.Unknown -- Woo's per-order meta capability.
 				return $order instanceof WC_Order && current_user_can( 'view_order', $order->get_id() ) ? $this->fragment( 'summary', $this->order_row( $order ) ) : '';
+			case 'amount':
+				return '' !== ( $this->row['total'] ?? '' ) ? $this->fragment( 'amount', $this->row ) : '';
 			case 'proforma':
 				$order = $this->row['order'] ?? null;
 				if ( ! $order instanceof WC_Order || ! InquiryList::has_proforma( $order ) ) {
@@ -783,7 +785,7 @@ final class AccountTemplates {
 				'status'          => wc_get_order_status_name( $order->get_status() ),
 				'status-slug'     => $order->get_status(),
 				'date'            => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
-				'total'           => $order->get_formatted_order_total(),
+				'total'           => $this->prices->shows_order_total( $order ) ? $order->get_formatted_order_total() : '',
 				'url'             => $order->get_view_order_url(),
 				'items-summary'   => self::items_summary( $count ),
 				/* translators: %s: inquiry number. */
