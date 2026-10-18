@@ -1,0 +1,21 @@
+{
+  "correction": "The historical desktop pair proves retention, not a desktop redesign. Mobile differs. Approved service implementation is preserved. Fresh current-source four-state captures are separate evidence.",
+  "historical_pairs": [
+    {
+      "width": 1440,
+      "before": "../en-before/service-1440.png",
+      "final": "../en-final/service-1440.png",
+      "before_sha256": "18be8eac913bbd3efdad8e45f092c2ae0b2db7ae6ac845c64a14a1dbef9b23da",
+      "final_sha256": "18be8eac913bbd3efdad8e45f092c2ae0b2db7ae6ac845c64a14a1dbef9b23da",
+      "byte_identical": true
+    },
+    {
+      "width": 390,
+      "before": "../en-before/service-390.png",
+      "final": "../en-final/service-390.png",
+      "before_sha256": "a13abdd7d9530995bda456a98c1be4547208716d5decaa6447dbf33e5cbec1f0",
+      "final_sha256": "544237ff6a792fc88e7273cd48875c790bd70f78dc7efbce7cf90eb65030987f",
+      "byte_identical": false
+    }
+  ]
+}

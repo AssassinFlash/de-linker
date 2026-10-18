@@ -1,0 +1,37 @@
+{
+  "base": "1a277c1e51e3f6acb04771a3277b7960f2f36d3b",
+  "all_existing_main_German_msgstr_preserved_active_or_obsolete": true,
+  "rows": [
+    {
+      "file": "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.mo",
+      "main_active": 836,
+      "feature_active": 835,
+      "unchanged_main_translations_retained_as_obsolete": [
+        {
+          "msgid": "Sign in or register",
+          "msgstr": "Anmelden oder registrieren",
+          "retained_in_PO": true,
+          "reason": "English source retired; native msgmerge retains the existing German as obsolete."
+        }
+      ],
+      "lost_translations": [],
+      "changed_existing": {}
+    },
+    {
+      "file": "plugins/linker-i18n/languages/linker-i18n-de_DE_formal.mo",
+      "main_active": 28,
+      "feature_active": 45,
+      "unchanged_main_translations_retained_as_obsolete": [],
+      "lost_translations": [],
+      "changed_existing": {}
+    },
+    {
+      "file": "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+      "main_active": 453,
+      "feature_active": 453,
+      "unchanged_main_translations_retained_as_obsolete": [],
+      "lost_translations": [],
+      "changed_existing": {}
+    }
+  ]
+}

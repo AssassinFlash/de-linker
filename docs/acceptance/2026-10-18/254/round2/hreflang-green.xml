@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="1" assertions="72" errors="0" warnings="0" failures="0" skipped="0" time="24.557127">
+    <testsuite name="integration" tests="1" assertions="72" errors="0" warnings="0" failures="0" skipped="0" time="24.557127">
+      <testsuite name="Linker\I18n\Tests\Integration\GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" tests="1" assertions="72" errors="0" warnings="0" failures="0" skipped="0" time="24.557127">
+        <testcase name="test_account_hreflangs_identify_the_current_endpoint" class="Linker\I18n\Tests\Integration\GermanUrlsTest" classname="Linker.I18n.Tests.Integration.GermanUrlsTest" file="/Users/chesterjohn/Documents/de-linker-worktrees/c254/plugins/linker-i18n/tests/php/Integration/GermanUrlsTest.php" line="29" assertions="72" time="24.557127"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>
