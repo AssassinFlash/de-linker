@@ -19,6 +19,7 @@ import re
 import shlex
 import shutil
 import subprocess
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -248,10 +249,17 @@ def deploy(
     before the same verification runs.
     """
     home = snapshot_home or backup_module.DATA_HOME
+    # Each phase says what it is doing and how long it took: the deploy used to
+    # say nothing until the end, so a slow phase looked like a hang (2026-10-18).
+    print("deploy: database snapshot", flush=True)
+    started = time.monotonic()
     taken = snapshot_module.take(target, home)
+    print(f"deploy: snapshot done in {time.monotonic() - started:.1f}s", flush=True)
     reminder = full_backup_reminder(home, now=now)
     artifacts = deployment_artifacts(repository)
     # Finish every local Composer build before starting any remote upload.
+    print("deploy: staging and Composer builds", flush=True)
+    started = time.monotonic()
     prepared = [
         atomic.Artifact(
             stage_plugin(repository, item.source.name, staging), item.relative
@@ -260,6 +268,7 @@ def deploy(
         else item
         for item in artifacts
     ]
+    print(f"deploy: staging done in {time.monotonic() - started:.1f}s", flush=True)
     receipt = atomic.publish(
         target,
         prepared,
@@ -279,6 +288,8 @@ def deploy(
         f"total switch duration: {receipt.switch_seconds:.3f} s",
     ]
     actions += [f"after switch: {line}" for line in receipt.after_switch]
+    print("deploy: plugin activation and language packs", flush=True)
+    started = time.monotonic()
     installed = {
         str(entry["name"])
         for entry in target.wp_json("plugin", "list", "--fields=name")
@@ -304,6 +315,9 @@ def deploy(
     # own rollback copy. --allow-stale because a stylesheet change makes the
     # cache stale by definition and present would refuse after the switch; the
     # browser-side WindPress compile that follows is the step that clears it.
+    print(f"deploy: activation done in {time.monotonic() - started:.1f}s", flush=True)
+    print("deploy: present (templates and the WindPress volume)", flush=True)
+    started = time.monotonic()
     target.wp("linker-commerce", "present", "--user=1", "--allow-stale")
     actions.append(
         "wp linker-commerce present --user=1 --allow-stale (now run the WindPress "
@@ -313,6 +327,7 @@ def deploy(
     # activation run afterwards, and a request can still meet a tree the
     # workers compiled before them (one 500 in the 2026-10-18 probe window).
     # A second reset at the end leaves every worker compiling the final tree.
+    print(f"deploy: present done in {time.monotonic() - started:.1f}s", flush=True)
     refresh = target.shell(opcache_reset_script(target))
     line = refresh.replace(atomic.AFTER_SWITCH_MARKER, "").strip().splitlines()[-1:]
     actions.append("after present: " + (" ".join(line) or "opcache-reset=unknown"))
@@ -412,6 +427,8 @@ def ensure_plugins(target: Target, slugs: tuple[str, ...]) -> list[str]:
     instances have one, and their isolation layer blocks wordpress.org on
     purpose), and stay silent about which of the two it did.
     """
+    print("deploy: plugin activation and language packs", flush=True)
+    started = time.monotonic()
     installed = {
         str(entry["name"])
         for entry in target.wp_json("plugin", "list", "--fields=name")
@@ -475,6 +492,8 @@ def remove_legacy(target: Target, *, snippets: Path, acceptance: Path) -> Result
         raise CutoverError(
             f"{snippets} is missing — export the snippets before deleting the plugin"
         )
+    print("deploy: plugin activation and language packs", flush=True)
+    started = time.monotonic()
     installed = {
         str(entry["name"])
         for entry in target.wp_json("plugin", "list", "--fields=name")
