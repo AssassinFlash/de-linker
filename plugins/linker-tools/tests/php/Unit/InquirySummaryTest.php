@@ -134,8 +134,7 @@ final class InquirySummaryTest extends TestCase {
 				)
 			),
 			$fetch
-		) )->answer( null, 5 );
-		/** @var array<string, mixed> $summary */
+		) )->answer( null, 5 ) ?? array();
 		$this->assertSame( 'model', $summary['source'] );
 		$this->assertNull( $summary['reason'] );
 		$this->assertSame( 'A 10 kW hybrid inverter with a 10 kWh battery.', $summary['summary'] );
@@ -182,8 +181,7 @@ final class InquirySummaryTest extends TestCase {
 				)
 			),
 			static fn (): \WP_Error => new \WP_Error( 'down', 'timeout' )
-		) )->answer( null, 5 );
-		/** @var array<string, mixed> $summary */
+		) )->answer( null, 5 ) ?? array();
 		$this->assertSame( 'rule', $summary['source'] );
 		$this->assertSame( 'timeout', $summary['reason'] );
 		$this->assertSame( 'The roof faces south. · Ten panels, please.', $summary['summary'] );
@@ -217,8 +215,7 @@ final class InquirySummaryTest extends TestCase {
 				)
 			),
 			static fn (): \WP_Error => new \WP_Error( 'linker_genie_summary', 'HTTP 422' )
-		) )->answer( null, 5 );
-		/** @var array<string, mixed> $summary */
+		) )->answer( null, 5 ) ?? array();
 		$this->assertSame( 'rule', $summary['source'] );
 		$this->assertSame( 'HTTP 422', $summary['reason'] );
 		$this->assertSame( 'Two of them.', $summary['summary'] );
