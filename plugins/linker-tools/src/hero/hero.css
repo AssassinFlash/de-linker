@@ -1,0 +1,282 @@
+/**
+ * The home hero's unfolded conversation (ticket #232, variant B). These
+ * rules apply only after the visitor asked or picked a file: the resting
+ * hero is the LiveCanvas page's own markup and stylesheet, untouched.
+ *
+ * This is the Genie tool's own surface (AGENTS.md 2026-10-10: tool pages may
+ * have their own design), so the colors are the dock's, not the page's.
+ */
+
+/* The owner's variant B: the hero's own words fold away and the dialog
+ * grows in place. The prototype's unfolded stage kept 24px inside
+ * (`.hp-unfolded .hero-stage`); the hero's own 110/90px outer padding is
+ * tightened to 48/40 so the unfolded dialog fits the 900px acceptance
+ * viewport with the follow-up field and send row on screen. */
+.hero-cinematic.linker-genie-hero--open {
+	padding-top: 48px;
+	padding-bottom: 40px;
+}
+
+.hero-cinematic.linker-genie-hero--open .hero-badge,
+.hero-cinematic.linker-genie-hero--open .hero-title,
+.hero-cinematic.linker-genie-hero--open .hero-subtitle,
+.hero-cinematic.linker-genie-hero--open .hero-capsules,
+.hero-cinematic.linker-genie-hero--open .hero-footnote {
+	display: none !important;
+}
+
+.hero-cinematic.linker-genie-hero--open .hero-stage {
+	padding-top: 24px;
+	padding-bottom: 24px;
+}
+
+/* The prototype's unfolded width: `.hp-unfolded .hero-dialog` is
+ * `min(960px, 92vw)`. */
+.hero-cinematic.linker-genie-hero--open .hero-dialog {
+	width: min(960px, 92vw);
+	max-width: none;
+	margin-bottom: 0;
+}
+
+/* The conversation above the page's own textarea (the follow-up field). */
+.linker-genie-hero__surface {
+	margin: 0 0 10px;
+	padding: 0 0 10px;
+	border-bottom: 1px solid #eef1f3;
+	font-family: Inter, "Plus Jakarta Sans", Arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.55;
+	color: #172636;
+	text-align: left;
+}
+
+.linker-genie-hero__bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 0 2px 8px;
+}
+
+.linker-genie-hero__title {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 650;
+	color: #0b1f33;
+}
+
+.linker-genie-hero__actions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.linker-genie-hero__continue {
+	padding: 6px 8px;
+	border: 0;
+	border-radius: 8px;
+	background: none;
+	color: #087c73;
+	font: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.2;
+	cursor: pointer;
+}
+
+.linker-genie-hero__continue:hover {
+	background: #eef7f6;
+}
+
+.linker-genie-hero__close {
+	display: inline-grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border: 0;
+	border-radius: 9px;
+	background: transparent;
+	color: #5f6b7c;
+	font: inherit;
+	font-size: 20px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.linker-genie-hero__close:hover {
+	background: #f1f4f6;
+	color: #172636;
+}
+
+.linker-genie-hero__intro {
+	margin: 0 2px 8px;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #5f6b7c;
+}
+
+.linker-genie-hero__intro strong {
+	font-weight: 600;
+	color: #172636;
+}
+
+/* The transcript is the scroll box: a long answer never pushes the
+ * follow-up field out of the dialog (the dock's own rule; the prototype's
+ * `.hp-hero-thread .hp-thread` caps at 52vh). */
+.linker-genie-hero__surface .linker-genie-app__transcript {
+	max-height: 52vh;
+	padding: 4px 2px;
+	overflow: auto;
+	scrollbar-width: thin;
+}
+
+.linker-genie-hero__surface .linker-genie-app__thread {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.linker-genie-hero__surface .linker-genie-app__message {
+	font-size: 14px;
+}
+
+.linker-genie-hero__surface .linker-genie-reading-controls {
+	display: none;
+}
+
+/* Product cards: four columns at desktop, two on a phone (owner ruling
+ * 2026-10-17, variant B). */
+.linker-genie-hero__cards {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 10px;
+	margin: 10px 0;
+}
+
+/* The shared card is a two-column row, built for the dock's 400px column;
+ * four of those do not fit inside 960px. The hero's own card is the
+ * prototype's: image on top, words under it. */
+.linker-genie-hero__cards .linker-card {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 0;
+	height: 100%;
+	padding: 10px;
+}
+
+.linker-genie-hero__cards .linker-card__media {
+	width: 100%;
+	aspect-ratio: 4 / 3;
+}
+
+.linker-genie-hero__cards .linker-card__title {
+	font-size: 13px;
+	line-height: 1.35;
+}
+
+.linker-genie-hero__cards .linker-card__model,
+.linker-genie-hero__cards .linker-card__price {
+	font-size: 12px;
+}
+
+.linker-genie-hero__cards .linker-card__actions {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 4px;
+}
+
+.linker-genie-hero__cards .linker-genie-app__card-action {
+	width: 100%;
+	text-align: left;
+}
+
+/* 860px is the dock's own mobile breakpoint (genie.css hides the resting
+ * bubble below it); the prototype's `.hp-unfolded .hero-stage` 24px padding
+ * is what a phone gets here. */
+@media (max-width: 860px) {
+	.hero-cinematic.linker-genie-hero--open {
+		padding-top: 24px;
+		padding-bottom: 24px;
+	}
+
+	.linker-genie-hero__cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	/* The dialog's controls stay on a phone's screen: the transcript gives
+	 * way, not the follow-up field or the send row. The prototype's 52vh is
+	 * too tall at 390×844 once the attachment states are shown; 36vh is the
+	 * measured fit (docs/acceptance/2026-10-19/232/shots/hero-*-390-cards.png). */
+	.linker-genie-hero__surface .linker-genie-app__transcript {
+		max-height: 36vh;
+	}
+}
+
+/* A phone's dialog header stacks: the title on its own line, then the two
+ * exits, so neither wraps mid-word. 600px is the prototype's phone
+ * breakpoint (hero-prototype.css `@media (max-width: 600px)`). */
+@media (max-width: 600px) {
+	.linker-genie-hero__bar {
+		flex-wrap: wrap;
+		gap: 2px;
+	}
+
+	.linker-genie-hero__title {
+		width: 100%;
+	}
+
+	.linker-genie-hero__actions {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.linker-genie-hero__continue {
+		padding-left: 0;
+	}
+}
+
+/* The way back beside the standing Genie button (bottom-right, 50×50 at
+ * 20/20: genie.css `.linker-genie`). 86px leaves the 16px gap the prototype
+ * used; 26px centres the pill against the button. */
+.linker-genie-hero-pill {
+	position: fixed;
+	right: 86px;
+	bottom: 26px;
+	z-index: 10000;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 14px;
+	border: 1px solid #dfe7ec;
+	border-radius: 999px;
+	background: #fff;
+	color: #172636;
+	font-family: Inter, "Plus Jakarta Sans", Arial, sans-serif;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1;
+	box-shadow: 0 10px 26px rgba(11, 31, 51, 0.2);
+	cursor: pointer;
+}
+
+.linker-genie-hero-pill[hidden] {
+	display: none;
+}
+
+.linker-genie-hero-pill:hover {
+	border-color: #087c73;
+	color: #087c73;
+}
+
+/* Below 860px the standing Genie button is hidden (genie.css): the way back
+ * takes its corner. 12px/20px is the page's phone gutter and the round
+ * button's own bottom inset (genie.css `.linker-genie` 20/20); 24px keeps
+ * the pill inside the 390px viewport. */
+@media (max-width: 860px) {
+	.linker-genie-hero-pill {
+		right: 12px;
+		bottom: 20px;
+		max-width: calc(100vw - 24px);
+	}
+}

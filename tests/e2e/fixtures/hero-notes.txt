@@ -1,0 +1,1 @@
+A file type Genie does not read: the hero must refuse it before any turn.

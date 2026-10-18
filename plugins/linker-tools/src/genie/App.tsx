@@ -183,6 +183,9 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ historyPhase, setHistoryPhase ] =
 		useState< HistoryPhase >( 'loading' );
 	const [ currentId, setCurrentId ] = useState( 0 );
+	// The conversation was asked from the home hero (#232): the dock says so
+	// above the transcript, until another conversation is opened.
+	const [ fromHome, setFromHome ] = useState( false );
 	// The rail rides open beside the workspace's column on a wide screen; under
 	// 768px it is an overlay that would land on top of the conversation, so it
 	// starts closed and the bar's toggle opens it — the prototype's own mobile
@@ -459,6 +462,8 @@ export function App( { config }: { config: GenieConfig } ) {
 			// Before the job, not inside it: a list already queued behind
 			// this switch captured the old epoch and must drop itself.
 			historyEpoch += 1;
+			// A switched-to conversation is not the one the hero began.
+			setFromHome( false );
 			return enqueue( async () => {
 				try {
 					const selected = await selectConversation(
@@ -491,6 +496,9 @@ export function App( { config }: { config: GenieConfig } ) {
 	const removeConversation = useCallback(
 		( id: number ): Promise< boolean > => {
 			historyEpoch += 1;
+			// The hero's conversation may be the one being cleared; the
+			// origin line follows the conversation, not the dock.
+			setFromHome( false );
 			let removed = false;
 			return enqueue( async () => {
 				const remaining = await deleteConversation(
@@ -603,8 +611,28 @@ export function App( { config }: { config: GenieConfig } ) {
 			setOpen( true );
 			setDockHistory( false );
 			const detail = (
-				event as CustomEvent< { message?: unknown; attach?: unknown } >
+				event as CustomEvent< {
+					message?: unknown;
+					attach?: unknown;
+					refresh?: unknown;
+					fromHome?: unknown;
+				} >
 			 ).detail;
+			if ( detail && true === detail.fromHome ) {
+				setFromHome( true );
+			}
+			if ( detail && true === detail.refresh ) {
+				// The home hero (#232) wrote the thread while the dock was
+				// shut: read it before showing, then deliver any question.
+				const message =
+					typeof detail.message === 'string' ? detail.message : '';
+				void showStored().then( () => {
+					if ( message ) {
+						void ask( message );
+					}
+				} );
+				return;
+			}
 			if (
 				detail &&
 				typeof detail.message === 'string' &&
@@ -617,7 +645,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		}
 		window.addEventListener( 'linker-genie-open', onOpen );
 		return () => window.removeEventListener( 'linker-genie-open', onOpen );
-	}, [ ask ] );
+	}, [ ask, showStored ] );
 
 	useEffect( () => {
 		window.dispatchEvent(
@@ -930,6 +958,15 @@ export function App( { config }: { config: GenieConfig } ) {
 					<div className="linker-genie-app__panel">
 						{ linkResult ? (
 							<LinkResult outcome={ linkResult } />
+						) : null }
+						{ /* The conversation began in the home hero (#232). */ }
+						{ ! workspace && fromHome ? (
+							<p className="linker-genie-app__origin">
+								{ __(
+									'Asked from the homepage',
+									'linker-tools'
+								) }
+							</p>
 						) : null }
 						{ /*
 						 * `.gp-welcome h1`: the empty column opens with its own

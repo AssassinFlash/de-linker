@@ -1,0 +1,54 @@
+{
+  "cases": [
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/de/",
+      "stem": "de",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/de/",
+      "stem": "de",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    }
+  ],
+  "allowedHeaderChanges": [],
+  "networkRoute": "system default"
+}

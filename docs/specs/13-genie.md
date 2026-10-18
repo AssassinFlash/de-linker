@@ -111,9 +111,21 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
   - **空 Proforma 请求页**：登录门的 Genie pill（`LoginGate::genie_pill()`，`data-linker-genie-open`），#184 验收过的 `gates.html?gate=empty-proforma` 形态。
   - **账户页**：无页面芯片（账户面渲染自己的 overview，不触发 `woocommerce_account_dashboard`）；入口是常驻 dock——mount 带 `data-page-type="account"`，开场提示即 "Where is my Proforma?" / "Wo steht meine Proforma?" 与 "What happens next?"。**账户面条目只此一枚**。
   - **站头站脚**：`/genie/` 的链接（页头菜单卡、移动链接、站脚 Plan with Linker 面板）与全站常驻 dock；工作区页（`/genie/`）由 `[linker_genie_workspace]` 承载。
+  - **首页 hero**（#232）：首页 `.hero-cinematic` 自己的输入框、发送、胶囊、拍照、附件与语音按钮；见下节"首页 hero"。
   - `Entries::*_chips()` 仍是可挂载的钩子（Woo 模板面：`woocommerce_single_product_summary` / `woocommerce_account_dashboard`），当前 LiveCanvas 模板不触发；`[linker_genie_chips page_type="…"]` 可随时显式挂载。首次点击才加载 JS。
 - 组件：线程、消息、追问芯片、ProductCard（加入 Lösungsentwurf 并读回数量；加入方案；状态 pending/added/unverified/retry 在卡内、高度稳定）、CompareTable、Handoff。
 - 文案：按 AGENTS.md 规则逐处写，EN/DE；对抗评审记录附 PR。
+
+### 首页 hero（#232，实现目标第 10 条；业主 2026-10-17 选变体 B · 就地展开，`docs/prototypes/2026-10-17-hero/DECISION.md`）
+
+- **未交互时不动**：首页 hero 是 LiveCanvas 页面自己的标记（`section.hero-cinematic`，输入框 `.hero-prompt`、发送 `.hero-send`、胶囊 `.hero-capsule`、拍照/附件/语音 `[data-linker-assistant-open]`）。`Linker\Tools\Genie\Hero` 只在 `is_front_page()` 加载构建入口 `hero`（`src/hero/`），它不打印也不替换这些元素；不发问题就不出现任何新 DOM、类或样式，静止页面与线上逐像素一致（像素门见下）。
+- **每个控件原地开聊、不跳页**：输入框回车（Shift+Enter 换行）、点发送、点胶囊、拍照、附件、语音都展开对话。发送与胶囊在线上是 `<a href="/linker-advisor/">`：脚本只阻止这一次导航，href 仍是无 JavaScript 时的回退；语音用浏览器自带听写，没有听写时只展开并聚焦追问框。
+- **展开后的组成**：眉题、标题、副标题、胶囊、脚注收起；对话区插在 `.hero-dialog` 顶部、页面自己的 textarea 之上，textarea 仍是追问框（placeholder 换成 "Ask a follow-up…" / "Stellen Sie eine Rückfrage …"，关闭时复原）。对话区顶部是 "Genie - Linker's AI assistant" ＋ "Continue in the side panel" ＋ ×；首条写明 "Genie is Linker's AI assistant." 与答案依据、可能出错（目标 9）。答案里的产品卡桌面四列、手机两列（`src/hero/hero.css`；窄屏 860 px 与 dock 的断点一致）。hero 内渲染回答文字、产品卡、对比、文档、追问芯片与附件卡；询盘确认卡与联系卡（#250 / #243）留在 dock 的完整工作面，经 "Continue in the side panel" 或继续入口接续。
+- **一个会话**：`src/hero/session.ts` 先读浏览器已有的会话（`readThread`，与 dock 同一 cookie 指向的会话文章），再把这整条线程连同新问题发送；`Proxy::turn` 记录的是请求里的整条线程，不先读就会覆盖 dock 的历史。关闭对话区只是卸载 hero 的视图，会话留在服务端；再展开或转到 dock 都是同一条。
+- **继续与复原**：× 关闭对话区，hero 复原（类、注入的 DOM、placeholder、输入值全部还原）。hero 整体滚出视口后，右下角 Genie 圆钮旁出现 "Your Genie conversation · continue" / „Ihre Genie-Unterhaltung · fortsetzen"；点它、或点对话区顶部的 "Continue in the side panel"，都经 dock 加载器的 `linker-genie-ask` `{refresh:true, fromHome:true}` 把会话交给 dock：App 重读线程（`showStored`）并在面板顶部标出 "Asked from the homepage" / "Auf der Startseite begonnen"；dock 开着时返回入口收起，dock 关掉且 hero 仍在视口外时再出现。
+- **附件（#236）**：拍照与附件按钮用同一个 `src/genie/attachments/prepare.ts`、`useAttachments` 与代理 `attachments` 字段；photo 选择器只列图片，附件选择器列图片与 PDF。文件准备好的那一刻作为这一轮的问题发出（照片/文档本身就是问题）；读到的铭牌渲染 `AttachmentCard`，确认按钮发普通消息，"No, type the model" / "Type the model" 把 "My device is the " 填进 hero 的追问框并聚焦。被拒的文件（类型、大小、读不了）在发送前就说明原因，不打开会话、不到服务。
+- **文案**：六条新文案走对抗评审，记录 `docs/acceptance/2026-10-19/232/copy-review.md`；其余复用 dock 与 #236 已评审的条目。文案在 `plugins/linker-tools/languages/linker-tools-de_DE_formal.po`，JSON 由 `just i18n-tools` 生成。
+- **测试与验收**：`src/hero/state.test.ts`（状态机）、`src/hero/session.test.ts`（共享会话）、`src/hero/Hero.test.tsx`、`src/hero/controller.test.tsx`（六个控件、关闭、返回入口、附件桥）、`tests/php/Unit/HeroTest.php`（只在首页加载）、`tests/e2e/specs/genie-hero.spec.ts`（EN/DE × 1440/390，真实 Genie、附件四态、dock 交接）。像素门 `docs/acceptance/2026-10-19/232/pixel/`：首页 EN/DE × 1440/390，掩膜外差异 0；截图 `docs/acceptance/2026-10-19/232/shots/`。
 
 ### 主动预览卡（#249，实现目标第 4 条；业主选样式 A · 提示卡，`docs/prototypes/2026-10-17-preview-card/DECISION.md`）
 
@@ -277,3 +289,4 @@ dock 的 mount 以 `data-page` 打印整份上下文，应用逐轮原样发回�
 - 2026-10-17：新增"目标"一节（业主在 #240 的两轮答复 + 竞品调研 #241）；上文的产品定义与入口按本节修订，实现票以本节为准。
 - 2026-10-17：目标第 2 条加入理解层（Jev 意图识别 + 代码路由 + deepseek-flash 兜底与写作），依据 #260 实测。
 - 2026-10-18（#250 对话内询盘确认卡）：见"目标"第 5 条。模型可写动作 `send_inquiry`（`schema.ActionName`），客户明说"发询盘"时服务自己补上（`inquiry.py`），动作只请求展示卡；卡的写入口是 `InquiryRequest`（`linker-ai/v1/genie/inquiry`），POST 经 `Inquiry\Sender::request()` 走询盘页同一条 Woo 管线（`Genie\Module::INQUIRY_FILTER`），摘要沿用 #244（卡的开关决定是否存 `_linker_genie_summary`）；模型说"已发送"的句子由 `ground._no_sent_claim` 拒绝（A8）。壳：`InquiryCard` / `InquirySent`，已发出的卡随 `inquiries[]` 留在历史里；`Sender::request()` 加 `$summary` 参数；`InquirySummary` 的缓存键加语言（同一会话 EN/DE 两页各得各的摘要）；`.po` 30 条新译文。文案评审 `docs/acceptance/2026-10-18/250/copy-review.md`，验收 `docs/acceptance/2026-10-18/250/`。
+- 2026-10-19（#232 首页 hero）：见"首页 hero"一节。新增 `Linker\Tools\Genie\Hero` 与构建入口 `hero`（`src/hero/`）；`Entries` 的 dock 加载器把 `linker-genie-ask` 的 `refresh` / `fromHome` 传给 App，App 用 `showStored()` 重读 hero 写的线程并显示来源行；hero 与 dock 共用会话文章与 cookie（`Conversation` 的既有规则，不改数据层）。验收 `docs/acceptance/2026-10-19/232/`，像素门外差异 0（首页 EN/DE × 1440/390）。

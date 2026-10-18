@@ -491,11 +491,13 @@ global.document = {
 JS . $script . <<<'JS'
 
 var asks = [];
+var opens = [];
 window.addEventListener('linker-genie-ready', function () {
 	window.dispatchEvent(new CustomEvent('linker-genie-state', { detail: { open: true } }));
 });
 window.addEventListener('linker-genie-open', function (event) {
 	asks.push(event.detail && event.detail.message);
+	opens.push(event.detail);
 });
 var events = [];
 function click(button) {
@@ -526,8 +528,14 @@ pill.setAttribute('href', '/genie/');
 pill.textContent = 'Genie';
 document.body.appendChild(pill);
 click(pill);
+// The home hero hands its conversation to the dock (#232): refresh re-reads
+// the thread the hero wrote, fromHome says where it began.
+window.dispatchEvent(new CustomEvent('linker-genie-ask', {
+	detail: { refresh: true, fromHome: true }
+}));
 process.stdout.write(JSON.stringify({
 	asks: asks,
+	opens: opens,
 	buttonPrevented: events[0].defaultPrevented || events[1].defaultPrevented,
 	anchorPrevented: events[2].defaultPrevented,
 }));
@@ -550,9 +558,19 @@ JS
 		unlink( $fixture );
 		$this->assertSame( 0, $code, $err );
 		$result = (array) json_decode( (string) $out, true );
-		$this->assertSame( array( '', 'Where is my Proforma?', '' ), $result['asks'] ?? null, 'every opener asks, the anchor included' );
+		$this->assertSame( array( '', 'Where is my Proforma?', '', '' ), $result['asks'] ?? null, 'every opener asks, the anchor included' );
 		$this->assertFalse( (bool) ( $result['buttonPrevented'] ?? true ), 'a button opener has no default action to cancel' );
 		$this->assertTrue( (bool) ( $result['anchorPrevented'] ?? false ), 'the anchor opener must not navigate away from the page' );
+		$this->assertSame(
+			array(
+				'message'  => '',
+				'attach'   => false,
+				'refresh'  => true,
+				'fromHome' => true,
+			),
+			$result['opens'][3] ?? null,
+			'the hero handoff re-reads the thread and names its origin'
+		);
 		$this->assertConditionsMet();
 	}
 	// phpcs:enable WordPress.WP.AlternativeFunctions, WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec, WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open
