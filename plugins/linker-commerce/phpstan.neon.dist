@@ -19,6 +19,12 @@ parameters:
 	excludePaths:
 		# Stand-ins for WordPress and WooCommerce classes; PHPStan reads the real ones from the stubs.
 		- tests/php/Doubles
+	scanDirectories:
+		# Genie's routes of the companion plugin: the filter and action contracts of
+		# "email me this conversation" (#235) and "Let Linker contact me" (#243)
+		# span both plugins, and the integration tests drive linker-tools' side
+		# with this plugin's mail (ContactRequest, FormGuard, RateLimit).
+		- ../linker-tools/includes/Genie
 	scanFiles:
 		# The existing language helper is supplied by the companion plugin.
 		- ../linker-i18n/includes/Languages.php

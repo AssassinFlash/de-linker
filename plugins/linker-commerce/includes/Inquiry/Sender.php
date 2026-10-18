@@ -67,9 +67,10 @@ final class Sender {
 	/**
 	 * Sends a contact message without reading or consuming the solution draft.
 	 *
-	 * @param Submission $details Validated reply details and message.
+	 * @param Submission           $details Validated reply details and message.
+	 * @param array<string, mixed> $meta    Record meta a door adds before the mail goes (Genie's hand-off, #243).
 	 */
-	public function message( Submission $details ): WC_Order {
+	public function message( Submission $details, array $meta = array() ): WC_Order {
 		$order = new WC_Order();
 		$order->set_customer_id( get_current_user_id() );
 		$order->set_created_via( 'linker_contact' );
@@ -83,6 +84,9 @@ final class Sender {
 		);
 		$order->set_customer_note( $details->message );
 		$order->set_payment_method( ProformaGateway::ID );
+		foreach ( $meta as $key => $value ) {
+			$order->update_meta_data( (string) $key, $value );
+		}
 		$this->receive( $order, $details, 'contact' );
 		return $order;
 	}

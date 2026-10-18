@@ -86,7 +86,20 @@ export interface DocumentBlock {
 	url: string | null;
 }
 
+/** Why Genie offers the team's contact (the service's contact.py, #243). */
+export type ContactReason = 'asked' | 'service' | 'dissatisfied' | 'repeat';
+
+/**
+ * "Let Linker contact me": the service adds it after the answer; the shell
+ * renders the contact card (components/ContactCard.tsx).
+ */
+export interface ContactBlock {
+	type: 'contact';
+	reason: ContactReason;
+}
+
 export type Block =
+	| ContactBlock
 	| TextBlock
 	| AskBlock
 	| CompareBlock
@@ -129,6 +142,17 @@ export interface PageContext {
 	product_id?: number;
 	post_id?: number;
 	category_id?: number;
+}
+
+/**
+ * A contact request sent from this conversation (#243): the card stays in the
+ * history after the answer that showed it (`after`, a message index).
+ */
+export interface SentContact {
+	after: number;
+	email: string;
+	/** False when the site's receipt cap held the customer's receipt back. */
+	receipt?: boolean;
 }
 
 /** One row of the history rail. */
@@ -211,7 +235,7 @@ export function assistantMessage( turn: Turn ): TurnMessage {
  * answered turn and that turn's stream on the conversation post, and this
  * reads them back in the same shapes a live turn uses.
  *
- * @param threadUrl Proxy route that answers `{ conversation_id, messages, stream }`.
+ * @param threadUrl Proxy route that answers `{ conversation_id, messages, stream, contacts }`.
  * @param nonce     wp_rest nonce.
  * @param fetcher   Fetch for tests.
  */
@@ -219,8 +243,13 @@ export async function readThread(
 	threadUrl: string,
 	nonce: string,
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
-): Promise< { messages: TurnMessage[]; turn: Turn | null } > {
-	const empty = { messages: [], turn: null };
+): Promise< {
+	messages: TurnMessage[];
+	turn: Turn | null;
+	/** Always set here; optional for the callers' own stand-ins. */
+	contacts?: SentContact[];
+} > {
+	const empty = { messages: [], turn: null, contacts: [] };
 	try {
 		const response = await fetcher( threadUrl, {
 			credentials: 'same-origin',
@@ -234,6 +263,7 @@ export async function readThread(
 		const stored = ( await response.json() ) as {
 			messages?: TurnMessage[];
 			stream?: string;
+			contacts?: Array< Partial< SentContact > >;
 		};
 		const messages = ( stored.messages ?? [] )
 			.filter(
@@ -265,6 +295,11 @@ export async function readThread(
 				? [ ...messages, assistantMessage( turn ) ]
 				: messages,
 			turn,
+			contacts: ( stored.contacts ?? [] ).filter(
+				( card ): card is SentContact =>
+					Number.isInteger( card?.after ) &&
+					typeof card?.email === 'string'
+			),
 		};
 	} catch {
 		return empty;

@@ -29,13 +29,16 @@ import {
 	type CardPrice,
 	type CardsBlock,
 	type CompareBlock,
+	type ContactBlock,
 	type ConversationSummary,
+	type SentContact,
 	type EmailOutcome,
 	type Turn,
 	type TurnMessage,
 } from './api/turn';
 import { BlockView } from './components/BlockView';
 import { Compare } from './components/Compare';
+import { ContactCard, ContactSent } from './components/ContactCard';
 import { GenieCard } from './components/GenieCard';
 import {
 	AttachIcon,
@@ -148,6 +151,12 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ open, setOpen ] = useState( false );
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
 	const [ turn, setTurn ] = useState< Turn | null >( null );
+	// The contact requests sent from this conversation, each after the answer
+	// that showed its card (#243): the history keeps them.
+	const [ contacts, setContacts ] = useState< SentContact[] >( [] );
+	// Where the shown turn's answer stands in the thread: a sent card belongs
+	// there, whatever is asked after it.
+	const turnAt = useRef( -1 );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
 	const [ input, setInput ] = useState( '' );
 	const [ cards, setCards ] = useState< CardItem[] >( [] );
@@ -217,11 +226,23 @@ export function App( { config }: { config: GenieConfig } ) {
 		} );
 	}, [ config.conversationsUrl, config.restNonce, show ] );
 
+	// A request is with the team: its card stays after the shown turn's answer.
+	const sent = useCallback( ( email: string, receipt: boolean ) => {
+		const after = turnAt.current;
+		setContacts( ( known ) =>
+			known.some( ( card ) => card.after === after )
+				? known
+				: [ ...known, { after, email, receipt } ]
+		);
+	}, [] );
+
 	const showStored = useCallback( async () => {
 		const stored = await readThread( config.threadUrl, config.restNonce );
 		currentThread.current = stored.messages;
 		setThread( stored.messages );
 		setTurn( stored.turn );
+		turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
+		setContacts( stored.contacts ?? [] );
 		setPhase( 'ask' );
 		setInput( '' );
 		setMail( 'idle' );
@@ -270,6 +291,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					const assistant = assistantMessage( answer );
 					currentThread.current = next.concat( assistant );
 					setThread( currentThread.current );
+					turnAt.current = currentThread.current.length - 1;
 					setTurn( answer );
 					setPhase( 'ask' );
 					// Enqueue, do not await: the refresh must follow this
@@ -294,6 +316,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		const pending = deferred< {
 			messages: TurnMessage[];
 			turn: Turn | null;
+			contacts?: SentContact[];
 		} >();
 		void enqueue( async () => {
 			const stored = await Promise.race( [
@@ -306,7 +329,9 @@ export function App( { config }: { config: GenieConfig } ) {
 			if ( stored.messages.length > 0 ) {
 				currentThread.current = stored.messages;
 				setThread( stored.messages );
+				setContacts( stored.contacts ?? [] );
 				if ( stored.turn ) {
+					turnAt.current = stored.messages.length - 1;
 					setTurn( stored.turn );
 				}
 			}
@@ -322,7 +347,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			cancelled = true;
 			// A superseded mount must not hold the lane. The replacement
 			// reads the thread itself.
-			pending.resolve( { messages: [], turn: null } );
+			pending.resolve( { messages: [], turn: null, contacts: [] } );
 		};
 	}, [ config.threadUrl, config.restNonce, refreshHistory ] );
 
@@ -383,6 +408,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 				currentThread.current = [];
 				setThread( [] );
+				setContacts( [] );
 				setTurn( null );
 				setPhase( 'ask' );
 				setMail( 'idle' );
@@ -889,6 +915,22 @@ export function App( { config }: { config: GenieConfig } ) {
 													turnId={ message.turnId }
 												/>
 											) : null }
+											{ contacts
+												.filter(
+													( card ) =>
+														card.after === index
+												)
+												.slice( 0, 1 )
+												.map( ( card ) => (
+													<ContactSent
+														key={ card.email }
+														email={ card.email }
+														receipt={
+															false !==
+															card.receipt
+														}
+													/>
+												) ) }
 										</li>
 									) ) }
 									{ 'waiting' === phase ? (
@@ -920,7 +962,9 @@ export function App( { config }: { config: GenieConfig } ) {
 								 * carry: chips, cards, compare, handoff. */ }
 								{ turn?.blocks
 									.filter(
-										( block ) => 'text' !== block.type
+										( block ) =>
+											'text' !== block.type &&
+											'contact' !== block.type
 									)
 									.map( ( block, index ) => (
 										<BlockView
@@ -993,6 +1037,30 @@ export function App( { config }: { config: GenieConfig } ) {
 										} }
 									/>
 								) : null }
+								{ /* "Let Linker contact me" follows the
+								 * answer and its cards (#243). */ }
+								{ turn?.blocks
+									.filter(
+										( block ): block is ContactBlock =>
+											'contact' === block.type &&
+											! contacts.some(
+												( card ) =>
+													card.after ===
+													turnAt.current
+											)
+									)
+									.slice( 0, 1 )
+									.map( ( block ) => (
+										<ContactCard
+											key={ `${ turn.meta?.turn_id ?? 0 }-${ block.reason }` }
+											block={ block }
+											contactUrl={ config.contactUrl }
+											nonce={ config.restNonce }
+											locale={ config.locale }
+											page={ config.page }
+											onSent={ sent }
+										/>
+									) ) }
 							</div>
 						) : null }
 						{ /* The picked files' names, over the composer; each

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-18T01:39:18+00:00\n"
+"POT-Creation-Date: 2026-10-18T02:22:47+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -631,6 +631,7 @@ msgid "Answer (German)"
 msgstr "Antwort (Deutsch)"
 
 #: includes/Admin/FaqsMetaBox.php:74 includes/Admin/FiguresMetaBox.php:79
+#: templates/emails/linker-genie-handoff.php:33
 msgid "Page"
 msgstr "Seite"
 
@@ -1030,7 +1031,7 @@ msgid "Your conversation with Genie"
 msgstr "Ihr Gespräch mit Genie"
 
 #: includes/Genie/GenieEmail.php:97 includes/Mail/CustomerOrderEmail.php:89
-#: includes/Mail/TeamEmail.php:122
+#: includes/Mail/TeamEmail.php:125
 #: includes/Registration/Emails/CustomerApprovalEmail.php:130
 msgid "HTML"
 msgstr "HTML"
@@ -1235,6 +1236,7 @@ msgstr ""
 #: includes/Presentation/ProductShortcodes.php:1912
 #: includes/Vocabulary/Labels.php:101 includes/Vocabulary/Labels.php:176
 #: includes/Vocabulary/Labels.php:200 includes/Vocabulary/Terms.php:31
+#: templates/emails/linker-genie-handoff.php:56
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
 
@@ -1243,6 +1245,7 @@ msgid "Edit solution draft"
 msgstr "Lösungsentwurf bearbeiten"
 
 #: includes/Inquiry/Form.php:140 includes/Vocabulary/Terms.php:65
+#: templates/emails/linker-genie-handoff.php:65
 msgid "Quantity"
 msgstr "Menge"
 
@@ -1550,6 +1553,7 @@ msgstr "Produkte"
 
 #: includes/Presentation/ComparePage.php:225
 #: includes/Presentation/ProductShortcodes.php:1382
+#: templates/emails/linker-genie-handoff.php:64
 msgid "Item number"
 msgstr "Artikelnummer"
 
@@ -3026,6 +3030,7 @@ msgid "Approval"
 msgstr "Freigabe"
 
 #: includes/Registration/AccountsTable.php:46
+#: templates/emails/linker-genie-handoff.php:29
 msgid "Reason"
 msgstr "Grund"
 
@@ -3664,6 +3669,7 @@ msgid "View solution draft"
 msgstr "Lösungsentwurf ansehen"
 
 #: includes/Vocabulary/Terms.php:41
+#: templates/emails/linker-genie-handoff.php:58
 msgid "No products in the solution draft."
 msgstr "Keine Produkte im Lösungsentwurf."
 
@@ -4106,6 +4112,27 @@ msgstr ""
 msgid "Replies to this email go to the Linker team."
 msgstr "Eine Antwort auf diese E-Mail erreicht das Linker-Team."
 
+#: templates/emails/linker-genie-handoff.php:25
+msgid "Through Genie"
+msgstr "Über Genie"
+
+#: templates/emails/linker-genie-handoff.php:26
+msgid "Genie promised a reply within one business day."
+msgstr "Genie hat eine Antwort innerhalb eines Arbeitstags zugesagt."
+
+#: templates/emails/linker-genie-handoff.php:44
+msgid "The customer's last messages, newest first"
+msgstr "Letzte Nachrichten des Kunden, neueste zuerst"
+
+#: templates/emails/linker-genie-handoff.php:54
+msgid "Open the conversation"
+msgstr "Unterhaltung öffnen"
+
+#: templates/emails/linker-genie-handoff.php:63
+#: templates/proforma/proforma.php:111
+msgid "Product"
+msgstr "Produkt"
+
 #: templates/emails/linker-inquiry-received.php:27
 msgid "Hello,"
 msgstr "Guten Tag,"
@@ -4343,10 +4370,6 @@ msgstr "Gültig bis"
 #: templates/proforma/proforma.php:110
 msgid "Pos."
 msgstr "Pos."
-
-#: templates/proforma/proforma.php:111
-msgid "Product"
-msgstr "Produkt"
 
 #: templates/proforma/proforma.php:112
 msgid "Qty"

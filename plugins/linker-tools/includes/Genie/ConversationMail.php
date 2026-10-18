@@ -18,11 +18,11 @@ namespace Linker\Tools\Genie;
  *   gets a short email with a one-time link and no conversation content;
  *   the conversation goes out only when that link is opened, so the
  *   transcript only ever reaches a mailbox that asked for it. The request
- *   carries a honeypot and a signed start time, the inquiry and contact
- *   doors' guard; a request that fails it is answered like a success and
- *   sends nothing.
+ *   carries a honeypot and a signed start time (FormGuard, shared with
+ *   "Let Linker contact me"); a request that fails it is answered like a
+ *   success and sends nothing.
  * - Every email of this kind counts against a site-wide daily cap and, per
- *   connection, an hourly limit (RateLimit, one statement each). Over either,
+ *   connection, an hourly limit (FormGuard's two RateLimits). Over either,
  *   the request is refused; nothing is queued for later.
  *
  * This class decides whether an email may go and to whom; the emails
@@ -110,30 +110,11 @@ class ConversationMail {
 	public const LINK_LIFETIME = DAY_IN_SECONDS;
 
 	/**
-	 * Seconds a guest's request must come after the page that carries the
-	 * form: the inquiry doors' fill-time floor (#246, 3 seconds).
-	 */
-	public const MIN_SECONDS = 3;
-
-	/**
-	 * How long a page's start time stays good: a WordPress nonce's
-	 * lifetime (DAY_IN_SECONDS, `nonce_life`), which this stamp stands in for.
-	 */
-	public const STAMP_LIFETIME = DAY_IN_SECONDS;
-
-	/**
-	 * Per-connection hourly limit.
+	 * The bot guard and the limits of this door (FormGuard).
 	 *
-	 * @var RateLimit
+	 * @var FormGuard
 	 */
-	private readonly RateLimit $connection;
-
-	/**
-	 * Site-wide daily cap.
-	 *
-	 * @var RateLimit
-	 */
-	private readonly RateLimit $site;
+	private readonly FormGuard $guard;
 
 	/**
 	 * Sets up the sender.
@@ -149,8 +130,7 @@ class ConversationMail {
 		?RateLimit $connection = null,
 		?RateLimit $site = null
 	) {
-		$this->connection = $connection ?? new RateLimit( 'genie_mail', self::LIMIT, HOUR_IN_SECONDS );
-		$this->site       = $site ?? new RateLimit( 'genie_mail_day', self::DAILY_CAP, DAY_IN_SECONDS );
+		$this->guard = self::guard( $connection, $site );
 	}
 
 	/**
@@ -164,23 +144,23 @@ class ConversationMail {
 
 	/**
 	 * The signed start time a guest's request carries back: when the page
-	 * with the form was made, and a signature over it.
-	 *
-	 * The signature is an HMAC with the site's nonce salt, not a WordPress
-	 * nonce: a guest's nonce follows WooCommerce's session cookie
-	 * (`nonce_user_logged_out`), which the page may not have had yet when
-	 * it was made and has by the time the guest sends (seen on g235: every
-	 * guest request failed the nonce).
+	 * with the form was made, and a signature over it (FormGuard::stamp()).
 	 *
 	 * @param int|null $at Unix time of the stamp; now when omitted.
 	 * @return array{started: string, nonce: string}
 	 */
 	public static function stamp( ?int $at = null ): array {
-		$started = (string) ( $at ?? time() );
-		return array(
-			'started' => $started,
-			'nonce'   => self::signature( $started ),
-		);
+		return self::guard()->stamp( $at );
+	}
+
+	/**
+	 * This door's guard: its name and its sourced caps (LIMIT, DAILY_CAP).
+	 *
+	 * @param RateLimit|null $connection The hourly limit; the default when omitted.
+	 * @param RateLimit|null $site       The daily cap; the default when omitted.
+	 */
+	private static function guard( ?RateLimit $connection = null, ?RateLimit $site = null ): FormGuard {
+		return new FormGuard( 'genie_mail', self::LIMIT, self::DAILY_CAP, $connection, $site );
 	}
 
 	/**
@@ -213,7 +193,7 @@ class ConversationMail {
 		if ( ! is_email( $to ) ) {
 			return self::outcome( self::INVALID );
 		}
-		if ( ! self::passes( $guard ) ) {
+		if ( ! $this->guard->passes( $guard ) ) {
 			// Answered like a real request, so a bot learns nothing.
 			return self::outcome( self::CONFIRM, $to );
 		}
@@ -246,7 +226,7 @@ class ConversationMail {
 			return self::result( self::EXPIRED, $locale );
 		}
 		// Over today's cap the link stays good until it expires.
-		if ( ! $this->site->take( '' ) ) {
+		if ( ! $this->guard->take_site() ) {
 			return self::result( self::CAPPED, $locale );
 		}
 		delete_post_meta( $id, self::PENDING );
@@ -271,10 +251,11 @@ class ConversationMail {
 	 * @return string '' when both allow, else the refusal.
 	 */
 	private function take(): string {
-		if ( ! $this->connection->take( self::connection() ) ) {
-			return self::THROTTLED;
-		}
-		return $this->site->take( '' ) ? '' : self::CAPPED;
+		return match ( $this->guard->take() ) {
+			'connection' => self::THROTTLED,
+			'site'       => self::CAPPED,
+			default      => '',
+		};
 	}
 
 	/**
@@ -364,42 +345,6 @@ class ConversationMail {
 			return self::outcome( self::UNAVAILABLE );
 		}
 		return self::outcome( self::CONFIRM, $to );
-	}
-
-	/**
-	 * Whether a guest's request passes the bot guard: the honeypot empty,
-	 * the start time signed by this site, at least MIN_SECONDS and at most
-	 * STAMP_LIFETIME old.
-	 *
-	 * @param array<string, mixed> $guard `website`, `started`, `started_nonce`.
-	 */
-	private static function passes( array $guard ): bool {
-		$started = $guard['started'] ?? '';
-		$nonce   = $guard['started_nonce'] ?? '';
-		$trap    = $guard['website'] ?? '';
-		return '' === $trap
-			&& is_string( $started ) && ctype_digit( $started )
-			&& is_string( $nonce )
-			&& time() - (int) $started >= self::MIN_SECONDS
-			&& time() - (int) $started <= self::STAMP_LIFETIME
-			&& hash_equals( self::signature( $started ), $nonce );
-	}
-
-	/**
-	 * The signature of one start time.
-	 *
-	 * @param string $started Unix time, as sent.
-	 */
-	private static function signature( string $started ): string {
-		return hash_hmac( 'sha256', 'linker_tools_genie_mail|' . $started, wp_salt( 'nonce' ) );
-	}
-
-	/**
-	 * The address this connection came from, never a forwarded header a
-	 * sender sets freely.
-	 */
-	private static function connection(): string {
-		return isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) ) : '';
 	}
 
 	/**

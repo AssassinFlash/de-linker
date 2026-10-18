@@ -183,11 +183,35 @@ dock 的 mount 以 `data-page` 打印整份上下文，应用逐轮原样发回�
 
 1. **产品词**（`lexicon.py`、`storeapi.py`）：词表来自 Woo 原生 Store API（`/wp-json/wc/store/v1/products` 与 `/products/categories`，EN + `lang=de`），不新增 WP 端代码；缓存 10 分钟。品牌、系列（slug、去品牌别名，一词别名须含数字或在标题中大写出现）、型号（`pa_model`、标题里的字母数字码、SKU 与去前缀 SKU）、分类（只认本身是 device class 的分类；德语名经 SKU 关联到英文分类）。比较前归一化（小写、只留字母数字），按空白与连字符切词，最长匹配优先。德语商品是独立文章，轮次里的商品 ID 一律是英文 ID。读不到 Store API 时显式记日志（`vocabulary_error`），本轮无产品词。
 2. **Jev**（`jev.py`）：typesafe/jev-1.13，仅经 OpenRouter `/api/v1/systemone`，一次问四题：`intent`（10 类，判据同 `docs/research/2026-10-17-jev-intent/eval.py`）、`about_this_page`、`wants_person`、`needs_followup`。每次 6 秒超时、最多 3 次；仍失败、拒绝或答复来自别的模型都抛 `JevError`，记入轮次日志 `jev_error` 与 SSE meta，本轮由 deepseek-flash 自行决定（票里允许的唯一降级）。
-3. **路由**（`route.py`）：意图置信 ≥0.8 由代码调工具——找产品 → search-products（产品词给出的过滤；一个系列族同时有单相和三相时按相数各搜三张）；文档参数 → search-knowledge（`product_ids` = 匹配到的型号或本页产品）+ get-product / 族搜索；配对 → 两件 check-compatibility、一台逆变器 `with_pairings` 搜索；对比 → compare-products；选型 → size-hint（kWp、年用电、相数、备电由代码从原句读出）并要求配置器动作、不出卡片；询盘 → inquiry-status；找人 → `route.person()`（#243 只替换这个函数）；公司物流 → handoff-team。整条消息都是产品词（裸词）时，无论 Jev 怎样答都走产品搜索并要求出卡片；长句里的产品词，Jev 最倾向 documents_specs 时（置信度不论）由代码同时调用 search-products 与 search-knowledge（只有系列时 `product_ids` 取该系列的商品）；其余 Jev 不确定的情况照搜但不强制卡片。其余交 deepseek-flash 决定。路由的调用计入每轮 4 次工具预算，结果以 JSON 放进提示词。
+3. **路由**（`route.py`）：意图置信 ≥0.8 由代码调工具——找产品 → search-products（产品词给出的过滤；一个系列族同时有单相和三相时按相数各搜三张）；文档参数 → search-knowledge（`product_ids` = 匹配到的型号或本页产品）+ get-product / 族搜索；配对 → 两件 check-compatibility、一台逆变器 `with_pairings` 搜索；对比 → compare-products；选型 → size-hint（kWp、年用电、相数、备电由代码从原句读出）并要求配置器动作、不出卡片；询盘 → inquiry-status；找人 → `route.person()`（不调工具、不跑模型，见"转人工"）；公司物流 → handoff-team。整条消息都是产品词（裸词）时，无论 Jev 怎样答都走产品搜索并要求出卡片；长句里的产品词，Jev 最倾向 documents_specs 时（置信度不论）由代码同时调用 search-products 与 search-knowledge（只有系列时 `product_ids` 取该系列的商品）；其余 Jev 不确定的情况照搜但不强制卡片。其余交 deepseek-flash 决定。路由的调用计入每轮 4 次工具预算，结果以 JSON 放进提示词。
 4. **核验**（`ground.py` 第 6–8 条）：文档只以 `document` 块出现（模型只写 `ref`，服务填标签与 `#page=N` 链接；get-product 的文档是 `pID.document.N`；同一文件只出一个链接，多页合并为"pp. 3, 7"/"S. 3, 7"；配置器动作的 URL 也由服务按 size-hint 填写），正文与占位符里不得有 URL；AGENTS.md §3 禁用词（article/catalogue/cart/basket，Artikel/Katalog/Warenkorb）；路由要求（产品词出卡、选型带配置器无卡、产品与文档类不转团队、找人与公司类只有 handoff 块）。兜底按路由出形状（选型 = 配置器、文档 = 文档链接、产品 ≤6 张卡）。
 5. **事实**：get-product 的数据表 `figures`（`n_mppt` 等）按轮次语言登记为 `pID.<key>`；功率与能量类选择事实水合时补单位（kW/kWh）。
 
 评测：`services/genie/eval/understanding/`——`bare_words.json`（75 条裸词 EN/DE，离线测试与线上实例共用）、`jev_cases.json`（#260 的 60 条 + 线上真实问句 15 条）、`run.py`、`jev_eval.py`、`capture.py`（重取 Store API 夹具 `tests/fixtures/storeapi.json`）。结果：`docs/acceptance/2026-10-17/233/`。
+
+## 转人工："让 Linker 联系我"（#243，实现目标第 6 条，验收 A5、A6）
+
+**何时提供**（`services/genie/src/linker_genie/contact.py`，服务在回答之后附上 `contact` 块，模型的输出结构里没有它，模型文字永远不能提供或发送转人工）：
+
+| 原因 `reason` | 触发 | 回答 | 连续两轮 |
+|---|---|---|---|
+| `asked` | ① 确定性找人短语表（EN/DE 两张表总是都查，Knocket 外层的做法：NFKC、小写、去标点、按词边界匹配，只收明确的找人说法：人称名词（person、someone、human、Mitarbeiter、jemandem……），"team" 只在属于某人时算（your team、the Linker team、Ihrem Team），agent 只带冠词时算；"expert""engineer""Techniker"与裸 "team" 也指软件、模式与手册（"the team portal""expert mode""the engineer's guide"），不收（评审第 1 轮）；裸名词如 customer service 留给 Jev；短语所在分句里有否定词则不算，"I don't want to talk to a person" 照常交 Jev；`contact.PHRASES`）命中即走 `person` 路由，**不调 Jev、不调模型**；② 没命中而 Jev 以 ≥0.8 置信判意图 `talk_to_person` | 服务自己的一句（`contact.ANSWER`）+ 联系卡，不经模型 | 客户每次要求都提供 |
+| `service` | 公司、物流、售后（`service` 路由） | 团队邮箱句（handoff 块）每次都有；联系卡附在其后 | 卡：上一轮已提供则不提供（邮箱句照旧） |
+| `dissatisfied` | Jev 的 `wants_person`（"找人或不满"）≥0.8，意图是别的 | 照常按路由回答 + 联系卡 | 上一轮已提供则不提供 |
+| `repeat` | 客户连续第三轮问同一个问题（`contact.same_question`：去掉 EN/DE 虚词后，后一句不加任何实词、型号与数量词（带数字的词）不变、两句仍共有 ≥0.5 的词（Jaccard），至少两个实词；加了功能或数量（"…with backup?""…für 15 kWh?"）或换了同系列型号（H2-10K-T3 → H2-8K-T3）都是新问题。在 `eval/contact/repeats.json` 39 对 EN/DE（含 8 对真实追问反例）上测定：0 到 0.75 之间任何切线都 39 对全对，取中间 0.5） | 照常回答 + 联系卡 | 上一轮已提供则不提供；同一个问题的这一串里提供过一次就不再提供 |
+
+哪几轮提供过由服务自己的轮次日志判定（`TurnLog.offers`，按 `conversation_id`，最新在前；日志的 `contact` 列存 `contact.decide` 定下的原因，日志本身不读块），不信浏览器。附卡后服务以 `ground.shipped` 检查整份出货回答：至多一张卡、在最后、正是 `decide` 定下的那一种；公司类回答只有邮箱句和卡——不过即去掉卡（服务自己的错，不由模型改）。不经模型的找人回答在轮次日志里记 `provider=service`、`model=none`。提供之后 Genie 照常回答后续问题（不学 Knocket 的 30 分钟静音，TRIAL.md §3）。Jev 不可用时短语表与重复规则照常生效。
+
+**联系卡**（`plugins/linker-tools/src/genie/components/ContactCard.tsx`，样式在 `genie.css` 末节，全部取该表已有的值）：出现时 GET `linker-ai/v1/genie/contact` 取签名起始时间、已登录客户的地址、本会话是否已转出、客户可见的团队邮箱（过滤器 `linker_genie_team_mailbox`，commerce 以 `Options::team_mailbox()` 回答；被拒时卡上给出它，找人的客户不走进死胡同）。已登录客户**不问联系方式**，卡上点名账户地址（账单邮箱，没有时用登录邮箱），一键发送；访客只留邮箱，并勾选站内公开表单共用的同意句（"I agree that my details may be used to respond to this message."，#246 的措辞；已登录客户注册时已同意）。卡上承诺一个工作日内回复（AGENTS.md 2026-10-09），并说明 Genie 继续回答其它问题。发出后卡显示"已转给团队"与回复地址；这张已发出的卡留在对话历史里，紧跟提供它的那条回答，之后的轮次与重载后都在（`ContactSent`；会话读取路由 `linker-ai/v1/genie/conversation` 返回 `contacts: [{after, email, receipt}]`，`after` 是发出时已存消息数，即那条回答的位置；评审第 1 轮）。整张卡是同一个 `aria-live` 区，状态变化会被播报。回复渠道是邮件，文案说明这一点（"by email / per E-Mail"）。客户收到与联系表单一样的回执（#246 的 `InquiryReceivedEmail`，客户的语言），受站点回执日上限（`ReceiptLimit::DAILY_CAP` 10，只拦回执、不拦记录与团队邮件）约束；超过上限时卡与历史里的卡照实说"We have not sent a confirmation email."（#246 联系表单的同一句）。文案评审 `docs/acceptance/2026-10-18/243/copy-review.md`。
+
+**转给团队**（`Linker\Tools\Genie\ContactRequest`，POST 同一路由）：
+- 公开表单的防护（`FormGuard`，与 #235 的 `ConversationMail` 共用一个类，评审第 1 轮）：蜜罐 `website`；签名起始时间 `started` + `started_nonce`（HMAC，站点 nonce salt，门名在签名里，一扇门的戳到另一扇门无效），早于 `MIN_SECONDS`（3 秒）、晚于 `STAMP_LIFETIME`（一天）或签名不对即拒；每个连接每小时、全站每天各一个 `RateLimit`（一条带条件的 SQL `UPDATE`，同一时刻的请求不会共占最后一个名额），每扇门自带有出处的上限：本门 `ContactRequest::LIMIT` 3/小时（联系表单的限额）、`ContactRequest::DAILY` 20/天（站点占主机 100 封/日中的 80 封；加上会话邮件 `ConversationMail::DAILY_CAP` 10，Genie 共 30 封，余 50 封；线上邮件日志最多的一天 2026-10-17 发了 7 封）；超出即 429 拒绝，**不排队**。蜜罐命中按已发送回答、什么都不发。
+- 同一会话、此后没有新消息、同一地址的第二次请求不再发信（幂等）。
+- 交接内容（`ContactRequest::handoff()`）：后台整段对话的链接（`admin.php?page=linker-genie-quality&conversation=<ID>`，该页现在按 `Thread::transcript()` 显示含最后一轮回答的整段对话，并列出本会话的转人工记录）、摘要（客户最近 5 条消息，最新在前：重复规则的三轮加此前两轮）、当时的页面（类型、标题、本站地址；外站地址丢弃）、Lösungsentwurf（`wc_load_cart()` 读访客自己的草稿：产品名、SKU、数量）、原因与它的标签（`ContactRequest::reason_label()` 是原因标签唯一的地方，以站点语言写进交接，团队邮件与后台会话页都显示它）、语言、客户（用户 ID、地址、姓名）。
+- **一份记录**（评审第 1 轮，#246 合并后）：Genie 的交接是"经 Genie 来的联系留言"，走 #246 的唯一入口。`ContactRequest` 以过滤器 `linker_tools_genie_contact_team` 交出交接，`Linker\Commerce\Genie\Module::contact()` 以 `Contact\Submission::from_handoff()`（访客只给邮箱，名字可空）调 `Inquiry\Sender::message()`：一条 Woo 订单记录（来源 `contact`，`created_via=linker_contact`，客户留言 = 客户最后一句），交接存在记录的 `_linker_genie_handoff` meta（`Sender::message()` 的第二个参数，状态变更发信之前写入）；#246 的团队邮件（`NewInquiryEmail`，`Mail\TeamEmail`：收件人与 Bcc 来自内部通知入口 `notify_to()` / `notify_bcc()`，发件人 `notify_sender()`，Reply-to 是客户）在记录带交接时插入"Through Genie"一节（`templates/emails/linker-genie-handoff.php`：原因标签、页面、客户最近的消息、整段对话链接、Lösungsentwurf 行，"Genie promised a reply within one business day."）——#246 的邮件能带上这些，所以不另设团队邮件，原先的 `Genie\ContactEmail` 已删除。回执是 #246 的。过滤器回答 `{order, receipt}`；没有回答（commerce 未启用）时路由回 503，卡上说暂时转不出。
+- 会话文章上另记一条 `linker_genie_contact` meta（时间、原因、标签、地址、用户、页面、消息数、记录号、回执是否发出），后台会话页与历史里的已发出卡读它。
+
+**测试**：`services/genie/tests/test_contact.py`（短语表正反例、同问判定按 31 对测定集、四种原因与"不连续两次 / 一个问题一次"）、`test_turn.py`（找人不跑模型、不满附卡、日志判连续、第三轮一次）、`test_understand.py`（短语命中不调 Jev）；`test_ground_understanding.py`（出货检查）；`plugins/linker-tools/src/genie/components/ContactCard.test.tsx`、`App.test.tsx`（卡出现、提供后照常回答、已发出的卡在下一轮与重载后留在历史里且只一张）、`api/turn.test.ts`、`tests/php/Unit/FormGuardTest.php`、`ProxyTest.php`；`plugins/linker-commerce/tests/php/Integration/GenieContactTest.php`（真实实例：记录（#246 的联系记录、交接在 meta 里、页面语言）、Outbox 队列断言团队邮件的收件人与内容齐全、回执一行到客户、回执上限时只有团队邮件且卡说没有回执、访客未同意即拒、已登录不问地址、蜜罐、签名起始时间、连接限额、全站日上限、幂等、十个进程并发只有 3 个拿到名额）与 `NotificationRoutingTest`（Genie 一行：#246 的团队邮件与回执）。评测 `services/genie/eval/contact/`（真实服务：短语表、Jev、deepseek-flash，EN/DE），结果 `docs/acceptance/2026-10-18/243/`。
 
 ## 验收
 
@@ -197,7 +221,7 @@ dock 的 mount 以 `data-page` 打印整份上下文，应用逐轮原样发回�
 - 模型输出里不出现数字，数值由服务端填入——复刻 Rufus 的 hydration（报告第 151、171 行）。
 - 正文引用 ⊆ 本轮工具结果；卡片 ⊆ 正文引用；推荐 ⊆ `search-products` 的 qualified——复刻全部对标物的共同骨架 (a)"答案锚定平台目录与实时状态"（第 12、65 行）。
 - 动作只能是允许列表里的，参数只来自工具结果——复刻 Accio 的"高风险动作需用户批准"（第 89 行）与 Sidekick 的小工具面。
-- 范围外意图只有 handoff 块——业主 10-05 裁定，由提示词与 schema 实现。
+- 范围外意图只有 handoff 块——业主 10-05 裁定，由提示词与 schema 实现；服务提供联系卡时为 handoff 块 + 卡（#243，`ground.shipped`，卡不连续两轮）。
 - 披露句出现一次——复刻 Shopify（第 102 行）。
 - 卡片反馈态在卡内、按钮高度不变——普通组件测试（Storybook），与助手无关。
 
@@ -206,12 +230,15 @@ dock 的 mount 以 `data-page` 打印整份上下文，应用逐轮原样发回�
 
 ### 必过项（回归表 `docs/acceptance/protocol.md` §5 的 R1–R14）
 - [ ] R1/R2（EN/DE 住宅三相 10 kWp 原句）：qualified ⊆ #7 的住宅三相集合；无 ETR/ESA；卡片 ⊆ 正文引用；一个追问。
-- [ ] R3 冲突（12 kWp vs HS3-5K）、R4 事实不足（追问相数）、R5 产品页配对、R8 范围外只有邮箱句、R10 加装只列有放行的电池、R14 披露句。
+- [ ] R3 冲突（12 kWp vs HS3-5K）、R4 事实不足（追问相数）、R5 产品页配对、R8 范围外只有邮箱句（附联系卡时为邮箱句 + 卡）、R10 加装只列有放行的电池、R14 披露句。
 - [ ] 核验注入测试五类全部拦截；核验失败率写入 PR。
 - [ ] ProductCard：加入 Lösungsentwurf 的 pending/added/unverified/retry 与加入方案的 saving/saved/failed 均在卡内可见，按钮高度不变，内容不越过卡片（旧票 191 的验收行）；工作区与常驻 × 1440/390。
 - [ ] 视觉验收：四入口 + 常驻 × 状态 × EN/DE × 1440/390。
 
 ## 变更记录
+- 2026-10-18（#243 转人工，评审第 1 轮之二，#246 合并后）：交接经 `Submission::from_handoff()` → `Sender::message()` 成为 #246 的一条联系记录，团队邮件是 #246 的（带 Genie 一节），访客收到同样的回执（受回执上限），卡与历史照实说明；访客勾选同意句；`Genie\ContactEmail`、动作 `linker_genie_contact_requested` 删除，改为过滤器 `linker_tools_genie_contact_team`。
+- 2026-10-18（#243 转人工，评审第 1 轮）：短语表收窄（"team""expert""engineer"不再单独算人）；公司类联系卡也不连续两轮；重复判定改为"后一句不加词、型号与数量不变"，39 对测定；`FormGuard` 合并两扇公开表单的防护；原因标签一处；日志存 `contact` 列、不读块；不经模型的轮次 `model=none`；已发出的卡留在历史里；`ground.shipped` 检查附卡后的出货回答。
+- 2026-10-18（#243 转人工）：见"转人工"一节。`route.person()` 不再调 handoff-team，找人不经模型；Jev 意图不确定而 `wants_person` 高的轮次不再整轮转人工，改为照常回答并附联系卡；`ground` 的"handoff 块独占"只管 `service`。新增服务模块 `contact.py`、`TurnLog.offers`；壳 `ContactRequest`、`ContactGuard`、`ContactCard`，mount 加 `data-contact-url`；commerce `Genie\Module`、`Genie\ContactEmail`，`Mail\TeamEmail::notify()` 收 `null`（访客，Reply-to 由子类给出）。
 - 2026-10-18（#242 价格跟账号走）：见「价格跟账号走」一节。客户令牌从只带在 inquiry-status 上扩到 search-products 与 get-product，WordPress 一侧按解析出的路由绑定这三个 ability；壳发送 `partner`（站点价格规则）；`commerce` 加 `price_line` / `price_reason`；`cards` 块加服务填写的 `prices`（补查有截止）；正文禁止价格占位符；质检的职责说明改为正文从不写价格、卡上价格过两道门（规格 33）。顺带修掉产品页与对比页的三处（变更台账见规格 11）。评审第 1 轮（PR #301）：原因顺序收成一个带表面参数的函数、令牌绑定路由、TTL 与截止加来源、壳不再持有价格句子。验收 `docs/acceptance/2026-10-18/242/`。
 - 2026-10-18（#235 会话全部保留）：见 §C"会话全部保留"。`Conversations` 增加浏览器钥匙（认领后与退出后更换，User Switching 不认领）、全部认领（`wp_login` + `set_logged_in_cookie`）与 `delete()`，列表按最近活动（`Thread::ACTIVITY`）排序；新增 `ConversationMail`（访客先确认地址、蜜罐与签名起始时间、全站每日上限与每连接上限）、`RateLimit`（一条语句的判断加一）、`Thread::transcript()`（带每条回答的产品）、`Proxy` 的 DELETE 与 `/email` 两条路由、admin-post 的确认链接；linker-commerce 新增 `Genie\{Module,Conversation,GenieEmail,ConversationEmail,ConfirmAddressEmail}` 与两个模板；壳：工作区侧栏宽屏不再因新建/切换收起，列表行可删除，"Email me this conversation"，确认链接结果一行。genie 的 JS 德语译文进 `linker-tools-de_DE_formal.po`（引用 `build/genie.js`），JSON 由 `wp i18n make-json` 生成。验收 `docs/acceptance/2026-10-18/235/`。
 - 2026-10-18（#234 页面感知）：见"页面感知"一节。新增 `Linker\Tools\Genie\PageContext` 与服务模块 `page.py`（工具 `linker/read-page`）；`PageType` 加 `home`、`solution`、`blog`、`faq`，`PageContext` 加 `url`、`title`、`post_id`、`category_id`（只增不改）；代理按键清洗页面上下文并自己填 `draft_ids`；产品页 dock 的开场提示由三条不点名的问句换成预览卡那三条点名本产品的问句；预览卡改从页面上下文取类型与名字。验收 `docs/acceptance/2026-10-18/234/`。

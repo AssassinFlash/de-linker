@@ -134,6 +134,7 @@ test( 'a reload without a conversation answers empty, and a truncated stream kee
 	expect( await readThread( '/thread', 'n', empty ) ).toEqual( {
 		messages: [],
 		turn: null,
+		contacts: [],
 	} );
 
 	const truncated = vi.fn( async () => ( {
@@ -154,6 +155,7 @@ test( 'a reload without a conversation answers empty, and a truncated stream kee
 	expect( await readThread( '/thread', 'n', failing ) ).toEqual( {
 		messages: [],
 		turn: null,
+		contacts: [],
 	} );
 } );
 
@@ -231,4 +233,27 @@ test( 'an email answer reads the outcome from the route, refusals from their cod
 			answer( 500, { code: 'rest_error' } )
 		)
 	).toEqual( { outcome: 'unavailable', to: '', limit: 0 } );
+} );
+
+test( 'a reload keeps the sent contact cards where they were (#243)', async () => {
+	const fetchDouble = vi.fn( async () => ( {
+		ok: true,
+		json: async () => ( {
+			conversation_id: 12,
+			messages: [
+				{ role: 'user', content: 'Can I talk to a person?' },
+				{ role: 'assistant', content: 'Someone can get in touch.' },
+				{ role: 'user', content: 'Which battery fits?' },
+			],
+			stream: '',
+			contacts: [
+				{ after: 1, email: 'maria@example.test' },
+				{ after: 'x', email: 'broken' },
+			],
+		} ),
+	} ) ) as unknown as typeof fetch;
+	const thread = await readThread( '/thread', 'n', fetchDouble );
+	expect( thread.contacts ).toEqual( [
+		{ after: 1, email: 'maria@example.test' },
+	] );
 } );

@@ -312,6 +312,9 @@ class Proxy {
 				'conversation_id' => $id,
 				'messages'        => $store['messages'],
 				'stream'          => $store['stream'],
+				// The sent contact cards, each after the answer that showed
+				// it: history keeps them on a reload (#243).
+				'contacts'        => ContactRequest::cards( $id ),
 			)
 		);
 		// The answer depends on the visitor's cookie: it must never be reused

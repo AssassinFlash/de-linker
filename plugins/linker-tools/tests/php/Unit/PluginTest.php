@@ -12,7 +12,9 @@ namespace Linker\Tools\Tests\Unit;
 use Linker\Tools\Assets;
 use Linker\Tools\Configurator\EngineProxy;
 use Linker\Tools\Configurator\Mount;
+use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\Conversations;
+use Linker\Tools\Genie\PageContext;
 use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\Preview;
@@ -77,6 +79,7 @@ final class PluginTest extends TestCase {
 		$quality_page  = new QualityPage( $quality, new Thread() );
 		$preview       = new Preview();
 		$mail          = new ConversationMail( $conversations, new Thread(), new RateLimit( 'a', 1, 1 ), new RateLimit( 'b', 1, 1 ) );
+		$contact       = new ContactRequest( $conversations, new Thread(), new PageContext() );
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
@@ -84,6 +87,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $proxy, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $engine, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $quality_route, 'register' ) );
+		WP_Mock::expectActionAdded( 'rest_api_init', array( $contact, 'register' ) );
 		WP_Mock::expectFilterAdded( QualityStore::SUMMARY_FILTER, array( $quality, 'filter_summary' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'admin_menu', array( $quality_page, 'menu' ) );
 		// Priority 1: the retired addresses answer ahead of WordPress's own
@@ -111,7 +115,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'admin_post_nopriv_' . ConversationMail::CONFIRM_ACTION, array( $mail, 'handle_link' ) );
 		WP_Mock::expectActionAdded( 'admin_post_' . ConversationMail::CONFIRM_ACTION, array( $mail, 'handle_link' ) );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );

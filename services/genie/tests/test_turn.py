@@ -220,4 +220,131 @@ def test_an_old_log_gains_the_understanding_column(tmp_path: Path) -> None:
     columns = [r[1] for r in upgraded._db.execute("PRAGMA table_info(turns)")]
     upgraded.close()
     # #258 adds the account flag after it.
-    assert columns[-2:] == ["understanding", "approved"]
+    assert columns[-3:] == ["understanding", "approved", "contact"]
+
+
+def _blocks(body: str) -> list[dict[str, Any]]:
+    return [
+        json.loads(event.split("data: ", 1)[1])
+        for event in body.split("\n\n")
+        if event.startswith("event: block")
+    ]
+
+
+def _post(conversation: str, *customer: str, locale: str = "en") -> str:
+    messages: list[dict[str, str]] = []
+    for text in customer:
+        if messages:
+            messages.append({"role": "assistant", "content": "An answer."})
+        messages.append({"role": "user", "content": text})
+    response = TestClient(app).post(
+        "/assistant/turn",
+        json={"conversation_id": conversation, "messages": messages, "locale": locale},
+    )
+    assert response.status_code == 200
+    return response.text
+
+
+@pytest.mark.parametrize(
+    ("message", "locale", "sentence"),
+    [
+        (
+            "Can I talk to a person?",
+            "en",
+            "Someone from the Linker team can get in touch with you by email.",
+        ),
+        (
+            "Ich möchte mit einem Mitarbeiter sprechen",
+            "de",
+            "Jemand aus dem Linker-Team kann sich per E-Mail bei Ihnen melden.",
+        ),
+    ],
+)
+def test_a_request_for_a_person_is_answered_without_the_model(
+    log: TurnLog, message: str, locale: str, sentence: str
+) -> None:
+    from linker_genie.understand import Understander
+
+    def no_model(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        raise AssertionError("the model must not run for a request for a person")
+
+    app.state.prepare = lambda body: Understander(None, None).prepare(body, None)  # type: ignore[arg-type]
+    app.state.generate = no_model
+    body = _post("p1", message, locale=locale)
+    assert _blocks(body) == [
+        {"type": "text", "text": sentence, "refs": []},
+        {"type": "contact", "reason": "asked"},
+    ]
+    row = log._db.execute("SELECT output, model, contact FROM turns").fetchone()
+    assert json.loads(row[0])["blocks"][-1] == {"type": "contact", "reason": "asked"}
+    # No model ran: model-routing audits read this field (review round 1 of #243).
+    assert row[1] == "none"
+    assert row[2] == "asked"
+
+
+def _frustrated(request: TurnRequest) -> Any:
+    from linker_genie.jev import Reading
+    from linker_genie.route import Route
+    from linker_genie.understand import Prepared
+
+    return Prepared(
+        route=Route("model"), reading=Reading("other", 0.9, 0.1, 0.93, 0.1, 2.0, 0.0)
+    )
+
+
+def test_frustration_keeps_the_answer_and_adds_the_offer(log: TurnLog) -> None:
+    app.state.prepare = _frustrated
+    app.state.generate = _generate
+    blocks = _blocks(_post("f1", "This is useless."))
+    assert [b["type"] for b in blocks] == ["text", "cards", "contact"]
+    assert blocks[-1]["reason"] == "dissatisfied"
+
+
+def test_the_offer_never_comes_on_two_turns_in_a_row(log: TurnLog) -> None:
+    app.state.prepare = _frustrated
+    app.state.generate = _generate
+    first = _blocks(_post("f2", "This is useless."))
+    second = _blocks(_post("f2", "This is useless.", "Still useless!"))
+    third = _blocks(_post("f2", "This is useless.", "Still useless!", "Nope."))
+    assert [b["type"] for b in first][-1] == "contact"
+    assert "contact" not in [b["type"] for b in second]
+    assert [b["type"] for b in third][-1] == "contact"
+    # Another conversation is not this one's history.
+    assert _blocks(_post("f3", "This is useless."))[-1]["type"] == "contact"
+
+
+def test_the_third_round_of_one_question_offers_once(log: TurnLog) -> None:
+    app.state.generate = _generate
+    question = "Which battery fits the SAJ H2-10K-T3?"
+    rounds = [
+        [b["type"] for b in _blocks(_post("r1", *([question] * n)))]
+        for n in (1, 2, 3, 4, 5)
+    ]
+    assert ["contact" in shown for shown in rounds] == [
+        False,
+        False,
+        True,
+        False,
+        False,
+    ]
+
+
+def test_the_log_keeps_the_offer_as_a_plain_field(tmp_path: Path) -> None:
+    log = TurnLog(tmp_path / "turns.sqlite")
+    common: dict[str, Any] = {
+        "locale": "en",
+        "grounded": True,
+        "failures": (),
+        "fallback": False,
+        "provider": "deepseek",
+        "model": "deepseek-flash",
+        "tool_calls": [],
+        "output": {},
+    }
+    log.record(conversation_id="c", contact=None, **common)
+    log.record(conversation_id="c", contact="repeat", **common)
+    log.record(conversation_id="d", contact="asked", **common)
+    assert log.offers("c", 5) == [True, False]
+    log.close()

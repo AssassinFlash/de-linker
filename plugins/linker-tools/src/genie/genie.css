@@ -1477,3 +1477,110 @@ body:has(.pdp-buy-inner)
 		line-height: 15px;
 	}
 }
+
+/*
+ * "Let Linker contact me" (#243): the contact card under an answer. Built from
+ * this sheet's own parts, no new values: the panel's hairline and radius
+ * tokens (`.linker-genie-app` above), the chips' grey text and pill shape
+ * (`.linker-genie-app__chip`), the send button's black and its 44px touch size
+ * (`.linker-genie-app__send`), the error colour (`.linker-genie-app__error`).
+ */
+.linker-genie-contact {
+	margin: 12px 0;
+	padding: 12px 16px;
+	border: 1px solid var(--proto-color-line, #e2e5e5);
+	border-radius: var(--proto-radius-lg, 12px);
+	background: #fff;
+}
+
+.linker-genie-contact__title {
+	margin: 0;
+	font-weight: 600;
+}
+
+.linker-genie-contact__text {
+	margin: 4px 0 0;
+	color: #5d5d5d;
+	font-size: 14px;
+}
+
+.linker-genie-contact__form {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin: 12px 0 0;
+}
+
+.linker-genie-contact__email {
+	flex: 1 1 12rem;
+	min-width: 0;
+	height: 44px;
+	padding: 0 16px;
+	border: 1px solid #e5e5e5;
+	border-radius: 99px;
+	background: #fff;
+	font: inherit;
+	font-size: 14px;
+	color: #0d0d0d;
+}
+
+.linker-genie-contact__email[aria-invalid="true"] {
+	border-color: var(--proto-sem-danger, #b85a45);
+}
+
+.linker-genie-contact__send {
+	height: 44px;
+	padding: 0 16px;
+	border-radius: 99px;
+	background: #181818;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.linker-genie-contact__send:hover {
+	background: #303030;
+}
+
+.linker-genie-contact__send:disabled {
+	background: #ededed;
+	color: #afafaf;
+	cursor: default;
+}
+
+/* The field's name for screen readers (the sentence above says it to the
+ * eye), and the honeypot out of sight (its wrapper is aria-hidden and its
+ * field out of the tab order). */
+.linker-genie-contact__label,
+.linker-genie-contact__trap {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* The consent line under the address: the chips' grey, the disclosure's size. */
+.linker-genie-contact__consent {
+	display: flex;
+	flex-basis: 100%;
+	order: 1;
+	align-items: flex-start;
+	gap: 8px;
+	color: #5d5d5d;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.linker-genie-contact__consent input {
+	margin-top: 2px;
+}
+
+.linker-genie-contact__error {
+	margin: 8px 0 0;
+	color: var(--proto-sem-danger, #b85a45);
+	font-size: 14px;
+}

@@ -29,6 +29,7 @@ const BASE: GenieConfig = {
 		"Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.",
 	accountUrl: '/my-account/',
 	workspaceUrl: '/genie/',
+	contactUrl: '/wp-json/linker-ai/v1/genie/contact',
 	prompts: [
 		'Ask Genie',
 		'I need a three-phase hybrid inverter for a home with 10 kWp PV.',

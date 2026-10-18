@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-18T01:39:18+00:00\n"
+"POT-Creation-Date: 2026-10-18T02:22:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -605,6 +605,7 @@ msgid "Answer (German)"
 msgstr ""
 
 #: includes/Admin/FaqsMetaBox.php:74 includes/Admin/FiguresMetaBox.php:79
+#: templates/emails/linker-genie-handoff.php:33
 msgid "Page"
 msgstr ""
 
@@ -976,7 +977,7 @@ msgid "Your conversation with Genie"
 msgstr ""
 
 #: includes/Genie/GenieEmail.php:97 includes/Mail/CustomerOrderEmail.php:89
-#: includes/Mail/TeamEmail.php:122
+#: includes/Mail/TeamEmail.php:125
 #: includes/Registration/Emails/CustomerApprovalEmail.php:130
 msgid "HTML"
 msgstr ""
@@ -1163,6 +1164,7 @@ msgstr ""
 #: includes/Presentation/ProductShortcodes.php:1912
 #: includes/Vocabulary/Labels.php:101 includes/Vocabulary/Labels.php:176
 #: includes/Vocabulary/Labels.php:200 includes/Vocabulary/Terms.php:31
+#: templates/emails/linker-genie-handoff.php:56
 msgid "Solution draft"
 msgstr ""
 
@@ -1171,6 +1173,7 @@ msgid "Edit solution draft"
 msgstr ""
 
 #: includes/Inquiry/Form.php:140 includes/Vocabulary/Terms.php:65
+#: templates/emails/linker-genie-handoff.php:65
 msgid "Quantity"
 msgstr ""
 
@@ -1471,6 +1474,7 @@ msgstr ""
 
 #: includes/Presentation/ComparePage.php:225
 #: includes/Presentation/ProductShortcodes.php:1382
+#: templates/emails/linker-genie-handoff.php:64
 msgid "Item number"
 msgstr ""
 
@@ -2859,6 +2863,7 @@ msgid "Approval"
 msgstr ""
 
 #: includes/Registration/AccountsTable.php:46
+#: templates/emails/linker-genie-handoff.php:29
 msgid "Reason"
 msgstr ""
 
@@ -3447,6 +3452,7 @@ msgid "View solution draft"
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:41
+#: templates/emails/linker-genie-handoff.php:58
 msgid "No products in the solution draft."
 msgstr ""
 
@@ -3836,6 +3842,27 @@ msgstr ""
 msgid "Replies to this email go to the Linker team."
 msgstr ""
 
+#: templates/emails/linker-genie-handoff.php:25
+msgid "Through Genie"
+msgstr ""
+
+#: templates/emails/linker-genie-handoff.php:26
+msgid "Genie promised a reply within one business day."
+msgstr ""
+
+#: templates/emails/linker-genie-handoff.php:44
+msgid "The customer's last messages, newest first"
+msgstr ""
+
+#: templates/emails/linker-genie-handoff.php:54
+msgid "Open the conversation"
+msgstr ""
+
+#: templates/emails/linker-genie-handoff.php:63
+#: templates/proforma/proforma.php:111
+msgid "Product"
+msgstr ""
+
 #: templates/emails/linker-inquiry-received.php:27
 msgid "Hello,"
 msgstr ""
@@ -4061,10 +4088,6 @@ msgstr ""
 
 #: templates/proforma/proforma.php:110
 msgid "Pos."
-msgstr ""
-
-#: templates/proforma/proforma.php:111
-msgid "Product"
 msgstr ""
 
 #: templates/proforma/proforma.php:112
