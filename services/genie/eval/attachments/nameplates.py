@@ -215,11 +215,7 @@ def turns(service: str, uploads_root: Path) -> list[dict[str, Any]]:
                     # A supplier's paper written for the evaluation (papers.py): no
                     # real price list is shipped, and the file is a customer's.
                     data = getattr(papers, case["generated"])(locale)
-                    name = (
-                        "Preisliste.pdf"
-                        if locale == "de"
-                        else "Price list.pdf"
-                    )
+                    name = "Preisliste.pdf" if locale == "de" else "Price list.pdf"
                     if case["generated"] == "delivery_terms":
                         name = (
                             "Lieferbedingungen.pdf"
@@ -301,9 +297,13 @@ def turns(service: str, uploads_root: Path) -> list[dict[str, Any]]:
                 ):
                     failures.append("the reading is not cited")
                 if case.get("no_money") and (amount := MONEY.search(text)):
-                    failures.append(f"states an amount from the file: {amount.group(0)}")
+                    failures.append(
+                        f"states an amount from the file: {amount.group(0)}"
+                    )
                 if case.get("no_lead_time") and (lead := LEAD.search(text)):
-                    failures.append(f"states a lead time from the file: {lead.group(0)}")
+                    failures.append(
+                        f"states a lead time from the file: {lead.group(0)}"
+                    )
                 if case.get("handoff") and not any(
                     b.get("type") == "contact" for b in blocks
                 ):
