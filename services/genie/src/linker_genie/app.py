@@ -26,7 +26,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from linker_genie import contact, ground, jev, page, summary
+from linker_genie import contact, ground, inquiry, jev, page, summary
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import (
     deepseek_access,
@@ -170,6 +170,12 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         # logged with the turn, never swallowed (prices.fill).
         prepared.log["price_failures"] = list(result.price_failures)
     shipped = result.output.model_dump()
+    # The inquiry confirmation card (#250): the model may ask for it, and an
+    # explicit "send an inquiry" adds the action when the model did not
+    # (inquiry.decide). Only the card's Send button writes the inquiry.
+    if inquiry.decide(_question(body), shipped["blocks"]):
+        shipped["blocks"].append({"type": "action", "name": inquiry.ACTION, "args": {}})
+        prepared.log["inquiry"] = True
     offer = contact.decide(prepared.route, prepared.reading, body.messages, offers)
     if offer is not None:
         # The offer follows the answer; the model never writes it (contact.py).

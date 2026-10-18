@@ -11,6 +11,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Genie;
 
 use Linker\Commerce\Contact\Submission;
+use Linker\Commerce\Inquiry\Checkout;
 use Linker\Commerce\Inquiry\ReceiptLimit;
 use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Settings\Options;
@@ -48,6 +49,19 @@ final class Module {
 	public const CONTACT_FILTER = 'linker_tools_genie_contact_team';
 
 	/**
+	 * The filter linker-tools asks with the inquiry confirmation card's details
+	 * (Linker\Tools\Genie\InquiryRequest::SEND_FILTER, #250). The answer is the
+	 * record and whether the receipt went, or a WP_Error when Woo refused it.
+	 */
+	public const INQUIRY_FILTER = 'linker_tools_genie_inquiry_send';
+
+	/**
+	 * The filter that names the request page in the card's language
+	 * (Linker\Tools\Genie\InquiryRequest::PAGE_FILTER): Checkout::request_url().
+	 */
+	public const INQUIRY_PAGE_FILTER = 'linker_genie_inquiry_page';
+
+	/**
 	 * The record's meta that keeps the hand-off for the team mail and the
 	 * inquiry screen.
 	 */
@@ -79,6 +93,8 @@ final class Module {
 		add_filter( self::CONFIRM_FILTER, array( $this, 'confirm' ), 10, 2 );
 		add_filter( self::MAILBOX_FILTER, array( $this, 'mailbox' ) );
 		add_filter( self::CONTACT_FILTER, array( $this, 'contact' ), 10, 2 );
+		add_filter( self::INQUIRY_FILTER, array( $this, 'inquiry' ), 10, 2 );
+		add_filter( self::INQUIRY_PAGE_FILTER, array( $this, 'inquiry_page' ), 10, 2 );
 	}
 
 	/**
@@ -131,6 +147,71 @@ final class Module {
 	 */
 	public function mailbox(): string {
 		return $this->options->team_mailbox();
+	}
+
+	/**
+	 * Sends the inquiry the Genie confirmation card showed (#250); the
+	 * INQUIRY_FILTER answer.
+	 *
+	 * The card's own details go through the request page's validation
+	 * (Submission::from_post with the guest form's required fields) and then
+	 * through the one writer, Inquiry\Sender::request(): the same Woo record,
+	 * Proforma gateway, statuses, team mail and receipt the request page makes.
+	 * The summary is the card's choice: the exact #244 summary it showed, or
+	 * false when the customer turned it off.
+	 *
+	 * @param mixed $sent    An earlier answer: an array when another listener sent it.
+	 * @param mixed $details The card's details (InquiryRequest::send()).
+	 * @return array{order: int, receipt: bool}|WP_Error|null
+	 */
+	public function inquiry( mixed $sent, mixed $details ): array|WP_Error|null {
+		if ( is_array( $sent ) && isset( $sent['order'] ) ) {
+			return array(
+				'order'   => (int) $sent['order'],
+				'receipt' => ! empty( $sent['receipt'] ),
+			);
+		}
+		if ( ! is_array( $details ) || ! is_array( $details['customer'] ?? null ) ) {
+			return null;
+		}
+		$summary = $details['summary'] ?? false;
+		$details = Submission::from_post(
+			array(
+				'name'    => (string) ( $details['customer']['name'] ?? '' ),
+				'email'   => (string) ( $details['customer']['email'] ?? '' ),
+				'company' => (string) ( $details['customer']['company'] ?? '' ),
+				'message' => (string) ( $details['message'] ?? '' ),
+				// A guest ticked the card's consent; an account's customer
+				// gave it at sign-up (the request page sends the same).
+				'consent' => '1',
+				'lang'    => (string) ( $details['locale'] ?? 'en' ),
+			),
+			false
+		);
+		if ( $details instanceof WP_Error ) {
+			return $details;
+		}
+		$order = ( new Sender() )->request( $details, array(), is_array( $summary ) ? $summary : false );
+		if ( $order instanceof WP_Error ) {
+			return $order;
+		}
+		return array(
+			'order'   => $order->get_id(),
+			'receipt' => 'daily_cap' !== (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
+		);
+	}
+
+	/**
+	 * The request page in the card's language; the INQUIRY_PAGE_FILTER answer.
+	 *
+	 * @param mixed $url    An earlier answer.
+	 * @param mixed $locale The card's language (en/de).
+	 */
+	public function inquiry_page( mixed $url, mixed $locale = 'en' ): string {
+		if ( is_string( $url ) && '' !== $url ) {
+			return $url;
+		}
+		return Checkout::request_url( 'de' === $locale ? 'de' : 'en' );
 	}
 
 	/**

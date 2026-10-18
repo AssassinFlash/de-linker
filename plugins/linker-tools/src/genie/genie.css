@@ -1699,3 +1699,297 @@ body:has(.pdp-buy-inner)
 	color: var(--proto-sem-danger, #b85a45);
 	font-size: 14px;
 }
+
+/* ---------------------------------------------------------------------------
+ * The inquiry confirmation card (#250). The surface is the contact card's
+ * (same border, radius, white fill and padding); the lines follow the request
+ * page's rows — product, quantity, Woo's own price line — and the fields take
+ * the composer's 1px line on the card's radius. Values are the tokens the rest
+ * of this sheet already uses, with their fallbacks.
+ * ------------------------------------------------------------------------- */
+
+.linker-genie-inquiry {
+	margin: 12px 0;
+	padding: 16px;
+	border: 1px solid var(--proto-color-line, #e2e5e5);
+	border-radius: var(--proto-radius-lg, 12px);
+	background: #fff;
+}
+
+.linker-genie-inquiry__title {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.linker-genie-inquiry__text {
+	margin: 4px 0 0;
+	color: #5d5d5d;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.linker-genie-inquiry__label {
+	display: block;
+	margin: 16px 0 6px;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	color: #5d5d5d;
+}
+
+.linker-genie-inquiry__lines {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid var(--proto-color-line, #e2e5e5);
+}
+
+.linker-genie-inquiry__line {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto;
+	align-items: baseline;
+	gap: 4px 12px;
+	padding: 10px 0;
+	border-bottom: 1px solid var(--proto-color-line, #e2e5e5);
+}
+
+.linker-genie-inquiry__product {
+	min-width: 0;
+	font-size: 14px;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+
+.linker-genie-inquiry__product a {
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.linker-genie-inquiry__sku {
+	display: block;
+	margin-top: 2px;
+	color: #8f8f8f;
+	font-size: 12px;
+}
+
+.linker-genie-inquiry__quantity {
+	white-space: nowrap;
+	color: #5d5d5d;
+	font-size: 14px;
+	font-variant-numeric: tabular-nums;
+}
+
+.linker-genie-inquiry__price {
+	white-space: nowrap;
+	font-size: 14px;
+	font-weight: 600;
+	text-align: right;
+}
+
+.linker-genie-inquiry__empty {
+	margin-top: 12px;
+}
+
+.linker-genie-inquiry__message {
+	display: block;
+	width: 100%;
+	min-height: 96px;
+	margin: 0;
+	padding: 12px 14px;
+	border: 1px solid #e5e5e5;
+	border-radius: var(--proto-radius-md, 8px);
+	background: #fff;
+	font: inherit;
+	font-size: 14px;
+	line-height: 1.5;
+	color: #0d0d0d;
+	resize: vertical;
+}
+
+.linker-genie-inquiry__message:focus {
+	outline: 2px solid var(--proto-teal-600, #0c7f73);
+	outline-offset: 1px;
+}
+
+.linker-genie-inquiry__summary {
+	margin-top: 12px;
+	padding: 10px 12px;
+	border-radius: var(--proto-radius-md, 8px);
+	background: var(--proto-neutral-100, #eef0f0);
+}
+
+.linker-genie-inquiry__switch {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	font-size: 13px;
+	line-height: 1.4;
+	color: #0d0d0d;
+}
+
+.linker-genie-inquiry__switch input {
+	margin-top: 2px;
+}
+
+.linker-genie-inquiry__details {
+	margin-top: 6px;
+	font-size: 13px;
+	line-height: 1.5;
+	color: #5d5d5d;
+}
+
+.linker-genie-inquiry__details summary {
+	cursor: pointer;
+	color: var(--proto-teal-600, #0c7f73);
+}
+
+.linker-genie-inquiry__details p {
+	margin: 6px 0 0;
+}
+
+.linker-genie-inquiry__fields {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+	gap: 10px 12px;
+	margin-top: 16px;
+}
+
+.linker-genie-inquiry__field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+	font-size: 12px;
+	color: #5d5d5d;
+}
+
+.linker-genie-inquiry__field input {
+	height: 44px;
+	width: 100%;
+	padding: 0 12px;
+	border: 1px solid #e5e5e5;
+	border-radius: var(--proto-radius-md, 8px);
+	background: #fff;
+	font: inherit;
+	font-size: 14px;
+	color: #0d0d0d;
+}
+
+.linker-genie-inquiry__field input:focus {
+	outline: 2px solid var(--proto-teal-600, #0c7f73);
+	outline-offset: 1px;
+}
+
+.linker-genie-inquiry__field input[aria-invalid="true"],
+.linker-genie-inquiry__consent input[aria-invalid="true"] {
+	border-color: var(--proto-sem-danger, #b85a45);
+}
+
+.linker-genie-inquiry__consent {
+	display: flex;
+	grid-column: 1 / -1;
+	align-items: flex-start;
+	gap: 8px;
+	color: #5d5d5d;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.linker-genie-inquiry__consent input {
+	margin-top: 2px;
+}
+
+.linker-genie-inquiry__hint {
+	margin: 10px 0 0;
+	color: #5d5d5d;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.linker-genie-inquiry__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+	margin-top: 14px;
+}
+
+.linker-genie-inquiry__send {
+	height: 44px;
+	padding: 0 18px;
+	border-radius: 99px;
+	background: #181818;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.linker-genie-inquiry__send:hover {
+	background: #303030;
+}
+
+.linker-genie-inquiry__send:disabled {
+	background: #ededed;
+	color: #afafaf;
+	cursor: default;
+}
+
+.linker-genie-inquiry__edit {
+	font-size: 13px;
+	color: var(--proto-teal-600, #0c7f73);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.linker-genie-inquiry__promise {
+	margin: 10px 0 0;
+	color: #5d5d5d;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.linker-genie-inquiry__error {
+	margin: 8px 0 0;
+	color: var(--proto-sem-danger, #b85a45);
+	font-size: 14px;
+}
+
+.linker-genie-inquiry__status {
+	margin: 8px 0 0;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.linker-genie-inquiry__link {
+	color: var(--proto-teal-600, #0c7f73);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.linker-genie-inquiry__trap {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+	.linker-genie-inquiry {
+		padding: 14px;
+	}
+
+	.linker-genie-inquiry__line {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	.linker-genie-inquiry__price {
+		grid-column: 1 / -1;
+		text-align: left;
+	}
+}

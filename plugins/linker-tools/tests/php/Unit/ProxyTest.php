@@ -11,6 +11,7 @@ namespace Linker\Tools\Tests\Unit;
 
 use Linker\Tools\Genie\Attachments;
 use Linker\Tools\Genie\ContactRequest;
+use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Proxy;
 use WP_Mock;
@@ -804,6 +805,14 @@ final class ProxyTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn( $value ) => str_contains( (string) $value, '@' ) ) );
+		// No inquiry was sent from the confirmation card in this conversation (#250).
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'args'   => array( 51, InquiryRequest::NOTE, false ),
+				'return' => array(),
+			)
+		);
 		$response = $this->proxy( null, $thread )->conversation();
 		$data     = $response->get_data();
 		$this->assertSame( 51, $data['conversation_id'] );
@@ -819,6 +828,7 @@ final class ProxyTest extends TestCase {
 			),
 			$data['contacts']
 		);
+		$this->assertSame( array(), $data['inquiries'] );
 		// The answer depends on the visitor's cookie: it is never cacheable.
 		$this->assertStringContainsString(
 			'no-store',

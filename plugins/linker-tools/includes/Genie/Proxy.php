@@ -355,6 +355,8 @@ class Proxy {
 				// The sent contact cards, each after the answer that showed
 				// it: history keeps them on a reload (#243).
 				'contacts'        => ContactRequest::cards( $id ),
+				// The inquiries sent from the confirmation card (#250).
+				'inquiries'       => InquiryRequest::cards( $id ),
 			)
 		);
 		// The answer depends on the visitor's cookie: it must never be reused

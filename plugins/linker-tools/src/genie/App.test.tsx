@@ -56,7 +56,32 @@ vi.mock( './api/contact', () => ( {
 vi.mock( './api/product', () => ( {
 	productModel: vi.fn( async () => 'GW10K-ETA' ),
 } ) );
+vi.mock( './api/inquiry', () => ( {
+	readInquiry: vi.fn( async () => ( {
+		conversation: 5,
+		started: '100',
+		startedNonce: 'sig',
+		account: null,
+		lines: [
+			{
+				product_id: 4107,
+				name: 'SAJ H2-10K-T3',
+				sku: 'H2-10K-T3',
+				quantity: 2,
+				price_html: '<span>1.234,00&nbsp;€</span>',
+				url: 'https://de-linker.test/product/saj-h2-10k-t3/',
+			},
+		],
+		linesDigest: 'digest-1',
+		message: 'We need two units this quarter.',
+		summary: 'Two inverters for a three-phase rooftop.',
+		sent: null,
+		pageUrl: 'https://de-linker.test/inquiry/',
+	} ) ),
+	sendInquiry: vi.fn(),
+} ) );
 import { readContact, sendContact } from './api/contact';
+import { readInquiry, sendInquiry } from './api/inquiry';
 import {
 	deleteConversation,
 	emailConversation,
@@ -100,6 +125,7 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 		mailStarted: '1800000000',
 		mailStartedNonce: 'stamp-nonce',
 		contactUrl: '/wp-json/linker-ai/v1/genie/contact',
+		inquiryUrl: '/wp-json/linker-ai/v1/genie/inquiry',
 		prompts: [
 			'Ask Genie',
 			'I need a three-phase hybrid inverter for a home.',
@@ -1651,4 +1677,160 @@ test( 'a reload shows the sent card in the history, once', async () => {
 		screen.getByText( 'We have not sent a confirmation email.' )
 	).toBeInTheDocument();
 	expect( screen.queryByRole( 'button', { name: 'Contact me' } ) ).toBeNull();
+} );
+
+const INQUIRY_TURN = {
+	meta: {
+		turn_id: 41,
+		grounded: true,
+		fallback: false,
+		attempts: 1,
+		failures: [],
+		language: 'en' as const,
+	},
+	blocks: [
+		{
+			type: 'text' as const,
+			text: 'Check the details in the confirmation card and send the inquiry there.',
+			refs: [],
+		},
+		{ type: 'action' as const, name: 'send_inquiry' as const, args: {} },
+	],
+};
+
+const SENT_INQUIRY = {
+	order: 9,
+	number: '9',
+	status: 'inquiry-received',
+	receipt: true,
+	email: 'maria@example.test',
+	url: 'https://de-linker.test/checkout/order-received/9/?key=abc',
+};
+
+test( 'the inquiry card follows the answer and the sent card stays on the next turn', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+		inquiries: [],
+	} );
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 0,
+		conversations: [],
+		ok: true,
+	} );
+	vi.mocked( sendTurn ).mockResolvedValueOnce( INQUIRY_TURN );
+	vi.mocked( sendInquiry ).mockResolvedValue( {
+		ok: true,
+		inquiry: SENT_INQUIRY,
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await act( async () => {
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Please send an inquiry.' },
+		} );
+		fireEvent.submit(
+			screen
+				.getByLabelText( 'Ask Genie' )
+				.closest( 'form' ) as HTMLFormElement
+		);
+	} );
+	fireEvent.change( await screen.findByLabelText( 'Name' ), {
+		target: { value: 'Maria Weber' },
+	} );
+	fireEvent.change( screen.getByLabelText( 'Reply email' ), {
+		target: { value: 'maria@example.test' },
+	} );
+	fireEvent.click(
+		screen.getByLabelText(
+			'I agree that my details may be used to respond to this message.'
+		)
+	);
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Send inquiry' } )
+		);
+	} );
+	expect(
+		await screen.findByText( 'Inquiry #9 · Inquiry received' )
+	).toBeInTheDocument();
+	expect(
+		screen.queryByRole( 'button', { name: 'Send inquiry' } )
+	).toBeNull();
+
+	// From now on the route says this conversation's inquiry is sent: the
+	// next turn keeps the sent card in the history.
+	vi.mocked( readInquiry ).mockResolvedValue( {
+		conversation: 5,
+		started: '100',
+		startedNonce: 'sig',
+		account: null,
+		lines: [],
+		linesDigest: 'digest-2',
+		message: '',
+		summary: '',
+		sent: SENT_INQUIRY,
+		pageUrl: 'https://de-linker.test/inquiry/',
+	} );
+	vi.mocked( sendTurn ).mockResolvedValueOnce( {
+		meta: { ...INQUIRY_TURN.meta, turn_id: 42 },
+		blocks: [ { type: 'text', text: 'The SAJ B2 fits it.', refs: [] } ],
+	} );
+	await act( async () => {
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Which battery fits the SAJ H2?' },
+		} );
+		fireEvent.submit(
+			screen
+				.getByLabelText( 'Ask Genie' )
+				.closest( 'form' ) as HTMLFormElement
+		);
+	} );
+	expect(
+		await screen.findByText( 'The SAJ B2 fits it.' )
+	).toBeInTheDocument();
+	expect(
+		screen.getAllByText( 'Inquiry #9 · Inquiry received' )
+	).toHaveLength( 1 );
+	expect(
+		screen.queryByRole( 'button', { name: 'Send inquiry' } )
+	).toBeNull();
+} );
+
+test( 'a reload shows the sent inquiry in the history, once', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [
+			{ role: 'user', content: 'Please send an inquiry.' },
+			{
+				role: 'assistant',
+				content:
+					'Check the details in the confirmation card and send the inquiry there.',
+			},
+		],
+		turn: INQUIRY_TURN,
+		contacts: [],
+		inquiries: [ { ...SENT_INQUIRY, after: 1 } ],
+	} );
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 5,
+		conversations: [],
+		ok: true,
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	expect(
+		await screen.findByText( 'Inquiry #9 · Inquiry received' )
+	).toBeInTheDocument();
+	expect(
+		screen.getAllByText( 'Inquiry #9 · Inquiry received' )
+	).toHaveLength( 1 );
+	expect(
+		screen.getByText( 'Your inquiry is with the Linker team' )
+	).toBeInTheDocument();
+	expect(
+		screen.queryByRole( 'button', { name: 'Send inquiry' } )
+	).toBeNull();
 } );

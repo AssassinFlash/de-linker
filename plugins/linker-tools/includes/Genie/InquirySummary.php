@@ -126,7 +126,11 @@ final class InquirySummary {
 			return null;
 		}
 		$last = (string) $messages[ array_key_last( $messages ) ]['content'];
-		$key  = 'linker_genie_summary_' . $conversation . '_' . count( $messages ) . '_' . substr( md5( $last ), 0, 8 );
+		// The language is part of the key: the summary is written in the
+		// language of the page that asked (#250 shows the same conversation's
+		// card on an English and a German page).
+		$lang = str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en';
+		$key  = 'linker_genie_summary_' . $conversation . '_' . $lang . '_' . count( $messages ) . '_' . substr( md5( $last ), 0, 8 );
 		$seen = get_transient( $key );
 		if ( is_array( $seen ) ) {
 			return $seen;

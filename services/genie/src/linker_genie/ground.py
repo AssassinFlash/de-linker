@@ -45,6 +45,8 @@ And the price rule (#242):
 10. No text states an amount of money from a file the customer attached (#236): a
     price list or delivery terms are the customer's paper, never our price or
     delivery cost (the same rule `page.RULE` gives a page).
+11. No text claims an inquiry, request or quote was sent (#250, A8): only the
+    customer's Send button on the confirmation card sends.
 
 Registered reading of guarantee 2: "推荐 ⊆ search-products 的 qualified"
 means qualified by this turn's tool results. That is search-products'
@@ -91,6 +93,25 @@ _URL = re.compile(r"https?://|www\.", re.IGNORECASE)
 BANNED_WORDS = re.compile(
     r"\b(?:articles?|catalogues?|catalogs?|carts?|baskets?|"
     r"artikel[ns]?|katalog(?:e|en|s)?|warenk(?:o|ö)rb(?:e|en|s)?)\b",
+    re.IGNORECASE,
+)
+
+# A sentence that claims an inquiry went out (#250, acceptance A8). Only the
+# customer's Send button sends (inquiry.py); a model sentence that says otherwise
+# must never ship. The patterns name the inquiry (or quote/proforma) itself, so
+# "I sent you the datasheet" and "the document was sent" stay ordinary answers.
+_SENT_CLAIM = re.compile(
+    r"(?:\b(?:i|we)(?: have|'ve| ve)?(?: just| already)? "
+    r"(?:sent|submitted|placed|filed|created) (?:\w+ )?"
+    r"(?:inquiry|enquiry|request|quote|proforma|rfq)\b"
+    r"|\b(?:your|the|my|our|this) (?:inquiry|enquiry|request|quote|proforma|rfq) "
+    r"(?:has|have|was|were) (?:now |just |already )?(?:been )?"
+    r"(?:sent|submitted|placed|filed)\b"
+    r"|\b(?:ich|wir) habe(?:n)? (?:\w+ )?(?:anfrage|angebot|proformarechnung)"
+    r" (?:\w+ )?(?:gesendet|abgeschickt|gestellt|erstellt|übermittelt|uebermittelt)\b"
+    r"|\b(?:die|ihre|meine|unsere) (?:anfrage|angebot|proformarechnung)"
+    r" (?:wurde|ist) (?:\w+ )?(?:gesendet|abgeschickt|gestellt|erstellt|"
+    r"übermittelt|uebermittelt)(?: worden)?\b)",
     re.IGNORECASE,
 )
 
@@ -151,6 +172,7 @@ def check(
     failures.extend(_domain_words(output))
     failures.extend(_no_price_in_text(output))
     failures.extend(_no_amount_from_attachments(output, facts))
+    failures.extend(_no_sent_claim(output))
     if route is not None:
         failures.extend(_route(output, facts, route))
     return CheckResult(ok=not failures, failures=tuple(failures))
@@ -231,6 +253,22 @@ def _domain_words(output: TurnOutput) -> list[str]:
                 "product category or solution draft"
             )
     return failures
+
+
+def _no_sent_claim(output: TurnOutput) -> list[str]:
+    """Check 11. No sentence claims an inquiry went out (#250, A8).
+
+    Only the customer's Send button on the confirmation card sends; the model has
+    no ability that writes an inquiry. A model text that says one was sent would
+    describe a state the site is not in, so it is refused like any other
+    unsupported claim: the retry is told why, and the fallback carries no claim.
+    """
+    return [
+        "the text claims the inquiry was sent; only the customer's Send button on "
+        "the confirmation card sends it"
+        for text in _model_texts(output)
+        if _SENT_CLAIM.search(PLACEHOLDER.sub("", text))
+    ]
 
 
 def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:

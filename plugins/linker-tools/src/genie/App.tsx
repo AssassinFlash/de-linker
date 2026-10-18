@@ -33,6 +33,7 @@ import {
 	type ContactBlock,
 	type ConversationSummary,
 	type SentContact,
+	type SentInquiryCard,
 	type EmailOutcome,
 	type Turn,
 	type TurnMessage,
@@ -43,6 +44,8 @@ import { AttachmentCard } from './components/AttachmentCard';
 import { AttachmentChips, refusalText } from './components/AttachmentChips';
 import { BlockView } from './components/BlockView';
 import { Compare } from './components/Compare';
+import { InquiryCard, InquirySent } from './components/InquiryCard';
+import type { SentInquiry } from './api/inquiry';
 import { ContactCard, ContactSent } from './components/ContactCard';
 import { GenieCard } from './components/GenieCard';
 import {
@@ -159,6 +162,9 @@ export function App( { config }: { config: GenieConfig } ) {
 	// The contact requests sent from this conversation, each after the answer
 	// that showed its card (#243): the history keeps them.
 	const [ contacts, setContacts ] = useState< SentContact[] >( [] );
+	// The inquiries the confirmation card sent (#250), each after the answer
+	// that showed the card, with the record's number and status.
+	const [ inquiries, setInquiries ] = useState< SentInquiryCard[] >( [] );
 	// Where the shown turn's answer stands in the thread: a sent card belongs
 	// there, whatever is asked after it.
 	const turnAt = useRef( -1 );
@@ -247,6 +253,16 @@ export function App( { config }: { config: GenieConfig } ) {
 		);
 	}, [] );
 
+	// An inquiry is with the team: its card stays after the shown turn's answer.
+	const inquirySent = useCallback( ( inquiry: SentInquiry ) => {
+		const after = turnAt.current;
+		setInquiries( ( known ) =>
+			known.some( ( card ) => card.after === after )
+				? known
+				: [ ...known, { ...inquiry, after } ]
+		);
+	}, [] );
+
 	const showStored = useCallback( async () => {
 		const stored = await readThread( config.threadUrl, config.restNonce );
 		currentThread.current = stored.messages;
@@ -254,6 +270,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		setTurn( stored.turn );
 		turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
 		setContacts( stored.contacts ?? [] );
+		setInquiries( stored.inquiries ?? [] );
 		setPhase( 'ask' );
 		setInput( '' );
 		setMail( 'idle' );
@@ -380,6 +397,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			messages: TurnMessage[];
 			turn: Turn | null;
 			contacts?: SentContact[];
+			inquiries?: SentInquiryCard[];
 		} >();
 		void enqueue( async () => {
 			const stored = await Promise.race( [
@@ -393,6 +411,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				currentThread.current = stored.messages;
 				setThread( stored.messages );
 				setContacts( stored.contacts ?? [] );
+				setInquiries( stored.inquiries ?? [] );
 				if ( stored.turn ) {
 					turnAt.current = stored.messages.length - 1;
 					setTurn( stored.turn );
@@ -410,7 +429,12 @@ export function App( { config }: { config: GenieConfig } ) {
 			cancelled = true;
 			// A superseded mount must not hold the lane. The replacement
 			// reads the thread itself.
-			pending.resolve( { messages: [], turn: null, contacts: [] } );
+			pending.resolve( {
+				messages: [],
+				turn: null,
+				contacts: [],
+				inquiries: [],
+			} );
 		};
 	}, [ config.threadUrl, config.restNonce, refreshHistory ] );
 
@@ -472,6 +496,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				currentThread.current = [];
 				setThread( [] );
 				setContacts( [] );
+				setInquiries( [] );
 				setTurn( null );
 				setPhase( 'ask' );
 				setMail( 'idle' );
@@ -685,6 +710,28 @@ export function App( { config }: { config: GenieConfig } ) {
 		window.SpeechRecognition ?? window.webkitSpeechRecognition
 	);
 	const visible = workspace || open;
+	// The inquiry confirmation card's turn (#250): the action the model or the
+	// service asked for, and the inquiry it may already have sent.
+	const offersInquiry = Boolean(
+		turn?.blocks.some(
+			( block ) =>
+				'action' === block.type && 'send_inquiry' === block.name
+		)
+	);
+	const currentInquiry = inquiries.find(
+		( card ) => card.after === turnAt.current
+	);
+	const inquiryAfterAnswer = currentInquiry ? (
+		<InquirySent inquiry={ currentInquiry } />
+	) : (
+		<InquiryCard
+			inquiryUrl={ config.inquiryUrl }
+			nonce={ config.restNonce }
+			locale={ config.locale }
+			page={ config.page }
+			onSent={ inquirySent }
+		/>
+	);
 	return (
 		<section
 			className={ `linker-genie-app${
@@ -1001,6 +1048,25 @@ export function App( { config }: { config: GenieConfig } ) {
 														}
 													/>
 												) ) }
+											{ /* An inquiry sent from an earlier
+											 * turn: the card follows that
+											 * answer (#250). The last turn's
+											 * card stands at the end of the
+											 * transcript, where it was sent. */ }
+											{ inquiries
+												.filter(
+													( card ) =>
+														card.after === index &&
+														card.after !==
+															turnAt.current
+												)
+												.slice( 0, 1 )
+												.map( ( card ) => (
+													<InquirySent
+														key={ card.order }
+														inquiry={ card }
+													/>
+												) ) }
 										</li>
 									) ) }
 									{ 'waiting' === phase ? (
@@ -1146,6 +1212,11 @@ export function App( { config }: { config: GenieConfig } ) {
 											onSent={ sent }
 										/>
 									) ) }
+								{ /* The inquiry confirmation card (#250) follows
+								 * the answer too. Once the inquiry is with the
+								 * team, the sent card stands here, where the
+								 * customer sent it. */ }
+								{ offersInquiry ? inquiryAfterAnswer : null }
 							</div>
 						) : null }
 						{ /* The picked files, over the composer (#236). */ }

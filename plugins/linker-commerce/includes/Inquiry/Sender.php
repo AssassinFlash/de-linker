@@ -39,11 +39,15 @@ final class Sender {
 	 * Sends validated details with the current solution draft.
 	 * Products, prices and customer identity always come from Woo's session.
 	 *
-	 * @param Submission           $details Validated reply details and message.
-	 * @param array<string, mixed> $billing Optional account billing edits; guests cannot supply them.
+	 * @param Submission                      $details Validated reply details and message.
+	 * @param array<string, mixed>            $billing Optional account billing edits; guests cannot supply them.
+	 * @param array<string, mixed>|false|null $summary The conversation summary the
+	 *        Genie confirmation card showed (#250): an array stores it, false
+	 *        stores none (the customer turned the summary off), null asks the
+	 *        filter as the request page does (#244).
 	 * @return WC_Order|WP_Error Received inquiry or validation failure.
 	 */
-	public function request( Submission $details, array $billing = array() ): WC_Order|WP_Error {
+	public function request( Submission $details, array $billing = array(), array|false|null $summary = null ): WC_Order|WP_Error {
 		if ( WC()->cart->is_empty() && '' === $details->message ) {
 			return new WP_Error( 'linker_inquiry_empty', __( 'Please add a product or write a message.', 'linker-commerce' ) );
 		}
@@ -72,7 +76,7 @@ final class Sender {
 		if ( ! $order instanceof WC_Order ) {
 			return new WP_Error( 'linker_inquiry_create', __( 'Please try sending your inquiry again.', 'linker-commerce' ) );
 		}
-		$this->attach_summary( $order );
+		$this->attach_summary( $order, $summary );
 		$this->receive( $order, $details, 'proforma' );
 		WC()->cart->empty_cart();
 		return $order;
@@ -111,12 +115,20 @@ final class Sender {
 	 * The browser's own conversation is summarized (never an id from the form);
 	 * an unanswered filter, no conversation or a refused answer leaves the
 	 * inquiry without the block — it is never held up (InquirySummary::META).
+	 * The Genie confirmation card (#250) hands over the exact summary it showed,
+	 * or false when the customer turned the summary off.
 	 *
-	 * @param WC_Order $order The inquiry just created.
+	 * @param WC_Order                        $order   The inquiry just created.
+	 * @param array<string, mixed>|false|null $summary The card's summary; null asks the filter.
 	 */
-	private function attach_summary( WC_Order $order ): void {
-		// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- linker-tools' filter (Linker\Tools\Genie\InquirySummary::FILTER) answers with the browser's conversation summary.
-		$summary = apply_filters( self::SUMMARY_FILTER, null, 0 );
+	private function attach_summary( WC_Order $order, array|false|null $summary = null ): void {
+		if ( false === $summary ) {
+			return;
+		}
+		if ( null === $summary ) {
+			// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- linker-tools' filter (Linker\Tools\Genie\InquirySummary::FILTER) answers with the browser's conversation summary.
+			$summary = apply_filters( self::SUMMARY_FILTER, null, 0 );
+		}
 		if ( is_array( $summary ) && isset( $summary['summary'] ) && '' !== (string) $summary['summary'] ) {
 			$order->update_meta_data( self::SUMMARY_META, $summary );
 		}

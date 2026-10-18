@@ -30,6 +30,7 @@ const BASE: GenieConfig = {
 	accountUrl: '/my-account/',
 	workspaceUrl: '/genie/',
 	contactUrl: '/wp-json/linker-ai/v1/genie/contact',
+	inquiryUrl: '/wp-json/linker-ai/v1/genie/inquiry',
 	prompts: [
 		'Ask Genie',
 		'I need a three-phase hybrid inverter for a home with 10 kWp PV.',

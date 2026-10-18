@@ -45,6 +45,9 @@ ActionName = Literal[
     "add_to_draft",
     "save_solution",
     "view_inquiry",
+    # The inquiry confirmation card (#250): the action only asks the shell to show
+    # the card; the customer's Send button is the one writer (inquiry.py).
+    "send_inquiry",
 ]
 
 
