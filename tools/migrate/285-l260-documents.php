@@ -11,50 +11,55 @@
  * @package Linker\Migrate
  */
 
-// No declare(strict_types=1): `wp eval-file -` rejects it with a fatal error.
-$request = json_decode( (string) base64_decode( '285-l260-documents-payload' ), true );
+defined( 'ABSPATH' ) || exit;
 
-$product_id = (int) ( $request['product'] ?? 0 );
-$meta_key   = (string) ( $request['meta_key'] ?? '_linker_documents' );
-$product    = function_exists( 'wc_get_product' ) ? wc_get_product( $product_id ) : false;
+( static function ( string $payload ): void {
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- base64 lets the request JSON sit in the single-quoted literal 285-l260-documents.py writes into this file.
+	$request = json_decode( base64_decode( $payload ), true, 512, JSON_THROW_ON_ERROR );
 
-$documents = static function () use ( $product_id, $meta_key ): array {
-	$raw = (string) get_post_meta( $product_id, $meta_key, true );
-	if ( '' === $raw ) {
-		return array();
+	$product_id = (int) ( $request['product'] ?? 0 );
+	$meta_key   = (string) ( $request['meta_key'] ?? '_linker_documents' );
+	$product    = function_exists( 'wc_get_product' ) ? wc_get_product( $product_id ) : false;
+
+	$documents = static function () use ( $product_id, $meta_key ): array {
+		$raw = (string) get_post_meta( $product_id, $meta_key, true );
+		if ( '' === $raw ) {
+			return array();
+		}
+		$decoded = json_decode( $raw, true );
+		return is_array( $decoded ) ? $decoded : array();
+	};
+
+	$fields = static function () use ( $product ): array {
+		return array(
+			'name'           => $product ? $product->get_name() : '',
+			'sku'            => $product ? $product->get_sku() : '',
+			'status'         => $product ? $product->get_status() : '',
+			'price'          => $product ? $product->get_price() : '',
+			'regular_price'  => $product ? $product->get_regular_price() : '',
+			'sale_price'     => $product ? $product->get_sale_price() : '',
+			'stock_status'   => $product ? $product->get_stock_status() : '',
+			'stock_quantity' => $product ? $product->get_stock_quantity() : null,
+		);
+	};
+
+	if ( 'write' === ( $request['action'] ?? '' ) ) {
+		update_post_meta(
+			$product_id,
+			$meta_key,
+			wp_slash( (string) wp_json_encode( $request['documents'] ?? array(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) )
+		);
 	}
-	$decoded = json_decode( $raw, true );
-	return is_array( $decoded ) ? $decoded : array();
-};
 
-$fields = static function () use ( $product ): array {
-	return array(
-		'name'           => $product ? $product->get_name() : '',
-		'sku'            => $product ? $product->get_sku() : '',
-		'status'         => $product ? $product->get_status() : '',
-		'price'          => $product ? $product->get_price() : '',
-		'regular_price'  => $product ? $product->get_regular_price() : '',
-		'sale_price'     => $product ? $product->get_sale_price() : '',
-		'stock_status'   => $product ? $product->get_stock_status() : '',
-		'stock_quantity' => $product ? $product->get_stock_quantity() : null,
-	);
-};
-
-if ( 'write' === ( $request['action'] ?? '' ) ) {
-	update_post_meta(
-		$product_id,
-		$meta_key,
-		wp_slash( (string) wp_json_encode( $request['documents'] ?? array(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) )
-	);
-}
-
-echo '@@285-l260-documents@@' . base64_encode(
-	(string) wp_json_encode(
-		array(
-			'site'      => home_url( '/' ),
-			'product'   => $product_id,
-			'documents' => $documents(),
-			'fields'    => $fields(),
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- The answer is base64 JSON for the migration script, not HTML.
+	echo '@@285-l260-documents@@' . base64_encode(
+		(string) wp_json_encode(
+			array(
+				'site'      => home_url( '/' ),
+				'product'   => $product_id,
+				'documents' => $documents(),
+				'fields'    => $fields(),
+			)
 		)
-	)
-), "\n";
+	), "\n";
+} )( '285-l260-documents-payload' );
