@@ -33,6 +33,16 @@ final class GermanUrlMigration {
 	}
 
 	/**
+	 * Reviewed title/name values, including the SEO value of partially migrated pages.
+	 *
+	 * @return list<array{type:string,source:string,before:array<string,string>,after:array<string,string>}>
+	 */
+	private function title_manifest(): array {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Checked-in public title migration data.
+		return json_decode( (string) file_get_contents( dirname( __DIR__ ) . '/content/german-titles.json' ), true, 512, JSON_THROW_ON_ERROR );
+	}
+
+	/**
 	 * Previews field and URL changes in German, without writing.
 	 *
 	 * @return list<RouteRow>
@@ -43,7 +53,16 @@ final class GermanUrlMigration {
 		try {
 			$rows   = $this->objects();
 			$routes = new GermanRoutes();
+			$titles = array();
+			foreach ( $this->title_manifest() as $entry ) {
+				$titles[ $entry['type'] . ':' . $entry['source'] ] = $entry['after'];
+			}
 			foreach ( $rows as &$row ) {
+				$source = in_array( $row['type'], array( 'category', 'product_cat' ), true ) ? get_term( $row['source'], $row['type'] ) : get_post( $row['source'] );
+				$slug   = $source instanceof \WP_Post ? $source->post_name : ( $source instanceof \WP_Term ? $source->slug : '' );
+				if ( isset( $titles[ $row['type'] . ':' . $slug ] ) ) {
+					$row['after'] = array_replace( $row['after'], $titles[ $row['type'] . ':' . $slug ] );
+				}
 				foreach ( array( 'post_content', 'post_excerpt', 'description' ) as $field ) {
 					if ( isset( $row['before'][ $field ] ) ) {
 						$row['after'][ $field ] = $routes->rewrite_links( $row['before'][ $field ] );
@@ -268,7 +287,7 @@ final class GermanUrlMigration {
 	 * @throws \RuntimeException When reviewed data or a language pair has drifted.
 	 */
 	private function reviewed_pairs(): void {
-		foreach ( $this->manifest() as $entry ) {
+		foreach ( array_merge( $this->manifest(), $this->title_manifest() ) as $entry ) {
 			$is_term = in_array( $entry['type'], array( 'category', 'product_cat' ), true );
 			if ( $is_term ) {
 				$matches = get_terms(
@@ -300,8 +319,18 @@ final class GermanUrlMigration {
 				$de   = get_post( (int) pll_get_post( $matches[0]->ID, 'de' ) );
 				$slug = $de instanceof \WP_Post ? $de->post_name : '';
 			}
-			if ( ! in_array( $slug, array( $entry['old'], $entry['new'] ), true ) ) {
+			if ( isset( $entry['old'], $entry['new'] ) && ! in_array( $slug, array( $entry['old'], $entry['new'] ), true ) ) {
 				throw new \RuntimeException( esc_html( 'Unexpected German slug or missing pair: ' . $entry['type'] . ':' . $entry['source'] . ' (' . $slug . ')' ) );
+			}
+			foreach ( $entry['before'] ?? array() as $field => $old ) {
+				$current = match ( $field ) {
+					'name' => $de instanceof \WP_Term ? $de->name : '',
+					'post_title' => $de instanceof \WP_Post ? $de->post_title : '',
+					default => $de instanceof \WP_Post ? (string) get_post_meta( $de->ID, substr( $field, 5 ), true ) : '',
+				};
+				if ( ! in_array( $current, array( $old, $entry['after'][ $field ] ), true ) ) {
+					throw new \RuntimeException( esc_html( 'Unexpected German field: ' . $entry['type'] . ':' . $entry['source'] . ' ' . $field ) );
+				}
 			}
 		}
 	}

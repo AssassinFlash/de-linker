@@ -25,6 +25,37 @@ final class GermanUrlsTest extends SiteTestCase {
 	 */
 	private mixed $migration_state = null;
 
+	/** A first deployment must not overwrite independently edited German names or SEO copy. */
+	public function test_first_apply_rejects_unreviewed_titles_before_writing(): void {
+		$fixture = self::php( '$en = get_page_by_path( "faq-download" ); $id = (int) pll_get_post( $en->ID, "de" ); $term = get_term_by( "slug", "ems-monitoring", "product_cat" ); $term_id = (int) pll_get_term( $term->term_id, "de" ); delete_option( "linker_i18n_german_urls_backup" ); return array( "id" => $id, "title" => get_post_field( "post_title", $id ), "seo" => get_post_meta( $id, "_seopress_titles_title", true ), "seo_exists" => metadata_exists( "post", $id, "_seopress_titles_title" ), "term" => $term_id, "name" => get_term( $term_id )->name );' );
+		$applied = false;
+		try {
+			foreach ( array( 'post_title', 'meta:_seopress_titles_title', 'name' ) as $field ) {
+				self::php( 'if ( "name" === $input["field"] ) { wp_update_term( $input["term"], "product_cat", array( "name" => "Manuell benannte Kategorie" ) ); } elseif ( "post_title" === $input["field"] ) { wp_update_post( array( "ID" => $input["id"], "post_title" => "Manuell angepasster Seitentitel" ) ); } else { update_post_meta( $input["id"], "_seopress_titles_title", "Manuell verfasster SEO-Titel | Linker" ); }', $fixture + array( 'field' => $field ) );
+				foreach ( array( '--dry-run', '--apply' ) as $flag ) {
+					$result = self::command( array( $flag ) );
+					self::assertNotSame( 0, $result['status'], 'First-run drift must be rejected: ' . $field . ' ' . $flag );
+					self::assertStringContainsString( 'Unexpected German field', $result['output'] );
+					self::assertNull( self::php( 'return get_option( "linker_i18n_german_urls_backup", null );' ) );
+					self::assertSame( 200, self::get( '/de/warenkorb/' )['status'], 'No earlier field was applied.' );
+				}
+				self::php( 'wp_update_post( array( "ID" => $input["id"], "post_title" => $input["title"] ) ); if ( $input["seo_exists"] ) { update_post_meta( $input["id"], "_seopress_titles_title", $input["seo"] ); } else { delete_post_meta( $input["id"], "_seopress_titles_title" ); } wp_update_term( $input["term"], "product_cat", array( "name" => $input["name"] ) );', $fixture );
+			}
+			// A reviewed new post title with the reviewed old SEO value is resumable.
+			self::php( 'wp_update_post( array( "ID" => $input["id"], "post_title" => "FAQ & Dokumente" ) );', $fixture );
+			self::wp( array( 'linker-i18n', 'german-urls', '--apply' ) );
+			$applied = true;
+			self::assertSame( 0, self::command( array( '--verify' ) )['status'] );
+			preg_match( '#<title>(.*?)</title>#s', self::get( '/de/faq-dokumente/' )['body'], $match );
+			self::assertSame( 'FAQ & Dokumente | Linker', html_entity_decode( $match[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+		} finally {
+			if ( $applied ) {
+				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) );
+			}
+			self::php( 'wp_update_post( array( "ID" => $input["id"], "post_title" => $input["title"] ) ); if ( $input["seo_exists"] ) { update_post_meta( $input["id"], "_seopress_titles_title", $input["seo"] ); } else { delete_post_meta( $input["id"], "_seopress_titles_title" ); } wp_update_term( $input["term"], "product_cat", array( "name" => $input["name"] ) );', $fixture );
+		}
+	}
+
 	/** Real owned inquiries and a native logout nonce survive the translated endpoints. */
 	public function test_owned_inquiry_details_and_native_logout_keep_their_identity(): void {
 		$fixture = self::php( '$id = wp_insert_user( array( "user_login" => "i254-detail-" . wp_generate_uuid4(), "user_pass" => wp_generate_password(), "user_email" => "i254-detail@example.test", "role" => "customer" ) ); if ( is_wp_error( $id ) ) { throw new RuntimeException( $id->get_error_message() ); } update_user_meta( $id, Linker\\Commerce\\Registration\\Approval::STATUS_META, "approved" ); $orders = array(); for ( $n = 0; $n < 2; ++$n ) { $order = new WC_Order(); $order->set_customer_id( $id ); $order->set_status( "inquiry-received" ); $order->update_meta_data( "_linker_locale", "de_DE_formal" ); $orders[] = $order->save(); } $cookie = wp_generate_auth_cookie( $id, time() + 600, "logged_in" ); $_COOKIE[LOGGED_IN_COOKIE] = $cookie; wp_set_current_user( $id ); return array( "id" => $id, "orders" => $orders, "cookie" => LOGGED_IN_COOKIE . "=" . $cookie, "nonce" => wp_create_nonce( "customer-logout" ) );' );
