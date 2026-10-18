@@ -15,7 +15,14 @@
       "entry": "web router.php; object cache initialization"
     }
   ],
-  "finding": "A local Redis availability failure coincides with run10. This is evidence of an infrastructure fault, not proof of the entire stale-read cause.",
+  "finding": "Closed by Claude round 1: local shared Redis DB 0 graceful-mode read failure caused database fallback followed by a stale cache read. Not an account-code bug.",
   "faultSimulation": "Interrupted by reboot before a verdict; synthetic customer and test options restored before retry.",
-  "recovery": "User rebooted the Mac; c222 restarted, interrupted fixture removed, GitHub reachable, origin/main unchanged at 0fddf100."
+  "recovery": "User rebooted the Mac; c222 restarted, interrupted fixture removed, GitHub reachable, origin/main unchanged at 0fddf100.",
+  "liveConfiguration": {
+    "objectCacheDropIn": false,
+    "cacheType": "Default",
+    "liteSpeedCache": "inactive",
+    "accountCacheControl": "private, no-cache",
+    "source": "https://github.com/AssassinFlash/de-linker/pull/310#issuecomment-6245533011"
+  }
 }

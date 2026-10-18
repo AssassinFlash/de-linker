@@ -1,7 +1,7 @@
 {
   "failedRun": 10,
   "symptom": "Approved product price visible, then account still had one pending notice. Approval CLI and SQL were approved.",
-  "rootCause": "undetermined; not fixed",
+  "rootCause": "Closed by Claude round 1: local shared Redis failure in graceful mode; live has no object cache drop-in. No account-code fix required.",
   "minimizedProbes": [
     {
       "run": 2,
