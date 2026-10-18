@@ -81,6 +81,11 @@ final class ConversationRoutesTest extends TestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->mail    = array();
+		$this->created = array(
+			'posts' => array(),
+			'users' => array(),
+		);
 		global $wp_filter;
 		foreach ( array( 'linker_tools_set_conversation_cookie', 'linker_tools_set_genie_browser_cookie' ) as $hook ) {
 			$this->held[ $hook ] = $wp_filter[ $hook ] ?? null;
@@ -362,6 +367,44 @@ final class ConversationRoutesTest extends TestCase {
 		$this->assertSame( 429, $refused->get_status() );
 		$this->assertSame( 'linker_genie_email_capped', $refused->get_data()['code'] );
 		$this->assertSame( array(), $this->mail );
+	}
+
+	/**
+	 * Reopening preserves the exact Markdown/Unicode the first reply showed.
+	 */
+	public function test_reopening_keeps_the_complete_reply_formatting(): void {
+		$id       = $this->answered( 'linker-it-formatting' );
+		$text     = <<<'ANSWER'
+## Auswahl
+
+Prüfen Sie **"Phase"**.
+
+1. Netzanschluss
+2. Batterie
+
+`C:\PV\Datenblatt`
+ANSWER;
+		$messages = array(
+			array( 'role' => 'user', 'content' => 'First question' ), // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- one message per line.
+			array( 'role' => 'assistant', 'content' => $text ), // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- one message per line.
+			array( 'role' => 'user', 'content' => 'What next?' ), // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- one message per line.
+		);
+		$stream   = "event: block\ndata: " . wp_json_encode(
+			array(
+				'type' => 'text',
+				'text' => $text,
+				'refs' => array(),
+			)
+		)
+			. "\n\nevent: done\ndata: {}\n\n";
+		( new Thread() )->record( $id, $messages, $stream );
+		// Exercise the same public route a reloaded workspace or dock reads.
+		$response = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/conversation' ) );
+		$this->assertSame( 200, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertSame( $stream, $data['stream'] );
+		$this->assertSame( $messages, $data['messages'] );
+		$this->assertSame( $text, ( new Thread() )->transcript( $id )[3]['content'] );
 	}
 
 	/**

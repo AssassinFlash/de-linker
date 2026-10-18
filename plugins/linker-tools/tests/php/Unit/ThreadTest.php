@@ -21,6 +21,14 @@ use WP_Mock\Tools\TestCase;
 final class ThreadTest extends TestCase {
 
 	/**
+	 * Storage escaping is exercised against real WordPress in the route fixture.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'wp_slash', array( 'return_arg' => 0 ) );
+	}
+
+	/**
 	 * Reading a conversation that does not exist answers empty, without a write.
 	 */
 	public function test_read_without_a_conversation_is_empty(): void {
