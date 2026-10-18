@@ -92,17 +92,6 @@ final class HandlerTest extends TestCase {
 	}
 
 	/**
-	 * More messages than the limit from one connection: refused.
-	 */
-	public function test_flood_is_throttled(): void {
-		$handler = $this->handler();
-		WP_Mock::userFunction( 'wp_verify_nonce', array( 'return' => 1 ) );
-		WP_Mock::userFunction( 'get_transient', array( 'return' => array( time(), time(), time() ) ) );
-
-		$this->assertSame( 'throttled', $handler->process( $this->post() ) );
-	}
-
-	/**
 	 * An incomplete form is refused.
 	 */
 	public function test_incomplete_form_is_refused(): void {

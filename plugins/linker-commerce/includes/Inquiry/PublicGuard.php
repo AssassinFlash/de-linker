@@ -21,7 +21,7 @@ final class PublicGuard {
 	public const MIN_SECONDS = 3;
 
 	/**
-	 * PR #290 round 1 retains contact's three accepted messages per connection
+	 * PR #290 round 1 retains contact's three send attempts per connection
 	 * per hour, shared by both doors to protect the host's 100-mail daily quota.
 	 */
 	public const LIMIT = 3;
@@ -51,46 +51,23 @@ final class PublicGuard {
 		$trap  = $post['website'] ?? '';
 		return is_string( $stamp ) && ctype_digit( $stamp ) && is_string( $nonce ) && '' === $trap
 		&& time() - (int) $stamp >= self::MIN_SECONDS
-		&& false !== wp_verify_nonce( $nonce, 'linker_inquiry_started_' . $stamp ) && ! $this->is_limited();
+		&& false !== wp_verify_nonce( $nonce, 'linker_inquiry_started_' . $stamp );
 	}
 	/**
-	 * Whether this connection has reached the shared submission limit.
+	 * Atomically reserves one submission before either door writes an inquiry.
+	 * Hourly fixed windows use #235's conditional UPDATE technique, kept inside
+	 * commerce so the public forms have no dependency on linker-tools.
 	 */
-	public function is_limited(): bool {
-		return \count( $this->recent() ) >= self::LIMIT;
+	public function take(): bool {
+		return ( new RateLimit( 'public_connection', self::LIMIT, self::WINDOW ) )->take( $this->connection() );
 	}
 
 	/**
-	 * Records an accepted submission.
-	 */
-	public function record(): void {
-		$recent   = $this->recent();
-		$recent[] = time();
-		set_transient( $this->key(), $recent, self::WINDOW );
-	}
-
-	/**
-	 * The times of this connection's messages within the window.
-	 *
-	 * @return list<int>
-	 */
-	private function recent(): array {
-		$stored = get_transient( $this->key() );
-		$times  = array();
-		foreach ( \is_array( $stored ) ? $stored : array() as $time ) {
-			if ( \is_int( $time ) && $time > time() - self::WINDOW ) {
-				$times[] = $time;
-			}
-		}
-		return $times;
-	}
-
-	/**
-	 * The transient of this connection. The address is the one the connection
+	 * The direct connection address. The address is the one the connection
 	 * came from — never a forwarded header, which a sender could set freely.
 	 */
-	private function key(): string {
+	private function connection(): string {
 		$address = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) ) : '';
-		return 'linker_contact_' . md5( $address );
+		return $address;
 	}
 }

@@ -269,6 +269,7 @@ final class Form {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
 		$state = isset( $_GET[ self::STATE_PARAM ] ) ? sanitize_key( (string) wp_unslash( $_GET[ self::STATE_PARAM ] ) ) : '';
 		return match ( $state ) {
+			'sent_no_receipt' => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team. We have not sent a confirmation email. We reply within one business day.', 'linker-commerce' ) ),
 			'sent'      => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
 			'invalid'   => $this->notice( 'invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
 			'throttled' => $this->notice( 'invalid', __( 'We received several messages from this connection. Please try again later or write to sales@de-linker.com.', 'linker-commerce' ) ),

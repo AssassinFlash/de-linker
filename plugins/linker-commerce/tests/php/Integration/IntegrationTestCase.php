@@ -82,15 +82,19 @@ abstract class IntegrationTestCase extends TestCase {
 		$exists                 = array_key_exists( 'REMOTE_ADDR', $_SERVER );
 		$address                = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact runner value for restoration.
 		$_SERVER['REMOTE_ADDR'] = '127.0.0.246';
-		$key                    = 'linker_contact_' . md5( '127.0.0.246' );
-		$previous               = get_transient( $key );
-		delete_transient( $key );
+		global $wpdb;
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- preserve the atomic counters without an object cache between SQL and the test.
+		$pattern = $wpdb->esc_like( 'linker_commerce_limit_' ) . '%';
+		$rows    = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $pattern ), ARRAY_A );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $pattern ) );
 		$this->later(
-			static function () use ( $exists, $address, $key, $previous ): void {
-				delete_transient( $key );
-				if ( false !== $previous ) {
-					set_transient( $key, $previous, HOUR_IN_SECONDS );
+			static function () use ( $exists, $address, $pattern, $rows ): void {
+				global $wpdb;
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $pattern ) );
+				foreach ( $rows as $row ) {
+					$wpdb->insert( $wpdb->options, array_merge( $row, array( 'autoload' => 'off' ) ) );
 				}
+				// phpcs:enable
 				if ( $exists ) {
 					$_SERVER['REMOTE_ADDR'] = $address;
 				} else {

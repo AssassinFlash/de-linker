@@ -1,0 +1,16 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+E                                                                   1 / 1 (100%)
+
+Time: 00:00.019, Memory: 20.00 MB
+
+There was 1 error:
+
+1) Linker\Commerce\Tests\Unit\Contact\SubmissionTest::test_handoff_accepts_an_optional_name_but_still_validates_email_and_consent
+Error: Call to undefined method Linker\Commerce\Contact\Submission::from_handoff()
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Unit/Contact/SubmissionTest.php:148
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/10up/wp_mock/php/WP_Mock/Tools/TestCase.php:123
+
+ERRORS!
+Tests: 1, Assertions: 0, Errors: 1.

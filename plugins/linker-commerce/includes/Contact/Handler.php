@@ -11,6 +11,7 @@ namespace Linker\Commerce\Contact;
 
 use Linker\Commerce\Inquiry\PublicGuard;
 use Linker\Commerce\Inquiry\Sender;
+use Linker\Commerce\Inquiry\ReceiptLimit;
 use WP_Error;
 
 /**
@@ -55,7 +56,7 @@ final class Handler {
 	 * visitor returns to, and the sending a delivered message causes.
 	 *
 	 * @param  array<string, mixed> $post The posted values, unslashed.
-	 * @return string `sent`, `invalid` or `throttled`.
+	 * @return string `sent`, `sent_no_receipt`, `invalid` or `throttled`.
 	 */
 	public function process( array $post ): string {
 		$nonce = isset( $post[ Form::NONCE_FIELD ] ) ? sanitize_text_field( (string) $post[ Form::NONCE_FIELD ] ) : '';
@@ -63,18 +64,17 @@ final class Handler {
 			return 'invalid';
 		}
 
-		if ( ( new PublicGuard() )->is_limited() ) {
-			return 'throttled';
-		}
-
 		$submission = Submission::from_post( $post );
 		if ( $submission instanceof WP_Error || ! ( new PublicGuard() )->allows( $post ) ) {
 			return 'invalid';
 		}
 
-		( new Sender() )->message( $submission );
-		( new PublicGuard() )->record();
-		return 'sent';
+		if ( ! ( new PublicGuard() )->take() ) {
+			return 'throttled';
+		}
+
+		$order = ( new Sender() )->message( $submission );
+		return 'daily_cap' === $order->get_meta( ReceiptLimit::SKIPPED_META ) ? 'sent_no_receipt' : 'sent';
 	}
 
 	/**
@@ -99,7 +99,7 @@ final class Handler {
 	 * Returns to the page with the state and leaves the request.
 	 *
 	 * @param string $back  The page.
-	 * @param string $state `sent`, `invalid` or `throttled`.
+	 * @param string $state `sent`, `sent_no_receipt`, `invalid` or `throttled`.
 	 */
 	private function back( string $back, string $state ): void {
 		wp_safe_redirect( add_query_arg( Form::STATE_PARAM, $state, $back ) . '#' . Form::ANCHOR );

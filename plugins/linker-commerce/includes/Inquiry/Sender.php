@@ -88,7 +88,7 @@ final class Sender {
 	}
 
 	/**
-	 * One stored record and one status-driven pair of emails for both doors.
+	 * One stored record and status-driven mail; the receipt alone has a daily cap.
 	 *
 	 * @param WC_Order   $order Native inquiry.
 	 * @param Submission $details Validated reply details.
@@ -100,6 +100,7 @@ final class Sender {
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
 		$order->update_meta_data( '_linker_inquiry_topic', $details->intent );
+		$order->update_meta_data( ReceiptLimit::SKIPPED_META, ( new ReceiptLimit() )->take() ? '' : 'daily_cap' );
 		$order->save();
 		// Woo loads transactional email listeners lazily. Load before the transition.
 		WC()->mailer();

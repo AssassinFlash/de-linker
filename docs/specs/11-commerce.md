@@ -58,16 +58,18 @@
 
 sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`）对 From 域 `de-linker.com` 的判断，不能归因于已经通过的 SPF。2026-09-30 的对照邮件 From 为 `sunriverinverter.com`，进入收件箱。内部通知由 #286 使用 sunriver 发件身份解决；客户可见 From 按 AGENTS.md 2026-10-17 裁定继续为 `sales@de-linker.com`，客户邮件已记录为 QQ 收件箱。以上改前/改后证据完成本票的生产取证要求，无需部署信封代码或再次实投。
 
-内部身份统一由唯一公开读取方法 `Options::notify_sender()` 返回只读 `Mail\Identity`（`name`、`email`），供 `Mail\TeamEmail`、`Contact\Emails\TeamMessageEmail` 与 `Health\Monitor` 使用。Woo 原生发件人设置继续控制客户 From；Outbox 保留捕获时的 From 和收件路由，投递与重试沿用现有路径。`NotificationRoutingTest` 按通知类型分别断言队列 To/Bcc、From 和各邮件 ID 的 Reply-To；健康告警单独测试。
+内部身份统一由唯一公开读取方法 `Options::notify_sender()` 返回只读 `Mail\Identity`（`name`、`email`），供 `Mail\TeamEmail` 与 `Health\Monitor` 使用（联系留言自 #246 起同样使用询盘团队邮件）。Woo 原生发件人设置继续控制客户 From；Outbox 保留捕获时的 From 和收件路由，投递与重试沿用现有路径。`NotificationRoutingTest` 按通知类型分别断言队列 To/Bcc、From 和各邮件 ID 的 Reply-To；健康告警单独测试。
 
 ## 共用询盘入口（#246，供 #244 / #250）
 
-`Inquiry\Sender::request(Contact\Submission $details, array $billing = array()): WC_Order|WP_Error` 是带当前草稿“发一份询盘”的业务入口；联系页使用命名入口 `Sender::message($details)`，二者共用同一保存、状态迁移与通知核心。`Submission::from_post($fields, false)` 校验姓名、邮箱、同意与字段长度，留言可空；`lang` 经 Polylang 的语言模型解析，未提供时才读当前请求语言。公开调用方必须在调用前验证 nonce 与 `Inquiry\PublicGuard`（签名开始时间 + 空蜜罐；最短 3 秒是本票的初始防自动提交阈值，非行业常量；每连接每小时 3 次成功提交沿用联系表单规则，PR #290 round 1 决定共用同一计数，拒绝时不写询盘与 Outbox）。只有客户实际点击发送的请求才调用该入口。Sender 不接收客户端的 customer_id、产品、价格或合计。
+`Inquiry\Sender::request(Contact\Submission $details, array $billing = array()): WC_Order|WP_Error` 是带当前草稿“发一份询盘”的业务入口；联系页使用命名入口 `Sender::message($details)`，二者共用同一保存、状态迁移与通知核心。`Submission::from_post($fields, false)` 校验姓名、邮箱、同意与字段长度，留言可空；`lang` 经 Polylang 的语言模型解析，未提供时才读当前请求语言。公开调用方必须在调用前验证 nonce 与 `Inquiry\PublicGuard`（签名开始时间 + 空蜜罐；最短 3 秒是本票的初始防自动提交阈值，非行业常量；每连接每小时 3 次发送尝试沿用联系表单额度，PR #290 round 2 改为固定小时窗口的原子预留，单条条件 UPDATE 同时检查并递增；在字段和 bot 校验后、Sender 写入前占用，拒绝时不写询盘与 Outbox）。只有客户实际点击发送的请求才调用该入口。Sender 不接收客户端的 customer_id、产品、价格或合计。
 
 - 请求页：`admin_post[_nopriv]_linker_inquiry` → `Inquiry\Handler::process()` → Submission → Sender。表单语言也决定验证错误与失败回跳语言；失败将四个输入值作为一次性 flash 供下次渲染回填，读取即清除，草稿不变。`Handler::process()` 是可重复夹具测试的公开请求边界；`handle()` 负责 transport 与 redirect。
 - 产品来自当前 Woo 会话：校验原生草稿有效性与库存，`WC_Checkout::create_order()` 装配产品、数量、价格原因与账号已有地址/VAT；“修改”展开 Woo 原生账单字段，地址/VAT 均选填，访客不渲染或接受这些字段。成功才清空草稿。右栏更新数量与移除行使用 Woo 的 `update_cart` + `woocommerce-cart` nonce，不另造草稿存储。
 - 联系页：可见字段与外观不变，仍走原 contact admin-post、共用每连接限流；通过相同 bot guard 后调用 `Sender::message($details)`。创建没有产品的 Woo 询盘，保留客户原草稿。主题选择写入 `_linker_inquiry_topic`，在团队信与后台来源列可见。
 - 两个门的来源为 `_linker_inquiry_source=proforma|contact`，在 Woo 原生询盘列表显示，状态均为 `inquiry-received`。同一条状态迁移触发既有 `InquiryReceivedEmail` 与 `NewInquiryEmail`；团队信继承 `Mail\TeamEmail` 并调用 `notify()`，收件人仍由下节 #221 的设置读取。多收件路由只以 Outbox 数据断言，无实发测试。
+- 客户回执：`ReceiptLimit::DAILY_CAP=10`，来源为 PR #290 第 2 轮要求的小比例分配，取 AGENTS.md §4 / `mail-root-cause.md` §3、§9 所记 Hostinger 100 封/滚动 24 小时的十分之一，与 #235 相同。计数使用 commerce 自己的 `RateLimit`（复用 #235 单条条件 UPDATE 技术，无跨插件依赖），固定 UTC 日窗口；不宣称它测量主机的滚动用量。`Sender::receive()` 在通知前原子预留；用尽只存 `_linker_receipt_skipped=daily_cap`，`InquiryReceivedEmail` 跳过客户回执，记录与团队邮件照常。请求感谢页和联系成功状态明确说未发确认邮件，保留一个工作日内回复承诺。此额度与每连接限流无关，旋转连接也共用。
+- #243 交接接口：`Submission::from_handoff($fields)` 接受可空姓名，邮箱、留言、同意仍校验；交给现有 `Sender::message($submission)`，同一回执额度也适用。联系/请求 HTML 表单仍要求姓名。本票不实现 Genie 的确认 UI、对话附加信息或 transport。
 - #244 的摘要与预填应接这一个入口的经验证数据，不另造记录；#250 在确认卡实际发送时调用同一入口，须保留该调用方的 nonce、bot guard 与客户确认。当前入口只接受当前会话草稿，传入的产品/价格字段不会参与创建。
 - 可选注册：`Inquiry\AccountLink` 以 Woo 订单 key 校验持有者，只允许客单且注册邮箱与该单邮箱一致；不以邮箱匹配开放其他询盘，也不自动建账号。价格仍须批准。
 

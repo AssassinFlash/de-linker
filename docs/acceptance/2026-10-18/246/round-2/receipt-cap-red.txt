@@ -1,0 +1,26 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+FF                                                                  2 / 2 (100%)
+
+Time: 00:04.116, Memory: 136.00 MB
+
+There were 2 failures:
+
+1) Linker\Commerce\Tests\Integration\PublicSubmissionTest::test_receipt_cap_keeps_the_inquiry_and_team_mail_and_discloses_the_omitted_receipt with data set "request" ('request')
+Only the team notification is queued after the receipt cap.
+Failed asserting that actual size 2 matches expected size 1.
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/PublicSubmissionTest.php:142
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+2) Linker\Commerce\Tests\Integration\PublicSubmissionTest::test_receipt_cap_keeps_the_inquiry_and_team_mail_and_discloses_the_omitted_receipt with data set "contact" ('contact')
+Only the team notification is queued after the receipt cap.
+Failed asserting that actual size 2 matches expected size 1.
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/PublicSubmissionTest.php:142
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 2, Assertions: 30, Failures: 2.

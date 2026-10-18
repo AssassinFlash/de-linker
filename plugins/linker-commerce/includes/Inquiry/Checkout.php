@@ -99,7 +99,9 @@ final class Checkout {
 				'{{promise}}' => esc_html__( 'We reply within one business day.', 'linker-commerce' ),
 				'{{url}}'     => esc_url( $guest ? AccountLink::url( $order ) : wc_get_account_endpoint_url( 'orders' ) ),
 				'{{action}}'  => $guest ? esc_html__( 'Create an account with this email', 'linker-commerce' ) : esc_html__( 'View inquiries', 'linker-commerce' ),
-				'{{reply}}'   => esc_html__( 'The Linker team will reply to the email address you provided.', 'linker-commerce' ),
+				'{{reply}}'   => $order instanceof WC_Order && 'daily_cap' === $order->get_meta( ReceiptLimit::SKIPPED_META )
+					? esc_html__( 'We have not sent a confirmation email. The Linker team will reply to the email address you provided.', 'linker-commerce' )
+					: esc_html__( 'The Linker team will reply to the email address you provided.', 'linker-commerce' ),
 			)
 		);
 		echo wp_kses_post( $html );

@@ -186,21 +186,36 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 	public function test_contact_notification_routing( string $saved_from, string $from ): void {
 		update_option( Options::NOTIFY_FROM, $saved_from );
 		$this->as_user( 0 );
-		$stamp = (string) ( time() - 5 );
+		$stamp         = (string) ( time() - 5 );
 		$contact_email = 'linker-it-' . self::tag() . '@example.test';
-		$marker = self::newest_mail_job();
-		$this->assertSame( 'sent', ( new Handler() )->process( array(
-			'name' => 'Maria Beispiel',
-			'email' => $contact_email,
-			'message' => 'A question about a storage system.',
-			'consent' => '1',
-			Form::NONCE_FIELD => wp_create_nonce( Form::NONCE_ACTION ),
-			'linker_started' => $stamp,
-			'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
-		) ) );
-		$contacts = wc_get_orders( array( 'billing_email' => $contact_email, 'limit' => -1 ) );
+		$marker        = self::newest_mail_job();
+		$this->assertSame(
+			'sent',
+			( new Handler() )->process(
+				array(
+					'name'                 => 'Maria Beispiel',
+					'email'                => $contact_email,
+					'message'              => 'A question about a storage system.',
+					'consent'              => '1',
+					Form::NONCE_FIELD      => wp_create_nonce( Form::NONCE_ACTION ),
+					'linker_started'       => $stamp,
+					'linker_started_nonce' => wp_create_nonce( 'linker_inquiry_started_' . $stamp ),
+				)
+			)
+		);
+		$contacts = wc_get_orders(
+			array(
+				'billing_email' => $contact_email,
+				'limit'         => -1,
+			)
+		);
+		$this->assertIsArray( $contacts );
 		foreach ( $contacts as $contact ) {
-			$this->later( static function () use ( $contact ): void { $contact->delete( true ); } );
+			$this->later(
+				static function () use ( $contact ): void {
+					$contact->delete( true );
+				}
+			);
 		}
 		$this->assertCount( 1, $contacts );
 		$emails = WC()->mailer()->get_emails();
