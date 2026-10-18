@@ -80,7 +80,7 @@ final class AdminAccessNotice {
 	}
 
 	/**
-	 * Takes precedence over the pending-review card only on this explanation.
+	 * Applies only on this explanation page; the account page keeps its own status notice.
 	 *
 	 * @param string $path Located template.
 	 * @param string $name Woo template name.

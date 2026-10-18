@@ -8,7 +8,7 @@
 3. **审批**：后台首页原生仪表盘小工具展示待审卡片，顶栏红旗在任意后台页打开同一审核抽屉；Accounts 菜单通向原生列表历史。全部状态随时可再决定，Restrict / Reject 必须带客户可读原因，经既有邮件链告知；相同决定重复提交不重复发信，限制/拒绝的原因变更也通知。资料页与用户列表保留状态及深链，原 GET / 资料表单写入通道在对等验证后移除。权限为 `edit_users` 加每用户 `edit_user`，只审核纯 customer。详情与原生优先证明见 `accounts-admin.md`。
 4. **四态 × 界面**：
    - **approved**：看价；Lösungsentwurf 合并会话内容；产品页按钮 "Add to solution draft / Zum Lösungsentwurf hinzufügen"；可提交询盘。
-   - **pending**：与访客同视图——浏览无价产品、Genie 咨询（无价）、可在请求页或联系页发送询盘；不可看价（价格位 "Prices after approval / Preise nach Freigabe"）、不可进账户工作台（`PendingGate` 把账户端点送回审核页）；可以提交询盘，账户审核页的访问规则由账号票维护。
+   - **pending**：保持登录，可进账户工作台；账户页在原生账户内容顶部显示审核状态卡（`AccountStatusNotice`，不再是整页门禁）；浏览无价产品、Genie 咨询（无价）、可在请求页或联系页发送询盘；不可看价（价格位 "Account under review. Prices after approval. / Ihr Konto wird geprüft. Preise nach Freigabe."）；可以提交询盘（#222，2026-10-17 裁定）。
    - **restricted**：保留工作台（询盘、资料、文件仍可读）；不可看价（价格位 "Not available for your account / Für Ihr Konto nicht verfügbar"）；可以提交询盘，账户中仍显示限制原因。
    - **rejected**：登录被挡（`wp_authenticate_user`，登录表单显示状态与原因去向；拒绝同时终结该账号的全部登录会话）。
 5. **询盘提交**（#246，业主 2026-10-17）：原 checkout 地址 `/proforma-request/`、`/de/proforma-anfrage/` 不变。访客填写姓名、邮箱、公司（选填）、一个开放留言框（选填）与隐私同意，不问国家、地址、VAT 或电话，不自动注册。左边表单、右边可编辑的 Lösungsentwurf；已登录客户的回复资料折叠为一行，可展开更改本次询盘资料，留言与发送按钮直接可用。产品随询盘带上；空草稿可以只留言，但产品和留言均空时拒绝。访客、pending、restricted、approved 共用发送入口，价格门保持现状。提交后原生 Woo 感谢页与回执保留，状态 `wc-inquiry-received`，库存不扣减。回执与感谢页给访客一个可选注册链接（本次邮箱预填；须带正确订单 key 才能将该询盘附到新账号）。地址和 VAT 从账号已有数据带入，或由团队开 Proforma 时补。

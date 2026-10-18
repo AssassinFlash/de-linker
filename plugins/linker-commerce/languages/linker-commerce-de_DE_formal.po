@@ -4717,3 +4717,11 @@ msgstr "Verwendungszweck"
 #~ msgstr ""
 #~ "Es wurde keine Bestätigungs-E-Mail versendet. Das Linker-Team antwortet "
 #~ "an die angegebene E-Mail-Adresse."
+
+#: includes/Gating/DraftSummary.php
+msgid "You can send this solution draft. Your account is under review; net prices appear after approval."
+msgstr "Sie können diesen Lösungsentwurf senden. Ihr Konto wird geprüft; Nettopreise erscheinen nach der Freigabe."
+
+#: includes/Gating/DraftSummary.php
+msgid "You can send this solution draft. Net prices are not available for your account."
+msgstr "Sie können diesen Lösungsentwurf senden. Nettopreise sind für Ihr Konto nicht verfügbar."

@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Gating;
 
 use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Gating\DraftSummary;
 use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Tests\TestCase;
@@ -63,6 +64,37 @@ final class DraftSummaryTest extends TestCase {
 
 		$this->assertStringContainsString( 'href="https://example.test/proforma-request/">Send inquiry</a>', $html );
 		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">No account yet? Register</a>', $html );
+	}
+
+
+	/**
+	 * A signed-in account that sees no prices reads its own state, never the
+	 * guest box: "No account yet? Register" would send it to a page that
+	 * bounces it back (review round 2 of #222).
+	 */
+	public function test_pending_and_restricted_accounts_read_their_state(): void {
+		foreach (
+			array(
+				Approval::PENDING    => 'Your account is under review; net prices appear after approval.',
+				Approval::RESTRICTED => 'Net prices are not available for your account.',
+				Approval::REJECTED   => 'Net prices are not available for your account.',
+			) as $status => $sentence
+		) {
+			WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
+			WP_Mock::userFunction( 'remove_action', array( 'times' => 1, 'args' => array( 'woocommerce_cart_collaterals', 'woocommerce_cart_totals', 10 ) ) );
+			WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'https://example.test/proforma-request/' ) );
+			$this->approval_meta( array( Approval::STATUS_META => $status ) );
+			$state = new CommerceState( new Approval() );
+
+			ob_start();
+			( new DraftSummary( $state, new PriceDisplay( $state ) ) )->guest_totals();
+			$html = (string) ob_get_clean();
+
+			$this->assertStringContainsString( $sentence, $html, $status );
+			$this->assertStringContainsString( 'Send inquiry', $html, $status );
+			$this->assertStringNotContainsString( 'No account yet? Register', $html, $status );
+		}
 	}
 
 	/**

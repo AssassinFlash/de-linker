@@ -32,23 +32,36 @@ final class DraftSummary {
 	) {}
 
 	/**
-	 * Replaces the totals box of the solution draft with the login box for guests.
+	 * Replaces the totals box of the solution draft when the visitor sees no
+	 * prices. A guest reads the guest box; a signed-in account under review or
+	 * restricted reads its own state and never "No account yet? Register" —
+	 * it already has an account, and the register page would bounce it back.
 	 * Runs on woocommerce_cart_collaterals before WooCommerce prints the totals.
-	 * "Register" opens the account's own register page (AuthTemplates).
 	 */
 	public function guest_totals(): void {
 		if ( $this->state->visitor_sees_prices() ) {
 			return;
 		}
 		remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cart_totals', 10 );
-		printf(
-			'<div class="cart_totals linker-login-box"><p>%1$s</p><p><a class="button alt wc-forward" href="%2$s">%3$s</a></p><p><a href="%4$s">%5$s</a></p></div>',
-			esc_html__( 'You can send this solution draft without an account. Net prices are available after account approval.', 'linker-commerce' ),
+		$reason = $this->state->visitor_reason();
+		$links  = sprintf(
+			'<p><a class="button alt wc-forward" href="%s">%s</a></p>',
 			esc_url( wc_get_checkout_url() ),
-			esc_html__( 'Send inquiry', 'linker-commerce' ),
-			esc_url( AuthTemplates::register_url() ),
-			esc_html__( 'No account yet? Register', 'linker-commerce' )
+			esc_html__( 'Send inquiry', 'linker-commerce' )
 		);
+		if ( CommerceState::LOGIN === $reason ) {
+			$text   = esc_html__( 'You can send this solution draft without an account. Net prices are available after account approval.', 'linker-commerce' );
+			$links .= sprintf(
+				'<p><a href="%s">%s</a></p>',
+				esc_url( AuthTemplates::register_url() ),
+				esc_html__( 'No account yet? Register', 'linker-commerce' )
+			);
+		} elseif ( CommerceState::APPROVAL === $reason ) {
+			$text = esc_html__( 'You can send this solution draft. Your account is under review; net prices appear after approval.', 'linker-commerce' );
+		} else {
+			$text = esc_html__( 'You can send this solution draft. Net prices are not available for your account.', 'linker-commerce' );
+		}
+		printf( '<div class="cart_totals linker-login-box"><p>%s</p>%s</div>', $text, $links ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both parts escaped above.
 	}
 
 	/**
