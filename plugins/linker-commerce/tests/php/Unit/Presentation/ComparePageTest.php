@@ -100,6 +100,7 @@ final class ComparePageTest extends TestCase {
 			)
 		);
 		$this->plain_text();
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn ( string $value ): string => rtrim( $value, '/' ) . '/' ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( $value ) => $value ) );
 		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn ( $value ) => $value ) );

@@ -85,6 +85,23 @@ final class AccountLinksTest extends TestCase {
 		$this->assertStringContainsString( 'href="https://example.test/de/mein-konto/register/"', $html );
 	}
 
+	/** The narrow price cell offers both actions without repeating its row label. */
+	public function test_comparison_has_concise_links_and_retains_the_price_explanation(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction( 'wp_kses_post', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return_arg' => 0 ) );
+
+		$html = AccountLinks::comparison_price( 'Net price after partner sign-in' );
+
+		$this->assertStringContainsString( '>Sign in</a>', $html );
+		$this->assertStringContainsString( '>Create account</a>', $html );
+		$this->assertStringContainsString( 'Net price after partner sign-in', $html );
+	}
+
 	/** Registration is not offered to signed-in visitors or when Woo disables it. */
 	public function test_registration_respects_the_visitor_and_woo_setting(): void {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );

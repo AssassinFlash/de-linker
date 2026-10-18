@@ -1,18 +1,22 @@
-<section class="sf-compare">
-	<div id="container-content-compare" class="sf-container">
-		<nav aria-label="breadcrumb" class="sf-compare-crumbs">
-			<ol>
-				<li><a href="[lc_home_url]">Startseite</a></li>
-				<li aria-current="page"><span aria-hidden="true">/</span> [lc_the_title]</li>
+<section class="py-12">
+	<div id="container-content-compare" class="mx-auto max-w-[1160px] px-4">
+		<nav aria-label="breadcrumb" class="lc-block mb-6">
+			<ol class="flex flex-wrap gap-2 text-sm">
+				<li><a class="text-[#15352f] no-underline" href="[lc_home_url]">Startseite</a></li>
+				<li aria-current="page">[lc_the_title]</li>
 			</ol>
 		</nav>
-		<header class="sf-compare-head">
-			<div>
-				<h1>[lc_the_title]</h1>
-				<p class="sf-compare-note">Setzen Sie beim Durchsuchen der Produkte Häkchen bei bis zu vier Produkten und öffnen Sie diese Seite, um Kennzahlen und technische Daten nebeneinander zu sehen. Ihre Auswahl bleibt in diesem Browser-Tab.</p>
-			</div>
-			<a class="sf-compare-btn sf-compare-btn--ghost" href="[lc_wc_get_page_url]">Weiter einkaufen</a>
-		</header>
-		<div class="lc-block">[linker_compare_table]</div>
+		<div class="lc-block">
+			<h1 class="max-w-4xl text-4xl font-bold tracking-tight text-[#15352f]">[lc_the_title]</h1>
+		</div>
+		<div class="lc-block mt-4 max-w-3xl leading-relaxed text-neutral-600">
+			<p>Setzen Sie beim Durchsuchen der Produkte Häkchen bei bis zu vier Produkten und öffnen Sie diese Seite, um Kennzahlen und technische Daten nebeneinander zu sehen. Ihre Auswahl bleibt in diesem Browser-Tab.</p>
+		</div>
+		<div class="lc-block mt-8">
+			[linker_compare_table]
+		</div>
+		<div class="lc-block mt-10">
+			<a class="inline-flex min-h-11 items-center rounded-lg border border-(--proto-accent) px-4 font-bold text-(--proto-accent)" href="[lc_wc_get_page_url]">Weiter einkaufen</a>
+		</div>
 	</div>
 </section>

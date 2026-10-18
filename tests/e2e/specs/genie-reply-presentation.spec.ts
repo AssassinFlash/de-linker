@@ -161,13 +161,27 @@ for (const locale of ['en', 'de'] as const) {
 					.toBeGreaterThan(48);
 				await transcript.focus();
 				await transcript.press('Home');
-				await expect(
-					page.getByRole('button', {
-						name: german
-							? 'Zur neuesten Nachricht'
-							: 'Jump to latest',
-					})
-				).toBeVisible();
+				const jump = page.getByRole('button', {
+					name: german ? 'Zur neuesten Nachricht' : 'Jump to latest',
+				});
+				await expect(jump).toBeVisible();
+				// #223 review: controls occupy their own space, never answer text.
+				const readingBox = await transcript.boundingBox();
+				const jumpBox = await jump.boundingBox();
+				const composerBox = await page
+					.locator('.linker-genie-app__composer')
+					.boundingBox();
+				expect(jumpBox!.y).toBeGreaterThanOrEqual(
+					readingBox!.y + readingBox!.height
+				);
+				expect(jumpBox!.y + jumpBox!.height).toBeLessThanOrEqual(
+					composerBox!.y
+				);
+				await expect(transcript).toHaveCSS('outline-style', 'solid');
+				// End keyboard navigation before checking a pointer user's focus.
+				await composer.click();
+				await transcript.click({ position: { x: 8, y: 8 } });
+				await expect(transcript).toHaveCSS('outline-style', 'none');
 				await page.screenshot({
 					path: join(evidence, `${name}-answer.png`),
 				});
@@ -186,6 +200,17 @@ for (const locale of ['en', 'de'] as const) {
 						)
 					)
 					.toBeLessThan(2);
+				const finalLine = page
+					.locator('.linker-genie-message-body p')
+					.last();
+				await expect(finalLine).toBeInViewport({ ratio: 1 });
+				const finalBox = await finalLine.boundingBox();
+				expect(finalBox!.y + finalBox!.height).toBeLessThanOrEqual(
+					readingBox!.y + readingBox!.height
+				);
+				await page.screenshot({
+					path: join(evidence, `${name}-latest.png`),
+				});
 				await expect(
 					page.locator('.linker-genie-app__composer')
 				).toBeInViewport();

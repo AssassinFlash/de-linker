@@ -66,9 +66,10 @@ final class AccountLinks {
 		return strtr(
 			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/compare-price.html' ),
 			array(
-				'{{price}}'      => wp_kses_post( $price ),
-				'{{signin-url}}' => esc_url( wc_get_page_permalink( 'myaccount' ) ),
-				'{{create}}'     => $create,
+				'{{price-label}}' => esc_attr( wp_strip_all_tags( $price ) ),
+				'{{signin}}'      => esc_html__( 'Sign in', 'linker-commerce' ),
+				'{{signin-url}}'  => esc_url( wc_get_page_permalink( 'myaccount' ) ),
+				'{{create}}'      => $create,
 			)
 		);
 	}

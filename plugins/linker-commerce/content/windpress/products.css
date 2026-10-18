@@ -8,9 +8,8 @@
  * band. Header chrome stays in chrome.css. Selectors are unchanged.
  */
 
-body:is(:has(#linker-products),:has(.sf-compare)) { background: var(--shop-paper); }
-body #linker-products.sf-products,
-body .sf-compare {
+body:has(#linker-products) { background: var(--shop-paper); }
+body #linker-products.sf-products {
   --dlk-radius: 12px;
   --sf-fg: var(--shop-ink);
   --sf-muted: var(--shop-muted);
@@ -23,10 +22,10 @@ body .sf-compare {
   font: 14px/1.55 var(--shop-sans);
   padding: 34px 0 100px;
 }
-body #linker-products.sf-products .container, body .sf-compare .sf-container {
+body #linker-products.sf-products .container {
   width: min(1240px, calc(100% - 64px));
 }
-body #linker-products.sf-products .wb-metarow, body .sf-compare .sf-compare-crumbs {
+body #linker-products.sf-products .wb-metarow {
   color: var(--shop-teal);
   font-size: 10px;
   font-weight: 700;
@@ -41,12 +40,12 @@ body #linker-products.sf-products .wb-bar {
   margin-bottom: 26px;
 }
 body #linker-products.sf-products .wb-copy { grid-column: 1 / -1; }
-body #linker-products.sf-products .wb-title, body .sf-compare .sf-compare-head h1 {
+body #linker-products.sf-products .wb-title {
   color: var(--shop-ink);
   font: 600 clamp(32px, 3.4vw, 46px)/1.15 var(--shop-sans);
   letter-spacing: -.025em;
 }
-body #linker-products.sf-products .wb-intro, body .sf-compare .sf-compare-note {
+body #linker-products.sf-products .wb-intro {
   margin-top: 14px;
   font-size: 14px;
   max-width: 640px;
@@ -194,12 +193,12 @@ body #linker-products.sf-products [data-card-gate] { background: #f5f6f8; border
  */
 
   body:has(#linker-products) .lia-launch { display: none; }
-  body #linker-products.sf-products, body .sf-compare { padding-top: 22px; }
-  body #linker-products.sf-products .container, body .sf-compare .sf-container { width: calc(100% - 32px); }
-  body #linker-products.sf-products .wb-metarow, body .sf-compare .sf-compare-crumbs { margin-bottom: 20px; font-size: 9px; }
+  body #linker-products.sf-products { padding-top: 22px; }
+  body #linker-products.sf-products .container { width: calc(100% - 32px); }
+  body #linker-products.sf-products .wb-metarow { margin-bottom: 20px; font-size: 9px; }
   body #linker-products.sf-products .wb-bar { grid-template-columns: 1fr; gap: 22px; margin-bottom: 18px; }
-  body #linker-products.sf-products .wb-title, body .sf-compare .sf-compare-head h1 { font-size: 36px; }
-  body #linker-products.sf-products .wb-intro, body .sf-compare .sf-compare-note { font-size: 12px; margin-top: 12px; }
+  body #linker-products.sf-products .wb-title { font-size: 36px; }
+  body #linker-products.sf-products .wb-intro { font-size: 12px; margin-top: 12px; }
   body #linker-products.sf-products .wb-acts { display: none; }
   body #linker-products.sf-products #search-box { font-size: 12px; padding-left: 40px; }
   body #linker-products.sf-products .wb-go { padding-inline: 17px; font-size: 12px; }
@@ -224,10 +223,10 @@ body #linker-products.sf-products [data-card-gate] { background: #f5f6f8; border
 }
 
 @media (max-width: 640px) {
-  body #linker-products.sf-products .wb-title, body .sf-compare .sf-compare-head h1 { font-size: 30px; }
+  body #linker-products.sf-products .wb-title { font-size: 30px; }
   body #linker-products.sf-products .wb-scope { display: none; }
   body #linker-products.sf-products .wb-bar { gap: 18px; }
-  body #linker-products.sf-products .wb-metarow, body .sf-compare .sf-compare-crumbs { margin-bottom: 16px; }
+  body #linker-products.sf-products .wb-metarow { margin-bottom: 16px; }
   body #linker-products.sf-products .product-grid { grid-template-columns: 1fr; }
   body #linker-products.sf-products .sf-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px 14px; padding: 16px; }
   body #linker-products.sf-products .card-media { grid-column: 1; height: 118px; }
@@ -248,8 +247,8 @@ body #linker-products.sf-products [data-card-gate] { background: #f5f6f8; border
  */
 
 @media (min-width:1360px){
-  body #linker-products.sf-products,body .sf-compare{--sf-container:1360px}
-  body #linker-products.sf-products .container,body .sf-compare .sf-container{width:min(1360px,calc(100% - 64px));max-width:none}
+  body #linker-products.sf-products{--sf-container:1360px}
+  body #linker-products.sf-products .container{width:min(1360px,calc(100% - 64px));max-width:none}
 }
 
 @media (min-width:861px){

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-18T04:31:18+00:00\n"
+"POT-Creation-Date: 2026-10-18T13:07:45+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -396,8 +396,8 @@ msgstr "Sie wurden abgemeldet."
 msgid "Your contact person"
 msgstr "Ihre Ansprechperson"
 
-#: includes/Account/DocumentDownload.php:91
-#: includes/Account/DocumentDownload.php:136 includes/Admin/FaqsMetaBox.php:73
+#: includes/Account/DocumentDownload.php:94
+#: includes/Account/DocumentDownload.php:143 includes/Admin/FaqsMetaBox.php:73
 #: includes/Admin/FiguresMetaBox.php:78
 #: includes/Presentation/AccountTemplates.php:462
 #: includes/Presentation/LibraryPage.php:374
@@ -409,11 +409,11 @@ msgstr "Ihre Ansprechperson"
 msgid "Document"
 msgstr "Dokument"
 
-#: includes/Account/DocumentDownload.php:91
+#: includes/Account/DocumentDownload.php:94
 msgid "This document is not available."
 msgstr "Dieses Dokument ist nicht verfügbar."
 
-#: includes/Account/DocumentDownload.php:132
+#: includes/Account/DocumentDownload.php:137
 msgid ""
 "This document is available to the account it belongs to. Please log in with "
 "that account."
@@ -421,7 +421,7 @@ msgstr ""
 "Dieses Dokument ist nur für das Konto abrufbar, zu dem es gehört. Bitte "
 "melden Sie sich mit diesem Konto an."
 
-#: includes/Account/DocumentDownload.php:134 includes/Vocabulary/Terms.php:78
+#: includes/Account/DocumentDownload.php:139 includes/Vocabulary/Terms.php:78
 #: includes/Vocabulary/Terms.php:79
 msgid "Log in"
 msgstr "Anmelden"
@@ -592,7 +592,7 @@ msgstr "Typ"
 
 #: includes/Admin/DocumentsMetaBox.php:74
 #: includes/Admin/DocumentsMetaBox.php:123
-#: includes/Presentation/ProductShortcodes.php:1945
+#: includes/Presentation/ProductShortcodes.php:1943
 msgid "Language"
 msgstr "Sprache"
 
@@ -723,13 +723,13 @@ msgstr "Es geht um"
 msgid "Where can we reply?"
 msgstr "Wohin dürfen wir antworten?"
 
-#: includes/Contact/Form.php:152 includes/Inquiry/Form.php:129
+#: includes/Contact/Form.php:152 includes/Inquiry/Form.php:156
 #: includes/Settings/SettingsTab.php:137
 #: templates/emails/linker-new-customer.php:26
 msgid "Name"
 msgstr "Name"
 
-#: includes/Contact/Form.php:154 includes/Inquiry/Form.php:130
+#: includes/Contact/Form.php:154 includes/Inquiry/Form.php:157
 msgid "Reply email"
 msgstr "E-Mail für die Antwort"
 
@@ -741,13 +741,13 @@ msgstr "optional"
 msgid "No account or Project is needed to ask a question."
 msgstr "Für eine Frage brauchen Sie weder ein Konto noch ein Projekt."
 
-#: includes/Contact/Form.php:165 includes/Inquiry/Form.php:132
+#: includes/Contact/Form.php:165 includes/Inquiry/Form.php:159
 msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 "Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser "
 "Nachricht verwendet werden."
 
-#: includes/Contact/Form.php:167 includes/Inquiry/Form.php:133
+#: includes/Contact/Form.php:167 includes/Inquiry/Form.php:160
 #: templates/myaccount/auth/form-register.php:125
 msgid "Privacy"
 msgstr "Datenschutz"
@@ -833,7 +833,7 @@ msgstr ""
 msgid "Thank you. Your message is with the Linker team."
 msgstr "Vielen Dank. Ihre Nachricht liegt beim Linker-Team."
 
-#: includes/Contact/Form.php:274 includes/Inquiry/Form.php:78
+#: includes/Contact/Form.php:274 includes/Inquiry/Form.php:85
 #: includes/Inquiry/Handler.php:48
 msgid "Please check your entries and send the form again."
 msgstr "Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut."
@@ -953,7 +953,7 @@ msgstr "Keine Proformarechnung wartet länger als 3 Tage auf eine Antwort."
 msgid "Proforma invoice %1$s issued on %2$s at %3$s (%4$s)"
 msgstr "Proformarechnung %1$s ausgestellt am %2$s um %3$s Uhr (%4$s)"
 
-#: includes/Gating/DraftSummary.php:46
+#: includes/Gating/DraftSummary.php:50
 msgid ""
 "You can send this solution draft without an account. Net prices are "
 "available after account approval."
@@ -961,37 +961,49 @@ msgstr ""
 "Sie können diesen Lösungsentwurf ohne Konto senden. Nettopreise sehen Sie "
 "nach der Freigabe Ihres Kontos."
 
-#: includes/Gating/DraftSummary.php:48 includes/Inquiry/Form.php:134
+#: includes/Gating/DraftSummary.php:51
+msgid ""
+"You can send this solution draft. Your account is under review; net prices "
+"appear after approval."
+msgstr ""
+"Sie können diesen Lösungsentwurf senden. Ihr Konto wird geprüft; Nettopreise "
+"erscheinen nach der Freigabe."
+
+#: includes/Gating/DraftSummary.php:52
+msgid ""
+"You can send this solution draft. Net prices are not available for your "
+"account."
+msgstr ""
+"Sie können diesen Lösungsentwurf senden. Nettopreise sind für Ihr Konto "
+"nicht verfügbar."
+
+#: includes/Gating/DraftSummary.php:60 includes/Inquiry/Form.php:161
 msgid "Send inquiry"
 msgstr "Anfrage senden"
 
-#: includes/Gating/DraftSummary.php:50
-msgid "No account yet? Register"
-msgstr "Noch kein Konto? Registrieren"
-
-#: includes/Gating/DraftSummary.php:65 includes/Gating/DraftSummary.php:83
+#: includes/Gating/DraftSummary.php:77 includes/Gating/DraftSummary.php:95
 msgid ""
 "For products without a price, we state the price in your Proforma invoice."
 msgstr ""
 "Für Produkte ohne Preisangabe nennen wir den Preis in Ihrer Proformarechnung."
 
-#: includes/Gating/PriceDisplay.php:230
+#: includes/Gating/PriceDisplay.php:233
 msgid "Log in for prices"
 msgstr "Preise nach Anmeldung"
 
-#: includes/Gating/PriceDisplay.php:233
+#: includes/Gating/PriceDisplay.php:236
 msgid "Account under review. Prices after approval."
 msgstr "Ihr Konto wird geprüft. Preise nach Freigabe."
 
-#: includes/Gating/PriceDisplay.php:236
+#: includes/Gating/PriceDisplay.php:239
 msgid "Not available for your account"
 msgstr "Für Ihr Konto nicht verfügbar"
 
-#: includes/Gating/PriceDisplay.php:239 includes/Storefront/ProductView.php:300
+#: includes/Gating/PriceDisplay.php:242 includes/Storefront/ProductView.php:300
 msgid "Quoted per project"
 msgstr "Angebot pro Projekt"
 
-#: includes/Gating/PriceDisplay.php:240
+#: includes/Gating/PriceDisplay.php:243
 msgid "Price on request"
 msgstr "Preis auf Anfrage"
 
@@ -1140,7 +1152,7 @@ msgstr "Bitte senden Sie Ihre Anfrage über das Anfrageformular."
 msgid "Inquiry received"
 msgstr "Anfrage eingegangen"
 
-#: includes/Inquiry/Checkout.php:99 includes/Inquiry/Form.php:135
+#: includes/Inquiry/Checkout.php:99 includes/Inquiry/Form.php:162
 #: templates/emails/linker-inquiry-received.php:40
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
@@ -1194,44 +1206,44 @@ msgstr "Neue Anfrage #{order_number} von {company}"
 msgid "New inquiry #{order_number}"
 msgstr "Neue Anfrage #{order_number}"
 
-#: includes/Inquiry/Form.php:124 includes/Vocabulary/Labels.php:97
+#: includes/Inquiry/Form.php:151 includes/Vocabulary/Labels.php:97
 msgid "Send an inquiry"
 msgstr "Anfrage senden"
 
-#: includes/Inquiry/Form.php:125
+#: includes/Inquiry/Form.php:152
 msgid ""
 "Tell us what you need. The products in your solution draft will be included."
 msgstr ""
 "Teilen Sie uns Ihr Anliegen mit. Die Produkte aus Ihrem Lösungsentwurf "
 "werden mitgesendet."
 
-#: includes/Inquiry/Form.php:126
+#: includes/Inquiry/Form.php:153
 msgid "Message (optional)"
 msgstr "Nachricht (optional)"
 
-#: includes/Inquiry/Form.php:127
+#: includes/Inquiry/Form.php:154
 msgid "Your reply details"
 msgstr "Ihre Kontaktdaten"
 
-#: includes/Inquiry/Form.php:128
+#: includes/Inquiry/Form.php:155
 msgid "Change"
 msgstr "Ändern"
 
-#: includes/Inquiry/Form.php:131
+#: includes/Inquiry/Form.php:158
 msgid "Company (optional)"
 msgstr "Unternehmen (optional)"
 
-#: includes/Inquiry/Form.php:136
+#: includes/Inquiry/Form.php:163
 msgid "No account needed."
 msgstr "Kein Konto erforderlich."
 
-#: includes/Inquiry/Form.php:137
+#: includes/Inquiry/Form.php:164
 msgid "Have an approved account? Log in for net prices and saved details."
 msgstr ""
 "Sie haben bereits ein freigegebenes Partnerkonto? Melden Sie sich an, um "
 "Nettopreise zu sehen und Ihre gespeicherten Angaben zu verwenden."
 
-#: includes/Inquiry/Form.php:138
+#: includes/Inquiry/Form.php:165
 #: includes/Presentation/ProductShortcodes.php:1910
 #: includes/Presentation/ProductShortcodes.php:1912
 #: includes/Vocabulary/Labels.php:101 includes/Vocabulary/Labels.php:176
@@ -1240,26 +1252,26 @@ msgstr ""
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
 
-#: includes/Inquiry/Form.php:139
+#: includes/Inquiry/Form.php:166
 msgid "Edit solution draft"
 msgstr "Lösungsentwurf bearbeiten"
 
-#: includes/Inquiry/Form.php:140 includes/Vocabulary/Terms.php:65
+#: includes/Inquiry/Form.php:167 includes/Vocabulary/Terms.php:65
 #: templates/emails/linker-genie-handoff.php:65
 msgid "Quantity"
 msgstr "Menge"
 
-#: includes/Inquiry/Form.php:141 includes/Vocabulary/Terms.php:32
+#: includes/Inquiry/Form.php:168 includes/Vocabulary/Terms.php:32
 msgid "Update solution draft"
 msgstr "Lösungsentwurf aktualisieren"
 
 #. translators: %s: product name.
-#: includes/Inquiry/Form.php:162
+#: includes/Inquiry/Form.php:189
 #, php-format
 msgid "Quantity for %s"
 msgstr "Menge für %s"
 
-#: includes/Inquiry/Form.php:169
+#: includes/Inquiry/Form.php:196
 msgid "You can send a message without products."
 msgstr "Sie können uns auch ohne Produkte eine Nachricht senden."
 
@@ -1317,6 +1329,31 @@ msgstr "Kontaktformular"
 msgid "Proforma request"
 msgstr "Proforma-Anfrage"
 
+#: includes/Inquiry/OrderAdmin.php:93
+#: templates/emails/linker-inquiry-summary.php:19
+msgid "Conversation with Genie"
+msgstr "Gespräch mit Genie"
+
+#: includes/Inquiry/OrderAdmin.php:120
+msgid "Quantities"
+msgstr "Mengen"
+
+#: includes/Inquiry/OrderAdmin.php:134
+msgid "Conditions"
+msgstr "Projektbedingungen"
+
+#: includes/Inquiry/OrderAdmin.php:139
+#: templates/emails/linker-inquiry-summary.php:46
+msgid "Latest message"
+msgstr "Letzte Nachricht"
+
+#. translators: %s: why the model summary was not used (a short cause).
+#: includes/Inquiry/OrderAdmin.php:148
+#: templates/emails/linker-inquiry-summary.php:55
+#, php-format
+msgid "Assembled from the customer's messages (%s)."
+msgstr "Aus den Nachrichten des Kunden zusammengestellt (%s)."
+
 #: includes/Inquiry/ProformaGateway.php:46
 #: includes/Inquiry/ProformaGateway.php:61 includes/Proforma/AdminBox.php:47
 #: includes/Settings/SettingsTab.php:159 includes/Vocabulary/Terms.php:75
@@ -1341,11 +1378,11 @@ msgstr ""
 msgid "Website"
 msgstr "Website"
 
-#: includes/Inquiry/Sender.php:35
+#: includes/Inquiry/Sender.php:48
 msgid "Please add a product or write a message."
 msgstr "Bitte fügen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht."
 
-#: includes/Inquiry/Sender.php:60
+#: includes/Inquiry/Sender.php:73
 msgid "Please try sending your inquiry again."
 msgstr "Bitte senden Sie Ihre Anfrage erneut."
 
@@ -1403,6 +1440,21 @@ msgstr "SMTP konfiguriert"
 #: includes/Mail/SmtpHealth.php:58
 msgid "SMTP not configured"
 msgstr "SMTP nicht konfiguriert"
+
+#: includes/Presentation/AccountLinks.php:31
+#: includes/Presentation/AccountLinks.php:51
+#: includes/Presentation/AccountLinks.php:70
+#: includes/Presentation/ProductShortcodes.php:1900
+#: includes/Presentation/ProductShortcodes.php:1925
+#: includes/Presentation/Shortcodes.php:370
+#: templates/myaccount/auth/form-login.php:69
+#: templates/myaccount/auth/form-register.php:134
+msgid "Sign in"
+msgstr "Anmelden"
+
+#: includes/Presentation/AccountLinks.php:90
+msgid "Create account"
+msgstr "Konto erstellen"
 
 #: includes/Presentation/AccountTemplates.php:277
 #: includes/Presentation/AccountTemplates.php:353
@@ -1465,7 +1517,7 @@ msgstr "Noch keine Anfragen."
 
 #: includes/Presentation/AccountTemplates.php:470
 #: includes/Presentation/LoginGate.php:64
-#: includes/Presentation/Shortcodes.php:370 includes/Vocabulary/Terms.php:38
+#: includes/Presentation/Shortcodes.php:368 includes/Vocabulary/Terms.php:38
 #: templates/emails/linker-approval-approved.php:26
 #: templates/emails/linker-registration-received.php:38
 msgid "Browse products"
@@ -2190,13 +2242,6 @@ msgstr "Ausgewähltes Modell"
 msgid "My account"
 msgstr "Mein Konto"
 
-#: includes/Presentation/ProductShortcodes.php:1900
-#: includes/Presentation/ProductShortcodes.php:1927
-#: templates/myaccount/auth/form-login.php:69
-#: templates/myaccount/auth/form-register.php:134
-msgid "Sign in"
-msgstr "Anmelden"
-
 #: includes/Presentation/Shortcodes.php:118
 msgid "Contact Linker"
 msgstr "Linker kontaktieren"
@@ -2388,15 +2433,15 @@ msgstr ""
 msgid "Discuss your project"
 msgstr "Projekt besprechen"
 
-#: includes/Presentation/Shortcodes.php:365
+#: includes/Presentation/Shortcodes.php:364
 msgid "Empty solution draft"
 msgstr "Leerer Lösungsentwurf"
 
-#: includes/Presentation/Shortcodes.php:367 includes/Vocabulary/Terms.php:37
+#: includes/Presentation/Shortcodes.php:365 includes/Vocabulary/Terms.php:37
 msgid "Your solution draft is empty."
 msgstr "Ihr Lösungsentwurf ist leer."
 
-#: includes/Presentation/Shortcodes.php:368
+#: includes/Presentation/Shortcodes.php:366
 msgid ""
 "Browse products and add them to your solution draft. You can send an inquiry "
 "without an account."
@@ -2404,7 +2449,7 @@ msgstr ""
 "Wählen Sie Produkte für Ihren Lösungsentwurf aus. Sie können Ihre Anfrage "
 "ohne Konto senden."
 
-#: includes/Presentation/Shortcodes.php:372
+#: includes/Presentation/Shortcodes.php:370
 msgid "Sign in or register"
 msgstr "Anmelden oder registrieren"
 
@@ -4162,6 +4207,14 @@ msgstr ""
 "Erstellen Sie mit dieser E-Mail-Adresse ein Konto. Nach der Freigabe sehen "
 "Sie Nettopreise und können Ihre Anfrage verfolgen."
 
+#: templates/emails/linker-inquiry-summary.php:22
+msgid "Quantities from the conversation"
+msgstr "Mengen aus dem Gespräch"
+
+#: templates/emails/linker-inquiry-summary.php:41
+msgid "Conditions from the conversation"
+msgstr "Projektbedingungen aus dem Gespräch"
+
 #: templates/emails/linker-new-customer.php:28
 msgid "Address"
 msgstr "Anschrift"
@@ -4429,6 +4482,9 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#~ msgid "No account yet? Register"
+#~ msgstr "Noch kein Konto? Registrieren"
 
 #~ msgid "Prices after approval"
 #~ msgstr "Preise nach Freigabe"
@@ -4717,43 +4773,3 @@ msgstr "Verwendungszweck"
 #~ msgstr ""
 #~ "Es wurde keine Bestätigungs-E-Mail versendet. Das Linker-Team antwortet "
 #~ "an die angegebene E-Mail-Adresse."
-
-#: includes/Gating/DraftSummary.php
-msgid "You can send this solution draft. Your account is under review; net prices appear after approval."
-msgstr "Sie können diesen Lösungsentwurf senden. Ihr Konto wird geprüft; Nettopreise erscheinen nach der Freigabe."
-
-#: includes/Gating/DraftSummary.php
-msgid "You can send this solution draft. Net prices are not available for your account."
-msgstr "Sie können diesen Lösungsentwurf senden. Nettopreise sind für Ihr Konto nicht verfügbar."
-
-#: templates/emails/linker-inquiry-summary.php
-msgid "Conversation with Genie"
-msgstr "Gespräch mit Genie"
-
-#: templates/emails/linker-inquiry-summary.php
-msgid "Quantities from the conversation"
-msgstr "Mengen aus dem Gespräch"
-
-#: templates/emails/linker-inquiry-summary.php
-msgid "Conditions from the conversation"
-msgstr "Projektbedingungen aus dem Gespräch"
-
-#: templates/emails/linker-inquiry-summary.php
-msgid "Latest message"
-msgstr "Letzte Nachricht"
-
-#: templates/emails/linker-inquiry-summary.php
-msgid "Assembled from the customer's messages (%s)."
-msgstr "Aus den Nachrichten des Kunden zusammengestellt (%s)."
-
-#: templates/emails/linker-inquiry-summary.php
-msgid "Quantities"
-msgstr "Mengen"
-
-#: templates/emails/linker-inquiry-summary.php
-msgid "Conditions"
-msgstr "Projektbedingungen"
-
-#: includes/Presentation/AccountLinks.php
-msgid "Create account"
-msgstr "Konto erstellen"

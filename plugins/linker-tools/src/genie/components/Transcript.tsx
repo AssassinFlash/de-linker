@@ -54,7 +54,7 @@ export function Transcript( {
 		return () => observer.disconnect();
 	} );
 	return (
-		<>
+		<div className="linker-genie-reading">
 			<div
 				className="linker-genie-app__transcript"
 				ref={ scroll }
@@ -78,30 +78,32 @@ export function Transcript( {
 					{ children }
 				</div>
 			</div>
-			{ latest ? (
-				<button
-					type="button"
-					className="linker-genie-jump"
-					onClick={ () => jump( true ) }
-				>
-					<svg
-						viewBox="0 0 24 24"
-						width="18"
-						height="18"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="1.65"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						aria-hidden="true"
+			<div className="linker-genie-reading-controls">
+				{ latest ? (
+					<button
+						type="button"
+						className="linker-genie-jump"
+						onClick={ () => jump( true ) }
 					>
-						<path d="M12 4v16m-6-6 6 6 6-6" />
-					</svg>
-					<span className="screen-reader-text">
-						{ __( 'Jump to latest', 'linker-tools' ) }
-					</span>
-				</button>
-			) : null }
-		</>
+						<svg
+							viewBox="0 0 24 24"
+							width="18"
+							height="18"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.65"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							aria-hidden="true"
+						>
+							<path d="M12 4v16m-6-6 6 6 6-6" />
+						</svg>
+						<span className="screen-reader-text">
+							{ __( 'Jump to latest', 'linker-tools' ) }
+						</span>
+					</button>
+				) : null }
+			</div>
+		</div>
 	);
 }

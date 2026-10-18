@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Gating;
 
 use Linker\Commerce\Gating\CommerceState;
-use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Gating\DraftSummary;
 use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Registration\Approval;

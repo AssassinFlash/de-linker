@@ -101,7 +101,11 @@ for (const locale of ['en', 'de'] as const) {
 			context,
 		}) => {
 			await page.setViewportSize({ width, height: 900 });
-			await context.request.get(instance().url + '/?add-to-cart=4107');
+			await context.request.get(
+				instance().url +
+					(locale === 'de' ? '/de/' : '/') +
+					'?add-to-cart=4107'
+			);
 			await page.goto(
 				instance().url + (locale === 'de' ? '/de/warenkorb/' : '/cart/')
 			);
@@ -198,19 +202,7 @@ for (const locale of ['en', 'de'] as const) {
 			}) => {
 				await page.setViewportSize({ width, height: 900 });
 				await page.goto(instance().url + route);
-				if (surface === 'compare') {
-					await expect(
-						page.getByRole('heading', { level: 1 })
-					).toHaveCSS('font-size', width === 390 ? '30px' : '46px');
-					await expect(
-						page.getByRole('heading', { level: 1 })
-					).toHaveCSS('font-weight', '600');
-					expect(
-						await page
-							.getByRole('heading', { level: 1 })
-							.evaluate((e) => getComputedStyle(e).fontFamily)
-					).toContain('Plus Jakarta Sans');
-				}
+
 				const create = page
 					.locator(`${selector} .linker-create-account:visible`)
 					.first();
@@ -223,29 +215,15 @@ for (const locale of ['en', 'de'] as const) {
 							.evaluate((e) => e.getBoundingClientRect().height)
 					).toBe(44);
 				}
-				if (surface === 'compare' && width === 390) {
-					const region = page.locator('.linker-compare-scroll');
-					expect(
-						await region.evaluate(
-							(e) => e.scrollWidth > e.clientWidth
-						)
-					).toBe(true);
-					expect(
-						await page
-							.locator('.linker-compare-column')
-							.first()
-							.evaluate((e) => e.getBoundingClientRect().width)
-					).toBeGreaterThanOrEqual(224);
+				if (surface === 'compare') {
+					await expect(
+						page.locator('.linker-comparison-signin').first()
+					).toHaveText(locale === 'de' ? 'Anmelden' : 'Sign in');
 					expect(
 						await page.evaluate(
 							() => document.documentElement.scrollWidth
 						)
-					).toBe(390);
-					expect(
-						await create.evaluate(
-							(e) => e.getBoundingClientRect().height
-						)
-					).toBe(20);
+					).toBe(width);
 				}
 				await create.click();
 				await expect(page).toHaveURL(
@@ -273,7 +251,7 @@ for (const locale of ['en', 'de'] as const) {
 						await column.evaluate(
 							(e) => e.getBoundingClientRect().width
 						)
-					).toBeGreaterThanOrEqual(224);
+					).toBeGreaterThan(80);
 				}
 				expect(
 					await page.evaluate(

@@ -50,47 +50,33 @@ body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>
    when it shares the primary row, preserving that measured 104px total. */
 #tv-storefront-cart .sf-cart-empty__actions:has(>.linker-create-account)>.sf-cart-btn--ghost{padding-block:11px}
 
-/* Comparison uses the existing storefront comparison's 600px narrow-table
-   boundary and 7rem row labels. A 14rem product column shows one full model
-   and the next column edge at 390px; see 223/mobile-comparison.md. */
-.linker-comparison-guest{display:flex;align-items:flex-start;flex-wrap:wrap;gap:8px 12px}
-.linker-comparison-signin{color:inherit;text-decoration:underline;text-underline-offset:3px}
-.linker-comparison-guest>.linker-create-account{white-space:nowrap}
-@media(max-width:600px){
-  #linker-compare .linker-compare-scroll{border:1px solid var(--sf-line,#dfe7ec);border-radius:12px;background:#fff}
-  #linker-compare .linker-compare-cell{min-width:14rem;max-width:18rem;overflow-wrap:anywhere}
-  #linker-compare .linker-compare-table tr>:first-child{position:sticky;left:0;z-index:1;width:7rem;min-width:7rem;max-width:7rem;background:var(--sf-soft,#f5f7fa)}
-}
+/* Comparison stays on the live LC shell and table geometry. Only its guest
+   price cell gains a second destination (#223 review round 2). */
 .linker-price-entries>.linker-create-account{display:inline-block;margin-left:8px}
+.linker-comparison-guest{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 12px}
+.linker-comparison-signin{color:inherit;text-decoration:underline;text-underline-offset:3px}
+/* The draft's right-hand price column keeps its live intrinsic width. Its
+   second action uses the space below the label, inside the existing row gap.
+   Mobile uses the storefront's existing 12px action type, with an inline link
+   so the parent's original line strut and the quantity row stay unchanged. */
+@media(min-width:681px){
+  #tv-storefront-cart .product-subtotal .linker-price-entries{position:relative;display:inline-block}
+  #tv-storefront-cart .product-subtotal .linker-create-account{position:absolute;top:100%;left:0;margin-left:0;white-space:nowrap}
+}
+@media(max-width:680px){
+  #tv-storefront-cart .linker-price-entries{display:inline-flex;gap:8px;vertical-align:top}
+  #tv-storefront-cart .linker-price-entries>a{display:inline;font-size:12px;line-height:inherit;margin-left:0}
+}
 
-/* Comparison's LC shell now reaches storefront.css's existing design layer.
-   Crumbs / note metrics match product-list .wb-metarow and .wb-intro. */
-.sf-compare .sf-compare-crumbs{margin:0 0 24px;font-size:13px;color:var(--sf-muted)}
-.sf-compare-crumbs ol{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none}
-.sf-compare-crumbs a{color:inherit;text-decoration:none}
-.sf-compare-head>div{max-width:40rem;min-width:0}
-.sf-compare-head .sf-compare-note{margin:8px 0 0;color:var(--sf-muted);line-height:1.7}
-.sf-compare .linker-compare-name{text-decoration:none;line-height:1.5}
-.sf-compare .linker-compare-name:hover{text-decoration:underline}
-.sf-compare .linker-compare-actions{text-align:right}
-.sf-compare .linker-compare-actions a{color:var(--sf-muted);text-underline-offset:3px}
-
-/* Match the served product-list presentation, including its responsive title
-   and paper. products.css shares the declarations with the comparison shell. */
-body .sf-compare .sf-container{padding:0}
-body .sf-compare .sf-compare-crumbs{text-transform:uppercase}
-body .sf-compare .sf-compare-note{margin-bottom:0}
-body .sf-compare .linker-compare-scroll{background:#fff;border-radius:12px}
-body .sf-compare .linker-compare-name{font-weight:600}
-
-/* Owner's 223 visual correction: use the recorded OpenAI surface language.
+/* The row is emitted before the app mount so DOM and visual order agree
+   (review round 1, WCAG 1.3.2/2.4.3); hence no order property.
+   Owner's 223 visual correction: use the recorded OpenAI surface language.
    Source: 2026-10-12-genie-openai-design/DOSSIER.md A2 (44px account pills),
    A4/A5 (24/28 regular heading, rounded composer), B4 (top account nudge).
    The compact composer footer uses that dossier's 4px spacing rhythm.
    The latest owner correction keeps that footer at the bottom of the sheet.
    LC remains the account markup owner; the conversation tree is unchanged. */
 .linker-genie-panel>.linker-guest-account-links {
-  order:-1;
   justify-content:flex-end;
   gap:8px;
   padding:12px 16px;
@@ -197,7 +183,16 @@ body .sf-compare .linker-compare-name{font-weight:600}
 .linker-genie-wait__lines>span:nth-child(2){width:88%;animation-delay:.12s}
 .linker-genie-wait__lines>span:nth-child(3){width:64%;animation-delay:.24s}
 @keyframes linker-genie-breathe{0%,100%{opacity:.45}50%{opacity:1}}
-.linker-genie-app .linker-genie-jump{display:flex;align-items:center;justify-content:center;position:absolute;bottom:130px;left:calc(50% - 20px);z-index:2;width:40px;height:40px;border:1px solid #dedede;border-radius:50%;background:#fff;box-shadow:0 2px 6px #0000000d;color:#202020}
+/* Review round 2: one shrinking reader, then an opaque control row and the
+   composer. The 48px row reserves the existing 40px control plus 4px each side;
+   attachments and error messages can grow below it without covering text. */
+.linker-genie-reading{display:flex;flex:1 1 0;flex-direction:column;min-height:0;overflow:hidden}
+.linker-genie-app__panel:not(:has(.linker-genie-app__message)) .linker-genie-reading{flex:0 0 auto}
+.linker-genie-app__panel:not(:has(.linker-genie-app__message)) .linker-genie-reading-controls{display:none}
+.linker-genie-reading-controls{display:flex;flex:0 0 48px;align-items:center;justify-content:center;background:#fff}
+.linker-genie-app .linker-genie-app__transcript{outline:none}
+.linker-genie-app .linker-genie-app__transcript:focus-visible{outline:2px solid #0c7f73;outline-offset:-2px}
+.linker-genie-app .linker-genie-jump{display:flex;align-items:center;justify-content:center;position:static;width:40px;height:40px;border:1px solid #dedede;border-radius:50%;background:#fff;box-shadow:0 2px 6px #0000000d;color:#202020}
 .linker-genie-app--workspace .linker-genie-app__message--assistant{padding:0}
 .linker-genie-app--workspace .linker-genie-app__answer-brand{margin-bottom:16px}
 .linker-genie-app--workspace .linker-genie-app__message{margin-bottom:32px}
@@ -207,7 +202,7 @@ body .sf-compare .linker-compare-name{font-weight:600}
 .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__answer-brand{gap:8px;margin-bottom:12px;font-size:12px;color:#686868}
 .linker-genie-app:not(.linker-genie-app--workspace) .linker-genie-app__answer-brand .linker-genie-app__monogram{width:24px;height:24px;font-size:12px}
 .linker-genie-app .linker-genie-app__error{padding:12px 16px;border:1px solid #e5d4d4;border-radius:12px;background:#fff8f8;color:#813c3c;font-size:14px;line-height:1.5}
-@media(max-width:767px){.linker-genie-app .linker-genie-answer-actions .linker-genie-app__vote{width:44px;height:44px}.linker-genie-app .linker-genie-jump{bottom:132px}}
+@media(max-width:767px){.linker-genie-app .linker-genie-answer-actions .linker-genie-app__vote{width:44px;height:44px}}
 @media(prefers-reduced-motion:reduce){.linker-genie-wait__dot,.linker-genie-wait__lines>span{animation:none}}
 
 /* The waiting effect is deliberately simulated in the browser (#223 owner

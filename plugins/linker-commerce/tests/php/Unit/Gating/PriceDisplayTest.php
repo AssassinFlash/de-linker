@@ -238,6 +238,8 @@ final class PriceDisplayTest extends TestCase {
 		$html = ( new PriceDisplay( new CommerceState() ) )->order_line_subtotal( '€100.00', $item );
 		$this->assertStringContainsString( $note, $html );
 		$this->assertStringNotContainsString( '€', $html );
+		$this->assertStringNotContainsString( 'Create account', $html, 'Inquiry emails never offer registration.' );
+		$this->assertStringNotContainsString( '/register/', $html );
 	}
 
 	/**

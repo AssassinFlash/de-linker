@@ -1,15 +1,4 @@
-/**
- * The empty solution draft and the empty Proforma request, EN and DE.
- *
- * The commercial-chain spec only opens /cart/ after a line has been added.
- * This one opens the chain's two empty states with no lines and no account:
- * the cart's designed empty state (the live cart-en/de captures' icon, title,
- * note and actions), and the request page's left column with its Genie pill.
- * No turn and no engine request leaves the page — the pill's own click opens
- * the dock's panel, and the dock asks Genie nothing without a
- * data-ask-message — so the suite runs with LINKER_E2E_SKIP_SERVICES=1
- * (tests/e2e/README.md).
- */
+/** Empty solution draft and public inquiry stay usable without an account. */
 
 /**
  * External dependencies
@@ -25,29 +14,37 @@ const DRAFTS = {
 	en: {
 		path: '/cart/',
 		title: 'Your solution draft is empty.',
-		note: 'Browse the products now.',
+		note: 'Browse products and add them to your solution draft. You can send an inquiry without an account.',
 		browse: 'Browse products',
-		signIn: 'Sign in or register',
+		signIn: 'Sign in',
+		create: 'Create account',
+		account: '/my-account/',
 	},
 	de: {
 		path: '/de/warenkorb/',
 		title: 'Ihr Lösungsentwurf ist leer.',
-		note: 'Durchsuchen Sie jetzt die Produkte.',
+		note: 'Wählen Sie Produkte für Ihren Lösungsentwurf aus. Sie können Ihre Anfrage ohne Konto senden.',
 		browse: 'Zu den Produkten',
-		signIn: 'Anmelden oder registrieren',
+		signIn: 'Anmelden',
+		create: 'Konto erstellen',
+		account: '/de/mein-konto/',
 	},
 } as const;
 
 const REQUESTS = {
 	en: {
 		path: '/proforma-request/',
-		title: 'Get your Proforma',
-		signIn: 'Sign in to get your Proforma.',
+		title: 'Send an inquiry',
+		signIn: 'Have an approved account? Log in for net prices and saved details.',
+		create: 'Create account',
+		account: '/my-account/',
 	},
 	de: {
 		path: '/de/proforma-anfrage/',
-		title: 'Proformarechnung anfordern',
-		signIn: 'Melden Sie sich an, um Ihre Proformarechnung zu erhalten.',
+		title: 'Anfrage senden',
+		signIn: 'Sie haben bereits ein freigegebenes Partnerkonto? Melden Sie sich an, um Nettopreise zu sehen und Ihre gespeicherten Angaben zu verwenden.',
+		create: 'Konto erstellen',
+		account: '/de/mein-konto/',
 	},
 } as const;
 
@@ -72,9 +69,16 @@ for (const [locale, pageCopy] of Object.entries(DRAFTS)) {
 		await expect(
 			page.getByRole('link', { name: pageCopy.browse })
 		).toBeVisible();
+		const entries = page.locator('.sf-cart-empty__actions');
 		await expect(
-			page.getByRole('link', { name: pageCopy.signIn })
-		).toBeVisible();
+			entries.getByRole('link', { name: pageCopy.signIn, exact: true })
+		).toHaveAttribute('href', instance().url + pageCopy.account);
+		await expect(
+			entries.getByRole('link', { name: pageCopy.create, exact: true })
+		).toHaveAttribute(
+			'href',
+			instance().url + pageCopy.account + 'register/'
+		);
 		await expect(page.locator('.sf-cart-btn')).toHaveCount(2);
 		// The retired batch import is neither a button nor a promise (GAP-11).
 		await expect(body).not.toContainText('item-number');
@@ -83,7 +87,7 @@ for (const [locale, pageCopy] of Object.entries(DRAFTS)) {
 }
 
 for (const [locale, pageCopy] of Object.entries(REQUESTS)) {
-	test(`${locale}: an empty Proforma request is the gate card with its Genie pill`, async ({
+	test(`${locale}: an empty Proforma request stays public with optional account entries`, async ({
 		page,
 	}) => {
 		await page.context().clearCookies();
@@ -91,43 +95,18 @@ for (const [locale, pageCopy] of Object.entries(REQUESTS)) {
 		expect(response?.status(), 'the request page answers').toBe(200);
 		const body = page.locator('body');
 		await expect(body).not.toContainText('Invalid condition function');
-		await expect(
-			page.locator('.linker-gate'),
-			"the request gate's own card"
-		).toBeVisible();
+		await expect(page.locator('.linker-gate')).toHaveCount(0);
+		await expect(page.locator('.linker-inquiry-form')).toBeVisible();
 		await expect(page.locator('h1')).toHaveText(pageCopy.title);
-		const pill = page.locator('.linker-gate-genie-pill');
+		const entries = page.locator('.linker-inquiry-guest');
 		await expect(
-			pill,
-			'the dark pill under the title, in the site’s current name'
-		).toHaveText(/Genie/);
-		await expect(body).toContainText(pageCopy.signIn);
-
-		// The pill is an anchor whose href is the no-JavaScript fallback. With
-		// the dock present the click opens Genie here instead: the dock's own
-		// report is the evidence — it unhides the mount and marks the opener
-		// expanded only once the app is ready — and the fallback must not fire
-		// on top of it.
-		expect(
-			await pill.getAttribute('aria-expanded'),
-			'nothing has opened the dock yet: the opener sits collapsed'
-		).toBe('false');
-		await pill.click();
+			entries.getByRole('link', { name: pageCopy.signIn, exact: true })
+		).toHaveAttribute('href', instance().url + pageCopy.account);
 		await expect(
-			page.locator('[data-linker-genie-mount]'),
-			'the pill really opens the Genie panel'
-		).toBeVisible();
-		await expect(
-			page.locator('[data-linker-genie-load-error]'),
-			'the dock mounted without a load error'
-		).toHaveCount(0);
-		await expect(
-			pill,
-			'the opener that opened it is marked expanded'
-		).toHaveAttribute('aria-expanded', 'true');
-		expect(
-			new URL(page.url()).pathname,
-			'the pill keeps the visitor on the request page'
-		).toBe(pageCopy.path);
+			entries.getByRole('link', { name: pageCopy.create, exact: true })
+		).toHaveAttribute(
+			'href',
+			instance().url + pageCopy.account + 'register/'
+		);
 	});
 }

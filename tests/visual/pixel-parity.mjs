@@ -85,6 +85,7 @@ for (const width of widths) {
 					"--disable-gpu-rasterization",
 				],
 			});
+			let page;
 			try {
 				// 900px is the established desktop/mobile acceptance viewport height.
 				const context = await browser.newContext({
@@ -100,13 +101,20 @@ for (const width of widths) {
 						String(Date.now() + 30 * 86400000),
 					);
 				});
-				const page = await context.newPage();
+				page = await context.newPage();
 				// The existing snapshot capture budget also covers live lazy media.
 				await page.goto(base + route, {
 					waitUntil: "networkidle",
 					timeout: 120000,
 				});
 				for (const action of scenario.actions ?? []) {
+					// Only relative visits: filled-draft evidence uses a disposable
+					// anonymous Woo session, never an order or inquiry submission.
+					if (action.visit) {
+						if (!action.visit.startsWith("/") || action.visit.startsWith("//"))
+							throw new Error("scenario visits must be site-relative");
+						await page.goto(base + action.visit, { waitUntil: "networkidle" });
+					}
 					if (action.fill)
 						await page.locator(action.fill[0]).fill(action.fill[1]);
 					if (action.click) await page.locator(action.click).click();
@@ -159,21 +167,47 @@ for (const width of widths) {
 				}));
 				if (label !== "local") ({ language, headerHeight } = metadata);
 				for (const region of scenario.ruledRegions ?? []) {
-                    const boxes = await page.locator(region.selector).evaluateAll(elements => elements.map(element => {
-                        const box = element.getBoundingClientRect();
-                        return { x: box.x + scrollX, y: box.y + scrollY, width: box.width, height: box.height };
-                    }).filter(box => box.width > 0 && box.height > 0));
-                    if (!boxes.length && label !== "live") throw new Error(`missing ruled region: ${region.selector}`);
-                    const size = await page.evaluate(() => ({ width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight }));
-                    for (const [index, box] of boxes.entries()) {
-                        const padding = region.padding ?? 0;
-                        const name = `${region.name}:${index}`;
-                        const bounds = [Math.max(0, Math.floor(box.x - padding)), Math.max(0, Math.floor(box.y - padding)), Math.min(size.width, Math.ceil(box.x + box.width + padding)), Math.min(size.height, Math.ceil(box.y + box.height + padding))];
-                        const previous = ruledRegions.get(name);
-                        if (previous) previous.bounds = [Math.min(previous.bounds[0], bounds[0]), Math.min(previous.bounds[1], bounds[1]), Math.max(previous.bounds[2], bounds[2]), Math.max(previous.bounds[3], bounds[3])];
-                        else ruledRegions.set(name, { ...region, name, bounds });
-                    }
-                }
+					const boxes = await page
+						.locator(region.selector)
+						.evaluateAll((elements) =>
+							elements
+								.map((element) => {
+									const box = element.getBoundingClientRect();
+									return {
+										x: box.x + scrollX,
+										y: box.y + scrollY,
+										width: box.width,
+										height: box.height,
+									};
+								})
+								.filter((box) => box.width > 0 && box.height > 0),
+						);
+					if (!boxes.length && label !== "live")
+						throw new Error(`missing ruled region: ${region.selector}`);
+					const size = await page.evaluate(() => ({
+						width: document.documentElement.scrollWidth,
+						height: document.documentElement.scrollHeight,
+					}));
+					for (const [index, box] of boxes.entries()) {
+						const padding = region.padding ?? 0;
+						const name = `${region.name}:${index}`;
+						const bounds = [
+							Math.max(0, Math.floor(box.x - padding)),
+							Math.max(0, Math.floor(box.y - padding)),
+							Math.min(size.width, Math.ceil(box.x + box.width + padding)),
+							Math.min(size.height, Math.ceil(box.y + box.height + padding)),
+						];
+						const previous = ruledRegions.get(name);
+						if (previous)
+							previous.bounds = [
+								Math.min(previous.bounds[0], bounds[0]),
+								Math.min(previous.bounds[1], bounds[1]),
+								Math.max(previous.bounds[2], bounds[2]),
+								Math.max(previous.bounds[3], bounds[3]),
+							];
+						else ruledRegions.set(name, { ...region, name, bounds });
+					}
+				}
 				const name = `${stem}-${width}-${label}.png`;
 				await page.screenshot({
 					path: path.join(out, name),
@@ -181,7 +215,24 @@ for (const width of widths) {
 				});
 				console.log(name);
 			} finally {
-				await browser.close();
+				try {
+					if (scenario.emptyDraftAfter && page) {
+						// Use Woo's own nonce-bearing remove links from this new session.
+						const remove = await page
+							.locator(".woocommerce-cart-form a.remove")
+							.evaluateAll((elements) =>
+								elements.map((element) => element.href),
+							);
+						for (const url of remove)
+							await page.goto(url, { waitUntil: "networkidle" });
+						if (await page.locator(".woocommerce-cart-form a.remove").count())
+							throw new Error(
+								"disposable draft cleanup did not empty the session",
+							);
+					}
+				} finally {
+					await browser.close();
+				}
 			}
 		}
 		cases.push({
@@ -196,7 +247,17 @@ for (const width of widths) {
 }
 fs.writeFileSync(
 	path.join(out, "capture.json"),
-	JSON.stringify({ cases, allowedHeaderChanges, networkRoute: values.direct ? "direct browser connection" : "system default" }, null, 2) + "\n",
+	JSON.stringify(
+		{
+			cases,
+			allowedHeaderChanges,
+			networkRoute: values.direct
+				? "direct browser connection"
+				: "system default",
+		},
+		null,
+		2,
+	) + "\n",
 );
 if (!values.baseline)
 	execFileSync("python3", [path.join(here, "compare.py"), out], {
