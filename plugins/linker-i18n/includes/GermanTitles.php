@@ -90,6 +90,49 @@ final class GermanTitles {
 	}
 
 	/**
+	 * The German shop's description (ticket #264 H4).
+	 *
+	 * SEOPress resolves the shop page through `wc_get_page_id( 'shop' )`, which
+	 * can still name the English page while the German request renders its
+	 * German twin; the German page's own stored description is then never
+	 * read. The German shop description is a reviewed sentence of this plugin,
+	 * so every German shop request carries it.
+	 *
+	 * @param string $description SEOPress description.
+	 */
+	public function shop_description( string $description ): string {
+		if ( ! $this->is_german_shop() ) {
+			return $description;
+		}
+		return __( 'Filter inverters, LFP batteries, all-in-one systems, meters and controllers by brand, or find an item by number or nameplate photo. Net prices for partners.', 'linker-i18n' );
+	}
+
+	/**
+	 * The same sentence inside SEOPress's Open Graph and Twitter card tags,
+	 * which pass the complete meta tag rather than the sentence.
+	 *
+	 * @param string $tag Meta tag.
+	 */
+	public function shop_social_description( string $tag ): string {
+		if ( ! $this->is_german_shop() ) {
+			return $tag;
+		}
+		$html = new \WP_HTML_Tag_Processor( $tag );
+		if ( ! $html->next_tag( array( 'tag_name' => 'META' ) ) ) {
+			return $tag;
+		}
+		$html->set_attribute( 'content', $this->shop_description( '' ) );
+		return $html->get_updated_html();
+	}
+
+	/**
+	 * Whether this request is the German shop.
+	 */
+	private function is_german_shop(): bool {
+		return get_option( GermanUrlMigration::ACTIVE ) && 'de' === $this->languages->current() && is_shop();
+	}
+
+	/**
 	 * German page headings for the approved route changes; existing German otherwise.
 	 *
 	 * @param \WP_Post $post German post.

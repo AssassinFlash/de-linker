@@ -79,6 +79,13 @@ msgstr ""
 msgid "Inverters, storage and systems"
 msgstr ""
 
+#: includes/GermanTitles.php:84
+msgid ""
+"Filter inverters, LFP batteries, all-in-one systems, meters and controllers "
+"by brand, or find an item by number or nameplate photo. Net prices for "
+"partners."
+msgstr ""
+
 #. translators: %s: German product category name.
 #: includes/GermanTitles.php:62
 #, php-format

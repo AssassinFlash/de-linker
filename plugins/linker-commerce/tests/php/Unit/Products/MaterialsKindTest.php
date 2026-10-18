@@ -116,6 +116,35 @@ final class MaterialsKindTest extends TestCase {
 	}
 
 	/**
+	 * The German product terms use the site's words for items and catalogues
+	 * (#264 M3), while a legal citation keeps "Artikel".
+	 */
+	public function test_german_terms_name_products_and_catalogues_in_the_site_words(): void {
+		$this->assertSame( 'Dieses Produkt ist ein Schrank', Materials::apply_terms( 'Dieser Artikel ist ein Schrank', true ) );
+		$this->assertSame( 'ein eigenes Produkt', Materials::apply_terms( 'ein eigener Artikel', true ) );
+		$this->assertSame( 'Produktnummer (Serie)', Materials::apply_terms( 'Artikelnummer (Serie)', true ) );
+		$this->assertSame( 'Batteriespeicher-Produktübersicht', Materials::apply_terms( 'Batteriespeicher-Katalog', true ) );
+		$this->assertSame( 'Verordnung (EU) 2023/1542 Artikel 10, 12 und 14', Materials::apply_terms( 'Verordnung (EU) 2023/1542 Artikel 10, 12 und 14', true ) );
+		$this->assertSame( 'Dieser Artikel ist ein Schrank', Materials::apply_terms( 'Dieser Artikel ist ein Schrank', false ) );
+	}
+
+	/**
+	 * The German document title names a catalogue by the site's word (#264
+	 * M3); a catalogue number is a product number.
+	 */
+	public function test_a_german_document_title_says_product_overview(): void {
+		$this->assertSame( 'Chint DTSU666 Produktübersicht (EN)', Materials::document_title_display( 'Chint DTSU666 Katalog (EN)', true ) );
+		$this->assertSame( 'Produktnummer', Materials::document_title_display( 'Katalognummer', true ) );
+	}
+
+	/**
+	 * An English page keeps the manufacturer's document title.
+	 */
+	public function test_an_english_document_title_is_unchanged(): void {
+		$this->assertSame( 'Chint DTSU666 Katalog (EN)', Materials::document_title_display( 'Chint DTSU666 Katalog (EN)', false ) );
+	}
+
+	/**
 	 * A product with neither a material nor a type keeps the fallback order.
 	 */
 	public function test_an_untyped_product_keeps_the_other_order(): void {

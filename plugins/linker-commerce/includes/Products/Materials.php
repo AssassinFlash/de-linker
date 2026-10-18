@@ -876,13 +876,78 @@ final class Materials {
 		if ( self::is_de() ) {
 			$decoded = self::decode( \get_post_meta( $product_id, '_linker_de_acf_json', true ) );
 			if ( array() !== $decoded ) {
-				return $decoded;
+				return self::terms_in( $decoded );
 			}
 			$source  = self::source_product_id( $product_id );
 			$decoded = self::decode( \get_post_meta( $source, '_linker_de_acf_json', true ) );
-			return $decoded;
+			return self::terms_in( $decoded );
 		}
 		return self::decode( \get_post_meta( $product_id, '_tv_legacy_acf_json', true ) );
+	}
+
+	/**
+	 * The site's German words for the old data's item and catalogue terms
+	 * (AGENTS.md §3: Produkt, nie Artikel or Katalog; ticket #264 M3). Longest
+	 * phrases first, so "Artikelnummer" becomes "Produktnummer" and the legal
+	 * citation "Artikel 10, 12 und 14" stays untouched (banned-de.json's
+	 * documented exception).
+	 *
+	 * @var array<string,string>
+	 */
+	private const GERMAN_TERMS = array(
+		'Batteriespeicher-Katalog'          => 'Batteriespeicher-Produktübersicht',
+		'Katalog der Hybrid-Wechselrichter' => 'Produktübersicht der Hybrid-Wechselrichter',
+		'Katalog Hybrid-Wechselrichter'     => 'Produktübersicht Hybrid-Wechselrichter',
+		'Multi-Marken-PV-Katalog'           => 'Multi-Marken-PV-Sortiment',
+		'de-linker PV-Katalog'              => 'de-linker PV-Sortiment',
+		'de-linker-Katalog'                 => 'de-linker-Sortiment',
+		'Katalogprodukte'                   => 'Sortimentsprodukte',
+		'Katalognummer'                     => 'Produktnummer',
+		'Katalog'                           => 'Produktübersicht',
+		'Artikelnummer (Serie)'             => 'Produktnummer (Serie)',
+		'Artikelnummer'                     => 'Produktnummer',
+		'Artikelnr.'                        => 'Produktnr.',
+		'Artikel 1023601'                   => 'Produkt 1023601',
+		'Artikel 1023621'                   => 'Produkt 1023621',
+		'Entspricht Artikel '               => 'Entspricht Produkt ',
+		'ein eigener Artikel'               => 'ein eigenes Produkt',
+		'ein separater Artikel'             => 'ein separates Produkt',
+		'diesen Artikel'                    => 'dieses Produkt',
+		'Dieser Artikel ist'                => 'Dieses Produkt ist',
+		'Dieser Artikel umfasst'            => 'Dieses Produkt umfasst',
+		'dieses Artikels'                   => 'dieses Produkts',
+		'diesem Artikel'                    => 'diesem Produkt',
+		'P3-S2-Artikeln'                    => 'P3-S2-Produkten',
+		'dieser Artikelnummer'              => 'dieser Produktnummer',
+		'Diese Artikelnummer'               => 'Diese Produktnummer',
+	);
+
+	/**
+	 * A German product text with the site's words for the old data's item and
+	 * catalogue terms. English pages get their text byte for byte.
+	 *
+	 * @param string    $text   Text.
+	 * @param bool|null $german Whether the page is German; null reads the request.
+	 */
+	public static function apply_terms( string $text, ?bool $german = null ): string {
+		return ( $german ?? self::is_de() ) ? \strtr( $text, self::GERMAN_TERMS ) : $text;
+	}
+
+	/**
+	 * The reviewed terms through every string of a decoded ACF value.
+	 *
+	 * @param array<string, mixed> $value Decoded ACF value.
+	 * @return array<string, mixed>
+	 */
+	private static function terms_in( array $value ): array {
+		foreach ( $value as $key => $entry ) {
+			if ( \is_array( $entry ) ) {
+				$value[ $key ] = self::terms_in( $entry );
+			} elseif ( \is_string( $entry ) ) {
+				$value[ $key ] = self::apply_terms( $entry, true );
+			}
+		}
+		return $value;
 	}
 
 	/**
@@ -1250,7 +1315,7 @@ final class Materials {
 			$titles[ $title_key ] = true;
 			$out[]                = array(
 				'kind'      => $kind,
-				'title'     => '' !== $title ? $title : \ucfirst( (string) $kind ),
+				'title'     => self::document_title_display( '' !== $title ? $title : \ucfirst( (string) $kind ) ),
 				'language'  => $language,
 				'url'       => $url,
 				'_sequence' => $seq++,
@@ -1378,6 +1443,23 @@ final class Materials {
 			}
 		}
 		return '' !== $lower( $type ) ? $lower( $type ) : 'document';
+	}
+
+	/**
+	 * A document title in the page's language (AGENTS.md §3: the site never
+	 * says catalogue; ticket #264 M3). The stored titles are manufacturer
+	 * document names and may carry the English word; on a German page the
+	 * standalone word becomes "Produktübersicht", a catalogue number becomes
+	 * "Produktnummer", and English pages keep the stored title byte for byte.
+	 *
+	 * @param string    $title  The stored document title.
+	 * @param bool|null $german Whether the page is German; null reads the request.
+	 */
+	public static function document_title_display( string $title, ?bool $german = null ): string {
+		if ( ! ( $german ?? self::is_de() ) ) {
+			return $title;
+		}
+		return self::apply_terms( $title, true );
 	}
 
 	/**

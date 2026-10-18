@@ -147,6 +147,44 @@ final class Translator {
 	}
 
 	/**
+	 * Records the German already in place as the machine's baseline, without
+	 * rewriting it (ticket #264: reviewed German copy is written by the
+	 * German-copy migration, then adopted here). Fields whose English carries
+	 * text but whose German is empty stay out of the baseline and the object
+	 * is pending, so the next translation run fills only those fields.
+	 *
+	 * @param string $kind      State::POST or State::TERM.
+	 * @param int    $source_id English object ID.
+	 * @return string The status afterwards; empty when the object is not an English translated object.
+	 */
+	public function adopt_current( string $kind, int $source_id ): string {
+		$source = State::POST === $kind ? get_post( $source_id ) : get_term( $source_id );
+		if ( $source instanceof \WP_Post ) {
+			$fields = $this->fields->of_post( $source );
+			$twin   = $this->german_post( $source_id );
+		} elseif ( $source instanceof \WP_Term ) {
+			$fields = $this->fields->of_term( $source );
+			$twin   = $this->german_term( $source_id );
+		} else {
+			return '';
+		}
+		if ( null === $twin ) {
+			return '';
+		}
+		$german  = $this->german_fields( $kind, $twin );
+		$missing = array();
+		foreach ( $fields as $field => list( $value, $html ) ) {
+			if ( array() !== $this->planner->split( $value, $html )->segments && '' === trim( $german[ $field ][0] ?? '' ) ) {
+				$missing[] = $field;
+			}
+		}
+		$this->record( $kind, $twin, $fields, $missing );
+		$status = array() === $missing ? State::SYNCED : State::PENDING;
+		$this->state->set_status( $kind, $source_id, $status, array() === $missing ? '' : 'no German for ' . implode( ', ', $missing ) );
+		return $status;
+	}
+
+	/**
 	 * Stores German values made elsewhere (the migration of the old
 	 * plugin's German, an import) as the German version, and records them
 	 * as the machine's baseline: later English edits update them segment by

@@ -99,4 +99,27 @@ final class ProductViewTest extends TestCase {
 
 		$this->assertSame( array(), ( new ProductView( new CommerceState() ) )->scenarios( 6521 ) );
 	}
+
+	/**
+	 * The German series label is the manufacturer's label with the German
+	 * compound word (#264 M4): "ET Series" becomes "ET-Serie", the stored
+	 * English phase word becomes the German one, and labels that carry no
+	 * English suffix stay as they are.
+	 */
+	public function test_the_german_series_label_uses_serie_and_the_german_phase_word(): void {
+		$this->assertSame( 'ET-Serie', ProductView::series_label( 'ET Series', true ) );
+		$this->assertSame( 'ESA-Serie', ProductView::series_label( 'ESA Series', true ) );
+		$this->assertSame( 'STS-Serie', ProductView::series_label( 'STS Series', true ) );
+		$this->assertSame( 'EcoFlow OCEAN 2 (dreiphasig)', ProductView::series_label( 'EcoFlow OCEAN 2 (Three-Phase)', true ) );
+		$this->assertSame( 'GoodWe BAT-C', ProductView::series_label( 'GoodWe BAT-C', true ) );
+		$this->assertSame( 'ET-Serie', ProductView::series_label( 'ET-Serie', true ) );
+	}
+
+	/**
+	 * The English page keeps the stored label byte for byte.
+	 */
+	public function test_the_english_series_label_is_unchanged(): void {
+		$this->assertSame( 'ET Series', ProductView::series_label( 'ET Series', false ) );
+		$this->assertSame( 'EcoFlow OCEAN 2 (Three-Phase)', ProductView::series_label( 'EcoFlow OCEAN 2 (Three-Phase)', false ) );
+	}
 }

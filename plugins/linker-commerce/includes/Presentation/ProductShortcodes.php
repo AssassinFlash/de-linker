@@ -129,16 +129,19 @@ final class ProductShortcodes {
 		$q        = (string) ( $this->filters->requested()['q'] ?? '' );
 
 		$html = '<div class="wb-head">';
-		// The live page's own crumb: "HOME / PRODUCTS" on the shop (the
-		// second entry bold, not a link), "HOME / PRODUCTS / COMMERCIAL
-		// STORAGE / ALL-IN-ONE SYSTEMS" on a nested category (every ancestor
-		// of the term linked, the term itself bold), all words uppercase as
-		// the live page prints them (measured 2026-10-12; the recheck of
+		// The page's own crumb: "HOME / PRODUCTS" on the shop (the second
+		// entry bold, not a link), "HOME / PRODUCTS / COMMERCIAL STORAGE /
+		// ALL-IN-ONE SYSTEMS" on a nested category (every ancestor of the
+		// term linked, the term itself bold), all words uppercase as the
+		// live page printed them (measured 2026-10-12; the recheck of
 		// 2026-10-14 found the parent segment missing on the deployed tree).
-		// The category's name is the English one on both language pages —
-		// the live German archive prints "STARTSEITE / PRODUKTE / INVERTERS"
-		// above its own "Wechselrichter" heading.
-		$html .= '<div class="wb-metarow container"><span class="wbm-l"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html( self::upper( _x( 'Home', 'breadcrumb', 'linker-commerce' ) ) ) . '</a> / ';
+		// Since the 2026-10-17 ruling every German page is German-only: the
+		// home link follows the request's language and the category names are
+		// the queried terms' own (German) names, not their English twins. The
+		// last live German archive read "STARTSEITE / PRODUKTE / INVERTERS"
+		// above its own "Wechselrichter" heading; that copy is the defect, not
+		// the reference.
+		$html .= '<div class="wb-metarow container"><span class="wbm-l"><a href="' . esc_url( $this->home_link() ) . '">' . esc_html( self::upper( _x( 'Home', 'breadcrumb', 'linker-commerce' ) ) ) . '</a> / ';
 		if ( $is_term ) {
 			$html .= '<a href="' . esc_url( $shop_url ) . '">' . esc_html( self::upper( __( 'Products', 'linker-commerce' ) ) ) . '</a>';
 			foreach ( $this->term_ancestors( $queried ) as $ancestor ) {
@@ -1613,13 +1616,34 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * The category's name as the live crumb prints it: the English term's,
-	 * on the German page too (the live German archive reads "INVERTERS").
+	 * The category's name in the request's language: the queried term's own
+	 * name. Polylang hands the request the term of its language, so a German
+	 * archive reads its German category names (owner ruling 2026-10-17: a
+	 * German page is German-only; ticket #264 H5).
 	 *
-	 * @param WP_Term $term The queried category.
+	 * @param WP_Term $term The queried category or one of its ancestors.
 	 */
 	private function category_crumb_name( WP_Term $term ): string {
-		return (string) $this->english_term( $term )->name;
+		// Term names are stored HTML-encoded ("Energiezähler &amp; Stromwandler");
+		// uppercasing the entity would print "&AMP;", so decode first and let
+		// esc_html() encode the clean name once.
+		return \html_entity_decode( $term->name, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	}
+
+	/**
+	 * The site's home page in the request's language. Polylang's
+	 * `pll_home_url()` adds the language segment (`/de/`); WordPress's
+	 * `home_url()` does not, because the plugin calls it outside the theme's
+	 * filtered path.
+	 */
+	private function home_link(): string {
+		if ( \function_exists( 'pll_home_url' ) ) {
+			$home = (string) \pll_home_url();
+			if ( '' !== $home ) {
+				return $home;
+			}
+		}
+		return home_url( '/' );
 	}
 
 	/**

@@ -1,0 +1,321 @@
+[
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      8278
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      9238
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      9264
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      6689
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      3562
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      3395
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1055
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      6545
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      9382
+    ],
+    "unmasked_different_pixels": 180513,
+    "difference_bounds": [
+      175,
+      1734,
+      1340,
+      5564
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "two autoplaying product videos:0",
+        "selector": "video",
+        "padding": 2,
+        "bounds": [
+          172,
+          1731,
+          836,
+          2148
+        ]
+      },
+      {
+        "name": "two autoplaying product videos:1",
+        "selector": "video",
+        "padding": 2,
+        "bounds": [
+          654,
+          2372,
+          1306,
+          2782
+        ]
+      },
+      {
+        "name": "lazy package photo edge:0",
+        "selector": ".installer-pkg-photo",
+        "padding": 2,
+        "bounds": [
+          98,
+          4200,
+          640,
+          4830
+        ]
+      },
+      {
+        "name": "lazy package photo edge:1",
+        "selector": ".installer-pkg-photo",
+        "padding": 2,
+        "bounds": [
+          800,
+          4936,
+          1342,
+          5566
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      8809
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      12252
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      12270
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      8429
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      2937
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      4219
+    ],
+    "unmasked_different_pixels": 5538,
+    "difference_bounds": [
+      0,
+      3591,
+      390,
+      4156
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "animated site footer:0",
+        "selector": ".tv-footer-root",
+        "padding": 0,
+        "bounds": [
+          0,
+          3549,
+          390,
+          4218
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1194
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      8313
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      10386
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [],
+    "outside_ruled_different_pixels": 0
+  }
+]

@@ -1,0 +1,108 @@
+[
+	{
+		"type": "page",
+		"source": "products",
+		"set": {
+			"meta:_seopress_titles_desc": "Filtern Sie Wechselrichter, LFP-Batterien, Komplettsysteme, Zähler und Steuerungen nach Marke oder finden Sie ein Produkt per Produktnummer oder Typenschildfoto. Nettopreise für Partner."
+		}
+	},
+	{
+		"type": "page",
+		"source": "cart",
+		"set": {
+			"meta:_seopress_titles_desc": "Überprüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, Steuern und Lieferbedingungen vor der Proforma-Anfrage."
+		}
+	},
+	{
+		"type": "page",
+		"source": "proforma-request",
+		"set": {
+			"meta:_seopress_titles_desc": "Bestätigen Sie Ihr Konto, Ihre Rechnungs- und Lieferadresse, Ihre Umsatzsteuerangaben und die Zahlungsart; senden Sie dann Ihre Anfrage. Die Unterlagen stellen wir in Ihrem Partnerkonto bereit."
+		}
+	},
+	{
+		"type": "page",
+		"source": "my-account",
+		"set": {
+			"meta:_seopress_titles_desc": "Melden Sie sich an, um Preise für Ihr Konto, Ihre Anfragen, Adressen und Unterlagen zu sehen, oder registrieren Sie Ihr Unternehmen. Nur für Gewerbekunden; jede Registrierung wird geprüft."
+		}
+	},
+	{
+		"type": "page",
+		"source": "for-installer",
+		"set": {
+			"meta:_seopress_titles_desc": "Komplette Speicherpakete, im Lösungskonfigurator ausgelegt, mit den für Ihre Anfrage angeforderten Netzanschlussdokumenten, Lagerware in Deutschland und bestätigten Versandterminen."
+		}
+	},
+	{
+		"type": "page",
+		"source": "commercial-storage",
+		"set": {
+			"meta:_seopress_titles_desc": "C&I-Systeme von GoodWe, SAJ und Pylontech für Lastspitzenkappung, Eigenverbrauch und Notstrom, im Lösungskonfigurator anhand Ihres Lastprofils ausgelegt. Netzanschlussdokumente werden je Anfrage angefordert."
+		}
+	},
+	{
+		"type": "page",
+		"source": "imprint"
+	},
+	{
+		"type": "page",
+		"source": "solution",
+		"replace": {
+			"post_content": [
+				{
+					"old": "Angebot über den Katalog hinaus",
+					"new": "Angebot über das Sortiment hinaus"
+				}
+			]
+		}
+	},
+	{
+		"type": "page",
+		"source": "privacy-policy",
+		"replace": {
+			"post_content": [
+				{
+					"old": "Dieser Shop verwendet",
+					"new": "Diese Website verwendet"
+				}
+			]
+		}
+	},
+	{
+		"type": "product",
+		"source": "goodwe-esa-gw125-261-esa-lcn-g10",
+		"replace": {
+			"post_excerpt": [
+				{
+					"old": "Dieser Artikel ist ein Schrank",
+					"new": "Dieses Produkt ist ein Schrank"
+				}
+			]
+		}
+	},
+	{
+		"type": "page",
+		"source": "home",
+		"replace": {
+			"post_content": [
+				{
+					"old": "Artikelnummer",
+					"new": "Produktnummer"
+				}
+			]
+		}
+	},
+	{
+		"type": "page",
+		"source": "thank-you",
+		"replace": {
+			"post_content": [
+				{
+					"old": "Technische Artikel",
+					"new": "Technische Beiträge"
+				}
+			]
+		}
+	}
+]

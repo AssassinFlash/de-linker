@@ -54,9 +54,9 @@ final class ProductView {
 
 		return array(
 			'id'           => $product_id,
-			'title'        => $product->get_name(),
+			'title'        => Materials::apply_terms( $product->get_name() ),
 			'model'        => '' !== $model ? $model : $product->get_name(),
-			'designation'  => $this->designation( $product->get_name(), $brand, $model ),
+			'designation'  => Materials::apply_terms( $this->designation( $product->get_name(), $brand, $model ) ),
 			'brand'        => $brand,
 			'brand_slug'   => $this->term_slug( $product_id, 'pa_brand' ),
 			'brand_logo'   => $this->brand_logo( $product_id ),
@@ -68,9 +68,9 @@ final class ProductView {
 			'cta_label'    => $this->cta_label(),
 			'cta_url'      => $this->cta_url( $product ),
 			'ask_url'      => $this->ask_url( $product ),
-			'intro'        => '' !== $product->get_short_description() ? $product->get_short_description() : $this->legacy_field( $product_id, 'product_short_intro' ),
-			'body'         => $product->get_description(),
-			'series'       => $this->legacy_field( $product_id, 'product_series' ),
+			'intro'        => Materials::apply_terms( '' !== $product->get_short_description() ? $product->get_short_description() : $this->legacy_field( $product_id, 'product_short_intro' ) ),
+			'body'         => Materials::apply_terms( $product->get_description() ),
+			'series'       => self::series_label( $this->legacy_field( $product_id, 'product_series' ), Materials::is_de() ),
 			'spec_groups'  => $this->spec_groups( $product_id ),
 			'attributes'   => $this->attributes( $product ),
 			'figures'      => $this->figures( $product_id ),
@@ -82,6 +82,30 @@ final class ProductView {
 			'faqs'         => $this->faqs( $product_id ),
 			'pairings'     => $this->pairings( $product_id ),
 			'crumbs'       => $this->crumbs( $product_id ),
+		);
+	}
+
+	/**
+	 * The product's series label in the page's language (AGENTS.md §2
+	 * 2026-10-05: Produkt / Modell / Serie; ticket #264 M4). The stored
+	 * `product_series` values are the manufacturers' English labels ("ET
+	 * Series", "ESA Series", "EcoFlow OCEAN 2 (Three-Phase)"); the German
+	 * page prints the German compound ("ET-Serie", "ESA-Serie") and the
+	 * German phase word. Values without an English suffix stay byte for byte,
+	 * and an already German label ("ET-Serie") is left alone.
+	 *
+	 * @param string $series The stored series label.
+	 * @param bool   $german Whether the page is German.
+	 */
+	public static function series_label( string $series, bool $german ): string {
+		if ( ! $german || '' === $series ) {
+			return $series;
+		}
+		$series = (string) \preg_replace( '/\b([A-Za-z0-9]+) Series\b/u', '$1-Serie', $series );
+		return \str_replace(
+			array( '(Three-Phase)', '(Single-Phase)' ),
+			array( '(dreiphasig)', '(einphasig)' ),
+			$series
 		);
 	}
 

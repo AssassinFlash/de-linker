@@ -46,15 +46,16 @@ final class ModuleTest extends TestCase {
 		$account    = new AccountTemplates();
 		$module     = new Module( $shortcodes, $gate, $windpress, null, $compare, $library, $account );
 
-		// 63 (including the four guest account entry tags for #223): the product, checkout, comparison, library and account shortcodes,
+		// 64 (including the four guest account entry tags for #223): the product, checkout, comparison, library and account shortcodes,
 		// the empty-draft state, the contact invitation band, the catalogue's
-		// mobile actions bar and chips strip, the blog single template's two
-		// data fragments, and the site origin the blog index's JSON-LD composes
+		// mobile actions bar and chips strip, the blog single template's three
+		// data fragments (categories, related posts and the German share row,
+		// #264), and the site origin the blog index's JSON-LD composes
 		// (#175) — plus the product page's FAQ side panel (2026-10-16). The
 		// price gate is not a shortcode: prices are hidden at their source
 		// (Gating\PriceDisplay), and the registration nothing consumed went
 		// with it.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 63 ) );
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 64 ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $account, 'orders_query' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );
