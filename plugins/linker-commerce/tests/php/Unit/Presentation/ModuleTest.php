@@ -37,7 +37,7 @@ final class ModuleTest extends TestCase {
 	 * storefront CSS was retired.
 	 */
 	public function test_register_adds_exactly_the_module_hooks(): void {
-		$shortcodes = new Shortcodes( new LoginGate() );
+		$shortcodes = new Shortcodes();
 		$gate       = new LoginGate();
 		$windpress  = new WindPress();
 		$compare    = new ComparePage();

@@ -242,6 +242,7 @@ final class FormTest extends TestCase {
 	 * @param string $locale The locale the page is rendered in.
 	 */
 	private function form_environment( string $locale = 'en_US' ): void {
+		WP_Mock::userFunction( 'wp_create_nonce', array( 'return' => 'signed-time' ) );
 		WP_Mock::userFunction( 'determine_locale', array( 'return' => $locale ) );
 		WP_Mock::userFunction(
 			'get_queried_object',

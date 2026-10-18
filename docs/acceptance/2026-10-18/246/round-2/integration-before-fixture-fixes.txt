@@ -1,0 +1,50 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+................................F..........F...F...............  63 / 117 ( 53%)
+.........................SSSSSSSSS....................          117 / 117 (100%)
+
+Time: 00:44.469, Memory: 188.00 MB
+
+There were 3 failures:
+
+1) Linker\Commerce\Tests\Integration\DigestTest::test_exhausted_digest_is_reported_in_the_next_one
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+     2 => 'proformas_awaiting_reply'
+     3 => 'failed_emails'
+     4 => 'internal_mail'
++    5 => 'german_translation_exceptions'
+ )
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/DigestTest.php:193
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+2) Linker\Commerce\Tests\Integration\InternalSmtpTest::test_auth_failure_falls_back_and_reports_the_last_outcome
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'Der letzte SMTP-Versuch ist fehlgeschlagen.'
++'The last SMTP attempt failed.'
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/InternalSmtpTest.php:83
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+3) Linker\Commerce\Tests\Integration\InternalSmtpTest::test_missing_configuration_falls_back_and_reports_once_per_digest
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'Interne E-Mails sind nicht authentifiziert.'
++'Internal mail not authenticated.'
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/InternalSmtpTest.php:231
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 117, Assertions: 1221, Failures: 3, Skipped: 9.

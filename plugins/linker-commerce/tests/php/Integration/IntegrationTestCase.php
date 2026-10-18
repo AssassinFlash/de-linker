@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Integration;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Mail\TestMode;
 use PHPUnit\Framework\TestCase;
 use WC_Customer;
 use WC_Order;
@@ -22,6 +23,9 @@ use WC_Product_Simple;
  * them again after each test.
  */
 abstract class IntegrationTestCase extends TestCase {
+
+	/** Every fixture delivery uses this synthetic tester (AGENTS §5). */
+	protected const TESTER = 'tester246@example.test';
 
 	/**
 	 * Skips unless the integration configuration ran the bootstrap: LINKER_WP_ROOT
@@ -70,6 +74,34 @@ abstract class IntegrationTestCase extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$this->isolate_mail();
+		$this->isolate_public_connection();
+	}
+
+	/** Each test has its own public connection window, restored on exit. */
+	private function isolate_public_connection(): void {
+		$exists                 = array_key_exists( 'REMOTE_ADDR', $_SERVER );
+		$address                = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Exact runner value for restoration.
+		$_SERVER['REMOTE_ADDR'] = '127.0.0.246';
+		global $wpdb;
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- preserve the atomic counters without an object cache between SQL and the test.
+		$pattern = $wpdb->esc_like( 'linker_commerce_limit_' ) . '%';
+		$rows    = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $pattern ), ARRAY_A );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $pattern ) );
+		$this->later(
+			static function () use ( $exists, $address, $pattern, $rows ): void {
+				global $wpdb;
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $pattern ) );
+				foreach ( $rows as $row ) {
+					$wpdb->insert( $wpdb->options, array_merge( $row, array( 'autoload' => 'off' ) ) );
+				}
+				// phpcs:enable
+				if ( $exists ) {
+					$_SERVER['REMOTE_ADDR'] = $address;
+				} else {
+					unset( $_SERVER['REMOTE_ADDR'] );
+				}
+			}
+		);
 	}
 
 	/**
@@ -82,11 +114,18 @@ abstract class IntegrationTestCase extends TestCase {
 	 * setUp() calls it first, so its removal runs after the test's own.
 	 */
 	private function isolate_mail(): void {
+		$test_to = get_option( TestMode::OPTION );
+		( new TestMode() )->enable( self::TESTER );
 		$sends  = get_option( Throttle::OPTION );
 		$marker = self::newest_mail_job();
 		delete_option( Throttle::OPTION );
 		$this->later(
-			static function () use ( $sends, $marker ): void {
+			static function () use ( $sends, $marker, $test_to ): void {
+				if ( false === $test_to ) {
+					delete_option( TestMode::OPTION );
+				} else {
+					update_option( TestMode::OPTION, $test_to, false );
+				}
 				foreach ( self::mail_jobs_after( $marker ) as $id ) {
 					as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
 					wp_delete_post( $id, true );

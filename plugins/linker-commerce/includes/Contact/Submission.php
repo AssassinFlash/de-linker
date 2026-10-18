@@ -68,9 +68,33 @@ final class Submission {
 	 * German page is answered in German.
 	 *
 	 * @param  array<string, mixed> $post The posted values, unslashed.
+	 * @param  bool                 $message_required Contact requires a question; a product inquiry does not.
 	 * @return self|WP_Error
 	 */
-	public static function from_post( array $post ): self|WP_Error {
+	public static function from_post( array $post, bool $message_required = true ): self|WP_Error {
+		return self::validate( $post, $message_required, true );
+	}
+
+	/**
+	 * Genie supplies a reply email and message; a name is optional for that door.
+	 * The caller owns its consent UI and bot/nonce checks before Sender::message().
+	 *
+	 * @param array<string, mixed> $post Validated transport fields, unslashed.
+	 * @return self|WP_Error
+	 */
+	public static function from_handoff( array $post ): self|WP_Error {
+		return self::validate( $post, true, false );
+	}
+
+	/**
+	 * The same field validation for each door's required details.
+	 *
+	 * @param array<string, mixed> $post Unslashed fields.
+	 * @param bool                 $message_required Whether the message is required.
+	 * @param bool                 $name_required Whether the name is required.
+	 * @return self|WP_Error
+	 */
+	private static function validate( array $post, bool $message_required, bool $name_required ): self|WP_Error {
 		$name    = self::text( $post['name'] ?? '' );
 		$email   = self::text( $post['email'] ?? '' );
 		$company = self::text( $post['company'] ?? '' );
@@ -78,20 +102,21 @@ final class Submission {
 		$intent  = self::intent( $post[ self::INTENT_FIELD ] ?? '' );
 		$consent = isset( $post['consent'] ) && '1' === (string) $post['consent'];
 
-		if ( '' === $name ) {
+		if ( $name_required && '' === $name ) {
 			return new WP_Error( 'linker_contact_name', __( 'Please add your name.', 'linker-commerce' ) );
 		}
 		if ( ! is_email( $email ) ) {
 			return new WP_Error( 'linker_contact_email', __( 'Please add an email address we can reply to.', 'linker-commerce' ) );
 		}
-		if ( '' === $message ) {
+		if ( $message_required && '' === $message ) {
 			return new WP_Error( 'linker_contact_message', __( 'Please write your message.', 'linker-commerce' ) );
 		}
 		if ( ! $consent ) {
 			return new WP_Error( 'linker_contact_consent', __( 'Please agree to the use of your details for the reply.', 'linker-commerce' ) );
 		}
 
-		return new self( $name, strtolower( $email ), $company, $message, $intent, OrderLocale::current() );
+		$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
+		return new self( $name, strtolower( $email ), $company, $message, $intent, OrderLocale::current( $language ) );
 	}
 
 	/**

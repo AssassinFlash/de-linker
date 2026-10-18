@@ -37,15 +37,16 @@ final class OrderLocale {
 	 * The locale of the current request: the language the checkout form posted
 	 * first (its AJAX address ?wc-ajax=checkout names no language, so Polylang
 	 * answers with the default one there; the form's own "lang" field,
-	 * Checkout::language_field(), is the customer's page), then Polylang's
+	 * Form::hidden(), is the customer's page), then Polylang's
 	 * current language, and WordPress's own answer when neither does.
 	 *
+	 * @param  string|null $language Explicit form language for non-global callers.
 	 * @return string A WordPress locale.
 	 */
-	public static function current(): string {
+	public static function current( ?string $language = null ): string {
 		// The whole POST carries WooCommerce's checkout nonce (verified before any order is created).
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$posted = isset( $_POST['lang'] ) ? sanitize_key( wp_unslash( $_POST['lang'] ) ) : '';
+		$posted = $language ?? ( isset( $_POST['lang'] ) ? sanitize_key( wp_unslash( $_POST['lang'] ) ) : '' );
 		if ( '' !== $posted && function_exists( 'PLL' ) ) {
 			$language = PLL()->model->get_language( $posted );
 			if ( false !== $language ) {

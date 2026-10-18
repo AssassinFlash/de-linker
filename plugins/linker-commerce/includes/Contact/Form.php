@@ -67,10 +67,6 @@ final class Form {
 	 */
 	public const ANCHOR = 'contact-form';
 
-	/**
-	 * The field the honeypot rides in: a person never sees or fills it.
-	 */
-	public const TRAP_FIELD = 'website';
 
 	/**
 	 * The field that carries where the visitor came from, so the answer goes
@@ -128,6 +124,7 @@ final class Form {
 		$html .= '<input type="hidden" name="lang" value="' . esc_attr( $this->locale() ) . '" />';
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, true, false );
+		$html .= ( new \Linker\Commerce\Inquiry\PublicGuard() )->fields();
 
 		if ( '' !== $state ) {
 			$html .= $state;
@@ -170,7 +167,6 @@ final class Form {
 			$html .= ' <a class="underline" href="' . esc_url( $privacy ) . '">' . esc_html__( 'Privacy', 'linker-commerce' ) . '</a>';
 		}
 		$html .= '</span></label>';
-		$html .= '<div hidden aria-hidden="true"><label>' . esc_html__( 'Website', 'linker-commerce' ) . '<input type="text" name="' . esc_attr( self::TRAP_FIELD ) . '" tabindex="-1" autocomplete="off" /></label></div>';
 		$html .= '<div class="linker-form-submit grid gap-2"><button type="submit" class="linker-form-primary">' . esc_html__( 'Send message', 'linker-commerce' ) . '<span aria-hidden="true">↗</span></button>'
 			. '<p class="linker-form-note">' . esc_html__( 'Your message goes to the Linker team. We reply to the address you give here.', 'linker-commerce' ) . '</p></div>';
 		$html .= '</div>';
@@ -261,7 +257,7 @@ final class Form {
 		if ( ! $page instanceof \WP_Post || ! function_exists( 'pll_get_post' ) ) {
 			return home_url( '/de/genie/' );
 		}
-		$twin = (int) pll_get_post( (int) $page->ID, 'de' );
+		$twin = \Linker\Commerce\Presentation\PageUrls::twin( (int) $page->ID, 'de_DE_formal' );
 		$link = $twin > 0 ? get_permalink( $twin ) : false;
 		return is_string( $link ) && '' !== $link ? $link : home_url( '/de/genie/' );
 	}
@@ -273,6 +269,7 @@ final class Form {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
 		$state = isset( $_GET[ self::STATE_PARAM ] ) ? sanitize_key( (string) wp_unslash( $_GET[ self::STATE_PARAM ] ) ) : '';
 		return match ( $state ) {
+			'sent_no_receipt' => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team. We have not sent a confirmation email. We reply within one business day.', 'linker-commerce' ) ),
 			'sent'      => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
 			'invalid'   => $this->notice( 'invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
 			'throttled' => $this->notice( 'invalid', __( 'We received several messages from this connection. Please try again later or write to sales@de-linker.com.', 'linker-commerce' ) ),

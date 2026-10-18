@@ -31,14 +31,8 @@ use WC_Order;
  * and the Outbox path the digest itself travels (docs/specs/74-daily-digest.md,
  * acceptance).
  *
- * Recipients are asserted as the settings hold them. The test-mail discipline
- * (AGENTS.md) puts ONE switch in the Mail layer (Mail\TestMode, ticket #73,
- * landed with the approval ticket) that rewrites a test send to
- * chester@de-linker.com; it is off unless a scenario turns it on, so these
- * assertions read the real recipients. A scenario that turns it on reads its
- * address in the assertions about a delivered message — the wp_mail_succeeded
- * capture and the .eml — while the queue assertions (the JobStore rows, which
- * keep the original recipients) do not change.
+ * Actual fixture deliveries go to the one tester. Intended To/Bcc routes
+ * are asserted from the original Outbox records in NotificationRoutingTest.
  *
  * @coversNothing
  */
@@ -107,24 +101,26 @@ final class DigestTest extends IntegrationTestCase {
 		$digests = array();
 		$this->capture_digests( $digests );
 		$this->with_team_recipients();
+		$before = $this->captured_files();
 
 		$this->run_digest();
 
 		$this->assertCount( 1, $digests, 'One digest, empty or not.' );
 		[ $to, $subject, , $body ] = $digests[0];
-		// The settings' To: unrewritten, as long as the Mail layer's test switch
-		// is off (class docblock; the switch is the approval lane's).
-		$this->assertSame( array( 'digest-team@example.test' ), $to );
+		// The wire recipient is rewritten; NotificationRoutingTest reads queue routing.
+		$this->assertSame( array( self::TESTER ), $to );
 		$this->assertStringStartsWith( 'Daily digest, ', $subject );
 		$this->assertStringContainsString( 'No inquiry is waiting for more than 24 hours.', $body );
 		$this->assertStringContainsString( 'No Proforma invoice has waited more than 3 days for a reply.', $body );
 		$this->assertStringContainsString( 'No email failed to send.', $body );
 
-		// The blind copies are in the message the host's mail() would receive.
-		$raw = $this->latest_eml();
-		// The wire copy carries the same unrewritten To (class docblock).
-		$this->assertStringContainsString( 'To: digest-team@example.test', $raw );
-		$this->assertStringContainsString( 'Bcc: bcc-one@example.test, bcc-two@example.test', $raw );
+		// One captured wire copy proves delivery to the tester.
+		$files = array_values( array_diff( $this->captured_files(), $before ) );
+		$this->assertCount( 1, $files, 'This digest wrote exactly one captured message.' );
+		$raw = (string) file_get_contents( $files[0] );
+		// Test mode strips copies on the wire.
+		$this->assertStringContainsString( 'To: ' . self::TESTER, $raw );
+		$this->assertStringNotContainsString( "\nBcc:", $raw, 'The wire copy has no Bcc; queue routing is asserted separately.' );
 	}
 
 	/**
@@ -157,8 +153,8 @@ final class DigestTest extends IntegrationTestCase {
 		$this->run_pending_action( $job_id );
 
 		$this->assertCount( 1, $digests, 'The retry delivers.' );
-		// Delivered, so the unrewritten To once more (class docblock).
-		$this->assertSame( array( 'sales@sunriverinverter.com' ), $digests[0][0], 'The internal notification address (Options::DEFAULT_NOTIFY_TO).' );
+		// Retried deliveries keep the same test-mail discipline.
+		$this->assertSame( array( self::TESTER ), $digests[0][0], 'The retry still reaches the tester only.' );
 		$this->assertCount( 0, ( new JobStore() )->failed(), 'Delivered, so not failed.' );
 	}
 
@@ -193,10 +189,10 @@ final class DigestTest extends IntegrationTestCase {
 		// The approval ticket's pending-accounts block leads the digest (issue
 		// #73, the plug point of Blocks::all()); inquiries, proformas and
 		// failed emails keep their order. Internal authentication health
-		// follows them (#297).
+		// follows them (#297). Other modules may append their own blocks.
 		$this->assertSame(
 			array( PendingApprovals::ID, InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID, 'internal_mail' ),
-			array_map( static fn ( Block $block ): string => $block->id(), $blocks )
+			array_slice( array_map( static fn ( Block $block ): string => $block->id(), $blocks ), 0, 5 )
 		);
 		$fourth = $blocks[3];
 		$this->assertSame( FailedEmails::ID, $fourth->id() );
@@ -402,16 +398,12 @@ final class DigestTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * The captured email of this instance, as the host's mail() would have
-	 * received it (the isolation's mail directory).
+	 * This instance's captured messages; names identify a send even within one second.
+	 *
+	 * @return list<string>
 	 */
-	private function latest_eml(): string {
+	private function captured_files(): array {
 		$files = glob( dirname( (string) getenv( 'LINKER_WP_ROOT' ) ) . '/mail/*.eml' );
-		if ( false === $files || array() === $files ) {
-			$files = array();
-		}
-		$this->assertNotEmpty( $files, 'The isolation wrote an email.' );
-		$mtimes = array_map( 'filemtime', $files );
-		return (string) file_get_contents( $files[ array_search( max( $mtimes ), $mtimes, true ) ] );
+		return false === $files ? array() : $files;
 	}
 }

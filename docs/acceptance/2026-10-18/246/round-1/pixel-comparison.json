@@ -1,0 +1,871 @@
+{
+  "matrix": [
+    {
+      "left": "semantic-live-main-en-1440.png",
+      "right": "semantic-main-en-1440.png",
+      "language": "en",
+      "width": 1440,
+      "size": [
+        1440,
+        3512
+      ],
+      "raw_different_pixels": 4158,
+      "operator_toolbar_different_pixels": 4158,
+      "customer_page_different_pixels": 0,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        634,
+        265,
+        1440,
+        1448
+      ],
+      "max_customer_channel_delta": 0,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            89,
+            633,
+            1448
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            765,
+            1549,
+            1353,
+            2188
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2289,
+            1440,
+            2938
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        }
+      ],
+      "masks": [],
+      "phase": "main"
+    },
+    {
+      "left": "semantic-live-feature-en-1440.png",
+      "right": "semantic-feature-en-1440.png",
+      "language": "en",
+      "width": 1440,
+      "size": [
+        1440,
+        3512
+      ],
+      "raw_different_pixels": 376734,
+      "operator_toolbar_different_pixels": 4158,
+      "customer_page_different_pixels": 372576,
+      "contact_form_different_pixels": 90,
+      "form_box": [
+        634,
+        265,
+        1440,
+        1448
+      ],
+      "max_customer_channel_delta": 57,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            89,
+            633,
+            1448
+          ],
+          "different_pixels": 26049,
+          "max_channel_delta": 1
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            765,
+            1549,
+            1353,
+            2188
+          ],
+          "different_pixels": 2251,
+          "max_channel_delta": 1
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2289,
+            1440,
+            2938
+          ],
+          "different_pixels": 343063,
+          "max_channel_delta": 6
+        }
+      ],
+      "masks": [],
+      "phase": "feature"
+    },
+    {
+      "left": "semantic-live-main-en-390.png",
+      "right": "semantic-main-en-390.png",
+      "language": "en",
+      "width": 390,
+      "size": [
+        390,
+        3292
+      ],
+      "raw_different_pixels": 13515,
+      "operator_toolbar_different_pixels": 393,
+      "customer_page_different_pixels": 13122,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        0,
+        251,
+        390,
+        1798
+      ],
+      "max_customer_channel_delta": 2,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            81,
+            390,
+            251
+          ],
+          "different_pixels": 13056,
+          "max_channel_delta": 2
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            284,
+            1827,
+            366,
+            1930
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2255,
+            390,
+            2624
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        }
+      ],
+      "masks": [],
+      "phase": "main"
+    },
+    {
+      "left": "semantic-live-feature-en-390.png",
+      "right": "semantic-feature-en-390.png",
+      "language": "en",
+      "width": 390,
+      "size": [
+        390,
+        3292
+      ],
+      "raw_different_pixels": 2962,
+      "operator_toolbar_different_pixels": 393,
+      "customer_page_different_pixels": 2569,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        0,
+        251,
+        390,
+        1798
+      ],
+      "max_customer_channel_delta": 1,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            81,
+            390,
+            251
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            284,
+            1827,
+            366,
+            1930
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2255,
+            390,
+            2624
+          ],
+          "different_pixels": 2503,
+          "max_channel_delta": 1
+        }
+      ],
+      "masks": [],
+      "phase": "feature"
+    },
+    {
+      "left": "semantic-live-main-de-1440.png",
+      "right": "semantic-main-de-1440.png",
+      "language": "de",
+      "width": 1440,
+      "size": [
+        1440,
+        3560
+      ],
+      "raw_different_pixels": 370605,
+      "operator_toolbar_different_pixels": 4496,
+      "customer_page_different_pixels": 366109,
+      "contact_form_different_pixels": 13,
+      "form_box": [
+        634,
+        265,
+        1440,
+        1495
+      ],
+      "max_customer_channel_delta": 57,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            89,
+            633,
+            1495
+          ],
+          "different_pixels": 244787,
+          "max_channel_delta": 11
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            765,
+            1596,
+            1353,
+            2235
+          ],
+          "different_pixels": 2360,
+          "max_channel_delta": 1
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2336,
+            1440,
+            2985
+          ],
+          "different_pixels": 118022,
+          "max_channel_delta": 2
+        }
+      ],
+      "masks": [],
+      "phase": "main"
+    },
+    {
+      "left": "semantic-live-feature-de-1440.png",
+      "right": "semantic-feature-de-1440.png",
+      "language": "de",
+      "width": 1440,
+      "size": [
+        1440,
+        3560
+      ],
+      "raw_different_pixels": 140976,
+      "operator_toolbar_different_pixels": 4496,
+      "customer_page_different_pixels": 136480,
+      "contact_form_different_pixels": 15,
+      "form_box": [
+        634,
+        265,
+        1440,
+        1495
+      ],
+      "max_customer_channel_delta": 57,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            89,
+            633,
+            1495
+          ],
+          "different_pixels": 15557,
+          "max_channel_delta": 11
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            765,
+            1596,
+            1353,
+            2235
+          ],
+          "different_pixels": 2360,
+          "max_channel_delta": 1
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2336,
+            1440,
+            2985
+          ],
+          "different_pixels": 118022,
+          "max_channel_delta": 2
+        }
+      ],
+      "masks": [],
+      "phase": "feature"
+    },
+    {
+      "left": "semantic-live-main-de-390.png",
+      "right": "semantic-main-de-390.png",
+      "language": "de",
+      "width": 390,
+      "size": [
+        390,
+        3406
+      ],
+      "raw_different_pixels": 14152,
+      "operator_toolbar_different_pixels": 393,
+      "customer_page_different_pixels": 13759,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        0,
+        261,
+        390,
+        1849
+      ],
+      "max_customer_channel_delta": 3,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            81,
+            390,
+            260
+          ],
+          "different_pixels": 13759,
+          "max_channel_delta": 3
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            284,
+            1878,
+            366,
+            1981
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2306,
+            390,
+            2675
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        }
+      ],
+      "masks": [],
+      "phase": "main"
+    },
+    {
+      "left": "semantic-live-feature-de-390.png",
+      "right": "semantic-feature-de-390.png",
+      "language": "de",
+      "width": 390,
+      "size": [
+        390,
+        3406
+      ],
+      "raw_different_pixels": 21188,
+      "operator_toolbar_different_pixels": 393,
+      "customer_page_different_pixels": 20795,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        0,
+        261,
+        390,
+        1849
+      ],
+      "max_customer_channel_delta": 6,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            81,
+            390,
+            260
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            284,
+            1878,
+            366,
+            1981
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2306,
+            390,
+            2675
+          ],
+          "different_pixels": 20689,
+          "max_channel_delta": 3
+        }
+      ],
+      "masks": [],
+      "phase": "feature"
+    }
+  ],
+  "live_repeat_control": [
+    {
+      "left": "semantic-live-main-en-1440.png",
+      "right": "semantic-live-feature-en-1440.png",
+      "language": "en",
+      "width": 1440,
+      "size": [
+        1440,
+        3512
+      ],
+      "raw_different_pixels": 0,
+      "operator_toolbar_different_pixels": 0,
+      "customer_page_different_pixels": 0,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        634,
+        265,
+        1440,
+        1448
+      ],
+      "max_customer_channel_delta": 0,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            89,
+            633,
+            1448
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            765,
+            1549,
+            1353,
+            2188
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2289,
+            1440,
+            2938
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        }
+      ],
+      "masks": []
+    },
+    {
+      "left": "semantic-live-main-en-390.png",
+      "right": "semantic-live-feature-en-390.png",
+      "language": "en",
+      "width": 390,
+      "size": [
+        390,
+        3292
+      ],
+      "raw_different_pixels": 15559,
+      "operator_toolbar_different_pixels": 0,
+      "customer_page_different_pixels": 15559,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        0,
+        251,
+        390,
+        1798
+      ],
+      "max_customer_channel_delta": 2,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            81,
+            390,
+            251
+          ],
+          "different_pixels": 13056,
+          "max_channel_delta": 2
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            284,
+            1827,
+            366,
+            1930
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2255,
+            390,
+            2624
+          ],
+          "different_pixels": 2503,
+          "max_channel_delta": 1
+        }
+      ],
+      "masks": []
+    },
+    {
+      "left": "semantic-live-main-de-1440.png",
+      "right": "semantic-live-feature-de-1440.png",
+      "language": "de",
+      "width": 1440,
+      "size": [
+        1440,
+        3560
+      ],
+      "raw_different_pixels": 235541,
+      "operator_toolbar_different_pixels": 0,
+      "customer_page_different_pixels": 235541,
+      "contact_form_different_pixels": 2,
+      "form_box": [
+        634,
+        265,
+        1440,
+        1495
+      ],
+      "max_customer_channel_delta": 5,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            89,
+            633,
+            1495
+          ],
+          "different_pixels": 235108,
+          "max_channel_delta": 5
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            765,
+            1596,
+            1353,
+            2235
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2336,
+            1440,
+            2985
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        }
+      ],
+      "masks": []
+    },
+    {
+      "left": "semantic-live-main-de-390.png",
+      "right": "semantic-live-feature-de-390.png",
+      "language": "de",
+      "width": 390,
+      "size": [
+        390,
+        3406
+      ],
+      "raw_different_pixels": 13759,
+      "operator_toolbar_different_pixels": 0,
+      "customer_page_different_pixels": 13759,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        0,
+        261,
+        390,
+        1849
+      ],
+      "max_customer_channel_delta": 3,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            81,
+            390,
+            260
+          ],
+          "different_pixels": 13759,
+          "max_channel_delta": 3
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            284,
+            1878,
+            366,
+            1981
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2306,
+            390,
+            2675
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        }
+      ],
+      "masks": []
+    }
+  ],
+  "final_review_en_1440": {
+    "left": "diagnostic-live-second-en-1440.png",
+    "right": "diagnostic-feature-second-en-1440.png",
+    "language": "en",
+    "width": 1440,
+    "size": [
+      1440,
+      3512
+    ],
+    "raw_different_pixels": 4158,
+    "operator_toolbar_different_pixels": 4158,
+    "customer_page_different_pixels": 0,
+    "contact_form_different_pixels": 0,
+    "form_box": [
+      634,
+      265,
+      1440,
+      1448
+    ],
+    "max_customer_channel_delta": 0,
+    "photos": [
+      {
+        "asset": "lk-contact-linker-team-in-barleben.webp",
+        "box": [
+          0,
+          89,
+          633,
+          1448
+        ],
+        "different_pixels": 0,
+        "max_channel_delta": 0
+      },
+      {
+        "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+        "box": [
+          765,
+          1549,
+          1353,
+          2188
+        ],
+        "different_pixels": 0,
+        "max_channel_delta": 0
+      },
+      {
+        "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+        "box": [
+          0,
+          2289,
+          1440,
+          2938
+        ],
+        "different_pixels": 0,
+        "max_channel_delta": 0
+      }
+    ],
+    "masks": []
+  },
+  "immediate_repeat_control": [
+    {
+      "left": "diagnostic-live-first-en-1440.png",
+      "right": "diagnostic-live-second-en-1440.png",
+      "language": "en",
+      "width": 1440,
+      "size": [
+        1440,
+        3512
+      ],
+      "raw_different_pixels": 0,
+      "operator_toolbar_different_pixels": 0,
+      "customer_page_different_pixels": 0,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        634,
+        265,
+        1440,
+        1448
+      ],
+      "max_customer_channel_delta": 0,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            89,
+            633,
+            1448
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            765,
+            1549,
+            1353,
+            2188
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2289,
+            1440,
+            2938
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        }
+      ],
+      "masks": []
+    },
+    {
+      "left": "diagnostic-feature-first-en-1440.png",
+      "right": "diagnostic-feature-second-en-1440.png",
+      "language": "en",
+      "width": 1440,
+      "size": [
+        1440,
+        3512
+      ],
+      "raw_different_pixels": 0,
+      "operator_toolbar_different_pixels": 0,
+      "customer_page_different_pixels": 0,
+      "contact_form_different_pixels": 0,
+      "form_box": [
+        634,
+        265,
+        1440,
+        1448
+      ],
+      "max_customer_channel_delta": 0,
+      "photos": [
+        {
+          "asset": "lk-contact-linker-team-in-barleben.webp",
+          "box": [
+            0,
+            89,
+            633,
+            1448
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "linker-warehouse-logistics-engineer-inventory-management-desk.webp",
+          "box": [
+            765,
+            1549,
+            1353,
+            2188
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        },
+        {
+          "asset": "lk-contact-linker-team-in-barleben-with-goodwe-crrc-and-pylontech.webp",
+          "box": [
+            0,
+            2289,
+            1440,
+            2938
+          ],
+          "different_pixels": 0,
+          "max_channel_delta": 0
+        }
+      ],
+      "masks": []
+    }
+  ]
+}

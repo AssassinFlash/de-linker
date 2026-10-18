@@ -32,6 +32,10 @@ final class ModuleTest extends TestCase {
 	 * Statuses, stock, gateway, request page, admin labels and emails are hooked; stock is never reduced.
 	 */
 	public function test_register_adds_the_hooks(): void {
+		WP_Mock::userFunction( 'add_shortcode', array( 'return' => true ) );
+		$this->expect_action_on_any( 'woocommerce_created_customer', \Linker\Commerce\Inquiry\AccountLink::class, 'claim', 20 );
+		$this->expect_action_on_any( 'admin_post_nopriv_linker_inquiry', \Linker\Commerce\Inquiry\Handler::class, 'handle' );
+		$this->expect_action_on_any( 'admin_post_linker_inquiry', \Linker\Commerce\Inquiry\Handler::class, 'handle' );
 		$statuses = new Statuses();
 		$checkout = new Checkout();
 		$locale   = new OrderLocale();
@@ -50,12 +54,15 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_available_payment_gateways', array( $checkout, 'gateways' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_checkout_create_order', array( $checkout, 'without_payment_method_title' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_checkout_create_order', array( $locale, 'remember' ) );
-		WP_Mock::expectActionAdded( 'woocommerce_after_order_notes', array( $checkout, 'language_field' ) );
-		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $checkout, 'feedback' ) );
-		WP_Mock::expectActionAdded( 'woocommerce_checkout_update_order_review', array( $checkout, 'review_language' ) );
-		WP_Mock::expectActionAdded( 'woocommerce_review_order_before_submit', array( $checkout, 'reply_promise' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_thankyou_' . ProformaGateway::ID, array( $checkout, 'next_steps' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_get_checkout_order_received_url', array( $checkout, 'received_url' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_order_item_permalink', array( $checkout, 'item_permalink' ), 10, 3 );
+		WP_Mock::expectActionAdded( 'woocommerce_after_checkout_validation', array( $checkout, 'validate_public' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'rest_pre_dispatch', array( $checkout, 'block_store_checkout' ), 10, 3 );
+		WP_Mock::expectFilterAdded( 'manage_edit-shop_order_columns', array( $admin, 'columns' ) );
+		WP_Mock::expectFilterAdded( 'manage_woocommerce_page_wc-orders_columns', array( $admin, 'columns' ) );
+		WP_Mock::expectActionAdded( 'manage_shop_order_posts_custom_column', array( $admin, 'source' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'manage_woocommerce_page_wc-orders_custom_column', array( $admin, 'source' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_register_post_type_shop_order', array( $admin, 'labels' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_actions', array( $module, 'email_actions' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $module, 'add_emails' ) );

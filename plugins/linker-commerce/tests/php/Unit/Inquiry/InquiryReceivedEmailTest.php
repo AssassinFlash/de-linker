@@ -51,6 +51,7 @@ final class InquiryReceivedEmailTest extends TestCase {
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
+		$order->allows( 'get_meta' )->with( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META )->andReturn( '' );
 		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'de_DE_formal' );
 		$this->allow_locale_switch( 'de_DE_formal' );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_inquiry_received', 'maria@example.test' );

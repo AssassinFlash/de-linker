@@ -53,7 +53,7 @@ final class PluginTest extends TestCase {
 			'faqs'            => $faqs,
 			'documents'       => $documents,
 		]       = $d;
-		$plugin = new Plugin( self::FILE, $abilities, $selection_facts, $engineering, $product_search, $search_scope, new ContactModule( self::FILE, new \Linker\Commerce\Settings\Options() ), $figures, $faqs, $documents );
+		$plugin = new Plugin( self::FILE, $abilities, $selection_facts, $engineering, $product_search, $search_scope, new ContactModule(), $figures, $faqs, $documents );
 
 		WP_Mock::expectActionAdded( 'init', array( $plugin, 'load_textdomain' ), 0 );
 		WP_Mock::expectActionAdded( 'wp_abilities_api_categories_init', array( $abilities, 'register_category' ) );
@@ -85,7 +85,6 @@ final class PluginTest extends TestCase {
 				},
 			)
 		);
-			WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( new AnyInstance( ContactModule::class ), 'add_emails' ) ); // @phpstan-ignore argument.type
 			WP_Mock::expectFilterAdded( 'the_content', array( new AnyInstance( ContactModule::class ), 'mount_form' ), 9 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'admin_post_nopriv_linker_contact', array( new \WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Contact\Handler::class ), 'handle' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'admin_post_linker_contact', array( new \WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Contact\Handler::class ), 'handle' ) ); // @phpstan-ignore argument.type
@@ -142,7 +141,7 @@ final class PluginTest extends TestCase {
 		);
 
 		$d = $this->dependencies();
-		( new Plugin( self::FILE, $d['abilities'], $d['selection_facts'], $d['engineering'], $d['product_search'], $d['search_scope'], new ContactModule( self::FILE, new \Linker\Commerce\Settings\Options() ), $d['figures'], $d['faqs'], $d['documents'] ) )->stand_down_legacy_template_preemption();
+		( new Plugin( self::FILE, $d['abilities'], $d['selection_facts'], $d['engineering'], $d['product_search'], $d['search_scope'], new ContactModule(), $d['figures'], $d['faqs'], $d['documents'] ) )->stand_down_legacy_template_preemption();
 
 		$this->assertConditionsMet();
 	}
@@ -153,7 +152,7 @@ final class PluginTest extends TestCase {
 	 */
 	public function test_register_commerce_needs_woocommerce(): void {
 		$d = $this->dependencies();
-		( new Plugin( self::FILE, $d['abilities'], $d['selection_facts'], $d['engineering'], $d['product_search'], $d['search_scope'], new ContactModule( self::FILE, new \Linker\Commerce\Settings\Options() ), $d['figures'], $d['faqs'], $d['documents'] ) )->register_commerce();
+		( new Plugin( self::FILE, $d['abilities'], $d['selection_facts'], $d['engineering'], $d['product_search'], $d['search_scope'], new ContactModule(), $d['figures'], $d['faqs'], $d['documents'] ) )->register_commerce();
 
 		$this->assertFalse( class_exists( 'WooCommerce' ) );
 	}
@@ -178,7 +177,7 @@ final class PluginTest extends TestCase {
 		);
 
 		$d = $this->dependencies();
-		( new Plugin( self::FILE, $d['abilities'], $d['selection_facts'], $d['engineering'], $d['product_search'], $d['search_scope'], new ContactModule( self::FILE, new \Linker\Commerce\Settings\Options() ), $d['figures'], $d['faqs'], $d['documents'] ) )->load_textdomain();
+		( new Plugin( self::FILE, $d['abilities'], $d['selection_facts'], $d['engineering'], $d['product_search'], $d['search_scope'], new ContactModule(), $d['figures'], $d['faqs'], $d['documents'] ) )->load_textdomain();
 
 		$this->assertConditionsMet();
 	}

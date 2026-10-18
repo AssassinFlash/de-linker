@@ -111,6 +111,7 @@ final class LabelsTest extends TestCase {
 		 * description use the site's words; other pages are left alone.
 		 */
 	public function test_seo_title_and_description_drop_cart_and_catalogue(): void {
+		WP_Mock::userFunction( 'is_checkout', array( 'return' => false ) );
 		$labels = new Labels();
 
 		$this->assertSame( 'Solution draft | Linker', $labels->seo_title( 'Your Cart | Linker' ) );
@@ -125,6 +126,13 @@ final class LabelsTest extends TestCase {
 			$labels->seo_description( 'Build a cart from catalog products or SKU rows. Approved partner accounts can review pricing, delivery, tax, and checkout details.' )
 		);
 		$this->assertSame( 'A page that does not name a cart.', $labels->seo_description( 'A page that does not name a cart.' ) );
+	}
+
+	/** The public request and receipt have their own localized browser title. */
+	public function test_inquiry_seo_title_uses_the_current_form_state(): void {
+		WP_Mock::userFunction( 'is_checkout', array( 'return' => true ) );
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		$this->assertSame( 'Send an inquiry | Linker', ( new Labels() )->seo_title( 'Checkout | Linker' ) );
 	}
 
 	/**

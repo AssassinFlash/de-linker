@@ -10,7 +10,9 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Inquiry\Emails;
 
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Inquiry\ReceiptLimit;
 use Linker\Commerce\Mail\CustomerOrderEmail;
+use WC_Order;
 
 /**
  * Sent when an inquiry is received: its number, the reply promise and the
@@ -36,6 +38,24 @@ final class InquiryReceivedEmail extends CustomerOrderEmail {
 		$this->placeholders  = array( '{order_number}' => '' );
 		add_action( 'woocommerce_order_status_pending_to_' . Statuses::RECEIVED . '_notification', array( $this, 'trigger' ), 10, 2 );
 		parent::__construct( $plugin_file );
+	}
+
+	/**
+	 * A public-door receipt omitted at the cap must not be enqueued by the
+	 * status notification; the independent team notification still runs.
+	 *
+	 * @param int                $order_id Inquiry ID.
+	 * @param WC_Order|false|int $order Inquiry, if already loaded.
+	 */
+	public function trigger( $order_id, $order = false ): void {
+		$order = $order instanceof WC_Order ? $order : wc_get_order( (int) $order_id );
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+		if ( 'daily_cap' === $order->get_meta( ReceiptLimit::SKIPPED_META ) ) {
+			return;
+		}
+		parent::trigger( $order_id, $order );
 	}
 
 	/**

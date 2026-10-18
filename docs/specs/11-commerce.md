@@ -8,10 +8,10 @@
 3. **审批**：后台首页原生仪表盘小工具展示待审卡片，顶栏红旗在任意后台页打开同一审核抽屉；Accounts 菜单通向原生列表历史。全部状态随时可再决定，Restrict / Reject 必须带客户可读原因，经既有邮件链告知；相同决定重复提交不重复发信，限制/拒绝的原因变更也通知。资料页与用户列表保留状态及深链，原 GET / 资料表单写入通道在对等验证后移除。权限为 `edit_users` 加每用户 `edit_user`，只审核纯 customer。详情与原生优先证明见 `accounts-admin.md`。
 4. **四态 × 界面**：
    - **approved**：看价；Lösungsentwurf 合并会话内容；产品页按钮 "Add to solution draft / Zum Lösungsentwurf hinzufügen"；可提交询盘。
-   - **pending**：与访客同视图——浏览无价产品、Genie 咨询（无价）、开放式询价走 /contact/ 通道；不可看价（价格位 "Prices after approval / Preise nach Freigabe"）、不可进账户工作台（`PendingGate` 把账户端点送回审核页）、不可提交询盘（请求页显示审核 gate，网关对未批准账号一律不开放——视图与服务端同一权威）。
-   - **restricted**：保留工作台（询盘、资料、文件仍可读）；不可看价（价格位 "Not available for your account / Für Ihr Konto nicht verfügbar"）、不可提交询盘。Proforma request 显示 restricted gate，并写出限制原因（`LoginGate`，与工作台同一权威）。
+   - **pending**：与访客同视图——浏览无价产品、Genie 咨询（无价）、可在请求页或联系页发送询盘；不可看价（价格位 "Prices after approval / Preise nach Freigabe"）、不可进账户工作台（`PendingGate` 把账户端点送回审核页）；可以提交询盘，账户审核页的访问规则由账号票维护。
+   - **restricted**：保留工作台（询盘、资料、文件仍可读）；不可看价（价格位 "Not available for your account / Für Ihr Konto nicht verfügbar"）；可以提交询盘，账户中仍显示限制原因。
    - **rejected**：登录被挡（`wp_authenticate_user`，登录表单显示状态与原因去向；拒绝同时终结该账号的全部登录会话）。
-5. **询盘提交**（原 checkout 页，地址 `/proforma-request/`、`/de/proforma-anfrage/` 不变）：显示 Lösungsentwurf 行、数量、价格（未知价显示 "Price on request / Preis auf Anfrage"）、公司资料、备注；唯一"支付方式"是自建的 `ProformaGateway extends WC_Payment_Gateway`（`has_fields=false`、不显示银行账户、`process_payment` 直接落 `inquiry-received`）；提交按钮 "Request Proforma / Proforma anfordern"；页面写明 "We reply within one business day / Wir antworten innerhalb eines Arbeitstags"（德语成品用 Arbeitstag，与本插件 `.po` 一致）。提交后订单状态 `wc-inquiry-received`，减库存关闭。
+5. **询盘提交**（#246，业主 2026-10-17）：原 checkout 地址 `/proforma-request/`、`/de/proforma-anfrage/` 不变。访客填写姓名、邮箱、公司（选填）、一个开放留言框（选填）与隐私同意，不问国家、地址、VAT 或电话，不自动注册。左边表单、右边可编辑的 Lösungsentwurf；已登录客户的回复资料折叠为一行，可展开更改本次询盘资料，留言与发送按钮直接可用。产品随询盘带上；空草稿可以只留言，但产品和留言均空时拒绝。访客、pending、restricted、approved 共用发送入口，价格门保持现状。提交后原生 Woo 感谢页与回执保留，状态 `wc-inquiry-received`，库存不扣减。回执与感谢页给访客一个可选注册链接（本次邮箱预填；须带正确订单 key 才能将该询盘附到新账号）。地址和 VAT 从账号已有数据带入，或由团队开 Proforma 时补。
 6. **公司侧**（Woo 后台订单页，角色 shop_manager）：订单标题 "Inquiry #"；按钮 "Issue Proforma / Proforma ausstellen"：生成 PDF、状态改 `wc-proforma-issued`、给客户发邮件（附 PDF 链接，不附件）；之后手动 `completed` 或 `cancelled`。无其他动作。后台把状态直接改成 `wc-proforma-issued` 走同一条签发（`Issuer::ensure_issued`，钩在 `woocommerce_order_status_proforma-issued`）：号与 PDF 写上之后，客户侧才有下载入口。没有银行账户时按钮不出现，状态改过去也不签发——见下节，不补造账户。
 7. **客户账户**（Woo My Account，端点改名）：Inquiries / Anfragen（列表：编号、日期、状态、金额、PI 下载）、Saved solutions / Gespeicherte Lösungen（定名，账户页与 `POST linker/v1/solutions` 的保存结果；保存的方案与设计报告 PDF，来自 #14）、Company / Unternehmen（资料与地址）、Documents / Unterlagen（本账户所有 PI 与设计报告）、页面顶部 "Your contact person / Ihre Ansprechperson"（姓名、邮箱、电话，来自设置）、每条询盘上 "Request again / Erneut anfragen"（复制为新的 Lösungsentwurf）。移除：订单、付款方式、下载（Woo 原生端点中不需要的隐藏）。
 
@@ -20,8 +20,8 @@
 - `Registration\Approval`（**审批权威，票据 73**：状态机、读写与审计、登录拦截；唯一的 meta 读写方）。
 - `Registration\ApprovalAdmin`（用户列表状态列及列表/资料页审核深链；只读）。
 - `Registration\AccountsAdmin` / `AccountsTable` / `AccountsController`（原生后台入口、历史与受权限/nonce 保护的 POST 决定），`Accounts` / `RegistrationInformation` / `AccountSignals`（同一审批权威、动态注册资料与检查线索）。
-- `Gating`（价格隐藏：模板过滤 + `wc/store/v1` 价格置空；可购买性 = 已登录且已批准；`rfq_only` 产品标记显示 "Quoted per project / Angebot pro Projekt"）。`rfq_only` 读英文商品的标记：德语孪生经 `linker_commerce_facts_product_id`（linker-i18n 回答，与选型事实同一入口）换成英文商品再读。孪生上残留或缺失的 `tv_b2b_product_mode` 照旧留作数据（Polylang 免费版不同步 Woo meta），任何读取都必须走这条事实 ID 路径，永不直接对孪生 `get_post_meta`（2026-10-17 快照里 1957 的德语孪生 6800 没有自己的标记，德语产品页曾向已批准账号显示 33.250,00 €）。价格位置印什么由 `CommerceState::reason( $product, CARD|PAGE )` 决定，一个函数两个表面：`CARD`（Woo 自己的价格 HTML、Store API 的 `price_html`、Lösungsentwurf 与询盘的行、草稿汇总）先说商品——线上 2026-10-18 访客的 `/wc/store/v1/products/1957` 的 `price_html` 是 "Quoted per project"；`PAGE`（产品页、对比页、Genie 的产品卡）先说账号——同日线上访客的 1957 产品页是 "Net price after partner sign-in"。产品页与对比页共用 `ProductView::price_html`：访客 "Net price after partner sign-in"、待审 "Prices after approval"、限制 "Not available for your account"，已批准账号在按项目报价的商品上 "Quoted per project"、无价商品 "Price on request"；Genie 的产品卡读同一行（#242，见 13-genie.md「价格跟账号走」）。其他插件经过滤器 `linker_commerce_visitor_sees_prices` 问同一条规则（唯一回答者 `PriceDisplay::sees_prices`）。
-- `Inquiry`（状态注册与颜色、网关类 `ProformaGateway extends WC_Payment_Gateway`、减库存关闭、订单标题与列表列；`Checkout::gateways` 对未批准账号返回空=服务端拦截点）。
+- `Gating`（价格隐藏：模板过滤 + `wc/store/v1` 价格置空；可加入 Lösungsentwurf 与发询盘不受账号审批限制；`rfq_only` 产品标记显示 "Quoted per project / Angebot pro Projekt"）。`rfq_only` 读英文商品的标记：德语孪生经 `linker_commerce_facts_product_id`（linker-i18n 回答，与选型事实同一入口）换成英文商品再读。孪生上残留或缺失的 `tv_b2b_product_mode` 照旧留作数据（Polylang 免费版不同步 Woo meta），任何读取都必须走这条事实 ID 路径，永不直接对孪生 `get_post_meta`（2026-10-17 快照里 1957 的德语孪生 6800 没有自己的标记，德语产品页曾向已批准账号显示 33.250,00 €）。价格位置印什么由 `CommerceState::reason( $product, CARD|PAGE )` 决定，一个函数两个表面：`CARD`（Woo 自己的价格 HTML、Store API 的 `price_html`、Lösungsentwurf 与询盘的行、草稿汇总）先说商品——线上 2026-10-18 访客的 `/wc/store/v1/products/1957` 的 `price_html` 是 "Quoted per project"；`PAGE`（产品页、对比页、Genie 的产品卡）先说账号——同日线上访客的 1957 产品页是 "Net price after partner sign-in"。产品页与对比页共用 `ProductView::price_html`：访客 "Net price after partner sign-in"、待审 "Prices after approval"、限制 "Not available for your account"，已批准账号在按项目报价的商品上 "Quoted per project"、无价商品 "Price on request"；Genie 的产品卡读同一行（#242，见 13-genie.md「价格跟账号走」）。其他插件经过滤器 `linker_commerce_visitor_sees_prices` 问同一条规则（唯一回答者 `PriceDisplay::sees_prices`）。
+- `Inquiry`（状态注册与颜色、网关类 `ProformaGateway extends WC_Payment_Gateway`、减库存关闭、订单标题与列表列；`Checkout::gateways` 只保留询盘网关，不按审批状态拦截）。
 - `Proforma`（PDF：dompdf 或 mpdf（MIT/LGPL），模板 EN/DE，编号 `DLK-PF-YYYY-NNNN`（按年计数，选项 `linker_commerce_proforma_prefix`，空则 `DLK-PF`），银行条款（设置页填写），有效期 30 天，税额行按 Woo 税设置显示；生成后存 `wp-content/uploads/proforma/<order>/` 私有目录，账户内经鉴权下载）。线上 `de-linker.com` 的号是 `DLK-PF-年份-订单ID`（下单即写入账本，不是后台按钮才编）；本站保留同一前缀，序号按年递增，不沿用订单 ID。
 - `Mail`（`wp_mail` 统一：内部通知一封主信 To 内部通知收件人 + Bcc（设置页，见下文“内部通知收件人”）；每封投递在 WooCommerce 日志 `linker-mail` 留一行 info（主题、收件人与 Bcc，客户回执的行里因此有客户邮箱；保留期 = WooCommerce → Settings → Advanced → Logs 的 Retention period，线上未改即 Woo 缺省 30 天，到期由 Woo 自己删；文件在 `wp-content/uploads/wc-logs/`，目录有 Woo 写的 `.htaccess` deny from all，只能经后台 WooCommerce → Status → Logs 看，需要 `manage_woocommerce` 权限，即管理员与 Shop manager）；队列 Action Scheduler；失败重试：1、5、30 分钟、2、6、12、24 小时；Woo 事务邮件也经队列；VAT 审核提醒只在结论变化时发；本地隔离下写文件）。**测试邮件开关**（AGENTS.md 测试邮件纪律，2026-10-11；`Mail\TestMode`，与 #73/#94 同一实现）：选项 `linker_commerce_test_mail_to` 设了地址时，Outbox 的发送路径把每封信的全部 To/Cc/Bcc 重写成该单地址（每封信只发一份），队列里的消息保留原路由——多收件路由的正确性以队列数据（`_linker_mail_message`）断言，不做多封实发。默认未设=生产路由；`wp linker-commerce test-mail on|off|status` 设与撤（默认收件人 chester@de-linker.com，`--to=` 可换），不是设置页字段（#17 切换冒烟时开，验证后撤）。
 - `Account`（端点注册、模板、对接人设置、再次询盘）。
@@ -58,7 +58,22 @@
 
 sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`）对 From 域 `de-linker.com` 的判断，不能归因于已经通过的 SPF。2026-09-30 的对照邮件 From 为 `sunriverinverter.com`，进入收件箱。内部通知由 #286 使用 sunriver 发件身份解决；客户可见 From 按 AGENTS.md 2026-10-17 裁定继续为 `sales@de-linker.com`，客户邮件已记录为 QQ 收件箱。以上改前/改后证据完成本票的生产取证要求，无需部署信封代码或再次实投。
 
-内部身份统一由唯一公开读取方法 `Options::notify_sender()` 返回只读 `Mail\Identity`（`name`、`email`），供 `Mail\TeamEmail`、`Contact\Emails\TeamMessageEmail` 与 `Health\Monitor` 使用。Woo 原生发件人设置继续控制客户 From；Outbox 保留捕获时的 From 和收件路由，投递与重试沿用现有路径。`NotificationRoutingTest` 按通知类型分别断言队列 To/Bcc、From 和各邮件 ID 的 Reply-To；健康告警单独测试。
+内部身份统一由唯一公开读取方法 `Options::notify_sender()` 返回只读 `Mail\Identity`（`name`、`email`），供 `Mail\TeamEmail` 与 `Health\Monitor` 使用（联系留言自 #246 起同样使用询盘团队邮件）。Woo 原生发件人设置继续控制客户 From；Outbox 保留捕获时的 From 和收件路由，投递与重试沿用现有路径。`NotificationRoutingTest` 按通知类型分别断言队列 To/Bcc、From 和各邮件 ID 的 Reply-To；健康告警单独测试。
+
+## 共用询盘入口（#246，供 #244 / #250）
+
+`Inquiry\Sender::request(Contact\Submission $details, array $billing = array()): WC_Order|WP_Error` 是带当前草稿“发一份询盘”的业务入口；联系页使用命名入口 `Sender::message($details)`，二者共用同一保存、状态迁移与通知核心。`Submission::from_post($fields, false)` 校验姓名、邮箱、同意与字段长度，留言可空；`lang` 经 Polylang 的语言模型解析，未提供时才读当前请求语言。公开调用方必须在调用前验证 nonce 与 `Inquiry\PublicGuard`（签名开始时间 + 空蜜罐；最短 3 秒是本票的初始防自动提交阈值，非行业常量；每连接每小时 3 次发送尝试沿用联系表单额度，PR #290 round 2 改为固定小时窗口的原子预留，单条条件 UPDATE 同时检查并递增；在字段和 bot 校验后、Sender 写入前占用，拒绝时不写询盘与 Outbox）。只有客户实际点击发送的请求才调用该入口。Sender 不接收客户端的 customer_id、产品、价格或合计。
+
+- 请求页：`admin_post[_nopriv]_linker_inquiry` → `Inquiry\Handler::process()` → Submission → Sender。表单语言也决定验证错误与失败回跳语言；失败将四个输入值作为一次性 flash 供下次渲染回填，读取即清除，草稿不变。`Handler::process()` 是可重复夹具测试的公开请求边界；`handle()` 负责 transport 与 redirect。
+- 产品来自当前 Woo 会话：校验原生草稿有效性与库存，`WC_Checkout::create_order()` 装配产品、数量、价格原因与账号已有地址/VAT；“修改”展开 Woo 原生账单字段，地址/VAT 均选填，访客不渲染或接受这些字段。成功才清空草稿。右栏更新数量与移除行使用 Woo 的 `update_cart` + `woocommerce-cart` nonce，不另造草稿存储。
+- 联系页：可见字段与外观不变，仍走原 contact admin-post、共用每连接限流；通过相同 bot guard 后调用 `Sender::message($details)`。创建没有产品的 Woo 询盘，保留客户原草稿。主题选择写入 `_linker_inquiry_topic`，在团队信与后台来源列可见。
+- 两个门的来源为 `_linker_inquiry_source=proforma|contact`，在 Woo 原生询盘列表显示，状态均为 `inquiry-received`。同一条状态迁移触发既有 `InquiryReceivedEmail` 与 `NewInquiryEmail`；团队信继承 `Mail\TeamEmail` 并调用 `notify()`，收件人仍由下节 #221 的设置读取。多收件路由只以 Outbox 数据断言，无实发测试。
+- 客户回执：`ReceiptLimit::DAILY_CAP=10`，来源为 PR #290 第 2 轮要求的小比例分配，取 AGENTS.md §4 / `mail-root-cause.md` §3、§9 所记 Hostinger 100 封/滚动 24 小时的十分之一，与 #235 相同。计数使用 commerce 自己的 `RateLimit`（复用 #235 单条条件 UPDATE 技术，无跨插件依赖），固定 UTC 日窗口；不宣称它测量主机的滚动用量。`Sender::receive()` 在通知前原子预留；用尽只存 `_linker_receipt_skipped=daily_cap`，`InquiryReceivedEmail` 跳过客户回执，记录与团队邮件照常。请求感谢页和联系成功状态明确说未发确认邮件，保留一个工作日内回复承诺。此额度与每连接限流无关，旋转连接也共用。
+- #243 交接接口：`Submission::from_handoff($fields)` 接受可空姓名，邮箱、留言、同意仍校验；交给现有 `Sender::message($submission)`，同一回执额度也适用。联系/请求 HTML 表单仍要求姓名。本票不实现 Genie 的确认 UI、对话附加信息或 transport。
+- #244 的摘要与预填应接这一个入口的经验证数据，不另造记录；#250 在确认卡实际发送时调用同一入口，须保留该调用方的 nonce、bot guard 与客户确认。当前入口只接受当前会话草稿，传入的产品/价格字段不会参与创建。
+- 可选注册：`Inquiry\AccountLink` 以 Woo 订单 key 校验持有者，只允许客单且注册邮箱与该单邮箱一致；不以邮箱匹配开放其他询盘，也不自动建账号。价格仍须批准。
+
+原生优先证明：LC 动态 checkout 模板仍承载页面，布局在 `content/livecanvas/inquiry/`，样式进入 WindPress 卷。短代码只装配转义数据、语言文案、nonce 与 Woo 产品行。LC 的产品循环没有“当前 Woo 会话草稿”与“按 nonce 接收公开询盘”的能力；Woo 的 woocommerce_checkout_fields 可以精简账单字段；但原生 checkout 拒绝空草稿，无法表示联系页的无产品留言。为两扇门与后续确认卡提供同一个经确认的发送边界，故自定义窄表单 adapter；订单创建、存储、四状态、邮件、原生草稿更新与感谢页全部沿用 Woo。旧的原生 AJAX checkout 在 validation hook 阶段拒绝，Store API checkout 的 GET/POST 在 rest_pre_dispatch 阶段拒绝（该原生 GET 也可能创建草稿订单）。Store API 产品与草稿 API 继续可用；这样所有公开的询盘写入都经过唯一 Sender。
 
 ## 内部通知收件人（#221，业主 2026-10-17；#286 发件人拆分）
 
@@ -71,7 +86,7 @@ sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`
 | 内部通知的发件人地址（名称固定为 `Linker`） | `Options::notify_sender()->email` | Internal notifications → Sender email（`linker_commerce_notify_from`，紧邻 Recipient） | `sales@sunriverinverter.com` |
 | 内部通知的抄送 | `Options::notify_bcc()` | Internal notifications → Blind copies（`linker_commerce_team_bcc`，沿用原选项名，线上值不迁移） | 空 |
 
-内部通知的 From 为 `Linker <内部发件地址>`（#286；默认 `Linker <sales@sunriverinverter.com>`），空值、无效地址或非字符串值回到此默认值。`Mail\TeamEmail` 与联系留言的 `Contact\Emails\TeamMessageEmail` 通过 Woo 原生 `get_from_name()` / `get_from_address()` 提供发件人，Woo 只在发送该封信时安装过滤器；健康告警是普通 `wp_mail()`，显式携带同一内部发件人头。Outbox 在捕获时将已解析的 From 固化到队列消息，之后重试保留。客户邮件继续读取 WooCommerce → Settings → Emails 的发件人设置（线上 `Linker <sales@de-linker.com>`），内部设置不改该值；两类邮件的 Reply-to 规则不变（与客户相关的内部通知回复客户，联系留言回复访客，摘要与健康告警不新增 Reply-to）。
+内部通知的 From 为 `Linker <内部发件地址>`（#286；默认 `Linker <sales@sunriverinverter.com>`），空值、无效地址或非字符串值回到此默认值。`Mail\TeamEmail` 通过 Woo 原生 `get_from_name()` / `get_from_address()` 提供发件人，Woo 只在发送该封信时安装过滤器；健康告警是普通 `wp_mail()`，显式携带同一内部发件人头。Outbox 在捕获时将已解析的 From 固化到队列消息，之后重试保留。客户邮件继续读取 WooCommerce → Settings → Emails 的发件人设置（线上 `Linker <sales@de-linker.com>`），内部设置不改该值；两类邮件的 Reply-to 规则不变（与客户相关的内部通知回复客户，联系留言回复访客，摘要与健康告警不新增 Reply-to）。
 
 **新增一封内部通知的唯一做法**（#243"让 Linker 联系我"等）：继承 `Mail\TeamEmail`（`WC_Email` 子类），在 `trigger()` 里设好占位符后调 `notify( $order_or_user )`；收件人与 Bcc 由基类从 `notify_to()` / `notify_bcc()` 填，From 由基类读取 `notify_sender()`，内部路由标记由基类加入，Reply-to 是该订单或用户；在本模块的 `woocommerce_email_classes` 注册，员工在 Woo 邮件列表里可见可关。不是 Woo 邮件的纯 `wp_mail()`（如健康告警）直接用 `notify_to()` 作 To、`notify_sender()` 的名称与地址拼 `From:` 头、`notify_bcc()` 拼 `Bcc:` 头，并必须携带 `Mail\Message::INTERNAL_HEADER`。两种都经 Outbox（限速、重试、日志）。不要自己写地址，也不要读 `team_mailbox()` 发内部信。
 
@@ -101,7 +116,7 @@ sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`
 | 缺省 | meta 不存在且角色恰为 `customer` ⇒ `pending`；其他角色 ⇒ `approved`（职员不受审批门约束） |
 | 待审批口径（#74） | 纯 `customer` 且状态为 `pending`（含缺省）的账号数；限制数量另列，不并入待审 |
 | 语言 | WP 用户 `locale`（注册时写入请求语言；迁移回填最近一次询盘的 `_linker_locale`） |
-| 权威 | 只经 `Approval::status()/sees_prices()` 读；三重 Gating（PriceDisplay / CommerceState / StoreApiPrices）与请求页 gate、网关过滤读同一权威，无第二实现 |
+| 权威 | 只经 `Approval::status()/sees_prices()` 读；三重 Gating（PriceDisplay / CommerceState / StoreApiPrices）读同一权威，无第二实现；请求页与询盘网关对所有人开放 |
 
 ## 迁移（切换时执行，载体=#80 ④ 的 `tools/migrate/80-customers.py`）
 审批与语言回填合为一个迁移（#73/#80 契约裁定③：一条载体，两条并行脚本作废；#73 的 `73-approval.py` 删除）：
@@ -140,14 +155,9 @@ sunriver 的垃圾箱结论来自 Hostinger 入站过滤器（Cloudmark `X-CM-*`
   `website`（`hidden` + `aria-hidden`，人不可见）、nonce、隐藏 `lang`（页面语言）与
   回跳地址。校验在 `Contact\Submission`（服务端，与浏览器约束并行）。
 - 提交：`admin_post[_nopriv]_linker_contact`（`Contact\Handler`）：nonce 校验 → 蜜罐
-  （填了=当成功回应、不发送）→ 每连接限流（transient，3 次/小时；地址取 `REMOTE_ADDR`，
+  （填了即拒绝，不写记录、不发送）→ 每连接限流（transient，3 次/小时；地址取 `REMOTE_ADDR`，
   不信任转发头）→ 校验 → 发送 → 302 回页面带状态 `?contact=sent|invalid|throttled#contact-form`。
-- 邮件：客户回执（`Contact\Emails\ReceiptEmail`，收件人=访客，语言=提交语言）与团队信
-  （`Contact\Emails\TeamMessageEmail`，收件人=内部通知收件人（`Options::notify_to()`），Bcc=SettingsTab 的
-  盲抄列表，Reply-to=访客，语言=站点默认）——两封都是 `wp_mail()`，因此走既有 Outbox 队列/
-  重试/限速/日志。两封都注册进 `woocommerce_email_classes`，员工可在 WooCommerce →
-  Settings → Emails 看到并改主题。文案评审：docs/acceptance/2026-10-11/68/copy-review.md
-  （未把 Proforma 链的"一个工作日"承诺搬进本表单）。
+- 邮件与询盘共用：`Sender::message()` 创建无产品 Woo 询盘，`InquiryReceivedEmail` 回执给访客（提交语言），`NewInquiryEmail` 继承 `Mail\TeamEmail` 并 `notify()`，To=`Options::notify_to()`、Bcc=`Options::notify_bcc()`。旧联系邮件类、模板与注册均已移除。
 - 不做：旧表单的 workspace/项目绑定/回执查询会话（无对应物；回执不承诺"回来查进度"）。
 
 
@@ -185,7 +195,7 @@ IBAN 为空时：订单页不显示 Issue Proforma，框内说明去 Settings �
 - 2026-10-17（#221）：内部通知改投 `sales@sunriverinverter.com`（业主裁定），与客户可见的团队邮箱拆成两个设置（见“内部通知收件人”）；`Options::team_to()`/`team_bcc()` 改名为 `team_mailbox()` 与 `notify_to()`/`notify_bcc()`，不改任何选项值。健康告警由“To 对接人”改为内部通知收件人，发件人由 WordPress 缺省（`wordpress@…`）改为 WooCommerce 的发件人（评审第 1 轮）。集成测试的邮件隔离统一为 `IntegrationTestCase::isolate_mail()`（保存并还原限速记录、删掉本测试写的队列行），整套可连跑。Outbox 每次投递写一行 `linker-mail` info 日志：线上 cron 由 CLI PHP 跑，主机的 `~/.logs/mail.log` 只记 Web PHP 的 `mail()`，此前摘要、健康告警与队列重试在主机上不留任何痕迹。
 - 2026-10-16：登录与注册拆成两个页面（业主裁定）。`/my-account/` 只出登录卡；注册卡移到账号页的 `register` 端点（EN `/my-account/register/`，DE `/de/mein-konto/register/`，slug 跨语言共享），两页互跳。注册的处理链（Woo 的 nonce、字段、校验、建号、自动登录、pending 门禁）逐字不动，只有呈现分置两个请求。规格：`docs/specs/split-login-register.md`。
 - 2026-10-13：Proforma 号与 PDF 不再只挂在 Issue 按钮上。状态进入 `wc-proforma-issued` 时 `Issuer::ensure_issued` 补签发（已有号或 PDF 的不动，避免按钮路径签两次）。客户侧询盘详情（摘要卡号 + 下载链接）与 Documents 只读 `_linker_proforma_number`；Completed 后号还在，下载仍在。银行账户缺失时按钮隐藏、状态路径不签发，配置键见上节，不补造账户。默认号前缀由 `PI` 改为 `DLK-PF`，与线上 `DLK-PF-年份-…` 一致；空前缀走默认，已保存的自定义前缀不动。
-- 2026-10-13（#138）：注册邮件改为注册确认（`RegistrationReceivedEmail`；Woo 原生欢迎信仍关）。邮件清单补第 5 封。pending 停在审核页；restricted 保留工作台，Proforma request 显示限制原因。文案定稿 `docs/acceptance/2026-10-13/138/copy-review.md`。
+- 2026-10-13（#138）：注册邮件改为注册确认（`RegistrationReceivedEmail`；Woo 原生欢迎信仍关）。邮件清单补第 5 封。pending 停在审核页；restricted 保留工作台，Proforma request 在可用表单上方显示限制原因；pending 与 restricted 均能发询盘（#246）。文案定稿 `docs/acceptance/2026-10-13/138/copy-review.md`。
 - 2026-10-11（#67，GAP-16）：新增 `Health` 模块（服务健康告警最小件）。WordPress/Woo 没有外部服务健康监视的原生能力，检查本身是本插件的；机制全部原生：调度 WP cron daily（`init` 懒登记 + 停用 `wp_clear_scheduled_hook`），HTTP 走 WP HTTP API，邮件走 `wp_mail` 即 #11 的 Outbox 队列（复用限流与重试）。验收：单元 `MonitorTest`（7 项）+ 实例集成 `HealthMonitorTest`（cron 钩子触发路径、失败一封 To 对接人+Bcc、健康零邮件、每日事件在排期），实例级 `wp cron event run linker_commerce_health_check` 健康/失败两跑实证。
 - 2026-10-14：线上 `/contact/` 与 `/de/kontakt/` 仍渲染旧兜底（form=0）。根因是挂载替换只在迁移脚本里，而该脚本不在切换清单，部署后的页面内容没有短代码。渲染时替换补上这一步。兜底行在短代码未注册时留下，正文里已经写着短代码也一样。本页渲染的是 #68 重建的最小表单（`docs/acceptance/2026-10-11/68/README.md` §4 原文：线上像素级比对不适用本票两块新面——搜索框芯片与联系表单是新建/重建面，非复刻面）；该记录与业主 2026-10-10 像素门裁定（所有客户可见页遵循线上现有设计，营销页按页型对拍）对 `/contact/` 的适用关系曾随本票报业主（PR #159 openQuestions），**已收口**（清账决策 2，2026-10-15，`.scratch/closure-decisions-2026-10-15.md` 第 2 条）：**移植旧线上整卡设计**——`/contact/` 是客户可见页，#68 的「重建面」记录说的是实现管线，不豁免设计层；**PR #165 已执行**（旧线上 What can we help with? 整卡 + 副卡移植进 LC/WindPress 层，表单仍走 #68 管线，文案三轮对抗评审后保持 #68 定稿）。
 - 2026-10-11（#68）：联系表单（最小）落地并接 Mail 管线：短代码 `[linker_contact_form]`、admin-post 处理（nonce/蜜罐/限流/校验）、客户回执 + 团队信（Bcc 走 SettingsTab）；`tools/migrate/68-contact-form.py` 换挂载点；同轮修 Figures/FAQ meta box 的保存形态（浏览器实际提交的是嵌套数组，两个箱子此前对真实 POST 从不写入，证据与复现见 docs/acceptance/2026-10-11/68/README.md §3）。

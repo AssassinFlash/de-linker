@@ -166,7 +166,7 @@ abstract class TeamEmail extends WC_Email {
 	 */
 	private function reply_to(): string {
 		if ( $this->object instanceof WC_Order && is_email( $this->object->get_billing_email() ) ) {
-			return trim( $this->object->get_formatted_billing_full_name() . ' <' . $this->object->get_billing_email() . '>' );
+			return trim( trim( $this->object->get_formatted_billing_full_name() ) . ' <' . $this->object->get_billing_email() . '>' );
 		}
 		if ( $this->object instanceof WP_User && is_email( $this->object->user_email ) ) {
 			$name = trim( get_user_meta( $this->object->ID, 'billing_first_name', true ) . ' ' . get_user_meta( $this->object->ID, 'billing_last_name', true ) );

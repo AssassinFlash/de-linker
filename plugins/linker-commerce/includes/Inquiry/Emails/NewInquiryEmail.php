@@ -56,7 +56,10 @@ final class NewInquiryEmail extends TeamEmail {
 			return;
 		}
 		$this->placeholders['{order_number}'] = $order->get_order_number();
-		$this->placeholders['{company}']      = $order->get_billing_company();
+		$name                                 = trim( $order->get_formatted_billing_full_name() );
+		$this->placeholders['{company}']      = '' !== $order->get_billing_company()
+			? $order->get_billing_company()
+			: ( '' !== $name ? $name : $order->get_billing_email() );
 		$this->notify( $order );
 	}
 
@@ -82,6 +85,9 @@ final class NewInquiryEmail extends TeamEmail {
 	 * @return array<string, mixed>
 	 */
 	protected function template_args(): array {
-		return array( 'order' => $this->object );
+		return array(
+			'order'        => $this->object,
+			'sender_label' => $this->placeholders['{company}'],
+		);
 	}
 }

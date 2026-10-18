@@ -1,0 +1,18 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+F                                                                   1 / 1 (100%)
+
+Time: 00:00.422, Memory: 121.00 MB
+
+There was 1 failure:
+
+1) Linker\Commerce\Tests\Integration\OpenInquiryTest::test_public_guard_requires_a_signed_time_and_an_empty_honeypot
+Both doors receive the trap from the shared guard.
+Failed asserting that '<input type="hidden" name="linker_started" value="1792262751" /><input type="hidden" name="linker_started_nonce" value="5f575fa01d" />' contains "name="website"".
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/OpenInquiryTest.php:348
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 1, Assertions: 1, Failures: 1.

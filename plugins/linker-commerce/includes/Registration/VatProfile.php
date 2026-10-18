@@ -102,13 +102,20 @@ final class VatProfile {
 	}
 
 	/**
-	 * Copies the customer's verdict onto a new inquiry, so the inquiry shows the
-	 * verdict at the time it was sent.
+	 * Stores the verdict for this inquiry's VAT. Reuse a final account verdict
+	 * only for the same number; an inquiry edit never updates the account.
 	 *
 	 * @param WC_Order $order Inquiry.
 	 */
 	public function snapshot( WC_Order $order ): void {
-		$order->update_meta_data( self::ORDER_STATUS, $this->status( $order->get_customer_id() ) );
+		$input       = $order->get_meta( '_' . self::VAT_META );
+		$number      = VatNumber::normalize( is_string( $input ) ? $input : '' );
+		$customer_id = $order->get_customer_id();
+		$status      = $this->status( $customer_id );
+		if ( 0 >= $customer_id || ! $this->is_final( $customer_id, $status ) || get_user_meta( $customer_id, self::NUMBER_META, true ) !== $number ) {
+			$status = $this->verdict( $number )['status'];
+		}
+		$order->update_meta_data( self::ORDER_STATUS, $status );
 	}
 
 	/**

@@ -1,0 +1,18 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+F                                                                   1 / 1 (100%)
+
+Time: 00:09.688, Memory: 131.00 MB
+
+There was 1 failure:
+
+1) Linker\Commerce\Tests\Integration\PublicSubmissionTest::test_parallel_public_requests_accept_exactly_three_and_queue_no_rejected_mail
+Parallel posts cannot share the last allowance.
+Failed asserting that 8 is identical to 3.
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/tests/php/Integration/PublicSubmissionTest.php:98
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/Documents/de-linker-worktrees/c246/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 1, Assertions: 17, Failures: 1.

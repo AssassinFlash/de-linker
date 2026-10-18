@@ -1,6 +1,6 @@
 <?php
 /**
- * The empty Proforma-request page.
+ * The pending account page and the restricted inquiry notice.
  *
  * @package Linker\Commerce
  */
@@ -11,19 +11,7 @@ namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Registration\Approval;
 
-/**
- * An empty Proforma request stays on the checkout page (200) and shows the
- * live login-gate copy instead of WooCommerce's redirect to the solution
- * draft. A default WooCommerce checkout (the local stack's empty install)
- * still redirects: this only applies to the site's checkout page — in any
- * language, so the decision reads the page's translation group (Polylang),
- * never a slug. An account without approval (ticket 73) reads its own gate:
- * pending names the review, restricted names the limit with the reason.
- *
- * Every gate is one card: a badge where a state is named, the heading, the
- * body and the actions (ticket #184, the owner-accepted prototype's
- * gates.html). The look lives in content/windpress/auth.css.
- */
+/** Pending account presentation and the native empty-checkout redirect rule. */
 final class LoginGate {
 
 	/**
@@ -56,66 +44,45 @@ final class LoginGate {
 	}
 
 	/**
-	 * The login-gate (guest), approval-gate (account without approval) or
-	 * empty-draft (approved customer) HTML. A guest's gate names the draft it
-	 * has: with products in it the draft is the reason to sign in, without
-	 * them the Proforma request itself is.
-	 */
-	public function html(): string {
-		$user_id = get_current_user_id();
-		if ( $user_id > 0 ) {
-			$status = $this->approval->status( $user_id );
-			if ( Approval::APPROVED !== $status ) {
-				return $this->approval_gate( $status );
-			}
-			return $this->empty_draft_gate();
-		}
-		return $this->draft_empty() ? $this->proforma_gate() : $this->guest_draft_gate();
-	}
-
-	/**
 	 * The pending-review page, for the account page as well as the empty
 	 * Proforma request. Both surfaces read this one markup.
 	 */
 	public function pending_html(): string {
-		return $this->approval_gate( Approval::PENDING );
+		return $this->approval_gate();
 	}
 
 	/**
-	 * The gate of an account whose approval is pending or restricted: what the
-	 * account keeps, what is paused, and the way back.
-	 *
-	 * @param string $status The account's approval state.
+	 * The pending account page; inquiries stay open during review.
 	 */
-	private function approval_gate( string $status ): string {
+	private function approval_gate(): string {
 		$products = $this->products_url();
-		if ( Approval::RESTRICTED === $status ) {
-			$reason = $this->approval->reason( get_current_user_id() );
-			return $this->card(
-				esc_attr__( 'Account with limited access', 'linker-commerce' ),
-				$this->badge( 'restricted', esc_html__( 'Access currently limited', 'linker-commerce' ) ),
-				esc_html__( 'Access currently limited', 'linker-commerce' ),
-				'',
-				'<p>' . esc_html__( 'Your partner account is limited for now: the products and your questions stay open, net prices and the Proforma request are paused.', 'linker-commerce' ) . '</p>'
-					. $this->reason_notice( $reason )
-					. '<p>' . $this->mailto_sentence(
-						/* translators: %s: the team's email address. */
-						__( 'Write to %s and we will look at your account again.', 'linker-commerce' )
-					) . '</p>',
-				$this->action( $products, esc_html__( 'Browse products', 'linker-commerce' ), 'primary' )
-			);
-		}
+
 		return $this->card(
 			esc_attr__( 'Account under review', 'linker-commerce' ),
 			$this->badge( 'pending', esc_html__( 'Under review', 'linker-commerce' ) ),
 			esc_html__( 'Your account is under review', 'linker-commerce' ),
 			'',
-			'<p>' . esc_html__( 'We are reviewing your partner account. Net prices and the Proforma request open as soon as it is approved, and we will email you.', 'linker-commerce' ) . '</p>'
+			'<p>' . esc_html__( 'We are reviewing your partner account and will email you when it is approved. You can send inquiries now; approval opens net prices.', 'linker-commerce' ) . '</p>'
 				. '<p>' . $this->mailto_sentence(
 					/* translators: %s: the team's email address. */
 					__( 'Until then, browse the products and write to %s with any question.', 'linker-commerce' )
 				) . '</p>',
 			$this->action( $products, esc_html__( 'Browse products', 'linker-commerce' ), 'primary' )
+		);
+	}
+
+	/** A restricted account can still send; show the team's saved reason above the form. */
+	public function restricted_notice(): string {
+		if ( Approval::RESTRICTED !== $this->approval->status( get_current_user_id() ) ) {
+			return '';
+		}
+		return strtr(
+			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/restricted.html' ),
+			array(
+				'{{title}}'   => esc_html__( 'Access currently limited', 'linker-commerce' ),
+				'{{message}}' => esc_html__( 'You can send inquiries. Net prices are unavailable while your account is limited.', 'linker-commerce' ),
+				'{{reason}}'  => $this->reason_notice( $this->approval->reason( get_current_user_id() ) ),
+			)
 		);
 	}
 
@@ -131,53 +98,6 @@ final class LoginGate {
 		return sprintf(
 			esc_html( $message ),
 			'<a href="mailto:' . esc_attr( self::TEAM_ADDRESS ) . '">' . esc_html( self::TEAM_ADDRESS ) . '</a>'
-		);
-	}
-
-	/**
-	 * The approved customer whose draft is empty: nothing to send yet.
-	 */
-	private function empty_draft_gate(): string {
-		return $this->card(
-			esc_attr__( 'Empty solution draft', 'linker-commerce' ),
-			'',
-			esc_html__( 'Nothing to submit yet.', 'linker-commerce' ),
-			'',
-			'<p>' . esc_html__( 'Your solution draft is empty. Add matched systems, then come back for your Proforma.', 'linker-commerce' ) . '</p>',
-			$this->action( $this->products_url(), esc_html__( 'Browse products', 'linker-commerce' ), 'primary' )
-		);
-	}
-
-	/**
-	 * The guest without a draft: what a Proforma request needs.
-	 */
-	private function proforma_gate(): string {
-		return $this->card(
-			esc_attr__( 'Proforma request sign-in', 'linker-commerce' ),
-			'',
-			esc_html__( 'Get your Proforma', 'linker-commerce' ),
-			'<p class="linker-gate-sub">' . esc_html__( 'Sign in to get your Proforma.', 'linker-commerce' ) . '</p>' . $this->genie_pill(),
-			'<p>' . esc_html__( 'The Proforma request is reserved for Linker partner accounts. Register, add your systems, and return here — VAT and delivery are ours to handle.', 'linker-commerce' ) . '</p>',
-			$this->action( (string) wc_get_page_permalink( 'myaccount' ), esc_html__( 'Sign in or register', 'linker-commerce' ), 'primary' )
-				. $this->action( $this->products_url(), esc_html__( 'Browse products', 'linker-commerce' ), 'ghost' )
-		);
-	}
-
-	/**
-	 * The guest whose draft holds products: the draft waits for the account.
-	 */
-	private function guest_draft_gate(): string {
-		return $this->card(
-			esc_attr__( 'Proforma request sign-in', 'linker-commerce' ),
-			'',
-			esc_html__( 'Sign in to request your Proforma', 'linker-commerce' ),
-			'',
-			'<p>' . esc_html__( 'Your solution draft is saved. Log in with your partner account to send the inquiry — no account yet? Register on the account page; the draft waits for you.', 'linker-commerce' ) . '</p>',
-			$this->action( (string) wc_get_page_permalink( 'myaccount' ), esc_html__( 'Sign in or register', 'linker-commerce' ), 'primary' )
-				. $this->action( $this->products_url(), esc_html__( 'Browse products', 'linker-commerce' ), 'ghost' ),
-			'<p class="linker-gate-links">'
-				/* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Woo native label. */
-				. '<a href="' . esc_url( wp_lostpassword_url() ) . '">' . esc_html__( 'Lost your password?', 'woocommerce' ) . '</a></p>'
 		);
 	}
 
@@ -213,12 +133,11 @@ final class LoginGate {
 	 * @param string $text  The badge's word, escaped.
 	 */
 	private function badge( string $state, string $text ): string {
-		$clock  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.6V12l3.2 2"/></svg>';
-		$shield = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 19 6v5.6c0 4.2-2.9 8-7 9.4-4.1-1.4-7-5.2-7-9.4V6Z"/><path d="M12 9.2v3.7"/><path d="M12 16.1h.01"/></svg>';
+		$clock = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.6V12l3.2 2"/></svg>';
 		return sprintf(
 			'<span class="linker-gate-badge is-%1$s">%2$s<span>%3$s</span></span>',
 			esc_attr( $state ),
-			'restricted' === $state ? $shield : $clock,
+			$clock,
 			$text
 		);
 	}
@@ -258,40 +177,10 @@ final class LoginGate {
 	}
 
 	/**
-	 * The Genie entry on the empty Proforma request.
-	 *
-	 * The live page opened the assistant from a dark pill under the title
-	 * (then named Advisor / Berater). The pill keeps that place and opens
-	 * Genie, the name the site uses now. Without the dock script the same
-	 * control is the Genie page, so the entry is not JavaScript-only.
-	 */
-	private function genie_pill(): string {
-		$url  = PageUrls::translated( 'genie' );
-		$url  = '' === $url ? (string) home_url( '/genie/' ) : $url;
-		$mark = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.4 5v10.9a1.8 1.8 0 0 0 1.8 1.8H17"/><path d="M8.8 8.4C11.8 4.5 16.4 3.1 19.6 3.5"/><circle cx="20.7" cy="4.9" r="1.5" fill="currentColor" stroke="none"/></svg>';
-		// aria-expanded declares the collapsed state up front: the dock's
-		// shell() flips it to true only when it reports the panel open, so
-		// the opener never claims an expansion that never happened.
-		return sprintf(
-			'<p class="linker-gate-genie"><a class="linker-gate-genie-pill" href="%1$s" data-linker-genie-open aria-expanded="false">%2$s<span>%3$s</span></a></p>',
-			esc_url( $url ),
-			$mark,
-			esc_html__( 'Genie', 'linker-commerce' )
-		);
-	}
-
-	/**
 	 * The products page's address, wherever the gate is shown.
 	 */
 	private function products_url(): string {
 		return function_exists( 'wc_get_page_id' ) ? (string) get_permalink( (int) wc_get_page_id( 'shop' ) ) : '';
-	}
-
-	/**
-	 * Whether the solution draft holds nothing.
-	 */
-	private function draft_empty(): bool {
-		return function_exists( 'linker_commerce_draft_empty' ) ? (bool) linker_commerce_draft_empty() : true;
 	}
 
 	/**

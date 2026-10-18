@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-17T22:23:55+00:00\n"
+"POT-Creation-Date: 2026-10-18T01:39:18+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -514,7 +514,7 @@ msgid "Documents"
 msgstr "Dokumente"
 
 #: includes/Account/Menu.php:52 includes/Account/Menu.php:88
-#: includes/Contact/Form.php:160 includes/Registration/AccountsTable.php:43
+#: includes/Contact/Form.php:157 includes/Registration/AccountsTable.php:43
 #: templates/emails/linker-new-customer.php:24
 #: templates/myaccount/auth/form-register.php:72
 msgid "Company"
@@ -690,154 +690,111 @@ msgstr ""
 "Die Kenndaten %s behalten ihren bisherigen Wert: Ein geänderter Wert "
 "benötigt das Dokument und die Seite, auf der er steht."
 
-#: includes/Contact/Emails/ContactEmail.php:72 includes/Genie/GenieEmail.php:97
-#: includes/Mail/CustomerOrderEmail.php:89 includes/Mail/TeamEmail.php:122
-#: includes/Registration/Emails/CustomerApprovalEmail.php:130
-msgid "HTML"
-msgstr "HTML"
-
-#: includes/Contact/Emails/ReceiptEmail.php:34
-msgid "Contact form receipt"
-msgstr "Eingangsbestätigung des Kontaktformulars"
-
-#: includes/Contact/Emails/ReceiptEmail.php:35
-msgid "Sent to the visitor when the contact form is sent."
-msgstr ""
-"Wird an den Besucher gesendet, wenn das Kontaktformular abgesendet wird."
-
-#: includes/Contact/Emails/ReceiptEmail.php:57
-#: includes/Contact/Emails/ReceiptEmail.php:64
-msgid "We received your message"
-msgstr "Wir haben Ihre Nachricht erhalten"
-
-#: includes/Contact/Emails/TeamMessageEmail.php:47
-msgid "Contact form message"
-msgstr "Nachricht über das Kontaktformular"
-
-#: includes/Contact/Emails/TeamMessageEmail.php:48
-msgid ""
-"Sent to the internal notification address, with blind copies, when the "
-"contact form is sent."
-msgstr ""
-"Geht an die Adresse für interne Benachrichtigungen (mit Blindkopien), wenn "
-"das Kontaktformular abgesendet wird."
-
-#. translators: {name}: the visitor's name.
-#: includes/Contact/Emails/TeamMessageEmail.php:107
-msgid "New message from {name}"
-msgstr "Neue Nachricht von {name}"
-
-#: includes/Contact/Emails/TeamMessageEmail.php:114
-msgid "New message from the contact form"
-msgstr "Neue Nachricht über das Kontaktformular"
-
-#: includes/Contact/Form.php:137
+#: includes/Contact/Form.php:134
 #: includes/Presentation/ProductShortcodes.php:1575
-#: includes/Presentation/Shortcodes.php:287
+#: includes/Presentation/Shortcodes.php:279
 msgid "CONTACT LINKER"
 msgstr "KONTAKT ZU LINKER"
 
-#: includes/Contact/Form.php:138
+#: includes/Contact/Form.php:135
 msgid "What can we help with?"
 msgstr "Wie können wir helfen?"
 
-#: includes/Contact/Form.php:139
+#: includes/Contact/Form.php:136
 msgid "Tell us what you need. We’ll use the email below for your reply."
 msgstr ""
 "Beschreiben Sie Ihr Anliegen. Für die Antwort verwenden wir die unten "
 "angegebene E-Mail-Adresse."
 
-#: includes/Contact/Form.php:143
+#: includes/Contact/Form.php:140
 msgid "Your question"
 msgstr "Ihre Frage"
 
-#: includes/Contact/Form.php:144
+#: includes/Contact/Form.php:141
 msgid "What would you like to know?"
 msgstr "Was möchten Sie wissen?"
 
-#: includes/Contact/Form.php:148
+#: includes/Contact/Form.php:145
 msgid "This is about"
 msgstr "Es geht um"
 
-#: includes/Contact/Form.php:153
+#: includes/Contact/Form.php:150
 msgid "Where can we reply?"
 msgstr "Wohin dürfen wir antworten?"
 
-#: includes/Contact/Form.php:155 includes/Settings/SettingsTab.php:137
+#: includes/Contact/Form.php:152 includes/Inquiry/Form.php:129
+#: includes/Settings/SettingsTab.php:137
 #: templates/emails/linker-new-customer.php:26
 msgid "Name"
 msgstr "Name"
 
-#: includes/Contact/Form.php:157
+#: includes/Contact/Form.php:154 includes/Inquiry/Form.php:130
 msgid "Reply email"
 msgstr "E-Mail für die Antwort"
 
-#: includes/Contact/Form.php:160
+#: includes/Contact/Form.php:157
 msgid "optional"
 msgstr "optional"
 
-#: includes/Contact/Form.php:162
+#: includes/Contact/Form.php:159
 msgid "No account or Project is needed to ask a question."
 msgstr "Für eine Frage brauchen Sie weder ein Konto noch ein Projekt."
 
-#: includes/Contact/Form.php:168
+#: includes/Contact/Form.php:165 includes/Inquiry/Form.php:132
 msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 "Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser "
 "Nachricht verwendet werden."
 
-#: includes/Contact/Form.php:170 templates/myaccount/auth/form-register.php:125
+#: includes/Contact/Form.php:167 includes/Inquiry/Form.php:133
+#: templates/myaccount/auth/form-register.php:125
 msgid "Privacy"
 msgstr "Datenschutz"
 
-#: includes/Contact/Form.php:173
-msgid "Website"
-msgstr "Website"
-
-#: includes/Contact/Form.php:174
+#: includes/Contact/Form.php:170
 msgid "Send message"
 msgstr "Nachricht senden"
 
-#: includes/Contact/Form.php:175
+#: includes/Contact/Form.php:171
 msgid ""
 "Your message goes to the Linker team. We reply to the address you give here."
 msgstr ""
 "Ihre Nachricht geht an das Linker-Team. Wir antworten an die Adresse, die "
 "Sie hier angeben."
 
-#: includes/Contact/Form.php:213
+#: includes/Contact/Form.php:209
 msgid "Product guidance"
 msgstr "Produktberatung"
 
-#: includes/Contact/Form.php:214
+#: includes/Contact/Form.php:210
 msgid "Price & availability"
 msgstr "Preis und Verfügbarkeit"
 
-#: includes/Contact/Form.php:215
+#: includes/Contact/Form.php:211
 msgid "Product documents"
 msgstr "Produktunterlagen"
 
-#: includes/Contact/Form.php:216
+#: includes/Contact/Form.php:212
 msgid "Discuss a project"
 msgstr "Projekt besprechen"
 
-#: includes/Contact/Form.php:217
+#: includes/Contact/Form.php:213
 msgid "Support for an order"
 msgstr "Hilfe zu einer Bestellung"
 
-#: includes/Contact/Form.php:218
+#: includes/Contact/Form.php:214
 msgid "Work with Linker"
 msgstr "Zusammenarbeit mit Linker"
 
-#: includes/Contact/Form.php:219
+#: includes/Contact/Form.php:215
 msgid "A question"
 msgstr "Eine Frage"
 
-#: includes/Contact/Form.php:233
+#: includes/Contact/Form.php:229
 msgid "Prefer email?"
 msgstr "Lieber per E-Mail?"
 
-#: includes/Contact/Form.php:235
+#: includes/Contact/Form.php:231
 msgid ""
 "Send your question directly to our team. Opening your email app does not "
 "send a message."
@@ -845,33 +802,42 @@ msgstr ""
 "Schreiben Sie unserem Team direkt. Das Öffnen Ihres E-Mail-Programms sendet "
 "noch keine Nachricht."
 
-#: includes/Contact/Form.php:238
+#: includes/Contact/Form.php:234
 msgid "Still exploring?"
 msgstr "Noch in der Orientierung?"
 
-#: includes/Contact/Form.php:239
+#: includes/Contact/Form.php:235
 msgid "Take your time."
 msgstr "Nehmen Sie sich Zeit."
 
-#: includes/Contact/Form.php:240
+#: includes/Contact/Form.php:236
 msgid "Use Genie to explore the options, then return to your question."
 msgstr ""
 "Mit Genie können Sie Ihre Möglichkeiten erkunden und später zu Ihrer Frage "
 "zurückkehren."
 
-#: includes/Contact/Form.php:241
+#: includes/Contact/Form.php:237
 msgid "Explore with Genie"
 msgstr "Mit Genie weiterdenken"
 
-#: includes/Contact/Form.php:276
+#: includes/Contact/Form.php:272
+msgid ""
+"Thank you. Your message is with the Linker team. We have not sent a "
+"confirmation email. We reply within one business day."
+msgstr ""
+"Ihre Nachricht ist beim Linker-Team eingegangen. Eine Bestätigung per E-Mail "
+"wurde nicht versendet. Sie erhalten innerhalb eines Arbeitstags eine Antwort."
+
+#: includes/Contact/Form.php:273
 msgid "Thank you. Your message is with the Linker team."
 msgstr "Vielen Dank. Ihre Nachricht liegt beim Linker-Team."
 
-#: includes/Contact/Form.php:277
+#: includes/Contact/Form.php:274 includes/Inquiry/Form.php:78
+#: includes/Inquiry/Handler.php:48
 msgid "Please check your entries and send the form again."
 msgstr "Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut."
 
-#: includes/Contact/Form.php:278
+#: includes/Contact/Form.php:275 includes/Inquiry/Handler.php:55
 msgid ""
 "We received several messages from this connection. Please try again later or "
 "write to sales@de-linker.com."
@@ -879,23 +845,23 @@ msgstr ""
 "Von dieser Verbindung sind mehrere Nachrichten eingegangen. Bitte versuchen "
 "Sie es später erneut oder schreiben Sie an sales@de-linker.com."
 
-#: includes/Contact/Form.php:294
+#: includes/Contact/Form.php:291
 msgid "Send another message"
 msgstr "Weitere Nachricht senden"
 
-#: includes/Contact/Submission.php:82
+#: includes/Contact/Submission.php:106
 msgid "Please add your name."
 msgstr "Bitte geben Sie Ihren Namen an."
 
-#: includes/Contact/Submission.php:85
+#: includes/Contact/Submission.php:109
 msgid "Please add an email address we can reply to."
 msgstr "Bitte geben Sie eine E-Mail-Adresse an, an die wir antworten können."
 
-#: includes/Contact/Submission.php:88
+#: includes/Contact/Submission.php:112
 msgid "Please write your message."
 msgstr "Bitte schreiben Sie Ihre Nachricht."
 
-#: includes/Contact/Submission.php:91
+#: includes/Contact/Submission.php:115
 msgid "Please agree to the use of your details for the reply."
 msgstr "Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu."
 
@@ -962,7 +928,7 @@ msgstr "Anfrage #%1$s – %2$s"
 
 #: includes/Digest/InquiriesAwaitingProforma.php:107
 #: includes/Digest/ProformasAwaitingReply.php:105
-#: templates/emails/linker-new-inquiry.php:33
+#: templates/emails/linker-new-inquiry.php:45
 msgid "Open the inquiry"
 msgstr "Anfrage öffnen"
 
@@ -988,15 +954,15 @@ msgstr "Proformarechnung %1$s ausgestellt am %2$s um %3$s Uhr (%4$s)"
 
 #: includes/Gating/DraftSummary.php:46
 msgid ""
-"Prices are shown after you log in. Then you can request a Proforma invoice "
-"for this solution draft."
+"You can send this solution draft without an account. Net prices are "
+"available after account approval."
 msgstr ""
-"Preise sehen Sie nach der Anmeldung. Danach können Sie für diesen "
-"Lösungsentwurf eine Proformarechnung anfordern."
+"Sie können diesen Lösungsentwurf ohne Konto senden. Nettopreise sehen Sie "
+"nach der Freigabe Ihres Kontos."
 
-#: includes/Gating/DraftSummary.php:48
-msgid "Log in and request a Proforma"
-msgstr "Anmelden und Proforma anfordern"
+#: includes/Gating/DraftSummary.php:48 includes/Inquiry/Form.php:134
+msgid "Send inquiry"
+msgstr "Anfrage senden"
 
 #: includes/Gating/DraftSummary.php:50
 msgid "No account yet? Register"
@@ -1008,25 +974,23 @@ msgid ""
 msgstr ""
 "Für Produkte ohne Preisangabe nennen wir den Preis in Ihrer Proformarechnung."
 
-#: includes/Gating/PriceDisplay.php:206
+#: includes/Gating/PriceDisplay.php:217
 msgid "Log in for prices"
 msgstr "Preise nach Anmeldung"
 
-#: includes/Gating/PriceDisplay.php:211 includes/Storefront/ProductView.php:305
-#: includes/Storefront/ProductView.php:324
+#: includes/Gating/PriceDisplay.php:222 includes/Storefront/ProductView.php:305
 msgid "Not available for your account"
 msgstr "Für Ihr Konto nicht verfügbar"
 
-#: includes/Gating/PriceDisplay.php:212 includes/Storefront/ProductView.php:304
-#: includes/Storefront/ProductView.php:323
+#: includes/Gating/PriceDisplay.php:223 includes/Storefront/ProductView.php:304
 msgid "Prices after approval"
 msgstr "Preise nach Freigabe"
 
-#: includes/Gating/PriceDisplay.php:216 includes/Storefront/ProductView.php:300
+#: includes/Gating/PriceDisplay.php:227 includes/Storefront/ProductView.php:300
 msgid "Quoted per project"
 msgstr "Angebot pro Projekt"
 
-#: includes/Gating/PriceDisplay.php:217
+#: includes/Gating/PriceDisplay.php:228
 msgid "Price on request"
 msgstr "Preis auf Anfrage"
 
@@ -1064,6 +1028,12 @@ msgstr "Geht an die Person, die eine Genie-Unterhaltung per E-Mail anfordert."
 #: includes/Genie/ConversationEmail.php:71
 msgid "Your conversation with Genie"
 msgstr "Ihr Gespräch mit Genie"
+
+#: includes/Genie/GenieEmail.php:97 includes/Mail/CustomerOrderEmail.php:89
+#: includes/Mail/TeamEmail.php:122
+#: includes/Registration/Emails/CustomerApprovalEmail.php:130
+msgid "HTML"
+msgstr "HTML"
 
 #: includes/Health/InternalMail.php:41
 msgid "Internal mail authentication"
@@ -1117,7 +1087,7 @@ msgstr "die Adressoption %s ist leer"
 msgid "the service answered HTTP %d instead of 200"
 msgstr "der Dienst antwortete mit HTTP %d statt 200"
 
-#: includes/Health/Monitor.php:145 includes/Presentation/LoginGate.php:279
+#: includes/Health/Monitor.php:145
 #: templates/emails/linker-genie-conversation.php:37
 msgid "Genie"
 msgstr "Genie"
@@ -1158,38 +1128,45 @@ msgstr ""
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
 
-#: includes/Inquiry/Checkout.php:111 includes/Inquiry/Checkout.php:136
-#: includes/Inquiry/Checkout.php:142
-#: templates/emails/linker-inquiry-received.php:34
-msgid "We reply within one business day."
-msgstr "Wir antworten innerhalb eines Arbeitstags."
+#: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:139
+msgid "Please use the inquiry form to send your inquiry."
+msgstr "Bitte senden Sie Ihre Anfrage über das Anfrageformular."
 
-#: includes/Inquiry/Checkout.php:135
-#: includes/Inquiry/Emails/InquiryReceivedEmail.php:33
-#: includes/Inquiry/Emails/InquiryReceivedEmail.php:53
-#: includes/Vocabulary/Terms.php:107
+#: includes/Inquiry/Checkout.php:98
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:35
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:73
+#: includes/Vocabulary/Labels.php:97 includes/Vocabulary/Terms.php:107
 msgid "Inquiry received"
 msgstr "Anfrage eingegangen"
 
-#: includes/Inquiry/Checkout.php:138
+#: includes/Inquiry/Checkout.php:99 includes/Inquiry/Form.php:135
+#: templates/emails/linker-inquiry-received.php:40
+msgid "We reply within one business day."
+msgstr "Wir antworten innerhalb eines Arbeitstags."
+
+#: includes/Inquiry/Checkout.php:101
+msgid "Create an account with this email"
+msgstr "Konto mit dieser E-Mail-Adresse erstellen"
+
+#: includes/Inquiry/Checkout.php:101
 msgid "View inquiries"
 msgstr "Anfragen ansehen"
 
-#: includes/Inquiry/Checkout.php:143
-#: templates/emails/linker-inquiry-received.php:34
-msgid ""
-"Your Proforma invoice will be in your account under Inquiries, and we will "
-"send you a link by email."
-msgstr ""
-"Ihre Proformarechnung finden Sie dann in Ihrem Konto unter „Anfragen“; den "
-"Link schicken wir Ihnen auch per E-Mail."
+#: includes/Inquiry/Checkout.php:102
+#: templates/emails/linker-inquiry-received.php:40
+msgid "The Linker team will reply to the email address you provided."
+msgstr "Das Linker-Team antwortet Ihnen an die angegebene E-Mail-Adresse."
 
-#: includes/Inquiry/Emails/InquiryReceivedEmail.php:34
+#: includes/Inquiry/Checkout.php:104
+msgid "We have not sent a confirmation email."
+msgstr "Es wurde keine Bestätigungs-E-Mail versendet."
+
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:36
 msgid "Sent to the customer when an inquiry is received."
 msgstr "Geht an den Kunden, wenn eine Anfrage eingegangen ist."
 
 #. translators: {order_number} is replaced by the inquiry number.
-#: includes/Inquiry/Emails/InquiryReceivedEmail.php:46
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:66
 msgid "Your inquiry #{order_number} has been received"
 msgstr "Ihre Anfrage #{order_number} ist eingegangen"
 
@@ -1207,14 +1184,81 @@ msgstr ""
 "eine Anfrage eingegangen ist."
 
 #. translators: {order_number}: inquiry number, {company}: customer's company.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:68
+#: includes/Inquiry/Emails/NewInquiryEmail.php:71
 msgid "New inquiry #{order_number} from {company}"
 msgstr "Neue Anfrage #{order_number} von {company}"
 
 #. translators: {order_number}: inquiry number.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:76
+#: includes/Inquiry/Emails/NewInquiryEmail.php:79
 msgid "New inquiry #{order_number}"
 msgstr "Neue Anfrage #{order_number}"
+
+#: includes/Inquiry/Form.php:124 includes/Vocabulary/Labels.php:97
+msgid "Send an inquiry"
+msgstr "Anfrage senden"
+
+#: includes/Inquiry/Form.php:125
+msgid ""
+"Tell us what you need. The products in your solution draft will be included."
+msgstr ""
+"Teilen Sie uns Ihr Anliegen mit. Die Produkte aus Ihrem Lösungsentwurf "
+"werden mitgesendet."
+
+#: includes/Inquiry/Form.php:126
+msgid "Message (optional)"
+msgstr "Nachricht (optional)"
+
+#: includes/Inquiry/Form.php:127
+msgid "Your reply details"
+msgstr "Ihre Kontaktdaten"
+
+#: includes/Inquiry/Form.php:128
+msgid "Change"
+msgstr "Ändern"
+
+#: includes/Inquiry/Form.php:131
+msgid "Company (optional)"
+msgstr "Unternehmen (optional)"
+
+#: includes/Inquiry/Form.php:136
+msgid "No account needed."
+msgstr "Kein Konto erforderlich."
+
+#: includes/Inquiry/Form.php:137
+msgid "Have an approved account? Log in for net prices and saved details."
+msgstr ""
+"Sie haben bereits ein freigegebenes Partnerkonto? Melden Sie sich an, um "
+"Nettopreise zu sehen und Ihre gespeicherten Angaben zu verwenden."
+
+#: includes/Inquiry/Form.php:138
+#: includes/Presentation/ProductShortcodes.php:1910
+#: includes/Presentation/ProductShortcodes.php:1912
+#: includes/Vocabulary/Labels.php:101 includes/Vocabulary/Labels.php:176
+#: includes/Vocabulary/Labels.php:200 includes/Vocabulary/Terms.php:31
+msgid "Solution draft"
+msgstr "Lösungsentwurf"
+
+#: includes/Inquiry/Form.php:139
+msgid "Edit solution draft"
+msgstr "Lösungsentwurf bearbeiten"
+
+#: includes/Inquiry/Form.php:140 includes/Vocabulary/Terms.php:65
+msgid "Quantity"
+msgstr "Menge"
+
+#: includes/Inquiry/Form.php:141 includes/Vocabulary/Terms.php:32
+msgid "Update solution draft"
+msgstr "Lösungsentwurf aktualisieren"
+
+#. translators: %s: product name.
+#: includes/Inquiry/Form.php:162
+#, php-format
+msgid "Quantity for %s"
+msgstr "Menge für %s"
+
+#: includes/Inquiry/Form.php:169
+msgid "You can send a message without products."
+msgstr "Sie können uns auch ohne Produkte eine Nachricht senden."
 
 #: includes/Inquiry/OrderAdmin.php:33
 msgid "Add inquiry"
@@ -1256,6 +1300,20 @@ msgstr "Navigation der Anfragen"
 msgid "Inquiries list"
 msgstr "Liste der Anfragen"
 
+#: includes/Inquiry/OrderAdmin.php:55
+msgid "Source"
+msgstr "Eingang"
+
+#: includes/Inquiry/OrderAdmin.php:74
+#: templates/emails/linker-new-inquiry.php:47
+msgid "Contact form"
+msgstr "Kontaktformular"
+
+#: includes/Inquiry/OrderAdmin.php:74 includes/Vocabulary/Labels.php:179
+#: includes/Vocabulary/Terms.php:40
+msgid "Proforma request"
+msgstr "Proforma-Anfrage"
+
 #: includes/Inquiry/ProformaGateway.php:46
 #: includes/Inquiry/ProformaGateway.php:61 includes/Proforma/AdminBox.php:47
 #: includes/Settings/SettingsTab.php:159 includes/Vocabulary/Terms.php:75
@@ -1275,6 +1333,18 @@ msgstr ""
 "Sendet die Anfrage ohne Zahlung. Die Proformarechnung stellen die "
 "Mitarbeitenden in der Anfrage aus. Immer aktiv: Nur so lässt sich eine "
 "Anfrage senden."
+
+#: includes/Inquiry/PublicGuard.php:40
+msgid "Website"
+msgstr "Website"
+
+#: includes/Inquiry/Sender.php:35
+msgid "Please add a product or write a message."
+msgstr "Bitte fügen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht."
+
+#: includes/Inquiry/Sender.php:60
+msgid "Please try sending your inquiry again."
+msgstr "Bitte senden Sie Ihre Anfrage erneut."
 
 #: includes/Inquiry/Statuses.php:45 includes/Inquiry/Statuses.php:80
 #: includes/Inquiry/Statuses.php:84
@@ -1374,7 +1444,7 @@ msgstr "Gespeichert am"
 
 #: includes/Presentation/AccountTemplates.php:465
 #: includes/Presentation/ProductShortcodes.php:626
-#: includes/Storefront/ProductView.php:319 includes/Vocabulary/Labels.php:33
+#: includes/Storefront/ProductView.php:316 includes/Vocabulary/Labels.php:33
 #: includes/Vocabulary/Terms.php:43
 #: templates/myaccount/linker-saved-solutions.php:54
 msgid "Add to solution draft"
@@ -1391,12 +1461,8 @@ msgid "No inquiries yet."
 msgstr "Noch keine Anfragen."
 
 #: includes/Presentation/AccountTemplates.php:470
-#: includes/Presentation/LoginGate.php:105
-#: includes/Presentation/LoginGate.php:118
-#: includes/Presentation/LoginGate.php:147
-#: includes/Presentation/LoginGate.php:162
-#: includes/Presentation/LoginGate.php:177
-#: includes/Presentation/Shortcodes.php:386 includes/Vocabulary/Terms.php:38
+#: includes/Presentation/LoginGate.php:70
+#: includes/Presentation/Shortcodes.php:370 includes/Vocabulary/Terms.php:38
 #: templates/emails/linker-approval-approved.php:26
 #: templates/emails/linker-registration-received.php:38
 msgid "Browse products"
@@ -1476,7 +1542,7 @@ msgstr "Vergleichstabelle der Produkte"
 #: includes/Presentation/ProductShortcodes.php:153
 #: includes/Presentation/ProductShortcodes.php:1540
 #: includes/Storefront/ArchiveSchema.php:174
-#: includes/Storefront/ProductView.php:656
+#: includes/Storefront/ProductView.php:630
 #: templates/myaccount/linker-saved-solutions.php:29
 #: templates/myaccount/linker-saved-solutions.php:41
 msgid "Products"
@@ -1656,118 +1722,49 @@ msgid_plural "covers %d products"
 msgstr[0] "gilt für %d Produkt"
 msgstr[1] "gilt für %d Produkte"
 
-#: includes/Presentation/LoginGate.php:95
-msgid "Account with limited access"
-msgstr "Konto mit eingeschränktem Zugriff"
-
-#: includes/Presentation/LoginGate.php:96
-#: includes/Presentation/LoginGate.php:97
-msgid "Access currently limited"
-msgstr "Zugriff derzeit eingeschränkt"
-
-#: includes/Presentation/LoginGate.php:99
-msgid ""
-"Your partner account is limited for now: the products and your questions "
-"stay open, net prices and the Proforma request are paused."
-msgstr ""
-"Ihr Partner-Konto ist vorerst eingeschränkt: Produkte und Ihre Fragen "
-"bleiben offen, Nettopreise und Proforma-Anfrage sind pausiert."
-
-#. translators: %s: the team's email address.
-#: includes/Presentation/LoginGate.php:103
-#, php-format
-msgid "Write to %s and we will look at your account again."
-msgstr "Schreiben Sie an %s, und wir sehen uns Ihr Konto erneut an."
-
-#: includes/Presentation/LoginGate.php:109
+#: includes/Presentation/LoginGate.php:61
 msgid "Account under review"
 msgstr "Konto in Prüfung"
 
-#: includes/Presentation/LoginGate.php:110
+#: includes/Presentation/LoginGate.php:62
 msgid "Under review"
 msgstr "In Prüfung"
 
-#: includes/Presentation/LoginGate.php:111
+#: includes/Presentation/LoginGate.php:63
 msgid "Your account is under review"
 msgstr "Ihr Konto wird geprüft"
 
-#: includes/Presentation/LoginGate.php:113
+#: includes/Presentation/LoginGate.php:65
 #: templates/emails/linker-registration-received.php:24
 msgid ""
-"We are reviewing your partner account. Net prices and the Proforma request "
-"open as soon as it is approved, and we will email you."
+"We are reviewing your partner account and will email you when it is "
+"approved. You can send inquiries now; approval opens net prices."
 msgstr ""
-"Wir prüfen Ihr Partner-Konto. Nettopreise und die Proforma-Anfrage öffnen "
-"sich mit der Freigabe; wir melden uns per E-Mail."
+"Wir prüfen Ihr Partnerkonto und informieren Sie per E-Mail über die "
+"Freigabe. Anfragen können Sie bereits senden; Nettopreise sehen Sie nach der "
+"Freigabe."
 
 #. translators: %s: the team's email address.
-#: includes/Presentation/LoginGate.php:116
+#: includes/Presentation/LoginGate.php:68
 #: templates/emails/linker-registration-received.php:32
 #, php-format
 msgid "Until then, browse the products and write to %s with any question."
 msgstr ""
 "Bis dahin können Sie die Produkte ansehen und Ihre Fragen an %s schreiben."
 
-#: includes/Presentation/LoginGate.php:142
-#: includes/Presentation/Shortcodes.php:381
-msgid "Empty solution draft"
-msgstr "Leerer Lösungsentwurf"
+#: includes/Presentation/LoginGate.php:82
+msgid "Access currently limited"
+msgstr "Zugriff derzeit eingeschränkt"
 
-#: includes/Presentation/LoginGate.php:144
-msgid "Nothing to submit yet."
-msgstr "Noch nichts zum Absenden."
-
-#: includes/Presentation/LoginGate.php:146
+#: includes/Presentation/LoginGate.php:83
 msgid ""
-"Your solution draft is empty. Add matched systems, then come back for your "
-"Proforma."
+"You can send inquiries. Net prices are unavailable while your account is "
+"limited."
 msgstr ""
-"Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren Sie "
-"dann für Ihre Proformarechnung zurück."
-
-#: includes/Presentation/LoginGate.php:156
-#: includes/Presentation/LoginGate.php:171
-msgid "Proforma request sign-in"
-msgstr "Anmeldung zur Proforma-Anfrage"
+"Sie können Anfragen senden. Solange Ihr Konto eingeschränkt ist, werden "
+"keine Nettopreise angezeigt."
 
 #: includes/Presentation/LoginGate.php:158
-msgid "Get your Proforma"
-msgstr "Proformarechnung anfordern"
-
-#: includes/Presentation/LoginGate.php:159
-msgid "Sign in to get your Proforma."
-msgstr "Melden Sie sich an, um Ihre Proformarechnung zu erhalten."
-
-#: includes/Presentation/LoginGate.php:160
-msgid ""
-"The Proforma request is reserved for Linker partner accounts. Register, add "
-"your systems, and return here — VAT and delivery are ours to handle."
-msgstr ""
-"Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren Sie "
-"sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — "
-"Umsatzsteuer und Lieferung übernehmen wir."
-
-#: includes/Presentation/LoginGate.php:161
-#: includes/Presentation/LoginGate.php:176
-#: includes/Presentation/Shortcodes.php:388
-msgid "Sign in or register"
-msgstr "Anmelden oder registrieren"
-
-#: includes/Presentation/LoginGate.php:173
-msgid "Sign in to request your Proforma"
-msgstr "Melden Sie sich an, um Ihre Proformarechnung anzufordern"
-
-#: includes/Presentation/LoginGate.php:175
-msgid ""
-"Your solution draft is saved. Log in with your partner account to send the "
-"inquiry — no account yet? Register on the account page; the draft waits for "
-"you."
-msgstr ""
-"Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem Partner-Konto "
-"an, um die Anfrage abzusenden — noch kein Konto? Registrieren Sie sich auf "
-"der Kontoseite; Ihr Entwurf wartet dort auf Sie."
-
-#: includes/Presentation/LoginGate.php:239
 #: templates/emails/linker-approval-rejected.php:25
 #: templates/emails/linker-approval-restricted.php:26
 msgid "Our reason:"
@@ -2157,7 +2154,7 @@ msgid "Not sure which model to look for?"
 msgstr "Noch nicht sicher, welches Modell passt?"
 
 #: includes/Presentation/ProductShortcodes.php:1577
-#: includes/Presentation/Shortcodes.php:289
+#: includes/Presentation/Shortcodes.php:281
 msgid ""
 "Your question includes this page as context. You can remove it before "
 "sending."
@@ -2188,26 +2185,19 @@ msgstr "Mein Konto"
 msgid "Sign in"
 msgstr "Anmelden"
 
-#: includes/Presentation/ProductShortcodes.php:1910
-#: includes/Presentation/ProductShortcodes.php:1912
-#: includes/Vocabulary/Labels.php:96 includes/Vocabulary/Labels.php:171
-#: includes/Vocabulary/Labels.php:195 includes/Vocabulary/Terms.php:31
-msgid "Solution draft"
-msgstr "Lösungsentwurf"
-
-#: includes/Presentation/Shortcodes.php:126
+#: includes/Presentation/Shortcodes.php:118
 msgid "Contact Linker"
 msgstr "Linker kontaktieren"
 
-#: includes/Presentation/Shortcodes.php:248
+#: includes/Presentation/Shortcodes.php:240
 msgid "LÖSUNGEN FÜR GROSSSPEICHER"
 msgstr "LÖSUNGEN FÜR GROSSSPEICHER"
 
-#: includes/Presentation/Shortcodes.php:249
+#: includes/Presentation/Shortcodes.php:241
 msgid "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
 msgstr "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
 
-#: includes/Presentation/Shortcodes.php:250
+#: includes/Presentation/Shortcodes.php:242
 msgid ""
 "Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher "
 "an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die "
@@ -2217,19 +2207,19 @@ msgstr ""
 "an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die "
 "Systemauswahl mit einer umsetzbaren Planung für die Lieferung."
 
-#: includes/Presentation/Shortcodes.php:251
+#: includes/Presentation/Shortcodes.php:243
 msgid "Ihr Projekt gemeinsam entwickeln"
 msgstr "Ihr Projekt gemeinsam entwickeln"
 
-#: includes/Presentation/Shortcodes.php:254
+#: includes/Presentation/Shortcodes.php:246
 msgid "KONTAKT ZU LINKER"
 msgstr "KONTAKT ZU LINKER"
 
-#: includes/Presentation/Shortcodes.php:255
+#: includes/Presentation/Shortcodes.php:247
 msgid "Das Projekt vor dem vollständigen Briefing besprechen."
 msgstr "Das Projekt vor dem vollständigen Briefing besprechen."
 
-#: includes/Presentation/Shortcodes.php:256
+#: includes/Presentation/Shortcodes.php:248
 msgid ""
 "Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden "
 "entfernen."
@@ -2237,19 +2227,19 @@ msgstr ""
 "Ihre Frage enthält den Bezug zu dieser Seite. Sie können ihn vor dem Senden "
 "entfernen."
 
-#: includes/Presentation/Shortcodes.php:257
+#: includes/Presentation/Shortcodes.php:249
 msgid "EPC-Anforderung besprechen"
 msgstr "EPC-Anforderung besprechen"
 
-#: includes/Presentation/Shortcodes.php:260
+#: includes/Presentation/Shortcodes.php:252
 msgid "TECHNISCHE ZUSAMMENARBEIT"
 msgstr "TECHNISCHE ZUSAMMENARBEIT"
 
-#: includes/Presentation/Shortcodes.php:261
+#: includes/Presentation/Shortcodes.php:253
 msgid "Ein technischer Partner in jeder Projektphase."
 msgstr "Ein technischer Partner in jeder Projektphase."
 
-#: includes/Presentation/Shortcodes.php:262
+#: includes/Presentation/Shortcodes.php:254
 msgid ""
 "Unser Team arbeitet mit Ihrem Team an Systementscheidungen, "
 "Installationsfragen und der Inbetriebnahme. Auch nach der Lieferung bleiben "
@@ -2259,19 +2249,19 @@ msgstr ""
 "Installationsfragen und der Inbetriebnahme. Auch nach der Lieferung bleiben "
 "wir bei technischen Fragen an Ihrer Seite."
 
-#: includes/Presentation/Shortcodes.php:263
+#: includes/Presentation/Shortcodes.php:255
 msgid "Mit unserem Technikteam sprechen"
 msgstr "Mit unserem Technikteam sprechen"
 
-#: includes/Presentation/Shortcodes.php:266
+#: includes/Presentation/Shortcodes.php:258
 msgid "IHR PROJEKT IN DER PRAXIS"
 msgstr "IHR PROJEKT IN DER PRAXIS"
 
-#: includes/Presentation/Shortcodes.php:267
+#: includes/Presentation/Shortcodes.php:259
 msgid "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
 msgstr "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
 
-#: includes/Presentation/Shortcodes.php:268
+#: includes/Presentation/Shortcodes.php:260
 msgid ""
 "Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu "
 "Ihrer Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
@@ -2279,15 +2269,15 @@ msgstr ""
 "Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu "
 "Ihrer Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
 
-#: includes/Presentation/Shortcodes.php:269
+#: includes/Presentation/Shortcodes.php:261
 msgid "Ihre Speicheroptionen besprechen"
 msgstr "Ihre Speicheroptionen besprechen"
 
-#: includes/Presentation/Shortcodes.php:273
+#: includes/Presentation/Shortcodes.php:265
 msgid "Eine frühe Frage reicht aus."
 msgstr "Eine frühe Frage reicht aus."
 
-#: includes/Presentation/Shortcodes.php:274
+#: includes/Presentation/Shortcodes.php:266
 msgid ""
 "Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im "
 "Kurzformular optional."
@@ -2295,19 +2285,19 @@ msgstr ""
 "Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im "
 "Kurzformular optional."
 
-#: includes/Presentation/Shortcodes.php:275
+#: includes/Presentation/Shortcodes.php:267
 msgid "Projekt besprechen"
 msgstr "Projekt besprechen"
 
-#: includes/Presentation/Shortcodes.php:281
+#: includes/Presentation/Shortcodes.php:273
 msgid "UTILITY-SCALE SOLUTIONS"
 msgstr "LÖSUNGEN FÜR GROSSSPEICHER"
 
-#: includes/Presentation/Shortcodes.php:282
+#: includes/Presentation/Shortcodes.php:274
 msgid "A storage solution built around the whole project."
 msgstr "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
 
-#: includes/Presentation/Shortcodes.php:283
+#: includes/Presentation/Shortcodes.php:275
 msgid ""
 "We work alongside developers and EPC teams to shape battery storage around "
 "the project’s energy goals, site conditions and integration needs. Together, "
@@ -2317,27 +2307,27 @@ msgstr ""
 "an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die "
 "Systemauswahl mit einer umsetzbaren Planung für die Lieferung."
 
-#: includes/Presentation/Shortcodes.php:284
+#: includes/Presentation/Shortcodes.php:276
 msgid "Explore your project with us"
 msgstr "Ihr Projekt gemeinsam entwickeln"
 
-#: includes/Presentation/Shortcodes.php:288
+#: includes/Presentation/Shortcodes.php:280
 msgid "Discuss the project before preparing the full brief."
 msgstr "Das Projekt vor dem vollständigen Briefing besprechen."
 
-#: includes/Presentation/Shortcodes.php:290
+#: includes/Presentation/Shortcodes.php:282
 msgid "Discuss an EPC requirement"
 msgstr "EPC-Anforderung besprechen"
 
-#: includes/Presentation/Shortcodes.php:293
+#: includes/Presentation/Shortcodes.php:285
 msgid "TECHNICAL PARTNERSHIP"
 msgstr "TECHNISCHE ZUSAMMENARBEIT"
 
-#: includes/Presentation/Shortcodes.php:294
+#: includes/Presentation/Shortcodes.php:286
 msgid "A technical partner, wherever your project stands."
 msgstr "Ein technischer Partner in jeder Projektphase."
 
-#: includes/Presentation/Shortcodes.php:295
+#: includes/Presentation/Shortcodes.php:287
 msgid ""
 "Our team works with yours on system choices, installation questions and "
 "commissioning, and stays involved when support is needed after delivery."
@@ -2346,19 +2336,19 @@ msgstr ""
 "Installationsfragen und der Inbetriebnahme. Auch nach der Lieferung bleiben "
 "wir bei technischen Fragen an Ihrer Seite."
 
-#: includes/Presentation/Shortcodes.php:296
+#: includes/Presentation/Shortcodes.php:288
 msgid "Talk to our technical team"
 msgstr "Mit unserem Technikteam sprechen"
 
-#: includes/Presentation/Shortcodes.php:299
+#: includes/Presentation/Shortcodes.php:291
 msgid "YOUR PROJECT, IN PRACTICE"
 msgstr "IHR PROJEKT IN DER PRAXIS"
 
-#: includes/Presentation/Shortcodes.php:300
+#: includes/Presentation/Shortcodes.php:292
 msgid "What could the right storage solution do for your site?"
 msgstr "Was kann die passende Speicherlösung an Ihrem Standort leisten?"
 
-#: includes/Presentation/Shortcodes.php:301
+#: includes/Presentation/Shortcodes.php:293
 msgid ""
 "We’ll explore how hybrid or AC-coupled storage could work with your "
 "installation, your energy use and the outcome you want to achieve."
@@ -2366,15 +2356,15 @@ msgstr ""
 "Gemeinsam betrachten wir, wie ein Hybrid- oder AC-gekoppelter Speicher zu "
 "Ihrer Anlage, Ihrem Energieverbrauch und Ihren Zielen passt."
 
-#: includes/Presentation/Shortcodes.php:302
+#: includes/Presentation/Shortcodes.php:294
 msgid "Talk through your storage options"
 msgstr "Ihre Speicheroptionen besprechen"
 
-#: includes/Presentation/Shortcodes.php:306
+#: includes/Presentation/Shortcodes.php:298
 msgid "An early question is enough."
 msgstr "Eine frühe Frage reicht aus."
 
-#: includes/Presentation/Shortcodes.php:307
+#: includes/Presentation/Shortcodes.php:299
 msgid ""
 "Share what you already know. Project location and timing are optional in the "
 "short form."
@@ -2382,21 +2372,29 @@ msgstr ""
 "Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im "
 "Kurzformular optional."
 
-#: includes/Presentation/Shortcodes.php:308
+#: includes/Presentation/Shortcodes.php:300
 msgid "Discuss your project"
 msgstr "Projekt besprechen"
 
-#: includes/Presentation/Shortcodes.php:383 includes/Vocabulary/Terms.php:37
+#: includes/Presentation/Shortcodes.php:365
+msgid "Empty solution draft"
+msgstr "Leerer Lösungsentwurf"
+
+#: includes/Presentation/Shortcodes.php:367 includes/Vocabulary/Terms.php:37
 msgid "Your solution draft is empty."
 msgstr "Ihr Lösungsentwurf ist leer."
 
-#: includes/Presentation/Shortcodes.php:384
+#: includes/Presentation/Shortcodes.php:368
 msgid ""
-"Browse the products now. Adding to the solution draft is possible only after "
-"your account has been reviewed."
+"Browse products and add them to your solution draft. You can send an inquiry "
+"without an account."
 msgstr ""
-"Durchsuchen Sie jetzt die Produkte. Das Hinzufügen zum Lösungsentwurf ist "
-"erst nach der Kontoprüfung möglich."
+"Wählen Sie Produkte für Ihren Lösungsentwurf aus. Sie können Ihre Anfrage "
+"ohne Konto senden."
+
+#: includes/Presentation/Shortcodes.php:372
+msgid "Sign in or register"
+msgstr "Anmelden oder registrieren"
 
 #: includes/Products/Comparison.php:224 includes/Storefront/ProductView.php:307
 msgid "Net price after partner sign-in"
@@ -3302,23 +3300,23 @@ msgstr "Registriert am %s"
 msgid "Login email"
 msgstr "E-Mail-Adresse für die Anmeldung"
 
-#: includes/Registration/VatProfile.php:121
+#: includes/Registration/VatProfile.php:128
 msgid "Valid (VIES)"
 msgstr "Gültig (VIES)"
 
-#: includes/Registration/VatProfile.php:122
+#: includes/Registration/VatProfile.php:129
 msgid "Not valid according to VIES – review"
 msgstr "Laut VIES ungültig – prüfen"
 
-#: includes/Registration/VatProfile.php:123
+#: includes/Registration/VatProfile.php:130
 msgid "Not checked (VIES unavailable or not an EU VAT ID) – review"
 msgstr "Nicht geprüft (VIES nicht erreichbar oder keine EU-USt-IdNr.) – prüfen"
 
-#: includes/Registration/VatProfile.php:124
+#: includes/Registration/VatProfile.php:131
 msgid "No VAT ID given"
 msgstr "Keine USt-IdNr. angegeben"
 
-#: includes/Registration/VatProfile.php:126
+#: includes/Registration/VatProfile.php:133
 msgid "Not checked yet"
 msgstr "Noch nicht geprüft"
 
@@ -3570,10 +3568,6 @@ msgstr "Netzphasen"
 msgid "Energy capacity"
 msgstr "Nutzbare Energie"
 
-#: includes/Storefront/ProductView.php:326
-msgid "Sign in for partner pricing"
-msgstr "Für Partnerpreise anmelden"
-
 #: includes/Vocabulary/Labels.php:40 includes/Vocabulary/Terms.php:89
 msgid "Request Proforma"
 msgstr "Proforma anfordern"
@@ -3606,7 +3600,7 @@ msgstr ""
 "Wir verwenden Ihre personenbezogenen Daten zur Verwaltung Ihres Kontos und "
 "für die weiteren in unserer [privacy_policy] beschriebenen Zwecke."
 
-#: includes/Vocabulary/Labels.php:116
+#: includes/Vocabulary/Labels.php:121
 msgid ""
 "Review the lines in your solution draft, adjust quantities and check the "
 "totals. Approved partner accounts see net prices, tax and delivery terms "
@@ -3616,7 +3610,7 @@ msgstr ""
 "und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
 "Steuern und Lieferbedingungen vor der Proforma-Anfrage."
 
-#: includes/Vocabulary/Labels.php:117
+#: includes/Vocabulary/Labels.php:122
 msgid ""
 "Build a solution draft from products or product numbers. Approved partner "
 "accounts can review prices, delivery, tax and the Proforma request."
@@ -3625,7 +3619,7 @@ msgstr ""
 "Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die "
 "Proforma-Anfrage prüfen."
 
-#: includes/Vocabulary/Labels.php:118
+#: includes/Vocabulary/Labels.php:123
 msgid ""
 "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
 "und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
@@ -3634,10 +3628,6 @@ msgstr ""
 "Prüfen Sie die Positionen in Ihrem Lösungsentwurf, passen Sie die Mengen an "
 "und prüfen Sie die Summen. Freigegebene Partnerkonten sehen Nettopreise, "
 "Steuern und Lieferbedingungen vor der Proforma-Anfrage."
-
-#: includes/Vocabulary/Labels.php:174 includes/Vocabulary/Terms.php:40
-msgid "Proforma request"
-msgstr "Proforma-Anfrage"
 
 #: includes/Vocabulary/LocaleFormat.php:26
 msgctxt "date format, see https://www.php.net/manual/datetime.format.php"
@@ -3654,10 +3644,6 @@ msgstr "USt. %s %%"
 #: includes/Vocabulary/Terms.php:30
 msgid "Totals"
 msgstr "Summen"
-
-#: includes/Vocabulary/Terms.php:32
-msgid "Update solution draft"
-msgstr "Lösungsentwurf aktualisieren"
 
 #: includes/Vocabulary/Terms.php:33
 msgid "Continue to Proforma request"
@@ -3777,10 +3763,6 @@ msgid ""
 msgstr ""
 "Einige Produkte in Ihrem Lösungsentwurf müssen geprüft werden. Bitte kehren "
 "Sie zum Lösungsentwurf zurück, bevor Sie eine Proformarechnung anfordern."
-
-#: includes/Vocabulary/Terms.php:65
-msgid "Quantity"
-msgstr "Menge"
 
 #: includes/Vocabulary/Terms.php:70
 msgid "Sort by popularity"
@@ -4057,78 +4039,16 @@ msgstr "Ihr Partner-Konto ist vorerst eingeschränkt."
 
 #: templates/emails/linker-approval-restricted.php:24
 msgid ""
-"You can keep browsing the products, and you can reach us any time at "
-"sales@de-linker.com. Net prices and the Proforma request are paused while "
-"the account is limited."
+"You can browse products and send inquiries. Net prices remain unavailable "
+"while your account is limited. You can also reach us at sales@de-linker.com."
 msgstr ""
-"Sie können die Produkte weiterhin ansehen und uns jederzeit unter sales@de-"
-"linker.com erreichen. Nettopreise und Proforma-Anfrage sind pausiert, "
-"solange das Konto eingeschränkt ist."
+"Sie können Produkte ansehen und Anfragen senden. Solange Ihr Konto "
+"eingeschränkt ist, werden keine Nettopreise angezeigt. Sie erreichen uns "
+"auch unter sales@de-linker.com."
 
 #: templates/emails/linker-approval-restricted.php:28
 msgid "Write to us and we will look at your account again."
 msgstr "Schreiben Sie uns, und wir sehen uns Ihr Konto erneut an."
-
-#. translators: %s: the visitor's name.
-#. translators: %s: the customer's full name.
-#: templates/emails/linker-contact-receipt.php:27
-#: templates/emails/linker-inquiry-received.php:25
-#: templates/emails/linker-proforma-issued.php:27
-#, php-format
-msgid "Hello %s,"
-msgstr "Guten Tag %s,"
-
-#: templates/emails/linker-contact-receipt.php:30
-msgid "Thank you for your message. The Linker team will reply to this address."
-msgstr ""
-"Vielen Dank für Ihre Nachricht. Das Linker-Team antwortet an diese Adresse."
-
-#: templates/emails/linker-contact-receipt.php:31
-msgid "Your message:"
-msgstr "Ihre Nachricht:"
-
-#: templates/emails/linker-contact-receipt.php:35
-msgid ""
-"If anything is missing, reply to this email and it reaches the same team."
-msgstr ""
-"Falls etwas fehlt: Antworten Sie auf diese E-Mail, damit erreichen Sie "
-"dasselbe Team."
-
-#. translators: 1: the visitor's name, 2: the visitor's company, empty when not given.
-#: templates/emails/linker-contact-team.php:28
-#, php-format
-msgid "%1$s (%2$s) sent a message through the contact form."
-msgstr "%1$s (%2$s) hat eine Nachricht über das Kontaktformular gesendet."
-
-#: templates/emails/linker-contact-team.php:30
-msgid "no company given"
-msgstr "kein Unternehmen angegeben"
-
-#. translators: %s: the visitor's email address.
-#: templates/emails/linker-contact-team.php:37
-#, php-format
-msgid "Reply address: %s"
-msgstr "Antwortadresse: %s"
-
-#. translators: %s: the topic the visitor picked, for example "A question".
-#: templates/emails/linker-contact-team.php:43
-#, php-format
-msgid "This is about: %s"
-msgstr "Es geht um: %s"
-
-#. translators: %s: EN or DE, the language the visitor wrote in.
-#: templates/emails/linker-contact-team.php:51
-#, php-format
-msgid "Written in: %s"
-msgstr "Geschrieben auf: %s"
-
-#: templates/emails/linker-contact-team.php:56
-msgid "Message:"
-msgstr "Nachricht:"
-
-#: templates/emails/linker-contact-team.php:60
-msgid "Answer this email to reply to the visitor directly."
-msgstr "Antworten Sie auf diese E-Mail, um dem Besucher direkt zu antworten."
 
 #. translators: %s: the site's domain, e.g. de-linker.com.
 #: templates/emails/linker-genie-confirm-address.php:29
@@ -4186,21 +4106,52 @@ msgstr ""
 msgid "Replies to this email go to the Linker team."
 msgstr "Eine Antwort auf diese E-Mail erreicht das Linker-Team."
 
+#: templates/emails/linker-inquiry-received.php:27
+msgid "Hello,"
+msgstr "Guten Tag,"
+
+#. translators: %s: the customer's full name.
+#: templates/emails/linker-inquiry-received.php:30
+#: templates/emails/linker-proforma-issued.php:27
+#, php-format
+msgid "Hello %s,"
+msgstr "Guten Tag %s,"
+
 #. translators: %s: inquiry number. The sentence follows the salutation "Hello %s,".
-#: templates/emails/linker-inquiry-received.php:31
+#: templates/emails/linker-inquiry-received.php:37
 #, php-format
 msgid "Thank you for your inquiry %s."
 msgstr "vielen Dank für Ihre Anfrage %s."
+
+#: templates/emails/linker-inquiry-received.php:43
+msgid ""
+"Create an account with this email to see net prices after approval and track "
+"your inquiry."
+msgstr ""
+"Erstellen Sie mit dieser E-Mail-Adresse ein Konto. Nach der Freigabe sehen "
+"Sie Nettopreise und können Ihre Anfrage verfolgen."
 
 #: templates/emails/linker-new-customer.php:28
 msgid "Address"
 msgstr "Anschrift"
 
+#. translators: 1: inquiry number, 2: company or reply email when no name was given.
+#: templates/emails/linker-new-inquiry.php:30
+#, php-format
+msgid "New inquiry %1$s from %2$s."
+msgstr "Neue Anfrage %1$s von %2$s."
+
 #. translators: 1: inquiry number, 2: company, 3: customer's full name.
-#: templates/emails/linker-new-inquiry.php:26
+#: templates/emails/linker-new-inquiry.php:37
 #, php-format
 msgid "New inquiry %1$s from %2$s (%3$s)."
 msgstr "Neue Anfrage %1$s von %2$s (%3$s)."
+
+#. translators: %s: topic selected in the contact form.
+#: templates/emails/linker-new-inquiry.php:51
+#, php-format
+msgid "This is about: %s"
+msgstr "Es geht um: %s"
 
 #. translators: 1: Proforma number, 2: inquiry number, 3: last day of validity. The sentence follows the salutation "Hello %s,".
 #: templates/emails/linker-proforma-issued.php:34
@@ -4289,8 +4240,8 @@ msgstr ""
 "Der Arbeitsbereich für Installationsbetriebe, EPC-Unternehmen und Händler."
 
 #: templates/myaccount/auth/form-login.php:60
-msgid "Net prices and Proforma requests once approved"
-msgstr "Nettopreise und Proforma-Anfragen nach Freigabe"
+msgid "Net prices after account approval"
+msgstr "Nettopreise nach Freigabe Ihres Kontos"
 
 #: templates/myaccount/auth/form-login.php:61
 msgid "Every inquiry and document in one place"
@@ -4452,6 +4403,168 @@ msgstr ""
 msgid "Reference"
 msgstr "Verwendungszweck"
 
+#~ msgid "Contact form receipt"
+#~ msgstr "Eingangsbestätigung des Kontaktformulars"
+
+#~ msgid "Sent to the visitor when the contact form is sent."
+#~ msgstr ""
+#~ "Wird an den Besucher gesendet, wenn das Kontaktformular abgesendet wird."
+
+#~ msgid "We received your message"
+#~ msgstr "Wir haben Ihre Nachricht erhalten"
+
+#~ msgid "Contact form message"
+#~ msgstr "Nachricht über das Kontaktformular"
+
+#~ msgid ""
+#~ "Sent to the internal notification address, with blind copies, when the "
+#~ "contact form is sent."
+#~ msgstr ""
+#~ "Geht an die Adresse für interne Benachrichtigungen (mit Blindkopien), "
+#~ "wenn das Kontaktformular abgesendet wird."
+
+#~ msgid "New message from {name}"
+#~ msgstr "Neue Nachricht von {name}"
+
+#~ msgid "New message from the contact form"
+#~ msgstr "Neue Nachricht über das Kontaktformular"
+
+#~ msgid ""
+#~ "Prices are shown after you log in. Then you can request a Proforma "
+#~ "invoice for this solution draft."
+#~ msgstr ""
+#~ "Preise sehen Sie nach der Anmeldung. Danach können Sie für diesen "
+#~ "Lösungsentwurf eine Proformarechnung anfordern."
+
+#~ msgid "Log in and request a Proforma"
+#~ msgstr "Anmelden und Proforma anfordern"
+
+#~ msgid ""
+#~ "Your Proforma invoice will be in your account under Inquiries, and we "
+#~ "will send you a link by email."
+#~ msgstr ""
+#~ "Ihre Proformarechnung finden Sie dann in Ihrem Konto unter „Anfragen“; "
+#~ "den Link schicken wir Ihnen auch per E-Mail."
+
+#~ msgid "Account with limited access"
+#~ msgstr "Konto mit eingeschränktem Zugriff"
+
+#~ msgid ""
+#~ "Your partner account is limited for now: the products and your questions "
+#~ "stay open, net prices and the Proforma request are paused."
+#~ msgstr ""
+#~ "Ihr Partner-Konto ist vorerst eingeschränkt: Produkte und Ihre Fragen "
+#~ "bleiben offen, Nettopreise und Proforma-Anfrage sind pausiert."
+
+#, php-format
+#~ msgid "Write to %s and we will look at your account again."
+#~ msgstr "Schreiben Sie an %s, und wir sehen uns Ihr Konto erneut an."
+
+#~ msgid ""
+#~ "We are reviewing your partner account. Net prices and the Proforma "
+#~ "request open as soon as it is approved, and we will email you."
+#~ msgstr ""
+#~ "Wir prüfen Ihr Partner-Konto. Nettopreise und die Proforma-Anfrage öffnen "
+#~ "sich mit der Freigabe; wir melden uns per E-Mail."
+
+#~ msgid "Nothing to submit yet."
+#~ msgstr "Noch nichts zum Absenden."
+
+#~ msgid ""
+#~ "Your solution draft is empty. Add matched systems, then come back for "
+#~ "your Proforma."
+#~ msgstr ""
+#~ "Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren "
+#~ "Sie dann für Ihre Proformarechnung zurück."
+
+#~ msgid "Proforma request sign-in"
+#~ msgstr "Anmeldung zur Proforma-Anfrage"
+
+#~ msgid "Get your Proforma"
+#~ msgstr "Proformarechnung anfordern"
+
+#~ msgid "Sign in to get your Proforma."
+#~ msgstr "Melden Sie sich an, um Ihre Proformarechnung zu erhalten."
+
+#~ msgid ""
+#~ "The Proforma request is reserved for Linker partner accounts. Register, "
+#~ "add your systems, and return here — VAT and delivery are ours to handle."
+#~ msgstr ""
+#~ "Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren "
+#~ "Sie sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — "
+#~ "Umsatzsteuer und Lieferung übernehmen wir."
+
+#~ msgid "Sign in to request your Proforma"
+#~ msgstr "Melden Sie sich an, um Ihre Proformarechnung anzufordern"
+
+#~ msgid ""
+#~ "Your solution draft is saved. Log in with your partner account to send "
+#~ "the inquiry — no account yet? Register on the account page; the draft "
+#~ "waits for you."
+#~ msgstr ""
+#~ "Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem Partner-"
+#~ "Konto an, um die Anfrage abzusenden — noch kein Konto? Registrieren Sie "
+#~ "sich auf der Kontoseite; Ihr Entwurf wartet dort auf Sie."
+
+#~ msgid ""
+#~ "Browse the products now. Adding to the solution draft is possible only "
+#~ "after your account has been reviewed."
+#~ msgstr ""
+#~ "Durchsuchen Sie jetzt die Produkte. Das Hinzufügen zum Lösungsentwurf ist "
+#~ "erst nach der Kontoprüfung möglich."
+
+#~ msgid "Sign in for partner pricing"
+#~ msgstr "Für Partnerpreise anmelden"
+
+#~ msgid ""
+#~ "You can keep browsing the products, and you can reach us any time at "
+#~ "sales@de-linker.com. Net prices and the Proforma request are paused while "
+#~ "the account is limited."
+#~ msgstr ""
+#~ "Sie können die Produkte weiterhin ansehen und uns jederzeit unter "
+#~ "sales@de-linker.com erreichen. Nettopreise und Proforma-Anfrage sind "
+#~ "pausiert, solange das Konto eingeschränkt ist."
+
+#~ msgid ""
+#~ "Thank you for your message. The Linker team will reply to this address."
+#~ msgstr ""
+#~ "Vielen Dank für Ihre Nachricht. Das Linker-Team antwortet an diese "
+#~ "Adresse."
+
+#~ msgid "Your message:"
+#~ msgstr "Ihre Nachricht:"
+
+#~ msgid ""
+#~ "If anything is missing, reply to this email and it reaches the same team."
+#~ msgstr ""
+#~ "Falls etwas fehlt: Antworten Sie auf diese E-Mail, damit erreichen Sie "
+#~ "dasselbe Team."
+
+#, php-format
+#~ msgid "%1$s (%2$s) sent a message through the contact form."
+#~ msgstr "%1$s (%2$s) hat eine Nachricht über das Kontaktformular gesendet."
+
+#~ msgid "no company given"
+#~ msgstr "kein Unternehmen angegeben"
+
+#, php-format
+#~ msgid "Reply address: %s"
+#~ msgstr "Antwortadresse: %s"
+
+#, php-format
+#~ msgid "Written in: %s"
+#~ msgstr "Geschrieben auf: %s"
+
+#~ msgid "Message:"
+#~ msgstr "Nachricht:"
+
+#~ msgid "Answer this email to reply to the visitor directly."
+#~ msgstr ""
+#~ "Antworten Sie auf diese E-Mail, um dem Besucher direkt zu antworten."
+
+#~ msgid "Net prices and Proforma requests once approved"
+#~ msgstr "Nettopreise und Proforma-Anfragen nach Freigabe"
+
 #~ msgid "Authenticated SMTP is configured for internal notifications."
 #~ msgstr ""
 #~ "Authentifiziertes SMTP ist für interne Benachrichtigungen konfiguriert."
@@ -4567,3 +4680,10 @@ msgstr "Verwendungszweck"
 #~ "Sie können die Produkte durchsuchen und eine Artikelnummernliste "
 #~ "abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der "
 #~ "Kontoprüfung möglich."
+
+#~ msgid ""
+#~ "We have not sent a confirmation email. The Linker team will reply to the "
+#~ "email address you provided."
+#~ msgstr ""
+#~ "Es wurde keine Bestätigungs-E-Mail versendet. Das Linker-Team antwortet "
+#~ "an die angegebene E-Mail-Adresse."

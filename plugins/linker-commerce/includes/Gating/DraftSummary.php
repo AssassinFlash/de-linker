@@ -43,9 +43,9 @@ final class DraftSummary {
 		remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cart_totals', 10 );
 		printf(
 			'<div class="cart_totals linker-login-box"><p>%1$s</p><p><a class="button alt wc-forward" href="%2$s">%3$s</a></p><p><a href="%4$s">%5$s</a></p></div>',
-			esc_html__( 'Prices are shown after you log in. Then you can request a Proforma invoice for this solution draft.', 'linker-commerce' ),
+			esc_html__( 'You can send this solution draft without an account. Net prices are available after account approval.', 'linker-commerce' ),
 			esc_url( wc_get_checkout_url() ),
-			esc_html__( 'Log in and request a Proforma', 'linker-commerce' ),
+			esc_html__( 'Send inquiry', 'linker-commerce' ),
 			esc_url( AuthTemplates::register_url() ),
 			esc_html__( 'No account yet? Register', 'linker-commerce' )
 		);

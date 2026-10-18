@@ -136,6 +136,28 @@ final class SubmissionTest extends TestCase {
 		$this->assertFalse( $ok->is_german() );
 	}
 
+	/** Genie hand-off accepts a reply email without inventing a customer name. */
+	public function test_handoff_accepts_an_optional_name_but_still_validates_email_and_consent(): void {
+		$this->plain_text();
+		$this->reload_plugin_textdomain();
+		$this->sanitizers();
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_option', array( 'return' => false ) );
+		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'en_US' ) );
+		$post       = array(
+			'email'   => 'guest@example.test',
+			'message' => 'Please contact me.',
+			'consent' => '1',
+		);
+		$submission = Submission::from_handoff( $post );
+		$this->assertInstanceOf( Submission::class, $submission );
+		$this->assertSame( '', $submission->name );
+		$this->assertSame( 'guest@example.test', $submission->email );
+		$this->assertInstanceOf( WP_Error::class, Submission::from_post( $post ) );
+		$this->assertInstanceOf( WP_Error::class, Submission::from_handoff( array_merge( $post, array( 'email' => 'invalid' ) ) ) );
+		$this->assertInstanceOf( WP_Error::class, Submission::from_handoff( array_merge( $post, array( 'consent' => '' ) ) ) );
+	}
+
 	/**
 	 * The message is capped at the form's own limit.
 	 */

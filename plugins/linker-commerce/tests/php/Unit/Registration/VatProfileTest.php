@@ -154,9 +154,13 @@ final class VatProfileTest extends TestCase {
 	 * The inquiry keeps the verdict at the time it was sent.
 	 */
 	public function test_snapshot(): void {
-		$this->meta = array( VatProfile::STATUS_META => VatProfile::VALID );
+		$this->meta = array(
+			VatProfile::STATUS_META => VatProfile::VALID,
+			VatProfile::NUMBER_META => 'DE143454214',
+		);
 		$order      = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_customer_id' )->andReturn( 5 );
+		$order->allows( 'get_meta' )->with( '_' . VatProfile::VAT_META )->andReturn( 'DE143454214' );
 		$order->expects( 'update_meta_data' )->with( VatProfile::ORDER_STATUS, VatProfile::VALID );
 
 		( new VatProfile( new ViesClient() ) )->snapshot( $order );

@@ -159,7 +159,7 @@ final class Plugin {
 		$issuer    = new Proforma\Issuer( $options, new Proforma\Sequence(), new Proforma\Document( $options ), new Proforma\Renderer( $this->file ), $proformas, $prices );
 		$documents = new Account\Documents( $solutions, $templates );
 		$gate      = new Presentation\LoginGate( $approval );
-		$checkout  = new Inquiry\Checkout( $approval );
+		$checkout  = new Inquiry\Checkout();
 		$fields    = new Registration\Fields( $vat, $approval );
 		$accounts  = new Registration\Accounts( $approval, new Registration\RegistrationInformation( $fields ) );
 
@@ -173,7 +173,7 @@ final class Plugin {
 			new Inquiry\Module( $this->file, $options, new Inquiry\Statuses(), $checkout, new Inquiry\OrderLocale(), new Inquiry\OrderAdmin() ),
 			new Proforma\Module( $this->file, new Proforma\AdminBox( $issuer ), $issuer ),
 			new Account\Module( new Account\Menu(), new Account\ContactCard( $options ), new Account\InquiryList(), $solutions, $documents, new Account\DocumentDownload( $proformas, $solutions ), new Account\SolutionsRoute( $solutions ) ),
-			new Presentation\Module( new Presentation\Shortcodes( $gate, $approval ), $gate, new Presentation\WindPress(), account: new Presentation\AccountTemplates( $documents ) ),
+			new Presentation\Module( new Presentation\Shortcodes(), $gate, new Presentation\WindPress(), account: new Presentation\AccountTemplates( $documents ) ),
 			new Stock\Module( new Stock\StockController(), new Stock\BatchLog(), new Stock\Retention( $this->file ) ),
 			new Genie\Module( $this->file ),
 		);
