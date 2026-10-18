@@ -1,0 +1,13 @@
+{
+  "tag": "225-1792345981",
+  "register_url": "http://127.0.0.1:9138/my-account/register/",
+  "bot": {
+    "status": 200,
+    "location": "",
+    "error_notice": true,
+    "account_exists": false,
+    "mail_added": 0
+  },
+  "counter_before": "No blocked registrations.",
+  "counter_after": "honeypot: 1\ntotal: 1 \u00b7 last: 2026-10-18 17:53:06"
+}

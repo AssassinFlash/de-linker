@@ -66,13 +66,13 @@ final class CountryFieldTest extends TestCase {
 			'id'                => 'billing_country',
 			'label'             => 'Country / Region',
 			'required'          => true,
-			'class'             => array( 'form-row-wide', 'validate-required' ),
+			// The renderer must supply the required semantics itself, so a call
+			// whose WooCommerce arguments lost them cannot render a select the
+			// client's required check would skip.
+			'class'             => array( 'form-row-wide' ),
 			'input_class'       => array(),
 			'label_class'       => array( 'required_field' ),
-			'custom_attributes' => array(
-				'autocomplete'  => 'country',
-				'aria-required' => 'true',
-			),
+			'custom_attributes' => array( 'autocomplete' => 'country' ),
 		);
 	}
 
@@ -85,7 +85,9 @@ final class CountryFieldTest extends TestCase {
 
 		$this->assertStringContainsString( '<select name="billing_country" id="billing_country"', $html );
 		$this->assertStringContainsString( 'linker-country-select', $html );
-		$this->assertStringContainsString( 'aria-required="true"', $html );
+		$this->assertStringContainsString( 'validate-required', $html, 'The client check finds the row.' );
+		$this->assertStringContainsString( 'required="required"', $html, 'The browser without the script still requires it.' );
+		$this->assertStringContainsString( 'aria-required="true"', $html, 'The client check finds the control.' );
 		$this->assertStringContainsString( 'required_field', $html );
 		$this->assertStringContainsString( '<optgroup label="Europe">', $html );
 		$this->assertStringContainsString( '<optgroup label="Other countries">', $html );

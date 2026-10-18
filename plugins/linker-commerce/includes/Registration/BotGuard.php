@@ -46,15 +46,15 @@ final class BotGuard {
 
 	/**
 	 * Refuses a bot or an over-limit connection, and counts the refusal.
-	 * Runs after the field validation: a form the customer must correct is not
-	 * a bot and does not spend the connection's allowance.
+	 * The trap, the missing/forged clock and the too-fast check are counted
+	 * whatever the field errors are: a filled trap is a bot even when the rest
+	 * of the form is also incomplete. The per-connection allowance is only
+	 * spent by a form whose fields already pass, so a customer correcting a
+	 * field does not lose an attempt.
 	 *
 	 * @param WP_Error $errors Errors so far.
 	 */
 	public function validate( WP_Error $errors ): WP_Error {
-		if ( $errors->has_errors() ) {
-			return $errors;
-		}
 		$guard = new PublicGuard();
 		// The request's own field names are strings; the loop gives the guard
 		// the string-keyed request it documents.
@@ -69,6 +69,9 @@ final class BotGuard {
 		if ( '' !== $refusal ) {
 			BlockedRegistrations::record( $refusal );
 			$errors->add( self::ERROR, __( 'We could not process this registration. Please check your entries and try again.', 'linker-commerce' ) );
+			return $errors;
+		}
+		if ( $errors->has_errors() ) {
 			return $errors;
 		}
 		if ( ! $guard->take() ) {

@@ -102,12 +102,17 @@ final class Fields {
 				'class'        => array( 'form-row-wide' ),
 			),
 			Website::META        => array(
-				'type'         => 'url',
-				'label'        => __( 'Company website', 'linker-commerce' ),
-				'required'     => false,
-				'placeholder'  => 'example.com',
-				'autocomplete' => 'url',
-				'class'        => array( 'form-row-wide' ),
+				'type'              => 'text',
+				'label'             => __( 'Company website', 'linker-commerce' ),
+				'required'          => false,
+				'placeholder'       => 'example.com',
+				'autocomplete'      => 'url',
+				// The accepted values include a bare host (example.com), which a
+				// type=url field rejects in the browser before our own check runs.
+				// Website::valid() is the validator; inputmode keeps the phone
+				// keyboard on the URL layout.
+				'custom_attributes' => array( 'inputmode' => 'url' ),
+				'class'             => array( 'form-row-wide' ),
 			),
 			VatProfile::VAT_META => array(
 				'label'       => __( 'VAT ID', 'linker-commerce' ),

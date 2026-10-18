@@ -200,8 +200,9 @@
 /* A WooCommerce notice is a list of messages (the register card can produce
  * several at once, #225). The frame's flex row above suits a single message;
  * the list becomes a grid with the icon in its own column and every message
- * in the second column, one row each. */
-.linker-auth :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) {
+ * in the second column, one row each. Scoped to the register card: the login
+ * and lost-password cards keep the single-message layout they had. */
+.linker-auth .linker-auth-register :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	column-gap: 12px;
@@ -209,9 +210,9 @@
 	padding-left: 0;
 }
 
-.linker-auth :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info)::before { grid-column: 1; grid-row: 1; }
+.linker-auth .linker-auth-register :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info)::before { grid-column: 1; grid-row: 1; }
 
-.linker-auth :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) > li { grid-column: 2; }
+.linker-auth .linker-auth-register :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) > li { grid-column: 2; }
 
 .linker-auth .woocommerce-notices-wrapper:empty,
 .linker-account .woocommerce-notices-wrapper:empty { display: none; }

@@ -134,7 +134,7 @@ test('a public inquiry cannot submit twice while navigation is in flight',()=>{
 
 // ── The two-step register card (ticket #225) ──────────────────────────────
 const registerMarkup=()=>`<div class="linker-auth"><form method="post" data-linker-register data-active-step="1">
- <div data-progress hidden><span data-progress-segment="1"></span><span data-progress-segment="2"></span></div>
+ <div data-progress hidden role="progressbar" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1" aria-label="Registration step"><span data-progress-segment="1"></span><span data-progress-segment="2"></span></div>
  <p data-stepnote="1" hidden>step one</p><p data-stepnote="2" hidden>step two</p>
  <div data-pane="1">
   <div class="form-row validate-required"><input name="billing_company" aria-required="true"></div>
@@ -180,6 +180,8 @@ test('the register card opens on the company step and disables the hidden sign-i
  assert.equal(form.querySelector('[data-stepnote="1"]').hidden,false);
  assert.equal(form.querySelector('[data-stepnote="2"]').hidden,true);
  assert.equal(form.querySelector('[data-progress]').hidden,false);
+ assert.equal(form.querySelector('[data-progress]').getAttribute('role'),'progressbar');
+ assert.equal(form.querySelector('[data-progress]').getAttribute('aria-valuenow'),'1');
  assert.equal(form.querySelector('[data-next]').hidden,false);
  assert.equal(form.querySelector('[data-back]').hidden,true);
  assert.equal(field('billing_company').disabled,false);
@@ -207,6 +209,7 @@ test('a complete company step opens the sign-in step and enables its controls',(
  assert.equal(form.dataset.activeStep,'2');
  assert.equal(form.querySelector('[data-stepnote="2"]').hidden,false);
  assert.equal(form.querySelector('[data-stepnote="1"]').hidden,true);
+ assert.equal(form.querySelector('[data-progress]').getAttribute('aria-valuenow'),'2');
  assert.equal(form.querySelector('[data-progress-segment="2"]').classList.contains('is-on'),true);
  assert.equal(form.querySelector('[data-next]').hidden,true);
  assert.equal(form.querySelector('[data-back]').hidden,false);
@@ -247,3 +250,39 @@ test('a malformed website keeps the company step open; a VAT ID alone satisfies 
  vatOnly.form.querySelector('[data-next]').click();
  assert.equal(vatOnly.form.dataset.activeStep,'2');
 });
+
+test('a required row whose control lost aria-required is still checked',()=>{
+ const dom=new JSDOM(`<div class="linker-auth"><form method="post" data-linker-register data-active-step="1">
+  <div data-progress hidden><span data-progress-segment="1"></span><span data-progress-segment="2"></span></div>
+  <div data-pane="1">
+   <div class="form-row validate-required"><input name="billing_company"></div>
+   <div class="form-row"><input name="linker_company_website"></div>
+   <p data-oneof-error hidden>one of them</p>
+   <p data-client-error hidden>complete the fields</p>
+   <button type="button" data-next hidden>Continue</button>
+  </div>
+  <div data-pane="2"></div>
+ </form></div>`,{runScripts:'outside-only'});
+ dom.window.eval(script);
+ const form=dom.window.document.querySelector('form');
+ form.querySelector('[data-next]').click();
+ assert.equal(form.dataset.activeStep,'1');
+ assert.equal(form.querySelector('[name="billing_company"]').getAttribute('aria-invalid'),'true');
+});
+
+test('a pasted password triggers the strength meter before the field is left',()=>{
+ const dom=new JSDOM(`<div class="linker-auth"><form method="post" data-linker-register data-active-step="1">
+  <div data-pane="1"></div><div data-pane="2"><input type="password" id="reg_password" name="password"></div>
+ </form></div>`,{runScripts:'outside-only'});
+ dom.window.eval(script);
+ const field=dom.window.document.getElementById('reg_password');
+ let keyups=0;
+ field.addEventListener('keyup',()=>{keyups+=1;});
+ field.value='Muster-Solar-2026!';
+ field.dispatchEvent(new dom.window.Event('input',{bubbles:true}));
+ // WooCommerce's meter handler is a keyup listener; the synthetic event lets
+ // it run while the visitor is still in the field, not on blur.
+ assert.equal(keyups,1);
+});
+
+

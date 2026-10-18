@@ -30,11 +30,11 @@ final class NewCustomerEmail extends TeamEmail {
 	/**
 	 * Sets up the email.
 	 *
-	 * @param string                       $plugin_file Absolute path of the main plugin file.
-	 * @param Options                      $options     The plugin settings.
-	 * @param RegistrationInformation|null $information The same field reader as the accounts page.
+	 * @param string                  $plugin_file Absolute path of the main plugin file.
+	 * @param Options                 $options     The plugin settings.
+	 * @param RegistrationInformation $information The same field reader as the accounts page.
 	 */
-	public function __construct( string $plugin_file, Options $options, private readonly ?RegistrationInformation $information = null ) {
+	public function __construct( string $plugin_file, Options $options, private readonly RegistrationInformation $information ) {
 		$this->id            = self::ID;
 		$this->title         = __( 'New customer', 'linker-commerce' );
 		$this->description   = __( 'Sent to the internal notification address, with blind copies, when a customer registers.', 'linker-commerce' );
@@ -82,7 +82,7 @@ final class NewCustomerEmail extends TeamEmail {
 	protected function template_args(): array {
 		return array(
 			'customer'          => $this->object,
-			'registration_rows' => $this->object instanceof WP_User && null !== $this->information ? $this->information->rows( $this->object ) : array(),
+			'registration_rows' => $this->object instanceof WP_User ? $this->information->rows( $this->object ) : array(),
 		);
 	}
 }

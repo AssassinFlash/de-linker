@@ -73,9 +73,9 @@ $active_step     = Fields::active_step();
 
 					<?php $register_blocks = AuthTemplates::register_field_blocks(); ?>
 
-					<div class="linker-auth-progress" data-progress hidden aria-hidden="true">
-						<span class="linker-auth-progress-segment is-on" data-progress-segment="1"></span>
-						<span class="linker-auth-progress-segment" data-progress-segment="2"></span>
+					<div class="linker-auth-progress" data-progress hidden role="progressbar" aria-valuemin="1" aria-valuemax="2" aria-valuenow="<?php echo esc_attr( (string) $active_step ); ?>" aria-label="<?php esc_attr_e( 'Registration step', 'linker-commerce' ); ?>">
+						<span class="linker-auth-progress-segment is-on" data-progress-segment="1" aria-hidden="true"></span>
+						<span class="linker-auth-progress-segment" data-progress-segment="2" aria-hidden="true"></span>
 					</div>
 					<div aria-live="polite">
 						<p class="linker-auth-stepnote" data-stepnote="1" hidden><?php esc_html_e( 'Step 1 of 2 · Your company', 'linker-commerce' ); ?></p>

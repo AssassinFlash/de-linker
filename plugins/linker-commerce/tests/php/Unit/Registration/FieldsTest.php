@@ -120,7 +120,8 @@ final class FieldsTest extends TestCase {
 		$this->assertSame( array( 'installer', 'epc', 'distributor' ), array_keys( $fields[ CustomerRole::META ]['options'] ) );
 		$this->assertSame( 'linker_country', $fields['billing_country']['type'] );
 		$this->assertSame( array( 'DE', 'AT', 'FR', 'CH' ), array_keys( $fields['billing_country']['options'] ) );
-		$this->assertSame( 'url', $fields[ Website::META ]['type'] );
+		$this->assertSame( 'text', $fields[ Website::META ]['type'], 'A bare host is an accepted value, so the browser must not apply the type=url rule.' );
+		$this->assertSame( array( 'inputmode' => 'url' ), $fields[ Website::META ]['custom_attributes'] );
 		$this->assertFalse( $fields[ Website::META ]['required'] );
 		$this->assertFalse( $fields[ VatProfile::VAT_META ]['required'] );
 		$this->assertArrayNotHasKey( 'billing_address_1', $fields );

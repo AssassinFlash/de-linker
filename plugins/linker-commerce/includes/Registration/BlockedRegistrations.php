@@ -12,9 +12,9 @@ namespace Linker\Commerce\Registration;
 /**
  * A blocked registration creates no account and no mail, so its only trace is
  * this counter. The ticket asks that the count be observable (#225); it is
- * stored in one non-autoloaded option, printed by `wp linker-commerce
- * registration-blocks`, and announced on the action so a monitor or the digest
- * can consume it without reading the option.
+ * stored in one non-autoloaded option and printed by `wp linker-commerce
+ * registration-blocks`. The action is the extension point for a future
+ * consumer; this branch ships no digest or monitor reader.
  */
 final class BlockedRegistrations {
 

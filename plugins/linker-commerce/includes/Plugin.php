@@ -121,7 +121,6 @@ final class Plugin {
 		\WP_CLI::add_command( 'linker-commerce stock-key', new Cli\StockKeyCommand() );
 		\WP_CLI::add_command( 'linker-commerce test-mail', new Cli\TestMailCommand() );
 		\WP_CLI::add_command( 'linker-commerce registration-blocks', new Cli\RegistrationBlocksCommand() );
-		\WP_CLI::add_command( 'linker-commerce registration-blocks', new Cli\RegistrationBlocksCommand() );
 	}
 
 	/**

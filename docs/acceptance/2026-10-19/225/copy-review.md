@@ -26,6 +26,7 @@
 | 第一步客户端必填 | `Please complete the required fields.` | 只在 Continue 的本步校验里出现 |
 | 机器人/时钟被拒 | `We could not process this registration. Please check your entries and try again.` | 不提示蜜罐或时间阈值 |
 | 连接限流 | `We received several registrations from this connection. Please try again later or write to sales@de-linker.com.` | 与询盘限流句同一结构；客户可见邮箱用 sales@de-linker.com |
+| 进度条无障碍标签 | `Registration step` | `role="progressbar"` 的 aria-label；与 aria-live 的步骤句一起报告进度 |
 
 ## 2. DE 定稿（独立撰写，Sie 体）
 
@@ -49,6 +50,7 @@
 | 第一步客户端必填 | `Bitte füllen Sie die Pflichtfelder aus.` |
 | 机器人/时钟被拒 | `Wir konnten Ihre Registrierung nicht verarbeiten. Bitte prüfen Sie Ihre Angaben und versuchen Sie es erneut.` |
 | 连接限流 | `Von dieser Verbindung sind mehrere Registrierungen eingegangen. Bitte versuchen Sie es später erneut oder schreiben Sie an sales@de-linker.com.` |
+| 进度条无障碍标签 | `Registrierungsschritt` |
 
 ## 3. 对抗评审意见与处理
 

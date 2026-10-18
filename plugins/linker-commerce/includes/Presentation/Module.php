@@ -78,13 +78,13 @@ final class Module {
 			return;
 		}
 		$base = plugins_url( 'assets/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
-		// The country select's translations come from WooCommerce's own
-		// country-select script; only the register card carries that field, so
-		// other account pages keep their scripts exactly as they were.
-		$deps = array( 'jquery', 'selectWoo' );
-		if ( AuthTemplates::is_register_request() ) {
-			$deps[] = 'wc-country-select';
-		}
+		// The register card initializes WooCommerce's selectWoo on its country
+		// field; the country-select script also carries that field's
+		// translations. Every other account/checkout page keeps this file's
+		// original dependency list (none), exactly as it was.
+		$deps = AuthTemplates::is_register_request()
+			? array( 'jquery', 'selectWoo', 'wc-country-select' )
+			: array();
 		wp_enqueue_script( 'linker-account-ui', $base . 'account-ui.js', $deps, (string) filemtime( dirname( __DIR__, 2 ) . '/assets/account-ui.js' ), true );
 	}
 

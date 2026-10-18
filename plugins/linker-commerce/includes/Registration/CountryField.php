@@ -43,6 +43,9 @@ final class CountryField {
 		$required = ! empty( $args['required'] );
 		if ( $required ) {
 			$indicators = '&nbsp;<span class="required" aria-hidden="true">*</span>';
+			if ( ! in_array( 'validate-required', $classes, true ) ) {
+				$classes[] = 'validate-required';
+			}
 		} else {
 			// phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- WooCommerce's own optional marker, kept in its text domain.
 			$indicators = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>';
@@ -52,6 +55,12 @@ final class CountryField {
 			'id'    => $id,
 			'class' => implode( ' ', $input ),
 		);
+		if ( $required ) {
+			// The card's client check keys on aria-required; the native
+			// attribute is the same rule in browsers without that script.
+			$attributes['required']      = 'required';
+			$attributes['aria-required'] = 'true';
+		}
 		foreach ( (array) ( $args['custom_attributes'] ?? array() ) as $attribute => $attribute_value ) {
 			$attributes[ (string) $attribute ] = (string) $attribute_value;
 		}

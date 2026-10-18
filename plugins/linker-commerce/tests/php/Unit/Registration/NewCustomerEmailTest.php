@@ -11,6 +11,9 @@ namespace Linker\Commerce\Tests\Unit\Registration;
 
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
 use Linker\Commerce\Registration\Fields;
+use Linker\Commerce\Registration\RegistrationInformation;
+use Linker\Commerce\Registration\VatProfile;
+use Linker\Commerce\Registration\ViesClient;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
@@ -66,12 +69,19 @@ final class NewCustomerEmailTest extends TestCase {
 	}
 
 	/**
+	 * The email with the same field reader the accounts page uses.
+	 */
+	private static function email(): NewCustomerEmail {
+		return new NewCustomerEmail( '/plugin/linker-commerce.php', new Options(), new RegistrationInformation( new Fields( new VatProfile( new ViesClient() ) ) ) );
+	}
+
+	/**
 	 * The email listens for registrations and goes to the team mailbox in the site's language,
 	 * with the blind copies and a reply address of the customer.
 	 */
 	public function test_notifies_the_team(): void {
 		$this->expect_action_on_any( Fields::REGISTERED_ACTION . '_notification', NewCustomerEmail::class, 'trigger' );
-		$email = new NewCustomerEmail( '/plugin/linker-commerce.php', new Options() );
+		$email = self::email();
 		$this->assertSame( 'linker_new_customer', $email->id );
 		$this->assertSame( '/plugin/templates/', $email->template_base );
 		$this->assertFalse( $email->is_customer_email() );
@@ -103,7 +113,7 @@ final class NewCustomerEmailTest extends TestCase {
 	public function test_unknown_user_and_format(): void {
 		$this->expect_action_on_any( Fields::REGISTERED_ACTION . '_notification', NewCustomerEmail::class, 'trigger' );
 		WP_Mock::userFunction( 'get_userdata', array( 'return' => false ) );
-		$email = new NewCustomerEmail( '/plugin/linker-commerce.php', new Options() );
+		$email = self::email();
 
 		$email->trigger( 99 );
 

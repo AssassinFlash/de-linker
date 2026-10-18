@@ -102,6 +102,15 @@
 		pair.second.addEventListener( 'input', paint );
 	}
 
+	// WooCommerce's strength meter listens to keyup. A pasted or
+	// password-manager-filled value fires input/change only, so the meter would
+	// appear on blur and move the submit button out from under the click. A
+	// synthetic keyup on input lets Woo's own meter settle while the visitor is
+	// still in the field.
+	for ( const password of document.querySelectorAll( '#reg_password, #password_1' ) ) {
+		password.addEventListener( 'input', () => password.dispatchEvent( new KeyboardEvent( 'keyup', { bubbles: true } ) ) );
+	}
+
 	// ── The register card's two steps (ticket #225) ─────────────────────────
 	// One WooCommerce form, two panes. Without this file both panes stay
 	// visible and the single Register button posts the whole form; with it the
@@ -148,7 +157,12 @@
 			let bad = false;
 			for ( const row of panes[ 1 ].querySelectorAll( '.validate-required' ) ) {
 				const radios = row.querySelectorAll( 'input[type="radio"]' );
-				const control = radios.length ? radios[ 0 ] : row.querySelector( 'input[aria-required="true"], select[aria-required="true"]' );
+				// A required row always names its control: aria-required is the
+				// card's own marker, the fallback covers a field whose attributes
+				// came from another renderer.
+				const control = radios.length
+					? radios[ 0 ]
+					: row.querySelector( 'input[aria-required="true"], select[aria-required="true"]' ) || row.querySelector( 'input:not([type="hidden"]), select, textarea' );
 				if ( ! control ) {
 					continue;
 				}
@@ -190,6 +204,7 @@
 			register.dataset.activeStep = String( step );
 			if ( progress ) {
 				progress.hidden = false;
+				progress.setAttribute( 'aria-valuenow', String( step ) );
 			}
 			for ( const number of [ 1, 2 ] ) {
 				const current = note( number );

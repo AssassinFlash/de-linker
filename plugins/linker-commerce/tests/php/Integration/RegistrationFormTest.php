@@ -215,6 +215,21 @@ final class RegistrationFormTest extends IntegrationTestCase {
 		$errors = ( new BotGuard() )->validate( new WP_Error() );
 		$this->assertContains( BotGuard::ERROR, $errors->get_error_codes() );
 
+		// A filled trap is counted even when the same post also has a field
+		// error: the field errors stay, and the bot refusal is not hidden.
+		$_POST        = array_merge(
+			$base,
+			array(
+				'billing_company' => '',
+				'website'         => 'http://spam.example',
+			)
+		);
+		$field_errors = ( new Fields( new VatProfile( new ViesClient() ) ) )->validate( new WP_Error() );
+		$this->assertContains( 'billing_company', $field_errors->get_error_codes() );
+		$errors = ( new BotGuard() )->validate( $field_errors );
+		$this->assertContains( BotGuard::ERROR, $errors->get_error_codes() );
+		$this->assertContains( 'billing_company', $errors->get_error_codes() );
+
 		$now    = (string) time();
 		$_POST  = array_merge(
 			$this->post(),
@@ -226,7 +241,7 @@ final class RegistrationFormTest extends IntegrationTestCase {
 		$errors = ( new BotGuard() )->validate( new WP_Error() );
 		$this->assertContains( BotGuard::ERROR, $errors->get_error_codes() );
 		$counts = BlockedRegistrations::counts();
-		$this->assertSame( 1, $counts['counts'][ PublicGuard::REFUSAL_HONEYPOT ] );
+		$this->assertSame( 2, $counts['counts'][ PublicGuard::REFUSAL_HONEYPOT ] );
 		$this->assertSame( 1, $counts['counts'][ PublicGuard::REFUSAL_TOO_FAST ] );
 
 		// Three accepted attempts spend the connection's allowance; the fourth is refused.
