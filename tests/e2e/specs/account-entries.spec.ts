@@ -324,6 +324,16 @@ for (const locale of ['en', 'de'] as const) {
 				'.linker-inquiry-guest .linker-create-account'
 			);
 			await expect(create).toBeVisible();
+			if (width === 390) {
+				const link = await create.boundingBox();
+				const draft = await page
+					.locator('.linker-inquiry-draft')
+					.boundingBox();
+				// Keep a readable separation from the following draft card.
+				expect(
+					draft!.y - link!.y - link!.height
+				).toBeGreaterThanOrEqual(24);
+			}
 			await create.click();
 			await expect(page).toHaveURL(
 				instance().url + account + 'register/'

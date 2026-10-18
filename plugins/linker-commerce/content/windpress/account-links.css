@@ -16,13 +16,15 @@
 #tv-footer-v2 .footer-route-list .footer-account-entries>a:hover{color:#087f79;background:none;border:0}
 @media(max-width:1000px){#tv-footer-v2 .footer-account-tile{min-height:50px}}
 @media(max-width:760px){#tv-footer-v2 .footer-account-tile{padding:9px 10px;min-height:47px;border-radius:12px}}
-/* The sentence and its link are two lines: inline-block left "details.Create
-   account" glued (review round 1, owner-reported class of defect). */
-/* The final guest block has 40px of existing column gap on mobile and
-   page padding on desktop. Use 29px of that space for the new line
-   (21px type + 8px gap), preserving the original form/footer geometry. */
-.linker-inquiry-guest:has(>.linker-create-account){position:relative}
-.linker-inquiry-guest>.linker-create-account{display:block;position:absolute;top:calc(100% + 8px);left:0;margin:0}
+/* #223 owner rejected the registration row touching the draft card.
+   Keep both links in normal flow and retain auth.css's original 32px column gap (proto-space-6).
+   The new row (14px × 1.5 line + 8px margin) uses part of the section's
+   existing end spacing; the following footer retains its live position. */
+.linker-inquiry-guest>.linker-create-account{display:block;margin-top:var(--proto-space-2)}
+.linker-inquiry:has(.linker-inquiry-guest:not([hidden])>.linker-create-account){padding-bottom:calc(var(--proto-space-8) - var(--proto-size-sm)*1.5 - var(--proto-space-2))}
+@media(max-width:760px){
+  .linker-inquiry:has(.linker-inquiry-guest:not([hidden])>.linker-create-account){padding-bottom:calc(var(--proto-space-7) - var(--proto-size-sm)*1.5 - var(--proto-space-2))}
+}
 .sf-card-price>.linker-create-account{display:inline-block;margin-left:8px;font-size:12px}
 .pdp-price .linker-create-account,.pdp-app-price .linker-create-account{display:inline-block;margin-left:12px;font-size:13px}
 .sf-cart-empty__actions>.linker-create-account{display:inline-flex;align-items:center;min-height:44px;padding:12px 4px;border:1px solid transparent}

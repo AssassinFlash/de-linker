@@ -134,17 +134,15 @@ for (const width of widths) {
 					}
 					window.scrollTo(0, 0);
 				});
-				// sizes="auto" images select again at full height. Set that height,
-				// request eagerly, then decode before the full-page screenshot.
+				// Expand the viewport so native lazy images enter it, preserving
+				// loading="lazy": sizes="auto" depends on that eligibility. Switching
+				// to eager made live/local race between different srcset candidates.
 				const full = await page.evaluate(
 					() => document.documentElement.scrollHeight,
 				);
 				await page.setViewportSize({ width, height: full });
 				await page.waitForLoadState("networkidle");
 				await page.evaluate(async () => {
-					document.querySelectorAll('img[loading="lazy"]').forEach((img) => {
-						img.loading = "eager";
-					});
 					await Promise.all(
 						[...document.images].map((img) => img.decode().catch(() => {})),
 					);
