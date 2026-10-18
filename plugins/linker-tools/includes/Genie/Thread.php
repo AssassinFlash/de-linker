@@ -47,6 +47,20 @@ class Thread {
 	public const ACTIVITY = 'linker_genie_activity';
 
 	/**
+	 * Meta key: what the service read from the files the customer attached
+	 * (#236), oldest first. The file itself is never kept: the reading is the
+	 * conversation's memory of it, sent back with every turn so a later
+	 * question needs no new upload, and it goes when the conversation goes
+	 * (deleted with the post, by the customer or by Retention).
+	 */
+	public const READINGS = 'linker_genie_readings';
+
+	/**
+	 * Readings kept: the service's MAX_READINGS (services/genie schema.py).
+	 */
+	public const READINGS_LIMIT = 10;
+
+	/**
 	 * How many messages are kept. The thread rides in every request, so an
 	 * unbounded one would grow the body without bound; a conversation this
 	 * long is one nobody scrolls back through.
@@ -78,14 +92,19 @@ class Thread {
 	/**
 	 * Records one answered turn: the thread the browser sent, and the answer.
 	 *
-	 * @param int                     $conversation Conversation post ID.
-	 * @param array<array-key, mixed> $messages The request's messages; the shape is
-	 *                                          the browser's, so entries are checked.
-	 * @param string                  $stream       The service's SSE text.
+	 * @param int                        $conversation Conversation post ID.
+	 * @param array<array-key, mixed>    $messages The request's messages; the shape is
+	 *                                             the browser's, so entries are checked.
+	 * @param string                     $stream       The service's SSE text, its `reading` events taken out (split).
+	 * @param list<array<string, mixed>> $readings  What the turn read from its files (split).
 	 */
-	public function record( int $conversation, array $messages, string $stream ): void {
+	public function record( int $conversation, array $messages, string $stream, array $readings = array() ): void {
 		if ( $conversation < 1 ) {
 			return;
+		}
+		if ( array() !== $readings ) {
+			$kept = array_merge( $this->readings( $conversation ), $readings );
+			update_post_meta( $conversation, self::READINGS, array_slice( $kept, -self::READINGS_LIMIT ) );
 		}
 		$kept = array();
 		foreach ( $messages as $message ) {
@@ -123,6 +142,57 @@ class Thread {
 		update_post_meta( $conversation, self::STREAM, $stream );
 		update_post_meta( $conversation, self::PRODUCTS, $known );
 		update_post_meta( $conversation, self::ACTIVITY, time() );
+	}
+
+	/**
+	 * What the service read from this conversation's files, oldest first.
+	 *
+	 * @param int $conversation Conversation post ID.
+	 * @return list<array<string, mixed>>
+	 */
+	public function readings( int $conversation ): array {
+		if ( $conversation < 1 ) {
+			return array();
+		}
+		$stored = get_post_meta( $conversation, self::READINGS, true );
+		$out    = array();
+		foreach ( is_array( $stored ) ? $stored : array() as $reading ) {
+			if ( is_array( $reading ) && is_string( $reading['id'] ?? null ) ) {
+				$out[] = $reading;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * A turn's stream without its `reading` events, and those readings.
+	 *
+	 * The service sends what it read from the turn's files as `reading`
+	 * events, for this store only: the browser gets the `attachment` events
+	 * (what each file is and how it matched), never the whole text again.
+	 *
+	 * @param string $stream SSE text.
+	 * @return array{stream: string, readings: list<array<string, mixed>>}
+	 */
+	public static function split( string $stream ): array {
+		$kept     = array();
+		$readings = array();
+		foreach ( explode( "\n\n", $stream ) as $event ) {
+			if ( 1 === preg_match( '/^event: reading$/m', $event ) ) {
+				if ( 1 === preg_match( '/^data: (.+)$/m', $event, $data ) ) {
+					$reading = json_decode( $data[1], true );
+					if ( is_array( $reading ) && is_string( $reading['id'] ?? null ) ) {
+						$readings[] = $reading;
+					}
+				}
+				continue;
+			}
+			$kept[] = $event;
+		}
+		return array(
+			'stream'   => implode( "\n\n", $kept ),
+			'readings' => $readings,
+		);
 	}
 
 	/**

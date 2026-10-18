@@ -290,6 +290,8 @@ class Entries {
 	var ready = false;
 		var pendingOpen = false;
 		var pendingAsk = '';
+		// Opened to send a nameplate photo (#236): the app offers the picker.
+		var pendingAttach = false;
 		var failure = null;
 		function clearFailure() {
 			if (failure) {
@@ -334,10 +336,12 @@ class Entries {
 			return;
 		}
 		var message = pendingAsk;
+		var attach = pendingAttach;
 		pendingOpen = false;
 		pendingAsk = '';
+		pendingAttach = false;
 		window.dispatchEvent(new CustomEvent('linker-genie-open', {
-			detail: { message: message }
+			detail: { message: message, attach: attach }
 		}));
 	}
 	function open(message) {
@@ -364,6 +368,9 @@ class Entries {
 		var detail = event.detail;
 		if (detail && typeof detail.message === 'string' && detail.message.trim()) {
 			open(detail.message);
+		} else if (detail && true === detail.attach) {
+			pendingAttach = true;
+			open('');
 		}
 	});
 			function boot() {

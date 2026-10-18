@@ -8,6 +8,7 @@ linker_engine_url (the Solution Configurator's engine) and linker_genie_url
 from __future__ import annotations
 
 import os
+import secrets
 import shutil
 import subprocess
 import urllib.error
@@ -19,7 +20,7 @@ from pathlib import Path
 from linker_local.checkout import Checkout
 from linker_local.instance import HOST, Instance
 from linker_local.processes import Background, ProcessError
-from linker_local.wpcli import WpCli
+from linker_local.wpcli import WpCli, WpCliError
 
 # The engine reads the site's data as two files, not over HTTP
 # (services/engine/src/linker_engine/app.py, Settings.from_environment): the
@@ -46,6 +47,31 @@ class GenieIndex:
 
     def line(self) -> str:
         return f"genie index {self.path} ({self.source})"
+
+
+# The token the shell and Genie share (docs/specs/13-genie.md "附件与铭牌", review round
+# 1 of PR #309, item 5): the instance's wp-config.php constant, and the service's
+# GENIE_SERVICE_TOKEN. Made once per instance, 32 random bytes as hex.
+SERVICE_TOKEN_CONSTANT = "LINKER_GENIE_SERVICE_TOKEN"
+
+
+def service_token(wp: WpCli) -> str:
+    """This instance's shared token: read from wp-config.php, made when missing."""
+    try:
+        token = wp.run("config", "get", SERVICE_TOKEN_CONSTANT, "--type=constant")
+    except WpCliError:
+        token = ""
+    if not token:
+        token = secrets.token_hex(32)
+        wp.run(
+            "config",
+            "set",
+            SERVICE_TOKEN_CONSTANT,
+            token,
+            "--type=constant",
+            "--quiet",
+        )
+    return token
 
 
 # Seconds to wait for a service's port: uvicorn listened 0.55–0.7 s after
@@ -85,6 +111,7 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
     """
     uv = _uv()
     index = genie_index()
+    token = service_token(wp)
     urls = []
     for service in SERVICES:
         project = checkout.service(service.name)
@@ -96,7 +123,7 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
         else:
-            env.update(genie_environment(instance, index.path))
+            env.update(genie_environment(instance, index.path, token))
         service.process(instance).restart(
             [
                 str(uv),
@@ -122,8 +149,9 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
     return urls
 
 
-def genie_environment(instance: Instance, index: Path) -> dict[str, str]:
-    """Where this instance's Genie calls back to, logs its turns and reads documents.
+def genie_environment(instance: Instance, index: Path, token: str) -> dict[str, str]:
+    """Where this instance's Genie calls back to, logs its turns and reads documents,
+    and the token the instance's shell sends it (`service_token`).
 
     Genie calls this instance's WordPress back (the abilities); without the
     explicit address its default `http://127.0.0.1` hits whatever answers on
@@ -136,6 +164,7 @@ def genie_environment(instance: Instance, index: Path) -> dict[str, str]:
         "GENIE_WP_URL": instance.url,
         "GENIE_LOG": str(instance.genie_log),
         "GENIE_INDEX": str(index),
+        "GENIE_SERVICE_TOKEN": token,
     }
 
 

@@ -44,6 +44,11 @@ else
     systemctl disable --now --quiet "$JUDGE_UNIT" 2>/dev/null || true
 fi
 
+if ! grep -q '^GENIE_SERVICE_TOKEN=.' "$GENIE_ENV" 2>/dev/null; then
+    echo "$GENIE_ENV has no GENIE_SERVICE_TOKEN: the service would answer 503 to every Genie POST (gate.py, #236). Set it there and LINKER_GENIE_SERVICE_TOKEN in the site's wp-config.php to the same value (the local stack writes both: tools/local/src/linker_local/services.py)." >&2
+    exit 3
+fi
+
 systemctl restart "${units[@]}"
 sleep "$SETTLE"
 failed=0

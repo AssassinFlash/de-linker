@@ -85,6 +85,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
 		WP_Mock::expectActionAdded( 'init', array( $conversations, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $proxy, 'register' ) );
+		WP_Mock::expectActionAdded( 'before_delete_post', array( $proxy, 'forget' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $engine, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $quality_route, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $contact, 'register' ) );

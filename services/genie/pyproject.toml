@@ -11,7 +11,13 @@ dependencies = [
     # (linker_genie.quality; docs/specs/33-judge-bakeoff.md "部署目标"):
     # standard library only, so it adds no third-party code to the service.
     "linker-judges",
+    # Attachments (#236, docs/specs/13-genie.md "附件与铭牌"): a photo is checked and
+    # re-encoded without its metadata (Pillow), a PDF's text layer is read and its
+    # scanned or drawn pages are rendered (PDFium). Neither runs a model; both
+    # versions were already locked through Docling's `index` group.
+    "pillow>=12.3.0",
     "pydantic-ai-slim[openai]>=1.0.0",
+    "pypdfium2>=5.14.0",
     # sqlite-vec is pre-v1 and its README says to expect breaking changes: pinned exactly.
     "sqlite-vec==0.1.9",
     "uvicorn>=0.54.0",
@@ -57,9 +63,9 @@ select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
 [tool.mypy]
 strict = true
 
-# The `index` group (Docling, PDFium, sentence-transformers and its torch, py3langid,
-# ocrmac) is installed on the build Mac only; CI checks the code that imports it
-# without its stubs.
+# The `index` group (Docling, sentence-transformers and its torch, py3langid, ocrmac) is
+# installed on the build Mac only; CI checks the code that imports it without its stubs.
+# PDFium ships no type information either.
 [[tool.mypy.overrides]]
 module = ["docling.*", "pypdfium2.*", "sentence_transformers.*", "torch", "torch.*", "py3langid.*", "ocrmac.*"]
 ignore_missing_imports = true

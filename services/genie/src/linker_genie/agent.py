@@ -18,10 +18,11 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from linker_genie import knowledge, page
+from linker_genie import attachments, knowledge, page
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
@@ -97,6 +98,28 @@ def _env_with_credentials() -> dict[str, str]:
     return values
 
 
+@dataclass(frozen=True)
+class DeepSeekAccess:
+    """The key and the address of the official DeepSeek API, from the environment."""
+
+    key: str
+    base_url: str
+
+
+def deepseek_access() -> DeepSeekAccess:
+    """The one place the DeepSeek key and base URL are resolved (review round 1 of
+    PR #309): the chat model (`build_model`), the image reads (`app.vision`) and the
+    attachment evaluation all take them from here. GENIE_* wins over DEEPSEEK_*; the
+    credentials file backfills; the address defaults to the official API."""
+    env = _env_with_credentials()
+    return DeepSeekAccess(
+        key=env.get("GENIE_API_KEY") or env.get("DEEPSEEK_API_KEY") or "",
+        base_url=env.get("GENIE_BASE_URL")
+        or env.get("DEEPSEEK_BASE_URL")
+        or DEFAULT_BASE_URL,
+    )
+
+
 class ToolBudget:
     """Counts ability calls in one turn; the fifth is refused."""
 
@@ -157,20 +180,27 @@ def build_model() -> Any:
     """
     from openai import AsyncOpenAI
     from pydantic_ai.models.openai import OpenAIChatModel
+    from pydantic_ai.profiles.openai import OpenAIModelProfile
     from pydantic_ai.providers.deepseek import DeepSeekProvider
 
-    env = _env_with_credentials()
-    key = env.get("GENIE_API_KEY") or env.get("DEEPSEEK_API_KEY") or ""
-    base = env.get("GENIE_BASE_URL") or env.get("DEEPSEEK_BASE_URL") or DEFAULT_BASE_URL
+    access = deepseek_access()
     return OpenAIChatModel(
         model_name(),
         provider=DeepSeekProvider(
-            openai_client=AsyncOpenAI(base_url=base.rstrip("/") + "/v1", api_key=key),
+            openai_client=AsyncOpenAI(
+                base_url=access.base_url.rstrip("/") + "/v1", api_key=access.key
+            ),
         ),
-        profile={
-            "thinking_enabled_by_default": True,
-            "supports_forced_tool_choice_with_thinking": False,
-        },
+        profile=OpenAIModelProfile(
+            thinking_enabled_by_default=True,
+            supports_forced_tool_choice_with_thinking=False,
+            # The official API takes no document (a PDF is refused with 400, and
+            # pydantic-ai's nested `file` block is refused before that; research
+            # docs/research/2026-10-17-deepseek-flash-vision/ §5): a document handed
+            # to the agent by mistake fails here, before any request is paid for.
+            # Attachments reach the agent as text (attachments.py, #236).
+            openai_chat_supports_document_input=False,
+        ),
     )
 
 
@@ -368,6 +398,20 @@ def _user_prompt(
             "Tool results the service already fetched for this turn (use them; "
             "do not call the same tool again with the same input): "
             + results[:MAX_RESULT_CHARS]
+        )
+    if prepared is not None and prepared.attachments:
+        # The customer's files as the service read them (#236): the text of each, the
+        # long ones cut to the passages nearest the question (attachments.model_view).
+        question = next(
+            (m.content for m in reversed(request.messages) if m.role == "user"), ""
+        )
+        files = json.dumps(
+            [attachments.model_view(item, question) for item in prepared.attachments],
+            ensure_ascii=False,
+        )
+        lines.append(
+            "Files the customer attached in this conversation, as the service read "
+            "them. " + attachments.RULE + " Files: " + files[:MAX_RESULT_CHARS]
         )
     if prepared is not None and prepared.facts.documents:
         # The refs a document block may name, spelled out: the model guessed
