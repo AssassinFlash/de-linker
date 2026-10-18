@@ -249,7 +249,10 @@ final class TemplatesTest extends TestCase {
 		// shortcode, so every instance answers with its own address; the
 		// template engine resolves nothing inside a script block, and the live
 		// template carried the host it was authored on.
-		foreach ( array( 'is_blog_posts_index' => 'blog/', 'is_blog_posts_index__de' => 'de/blog/' ) as $index => $path ) {
+		foreach ( array(
+			'is_blog_posts_index'     => 'blog/',
+			'is_blog_posts_index__de' => 'de/blog/',
+		) as $index => $path ) {
 			$html = (string) file_get_contents( $paths[ $index ] );
 			$this->assertStringContainsString( '"url": "[linker_site_url]' . $path . '"', $html );
 			$this->assertStringContainsString( '"url": "[linker_site_url]"', $html );
