@@ -1,86 +1,86 @@
-# Owner-expanded Genie reply scope
+# #223 · Genie presentation and reply fidelity
 
-The owner explicitly expanded this implementation on2026-10-18: right-bottom
-dock follows OpenAI Help Center conversation presentation; full workspace
-follows ChatGPT conversation and streaming presentation. Preserve both surfaces,
-existing shared conversation and all business/model/permission contracts.
+All work commissioned in this session stays in #223 and PR #312. The owner
+requested a compact OpenAI Help Center style dock and a ChatGPT style full
+workspace, then clarified that thinking/loading/flowing presentation should be
+simulated in the frontend. Backend token streaming is not required.
 
-Public seams remain rendered UI output and real browser behavior. The browser
-must observe actual incremental HTTP events, waiting/receiving/completed/error
-and cancellation, rather than a typing timer over a buffered final string.
-Verified product/document facts remain server-grounded before display. Raw
-model tokens must never be exposed before existing grounding/hydration.
+## Delivered presentation
 
-Current findings: browser sendTurn awaits JSON containing an entire SSE string;
-PHP Proxy buffers wp_remote_post, then records and returns that JSON; FastAPI
-runs the entire guarded turn before yielding meta/block/done. Assistant text is
-rendered as plain content, and votes are emoji. The old design dossier verified
-guest landing and helper shell, not authenticated reply internals.
+Dock and `/genie/` mount the same App/Reply/MessageBody/Transcript. WindPress
+sets their surface-specific density. Both have dynamic waiting text, a breathing
+dot and skeleton; a received complete answer reveals locally over 300–1200ms
+(3ms per Unicode code point, capped). These timings are local design choices,
+not measurements of OpenAI. Reduced motion and “Show full response” bypass
+animation. Copy and following questions use the complete canonical answer.
 
-A primary-source research agent is collecting official ChatKit/OpenAI evidence
-viaApify. Exact unobserved Help reply pixels must remain identified as unverified.
+Safe Markdown preserves existing headings, emphasis, lists, tables, code and
+quotes. Raw HTML is escaped; narrative cannot introduce new image requests or
+unverified destinations. Verified product/document blocks retain their native
+links and data. Long plain prose is visually grouped at sentence boundaries
+without rewriting words. The introduction and existing heading levels have
+separate type hierarchy; actual document blocks have a compact document card.
+The structured deciding question has a contained **Reply with an option /
+Antwort auswählen** group, an explicit immediate-send explanation and a Send
+affordance on each real button. `phase` reuses
+“Grid connection / Netzanschluss”; other fields use the reviewed continuation
+label. Option text and callbacks remain unchanged. The browser does not invent
+headings, facts or emphasis for a plain answer.
 
-Implementation slices: safe semantic answer formatting; message/action/state
-presentation; real verified-event delivery and cancellation; browser scroll,
-reduced-motion, retry/failure and reload behavior. Existing card/document/contact
-capabilities remain available. No registration, inquiry permission or model route
-is changed. Final evidence and review must cover this expanded scope beforePR.
+The transcript and composer are separate flex rows. The 40px jump button has a
+48px controls band between them and cannot cover text. Incoming answer growth
+does not pull the reader down. An explicit jump settles at the actual bottom;
+keyboard focus is visible, pointer focus has no persistent blue ring. History
+restores without replaying the reveal.
 
-## Superseding owner boundary: frontend only
+## Storage defect discovered by real reopening
 
-The owner subsequently clarified that actual backend streaming is unnecessary:
-backend receive/answer/persistence and request semantics must stay unchanged.
-Simulated thinking/loading/progressive presentation is explicitly authorized.
-All experimental Proxy, StreamResponse, StreamTransport and API streaming
-changes were removed. The held-upstream test/log records an abandoned experiment,
-not a delivered feature. Model/service and conversation APIs remain unchanged.
-The final renderer receives the complete verified answer through the existing
-JSON API and reveals it progressively on the client; reduced motion and an
-explicit “Show full response” control bypass the animation. Canonical answer
-text and business blocks remain complete, so animation cannot alter follow-up
-context, storage or permissions.
+Computer Use received a properly separated answer, then reopened it on the
+product page and saw literal `nn` in place of blank lines. Native WordPress
+meta writing unslashed the raw SSE JSON. The narrow PHP persistence correction
+saves MESSAGES and STREAM with `wp_slash`, preserving JSON newlines, Unicode,
+quotes and literal backslashes. The public GET route fixture first fails on
+this exact corruption, then passes byte-for-byte; its full suite runs twice
+with 18 tests / 166 assertions. Unit doubles do not claim to verify storage.
 
-## Delivered frontend choices
+This changes PHP persistence escaping. The persistence repair does not change generation. Subsequently the owner
+explicitly approved a narrow EN/DE prompt **formatting contract**: topical
+Markdown headings, bullets and sparse emphasis, preserving all existing
+factual, exact-wording and brief-response rules. The model, tools, grounding,
+permissions, REST schema and buffered transport are unchanged.
+No migration or guessed repair of already damaged old histories is performed.
+A fresh real German answer was compared before and after a page refresh:
+`sameRenderedAnswer: true`, one answer. See `checks/roundtrip-*.log` and
+`computer-use/de-genie-round3-dock-reopened-*.png`.
 
-The user's later clarification explicitly asks for simulated dynamic thinking,
-loading and flowing response presentation. Waiting has a breathing dot, moving
-text highlight and animated skeleton lines; it is not static text. The complete
-answer then reveals locally over 300–1200ms (3ms per Unicode code point, capped
-at 1200ms), with an immediate-show control. These are local design choices,
-not measured OpenAI timings. Reduced motion disables all waiting/reveal motion.
+## Entry coverage and remaining limit
 
-Markdown is parsed safely (raw HTML disabled); model narrative cannot create
-new image loads or destinations. Verified document/product blocks remain the
-original implementations. Text, lists, headings, code, tables and blockquotes
-share a quiet reading rhythm. Copy uses the complete canonical original text;
-feedback retains the existing vote API with SVG icons. History loads instantly,
-completed answers do not replay on reopening, and no client persistence format
-changes. Long answers preserve the reading position under Genie goal 9; only
-new user questions and an explicit “Jump to latest” move to the bottom.
+Both dock and workspace have the LC guest login/registration row before the
+React mount, with no visual order reversal. #236 attachments/busy-send and
+#250 inquiry confirmation/sent cards from main remain inside the reading flow.
+Inquiry registration is not added to transactional emails.
 
-The earlier experimental backend-delivery logs are superseded and do not form
-final acceptance. Proxy.php, api/turn.ts and api/turn.test.ts have zero final
-diff against the pre-expansion implementation. No new backend file is retained.
+Current homepage and solution hero submit/suggestion links enter the shared
+workspace, so that destination uses this reply design. Computer Use followed
+both entries; the existing images are retained. A transcript mounted inline
+inside the hero is **未完成** on this branch; no such delivery is claimed and
+no new ticket is created to move this session's work elsewhere.
 
-## Entry coverage and frontend/backend decision
+Official primary-source research and supplied references informed the local
+composition. Authenticated OpenAI reply internals were not captured, so this is
+not a measured pixel replica of those internals. Deterministic EN/DE ×1440/390
+waiting/answer/latest screenshots and videos are in `replies/`; real model
+inspection is in `computer-use/*round3*` and the latest `replies-real/`. The latter uses actual
+model replies to the same EN/DE multi-topic questions, without asking the
+question itself to use Markdown, and checks identical text after reopening. Fixtures intercept the existing JSON
+response only in their browser; they are not model answer-quality tests.
 
-Owner asked whether /genie/ and hero were synchronized. /genie/ and the dock
-both mount App and share Reply/MessageBody/Transcript, with surface-specific
-WindPress density. Browser tests cover EN/DE ×1440/390 for both. The current
-home hero is a link to /genie/: Computer Use clicked Submit query and verified
-the actual workspace. The selected inline hero is not implemented on this base;
-[Genie · hero 接线实现](https://github.com/AssassinFlash/de-linker/issues/232)
-remains open, with the attachment prerequisite PR309 still open. No claim of
-inline-hero completion is made by this ticket. Its future frontend should reuse
-these shared components rather than introducing a second answer renderer.
+## Earlier evidence
 
-This ticket changes front-end rendering/state only. It does not alter receiving,
-model answers, prompts, tools, grounding, permissions, transport or saved thread
-format. Actual backend incremental transport/content changes remain outside
-the owner's final request.
-
-Computer Use also verified the residential solution hero’s submit/suggestion
-links target /de/genie/ and enter the same workspace renderer. Its attachment
-and voice controls are disabled on this base, and their separate wiring is not
-claimed as delivered here. The current entry check is preserved in
-computer-use/de-solution-hero-to-workspace-1440.png.
+Rejected grey/disconnected footer views and earlier reply screenshots remain
+in the packet. The abandoned real-streaming experiment is not delivered.
+`replies/before-round2/` preserves the three defects returned by the owner.
+The final browser fixtures assert controls do not overlap text, pointer focus
+has no outline, the final paragraph is fully reachable, and choices are sent
+verbatim. Earlier failed pixel captures remain evidence; only the latest paired
+capture and exact recount determine the final pixel result.

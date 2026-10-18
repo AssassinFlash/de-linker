@@ -1,0 +1,4 @@
+
+> linker-tools@0.1.0 lint:types
+> tsc --noEmit
+

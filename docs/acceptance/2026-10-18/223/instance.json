@@ -3,13 +3,15 @@
   "url": "http://127.0.0.1:9126",
   "worktree": "/Users/chesterjohn/Documents/de-linker-worktrees/c223",
   "branch": "feat/223-create-account-links",
-  "snapshot": "20261018-0923",
-  "snapshot_at": "2026-10-18T01:34:35+00:00",
+  "snapshot": "20261018-2057",
+  "snapshot_at": "2026-10-18T13:05:47+00:00",
   "mail": "local files via linker-local isolation MU plugin; sendmail disabled",
   "mail_directory": "/Users/chesterjohn/de-linker-local/c223/mail",
-  "production_writes": false,
   "deploy": false,
   "merge": false,
   "missing_required_doc": "docs/agents/codex-queue.md",
-  "rebase_base": "c2106969d19be6797107fa50b35d4c8a58ad5d5f"
+  "rebase_base": "05a3fbc127e9e2624a8505b3265b6d6e7a7bf91d",
+  "guest_live_draft_capture": "Disposable anonymous Woo session; remove the added product after screenshot. No inquiry/order submitted, no mail.",
+  "production_write_scope": "No code, configuration, account, order or inquiry writes. Only disposable anonymous Woo guest-cart add/remove for explicitly requested live capture.",
+  "source_head": "160623c913aab10d2ef356cd4efedfc1e4814bfe"
 }

@@ -1,0 +1,114 @@
+./composer.json is valid
+./composer.json is valid
+./composer.json is valid
+./composer.json is valid
+./composer.json is valid
+== plugins/linker-commerce: PHPCS, PHPStan
+Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-commerce/phpstan.neon.dist.
+
+ [OK] No errors                                                                 
+
+== plugins/linker-i18n: PHPCS, PHPStan
+Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-i18n/phpstan.neon.dist.
+
+ [OK] No errors                                                                 
+
+== plugins/linker-tools: PHPCS, PHPStan
+Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/phpstan.neon.dist.
+
+ [OK] No errors                                                                 
+
+== mu-plugins: PHPCS, PHPStan
+Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/mu-plugins/phpstan.neon.dist.
+
+ [OK] No errors                                                                 
+
+== tools/local: PHPCS, PHPStan
+Note: Using configuration file /Users/chesterjohn/Documents/de-linker-worktrees/c223/tools/local/phpstan.neon.dist.
+
+ [OK] No errors                                                                 
+
+
+> linker-tools@0.1.0 lint:js
+> wp-scripts lint-js --max-warnings=0
+
+
+> linker-tools@0.1.0 lint:types
+> tsc --noEmit
+
+
+> linker-tools@0.1.0 lint:format
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> linker-commerce@0.1.0 lint:js
+> wp-scripts lint-js src eslint.config.cjs webpack.config.js vitest.config.mts vitest.setup.ts --max-warnings=0
+
+
+> linker-commerce@0.1.0 lint:types
+> tsc --noEmit
+
+
+> linker-commerce@0.1.0 lint:format
+> prettier --check src *.json *.cjs *.mts webpack.config.js vitest.setup.ts
+
+Checking formatting...
+All matched files use Prettier code style!
+if [ ! -f node_modules/.package-lock.json ] || [ package-lock.json -nt node_modules/.package-lock.json ]; then npm ci --no-audit --no-fund; fi
+cd "/Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e" && npm run lint:types && npm run lint:format
+
+> linker-e2e@0.1.0 lint:types
+> tsc --noEmit
+
+
+> linker-e2e@0.1.0 lint:format
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+== services/genie: Ruff, mypy
+All checks passed!
+146 files already formatted
+Success: no issues found in 142 source files
+== services/engine: Ruff, mypy
+All checks passed!
+43 files already formatted
+Success: no issues found in 43 source files
+== tools/local: Ruff, mypy
+All checks passed!
+30 files already formatted
+Success: no issues found in 30 source files
+== tools/migrate: Ruff, mypy
+All checks passed!
+23 files already formatted
+Success: no issues found in 23 source files
+== tools/faq: Ruff, mypy
+All checks passed!
+9 files already formatted
+Success: no issues found in 9 source files
+All checks passed!
+1 file already formatted
+Success: no issues found in 1 source file
+cd /Users/chesterjohn/Documents/de-linker-worktrees/c223/tools/pull && uv run --locked ruff check . && uv run --locked ruff format --check . && uv run --locked mypy .
+All checks passed!
+21 files already formatted
+Success: no issues found in 21 source files
+cd /Users/chesterjohn/Documents/de-linker-worktrees/c223/tools/cutover && uv run --locked ruff check . && uv run --locked ruff format --check . && uv run --locked mypy .
+All checks passed!
+19 files already formatted
+Success: no issues found in 19 source files
+banned-words: clean
+PHP=/opt/homebrew/opt/php@8.3/bin/php python3 "/Users/chesterjohn/Documents/de-linker-worktrees/c223/tools/checks/i18n-coverage.py"
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: untranslated=51 exempt=51 gap=0
+plugins/linker-i18n/languages/linker-i18n-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source gaps=0 JSON problems=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+i18n-coverage: clean
+python3 "/Users/chesterjohn/Documents/de-linker-worktrees/c223/tools/checks/i18n-validity.py"
+i18n-validity: clean (5 catalogs)
+cd /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools && npm run --silent build:check
+build/ matches its sources.
+cd /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-commerce && npm run --silent build:check
+build/ matches its sources.

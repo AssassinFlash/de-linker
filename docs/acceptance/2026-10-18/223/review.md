@@ -87,3 +87,73 @@ for an explicit jump. Both are corrected. Restored history starts at the beginni
 new-question positioning performs no deferred scroll into a fast complete answer.
 The anchored full-response control is exercised by actual pointer clicks and a
 stable-coordinate assertion during body growth.
+
+## Review round 2 — full source, 2026-10-18
+
+Fixed point 4cf49363; source head e990377542a2394e230f17cc178eb5eb43d6f2c9.
+Both independent reviewers read the complete source diff, not only the repair
+commit. **Spec: 0 actionable implementation findings. Standards: 0 actionable
+findings.** They checked the independent controls band, composer separation,
+last-paragraph and focus tests, narrowed comparison/mobile declarations, public
+inquiry and updated empty-state tests, both inquiry-email return paths, LC DOM
+order before the React root, retained #236 attachment flow, and absence of
+backend/model/transport changes. New-line legacy identifier scan was clean.
+
+Both reviewers explicitly left final screenshot/pixel and completion-table
+acceptance pending for this session to assess; source review alone is not a
+pixel-gate pass. The final recapture is pixels-review2/; historical failing
+folders remain available as before evidence.
+
+## Final rebase and reply-preservation addendum
+
+Fixed point `2789721a37de66274a6b359050d706c3420d4f6e`. Both reviewers
+rechecked the full source through `e5c190b3`: Spec 0 actionable, Standards 0
+actionable. The rebase retains #236 uploads/busy-send and #250 inquiry cards
+inside Transcript. A subsequent PO reference correction (`e4ecc95d`) makes the
+existing “Netzanschluss” entry load in the Genie script as well as Configurator;
+actual browser readback verified the German label.
+
+Real Computer Use then exposed a separate cause of lost reply structure:
+WordPress removed SSE JSON backslashes when saving post meta. Both reviewers
+independently examined `e4ecc95d..be07829d`: Spec 0 actionable, Standards 0
+actionable. `wp_slash()` is paired with WordPress's own storage unslashing for
+messages and raw stream, preserving the already received reply. It changes PHP
+persistence escaping; answer generation/model/tools/protocol remain unchanged.
+The public GET round-trip fixture covers Markdown newlines, Unicode, quotes
+and literal backslashes. Old stored histories are not migrated or guessed.
+
+
+## Final owner corrections and formatting-authorisation review
+
+Final source base `05a3fbc1` (main deployment-tooling merges), source head
+`160623c9` (format contract27a128ab plus native-scroll browser fixture). Earlier source
+reviews covered the full diff against `c7b70232`; the base-only rebase changes
+no storefront/Genie behavior.
+
+### Standards
+
+Independent reviewer: **0 actionable source findings**. The prompts append
+formatting only and retain prior factual, grounding, exact-wording and short
+answer rules. Model/routing/tools/API/permissions stay intact. Ask retains the
+original options and onAsk payload, with styles exclusively in WindPress and
+no PHP layout. Native lazy/srcset decoding does not alter images or relax RGB
+or dimension checks. The new two copy pairs are now recorded in copy-review.md.
+No judgement smell justifies further refactoring; added legacy identifiers:0.
+
+### Spec
+
+Independent reviewer initially found a real dead dock selector (`--dock` was
+not an emitted root class). Fixed to the actual non-workspace root; official
+WindPress recompilation and Computer Use screenshots confirm single-column
+choices at1440/390. Final narrow confirmation: **0 remaining actionable source
+findings**. The last prose line and the taller option group are each fully
+reachable by native scrolling; both reader bounds remain asserted, followed by
+an explicit jump where needed. This preserves the composer-occlusion test.
+Actual EN/DE model replies use headings/lists and match after reopening.
+
+Remaining delivery limitation is explicit: hero inline conversation wiring is
+**未完成 within223**, without a new ticket or invented completion claim. Source
+review is separate from final browser/pixel/check/CI evidence.
+
+Standards:0 findings. Spec:0 remaining implementation findings; hero inline
+scope remains unfinished. See README for the complete acceptance table.

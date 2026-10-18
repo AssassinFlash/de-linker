@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:41693) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: product price prompt offers registration (15.4s)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: product price prompt offers registration 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.pdp-price .linker-create-account:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.pdp-price .linker-create-account:visible').first() with timeout 15000ms
+      - waiting for locator('.pdp-price .linker-create-account:visible').first()
+
+
+      19 | 				await page.goto(instance().url + route);
+      20 | 				const create = page.locator(`${selector} .linker-create-account:visible`).first();
+    > 21 | 				await expect(create).toBeVisible();
+         | 				                     ^
+      22 | 				await create.click();
+      23 | 				await expect(page).toHaveURL(instance().url + account + 'register/');
+      24 | 			});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:26
+
+    Error Context: artifacts/test-results/account-entries-en-1440-pr-e5b86--prompt-offers-registration-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: product price prompt offers registration 
+error: recipe `e2e` failed with exit code 1

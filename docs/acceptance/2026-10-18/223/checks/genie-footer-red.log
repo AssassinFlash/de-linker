@@ -1,0 +1,32 @@
+
+> linker-e2e@0.1.0 test
+> playwright test account-entries.spec.ts --grep de-390: Genie dock
+
+
+Running 1 test using 1 worker
+
+(node:38002) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/account-entries.spec.ts:14:4 › de-390: Genie dock has native guest entries (1.2s)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:14:4 › de-390: Genie dock has native guest entries ─
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 16
+    Received:    190.75
+
+      71 | 						main!.y + main!.height - (links!.y + links!.height);
+      72 | 					expect(bottomGap).toBeGreaterThanOrEqual(0);
+    > 73 | 					expect(bottomGap).toBeLessThanOrEqual(16);
+         | 					                  ^
+      74 | 				}
+      75 | 				await expect(entries.locator('a').first()).toHaveAttribute(
+      76 | 					'href',
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:73:24
+
+    Error Context: artifacts/test-results/account-entries-de-390-Genie-dock-has-native-guest-entries-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:14:4 › de-390: Genie dock has native guest entries ──

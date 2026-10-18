@@ -1,0 +1,9 @@
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  12:37:24
+   Duration  640ms (environment 51%, setup 23%, import 12%, tests 9%, transform 5%)
+

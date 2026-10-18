@@ -1,0 +1,162 @@
+{
+  "cases": [
+    {
+      "path": "/cart/",
+      "stem": "en-filled-draft",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "guest line price and subtotal:0",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            304,
+            511,
+            855,
+            556
+          ]
+        },
+        {
+          "name": "guest line price and subtotal:1",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            633,
+            460,
+            855,
+            515
+          ]
+        },
+        {
+          "name": "guest summary account entries:0",
+          "selector": ".linker-login-box",
+          "bounds": [
+            934,
+            460,
+            1284,
+            603
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/warenkorb/",
+      "stem": "de-filled-draft",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "guest line price and subtotal:0",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            304,
+            526,
+            855,
+            564
+          ]
+        },
+        {
+          "name": "guest line price and subtotal:1",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            585,
+            460,
+            855,
+            530
+          ]
+        },
+        {
+          "name": "guest summary account entries:0",
+          "selector": ".linker-login-box",
+          "bounds": [
+            934,
+            460,
+            1284,
+            603
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/cart/",
+      "stem": "en-filled-draft",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "guest line price and subtotal:0",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            132,
+            676,
+            374,
+            698
+          ]
+        },
+        {
+          "name": "guest line price and subtotal:1",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            132,
+            643,
+            374,
+            665
+          ]
+        },
+        {
+          "name": "guest summary account entries:0",
+          "selector": ".linker-login-box",
+          "bounds": [
+            16,
+            987,
+            374,
+            1129
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/warenkorb/",
+      "stem": "de-filled-draft",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "guest line price and subtotal:0",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            132,
+            698,
+            374,
+            762
+          ]
+        },
+        {
+          "name": "guest line price and subtotal:1",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            132,
+            665,
+            374,
+            708
+          ]
+        },
+        {
+          "name": "guest summary account entries:0",
+          "selector": ".linker-login-box",
+          "bounds": [
+            16,
+            1009,
+            374,
+            1193
+          ]
+        }
+      ]
+    }
+  ],
+  "allowedHeaderChanges": [],
+  "networkRoute": "direct browser connection"
+}

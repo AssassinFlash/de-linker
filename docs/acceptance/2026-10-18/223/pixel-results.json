@@ -1,27 +1,17 @@
 [
   {
     "case": "en-header-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/",
-      "stem": "en-header",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "header account entries and 0 24px 50px shadow:0",
-          "selector": ".tv-b2b-acct-menu",
-          "padding": 74,
-          "bounds": [
-            798,
-            2,
-            1239,
-            262
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      8278
+    ],
+    "local_size": [
+      1440,
+      8278
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -54,36 +44,17 @@
   },
   {
     "case": "en-footer-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/",
-      "stem": "en-footer",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "account entry tile:0",
-          "selector": "#footer-panel-account .footer-route-list>li:first-child",
-          "bounds": [
-            492,
-            7848,
-            884,
-            7919
-          ]
-        },
-        {
-          "name": "account destination count:0",
-          "selector": "#footer-panel-account .footer-panel-count",
-          "bounds": [
-            1256,
-            7801,
-            1286,
-            7832
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      8278
+    ],
+    "local_size": [
+      1440,
+      8278
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -125,27 +96,17 @@
   },
   {
     "case": "en-draft-1440",
-    "source": "pixels-final-fixes",
-    "capture": {
-      "path": "/cart/",
-      "stem": "en-draft",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "draft account entries:0",
-          "selector": ".sf-cart-empty__actions",
-          "padding": 0,
-          "bounds": [
-            416,
-            417,
-            1024,
-            465
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/cart/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      1239
+    ],
+    "local_size": [
+      1440,
+      1239
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -178,61 +139,60 @@
   },
   {
     "case": "en-inquiry-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/proforma-request/",
-      "stem": "en-inquiry",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "inquiry account entries:0",
-          "selector": ".linker-inquiry-guest",
-          "padding": 0,
-          "bounds": [
-            156,
-            615,
-            1284,
-            1045
-          ]
-        }
-      ]
-    },
-    "dimension_match": false,
+    "capture_folder": "pixels-final-desktop",
+    "path": "/proforma-request/",
+    "dimension_match": true,
     "live_size": [
       1440,
-      1429
+      1789
     ],
     "local_size": [
       1440,
-      1804
+      1789
     ],
-    "ruled_change": false
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1789
+    ],
+    "unmasked_different_pixels": 731,
+    "difference_bounds": [
+      156,
+      1042,
+      262,
+      1058
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "new registration line in existing form gap:0",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0,
+        "bounds": [
+          156,
+          1037,
+          819,
+          1059
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "en-lost-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/my-account/lost-password/",
-      "stem": "en-lost",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "lost account entries:0",
-          "selector": ".linker-auth-links",
-          "padding": 0,
-          "bounds": [
-            521,
-            541,
-            919,
-            565
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/my-account/lost-password/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      1276
+    ],
+    "local_size": [
+      1440,
+      1276
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -265,27 +225,17 @@
   },
   {
     "case": "en-lost-confirmation-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/my-account/lost-password/?reset-link-sent=true",
-      "stem": "en-lost-confirmation",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "lost-confirmation account entries:0",
-          "selector": ".linker-auth-links",
-          "padding": 0,
-          "bounds": [
-            521,
-            461,
-            919,
-            485
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/my-account/lost-password/?reset-link-sent=true",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      1196
+    ],
+    "local_size": [
+      1440,
+      1196
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -318,27 +268,17 @@
   },
   {
     "case": "en-document-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/?linker-document=proforma&id=1",
-      "stem": "en-document",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 0,
-      "ruledRegions": [
-        {
-          "name": "document account entries:0",
-          "selector": "#error-page",
-          "padding": 0,
-          "bounds": [
-            337,
-            50,
-            1103,
-            196
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/?linker-document=proforma&id=1",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      900
+    ],
+    "local_size": [
+      1440,
+      900
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -371,42 +311,32 @@
   },
   {
     "case": "de-header-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/",
-      "stem": "de-header",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "header account entries and 0 24px 50px shadow:0",
-          "selector": ".tv-b2b-acct-menu",
-          "padding": 74,
-          "bounds": [
-            765,
-            2,
-            1336,
-            262
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      8591
+    ],
+    "local_size": [
+      1440,
+      8591
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       8591
     ],
-    "unmasked_different_pixels": 79763,
+    "unmasked_different_pixels": 39611,
     "difference_bounds": [
-      188,
-      21,
-      1416,
+      791,
+      94,
+      1179,
       254
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "header account entries and 0 24px 50px shadow:0",
@@ -415,60 +345,41 @@
         "bounds": [
           765,
           2,
-          1336,
+          1206,
           262
         ]
       }
     ],
-    "outside_ruled_different_pixels": 6166
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-footer-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/",
-      "stem": "de-footer",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "account entry tile:0",
-          "selector": "#footer-panel-account .footer-route-list>li:first-child",
-          "bounds": [
-            492,
-            8160,
-            884,
-            8231
-          ]
-        },
-        {
-          "name": "account destination count:0",
-          "selector": "#footer-panel-account .footer-panel-count",
-          "bounds": [
-            1256,
-            8114,
-            1286,
-            8145
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      8591
+    ],
+    "local_size": [
+      1440,
+      8591
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       8591
     ],
-    "unmasked_different_pixels": 13663,
+    "unmasked_different_pixels": 604,
     "difference_bounds": [
-      188,
-      21,
-      1416,
+      618,
+      8124,
+      1278,
       8204
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "account entry tile:0",
@@ -491,46 +402,36 @@
         ]
       }
     ],
-    "outside_ruled_different_pixels": 13059
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-draft-1440",
-    "source": "pixels-final-fixes",
-    "capture": {
-      "path": "/de/warenkorb/",
-      "stem": "de-draft",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "draft account entries:0",
-          "selector": ".sf-cart-empty__actions",
-          "padding": 0,
-          "bounds": [
-            416,
-            417,
-            1024,
-            465
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/warenkorb/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      1239
+    ],
+    "local_size": [
+      1440,
+      1239
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       1239
     ],
-    "unmasked_different_pixels": 22906,
+    "unmasked_different_pixels": 9845,
     "difference_bounds": [
-      188,
-      21,
-      1416,
+      531,
+      417,
+      909,
       464
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "draft account entries:0",
@@ -544,80 +445,79 @@
         ]
       }
     ],
-    "outside_ruled_different_pixels": 13061
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-inquiry-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/proforma-anfrage/",
-      "stem": "de-inquiry",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "inquiry account entries:0",
-          "selector": ".linker-inquiry-guest",
-          "padding": 0,
-          "bounds": [
-            156,
-            615,
-            1284,
-            1088
-          ]
-        }
-      ]
-    },
-    "dimension_match": false,
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/proforma-anfrage/",
+    "dimension_match": true,
     "live_size": [
       1440,
-      1429
+      1831
     ],
     "local_size": [
       1440,
-      1846
+      1831
     ],
-    "ruled_change": false
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1831
+    ],
+    "unmasked_different_pixels": 743,
+    "difference_bounds": [
+      156,
+      1084,
+      259,
+      1100
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "new registration line in existing form gap:0",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0,
+        "bounds": [
+          156,
+          1080,
+          819,
+          1102
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-lost-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/mein-konto/lost-password/",
-      "stem": "de-lost",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "lost account entries:0",
-          "selector": ".linker-auth-links",
-          "padding": 0,
-          "bounds": [
-            521,
-            566,
-            919,
-            590
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/mein-konto/lost-password/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      1301
+    ],
+    "local_size": [
+      1440,
+      1301
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       1301
     ],
-    "unmasked_different_pixels": 15148,
+    "unmasked_different_pixels": 2087,
     "difference_bounds": [
-      188,
-      21,
-      1416,
+      583,
+      572,
+      858,
       588
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "lost account entries:0",
@@ -631,46 +531,36 @@
         ]
       }
     ],
-    "outside_ruled_different_pixels": 13061
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-lost-confirmation-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/mein-konto/lost-password/?reset-link-sent=true",
-      "stem": "de-lost-confirmation",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "lost-confirmation account entries:0",
-          "selector": ".linker-auth-links",
-          "padding": 0,
-          "bounds": [
-            521,
-            481,
-            919,
-            505
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/mein-konto/lost-password/?reset-link-sent=true",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      1217
+    ],
+    "local_size": [
+      1440,
+      1217
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       1217
     ],
-    "unmasked_different_pixels": 15148,
+    "unmasked_different_pixels": 2087,
     "difference_bounds": [
-      188,
-      21,
-      1416,
+      583,
+      488,
+      858,
       504
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "lost-confirmation account entries:0",
@@ -684,31 +574,21 @@
         ]
       }
     ],
-    "outside_ruled_different_pixels": 13061
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-document-1440",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/?linker-document=proforma&id=1",
-      "stem": "de-document",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 0,
-      "ruledRegions": [
-        {
-          "name": "document account entries:0",
-          "selector": "#error-page",
-          "padding": 0,
-          "bounds": [
-            337,
-            50,
-            1103,
-            217
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/?linker-document=proforma&id=1",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      900
+    ],
+    "local_size": [
+      1440,
+      900
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
@@ -740,997 +620,18 @@
     "outside_ruled_different_pixels": 0
   },
   {
-    "case": "en-mobile-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/",
-      "stem": "en-mobile",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 526,
-      "ruledRegions": [
-        {
-          "name": "mobile account entries:0",
-          "selector": "#tv-mobile-panel",
-          "padding": 0,
-          "bounds": [
-            16,
-            80,
-            374,
-            525
-          ]
-        }
-      ]
-    },
-    "language": "en",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      9254
-    ],
-    "unmasked_different_pixels": 1001,
-    "difference_bounds": [
-      120,
-      411,
-      248,
-      457
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "mobile account entries:0",
-        "selector": "#tv-mobile-panel",
-        "padding": 0,
-        "bounds": [
-          16,
-          80,
-          374,
-          525
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "en-footer-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/",
-      "stem": "en-footer",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "account entry tile:0",
-          "selector": "#footer-panel-account .footer-route-list>li:first-child",
-          "bounds": [
-            49,
-            8397,
-            341,
-            8446
-          ]
-        },
-        {
-          "name": "account destination count:0",
-          "selector": "#footer-panel-account .footer-panel-count",
-          "bounds": [
-            314,
-            8355,
-            341,
-            8383
-          ]
-        }
-      ]
-    },
-    "language": "en",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      8809
-    ],
-    "unmasked_different_pixels": 607,
-    "difference_bounds": [
-      147,
-      8365,
-      334,
-      8429
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "account entry tile:0",
-        "selector": "#footer-panel-account .footer-route-list>li:first-child",
-        "bounds": [
-          49,
-          8397,
-          341,
-          8446
-        ]
-      },
-      {
-        "name": "account destination count:0",
-        "selector": "#footer-panel-account .footer-panel-count",
-        "bounds": [
-          314,
-          8355,
-          341,
-          8383
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "en-draft-390",
-    "source": "pixels-final-fixes",
-    "capture": {
-      "path": "/cart/",
-      "stem": "en-draft",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "draft account entries:0",
-          "selector": ".sf-cart-empty__actions",
-          "padding": 0,
-          "bounds": [
-            32,
-            416,
-            358,
-            464
-          ]
-        }
-      ]
-    },
-    "language": "en",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      1317
-    ],
-    "unmasked_different_pixels": 9260,
-    "difference_bounds": [
-      37,
-      417,
-      349,
-      464
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "draft account entries:0",
-        "selector": ".sf-cart-empty__actions",
-        "padding": 0,
-        "bounds": [
-          32,
-          416,
-          358,
-          464
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "en-inquiry-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/proforma-request/",
-      "stem": "en-inquiry",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "inquiry account entries:0",
-          "selector": ".linker-inquiry-guest",
-          "padding": 0,
-          "bounds": [
-            16,
-            622,
-            374,
-            1032
-          ]
-        }
-      ]
-    },
-    "dimension_match": false,
-    "live_size": [
-      390,
-      1539
-    ],
-    "local_size": [
-      390,
-      2014
-    ],
-    "ruled_change": false
-  },
-  {
-    "case": "en-lost-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/my-account/lost-password/",
-      "stem": "en-lost",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "lost account entries:0",
-          "selector": ".linker-auth-links",
-          "padding": 0,
-          "bounds": [
-            33,
-            434,
-            357,
-            458
-          ]
-        }
-      ]
-    },
-    "language": "en",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      1199
-    ],
-    "unmasked_different_pixels": 1625,
-    "difference_bounds": [
-      85,
-      440,
-      306,
-      456
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "lost account entries:0",
-        "selector": ".linker-auth-links",
-        "padding": 0,
-        "bounds": [
-          33,
-          434,
-          357,
-          458
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "en-lost-confirmation-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/my-account/lost-password/?reset-link-sent=true",
-      "stem": "en-lost-confirmation",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "lost-confirmation account entries:0",
-          "selector": ".linker-auth-links",
-          "padding": 0,
-          "bounds": [
-            33,
-            378,
-            357,
-            402
-          ]
-        }
-      ]
-    },
-    "language": "en",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      1144
-    ],
-    "unmasked_different_pixels": 1625,
-    "difference_bounds": [
-      85,
-      385,
-      306,
-      401
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "lost-confirmation account entries:0",
-        "selector": ".linker-auth-links",
-        "padding": 0,
-        "bounds": [
-          33,
-          378,
-          357,
-          402
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "en-document-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/?linker-document=proforma&id=1",
-      "stem": "en-document",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 0,
-      "ruledRegions": [
-        {
-          "name": "document account entries:0",
-          "selector": "#error-page",
-          "padding": 0,
-          "bounds": [
-            0,
-            50,
-            390,
-            217
-          ]
-        }
-      ]
-    },
-    "language": "en",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      900
-    ],
-    "unmasked_different_pixels": 691,
-    "difference_bounds": [
-      75,
-      164,
-      175,
-      177
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "document account entries:0",
-        "selector": "#error-page",
-        "padding": 0,
-        "bounds": [
-          0,
-          50,
-          390,
-          217
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "de-mobile-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/",
-      "stem": "de-mobile",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 526,
-      "ruledRegions": [
-        {
-          "name": "mobile account entries:0",
-          "selector": "#tv-mobile-panel",
-          "padding": 0,
-          "bounds": [
-            16,
-            80,
-            374,
-            525
-          ]
-        }
-      ]
-    },
-    "language": "de",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      9710
-    ],
-    "unmasked_different_pixels": 1027,
-    "difference_bounds": [
-      120,
-      411,
-      246,
-      457
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "mobile account entries:0",
-        "selector": "#tv-mobile-panel",
-        "padding": 0,
-        "bounds": [
-          16,
-          80,
-          374,
-          525
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "de-footer-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/",
-      "stem": "de-footer",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "account entry tile:0",
-          "selector": "#footer-panel-account .footer-route-list>li:first-child",
-          "bounds": [
-            49,
-            8811,
-            341,
-            8860
-          ]
-        },
-        {
-          "name": "account destination count:0",
-          "selector": "#footer-panel-account .footer-panel-count",
-          "bounds": [
-            314,
-            8770,
-            341,
-            8798
-          ]
-        }
-      ]
-    },
-    "language": "de",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      9265
-    ],
-    "unmasked_different_pixels": 596,
-    "difference_bounds": [
-      168,
-      8779,
-      334,
-      8844
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "account entry tile:0",
-        "selector": "#footer-panel-account .footer-route-list>li:first-child",
-        "bounds": [
-          49,
-          8811,
-          341,
-          8860
-        ]
-      },
-      {
-        "name": "account destination count:0",
-        "selector": "#footer-panel-account .footer-panel-count",
-        "bounds": [
-          314,
-          8770,
-          341,
-          8798
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "de-draft-390",
-    "source": "pixels-final-fixes",
-    "capture": {
-      "path": "/de/warenkorb/",
-      "stem": "de-draft",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "draft account entries:0",
-          "selector": ".sf-cart-empty__actions",
-          "padding": 0,
-          "bounds": [
-            32,
-            416,
-            358,
-            521
-          ]
-        }
-      ]
-    },
-    "language": "de",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      1437
-    ],
-    "unmasked_different_pixels": 16357,
-    "difference_bounds": [
-      87,
-      417,
-      303,
-      521
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "draft account entries:0",
-        "selector": ".sf-cart-empty__actions",
-        "padding": 0,
-        "bounds": [
-          32,
-          416,
-          358,
-          521
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "de-inquiry-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/proforma-anfrage/",
-      "stem": "de-inquiry",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "inquiry account entries:0",
-          "selector": ".linker-inquiry-guest",
-          "padding": 0,
-          "bounds": [
-            16,
-            643,
-            374,
-            1096
-          ]
-        }
-      ]
-    },
-    "dimension_match": false,
-    "live_size": [
-      390,
-      1697
-    ],
-    "local_size": [
-      390,
-      2167
-    ],
-    "ruled_change": false
-  },
-  {
-    "case": "de-lost-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/mein-konto/lost-password/",
-      "stem": "de-lost",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "lost account entries:0",
-          "selector": ".linker-auth-links",
-          "padding": 0,
-          "bounds": [
-            33,
-            483,
-            357,
-            507
-          ]
-        }
-      ]
-    },
-    "language": "de",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      1312
-    ],
-    "unmasked_different_pixels": 2087,
-    "difference_bounds": [
-      58,
-      490,
-      333,
-      506
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "lost account entries:0",
-        "selector": ".linker-auth-links",
-        "padding": 0,
-        "bounds": [
-          33,
-          483,
-          357,
-          507
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "de-lost-confirmation-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/mein-konto/lost-password/?reset-link-sent=true",
-      "stem": "de-lost-confirmation",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "lost-confirmation account entries:0",
-          "selector": ".linker-auth-links",
-          "padding": 0,
-          "bounds": [
-            33,
-            444,
-            357,
-            468
-          ]
-        }
-      ]
-    },
-    "language": "de",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      1272
-    ],
-    "unmasked_different_pixels": 2087,
-    "difference_bounds": [
-      58,
-      450,
-      333,
-      466
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "lost-confirmation account entries:0",
-        "selector": ".linker-auth-links",
-        "padding": 0,
-        "bounds": [
-          33,
-          444,
-          357,
-          468
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
-    "case": "de-document-390",
-    "source": "pixels",
-    "capture": {
-      "path": "/de/?linker-document=proforma&id=1",
-      "stem": "de-document",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 0,
-      "ruledRegions": [
-        {
-          "name": "document account entries:0",
-          "selector": "#error-page",
-          "padding": 0,
-          "bounds": [
-            0,
-            50,
-            390,
-            238
-          ]
-        }
-      ]
-    },
-    "language": "de",
-    "viewport_width": 390,
-    "image_size": [
-      390,
-      900
-    ],
-    "unmasked_different_pixels": 688,
-    "difference_bounds": [
-      101,
-      185,
-      199,
-      198
-    ],
-    "masks": [],
-    "ruled_change": true,
-    "ruled_regions": [
-      {
-        "name": "document account entries:0",
-        "selector": "#error-page",
-        "padding": 0,
-        "bounds": [
-          0,
-          50,
-          390,
-          238
-        ]
-      }
-    ],
-    "outside_ruled_different_pixels": 0
-  },
-  {
     "case": "en-shop-1440",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/products/",
-      "stem": "en-shop",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "shop guest entries:0",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            1033,
-            809,
-            1078
-          ]
-        },
-        {
-          "name": "shop guest entries:1",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            1033,
-            1379,
-            1078
-          ]
-        },
-        {
-          "name": "shop guest entries:2",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            1685,
-            809,
-            1730
-          ]
-        },
-        {
-          "name": "shop guest entries:3",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            1685,
-            1379,
-            1730
-          ]
-        },
-        {
-          "name": "shop guest entries:4",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            2337,
-            809,
-            2382
-          ]
-        },
-        {
-          "name": "shop guest entries:5",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            2337,
-            1379,
-            2382
-          ]
-        },
-        {
-          "name": "shop guest entries:6",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            2989,
-            809,
-            3034
-          ]
-        },
-        {
-          "name": "shop guest entries:7",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            2989,
-            1379,
-            3034
-          ]
-        },
-        {
-          "name": "shop guest entries:8",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            3641,
-            809,
-            3686
-          ]
-        },
-        {
-          "name": "shop guest entries:9",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            3641,
-            1379,
-            3686
-          ]
-        },
-        {
-          "name": "shop guest entries:10",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            4293,
-            809,
-            4338
-          ]
-        },
-        {
-          "name": "shop guest entries:11",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            4293,
-            1379,
-            4338
-          ]
-        },
-        {
-          "name": "shop guest entries:12",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            4945,
-            809,
-            4990
-          ]
-        },
-        {
-          "name": "shop guest entries:13",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            4945,
-            1379,
-            4990
-          ]
-        },
-        {
-          "name": "shop guest entries:14",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            5596,
-            809,
-            5641
-          ]
-        },
-        {
-          "name": "shop guest entries:15",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            5596,
-            1379,
-            5641
-          ]
-        },
-        {
-          "name": "shop guest entries:16",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            6248,
-            809,
-            6293
-          ]
-        },
-        {
-          "name": "shop guest entries:17",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            6248,
-            1379,
-            6293
-          ]
-        },
-        {
-          "name": "shop guest entries:18",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            6900,
-            809,
-            6945
-          ]
-        },
-        {
-          "name": "shop guest entries:19",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            6900,
-            1379,
-            6945
-          ]
-        },
-        {
-          "name": "shop guest entries:20",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            7552,
-            809,
-            7597
-          ]
-        },
-        {
-          "name": "shop guest entries:21",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            7552,
-            1379,
-            7597
-          ]
-        },
-        {
-          "name": "shop guest entries:22",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            8204,
-            809,
-            8249
-          ]
-        },
-        {
-          "name": "shop guest entries:23",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            8204,
-            1379,
-            8249
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/products/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      9238
+    ],
+    "local_size": [
+      1440,
+      9238
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -1992,256 +893,17 @@
   },
   {
     "case": "en-category-1440",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/product-category/inverters/",
-      "stem": "en-category",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "category guest entries:0",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            1059,
-            809,
-            1104
-          ]
-        },
-        {
-          "name": "category guest entries:1",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            1059,
-            1379,
-            1104
-          ]
-        },
-        {
-          "name": "category guest entries:2",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            1711,
-            809,
-            1756
-          ]
-        },
-        {
-          "name": "category guest entries:3",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            1711,
-            1379,
-            1756
-          ]
-        },
-        {
-          "name": "category guest entries:4",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            2363,
-            809,
-            2408
-          ]
-        },
-        {
-          "name": "category guest entries:5",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            2363,
-            1379,
-            2408
-          ]
-        },
-        {
-          "name": "category guest entries:6",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            3015,
-            809,
-            3060
-          ]
-        },
-        {
-          "name": "category guest entries:7",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            3015,
-            1379,
-            3060
-          ]
-        },
-        {
-          "name": "category guest entries:8",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            3667,
-            809,
-            3711
-          ]
-        },
-        {
-          "name": "category guest entries:9",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            3667,
-            1379,
-            3711
-          ]
-        },
-        {
-          "name": "category guest entries:10",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            4318,
-            809,
-            4363
-          ]
-        },
-        {
-          "name": "category guest entries:11",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            4318,
-            1379,
-            4363
-          ]
-        },
-        {
-          "name": "category guest entries:12",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            4970,
-            809,
-            5015
-          ]
-        },
-        {
-          "name": "category guest entries:13",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            4970,
-            1379,
-            5015
-          ]
-        },
-        {
-          "name": "category guest entries:14",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            5622,
-            809,
-            5667
-          ]
-        },
-        {
-          "name": "category guest entries:15",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            5622,
-            1379,
-            5667
-          ]
-        },
-        {
-          "name": "category guest entries:16",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            6274,
-            809,
-            6319
-          ]
-        },
-        {
-          "name": "category guest entries:17",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            6274,
-            1379,
-            6319
-          ]
-        },
-        {
-          "name": "category guest entries:18",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            6904,
-            809,
-            6949
-          ]
-        },
-        {
-          "name": "category guest entries:19",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            6926,
-            1379,
-            6971
-          ]
-        },
-        {
-          "name": "category guest entries:20",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            7578,
-            809,
-            7623
-          ]
-        },
-        {
-          "name": "category guest entries:21",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            7578,
-            1379,
-            7623
-          ]
-        },
-        {
-          "name": "category guest entries:22",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            8229,
-            809,
-            8274
-          ]
-        },
-        {
-          "name": "category guest entries:23",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            8229,
-            1379,
-            8274
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/product-category/inverters/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      9264
+    ],
+    "local_size": [
+      1440,
+      9264
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -2503,26 +1165,17 @@
   },
   {
     "case": "en-product-1440",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/product/saj-h2-10k-t3/",
-      "stem": "en-product",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "product guest entries:0",
-          "selector": ".pdp-price",
-          "bounds": [
-            952,
-            296,
-            1360,
-            321
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/product/saj-h2-10k-t3/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      7737
+    ],
+    "local_size": [
+      1440,
+      7737
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -2554,59 +1207,69 @@
   },
   {
     "case": "en-compare-1440",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/compare-products/?ids=4107,4108",
-      "stem": "en-compare",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "owner-rejected comparison design layer restored:0",
-          "selector": ".sf-compare",
-          "bounds": [
-            0,
-            89,
-            1440,
-            3405
-          ]
-        }
-      ]
-    },
-    "dimension_match": false,
+    "capture_folder": "pixels-final-desktop",
+    "path": "/compare-products/?ids=4107,4108",
+    "dimension_match": true,
     "live_size": [
       1440,
       4212
     ],
     "local_size": [
       1440,
-      3979
+      4212
     ],
-    "ruled_change": false
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      4212
+    ],
+    "unmasked_different_pixels": 3097,
+    "difference_bounds": [
+      344,
+      596,
+      1013,
+      611
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          332,
+          579,
+          809,
+          625
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          808,
+          579,
+          1284,
+          625
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "en-genie-dock-1440",
-    "source": "pixels-genie-final",
-    "capture": {
-      "path": "/",
-      "stem": "en-genie-dock",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "genie-dock guest entries:0",
-          "selector": ".linker-genie-panel",
-          "bounds": [
-            1020,
-            7562,
-            1420,
-            8162
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      8278
+    ],
+    "local_size": [
+      1440,
+      8278
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -2638,26 +1301,17 @@
   },
   {
     "case": "en-genie-workspace-1440",
-    "source": "pixels-genie-final",
-    "capture": {
-      "path": "/genie/",
-      "stem": "en-genie-workspace",
-      "width": 1440,
-      "language": "en",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "genie-workspace guest entries:0",
-          "selector": ".linker-genie-panel--workspace",
-          "bounds": [
-            0,
-            89,
-            1440,
-            1475
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/genie/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      2050
+    ],
+    "local_size": [
+      1440,
+      2050
+    ],
     "language": "en",
     "viewport_width": 1440,
     "image_size": [
@@ -2689,271 +1343,32 @@
   },
   {
     "case": "de-shop-1440",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/de/produkte/",
-      "stem": "de-shop",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "shop guest entries:0",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            1033,
-            809,
-            1078
-          ]
-        },
-        {
-          "name": "shop guest entries:1",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            1033,
-            1379,
-            1078
-          ]
-        },
-        {
-          "name": "shop guest entries:2",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            1685,
-            809,
-            1730
-          ]
-        },
-        {
-          "name": "shop guest entries:3",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            1685,
-            1379,
-            1730
-          ]
-        },
-        {
-          "name": "shop guest entries:4",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            2337,
-            809,
-            2382
-          ]
-        },
-        {
-          "name": "shop guest entries:5",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            2337,
-            1379,
-            2382
-          ]
-        },
-        {
-          "name": "shop guest entries:6",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            2989,
-            809,
-            3034
-          ]
-        },
-        {
-          "name": "shop guest entries:7",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            2989,
-            1379,
-            3034
-          ]
-        },
-        {
-          "name": "shop guest entries:8",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            3641,
-            809,
-            3686
-          ]
-        },
-        {
-          "name": "shop guest entries:9",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            3641,
-            1379,
-            3686
-          ]
-        },
-        {
-          "name": "shop guest entries:10",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            4293,
-            809,
-            4338
-          ]
-        },
-        {
-          "name": "shop guest entries:11",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            4293,
-            1379,
-            4338
-          ]
-        },
-        {
-          "name": "shop guest entries:12",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            4945,
-            809,
-            4990
-          ]
-        },
-        {
-          "name": "shop guest entries:13",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            4945,
-            1379,
-            4990
-          ]
-        },
-        {
-          "name": "shop guest entries:14",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            5596,
-            809,
-            5641
-          ]
-        },
-        {
-          "name": "shop guest entries:15",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            5596,
-            1379,
-            5641
-          ]
-        },
-        {
-          "name": "shop guest entries:16",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            6248,
-            809,
-            6293
-          ]
-        },
-        {
-          "name": "shop guest entries:17",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            6248,
-            1379,
-            6293
-          ]
-        },
-        {
-          "name": "shop guest entries:18",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            6900,
-            809,
-            6945
-          ]
-        },
-        {
-          "name": "shop guest entries:19",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            6900,
-            1379,
-            6945
-          ]
-        },
-        {
-          "name": "shop guest entries:20",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            7552,
-            809,
-            7597
-          ]
-        },
-        {
-          "name": "shop guest entries:21",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            7552,
-            1379,
-            7597
-          ]
-        },
-        {
-          "name": "shop guest entries:22",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            8204,
-            809,
-            8249
-          ]
-        },
-        {
-          "name": "shop guest entries:23",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            8204,
-            1379,
-            8249
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/produkte/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      9238
+    ],
+    "local_size": [
+      1440,
+      9238
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       9238
     ],
-    "unmasked_different_pixels": 326881,
+    "unmasked_different_pixels": 313820,
     "difference_bounds": [
-      188,
-      21,
-      1416,
+      304,
+      1034,
+      1379,
       8248
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "shop guest entries:0",
@@ -3196,275 +1611,36 @@
         ]
       }
     ],
-    "outside_ruled_different_pixels": 13061
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-category-1440",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/de/produkt-kategorie/wechselrichter/",
-      "stem": "de-category",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "category guest entries:0",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            1059,
-            809,
-            1104
-          ]
-        },
-        {
-          "name": "category guest entries:1",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            1059,
-            1379,
-            1104
-          ]
-        },
-        {
-          "name": "category guest entries:2",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            1711,
-            809,
-            1756
-          ]
-        },
-        {
-          "name": "category guest entries:3",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            1711,
-            1379,
-            1756
-          ]
-        },
-        {
-          "name": "category guest entries:4",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            2363,
-            809,
-            2408
-          ]
-        },
-        {
-          "name": "category guest entries:5",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            2363,
-            1379,
-            2408
-          ]
-        },
-        {
-          "name": "category guest entries:6",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            3015,
-            809,
-            3060
-          ]
-        },
-        {
-          "name": "category guest entries:7",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            3015,
-            1379,
-            3060
-          ]
-        },
-        {
-          "name": "category guest entries:8",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            3667,
-            809,
-            3711
-          ]
-        },
-        {
-          "name": "category guest entries:9",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            3667,
-            1379,
-            3711
-          ]
-        },
-        {
-          "name": "category guest entries:10",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            4318,
-            809,
-            4363
-          ]
-        },
-        {
-          "name": "category guest entries:11",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            4318,
-            1379,
-            4363
-          ]
-        },
-        {
-          "name": "category guest entries:12",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            4970,
-            809,
-            5015
-          ]
-        },
-        {
-          "name": "category guest entries:13",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            4970,
-            1379,
-            5015
-          ]
-        },
-        {
-          "name": "category guest entries:14",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            5622,
-            809,
-            5667
-          ]
-        },
-        {
-          "name": "category guest entries:15",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            5622,
-            1379,
-            5667
-          ]
-        },
-        {
-          "name": "category guest entries:16",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            6274,
-            809,
-            6319
-          ]
-        },
-        {
-          "name": "category guest entries:17",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            6274,
-            1379,
-            6319
-          ]
-        },
-        {
-          "name": "category guest entries:18",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            6904,
-            809,
-            6949
-          ]
-        },
-        {
-          "name": "category guest entries:19",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            6926,
-            1379,
-            6971
-          ]
-        },
-        {
-          "name": "category guest entries:20",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            7578,
-            809,
-            7623
-          ]
-        },
-        {
-          "name": "category guest entries:21",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            7578,
-            1379,
-            7623
-          ]
-        },
-        {
-          "name": "category guest entries:22",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            303,
-            8229,
-            809,
-            8274
-          ]
-        },
-        {
-          "name": "category guest entries:23",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            873,
-            8229,
-            1379,
-            8274
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/produkt-kategorie/wechselrichter/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      9264
+    ],
+    "local_size": [
+      1440,
+      9264
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       9264
     ],
-    "unmasked_different_pixels": 326804,
+    "unmasked_different_pixels": 313743,
     "difference_bounds": [
-      188,
-      21,
-      1416,
+      304,
+      1060,
+      1379,
       8274
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "category guest entries:0",
@@ -3707,45 +1883,36 @@
         ]
       }
     ],
-    "outside_ruled_different_pixels": 13061
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-product-1440",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/de/produkt/saj-h2-10k-t3/",
-      "stem": "de-product",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "product guest entries:0",
-          "selector": ".pdp-price",
-          "bounds": [
-            952,
-            296,
-            1360,
-            321
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/produkt/saj-h2-10k-t3/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      7913
+    ],
+    "local_size": [
+      1440,
+      7913
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       7913
     ],
-    "unmasked_different_pixels": 13597,
+    "unmasked_different_pixels": 536,
     "difference_bounds": [
-      188,
-      21,
-      1416,
+      1229,
+      305,
+      1323,
       316
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "product guest entries:0",
@@ -3758,78 +1925,88 @@
         ]
       }
     ],
-    "outside_ruled_different_pixels": 13061
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-compare-1440",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/de/compare-products/?ids=4107,4108",
-      "stem": "de-compare",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "owner-rejected comparison design layer restored:0",
-          "selector": ".sf-compare",
-          "bounds": [
-            0,
-            89,
-            1440,
-            3427
-          ]
-        }
-      ]
-    },
-    "dimension_match": false,
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/compare-products/?ids=4107,4108",
+    "dimension_match": true,
     "live_size": [
       1440,
       4098
     ],
     "local_size": [
       1440,
-      4002
+      4098
     ],
-    "ruled_change": false
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      4098
+    ],
+    "unmasked_different_pixels": 3749,
+    "difference_bounds": [
+      400,
+      622,
+      1081,
+      637
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          388,
+          605,
+          837,
+          651
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          836,
+          605,
+          1284,
+          651
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-genie-dock-1440",
-    "source": "pixels-genie-final",
-    "capture": {
-      "path": "/de/",
-      "stem": "de-genie-dock",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "genie-dock guest entries:0",
-          "selector": ".linker-genie-panel",
-          "bounds": [
-            1020,
-            7875,
-            1420,
-            8475
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      8591
+    ],
+    "local_size": [
+      1440,
+      8591
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       8591
     ],
-    "unmasked_different_pixels": 119910,
+    "unmasked_different_pixels": 106851,
     "difference_bounds": [
-      188,
-      21,
+      1020,
+      7875,
       1420,
       8475
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "genie-dock guest entries:0",
@@ -3842,45 +2019,36 @@
         ]
       }
     ],
-    "outside_ruled_different_pixels": 13059
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-genie-workspace-1440",
-    "source": "pixels-genie-final",
-    "capture": {
-      "path": "/de/genie/",
-      "stem": "de-genie-workspace",
-      "width": 1440,
-      "language": "de",
-      "headerHeight": 89,
-      "ruledRegions": [
-        {
-          "name": "genie-workspace guest entries:0",
-          "selector": ".linker-genie-panel--workspace",
-          "bounds": [
-            0,
-            89,
-            1440,
-            1475
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/genie/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      2050
+    ],
+    "local_size": [
+      1440,
+      2050
+    ],
     "language": "de",
     "viewport_width": 1440,
     "image_size": [
       1440,
       2050
     ],
-    "unmasked_different_pixels": 193416,
+    "unmasked_different_pixels": 180357,
     "difference_bounds": [
       0,
-      21,
+      89,
       1440,
       896
     ],
     "masks": [],
-    "ruled_change": false,
+    "ruled_change": true,
     "ruled_regions": [
       {
         "name": "genie-workspace guest entries:0",
@@ -3893,260 +2061,827 @@
         ]
       }
     ],
-    "outside_ruled_different_pixels": 13059
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "en-filled-draft-1440",
+    "capture_folder": "pixels-final-desktop",
+    "path": "/cart/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      1421
+    ],
+    "local_size": [
+      1440,
+      1421
+    ],
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1421
+    ],
+    "unmasked_different_pixels": 3035,
+    "difference_bounds": [
+      419,
+      486,
+      1124,
+      599
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest line price and subtotal:0",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          304,
+          511,
+          855,
+          549
+        ]
+      },
+      {
+        "name": "guest line price and subtotal:1",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          749,
+          460,
+          855,
+          500
+        ]
+      },
+      {
+        "name": "guest summary account entries:0",
+        "selector": ".linker-login-box",
+        "bounds": [
+          934,
+          460,
+          1284,
+          603
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:0",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          419,
+          511,
+          525,
+          533
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:1",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          749,
+          481,
+          855,
+          503
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "de-filled-draft-1440",
+    "capture_folder": "pixels-final-desktop",
+    "path": "/de/warenkorb/",
+    "dimension_match": true,
+    "live_size": [
+      1440,
+      1421
+    ],
+    "local_size": [
+      1440,
+      1421
+    ],
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1421
+    ],
+    "unmasked_different_pixels": 3281,
+    "difference_bounds": [
+      469,
+      486,
+      1160,
+      599
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest line price and subtotal:0",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          304,
+          526,
+          855,
+          556
+        ]
+      },
+      {
+        "name": "guest line price and subtotal:1",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          698,
+          460,
+          855,
+          515
+        ]
+      },
+      {
+        "name": "guest summary account entries:0",
+        "selector": ".linker-login-box",
+        "bounds": [
+          934,
+          460,
+          1284,
+          603
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:0",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          469,
+          526,
+          572,
+          548
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:1",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          698,
+          481,
+          801,
+          503
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "en-mobile-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      9254
+    ],
+    "local_size": [
+      390,
+      9254
+    ],
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      9254
+    ],
+    "unmasked_different_pixels": 1001,
+    "difference_bounds": [
+      120,
+      411,
+      248,
+      457
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "mobile account utility row only:0",
+        "selector": "#tv-mobile-panel .tv-mobile-utility-row",
+        "padding": 0,
+        "bounds": [
+          16,
+          411,
+          374,
+          457
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "en-footer-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      8809
+    ],
+    "local_size": [
+      390,
+      8809
+    ],
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      8809
+    ],
+    "unmasked_different_pixels": 607,
+    "difference_bounds": [
+      147,
+      8365,
+      334,
+      8429
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "account entry tile:0",
+        "selector": "#footer-panel-account .footer-route-list>li:first-child",
+        "bounds": [
+          49,
+          8397,
+          341,
+          8446
+        ]
+      },
+      {
+        "name": "account destination count:0",
+        "selector": "#footer-panel-account .footer-panel-count",
+        "bounds": [
+          314,
+          8355,
+          341,
+          8383
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "en-draft-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/cart/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      1317
+    ],
+    "local_size": [
+      390,
+      1317
+    ],
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1317
+    ],
+    "unmasked_different_pixels": 9260,
+    "difference_bounds": [
+      37,
+      417,
+      349,
+      464
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "draft account entries:0",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0,
+        "bounds": [
+          32,
+          416,
+          358,
+          464
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "en-inquiry-mobile-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/proforma-request/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      1999
+    ],
+    "local_size": [
+      390,
+      1999
+    ],
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1999
+    ],
+    "unmasked_different_pixels": 9509,
+    "difference_bounds": [
+      16,
+      1029,
+      374,
+      1207
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "following draft card moves with the new normal-flow link row:0",
+        "selector": ".linker-inquiry-draft",
+        "padding": 0,
+        "bounds": [
+          16,
+          1048,
+          374,
+          1207
+        ]
+      },
+      {
+        "name": "new registration line in existing form gap:0",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0,
+        "bounds": [
+          16,
+          1024,
+          374,
+          1046
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "en-lost-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/my-account/lost-password/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      1199
+    ],
+    "local_size": [
+      390,
+      1199
+    ],
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1199
+    ],
+    "unmasked_different_pixels": 1625,
+    "difference_bounds": [
+      85,
+      440,
+      306,
+      456
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "lost account entries:0",
+        "selector": ".linker-auth-links",
+        "padding": 0,
+        "bounds": [
+          33,
+          434,
+          357,
+          458
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "en-lost-confirmation-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/my-account/lost-password/?reset-link-sent=true",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      1144
+    ],
+    "local_size": [
+      390,
+      1144
+    ],
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1144
+    ],
+    "unmasked_different_pixels": 1625,
+    "difference_bounds": [
+      85,
+      385,
+      306,
+      401
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "lost-confirmation account entries:0",
+        "selector": ".linker-auth-links",
+        "padding": 0,
+        "bounds": [
+          33,
+          378,
+          357,
+          402
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "en-document-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/?linker-document=proforma&id=1",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      900
+    ],
+    "local_size": [
+      390,
+      900
+    ],
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      900
+    ],
+    "unmasked_different_pixels": 691,
+    "difference_bounds": [
+      75,
+      164,
+      175,
+      177
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "document account entries:0",
+        "selector": "#error-page",
+        "padding": 0,
+        "bounds": [
+          0,
+          50,
+          390,
+          217
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "de-mobile-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      9710
+    ],
+    "local_size": [
+      390,
+      9710
+    ],
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      9710
+    ],
+    "unmasked_different_pixels": 1027,
+    "difference_bounds": [
+      120,
+      411,
+      246,
+      457
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "mobile account utility row only:0",
+        "selector": "#tv-mobile-panel .tv-mobile-utility-row",
+        "padding": 0,
+        "bounds": [
+          16,
+          411,
+          374,
+          457
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "de-footer-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      9265
+    ],
+    "local_size": [
+      390,
+      9265
+    ],
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      9265
+    ],
+    "unmasked_different_pixels": 596,
+    "difference_bounds": [
+      168,
+      8779,
+      334,
+      8844
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "account entry tile:0",
+        "selector": "#footer-panel-account .footer-route-list>li:first-child",
+        "bounds": [
+          49,
+          8811,
+          341,
+          8860
+        ]
+      },
+      {
+        "name": "account destination count:0",
+        "selector": "#footer-panel-account .footer-panel-count",
+        "bounds": [
+          314,
+          8770,
+          341,
+          8798
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "de-draft-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/warenkorb/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      1437
+    ],
+    "local_size": [
+      390,
+      1437
+    ],
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1437
+    ],
+    "unmasked_different_pixels": 16357,
+    "difference_bounds": [
+      87,
+      417,
+      303,
+      521
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "draft account entries:0",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0,
+        "bounds": [
+          32,
+          416,
+          358,
+          521
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "de-inquiry-mobile-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/proforma-anfrage/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      2131
+    ],
+    "local_size": [
+      390,
+      2131
+    ],
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      2131
+    ],
+    "unmasked_different_pixels": 11607,
+    "difference_bounds": [
+      16,
+      1071,
+      374,
+      1276
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "following draft card moves with the new normal-flow link row:0",
+        "selector": ".linker-inquiry-draft",
+        "padding": 0,
+        "bounds": [
+          16,
+          1091,
+          374,
+          1277
+        ]
+      },
+      {
+        "name": "new registration line in existing form gap:0",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0,
+        "bounds": [
+          16,
+          1067,
+          374,
+          1089
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "de-lost-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/mein-konto/lost-password/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      1312
+    ],
+    "local_size": [
+      390,
+      1312
+    ],
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1312
+    ],
+    "unmasked_different_pixels": 2087,
+    "difference_bounds": [
+      58,
+      490,
+      333,
+      506
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "lost account entries:0",
+        "selector": ".linker-auth-links",
+        "padding": 0,
+        "bounds": [
+          33,
+          483,
+          357,
+          507
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "de-lost-confirmation-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/mein-konto/lost-password/?reset-link-sent=true",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      1272
+    ],
+    "local_size": [
+      390,
+      1272
+    ],
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1272
+    ],
+    "unmasked_different_pixels": 2087,
+    "difference_bounds": [
+      58,
+      450,
+      333,
+      466
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "lost-confirmation account entries:0",
+        "selector": ".linker-auth-links",
+        "padding": 0,
+        "bounds": [
+          33,
+          444,
+          357,
+          468
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "de-document-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/?linker-document=proforma&id=1",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      900
+    ],
+    "local_size": [
+      390,
+      900
+    ],
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      900
+    ],
+    "unmasked_different_pixels": 688,
+    "difference_bounds": [
+      101,
+      185,
+      199,
+      198
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "document account entries:0",
+        "selector": "#error-page",
+        "padding": 0,
+        "bounds": [
+          0,
+          50,
+          390,
+          238
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "en-shop-390",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/products/",
-      "stem": "en-shop",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "shop guest entries:0",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            770,
-            357,
-            815
-          ]
-        },
-        {
-          "name": "shop guest entries:1",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            1207,
-            357,
-            1252
-          ]
-        },
-        {
-          "name": "shop guest entries:2",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            1658,
-            357,
-            1703
-          ]
-        },
-        {
-          "name": "shop guest entries:3",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2095,
-            357,
-            2140
-          ]
-        },
-        {
-          "name": "shop guest entries:4",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2532,
-            357,
-            2577
-          ]
-        },
-        {
-          "name": "shop guest entries:5",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2969,
-            357,
-            3014
-          ]
-        },
-        {
-          "name": "shop guest entries:6",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3421,
-            357,
-            3466
-          ]
-        },
-        {
-          "name": "shop guest entries:7",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3858,
-            357,
-            3903
-          ]
-        },
-        {
-          "name": "shop guest entries:8",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            4295,
-            357,
-            4340
-          ]
-        },
-        {
-          "name": "shop guest entries:9",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            4732,
-            357,
-            4777
-          ]
-        },
-        {
-          "name": "shop guest entries:10",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            5183,
-            357,
-            5228
-          ]
-        },
-        {
-          "name": "shop guest entries:11",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            5620,
-            357,
-            5665
-          ]
-        },
-        {
-          "name": "shop guest entries:12",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            6071,
-            357,
-            6116
-          ]
-        },
-        {
-          "name": "shop guest entries:13",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            6546,
-            357,
-            6591
-          ]
-        },
-        {
-          "name": "shop guest entries:14",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            6983,
-            357,
-            7028
-          ]
-        },
-        {
-          "name": "shop guest entries:15",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            7434,
-            357,
-            7479
-          ]
-        },
-        {
-          "name": "shop guest entries:16",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            7886,
-            357,
-            7931
-          ]
-        },
-        {
-          "name": "shop guest entries:17",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            8323,
-            357,
-            8368
-          ]
-        },
-        {
-          "name": "shop guest entries:18",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            8760,
-            357,
-            8805
-          ]
-        },
-        {
-          "name": "shop guest entries:19",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            9211,
-            357,
-            9256
-          ]
-        },
-        {
-          "name": "shop guest entries:20",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            9648,
-            357,
-            9693
-          ]
-        },
-        {
-          "name": "shop guest entries:21",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            10100,
-            357,
-            10145
-          ]
-        },
-        {
-          "name": "shop guest entries:22",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            10551,
-            357,
-            10596
-          ]
-        },
-        {
-          "name": "shop guest entries:23",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            10988,
-            357,
-            11033
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/products/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      12252
+    ],
+    "local_size": [
+      390,
+      12252
+    ],
     "language": "en",
     "viewport_width": 390,
     "image_size": [
@@ -4408,256 +3143,17 @@
   },
   {
     "case": "en-category-390",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/product-category/inverters/",
-      "stem": "en-category",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "category guest entries:0",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            785,
-            357,
-            830
-          ]
-        },
-        {
-          "name": "category guest entries:1",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            1222,
-            357,
-            1267
-          ]
-        },
-        {
-          "name": "category guest entries:2",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            1658,
-            357,
-            1703
-          ]
-        },
-        {
-          "name": "category guest entries:3",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2095,
-            357,
-            2140
-          ]
-        },
-        {
-          "name": "category guest entries:4",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2547,
-            357,
-            2592
-          ]
-        },
-        {
-          "name": "category guest entries:5",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2984,
-            357,
-            3029
-          ]
-        },
-        {
-          "name": "category guest entries:6",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3435,
-            357,
-            3480
-          ]
-        },
-        {
-          "name": "category guest entries:7",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3910,
-            357,
-            3955
-          ]
-        },
-        {
-          "name": "category guest entries:8",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            4347,
-            357,
-            4392
-          ]
-        },
-        {
-          "name": "category guest entries:9",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            4798,
-            357,
-            4843
-          ]
-        },
-        {
-          "name": "category guest entries:10",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            5250,
-            357,
-            5295
-          ]
-        },
-        {
-          "name": "category guest entries:11",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            5687,
-            357,
-            5732
-          ]
-        },
-        {
-          "name": "category guest entries:12",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            6124,
-            357,
-            6169
-          ]
-        },
-        {
-          "name": "category guest entries:13",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            6575,
-            357,
-            6620
-          ]
-        },
-        {
-          "name": "category guest entries:14",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            7012,
-            357,
-            7057
-          ]
-        },
-        {
-          "name": "category guest entries:15",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            7464,
-            357,
-            7509
-          ]
-        },
-        {
-          "name": "category guest entries:16",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            7915,
-            357,
-            7960
-          ]
-        },
-        {
-          "name": "category guest entries:17",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            8352,
-            357,
-            8397
-          ]
-        },
-        {
-          "name": "category guest entries:18",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            8793,
-            357,
-            8838
-          ]
-        },
-        {
-          "name": "category guest entries:19",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            9230,
-            357,
-            9275
-          ]
-        },
-        {
-          "name": "category guest entries:20",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            9682,
-            357,
-            9727
-          ]
-        },
-        {
-          "name": "category guest entries:21",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            10118,
-            357,
-            10163
-          ]
-        },
-        {
-          "name": "category guest entries:22",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            10555,
-            357,
-            10600
-          ]
-        },
-        {
-          "name": "category guest entries:23",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            11007,
-            357,
-            11052
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/product-category/inverters/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      12270
+    ],
+    "local_size": [
+      390,
+      12270
+    ],
     "language": "en",
     "viewport_width": 390,
     "image_size": [
@@ -4919,26 +3415,17 @@
   },
   {
     "case": "en-product-390",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/product/saj-h2-10k-t3/",
-      "stem": "en-product",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "product guest entries:0",
-          "selector": ".pdp-price",
-          "bounds": [
-            29,
-            11718,
-            193,
-            11752
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/product/saj-h2-10k-t3/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      11781
+    ],
+    "local_size": [
+      390,
+      11781
+    ],
     "language": "en",
     "viewport_width": 390,
     "image_size": [
@@ -4970,59 +3457,69 @@
   },
   {
     "case": "en-compare-390",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/compare-products/?ids=4107,4108",
-      "stem": "en-compare",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "owner-rejected comparison design layer restored:0",
-          "selector": ".sf-compare",
-          "bounds": [
-            0,
-            81,
-            390,
-            4795
-          ]
-        }
-      ]
-    },
-    "dimension_match": false,
+    "capture_folder": "pixels-final-mobile",
+    "path": "/compare-products/?ids=4107,4108",
+    "dimension_match": true,
     "live_size": [
       390,
       5730
     ],
     "local_size": [
       390,
-      5463
+      5730
     ],
-    "ruled_change": false
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      5730
+    ],
+    "unmasked_different_pixels": 3199,
+    "difference_bounds": [
+      159,
+      741,
+      354,
+      796
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          147,
+          724,
+          261,
+          810
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          260,
+          724,
+          374,
+          810
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "en-genie-workspace-390",
-    "source": "pixels-genie-final",
-    "capture": {
-      "path": "/genie/",
-      "stem": "en-genie-workspace",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "genie-workspace guest entries:0",
-          "selector": ".linker-genie-panel--workspace",
-          "bounds": [
-            0,
-            81,
-            390,
-            1569
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/genie/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      2238
+    ],
+    "local_size": [
+      390,
+      2238
+    ],
     "language": "en",
     "viewport_width": 390,
     "image_size": [
@@ -5054,256 +3551,17 @@
   },
   {
     "case": "de-shop-390",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/de/produkte/",
-      "stem": "de-shop",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "shop guest entries:0",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            789,
-            357,
-            834
-          ]
-        },
-        {
-          "name": "shop guest entries:1",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            1226,
-            357,
-            1271
-          ]
-        },
-        {
-          "name": "shop guest entries:2",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            1701,
-            357,
-            1746
-          ]
-        },
-        {
-          "name": "shop guest entries:3",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2138,
-            357,
-            2183
-          ]
-        },
-        {
-          "name": "shop guest entries:4",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2574,
-            357,
-            2619
-          ]
-        },
-        {
-          "name": "shop guest entries:5",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3011,
-            357,
-            3056
-          ]
-        },
-        {
-          "name": "shop guest entries:6",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3486,
-            357,
-            3531
-          ]
-        },
-        {
-          "name": "shop guest entries:7",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3923,
-            357,
-            3968
-          ]
-        },
-        {
-          "name": "shop guest entries:8",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            4374,
-            357,
-            4419
-          ]
-        },
-        {
-          "name": "shop guest entries:9",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            4811,
-            357,
-            4856
-          ]
-        },
-        {
-          "name": "shop guest entries:10",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            5263,
-            357,
-            5308
-          ]
-        },
-        {
-          "name": "shop guest entries:11",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            5714,
-            357,
-            5759
-          ]
-        },
-        {
-          "name": "shop guest entries:12",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            6189,
-            357,
-            6234
-          ]
-        },
-        {
-          "name": "shop guest entries:13",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            6663,
-            357,
-            6708
-          ]
-        },
-        {
-          "name": "shop guest entries:14",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            7138,
-            357,
-            7183
-          ]
-        },
-        {
-          "name": "shop guest entries:15",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            7612,
-            357,
-            7657
-          ]
-        },
-        {
-          "name": "shop guest entries:16",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            8086,
-            357,
-            8131
-          ]
-        },
-        {
-          "name": "shop guest entries:17",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            8523,
-            357,
-            8568
-          ]
-        },
-        {
-          "name": "shop guest entries:18",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            8960,
-            357,
-            9005
-          ]
-        },
-        {
-          "name": "shop guest entries:19",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            9435,
-            357,
-            9480
-          ]
-        },
-        {
-          "name": "shop guest entries:20",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            9886,
-            357,
-            9931
-          ]
-        },
-        {
-          "name": "shop guest entries:21",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            10338,
-            357,
-            10383
-          ]
-        },
-        {
-          "name": "shop guest entries:22",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            10789,
-            357,
-            10834
-          ]
-        },
-        {
-          "name": "shop guest entries:23",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            11241,
-            357,
-            11286
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/produkte/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      12590
+    ],
+    "local_size": [
+      390,
+      12590
+    ],
     "language": "de",
     "viewport_width": 390,
     "image_size": [
@@ -5565,256 +3823,17 @@
   },
   {
     "case": "de-category-390",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/de/produkt-kategorie/wechselrichter/",
-      "stem": "de-category",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "category guest entries:0",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            827,
-            357,
-            872
-          ]
-        },
-        {
-          "name": "category guest entries:1",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            1264,
-            357,
-            1309
-          ]
-        },
-        {
-          "name": "category guest entries:2",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            1701,
-            357,
-            1746
-          ]
-        },
-        {
-          "name": "category guest entries:3",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2138,
-            357,
-            2183
-          ]
-        },
-        {
-          "name": "category guest entries:4",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            2612,
-            357,
-            2657
-          ]
-        },
-        {
-          "name": "category guest entries:5",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3049,
-            357,
-            3094
-          ]
-        },
-        {
-          "name": "category guest entries:6",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3523,
-            357,
-            3568
-          ]
-        },
-        {
-          "name": "category guest entries:7",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            3998,
-            357,
-            4043
-          ]
-        },
-        {
-          "name": "category guest entries:8",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            4472,
-            357,
-            4517
-          ]
-        },
-        {
-          "name": "category guest entries:9",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            4947,
-            357,
-            4992
-          ]
-        },
-        {
-          "name": "category guest entries:10",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            5421,
-            357,
-            5466
-          ]
-        },
-        {
-          "name": "category guest entries:11",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            5858,
-            357,
-            5903
-          ]
-        },
-        {
-          "name": "category guest entries:12",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            6295,
-            357,
-            6340
-          ]
-        },
-        {
-          "name": "category guest entries:13",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            6769,
-            357,
-            6814
-          ]
-        },
-        {
-          "name": "category guest entries:14",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            7221,
-            357,
-            7266
-          ]
-        },
-        {
-          "name": "category guest entries:15",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            7673,
-            357,
-            7717
-          ]
-        },
-        {
-          "name": "category guest entries:16",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            8124,
-            357,
-            8169
-          ]
-        },
-        {
-          "name": "category guest entries:17",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            8576,
-            357,
-            8621
-          ]
-        },
-        {
-          "name": "category guest entries:18",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            9033,
-            357,
-            9078
-          ]
-        },
-        {
-          "name": "category guest entries:19",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            9470,
-            357,
-            9515
-          ]
-        },
-        {
-          "name": "category guest entries:20",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            9922,
-            357,
-            9967
-          ]
-        },
-        {
-          "name": "category guest entries:21",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            10359,
-            357,
-            10403
-          ]
-        },
-        {
-          "name": "category guest entries:22",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            10795,
-            357,
-            10840
-          ]
-        },
-        {
-          "name": "category guest entries:23",
-          "selector": ".sf-card-actions",
-          "bounds": [
-            33,
-            11270,
-            357,
-            11315
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/produkt-kategorie/wechselrichter/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      12619
+    ],
+    "local_size": [
+      390,
+      12619
+    ],
     "language": "de",
     "viewport_width": 390,
     "image_size": [
@@ -6076,26 +4095,17 @@
   },
   {
     "case": "de-product-390",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/de/produkt/saj-h2-10k-t3/",
-      "stem": "de-product",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "product guest entries:0",
-          "selector": ".pdp-price",
-          "bounds": [
-            29,
-            12490,
-            193,
-            12524
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/produkt/saj-h2-10k-t3/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      12561
+    ],
+    "local_size": [
+      390,
+      12561
+    ],
     "language": "de",
     "viewport_width": 390,
     "image_size": [
@@ -6127,59 +4137,69 @@
   },
   {
     "case": "de-compare-390",
-    "source": "pixels-products",
-    "capture": {
-      "path": "/de/compare-products/?ids=4107,4108",
-      "stem": "de-compare",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "owner-rejected comparison design layer restored:0",
-          "selector": ".sf-compare",
-          "bounds": [
-            0,
-            81,
-            390,
-            5275
-          ]
-        }
-      ]
-    },
-    "dimension_match": false,
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/compare-products/?ids=4107,4108",
+    "dimension_match": true,
     "live_size": [
       390,
       4900
     ],
     "local_size": [
       390,
-      6006
+      4900
     ],
-    "ruled_change": false
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      4900
+    ],
+    "unmasked_different_pixels": 1827,
+    "difference_bounds": [
+      237,
+      727,
+      364,
+      762
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          225,
+          710,
+          387,
+          776
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          386,
+          710,
+          390,
+          776
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
   },
   {
     "case": "de-genie-workspace-390",
-    "source": "pixels-genie-final",
-    "capture": {
-      "path": "/de/genie/",
-      "stem": "de-genie-workspace",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "genie-workspace guest entries:0",
-          "selector": ".linker-genie-panel--workspace",
-          "bounds": [
-            0,
-            81,
-            390,
-            1632
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/genie/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      2364
+    ],
+    "local_size": [
+      390,
+      2364
+    ],
     "language": "de",
     "viewport_width": 390,
     "image_size": [
@@ -6211,33 +4231,24 @@
   },
   {
     "case": "en-genie-dock-mobile-390",
-    "source": "pixels-genie-final",
-    "capture": {
-      "path": "/products/",
-      "stem": "en-genie-dock-mobile",
-      "width": 390,
-      "language": "en",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "genie-dock guest entries:0",
-          "selector": ".linker-genie-panel",
-          "bounds": [
-            0,
-            48,
-            390,
-            12252
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/products/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      12252
+    ],
+    "local_size": [
+      390,
+      12252
+    ],
     "language": "en",
     "viewport_width": 390,
     "image_size": [
       390,
       12252
     ],
-    "unmasked_different_pixels": 4745421,
+    "unmasked_different_pixels": 73154,
     "difference_bounds": [
       0,
       48,
@@ -6262,33 +4273,24 @@
   },
   {
     "case": "de-genie-dock-mobile-390",
-    "source": "pixels-genie-final",
-    "capture": {
-      "path": "/de/produkte/",
-      "stem": "de-genie-dock-mobile",
-      "width": 390,
-      "language": "de",
-      "headerHeight": 81,
-      "ruledRegions": [
-        {
-          "name": "genie-dock guest entries:0",
-          "selector": ".linker-genie-panel",
-          "bounds": [
-            0,
-            48,
-            390,
-            12590
-          ]
-        }
-      ]
-    },
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/produkte/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      12590
+    ],
+    "local_size": [
+      390,
+      12590
+    ],
     "language": "de",
     "viewport_width": 390,
     "image_size": [
       390,
       12590
     ],
-    "unmasked_different_pixels": 4882412,
+    "unmasked_different_pixels": 99285,
     "difference_bounds": [
       0,
       48,
@@ -6306,6 +4308,170 @@
           48,
           390,
           12590
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "en-filled-draft-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/cart/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      1901
+    ],
+    "local_size": [
+      390,
+      1901
+    ],
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1901
+    ],
+    "unmasked_different_pixels": 4245,
+    "difference_bounds": [
+      16,
+      647,
+      321,
+      1125
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest line price and subtotal:0",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          132,
+          676,
+          374,
+          698
+        ]
+      },
+      {
+        "name": "guest line price and subtotal:1",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          132,
+          643,
+          374,
+          665
+        ]
+      },
+      {
+        "name": "guest summary account entries:0",
+        "selector": ".linker-login-box",
+        "bounds": [
+          16,
+          987,
+          374,
+          1129
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:0",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          229,
+          676,
+          320,
+          698
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:1",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          230,
+          643,
+          321,
+          665
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "case": "de-filled-draft-390",
+    "capture_folder": "pixels-final-mobile",
+    "path": "/de/warenkorb/",
+    "dimension_match": true,
+    "live_size": [
+      390,
+      2011
+    ],
+    "local_size": [
+      390,
+      2011
+    ],
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      2011
+    ],
+    "unmasked_different_pixels": 5162,
+    "difference_bounds": [
+      16,
+      694,
+      362,
+      1171
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest line price and subtotal:0",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          132,
+          722,
+          374,
+          744
+        ]
+      },
+      {
+        "name": "guest line price and subtotal:1",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          132,
+          689,
+          374,
+          711
+        ]
+      },
+      {
+        "name": "guest summary account entries:0",
+        "selector": ".linker-login-box",
+        "bounds": [
+          16,
+          1033,
+          374,
+          1175
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:0",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          272,
+          722,
+          361,
+          744
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:1",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          273,
+          689,
+          362,
+          711
         ]
       }
     ],

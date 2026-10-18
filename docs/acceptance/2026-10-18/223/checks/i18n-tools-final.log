@@ -1,0 +1,3 @@
+/opt/homebrew/opt/php@8.3/bin/php "$(command -v wp)" i18n make-json "/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/languages/linker-tools-de_DE_formal.po" --no-purge
+Success: Created 2 files.
+msgfmt --check "/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/languages/linker-tools-de_DE_formal.po" -o "/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/languages/linker-tools-de_DE_formal.mo"

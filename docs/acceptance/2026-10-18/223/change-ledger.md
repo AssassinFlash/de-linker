@@ -7,15 +7,15 @@ extension to recovery, private-document 403 and Genie. New copy is recorded in
 | Change | Before | After / bounded region |
 |---|---|---|
 | Account dropdown adds registration | before/*-header-1440-before.png | pixels/*-header-1440-local.png; dropdown box and its existing shadow (50px blur in chrome.css) |
-| Mobile menu adds registration | before/*-mobile-390-before.png | pixels/*-mobile-390-local.png; mobile disclosure |
+| Mobile menu adds registration | before/*-mobile-390-before.png | pixels-review2/*-mobile-390-local.png; account utility row only (.tv-mobile-utility-row) |
 | Footer login tile has two destinations, count 04 | before/*-footer-*-before.png | pixels/*-footer-*-local.png; first account tile and count only |
 | Separate empty-draft entries | before/*-draft-*-before.png | pixels/*-draft-*-local.png; action row only |
-| Inquiry optional create link | before/*-inquiry-*-before.png | pixels/*-inquiry-*-local.png; guest account hint only |
+| Inquiry optional create link | before/*-inquiry-*-before.png | pixels-review2/*-inquiry-*-local.png; new registration anchor only |
 | Recovery links paired | before/*-lost*-before.png | pixels/*-lost*-local.png; recovery link row only |
 | Document denial secondary registration | before/*-document-*-before.png | pixels/*-document-*-local.png; existing denial card, retaining 403 |
 | Visible product-card actions paired | before-products/*-shop-*-before.png and *-category-*-before.png | pixels-products/*-local.png; each card action row, with existing 44px minimum |
 | PDP login price area paired | before-products/*-product-*-before.png | pixels-products/*-product-*-local.png; price areas in rail/mobile bar |
-| Comparison guest price row paired | before-products/*-compare-*-before.png | pixels-products/*-compare-*-local.png; entire .sf-compare body, following the owner visual correction |
+| Comparison guest price row paired | before-products/*-compare-*-before.png | pixels-review2/*-compare-*-local.png; guest price cells only |
 | Genie guest entry row | before-products/*-genie-*-before.png | pixels-products/*-genie-*-local.png; tool panel, including its necessary height allocation |
 
 The scenario JSON records exact selectors and the capture manifest records their
@@ -40,20 +40,31 @@ and the normal WindPress admin compilation. No database migration is introduced.
 
 The nonempty draft pairs both Woo price cells and its summary with Create account.
 `before-filled/` and `filled-draft/` preserve the local before/after state.
-This fixture is only prepared locally; no products are added to a production
-cart. Comparison links receive a measured independent gap. The footer reset
+Review round 2 adds live parity through a disposable anonymous Woo session; its
+own nonce-bearing remove link clears the line after capture, including failures.
+No inquiry/order is submitted and no mail is sent. The footer reset
 uses a stronger selector than its existing LC style so nested links do not
 inherit 70/50/47px tile dimensions; surrounding items keep their original size.
 
-The owner twice rejected the comparison page during live Computer Use. The
-column-only change is superseded: the final EN/DE LC comparison shell reconnects
-the established storefront layer and shares the actual product-list overrides
-in `products.css`, including its responsive title, paper and container. The
-existing comparison table rules now target the real semantic markup as well.
-This is a ruled visual bug fix in the current ticket; the full comparison page
-body is the declared region. Original full-page dimensions are still compared,
-and a mismatch remains a failure under the strict pixel gate. See
-`mobile-comparison.md` and the final whole-page Computer Use images.
+### Owner ruling and superseding comparison decision (2026-10-18)
+
+All comparison and Genie presentation changes remain in #223 and PR #312;
+no ticket is split. The owner explicitly returned the branch for repair.
+The earlier whole-body comparison declaration is superseded: the live LC shell,
+typography, table widths and image geometry are restored. Only the guest price
+cells change, with concise existing Sign in / Anmelden and Create account /
+Konto erstellen actions; the full original price explanation is in the native
+sign-in link's escaped accessible label. No broad .sf-compare region remains.
+Whole-page dimensions remain a separate exact failure condition. The mobile
+menu declaration is narrowed to .tv-mobile-utility-row, with no panel-wide mask.
+
+Filled-draft links preserve the existing native layout. The right-hand desktop
+registration action uses the space under its price label without increasing the
+intrinsic price-column width. Mobile links use the existing storefront 12px
+control type within the original 21px line strut, preventing wrapped registration
+from moving the quantity field or footer. Declared regions cover only price cells,
+the new link rectangles, and the existing summary account area. Original raw
+images and failures remain in before-filled-round2/.
 
 ### Owner follow-up: Genie expanded surface
 
@@ -116,3 +127,47 @@ The final WindPress rule anchors it beside the answer label, outside body flow;
 no force-click is used. The browser fixture now measures identical x/y coordinates
 across 100ms of progressive body growth before performing the normal click.
 Fixture cleanup always releases held responses before closing a video context.
+
+### Review round 2: readable reply and controls
+
+Before: replies/before-round2/*-answer.png (owner-identified composer clipping,
+floating jump over text and keyboard focus ring in the capture). After:
+replies/*-answer.png and *-latest.png, EN/DE x1440/390 x dock/workspace.
+The reader, an opaque 48px control row (40px button +4px each side), and composer
+are separate flex items. No text can paint through the bottom control area.
+The last paragraph is fully reachable within the reader, above the composer. The transcript uses
+:focus-visible for keyboard navigation and no outline during pointer reading.
+Real-response Computer Use images are also under computer-use/*round2*.png.
+
+## Final review additions
+
+- Inquiry: the new registration anchor is its own line, using 29px of the
+  existing space after the guest block. **This intermediate absolute placement
+  was rejected by the owner** because it left only 3px before the draft card.
+  `pixels-review2/*inquiry*` is retained as intermediate evidence, not the final
+  visual acceptance. The superseding normal-flow repair is described below.
+- Reply hierarchy: the existing first paragraph, Markdown heading levels,
+  markers, tables, document cards and actual follow-up options get distinct
+  type/spacing. Before: `computer-use/*round2*`; after:
+  `computer-use/*round3*` and current `replies/*answer.png`/`*latest.png`.
+- Reply reopening: native meta escaping preserves received Markdown instead
+  of turning newlines into `nn`; no old history rewrite. Red/green route proof:
+  `checks/roundtrip-red.log`, `checks/roundtrip-final.log`; real refreshed reply:
+  `computer-use/de-genie-round3-dock-reopened-1440.png`.
+
+
+## Owner corrections after round 2 (supersedes earlier inquiry placement)
+
+| Ruled change | Before | Final after | Exact boundary |
+|---|---|---|---|
+| Inquiry registration spacing | `computer-use/en-inquiry-gap-rejected.png` | `computer-use/{en,de}-inquiry-gap-fixed-{1440,390}.png` | Normal-flow registration row; existing 32px column gap. Desktop only new anchor. Mobile new anchor and the exact following `.linker-inquiry-draft` card moving 29px. Full canvas/footer unchanged. |
+| Real answer hierarchy | `computer-use/en-genie-structure-rejected.png`, `replies-real/before-format-contract/` | `replies-real/{en,de}-{1440,390}-{dock,workspace}.png` | Genie tool redraw region only. User approved EN/DE formatting contract; existing facts/short/special rules remain. |
+| Recognisable immediate reply options | `computer-use/en-genie-structure-rejected.png` | `replies/*latest.png`, `computer-use/en-genie-format-dock-latest-{1440,390}.png` | Contained option group, send explanation, visible Send label; original option payload. Desktop narrow dock and mobile single column, wide workspace two columns. |
+| Native filled-draft image capture | earlier image-only failures in `pixels-review2/` | final full-pair captures and `capture.json` cart image metadata | No new ruled region. Keep native lazy/srcset; decode visible images only. Comparator still exact RGB and exact dimensions. |
+
+Comparison declaration is only `.linker-compare-table tbody tr:nth-child(2)>td`;
+mobile navigation declaration is only `.tv-mobile-utility-row`. Neither an entire
+`.sf-compare` nor the entire `#tv-mobile-panel` is declared. Historical 10 DE
+header differences attributed to #229 remain in `pixel-results-before-review2.*`;
+the fresh snapshot comparison reports its actual current numbers without a
+header mask. No new breakpoint or engine exception is introduced.

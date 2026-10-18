@@ -31,8 +31,8 @@
     ],
     "ruledRegions": [
       {
-        "name": "mobile account entries",
-        "selector": "#tv-mobile-panel",
+        "name": "mobile account utility row only",
+        "selector": "#tv-mobile-panel .tv-mobile-utility-row",
         "padding": 0
       }
     ]
@@ -80,14 +80,33 @@
     "name": "en-inquiry",
     "path": "/proforma-request/",
     "widths": [
-      1440,
+      1440
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "new registration line in existing form gap",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "en-inquiry-mobile",
+    "path": "/proforma-request/",
+    "widths": [
       390
     ],
     "actions": [],
     "ruledRegions": [
       {
-        "name": "inquiry account entries",
-        "selector": ".linker-inquiry-guest",
+        "name": "new registration line in existing form gap",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0
+      },
+      {
+        "name": "following draft card moves with the new normal-flow link row",
+        "selector": ".linker-inquiry-draft",
         "padding": 0
       }
     ]
@@ -172,8 +191,8 @@
     ],
     "ruledRegions": [
       {
-        "name": "mobile account entries",
-        "selector": "#tv-mobile-panel",
+        "name": "mobile account utility row only",
+        "selector": "#tv-mobile-panel .tv-mobile-utility-row",
         "padding": 0
       }
     ]
@@ -221,14 +240,33 @@
     "name": "de-inquiry",
     "path": "/de/proforma-anfrage/",
     "widths": [
-      1440,
+      1440
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "new registration line in existing form gap",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-inquiry-mobile",
+    "path": "/de/proforma-anfrage/",
+    "widths": [
       390
     ],
     "actions": [],
     "ruledRegions": [
       {
-        "name": "inquiry account entries",
-        "selector": ".linker-inquiry-guest",
+        "name": "new registration line in existing form gap",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0
+      },
+      {
+        "name": "following draft card moves with the new normal-flow link row",
+        "selector": ".linker-inquiry-draft",
         "padding": 0
       }
     ]

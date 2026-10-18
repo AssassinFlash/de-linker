@@ -1,0 +1,32 @@
+
+> linker-e2e@0.1.0 test
+> playwright test account-entries.spec.ts --project chromium --grep en-390: compare price
+
+
+Running 1 test using 1 worker
+
+(node:53834) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/account-entries.spec.ts:151:4 › en-390: compare price prompt offers registration (637ms)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:151:4 › en-390: compare price prompt offers registration 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 85
+    Received: 125
+
+      167 | 					const originalHeight = await row.evaluate((e) => e.getBoundingClientRect().height);
+      168 | 					await probe.evaluate((e) => e.remove());
+    > 169 | 					expect(height).toBe(originalHeight);
+          | 					               ^
+      170 | 				}
+      171 | 				await create.click();
+      172 | 				await expect(page).toHaveURL(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:169:21
+
+    Error Context: artifacts/test-results/account-entries-en-390-com-77719--prompt-offers-registration-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-390: compare price prompt offers registration 

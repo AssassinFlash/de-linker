@@ -1,0 +1,124 @@
+en-shop-1440-before.png
+en-category-1440-before.png
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.boundingBox: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator('.pdp-shell')
+
+    at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/visual/pixel-parity.mjs:147:54 {
+  log: [ "  - waiting for locator('.pdp-shell')" ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.23.2
+en-product-1440-before.png
+en-compare-1440-before.png
+en-genie-dock-1440-before.png
+en-genie-workspace-1440-before.png
+de-shop-1440-before.png
+de-category-1440-before.png
+de-product-1440-before.png
+de-compare-1440-before.png
+de-genie-dock-1440-before.png
+de-genie-workspace-1440-before.png
+en-shop-390-before.png
+en-category-390-before.png
+en-product-390-before.png
+en-compare-390-before.png
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator('[data-linker-genie-open]')
+    - locator resolved to <button type="button" aria-expanded="false" aria-label="Ask Genie" class="linker-genie-open" data-linker-genie-open="" aria-controls="linker-genie-mount">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is not visible
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is not visible
+    - retrying click action
+      - waiting 100ms
+    58 × waiting for element to be visible, enabled and stable
+       - element is not visible
+     - retrying click action
+       - waiting 500ms
+
+    at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/visual/pixel-parity.mjs:91:57 {
+  log: [
+    "  - waiting for locator('[data-linker-genie-open]')",
+    '    - locator resolved to <button type="button" aria-expanded="false" aria-label="Ask Genie" class="linker-genie-open" data-linker-genie-open="" aria-controls="linker-genie-mount">…</button>',
+    '  - attempting click action',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '    - waiting 20ms',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '    58 × waiting for element to be visible, enabled and stable',
+    '       - element is not visible',
+    '     - retrying click action',
+    '       - waiting 500ms'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.23.2
+en-genie-workspace-390-before.png
+de-shop-390-before.png
+de-category-390-before.png
+de-product-390-before.png
+de-compare-390-before.png
+de-genie-workspace-390-before.png
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator('[data-linker-ask-genie]')
+    - locator resolved to <button type="button" data-linker-ask-genie="" data-linker-genie-open="" class="linker-genie-ask min-h-11 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-[#0c7f73]">…</button>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is not visible
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is not visible
+    - retrying click action
+      - waiting 100ms
+    58 × waiting for element to be visible, enabled and stable
+       - element is not visible
+     - retrying click action
+       - waiting 500ms
+
+    at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/visual/pixel-parity.mjs:92:57 {
+  log: [
+    "  - waiting for locator('[data-linker-ask-genie]')",
+    '    - locator resolved to <button type="button" data-linker-ask-genie="" data-linker-genie-open="" class="linker-genie-ask min-h-11 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-[#0c7f73]">…</button>',
+    '  - attempting click action',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '    - waiting 20ms',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '    58 × waiting for element to be visible, enabled and stable',
+    '       - element is not visible',
+    '     - retrying click action',
+    '       - waiting 500ms'
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v22.23.2

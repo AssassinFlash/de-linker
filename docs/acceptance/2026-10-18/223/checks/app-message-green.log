@@ -1,0 +1,13 @@
+
+> linker-tools@0.1.0 test:unit
+> wp-scripts test-unit-js --run src/genie/App.test.tsx -t semantic Markdown
+
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 34 skipped (35)
+   Start at  12:24:17
+   Duration  741ms (environment 41%, setup 18%, transform 18%, import 12%, tests 10%)
+

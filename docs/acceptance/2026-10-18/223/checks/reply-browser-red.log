@@ -1,0 +1,35 @@
+
+Running 1 test using 1 worker
+
+(node:25674) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-dock: waiting, formatted response and reader-controlled scroll (17.2s)
+
+
+  1) [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-dock: waiting, formatted response and reader-controlled scroll 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.linker-genie-wait [role="status"]')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.linker-genie-wait [role="status"]') with timeout 15000ms
+      - waiting for locator('.linker-genie-wait [role="status"]')
+
+
+      33 |     await composer.fill(german ? 'Welche Produkte passen?' : 'Which products fit?');
+      34 |     await page.locator('.linker-genie-app__send').click();
+    > 35 |     await expect(page.locator('.linker-genie-wait [role="status"]')).toBeVisible();
+         |                                                                      ^
+      36 |     await expect(page.locator('.linker-genie-app__send')).toBeDisabled();
+      37 |     const evidence = join(REPO_ROOT, 'docs/acceptance/2026-10-18/223/replies');
+      38 |     mkdirSync(evidence, { recursive: true });
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/genie-reply-presentation.spec.ts:35:70
+
+    Error Context: tests/e2e/artifacts/test-results/genie-reply-presentation-e-4615d-nd-reader-controlled-scroll-chromium/error-context.md
+
+  1 failed
+    [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-dock: waiting, formatted response and reader-controlled scroll 

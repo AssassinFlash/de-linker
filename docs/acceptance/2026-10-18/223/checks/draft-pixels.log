@@ -1,0 +1,9 @@
+en-draft-1440-live.png
+file:///Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/visual/pixel-parity.mjs:166
+                    if (!boxes.length && label !== "live") throw new Error(`missing ruled region: ${region.selector}`);
+                                                                 ^
+
+Error: missing ruled region: .sf-cart-empty__actions
+    at file:///Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/visual/pixel-parity.mjs:166:66
+
+Node.js v22.23.2

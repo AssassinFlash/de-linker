@@ -1,0 +1,45 @@
+
+> linker-e2e@0.1.0 test
+> playwright test genie-reply-presentation.spec.ts empty-draft.spec.ts --project=chromium --repeat-each=2
+
+
+Running 28 tests using 1 worker
+
+(node:77314) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › specs/empty-draft.spec.ts:52:2 › en: an empty draft is the designed empty state (376ms)
+  ✓   2 [chromium] › specs/empty-draft.spec.ts:52:2 › de: an empty draft is the designed empty state (308ms)
+  ✓   3 [chromium] › specs/empty-draft.spec.ts:90:2 › en: an empty Proforma request stays public with optional account entries (306ms)
+  ✓   4 [chromium] › specs/empty-draft.spec.ts:90:2 › de: an empty Proforma request stays public with optional account entries (315ms)
+(node:77376) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 [chromium] › specs/empty-draft.spec.ts:52:2 › en: an empty draft is the designed empty state (318ms)
+  ✓   6 [chromium] › specs/empty-draft.spec.ts:52:2 › de: an empty draft is the designed empty state (380ms)
+  ✓   7 [chromium] › specs/empty-draft.spec.ts:90:2 › en: an empty Proforma request stays public with optional account entries (363ms)
+  ✓   8 [chromium] › specs/empty-draft.spec.ts:90:2 › de: an empty Proforma request stays public with optional account entries (392ms)
+(node:77495) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › en-1440-dock: waiting, formatted response and reader-controlled scroll (1.9s)
+  ✓  10 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › en-1440-workspace: waiting, formatted response and reader-controlled scroll (1.1s)
+  ✓  11 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › en-390-dock: waiting, formatted response and reader-controlled scroll (1.6s)
+  ✓  12 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › en-390-workspace: waiting, formatted response and reader-controlled scroll (961ms)
+  ✓  13 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › de-1440-dock: waiting, formatted response and reader-controlled scroll (2.0s)
+  ✓  14 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › de-1440-workspace: waiting, formatted response and reader-controlled scroll (1.1s)
+  ✓  15 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › de-390-dock: waiting, formatted response and reader-controlled scroll (1.7s)
+  ✓  16 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › de-390-workspace: waiting, formatted response and reader-controlled scroll (851ms)
+  ✓  17 [chromium] › specs/genie-reply-presentation.spec.ts:261:1 › reduced-motion: waiting stays static and a received answer appears immediately (392ms)
+  ✓  18 [chromium] › specs/genie-reply-presentation.spec.ts:303:1 › history: a restored long answer starts at its beginning without replay (291ms)
+(node:77961) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › en-1440-dock: waiting, formatted response and reader-controlled scroll (1.7s)
+  ✓  20 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › en-1440-workspace: waiting, formatted response and reader-controlled scroll (1.1s)
+  ✓  21 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › en-390-dock: waiting, formatted response and reader-controlled scroll (1.5s)
+  ✓  22 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › en-390-workspace: waiting, formatted response and reader-controlled scroll (932ms)
+  ✓  23 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › de-1440-dock: waiting, formatted response and reader-controlled scroll (2.0s)
+  ✓  24 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › de-1440-workspace: waiting, formatted response and reader-controlled scroll (1.1s)
+  ✓  25 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › de-390-dock: waiting, formatted response and reader-controlled scroll (1.7s)
+  ✓  26 [chromium] › specs/genie-reply-presentation.spec.ts:28:4 › de-390-workspace: waiting, formatted response and reader-controlled scroll (970ms)
+  ✓  27 [chromium] › specs/genie-reply-presentation.spec.ts:261:1 › reduced-motion: waiting stays static and a received answer appears immediately (388ms)
+  ✓  28 [chromium] › specs/genie-reply-presentation.spec.ts:303:1 › history: a restored long answer starts at its beginning without replay (297ms)
+
+  28 passed (28.3s)

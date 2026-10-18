@@ -1,0 +1,1894 @@
+[
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      8278
+    ],
+    "unmasked_different_pixels": 39503,
+    "difference_bounds": [
+      825,
+      94,
+      1213,
+      254
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "header account entries and 0 24px 50px shadow:0",
+        "selector": ".tv-b2b-acct-menu",
+        "padding": 74,
+        "bounds": [
+          798,
+          2,
+          1239,
+          262
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      8278
+    ],
+    "unmasked_different_pixels": 615,
+    "difference_bounds": [
+      597,
+      7812,
+      1278,
+      7891
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "account entry tile:0",
+        "selector": "#footer-panel-account .footer-route-list>li:first-child",
+        "bounds": [
+          492,
+          7848,
+          884,
+          7919
+        ]
+      },
+      {
+        "name": "account destination count:0",
+        "selector": "#footer-panel-account .footer-panel-count",
+        "bounds": [
+          1256,
+          7801,
+          1286,
+          7832
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1239
+    ],
+    "unmasked_different_pixels": 9260,
+    "difference_bounds": [
+      562,
+      417,
+      874,
+      464
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "draft account entries:0",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0,
+        "bounds": [
+          416,
+          417,
+          1024,
+          465
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1789
+    ],
+    "unmasked_different_pixels": 731,
+    "difference_bounds": [
+      156,
+      1042,
+      262,
+      1058
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "new registration line in existing form gap:0",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0,
+        "bounds": [
+          156,
+          1037,
+          819,
+          1059
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1276
+    ],
+    "unmasked_different_pixels": 1625,
+    "difference_bounds": [
+      610,
+      547,
+      831,
+      563
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "lost account entries:0",
+        "selector": ".linker-auth-links",
+        "padding": 0,
+        "bounds": [
+          521,
+          541,
+          919,
+          565
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1196
+    ],
+    "unmasked_different_pixels": 1625,
+    "difference_bounds": [
+      610,
+      467,
+      831,
+      483
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "lost-confirmation account entries:0",
+        "selector": ".linker-auth-links",
+        "padding": 0,
+        "bounds": [
+          521,
+          461,
+          919,
+          485
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      900
+    ],
+    "unmasked_different_pixels": 691,
+    "difference_bounds": [
+      412,
+      143,
+      512,
+      156
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "document account entries:0",
+        "selector": "#error-page",
+        "padding": 0,
+        "bounds": [
+          337,
+          50,
+          1103,
+          196
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      8591
+    ],
+    "unmasked_different_pixels": 39611,
+    "difference_bounds": [
+      791,
+      94,
+      1179,
+      254
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "header account entries and 0 24px 50px shadow:0",
+        "selector": ".tv-b2b-acct-menu",
+        "padding": 74,
+        "bounds": [
+          765,
+          2,
+          1206,
+          262
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      8591
+    ],
+    "unmasked_different_pixels": 604,
+    "difference_bounds": [
+      618,
+      8124,
+      1278,
+      8204
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "account entry tile:0",
+        "selector": "#footer-panel-account .footer-route-list>li:first-child",
+        "bounds": [
+          492,
+          8160,
+          884,
+          8231
+        ]
+      },
+      {
+        "name": "account destination count:0",
+        "selector": "#footer-panel-account .footer-panel-count",
+        "bounds": [
+          1256,
+          8114,
+          1286,
+          8145
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1239
+    ],
+    "unmasked_different_pixels": 9845,
+    "difference_bounds": [
+      531,
+      417,
+      909,
+      464
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "draft account entries:0",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0,
+        "bounds": [
+          416,
+          417,
+          1024,
+          465
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1831
+    ],
+    "unmasked_different_pixels": 743,
+    "difference_bounds": [
+      156,
+      1084,
+      259,
+      1100
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "new registration line in existing form gap:0",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0,
+        "bounds": [
+          156,
+          1080,
+          819,
+          1102
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1301
+    ],
+    "unmasked_different_pixels": 2087,
+    "difference_bounds": [
+      583,
+      572,
+      858,
+      588
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "lost account entries:0",
+        "selector": ".linker-auth-links",
+        "padding": 0,
+        "bounds": [
+          521,
+          566,
+          919,
+          590
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1217
+    ],
+    "unmasked_different_pixels": 2087,
+    "difference_bounds": [
+      583,
+      488,
+      858,
+      504
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "lost-confirmation account entries:0",
+        "selector": ".linker-auth-links",
+        "padding": 0,
+        "bounds": [
+          521,
+          481,
+          919,
+          505
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      900
+    ],
+    "unmasked_different_pixels": 688,
+    "difference_bounds": [
+      438,
+      164,
+      536,
+      177
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "document account entries:0",
+        "selector": "#error-page",
+        "padding": 0,
+        "bounds": [
+          337,
+          50,
+          1103,
+          217
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      9238
+    ],
+    "unmasked_different_pixels": 308278,
+    "difference_bounds": [
+      304,
+      1034,
+      1379,
+      8248
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "shop guest entries:0",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          1033,
+          809,
+          1078
+        ]
+      },
+      {
+        "name": "shop guest entries:1",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          1033,
+          1379,
+          1078
+        ]
+      },
+      {
+        "name": "shop guest entries:2",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          1685,
+          809,
+          1730
+        ]
+      },
+      {
+        "name": "shop guest entries:3",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          1685,
+          1379,
+          1730
+        ]
+      },
+      {
+        "name": "shop guest entries:4",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          2337,
+          809,
+          2382
+        ]
+      },
+      {
+        "name": "shop guest entries:5",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          2337,
+          1379,
+          2382
+        ]
+      },
+      {
+        "name": "shop guest entries:6",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          2989,
+          809,
+          3034
+        ]
+      },
+      {
+        "name": "shop guest entries:7",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          2989,
+          1379,
+          3034
+        ]
+      },
+      {
+        "name": "shop guest entries:8",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          3641,
+          809,
+          3686
+        ]
+      },
+      {
+        "name": "shop guest entries:9",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          3641,
+          1379,
+          3686
+        ]
+      },
+      {
+        "name": "shop guest entries:10",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          4293,
+          809,
+          4338
+        ]
+      },
+      {
+        "name": "shop guest entries:11",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          4293,
+          1379,
+          4338
+        ]
+      },
+      {
+        "name": "shop guest entries:12",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          4945,
+          809,
+          4990
+        ]
+      },
+      {
+        "name": "shop guest entries:13",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          4945,
+          1379,
+          4990
+        ]
+      },
+      {
+        "name": "shop guest entries:14",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          5596,
+          809,
+          5641
+        ]
+      },
+      {
+        "name": "shop guest entries:15",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          5596,
+          1379,
+          5641
+        ]
+      },
+      {
+        "name": "shop guest entries:16",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          6248,
+          809,
+          6293
+        ]
+      },
+      {
+        "name": "shop guest entries:17",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          6248,
+          1379,
+          6293
+        ]
+      },
+      {
+        "name": "shop guest entries:18",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          6900,
+          809,
+          6945
+        ]
+      },
+      {
+        "name": "shop guest entries:19",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          6900,
+          1379,
+          6945
+        ]
+      },
+      {
+        "name": "shop guest entries:20",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          7552,
+          809,
+          7597
+        ]
+      },
+      {
+        "name": "shop guest entries:21",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          7552,
+          1379,
+          7597
+        ]
+      },
+      {
+        "name": "shop guest entries:22",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          8204,
+          809,
+          8249
+        ]
+      },
+      {
+        "name": "shop guest entries:23",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          8204,
+          1379,
+          8249
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      9264
+    ],
+    "unmasked_different_pixels": 308222,
+    "difference_bounds": [
+      304,
+      1060,
+      1379,
+      8274
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "category guest entries:0",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          1059,
+          809,
+          1104
+        ]
+      },
+      {
+        "name": "category guest entries:1",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          1059,
+          1379,
+          1104
+        ]
+      },
+      {
+        "name": "category guest entries:2",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          1711,
+          809,
+          1756
+        ]
+      },
+      {
+        "name": "category guest entries:3",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          1711,
+          1379,
+          1756
+        ]
+      },
+      {
+        "name": "category guest entries:4",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          2363,
+          809,
+          2408
+        ]
+      },
+      {
+        "name": "category guest entries:5",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          2363,
+          1379,
+          2408
+        ]
+      },
+      {
+        "name": "category guest entries:6",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          3015,
+          809,
+          3060
+        ]
+      },
+      {
+        "name": "category guest entries:7",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          3015,
+          1379,
+          3060
+        ]
+      },
+      {
+        "name": "category guest entries:8",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          3667,
+          809,
+          3711
+        ]
+      },
+      {
+        "name": "category guest entries:9",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          3667,
+          1379,
+          3711
+        ]
+      },
+      {
+        "name": "category guest entries:10",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          4318,
+          809,
+          4363
+        ]
+      },
+      {
+        "name": "category guest entries:11",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          4318,
+          1379,
+          4363
+        ]
+      },
+      {
+        "name": "category guest entries:12",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          4970,
+          809,
+          5015
+        ]
+      },
+      {
+        "name": "category guest entries:13",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          4970,
+          1379,
+          5015
+        ]
+      },
+      {
+        "name": "category guest entries:14",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          5622,
+          809,
+          5667
+        ]
+      },
+      {
+        "name": "category guest entries:15",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          5622,
+          1379,
+          5667
+        ]
+      },
+      {
+        "name": "category guest entries:16",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          6274,
+          809,
+          6319
+        ]
+      },
+      {
+        "name": "category guest entries:17",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          6274,
+          1379,
+          6319
+        ]
+      },
+      {
+        "name": "category guest entries:18",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          6904,
+          809,
+          6949
+        ]
+      },
+      {
+        "name": "category guest entries:19",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          6926,
+          1379,
+          6971
+        ]
+      },
+      {
+        "name": "category guest entries:20",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          7578,
+          809,
+          7623
+        ]
+      },
+      {
+        "name": "category guest entries:21",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          7578,
+          1379,
+          7623
+        ]
+      },
+      {
+        "name": "category guest entries:22",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          8229,
+          809,
+          8274
+        ]
+      },
+      {
+        "name": "category guest entries:23",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          8229,
+          1379,
+          8274
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      7737
+    ],
+    "unmasked_different_pixels": 551,
+    "difference_bounds": [
+      1179,
+      305,
+      1277,
+      316
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "product guest entries:0",
+        "selector": ".pdp-price",
+        "bounds": [
+          952,
+          296,
+          1360,
+          321
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      4212
+    ],
+    "unmasked_different_pixels": 3097,
+    "difference_bounds": [
+      344,
+      596,
+      1013,
+      611
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          332,
+          579,
+          809,
+          625
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          808,
+          579,
+          1284,
+          625
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      8278
+    ],
+    "unmasked_different_pixels": 103318,
+    "difference_bounds": [
+      1020,
+      7562,
+      1420,
+      8162
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-dock guest entries:0",
+        "selector": ".linker-genie-panel",
+        "bounds": [
+          1020,
+          7562,
+          1420,
+          8162
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      2050
+    ],
+    "unmasked_different_pixels": 175355,
+    "difference_bounds": [
+      0,
+      89,
+      1440,
+      896
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-workspace guest entries:0",
+        "selector": ".linker-genie-panel--workspace",
+        "bounds": [
+          0,
+          89,
+          1440,
+          1475
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      9238
+    ],
+    "unmasked_different_pixels": 313820,
+    "difference_bounds": [
+      304,
+      1034,
+      1379,
+      8248
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "shop guest entries:0",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          1033,
+          809,
+          1078
+        ]
+      },
+      {
+        "name": "shop guest entries:1",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          1033,
+          1379,
+          1078
+        ]
+      },
+      {
+        "name": "shop guest entries:2",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          1685,
+          809,
+          1730
+        ]
+      },
+      {
+        "name": "shop guest entries:3",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          1685,
+          1379,
+          1730
+        ]
+      },
+      {
+        "name": "shop guest entries:4",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          2337,
+          809,
+          2382
+        ]
+      },
+      {
+        "name": "shop guest entries:5",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          2337,
+          1379,
+          2382
+        ]
+      },
+      {
+        "name": "shop guest entries:6",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          2989,
+          809,
+          3034
+        ]
+      },
+      {
+        "name": "shop guest entries:7",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          2989,
+          1379,
+          3034
+        ]
+      },
+      {
+        "name": "shop guest entries:8",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          3641,
+          809,
+          3686
+        ]
+      },
+      {
+        "name": "shop guest entries:9",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          3641,
+          1379,
+          3686
+        ]
+      },
+      {
+        "name": "shop guest entries:10",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          4293,
+          809,
+          4338
+        ]
+      },
+      {
+        "name": "shop guest entries:11",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          4293,
+          1379,
+          4338
+        ]
+      },
+      {
+        "name": "shop guest entries:12",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          4945,
+          809,
+          4990
+        ]
+      },
+      {
+        "name": "shop guest entries:13",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          4945,
+          1379,
+          4990
+        ]
+      },
+      {
+        "name": "shop guest entries:14",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          5596,
+          809,
+          5641
+        ]
+      },
+      {
+        "name": "shop guest entries:15",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          5596,
+          1379,
+          5641
+        ]
+      },
+      {
+        "name": "shop guest entries:16",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          6248,
+          809,
+          6293
+        ]
+      },
+      {
+        "name": "shop guest entries:17",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          6248,
+          1379,
+          6293
+        ]
+      },
+      {
+        "name": "shop guest entries:18",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          6900,
+          809,
+          6945
+        ]
+      },
+      {
+        "name": "shop guest entries:19",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          6900,
+          1379,
+          6945
+        ]
+      },
+      {
+        "name": "shop guest entries:20",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          7552,
+          809,
+          7597
+        ]
+      },
+      {
+        "name": "shop guest entries:21",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          7552,
+          1379,
+          7597
+        ]
+      },
+      {
+        "name": "shop guest entries:22",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          8204,
+          809,
+          8249
+        ]
+      },
+      {
+        "name": "shop guest entries:23",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          8204,
+          1379,
+          8249
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      9264
+    ],
+    "unmasked_different_pixels": 313743,
+    "difference_bounds": [
+      304,
+      1060,
+      1379,
+      8274
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "category guest entries:0",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          1059,
+          809,
+          1104
+        ]
+      },
+      {
+        "name": "category guest entries:1",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          1059,
+          1379,
+          1104
+        ]
+      },
+      {
+        "name": "category guest entries:2",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          1711,
+          809,
+          1756
+        ]
+      },
+      {
+        "name": "category guest entries:3",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          1711,
+          1379,
+          1756
+        ]
+      },
+      {
+        "name": "category guest entries:4",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          2363,
+          809,
+          2408
+        ]
+      },
+      {
+        "name": "category guest entries:5",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          2363,
+          1379,
+          2408
+        ]
+      },
+      {
+        "name": "category guest entries:6",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          3015,
+          809,
+          3060
+        ]
+      },
+      {
+        "name": "category guest entries:7",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          3015,
+          1379,
+          3060
+        ]
+      },
+      {
+        "name": "category guest entries:8",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          3667,
+          809,
+          3711
+        ]
+      },
+      {
+        "name": "category guest entries:9",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          3667,
+          1379,
+          3711
+        ]
+      },
+      {
+        "name": "category guest entries:10",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          4318,
+          809,
+          4363
+        ]
+      },
+      {
+        "name": "category guest entries:11",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          4318,
+          1379,
+          4363
+        ]
+      },
+      {
+        "name": "category guest entries:12",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          4970,
+          809,
+          5015
+        ]
+      },
+      {
+        "name": "category guest entries:13",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          4970,
+          1379,
+          5015
+        ]
+      },
+      {
+        "name": "category guest entries:14",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          5622,
+          809,
+          5667
+        ]
+      },
+      {
+        "name": "category guest entries:15",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          5622,
+          1379,
+          5667
+        ]
+      },
+      {
+        "name": "category guest entries:16",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          6274,
+          809,
+          6319
+        ]
+      },
+      {
+        "name": "category guest entries:17",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          6274,
+          1379,
+          6319
+        ]
+      },
+      {
+        "name": "category guest entries:18",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          6904,
+          809,
+          6949
+        ]
+      },
+      {
+        "name": "category guest entries:19",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          6926,
+          1379,
+          6971
+        ]
+      },
+      {
+        "name": "category guest entries:20",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          7578,
+          809,
+          7623
+        ]
+      },
+      {
+        "name": "category guest entries:21",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          7578,
+          1379,
+          7623
+        ]
+      },
+      {
+        "name": "category guest entries:22",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          303,
+          8229,
+          809,
+          8274
+        ]
+      },
+      {
+        "name": "category guest entries:23",
+        "selector": ".sf-card-actions",
+        "bounds": [
+          873,
+          8229,
+          1379,
+          8274
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      7913
+    ],
+    "unmasked_different_pixels": 536,
+    "difference_bounds": [
+      1229,
+      305,
+      1323,
+      316
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "product guest entries:0",
+        "selector": ".pdp-price",
+        "bounds": [
+          952,
+          296,
+          1360,
+          321
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      4098
+    ],
+    "unmasked_different_pixels": 3749,
+    "difference_bounds": [
+      400,
+      622,
+      1081,
+      637
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          388,
+          605,
+          837,
+          651
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          836,
+          605,
+          1284,
+          651
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      8591
+    ],
+    "unmasked_different_pixels": 106851,
+    "difference_bounds": [
+      1020,
+      7875,
+      1420,
+      8475
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-dock guest entries:0",
+        "selector": ".linker-genie-panel",
+        "bounds": [
+          1020,
+          7875,
+          1420,
+          8475
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      2050
+    ],
+    "unmasked_different_pixels": 180357,
+    "difference_bounds": [
+      0,
+      89,
+      1440,
+      896
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "genie-workspace guest entries:0",
+        "selector": ".linker-genie-panel--workspace",
+        "bounds": [
+          0,
+          89,
+          1440,
+          1475
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1421
+    ],
+    "unmasked_different_pixels": 3035,
+    "difference_bounds": [
+      419,
+      486,
+      1124,
+      599
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest line price and subtotal:0",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          304,
+          511,
+          855,
+          549
+        ]
+      },
+      {
+        "name": "guest line price and subtotal:1",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          749,
+          460,
+          855,
+          500
+        ]
+      },
+      {
+        "name": "guest summary account entries:0",
+        "selector": ".linker-login-box",
+        "bounds": [
+          934,
+          460,
+          1284,
+          603
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:0",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          419,
+          511,
+          525,
+          533
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:1",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          749,
+          481,
+          855,
+          503
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1421
+    ],
+    "unmasked_different_pixels": 3281,
+    "difference_bounds": [
+      469,
+      486,
+      1160,
+      599
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest line price and subtotal:0",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          304,
+          526,
+          855,
+          556
+        ]
+      },
+      {
+        "name": "guest line price and subtotal:1",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          698,
+          460,
+          855,
+          515
+        ]
+      },
+      {
+        "name": "guest summary account entries:0",
+        "selector": ".linker-login-box",
+        "bounds": [
+          934,
+          460,
+          1284,
+          603
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:0",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          469,
+          526,
+          572,
+          548
+        ]
+      },
+      {
+        "name": "new registration action within existing price-row gap:1",
+        "selector": ".woocommerce-cart-form .linker-create-account",
+        "bounds": [
+          698,
+          481,
+          801,
+          503
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  }
+]

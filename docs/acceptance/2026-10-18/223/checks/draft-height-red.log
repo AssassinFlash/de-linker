@@ -1,0 +1,41 @@
+
+> linker-e2e@0.1.0 test
+> playwright test account-entries.spec.ts --grep de-390: draft
+
+
+Running 1 test using 1 worker
+
+(node:27591) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/account-entries.spec.ts:276:4 › de-390: draft has independent registration (15.5s)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:276:4 › de-390: draft has independent registration ─
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  locator('.sf-cart-empty__actions')
+    Expected: "104px"
+    Received: "106px"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCSS" locator('.sf-cart-empty__actions') with timeout 15000ms
+      - waiting for locator('.sf-cart-empty__actions')
+        34 × locator resolved to <div class="sf-cart-empty__actions">…</div>
+           - unexpected value "106px"
+
+
+      283 | 				if (surface === 'draft' && locale === 'de' && width === 390) {
+      284 | 					// Live reference: 45px primary row + 12px gap + 47px secondary row.
+    > 285 | 					await expect(page.locator('.sf-cart-empty__actions')).toHaveCSS(
+          | 					                                                      ^
+      286 | 						'height',
+      287 | 						'104px'
+      288 | 					);
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:285:60
+
+    Error Context: artifacts/test-results/account-entries-de-390-draft-has-independent-registration-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:276:4 › de-390: draft has independent registration ──

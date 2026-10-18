@@ -1,0 +1,37 @@
+
+> linker-tools@0.1.0 test:unit
+> wp-scripts test-unit-js --run src/genie/components/MessageBody.test.tsx
+
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools
+
+ ❯ src/genie/components/MessageBody.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/genie/components/MessageBody.test.tsx [ src/genie/components/MessageBody.test.tsx ]
+Error: Failed to resolve import "./MessageBody" from "src/genie/components/MessageBody.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/src/genie/components/MessageBody.test.tsx:4:28
+  2  |  import { render, screen } from "@testing-library/react";
+  3  |  import { expect, test } from "vitest";
+  4  |  import { MessageBody } from "./MessageBody";
+     |                               ^
+  5  |  var _jsxFileName = "/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/src/genie/components/M...
+  6  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8766:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8763:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26632:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26702:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26668:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8545:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20184:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  12:18:17
+   Duration  602ms (environment 66%, setup 31%, transform 3%, worker 1%)
+

@@ -1,0 +1,606 @@
+
+> linker-tools@0.1.0 test:unit
+> wp-scripts test-unit-js --run src/genie/App.test.tsx
+
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools
+
+ ❯ src/genie/App.test.tsx (43 tests | 1 failed) 1382ms
+   × the disclosure is spoken once and a prompt sends the first turn 204ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/genie/App.test.tsx > the disclosure is spoken once and a prompt sends the first turn
+TestingLibraryElementError: Unable to find an accessible element with the role "group" and name "Reply with an option"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "Genie - Linker's AI assistant":
+  <section
+    aria-label="Genie - Linker's AI assistant"
+    class="linker-genie-app"
+    lang="en"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "Hide":
+  <button
+    class="linker-genie-dock-mask"
+    type="button"
+  />
+
+  Name "New conversation":
+  <button
+    aria-label="New conversation"
+    class="linker-genie-app__icon"
+    type="button"
+  />
+
+  Name "Conversations":
+  <button
+    aria-expanded="false"
+    aria-label="Conversations"
+    class="linker-genie-app__icon"
+    type="button"
+  />
+
+  Name "Close":
+  <button
+    aria-label="Close"
+    class="linker-genie-app__icon"
+    type="button"
+  />
+
+  Name "Copy response":
+  <button
+    aria-label="Copy response"
+    class="linker-genie-app__vote"
+    type="button"
+  />
+
+  Name "Single-phase":
+  <button
+    class="linker-genie-app__chip"
+    type="button"
+  />
+
+  Name "Three-phase":
+  <button
+    class="linker-genie-app__chip"
+    type="button"
+  />
+
+  Name "Attach a file":
+  <button
+    aria-label="Attach a file"
+    class="linker-genie-app__attach"
+    type="button"
+  />
+
+  Name "Send":
+  <button
+    class="linker-genie-app__send"
+    disabled=""
+    type="submit"
+  />
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  <header
+    class="linker-genie-app__bar"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="linker-genie-app__title"
+  />
+
+  Name "":
+  <p
+    class="linker-genie-ask-label"
+  />
+
+  Name "":
+  <p
+    class="linker-genie-app__disclosure"
+  />
+
+  --------------------------------------------------
+  link:
+
+  Name "Open full page":
+  <a
+    aria-label="Open full page"
+    class="linker-genie-app__icon"
+    href="/genie/"
+  />
+
+  Name "FAQ & Downloads":
+  <a
+    href="/faq-download/"
+  />
+
+  Name "Contact Linker":
+  <a
+    href="/contact/"
+  />
+
+  Name "Privacy Policy":
+  <a
+    href="/privacy-policy/"
+  />
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  <ol
+    class="linker-genie-app__thread"
+  />
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  <li
+    class="linker-genie-app__message linker-genie-app__message--user"
+  />
+
+  Name "":
+  <li
+    class="linker-genie-app__message linker-genie-app__message--assistant"
+  />
+
+  --------------------------------------------------
+  group:
+
+  Name "Grid connection":
+  <div
+    aria-label="Grid connection"
+    class="linker-genie-app__ask"
+    role="group"
+  />
+
+  Name "":
+  <details
+    class="linker-genie-help"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Ask Genie":
+  <input
+    class="linker-genie-app__input"
+    id="linker-genie-input"
+    placeholder="Ask Genie"
+    value=""
+  />
+
+  --------------------------------------------------
+  contentinfo:
+
+  Name "":
+  <footer
+    class="linker-genie-footnote"
+  />
+
+  --------------------------------------------------
+  navigation:
+
+  Name "":
+  <nav
+    class="linker-genie-app__links"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      aria-label="Genie - Linker's AI assistant"
+      class="linker-genie-app"
+      lang="en"
+    >
+      <button
+        class="linker-genie-dock-mask"
+        type="button"
+      >
+        <span
+          class="screen-reader-text"
+        >
+          Hide
+        </span>
+      </button>
+      <div
+        class="linker-genie-app__main"
+      >
+        <header
+          class="linker-genie-app__bar"
+        >
+          <div
+            class="linker-genie-app__bar-lead"
+          >
+            <p
+              class="linker-genie-app__title"
+            >
+              Genie - Linker's AI assistant
+            </p>
+          </div>
+          <div
+            class="linker-genie-app__bar-actions"
+          >
+            <button
+              aria-label="New conversation"
+              class="linker-genie-app__icon"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.65"
+                viewBox="0 0 24 24"
+                width="20"
+              >
+                <path
+                  d="M12 5v14M5 12h14"
+                />
+              </svg>
+            </button>
+            <a
+              aria-label="Open full page"
+              class="linker-genie-app__icon"
+              href="/genie/"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.65"
+                viewBox="0 0 24 24"
+                width="20"
+              >
+                <path
+                  d="M14 5h5v5M19 5l-7 7M10 19H5v-5M5 19l7-7"
+                />
+              </svg>
+            </a>
+            <button
+              aria-expanded="false"
+              aria-label="Conversations"
+              class="linker-genie-app__icon"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.65"
+                viewBox="0 0 24 24"
+                width="20"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="8"
+                />
+                <path
+                  d="M12 8v4l2.5 2.5"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="Close"
+              class="linker-genie-app__icon"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.65"
+                viewBox="0 0 24 24"
+                width="20"
+              >
+                <path
+                  d="M6 6l12 12M18 6 6 18"
+                />
+              </svg>
+            </button>
+          </div>
+        </header>
+        <div
+          class="linker-genie-app__panel"
+        >
+          <div
+            class="linker-genie-reading"
+          >
+            <div
+              class="linker-genie-app__transcript"
+              tabindex="0"
+            >
+              <div
+                class="linker-genie-transcript-content"
+              >
+                <ol
+                  class="linker-genie-app__thread"
+                >
+                  <li
+                    class="linker-genie-app__message linker-genie-app__message--user"
+                  >
+                    I need a three-phase hybrid inverter for a home.
+                  </li>
+                  <li
+                    class="linker-genie-app__message linker-genie-app__message--assistant"
+                  >
+                    <div
+                      class="linker-genie-app__answer-brand"
+                    >
+                      <span
+                        aria-hidden="true"
+                        class="linker-genie-app__monogram"
+                      >
+                        G
+                      </span>
+                      <span>
+                        Genie
+                      </span>
+                    </div>
+                    <div
+                      class="linker-genie-reply"
+                    >
+                      <div
+                        data-testid="reply-reveal"
+                      >
+                        <div
+                          class="linker-genie-message-body"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="linker-genie-answer-actions"
+                    >
+                      <button
+                        aria-label="Copy response"
+                        class="linker-genie-app__vote"
+                        type="button"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          fill="none"
+                          height="18"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.65"
+                          viewBox="0 0 24 24"
+                          width="18"
+                        >
+                          <rect
+                            height="13"
+                            rx="2"
+                            width="12"
+                            x="8"
+                            y="8"
+                          />
+                          <path
+                            d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </li>
+                </ol>
+                <div
+                  aria-label="Grid connection"
+                  class="linker-genie-app__ask"
+                  role="group"
+                >
+                  <p
+                    class="linker-genie-ask-label"
+                  >
+                    Grid connection
+                  </p>
+                  <button
+                    class="linker-genie-app__chip"
+                    type="button"
+                  >
+                    Single-phase
+                    <span
+                      aria-hidden="true"
+                    >
+                      ↗
+                    </span>
+                  </button>
+                  <button
+                    class="linker-genie-app__chip"
+                    type="button"
+                  >
+                    Three-phase
+                    <span
+                      aria-hidden="true"
+                    >
+                      ↗
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="linker-genie-reading-controls"
+            />
+          </div>
+          <form
+            class="linker-genie-app__composer"
+          >
+            <button
+              aria-label="Attach a file"
+              class="linker-genie-app__attach"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.65"
+                viewBox="0 0 24 24"
+                width="20"
+              >
+                <path
+                  d="m15 7-6.5 6.5a2.1 2.1 0 0 0 3 3L18 10a4.2 4.2 0 0 0-6-6L5.5 10.5a6.4 6.4 0 0 0 9 9L20 14"
+                />
+              </svg>
+            </button>
+            <input
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif,application/pdf"
+              hidden=""
+              multiple=""
+              type="file"
+            />
+            <label
+              class="screen-reader-text"
+              for="linker-genie-input"
+            >
+              Ask Genie
+            </label>
+            <input
+              class="linker-genie-app__input"
+              id="linker-genie-input"
+              placeholder="Ask Genie"
+              value=""
+            />
+            <button
+              class="linker-genie-app__send"
+              disabled=""
+              type="submit"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="20"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.65"
+                viewBox="0 0 24 24"
+                width="20"
+              >
+                <path
+                  d="M12 19V5m-6 6 6-6 6 6"
+                />
+              </svg>
+              <span
+                class="screen-reader-text"
+              >
+                Send
+              </span>
+            </button>
+          </form>
+          <footer
+            class="linker-genie-footnote"
+          >
+            <span>
+              Genie is an AI assistant.
+            </span>
+            <details
+              class="linker-genie-help"
+            >
+              <summary>
+                Help & privacy
+                <svg
+                  aria-hidden="true"
+                  fill="none"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  width="12"
+                >
+                  <path
+                    d="m3 4.5 3 3 3-3"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.25"
+                  />
+                </svg>
+              </summary>
+              <div
+                class="linker-genie-help-menu"
+              >
+                <p
+                  class="linker-genie-app__disclosure"
+                >
+                  Hi, I'm Genie, Linker's AI assistant. You're chatting with an AI system.
+                </p>
+                <nav
+                  class="linker-genie-app__links"
+                >
+                  <a
+                    href="/faq-download/"
+                  >
+                    FAQ & Downloads
+                  </a>
+                  <a
+                    href="/contact/"
+                  >
+                    Contact Linker
+                  </a>
+                  <a
+                    href="/privacy-policy/"
+                  >
+                    Privacy Policy
+                  </a>
+                </nav>
+              </div>
+            </details>
+          </footer>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/genie/App.test.tsx:186:10
+    184|  expect( await screen.findByText( 'Three-phase' ) ).toBeInTheDocument(…
+    185|  expect(
+    186|   screen.getByRole( 'group', { name: 'Reply with an option' } )
+       |          ^
+    187|  ).toBeInTheDocument();
+    188|  // The disclosure is still there exactly once after the turn.
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 42 passed (43)
+   Start at  22:16:47
+   Duration  2.80s (tests 52%, environment 20%, transform 13%, setup 10%, import 5%)
+

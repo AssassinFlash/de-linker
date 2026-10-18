@@ -1,0 +1,41 @@
+
+> linker-e2e@0.1.0 test
+> playwright test account-entries.spec.ts --grep de-390: Genie dock
+
+
+Running 1 test using 1 worker
+
+(node:26251) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/account-entries.spec.ts:14:4 › de-390: Genie dock has native guest entries (16.1s)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:14:4 › de-390: Genie dock has native guest entries ─
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  locator('.linker-genie-app__main')
+    Expected: "rgb(255, 255, 255)"
+    Received: "rgba(0, 0, 0, 0)"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCSS" locator('.linker-genie-app__main') with timeout 15000ms
+      - waiting for locator('.linker-genie-app__main')
+        34 × locator resolved to <div class="linker-genie-app__main">…</div>
+           - unexpected value "rgba(0, 0, 0, 0)"
+
+
+      38 | 					await expect(
+      39 | 						page.locator('.linker-genie-app__main')
+    > 40 | 					).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+         | 					  ^
+      41 | 					await page.locator('.linker-genie-app__input').click();
+      42 | 					await expect(
+      43 | 						page.locator('.linker-genie-app__input')
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:40:8
+
+    Error Context: artifacts/test-results/account-entries-de-390-Genie-dock-has-native-guest-entries-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:14:4 › de-390: Genie dock has native guest entries ──

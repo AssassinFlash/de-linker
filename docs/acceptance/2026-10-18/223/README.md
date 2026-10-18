@@ -1,89 +1,82 @@
-# #223 · Guest account entries and owner-requested Genie presentation
+# #223 · Account entries and Genie presentation
 
-Instance: **c223**, <http://127.0.0.1:9126>. Worktree:
-`/Users/chesterjohn/Documents/de-linker-worktrees/c223`, branch
-`feat/223-create-account-links`. Snapshot and mail isolation: [instance.json](instance.json).
-No deployment, merge, production write or real test email was performed.
+Work remains in **#223 / PR #312**. Instance **c223**, <http://127.0.0.1:9126>,
+worktree `/Users/chesterjohn/Documents/de-linker-worktrees/c223`, branch
+`feat/223-create-account-links`. Snapshot `20261018-2057`; [isolation](instance.json).
+No merge or deployment. No production code/configuration/account/order/inquiry
+writes. The explicitly requested live filled-draft comparison used only a
+disposable anonymous Woo add/remove session, emptied in finally; no inquiry,
+order or real email was sent. Test mail stays in local files.
 
-Guest sign-in surfaces now offer the existing native registration endpoint in
-English and German. PHP supplies data/semantic fragments, LC owns composition,
-and WindPress owns new styles. Logged-in state, Woo registration availability,
-account approval, public inquiry and document permissions retain their contracts.
-
-The owner additionally requested comparison-page visual repair and Genie visual
-refinement. Genie uses a shared front-end reply renderer for dock and workspace:
-dynamic simulated thinking/loading, safe Markdown, local progressive reveal of
-an already complete answer, copy/feedback, reduced motion, quiet footer and
-reader-controlled scrolling. The backend request, model, answer, tools,
-transport, permissions and thread storage remain unchanged. See
-[frontend boundary and entry coverage](genie-expansion.md).
+All guest sign-in surfaces have a separate **Create account / Konto erstellen**
+entry to the existing native language endpoint, respecting Woo registration and
+visitor state. LC owns composition, WindPress owns styling, PHP supplies data.
+The owner’s later Genie work is included here: dynamic simulated waiting,
+local reveal of complete answers, safe Markdown, explicit immediate reply
+options, separate reader/composer rows and a quiet support footer. Real reopening
+also exposed and repaired WordPress meta unslashing of SSE JSON. The owner then
+approved only the EN/DE prompt **formatting contract**, preserving existing
+model, factual/short/exact-answer rules, tools, API, transport and permissions.
 
 ## Completion criteria
 
-| Criterion | Result | Evidence |
-| --- | --- | --- |
-| Establish every guest sign-in surface before implementation | 完成 | [Census and source consumers](surfaces.md) |
-| Desktop account dropdown and expanded mobile menu, EN/DE | 完成 | [Account browser tests](checks/entries-final.log), [screenshots](computer-use/) |
-| Footer account panel, EN/DE, independent links/count | 完成 | [Census](surfaces.md), [ledger](change-ledger.md), [pixels](pixel-results.md) |
-| Product list/category/PDP/comparison, including model switching | 完成 | [Account tests](checks/entries-final.log), [product captures](pixels-products/), [comparison repair](mobile-comparison.md) |
-| Empty/filled solution draft and public inquiry | 完成 | [Account tests](checks/entries-final.log), [filled draft](filled-draft/), [LC source inventory](surfaces.md) |
-| Password recovery, confirmation and private-document 403 | 完成 | [Account tests](checks/entries-final.log), [captures](pixels/); original 403 and ownership checks retained |
-| Guest/approved/pending/registration-disabled behavior and escaping | 完成 | [TDD record](tdd.md), [public-output tests](checks/output-tests.log), [account browser tests](checks/entries-final.log) |
-| A new account cannot read another account's document or inquiry | 完成 | [Ownership fixture](checks/ownership.log), also included in both final full account runs |
-| Genie dock/workspace account entries and front-end visual expansion | 完成 | [Reply tests](checks/reply-browser-final.log), [screens and motion videos](replies/), [real browser inspection](computer-use/) |
-| EN/DE ×1440/390 images of every scoped surface | 完成 | [State census](surfaces.md), [Computer Use images](computer-use/), [pixel captures](pixel-results.md), [filled draft](filled-draft/), [reply states](replies/) |
-| Header 95-width boundary sweep in Chromium/WebKit/Firefox | 完成 | [Summary](sweep-summary.md), [raw matrix](checks/header-matrix.log): Chromium/WebKit both mismatch sets empty; Firefox exactly 1283–1287, EN expanded/DE folded |
-| New link and new Genie controls have independent EN/DE copy review | 完成 | [Draft, adversarial feedback and final copy](copy-review.md) |
-| Ruled changes have before/after evidence | 完成 | [Change ledger](change-ledger.md), [before captures](before/), [before product captures](before-products/) |
-| Every other pixel against live equals zero | **未完成** | [Exact results](pixel-results.md): 34/52 cases outside ruled regions =0; 10 DE desktop cases retain main/live header drift; 8 dimension mismatches stay FAIL |
-| Filled-draft live pixel parity | **未完成** | Local real fixtures/screens completed; no live cart/session mutation was used for production parity |
-| Exact current authenticated OpenAI reply pixel match | **未完成** | [Primary-source research](../../../research/2026-10-18-genie-reply-design/REFERENCES.md): actual logged-in reply captures unavailable; official component contracts and verified shells inform local design |
-| Inline hero conversation design | **未完成（独立接线事项）** | Current home/solution hero links enter the shared workspace. [Genie · hero 接线实现](https://github.com/AssassinFlash/de-linker/issues/232) remains open; this ticket does not claim an inline hero exists |
-| Full Spec + Standards source review and legacy absence | 完成 | [Review record](review.md), [new legacy identifier scan](checks/legacy-added-lines.log) |
-| Official WindPress compile and served cache readback | 完成 | [Compile](checks/windpress-final.log), [presentation readback](checks/present-final.log) |
-| Rebase, `just check`, `just test` | 完成（最终命令日志） | [Final local check](checks/just-check-final.log), [final local tests](checks/just-test-final.log); PR records final base/head and CI |
+| Criterion | Status | Evidence |
+|---|---|---|
+| Find every guest sign-in surface before implementation | 完成 | [Census and consumers](surfaces.md) |
+| Header dropdown, mobile menu and footer panel in EN/DE | 完成 | [Browser output/click tests](checks/entries-final.log), [full raw pixels](pixel-results.md) |
+| Product list/category/PDP/comparison price gates and model switching | 完成 | [Account tests](checks/entries-final.log), [comparison repair](mobile-comparison.md) |
+| Empty and filled solution draft, public inquiry | 完成 | [Tests](checks/entries-final.log), [exact live filled-draft pairs](pixel-results.md) |
+| Password reset/confirmation, private document403 | 完成 | [Census](surfaces.md), [account tests](checks/entries-final.log), [raw captures](pixel-results.md) |
+| Guest/approved/pending/registration-disabled conditions, escaping | 完成 | [TDD](tdd.md), [output tests](checks/output-tests.log), [browser states](checks/entries-final.log) |
+| New account cannot read another account’s document or inquiry | 完成 | Real ownership fixture in both full account runs; [test log](checks/entries-final.log) |
+| Genie dock/workspace guest links precede React mount, no order reversal | 完成 | [Source/entry coverage](genie-expansion.md), [browser tests](checks/entries-final.log) |
+| Inquiry Create account stays on its own line, clear space above draft card; absent from emails | 完成 | [Rejected before and normal-flow after](change-ledger.md), [32px screenshots](computer-use/), [route/mail output tests](checks/output-tests.log) |
+| Reply final prose/control rows fully reachable, composer does not cover text | 完成 | [Repeated browser test](checks/reply-browser-final.log), [waiting/reading/latest images and videos](replies/) |
+| Jump control outside prose and focus ring only on focus-visible | 完成 | [Browser bounds/focus assertions](checks/reply-browser-final.log), [before/after](change-ledger.md) |
+| Actual EN/DE answers use headings/lists/emphasis; reopened text identical | 完成 | [Real model test](checks/real-format-final.log), [raw received streams and dock/workspace matrix](replies-real/) |
+| Quick replies recognisable as immediate send choices | 完成 | [Copy review](copy-review.md), [real Computer Use](computer-use/en-genie-format-dock-latest-390.png), [click payload tests](checks/reply-browser-final.log) |
+| Dynamic waiting/loading/local reveal, reduced motion, history no replay | 完成 | [Repeated tests](checks/reply-browser-final.log), [motion videos](replies/) |
+| EN/DE ×1440/390 screenshots of every scoped surface/state | 完成 | [Census](surfaces.md), [full raw pairs](pixel-results.md), [real replies](replies-real/), [Computer Use](computer-use/) |
+| Header95 widths in Chromium/WebKit/Firefox, exact inherited exception | 完成 | [24 tests and95×3 matrix](sweep-summary.md); Chromium/WebKit empty sets, Firefox1283–1287 EN expanded/DE folded |
+| Narrow declarations: mobile utility row and comparison price cells only | 完成 | [Scenario declarations](review2-scenarios.json), measured bounds in capture manifests; no whole mobile panel or comparison shell |
+| Every other pixel against live equals0, dimensions exact | 完成 | **[56/56 PASS](pixel-results.md)**, full RGB counts/raw images; no tolerance/cropping/padding |
+| Filled-draft live counterpart and repeatability | 完成 | All four cases in [final full capture](pixel-results.md); separate4-case repeated capture also zero outside |
+| Preserve historical10 DE header differences attributed to #229 | 完成 | [Historical results](pixel-results-before-review2.md) retained; fresh snapshot result does not overwrite them |
+| Link/control copy: EN draft, adversarial review, independent DE final | 完成 | [Copy record](copy-review.md) |
+| Ruled changes before/after and obsolete split-login exclusion corrected | 完成 | [Ledger](change-ledger.md), [spec](../../../specs/split-login-register.md) |
+| Full Spec + Standards reviews and old-code absence | 完成 | [Separate review conclusions](review.md), [added-line scan](checks/legacy-added-lines.log) |
+| Main #236 attachments, #250 inquiry cards, #322 asset version retained | 完成 | [Review](review.md), build and browser regressions |
+| Official WindPress compilation and served readback | 完成 | [Compile](checks/windpress-final.log), [readback](checks/present-final.log) |
+| Rebase on latest fetched origin/main and just check/just test | 完成 | Base05a3fbc1, source160623c9; [just check](checks/just-check-final.log), [just test](checks/just-test-final.log); CI is recorded on PR312’s final head |
+| Inline conversation inside homepage/other hero | **未完成** | Hero entries currently open the shared full workspace and use its reply design. Inline transcript wiring has not been delivered. This remains within #223, with no new split ticket. |
 
-The strict pixel gate remains failed. No color tolerance, image cropping,
-padding, resized canvas or broad header exception was introduced to make it pass.
-Page dimensions stay an independent failure condition. Tool redraw regions are
-explicit owner-authorized changes, not dynamic masks.
+The design follows the supplied direction and [official source research](../../../research/2026-10-18-genie-reply-design/REFERENCES.md).
+It is not a measured replica of authenticated OpenAI reply pixels. Deterministic
+fixtures prove layout/motion/click behavior; `replies-real/` separately proves
+actual generated formatting. Neither claim substitutes for the other.
 
-## Review the visual changes
+## Review the current result
 
-- Comparison before/after: [ledger](change-ledger.md), [mobile comparison](mobile-comparison.md).
-- Real DE response before typography: [14px single paragraph](computer-use/de-genie-real-answer-before-typography-390.png).
-- Real DE response after typography: [16px/26px, three reading paragraphs](computer-use/de-genie-real-answer-after-typography-390.png).
-- Full-page workspace: [1440](computer-use/de-genie-real-workspace-1440.png), [390](computer-use/de-genie-real-workspace-390.png).
-- Deterministic EN/DE waiting/completed replies and dynamic videos: [replies](replies/).
-  These fixtures intercept the existing JSON response in the browser; they do
-  not replace the service or constitute a model-answer quality test.
+- Rejected inquiry gap → normal flow: [ledger](change-ledger.md),
+  [EN390](computer-use/en-inquiry-gap-fixed-390.png),
+  [DE390](computer-use/de-inquiry-gap-fixed-390.png).
+- Real structured answer: [EN workspace1440](replies-real/en-1440-workspace.png),
+  [DE workspace390](replies-real/de-390-workspace.png).
+- Clear reply options: [EN dock390](computer-use/en-genie-format-dock-latest-390.png),
+  [DE workspace390](replies-real/de-390-workspace-latest.png).
+- Exact pixels: [all56 cases](pixel-results.md),
+  [desktop manifest](pixels-final-desktop/capture.json),
+  [mobile manifest](pixels-final-mobile/capture.json).
 
-The source base was rebased from `0fddf100` to `c2106969` (opcode-cache reset
-only; no header/UI changes). Header measurements were taken after the account
-header change; later Genie-only styling and this rebase leave the measured
-header source unchanged. The original requested `docs/agents/codex-queue.md`
-was absent; its absence is recorded, not represented as having been read.
+The original requested `docs/agents/codex-queue.md` was absent; no claim is made
+that it was read. Earlier screenshots/failed results are historical evidence.
+The latest manifests and per-case full raw pairs determine the current pixel gate.
 
-## Repeat locally
+## Local rollback
 
-```sh
-just up c223
-just serve c223
-just check
-just test
-LINKER_E2E_INSTANCE=c223 LINKER_E2E_SKIP_SERVICES=1 \
-  npx --prefix tests/e2e playwright test --config tests/e2e/playwright.config.ts \
-  account-entries.spec.ts --project chromium --repeat-each=2
-LINKER_E2E_INSTANCE=c223 LINKER_E2E_SKIP_SERVICES=1 \
-  npx --prefix tests/e2e playwright test --config tests/e2e/playwright.config.ts \
-  genie-reply-presentation.spec.ts --project chromium --repeat-each=2
-```
-
-Run stateful account fixtures before captures; do not overlap instance option
-fixtures with visual capture. Mail stays in the c223 local file spool. Temporary
-users, options and business records are restored by each fixture.
-
-Rollback locally: revert the ticket commits on this branch, rebuild tools,
-reinstall presentation into c223 and run official WindPress compilation. The
-presentation installer retains its prior option backup. Do not apply these
-commands to production. The PR uses `Refs #223`, not an auto-close directive.
+Do not deploy as part of this session. To inspect rollback locally, preserve the
+worktree diff, switch c223 to the review base in a dedicated local checkout, run
+`just present c223`, compile with `just windpress-compile c223`, and read back with
+`just present c223`. The presentation command stores its prior template option
+for local restoration. No DB schema or registered endpoint was introduced; the
+Thread fix only preserves bytes on future writes. It does not migrate histories.

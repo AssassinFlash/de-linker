@@ -1,8 +1,8 @@
 {
   "instance": "c223",
   "url": "http://127.0.0.1:9126",
-  "source_head": "9db0d0eea6e2b41e708cb67bbca39e66deb880b2",
-  "rebase_base": "c2106969d19be6797107fa50b35d4c8a58ad5d5f",
+  "source_head": "160623c913aab10d2ef356cd4efedfc1e4814bfe",
+  "rebase_base": "05a3fbc127e9e2624a8505b3265b6d6e7a7bf91d",
   "just_check": "passed",
   "just_test": "passed",
   "account_browser": {
@@ -10,16 +10,26 @@
     "repeats": 2,
     "passed": 126
   },
-  "reply_presentation_browser": {
-    "cases": 10,
+  "reply_and_empty_draft_browser": {
+    "cases": 14,
     "repeats": 2,
-    "passed": 20
+    "passed": 28
+  },
+  "real_model_format_browser": {
+    "languages": [
+      "en",
+      "de"
+    ],
+    "passed": 2,
+    "response_interception": false,
+    "reopened_text_identical": true
   },
   "header": {
+    "tests_passed": 24,
     "widths_per_engine": 95,
-    "chromium_mismatch": [],
-    "webkit_mismatch": [],
-    "firefox_mismatch": [
+    "chromium_fold_and_visibility_mismatch": [],
+    "webkit_fold_and_visibility_mismatch": [],
+    "firefox_fold_and_visibility_mismatch": [
       1283,
       1284,
       1285,
@@ -29,16 +39,21 @@
     "firefox_direction": "EN expanded, DE folded"
   },
   "pixel_gate": {
-    "status": "未完成",
-    "outside_zero": 34,
-    "outside_nonzero": 10,
-    "dimension_fail": 8,
-    "total": 52
+    "status": "PASS",
+    "outside_zero": 56,
+    "outside_nonzero": 0,
+    "dimension_fail": 0,
+    "total": 56,
+    "historical_de_header_cases_retained": 10
   },
-  "filled_draft_live_parity": "未完成",
-  "inline_hero_wiring": "未完成; independent open issue232",
-  "backend_changes_to_genie_answer_or_transport": false,
-  "production_writes": false,
+  "filled_draft_live_parity": "PASS all4, independent repeat4PASS",
+  "inline_hero_wiring": "\u672a\u5b8c\u6210 within223; no new split ticket",
+  "genie_changes": {
+    "owner_approved_presentation_format_contract": true,
+    "lossless_wp_meta_escaping": true,
+    "model_tools_facts_guards_permissions_transport_changed": false
+  },
+  "production_write_scope": "Only explicitly requested disposable anonymous Woo cart add/remove for live capture; no code/config/account/order/inquiry writes or mail",
   "deploy": false,
   "merge": false
 }

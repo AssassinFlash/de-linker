@@ -1,0 +1,330 @@
+{
+  "cases": [
+    {
+      "path": "/cart/",
+      "stem": "en-filled-draft",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "guest line price and subtotal:0",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            304,
+            511,
+            855,
+            549
+          ]
+        },
+        {
+          "name": "guest line price and subtotal:1",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            749,
+            460,
+            855,
+            500
+          ]
+        },
+        {
+          "name": "guest summary account entries:0",
+          "selector": ".linker-login-box",
+          "bounds": [
+            934,
+            460,
+            1284,
+            603
+          ]
+        },
+        {
+          "name": "new registration action within existing price-row gap:0",
+          "selector": ".woocommerce-cart-form .linker-create-account",
+          "bounds": [
+            419,
+            511,
+            525,
+            533
+          ]
+        },
+        {
+          "name": "new registration action within existing price-row gap:1",
+          "selector": ".woocommerce-cart-form .linker-create-account",
+          "bounds": [
+            749,
+            481,
+            855,
+            503
+          ]
+        }
+      ],
+      "imageSources": {
+        "live": [
+          {
+            "source": "/wp-content/uploads/2026/07/delinker-h2-inverter-284x300.jpg",
+            "loading": "lazy",
+            "natural": [
+              128,
+              135
+            ]
+          }
+        ],
+        "local": [
+          {
+            "source": "/wp-content/uploads/2026/07/delinker-h2-inverter-284x300.jpg",
+            "loading": "lazy",
+            "natural": [
+              128,
+              135
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/de/warenkorb/",
+      "stem": "de-filled-draft",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "guest line price and subtotal:0",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            304,
+            526,
+            855,
+            556
+          ]
+        },
+        {
+          "name": "guest line price and subtotal:1",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            698,
+            460,
+            855,
+            515
+          ]
+        },
+        {
+          "name": "guest summary account entries:0",
+          "selector": ".linker-login-box",
+          "bounds": [
+            934,
+            460,
+            1284,
+            603
+          ]
+        },
+        {
+          "name": "new registration action within existing price-row gap:0",
+          "selector": ".woocommerce-cart-form .linker-create-account",
+          "bounds": [
+            469,
+            526,
+            572,
+            548
+          ]
+        },
+        {
+          "name": "new registration action within existing price-row gap:1",
+          "selector": ".woocommerce-cart-form .linker-create-account",
+          "bounds": [
+            698,
+            481,
+            801,
+            503
+          ]
+        }
+      ],
+      "imageSources": {
+        "live": [
+          {
+            "source": "/wp-content/uploads/2026/07/delinker-h2-inverter-284x300.jpg",
+            "loading": "lazy",
+            "natural": [
+              128,
+              135
+            ]
+          }
+        ],
+        "local": [
+          {
+            "source": "/wp-content/uploads/2026/07/delinker-h2-inverter-284x300.jpg",
+            "loading": "lazy",
+            "natural": [
+              128,
+              135
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/cart/",
+      "stem": "en-filled-draft",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "guest line price and subtotal:0",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            132,
+            676,
+            374,
+            698
+          ]
+        },
+        {
+          "name": "guest line price and subtotal:1",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            132,
+            643,
+            374,
+            665
+          ]
+        },
+        {
+          "name": "guest summary account entries:0",
+          "selector": ".linker-login-box",
+          "bounds": [
+            16,
+            987,
+            374,
+            1129
+          ]
+        },
+        {
+          "name": "new registration action within existing price-row gap:0",
+          "selector": ".woocommerce-cart-form .linker-create-account",
+          "bounds": [
+            229,
+            676,
+            320,
+            698
+          ]
+        },
+        {
+          "name": "new registration action within existing price-row gap:1",
+          "selector": ".woocommerce-cart-form .linker-create-account",
+          "bounds": [
+            230,
+            643,
+            321,
+            665
+          ]
+        }
+      ],
+      "imageSources": {
+        "live": [
+          {
+            "source": "/wp-content/uploads/2026/07/delinker-h2-inverter-284x300.jpg",
+            "loading": "lazy",
+            "natural": [
+              96,
+              101
+            ]
+          }
+        ],
+        "local": [
+          {
+            "source": "/wp-content/uploads/2026/07/delinker-h2-inverter-284x300.jpg",
+            "loading": "lazy",
+            "natural": [
+              96,
+              101
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "/de/warenkorb/",
+      "stem": "de-filled-draft",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "guest line price and subtotal:0",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            132,
+            722,
+            374,
+            744
+          ]
+        },
+        {
+          "name": "guest line price and subtotal:1",
+          "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+          "bounds": [
+            132,
+            689,
+            374,
+            711
+          ]
+        },
+        {
+          "name": "guest summary account entries:0",
+          "selector": ".linker-login-box",
+          "bounds": [
+            16,
+            1033,
+            374,
+            1175
+          ]
+        },
+        {
+          "name": "new registration action within existing price-row gap:0",
+          "selector": ".woocommerce-cart-form .linker-create-account",
+          "bounds": [
+            272,
+            722,
+            361,
+            744
+          ]
+        },
+        {
+          "name": "new registration action within existing price-row gap:1",
+          "selector": ".woocommerce-cart-form .linker-create-account",
+          "bounds": [
+            273,
+            689,
+            362,
+            711
+          ]
+        }
+      ],
+      "imageSources": {
+        "live": [
+          {
+            "source": "/wp-content/uploads/2026/07/delinker-h2-inverter-284x300.jpg",
+            "loading": "lazy",
+            "natural": [
+              96,
+              101
+            ]
+          }
+        ],
+        "local": [
+          {
+            "source": "/wp-content/uploads/2026/07/delinker-h2-inverter-284x300.jpg",
+            "loading": "lazy",
+            "natural": [
+              96,
+              101
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "allowedHeaderChanges": [],
+  "networkRoute": "direct browser connection"
+}

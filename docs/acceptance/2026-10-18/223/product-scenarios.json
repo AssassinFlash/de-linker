@@ -38,8 +38,8 @@
     "actions": [],
     "ruledRegions": [
       {
-        "name": "owner-rejected comparison design layer restored",
-        "selector": ".sf-compare"
+        "name": "guest net-price cells only",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td"
       }
     ]
   },
@@ -111,8 +111,8 @@
     "actions": [],
     "ruledRegions": [
       {
-        "name": "owner-rejected comparison design layer restored",
-        "selector": ".sf-compare"
+        "name": "guest net-price cells only",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td"
       }
     ]
   },

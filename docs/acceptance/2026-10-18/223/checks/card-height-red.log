@@ -1,0 +1,32 @@
+
+> linker-e2e@0.1.0 test
+> playwright test account-entries.spec.ts --project chromium --grep en-1440: shop price
+
+
+Running 1 test using 1 worker
+
+(node:51943) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration (2.7s)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 96
+
+      159 | 				await expect(create).toBeVisible();
+      160 | 				if (surface === 'shop' || surface === 'category') {
+    > 161 | 					expect(await page.locator('.sf-card-actions').first().evaluate((e) => e.getBoundingClientRect().height)).toBe(44);
+          | 					                                                                                                         ^
+      162 | 				}
+      163 | 				await create.click();
+      164 | 				await expect(page).toHaveURL(
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:161:111
+
+    Error Context: artifacts/test-results/account-entries-en-1440-sh-e2f25--prompt-offers-registration-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration 

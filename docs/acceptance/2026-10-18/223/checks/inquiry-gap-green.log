@@ -1,0 +1,21 @@
+
+> linker-e2e@0.1.0 test
+> playwright test account-entries.spec.ts --project=chromium --grep open inquiry --repeat-each=2
+
+
+Running 8 tests using 1 worker
+
+(node:42251) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › specs/account-entries.spec.ts:312:3 › en-1440: open inquiry keeps both optional account entries (879ms)
+  ✓  2 [chromium] › specs/account-entries.spec.ts:312:3 › en-390: open inquiry keeps both optional account entries (789ms)
+  ✓  3 [chromium] › specs/account-entries.spec.ts:312:3 › de-1440: open inquiry keeps both optional account entries (670ms)
+  ✓  4 [chromium] › specs/account-entries.spec.ts:312:3 › de-390: open inquiry keeps both optional account entries (604ms)
+(node:42288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 [chromium] › specs/account-entries.spec.ts:312:3 › en-1440: open inquiry keeps both optional account entries (596ms)
+  ✓  6 [chromium] › specs/account-entries.spec.ts:312:3 › en-390: open inquiry keeps both optional account entries (603ms)
+  ✓  7 [chromium] › specs/account-entries.spec.ts:312:3 › de-1440: open inquiry keeps both optional account entries (621ms)
+  ✓  8 [chromium] › specs/account-entries.spec.ts:312:3 › de-390: open inquiry keeps both optional account entries (808ms)
+
+  8 passed (7.3s)

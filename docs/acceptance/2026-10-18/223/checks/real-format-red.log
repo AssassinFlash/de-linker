@@ -1,0 +1,32 @@
+
+> linker-e2e@0.1.0 test
+> playwright test genie-real-format.spec.ts --project=chromium --grep en: real
+
+
+Running 1 test using 1 worker
+
+(node:61182) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/genie-real-format.spec.ts:8:2 › en: real multi-part guidance uses readable Markdown (26.1s)
+
+
+  1) [chromium] › specs/genie-real-format.spec.ts:8:2 › en: real multi-part guidance uses readable Markdown 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      59 | 			});
+      60 | 			// This observes generated output, not an instruction string or a hand-written Markdown fixture.
+    > 61 | 			expect(await body.locator('h2,h3').count()).toBeGreaterThan(0);
+         | 			                                            ^
+      62 | 			expect(await body.locator('ul,ol').count()).toBeGreaterThan(0);
+      63 | 			const original = await body.textContent();
+      64 | 			for (const width of [390, 1440]) {
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/genie-real-format.spec.ts:61:48
+
+    Error Context: artifacts/test-results/genie-real-format-en-real--e8f3b-ance-uses-readable-Markdown-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/genie-real-format.spec.ts:8:2 › en: real multi-part guidance uses readable Markdown 

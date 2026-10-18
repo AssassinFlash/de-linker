@@ -1,0 +1,32 @@
+
+> linker-e2e@0.1.0 test
+> playwright test account-entries.spec.ts --project chromium --grep en-1440: footer
+
+
+Running 1 test using 1 worker
+
+(node:16594) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/account-entries.spec.ts:148:3 › en-1440: footer offers a direct registration entry (580ms)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:148:3 › en-1440: footer offers a direct registration entry 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 70
+    Received: 96
+
+      155 | 			await expect(panel.locator('.linker-create-account')).toBeVisible();
+      156 | 			await expect(panel.locator('.footer-panel-count')).toHaveText('04');
+    > 157 | 			expect(await panel.locator('.footer-account-tile').evaluate((e) => e.getBoundingClientRect().height)).toBe(width === 1440 ? 70 : 47);
+          | 			                                                                                                      ^
+      158 | 			await panel.locator('.linker-create-account').click();
+      159 | 			await expect(page).toHaveURL(
+      160 | 				instance().url + account + 'register/'
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:157:106
+
+    Error Context: artifacts/test-results/account-entries-en-1440-fo-8f8ad-a-direct-registration-entry-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:148:3 › en-1440: footer offers a direct registration entry 

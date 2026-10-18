@@ -1,0 +1,122 @@
+{
+  "cases": [
+    {
+      "path": "/compare-products/?ids=4107,4108",
+      "stem": "en-compare",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "guest net-price cells only:0",
+          "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+          "bounds": [
+            332,
+            579,
+            809,
+            625
+          ]
+        },
+        {
+          "name": "guest net-price cells only:1",
+          "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+          "bounds": [
+            808,
+            579,
+            1284,
+            625
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/compare-products/?ids=4107,4108",
+      "stem": "de-compare",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": [
+        {
+          "name": "guest net-price cells only:0",
+          "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+          "bounds": [
+            388,
+            605,
+            837,
+            651
+          ]
+        },
+        {
+          "name": "guest net-price cells only:1",
+          "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+          "bounds": [
+            836,
+            605,
+            1284,
+            651
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/compare-products/?ids=4107,4108",
+      "stem": "en-compare",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "guest net-price cells only:0",
+          "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+          "bounds": [
+            147,
+            724,
+            261,
+            810
+          ]
+        },
+        {
+          "name": "guest net-price cells only:1",
+          "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+          "bounds": [
+            260,
+            724,
+            374,
+            810
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/compare-products/?ids=4107,4108",
+      "stem": "de-compare",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "guest net-price cells only:0",
+          "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+          "bounds": [
+            225,
+            710,
+            387,
+            776
+          ]
+        },
+        {
+          "name": "guest net-price cells only:1",
+          "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+          "bounds": [
+            386,
+            710,
+            390,
+            776
+          ]
+        }
+      ]
+    }
+  ],
+  "allowedHeaderChanges": [],
+  "networkRoute": "direct browser connection"
+}
