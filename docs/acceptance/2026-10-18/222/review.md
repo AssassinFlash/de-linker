@@ -29,3 +29,19 @@ LC/WindPress 归属、PHP 数据装配、CommerceState 唯一价格规则均符�
 ## rebase 后全量复核
 
 最终基线 `0fddf100`，复核 HEAD `15234521`。Spec 与 Standards 均重新只读检查全量 diff，无新增发现。POT/PO 逐字保留主线全文，仅追加本票一个新词条；MO 与重新编译结果逐字节一致，主线译文不变。运行时代码与此前已评审版本一致。
+
+## Claude 第一轮修正后的独立复核
+
+基线 `0fddf100`，初审 HEAD `1581ac4c`；Spec 与 Standards 分别使用独立代理只读审完整 diff。
+
+### Standards
+
+0 项文档规范违规；1 项 P3 判断项：restricted 同时加入 warning 与 danger 两个连续选择器，前者立即被覆盖。已移除重复选择器，保留既有 danger 状态样式。原生 Woo / LC / WindPress 归属、同模块直接共享金额规则、共享夹具纳入 PHPCS 符合规范。旧标识符新增可执行 diff 为 0；原有产品模式 meta 是数据兼容键，未移植旧实现。
+
+### Spec
+
+1 项行为发现：原生询盘详情对已有价格的历史行会直接返回金额，账号由 approved 改为 restricted 后可能泄漏旧行价。先增加 pending/restricted/guest 三条失败测试（3 failures），然后让原生行价出口读取 CommerceState 当前原因；针对性 51 tests / 154 assertions 通过。新增真实 Woo 夹具覆盖批准时有价、限制后行价与总额同时隐藏。无额外范围扩张。
+
+英德文案独立评审无修改意见：pending 短句描述当前审核与之后价格权限，无重登录或时限承诺；restricted 卡沿用 #246 的英文与德语 Sie 体条目，员工保存原因转义输出，顺序为状态、说明、原因、联系。
+
+前文“run10 未确定”和手工追加目录的历史复核结论由 Claude 第一轮裁定及本轮规范重新生成取代；当前结论见 verification.md。

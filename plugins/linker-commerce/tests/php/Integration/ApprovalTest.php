@@ -150,6 +150,24 @@ final class ApprovalTest extends IntegrationTestCase {
 		);
 	}
 
+	/** Native inquiry detail filters follow approval changes for already-priced lines. */
+	public function test_priced_inquiry_detail_loses_prices_when_access_is_limited(): void {
+		$customer = $this->customer();
+		$this->set_state( $customer, Approval::APPROVED );
+		$this->as_user( $customer->get_id() );
+		$order = $this->send_inquiry( $customer, array( array( $this->product( '100' ), 1 ) ) );
+		$item  = array_values( $order->get_items() )[0];
+		$this->assertInstanceOf( \WC_Order_Item_Product::class, $item );
+		$this->assertGreaterThan( 0, (float) $item->get_total() );
+		$this->assertStringContainsString( 'woocommerce-Price-amount', $order->get_formatted_line_subtotal( $item ) );
+		foreach ( array( Approval::PENDING, Approval::RESTRICTED ) as $status ) {
+			$this->set_state( $customer, $status, Approval::RESTRICTED === $status ? 'Please complete your company information.' : '' );
+			$this->as_user( $customer->get_id() );
+			$this->assertStringNotContainsString( 'woocommerce-Price-amount', $order->get_formatted_line_subtotal( $item ), $status );
+			$this->assertSame( array(), $order->get_order_item_totals(), $status );
+		}
+	}
+
 	/**
 	 * The three actions, each with the customer's email: subject, language and
 	 * the team's reason; then the way back.
