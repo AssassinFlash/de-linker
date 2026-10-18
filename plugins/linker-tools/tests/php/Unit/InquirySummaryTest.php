@@ -83,7 +83,7 @@ final class InquirySummaryTest extends TestCase {
 			/**
 			 * No cookie in these tests.
 			 */
-			public function current_id(): int {
+			public function existing_id(): int {
 				return 0;
 			}
 		};
