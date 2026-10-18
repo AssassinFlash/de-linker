@@ -1,0 +1,58 @@
+[
+  {
+    "crawl": {
+      "httpStatusCode": 200,
+      "httpStatusMessage": "OK",
+      "loadedAt": "2026-10-18T04:17:07.435Z",
+      "uniqueKey": "zj93yriKgu",
+      "requestStatus": "handled"
+    },
+    "metadata": {
+      "title": "GitHub - openai/chatkit-js · GitHub",
+      "description": "Contribute to openai/chatkit-js development by creating an account on GitHub.",
+      "languageCode": "en",
+      "url": "https://github.com/openai/chatkit-js",
+      "redirectedUrl": "https://github.com/openai/chatkit-js",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://opengraph.githubassets.com/0978920d05046eb4d3a7d9b52439820f328b89afb9dc2f1f2fbb6ee86d32e6a2/openai/chatkit-js"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "Contribute to openai/chatkit-js development by creating an account on GitHub."
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "600"
+        },
+        {
+          "property": "og:site_name",
+          "content": "GitHub"
+        },
+        {
+          "property": "og:type",
+          "content": "object"
+        },
+        {
+          "property": "og:title",
+          "content": "GitHub - openai/chatkit-js"
+        },
+        {
+          "property": "og:url",
+          "content": "https://github.com/openai/chatkit-js"
+        },
+        {
+          "property": "og:description",
+          "content": "Contribute to openai/chatkit-js development by creating an account on GitHub."
+        }
+      ]
+    },
+    "query": "https://github.com/openai/chatkit-js",
+    "markdown": "GitHub - openai/chatkit-js · GitHub\n\n[Skip to content](https://github.com/openai/chatkit-js#start-of-content)                \n\nYou signed in with another tab or window. Reload to refresh your session. You signed out in another tab or window. Reload to refresh your session. You switched accounts on another tab or window. Reload to refresh your session. Dismiss alert\n\n                   \n\n## Repository navigation\n\n [](https://github.com/openai/chatkit-js)\n\n![openai](https://avatars.githubusercontent.com/u/14957082?s=60&v=4)\n\n**[chatkit-js](https://github.com/openai/chatkit-js)**\n\nPublic\n\n*   [Notifications](https://github.com/login?return_to=%2Fopenai%2Fchatkit-js)You must be signed in to change notification settings\n*   [Fork191 (191)](https://github.com/login?return_to=%2Fopenai%2Fchatkit-js)\n*   [Star2k (2k)](https://github.com/login?return_to=%2Fopenai%2Fchatkit-js)You must be signed in to star a repository\n\n## About\n\n[openai.github.io/chatkit-js/](https://openai.github.io/chatkit-js/)\n\n### Resources\n\n[Readme](https://github.com/openai/chatkit-js#readme-ov-file)\n\n[Apache-2.0 license](https://github.com/openai/chatkit-js#Apache-2.0-1-ov-file)\n\n[Activity](https://github.com/openai/chatkit-js/activity)\n\n[Custom properties](https://github.com/openai/chatkit-js/custom-properties)\n\n### Stars\n\n**2.0k** stars\n\n### Watchers\n\n**18** watching\n\n### Forks\n\n[**191** forks](https://github.com/openai/chatkit-js/forks)\n\n[Report repository](https://github.com/contact/report-content?content_url=https%3A%2F%2Fgithub.com%2Fopenai%2Fchatkit-js&report=openai+%28user%29)\n\nmain\n\n[Branches](https://github.com/openai/chatkit-js/branches)[Tags](https://github.com/openai/chatkit-js/tags)\n\n[](https://github.com/openai/chatkit-js/branches)[](https://github.com/openai/chatkit-js/tags)\n\nGo to file\n\nCode\n\nOpen more actions menu\n\n## Latest commit\n\n## History\n\n[176 Commits](https://github.com/openai/chatkit-js/commits/main/)\n\n[](https://github.com/openai/chatkit-js/commits/main/)176 Commits\n\n## Folders and files\n\n| Name |     | Name | Last commit message | Last commit date |\n| --- | --- | --- | --- |\n| [.changeset](https://github.com/openai/chatkit-js/tree/main/.changeset \".changeset\") |     | [.changeset](https://github.com/openai/chatkit-js/tree/main/.changeset \".changeset\") |     |     |\n| [.github/workflows](https://github.com/openai/chatkit-js/tree/main/.github/workflows \"This path skips through empty directories\") |     | [.github/workflows](https://github.com/openai/chatkit-js/tree/main/.github/workflows \"This path skips through empty directories\") |     |     |\n| [packages](https://github.com/openai/chatkit-js/tree/main/packages \"packages\") |     | [packages](https://github.com/openai/chatkit-js/tree/main/packages \"packages\") |     |     |\n| [.gitignore](https://github.com/openai/chatkit-js/blob/main/.gitignore \".gitignore\") |     | [.gitignore](https://github.com/openai/chatkit-js/blob/main/.gitignore \".gitignore\") |     |     |\n| [.prettierignore](https://github.com/openai/chatkit-js/blob/main/.prettierignore \".prettierignore\") |     | [.prettierignore](https://github.com/openai/chatkit-js/blob/main/.prettierignore \".prettierignore\") |     |     |\n| [.prettierrc](https://github.com/openai/chatkit-js/blob/main/.prettierrc \".prettierrc\") |     | [.prettierrc](https://github.com/openai/chatkit-js/blob/main/.prettierrc \".prettierrc\") |     |     |\n| [LICENSE](https://github.com/openai/chatkit-js/blob/main/LICENSE \"LICENSE\") |     | [LICENSE](https://github.com/openai/chatkit-js/blob/main/LICENSE \"LICENSE\") |     |     |\n| [NOTICE](https://github.com/openai/chatkit-js/blob/main/NOTICE \"NOTICE\") |     | [NOTICE](https://github.com/openai/chatkit-js/blob/main/NOTICE \"NOTICE\") |     |     |\n| [README.md](https://github.com/openai/chatkit-js/blob/main/README.md \"README.md\") |     | [README.md](https://github.com/openai/chatkit-js/blob/main/README.md \"README.md\") |     |     |\n| [package.json](https://github.com/openai/chatkit-js/blob/main/package.json \"package.json\") |     | [package.json](https://github.com/openai/chatkit-js/blob/main/package.json \"package.json\") |     |     |\n| [pnpm-lock.yaml](https://github.com/openai/chatkit-js/blob/main/pnpm-lock.yaml \"pnpm-lock.yaml\") |     | [pnpm-lock.yaml](https://github.com/openai/chatkit-js/blob/main/pnpm-lock.yaml \"pnpm-lock.yaml\") |     |     |\n| [pnpm-workspace.yaml](https://github.com/openai/chatkit-js/blob/main/pnpm-workspace.yaml \"pnpm-workspace.yaml\") |     | [pnpm-workspace.yaml](https://github.com/openai/chatkit-js/blob/main/pnpm-workspace.yaml \"pnpm-workspace.yaml\") |     |     |\n| View all files |     |     |\n\n## Repository files navigation\n\nChatKit is a batteries-included framework for building high-quality, AI-powered chat experiences. It’s designed for developers who want to add advanced conversational intelligence to their apps fast—with minimal setup and no reinventing the wheel. ChatKit delivers a complete, production-ready chat interface out of the box.\n\n**Key features include:**\n\n*   **Deep UI customization** so that ChatKit feels like a first-class part of your app\n*   **Built-in response streaming** for interactive, natural conversations\n*   **Tool and workflow integration** for visualizing agentic actions and chain-of-thought reasoning\n*   **Rich interactive widgets** rendered directly inside the chat\n*   **Attachment handling** with support for file and image uploads\n*   **Thread and message management** for organizing complex conversations\n*   **Source annotations and entity tagging** for transparency and references\n\nSimply drop the ChatKit component into your app, configure a few options, and you're good to go.\n\n### What makes ChatKit different?\n\n[](https://github.com/openai/chatkit-js#what-makes-chatkit-different)\n\nChatKit is a framework-agnostic, drop-in chat solution. You don’t need to build custom UIs, manage low-level chat state, or patch together various features yourself. Just add the ChatKit component, give it a client token, and customize the chat experience as needed, no extra work needed.\n\n## Quickstart\n\n[](https://github.com/openai/chatkit-js#quickstart)\n\n1.  Generate a client token on your server.\n    \n    ```python\n    from fastapi import FastAPI\n    from pydantic import BaseModel\n    from openai import OpenAI\n    import os\n    \n    app = FastAPI()\n    openai = OpenAI(api_key=os.environ[\"OPENAI_API_KEY\"])\n    \n    @app.post(\"/api/chatkit/session\")\n    def create_chatkit_session():\n        session = openai.chatkit.sessions.create({\n          # ...\n        })\n        return { client_secret: session.client_secret }\n    ```\n    \n2.  Install the React bindings\n    \n    ```shell\n    npm install @openai/chatkit-react\n    ```\n    \n3.  Add the ChatKit JS script to your page\n    \n    ```html\n    <script\n      src=\"https://cdn.platform.openai.com/deployments/chatkit/chatkit.js\"\n      async\n    ></script>\n    ```\n    \n4.  Render ChatKit\n    \n    ```tsx\n    import { ChatKit, useChatKit } from '@openai/chatkit-react';\n    \n    export function MyChat() {\n      const { control } = useChatKit({\n        api: {\n          async getClientSecret(existing) {\n            if (existing) {\n              // implement session refresh\n            }\n    \n            const res = await fetch('/api/chatkit/session', {\n              method: 'POST',\n              headers: {\n                'Content-Type': 'application/json',\n              },\n            });\n            const { client_secret } = await res.json();\n            return client_secret;\n          },\n        },\n      });\n    \n      return <ChatKit control={control} className=\"h-[600px] w-[320px]\" />;\n    }\n    ```\n    \n\n## See working examples\n\n[](https://github.com/openai/chatkit-js#see-working-examples)\n\n*   [Starter app](https://github.com/openai/openai-chatkit-starter-app) - Clone a repo to start with a fully working template\n*   [Samples](https://github.com/openai/openai-chatkit-advanced-samples) - See working examples of ChatKit and get inspired\n\n## License\n\n[](https://github.com/openai/chatkit-js#license)\n\nThis project is licensed under the [Apache License 2.0](https://github.com/openai/chatkit-js/blob/main/LICENSE).\n\n## About\n\n[openai.github.io/chatkit-js/](https://openai.github.io/chatkit-js/)\n\n### Resources\n\n[Readme](https://github.com/openai/chatkit-js#readme-ov-file)\n\n[Apache-2.0 license](https://github.com/openai/chatkit-js#Apache-2.0-1-ov-file)\n\n[Activity](https://github.com/openai/chatkit-js/activity)\n\n[Custom properties](https://github.com/openai/chatkit-js/custom-properties)\n\n### Stars\n\n**2.0k** stars\n\n### Watchers\n\n**18** watching\n\n### Forks\n\n[**191** forks](https://github.com/openai/chatkit-js/forks)\n\n[Report repository](https://github.com/contact/report-content?content_url=https%3A%2F%2Fgithub.com%2Fopenai%2Fchatkit-js&report=openai+%28user%29)\n\n## Releases\n\n## Packages\n\n## Contributors\n\n## Languages\n\nYou can’t perform that action at this time."
+  }
+]

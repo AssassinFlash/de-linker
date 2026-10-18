@@ -1,0 +1,34 @@
+Browser tab: 1, Title: "PV & Storage Solutions for Installers and EPCs | Linker", URL: "http://127.0.0.1:9126/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 3-10
++		179 container tv-header-v2
++			180 container Primary navigation
++				181 link Description: Linker home, Value: 127.0.0.1:9126/
++				182 link Description: Search products, Value: 127.0.0.1:9126/products/#search-box
++				183 container Language
++					184 link Description: EN, Help: English, Value: 127.0.0.1:9126/
++					185 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9126/de/
++				186 button (expanded) Description: Close menu, ID: tv-mobile-toggle, Secondary Actions: Collapse
++					187 image
++			188 container tv-mobile-panel
++				189 button (collapsed) Solutions, Secondary Actions: Expand
++					190 text Solutions
++					191 image
++				192 button (collapsed) Products, Secondary Actions: Expand
++					193 text Products
++					194 image
++				195 button (collapsed) Plan with Linker, Secondary Actions: Expand
++					196 text Plan with Linker
++					197 image
++				198 link Description: Services, Value: 127.0.0.1:9126/services-support/
++				199 button (collapsed) For Partners, Secondary Actions: Expand
++					200 text For Partners
++					201 image
++				202 button (collapsed) About, Secondary Actions: Expand
++					203 text About
++					204 image
++				205 link Description: Solution draft, Value: 127.0.0.1:9126/cart/
++				206 link Description: Sign in, Value: 127.0.0.1:9126/my-account/
++				207 link Description: Create account, Value: 127.0.0.1:9126/my-account/register/
++				208 link Description: Contact Linker, Value: 127.0.0.1:9126/contact/
+The focused UI element is 186 button (expanded) Description: Close menu, ID: tv-mobile-toggle, Secondary Actions: Collapse

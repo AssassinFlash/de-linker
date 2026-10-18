@@ -1,0 +1,12 @@
+
+> linker-tools@0.1.0 test:unit
+> wp-scripts test-unit-js --run src/genie/components/HelperFooter.test.tsx src/genie/App.test.tsx
+
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools
+
+
+ Test Files  2 passed (2)
+      Tests  37 passed (37)
+   Start at  12:10:49
+   Duration  1.60s (tests 35%, environment 33%, setup 17%, transform 11%, import 3%)

@@ -1,0 +1,37 @@
+{
+  "cases": [
+    {
+      "path": "/cart/?add-to-cart=4107",
+      "stem": "en-filled-draft",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": []
+    },
+    {
+      "path": "/de/warenkorb/?add-to-cart=4107",
+      "stem": "de-filled-draft",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89,
+      "ruledRegions": []
+    },
+    {
+      "path": "/cart/?add-to-cart=4107",
+      "stem": "en-filled-draft",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": []
+    },
+    {
+      "path": "/de/warenkorb/?add-to-cart=4107",
+      "stem": "de-filled-draft",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": []
+    }
+  ],
+  "allowedHeaderChanges": []
+}

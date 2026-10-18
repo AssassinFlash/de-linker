@@ -46,8 +46,12 @@ import { BlockView } from './components/BlockView';
 import { Compare } from './components/Compare';
 import { InquiryCard, InquirySent } from './components/InquiryCard';
 import type { SentInquiry } from './api/inquiry';
+import { CopyReply } from './components/CopyReply';
 import { ContactCard, ContactSent } from './components/ContactCard';
 import { GenieCard } from './components/GenieCard';
+import { HelperFooter } from './components/HelperFooter';
+import { Reply } from './components/Reply';
+import { Transcript } from './components/Transcript';
 import {
 	AttachIcon,
 	BackIcon,
@@ -169,6 +173,10 @@ export function App( { config }: { config: GenieConfig } ) {
 	// there, whatever is asked after it.
 	const turnAt = useRef( -1 );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
+	// The request still returns one complete answer. This index only opts the
+	// newly received answer into a short local reveal; stored history is instant.
+	const [ revealingAt, setRevealingAt ] = useState< number | null >( null );
+	const finishReveal = useCallback( () => setRevealingAt( null ), [] );
 	const [ input, setInput ] = useState( '' );
 	const [ cards, setCards ] = useState< CardItem[] >( [] );
 	const [ history, setHistory ] = useState< ConversationSummary[] >( [] );
@@ -187,6 +195,11 @@ export function App( { config }: { config: GenieConfig } ) {
 	// from the header's clock): it replaces the thread, and the header's
 	// mark becomes the way back. The workspace keeps its rail instead.
 	const [ dockHistory, setDockHistory ] = useState( false );
+	useEffect( () => {
+		if ( ! open || dockHistory ) {
+			finishReveal();
+		}
+	}, [ open, dockHistory, revealingAt, finishReveal ] );
 	// What the visitor attached for the next turn (#236): each file is
 	// prepared as it is picked and rides apart from the messages; its name
 	// rides in the question, so the thread says what was sent. What the
@@ -264,6 +277,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	}, [] );
 
 	const showStored = useCallback( async () => {
+		setRevealingAt( null );
 		const stored = await readThread( config.threadUrl, config.restNonce );
 		currentThread.current = stored.messages;
 		setThread( stored.messages );
@@ -297,6 +311,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			setOpen( true );
 			setDockHistory( false );
 			setPhase( 'waiting' );
+			setRevealingAt( null );
 			setInput( '' );
 			setRefused( '' );
 			setPhotoPrompt( false );
@@ -328,6 +343,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					currentThread.current = next.concat( assistant );
 					setThread( currentThread.current );
 					turnAt.current = currentThread.current.length - 1;
+					setRevealingAt( turnAt.current );
 					setTurn( answer );
 					setPhase( 'ask' );
 					// Enqueue, do not await: the refresh must follow this
@@ -997,11 +1013,20 @@ export function App( { config }: { config: GenieConfig } ) {
 						 */ }
 						{ ! historyView &&
 						( workspace || thread.length > 0 ) ? (
-							<div className="linker-genie-app__transcript">
+							<Transcript
+								followKey={
+									phase === 'waiting'
+										? thread.filter(
+												( message ) =>
+													message.role === 'user'
+											).length
+										: 0
+								}
+							>
 								<ol className="linker-genie-app__thread">
 									{ thread.map( ( message, index ) => (
 										<li
-											key={ index }
+											key={ `${ index }:${ message.role }:${ message.turnId ?? message.content }` }
 											className={ `linker-genie-app__message linker-genie-app__message--${ message.role }` }
 										>
 											{ /* `.gp-answer-brand` — the answer's own
@@ -1024,13 +1049,35 @@ export function App( { config }: { config: GenieConfig } ) {
 													</span>
 												</div>
 											) : null }
-											{ message.content }
 											{ 'assistant' === message.role ? (
-												<VoteButtons
-													voteUrl={ config.voteUrl }
-													nonce={ config.restNonce }
-													turnId={ message.turnId }
+												<Reply
+													text={ message.content }
+													locale={ config.locale }
+													animate={
+														index === revealingAt
+													}
+													onComplete={ finishReveal }
 												/>
+											) : (
+												message.content
+											) }
+											{ 'assistant' === message.role ? (
+												<div className="linker-genie-answer-actions">
+													<CopyReply
+														text={ message.content }
+													/>
+													<VoteButtons
+														voteUrl={
+															config.voteUrl
+														}
+														nonce={
+															config.restNonce
+														}
+														turnId={
+															message.turnId
+														}
+													/>
+												</div>
 											) : null }
 											{ contacts
 												.filter(
@@ -1070,11 +1117,28 @@ export function App( { config }: { config: GenieConfig } ) {
 										</li>
 									) ) }
 									{ 'waiting' === phase ? (
-										<li className="linker-genie-app__message linker-genie-app__message--assistant">
-											{ __(
-												'Genie is thinking…',
-												'linker-tools'
-											) }
+										<li className="linker-genie-app__message linker-genie-app__message--assistant linker-genie-wait">
+											<div
+												role="status"
+												className="linker-genie-wait__status"
+											>
+												<span
+													className="linker-genie-wait__dot"
+													aria-hidden="true"
+												/>
+												{ __(
+													'Genie is thinking…',
+													'linker-tools'
+												) }
+											</div>
+											<div
+												className="linker-genie-wait__lines"
+												aria-hidden="true"
+											>
+												<span />
+												<span />
+												<span />
+											</div>
 										</li>
 									) : null }
 								</ol>
@@ -1217,7 +1281,7 @@ export function App( { config }: { config: GenieConfig } ) {
 								 * team, the sent card stands here, where the
 								 * customer sent it. */ }
 								{ offersInquiry ? inquiryAfterAnswer : null }
-							</div>
+							</Transcript>
 						) : null }
 						{ /* The picked files, over the composer (#236). */ }
 						{ ! workspace && ! historyView ? (
@@ -1350,6 +1414,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									type="submit"
 									className="linker-genie-app__send"
 									disabled={
+										phase === 'waiting' ||
 										files.busy ||
 										( ! input.trim() &&
 											files.uploads.length === 0 )
@@ -1364,7 +1429,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						) : null }
 						{ /* `.gp-disclosure` — the prototype prints it under the
 						 * composer, inside the pinned zone. */ }
-						{ config.disclosure && ! historyView ? (
+						{ workspace && config.disclosure && ! historyView ? (
 							<p className="linker-genie-app__disclosure">
 								{ config.disclosure }
 							</p>
@@ -1388,42 +1453,11 @@ export function App( { config }: { config: GenieConfig } ) {
 								) ) }
 							</div>
 						) : null }
-						{ /*
-						 * The Advisor's `.lia-privacy` row, with the site's own
-						 * pages and words: the questions page, the contact page
-						 * and the privacy policy (English footer partial; the
-						 * German twins per tools/migrate/9-i18n.py's PAGE_BASES
-						 * and the German footer partial).
-						 */ }
 						{ ! workspace && ! historyView ? (
-							<p className="linker-genie-app__links">
-								<a
-									href={
-										german
-											? '/de/faq-download/'
-											: '/faq-download/'
-									}
-								>
-									{ __( 'FAQ & Downloads', 'linker-tools' ) }
-								</a>
-								<a
-									className="linker-genie-app__links-contact"
-									href={
-										german ? '/de/kontakt/' : '/contact/'
-									}
-								>
-									{ __( 'Contact Linker', 'linker-tools' ) }
-								</a>
-								<a
-									href={
-										german
-											? '/de/datenschutz/'
-											: '/privacy-policy/'
-									}
-								>
-									{ __( 'Privacy Policy', 'linker-tools' ) }
-								</a>
-							</p>
+							<HelperFooter
+								german={ german }
+								disclosure={ config.disclosure }
+							/>
 						) : null }
 					</div>
 				) : null }

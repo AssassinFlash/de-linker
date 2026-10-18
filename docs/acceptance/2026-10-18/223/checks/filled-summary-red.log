@@ -1,0 +1,22 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+FF...                                                               5 / 5 (100%)
+
+Time: 00:00.028, Memory: 22.00 MB
+
+There were 2 failures:
+
+1) Linker\Commerce\Tests\Unit\Gating\DraftSummaryTest::test_guests_see_the_login_box
+Failed asserting that '<div class="cart_totals linker-login-box"><p>You can send this solution draft without an account. Net prices are available after account approval.</p><p><a class="button alt wc-forward" href="https://example.test/proforma-request/">Send inquiry</a></p><p><a href="https://example.test/my-account/register/">No account yet? Register</a></p></div>' contains "href="https://example.test/my-account/register/">Create account</a>".
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-commerce/tests/php/Unit/Gating/DraftSummaryTest.php:66
+/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-commerce/vendor/10up/wp_mock/php/WP_Mock/Tools/TestCase.php:123
+
+2) Linker\Commerce\Tests\Unit\Gating\DraftSummaryTest::test_registration_is_hidden_when_unavailable
+Failed asserting that '' contains "Send inquiry</a>".
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-commerce/tests/php/Unit/Gating/DraftSummaryTest.php:79
+/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-commerce/vendor/10up/wp_mock/php/WP_Mock/Tools/TestCase.php:123
+
+FAILURES!
+Tests: 5, Assertions: 7, Failures: 2.

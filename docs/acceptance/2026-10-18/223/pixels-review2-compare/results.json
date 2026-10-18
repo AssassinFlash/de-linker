@@ -1,0 +1,162 @@
+[
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      4212
+    ],
+    "unmasked_different_pixels": 3097,
+    "difference_bounds": [
+      344,
+      596,
+      1013,
+      611
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          332,
+          579,
+          809,
+          625
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          808,
+          579,
+          1284,
+          625
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      4098
+    ],
+    "unmasked_different_pixels": 3749,
+    "difference_bounds": [
+      400,
+      622,
+      1081,
+      637
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          388,
+          605,
+          837,
+          651
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          836,
+          605,
+          1284,
+          651
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      5730
+    ],
+    "unmasked_different_pixels": 3199,
+    "difference_bounds": [
+      159,
+      741,
+      354,
+      796
+    ],
+    "masks": [],
+    "ruled_change": true,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          147,
+          724,
+          261,
+          810
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          260,
+          724,
+          374,
+          810
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 0
+  },
+  {
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      4900
+    ],
+    "unmasked_different_pixels": 6326,
+    "difference_bounds": [
+      16,
+      133,
+      372,
+      4120
+    ],
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [
+      {
+        "name": "guest net-price cells only:0",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          225,
+          710,
+          387,
+          776
+        ]
+      },
+      {
+        "name": "guest net-price cells only:1",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td",
+        "bounds": [
+          386,
+          710,
+          390,
+          776
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 4499
+  }
+]

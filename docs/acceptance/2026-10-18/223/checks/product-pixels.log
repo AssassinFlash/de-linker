@@ -1,0 +1,91 @@
+en-shop-1440-live.png
+en-shop-1440-local.png
+en-category-1440-live.png
+en-category-1440-local.png
+en-product-1440-live.png
+en-product-1440-local.png
+en-compare-1440-live.png
+en-compare-1440-local.png
+en-genie-dock-1440-live.png
+en-genie-dock-1440-local.png
+en-genie-workspace-1440-live.png
+en-genie-workspace-1440-local.png
+de-shop-1440-live.png
+de-shop-1440-local.png
+de-category-1440-live.png
+de-category-1440-local.png
+de-product-1440-live.png
+de-product-1440-local.png
+de-compare-1440-live.png
+de-compare-1440-local.png
+de-genie-dock-1440-live.png
+de-genie-dock-1440-local.png
+de-genie-workspace-1440-live.png
+de-genie-workspace-1440-local.png
+en-shop-390-live.png
+en-shop-390-local.png
+en-category-390-live.png
+en-category-390-local.png
+en-product-390-live.png
+en-product-390-local.png
+en-compare-390-live.png
+en-compare-390-local.png
+en-genie-workspace-390-live.png
+en-genie-workspace-390-local.png
+de-shop-390-live.png
+de-shop-390-local.png
+de-category-390-live.png
+de-category-390-local.png
+de-product-390-live.png
+de-product-390-local.png
+de-compare-390-live.png
+de-compare-390-local.png
+de-genie-workspace-390-live.png
+de-genie-workspace-390-local.png
+en-genie-dock-mobile-390-live.png
+en-genie-dock-mobile-390-local.png
+de-genie-dock-mobile-390-live.png
+de-genie-dock-mobile-390-local.png
+en-shop-1440: size mismatch (1440, 9238) / (1440, 9862)
+en-category-1440: size mismatch (1440, 9264) / (1440, 9888)
+de-shop-1440: size mismatch (1440, 9238) / (1440, 9862)
+de-category-1440: size mismatch (1440, 9264) / (1440, 9888)
+en-shop-390: size mismatch (390, 12252) / (390, 13500)
+en-category-390: size mismatch (390, 12270) / (390, 13518)
+en-compare-390: size mismatch (390, 5730) / (390, 5770)
+de-shop-390: size mismatch (390, 12590) / (390, 13838)
+de-category-390: size mismatch (390, 12619) / (390, 13867)
+de-product-390: size mismatch (390, 12545) / (390, 12561)
+de-compare-390: size mismatch (390, 4900) / (390, 4940)
+en-genie-dock-mobile-390: size mismatch (390, 12252) / (390, 13500)
+de-genie-dock-mobile-390: size mismatch (390, 12590) / (390, 13838)
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 7737], "unmasked_different_pixels": 2117, "difference_bounds": [1067, 305, 1277, 656], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "product guest entries:0", "selector": ".pdp-price", "bounds": [952, 296, 1360, 321]}], "outside_ruled_different_pixels": 1566}
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 4212], "unmasked_different_pixels": 1452, "difference_bounds": [536, 596, 1117, 611], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "compare guest entries:0", "selector": "#linker-compare tr:nth-child(2) td", "bounds": [332, 579, 809, 625]}, {"name": "compare guest entries:1", "selector": "#linker-compare tr:nth-child(2) td", "bounds": [808, 579, 1284, 625]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 8278], "unmasked_different_pixels": 87538, "difference_bounds": [1020, 7702, 1420, 8162], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "genie-dock guest entries:0", "selector": ".linker-genie-panel", "bounds": [1020, 7562, 1420, 8162]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 2050], "unmasked_different_pixels": 170353, "difference_bounds": [0, 324, 1440, 1475], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "genie-workspace guest entries:0", "selector": ".linker-genie-panel--workspace", "bounds": [0, 89, 1440, 1475]}], "outside_ruled_different_pixels": 0}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 7913], "unmasked_different_pixels": 15661, "difference_bounds": [188, 21, 1416, 676], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "product guest entries:0", "selector": ".pdp-price", "bounds": [952, 296, 1360, 321]}], "outside_ruled_different_pixels": 15125}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 4098], "unmasked_different_pixels": 14550, "difference_bounds": [188, 21, 1416, 637], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "compare guest entries:0", "selector": "#linker-compare tr:nth-child(2) td", "bounds": [388, 605, 837, 651]}, {"name": "compare guest entries:1", "selector": "#linker-compare tr:nth-child(2) td", "bounds": [836, 605, 1284, 651]}], "outside_ruled_different_pixels": 13061}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 8591], "unmasked_different_pixels": 104113, "difference_bounds": [188, 21, 1420, 8475], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "genie-dock guest entries:0", "selector": ".linker-genie-panel", "bounds": [1020, 7875, 1420, 8475]}], "outside_ruled_different_pixels": 13059}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 2050], "unmasked_different_pixels": 186991, "difference_bounds": [0, 21, 1440, 1475], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "genie-workspace guest entries:0", "selector": ".linker-genie-panel--workspace", "bounds": [0, 89, 1440, 1475]}], "outside_ruled_different_pixels": 13059}
+{"language": "en", "viewport_width": 390, "image_size": [390, 11781], "unmasked_different_pixels": 1914, "difference_bounds": [85, 11721, 347, 11753], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "product guest entries:0", "selector": ".pdp-price", "bounds": [29, 11718, 193, 11752]}], "outside_ruled_different_pixels": 1369}
+{"language": "en", "viewport_width": 390, "image_size": [390, 2238], "unmasked_different_pixels": 69738, "difference_bounds": [0, 655, 390, 1569], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "genie-workspace guest entries:0", "selector": ".linker-genie-panel--workspace", "bounds": [0, 81, 390, 1569]}], "outside_ruled_different_pixels": 0}
+{"language": "de", "viewport_width": 390, "image_size": [390, 2364], "unmasked_different_pixels": 73914, "difference_bounds": [0, 686, 390, 1632], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "genie-workspace guest entries:0", "selector": ".linker-genie-panel--workspace", "bounds": [0, 81, 390, 1632]}], "outside_ruled_different_pixels": 0}
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: python3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/visual/compare.py docs/acceptance/2026-10-18/223/pixels-products
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:916:11)
+    at execFileSync (node:child_process:952:15)
+    at file:///Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/visual/pixel-parity.mjs:200:2 {
+  status: 1,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 10506,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v22.23.2

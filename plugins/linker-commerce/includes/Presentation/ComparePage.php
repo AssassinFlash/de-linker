@@ -223,7 +223,7 @@ final class ComparePage {
 		$html .= '</tr></thead><tbody>';
 
 		$html .= $this->row( __( 'Item number', 'linker-commerce' ), array_map( static fn( array $column ): string => $column['sku'], $columns ) );
-		$html .= $this->row( __( 'Net price', 'linker-commerce' ), array_map( static fn( array $column ): string => $column['price'], $columns ), true );
+		$html .= $this->row( __( 'Net price', 'linker-commerce' ), array_map( static fn( array $column ): string => $column['price_visible'] ? $column['price'] : AccountLinks::comparison_price( $column['price'] ), $columns ), true );
 		$html .= $this->row( __( 'Availability', 'linker-commerce' ), array_map( static fn( array $column ): string => $column['availability'], $columns ) );
 		foreach ( $comparison['rows'] as $dimension ) {
 			$values = array_map(

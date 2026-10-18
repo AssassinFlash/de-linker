@@ -138,8 +138,10 @@ class Thread {
 		if ( '' !== $answer['text'] && array() !== $answer['products'] ) {
 			$known[ self::key( $answer['text'] ) ] = $answer['products'];
 		}
-		update_post_meta( $conversation, self::MESSAGES, $kept );
-		update_post_meta( $conversation, self::STREAM, $stream );
+		// WordPress unslashes meta before storage. Preserve JSON escapes and
+		// literal backslashes so reopening renders the original answer (#223).
+		update_post_meta( $conversation, self::MESSAGES, wp_slash( $kept ) );
+		update_post_meta( $conversation, self::STREAM, wp_slash( $stream ) );
 		update_post_meta( $conversation, self::PRODUCTS, $known );
 		update_post_meta( $conversation, self::ACTIVITY, time() );
 	}

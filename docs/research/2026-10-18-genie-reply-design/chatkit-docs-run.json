@@ -1,0 +1,17 @@
+{
+  "source": "https://openai.github.io/chatkit-js/",
+  "capturedAt": "2026-10-18T04:16:56.298923+00:00",
+  "actor": "apify/rag-web-browser",
+  "runId": "aNfahQyrn24fsEVtU",
+  "datasetId": "6mEyDDGrEL2BzbRoZ",
+  "status": "SUCCEEDED",
+  "input": {
+    "query": "https://openai.github.io/chatkit-js/",
+    "maxResults": 1,
+    "outputFormats": [
+      "markdown"
+    ]
+  },
+  "usageTotalUsd": 0.0009,
+  "statusMessage": "Finished! Scraped 1 pages, 0 failed."
+}

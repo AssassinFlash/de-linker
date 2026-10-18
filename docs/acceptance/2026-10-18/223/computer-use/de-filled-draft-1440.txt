@@ -1,0 +1,25 @@
+Browser tab: 2, Title: "Lösungsentwurf | Linker", URL: "http://127.0.0.1:9126/de/warenkorb/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 6-10, 37-39
++			71 pop up button (collapsed) Produkte, Secondary Actions: Expand
++				72 text Produkte
++				73 image
++			74 pop up button (collapsed) Lösungen, Secondary Actions: Expand
++				75 text Lösungen
++				76 image
++			77 pop up button (collapsed) Planen mit Linker, Secondary Actions: Expand
++			78 link Description: Dienstleistungen, Value: 127.0.0.1:9126/de/service-support/
++			79 pop up button (collapsed) Für Partner, Secondary Actions: Expand
++			80 pop up button (collapsed) Über uns, Secondary Actions: Expand
++			81 link Description: Lösungsentwurf, Value: 127.0.0.1:9126/de/warenkorb/
++			82 pop up button (collapsed) Description: Anmelden, Secondary Actions: Expand
++			83 container Sprache
++				84 link Description: EN, Help: English, Value: 127.0.0.1:9126/cart/
++				85 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9126/de/warenkorb/
++			86 link Description: Linker kontaktieren, Value: 127.0.0.1:9126/de/kontakt/
++			87 container
++				88 text Sie können diesen Lösungsentwurf ohne Konto senden. Nettopreise sehen Sie nach der Freigabe Ihres Kontos.
++				89 link Description: Anfrage senden, Value: 127.0.0.1:9126/de/proforma-anfrage/
++				90 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
++		91 button (collapsed) Description: Genie fragen, Secondary Actions: Expand
+The focused UI element is 1 AXWebArea Lösungsentwurf | Linker, URL: 127.0.0.1:9126/de/warenkorb/

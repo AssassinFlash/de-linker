@@ -1,0 +1,13 @@
+Browser tab: 2, Title: "Lösungsentwurf | Linker", URL: "http://127.0.0.1:9126/de/warenkorb/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 76-91
++			5 link Description: Produkte suchen, Value: 127.0.0.1:9126/de/produkte/#search-box
+~			71 container Sprache
+~				72 link Description: EN, Help: English, Value: 127.0.0.1:9126/cart/
+~				73 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9126/de/warenkorb/
+~			74 button (collapsed) Description: Menü öffnen, ID: tv-mobile-toggle, Secondary Actions: Expand
+~				75 image
++			76 text Sie können diesen Lösungsentwurf ohne Konto senden. Nettopreise sehen Sie nach der Freigabe Ihres Kontos.
++			77 link Description: Anfrage senden, Value: 127.0.0.1:9126/de/proforma-anfrage/
++			78 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
+The focused UI element is 1 AXWebArea Lösungsentwurf | Linker, URL: 127.0.0.1:9126/de/warenkorb/

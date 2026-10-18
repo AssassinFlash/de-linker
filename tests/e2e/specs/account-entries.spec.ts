@@ -1,0 +1,431 @@
+/** Guest sign-in surfaces also offer the native registration endpoint (#223). */
+import { expect, test } from '@playwright/test';
+import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { instance, loginLink, REPO_ROOT, wp } from '../lib/instance';
+
+test.describe.configure({ timeout: 60_000 });
+
+for (const locale of ['en', 'de'] as const) {
+	const home = locale === 'de' ? '/de/' : '/';
+	const account = locale === 'de' ? '/de/mein-konto/' : '/my-account/';
+	for (const width of [1440, 390]) {
+		for (const surface of ['dock', 'workspace']) {
+			test(`${locale}-${width}: Genie ${surface} has native guest entries`, async ({
+				page,
+			}) => {
+				await page.setViewportSize({ width, height: 900 });
+				await page.goto(
+					instance().url +
+						(surface === 'workspace'
+							? home + 'genie/'
+							: width === 390
+								? locale === 'de'
+									? '/de/produkte/'
+									: '/products/'
+								: home)
+				);
+				if (surface === 'dock')
+					await page
+						.locator(
+							width === 390
+								? '.product-mobile-actions .linker-genie-chip'
+								: '.linker-genie-open'
+						)
+						.click();
+				if (surface === 'dock') {
+					// The sheet is opaque; its own scrim must only dim the page behind it.
+					await expect(
+						page.locator('.linker-genie-app__main')
+					).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+					await page.locator('.linker-genie-app__input').click();
+					await expect(
+						page.locator('.linker-genie-app__input')
+					).toBeFocused();
+				}
+				const entries = page.locator(
+					'.linker-genie-panel>.linker-guest-account-links'
+				);
+				await expect(entries).toBeVisible();
+				// OpenAI reference A2: the two account actions are 44px pills.
+				await expect(entries.locator('a').first()).toHaveCSS(
+					'background-color',
+					'rgb(13, 13, 13)'
+				);
+				await expect(entries.locator('a').first()).toHaveCSS(
+					'border-radius',
+					'999px'
+				);
+				if (surface === 'dock') {
+					await expect(
+						page.locator('.linker-genie-app__welcome-greeting')
+					).toHaveCSS('font-weight', '400');
+					const main = await page
+						.locator('.linker-genie-app__main')
+						.boundingBox();
+					const links = await page
+						.locator('.linker-genie-footnote')
+						.boundingBox();
+					// The legal/support footer finishes at the sheet bottom (A7, 16px rhythm).
+					const bottomGap =
+						main!.y + main!.height - (links!.y + links!.height);
+					expect(bottomGap).toBeGreaterThanOrEqual(0);
+					expect(bottomGap).toBeLessThanOrEqual(16);
+					const support = page.locator('.linker-genie-help');
+					await expect(support.locator('a').first()).toBeHidden();
+					await support.locator('summary').click();
+					await expect(support.locator('a')).toHaveCount(3);
+					for (const link of await support.locator('a').all())
+						await expect(link).toBeVisible();
+					await support.locator('a').last().focus();
+					await page.keyboard.press('Escape');
+					await expect(support).not.toHaveAttribute('open');
+					await expect(support.locator('summary')).toBeFocused();
+				}
+				await expect(entries.locator('a').first()).toHaveAttribute(
+					'href',
+					instance().url + account
+				);
+				const create = entries.locator('.linker-create-account');
+				await expect(create).toHaveText(
+					locale === 'de' ? 'Konto erstellen' : 'Create account'
+				);
+				await create.click();
+				await expect(page).toHaveURL(
+					instance().url + account + 'register/'
+				);
+			});
+		}
+		test(`${locale}-${width}: filled draft pairs every guest price prompt`, async ({
+			page,
+			context,
+		}) => {
+			await page.setViewportSize({ width, height: 900 });
+			await context.request.get(
+				instance().url +
+					(locale === 'de' ? '/de/' : '/') +
+					'?add-to-cart=4107'
+			);
+			await page.goto(
+				instance().url + (locale === 'de' ? '/de/warenkorb/' : '/cart/')
+			);
+			const gates = page.locator(
+				'.woocommerce-cart-form .linker-price-entries'
+			);
+			await expect(gates).toHaveCount(2);
+			for (const gate of await gates.all()) {
+				await expect(
+					gate.locator('.linker-price-login')
+				).toHaveAttribute('href', instance().url + account);
+				await expect(
+					gate.locator('.linker-create-account')
+				).toHaveAttribute(
+					'href',
+					instance().url + account + 'register/'
+				);
+			}
+			await expect(
+				page.locator('.linker-login-box .linker-create-account')
+			).toBeVisible();
+			const evidence = join(
+				REPO_ROOT,
+				'docs/acceptance/2026-10-18/223/filled-draft'
+			);
+			mkdirSync(evidence, { recursive: true });
+			await page.screenshot({
+				path: join(evidence, `${locale}-${width}.png`),
+				fullPage: true,
+			});
+			await gates.first().locator('.linker-create-account').click();
+			await expect(page).toHaveURL(
+				instance().url + account + 'register/'
+			);
+			// This disposable browser owns its anonymous Woo session; no user cart is changed.
+		});
+		test(`${locale}-${width}: registration survives a family model switch`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height: 900 });
+			await page.goto(
+				instance().url +
+					(locale === 'de'
+						? '/de/produkte/?brand=saj'
+						: '/products/?brand=saj')
+			);
+			const card = page
+				.locator('[data-linker-family-card]')
+				.filter({ has: page.locator('[data-linker-select-product]') })
+				.first();
+			const choice = card.locator('[data-linker-select-product]').last();
+			const selectedId = await choice.getAttribute(
+				'data-linker-select-product'
+			);
+			await card.locator('.card-product-picker>summary').click();
+			await choice.click();
+			await expect(card).toHaveAttribute('data-product-id', selectedId!);
+			await card
+				.locator('.sf-card-actions .linker-create-account')
+				.click();
+			await expect(page).toHaveURL(
+				instance().url + account + 'register/'
+			);
+		});
+
+		for (const [surface, route, selector] of [
+			[
+				'shop',
+				locale === 'de' ? '/de/produkte/' : '/products/',
+				'.sf-card-actions',
+			],
+			[
+				'category',
+				locale === 'de'
+					? '/de/produkt-kategorie/wechselrichter/'
+					: '/product-category/inverters/',
+				'.sf-card-actions',
+			],
+			[
+				'product',
+				locale === 'de'
+					? '/de/produkt/saj-h2-10k-t3/'
+					: '/product/saj-h2-10k-t3/',
+				'.pdp-price',
+			],
+			[
+				'compare',
+				home + 'compare-products/?ids=4107,4108',
+				'#linker-compare',
+			],
+		]) {
+			test(`${locale}-${width}: ${surface} price prompt offers registration`, async ({
+				page,
+			}) => {
+				await page.setViewportSize({ width, height: 900 });
+				await page.goto(instance().url + route);
+
+				const create = page
+					.locator(`${selector} .linker-create-account:visible`)
+					.first();
+				await expect(create).toBeVisible();
+				if (surface === 'shop' || surface === 'category') {
+					expect(
+						await page
+							.locator('.sf-card-actions')
+							.first()
+							.evaluate((e) => e.getBoundingClientRect().height)
+					).toBe(44);
+				}
+				if (surface === 'compare') {
+					await expect(
+						page.locator('.linker-comparison-signin').first()
+					).toHaveText(locale === 'de' ? 'Anmelden' : 'Sign in');
+					expect(
+						await page.evaluate(
+							() => document.documentElement.scrollWidth
+						)
+					).toBe(width);
+				}
+				await create.click();
+				await expect(page).toHaveURL(
+					instance().url + account + 'register/'
+				);
+			});
+		}
+		if (width === 390) {
+			test(`${locale}-${width}: four comparison models stay readable inside the scroll region`, async ({
+				page,
+			}) => {
+				await page.setViewportSize({ width, height: 900 });
+				await page.goto(
+					instance().url +
+						home +
+						'compare-products/?ids=4107,4108,4109,4106'
+				);
+				await expect(
+					page.locator('.linker-compare-column')
+				).toHaveCount(4);
+				for (const column of await page
+					.locator('.linker-compare-column')
+					.all()) {
+					expect(
+						await column.evaluate(
+							(e) => e.getBoundingClientRect().width
+						)
+					).toBeGreaterThan(80);
+				}
+				expect(
+					await page.evaluate(
+						() => document.documentElement.scrollWidth
+					)
+				).toBe(width);
+				await page
+					.locator('#linker-compare .linker-create-account')
+					.last()
+					.click();
+				await expect(page).toHaveURL(
+					instance().url + account + 'register/'
+				);
+			});
+		}
+
+		for (const [surface, route, selector] of [
+			[
+				'draft',
+				locale === 'de' ? '/de/warenkorb/' : '/cart/',
+				'.sf-cart-empty',
+			],
+			['lost', account + 'lost-password/', '.linker-auth-links'],
+			[
+				'lost-confirmation',
+				account + 'lost-password/?reset-link-sent=true',
+				'.linker-auth-links',
+			],
+			[
+				'document',
+				home + '?linker-document=proforma&id=1',
+				'#error-page',
+			],
+		]) {
+			test(`${locale}-${width}: ${surface} has independent registration`, async ({
+				page,
+			}) => {
+				await page.setViewportSize({ width, height: 900 });
+				const response = await page.goto(instance().url + route);
+				if (surface === 'document')
+					expect(response?.status()).toBe(403);
+				if (surface === 'draft' && locale === 'de' && width === 390) {
+					// Live reference: 45px primary row + 12px gap + 47px secondary row.
+					await expect(
+						page.locator('.sf-cart-empty__actions')
+					).toHaveCSS('height', '104px');
+				}
+				const create = page
+					.locator(selector!)
+					.locator('.linker-create-account');
+				await expect(create).toBeVisible();
+				await create.click();
+				await expect(page).toHaveURL(
+					instance().url + account + 'register/'
+				);
+			});
+		}
+		test(`${locale}-${width}: open inquiry keeps both optional account entries`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height: 900 });
+			await page.goto(
+				instance().url +
+					(locale === 'de'
+						? '/de/proforma-anfrage/'
+						: '/proforma-request/')
+			);
+			await expect(page.locator('#inquiry-email')).toBeVisible();
+			const create = page.locator(
+				'.linker-inquiry-guest .linker-create-account'
+			);
+			await expect(create).toBeVisible();
+			if (width === 390) {
+				const link = await create.boundingBox();
+				const draft = await page
+					.locator('.linker-inquiry-draft')
+					.boundingBox();
+				// Keep a readable separation from the following draft card.
+				expect(
+					draft!.y - link!.y - link!.height
+				).toBeGreaterThanOrEqual(24);
+			}
+			await create.click();
+			await expect(page).toHaveURL(
+				instance().url + account + 'register/'
+			);
+		});
+		test(`${locale}-${width}: footer offers a direct registration entry`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height: 900 });
+			await page.goto(instance().url + home);
+			await page.locator('#footer-tab-account').click();
+			const panel = page.locator('#footer-panel-account');
+			await expect(panel.locator('.linker-create-account')).toBeVisible();
+			await expect(panel.locator('.footer-panel-count')).toHaveText('04');
+			expect(
+				await panel
+					.locator('.footer-account-tile')
+					.evaluate((e) => e.getBoundingClientRect().height)
+			).toBe(
+				await panel
+					.locator('.footer-route-list>li:last-child>a')
+					.evaluate((e) => e.getBoundingClientRect().height)
+			);
+			await panel.locator('.linker-create-account').click();
+			await expect(page).toHaveURL(
+				instance().url + account + 'register/'
+			);
+		});
+		test(`${locale}-${width}: header registration opens its own language's form`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height: 900 });
+			await page.goto(instance().url + home);
+			if (width === 1440) await page.locator('.tv-b2b-acct-btn').click();
+			else await page.locator('#tv-mobile-toggle').click();
+			const scope = page.locator(
+				width === 1440 ? '.tv-b2b-acct-menu' : '#tv-mobile-panel'
+			);
+			const create = scope.locator('.linker-create-account');
+			await expect(create).toBeVisible();
+			await expect(create).toHaveAttribute(
+				'href',
+				instance().url + account + 'register/'
+			);
+			await create.click();
+			await expect(page).toHaveURL(
+				instance().url + account + 'register/'
+			);
+			await expect(page.locator('form.register')).toBeVisible();
+		});
+	}
+}
+
+test('a separate newly created account cannot read another account document or Genie inquiry', async ({
+	page,
+}) => {
+	const fixture = JSON.parse(
+		wp([
+			'eval',
+			`$a = wp_insert_user( [ 'user_login' => 'c223_document_owner', 'user_email' => 'c223-owner@example.test', 'role' => 'customer', 'user_pass' => wp_generate_password() ] ); $b = wp_insert_user( [ 'user_login' => 'c223_document_other', 'user_email' => 'c223-other@example.test', 'role' => 'customer', 'user_pass' => wp_generate_password() ] ); if ( is_wp_error( $a ) || is_wp_error( $b ) ) { throw new Exception( 'fixture account already exists' ); } $o = wc_create_order( [ 'customer_id' => $a ] ); update_user_meta( $b, 'linker_approval_status', 'approved' ); echo json_encode( [ 'owner' => $a, 'other' => $b, 'order' => $o->get_id() ] );`,
+		])
+	) as { owner: number; other: number; order: number };
+	try {
+		const route = `${instance().url}/?linker-document=proforma&id=${fixture.order}`;
+		expect((await page.goto(route))?.status()).toBe(403);
+		await expect(page.locator('.linker-create-account')).toBeVisible();
+		const inquiryIds = async () => {
+			await page.goto(instance().url + '/genie/');
+			const nonce = await page
+				.locator('[data-linker-app="genie"]')
+				.getAttribute('data-rest-nonce');
+			const response = await page.request.get(
+				instance().url +
+					'/wp-json/wp-abilities/v1/abilities/linker/inquiry-status/run',
+				{ headers: { 'X-WP-Nonce': nonce! } }
+			);
+			expect(response.status()).toBe(200);
+			const body = (await response.json()) as {
+				inquiries: { id: number }[];
+			};
+			return body.inquiries.map((inquiry) => inquiry.id);
+		};
+		await page.goto(loginLink(undefined, 'c223_document_owner'));
+		expect(await inquiryIds()).toContain(fixture.order);
+		await page.goto(loginLink(undefined, 'c223_document_other'));
+		expect(await inquiryIds()).not.toContain(fixture.order);
+		expect((await page.goto(route))?.status()).toBe(403);
+		await expect(page.locator('.linker-create-account')).toHaveCount(0);
+	} finally {
+		wp([
+			'eval',
+			`$o = wc_get_order( ${fixture.order} ); if ( $o ) { $o->delete( true ); } require_once ABSPATH . 'wp-admin/includes/user.php'; wp_delete_user( ${fixture.owner} ); wp_delete_user( ${fixture.other} );`,
+		]);
+	}
+});

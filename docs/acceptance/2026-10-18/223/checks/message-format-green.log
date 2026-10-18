@@ -1,0 +1,12 @@
+
+> linker-tools@0.1.0 test:unit
+> wp-scripts test-unit-js --run src/genie/components/MessageBody.test.tsx
+
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  12:18:55
+   Duration  638ms (environment 53%, setup 23%, import 12%, tests 7%, transform 4%)

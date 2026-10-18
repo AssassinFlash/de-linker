@@ -13,6 +13,8 @@ use WC_Order;
 use WC_Order_Item;
 use WC_Order_Item_Product;
 use WC_Product;
+use Linker\Commerce\Presentation\AccountLinks;
+use Linker\Commerce\Presentation\Tokens;
 
 /**
  * Applies CommerceState: a product whose price the visitor may not see has no
@@ -161,13 +163,14 @@ final class PriceDisplay {
 	public function order_line_subtotal( string $subtotal, WC_Order_Item $item ): string {
 		$reason = $item->get_meta( self::ITEM_REASON_META );
 		if ( $item instanceof WC_Order_Item_Product && ! $this->state->visitor_sees_prices() ) {
-			return $this->label( $this->state->reason( is_string( $reason ) ? $reason : '', CommerceState::CARD ) ?? $this->state->visitor_reason() );
+			return $this->label( $this->state->reason( is_string( $reason ) ? $reason : '', CommerceState::CARD ) ?? $this->state->visitor_reason(), false );
 		}
 		if ( ! $item instanceof WC_Order_Item_Product || ! is_string( $reason ) || '' === $reason || 0.0 !== (float) $item->get_total() ) {
 			return $subtotal;
 		}
 		$reason = $this->state->reason( $reason, CommerceState::CARD );
-		return null === $reason ? $subtotal : $this->label( $reason );
+		// Inquiry emails print this label too: no registration entry there.
+		return null === $reason ? $subtotal : $this->label( $reason, false );
 	}
 
 	/**
@@ -246,14 +249,20 @@ final class PriceDisplay {
 	 * cells. The guest's text links to the account page, every other text is a
 	 * plain note.
 	 *
-	 * @param string $reason One of the CommerceState reasons.
+	 * @param string $reason      One of the CommerceState reasons.
+	 * @param bool   $with_create Add the registration entry (screen surfaces only:
+	 *                            the emails use this label too, and a new entry
+	 *                            there is not part of this ticket).
 	 */
-	public function label( string $reason ): string {
+	public function label( string $reason, bool $with_create = true ): string {
 		if ( CommerceState::LOGIN === $reason ) {
-			return sprintf(
-				'<a class="linker-price-login" href="%1$s">%2$s</a>',
-				esc_url( wc_get_page_permalink( 'myaccount' ) ),
-				$this->reason_text( $reason )
+			return strtr(
+				Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/price-gate.html' ),
+				array(
+					'{{signin-url}}' => esc_url( wc_get_page_permalink( 'myaccount' ) ),
+					'{{signin}}'     => $this->reason_text( $reason ),
+					'{{create}}'     => $with_create ? AccountLinks::create() : '',
+				)
 			);
 		}
 		return '<span class="linker-price-note">' . $this->reason_text( $reason ) . '</span>';

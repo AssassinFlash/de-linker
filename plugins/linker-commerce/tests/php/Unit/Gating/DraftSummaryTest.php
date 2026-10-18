@@ -10,9 +10,9 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Gating;
 
 use Linker\Commerce\Gating\CommerceState;
-use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Gating\DraftSummary;
 use Linker\Commerce\Gating\PriceDisplay;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WC_Cart;
@@ -27,6 +27,13 @@ use WP_Mock;
 final class DraftSummaryTest extends TestCase {
 
 	/**
+	 * Woo registration state for this request.
+	 *
+	 * @var string
+	 */
+	private string $registration = 'yes';
+
+	/**
 	 * Translation and escaping return their input.
 	 */
 	public function setUp(): void {
@@ -39,6 +46,7 @@ final class DraftSummaryTest extends TestCase {
 			)
 		);
 		$this->plain_text();
+		WP_Mock::userFunction( 'get_option', array( 'return' => fn (): string => $this->registration ) );
 	}
 
 	/**
@@ -63,7 +71,39 @@ final class DraftSummaryTest extends TestCase {
 		$html = (string) ob_get_clean();
 
 		$this->assertStringContainsString( 'href="https://example.test/proforma-request/">Send inquiry</a>', $html );
-		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">No account yet? Register</a>', $html );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/">Create account</a>', $html );
+	}
+
+	/**
+	 * Pending accounts and guests with registration closed can still inquire.
+	 *
+	 * @dataProvider unavailable_registration
+	 * @param bool $logged_in Whether the visitor has an account.
+	 */
+	public function test_registration_is_hidden_when_unavailable( bool $logged_in ): void {
+		$this->registration = 'no';
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $logged_in ) );
+		$this->approval_meta( array() );
+		WP_Mock::userFunction( 'remove_action', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wc_get_checkout_url', array( 'return' => 'https://example.test/proforma-request/' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
+		ob_start();
+		( new DraftSummary( new CommerceState( new Approval() ), new PriceDisplay( new CommerceState( new Approval() ) ) ) )->guest_totals();
+		$html = (string) ob_get_clean();
+		$this->assertStringContainsString( 'Send inquiry</a>', $html );
+		$this->assertStringNotContainsString( '/register/', $html );
+	}
+
+	/**
+	 * Visitors who cannot register.
+	 *
+	 * @return array<string, array{bool}>
+	 */
+	public function unavailable_registration(): array {
+		return array(
+			'guest registration closed' => array( false ),
+			'pending account'           => array( true ),
+		);
 	}
 
 

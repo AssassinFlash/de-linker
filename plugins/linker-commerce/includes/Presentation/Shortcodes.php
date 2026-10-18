@@ -357,22 +357,21 @@ final class Shortcodes {
 		 * lives in the storefront volume.
 		 */
 	private function empty_draft_html(): string {
-		$products = (string) get_permalink( wc_get_page_id( 'shop' ) );
-		$account  = (string) wc_get_page_permalink( 'myaccount' );
-		$icon     = '<svg class="sf-cart-empty__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M3 4h2l2.2 11.2a1 1 0 0 0 1 .8h9.6a1 1 0 0 0 1-.8L21 8H7"/></svg>';
-		return sprintf(
-			'<section class="sf-cart-empty" aria-label="%1$s">%2$s<h1>%3$s</h1><p>%4$s</p><div class="sf-cart-empty__actions"><a class="sf-cart-btn" href="%5$s">%6$s</a><a class="sf-cart-btn sf-cart-btn--ghost" href="%7$s">%8$s</a></div></section>',
-			esc_attr__( 'Empty solution draft', 'linker-commerce' ),
-			$icon,
-			esc_html__( 'Your solution draft is empty.', 'linker-commerce' ),
-			esc_html__( 'Browse products and add them to your solution draft. You can send an inquiry without an account.', 'linker-commerce' ),
-			esc_url( $products ),
-			esc_html__( 'Browse products', 'linker-commerce' ),
-			esc_url( $account ),
-			esc_html__( 'Sign in or register', 'linker-commerce' )
+		$products = get_permalink( wc_get_page_id( 'shop' ) );
+		return strtr(
+			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/empty-draft.html' ),
+			array(
+				'{{label}}'        => esc_attr__( 'Empty solution draft', 'linker-commerce' ),
+				'{{title}}'        => esc_html__( 'Your solution draft is empty.', 'linker-commerce' ),
+				'{{intro}}'        => esc_html__( 'Browse products and add them to your solution draft. You can send an inquiry without an account.', 'linker-commerce' ),
+				'{{products-url}}' => esc_url( false === $products ? '' : $products ),
+				'{{products}}'     => esc_html__( 'Browse products', 'linker-commerce' ),
+				'{{signin-url}}'   => esc_url( wc_get_page_permalink( 'myaccount' ) ),
+				'{{signin}}'       => esc_html__( 'Sign in', 'linker-commerce' ),
+				'{{create}}'       => AccountLinks::create(),
+			)
 		);
 	}
-
 
 	/**
 	 * The current product's FAQ rows from `_linker_faqs` (docs/specs/15-faq.md),

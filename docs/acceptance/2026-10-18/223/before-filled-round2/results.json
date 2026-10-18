@@ -1,0 +1,165 @@
+[
+  {
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1421
+    ],
+    "unmasked_different_pixels": 6971,
+    "difference_bounds": [
+      304,
+      465,
+      1124,
+      612
+    ],
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [
+      {
+        "name": "guest line price and subtotal:0",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          304,
+          511,
+          855,
+          556
+        ]
+      },
+      {
+        "name": "guest line price and subtotal:1",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          633,
+          460,
+          855,
+          515
+        ]
+      },
+      {
+        "name": "guest summary account entries:0",
+        "selector": ".linker-login-box",
+        "bounds": [
+          934,
+          460,
+          1284,
+          603
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 1874
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      1421
+    ],
+    "unmasked_different_pixels": 9836,
+    "difference_bounds": [
+      304,
+      465,
+      1160,
+      619
+    ],
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [
+      {
+        "name": "guest line price and subtotal:0",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          304,
+          526,
+          855,
+          564
+        ]
+      },
+      {
+        "name": "guest line price and subtotal:1",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          585,
+          460,
+          855,
+          530
+        ]
+      },
+      {
+        "name": "guest summary account entries:0",
+        "selector": ".linker-login-box",
+        "bounds": [
+          934,
+          460,
+          1284,
+          603
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 3471
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1901
+    ],
+    "unmasked_different_pixels": 6349,
+    "difference_bounds": [
+      16,
+      606,
+      354,
+      1125
+    ],
+    "masks": [],
+    "ruled_change": false,
+    "ruled_regions": [
+      {
+        "name": "guest line price and subtotal:0",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          132,
+          676,
+          374,
+          698
+        ]
+      },
+      {
+        "name": "guest line price and subtotal:1",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal",
+        "bounds": [
+          132,
+          643,
+          374,
+          665
+        ]
+      },
+      {
+        "name": "guest summary account entries:0",
+        "selector": ".linker-login-box",
+        "bounds": [
+          16,
+          987,
+          374,
+          1129
+        ]
+      }
+    ],
+    "outside_ruled_different_pixels": 3312
+  },
+  {
+    "case": "de-filled-draft-390",
+    "dimension_match": false,
+    "live_size": [
+      390,
+      1987
+    ],
+    "local_size": [
+      390,
+      2029
+    ],
+    "ruled_change": false
+  }
+]

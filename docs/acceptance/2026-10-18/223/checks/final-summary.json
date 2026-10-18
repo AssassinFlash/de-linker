@@ -1,0 +1,59 @@
+{
+  "instance": "c223",
+  "url": "http://127.0.0.1:9126",
+  "source_head": "160623c913aab10d2ef356cd4efedfc1e4814bfe",
+  "rebase_base": "05a3fbc127e9e2624a8505b3265b6d6e7a7bf91d",
+  "just_check": "passed",
+  "just_test": "passed",
+  "account_browser": {
+    "cases": 63,
+    "repeats": 2,
+    "passed": 126
+  },
+  "reply_and_empty_draft_browser": {
+    "cases": 14,
+    "repeats": 2,
+    "passed": 28
+  },
+  "real_model_format_browser": {
+    "languages": [
+      "en",
+      "de"
+    ],
+    "passed": 2,
+    "response_interception": false,
+    "reopened_text_identical": true
+  },
+  "header": {
+    "tests_passed": 24,
+    "widths_per_engine": 95,
+    "chromium_fold_and_visibility_mismatch": [],
+    "webkit_fold_and_visibility_mismatch": [],
+    "firefox_fold_and_visibility_mismatch": [
+      1283,
+      1284,
+      1285,
+      1286,
+      1287
+    ],
+    "firefox_direction": "EN expanded, DE folded"
+  },
+  "pixel_gate": {
+    "status": "PASS",
+    "outside_zero": 56,
+    "outside_nonzero": 0,
+    "dimension_fail": 0,
+    "total": 56,
+    "historical_de_header_cases_retained": 10
+  },
+  "filled_draft_live_parity": "PASS all4, independent repeat4PASS",
+  "inline_hero_wiring": "delegated to #232 per owner ruling 2026-10-18; #223 does not claim it",
+  "genie_changes": {
+    "owner_approved_presentation_format_contract": true,
+    "lossless_wp_meta_escaping": true,
+    "model_tools_facts_guards_permissions_transport_changed": false
+  },
+  "production_write_scope": "Only explicitly requested disposable anonymous Woo cart add/remove for live capture; no code/config/account/order/inquiry writes or mail",
+  "deploy": false,
+  "merge": false
+}

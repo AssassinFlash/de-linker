@@ -1,0 +1,43 @@
+[
+  {
+    "crawl": {
+      "httpStatusCode": 404,
+      "httpStatusMessage": "OK",
+      "loadedAt": "2026-10-18T04:17:42.784Z",
+      "uniqueKey": "PTnbpMfBnH",
+      "requestStatus": "handled"
+    },
+    "metadata": {
+      "title": "404 | OpenAI ChatKit",
+      "languageCode": "en",
+      "url": "https://openai.github.io/chatkit-js/api/openai/chatkit/type-aliases/ChatKitOptions/",
+      "redirectedUrl": "https://openai.github.io/chatkit-js/api/openai/chatkit/type-aliases/ChatKitOptions/",
+      "canonicalUrl": "https://openai.github.io/chatkit-js/404/",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "404"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:url",
+          "content": "https://openai.github.io/chatkit-js/404/"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:site_name",
+          "content": "OpenAI ChatKit"
+        }
+      ]
+    },
+    "query": "https://openai.github.io/chatkit-js/api/openai/chatkit/type-aliases/ChatKitOptions/",
+    "markdown": "404 | OpenAI ChatKit [Skip to content](https://openai.github.io/chatkit-js/api/openai/chatkit/type-aliases/ChatKitOptions/#_top)\n\n[ChatKit](https://openai.github.io/chatkit-js/)\n\nSearch CtrlK\n\nCancel\n\n[ChatKit.js](https://github.com/openai/chatkit-js)\n\nSelect theme DarkLightAuto\n\n# 404\n\nPage not found. Check the URL or try using the search bar.",
+    "html": "<html lang=\"\">\n        <head>\n            <title>\n                404 | OpenAI ChatKit\n            </title>\n        </head>\n        <body>\n            <a href=\"#_top\" class=\"astro-e5ywvrzp\">Skip to content</a>  <div class=\"page sl-flex astro-crz7azws\"> <header class=\"header astro-crz7azws\"><div class=\"header astro-bsrodofk\"> <div class=\"title-wrapper sl-flex astro-bsrodofk\"> <a href=\"/chatkit-js/\" class=\"site-title sl-flex\" style=\"text-decoration:none;\"> <span class=\"logo-wrapper\" style=\"display:inline-flex;align-items:center;gap:0.35rem;line-height:1;text-decoration:none;color:inherit;\" aria-label=\"OpenAI ChatKit\">  <span style=\"font-size:24px;font-weight:600;letter-spacing:.5px;display:inline-block;text-decoration:none;\">ChatKit</span> </span> </a> </div> <div class=\"sl-flex print:hidden astro-bsrodofk\"> <site-search class=\"astro-bsrodofk astro-zlshpccv\" data-translations=\"{&quot;placeholder&quot;:&quot;Search&quot;}\"> <button data-open-modal disabled aria-label=\"Search\" aria-keyshortcuts=\"Control+K\" class=\"astro-zlshpccv\">  <span class=\"sl-hidden md:sl-block astro-zlshpccv\" aria-hidden=\"true\">Search</span> <kbd class=\"sl-hidden md:sl-flex astro-zlshpccv\" style=\"display: none;\"> <kbd class=\"astro-zlshpccv\">Ctrl</kbd><kbd class=\"astro-zlshpccv\">K</kbd> </kbd> </button> <dialog style=\"padding:0\" aria-label=\"Search\" class=\"astro-zlshpccv\"> <div class=\"dialog-frame sl-flex astro-zlshpccv\">  <button data-close-modal class=\"sl-flex md:sl-hidden astro-zlshpccv\"> Cancel </button> <div class=\"search-container astro-zlshpccv\"> <div id=\"starlight__search\" class=\"astro-zlshpccv\"></div> </div> </div> </dialog> </site-search>      </div> <div class=\"sl-hidden md:sl-flex print:hidden right-group astro-bsrodofk\"> <div class=\"sl-flex social-icons astro-bsrodofk\"> <a href=\"https://github.com/openai/chatkit-js\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"sl-flex astro-dv46nlzh\"><span class=\"astro-dv46nlzh\">ChatKit.js</span></a> </div> <starlight-theme-select>  <label style=\"--sl-select-width: 6.25em\" class=\"astro-iliim2ba\"> <span class=\"sr-only astro-iliim2ba\">Select theme</span>  <select autocomplete=\"off\" class=\"astro-iliim2ba\"> <option value=\"dark\" class=\"astro-iliim2ba\">Dark</option><option value=\"light\" class=\"astro-iliim2ba\">Light</option><option value=\"auto\" selected class=\"astro-iliim2ba\">Auto</option> </select>  </label>  </starlight-theme-select>     </div> </div> </header>  <div class=\"main-frame astro-crz7azws\">   <div class=\"lg:sl-flex astro-nty4tmbk\">  <div class=\"main-pane astro-nty4tmbk\">  <main class=\"astro-crp2w4j4\" lang=\"en\" dir=\"ltr\">   <div class=\"content-panel astro-jvgipifn\"> <div class=\"sl-container astro-jvgipifn\"> <div class=\"hero astro-dl7kn7r4\">    <div class=\"sl-flex stack astro-dl7kn7r4\"> <div class=\"sl-flex copy astro-dl7kn7r4\"> <h1 id=\"_top\" data-page-title class=\"astro-dl7kn7r4\">404</h1> <div class=\"tagline astro-dl7kn7r4\">Page not found. Check the URL or try using the search bar.</div> </div>  </div> </div>  <div class=\"sl-markdown-content\">  </div>   </div> </div>  </main> </div> </div>  </div> </div>\n        </body>\n    </html>"
+  }
+]

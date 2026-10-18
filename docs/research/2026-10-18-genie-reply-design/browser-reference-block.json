@@ -1,0 +1,6 @@
+{
+  "actor": "apify/web-scraper",
+  "httpStatusCode": 403,
+  "body": "{\n  \"error\": {\n    \"type\": \"full-permission-actor-not-approved\",\n    \"message\": \"This Actor requires full access to your account. You must approve its permissions before running it: https://console.apify.com/actors/moJRLRc85AitArpNN?approvePermissions=true\",\n    \"data\": {\n      \"approvalUrl\": \"https://console.apify.com/actors/moJRLRc85AitArpNN?approvePermissions=true\"\n    }\n  }\n}",
+  "capturedAt": "2026-10-18T04:20:21.402354+00:00"
+}

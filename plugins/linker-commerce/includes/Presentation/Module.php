@@ -47,6 +47,7 @@ final class Module {
 	 */
 	public function register(): void {
 		$this->shortcodes->register();
+		( new AccountLinks() )->register();
 			( $this->products ?? new ProductShortcodes( new ProductFilters(), new ProductView() ) )->register();
 		$this->gate->register();
 		$this->windpress->register();

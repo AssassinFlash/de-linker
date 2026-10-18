@@ -1,0 +1,41 @@
+
+> linker-e2e@0.1.0 test
+> playwright test account-entries.spec.ts --project chromium --grep en-390: compare price
+
+
+Running 1 test using 1 worker
+
+(node:78608) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/account-entries.spec.ts:151:4 › en-390: compare price prompt offers registration (15.7s)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:151:4 › en-390: compare price prompt offers registration
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  getByRole('heading', { level: 1 })
+    Expected: "20px"
+    Received: "36px"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCSS" getByRole('heading', { level: 1 }) with timeout 15000ms
+      - waiting for getByRole('heading', { level: 1 })
+        34 × locator resolved to <h1 class="max-w-4xl text-4xl font-bold tracking-tight text-[#15352f]">Compare products</h1>
+           - unexpected value "36px"
+
+
+      155 | 				await page.goto(instance().url + route);
+      156 | 				if (surface === 'compare') {
+    > 157 | 					await expect(page.getByRole('heading', {level:1})).toHaveCSS('font-size', '20px');
+          | 					                                                   ^
+      158 | 					await expect(page.getByRole('heading', {level:1})).toHaveCSS('font-weight', '500');
+      159 | 					expect(await page.getByRole('heading', {level:1}).evaluate(e=>getComputedStyle(e).fontFamily)).toContain('Plus Jakarta Sans');
+      160 | 				}
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:157:57
+
+    Error Context: artifacts/test-results/account-entries-en-390-com-77719--prompt-offers-registration-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-390: compare price prompt offers registration

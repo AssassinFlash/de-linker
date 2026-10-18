@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+(node:38306) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › specs/account-entries.spec.ts:11:3 › en-1440: open inquiry keeps both optional account entries (15.6s)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:11:3 › en-1440: open inquiry keeps both optional account entries
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.linker-inquiry-guest .linker-create-account')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.linker-inquiry-guest .linker-create-account') with timeout 15000ms
+      - waiting for locator('.linker-inquiry-guest .linker-create-account')
+
+
+      14 | 			await expect(page.locator('#inquiry-email')).toBeVisible();
+      15 | 			const create = page.locator('.linker-inquiry-guest .linker-create-account');
+    > 16 | 			await expect(create).toBeVisible();
+         | 			                     ^
+      17 | 			await create.click();
+      18 | 			await expect(page).toHaveURL(instance().url + account + 'register/');
+      19 | 		});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:16:25
+
+    Error Context: artifacts/test-results/account-entries-en-1440-op-fe5f0-th-optional-account-entries-chromium/error-context.md
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:11:3 › en-1440: open inquiry keeps both optional account entries
+error: recipe `e2e` failed with exit code 1

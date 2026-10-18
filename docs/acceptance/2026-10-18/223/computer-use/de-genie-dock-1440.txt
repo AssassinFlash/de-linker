@@ -1,0 +1,28 @@
+Browser tab: 1, Title: "PV- & Speicherlösungen für Installateure und EPCs | Linker", URL: "http://127.0.0.1:9126/de/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~		186 button (expanded) Description: Genie fragen, Secondary Actions: Collapse
++		187 container linker-genie-mount
++			188 container Genie – der KI-Assistent von Linker
++				189 container
++					190 text Genie – der KI-Assistent von Linker
++					191 button Neues Gespräch
++					192 link Description: Vollständige Seite öffnen, Value: 127.0.0.1:9126/de/genie/
++					193 button (collapsed) Description: Gespräche, Secondary Actions: Expand
++					194 button Schließen
++					195 text Hilfe bei Ihrem Solarprojekt
++					196 text Produkte, Unterlagen und Ihr nächster Schritt.
++					197 button GoodWe ESA GW10K-EHA-G20: Was sind die wichtigsten Daten?
++					198 button Welche Batterien passen zu meinem Wechselrichter?
++					199 button Wie unterscheiden sich die Hybrid-Wechselrichter von SAJ und GoodWe?
++					200 button Datei anhängen
++					201 text Genie fragen
++					202 text field (settable) Genie fragen, ID: linker-genie-input
++					203 checkbox Description: Diktieren, Value: 0
++					204 button (disabled) Senden
++					205 text Genie ist ein KI-Assistent.
++					206 button (collapsed) Hilfe & Datenschutz, Secondary Actions: Expand
++						207 text Hilfe & Datenschutz
++			208 container
++				209 link Description: Anmelden, Value: 127.0.0.1:9126/de/mein-konto/
++				210 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
+The focused UI element is 186 button (expanded) Description: Genie fragen, Secondary Actions: Collapse

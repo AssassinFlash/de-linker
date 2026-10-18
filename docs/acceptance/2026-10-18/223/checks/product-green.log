@@ -1,0 +1,250 @@
+
+Running 16 tests using 1 worker
+
+(node:43006) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: shop price prompt offers registration (16.0s)
+(node:43553) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   2 [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: category price prompt offers registration (15.7s)
+(node:43803) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: product price prompt offers registration (689ms)
+  ✓   4 [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: compare price prompt offers registration (453ms)
+  ✘   5 [chromium] › specs/account-entries.spec.ts:17:4 › en-390: shop price prompt offers registration (15.7s)
+(node:44393) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   6 [chromium] › specs/account-entries.spec.ts:17:4 › en-390: category price prompt offers registration (15.8s)
+(node:44567) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [chromium] › specs/account-entries.spec.ts:17:4 › en-390: product price prompt offers registration (771ms)
+  ✓   8 [chromium] › specs/account-entries.spec.ts:17:4 › en-390: compare price prompt offers registration (425ms)
+  ✘   9 [chromium] › specs/account-entries.spec.ts:17:4 › de-1440: shop price prompt offers registration (16.2s)
+(node:45005) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  10 [chromium] › specs/account-entries.spec.ts:17:4 › de-1440: category price prompt offers registration (16.1s)
+(node:45607) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [chromium] › specs/account-entries.spec.ts:17:4 › de-1440: product price prompt offers registration (1.4s)
+  ✓  12 [chromium] › specs/account-entries.spec.ts:17:4 › de-1440: compare price prompt offers registration (671ms)
+  ✘  13 [chromium] › specs/account-entries.spec.ts:17:4 › de-390: shop price prompt offers registration (16.6s)
+(node:45878) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  14 [chromium] › specs/account-entries.spec.ts:17:4 › de-390: category price prompt offers registration (18.6s)
+(node:46195) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  15 [chromium] › specs/account-entries.spec.ts:17:4 › de-390: product price prompt offers registration (873ms)
+  ✓  16 [chromium] › specs/account-entries.spec.ts:17:4 › de-390: compare price prompt offers registration (496ms)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: shop price prompt offers registration
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sf-card-price .linker-create-account:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sf-card-price .linker-create-account:visible').first() with timeout 15000ms
+      - waiting for locator('.sf-card-price .linker-create-account:visible').first()
+
+
+      19 | 				await page.goto(instance().url + route);
+      20 | 				const create = page.locator(`${selector} .linker-create-account:visible`).first();
+    > 21 | 				await expect(create).toBeVisible();
+         | 				                     ^
+      22 | 				await create.click();
+      23 | 				await expect(page).toHaveURL(instance().url + account + 'register/');
+      24 | 			});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:26
+
+    Error Context: artifacts/test-results/account-entries-en-1440-sh-e2f25--prompt-offers-registration-chromium/error-context.md
+
+  2) [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: category price prompt offers registration
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sf-card-price .linker-create-account:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sf-card-price .linker-create-account:visible').first() with timeout 15000ms
+      - waiting for locator('.sf-card-price .linker-create-account:visible').first()
+
+
+      19 | 				await page.goto(instance().url + route);
+      20 | 				const create = page.locator(`${selector} .linker-create-account:visible`).first();
+    > 21 | 				await expect(create).toBeVisible();
+         | 				                     ^
+      22 | 				await create.click();
+      23 | 				await expect(page).toHaveURL(instance().url + account + 'register/');
+      24 | 			});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:26
+
+    Error Context: artifacts/test-results/account-entries-en-1440-ca-7ad05--prompt-offers-registration-chromium/error-context.md
+
+  3) [chromium] › specs/account-entries.spec.ts:17:4 › en-390: shop price prompt offers registration
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sf-card-price .linker-create-account:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sf-card-price .linker-create-account:visible').first() with timeout 15000ms
+      - waiting for locator('.sf-card-price .linker-create-account:visible').first()
+
+
+      19 | 				await page.goto(instance().url + route);
+      20 | 				const create = page.locator(`${selector} .linker-create-account:visible`).first();
+    > 21 | 				await expect(create).toBeVisible();
+         | 				                     ^
+      22 | 				await create.click();
+      23 | 				await expect(page).toHaveURL(instance().url + account + 'register/');
+      24 | 			});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:26
+
+    Error Context: artifacts/test-results/account-entries-en-390-shop-price-prompt-offers-registration-chromium/error-context.md
+
+  4) [chromium] › specs/account-entries.spec.ts:17:4 › en-390: category price prompt offers registration
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sf-card-price .linker-create-account:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sf-card-price .linker-create-account:visible').first() with timeout 15000ms
+      - waiting for locator('.sf-card-price .linker-create-account:visible').first()
+
+
+      19 | 				await page.goto(instance().url + route);
+      20 | 				const create = page.locator(`${selector} .linker-create-account:visible`).first();
+    > 21 | 				await expect(create).toBeVisible();
+         | 				                     ^
+      22 | 				await create.click();
+      23 | 				await expect(page).toHaveURL(instance().url + account + 'register/');
+      24 | 			});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:26
+
+    Error Context: artifacts/test-results/account-entries-en-390-cat-2786a--prompt-offers-registration-chromium/error-context.md
+
+  5) [chromium] › specs/account-entries.spec.ts:17:4 › de-1440: shop price prompt offers registration
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sf-card-price .linker-create-account:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sf-card-price .linker-create-account:visible').first() with timeout 15000ms
+      - waiting for locator('.sf-card-price .linker-create-account:visible').first()
+
+
+      19 | 				await page.goto(instance().url + route);
+      20 | 				const create = page.locator(`${selector} .linker-create-account:visible`).first();
+    > 21 | 				await expect(create).toBeVisible();
+         | 				                     ^
+      22 | 				await create.click();
+      23 | 				await expect(page).toHaveURL(instance().url + account + 'register/');
+      24 | 			});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:26
+
+    Error Context: artifacts/test-results/account-entries-de-1440-sh-a5060--prompt-offers-registration-chromium/error-context.md
+
+  6) [chromium] › specs/account-entries.spec.ts:17:4 › de-1440: category price prompt offers registration
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sf-card-price .linker-create-account:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sf-card-price .linker-create-account:visible').first() with timeout 15000ms
+      - waiting for locator('.sf-card-price .linker-create-account:visible').first()
+
+
+      19 | 				await page.goto(instance().url + route);
+      20 | 				const create = page.locator(`${selector} .linker-create-account:visible`).first();
+    > 21 | 				await expect(create).toBeVisible();
+         | 				                     ^
+      22 | 				await create.click();
+      23 | 				await expect(page).toHaveURL(instance().url + account + 'register/');
+      24 | 			});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:26
+
+    Error Context: artifacts/test-results/account-entries-de-1440-ca-48cc2--prompt-offers-registration-chromium/error-context.md
+
+  7) [chromium] › specs/account-entries.spec.ts:17:4 › de-390: shop price prompt offers registration
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sf-card-price .linker-create-account:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sf-card-price .linker-create-account:visible').first() with timeout 15000ms
+      - waiting for locator('.sf-card-price .linker-create-account:visible').first()
+
+
+      19 | 				await page.goto(instance().url + route);
+      20 | 				const create = page.locator(`${selector} .linker-create-account:visible`).first();
+    > 21 | 				await expect(create).toBeVisible();
+         | 				                     ^
+      22 | 				await create.click();
+      23 | 				await expect(page).toHaveURL(instance().url + account + 'register/');
+      24 | 			});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:26
+
+    Error Context: artifacts/test-results/account-entries-de-390-shop-price-prompt-offers-registration-chromium/error-context.md
+
+  8) [chromium] › specs/account-entries.spec.ts:17:4 › de-390: category price prompt offers registration
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.sf-card-price .linker-create-account:visible').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.sf-card-price .linker-create-account:visible').first() with timeout 15000ms
+      - waiting for locator('.sf-card-price .linker-create-account:visible').first()
+
+
+      19 | 				await page.goto(instance().url + route);
+      20 | 				const create = page.locator(`${selector} .linker-create-account:visible`).first();
+    > 21 | 				await expect(create).toBeVisible();
+         | 				                     ^
+      22 | 				await create.click();
+      23 | 				await expect(page).toHaveURL(instance().url + account + 'register/');
+      24 | 			});
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:26
+
+    Error Context: artifacts/test-results/account-entries-de-390-cat-a8abc--prompt-offers-registration-chromium/error-context.md
+
+  8 failed
+    [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:17:4 › en-1440: category price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:17:4 › en-390: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:17:4 › en-390: category price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:17:4 › de-1440: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:17:4 › de-1440: category price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:17:4 › de-390: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:17:4 › de-390: category price prompt offers registration
+  8 passed (2.4m)
+error: recipe `e2e` failed with exit code 1

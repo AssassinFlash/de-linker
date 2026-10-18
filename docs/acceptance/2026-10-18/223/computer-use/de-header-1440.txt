@@ -1,0 +1,9 @@
+Browser tab: 1, Title: "PV- & Speicherlösungen für Installateure und EPCs | Linker", URL: "http://127.0.0.1:9126/de/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 17
++			187 container
++				188 pop up button (expanded) Description: Anmelden, Secondary Actions: Collapse
++				189 container linker-header-account-menu
++					190 link Description: Anmelden, Value: 127.0.0.1:9126/de/mein-konto/
++					191 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
+The focused UI element is 188 pop up button (expanded) Description: Anmelden, Secondary Actions: Collapse

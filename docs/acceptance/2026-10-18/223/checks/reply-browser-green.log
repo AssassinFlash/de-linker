@@ -1,0 +1,15 @@
+
+Running 8 tests using 1 worker
+
+(node:32638) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-1440-dock: waiting, formatted response and reader-controlled scroll (3.3s)
+  ✓  2 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-1440-workspace: waiting, formatted response and reader-controlled scroll (829ms)
+  ✓  3 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-dock: waiting, formatted response and reader-controlled scroll (1.1s)
+  ✓  4 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › en-390-workspace: waiting, formatted response and reader-controlled scroll (533ms)
+  ✓  5 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › de-1440-dock: waiting, formatted response and reader-controlled scroll (1.8s)
+  ✓  6 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › de-1440-workspace: waiting, formatted response and reader-controlled scroll (679ms)
+  ✓  7 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › de-390-dock: waiting, formatted response and reader-controlled scroll (1.5s)
+  ✓  8 [chromium] › tests/e2e/specs/genie-reply-presentation.spec.ts:10:4 › de-390-workspace: waiting, formatted response and reader-controlled scroll (558ms)
+
+  8 passed (11.2s)

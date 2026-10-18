@@ -1,0 +1,56 @@
+[
+  {
+    "name": "en-filled-draft",
+    "path": "/cart/",
+    "actions": [
+      {
+        "visit": "/?add-to-cart=4107"
+      },
+      {
+        "visit": "/cart/"
+      }
+    ],
+    "emptyDraftAfter": true,
+    "ruledRegions": [
+      {
+        "name": "guest line price and subtotal",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal"
+      },
+      {
+        "name": "new registration action within existing price-row gap",
+        "selector": ".woocommerce-cart-form .linker-create-account"
+      },
+      {
+        "name": "guest summary account entries",
+        "selector": ".linker-login-box"
+      }
+    ]
+  },
+  {
+    "name": "de-filled-draft",
+    "path": "/de/warenkorb/",
+    "actions": [
+      {
+        "visit": "/de/?add-to-cart=4107"
+      },
+      {
+        "visit": "/de/warenkorb/"
+      }
+    ],
+    "emptyDraftAfter": true,
+    "ruledRegions": [
+      {
+        "name": "guest line price and subtotal",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal"
+      },
+      {
+        "name": "new registration action within existing price-row gap",
+        "selector": ".woocommerce-cart-form .linker-create-account"
+      },
+      {
+        "name": "guest summary account entries",
+        "selector": ".linker-login-box"
+      }
+    ]
+  }
+]

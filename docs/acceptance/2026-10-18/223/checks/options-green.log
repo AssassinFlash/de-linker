@@ -1,0 +1,12 @@
+
+> linker-tools@0.1.0 test:unit
+> wp-scripts test-unit-js --run App.test.tsx
+
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools
+
+
+ Test Files  2 passed (2)
+      Tests  54 passed (54)
+   Start at  22:22:08
+   Duration  2.80s (tests 50%, environment 21%, transform 14%, setup 9%, import 6%)

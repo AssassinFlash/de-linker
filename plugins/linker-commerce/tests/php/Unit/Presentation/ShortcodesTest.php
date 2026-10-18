@@ -124,6 +124,9 @@ final class ShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
 		$this->cart_is( true );
 
 		$html = $this->shortcodes()->draft_empty();
@@ -133,12 +136,35 @@ final class ShortcodesTest extends TestCase {
 		$this->assertStringContainsString( 'Browse products and add them', $html );
 		$this->assertStringContainsString( 'href="https://example.test/products/"', $html );
 		$this->assertStringContainsString( 'href="https://example.test/my-account/"', $html );
-		$this->assertStringContainsString( 'Sign in or register', $html );
+		$this->assertStringContainsString( '>Sign in</a>', $html );
+		$this->assertStringContainsString( '>Create account</a>', $html );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/"', $html );
 		$this->assertStringNotContainsString( 'bulk-order', $html );
 		$this->assertStringNotContainsString( 'Batch item-number import', $html );
 		$this->assertStringNotContainsString( 'item-number', $html );
 		$this->assertSame( 2, substr_count( $html, 'class="sf-cart-btn' ) );
 		$this->assertStringNotContainsString( 'style=', $html );
+	}
+
+	/**
+	 * A signed-in visitor keeps the live second action but never sees the
+	 * retired combined label, and there is no registration entry to add.
+	 */
+	public function test_a_signed_in_visitor_does_not_see_the_combined_label(): void {
+		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
+		$this->cart_is( true );
+
+		$html = $this->shortcodes()->draft_empty();
+
+		$this->assertStringContainsString( '>Sign in</a>', $html );
+		$this->assertStringNotContainsString( 'Sign in or register', $html );
+		$this->assertStringNotContainsString( 'Create account', $html );
+		$this->assertSame( 2, substr_count( $html, 'class="sf-cart-btn' ) );
 	}
 
 

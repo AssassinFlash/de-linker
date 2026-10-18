@@ -1,0 +1,16 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+....F...                                                            8 / 8 (100%)
+
+Time: 00:00.024, Memory: 22.00 MB
+
+There was 1 failure:
+
+1) Linker\Commerce\Tests\Unit\Gating\PriceDisplayTest::test_texts_instead_of_prices
+Failed asserting that '<a class="linker-price-login" href="https://example.test/my-account/">Log in for prices</a>' contains "href="https://example.test/my-account/register/">Create account</a>".
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-commerce/tests/php/Unit/Gating/PriceDisplayTest.php:152
+/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-commerce/vendor/10up/wp_mock/php/WP_Mock/Tools/TestCase.php:123
+
+FAILURES!
+Tests: 8, Assertions: 26, Failures: 1.

@@ -1,0 +1,17 @@
+{
+  "source": "https://help.openai.com/en/articles/6614161-how-can-i-contact-support",
+  "capturedAt": "2026-10-18T04:16:56.468941+00:00",
+  "actor": "apify/rag-web-browser",
+  "runId": "2geSKWX8jUm38hCR5",
+  "datasetId": "AbIeCbxZJowOG1JTR",
+  "status": "SUCCEEDED",
+  "input": {
+    "query": "https://help.openai.com/en/articles/6614161-how-can-i-contact-support",
+    "maxResults": 1,
+    "outputFormats": [
+      "markdown"
+    ]
+  },
+  "usageTotalUsd": 0.0009,
+  "statusMessage": "Finished! Scraped 0 pages, 1 failed."
+}

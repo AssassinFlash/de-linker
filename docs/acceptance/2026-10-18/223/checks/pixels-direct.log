@@ -1,0 +1,103 @@
+en-header-1440-live.png
+en-header-1440-local.png
+en-footer-1440-live.png
+en-footer-1440-local.png
+en-draft-1440-live.png
+en-draft-1440-local.png
+en-inquiry-1440-live.png
+en-inquiry-1440-local.png
+en-lost-1440-live.png
+en-lost-1440-local.png
+en-lost-confirmation-1440-live.png
+en-lost-confirmation-1440-local.png
+en-document-1440-live.png
+en-document-1440-local.png
+de-header-1440-live.png
+de-header-1440-local.png
+de-footer-1440-live.png
+de-footer-1440-local.png
+de-draft-1440-live.png
+de-draft-1440-local.png
+de-inquiry-1440-live.png
+de-inquiry-1440-local.png
+de-lost-1440-live.png
+de-lost-1440-local.png
+de-lost-confirmation-1440-live.png
+de-lost-confirmation-1440-local.png
+de-document-1440-live.png
+de-document-1440-local.png
+en-mobile-390-live.png
+en-mobile-390-local.png
+en-footer-390-live.png
+en-footer-390-local.png
+en-draft-390-live.png
+en-draft-390-local.png
+en-inquiry-390-live.png
+en-inquiry-390-local.png
+en-lost-390-live.png
+en-lost-390-local.png
+en-lost-confirmation-390-live.png
+en-lost-confirmation-390-local.png
+en-document-390-live.png
+en-document-390-local.png
+de-mobile-390-live.png
+de-mobile-390-local.png
+de-footer-390-live.png
+de-footer-390-local.png
+de-draft-390-live.png
+de-draft-390-local.png
+de-inquiry-390-live.png
+de-inquiry-390-local.png
+de-lost-390-live.png
+de-lost-390-local.png
+de-lost-confirmation-390-live.png
+de-lost-confirmation-390-local.png
+de-document-390-live.png
+de-document-390-local.png
+en-inquiry-1440: size mismatch (1440, 1429) / (1440, 1804)
+de-inquiry-1440: size mismatch (1440, 1429) / (1440, 1846)
+en-inquiry-390: size mismatch (390, 1539) / (390, 2014)
+de-draft-390: size mismatch (390, 1437) / (390, 1436)
+de-inquiry-390: size mismatch (390, 1697) / (390, 2167)
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 8278], "unmasked_different_pixels": 39503, "difference_bounds": [825, 94, 1213, 254], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "header account entries and 0 24px 50px shadow:0", "selector": ".tv-b2b-acct-menu", "padding": 74, "bounds": [798, 2, 1239, 262]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 8278], "unmasked_different_pixels": 615, "difference_bounds": [597, 7812, 1278, 7891], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "account entry tile:0", "selector": "#footer-panel-account .footer-route-list>li:first-child", "bounds": [492, 7848, 884, 7919]}, {"name": "account destination count:0", "selector": "#footer-panel-account .footer-panel-count", "bounds": [1256, 7801, 1286, 7832]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 1239], "unmasked_different_pixels": 9127, "difference_bounds": [563, 417, 874, 464], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "draft account entries:0", "selector": ".sf-cart-empty__actions", "padding": 0, "bounds": [416, 417, 1024, 465]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 1276], "unmasked_different_pixels": 1625, "difference_bounds": [610, 547, 831, 563], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "lost account entries:0", "selector": ".linker-auth-links", "padding": 0, "bounds": [521, 541, 919, 565]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 1196], "unmasked_different_pixels": 1625, "difference_bounds": [610, 467, 831, 483], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "lost-confirmation account entries:0", "selector": ".linker-auth-links", "padding": 0, "bounds": [521, 461, 919, 485]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 1440, "image_size": [1440, 900], "unmasked_different_pixels": 691, "difference_bounds": [412, 143, 512, 156], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "document account entries:0", "selector": "#error-page", "padding": 0, "bounds": [337, 50, 1103, 196]}], "outside_ruled_different_pixels": 0}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 8591], "unmasked_different_pixels": 79763, "difference_bounds": [188, 21, 1416, 254], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "header account entries and 0 24px 50px shadow:0", "selector": ".tv-b2b-acct-menu", "padding": 74, "bounds": [765, 2, 1336, 262]}], "outside_ruled_different_pixels": 6166}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 8591], "unmasked_different_pixels": 13663, "difference_bounds": [188, 21, 1416, 8204], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "account entry tile:0", "selector": "#footer-panel-account .footer-route-list>li:first-child", "bounds": [492, 8160, 884, 8231]}, {"name": "account destination count:0", "selector": "#footer-panel-account .footer-panel-count", "bounds": [1256, 8114, 1286, 8145]}], "outside_ruled_different_pixels": 13059}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 1239], "unmasked_different_pixels": 22808, "difference_bounds": [188, 21, 1416, 464], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "draft account entries:0", "selector": ".sf-cart-empty__actions", "padding": 0, "bounds": [416, 417, 1024, 465]}], "outside_ruled_different_pixels": 13061}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 1301], "unmasked_different_pixels": 15148, "difference_bounds": [188, 21, 1416, 588], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "lost account entries:0", "selector": ".linker-auth-links", "padding": 0, "bounds": [521, 566, 919, 590]}], "outside_ruled_different_pixels": 13061}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 1217], "unmasked_different_pixels": 15148, "difference_bounds": [188, 21, 1416, 504], "masks": [], "ruled_change": false, "ruled_regions": [{"name": "lost-confirmation account entries:0", "selector": ".linker-auth-links", "padding": 0, "bounds": [521, 481, 919, 505]}], "outside_ruled_different_pixels": 13061}
+{"language": "de", "viewport_width": 1440, "image_size": [1440, 900], "unmasked_different_pixels": 688, "difference_bounds": [438, 164, 536, 177], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "document account entries:0", "selector": "#error-page", "padding": 0, "bounds": [337, 50, 1103, 217]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 390, "image_size": [390, 9254], "unmasked_different_pixels": 1001, "difference_bounds": [120, 411, 248, 457], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "mobile account entries:0", "selector": "#tv-mobile-panel", "padding": 0, "bounds": [16, 80, 374, 525]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 390, "image_size": [390, 8809], "unmasked_different_pixels": 607, "difference_bounds": [147, 8365, 334, 8429], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "account entry tile:0", "selector": "#footer-panel-account .footer-route-list>li:first-child", "bounds": [49, 8397, 341, 8446]}, {"name": "account destination count:0", "selector": "#footer-panel-account .footer-panel-count", "bounds": [314, 8355, 341, 8383]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 390, "image_size": [390, 1317], "unmasked_different_pixels": 9127, "difference_bounds": [38, 417, 349, 464], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "draft account entries:0", "selector": ".sf-cart-empty__actions", "padding": 0, "bounds": [32, 416, 358, 464]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 390, "image_size": [390, 1199], "unmasked_different_pixels": 1625, "difference_bounds": [85, 440, 306, 456], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "lost account entries:0", "selector": ".linker-auth-links", "padding": 0, "bounds": [33, 434, 357, 458]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 390, "image_size": [390, 1144], "unmasked_different_pixels": 1625, "difference_bounds": [85, 385, 306, 401], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "lost-confirmation account entries:0", "selector": ".linker-auth-links", "padding": 0, "bounds": [33, 378, 357, 402]}], "outside_ruled_different_pixels": 0}
+{"language": "en", "viewport_width": 390, "image_size": [390, 900], "unmasked_different_pixels": 691, "difference_bounds": [75, 164, 175, 177], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "document account entries:0", "selector": "#error-page", "padding": 0, "bounds": [0, 50, 390, 217]}], "outside_ruled_different_pixels": 0}
+{"language": "de", "viewport_width": 390, "image_size": [390, 9710], "unmasked_different_pixels": 1027, "difference_bounds": [120, 411, 246, 457], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "mobile account entries:0", "selector": "#tv-mobile-panel", "padding": 0, "bounds": [16, 80, 374, 525]}], "outside_ruled_different_pixels": 0}
+{"language": "de", "viewport_width": 390, "image_size": [390, 9265], "unmasked_different_pixels": 596, "difference_bounds": [168, 8779, 334, 8844], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "account entry tile:0", "selector": "#footer-panel-account .footer-route-list>li:first-child", "bounds": [49, 8811, 341, 8860]}, {"name": "account destination count:0", "selector": "#footer-panel-account .footer-panel-count", "bounds": [314, 8770, 341, 8798]}], "outside_ruled_different_pixels": 0}
+{"language": "de", "viewport_width": 390, "image_size": [390, 1312], "unmasked_different_pixels": 2087, "difference_bounds": [58, 490, 333, 506], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "lost account entries:0", "selector": ".linker-auth-links", "padding": 0, "bounds": [33, 483, 357, 507]}], "outside_ruled_different_pixels": 0}
+{"language": "de", "viewport_width": 390, "image_size": [390, 1272], "unmasked_different_pixels": 2087, "difference_bounds": [58, 450, 333, 466], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "lost-confirmation account entries:0", "selector": ".linker-auth-links", "padding": 0, "bounds": [33, 444, 357, 468]}], "outside_ruled_different_pixels": 0}
+{"language": "de", "viewport_width": 390, "image_size": [390, 900], "unmasked_different_pixels": 688, "difference_bounds": [101, 185, 199, 198], "masks": [], "ruled_change": true, "ruled_regions": [{"name": "document account entries:0", "selector": "#error-page", "padding": 0, "bounds": [0, 50, 390, 238]}], "outside_ruled_different_pixels": 0}
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: python3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/visual/compare.py docs/acceptance/2026-10-18/223/pixels
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:916:11)
+    at execFileSync (node:child_process:952:15)
+    at file:///Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/visual/pixel-parity.mjs:202:2 {
+  status: 1,
+  signal: null,
+  output: [ null, null, null ],
+  pid: 68280,
+  stdout: null,
+  stderr: null
+}
+
+Node.js v22.23.2

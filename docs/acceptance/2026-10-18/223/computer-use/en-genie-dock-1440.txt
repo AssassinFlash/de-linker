@@ -1,0 +1,27 @@
+Browser tab: 1, Title: "PV & Storage Solutions for Installers and EPCs | Linker", URL: "http://127.0.0.1:9126/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~		186 button (expanded) Description: Ask Genie, Secondary Actions: Collapse
++		187 container linker-genie-mount
++			188 container Genie - Linker's AI assistant
++				189 container
++					190 text Genie - Linker's AI assistant
++					191 button New conversation
++					192 link Description: Open full page, Value: 127.0.0.1:9126/genie/
++					193 button (collapsed) Description: Conversations, Secondary Actions: Expand
++					194 button Close
++					195 text Get help with your solar project Products, documents and your next step.
++					196 button Tell me about the GoodWe ESA GW10K-EHA-G20
++					197 button Which batteries work with my inverter?
++					198 button Compare SAJ and GoodWe hybrid inverters
++					199 button Attach a file
++					200 text Ask Genie
++					201 text field (settable) Ask Genie, ID: linker-genie-input
++					202 checkbox Description: Dictate, Value: 0
++					203 button (disabled) Send
++					204 text Genie is an AI assistant.
++					205 button (collapsed) Help & privacy, Secondary Actions: Expand
++						206 text Help & privacy
++			207 container
++				208 link Description: Sign in, Value: 127.0.0.1:9126/my-account/
++				209 link Description: Create account, Value: 127.0.0.1:9126/my-account/register/
+The focused UI element is 186 button (expanded) Description: Ask Genie, Secondary Actions: Collapse

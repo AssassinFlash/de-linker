@@ -1,0 +1,44 @@
+Browser tab: 1, Title: "Wechselrichter | Linker", URL: "http://127.0.0.1:9126/de/produkt-kategorie/wechselrichter/#product-grid".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 44-85, 691-694
+~1 AXWebArea Wechselrichter | Linker, URL: 127.0.0.1:9126/de/produkt-kategorie/wechselrichter/#product-grid
+~			15 link Description: Produkte suchen, Value: 127.0.0.1:9126/de/produkte/#search-box
+~						97 link Description: GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/
+~						99 link Description: GoodWe ESA GW10K-EHA-G20 (10 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/
+~						115 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module/
+~						116 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/?redirect_to=http%3A%2F%2F127.0.0.1%3A9126%2Fde%2Fprodukt%2Fgoodwe-esa-gw10k-eha-g20-10-kw-single-phase-power-module%2F
+~						120 link Description: GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/
+~						122 link Description: GoodWe ESA GW8K-EHA-G20 (8-kW-einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/
+~						138 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module/
+~						139 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/?redirect_to=http%3A%2F%2F127.0.0.1%3A9126%2Fde%2Fprodukt%2Fgoodwe-esa-gw8k-eha-g20-8-kw-single-phase-power-module%2F
+~						143 link Description: GoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/
+~						145 link Description: GoodWe ESA GW6K-EHA-G20 (6 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/
+~						161 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module/
+~						162 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/?redirect_to=http%3A%2F%2F127.0.0.1%3A9126%2Fde%2Fprodukt%2Fgoodwe-esa-gw6k-eha-g20-6-kw-single-phase-power-module%2F
+~						166 link Description: GoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/
+~						168 link Description: GoodWe ESA GW5K-EHA-G20 (einphasiges 5-kW-Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/
+~						184 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module/
+~						185 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/?redirect_to=http%3A%2F%2F127.0.0.1%3A9126%2Fde%2Fprodukt%2Fgoodwe-esa-gw5k-eha-g20-5-kw-single-phase-power-module%2F
+~						189 link Description: GoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/
+~						191 link Description: GoodWe ESA GW3.6K-EHA-G20 (3,6 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/
+~						207 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module/
+~						208 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/?redirect_to=http%3A%2F%2F127.0.0.1%3A9126%2Fde%2Fprodukt%2Fgoodwe-esa-gw3-6k-eha-g20-3-6-kw-single-phase-power-module%2F
+~						212 link Description: GoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/
+~						214 link Description: GoodWe ESA GW3K-EHA-G20 (3 kW einphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/
+~						230 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module/
+~						231 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/?redirect_to=http%3A%2F%2F127.0.0.1%3A9126%2Fde%2Fprodukt%2Fgoodwe-esa-gw3k-eha-g20-3-kw-single-phase-power-module%2F
+~						235 link Description: GoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/
+~						237 link Description: GoodWe ESA GW30K-ETA-G20 (30 kW dreiphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/
+~						253 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module/
+~						254 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/?redirect_to=http%3A%2F%2F127.0.0.1%3A9126%2Fde%2Fprodukt%2Fgoodwe-esa-gw30k-eta-g20-30-kw-three-phase-power-module%2F
+~						258 link Description: GoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/
+~						260 link Description: GoodWe ESA GW29.999K-ETA-G20 (29,999 kW dreiphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/
+~						276 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module/
+~						277 link Description: Für Preise anmelden, Value: 127.0.0.1:9126/de/mein-konto/?redirect_to=http%3A%2F%2F127.0.0.1%3A9126%2Fde%2Fprodukt%2Fgoodwe-esa-gw29-999k-eta-g20-29-999-kw-three-phase-power-module%2F
+~						281 link Description: GoodWe ESA GW25K-ETA-G20 (25 kW dreiphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/
+~						283 link Description: GoodWe ESA GW25K-ETA-G20 (25 kW dreiphasiges Leistungsmodul), Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/
+~						299 link Description: Produkt ansehen, Value: 127.0.0.1:9126/de/produkt/goodwe-esa-gw25k-eta-g20-25-kw-three-phase-power-module/
+~						300 link Description: Für Preise anmelden, Value: …
+~						304 link Description: GoodWe ESA GW20K-ETA-G20 (20 kW dreiphasiges Leistungsmodul), Value: …
+~						324 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
+The focused UI element is 1 AXWebArea Wechselrichter | Linker, URL: 127.0.0.1:9126/de/produkt-kategorie/wechselrichter/#product-grid

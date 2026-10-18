@@ -1,0 +1,558 @@
+[
+  {
+    "name": "en-header",
+    "path": "/",
+    "widths": [
+      1440
+    ],
+    "actions": [
+      {
+        "click": ".tv-b2b-acct-btn"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "header account entries and 0 24px 50px shadow",
+        "selector": ".tv-b2b-acct-menu",
+        "padding": 74
+      }
+    ]
+  },
+  {
+    "name": "en-mobile",
+    "path": "/",
+    "widths": [
+      390
+    ],
+    "actions": [
+      {
+        "click": "#tv-mobile-toggle"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "mobile account utility row only",
+        "selector": "#tv-mobile-panel .tv-mobile-utility-row",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "en-footer",
+    "path": "/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [
+      {
+        "click": "#footer-tab-account"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "account entry tile",
+        "selector": "#footer-panel-account .footer-route-list>li:first-child"
+      },
+      {
+        "name": "account destination count",
+        "selector": "#footer-panel-account .footer-panel-count"
+      }
+    ]
+  },
+  {
+    "name": "en-draft",
+    "path": "/cart/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "draft account entries",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "en-inquiry",
+    "path": "/proforma-request/",
+    "widths": [
+      1440
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "new registration line in existing form gap",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "en-inquiry-mobile",
+    "path": "/proforma-request/",
+    "widths": [
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "new registration line in existing form gap",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0
+      },
+      {
+        "name": "following draft card moves with the new normal-flow link row",
+        "selector": ".linker-inquiry-draft",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "en-lost",
+    "path": "/my-account/lost-password/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "lost account entries",
+        "selector": ".linker-auth-links",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "en-lost-confirmation",
+    "path": "/my-account/lost-password/?reset-link-sent=true",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "lost-confirmation account entries",
+        "selector": ".linker-auth-links",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "en-document",
+    "path": "/?linker-document=proforma&id=1",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "document account entries",
+        "selector": "#error-page",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-header",
+    "path": "/de/",
+    "widths": [
+      1440
+    ],
+    "actions": [
+      {
+        "click": ".tv-b2b-acct-btn"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "header account entries and 0 24px 50px shadow",
+        "selector": ".tv-b2b-acct-menu",
+        "padding": 74
+      }
+    ]
+  },
+  {
+    "name": "de-mobile",
+    "path": "/de/",
+    "widths": [
+      390
+    ],
+    "actions": [
+      {
+        "click": "#tv-mobile-toggle"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "mobile account utility row only",
+        "selector": "#tv-mobile-panel .tv-mobile-utility-row",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-footer",
+    "path": "/de/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [
+      {
+        "click": "#footer-tab-account"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "account entry tile",
+        "selector": "#footer-panel-account .footer-route-list>li:first-child"
+      },
+      {
+        "name": "account destination count",
+        "selector": "#footer-panel-account .footer-panel-count"
+      }
+    ]
+  },
+  {
+    "name": "de-draft",
+    "path": "/de/warenkorb/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "draft account entries",
+        "selector": ".sf-cart-empty__actions",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-inquiry",
+    "path": "/de/proforma-anfrage/",
+    "widths": [
+      1440
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "new registration line in existing form gap",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-inquiry-mobile",
+    "path": "/de/proforma-anfrage/",
+    "widths": [
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "new registration line in existing form gap",
+        "selector": ".linker-inquiry-guest>.linker-create-account",
+        "padding": 0
+      },
+      {
+        "name": "following draft card moves with the new normal-flow link row",
+        "selector": ".linker-inquiry-draft",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-lost",
+    "path": "/de/mein-konto/lost-password/",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "lost account entries",
+        "selector": ".linker-auth-links",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-lost-confirmation",
+    "path": "/de/mein-konto/lost-password/?reset-link-sent=true",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "lost-confirmation account entries",
+        "selector": ".linker-auth-links",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "de-document",
+    "path": "/de/?linker-document=proforma&id=1",
+    "widths": [
+      1440,
+      390
+    ],
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "document account entries",
+        "selector": "#error-page",
+        "padding": 0
+      }
+    ]
+  },
+  {
+    "name": "en-shop",
+    "path": "/products/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "shop guest entries",
+        "selector": ".sf-card-actions"
+      }
+    ]
+  },
+  {
+    "name": "en-category",
+    "path": "/product-category/inverters/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "category guest entries",
+        "selector": ".sf-card-actions"
+      }
+    ]
+  },
+  {
+    "name": "en-product",
+    "path": "/product/saj-h2-10k-t3/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "product guest entries",
+        "selector": ".pdp-price"
+      }
+    ]
+  },
+  {
+    "name": "en-compare",
+    "path": "/compare-products/?ids=4107,4108",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "guest net-price cells only",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td"
+      }
+    ]
+  },
+  {
+    "name": "en-genie-dock",
+    "path": "/",
+    "actions": [
+      {
+        "click": "[data-linker-genie-open]"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      1440
+    ]
+  },
+  {
+    "name": "en-genie-workspace",
+    "path": "/genie/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "genie-workspace guest entries",
+        "selector": ".linker-genie-panel--workspace"
+      }
+    ]
+  },
+  {
+    "name": "de-shop",
+    "path": "/de/produkte/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "shop guest entries",
+        "selector": ".sf-card-actions"
+      }
+    ]
+  },
+  {
+    "name": "de-category",
+    "path": "/de/produkt-kategorie/wechselrichter/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "category guest entries",
+        "selector": ".sf-card-actions"
+      }
+    ]
+  },
+  {
+    "name": "de-product",
+    "path": "/de/produkt/saj-h2-10k-t3/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "product guest entries",
+        "selector": ".pdp-price"
+      }
+    ]
+  },
+  {
+    "name": "de-compare",
+    "path": "/de/compare-products/?ids=4107,4108",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "guest net-price cells only",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td"
+      }
+    ]
+  },
+  {
+    "name": "de-genie-dock",
+    "path": "/de/",
+    "actions": [
+      {
+        "click": "[data-linker-genie-open]"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      1440
+    ]
+  },
+  {
+    "name": "de-genie-workspace",
+    "path": "/de/genie/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "genie-workspace guest entries",
+        "selector": ".linker-genie-panel--workspace"
+      }
+    ]
+  },
+  {
+    "name": "en-genie-dock-mobile",
+    "path": "/products/",
+    "actions": [
+      {
+        "click": ".product-mobile-actions .linker-genie-chip"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      390
+    ]
+  },
+  {
+    "name": "de-genie-dock-mobile",
+    "path": "/de/produkte/",
+    "actions": [
+      {
+        "click": ".product-mobile-actions .linker-genie-chip"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      390
+    ]
+  },
+  {
+    "name": "en-filled-draft",
+    "path": "/cart/",
+    "actions": [
+      {
+        "visit": "/?add-to-cart=4107"
+      },
+      {
+        "visit": "/cart/"
+      }
+    ],
+    "emptyDraftAfter": true,
+    "ruledRegions": [
+      {
+        "name": "guest line price and subtotal",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal"
+      },
+      {
+        "name": "new registration action within existing price-row gap",
+        "selector": ".woocommerce-cart-form .linker-create-account"
+      },
+      {
+        "name": "guest summary account entries",
+        "selector": ".linker-login-box"
+      }
+    ]
+  },
+  {
+    "name": "de-filled-draft",
+    "path": "/de/warenkorb/",
+    "actions": [
+      {
+        "visit": "/de/?add-to-cart=4107"
+      },
+      {
+        "visit": "/de/warenkorb/"
+      }
+    ],
+    "emptyDraftAfter": true,
+    "ruledRegions": [
+      {
+        "name": "guest line price and subtotal",
+        "selector": ".woocommerce-cart-form td.product-price, .woocommerce-cart-form td.product-subtotal"
+      },
+      {
+        "name": "new registration action within existing price-row gap",
+        "selector": ".woocommerce-cart-form .linker-create-account"
+      },
+      {
+        "name": "guest summary account entries",
+        "selector": ".linker-login-box"
+      }
+    ]
+  }
+]

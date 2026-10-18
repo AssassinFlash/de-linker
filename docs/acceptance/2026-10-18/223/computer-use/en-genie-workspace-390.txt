@@ -1,0 +1,3 @@
+Browser tab: 1, Title: "Ask About a Product, Model or Datasheet | Linker", URL: "http://127.0.0.1:9126/genie/".
+There has been no change in the accessibility tree.
+The focused UI element is 1 AXWebArea Ask About a Product, Model or Datasheet | Linker, URL: 127.0.0.1:9126/genie/

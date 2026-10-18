@@ -1,0 +1,195 @@
+
+> linker-e2e@0.1.0 test
+> playwright test account-entries.spec.ts --project chromium --grep shop price|category price|compare price|four comparison
+
+
+Running 14 tests using 1 worker
+
+(node:73116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration (5.5s)
+(node:73566) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   2 [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: category price prompt offers registration (1.2s)
+(node:73755) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: compare price prompt offers registration (1.7s)
+  ✘   4 [chromium] › specs/account-entries.spec.ts:151:4 › en-390: shop price prompt offers registration (1.1s)
+(node:73840) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   5 [chromium] › specs/account-entries.spec.ts:151:4 › en-390: category price prompt offers registration (1.1s)
+(node:73977) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 [chromium] › specs/account-entries.spec.ts:151:4 › en-390: compare price prompt offers registration (905ms)
+  ✓   7 [chromium] › specs/account-entries.spec.ts:199:4 › en-390: four comparison models stay readable inside the scroll region (867ms)
+  ✘   8 [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: shop price prompt offers registration (2.1s)
+(node:74537) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   9 [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: category price prompt offers registration (2.0s)
+(node:74626) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: compare price prompt offers registration (975ms)
+  ✘  11 [chromium] › specs/account-entries.spec.ts:151:4 › de-390: shop price prompt offers registration (1.6s)
+(node:74757) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  12 [chromium] › specs/account-entries.spec.ts:151:4 › de-390: category price prompt offers registration (8.9s)
+(node:76226) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [chromium] › specs/account-entries.spec.ts:151:4 › de-390: compare price prompt offers registration (1.1s)
+  ✓  14 [chromium] › specs/account-entries.spec.ts:199:4 › de-390: four comparison models stay readable inside the scroll region (700ms)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 96
+
+      164 | 							.first()
+      165 | 							.evaluate((e) => e.getBoundingClientRect().height)
+    > 166 | 					).toBe(44);
+          | 					  ^
+      167 | 				}
+      168 | 				if (surface === 'compare' && width === 390) {
+      169 | 					const region = page.locator('.linker-compare-scroll');
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:166:8
+
+    Error Context: artifacts/test-results/account-entries-en-1440-sh-e2f25--prompt-offers-registration-chromium/error-context.md
+
+  2) [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: category price prompt offers registration
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 96
+
+      164 | 							.first()
+      165 | 							.evaluate((e) => e.getBoundingClientRect().height)
+    > 166 | 					).toBe(44);
+          | 					  ^
+      167 | 				}
+      168 | 				if (surface === 'compare' && width === 390) {
+      169 | 					const region = page.locator('.linker-compare-scroll');
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:166:8
+
+    Error Context: artifacts/test-results/account-entries-en-1440-ca-7ad05--prompt-offers-registration-chromium/error-context.md
+
+  3) [chromium] › specs/account-entries.spec.ts:151:4 › en-390: shop price prompt offers registration
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 96
+
+      164 | 							.first()
+      165 | 							.evaluate((e) => e.getBoundingClientRect().height)
+    > 166 | 					).toBe(44);
+          | 					  ^
+      167 | 				}
+      168 | 				if (surface === 'compare' && width === 390) {
+      169 | 					const region = page.locator('.linker-compare-scroll');
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:166:8
+
+    Error Context: artifacts/test-results/account-entries-en-390-shop-price-prompt-offers-registration-chromium/error-context.md
+
+  4) [chromium] › specs/account-entries.spec.ts:151:4 › en-390: category price prompt offers registration
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 96
+
+      164 | 							.first()
+      165 | 							.evaluate((e) => e.getBoundingClientRect().height)
+    > 166 | 					).toBe(44);
+          | 					  ^
+      167 | 				}
+      168 | 				if (surface === 'compare' && width === 390) {
+      169 | 					const region = page.locator('.linker-compare-scroll');
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:166:8
+
+    Error Context: artifacts/test-results/account-entries-en-390-cat-2786a--prompt-offers-registration-chromium/error-context.md
+
+  5) [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: shop price prompt offers registration
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 96
+
+      164 | 							.first()
+      165 | 							.evaluate((e) => e.getBoundingClientRect().height)
+    > 166 | 					).toBe(44);
+          | 					  ^
+      167 | 				}
+      168 | 				if (surface === 'compare' && width === 390) {
+      169 | 					const region = page.locator('.linker-compare-scroll');
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:166:8
+
+    Error Context: artifacts/test-results/account-entries-de-1440-sh-a5060--prompt-offers-registration-chromium/error-context.md
+
+  6) [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: category price prompt offers registration
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 96
+
+      164 | 							.first()
+      165 | 							.evaluate((e) => e.getBoundingClientRect().height)
+    > 166 | 					).toBe(44);
+          | 					  ^
+      167 | 				}
+      168 | 				if (surface === 'compare' && width === 390) {
+      169 | 					const region = page.locator('.linker-compare-scroll');
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:166:8
+
+    Error Context: artifacts/test-results/account-entries-de-1440-ca-48cc2--prompt-offers-registration-chromium/error-context.md
+
+  7) [chromium] › specs/account-entries.spec.ts:151:4 › de-390: shop price prompt offers registration
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 96
+
+      164 | 							.first()
+      165 | 							.evaluate((e) => e.getBoundingClientRect().height)
+    > 166 | 					).toBe(44);
+          | 					  ^
+      167 | 				}
+      168 | 				if (surface === 'compare' && width === 390) {
+      169 | 					const region = page.locator('.linker-compare-scroll');
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:166:8
+
+    Error Context: artifacts/test-results/account-entries-de-390-shop-price-prompt-offers-registration-chromium/error-context.md
+
+  8) [chromium] › specs/account-entries.spec.ts:151:4 › de-390: category price prompt offers registration
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 44
+    Received: 96
+
+      164 | 							.first()
+      165 | 							.evaluate((e) => e.getBoundingClientRect().height)
+    > 166 | 					).toBe(44);
+          | 					  ^
+      167 | 				}
+      168 | 				if (surface === 'compare' && width === 390) {
+      169 | 					const region = page.locator('.linker-compare-scroll');
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:166:8
+
+    Error Context: artifacts/test-results/account-entries-de-390-cat-a8abc--prompt-offers-registration-chromium/error-context.md
+
+  8 failed
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-1440: category price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-390: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › en-390: category price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › de-1440: category price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › de-390: shop price prompt offers registration
+    [chromium] › specs/account-entries.spec.ts:151:4 › de-390: category price prompt offers registration
+  6 passed (39.1s)

@@ -1,0 +1,8 @@
+PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project tools/local linker-local wp "c223" linker-commerce present --user=1
+backup: 26 templates, additional css, 5 partials staged for rollback
+templates: created 0, updated 0, unchanged 18
+tokens: no Additional CSS copy to remove
+windpress volume: storefront styles
+Warning: WindPress cache is stale (cache compiled 2026-10-18 03:49:00 UTC, newer source files: account-links.css). Compile from the WindPress admin (admin.php?page=windpress), or rerun with --allow-stale.
+Error: WindPress cache is stale (cache compiled 2026-10-18 03:49:00 UTC, newer source files: account-links.css). Compile from the WindPress admin (admin.php?page=windpress), or rerun with --allow-stale.
+error: recipe `present` failed on line 180 with exit code 1

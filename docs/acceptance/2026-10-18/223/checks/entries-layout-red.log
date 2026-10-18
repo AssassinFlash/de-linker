@@ -1,0 +1,140 @@
+
+Running 53 tests using 1 worker
+
+(node:47520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › specs/account-entries.spec.ts:12:4 › en-1440: Genie dock has native guest entries (820ms)
+  ✘   2 [chromium] › specs/account-entries.spec.ts:12:4 › en-1440: Genie workspace has native guest entries (1.0m)
+(node:49211) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 [chromium] › specs/account-entries.spec.ts:31:4 › en-1440: shop price prompt offers registration (14.7s)
+  ✓   4 [chromium] › specs/account-entries.spec.ts:31:4 › en-1440: category price prompt offers registration (1.3s)
+  ✓   5 [chromium] › specs/account-entries.spec.ts:31:4 › en-1440: product price prompt offers registration (1.2s)
+  ✓   6 [chromium] › specs/account-entries.spec.ts:31:4 › en-1440: compare price prompt offers registration (1.3s)
+  ✓   7 [chromium] › specs/account-entries.spec.ts:46:4 › en-1440: draft has independent registration (2.1s)
+  ✓   8 [chromium] › specs/account-entries.spec.ts:46:4 › en-1440: lost has independent registration (1.0s)
+  ✓   9 [chromium] › specs/account-entries.spec.ts:46:4 › en-1440: lost-confirmation has independent registration (953ms)
+  ✓  10 [chromium] › specs/account-entries.spec.ts:46:4 › en-1440: document has independent registration (798ms)
+  ✓  11 [chromium] › specs/account-entries.spec.ts:56:3 › en-1440: open inquiry keeps both optional account entries (902ms)
+  ✓  12 [chromium] › specs/account-entries.spec.ts:65:3 › en-1440: footer offers a direct registration entry (772ms)
+  ✓  13 [chromium] › specs/account-entries.spec.ts:75:3 › en-1440: header registration opens its own language's form (816ms)
+  ✘  14 [chromium] › specs/account-entries.spec.ts:12:4 › en-390: Genie dock has native guest entries (48.8s)
+
+
+  1) [chromium] › specs/account-entries.spec.ts:12:4 › en-1440: Genie workspace has native guest entries
+
+    Test timeout of 60000ms exceeded.
+
+    Error Context: artifacts/test-results/account-entries-en-1440-Ge-785c0-ce-has-native-guest-entries-chromium/error-context.md
+
+  2) [chromium] › specs/account-entries.spec.ts:12:4 › en-390: Genie dock has native guest entries ─
+
+    Test was interrupted.
+
+    Error: locator.click: Test ended.
+    Browser logs:
+
+    <launching> /Users/chesterjohn/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/playwright_chromiumdev_profile-yDmenP --remote-debugging-pipe --no-startup-window
+    <launched> pid=49272
+    [pid=49272][err] [1018/105350.325637:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105404.273615:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105404.285587:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105404.761128:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105404.793487:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105404.963149:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105405.862914:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105405.877784:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105406.218027:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105406.227975:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105406.335077:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105407.011807:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105407.027973:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105407.437717:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105407.448212:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105407.521341:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105408.188350:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105408.210876:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105408.670310:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105408.692963:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105408.926681:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105410.039851:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105410.060634:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105410.856551:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105410.866503:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105410.984920:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105411.254536:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105411.269142:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105411.901763:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105411.927398:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105412.034635:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105412.436000:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105412.464880:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105412.877698:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105412.885253:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105413.001004:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105413.326486:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105413.650052:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105413.667878:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105413.818151:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105414.181093:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105414.199186:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105414.626840:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105414.635378:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105414.726715:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105414.959521:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105414.974860:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105415.426279:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105415.429674:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105415.504927:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105415.760257:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105415.779796:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105416.218429:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105416.227694:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272][err] [1018/105416.328459:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105417.770166:ERROR:ui/display/mac/cv_display_link_mac.mm:188] CVDisplayLinkCreateWithCGDisplay failed. CVReturn: -6670
+    [pid=49272][err] [1018/105417.795333:INFO:CONSOLE:2] "JQMIGRATE: Migrate is installed, version 3.4.1", source: http://127.0.0.1:9126/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 (2)
+    [pid=49272] <gracefully close start>
+    Call log:
+      - waiting for locator('.linker-genie-panel>.linker-guest-account-links').locator('.linker-create-account')
+        - locator resolved to <a class="linker-create-account" href="http://127.0.0.1:9126/my-account/register/">Create account</a>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <button type="button" class="linker-genie-dock-mask">…</button> from <div data-locale="en" data-signed-in="0" data-product-id="0" data-surface="helper" data-linker-app="genie" data-retention-days="90" data-page-type="category" data-rest-nonce="3c47a68fc0" data-mail-started="1792292057" data-rest-url="http://127.0.0.1:9126/wp-json/" data-workspace-url="http://127.0.0.1:9126/genie/" data-account-url="http://127.0.0.1:9126/my-account/" data-turn-url="http://127.0.0.1:9126/wp-json/linker-ai/v1/genie/turn" data-vote-url="http://127.0.0.1:9126/wp-json/linker-ai/v1/genie/t…>…</div> subtree intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <button type="button" class="linker-genie-dock-mask">…</button> from <div data-locale="en" data-signed-in="0" data-product-id="0" data-surface="helper" data-linker-app="genie" data-retention-days="90" data-page-type="category" data-rest-nonce="3c47a68fc0" data-mail-started="1792292057" data-rest-url="http://127.0.0.1:9126/wp-json/" data-workspace-url="http://127.0.0.1:9126/genie/" data-account-url="http://127.0.0.1:9126/my-account/" data-turn-url="http://127.0.0.1:9126/wp-json/linker-ai/v1/genie/turn" data-vote-url="http://127.0.0.1:9126/wp-json/linker-ai/v1/genie/t…>…</div> subtree intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        90 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <button type="button" class="linker-genie-dock-mask">…</button> from <div data-locale="en" data-signed-in="0" data-product-id="0" data-surface="helper" data-linker-app="genie" data-retention-days="90" data-page-type="category" data-rest-nonce="3c47a68fc0" data-mail-started="1792292057" data-rest-url="http://127.0.0.1:9126/wp-json/" data-workspace-url="http://127.0.0.1:9126/genie/" data-account-url="http://127.0.0.1:9126/my-account/" data-turn-url="http://127.0.0.1:9126/wp-json/linker-ai/v1/genie/turn" data-vote-url="http://127.0.0.1:9126/wp-json/linker-ai/v1/genie/t…>…</div> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      19 | 							? home + 'genie/'
+      20 | 							: width === 390
+    > 21 | 								? locale === 'de'
+         | 								         ^
+      22 | 									? '/de/produkte/'
+      23 | 									: '/products/'
+      24 | 								: home)
+        at /Users/chesterjohn/Documents/de-linker-worktrees/c223/tests/e2e/specs/account-entries.spec.ts:21:18
+
+  1 failed
+    [chromium] › specs/account-entries.spec.ts:12:4 › en-1440: Genie workspace has native guest entries
+  1 interrupted
+    [chromium] › specs/account-entries.spec.ts:12:4 › en-390: Genie dock has native guest entries ──
+  39 did not run
+  12 passed (2.4m)
+error: recipe `e2e` failed with exit code 130

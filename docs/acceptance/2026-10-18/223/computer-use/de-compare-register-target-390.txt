@@ -1,0 +1,348 @@
+Browser tab: 1, Title: "Partnerkonto: Anmelden oder Registrieren | Linker", URL: "http://127.0.0.1:9126/de/mein-konto/register/".
+1 AXWebArea Partnerkonto: Anmelden oder Registrieren | Linker, URL: 127.0.0.1:9126/de/mein-konto/register/
+	2 container
+		3 container Primäre Navigation
+			4 link Description: Linker-Startseite, Value: 127.0.0.1:9126/de/
+			5 link Description: Produkte suchen, Value: 127.0.0.1:9126/de/produkte/#search-box
+			6 container Sprache
+				7 link Description: EN, Help: English, Value: 127.0.0.1:9126/my-account/register/
+				8 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9126/de/mein-konto/register/
+			9 button (collapsed) Description: Menü öffnen, ID: tv-mobile-toggle, Secondary Actions: Expand
+				10 image
+		11 container Erstellen Sie Ihr Firmenkonto
+			12 container
+				13 heading Erstellen Sie Ihr Firmenkonto, Value: 1, ID: linker-auth-register-heading
+					14 text Erstellen Sie Ihr Firmenkonto
+				15 text Wir prüfen jedes neue Konto vor der Freischaltung.
+			16 container
+				17 content list
+					18 container
+						19 heading Unternehmen, Value: 2
+							20 text Unternehmen
+						21 container billing_company_field
+							22 text Firmenname 
+							23 text field (settable) Firmenname , ID: billing_company
+						24 container linker_customer_role_field
+							25 text Unternehmensart 
+						26 container billing_vat_id_field
+							27 container
+								28 text USt-IdNr.  (optional)
+							29 text field (settable) USt-IdNr. (optional), ID: billing_vat_id
+					30 container
+						31 heading Kontakt und Adresse, Value: 2
+							32 text Kontakt und Adresse
+						33 container billing_first_name_field
+							34 text Vorname 
+							35 text field (settable) Vorname , ID: billing_first_name
+						36 container billing_last_name_field
+							37 text Nachname 
+							38 text field (settable) Nachname , ID: billing_last_name
+						39 container billing_country_field
+							40 text Land/Region 
+							41 pop up button (collapsed, settable) Land/Region , Value: Deutschland, ID: billing_country, Secondary Actions: Expand
+								42 menu
+									43 Land/Region auswählen …
+									44 Afghanistan
+									45 Ägypten
+									46 Ålandinseln
+									47 Albanien
+									48 Algerien
+									49 Amerikanisch-Samoa
+									50 Amerikanische Jungferninseln
+									51 Andorra
+									52 Angola
+									53 Anguilla
+									54 Antarktika
+									55 Antigua und Barbuda
+									56 Äquatorialguinea
+									57 Argentinien
+									58 Armenien
+									59 Aruba
+									60 Aserbaidschan
+									61 Äthiopien
+									62 Australien
+									63 Bahamas
+									64 Bahrain
+									65 Bangladesch
+									66 Barbados
+									67 Belarus
+									68 Belgien
+									69 Belize
+									70 Benin
+									71 Bermuda
+									72 Bhutan
+									73 Bolivien
+									74 Bonaire, Sint Eustatius und Saba
+									75 Bosnien und Herzegowina
+									76 Botswana
+									77 Bouvetinsel
+									78 Brasilien
+									79 Britische Jungferninseln
+									80 Britisches Territorium im Indischen Ozean
+									81 Brunei
+									82 Bulgarien
+									83 Burkina Faso
+									84 Burundi
+									85 Chile
+									86 China
+									87 Cookinseln
+									88 Costa Rica
+									89 Curaçao
+									90 Dänemark
+									91 (selected) Deutschland
+									92 Dominica
+									93 Dominikanische Republik
+									94 Dschibuti
+									95 Ecuador
+									96 El Salvador
+									97 Elfenbeinküste
+									98 Eritrea
+									99 Estland
+									100 Eswatini
+									101 Falklandinseln
+									102 Färöer
+									103 Fidschi
+									104 Finnland
+									105 Frankreich
+									106 Französisch-Guayana
+									107 Französisch-Polynesien
+									108 Französische Süd- und Antarktisgebiete
+									109 Gabun
+									110 Gambia
+									111 Georgien
+									112 Ghana
+									113 Gibraltar
+									114 Grenada
+									115 Griechenland
+									116 Grönland
+									117 Guadeloupe
+									118 Guam
+									119 Guatemala
+									120 Guernsey
+									121 Guinea
+									122 Guinea-Bissau
+									123 Guyana
+									124 Haiti
+									125 Heard- und McDonaldinseln
+									126 Honduras
+									127 Hongkong
+									128 Indien
+									129 Indonesien
+									130 Irak
+									131 Iran
+									132 Irland
+									133 Island
+									134 Isle of Man
+									135 Israel
+									136 Italien
+									137 Jamaika
+									138 Japan
+									139 Jemen
+									140 Jersey
+									141 Jordanien
+									142 Kaimaninseln
+									143 Kambodscha
+									144 Kamerun
+									145 Kanada
+									146 Kap Verde
+									147 Kasachstan
+									148 Katar
+									149 Kenia
+									150 Kirgisistan
+									151 Kiribati
+									152 Kleinere Amerikanische Überseeinseln (USA)
+									153 Kokosinseln (Keelinginseln)
+									154 Kolumbien
+									155 Komoren
+									156 Kongo-Brazzaville
+									157 Kongo-Kinshasa
+									158 Kosovo
+									159 Kroatien
+									160 Kuba
+									161 Kuwait
+									162 Laos
+									163 Lesotho
+									164 Lettland
+									165 Libanon
+									166 Liberia
+									167 Libyen
+									168 Liechtenstein
+									169 Litauen
+									170 Luxemburg
+									171 Macau
+									172 Madagaskar
+									173 Malawi
+									174 Malaysia
+									175 Malediven
+									176 Mali
+									177 Malta
+									178 Marokko
+									179 Marshallinseln
+									180 Martinique
+									181 Mauretanien
+									182 Mauritius
+									183 Mayotte
+									184 Mexiko
+									185 Mikronesien
+									186 Moldau
+									187 Monaco
+									188 Mongolei
+									189 Montenegro
+									190 Montserrat
+									191 Mosambik
+									192 Myanmar
+									193 Namibia
+									194 Nauru
+									195 Nepal
+									196 Neukaledonien
+									197 Neuseeland
+									198 Nicaragua
+									199 Niederlande
+									200 Niger
+									201 Nigeria
+									202 Niue
+									203 Nordkorea
+									204 Nördliche Marianen
+									205 Nordmazedonien
+									206 Norfolkinsel
+									207 Norwegen
+									208 Oman
+									209 Österreich
+									210 Osttimor
+									211 Pakistan
+									212 Palästinensische Autonomiegebiete
+									213 Palau
+									214 Panama
+									215 Papua-Neuguinea
+									216 Paraguay
+									217 Peru
+									218 Philippinen
+									219 Pitcairninseln
+									220 Polen
+									221 Portugal
+									222 Puerto Rico
+									223 Réunion
+									224 Ruanda
+									225 Rumänien
+									226 Russland
+									227 Saint Martin (französischer Teil)
+									228 Saint Martin (niederländischer Teil)
+									229 Saint-Barthélemy
+									230 Saint-Pierre und Miquelon
+									231 Salomonen
+									232 Sambia
+									233 Samoa
+									234 San Marino
+									235 São Tomé und Príncipe
+									236 Saudi-Arabien
+									237 Schweden
+									238 Schweiz
+									239 Senegal
+									240 Serbien
+									241 Seychellen
+									242 Sierra Leone
+									243 Simbabwe
+									244 Singapur
+									245 Slowakei
+									246 Slowenien
+									247 Somalia
+									248 Spanien
+									249 Spitzbergen und Jan Mayen
+									250 Sri Lanka
+									251 St. Helena
+									252 St. Kitts und Nevis
+									253 St. Lucia
+									254 St. Vincent und die Grenadinen
+									255 Südafrika
+									256 Sudan
+									257 Südgeorgien / Sandwich-Inseln
+									258 Südkorea
+									259 Südsudan
+									260 Surinam
+									261 Syrien
+									262 Tadschikistan
+									263 Taiwan
+									264 Tansania
+									265 Thailand
+									266 Togo
+									267 Tokelau
+									268 Tonga
+									269 Trinidad und Tobago
+									270 Tschad
+									271 Tschechien
+									272 Tunesien
+									273 Türkei
+									274 Turkmenistan
+									275 Turks- und Caicosinseln
+									276 Tuvalu
+									277 Uganda
+									278 Ukraine
+									279 Ungarn
+									280 Uruguay
+									281 Usbekistan
+									282 Vanuatu
+									283 Vatikanstadt
+									284 Venezuela
+									285 Vereinigte Arabische Emirate
+									286 Vereinigte Staaten von Amerika (USA)
+									287 Vereinigtes Königreich
+									288 Vietnam
+									289 Wallis und Futuna
+									290 Weihnachtsinsel
+									291 Westsahara
+									292 Zentralafrikanische Republik
+									293 Zypern
+						294 container billing_address_1_field
+							295 text Straße und Hausnummer 
+							296 text field (settable) Straße und Hausnummer , ID: billing_address_1
+						297 container billing_postcode_field
+							298 text Postleitzahl 
+							299 text field (settable) Postleitzahl , ID: billing_postcode
+						300 container billing_city_field
+							301 text Stadt 
+							302 text field (settable) Stadt , ID: billing_city
+					303 container
+						304 heading Zugangsdaten, Value: 2
+							305 text Zugangsdaten
+						306 text E-Mail-Adresse  Erforderlich
+						307 text field (settable) E-Mail-Adresse  Erforderlich
+						308 text Passwort  Erforderlich
+						309 text field (settable) Passwort  Erforderlich
+						310 button Passwort anzeigen
+						311 text Verwenden Sie mindestens 8 Zeichen mit Buchstaben, Zahlen und Sonderzeichen.
+				312 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9126/de/verkaufsbedingungen/
+				313 button Registrieren
+				314 link Description: Sie haben bereits ein Partner-Konto? Anmelden, Value: 127.0.0.1:9126/de/mein-konto/
+		315 container tv-footer-v2
+			316 image Linker
+			317 container
+				318 text Sprache
+				319 container Sprache
+					320 link Description: Englisch, Value: 127.0.0.1:9126/de/
+					321 link Description: Deutsch, Value: 127.0.0.1:9126/de/
+			322 text WIR VERBINDEN Produkte , Technologie und Service und schaffen 
+			323 text dauerhaften Wert
+			324 text  für Energiepartner in Europa.
+			325 container Description: Lösungen, ID: footer-panel-solutions
+				326 heading Lösungen, Value: 2
+					327 text Lösungen
+				328 content list
+					329 link Description: Heimspeicher, Value: 127.0.0.1:9126/de/loesung/heimspeicher/
+					330 link Description: Gewerbespeicher, Value: 127.0.0.1:9126/de/loesung/gewerbespeicher/
+					331 link Description: Großspeicher, Value: 127.0.0.1:9126/de/loesung/grossspeicher/
+			332 tab group Fußzeilen-Navigation
+				333 tab (selected, settable, boolean) Lösungen, Value: 1, ID: footer-tab-solutions
+				334 tab (selectable, settable, boolean) Dienstleistungen, Value: 0, ID: footer-tab-services
+				335 tab (selectable, settable, boolean) Planen mit Linker, Value: 0, ID: footer-tab-planning
+				336 tab (selectable, settable, boolean) Konto, Value: 0, ID: footer-tab-account
+				337 tab (selectable, settable, boolean) Linker kontaktieren, Value: 0, ID: footer-tab-contact
+			338 text © 2026 Linker. Alle Rechte vorbehalten.
+			339 container Rechtliches
+				340 link Description: Impressum, Value: 127.0.0.1:9126/de/impressum/
+				341 link Description: Datenschutzerklärung, Value: 127.0.0.1:9126/de/datenschutz/
+				342 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9126/de/verkaufsbedingungen/
+				343 link Description: Rückgabe & Erstattung, Value: 127.0.0.1:9126/de/rueckgabe-erstattung/
+			344 container
+				345 text Produkteignung · Wechselrichter-Kompatibilität · Projektunterstützung
+
+The focused UI element is 1 AXWebArea Partnerkonto: Anmelden oder Registrieren | Linker, URL: 127.0.0.1:9126/de/mein-konto/register/

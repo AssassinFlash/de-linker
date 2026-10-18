@@ -1,0 +1,43 @@
+{
+  "cases": [
+    {
+      "path": "/products/",
+      "stem": "en-genie-dock-mobile",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            0,
+            48,
+            390,
+            13500
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/de/produkte/",
+      "stem": "de-genie-dock-mobile",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81,
+      "ruledRegions": [
+        {
+          "name": "genie-dock guest entries",
+          "selector": ".linker-genie-panel",
+          "bounds": [
+            0,
+            48,
+            390,
+            13838
+          ]
+        }
+      ]
+    }
+  ],
+  "allowedHeaderChanges": []
+}

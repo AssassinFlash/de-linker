@@ -1,0 +1,184 @@
+[
+  {
+    "name": "en-shop",
+    "path": "/products/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "shop guest entries",
+        "selector": ".sf-card-actions"
+      }
+    ]
+  },
+  {
+    "name": "en-category",
+    "path": "/product-category/inverters/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "category guest entries",
+        "selector": ".sf-card-actions"
+      }
+    ]
+  },
+  {
+    "name": "en-product",
+    "path": "/product/saj-h2-10k-t3/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "product guest entries",
+        "selector": ".pdp-price"
+      }
+    ]
+  },
+  {
+    "name": "en-compare",
+    "path": "/compare-products/?ids=4107,4108",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "guest net-price cells only",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td"
+      }
+    ]
+  },
+  {
+    "name": "en-genie-dock",
+    "path": "/",
+    "actions": [
+      {
+        "click": "[data-linker-genie-open]"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      1440
+    ]
+  },
+  {
+    "name": "en-genie-workspace",
+    "path": "/genie/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "genie-workspace guest entries",
+        "selector": ".linker-genie-panel--workspace"
+      }
+    ]
+  },
+  {
+    "name": "de-shop",
+    "path": "/de/produkte/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "shop guest entries",
+        "selector": ".sf-card-actions"
+      }
+    ]
+  },
+  {
+    "name": "de-category",
+    "path": "/de/produkt-kategorie/wechselrichter/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "category guest entries",
+        "selector": ".sf-card-actions"
+      }
+    ]
+  },
+  {
+    "name": "de-product",
+    "path": "/de/produkt/saj-h2-10k-t3/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "product guest entries",
+        "selector": ".pdp-price"
+      }
+    ]
+  },
+  {
+    "name": "de-compare",
+    "path": "/de/compare-products/?ids=4107,4108",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "guest net-price cells only",
+        "selector": ".linker-compare-table tbody tr:nth-child(2)>td"
+      }
+    ]
+  },
+  {
+    "name": "de-genie-dock",
+    "path": "/de/",
+    "actions": [
+      {
+        "click": "[data-linker-genie-open]"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      1440
+    ]
+  },
+  {
+    "name": "de-genie-workspace",
+    "path": "/de/genie/",
+    "actions": [],
+    "ruledRegions": [
+      {
+        "name": "genie-workspace guest entries",
+        "selector": ".linker-genie-panel--workspace"
+      }
+    ]
+  },
+  {
+    "name": "en-genie-dock-mobile",
+    "path": "/products/",
+    "actions": [
+      {
+        "click": ".product-mobile-actions .linker-genie-chip"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      390
+    ]
+  },
+  {
+    "name": "de-genie-dock-mobile",
+    "path": "/de/produkte/",
+    "actions": [
+      {
+        "click": ".product-mobile-actions .linker-genie-chip"
+      }
+    ],
+    "ruledRegions": [
+      {
+        "name": "genie-dock guest entries",
+        "selector": ".linker-genie-panel"
+      }
+    ],
+    "widths": [
+      390
+    ]
+  }
+]

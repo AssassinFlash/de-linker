@@ -1,0 +1,11 @@
+Browser tab: 1, Title: "Ask About a Product, Model or Datasheet | Linker", URL: "http://127.0.0.1:9126/genie/".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 32
++						78 content list
++							79 container
++								80 button
++								81 button
++							82 container
++								83 button
++								84 button
+The focused UI element is 1 AXWebArea Ask About a Product, Model or Datasheet | Linker, URL: 127.0.0.1:9126/genie/

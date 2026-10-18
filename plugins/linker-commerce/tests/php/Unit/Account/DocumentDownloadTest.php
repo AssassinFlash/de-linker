@@ -27,6 +27,13 @@ use WP_Mock;
 final class DocumentDownloadTest extends TestCase {
 
 	/**
+	 * The public error response body.
+	 *
+	 * @var string
+	 */
+	private string $denial = '';
+
+	/**
 	 * Translation and escaping return their input; wp_die() reports its status by exception.
 	 */
 	public function setUp(): void {
@@ -37,10 +44,13 @@ final class DocumentDownloadTest extends TestCase {
 		WP_Mock::userFunction( 'absint', array( 'return' => static fn ( $value ): int => abs( (int) $value ) ) );
 		WP_Mock::userFunction( 'nocache_headers' );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
 		WP_Mock::userFunction(
 			'wp_die',
 			array(
-				'return' => static function ( $message, $title, array $args ): void {
+				'return' => function ( $message, $title, array $args ): void {
+					$this->denial = (string) $message;
 					throw new RuntimeException( (string) $args['response'] );
 				},
 			)
@@ -53,6 +63,13 @@ final class DocumentDownloadTest extends TestCase {
 		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => '/nonexistent' ) ) );
 		WP_Mock::userFunction( 'get_post', array( 'return' => null ) );
 		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
+	}
+
+	/** Registration remains secondary to the original account's ownership check. */
+	public function test_guest_denial_has_a_register_entry_but_keeps_403(): void {
+		$this->assertSame( '403', $this->status( false ) );
+		$this->assertStringContainsString( 'Please log in with that account.', $this->denial );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/"', $this->denial );
 	}
 
 	/**

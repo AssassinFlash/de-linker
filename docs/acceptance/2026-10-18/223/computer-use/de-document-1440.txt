@@ -1,0 +1,9 @@
+Browser tab: 1, Title: "Dokument", URL: "http://127.0.0.1:9126/de/?linker-document=proforma&id=1".
+1 AXWebArea Dokument, URL: 127.0.0.1:9126/de/?linker-document=proforma&id=1
+	2 container error-page
+		3 text Dieses Dokument ist nur für das Konto abrufbar, zu dem es gehört. Bitte melden Sie sich mit diesem Konto an.
+		4 container
+			5 link Description: Anmelden, Value: 127.0.0.1:9126/de/mein-konto/
+			6 link Description: Konto erstellen, Value: 127.0.0.1:9126/de/mein-konto/register/
+
+The focused UI element is 1 AXWebArea Dokument, URL: 127.0.0.1:9126/de/?linker-document=proforma&id=1

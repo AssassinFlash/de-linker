@@ -1,0 +1,32 @@
+
+ RUN  v5.0.3 /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools
+
+ ❯ src/genie/components/CopyReply.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/genie/components/CopyReply.test.tsx [ src/genie/components/CopyReply.test.tsx ]
+Error: Failed to resolve import "./CopyReply" from "src/genie/components/CopyReply.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/src/genie/components/CopyReply.test.tsx:3:26
+  1  |  import { fireEvent, render, screen } from "@testing-library/react";
+  2  |  import { expect, test, vi } from "vitest";
+  3  |  import { CopyReply } from "./CopyReply";
+     |                             ^
+  4  |  var _jsxFileName = "/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/src/genie/components/C...
+  5  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8766:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8763:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:26632:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26702:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26668:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8545:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20184:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  12:38:38
+   Duration  549ms (environment 54%, setup 41%, transform 4%, worker 1%)

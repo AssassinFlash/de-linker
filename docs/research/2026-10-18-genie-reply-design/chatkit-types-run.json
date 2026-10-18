@@ -1,0 +1,18 @@
+{
+  "source": "https://raw.githubusercontent.com/openai/chatkit-js/main/packages/chatkit/types/index.d.ts",
+  "capturedAt": "2026-10-18T04:17:37.481882+00:00",
+  "actor": "apify/rag-web-browser",
+  "runId": "LKIePiO87EtgGsQEb",
+  "datasetId": "pkguhI2InrHL1g4V9",
+  "status": "SUCCEEDED",
+  "input": {
+    "query": "https://raw.githubusercontent.com/openai/chatkit-js/main/packages/chatkit/types/index.d.ts",
+    "maxResults": 1,
+    "outputFormats": [
+      "markdown",
+      "html"
+    ]
+  },
+  "usageTotalUsd": 0.0031799999999999997,
+  "statusMessage": "Finished! Scraped 1 pages, 0 failed."
+}

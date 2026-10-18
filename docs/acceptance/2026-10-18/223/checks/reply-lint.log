@@ -1,0 +1,10 @@
+
+> linker-tools@0.1.0 lint:js
+> wp-scripts lint-js --max-warnings=0
+
+
+/Users/chesterjohn/Documents/de-linker-worktrees/c223/plugins/linker-tools/src/genie/App.tsx
+  188:32  error  Expected { after 'if' condition  curly
+
+✖ 1 problem (1 error, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.

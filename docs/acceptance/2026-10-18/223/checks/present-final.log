@@ -1,0 +1,7 @@
+PHP=/opt/homebrew/opt/php@8.3/bin/php uv run --locked --project tools/local linker-local wp "c223" linker-commerce present --user=1
+backup: 26 templates, additional css, 5 partials staged for rollback
+templates: created 0, updated 0, unchanged 18
+tokens: no Additional CSS copy to remove
+windpress volume: storefront styles
+windpress: cache is newer than the templates/tokens and contains the template classes
+Success: Presentation installed. A rollback copy is in the linker_commerce_present_backup option.
