@@ -169,6 +169,9 @@ for (const language of ['en', 'de'] as const) {
 						)
 						.first()
 				).toBeVisible();
+				await expect(
+					page.locator('.linker-account-main')
+				).not.toContainText(/€|EUR/);
 				await shot(page, `${prefix}-pending-account`);
 				for (const endpoint of [
 					'inquiries/',

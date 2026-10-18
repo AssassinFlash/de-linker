@@ -780,7 +780,8 @@ final class AccountTemplates {
 				'status'          => wc_get_order_status_name( $order->get_status() ),
 				'status-slug'     => $order->get_status(),
 				'date'            => $order->get_date_created() ? wc_format_datetime( $order->get_date_created() ) : '',
-				'total'           => $order->get_formatted_order_total(),
+				/** This filter is documented in includes/Gating/PriceDisplay.php */
+				'total'           => apply_filters( 'linker_commerce_visitor_sees_prices', false ) ? $order->get_formatted_order_total() : '',
 				'url'             => $order->get_view_order_url(),
 				'items-summary'   => self::items_summary( $count ),
 				/* translators: %s: inquiry number. */
