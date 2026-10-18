@@ -30,3 +30,11 @@ After seeing stabilized before/after diagnostics, the owner said the designs the
 | Service introduction | Aligned existing photo group and a continuous capability list; mobile shows all four capabilities with readable type. | The stored LC content remains intact. New WindPress rules replace the visual effect of its photo dock in this region; native contact/navigation remains intact. |
 
 The zero-pixel gate now applies to the nine unaffected English page types at both viewports (18 comparisons). Product, inquiry, blog index, blog category and service page screenshots carry the owner-authorized region changes; those changes are reviewed visually and listed here. No dynamic mask or colour tolerance is introduced.
+
+### Final journal reference
+
+The owner's later [light reference](owner-journal-reference-1.png) and [dark reference](owner-journal-reference-2.png) specify the desired content-platform composition. The final EN/DE index, category and search lists use a topic rail/sidebar, native search, featured cover, thumbnail feed and desktop more-reading rail. This supersedes the intermediate traditional archive-card treatment. All cards remain genuine written-post links; thumbnail ratios and visual grouping do not imply video functionality. The shared site chrome and individual post-reading template are preserved. Search is an additional explicitly verified visual state of this same discovery flow.
+
+### Approved service and single-post reading
+
+The owner approved the service screenshot, then supplied [mobile browsing](owner-mobile-reference-1.png), [mobile reading](owner-mobile-reference-2.png), [desktop reading](owner-reader-reference-1.png) and [contents/reading reference](owner-reader-reference-2.png). The final discovery flow uses compact mobile recommendation rows. Single posts use a chapter rail, a measured reading column, related reading and sharing; mobile joins the cover to the reading panel and collapses the contents disclosure. This is an additional explicitly authorized EN visual exception, verified in EN/DE at both widths. No existing written content is reauthored as a consequence of the design change.

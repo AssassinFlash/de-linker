@@ -1,0 +1,101 @@
+/* Owner's 2026-10-18 content-platform references: topic rail, native search,
+ * featured cover and an uninterrupted thumbnail feed. Values use the shared
+ * site tokens. 640/1000/1280px follow the site's existing responsive bands;
+ * 16:9 covers follow the owner's video-platform reference, without implying
+ * that written posts are videos. No component escapes the three journal faces.
+ */
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) {
+  color: var(--proto-ink-deep); background: var(--proto-neutral-50);
+  font-family: var(--proto-font-sans); font-weight: 400;
+}
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) :is(h1,h2,h3,p,ul) { margin: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) a { color: inherit; text-decoration: none; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) a:focus-visible,
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) button:focus-visible { outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-shell {
+  display: grid; grid-template-columns: 180px minmax(0,1fr); gap: var(--proto-space-7);
+  max-width: 1600px; margin-inline: auto; padding: var(--proto-space-6);
+}
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-sidebar {
+  position: sticky; top: calc(var(--lk-header-h) + var(--proto-space-5)); align-self: start;
+  max-height: calc(100dvh - var(--lk-header-h) - var(--proto-space-7)); overflow-y: auto;
+}
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-home { display: flex; gap: var(--proto-space-3); align-items: center; font-size: .9375rem; font-weight: 600; padding-block: var(--proto-space-3); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-mark { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--proto-teal-700); color: #fff; font-weight: 700; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics { display: grid; gap: var(--proto-space-5); margin-top: var(--proto-space-5); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics ul { list-style: none; padding: 0; margin: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .categories { font-size: .6875rem; font-weight: 600; letter-spacing: .08em; color: var(--proto-neutral-500); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .categories > ul { display: grid; gap: var(--proto-space-1); margin-top: var(--proto-space-3); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics :is(.journal-all,.cat-item > a) { display: flex; align-items: center; min-height: var(--proto-control-height); padding: var(--proto-space-3); border-radius: var(--proto-radius-lg); font-size: .8125rem; font-weight: 400; line-height: 1.5; letter-spacing: 0; color: var(--proto-ink-muted-deep); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics :is(a[aria-current="page"],.current-cat > a) { background: var(--proto-teal-100); color: var(--proto-teal-800); font-weight: 600; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics a:hover { background: var(--proto-neutral-100); color: var(--proto-teal-700); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-resources { display: grid; gap: var(--proto-space-2); margin-top: var(--proto-space-6); padding-top: var(--proto-space-5); border-top: 1px solid var(--proto-neutral-200); font-size: .8125rem; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-resources > p { margin-bottom: var(--proto-space-2); color: var(--proto-neutral-500); font-size: .6875rem; font-weight: 600; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-resources > a { display: flex; justify-content: space-between; gap: var(--proto-space-2); padding-block: var(--proto-space-2); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-main { min-width: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topbar { display: flex; align-items: center; justify-content: space-between; gap: var(--proto-space-6); margin-bottom: var(--proto-space-6); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-intro { min-width: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-eyebrow { color: var(--proto-teal-700); font-size: .6875rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; margin-bottom: var(--proto-space-2); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) h1 { max-width: 28ch; font-family: var(--proto-font-display); font-size: clamp(1.5rem,2.2vw,2rem); font-weight: 600; line-height: 1.25; letter-spacing: -.025em; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-intro > p:last-child:not(.journal-eyebrow) { margin-top: var(--proto-space-3); max-width: 60ch; color: var(--proto-ink-muted-deep); font-size: .875rem; line-height: 1.65; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search { display: flex; flex-shrink: 0; align-items: center; width: 280px; min-height: var(--proto-control-height); border: 1px solid var(--proto-neutral-300); border-radius: var(--proto-radius-lg); background: #fff; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search input[type="search"] { min-width: 0; width: 100%; padding: var(--proto-space-3) var(--proto-space-4); border: 0; border-radius: inherit; background: transparent; color: var(--proto-ink-deep); font: 400 .8125rem/1.5 var(--proto-font-sans); box-shadow: none; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search:focus-within { outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search input:focus-visible { outline: none; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search button { display: grid; place-items: center; flex-shrink: 0; width: var(--proto-control-height); height: var(--proto-control-height); padding: 0; border: 0; border-left: 1px solid var(--proto-neutral-200); border-radius: 0 var(--proto-radius-lg) var(--proto-radius-lg) 0; background: transparent; color: var(--proto-ink-deep); cursor: pointer; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search svg { width: 19px; height: 19px; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-content { display: grid; grid-template-columns: minmax(0,1fr); gap: var(--proto-space-6); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-stream { min-width: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-feed { margin-top: var(--proto-space-6); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-feed > h2 { margin-bottom: var(--proto-space-5); font-size: 1.125rem; font-weight: 600; line-height: 1.5; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--proto-space-6) var(--proto-space-5); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card { min-width: 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card > a { display: block; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) :is(.journal-card-image,.journal-suggestion-image) { aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--proto-radius-lg); background: var(--proto-neutral-200); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) :is(.journal-card-image,.journal-suggestion-image) img { display: block; width: 100%; height: 100%; object-fit: contain; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-image-fallback { display: block; width: 100%; height: 100%; background: var(--proto-neutral-200); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card h3 { margin-top: var(--proto-space-3); color: var(--proto-ink-deep); font-size: 1rem; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card a:hover h3 { color: var(--proto-teal-700); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-meta { display: flex; flex-wrap: wrap; gap: var(--proto-space-1) var(--proto-space-3); margin-top: var(--proto-space-2); color: var(--proto-neutral-500); font-size: .6875rem; line-height: 1.6; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestions { display: none; align-self: start; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestions > h2 { margin-bottom: var(--proto-space-5); font-size: 1rem; font-weight: 600; line-height: 1.5; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestion { display: grid; grid-template-columns: 80px minmax(0,1fr); gap: var(--proto-space-3); align-items: start; padding-bottom: var(--proto-space-5); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestion h3 { font-size: .8125rem; font-weight: 500; line-height: 1.5; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestion-date { display: block; margin-top: var(--proto-space-2); color: var(--proto-neutral-500); font-size: .6875rem; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination { margin-top: var(--proto-space-7); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination :is(.page-numbers,.pagination) { display: flex; flex-wrap: wrap; gap: var(--proto-space-2); padding: 0; list-style: none; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination :is(a,span.page-numbers) { display: inline-flex; align-items: center; justify-content: center; min-width: var(--proto-control-height); min-height: var(--proto-control-height); padding: var(--proto-space-2) var(--proto-space-3); border: 1px solid var(--proto-neutral-300); border-radius: var(--proto-radius-lg); background: #fff; font-size: .8125rem; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-pagination .current { background: var(--proto-teal-700); color: #fff; border-color: var(--proto-teal-700); }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty { padding: var(--proto-space-7) 0; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty h3 { font-size: 1.125rem; font-weight: 600; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty p { margin-block: var(--proto-space-3); color: var(--proto-ink-muted-deep); font-size: .9375rem; }
+:is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-empty a { color: var(--proto-teal-700); text-decoration: underline; }
+@media (min-width:1280px) {
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-content-with-rail { grid-template-columns: minmax(0,1fr) 220px; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-suggestions { display: block; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media (max-width:999px) {
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-shell { display: block; padding: var(--proto-space-5); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-sidebar { position: static; max-height: none; overflow: visible; margin-bottom: var(--proto-space-5); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) :is(.journal-home,.journal-resources) { display: none; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics { display: flex; gap: var(--proto-space-2); align-items: center; margin: 0; padding-bottom: var(--proto-space-3); overflow-x: auto; scrollbar-width: thin; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics > ul { display: contents; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .categories { display: contents; font-size: 0; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics .categories > ul { display: flex; gap: var(--proto-space-2); margin: 0; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics :is(.journal-all,.cat-item > a) { flex-shrink: 0; white-space: nowrap; padding: var(--proto-space-2) var(--proto-space-3); background: #fff; border: 1px solid var(--proto-neutral-200); border-radius: 8px; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topics a[aria-current="page"] { border-color: var(--proto-teal-700); background: var(--proto-teal-100); }
+}
+@media (max-width:639px) {
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-shell { padding: var(--proto-space-4); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-topbar { align-items: stretch; flex-direction: column; gap: var(--proto-space-5); }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-search { width: 100%; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-grid { grid-template-columns: minmax(0,1fr); }
+}
+/* Mobile reference: compact recommendations below the lead cover. */
+@media (max-width:639px) {
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card > a { display: grid; grid-template-columns: 104px minmax(0,1fr); gap: var(--proto-space-2) var(--proto-space-4); align-items: start; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card-image { grid-column: 1; grid-row: 1/3; aspect-ratio: 1; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card h3 { grid-column: 2; grid-row: 1; margin: 0; font-size: .9375rem; }
+  :is(#tv-blog-index-v1,#tv-blog-category-v1,#tv-blog-search-v1) .journal-card .journal-card-meta { grid-column: 2; grid-row: 2; margin: 0; }
+}

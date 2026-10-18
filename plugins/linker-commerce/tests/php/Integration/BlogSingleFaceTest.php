@@ -151,7 +151,7 @@ final class BlogSingleFaceTest extends IntegrationTestCase {
 
 		$html = $this->get( $this->page( $post ) );
 
-		$meta = $this->block( $html, '<div class="tv-blog-single-meta-cats">', '</main>' );
+		$meta = $this->block( $html, '<div class="tv-blog-single-meta-cats">', '</div>' );
 		$this->assertStringContainsString( 'href="' . esc_url( $archive ) . '"', $meta );
 		$this->assertStringContainsString( esc_html( $categories[0]->name ), $meta );
 		$this->assertStringNotContainsString( '[linker_blog_post_categories]', $html, 'the shortcode is expanded, not left as text' );

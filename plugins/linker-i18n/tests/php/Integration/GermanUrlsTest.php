@@ -25,17 +25,43 @@ final class GermanUrlsTest extends SiteTestCase {
 	 */
 	private mixed $migration_state = null;
 
+	/** The journal's collection metadata names the document in its own language. */
+	public function test_journal_collection_metadata_uses_its_own_language_url(): void {
+		foreach ( array( '/blog/', '/de/blog/' ) as $path ) {
+			$page = self::get( $path );
+			self::assertSame( 200, $page['status'] );
+			preg_match_all( '#<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>#s', $page['body'], $scripts );
+			$collections = array();
+			foreach ( $scripts[1] as $script ) {
+				$data = json_decode( $script, true );
+				if ( is_array( $data ) && in_array( 'CollectionPage', (array) ( $data['@type'] ?? array() ), true ) ) {
+					$collections[] = $data['url'] ?? '';
+				}
+			}
+			self::assertSame( array( self::$site . $path ), $collections );
+		}
+	}
+
 	/** The topic navigation identifies the current topic through native category links. */
 	public function test_journal_topics_identify_the_current_category_in_each_language(): void {
 		$applied = false;
 		try {
 			self::wp( array( 'linker-i18n', 'german-urls', '--apply' ) );
 			$applied = true;
-			foreach ( array( '/category/system-design/' => 'Journal topics', '/de/kategorie/systemauslegung/' => 'Themen im Journal' ) as $path => $label ) {
+			foreach ( array(
+				'/category/system-design/'       => 'Journal topics',
+				'/de/kategorie/systemauslegung/' => 'Themen im Journal',
+			) as $path => $label ) {
 				$page = self::get( $path );
 				self::assertSame( 200, $page['status'] );
 				$document = new \DOMDocument();
-				@$document->loadHTML( $page['body'], LIBXML_NONET );
+				$previous = libxml_use_internal_errors( true );
+				try {
+					self::assertTrue( $document->loadHTML( $page['body'], LIBXML_NONET ) );
+				} finally {
+					libxml_clear_errors();
+					libxml_use_internal_errors( $previous );
+				}
 				$xpath = new \DOMXPath( $document );
 				$nav   = $xpath->query( '//nav[contains(@class,"tv-blog-cat-nav-inner")]' );
 				self::assertSame( 1, $nav->length, 'Topics must be a labelled navigation landmark.' );

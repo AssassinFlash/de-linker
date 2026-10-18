@@ -21,3 +21,15 @@ The final full route table is the review surface for uniqueness and German expre
 ## Topic navigation label review
 
 Initial EN “All articles” / DE “Alle Artikel” was both prohibited vocabulary and misleading as a selected pill on a category page. “All topics” / “Alle Themen” describes the route back to the journal index; it remains a quiet unselected link. The native category list selects only the current topic with `aria-current="page"`. No category names, summaries, product facts or promises are rewritten.
+
+## Content-platform journal copy
+
+The owner supplied visual references for a YouTube-like browsing experience. Draft EN “Know more. Plan with confidence.” was rejected in review as a vague benefit claim. Final EN **“Knowledge for your next project.”** / DE **“Wissen für Ihr nächstes Projekt.”** names the reading task without a promise. The supporting lines are **“Technical guidance for installers and EPCs.”** / **“Praxiswissen für Installationsbetriebe und EPCs.”**
+
+Navigation and actions: **All topics / Alle Themen**, **Topics / Themen**, **Search the journal / Journal durchsuchen**, **Search / Suche**, **Latest / Aktuell**, **All posts / Alle Beiträge**, **Read more / Weiterlesen**, **More from the journal / Mehr aus dem Journal**, **Resources / Ressourcen**. “Latest” is backed by the native descending publication-date query. The rail is described as more reading; it makes no invented popularity, watch-history or recommendation-personalization claim.
+
+Empty search: **“No matching posts found. Try another search term or choose a topic.”** / **“Keine passenden Beiträge gefunden. Versuchen Sie einen anderen Suchbegriff oder wählen Sie ein Thema.”** Both explain a real next action. The configurator remains **“Open the Solution Configurator” / “Lösungskonfigurator öffnen”**, with **“From reading to a system plan.” / “Von der Recherche zur Planung.”** Existing product/post facts and titles are not rewritten. German collection metadata uses a German description of this same audience and subject.
+
+## Reading-page navigation
+
+The reader reference calls for clear reading controls. Final labels: **On this page / Auf dieser Seite**, **Post sections / Abschnitte dieses Beitrags**, **Overview / Überblick**, **Post details / Beitragsdetails**, **Related reading / Passende Beiträge**, **Share / Teilen**, **Published / Veröffentlicht**, **Previous post / Vorheriger Beitrag**, **Next post / Nächster Beitrag**. Existing **Back to blog / Zurück zum Blog** and project-quote labels stay. Review rejected invented watch history, rating, follower, like, read-time or popularity indicators: none has a backing data contract here. Post body, facts and actual author/date remain native.
