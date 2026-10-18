@@ -257,8 +257,7 @@ def publish(
         else:
             target.copy_file_in(artifact.source, names.next)
         print(
-            f"uploaded {artifact.relative} in "
-            f"{time.monotonic() - started:.1f}s",
+            f"uploaded {artifact.relative} in {time.monotonic() - started:.1f}s",
             flush=True,
         )
     _same_filesystem(
