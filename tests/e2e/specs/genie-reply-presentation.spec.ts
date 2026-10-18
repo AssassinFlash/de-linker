@@ -218,11 +218,21 @@ for (const locale of ['en', 'de'] as const) {
 				const finalLine = page
 					.locator('.linker-genie-message-body p')
 					.last();
+				// A narrow dock ends with the taller choice panel. The final prose
+				// line and the final controls must each be fully reachable by native
+				// scrolling; they need not occupy the small viewport simultaneously.
+				await finalLine.scrollIntoViewIfNeeded();
 				await expect(finalLine).toBeInViewport({ ratio: 1 });
 				const finalBox = await finalLine.boundingBox();
+				expect(finalBox!.y).toBeGreaterThanOrEqual(readingBox!.y);
 				expect(finalBox!.y + finalBox!.height).toBeLessThanOrEqual(
 					readingBox!.y + readingBox!.height
 				);
+				const backToLatest = page.getByRole('button', {
+					name: german ? 'Zur neuesten Nachricht' : 'Jump to latest',
+				});
+				if (await backToLatest.isVisible()) await backToLatest.click();
+				await expect(choices).toBeInViewport({ ratio: 1 });
 				await page.screenshot({
 					path: join(evidence, `${name}-latest.png`),
 				});
