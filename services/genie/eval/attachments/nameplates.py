@@ -36,18 +36,13 @@ from typing import Any
 
 import httpx
 
-from linker_genie import attachments
-from linker_genie.agent import chat_endpoint, model_name
+from linker_genie import attachments, eval_papers
+from linker_genie.agent import deepseek_access, model_name
 from linker_genie.lexicon import normalize
 from linker_genie.nameplate import identify
 from linker_genie.schema import Upload
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.vision import Vision
-
-if __package__:  # imported by the tests: the sibling module through the package
-    from . import papers
-else:  # run as a script (the documented use): its own folder is sys.path[0]
-    import papers
 
 HERE = Path(__file__).resolve().parent
 CASES = json.loads((HERE / "cases.json").read_text())
@@ -107,8 +102,8 @@ def _case_path(name: str, labels_root: Path) -> Path:
 
 
 def readings(wp: str, labels_root: Path) -> list[dict[str, Any]]:
-    base, key = chat_endpoint()
-    see = Vision(key, base, model_name())
+    access = deepseek_access()
+    see = Vision(access.key, access.base_url, model_name())
     vocabulary = StoreVocabulary(wp).get()
     rows = []
     for case in CASES["photos"]:
@@ -222,7 +217,7 @@ def turns(service: str, uploads_root: Path) -> list[dict[str, Any]]:
                 elif "generated" in case:
                     # A supplier's paper written for the evaluation (papers.py): no
                     # real price list is shipped, and the file is a customer's.
-                    data = getattr(papers, case["generated"])(locale)
+                    data = getattr(eval_papers, case["generated"])(locale)
                     name = "Preisliste.pdf" if locale == "de" else "Price list.pdf"
                     if case["generated"] == "delivery_terms":
                         name = (
