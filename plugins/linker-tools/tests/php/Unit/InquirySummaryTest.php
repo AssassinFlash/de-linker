@@ -152,6 +152,42 @@ final class InquirySummaryTest extends TestCase {
 		$this->assertSame( 1, $calls );
 	}
 
+
+	/**
+	 * The model's empty note does not leave the form blank: A7 starts the
+	 * message from the customer's last sentence.
+	 */
+	public function test_a_model_summary_without_a_note_uses_the_last_message(): void {
+		WP_Mock::userFunction( 'get_transient', array( 'return' => false ) );
+		WP_Mock::userFunction( 'set_transient', array( 'return' => true ) );
+		$summary = ( new InquirySummary(
+			self::conversations(),
+			self::thread(
+				array(
+					array(
+						'role'     => 'user',
+						'content'  => 'Zwei Wechselrichter, Lieferung im Dezember.',
+						'products' => array(),
+					),
+					array(
+						'role'     => 'assistant',
+						'content'  => 'Hier sind zwei Modelle.',
+						'products' => array( 4107 ),
+					),
+				)
+			),
+			static fn (): array => array(
+				'summary'    => 'Zwei Wechselrichter fuer Dezember.',
+				'quantities' => array(),
+				'conditions' => array( 'Lieferung im Dezember' ),
+				'note'       => '',
+			)
+		) )->answer( null, 5 ) ?? array();
+
+		$this->assertSame( 'model', $summary['source'] );
+		$this->assertSame( 'Zwei Wechselrichter, Lieferung im Dezember.', $summary['note'] );
+	}
+
 	/**
 	 * An unreachable service leaves the customer's own sentences, newest first.
 	 */

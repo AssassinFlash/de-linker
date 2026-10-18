@@ -169,14 +169,38 @@ final class InquirySummary {
 		if ( '' === $summary ) {
 			return $this->by_rule( $messages, 'unreadable' );
 		}
+		// The form starts its message from the note (acceptance A7): when the
+		// model states none, the customer's last message is that note, the same
+		// one the rule-based fallback gives.
+		$note = trim( (string) ( $answer['note'] ?? '' ) );
+		if ( '' === $note ) {
+			$note = $this->last_said( $messages );
+		}
 		return array(
 			'summary'    => mb_substr( $summary, 0, self::MAX_SUMMARY ),
 			'quantities' => $this->quantities( $answer['quantities'] ?? array() ),
 			'conditions' => $this->conditions( $answer['conditions'] ?? array() ),
-			'note'       => mb_substr( (string) ( $answer['note'] ?? '' ), 0, self::MAX_NOTE ),
+			'note'       => mb_substr( $note, 0, self::MAX_NOTE ),
 			'source'     => 'model',
 			'reason'     => null,
 		);
+	}
+
+	/**
+	 * The customer's latest message, '' when there is none.
+	 *
+	 * @param list<array<string, mixed>> $messages Thread::transcript().
+	 */
+	private function last_said( array $messages ): string {
+		foreach ( array_reverse( $messages ) as $message ) {
+			if ( 'user' === ( $message['role'] ?? '' ) ) {
+				$content = trim( (string) ( $message['content'] ?? '' ) );
+				if ( '' !== $content ) {
+					return $content;
+				}
+			}
+		}
+		return '';
 	}
 
 	/**
