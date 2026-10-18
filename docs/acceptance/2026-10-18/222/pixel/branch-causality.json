@@ -152,5 +152,9 @@
   "featureVsMainZeroPairs": 16,
   "mainVsLiveZeroPairs": 12,
   "featureVsLiveZeroPairs": 11,
-  "liveVariationFinding": "EN 390 product compatibility thumbnails differed by 7597 pixels between the two live captures. Both local builds were identical; the second live capture matched them. No cause beyond observed live image variation is claimed."
+  "liveVariationFinding": "EN 390 product compatibility thumbnails differed by 7597 pixels between the two live captures. Both local builds were identical; the second live capture matched them. No cause beyond observed live image variation is claimed.",
+  "finalMainAfterRebase": "c2106969d19be6797107fa50b35d4c8a58ad5d5f",
+  "frontendPluginTreesIdenticalBetweenCaptureBaseAndFinalMain": true,
+  "mainAdvanceScope": "PR #311 / ticket #308: deployment opcode-cache reset only; no website plugin source changes.",
+  "featureCssAfterFinalRebase": "e8f373446bac692821dce3f462567d12315969275a65f853da712d211135de01"
 }

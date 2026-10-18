@@ -1,14 +1,14 @@
 {
   "instance": "c222",
   "branch": "feat/222-pending-signed-in",
-  "baseCommit": "0fddf100c267581dd8d3e781fa498b5d1471bf47",
+  "baseCommit": "c2106969d19be6797107fa50b35d4c8a58ad5d5f",
   "justCheck": {
     "exit": 0,
-    "log": ".scratch/round1-just-check-final.log"
+    "log": ".scratch/round1-rebased-check.log"
   },
   "justTest": {
     "exit": 0,
-    "log": ".scratch/round1-just-test.log"
+    "log": ".scratch/round1-rebased-test.log"
   },
   "i18nCommerce": {
     "exit": 0,
@@ -75,6 +75,17 @@
     "ownedMailJobsRemaining": 0,
     "localMailIsolation": true,
     "loadedAccountStatusNotice": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce/includes/Account/AccountStatusNotice.php",
-    "commercePlugin": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce"
-  }
+    "commercePlugin": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce",
+    "afterFinalRebase": {
+      "nativeFixtureCustomersRemaining": 0,
+      "nativeFixtureMailJobsRemaining": 0,
+      "testRecipientAbsent": true
+    }
+  },
+  "finalRebasedApproval": {
+    "tests": 9,
+    "assertions": 148,
+    "failures": 0
+  },
+  "cutoverTestsAfterRebase": 147
 }

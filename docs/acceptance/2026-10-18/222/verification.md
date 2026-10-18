@@ -18,7 +18,7 @@ pending-account 与 public-inquiry 共用 `BrowserFixture`，两入口和 helper
 
 ## 测试与目录
 
-- 已 fetch/rebase 到当前 `origin/main`（`0fddf100`）。`just check`、`just test` 均 exit 0；全仓 Commerce PHP 为 **1209 tests / 5493 assertions，127 skipped**，真实 WordPress 测试单独运行。
+- 已 fetch/rebase 到当前 `origin/main`（`c2106969`，最终 fetch 合入部署 OPcache 重置 #308，网站插件树与对照基线完全相同）。`just check`、`just test` 均 exit 0；全仓 Commerce PHP 为 **1209 tests / 5493 assertions，127 skipped**，真实 WordPress 测试单独运行。
 - 真实 WordPress/Woo：**134 tests / 1402 assertions，0 failures，9 skipped**。跳过项为快照缺失的博客夹具，不是账号状态。
 - `just i18n-commerce c222` 正规生成 POT/PO/MO，按源文件排序，旧 `Prices after approval` 已过时；i18n-coverage 为 gap 0，i18n-validity 通过。相对当前 main 的 MO：**既有译文 changed 0**，仅移除不用的旧短句，加入新的完整审核提示；明细见 `catalog-comparison.json`。
 - 真实 Genie 价格浏览器矩阵 **16/16 通过**：EN/DE × 1440/390 × approved/pending/restricted/guest，卡片价格位逐字与产品页一致；见 `genie-prices.txt` 与 `screens/genie-prices/`。
@@ -36,3 +36,7 @@ pending-account 与 public-inquiry 共用 `BrowserFixture`，两入口和 helper
 按指定 `tests/visual/pixel-parity.mjs`、同机同浏览器同视口、全页、禁动画并等字体图片重新拍摄全部 16 组。分支对 live 为 **11/16 零差异**；四组 DE 1440 页头各 13061 pixels，EN 390 产品页五个兼容产品缩略图区域 7597 pixels。全部差异无掩膜、无容差。纯 main 对 live 为 **12/16 零差异**，仍有相同的四组 DE 页头差异；EN 手机产品图在两次 live 捕获间变化，第二次 live 与 local 相同。**本分支 local vs 纯 main local 全部 16/16、每组 0 pixels**，证明本票未造成这些差异。绝对 live/local 门仍为未完成，关联现有页头 #229 与同步 #252 范围；完整逐页归因与双构建截图见 `pixel/`。对照后已恢复本分支，实际类路径读回正确，CSS 与对照前逐字节相同；恢复后 Approval 真实夹具再验为 **9 tests / 148 assertions，0 failures**。
 
 线上注册与审批实走、approved 客户账户的 live/local 比对：**未完成，本轮仅本地写入授权，按第一轮交给 Claude 合并部署后执行**。本票和地图均未关闭。Spec/Standards 独立评审及修正记录见 `review.md`。
+
+最终基线刷新后已安装主线新增的部署 MU 插件，普通账户 GET 返回成功；指定员工再次完成官方 WindPress 编译及 present 读回，CSS 仍逐字节相同。Approval 再验为 9/148，原生夹具客户和邮件队列读回均为 0，测试收件人已撤。
+
+最终 rebase 后 `just i18n-commerce c222`、`just check`、`just test` 再次全部 exit 0；主线新增的部署工具测试一并通过（cutover 147 tests）。MO 比较已更新到 `c2106969`，译文仍为 changed 0。

@@ -17,3 +17,5 @@
 主线 32 张截图已拍完后，uv 子进程中的 Python 缺 Pillow 导致比较器停止；使用已具备 Pillow 的系统 Python 重跑同一官方 `compare.py`，产生本目录 `main-only/results.json`，保留真正的四组页头 FAIL。没有调整截图、容差或比较算法。
 
 `branch-causality.json` 保存全部逐页差异数、主线提交、实际类文件路径与恢复证据。`main-only/` 保留完整主线截图；根目录保留分支截图。对照结束后恢复本分支，类加载文件路径读回正确，WindPress CSS 与对照前逐字节相同；恢复后的账户浏览器矩阵与 Approval 夹具再验收。
+
+最终 fetch 时主线合并 #308，rebase 到 `c2106969`。经 git tree 比较，`0fddf100:plugins` 与 `c2106969:plugins` 完全相同；新增内容只有部署 OPcache 重置及其测试/规格，因此上述纯 main 网站插件对照仍适用于最终基线。

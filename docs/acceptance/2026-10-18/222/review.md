@@ -1,6 +1,6 @@
 # #222 第一轮修正 · 全量 diff 双评审
 
-固定基线 `origin/main = 0fddf100`，独立评审 HEAD `1581ac4c`，命令 `git diff origin/main...HEAD`。Spec 与 Standards 使用两个独立上下文，只读完整 diff、AGENTS、当前规格与 Claude 第一轮评审。修正见 `c19fa58d` 的后续提交链（以 git log 为准）；最终测试和运行时证据见 verification.md。
+固定基线 `origin/main = 0fddf100`，独立评审 HEAD `1581ac4c`，命令 `git diff origin/main...HEAD`。Spec 与 Standards 使用两个独立上下文，只读完整 diff、AGENTS、当前规格与 Claude 第一轮评审。修正经最终 rebase 后为 `23dcfc18` / `9fb7a86e`；评审原基线和 HEAD 为评审当时固定点；最终测试和运行时证据见 verification.md。
 
 ## Standards
 
@@ -23,3 +23,5 @@
 run10 按 Claude 第一轮裁定关闭为本地共享 Redis 故障，非账号代码缺陷，规格 184 和 17 已同步。POT/PO/MO 经正式命令重新生成，先前的手工追加状态不再作为交付目录。中间 run8–14、reboot15/16 原始 JSON 已移除。
 
 真实 WordPress、Computer Use、Genie、像素实测和目录比较分别保留实际结果；没有把静态实现或通过次数当成运行时证明。像素绝对门及线上实走的限制明确记在 verification.md。
+
+最终 rebase 基线 `c2106969` 只增加主线的部署 OPcache 重置（#308）；网站插件树与评审/像素固定点相同，评审的本票网站 diff 未因此改变。rebase 后正式再生成目录并重跑全仓 gates。

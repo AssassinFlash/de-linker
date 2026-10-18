@@ -19,5 +19,10 @@
   "ownedMailJobsRemaining": 0,
   "localMailIsolation": true,
   "loadedAccountStatusNotice": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce/includes/Account/AccountStatusNotice.php",
-  "commercePlugin": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce"
+  "commercePlugin": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce",
+  "afterFinalRebase": {
+    "nativeFixtureCustomersRemaining": 0,
+    "nativeFixtureMailJobsRemaining": 0,
+    "testRecipientAbsent": true
+  }
 }
