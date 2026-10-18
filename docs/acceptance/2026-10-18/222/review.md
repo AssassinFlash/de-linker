@@ -17,3 +17,7 @@ LC/WindPress 归属、PHP 数据装配、CommerceState 唯一价格规则均符�
 ## 全拆与通道
 
 本票新增运行时与 LC/WindPress diff 无旧代码标识符。账户内容继续由现有 LC 模板承接，pending 适配器只在原生 Woo 内容 hook 提供状态；无新模板抢占或第二价格规则。运行时的真实呈现另由浏览器截图验证。
+
+## 真实视觉发现后的补充评审
+
+`06957bad`：待审工作台新开放后暴露原有询盘 €0.00 金额。浏览器断言先复现，再让账户行数据读取既有 `linker_commerce_visitor_sees_prices` 答案；新增单测验证隐藏输出。Spec 与 Standards 分别复核通过：没有第二条价格政策，LC/WindPress 归属不变，邮件输出不受影响。

@@ -76,6 +76,11 @@ for (const language of ['en', 'de'] as const) {
 					)
 				);
 				const page = await context.newPage();
+				const priceBlock = page.locator(
+					width === 390
+						? '.pdp-mobile-action .pdp-price'
+						: '.pdp-purchase .pdp-price'
+				);
 				await page.goto(base + account + 'register/');
 				await page.fill('#billing_company', '222 Browser Solar GmbH');
 				await page.selectOption('#linker_customer_role', 'installer');
@@ -118,20 +123,17 @@ for (const language of ['en', 'de'] as const) {
 				await shot(page, `${prefix}-registered`);
 
 				await page.goto(base + product);
-				await expect(page.locator('.pdp-purchase')).toContainText(
-					pending
-				);
+				await expect(priceBlock).toContainText(pending);
 				await expect(
-					page.locator('.pdp-purchase .woocommerce-Price-amount')
+					priceBlock.locator('.woocommerce-Price-amount')
 				).toHaveCount(0);
 				await shot(page, `${prefix}-pending-product`);
 				await page
-					.locator('.pdp-purchase a')
-					.filter({
-						hasText:
+					.getByRole('link', {
+						name:
 							language === 'de'
-								? 'Zum Lösungsentwurf'
-								: 'Add to solution draft',
+								? /Zum Lösungsentwurf/
+								: /Add to solution draft/,
 					})
 					.click();
 				await page.goto(base + request);
@@ -191,13 +193,9 @@ for (const language of ['en', 'de'] as const) {
 				run('approved');
 				await page.goto(base + product);
 				await expect(
-					page
-						.locator('.pdp-purchase .woocommerce-Price-amount')
-						.first()
+					priceBlock.locator('.woocommerce-Price-amount').first()
 				).toBeVisible();
-				await expect(page.locator('.pdp-purchase')).not.toContainText(
-					pending
-				);
+				await expect(priceBlock).not.toContainText(pending);
 				const approvedCookie = (await context.cookies()).find(
 					(cookie) => cookie.name === loginCookie?.name
 				);

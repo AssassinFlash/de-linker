@@ -11,6 +11,9 @@ if ( ! defined( 'LINKER_LOCAL_MAIL_DIR' ) || '127.0.0.1' !== wp_parse_url( home_
 global $wpdb;
 $key  = 'linker_222_browser';
 $mode = $args[0] ?? '';
+// A previous request may have retained this fixture after its SQL row was deleted.
+// Invalidate only this fixture key; never flush the instance's shared cache.
+wp_cache_delete( $key, 'options' );
 if ( 'setup' === $mode ) {
 	if ( false !== get_option( $key ) ) {
 		throw new RuntimeException( 'An existing fixture must be restored before another run.' );
@@ -87,3 +90,4 @@ foreach ( $state['options'] as $option => $value ) {
 $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'linker_commerce_limit_%'" );
 foreach ( $state['limits'] as $row ) { $wpdb->insert( $wpdb->options, array_merge( $row, array( 'autoload' => 'off' ) ) ); }
 delete_option( $key );
+wp_cache_delete( $key, 'options' );

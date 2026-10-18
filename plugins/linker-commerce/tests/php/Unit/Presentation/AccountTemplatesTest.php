@@ -134,7 +134,7 @@ final class AccountTemplatesTest extends TestCase {
 
 	/** The inquiry row's own summary: how many products, and the number behind it. */
 	public function test_inquiry_row_carries_the_product_count_and_the_view_label(): void {
-		WP_Mock::onFilter( 'linker_commerce_visitor_sees_prices' )->with( false )->reply( true );
+		$this->visible_prices( true );
 		$this->plain_text();
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
@@ -162,7 +162,7 @@ final class AccountTemplatesTest extends TestCase {
 	/** Account inquiry rows use the shared price answer, including a recorded zero. */
 	public function test_inquiry_total_is_hidden_when_shared_price_rule_says_no(): void {
 		$this->plain_text();
-		WP_Mock::onFilter( 'linker_commerce_visitor_sees_prices' )->with( false )->reply( false );
+		$this->visible_prices( false );
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => 'Inquiry received' ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => '0' ) );
 		$row = ( new AccountTemplates() )->inquiry_row( $this->inquiry( Statuses::RECEIVED, '' ) );
@@ -179,7 +179,7 @@ final class AccountTemplatesTest extends TestCase {
 	 * A received inquiry renders neither. The number is the order meta, never invented.
 	 */
 	public function test_proforma_issued_renders_the_download_and_the_number(): void {
-		WP_Mock::onFilter( 'linker_commerce_visitor_sees_prices' )->with( false )->reply( true );
+		$this->visible_prices( true );
 		$this->plain_text();
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
@@ -219,7 +219,7 @@ final class AccountTemplatesTest extends TestCase {
 		 * German labels are the formal catalogue strings, not a translation invented in this test.
 		 */
 	public function test_detail_and_documents_both_carry_the_number_and_the_link(): void {
-		WP_Mock::onFilter( 'linker_commerce_visitor_sees_prices' )->with( false )->reply( true );
+		$this->visible_prices( true );
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
@@ -365,7 +365,7 @@ final class AccountTemplatesTest extends TestCase {
 	 * fall back to the empty row, never to nothing.
 	 */
 	public function test_dashboard_tiles_rows_and_documents_entry(): void {
-		WP_Mock::onFilter( 'linker_commerce_visitor_sees_prices' )->with( false )->reply( true );
+		$this->visible_prices( true );
 		$this->plain_text();
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
@@ -408,6 +408,17 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertSame( 3, substr_count( $html, '#20' ) );
 		$this->assertStringContainsString( 'linker-account-panel', $html );
 		$this->assertStringContainsString( 'linker-account-empty', $html );
+	}
+
+	/**
+	 * The canonical price filter is a WordPress boundary, not a second rule.
+	 *
+	 * @param bool $visible The shared rule's answer.
+	 */
+	private function visible_prices( bool $visible ): void {
+		$prices = WP_Mock::onFilter( 'linker_commerce_visitor_sees_prices' )->with( false );
+		$this->assertInstanceOf( \WP_Mock\Filter_Responder::class, $prices );
+		$prices->reply( $visible );
 	}
 
 	/**
