@@ -1225,68 +1225,73 @@
 	object-fit: contain;
 }
 
-/* Compatibility records */
+/* Owner's 2026-10-18 visual correction: two reading columns, larger product
+   images and quiet source text. Existing PDP spacing/type tokens keep this
+   section part of the page; compatibility source text stays secondary. */
 #tv-storefront-pdp .pdp-pairings {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-	gap: 16px;
-	margin-top: 36px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: 40px;
+	margin-top: 32px;
+	border-top: 1px solid var(--pdp-line);
 }
 
 #tv-storefront-pdp .pdp-pairing {
 	display: grid;
-	grid-template-columns: 88px minmax(0, 1fr);
-	column-gap: 16px;
-	row-gap: 6px;
-	padding: 18px;
-	border: 1px solid var(--pdp-line);
-	border-radius: var(--proto-radius-card);
+	grid-template-columns: 120px minmax(0, 1fr) 20px;
+	align-items: center;
+	gap: 24px;
+	min-width: 0;
+	padding: 28px 0;
+	border-bottom: 1px solid var(--pdp-line);
 	background: var(--pdp-paper);
 }
 
-#tv-storefront-pdp .pdp-pairing:hover {
-	border-color: var(--pdp-teal);
+#tv-storefront-pdp .pdp-pairing::after {
+	content: "→";
+	align-self: start;
+	color: var(--pdp-teal-dark);
+	font-size: 20px;
+	line-height: 1.4;
+}
+
+#tv-storefront-pdp .pdp-pairing:hover .pdp-pairing-name {
+	color: var(--pdp-teal-dark);
+	text-decoration: underline;
+	text-underline-offset: 4px;
 }
 
 #tv-storefront-pdp .pdp-pairing img {
-	grid-row: 1 / 5;
-	align-self: start;
-	width: 88px;
-	height: 100px;
-	padding: 12px;
-	border-radius: 12px;
-	background: var(--pdp-journal);
+	width: 120px;
+	height: 144px;
 	object-fit: contain;
 }
 
 #tv-storefront-pdp .pdp-pairing-copy {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 8px;
 	min-width: 0;
 }
 
 #tv-storefront-pdp .pdp-pairing-name {
-	font-size: 15px;
+	font-size: 18px;
 	font-weight: 600;
-	line-height: 1.35;
+	line-height: 1.45;
 }
 
 #tv-storefront-pdp .pdp-pairing-sku {
 	color: var(--pdp-muted);
-	font-size: 12px;
-	line-height: 1.4;
+	font-size: 11px;
+	line-height: 1.5;
+	overflow-wrap: anywhere;
 }
 
 #tv-storefront-pdp .pdp-pairing-chips .pdp-doc-meta {
-	display: inline-flex;
-	align-items: center;
-	padding: 2px 8px;
-	border-radius: var(--proto-radius-round);
-	background: var(--pdp-soft);
-	color: var(--pdp-muted);
-	font-size: 11px;
-	line-height: 16px;
+	margin-top: 4px;
+	color: var(--pdp-teal-dark);
+	font-size: 12px;
+	line-height: 1.6;
 }
 
 #tv-storefront-pdp .pdp-pairing-footnote {
@@ -1365,6 +1370,10 @@
    floating glass action pill).
    ================================================================ */
 @media (max-width: 1023px) {
+	#tv-storefront-pdp .pdp-pairings {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
 	#tv-storefront-pdp .pdp-layout {
 		grid-template-columns: minmax(0, 1fr);
 		grid-template-areas:
@@ -1745,13 +1754,18 @@
 	}
 
 	#tv-storefront-pdp .pdp-pairing {
-		grid-template-columns: 72px minmax(0, 1fr);
+		grid-template-columns: 84px minmax(0, 1fr) 16px;
+		gap: 16px;
+		padding-block: 24px;
 	}
 
 	#tv-storefront-pdp .pdp-pairing img {
-		width: 72px;
-		height: 84px;
-		padding: 8px;
+		width: 84px;
+		height: 112px;
+	}
+
+	#tv-storefront-pdp .pdp-pairing-name {
+		font-size: 15px;
 	}
 
 	/* The phone action bar: the floating glass pill. */
