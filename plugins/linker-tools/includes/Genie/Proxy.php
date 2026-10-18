@@ -50,15 +50,31 @@ class Proxy {
 	public const OPTION = 'linker_genie_url';
 
 	/**
+	 * The wp-config.php constant that holds the token this site and its Genie
+	 * service share (#236, review round 1 of PR #309, item 5): the service's
+	 * endpoints are reachable from the Hostinger host's shared outgoing
+	 * address, so each call carries it (services/genie gate.py). Without the
+	 * constant Genie is not configured.
+	 */
+	public const TOKEN_CONSTANT = 'LINKER_GENIE_SERVICE_TOKEN';
+
+	/**
+	 * The header the token travels in (not Authorization: Bearer, which
+	 * LiveCanvas reads as a JWT on this site's own REST requests).
+	 */
+	public const TOKEN_HEADER = 'X-Linker-Service-Token';
+
+	/**
 	 * Sets up the proxy.
 	 *
-	 * @param Conversations                                                        $conversations Conversation posts.
-	 * @param callable( string, array<string, mixed> ): (string|int|WP_Error)|null $fetch         Optional HTTP client for tests: a body string (turn), an int status (vote), or WP_Error.
-	 * @param Thread|null                                                          $thread        Conversation store; a default one is built when omitted.
-	 * @param UserContext|null                                                     $user_context  Identity handed to the service; a default one is built when omitted.
-	 * @param PageContext|null                                                     $pages         The page a turn comes from; a default one is built when omitted.
-	 * @param ConversationMail|null                                                $mail          Sends a conversation to the visitor; a default one is built when omitted.
-	 * @param Attachments|null                                                     $attachments   Checks a turn's files; a default one is built when omitted.
+	 * @param Conversations                                                                               $conversations Conversation posts.
+	 * @param callable( string, array<string, mixed>, array<string, string> ): (string|int|WP_Error)|null $fetch Optional HTTP client for tests (URL, body, headers): a body string (turn), an int status (vote), or WP_Error.
+	 * @param Thread|null                                                                                 $thread        Conversation store; a default one is built when omitted.
+	 * @param UserContext|null                                                                            $user_context  Identity handed to the service; a default one is built when omitted.
+	 * @param PageContext|null                                                                            $pages         The page a turn comes from; a default one is built when omitted.
+	 * @param ConversationMail|null                                                                       $mail          Sends a conversation to the visitor; a default one is built when omitted.
+	 * @param Attachments|null                                                                            $attachments   Checks a turn's files; a default one is built when omitted.
+	 * @param string|null                                                                                 $token         The shared service token; read from TOKEN_CONSTANT when null (tests pass one).
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
@@ -67,14 +83,23 @@ class Proxy {
 		?UserContext $user_context = null,
 		?PageContext $pages = null,
 		?ConversationMail $mail = null,
-		?Attachments $attachments = null
+		?Attachments $attachments = null,
+		?string $token = null
 	) {
 		$this->thread       = $thread ?? new Thread();
 		$this->user_context = $user_context ?? new UserContext();
 		$this->pages        = $pages ?? new PageContext();
 		$this->mail         = $mail ?? new ConversationMail( $conversations, $this->thread );
 		$this->attachments  = $attachments ?? new Attachments();
+		$this->token        = $token ?? ( defined( self::TOKEN_CONSTANT ) ? (string) constant( self::TOKEN_CONSTANT ) : '' );
 	}
+
+	/**
+	 * The shared service token; '' when the site has none.
+	 *
+	 * @var string
+	 */
+	private readonly string $token;
 
 	/**
 	 * Checks a turn's files (#236).
@@ -397,7 +422,7 @@ class Proxy {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function turn( WP_REST_Request $request ) {
-		$base = (string) get_option( self::OPTION, '' );
+		$base = $this->base();
 		if ( '' === $base ) {
 			return new WP_Error( 'linker_genie_unconfigured', 'Genie is not configured.', array( 'status' => 503 ) );
 		}
@@ -457,7 +482,7 @@ class Proxy {
 		if ( array() !== $readings ) {
 			$body['readings'] = $readings;
 		}
-		$stream = $this->post( rtrim( $base, '/' ) . '/assistant/turn', $body );
+		$stream = $this->post( $base . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}
@@ -473,19 +498,59 @@ class Proxy {
 				mb_substr( trim( (string) $first['content'] ), 0, 80 )
 			);
 		}
-		$this->thread->record(
-			$conversation,
-			$messages,
-			(string) $stream
-		);
-		// The readings are the conversation's store (Thread::split); the
-		// browser gets what each file is, not its whole text again.
+		// The readings are the conversation's store (Thread::split, once per
+		// turn); the browser gets what each file is, not its whole text again.
+		$split = Thread::split( (string) $stream );
+		$this->thread->record( $conversation, $messages, $split['stream'], $split['readings'] );
 		return new WP_REST_Response(
 			array(
 				'conversation_id' => $conversation,
-				'stream'          => Thread::split( (string) $stream )['stream'],
+				'stream'          => $split['stream'],
 			)
 		);
+	}
+
+	/**
+	 * A conversation is being deleted (by the customer, by Retention, by
+	 * staff): the reading text of its files leaves the service's turn log
+	 * too (#236, review round 1 of PR #309, item 6). Hooked on
+	 * `before_delete_post`, while the conversation's readings can still be
+	 * read; only a conversation with readings calls the service. A failure
+	 * is logged, never fatal to the deletion: the turn log's own retention
+	 * removes the turn later.
+	 *
+	 * @param int $post_id The post being deleted.
+	 */
+	public function forget( int $post_id ): void {
+		if ( Conversations::POST_TYPE !== get_post_type( $post_id ) || array() === $this->thread->readings( $post_id ) ) {
+			return;
+		}
+		$base = $this->base();
+		$code = '' === $base ? 503 : $this->post_status( $base . "/assistant/conversation/{$post_id}/forget", array() );
+		if ( $code >= 400 && function_exists( 'wc_get_logger' ) ) {
+			wc_get_logger()->error(
+				sprintf( 'Genie: the file readings of conversation %d were not purged from the service turn log (status %d).', $post_id, $code ),
+				array( 'source' => 'linker-genie' )
+			);
+		}
+	}
+
+	/**
+	 * The service's address without a trailing slash; '' when Genie is not
+	 * configured (no address, or no shared token, which is logged).
+	 */
+	private function base(): string {
+		$base = rtrim( (string) get_option( self::OPTION, '' ), '/' );
+		if ( '' !== $base && '' === $this->token ) {
+			if ( function_exists( 'wc_get_logger' ) ) {
+				wc_get_logger()->error(
+					sprintf( 'Genie: %s is not defined in wp-config.php; Genie is closed.', self::TOKEN_CONSTANT ),
+					array( 'source' => 'linker-genie' )
+				);
+			}
+			return '';
+		}
+		return $base;
 	}
 
 	/**
@@ -495,13 +560,13 @@ class Proxy {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function vote( WP_REST_Request $request ) {
-		$base = (string) get_option( self::OPTION, '' );
+		$base = $this->base();
 		if ( '' === $base ) {
 			return new WP_Error( 'linker_genie_unconfigured', 'Genie is not configured.', array( 'status' => 503 ) );
 		}
 		$id   = (int) $request->get_param( 'id' );
 		$body = array( 'vote' => (int) $request->get_param( 'vote' ) );
-		$code = $this->post_status( rtrim( $base, '/' ) . "/turn/{$id}/vote", $body );
+		$code = $this->post_status( $base . "/turn/{$id}/vote", $body );
 		if ( 404 === $code ) {
 			return new WP_Error( 'linker_genie_turn', 'Unknown turn.', array( 'status' => 404 ) );
 		}
@@ -535,7 +600,7 @@ class Proxy {
 		if ( is_callable( $this->fetch ) ) {
 			// A turn answers with its body string; anything else (the vote
 			// test contract's int status) is no stream and maps to 502.
-			$answer = ( $this->fetch )( $url, $body );
+			$answer = ( $this->fetch )( $url, $body, $this->headers() );
 			if ( is_string( $answer ) ) {
 				return $answer;
 			}
@@ -545,8 +610,9 @@ class Proxy {
 			$url,
 			array(
 				'headers' => array(
-					'Content-Type' => 'application/json',
-					'Accept'       => 'text/event-stream',
+					'Content-Type'     => 'application/json',
+					'Accept'           => 'text/event-stream',
+					self::TOKEN_HEADER => $this->token,
 				),
 				'body'    => (string) wp_json_encode( $body ),
 				// Sixty seconds: one turn makes at most four ability calls
@@ -567,6 +633,15 @@ class Proxy {
 	}
 
 	/**
+	 * The headers every call to the service carries besides its type.
+	 *
+	 * @return array<string, string>
+	 */
+	private function headers(): array {
+		return array( self::TOKEN_HEADER => $this->token );
+	}
+
+	/**
 	 * POST JSON to the service; returns only the response status code.
 	 *
 	 * @param string               $url  Service URL.
@@ -577,7 +652,7 @@ class Proxy {
 		if ( is_callable( $this->fetch ) ) {
 			// Test contract: the fetch double answers WP_Error, or an int
 			// status code, or a body string (which means 200).
-			$answer = ( $this->fetch )( $url, $body );
+			$answer = ( $this->fetch )( $url, $body, $this->headers() );
 			if ( is_wp_error( $answer ) ) {
 				return 502;
 			}
@@ -586,7 +661,10 @@ class Proxy {
 		$response = wp_remote_post(
 			$url,
 			array(
-				'headers' => array( 'Content-Type' => 'application/json' ),
+				'headers' => array(
+					'Content-Type'     => 'application/json',
+					self::TOKEN_HEADER => $this->token,
+				),
 				'body'    => (string) wp_json_encode( $body ),
 				'timeout' => 60.0,
 			)

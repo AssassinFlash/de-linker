@@ -11,8 +11,9 @@ deepseek-flash 抽取"); the agent only reads the text this returns.
 Every failure is explicit: a 4xx is raised at once with the API's own message (a 400
 is how the API refuses a file it cannot take, research §6.5), a 5xx, a 429 or a broken
 connection is tried once more and then raised. Nothing falls back to another model.
-The key, the address and the model name are the chat model's (agent.py, handed in by
-app.py), never written anywhere.
+The key, the address and the model name are the chat model's (agent.deepseek_access,
+handed in by app.py), never written anywhere; an address other than
+https://api.deepseek.com is refused before anything is sent (`OFFICIAL_HOST`).
 """
 
 from __future__ import annotations
@@ -24,6 +25,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -61,6 +63,16 @@ class VisionError(RuntimeError):
     """deepseek-flash did not read the image; the message says why."""
 
 
+class VisionChannelError(VisionError):
+    """The image was not sent: its address is not the official DeepSeek API."""
+
+
+# AGENTS.md §5, model routing: the Genie channel is deepseek-flash on the official
+# api.deepseek.com only. A customer's image goes nowhere else, whatever
+# GENIE_BASE_URL or DEEPSEEK_BASE_URL say (review round 1 of PR #309, item 7).
+OFFICIAL_HOST = "api.deepseek.com"
+
+
 class Vision:
     """The official API's chat completions, for one image at a time."""
 
@@ -75,6 +87,16 @@ class Vision:
         self._key = key
         self._model = model
         self._url = base_url.rstrip("/") + "/chat/completions"
+        address = urlsplit(self._url)
+        # Refused here and again before every call: an image never leaves on
+        # another channel, and the refusal is in the log from the start.
+        self._refusal = (
+            None
+            if address.scheme == "https" and address.hostname == OFFICIAL_HOST
+            else f"{address.scheme}://{address.hostname} is not https://{OFFICIAL_HOST}"
+        )
+        if self._refusal:
+            log.error("genie vision: images will not be sent: %s", self._refusal)
         self._client = httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport)
         self._sleep = sleep
 
@@ -82,6 +104,9 @@ class Vision:
         self._client.close()
 
     def __call__(self, jpeg: bytes, instruction: Instruction) -> dict[str, Any]:
+        if self._refusal:
+            log.error("genie vision: image not sent: %s", self._refusal)
+            raise VisionChannelError(self._refusal)
         payload: dict[str, Any] = {
             "model": self._model,
             "messages": [
@@ -166,13 +191,19 @@ class Vision:
         raise VisionError(last)
 
 
+# Characters of the API's error message kept for the log: the longest the research
+# recorded is 203 (the 400 for a PDF, docs/research/2026-10-17-deepseek-flash-vision/
+# raw/probe-2-pdf-raw.json); 300 keeps such a message whole and cuts an HTML page.
+MESSAGE_CHARS = 300
+
+
 def _message(response: httpx.Response) -> str:
     """The API's own error message, without anything the request carried."""
     try:
         data = response.json()
     except ValueError:
-        return response.text[:300]
+        return response.text[:MESSAGE_CHARS]
     error = data.get("error") if isinstance(data, dict) else None
     if isinstance(error, dict) and isinstance(error.get("message"), str):
-        return str(error["message"])[:300]
-    return str(data)[:300]
+        return str(error["message"])[:MESSAGE_CHARS]
+    return str(data)[:MESSAGE_CHARS]

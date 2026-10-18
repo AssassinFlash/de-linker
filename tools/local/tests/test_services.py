@@ -27,14 +27,15 @@ def test_each_instance_logs_genie_turns_in_its_own_directory() -> None:
 
     index = Path("/data/index/builds/v/index.sqlite")
 
-    assert genie_environment(a, index) == {
+    assert genie_environment(a, index, "t") == {
         "GENIE_WP_URL": "http://127.0.0.1:8888",
         "GENIE_LOG": "/data/a/genie/turns.sqlite",
         "GENIE_INDEX": "/data/index/builds/v/index.sqlite",
+        "GENIE_SERVICE_TOKEN": "t",
     }
     assert (
-        genie_environment(a, index)["GENIE_LOG"]
-        != genie_environment(b, index)["GENIE_LOG"]
+        genie_environment(a, index, "t")["GENIE_LOG"]
+        != genie_environment(b, index, "t")["GENIE_LOG"]
     )
 
 

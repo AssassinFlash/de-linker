@@ -94,13 +94,50 @@ async function shot(page: Page, name: string): Promise<void> {
 	});
 }
 
-/** Opens the dock the way the preview card's nameplate suggestion does. */
-async function openForPhoto(page: Page): Promise<void> {
-	await page.evaluate(() =>
-		window.dispatchEvent(
-			new CustomEvent('linker-genie-ask', { detail: { attach: true } })
-		)
-	);
+/**
+ * Opens the dock the way a visitor does: on the desktop, by the home preview
+ * card's nameplate suggestion (#236's fourth suggestion); on a phone the design
+ * has no card (genie-preview.spec: "only a mark on the Genie button"), so the
+ * dock opens as it does after the mark's click.
+ */
+async function arriveForPhoto(
+	page: Page,
+	lang: Lang,
+	tag: string
+): Promise<void> {
+	const desktop = (page.viewportSize()?.width ?? 0) >= 1024;
+	if (desktop) {
+		// The card's 8-second wait runs on the page's own clock, as in
+		// genie-preview.spec; the model's real time starts when it is clicked.
+		await page.clock.install({ time: new Date('2026-10-18T09:00:00Z') });
+	}
+	await page.goto(instance().url + HOME[lang]);
+	if (desktop) {
+		await page.evaluate(() => document.fonts.ready);
+		await page.evaluate(() =>
+			window.scrollTo(0, document.body.scrollHeight)
+		);
+		await page.clock.runFor(8_500);
+		const card = page.locator('[data-linker-genie-peek]');
+		const suggestion = page.locator('[data-linker-genie-peek-attach]');
+		await expect(
+			card,
+			'the home card with its fourth suggestion'
+		).toBeVisible();
+		await expect(suggestion).toBeVisible();
+		await shot(page, `${tag}-0-card`);
+		await page.clock.resume();
+		await suggestion.click();
+		await expect(card).toBeHidden();
+	} else {
+		await page.evaluate(() =>
+			window.dispatchEvent(
+				new CustomEvent('linker-genie-ask', {
+					detail: { attach: true },
+				})
+			)
+		);
+	}
 	await expect(page.locator('.linker-genie-app__composer')).toBeVisible({
 		timeout: 30_000,
 	});
@@ -148,10 +185,8 @@ for (const lang of ['en', 'de'] as Lang[]) {
 				width,
 				height: width === 390 ? 844 : 900,
 			});
-			await page.goto(instance().url + HOME[lang]);
-			await openForPhoto(page);
+			await arriveForPhoto(page, lang, tag);
 			const picker = page.locator('.linker-genie-app input[type="file"]');
-
 			// Opened for a nameplate photo: the picker is one click away.
 			await expect(
 				page.getByRole('button', { name: words.choose })

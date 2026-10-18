@@ -187,6 +187,7 @@ final class ThreadTest extends TestCase {
 			. "event: reading\ndata: {\"id\":\"att11\",\"kind\":\"nameplate\",\"model\":\"H2-10K-T3\"}\n\n"
 			. "event: done\ndata: {\"ok\":true}\n\n";
 
+		$split = Thread::split( $stream );
 		( new Thread() )->record(
 			51,
 			array(
@@ -195,7 +196,8 @@ final class ThreadTest extends TestCase {
 					'content' => 'Attached: plate.jpg',
 				),
 			),
-			$stream
+			$split['stream'],
+			$split['readings']
 		);
 
 		$kept = $written[ Thread::READINGS ];

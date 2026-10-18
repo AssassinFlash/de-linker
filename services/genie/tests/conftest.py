@@ -11,6 +11,7 @@ from typing import Any
 import httpx
 import pytest
 
+from linker_genie.gate import HEADER, TOKEN_VARIABLE
 from linker_genie.lexicon import Vocabulary
 from linker_genie.storeapi import StoreVocabulary
 
@@ -47,3 +48,14 @@ def vocabulary() -> Vocabulary:
     return StoreVocabulary(
         "http://site.test", transport=store_transport(STORE_FIXTURE)
     ).get()
+
+
+# The shell's shared token (gate.py): every test process has one, and a test client
+# sends it the way the proxy does.
+SHELL_TOKEN = "shell-test-token"
+SHELL = {HEADER: SHELL_TOKEN}
+
+
+@pytest.fixture(autouse=True)
+def _service_token(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(TOKEN_VARIABLE, SHELL_TOKEN)

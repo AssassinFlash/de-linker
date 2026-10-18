@@ -20,7 +20,8 @@ use WP_Error;
  * declared type; each under its type's size and the turn under MAX_TURN_BYTES;
  * and every file counts against the caller's hourly allowance (RateLimit, one
  * statement per take), so nobody can spend the site's deepseek-flash budget by
- * uploading in a loop. The service checks the same limits again (the numbers are
+ * uploading in a loop; a refused turn counts too, so nobody can repeat refused
+ * uploads for free either. The service checks the same limits again (the numbers are
  * the service's schema.py's; tests/test_attachments.py in services/genie locks
  * them together).
  *
@@ -68,11 +69,14 @@ class Attachments {
 	public const LIMIT = 20;
 
 	/**
-	 * The accepted types and the bytes each starts with.
+	 * The accepted types and the bytes each starts with; a WebP file also
+	 * says WEBP_MARK at byte WEBP_OFFSET (RIFF container). The service's
+	 * attachments.MAGIC and the shell's prepare.ts hold the same table
+	 * (services/genie/tests/test_attachments.py locks the three).
 	 *
 	 * @var array<string, string>
 	 */
-	private const MAGIC = array(
+	public const MAGIC = array(
 		'image/jpeg'      => "\xFF\xD8\xFF",
 		'image/png'       => "\x89PNG\r\n\x1A\n",
 		'image/webp'      => 'RIFF',
@@ -80,16 +84,27 @@ class Attachments {
 	);
 
 	/**
-	 * Takes one unit of a caller's hourly allowance; false past it.
+	 * Where a WebP file names itself, and how.
+	 */
+	public const WEBP_OFFSET = 8;
+
+	/**
+	 * WebP's mark at WEBP_OFFSET.
+	 */
+	public const WEBP_MARK = 'WEBP';
+
+	/**
+	 * Takes units of a caller's hourly allowance in one statement; false
+	 * when they would pass it, and then nothing is taken.
 	 *
-	 * @var callable(string): bool
+	 * @var callable(string, int): bool
 	 */
 	private $take;
 
 	/**
 	 * Sets up the check.
 	 *
-	 * @param (callable(string): bool)|null $take The hourly allowance's take; a RateLimit's when omitted.
+	 * @param (callable(string, int): bool)|null $take The hourly allowance's take; a RateLimit's when omitted.
 	 */
 	public function __construct( ?callable $take = null ) {
 		$this->take = $take ?? array( new RateLimit( 'genie_upload', self::LIMIT, HOUR_IN_SECONDS ), 'take' );
@@ -98,6 +113,14 @@ class Attachments {
 	/**
 	 * The turn's files as the service takes them, or why they are refused.
 	 *
+	 * Every file is checked before any allowance is taken, so a refusal
+	 * of the third file spends nothing on the first two. A refused turn
+	 * takes one unit itself: a caller who repeats oversized or disguised
+	 * uploads runs into the hourly limit like one who uploads, and the
+	 * refusal log grows no faster than the allowance (a throttled request
+	 * is answered 429 and not logged). An accepted turn takes one unit per
+	 * file, all at once.
+	 *
 	 * @param mixed $raw The request's `attachments`.
 	 * @return list<array{name: string, type: string, data: string}>|WP_Error
 	 */
@@ -105,32 +128,59 @@ class Attachments {
 		if ( null === $raw || array() === $raw ) {
 			return array();
 		}
+		$who   = is_user_logged_in() ? 'user:' . get_current_user_id() : self::connection();
+		$files = $this->files( $raw );
+		if ( $files instanceof WP_Error ) {
+			if ( ! ( $this->take )( $who, 1 ) ) {
+				return $this->throttled();
+			}
+			$this->log( (string) $files->get_error_code() );
+			return $files;
+		}
+		if ( ! ( $this->take )( $who, count( $files ) ) ) {
+			return $this->throttled();
+		}
+		return $files;
+	}
+
+	/**
+	 * The files, each checked, or the first refusal (not yet logged).
+	 *
+	 * @param mixed $raw The request's `attachments`.
+	 * @return list<array{name: string, type: string, data: string}>|WP_Error
+	 */
+	private function files( mixed $raw ) {
 		if ( ! is_array( $raw ) || count( $raw ) > self::MAX_FILES ) {
-			return $this->refuse( 'count', 400 );
+			return $this->refusal( 'count', 400 );
 		}
 		$files = array();
 		$total = 0;
 		foreach ( $raw as $item ) {
 			if ( ! is_array( $item ) ) {
-				return $this->refuse( 'type', 415 );
+				return $this->refusal( 'type', 415 );
 			}
 			$type = is_string( $item['type'] ?? null ) ? $item['type'] : '';
 			$data = is_string( $item['data'] ?? null ) ? $item['data'] : '';
 			if ( ! isset( self::MAGIC[ $type ] ) ) {
-				return $this->refuse( 'type', 415 );
+				return $this->refusal( 'type', 415 );
+			}
+			$max = 'application/pdf' === $type ? self::MAX_PDF_BYTES : self::MAX_IMAGE_BYTES;
+			// The size is known from the base64 length: a file past its cap is
+			// refused before anything is decoded.
+			if ( strlen( $data ) > self::encoded( $max ) ) {
+				return $this->refusal( 'size', 413 );
 			}
 			$bytes = base64_decode( $data, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- the file travels as base64; decoding is how its type and size are checked.
 			if ( false === $bytes || '' === $bytes ) {
-				return $this->refuse( 'unreadable', 400 );
+				return $this->refusal( 'unreadable', 400 );
 			}
 			if ( ! self::is( $bytes, $type ) ) {
-				return $this->refuse( 'type', 415 );
+				return $this->refusal( 'type', 415 );
 			}
 			$size   = strlen( $bytes );
 			$total += $size;
-			$max    = 'application/pdf' === $type ? self::MAX_PDF_BYTES : self::MAX_IMAGE_BYTES;
 			if ( $size > $max || $total > self::MAX_TURN_BYTES ) {
-				return $this->refuse( 'size', 413 );
+				return $this->refusal( 'size', 413 );
 			}
 			$files[] = array(
 				'name' => self::name( $item['name'] ?? '' ),
@@ -138,14 +188,16 @@ class Attachments {
 				'data' => $data,
 			);
 		}
-		$who = is_user_logged_in() ? 'user:' . get_current_user_id() : self::connection();
-		foreach ( $files as $unused ) {
-			unset( $unused );
-			if ( ! ( $this->take )( $who ) ) {
-				return $this->refuse( 'throttled', 429 );
-			}
-		}
 		return $files;
+	}
+
+	/**
+	 * Characters of `$bytes` bytes in base64: three bytes are four characters.
+	 *
+	 * @param int $bytes A size in bytes.
+	 */
+	public static function encoded( int $bytes ): int {
+		return intdiv( $bytes + 2, 3 ) * 4;
 	}
 
 	/**
@@ -158,7 +210,7 @@ class Attachments {
 		if ( ! str_starts_with( $bytes, self::MAGIC[ $type ] ) ) {
 			return false;
 		}
-		return 'image/webp' !== $type || 'WEBP' === substr( $bytes, 8, 4 );
+		return 'image/webp' !== $type || self::WEBP_MARK === substr( $bytes, self::WEBP_OFFSET, strlen( self::WEBP_MARK ) );
 	}
 
 	/**
@@ -174,18 +226,12 @@ class Attachments {
 	}
 
 	/**
-	 * The refusal the shell shows, logged where staff can see it.
+	 * A refusal the shell shows; `check` logs it once its unit is taken.
 	 *
-	 * @param string $reason Reason code: count, type, unreadable, size, throttled.
+	 * @param string $reason Reason code: count, type, unreadable, size.
 	 * @param int    $status HTTP status.
 	 */
-	private function refuse( string $reason, int $status ): WP_Error {
-		if ( function_exists( 'wc_get_logger' ) ) {
-			wc_get_logger()->warning(
-				sprintf( 'Genie attachment refused: %s', $reason ),
-				array( 'source' => 'linker-genie' )
-			);
-		}
+	private function refusal( string $reason, int $status ): WP_Error {
 		return new WP_Error(
 			'linker_genie_attachment_' . $reason,
 			'The attachment was not accepted.',
@@ -195,6 +241,28 @@ class Attachments {
 				'limit'     => self::LIMIT,
 			)
 		);
+	}
+
+	/**
+	 * The answer past the hourly allowance: explicit (429), not logged, so a
+	 * flood of requests cannot flood the log.
+	 */
+	private function throttled(): WP_Error {
+		return $this->refusal( 'throttled', 429 );
+	}
+
+	/**
+	 * Logs a refusal where staff can see it.
+	 *
+	 * @param string $code The refusal's error code.
+	 */
+	private function log( string $code ): void {
+		if ( function_exists( 'wc_get_logger' ) ) {
+			wc_get_logger()->warning(
+				sprintf( 'Genie attachment refused: %s', str_replace( 'linker_genie_attachment_', '', $code ) ),
+				array( 'source' => 'linker-genie' )
+			);
+		}
 	}
 
 	/**

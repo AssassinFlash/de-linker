@@ -19,7 +19,7 @@ final class RecordingThread extends Thread {
 	/**
 	 * The last recorded turn.
 	 *
-	 * @var array{conversation: int, messages: list<array<string, mixed>>, stream: string}|null
+	 * @var array{conversation: int, messages: list<array<string, mixed>>, stream: string, readings: list<array<string, mixed>>}|null
 	 */
 	public ?array $recorded = null;
 
@@ -54,15 +54,17 @@ final class RecordingThread extends Thread {
 	/**
 	 * Keeps the turn instead of writing post meta.
 	 *
-	 * @param int                     $conversation Conversation post ID.
-	 * @param array<array-key, mixed> $messages     The request's messages.
-	 * @param string                  $stream       The service's SSE text.
+	 * @param int                        $conversation Conversation post ID.
+	 * @param array<array-key, mixed>    $messages     The request's messages.
+	 * @param string                     $stream       The service's SSE text, split.
+	 * @param list<array<string, mixed>> $readings  The turn's readings, split.
 	 */
-	public function record( int $conversation, array $messages, string $stream ): void {
+	public function record( int $conversation, array $messages, string $stream, array $readings = array() ): void {
 		$this->recorded = array(
 			'conversation' => $conversation,
 			'messages'     => array_values( $messages ),
 			'stream'       => $stream,
+			'readings'     => $readings,
 		);
 	}
 

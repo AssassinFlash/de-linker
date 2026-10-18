@@ -7,8 +7,8 @@
 
 Two stages, nothing pinned or scripted:
 
-1. **Reading** (`readings.json`): every photo of `photos/` (README.md names each
-   source) is read the way the service reads it — `attachments.read`, deepseek-flash on
+1. **Reading** (`readings.json`): every photo of `photos/` and every label image of
+   `--labels` (README.md names each source) is read the way the service reads it — `attachments.read`, deepseek-flash on
    the official API — and graded against the instance's products (`nameplate.identify`,
    the Store API of `--wp`). A row passes when the brand and the model read are the
    ones printed (letters and digits compared; `*` any, a leading `*` a suffix) and the
@@ -43,9 +43,21 @@ from linker_genie.schema import Upload
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.vision import Vision
 
+if __package__:  # imported by the tests: the sibling module through the package
+    from . import papers
+else:  # run as a script (the documented use): its own folder is sys.path[0]
+    import papers
+
 HERE = Path(__file__).resolve().parent
 CASES = json.loads((HERE / "cases.json").read_text())
 ATTACHED = {"en": "Attached: {}", "de": "Anhang: {}"}
+# An amount of money, as a price list or delivery terms print one: the answer must
+# never quote it from a file (review round 1 of PR #309, item 8).
+MONEY = re.compile(
+    r"(?:\d[\d.,]*\s*(?:€|eur\b|euro\b))|(?:(?:€|eur\b|euro\b)\s*\d[\d.,]*)",
+    re.I,
+)
+LEAD = re.compile(r"\b\d+\s*(?:working\s+days?|werktage[n]?|wochentage[n]?)\b", re.I)
 # The service's turn may read a PDF page by page before the agent runs; the shell
 # itself waits 60 s (Proxy.php).
 TIMEOUT = 90.0
@@ -86,7 +98,14 @@ def _upload(path: Path, kind: str | None = None) -> Upload:
     )
 
 
-def readings(wp: str) -> list[dict[str, Any]]:
+def _case_path(name: str, labels_root: Path) -> Path:
+    """A case's image: `labels/…` from the extracted set, anything else from the repo."""
+    if name.startswith("labels/"):
+        return (labels_root / name[len("labels/") :]).resolve()
+    return (HERE / "photos" / name).resolve()
+
+
+def readings(wp: str, labels_root: Path) -> list[dict[str, Any]]:
     env = _env_with_credentials()
     key = env.get("GENIE_API_KEY") or env.get("DEEPSEEK_API_KEY") or ""
     base = env.get("GENIE_BASE_URL") or env.get("DEEPSEEK_BASE_URL") or DEFAULT_BASE_URL
@@ -94,7 +113,7 @@ def readings(wp: str) -> list[dict[str, Any]]:
     vocabulary = StoreVocabulary(wp).get()
     rows = []
     for case in CASES["photos"]:
-        path = (HERE / "photos" / case["file"]).resolve()
+        path = _case_path(case["file"], labels_root)
         started = time.monotonic()
         [reading] = attachments.read([_upload(path)], 0, see)
         seconds = round(time.monotonic() - started, 2)
@@ -192,6 +211,30 @@ def turns(service: str, uploads_root: Path) -> list[dict[str, Any]]:
                     uploads = [photo.model_copy(update={"name": "IMG_4711.jpg"})]
                 elif "pdf" in case:
                     uploads = [_upload(uploads_root / case["pdf"])]
+                elif "generated" in case:
+                    # A supplier's paper written for the evaluation (papers.py): no
+                    # real price list is shipped, and the file is a customer's.
+                    data = getattr(papers, case["generated"])(locale)
+                    name = (
+                        "Preisliste.pdf"
+                        if locale == "de"
+                        else "Price list.pdf"
+                    )
+                    if case["generated"] == "delivery_terms":
+                        name = (
+                            "Lieferbedingungen.pdf"
+                            if locale == "de"
+                            else "Delivery terms.pdf"
+                        )
+                    uploads = [
+                        Upload.model_validate(
+                            {
+                                "name": name,
+                                "type": "application/pdf",
+                                "data": base64.b64encode(data).decode(),
+                            }
+                        )
+                    ]
                 question = case.get("question_de" if locale == "de" else "question")
                 if locale == "de" and not question:
                     question = case.get("question")
@@ -257,6 +300,14 @@ def turns(service: str, uploads_root: Path) -> list[dict[str, Any]]:
                     r.startswith("att") for r in refs
                 ):
                     failures.append("the reading is not cited")
+                if case.get("no_money") and (amount := MONEY.search(text)):
+                    failures.append(f"states an amount from the file: {amount.group(0)}")
+                if case.get("no_lead_time") and (lead := LEAD.search(text)):
+                    failures.append(f"states a lead time from the file: {lead.group(0)}")
+                if case.get("handoff") and not any(
+                    b.get("type") == "contact" for b in blocks
+                ):
+                    failures.append("no handoff block")
                 rows.append(
                     {
                         "id": case["id"],
@@ -286,12 +337,18 @@ def main() -> None:
     parser.add_argument("--wp", required=True)
     parser.add_argument("--service", required=True)
     parser.add_argument("--uploads", type=Path, required=True)
+    parser.add_argument(
+        "--labels",
+        type=Path,
+        default=Path("~/de-linker-data/eval/attachments").expanduser(),
+        help="the folder the extracted label images live in (not in the repository)",
+    )
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--stage", choices=("all", "readings", "turns"), default="all")
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
     if args.stage in ("all", "readings"):
-        rows = readings(args.wp)
+        rows = readings(args.wp, args.labels.expanduser())
         (args.out / "readings.json").write_text(
             json.dumps(rows, indent=1, ensure_ascii=False) + "\n"
         )

@@ -42,6 +42,30 @@ class Identified:
     product_ids: tuple[int, ...] = field(default=())
 
 
+def with_known_brand(
+    reading: AttachmentReading, vocabulary: Vocabulary | None
+) -> AttachmentReading:
+    """The reading with its brand only when the brand is one of ours, else unread.
+
+    With thinking off, deepseek-flash guesses a maker for a label that prints none
+    (the SAJ R5 photo read as INVS, SOLIS or HVS across runs; with thinking on it
+    answered null, docs/acceptance/2026-10-18/236/thinking.md). A brand our product
+    words do not know is therefore treated as not read (review round 1 of PR #309,
+    item 11): the card and the answer never name a maker the label may not print.
+    Without the product words (the Store API unreadable) no brand is known.
+    """
+    if not reading.brand:
+        return reading
+    if vocabulary is not None and any(
+        match.kind == "brand" for match in vocabulary.match(reading.brand)
+    ):
+        return reading
+    text = "\n".join(
+        line for line in reading.text.split("\n") if not line.startswith("Brand: ")
+    )
+    return reading.model_copy(update={"brand": None, "text": text})
+
+
 def identify(
     reading: AttachmentReading, vocabulary: Vocabulary | None
 ) -> Identified | None:

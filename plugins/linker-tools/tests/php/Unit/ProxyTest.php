@@ -42,6 +42,71 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * Without the shared service token there is no Genie either: the
+	 * service refuses every call without it (#236, review item 5).
+	 */
+	public function test_turn_fails_closed_without_the_shared_token(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$called = false;
+
+		$result = $this->proxy(
+			static function () use ( &$called ): string {
+				$called = true;
+				return '';
+			},
+			null,
+			false,
+			''
+		)->turn( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' ) );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_genie_unconfigured', $result->get_error_code() );
+		$this->assertFalse( $called );
+	}
+
+	/**
+	 * Deleting a conversation with file readings asks the service to purge
+	 * them from its turn log, with the shared token; one without readings,
+	 * or another post type, calls nothing.
+	 */
+	public function test_deleting_a_conversation_purges_its_readings_in_the_service(): void {
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890/' ) );
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn( $thing ): bool => $thing instanceof WP_Error ) );
+		WP_Mock::userFunction(
+			'get_post_type',
+			array( 'return' => static fn( int $id ): string => 51 === $id || 52 === $id ? Conversations::POST_TYPE : 'post' )
+		);
+		$calls  = array();
+		$thread = new RecordingThread();
+		$proxy  = $this->proxy(
+			static function ( string $url, array $body, array $headers ) use ( &$calls ): int {
+				unset( $body );
+				$calls[] = array( $url, $headers );
+				return 200;
+			},
+			$thread
+		);
+
+		$proxy->forget( 52 );
+		$this->assertSame( array(), $calls, 'no readings, no call' );
+
+		$thread->kept_readings = array(
+			array(
+				'id'   => 'att1',
+				'kind' => 'nameplate',
+			),
+		);
+		$proxy->forget( 7 );
+		$proxy->forget( 51 );
+
+		$this->assertSame(
+			array( array( 'http://127.0.0.1:8890/assistant/conversation/51/forget', array( Proxy::TOKEN_HEADER => 'token' ) ) ),
+			$calls
+		);
+	}
+
+	/**
 	 * The turn carries the conversation, the normalized locale and the page
 	 * context; the service's SSE comes back with the conversation ID.
 	 */
@@ -105,9 +170,11 @@ final class ProxyTest extends TestCase {
 		WP_Mock::userFunction( 'wp_basename', array( 'return' => static fn( string $path ): string => basename( $path ) ) );
 		WP_Mock::passthruFunction( 'sanitize_text_field' );
 		$caught                = array();
-		$fetch                 = static function ( string $url, array $body ) use ( &$caught ) {
+		$sent                  = array();
+		$fetch                 = static function ( string $url, array $body, array $headers ) use ( &$caught, &$sent ) {
 			unset( $url );
 			$caught = $body;
+			$sent   = $headers;
 			return "event: meta\ndata: {}\n\nevent: attachment\ndata: {\"id\":\"att2\",\"match\":\"exact\"}\n\n"
 				. "event: reading\ndata: {\"id\":\"att2\",\"name\":\"plate.jpg\",\"kind\":\"nameplate\",\"text\":\"Model: H2-10K-T3\"}\n\n"
 				. "event: done\ndata: {\"ok\":true}\n\n";
@@ -157,8 +224,13 @@ final class ProxyTest extends TestCase {
 			$caught['attachments']
 		);
 		$this->assertSame( 'att1', $caught['readings'][0]['id'] );
+		$this->assertSame( array( Proxy::TOKEN_HEADER => 'token' ), $sent );
 		$this->assertNotNull( $thread->recorded );
 		$this->assertNotContains( $photo, array_column( $thread->recorded['messages'], 'content' ) );
+		// The stream is split once: the store gets the reading, the stored
+		// stream and the browser's the card.
+		$this->assertSame( 'att2', $thread->recorded['readings'][0]['id'] );
+		$this->assertStringNotContainsString( 'event: reading', $thread->recorded['stream'] );
 		// The browser gets the card, not the reading's text.
 		$raw    = $result->get_data();
 		$stream = is_array( $raw ) ? (string) $raw['stream'] : '';
@@ -173,6 +245,7 @@ final class ProxyTest extends TestCase {
 	public function test_a_refused_file_never_reaches_the_service(): void {
 		$this->wp_functions();
 		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		WP_Mock::passthruFunction( 'sanitize_text_field' );
 		$fetched = false;
 		$fetch   = static function () use ( &$fetched ) {
 			$fetched = true;
@@ -449,8 +522,9 @@ final class ProxyTest extends TestCase {
 	 * @param callable|null        $fetch  HTTP client.
 	 * @param RecordingThread|null $thread Conversation store; a recording one by default.
 	 * @param bool                 $uploads Whether the turn may carry files.
+	 * @param string               $token   The shared service token; '' for a site without one.
 	 */
-	private function proxy( ?callable $fetch = null, ?RecordingThread $thread = null, bool $uploads = false ): Proxy {
+	private function proxy( ?callable $fetch = null, ?RecordingThread $thread = null, bool $uploads = false, string $token = 'token' ): Proxy {
 		$conversations = new class() extends Conversations {
 			/**
 			 * Always the same conversation.
@@ -515,7 +589,8 @@ final class ProxyTest extends TestCase {
 			null,
 			null,
 			// An allowance that never runs out: the limit has its own tests.
-			$uploads ? new Attachments( static fn(): bool => true ) : null
+			$uploads ? new Attachments( static fn(): bool => true ) : null,
+			$token
 		);
 	}
 
@@ -610,7 +685,12 @@ final class ProxyTest extends TestCase {
 				$posted = array( $url, $body );
 				return "event: done\ndata: {}\n\n";
 			},
-			new RecordingThread()
+			new RecordingThread(),
+			null,
+			null,
+			null,
+			null,
+			'token'
 		);
 
 		$thread = $proxy->conversation();

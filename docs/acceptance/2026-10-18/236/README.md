@@ -63,3 +63,26 @@ uv run --locked python eval/attachments/nameplates.py --wp http://127.0.0.1:9121
 - 代理 `Attachments`：`tests/php/Unit/AttachmentsTest.php`（四种类型按首字节通过、伪装的 exe/svg/PDF/WAV/HEIC 原样 415、超过 3 个与坏 base64 400、单文件与整轮超限 413、超过每小时额度 429、访客按连接、登录按账号）；`ProxyTest`（文件走 `attachments`、不进存档消息、会话的 readings 随轮次带上、`reading` 事件不回给浏览器、被拒的文件不到服务也不开会话）；`ThreadTest`（readings 存进 meta、最新 10 条、从存档流里拿掉）。
 - 服务：`tests/test_attachments.py`（照片摆正、≤1.69 MP、EXIF/GPS 去掉；类型伪装、超限、非 base64、解压炸弹在解码前拒绝；PDF 文字层、扫描页渲染上限与未读页点名、坏 PDF；deepseek 400 立即报错并记日志、5xx 重试一次、非 JSON 报错；没有密钥记日志；读取的数字是事实、质检能重建；长文件按问题选段；代理与服务的上限数值一致）；`tests/test_nameplate.py`（真实产品词上的分级；铭牌轮次不问 Jev；exact/none/unreadable 的路由与卡；引用照片数字的回答通过核验并水合；追问不带文件；SSE 带卡与读取、轮次日志里没有文件字节）。
 - 壳：`src/genie/attachments/prepare.test.ts`（类型、缩放、命名、HEIC 打不开、经 canvas 重画、上限与 PHP 一致）、`App.test.tsx`（文件随轮次发送、拒绝在发送前、代理拒绝说明原因且不留在对话里、确认按钮发出的消息、读不出时换照片与手输、预览卡打开的选择按钮）、`src/preview/controller.test.ts`（"拍铭牌"建议发 `{attach:true}`）。
+
+## 评审第 1 轮修复（PR #309，2026-10-18 接手续做）
+
+评审意见见 PR #309 评论 "Review, round 1 (#236): two axes, Standards and Spec"（14 项已裁定）。修复在被 API 限流中断后由接手会话续完，逐项状态：
+
+| 项 | 状态 | 落点 |
+|---|---|---|
+| 1 第三方照片 | **业主裁定推翻**：照片用于本评测已获授权，**保留在仓库** `eval/attachments/photos/`（2026-10-18）。README 的"图片在哪"一节按此改写，双 sha256 溯源保留 | `eval/attachments/README.md` |
+| 2 PDFium 线程安全 | 完成：PDF 工作进独立进程（`pdfwork.py`），带墙钟超时与内存隔离；并发与恶意/慢 PDF 测试 | `pdfwork.py`、`test_attachments.py` |
+| 3 无来源数字 | 完成：schema 的长度上限与 id 正则在代码处注明来源 | `schema.py` |
+| 4 PHP `Attachments::check` | 完成：先按 base64 长度判定再解码；拒绝也计入额度；先检查整轮文件再取额度 | `Attachments.php`、`AttachmentsTest.php` |
+| 5 服务请求体与鉴权 | 完成：ASGI 层按整轮上限截断；turn 端点要求壳的令牌（`gate.py`）；PDF 解析有墙钟上限 | `gate.py`、`test_nameplate.py` |
+| 6 轮次日志 PII | 完成：reading 只记一次全文，后续轮次记 `earlier`；删除会话时 `forget` 清 reading 文字、由该文字派生的调用（`from_reading`）的参数/结果，以及 `understanding` 路由日志里的同一段文字。规格 13 "保存与清理"已写明 | `log.py`、`route.py`、`understand.py`、`docs/specs/13-genie.md` |
+| 7 视觉通道守卫 | 完成：图像读取仅在 base URL 主机为 `api.deepseek.com` 时运行，否则显式失败 | `gate.py`、`vision.py` |
+| 8 附件里的价格/交货 | 完成：提示词加同一条规则；核验拒绝把 `att*` 数字说成价格/运费；评测新增价格表与交货条款 PDF（EN/DE）与"不得出现金额/时效、交货走 handoff"断言 | `prompts/{en,de}/system.md`、`ground.py`、`eval/attachments/papers.py`、`cases.json` |
+| 9 单位与地区格式 | 完成：附件数字带单位水合、按本轮语言格式化；评测通过条件检查单位与小数格式 | `hydrate.py`、`figures.py`、评测 |
+| 10 "der Dienst" 泄漏 | 完成：路由提示不再出现内部用语，只对客户说照片与设备 | `route.py` |
+| 11 品牌猜测 | 完成：读到的品牌只在本站产品词表内才保留，否则按未读出处理；`thinking.md` 的表述已更正 | `nameplate.py`、`thinking.md` |
+| 12 真实铭牌精配 | 部分完成：从我们自托管文档抽出铭牌图（GoodWe GW112.6-BAT-AC-G10 两张 exact、GW5KN-ET 一张 none）；SAJ 与 Pylontech 的托管文档无铭牌，README 记录排查结论。评测用例已接入（`--labels`），**尚未重跑**（需本地栈与官方通道密钥） | `eval/attachments/{README.md,cases.json,nameplates.py}`、`~/de-linker-data/eval/attachments/labels/` |
+| 13 首页预览卡 | 完成：e2e 改为桌面点卡片上的"拍铭牌"建议（手机按现有设计无卡片，走标记入口）；截屏新增 `${lang}-${width}-0-card`。**截屏需在本地栈重拍** | `tests/e2e/specs/genie-attachments.spec.ts` |
+| 14 hero 交接 | 已记录在 #232 | #232 评论 |
+
+本轮验证：服务端 `pytest` **909 passed**、`ruff`、`mypy` 全过；壳 `vitest` **178 passed**、`tsc`、`eslint` 全过；PHP 单元 **230 passed**。端到端评测与截屏重跑待本地栈（与合并前一致的门）。

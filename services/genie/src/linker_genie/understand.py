@@ -28,7 +28,7 @@ from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.lexicon import Match, Vocabulary
-from linker_genie.nameplate import Identified, card, identify
+from linker_genie.nameplate import Identified, card, identify, with_known_brand
 from linker_genie.route import Call, Route, Subject, nameplate, person, plan, with_page
 from linker_genie.schema import (
     MAX_READINGS,
@@ -123,11 +123,14 @@ class Understander:
         ]
         subject = _subject(request, matches, vocabulary)
         # This turn's files are read first (#236): a nameplate decides the route.
-        fresh = (
-            attachments.read(request.attachments, len(request.readings), self._see)
-            if request.attachments
-            else []
-        )
+        fresh = [
+            with_known_brand(item, vocabulary)
+            for item in (
+                attachments.read(request.attachments, request.readings, self._see)
+                if request.attachments
+                else []
+            )
+        ]
         plate = _first_nameplate(fresh, vocabulary)
         reading: Reading | None = None
         if plate is not None:
@@ -155,7 +158,14 @@ class Understander:
         log.update(route.as_log())
         prepared = Prepared(route=route, log=log, reading=reading, readings=fresh)
         _run_calls(prepared, request, client, self._search, self._pages)
-        _add_readings(prepared, [*request.readings, *fresh], fresh, plate, vocabulary)
+        _add_readings(
+            prepared,
+            [*request.readings, *fresh],
+            fresh,
+            plate,
+            vocabulary,
+            request.locale,
+        )
         return prepared
 
     def _load_vocabulary(self, log: dict[str, Any]) -> Vocabulary | None:
@@ -214,14 +224,19 @@ def _add_readings(
     fresh: list[AttachmentReading],
     plate: Identified | None,
     vocabulary: Vocabulary | None,
+    locale: str,
 ) -> None:
     """Every reading of the conversation as this turn's facts; a card per new file.
 
     The conversation keeps the latest `MAX_READINGS` (the proxy cuts the same way).
     """
     parts = [prepared.facts]
+    new = {item.id for item in fresh}
     for item in readings[-MAX_READINGS:]:
-        payload, gathered = attachments.record(item)
+        payload, gathered = attachments.record(item, locale)
+        if item.id not in new:
+            # Logged in full with the turn that read it; named here (log once).
+            gathered.tool_calls = [attachments.recorded(item.id)]
         parts.append(gathered)
         prepared.attachments.append(payload)
     prepared.facts = merge(parts)
@@ -373,6 +388,11 @@ def _run_calls(
             logger.warning("genie route call failed: %s: %s", call.ability, error)
             continue
         parts.append(gathered)
+        if call.from_reading:
+            # The call's words came from a file's reading: the turn log purges
+            # them with the reading when the conversation is deleted (#236).
+            for entry in gathered.tool_calls:
+                entry["from_reading"] = call.from_reading
         prepared.results.append(
             {"name": call.ability, "arguments": call.arguments, "result": payload}
         )

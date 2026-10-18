@@ -20,6 +20,7 @@ from typing import Any
 
 import httpx
 import pytest
+from conftest import SHELL
 from fastapi.testclient import TestClient
 from linker_judges import cascade as cascade_module
 from linker_judges.judges import Answer, Judge, Verdict
@@ -117,7 +118,10 @@ def _ask(
         body["page_context"] = page
     if user is not None:
         body["user"] = user
-    assert TestClient(app).post("/assistant/turn", json=body).status_code == 200
+    assert (
+        TestClient(app, headers=SHELL).post("/assistant/turn", json=body).status_code
+        == 200
+    )
 
 
 # --- the log -----------------------------------------------------------------

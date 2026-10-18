@@ -92,19 +92,18 @@ class Thread {
 	/**
 	 * Records one answered turn: the thread the browser sent, and the answer.
 	 *
-	 * @param int                     $conversation Conversation post ID.
-	 * @param array<array-key, mixed> $messages The request's messages; the shape is
-	 *                                          the browser's, so entries are checked.
-	 * @param string                  $stream       The service's SSE text.
+	 * @param int                        $conversation Conversation post ID.
+	 * @param array<array-key, mixed>    $messages The request's messages; the shape is
+	 *                                             the browser's, so entries are checked.
+	 * @param string                     $stream       The service's SSE text, its `reading` events taken out (split).
+	 * @param list<array<string, mixed>> $readings  What the turn read from its files (split).
 	 */
-	public function record( int $conversation, array $messages, string $stream ): void {
+	public function record( int $conversation, array $messages, string $stream, array $readings = array() ): void {
 		if ( $conversation < 1 ) {
 			return;
 		}
-		$split  = self::split( $stream );
-		$stream = $split['stream'];
-		if ( array() !== $split['readings'] ) {
-			$kept = array_merge( $this->readings( $conversation ), $split['readings'] );
+		if ( array() !== $readings ) {
+			$kept = array_merge( $this->readings( $conversation ), $readings );
 			update_post_meta( $conversation, self::READINGS, array_slice( $kept, -self::READINGS_LIMIT ) );
 		}
 		$kept = array();

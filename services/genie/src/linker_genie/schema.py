@@ -249,8 +249,14 @@ MAX_FILES = 3
 MAX_IMAGE_BYTES = 6 * 1024 * 1024
 MAX_PDF_BYTES = 16 * 1024 * 1024
 MAX_TURN_BYTES = 20 * 1024 * 1024
-# Base64 writes three bytes as four characters.
-_MAX_DATA_CHARS = -(-MAX_PDF_BYTES // 3) * 4
+
+
+def base64_chars(size: int) -> int:
+    """Characters of `size` bytes in base64: three bytes are four characters."""
+    return -(-size // 3) * 4
+
+
+_MAX_DATA_CHARS = base64_chars(MAX_PDF_BYTES)
 # Readings kept per conversation and carried into every turn (Thread::READINGS); the
 # oldest go first. Ten covers a session of several devices and their datasheets.
 MAX_READINGS = 10
@@ -258,6 +264,17 @@ MAX_READINGS = 10
 # tokens, 0.3 per character, research §3.3) hold a datasheet of every page the service
 # reads; the model reads only the passages nearest the question of a longer one.
 MAX_READING_CHARS = 60_000
+# A turn's thread as the browser sends it: the proxy keeps sixty messages
+# (Thread::LIMIT) and the longest answer in the turn logs of five local instances is
+# 4 687 characters (the whole output JSON, 2026-10-18); sixty of 5 000 characters at
+# JSON's worst escaping (six bytes, "\uXXXX", wp_json_encode's default) is 1.8 MB.
+THREAD_BYTES = 2 * 1024 * 1024
+# The largest turn request the service reads (app.py caps the body before parsing):
+# the turn's files in base64, the conversation's readings at JSON's worst escaping,
+# and the thread.
+MAX_REQUEST_BYTES = (
+    base64_chars(MAX_TURN_BYTES) + MAX_READINGS * MAX_READING_CHARS * 6 + THREAD_BYTES
+)
 
 
 class Upload(Strict):
@@ -268,11 +285,45 @@ class Upload(Strict):
     data: str = Field(max_length=_MAX_DATA_CHARS, repr=False)
 
 
+# One printed field of a nameplate as the service keeps it (a brand, a model, a
+# product type, a rating's label or value): the longest line printed on the eval's
+# labels is the GoodWe BAT-AC label's "Crucial Material" row, 74 characters
+# (eval/attachments, 2026-10-18), and the longest product type read was 62; two
+# hundred keeps such a line whole with room for a wordier maker, and cuts a model's
+# runaway answer (`attachments._short`).
+FIELD_CHARS = 200
+# Ratings kept of one nameplate: the most read off one label in the eval was 24 (the
+# GoodWe GW10K-ET); sixty is two and a half times that.
+MAX_RATINGS = 60
+# A reading's id: "att" and its number in the conversation, counted from 1 and never
+# reused (attachments.read numbers after the highest kept). At the hourly allowance
+# of 20 files (Attachments::LIMIT) a conversation reaches 1 000 000 files after
+# more than five years of uploads without pause; six digits hold that.
+READING_ID = r"^att[1-9][0-9]{0,5}$"
+# Why a file was not read (attachments.py): the shell shows the card's own words for
+# each, and the turn log names it.
+FailedReason = Literal[
+    "not_base64",
+    "empty",
+    "too_large",
+    "turn_too_large",
+    "type",
+    "too_many_pixels",
+    "unreadable_image",
+    "unreadable_pdf",
+    "pdf_timeout",
+    "pdf_failed",
+    "unread",
+    "no_reader",
+    "channel_refused",
+]
+
+
 class Rating(Strict):
     """One line of a nameplate as printed: its label and its value."""
 
-    label: str = Field(max_length=200)
-    value: str = Field(max_length=200)
+    label: str = Field(max_length=FIELD_CHARS)
+    value: str = Field(max_length=FIELD_CHARS)
 
 
 ReadingKind = Literal["nameplate", "document", "photo"]
@@ -286,18 +337,18 @@ class AttachmentReading(Strict):
     again; the file itself is never kept. `failed` names why nothing could be read.
     """
 
-    id: str = Field(pattern=r"^att\d{1,3}$")
+    id: str = Field(pattern=READING_ID)
     name: str = Field(max_length=NAME_LENGTH)
     kind: ReadingKind
-    brand: str | None = Field(default=None, max_length=200)
-    model: str | None = Field(default=None, max_length=200)
-    product_type: str | None = Field(default=None, max_length=200)
-    ratings: list[Rating] = Field(default_factory=list, max_length=60)
+    brand: str | None = Field(default=None, max_length=FIELD_CHARS)
+    model: str | None = Field(default=None, max_length=FIELD_CHARS)
+    product_type: str | None = Field(default=None, max_length=FIELD_CHARS)
+    ratings: list[Rating] = Field(default_factory=list, max_length=MAX_RATINGS)
     text: str = Field(default="", max_length=MAX_READING_CHARS)
     # A PDF's page count, and the pages read (text layer or rendered).
     pages: int | None = None
     pages_read: int | None = None
-    failed: str | None = Field(default=None, max_length=200)
+    failed: FailedReason | None = None
 
 
 class TurnRequest(Strict):

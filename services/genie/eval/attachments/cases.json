@@ -1,208 +1,264 @@
 {
-  "photos": [
-    {
-      "file": "saj-sununo-plus-4k-m.jpg",
-      "brand": [
-        "SAJ"
-      ],
-      "model": [
-        "Sununo Plus 4K-M"
-      ],
-      "grade": "none"
-    },
-    {
-      "file": "saj-r5-6k-s2-15.jpg",
-      "brand": [
-        "SAJ",
-        null
-      ],
-      "model": [
-        "R5-6K-S2-15"
-      ],
-      "grade": "none",
-      "note": "The label prints no maker; the SAJ logo on the device in the same photo stands upside down."
-    },
-    {
-      "file": "goodwe-gw10k-et.jpg",
-      "brand": [
-        "GoodWe"
-      ],
-      "model": [
-        "GW10K-ET"
-      ],
-      "grade": "none"
-    },
-    {
-      "file": "goodwe-gw3648-em.jpg",
-      "brand": [
-        "GoodWe"
-      ],
-      "model": [
-        "GW3648-EM"
-      ],
-      "grade": "none"
-    },
-    {
-      "file": "goodwe-gw5048-em.jpg",
-      "brand": [
-        "GoodWe"
-      ],
-      "model": [
-        "GW5048-EM"
-      ],
-      "grade": "none"
-    },
-    {
-      "file": "goodwe-gw7600a-es.jpg",
-      "brand": [
-        "GoodWe"
-      ],
-      "model": [
-        "GW7600A-ES"
-      ],
-      "grade": "none"
-    },
-    {
-      "file": "goodwe-gw5048d-es.jpg",
-      "brand": [
-        "GoodWe"
-      ],
-      "model": [
-        "GW5048D-ES"
-      ],
-      "grade": "none"
-    },
-    {
-      "file": "goodwe-bat-c-label.jpg",
-      "brand": [
-        "GoodWe"
-      ],
-      "model": [
-        null,
-        "GW61.4-BAT-AC-JP-G10",
-        "GW71.6-BAT-AC-JP-G10",
-        "GW81.9-BAT-AC-JP-G10",
-        "GW92.1-BAT-AC-JP-G10",
-        "GW102.4-BAT-AC-JP-G10"
-      ],
-      "grade": [
-        "none",
-        "unreadable"
-      ],
-      "note": "A label for five models with tick boxes, none ticked: the model is null or one of the five as printed."
-    },
-    {
-      "file": "pylontech-us3000c.jpg",
-      "brand": [
-        "Pylontech"
-      ],
-      "model": [
-        "US3000C",
-        null
-      ],
-      "grade": [
-        "none",
-        "unreadable"
-      ],
-      "note": "A pen line crosses the model field: US3000C, or null when it cannot be read; never another model."
-    },
-    {
-      "file": "ecoflow-powerocean-bd-5.1-s1.jpg",
-      "brand": [
-        "EcoFlow"
-      ],
-      "model": [
-        "EF BD-5.1-S1"
-      ],
-      "grade": "none"
-    },
-    {
-      "file": "pylontech-us3000c-thumbnail.jpg",
-      "brand": [
-        "*"
-      ],
-      "model": [
-        null
-      ],
-      "grade": "unreadable"
-    },
-    {
-      "file": "../../../../../docs/research/2026-10-17-deepseek-flash-vision/raw/nameplate-probe.png",
-      "synthetic": true,
-      "brand": [
-        "SAJ"
-      ],
-      "model": [
-        "H2-10K-T3"
-      ],
-      "grade": "exact",
-      "product": 4107
-    }
-  ],
-  "turns": [
-    {
-      "id": "plate-exact",
-      "file": "../../../../../docs/research/2026-10-17-deepseek-flash-vision/raw/nameplate-probe.png",
-      "type": "image/png",
-      "grade": "exact",
-      "cards": [
-        4107
-      ]
-    },
-    {
-      "id": "plate-none-saj",
-      "file": "saj-sununo-plus-4k-m.jpg",
-      "grade": "none",
-      "mentions": "Sununo"
-    },
-    {
-      "id": "plate-none-goodwe",
-      "file": "goodwe-gw10k-et.jpg",
-      "grade": "none",
-      "mentions": "GW10K-ET"
-    },
-    {
-      "id": "plate-none-pylontech",
-      "file": "pylontech-us3000c.jpg",
-      "grade": [
-        "none",
-        "unreadable"
-      ],
-      "mentions": "Pylontech",
-      "note": "A pen line crosses the model field; the reading may leave the model null, so the answer is held to the brand."
-    },
-    {
-      "id": "plate-unreadable",
-      "file": "pylontech-us3000c-thumbnail.jpg",
-      "grade": "unreadable"
-    },
-    {
-      "id": "datasheet-en",
-      "pdf": "2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
-      "question": "What is the maximum PV array power of the H2-10K-T3 in this datasheet?",
-      "answer": "20000",
-      "question_de": "Welche maximale PV-Leistung hat der H2-10K-T3 laut diesem Datenblatt?"
-    },
-    {
-      "id": "datasheet-de",
-      "pdf": "2026/10/SAJ_H2_15-30K-T3_Datasheet_DE.pdf",
-      "question": "What is the maximum DC voltage according to this datasheet?",
-      "answer": "1000",
-      "question_de": "Wie hoch ist laut diesem Datenblatt die maximale DC-Spannung?"
-    },
-    {
-      "id": "drawings",
-      "pdf": "2026/10/GW_ETR_Quick-Installation-Guide-POLY.pdf",
-      "question": "What does this guide show?",
-      "rendered": true
-    },
-    {
-      "id": "follow-up",
-      "after": "plate-none-goodwe",
-      "question": "What maximum PV input voltage does my nameplate state?",
-      "question_de": "Welche maximale PV-Eingangsspannung steht auf meinem Typenschild?",
-      "cites_reading": true,
-      "answer": "1000"
-    }
-  ]
+ "photos": [
+  {
+   "file": "saj-sununo-plus-4k-m.jpg",
+   "brand": [
+    "SAJ"
+   ],
+   "model": [
+    "Sununo Plus 4K-M"
+   ],
+   "grade": "none"
+  },
+  {
+   "file": "saj-r5-6k-s2-15.jpg",
+   "brand": [
+    "SAJ",
+    null
+   ],
+   "model": [
+    "R5-6K-S2-15"
+   ],
+   "grade": "none",
+   "note": "The label prints no maker; the SAJ logo on the device in the same photo stands upside down."
+  },
+  {
+   "file": "goodwe-gw10k-et.jpg",
+   "brand": [
+    "GoodWe"
+   ],
+   "model": [
+    "GW10K-ET"
+   ],
+   "grade": "none"
+  },
+  {
+   "file": "goodwe-gw3648-em.jpg",
+   "brand": [
+    "GoodWe"
+   ],
+   "model": [
+    "GW3648-EM"
+   ],
+   "grade": "none"
+  },
+  {
+   "file": "goodwe-gw5048-em.jpg",
+   "brand": [
+    "GoodWe"
+   ],
+   "model": [
+    "GW5048-EM"
+   ],
+   "grade": "none"
+  },
+  {
+   "file": "goodwe-gw7600a-es.jpg",
+   "brand": [
+    "GoodWe"
+   ],
+   "model": [
+    "GW7600A-ES"
+   ],
+   "grade": "none"
+  },
+  {
+   "file": "goodwe-gw5048d-es.jpg",
+   "brand": [
+    "GoodWe"
+   ],
+   "model": [
+    "GW5048D-ES"
+   ],
+   "grade": "none"
+  },
+  {
+   "file": "goodwe-bat-c-label.jpg",
+   "brand": [
+    "GoodWe"
+   ],
+   "model": [
+    null,
+    "GW61.4-BAT-AC-JP-G10",
+    "GW71.6-BAT-AC-JP-G10",
+    "GW81.9-BAT-AC-JP-G10",
+    "GW92.1-BAT-AC-JP-G10",
+    "GW102.4-BAT-AC-JP-G10"
+   ],
+   "grade": [
+    "none",
+    "unreadable"
+   ],
+   "note": "A label for five models with tick boxes, none ticked: the model is null or one of the five as printed."
+  },
+  {
+   "file": "pylontech-us3000c.jpg",
+   "brand": [
+    "Pylontech"
+   ],
+   "model": [
+    "US3000C",
+    null
+   ],
+   "grade": [
+    "none",
+    "unreadable"
+   ],
+   "note": "A pen line crosses the model field: US3000C, or null when it cannot be read; never another model."
+  },
+  {
+   "file": "ecoflow-powerocean-bd-5.1-s1.jpg",
+   "brand": [
+    "EcoFlow"
+   ],
+   "model": [
+    "EF BD-5.1-S1"
+   ],
+   "grade": "none"
+  },
+  {
+   "file": "pylontech-us3000c-thumbnail.jpg",
+   "brand": [
+    "*"
+   ],
+   "model": [
+    null
+   ],
+   "grade": "unreadable"
+  },
+  {
+   "file": "../../../../../docs/research/2026-10-17-deepseek-flash-vision/raw/nameplate-probe.png",
+   "synthetic": true,
+   "brand": [
+    "SAJ"
+   ],
+   "model": [
+    "H2-10K-T3"
+   ],
+   "grade": "exact",
+   "product": 4107
+  },
+  {
+   "file": "labels/goodwe-gw112.6-bat-ac-g10-report-p8.jpg",
+   "brand": [
+    "GoodWe"
+   ],
+   "model": [
+    "GW112.6-BAT-AC-G10"
+   ],
+   "grade": "exact",
+   "product": 1955,
+   "note": "Photo on page 8 of our hosted UN38.3 test report; the label is ticked among six models. Review round 1 of PR #309, item 12."
+  },
+  {
+   "file": "labels/goodwe-gw112.6-bat-ac-g10-report-p13.jpg",
+   "brand": [
+    "GoodWe"
+   ],
+   "model": [
+    "GW112.6-BAT-AC-G10"
+   ],
+   "grade": "exact",
+   "product": 1955,
+   "note": "The same label model in a second photo of the same report (page 13), without a serial number."
+  },
+  {
+   "file": "labels/goodwe-gw5kn-et-manual-p26.jpg",
+   "brand": [
+    "GoodWe",
+    null
+   ],
+   "model": [
+    "GW5KN-ET"
+   ],
+   "grade": "none",
+   "note": "Drawn label rendered from page 26 of our hosted ET manual: a GoodWe model we do not carry."
+  }
+ ],
+ "turns": [
+  {
+   "id": "plate-exact",
+   "file": "../../../../../docs/research/2026-10-17-deepseek-flash-vision/raw/nameplate-probe.png",
+   "type": "image/png",
+   "grade": "exact",
+   "cards": [
+    4107
+   ]
+  },
+  {
+   "id": "plate-none-saj",
+   "file": "saj-sununo-plus-4k-m.jpg",
+   "grade": "none",
+   "mentions": "Sununo"
+  },
+  {
+   "id": "plate-none-goodwe",
+   "file": "goodwe-gw10k-et.jpg",
+   "grade": "none",
+   "mentions": "GW10K-ET"
+  },
+  {
+   "id": "plate-none-pylontech",
+   "file": "pylontech-us3000c.jpg",
+   "grade": [
+    "none",
+    "unreadable"
+   ],
+   "mentions": "Pylontech",
+   "note": "A pen line crosses the model field; the reading may leave the model null, so the answer is held to the brand."
+  },
+  {
+   "id": "plate-unreadable",
+   "file": "pylontech-us3000c-thumbnail.jpg",
+   "grade": "unreadable"
+  },
+  {
+   "id": "datasheet-en",
+   "pdf": "2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+   "question": "What is the maximum PV array power of the H2-10K-T3 in this datasheet?",
+   "answer": "20000",
+   "question_de": "Welche maximale PV-Leistung hat der H2-10K-T3 laut diesem Datenblatt?"
+  },
+  {
+   "id": "datasheet-de",
+   "pdf": "2026/10/SAJ_H2_15-30K-T3_Datasheet_DE.pdf",
+   "question": "What is the maximum DC voltage according to this datasheet?",
+   "answer": "1000",
+   "question_de": "Wie hoch ist laut diesem Datenblatt die maximale DC-Spannung?"
+  },
+  {
+   "id": "drawings",
+   "pdf": "2026/10/GW_ETR_Quick-Installation-Guide-POLY.pdf",
+   "question": "What does this guide show?",
+   "rendered": true
+  },
+  {
+   "id": "follow-up",
+   "after": "plate-none-goodwe",
+   "question": "What maximum PV input voltage does my nameplate state?",
+   "question_de": "Welche maximale PV-Eingangsspannung steht auf meinem Typenschild?",
+   "cites_reading": true,
+   "answer": "1000"
+  },
+  {
+   "id": "price-list",
+   "generated": "price_list",
+   "question": "Here is my supplier's price list. What do these cost from you?",
+   "question_de": "Hier ist die Preisliste meines Lieferanten. Was kosten diese bei Ihnen?",
+   "no_money": true,
+   "cites_reading": true,
+   "note": "The amounts of the file must never be quoted as prices (review round 1 of PR #309, item 8)."
+  },
+  {
+   "id": "delivery-terms",
+   "generated": "delivery_terms",
+   "question": "Can you deliver to Austria on these terms?",
+   "question_de": "Können Sie zu diesen Bedingungen nach Österreich liefern?",
+   "no_money": true,
+   "no_lead_time": true,
+   "handoff": true,
+   "cites_reading": true,
+   "note": "Freight and lead times are logistics: the handoff block, never the file's figures."
+  }
+ ]
 }

@@ -7,8 +7,10 @@ files first, attachments.py), the agent writes it. The stream is `meta`, an
 with the conversation and takes them out of what the browser gets), a `block` per
 block, `done`.
 POST /turn/{id}/vote and POST /assistant/turn/{id}/vote store a customer's
-thumbs-up or thumbs-down for a logged turn. GET /health reports that the
-process is up.
+thumbs-up or thumbs-down for a logged turn. POST
+/assistant/conversation/{id}/forget takes a deleted conversation's file readings out
+of the turn log. Every POST carries the shell's shared token and a capped body
+(gate.py). GET /health reports that the process is up.
 """
 
 from __future__ import annotations
@@ -25,22 +27,24 @@ from fastapi.responses import StreamingResponse
 from linker_genie import contact, ground, jev, page
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import (
-    DEFAULT_BASE_URL,
-    _env_with_credentials,
+    deepseek_access,
     make_generate,
     model_name,
     provider_name,
 )
 from linker_genie.cycle import TurnResult, run
 from linker_genie.facts import TurnFacts
+from linker_genie.gate import Gate
 from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup
-from linker_genie.schema import TurnOutput, TurnRequest, VoteRequest
+from linker_genie.schema import MAX_REQUEST_BYTES, TurnOutput, TurnRequest, VoteRequest
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 
 app = FastAPI(title="Genie - Linker's AI assistant")
+# The shell's shared token and the body cap, before anything is parsed (gate.py).
+app.add_middleware(Gate, limit=MAX_REQUEST_BYTES)
 
 _log: TurnLog | None = None
 _client: AbilityClient | None = None
@@ -90,15 +94,9 @@ def vision() -> Vision | None:
     model's own key, address and name; None when no key is configured."""
     global _vision
     if _vision is None:
-        env = _env_with_credentials()
-        key = env.get("GENIE_API_KEY") or env.get("DEEPSEEK_API_KEY") or ""
-        if key:
-            base = (
-                env.get("GENIE_BASE_URL")
-                or env.get("DEEPSEEK_BASE_URL")
-                or DEFAULT_BASE_URL
-            )
-            _vision = Vision(key, base, model_name())
+        access = deepseek_access()
+        if access.key:
+            _vision = Vision(access.key, access.base_url, model_name())
     return _vision
 
 
@@ -216,6 +214,13 @@ def turn_vote(turn_id: int, body: VoteRequest) -> dict[str, bool]:
     if not turn_log().vote(turn_id, body.vote):
         raise HTTPException(status_code=404, detail="unknown turn")
     return {"ok": True}
+
+
+@app.post("/assistant/conversation/{conversation_id}/forget")
+def forget(conversation_id: str) -> dict[str, int]:
+    """The customer deleted the conversation, or Retention did: the reading text of
+    its files leaves the turn log too (log.TurnLog.forget, #236)."""
+    return {"purged": turn_log().forget(conversation_id)}
 
 
 def _answer(

@@ -24,6 +24,40 @@ export const TARGET_PIXELS = 1300 * 1300;
 /** A notch above libjpeg's default 75: a nameplate's small print stays sharp. */
 export const JPEG_QUALITY = 0.85;
 
+/**
+ * The accepted types by the bytes each starts with, and WebP's second mark at
+ * byte 8: the proxy's Attachments::MAGIC and the service's attachments.MAGIC
+ * hold the same table (services/genie/tests/test_attachments.py locks the
+ * three). A photo is drawn again as a JPEG here, so only a PDF is checked by
+ * its bytes before it is sent.
+ */
+export const MAGIC: Readonly< Record< string, readonly number[] > > = {
+	'image/jpeg': [ 0xff, 0xd8, 0xff ],
+	'image/png': [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a ],
+	'image/webp': [ 0x52, 0x49, 0x46, 0x46 ],
+	'application/pdf': [ 0x25, 0x50, 0x44, 0x46, 0x2d ],
+};
+export const WEBP_MARK = { offset: 8, bytes: [ 0x57, 0x45, 0x42, 0x50 ] };
+
+/**
+ * Whether the bytes start as their type's file does (MAGIC).
+ *
+ * @param bytes The file.
+ * @param type  Its declared type.
+ */
+export function startsAs( bytes: Uint8Array, type: string ): boolean {
+	const magic = MAGIC[ type ];
+	if ( ! magic || ! magic.every( ( byte, at ) => bytes[ at ] === byte ) ) {
+		return false;
+	}
+	return (
+		type !== 'image/webp' ||
+		WEBP_MARK.bytes.every(
+			( byte, at ) => bytes[ WEBP_MARK.offset + at ] === byte
+		)
+	);
+}
+
 /** What the file input offers: photos (HEIC included) and PDFs. */
 export const ACCEPT =
 	'image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif,application/pdf';
@@ -120,7 +154,7 @@ export async function prepare( file: File ): Promise< Prepared > {
 			return { ok: false, reason: 'size' };
 		}
 		const bytes = await bytesOf( file );
-		if ( new TextDecoder().decode( bytes.slice( 0, 5 ) ) !== '%PDF-' ) {
+		if ( ! startsAs( bytes, 'application/pdf' ) ) {
 			return { ok: false, reason: 'type' };
 		}
 		return {

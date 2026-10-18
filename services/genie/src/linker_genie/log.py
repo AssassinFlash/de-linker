@@ -17,6 +17,8 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from linker_genie.tools import READ_ATTACHMENT
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS turns (
     id INTEGER PRIMARY KEY,
@@ -49,6 +51,14 @@ ADDED_COLUMNS = (
     # Why the turn offered the team's contact (contact.py, #243), NULL when it did not.
     ("contact", "TEXT"),
 )
+
+
+def _calls(raw: str | None) -> list[dict[str, Any]]:
+    """The turn's logged calls; a malformed entry is left out, never raised."""
+    calls = json.loads(raw) if raw else []
+    if not isinstance(calls, list):
+        return []
+    return [call for call in calls if isinstance(call, dict)]
 
 
 class TurnLog:
@@ -123,6 +133,82 @@ class TurnLog:
             (conversation_id, max(0, limit)),
         ).fetchall()
         return [row[0] is not None for row in rows]
+
+    def forget(self, conversation_id: str) -> int:
+        """Take the reading text of a deleted conversation's files out of its turns.
+
+        A reading is the customer's file as read (a nameplate's serial-free text, a
+        datasheet's pages): it goes when the conversation goes (docs/specs/13-genie.md
+        "附件与铭牌", 保存与清理). Each `read-attachment` call keeps only its id, kind,
+        page counts and failure, marked `purged`; a call whose words the reading made
+        (`from_reading`: the nameplate's product search) keeps its name and loses its
+        arguments and result the same way. The rest of the turn stays for the quality
+        check. Returns how many turns changed.
+        """
+        rows = self._db.execute(
+            "SELECT id, tool_calls, understanding FROM turns WHERE conversation_id = ?",
+            (conversation_id,),
+        ).fetchall()
+        # The readings this conversation logged in full: the ids whose text goes.
+        purged: set[str] = set()
+        for _turn_id, raw, _understanding in rows:
+            for call in _calls(raw):
+                result = call.get("result")
+                if (
+                    call.get("name") == READ_ATTACHMENT
+                    and isinstance(result, dict)
+                    and isinstance(result.get("id"), str)
+                    and not result.get("purged")
+                    and not result.get("earlier")
+                ):
+                    purged.add(result["id"])
+        changed = 0
+        for turn_id, raw, raw_understanding in rows:
+            calls = _calls(raw)
+            touched = False
+            for call in calls:
+                if call.get("name") == READ_ATTACHMENT:
+                    result = call.get("result")
+                    # A later turn's entry names the reading only (`earlier`): no text.
+                    if (
+                        isinstance(result, dict)
+                        and not result.get("purged")
+                        and not result.get("earlier")
+                    ):
+                        call["result"] = {
+                            key: result[key]
+                            for key in ("id", "kind", "pages", "pages_read", "failed")
+                            if key in result
+                        } | {"purged": True}
+                        touched = True
+                elif call.get("from_reading") in purged:
+                    # The words of this call are the reading's: they go with it.
+                    call["arguments"] = {}
+                    call["result"] = {"purged": True}
+                    touched = True
+            understanding = json.loads(raw_understanding) if raw_understanding else {}
+            if not isinstance(understanding, dict):
+                understanding = {}
+            # The route log names the same words (the nameplate's search input).
+            for key in ("calls", "dropped_calls"):
+                for call in understanding.get(key) or []:
+                    if isinstance(call, dict) and call.get("from_reading") in purged:
+                        call["arguments"] = {}
+                        call["from_reading"] = None
+                        call["purged"] = True
+                        touched = True
+            if touched:
+                self._db.execute(
+                    "UPDATE turns SET tool_calls = ?, understanding = ? WHERE id = ?",
+                    (
+                        json.dumps(calls),
+                        json.dumps(understanding, ensure_ascii=False),
+                        turn_id,
+                    ),
+                )
+                changed += 1
+        self._db.commit()
+        return changed
 
     def vote(self, turn_id: int, value: int) -> bool:
         """Record a vote; False when the turn id is unknown."""

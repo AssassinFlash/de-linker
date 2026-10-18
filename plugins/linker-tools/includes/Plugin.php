@@ -78,6 +78,8 @@ final class Plugin {
 		add_action( 'init', array( $this->assets, 'load_text_domain' ) );
 		add_action( 'init', array( $this->conversations, 'register' ) );
 		add_action( 'rest_api_init', array( $this->proxy, 'register' ) );
+		// A deleted conversation's file readings leave the service's turn log (#236).
+		add_action( 'before_delete_post', array( $this->proxy, 'forget' ) );
 		add_action( 'rest_api_init', array( $this->engine_proxy, 'register' ) );
 		add_action( 'rest_api_init', array( $this->quality_route, 'register' ) );
 		add_action( 'rest_api_init', array( $this->contact, 'register' ) );

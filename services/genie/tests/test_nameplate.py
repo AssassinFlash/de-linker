@@ -15,6 +15,7 @@ from typing import Any
 
 import httpx
 import pytest
+from conftest import SHELL
 from fastapi.testclient import TestClient
 from PIL import Image
 
@@ -299,7 +300,9 @@ def test_the_stream_carries_the_card_and_the_reading(
     app.state.generate = generate
     app.state.commerce = lambda ids: (TurnFacts(), [])
     try:
-        response = TestClient(app).post("/assistant/turn", json=_request().model_dump())
+        response = TestClient(app, headers=SHELL).post(
+            "/assistant/turn", json=_request().model_dump()
+        )
     finally:
         del app.state.prepare, app.state.generate, app.state.commerce
     assert response.status_code == 200
@@ -318,3 +321,182 @@ def test_the_stream_carries_the_card_and_the_reading(
     assert "base64" not in turn[0]
     assert '"match": "exact"' in turn[1]
     log.close()
+
+
+# --- review round 1 of PR #309 -------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("brand", "kept"),
+    [
+        ("SAJ", "SAJ"),
+        ("GOODWE", "GOODWE"),
+        ("Pylontech", "Pylontech"),
+        # Guessed for the R5 label that prints no maker, thinking off (thinking.md).
+        ("INVS", None),
+        ("SOLIS", None),
+        ("HVS", None),
+    ],
+)
+def test_a_brand_counts_only_when_it_is_one_of_ours(
+    vocabulary: Vocabulary, brand: str, kept: str | None
+) -> None:
+    see = See({**SAJ_PLATE, "brand": brand, "model": "R5-6K-S2-15"})
+    understander = Understander(lambda: vocabulary, NoJev(), see=see)
+    prepared = understander.prepare(_request(), _abilities([]))
+    [reading] = prepared.readings
+    assert reading.brand == kept
+    assert (f"Brand: {brand}" in reading.text) is (kept is not None)
+    assert prepared.cards[0]["brand"] == kept
+
+
+def test_without_the_product_words_no_brand_is_known() -> None:
+    from linker_genie.nameplate import with_known_brand
+
+    reading = AttachmentReading(
+        id="att1",
+        name="p.jpg",
+        kind="nameplate",
+        brand="SAJ",
+        model="H2-10K-T3",
+        text="Brand: SAJ\nModel: H2-10K-T3",
+    )
+    blind = with_known_brand(reading, None)
+    assert blind.brand is None
+    assert blind.text == "Model: H2-10K-T3"
+
+
+class OtherIntent:
+    """Jev on a follow-up without a file: a question, nothing more."""
+
+    def read(self, message: str, page: dict[str, Any], history: Any = ()) -> Reading:
+        return Reading("other", 0.9, 0.0, 0.0, 0.0, 1.0, 0.0)
+
+
+def _turn_through_the_app(
+    vocabulary: Vocabulary,
+    log: TurnLog,
+    monkeypatch: pytest.MonkeyPatch,
+    request: TurnRequest,
+) -> None:
+    monkeypatch.setattr(app_module, "_log", log)
+    jev = NoJev() if request.attachments else OtherIntent()
+    understander = Understander(lambda: vocabulary, jev, see=See(SAJ_PLATE))
+    app.state.prepare = lambda body: understander.prepare(body, _abilities([]))
+    app.state.generate = lambda _r, _retry: (
+        TurnOutput(
+            language="en",
+            blocks=[TextBlock(text="Is this your SAJ H2-10K-T3?", refs=["att1"])],
+        ),
+        TurnFacts(),
+    )
+    app.state.commerce = lambda ids: (TurnFacts(), [])
+    try:
+        response = TestClient(app, headers=SHELL).post(
+            "/assistant/turn", json=request.model_dump()
+        )
+    finally:
+        del app.state.prepare, app.state.generate, app.state.commerce
+    assert response.status_code == 200, response.text
+
+
+def test_a_reading_is_logged_once_and_purged_with_its_conversation(
+    vocabulary: Vocabulary, tmp_path: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from linker_genie.quality.turns import TurnSource
+
+    path = tmp_path / "turns.sqlite"
+    log = TurnLog(path)
+    first = _request()
+    _turn_through_the_app(vocabulary, log, monkeypatch, first)
+    [(stored,)] = log._db.execute("SELECT tool_calls FROM turns").fetchall()
+    [full] = [c for c in json.loads(stored) if c["name"] == "linker/read-attachment"]
+    reading = {
+        k: v for k, v in full["result"].items() if k not in ("figures", "decimal")
+    }
+    reading["text"] = "Brand: SAJ\nModel: H2-10K-T3\nMax. PV input voltage: 1000 V"
+    # The follow-up carries the reading back (the proxy's), and no file.
+    _turn_through_the_app(
+        vocabulary, log, monkeypatch, _request([reading], photo=False)
+    )
+    rows = log._db.execute("SELECT id, tool_calls FROM turns ORDER BY id").fetchall()
+    second = [
+        c for c in json.loads(rows[1][1]) if c["name"] == "linker/read-attachment"
+    ]
+    assert second == [
+        {
+            "name": "linker/read-attachment",
+            "arguments": {"id": "att1"},
+            "ok": True,
+            "result": {"id": "att1", "earlier": True},
+        }
+    ]
+    # The quality check still reads what the follow-up could cite.
+    [judged] = TurnSource(path).by_ids([rows[1][0]])
+    [resolved] = [c for c in judged.tool_calls if c["name"] == "linker/read-attachment"]
+    assert "1000 V" in resolved["result"]["text"]
+
+    # The customer deletes the conversation: the proxy calls forget.
+    response = TestClient(app, headers=SHELL).post("/assistant/conversation/c1/forget")
+    assert response.json() == {"purged": 1}
+    [(after,)] = log._db.execute(
+        "SELECT tool_calls FROM turns WHERE id = ?", (rows[0][0],)
+    ).fetchall()
+    [purged] = [c for c in json.loads(after) if c["name"] == "linker/read-attachment"]
+    assert purged["result"] == {
+        "id": "att1",
+        "kind": "nameplate",
+        "pages": None,
+        "pages_read": None,
+        "failed": None,
+        "purged": True,
+    }
+    assert "1000 V" not in after and "H2-10K-T3" not in after
+    log.close()
+
+
+def test_the_service_answers_only_its_shell(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    import logging
+
+    from linker_genie.schema import MAX_REQUEST_BYTES
+
+    client = TestClient(app)
+    body = _request().model_dump()
+    with caplog.at_level(logging.WARNING, logger="linker_genie.gate"):
+        assert client.post("/assistant/turn", json=body).status_code == 401
+        assert (
+            client.post(
+                "/assistant/turn", json=body, headers={"X-Linker-Service-Token": "no"}
+            ).status_code
+            == 401
+        )
+        assert client.post("/turn/1/vote", json={"vote": 1}).status_code == 401
+        assert client.post("/assistant/conversation/c1/forget").status_code == 401
+    assert "without the service token" in caplog.text
+    # /health stays open for the site's daily check.
+    assert client.get("/health").status_code == 200
+    # A body past the cap is refused before it is parsed, declared or streamed.
+    big = b"x" * (MAX_REQUEST_BYTES + 1)
+    shell = TestClient(app, headers=SHELL)
+    declared = shell.post(
+        "/assistant/turn", content=big, headers={"content-type": "application/json"}
+    )
+    assert declared.status_code == 413
+
+    def chunks() -> Any:
+        for start in range(0, len(big), 1 << 20):
+            yield big[start : start + (1 << 20)]
+
+    streamed = shell.post(
+        "/assistant/turn",
+        content=chunks(),
+        headers={"content-type": "application/json"},
+    )
+    assert streamed.status_code == 413
+    # Without the token configured the endpoints are closed, loudly.
+    monkeypatch.delenv("GENIE_SERVICE_TOKEN")
+    with caplog.at_level(logging.ERROR, logger="linker_genie.gate"):
+        assert shell.post("/assistant/turn", json=body).status_code == 503
+    assert "GENIE_SERVICE_TOKEN is not set" in caplog.text

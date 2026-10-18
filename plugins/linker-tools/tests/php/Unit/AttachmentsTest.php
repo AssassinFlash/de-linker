@@ -22,11 +22,18 @@ use WP_Mock\Tools\TestCase;
 final class AttachmentsTest extends TestCase {
 
 	/**
-	 * Who took what from the allowance.
+	 * Who asked for how many units of the allowance, as "who×units".
 	 *
 	 * @var list<string>
 	 */
 	private array $taken = array();
+
+	/**
+	 * Units left after the last check.
+	 *
+	 * @var int
+	 */
+	private int $left = 0;
 
 	/**
 	 * Common WordPress doubles.
@@ -49,11 +56,15 @@ final class AttachmentsTest extends TestCase {
 	private function attachments( int $left = 100, int $user = 0 ): Attachments {
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $user > 0 ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => $user ) );
+		$this->left = $left;
 		return new Attachments(
-			function ( string $who ) use ( &$left ): bool {
-				$this->taken[] = $who;
-				--$left;
-				return $left >= 0;
+			function ( string $who, int $units ): bool {
+				$this->taken[] = $who . '×' . $units;
+				if ( $units > $this->left ) {
+					return false;
+				}
+				$this->left -= $units;
+				return true;
 			}
 		);
 	}
@@ -84,8 +95,9 @@ final class AttachmentsTest extends TestCase {
 	}
 
 	/**
-	 * JPEG, PNG, WebP and PDF pass by their first bytes; each file takes one
-	 * unit of the connection's allowance; a name loses its path.
+	 * JPEG, PNG, WebP and PDF pass by their first bytes; the turn takes one
+	 * unit of the connection's allowance per file, in one take; a name loses
+	 * its path.
 	 */
 	public function test_the_four_types_pass_and_each_file_counts(): void {
 		$files = $this->attachments()->check(
@@ -98,14 +110,15 @@ final class AttachmentsTest extends TestCase {
 
 		$this->assertIsArray( $files );
 		$this->assertSame( array( 'IMG_0001.jpg', 'passwd', 'badname.webp' ), array_column( $files, 'name' ) );
-		$this->assertSame( array( '203.0.113.7', '203.0.113.7', '203.0.113.7' ), $this->taken );
+		$this->assertSame( array( '203.0.113.7×3' ), $this->taken );
 		$pdf = $this->attachments()->check( array( self::file( '%PDF-1.7 ...', 'application/pdf', 'ds.pdf' ) ) );
 		$this->assertIsArray( $pdf );
 		$this->assertSame( 'application/pdf', $pdf[0]['type'] );
 	}
 
 	/**
-	 * A file that is not what it says, or a type not taken, is a 415.
+	 * A file that is not what it says, or a type not taken, is a 415, and the
+	 * refused turn takes one unit.
 	 *
 	 * @testWith ["MZ\u0090\u0000program", "image/jpeg"]
 	 *           ["<svg xmlns=\"http://www.w3.org/2000/svg\"/>", "image/svg+xml"]
@@ -122,7 +135,60 @@ final class AttachmentsTest extends TestCase {
 		$this->assertInstanceOf( WP_Error::class, $result );
 		$this->assertSame( 'linker_genie_attachment_type', $result->get_error_code() );
 		$this->assertSame( 415, $result->get_error_data()['status'] );
-		$this->assertSame( array(), $this->taken );
+		$this->assertSame( array( '203.0.113.7×1' ), $this->taken );
+	}
+
+	/**
+	 * Every file is checked before allowance is taken: a refused third file
+	 * spends one unit for the refusal, nothing for the two good ones.
+	 */
+	public function test_a_later_refusal_spends_nothing_on_earlier_files(): void {
+		$jpeg   = self::file( "\xFF\xD8\xFFjpeg", 'image/jpeg' );
+		$result = $this->attachments( 20 )->check( array( $jpeg, $jpeg, self::file( 'MZ', 'image/png' ) ) );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_genie_attachment_type', $result->get_error_code() );
+		$this->assertSame( array( '203.0.113.7×1' ), $this->taken );
+		$this->assertSame( 19, $this->left );
+	}
+
+	/**
+	 * Refusals count against the allowance: once it is spent, a refused
+	 * upload is answered 429 like any other, so repeating it is not free.
+	 */
+	public function test_repeated_refusals_run_into_the_allowance(): void {
+		$bad   = array( self::file( 'MZ', 'image/jpeg' ) );
+		$check = $this->attachments( 2 );
+
+		foreach ( array( 1, 2 ) as $attempt ) {
+			$refused = $check->check( $bad );
+			$this->assertInstanceOf( WP_Error::class, $refused, "attempt $attempt" );
+			$this->assertSame( 'linker_genie_attachment_type', $refused->get_error_code() );
+		}
+		$third = $check->check( $bad );
+		$this->assertInstanceOf( WP_Error::class, $third );
+		$this->assertSame( 'linker_genie_attachment_throttled', $third->get_error_code() );
+		$this->assertSame( 429, $third->get_error_data()['status'] );
+	}
+
+	/**
+	 * A file's size is read from its base64 length before it is decoded: an
+	 * oversize body that is not even base64 is a 413, not a decode.
+	 */
+	public function test_an_oversize_file_is_refused_before_it_is_decoded(): void {
+		$result = $this->attachments()->check(
+			array(
+				array(
+					'name' => 'x.jpg',
+					'type' => 'image/jpeg',
+					'data' => str_repeat( '!', Attachments::encoded( Attachments::MAX_IMAGE_BYTES ) + 4 ),
+				),
+			)
+		);
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_genie_attachment_size', $result->get_error_code() );
+		$this->assertSame( 8388608, Attachments::encoded( Attachments::MAX_IMAGE_BYTES ) );
 	}
 
 	/**
@@ -164,8 +230,8 @@ final class AttachmentsTest extends TestCase {
 	}
 
 	/**
-	 * Past the hourly allowance the turn is a 429; a signed-in customer
-	 * counts by account, a guest by connection.
+	 * Past the hourly allowance the turn is a 429 and takes nothing: two
+	 * files do not fit in one unit.
 	 */
 	public function test_past_the_allowance_the_turn_is_refused(): void {
 		$jpeg   = self::file( "\xFF\xD8\xFFjpeg", 'image/jpeg' );
@@ -175,6 +241,8 @@ final class AttachmentsTest extends TestCase {
 		$this->assertSame( 'linker_genie_attachment_throttled', $result->get_error_code() );
 		$this->assertSame( 429, $result->get_error_data()['status'] );
 		$this->assertSame( Attachments::LIMIT, $result->get_error_data()['limit'] );
+		$this->assertSame( array( '203.0.113.7×2' ), $this->taken );
+		$this->assertSame( 1, $this->left );
 	}
 
 	/**
@@ -183,6 +251,6 @@ final class AttachmentsTest extends TestCase {
 	public function test_a_signed_in_customer_counts_by_account(): void {
 		$this->attachments( 100, 42 )->check( array( self::file( "\xFF\xD8\xFFjpeg", 'image/jpeg' ) ) );
 
-		$this->assertSame( array( 'user:42' ), $this->taken );
+		$this->assertSame( array( 'user:42×1' ), $this->taken );
 	}
 }

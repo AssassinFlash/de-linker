@@ -55,12 +55,14 @@ final class RateLimit {
 	}
 
 	/**
-	 * Takes one unit for a caller.
+	 * Takes units for a caller, all or none.
 	 *
-	 * @param string $who The caller: a connection address, or '' for the whole site.
-	 * @return bool Whether the caller was still under the limit.
+	 * @param string $who   The caller: a connection address, or '' for the whole site.
+	 * @param int    $units How many to take at once (a turn's files, #236); one by default.
+	 * @return bool Whether the caller had that many left; nothing is taken when not.
 	 */
-	public function take( string $who ): bool {
+	public function take( string $who, int $units = 1 ): bool {
+		$units = max( 1, $units );
 		global $wpdb;
 		$bucket = str_pad( (string) intdiv( ( $this->clock )(), max( 1, $this->window ) ), 10, '0', STR_PAD_LEFT );
 		// The dot ends the name: no limiter's rows start with another
@@ -79,8 +81,10 @@ final class RateLimit {
 		$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, '0', 'off')", $row ) );
 		$taken = $wpdb->query(
 			$wpdb->prepare(
-				"UPDATE {$wpdb->options} SET option_value = CAST(option_value AS UNSIGNED) + 1 WHERE option_name = %s AND CAST(option_value AS UNSIGNED) < %d",
+				"UPDATE {$wpdb->options} SET option_value = CAST(option_value AS UNSIGNED) + %d WHERE option_name = %s AND CAST(option_value AS UNSIGNED) + %d <= %d",
+				$units,
 				$row,
+				$units,
 				$this->limit
 			)
 		);

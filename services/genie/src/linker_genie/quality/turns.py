@@ -8,11 +8,12 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
 from linker_genie.log import ADDED_COLUMNS
+from linker_genie.tools import READ_ATTACHMENT
 
 # Seconds a read waits for the service's write lock. The service commits each
 # turn in one short INSERT, so a reader waits milliseconds; five seconds only
@@ -76,7 +77,7 @@ class TurnSource:
     def after(self, turn_id: int, limit: int) -> list[LoggedTurn]:
         """The turns logged after `turn_id`, oldest first."""
         return [
-            _turn(row)
+            self._with_readings(_turn(row))
             for row in self._query(
                 "SELECT {columns} FROM turns WHERE id > ? ORDER BY id LIMIT ?",
                 (turn_id, limit),
@@ -88,12 +89,57 @@ class TurnSource:
             return []
         marks = ",".join("?" for _ in ids)
         return [
-            _turn(row)
+            self._with_readings(_turn(row))
             for row in self._query(
                 "SELECT {columns} FROM turns WHERE id IN (" + marks + ") ORDER BY id",
                 tuple(ids),
             )
         ]
+
+    def _with_readings(self, turn: LoggedTurn) -> LoggedTurn:
+        """The turn with each earlier file reading it names filled in.
+
+        The service logs a reading once, with the turn that read it, and later turns
+        name it by id (`attachments.recorded`, #236). The judges read what the answer
+        could cite, so the reading is taken from the newest earlier turn of the same
+        conversation that logged it in full; a reading purged with its conversation
+        (`log.TurnLog.forget`) stays as it is.
+        """
+        wanted = {
+            str(call["result"]["id"])
+            for call in turn.tool_calls
+            if call.get("name") == READ_ATTACHMENT
+            and isinstance(call.get("result"), dict)
+            and call["result"].get("earlier")
+        }
+        if not wanted:
+            return turn
+        found: dict[str, dict[str, Any]] = {}
+        for row in self._query(
+            "SELECT id, tool_calls FROM turns WHERE conversation_id = ? AND id < ? "
+            "ORDER BY id DESC",
+            (turn.conversation_id, turn.id),
+        ):
+            calls = json.loads(row["tool_calls"]) if row["tool_calls"] else []
+            for call in calls if isinstance(calls, list) else []:
+                result = call.get("result") if isinstance(call, dict) else None
+                if (
+                    call.get("name") == READ_ATTACHMENT
+                    and isinstance(result, dict)
+                    and str(result.get("id")) in wanted
+                    and not result.get("earlier")
+                ):
+                    found.setdefault(str(result["id"]), result)
+        calls = [
+            {**call, "result": found[str(call["result"]["id"])]}
+            if call.get("name") == READ_ATTACHMENT
+            and isinstance(call.get("result"), dict)
+            and call["result"].get("earlier")
+            and str(call["result"]["id"]) in found
+            else call
+            for call in turn.tool_calls
+        ]
+        return replace(turn, tool_calls=calls)
 
     def prune(self, before: str) -> int:
         """Delete the turns logged before `before` (`YYYY-MM-DD HH:MM:SS`,
