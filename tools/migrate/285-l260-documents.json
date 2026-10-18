@@ -1,5 +1,5 @@
 {
- "description": "Ticket #285 C2: point product 2003's L260-OMNI portfolio entry at the two-page excerpt (PDF pp. 20-21). The full 44-page portfolio stays in the media library; the excerpt is a new media item (ID 7367). Precedent: the pp. 17-18 excerpt already listed beside the full datasheet. No competitor evidence covers page-range pinning; the data-side excerpt is the established pattern.",
+ "description": "Ticket #285 C2: point product 2003's L260-OMNI portfolio entry at the two-page excerpt (PDF pp. 20-21). Both product document sources change: _linker_documents (the site's list) and the ACF downloads rows (_tv_legacy_acf_json, _linker_de_acf_json) that the knowledge index reads for model tags. The full 44-page portfolio stays in the media library; the excerpt is media item 7367. Precedent: the pp. 17-18 excerpt already listed beside the full datasheet. No competitor evidence covers page-range pinning; the data-side excerpt is the established pattern.",
  "product": 2003,
  "meta_key": "_linker_documents",
  "from": [
@@ -40,6 +40,106 @@
    "title": "Pylontech Utility, C&I ESS product portfolio PY2412EN-SD - L260-OMNI: PDF pp. 20-21 (EN)",
    "type": "document",
    "lang": "en"
+  }
+ ],
+ "downloads": [
+  {
+   "meta_key": "_tv_legacy_acf_json",
+   "from": [
+    {
+     "download_title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet excerpt, printed pp. 17-18 (EN)",
+     "download_type": "Datasheet",
+     "download_language": "EN",
+     "download_file": 6001,
+     "download_role": "datasheet"
+    },
+    {
+     "download_title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet (dimensions without inverter) (EN)",
+     "download_type": "Datasheet",
+     "download_language": "EN",
+     "download_file": 5252,
+     "download_role": "datasheet"
+    },
+    {
+     "download_title": "Pylontech Utility, C&I ESS product portfolio PY2412EN-SD - L260-OMNI: PDF pp. 20-21 (EN)",
+     "download_type": "Document",
+     "download_language": "EN",
+     "download_file": 6003,
+     "download_role": "document"
+    }
+   ],
+   "to": [
+    {
+     "download_title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet excerpt, printed pp. 17-18 (EN)",
+     "download_type": "Datasheet",
+     "download_language": "EN",
+     "download_file": 6001,
+     "download_role": "datasheet"
+    },
+    {
+     "download_title": "Pylontech L260-OMNI 125 kW / 260 kWh - datasheet (dimensions without inverter) (EN)",
+     "download_type": "Datasheet",
+     "download_language": "EN",
+     "download_file": 5252,
+     "download_role": "datasheet"
+    },
+    {
+     "download_title": "Pylontech Utility, C&I ESS product portfolio PY2412EN-SD - L260-OMNI: PDF pp. 20-21 (EN)",
+     "download_type": "Document",
+     "download_language": "EN",
+     "download_file": 7367,
+     "download_role": "document"
+    }
+   ]
+  },
+  {
+   "meta_key": "_linker_de_acf_json",
+   "from": [
+    {
+     "download_title": "Pylontech L260-OMNI 125 kW / 260 kWh – Datenblattauszug, gedruckt S. 17-18 (EN)",
+     "download_type": "Datenblatt",
+     "download_language": "EN",
+     "download_file": 6001,
+     "download_role": "datasheet"
+    },
+    {
+     "download_title": "Pylontech L260-OMNI 125 kW / 260 kWh – Datenblatt (Abmessungen ohne Wechselrichter) (EN)",
+     "download_type": "Datenblatt",
+     "download_language": "EN",
+     "download_file": 5252,
+     "download_role": "datasheet"
+    },
+    {
+     "download_title": "Pylontech Utility, C&I ESS Produktportfolio PY2412EN-SD – L260-OMNI: PDF S. 20-21 (EN)",
+     "download_type": "Dokument",
+     "download_language": "EN",
+     "download_file": 6003,
+     "download_role": "document"
+    }
+   ],
+   "to": [
+    {
+     "download_title": "Pylontech L260-OMNI 125 kW / 260 kWh – Datenblattauszug, gedruckt S. 17-18 (EN)",
+     "download_type": "Datenblatt",
+     "download_language": "EN",
+     "download_file": 6001,
+     "download_role": "datasheet"
+    },
+    {
+     "download_title": "Pylontech L260-OMNI 125 kW / 260 kWh – Datenblatt (Abmessungen ohne Wechselrichter) (EN)",
+     "download_type": "Datenblatt",
+     "download_language": "EN",
+     "download_file": 5252,
+     "download_role": "datasheet"
+    },
+    {
+     "download_title": "Pylontech Utility, C&I ESS Produktportfolio PY2412EN-SD – L260-OMNI: PDF S. 20-21 (EN)",
+     "download_type": "Dokument",
+     "download_language": "EN",
+     "download_file": 7367,
+     "download_role": "document"
+    }
+   ]
   }
  ]
 }
