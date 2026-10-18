@@ -64,12 +64,18 @@ final class GermanUrlsTest extends SiteTestCase {
 				}
 				$xpath = new \DOMXPath( $document );
 				$nav   = $xpath->query( '//nav[contains(@class,"tv-blog-cat-nav-inner")]' );
+				self::assertInstanceOf( \DOMNodeList::class, $nav );
 				self::assertSame( 1, $nav->length, 'Topics must be a labelled navigation landmark.' );
-				self::assertSame( $label, $nav->item( 0 )->getAttribute( 'aria-label' ) );
-				$current = $xpath->query( './/a[@aria-current="page"]', $nav->item( 0 ) );
+				$navigation = $nav->item( 0 );
+				self::assertInstanceOf( \DOMElement::class, $navigation );
+				self::assertSame( $label, $navigation->getAttribute( 'aria-label' ) );
+				$current = $xpath->query( './/a[@aria-current="page"]', $navigation );
+				self::assertInstanceOf( \DOMNodeList::class, $current );
 				self::assertSame( 1, $current->length, 'Only the current topic is selected.' );
-				self::assertSame( self::$site . $path, $current->item( 0 )->getAttribute( 'href' ) );
-				self::assertStringNotContainsString( 'article', strtolower( $nav->item( 0 )->textContent ) );
+				$link = $current->item( 0 );
+				self::assertInstanceOf( \DOMElement::class, $link );
+				self::assertSame( self::$site . $path, $link->getAttribute( 'href' ) );
+				self::assertStringNotContainsString( 'article', strtolower( $navigation->textContent ) );
 			}
 		} finally {
 			if ( $applied ) {
