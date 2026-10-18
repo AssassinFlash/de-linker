@@ -907,21 +907,18 @@ body.tv-product-dialog-open { overflow: hidden; }
 }
 body .sf-compare .sf-compare-head h1 {
   margin: 0;
-  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--sf-fg);
-  font-size: 1.25rem;
-  font-weight: 500;
 }
 .sf-compare-note,
-.sf-compare-actions {
+:is(.sf-compare-actions,.linker-compare-actions) {
   margin: 0 0 16px;
   font-size: 14px;
 }
-.sf-compare-empty {
+:is(.sf-compare-empty,.linker-compare-empty) {
   text-align: center;
   padding: 80px 16px;
 }
-.sf-compare-empty p {
+:is(.sf-compare-empty,.linker-compare-empty) p {
   margin: 0 0 24px;
   color: var(--sf-muted);
 }
@@ -947,27 +944,27 @@ body .sf-compare .sf-compare-head h1 {
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
 }
 .sf-compare-btn:not(.sf-compare-btn--ghost):hover { background: var(--sf-primary-hover); border-color: var(--sf-primary-hover); }
-.sf-compare-scroll {
+:is(.sf-compare-scroll,.linker-compare-scroll) {
   overflow-x: auto;
   border: 1px solid var(--sf-line);
   border-radius: 16px;
 }
-.sf-compare-table {
+:is(.sf-compare-table,.linker-compare-table) {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
   text-align: start;
 }
-.sf-compare-table th,
-.sf-compare-table td {
+:is(.sf-compare-table,.linker-compare-table) th,
+:is(.sf-compare-table,.linker-compare-table) td {
   min-width: 10rem;
   max-width: 18rem;
   padding: 12px 16px;
   border-top: 1px solid var(--sf-line);
   vertical-align: top;
 }
-.sf-compare-table thead th:first-child,
-.sf-compare-table tbody th {
+:is(.sf-compare-table,.linker-compare-table) thead th:first-child,
+:is(.sf-compare-table,.linker-compare-table) tbody th {
   position: sticky;
   left: 0;
   z-index: 1;
@@ -976,7 +973,7 @@ body .sf-compare .sf-compare-head h1 {
   font-weight: 500;
   color: var(--sf-muted);
 }
-.sf-compare-table thead th img {
+:is(.sf-compare-table,.linker-compare-table) thead th img {
   width: 100%;
   height: 12rem;
   object-fit: contain;
@@ -985,8 +982,8 @@ body .sf-compare .sf-compare-head h1 {
   padding: 12px;
 }
 @media (max-width: 600px) {
-  .sf-compare-table thead th:first-child,
-  .sf-compare-table tbody th {
+  :is(.sf-compare-table,.linker-compare-table) thead th:first-child,
+  :is(.sf-compare-table,.linker-compare-table) tbody th {
     width: 7rem;
     min-width: 7rem;
     max-width: 7rem;
@@ -995,13 +992,13 @@ body .sf-compare .sf-compare-head h1 {
     hyphens: auto;
   }
 }
-.sf-compare-table thead th a {
+:is(.sf-compare-table,.linker-compare-table) thead th a {
   display: block;
   margin-top: 12px;
   color: inherit;
   font-weight: 500;
 }
-.sf-compare-remove {
+:is(.sf-compare-remove,.linker-compare-remove) {
   display: inline-block;
   margin-top: 8px;
   font-size: 12px;

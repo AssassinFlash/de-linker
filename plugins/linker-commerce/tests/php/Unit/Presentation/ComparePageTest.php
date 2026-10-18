@@ -90,6 +90,7 @@ final class ComparePageTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
+		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => fn (): string => 'https://de-linker.test/' . ( 'de' === $this->language ? 'de/mein-konto/' : 'my-account/' ) ) );
 		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
 		// English products: each answers for itself (CommerceState::is_rfq_only asks the language layer).
 		$this->english_products(

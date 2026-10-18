@@ -22,6 +22,7 @@ const { values, positionals } = parseArgs({
 		"allow-header": { type: "string", multiple: true, default: [] },
 		scenarios: { type: "string" },
 		baseline: { type: "boolean", default: false },
+		direct: { type: "boolean", default: false },
 	},
 });
 const [out, liveBase, localBase] = positionals;
@@ -77,6 +78,7 @@ for (const width of widths) {
 			const browser = await chromium.launch({
 				channel: "chromium",
 				args: [
+					...(values.direct ? ["--no-proxy-server"] : []),
 					"--disable-gpu",
 					"--force-color-profile=srgb",
 					"--disable-partial-raster",
@@ -194,7 +196,7 @@ for (const width of widths) {
 }
 fs.writeFileSync(
 	path.join(out, "capture.json"),
-	JSON.stringify({ cases, allowedHeaderChanges }, null, 2) + "\n",
+	JSON.stringify({ cases, allowedHeaderChanges, networkRoute: values.direct ? "direct browser connection" : "system default" }, null, 2) + "\n",
 );
 if (!values.baseline)
 	execFileSync("python3", [path.join(here, "compare.py"), out], {

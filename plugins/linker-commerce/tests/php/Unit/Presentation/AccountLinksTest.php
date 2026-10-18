@@ -40,6 +40,31 @@ final class AccountLinksTest extends TestCase {
 		$this->assertStringNotContainsString( 'style=', $html );
 	}
 
+	/** Native URLs and translated labels are safe in the LC output context. */
+	public function test_output_escapes_native_url_and_translated_label(): void {
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/?a=1&b=2' ) );
+		WP_Mock::userFunction(
+			'esc_url',
+			array(
+				'args'   => array( 'https://example.test/my-account/register/?a=1&b=2' ),
+				'return' => 'https://example.test/my-account/register/?a=1&#038;b=2',
+			)
+		);
+		WP_Mock::userFunction(
+			'esc_html__',
+			array(
+				'args'   => array( 'Create account', 'linker-commerce' ),
+				'return' => 'Create &lt;account&gt;',
+			)
+		);
+		$html = AccountLinks::create();
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/?a=1&#038;b=2"', $html );
+		$this->assertStringContainsString( '>Create &lt;account&gt;</a>', $html );
+		$this->assertStringNotContainsString( '<account>', $html );
+	}
+
 	/** Both guest entries use the request language's native addresses. */
 	public function test_guest_entry_group_uses_german_account_addresses(): void {
 		$this->plain_text();

@@ -19,7 +19,7 @@
 .linker-inquiry-guest>.linker-create-account{display:inline-block;margin-top:8px}
 .sf-card-price>.linker-create-account{display:inline-block;margin-left:8px;font-size:12px}
 .pdp-price .linker-create-account,.pdp-app-price .linker-create-account{display:inline-block;margin-left:12px;font-size:13px}
-.sf-cart-empty__actions>.linker-create-account{display:inline-flex;align-items:center;min-height:44px;padding:0 12px}
+.sf-cart-empty__actions>.linker-create-account{display:inline-flex;align-items:center;min-height:44px;padding:12px 4px;border:1px solid transparent}
 .linker-auth-links>.linker-create-account{display:inline-block}
 .linker-guest-account-links{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 20px;padding:10px 16px;background:#fff;color:var(--proto-ink,#172636);font-size:13px;line-height:1.5}
 /* The mobile dock scrim has auto stack order (genie.css); keep its sibling links above it. */
@@ -27,9 +27,8 @@
 .linker-genie-panel--workspace>.linker-guest-account-links{justify-content:flex-start}
 
 /* Split the existing card action row; retain its 44px minimum footprint. */
-#linker-products .sf-card-actions:has(>.linker-create-account){grid-template-columns:repeat(2,minmax(0,1fr))}
-#linker-products .sf-card-actions:has(>.linker-create-account)>.sf-card-view{grid-column:1/-1}
-#linker-products .sf-card-actions:has(>.linker-create-account)>[data-card-gate],#linker-products .sf-card-actions>.linker-create-account{min-width:0;min-height:44px;padding:8px 4px;font-size:11px;line-height:1.2;text-align:center}
+body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account){grid-template-columns:repeat(3,minmax(0,1fr))}
+body #linker-products.sf-products .sf-card-actions:has(>.linker-create-account)>a{min-width:0;min-height:44px;padding:8px 4px;font-size:11px;line-height:1.1;text-align:center}
 
 /* Reserve a visible LC account row outside the conversation's React root. */
 .linker-genie-panel:has(>.linker-guest-account-links){display:flex;flex-direction:column}
@@ -40,5 +39,35 @@
 .sf-cart-empty__actions:has(>.linker-create-account){gap:8px}
 #tv-storefront-cart .sf-cart-empty__actions:has(>.linker-create-account)>.sf-cart-btn,.sf-cart-empty__actions>.linker-create-account{padding-inline:4px;font-size:.875rem}
 
-#linker-compare td>.linker-create-account{display:inline-block;margin-left:12px}
+/* Comparison uses the existing storefront comparison's 600px narrow-table
+   boundary and 7rem row labels. A 14rem product column shows one full model
+   and the next column edge at 390px; see 223/mobile-comparison.md. */
+.linker-comparison-guest{display:flex;align-items:flex-start;flex-wrap:wrap;gap:8px 12px}
+.linker-comparison-signin{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.linker-comparison-guest>.linker-create-account{white-space:nowrap}
+@media(max-width:600px){
+  #linker-compare .linker-compare-scroll{border:1px solid var(--sf-line,#dfe7ec);border-radius:12px;background:#fff}
+  #linker-compare .linker-compare-cell{min-width:14rem;max-width:18rem;overflow-wrap:anywhere}
+  #linker-compare .linker-compare-table tr>:first-child{position:sticky;left:0;z-index:1;width:7rem;min-width:7rem;max-width:7rem;background:var(--sf-soft,#f5f7fa)}
+}
 .linker-price-entries>.linker-create-account{display:inline-block;margin-left:8px}
+
+/* Comparison's LC shell now reaches storefront.css's existing design layer.
+   Crumbs / note metrics match product-list .wb-metarow and .wb-intro. */
+.sf-compare .sf-compare-crumbs{margin:0 0 24px;font-size:13px;color:var(--sf-muted)}
+.sf-compare-crumbs ol{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0;list-style:none}
+.sf-compare-crumbs a{color:inherit;text-decoration:none}
+.sf-compare-head>div{max-width:40rem;min-width:0}
+.sf-compare-head .sf-compare-note{margin:8px 0 0;color:var(--sf-muted);line-height:1.7}
+.sf-compare .linker-compare-name{text-decoration:none;line-height:1.5}
+.sf-compare .linker-compare-name:hover{text-decoration:underline}
+.sf-compare .linker-compare-actions{text-align:right}
+.sf-compare .linker-compare-actions a{color:var(--sf-muted);text-underline-offset:3px}
+
+/* Match the served product-list presentation, including its responsive title
+   and paper. products.css shares the declarations with the comparison shell. */
+body .sf-compare .sf-container{padding:0}
+body .sf-compare .sf-compare-crumbs{text-transform:uppercase}
+body .sf-compare .sf-compare-note{margin-bottom:0}
+body .sf-compare .linker-compare-scroll{background:#fff;border-radius:12px}
+body .sf-compare .linker-compare-name{font-weight:600}

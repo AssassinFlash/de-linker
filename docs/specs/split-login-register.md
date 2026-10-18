@@ -114,7 +114,8 @@ LC 模板法被否的理由：注册链的载体是 Woo 的模板与表单处理
 `modules/templating-shortcodes.php:7–23` 的 `lc_wp_func` 只调用无参数函数；
 `modules/templating-shortcodes-woocommerce.php:607–615` 的 `lc_wc_get_page_url`
 只用 `wc_get_page_id(page)` 和 `get_permalink()` 取页面，不能生成账户端点；该模块的
-`lc_wc_product`、`lc_wc_label` 等为商品数据标签。两文件与 `modules/shortcodes.php`
+`lc_wc_product` 为商品数据标签，`lc_wc_label` 只在 WooCommerce 文案域查词，不能读取
+本插件的注册入口文案。两文件与 `modules/shortcodes.php`
 没有访客状态与 Woo 注册选项的组合条件标签。原生 `lc_get_partial` 负责装入片段，不能
 把这两个条件和当前语言端点绑定到片段内的链接。没有在 LC 中执行 PHP 或新增表单处理。
 

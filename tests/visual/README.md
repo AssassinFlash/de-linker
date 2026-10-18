@@ -49,3 +49,8 @@ images). It does not compare or change the site. Normal capture keeps full raw
 images and exact raw pixel counts. The comparator additionally reports
 `outside_ruled_different_pixels`; any nonzero value fails. Different image sizes
 are recorded as failures and are never cropped, padded or aligned away.
+
+`--direct` disables the system proxy only in the disposable capture browser,
+for machines whose HTTPS proxy intermittently refuses CONNECT tunnels. It does
+not change system settings or rendering flags; the capture manifest records the
+network route. Default behavior remains the system route.

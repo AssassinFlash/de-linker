@@ -99,7 +99,9 @@ for (const locale of ['en', 'de'] as const) {
 			await page.setViewportSize({ width, height: 900 });
 			await page.goto(
 				instance().url +
-					(locale === 'de' ? '/de/produkte/?brand=saj' : '/products/?brand=saj')
+					(locale === 'de'
+						? '/de/produkte/?brand=saj'
+						: '/products/?brand=saj')
 			);
 			const card = page
 				.locator('[data-linker-family-card]')
@@ -151,16 +153,98 @@ for (const locale of ['en', 'de'] as const) {
 			}) => {
 				await page.setViewportSize({ width, height: 900 });
 				await page.goto(instance().url + route);
+				if (surface === 'compare') {
+					await expect(
+						page.getByRole('heading', { level: 1 })
+					).toHaveCSS('font-size', width === 390 ? '30px' : '46px');
+					await expect(
+						page.getByRole('heading', { level: 1 })
+					).toHaveCSS('font-weight', '600');
+					expect(
+						await page
+							.getByRole('heading', { level: 1 })
+							.evaluate((e) => getComputedStyle(e).fontFamily)
+					).toContain('Plus Jakarta Sans');
+				}
 				const create = page
 					.locator(`${selector} .linker-create-account:visible`)
 					.first();
 				await expect(create).toBeVisible();
+				if (surface === 'shop' || surface === 'category') {
+					expect(
+						await page
+							.locator('.sf-card-actions')
+							.first()
+							.evaluate((e) => e.getBoundingClientRect().height)
+					).toBe(44);
+				}
+				if (surface === 'compare' && width === 390) {
+					const region = page.locator('.linker-compare-scroll');
+					expect(
+						await region.evaluate(
+							(e) => e.scrollWidth > e.clientWidth
+						)
+					).toBe(true);
+					expect(
+						await page
+							.locator('.linker-compare-column')
+							.first()
+							.evaluate((e) => e.getBoundingClientRect().width)
+					).toBeGreaterThanOrEqual(224);
+					expect(
+						await page.evaluate(
+							() => document.documentElement.scrollWidth
+						)
+					).toBe(390);
+					expect(
+						await create.evaluate(
+							(e) => e.getBoundingClientRect().height
+						)
+					).toBe(20);
+				}
 				await create.click();
 				await expect(page).toHaveURL(
 					instance().url + account + 'register/'
 				);
 			});
 		}
+		if (width === 390) {
+			test(`${locale}-${width}: four comparison models stay readable inside the scroll region`, async ({
+				page,
+			}) => {
+				await page.setViewportSize({ width, height: 900 });
+				await page.goto(
+					instance().url +
+						home +
+						'compare-products/?ids=4107,4108,4109,4106'
+				);
+				await expect(
+					page.locator('.linker-compare-column')
+				).toHaveCount(4);
+				for (const column of await page
+					.locator('.linker-compare-column')
+					.all()) {
+					expect(
+						await column.evaluate(
+							(e) => e.getBoundingClientRect().width
+						)
+					).toBeGreaterThanOrEqual(224);
+				}
+				expect(
+					await page.evaluate(
+						() => document.documentElement.scrollWidth
+					)
+				).toBe(width);
+				await page
+					.locator('#linker-compare .linker-create-account')
+					.last()
+					.click();
+				await expect(page).toHaveURL(
+					instance().url + account + 'register/'
+				);
+			});
+		}
+
 		for (const [surface, route, selector] of [
 			[
 				'draft',
@@ -229,7 +313,11 @@ for (const locale of ['en', 'de'] as const) {
 				await panel
 					.locator('.footer-account-tile')
 					.evaluate((e) => e.getBoundingClientRect().height)
-			).toBe(width === 1440 ? 70 : 47);
+			).toBe(
+				await panel
+					.locator('.footer-route-list>li:last-child>a')
+					.evaluate((e) => e.getBoundingClientRect().height)
+			);
 			await panel.locator('.linker-create-account').click();
 			await expect(page).toHaveURL(
 				instance().url + account + 'register/'
@@ -260,7 +348,7 @@ for (const locale of ['en', 'de'] as const) {
 	}
 }
 
-test('a separate newly created account still cannot read another account document', async ({
+test('a separate newly created account cannot read another account document or Genie inquiry', async ({
 	page,
 }) => {
 	const fixture = JSON.parse(
@@ -273,7 +361,26 @@ test('a separate newly created account still cannot read another account documen
 		const route = `${instance().url}/?linker-document=proforma&id=${fixture.order}`;
 		expect((await page.goto(route))?.status()).toBe(403);
 		await expect(page.locator('.linker-create-account')).toBeVisible();
+		const inquiryIds = async () => {
+			await page.goto(instance().url + '/genie/');
+			const nonce = await page
+				.locator('[data-linker-app="genie"]')
+				.getAttribute('data-rest-nonce');
+			const response = await page.request.get(
+				instance().url +
+					'/wp-json/wp-abilities/v1/abilities/linker/inquiry-status/run',
+				{ headers: { 'X-WP-Nonce': nonce! } }
+			);
+			expect(response.status()).toBe(200);
+			const body = (await response.json()) as {
+				inquiries: { id: number }[];
+			};
+			return body.inquiries.map((inquiry) => inquiry.id);
+		};
+		await page.goto(loginLink(undefined, 'c223_document_owner'));
+		expect(await inquiryIds()).toContain(fixture.order);
 		await page.goto(loginLink(undefined, 'c223_document_other'));
+		expect(await inquiryIds()).not.toContain(fixture.order);
 		expect((await page.goto(route))?.status()).toBe(403);
 		await expect(page.locator('.linker-create-account')).toHaveCount(0);
 	} finally {

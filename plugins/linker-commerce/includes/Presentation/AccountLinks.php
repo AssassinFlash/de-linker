@@ -54,6 +54,25 @@ final class AccountLinks {
 		);
 	}
 
+	/** Localized account destinations for a guest comparison price cell.
+	 *
+	 * @param string $price Existing safe price prompt.
+	 */
+	public static function comparison_price( string $price ): string {
+		$create = self::create();
+		if ( '' === $create ) {
+			return $price;
+		}
+		return strtr(
+			Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/compare-price.html' ),
+			array(
+				'{{price}}'      => wp_kses_post( $price ),
+				'{{signin-url}}' => esc_url( wc_get_page_permalink( 'myaccount' ) ),
+				'{{create}}'     => $create,
+			)
+		);
+	}
+
 	/** One direct registration entry, empty when this visitor cannot register. */
 	public static function create(): string {
 		if ( is_user_logged_in() || 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) {
