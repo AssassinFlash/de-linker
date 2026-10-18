@@ -80,10 +80,24 @@ class QualityStore {
 	public const FLAGS = array( 'contradicted', 'unverifiable', 'out_of_remit', 'worse_pick', 'citation', 'unresolved' );
 
 	/**
-	 * Hooks the digest's summary filter.
+	 * Hooks the digest's summary filter and its block.
 	 */
 	public function register(): void {
 		add_filter( self::SUMMARY_FILTER, array( $this, 'filter_summary' ), 10, 2 );
+		add_filter( 'linker_commerce_digest_blocks', array( $this, 'digest_blocks' ) );
+	}
+
+	/**
+	 * Adds the quality block to the commerce digest when its interface exists.
+	 *
+	 * @param array<int, mixed> $blocks The digest's blocks.
+	 * @return array<int, mixed>
+	 */
+	public function digest_blocks( array $blocks ): array {
+		if ( interface_exists( \Linker\Commerce\Digest\Block::class ) ) {
+			$blocks[] = new QualityDigestBlock();
+		}
+		return $blocks;
 	}
 
 	/**

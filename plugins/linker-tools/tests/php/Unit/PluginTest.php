@@ -94,6 +94,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $contact, 'register' ) );
 		WP_Mock::expectActionAdded( 'rest_api_init', array( $inquiry_card, 'register' ) );
 		WP_Mock::expectFilterAdded( QualityStore::SUMMARY_FILTER, array( $quality, 'filter_summary' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'linker_commerce_digest_blocks', array( $quality, 'digest_blocks' ) );
 		WP_Mock::expectActionAdded( 'admin_menu', array( $quality_page, 'menu' ) );
 		// Priority 1: the retired addresses answer ahead of WordPress's own
 		// canonical redirects (Redirects::register()).
