@@ -370,6 +370,9 @@ def test_copy_in_sends_each_chunk_to_one_host_prefix(
         return SimpleNamespace(returncode=0, stdout="", stderr="")
 
     monkeypatch.setattr("linker_cutover.target.subprocess.run", capture)
+    # Force the per-entry walk: the tree here is small and would take the
+    # single-leg path a real deploy uses for it.
+    monkeypatch.setattr("linker_cutover.target.SMALL_UPLOAD_BYTES", 0)
     target = remote_target()
     relative = f"{PLUGINS}/linker-commerce"
     target.copy_in(source, relative)
@@ -389,6 +392,41 @@ def test_copy_in_sends_each_chunk_to_one_host_prefix(
     ]
     for destination in destinations:
         assert f"{HOST}:{HOST}:" not in destination
+
+
+def test_a_small_tree_goes_in_one_leg(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A 23 MB tree took 22 minutes as one connection per file (2026-10-18).
+
+    Under the cap the whole tree is one rsync to the same bare path, so the
+    host appears once and the upload is seconds, not minutes.
+    """
+    source = tmp_path / "staged" / "linker-tools"
+    (source / "includes").mkdir(parents=True)
+    (source / "includes" / "Plugin.php").write_text("<?php", encoding="utf-8")
+    (source / "linker-tools.php").write_text("<?php", encoding="utf-8")
+
+    seen: list[list[str]] = []
+
+    def capture(command: list[str], *args: object, **kwargs: object) -> object:
+        del args, kwargs
+        seen.append(command)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("linker_cutover.target.subprocess.run", capture)
+    target = remote_target()
+    relative = f"{PLUGINS}/linker-tools"
+    target.copy_in(source, relative)
+
+    base = target.path_of(relative)
+    mkdir, *rsyncs = seen
+    assert mkdir[:5] == ["ssh", "-o", "BatchMode=yes", HOST, "bash -c"]
+    assert f"mkdir -p {base}" in mkdir[-1]
+    [push] = rsyncs
+    assert push[0] == "rsync" and "--delete" in push
+    assert push[-2:] == [f"{source}/", f"{HOST}:{base}/"]
+    assert f"{HOST}:{HOST}:" not in push[-1]
 
 
 def test_the_local_chunks_cover_every_file(tmp_path: Path) -> None:
