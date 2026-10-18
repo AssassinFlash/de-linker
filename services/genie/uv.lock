@@ -1095,7 +1095,9 @@ dependencies = [
     { name = "fastapi" },
     { name = "httpx" },
     { name = "linker-judges" },
+    { name = "pillow" },
     { name = "pydantic-ai-slim", extra = ["openai"] },
+    { name = "pypdfium2" },
     { name = "sqlite-vec" },
     { name = "uvicorn" },
 ]
@@ -1122,7 +1124,9 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.143.0" },
     { name = "httpx", specifier = ">=0.28.0" },
     { name = "linker-judges", editable = "eval/judges" },
+    { name = "pillow", specifier = ">=12.3.0" },
     { name = "pydantic-ai-slim", extras = ["openai"], specifier = ">=1.0.0" },
+    { name = "pypdfium2", specifier = ">=5.14.0" },
     { name = "sqlite-vec", specifier = "==0.1.9" },
     { name = "uvicorn", specifier = ">=0.54.0" },
 ]

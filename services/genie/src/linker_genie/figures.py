@@ -33,10 +33,12 @@ _UNITS = (
     "kg", "g", "°C", "℃", "%", "kHz", "Hz", "ms", "min", "s", "h",
     "dB(A)", "dBA", "dB", "Nm", "kPa", "Pa",
     "years", "year", "months", "month", "Jahren", "Jahre", "Jahr", "Monaten",
-    "Monate", "Monat", "cycles", "Zyklen", "tons", "ton", "Tonnen", "t",
+    "Monate", "Monat", "weeks", "week", "Wochen", "Woche", "days", "day", "Tagen",
+    "Tage", "Tag", "cycles", "Zyklen", "tons", "ton", "Tonnen", "t",
 )  # fmt: skip
 _UNIT = "|".join(re.escape(unit) for unit in sorted(_UNITS, key=len, reverse=True))
-_NUMBER = r"\d+(?:[.,]\d+)?"
+# A number, with its thousands grouped or not ("1,680.00", "1.680,00", "20000", "3.552").
+_NUMBER = r"(?:\d{1,3}(?:[.,]\d{3})+(?:[.,]\d+)?|\d+(?:[.,]\d+)?)"
 # A word: what stands between spaces and table or bracket marks.
 _WORD = re.compile(r"[^\s|()\[\]{}]+")
 _DATE = re.compile(r"\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4}")
@@ -164,11 +166,14 @@ def chunk_of(fact_id: str) -> str | None:
 _WORDS = {
     "de": {
         "years": "Jahre", "year": "Jahr", "months": "Monate", "month": "Monat",
-        "cycles": "Zyklen", "tons": "Tonnen", "ton": "Tonne",
+        "cycles": "Zyklen", "tons": "Tonnen", "ton": "Tonne", "weeks": "Wochen",
+        "week": "Woche", "days": "Tage", "day": "Tag",
     },
     "en": {
         "Jahren": "years", "Jahre": "years", "Jahr": "year", "Monaten": "months",
         "Monate": "months", "Monat": "month", "Zyklen": "cycles", "Tonnen": "tons",
+        "Wochen": "weeks", "Woche": "week", "Tagen": "days", "Tage": "days",
+        "Tag": "day",
     },
 }  # fmt: skip
 _MONTH_NAMES = {
@@ -203,3 +208,118 @@ def localize(value: str, locale: str) -> str:
     for word, other in _WORDS[language].items():
         value = re.sub(rf"(?<=\d)(\s?){word}\b", rf"\g<1>{other}", value)
     return value
+
+
+# Currencies a price list or an offer writes beside an amount: the symbols and ISO
+# codes of the currencies of the EU, the UK, Switzerland and the makers' China
+# (de-linker.com sells in the EU; registration is open to every country, owner
+# 2026-10-17, Europe first).
+CURRENCY = (
+    r"(?:€|EUR|Euro|US\$|USD|\$|£|GBP|CHF|Fr\.|CNY|RMB|¥|PLN|zł|CZK|Kč|HUF|Ft|"
+    r"SEK|DKK|NOK|RON|BGN)"
+)
+_TAG = re.compile(r"\[(n\d+)=([^\]]*)\]")
+_AMOUNT_BEFORE = re.compile(rf"{CURRENCY}\s?\[(n\d+)=([^\]]*)\]")
+_AMOUNT_AFTER = re.compile(rf"\[(n\d+)=([^\]]*)\]\s?{CURRENCY}(?![A-Za-z])")
+AMOUNT = re.compile(rf"(?:^|\s){CURRENCY}(?:\s|$)|^{CURRENCY}|{CURRENCY}$")
+
+
+def borrow_units(tagged: Tagged) -> Tagged:
+    """Each figure without a unit takes the unit its line names for it.
+
+    A nameplate prints one unit for a pair or a range ("12.5/12.5 A", "200 ... 850
+    Vdc") and a label may name the unit in brackets ("Max. input current (A): 12.5");
+    without it an answer read "bei 12.5" (review round 1 of PR #309, item 9). The
+    unit is the next figure's on the same line, else a bracketed unit before it.
+    """
+    figures = dict(tagged.figures)
+    for line in tagged.text.split("\n"):
+        found = list(_TAG.finditer(line))
+        for index, match in enumerate(found):
+            name, value = match.group(1), match.group(2)
+            if not re.fullmatch(_NUMBER, value):
+                continue
+            unit = next(
+                (
+                    tail.group(1)
+                    for later in found[index + 1 :]
+                    if (tail := re.search(rf"\s({_UNIT})$", later.group(2)))
+                ),
+                None,
+            )
+            if unit is None:
+                named = re.findall(rf"[\[(]({_UNIT})[\])]", line[: match.start()])
+                unit = named[-1] if named else None
+            if unit is not None:
+                fact_id = _fact_of(figures, name)
+                if fact_id is not None:
+                    figures[fact_id] = f"{value} {unit}"
+    return _retagged(tagged.text, figures)
+
+
+def mark_amounts(tagged: Tagged) -> Tagged:
+    """An amount of money keeps its currency in its value ("1,680.00 €").
+
+    A figure is an amount when a currency stands right before or after it, or when
+    its line names a currency and the figure carries no unit of its own (a price
+    list's row "| GW10K-ET | 1.680,00 | EUR |").
+    """
+    figures = dict(tagged.figures)
+
+    def keep(name: str, value: str, currency: str) -> None:
+        fact_id = _fact_of(figures, name)
+        if fact_id is not None and not AMOUNT.search(value):
+            figures[fact_id] = f"{value} {currency}"
+
+    for line in tagged.text.split("\n"):
+        for match in _AMOUNT_BEFORE.finditer(line):
+            keep(
+                match.group(1), match.group(2), match.group(0).split("[", 1)[0].strip()
+            )
+        for match in _AMOUNT_AFTER.finditer(line):
+            keep(
+                match.group(1), match.group(2), match.group(0).rsplit("]", 1)[1].strip()
+            )
+        named = re.search(rf"(?<![A-Za-z]){CURRENCY}(?![A-Za-z])", _TAG.sub("", line))
+        if named:
+            for match in _TAG.finditer(line):
+                if re.fullmatch(_NUMBER + r"(?:[.,]\d+)*", match.group(2)):
+                    keep(match.group(1), match.group(2), named.group(0))
+    return _retagged(tagged.text, figures)
+
+
+def _fact_of(figures: dict[str, str], name: str) -> str | None:
+    return next((key for key in figures if key.endswith("." + name)), None)
+
+
+def _retagged(text: str, figures: dict[str, str]) -> Tagged:
+    """`text` with each tag showing its figure's value from `figures`."""
+
+    def show(match: re.Match[str]) -> str:
+        fact_id = _fact_of(figures, match.group(1))
+        return f"[{match.group(1)}={figures[fact_id] if fact_id else match.group(2)}]"
+
+    return Tagged(_TAG.sub(show, text), figures)
+
+
+_SWAP = str.maketrans(".,", ",.")
+
+
+def swap_decimals(value: str, mark: str, locale: str) -> str:
+    """A figure in the turn's language: "12.5 A" reads "12,5 A" in German.
+
+    `mark` is the decimal mark of the text the figure comes from, "" when that
+    text wrote no decimal number at all: its separators are thousands marks, and
+    converting them blind turns "3,552 kWh" into a three-decimal "3.552" a German
+    reader takes for 3552 (review round 1 of PR #309, item 9). When the turn's
+    language writes the other mark, the decimal and thousands marks trade places
+    ("1,680.00" ↔ "1.680,00"). Dates keep their dots.
+    """
+    wanted = "," if locale.startswith("de") else "."
+    if mark not in (".", ",") or mark == wanted or _DATE.search(value):
+        return value
+    return re.sub(
+        r"\d[\d.,]*\d",
+        lambda m: m.group(0).translate(_SWAP),
+        value,
+    )

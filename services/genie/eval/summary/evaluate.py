@@ -1,6 +1,6 @@
 """The inquiry summary against the real model (#244).
 
-    uv run python eval/summary/run.py out.json [repeats]
+    uv run python eval/summary/evaluate.py out.json [repeats]
 
 Runs each conversation of cases.json through summary.summarise() with deepseek-flash on
 the official DeepSeek API (summary.deepseek(); the key from the environment or
@@ -72,7 +72,11 @@ def main() -> int:
         for case in CASES:
             run = score(case, complete)
             runs.append(run)
-            print(json.dumps({k: v for k, v in run.items() if k != "answer"}, ensure_ascii=False))
+            print(
+                json.dumps(
+                    {k: v for k, v in run.items() if k != "answer"}, ensure_ascii=False
+                )
+            )
     out.write_text(json.dumps(runs, ensure_ascii=False, indent=1), encoding="utf-8")
     accepted = [r for r in runs if r["accepted"]]
     seconds = sorted(r["seconds"] for r in runs)

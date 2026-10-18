@@ -154,4 +154,67 @@ final class ThreadTest extends TestCase {
 		);
 		$this->assertConditionsMet();
 	}
+
+	/**
+	 * A turn's `reading` events go to the conversation's readings and out of
+	 * the stored stream; the newest ten are kept (#236).
+	 */
+	public function test_record_keeps_the_readings_apart_from_the_stream(): void {
+		$earlier = array();
+		for ( $n = 1; $n <= 10; $n++ ) {
+			$earlier[] = array(
+				'id'   => 'att' . $n,
+				'kind' => 'document',
+			);
+		}
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => static fn( $id, $key ) => Thread::READINGS === $key ? $earlier : array(),
+			)
+		);
+		$written = array();
+		WP_Mock::userFunction(
+			'update_post_meta',
+			array(
+				'return' => static function ( $id, $key, $value ) use ( &$written ): bool {
+					$written[ $key ] = $value;
+					return true;
+				},
+			)
+		);
+		$stream = "event: meta\ndata: {}\n\nevent: attachment\ndata: {\"id\":\"att11\"}\n\n"
+			. "event: reading\ndata: {\"id\":\"att11\",\"kind\":\"nameplate\",\"model\":\"H2-10K-T3\"}\n\n"
+			. "event: done\ndata: {\"ok\":true}\n\n";
+
+		$split = Thread::split( $stream );
+		( new Thread() )->record(
+			51,
+			array(
+				array(
+					'role'    => 'user',
+					'content' => 'Attached: plate.jpg',
+				),
+			),
+			$split['stream'],
+			$split['readings']
+		);
+
+		$kept = $written[ Thread::READINGS ];
+		$this->assertCount( Thread::READINGS_LIMIT, $kept );
+		$this->assertSame( 'att2', $kept[0]['id'] );
+		$this->assertSame( 'H2-10K-T3', $kept[9]['model'] );
+		$this->assertStringNotContainsString( 'event: reading', $written[ Thread::STREAM ] );
+		$this->assertStringContainsString( 'event: attachment', $written[ Thread::STREAM ] );
+		$this->assertStringContainsString( 'event: done', $written[ Thread::STREAM ] );
+	}
+
+	/**
+	 * Without a conversation there are no readings, and a corrupt store reads empty.
+	 */
+	public function test_readings_tolerate_no_conversation_and_a_corrupt_store(): void {
+		$this->assertSame( array(), ( new Thread() )->readings( 0 ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => array( 'junk', array( 'no' => 'id' ) ) ) );
+		$this->assertSame( array(), ( new Thread() )->readings( 51 ) );
+	}
 }

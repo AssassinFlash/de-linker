@@ -1,11 +1,17 @@
 """HTTP entry point: `uvicorn linker_genie.app:app`.
 
 POST /assistant/turn and POST /turn (alias) stream one grounded turn as SSE: the
-understanding layer prepares the turn (understand.py), the agent writes it.
+understanding layer prepares the turn (understand.py; it reads the turn's attached
+files first, attachments.py), the agent writes it. The stream is `meta`, an
+`attachment` and a `reading` event per file of the turn (the proxy keeps the readings
+with the conversation and takes them out of what the browser gets), a `block` per
+block, `done`.
 POST /turn/{id}/vote and POST /assistant/turn/{id}/vote store a customer's
 thumbs-up or thumbs-down for a logged turn. POST /summary writes the checked summary
-of a conversation an inquiry carries (summary.py, #244). GET /health reports that
-the process is up.
+of a conversation an inquiry carries (summary.py, #244). POST
+/assistant/conversation/{id}/forget takes a deleted conversation's file readings out
+of the turn log. Every POST carries the shell's shared token and a capped body
+(gate.py). GET /health reports that the process is up.
 """
 
 from __future__ import annotations
@@ -22,22 +28,32 @@ from fastapi.responses import JSONResponse, StreamingResponse
 
 from linker_genie import contact, ground, jev, page, summary
 from linker_genie.abilities import AbilityClient
-from linker_genie.agent import make_generate, model_name, provider_name
+from linker_genie.agent import (
+    deepseek_access,
+    make_generate,
+    model_name,
+    provider_name,
+)
 from linker_genie.cycle import TurnResult, run
 from linker_genie.facts import TurnFacts
+from linker_genie.gate import Gate
 from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup
-from linker_genie.schema import TurnOutput, TurnRequest, VoteRequest
+from linker_genie.schema import MAX_REQUEST_BYTES, TurnOutput, TurnRequest, VoteRequest
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.understand import Prepared, Understander
+from linker_genie.vision import Vision
 
 app = FastAPI(title="Genie - Linker's AI assistant")
 logger = logging.getLogger(__name__)
+# The shell's shared token and the body cap, before anything is parsed (gate.py).
+app.add_middleware(Gate, limit=MAX_REQUEST_BYTES)
 
 _log: TurnLog | None = None
 _client: AbilityClient | None = None
 _understander: Understander | None = None
 _pages: page.PageReader | None = None
+_vision: Vision | None = None
 
 
 def _log_path() -> Path:
@@ -76,13 +92,27 @@ def page_reader() -> page.PageReader:
     return _pages
 
 
+def vision() -> Vision | None:
+    """deepseek-flash reading the customer's images (vision.py, #236), with the chat
+    model's own key, address and name; None when no key is configured."""
+    global _vision
+    if _vision is None:
+        access = deepseek_access()
+        if access.key:
+            _vision = Vision(access.key, access.base_url, model_name())
+    return _vision
+
+
 def understander() -> Understander:
-    """Product words from the site's Store API, Jev on OpenRouter, and the customer's
-    page read from the site (understand.py)."""
+    """Product words from the site's Store API, Jev on OpenRouter, the customer's
+    page read from the site, and their files read by deepseek-flash (understand.py)."""
     global _understander
     if _understander is None:
         _understander = Understander(
-            StoreVocabulary(_wp_url()).get, jev.from_env(), pages=page_reader().read
+            StoreVocabulary(_wp_url()).get,
+            jev.from_env(),
+            pages=page_reader().read,
+            see=vision(),
         )
     return _understander
 
@@ -207,6 +237,13 @@ def conversation_summary(
     return JSONResponse(content={**result.model_dump(), "model": model_name()})
 
 
+@app.post("/assistant/conversation/{conversation_id}/forget")
+def forget(conversation_id: str) -> dict[str, int]:
+    """The customer deleted the conversation, or Retention did: the reading text of
+    its files leaves the turn log too (log.TurnLog.forget, #236)."""
+    return {"purged": turn_log().forget(conversation_id)}
+
+
 def _answer(
     body: TurnRequest, prepared: Prepared, request: Request, commerce: Lookup
 ) -> TurnResult:
@@ -254,6 +291,12 @@ def _sse(
         "jev_error": prepared.log.get("jev_error"),
     }
     yield _event("meta", meta)
+    # This turn's files (#236): what the shell shows for each, and the reading the
+    # proxy keeps with the conversation (and takes out of the stream it stores).
+    for card in prepared.cards:
+        yield _event("attachment", card)
+    for reading in prepared.readings:
+        yield _event("reading", reading.model_dump())
     blocks = shipped.get("blocks")
     for block in blocks if isinstance(blocks, list) else []:
         yield _event("block", block)

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from conftest import SHELL
 from fastapi.testclient import TestClient
 
 import linker_genie.app as app_module
@@ -56,7 +57,7 @@ def _generate(request: TurnRequest, retry: str | None) -> tuple[TurnOutput, Turn
 
 def test_assistant_turn_streams_blocks(log: TurnLog) -> None:
     app.state.generate = _generate
-    client = TestClient(app)
+    client = TestClient(app, headers=SHELL)
     response = client.post(
         "/assistant/turn",
         json={
@@ -76,7 +77,7 @@ def test_assistant_turn_streams_blocks(log: TurnLog) -> None:
 
 def test_turn_alias_is_the_same_handler(log: TurnLog) -> None:
     app.state.generate = _generate
-    client = TestClient(app)
+    client = TestClient(app, headers=SHELL)
     response = client.post(
         "/turn",
         json={
@@ -101,7 +102,7 @@ def _meta(body: str) -> dict[str, Any]:
 
 def test_meta_carries_the_logged_turn_id(log: TurnLog) -> None:
     app.state.generate = _generate
-    client = TestClient(app)
+    client = TestClient(app, headers=SHELL)
     response = client.post(
         "/assistant/turn",
         json={
@@ -117,7 +118,7 @@ def test_meta_carries_the_logged_turn_id(log: TurnLog) -> None:
 
 def test_vote_stores_a_thumbs_up_or_down(log: TurnLog) -> None:
     app.state.generate = _generate
-    client = TestClient(app)
+    client = TestClient(app, headers=SHELL)
     body = client.post(
         "/assistant/turn",
         json={
@@ -139,12 +140,12 @@ def test_vote_stores_a_thumbs_up_or_down(log: TurnLog) -> None:
 
 
 def test_vote_on_an_unknown_turn_is_404(log: TurnLog) -> None:
-    client = TestClient(app)
+    client = TestClient(app, headers=SHELL)
     assert client.post("/turn/999999/vote", json={"vote": 1}).status_code == 404
 
 
 def test_a_vote_outside_the_scale_is_refused(log: TurnLog) -> None:
-    client = TestClient(app)
+    client = TestClient(app, headers=SHELL)
     assert client.post("/turn/1/vote", json={"vote": 5}).status_code == 422
 
 
@@ -153,7 +154,7 @@ def test_an_internal_failure_is_logged_and_raised(log: TurnLog) -> None:
         raise KeyError("model backend exploded")
 
     app.state.generate = broken
-    client = TestClient(app)
+    client = TestClient(app, headers=SHELL)
     with pytest.raises(KeyError):
         client.post(
             "/assistant/turn",
@@ -184,7 +185,7 @@ def test_a_jev_failure_is_visible_in_the_stream_and_the_log(log: TurnLog) -> Non
 
     app.state.prepare = prepare
     app.state.generate = _generate
-    response = TestClient(app).post(
+    response = TestClient(app, headers=SHELL).post(
         "/turn",
         json={
             "conversation_id": "c9",
@@ -237,7 +238,7 @@ def _post(conversation: str, *customer: str, locale: str = "en") -> str:
         if messages:
             messages.append({"role": "assistant", "content": "An answer."})
         messages.append({"role": "user", "content": text})
-    response = TestClient(app).post(
+    response = TestClient(app, headers=SHELL).post(
         "/assistant/turn",
         json={"conversation_id": conversation, "messages": messages, "locale": locale},
     )

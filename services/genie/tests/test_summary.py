@@ -6,6 +6,7 @@ from collections.abc import Callable
 from typing import Any
 
 import pytest
+from conftest import SHELL
 from fastapi.testclient import TestClient
 
 from linker_genie import summary
@@ -237,7 +238,7 @@ def test_a_model_failure_is_refused_with_its_cause() -> None:
 def test_the_endpoint_answers_the_checked_summary() -> None:
     app.state.summary_model = _model(GOOD)
     try:
-        response = TestClient(app).post("/summary", json=EN.model_dump())
+        response = TestClient(app, headers=SHELL).post("/summary", json=EN.model_dump())
     finally:
         del app.state.summary_model
     assert response.status_code == 200
@@ -250,7 +251,7 @@ def test_the_endpoint_answers_the_checked_summary() -> None:
 def test_the_endpoint_names_the_reason_it_refuses() -> None:
     app.state.summary_model = _model({**GOOD, "summary": "Offer: €900."})
     try:
-        response = TestClient(app).post("/summary", json=EN.model_dump())
+        response = TestClient(app, headers=SHELL).post("/summary", json=EN.model_dump())
     finally:
         del app.state.summary_model
     assert response.status_code == 422

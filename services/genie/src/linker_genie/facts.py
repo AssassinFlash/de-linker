@@ -11,7 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from linker_genie.tools import READ_PAGE
+from linker_genie.figures import swap_decimals
+from linker_genie.tools import READ_ATTACHMENT, READ_PAGE
 
 
 @dataclass
@@ -96,6 +97,8 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
         _from_handoff(gathered, payload)
     elif name == READ_PAGE:
         _from_page(gathered, payload)
+    elif name == READ_ATTACHMENT:
+        _from_attachment(gathered, payload, locale)
     return gathered
 
 
@@ -289,6 +292,45 @@ def _from_page(gathered: TurnFacts, payload: dict[str, Any]) -> None:
     for item in payload.get("products") or []:
         if isinstance(item, dict) and isinstance(item.get("product_id"), int):
             gathered.product_ids.add(item["product_id"])
+
+
+def _from_attachment(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> None:
+    """A file the customer attached (`attachments.py`, #236): the ref `attN` (its
+    name), its text and its figures (`attN.nK`), as a page's are.
+
+    The text is the customer's file read by deepseek-flash or from the PDF's text
+    layer: an answer may cite it and state its figures, and only those. A figure is
+    written with the turn's decimal mark (`figures.swap_decimals`; "bei 12.5" in a
+    German answer, review round 1 of PR #309, item 9).
+    """
+    reading_id = payload.get("id")
+    if not isinstance(reading_id, str) or not reading_id:
+        return
+    gathered.add(
+        Fact(
+            id=reading_id,
+            value=str(payload.get("name") or ""),
+            source="read-attachment",
+        )
+    )
+    text = payload.get("text")
+    if isinstance(text, str) and text:
+        gathered.add(
+            Fact(id=f"{reading_id}.text", value=text, source="read-attachment")
+        )
+    figures = payload.get("figures")
+    # "" when the reading wrote no decimal number: its separators are thousands
+    # marks, and swapping them blind would misplace the decimal (figures.py).
+    mark = str(payload.get("decimal") or "")
+    for figure, value in (figures if isinstance(figures, dict) else {}).items():
+        if isinstance(figure, str) and isinstance(value, str) and value:
+            gathered.add(
+                Fact(
+                    id=figure,
+                    value=swap_decimals(value, mark, locale),
+                    source="read-attachment",
+                )
+            )
 
 
 def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:

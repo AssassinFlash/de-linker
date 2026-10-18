@@ -34,7 +34,7 @@ from typing import Annotated
 import httpx
 from pydantic import Field, ValidationError
 
-from linker_genie.agent import chat_endpoint, model_name
+from linker_genie.agent import deepseek_access, model_name
 from linker_genie.schema import Locale, Strict, TurnMessage
 
 PROMPT = Path(__file__).resolve().parents[2] / "prompts" / "summary.md"
@@ -213,7 +213,8 @@ def _figures(text: str, words: bool) -> set[str]:
 
 def deepseek(transport: httpx.BaseTransport | None = None) -> Complete:
     """deepseek-flash on the official DeepSeek API, JSON output, one attempt."""
-    base, key = chat_endpoint()
+    access = deepseek_access()
+    base, key = access.base_url, access.key
 
     def complete(system: str, user: str) -> str:
         try:

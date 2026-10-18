@@ -12,6 +12,7 @@
  * Internal dependencies
  */
 import type { Locale } from '../../configurator/types';
+import type { Upload } from '../attachments/prepare';
 
 type Fetch = typeof fetch;
 
@@ -118,9 +119,46 @@ export interface TurnMeta {
 	language: Locale;
 }
 
+/**
+ * One file the customer attached this turn, as the service read it (#236,
+ * services/genie nameplate.card): what it is and, for a nameplate, how it
+ * matched our products. The words are the shell's; this carries codes.
+ */
+export interface AttachmentCard {
+	id: string;
+	name: string;
+	kind: 'nameplate' | 'document' | 'photo';
+	/** Why nothing could be read: a reason code of the service. */
+	failed?: string | null;
+	pages?: number | null;
+	pages_read?: number | null;
+	brand?: string | null;
+	model?: string | null;
+	product_type?: string | null;
+	/** How sure the match is, decided by our product data, never by the model. */
+	match?: 'exact' | 'partial' | 'none' | 'unreadable' | null;
+	/** The products the customer may confirm, by their model. */
+	products?: { product_id: number; label: string }[];
+}
+
 export interface Turn {
 	meta: TurnMeta | null;
 	blocks: Block[];
+	/** This turn's files (the stream's `attachment` events). */
+	attachments?: AttachmentCard[];
+}
+
+/**
+ * A turn the proxy refused, with its reason (a WP_Error code such as
+ * `linker_genie_attachment_type`).
+ */
+export class TurnError extends Error {
+	constructor(
+		readonly status: number,
+		readonly code: string
+	) {
+		super( `turn ${ status } ${ code }` );
+	}
 }
 
 export interface TurnMessage {
@@ -181,6 +219,7 @@ export interface ConversationList {
  * @param locale   Page language.
  * @param messages Thread so far, oldest first.
  * @param page     Page context.
+ * @param uploads  The files of this turn, apart from the messages (#236).
  * @param fetcher  Fetch for tests.
  */
 export async function sendTurn(
@@ -189,6 +228,7 @@ export async function sendTurn(
 	locale: Locale,
 	messages: TurnMessage[],
 	page: PageContext,
+	uploads: Upload[] = [],
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< Turn > {
 	const response = await fetcher( turnUrl, {
@@ -202,10 +242,18 @@ export async function sendTurn(
 				content,
 			} ) ),
 			page,
+			...( uploads.length > 0 ? { attachments: uploads } : {} ),
 		} ),
 	} );
 	if ( ! response.ok ) {
-		throw new Error( `turn ${ response.status }` );
+		let code = '';
+		try {
+			const refusal = ( await response.json() ) as { code?: unknown };
+			code = typeof refusal.code === 'string' ? refusal.code : '';
+		} catch {
+			code = '';
+		}
+		throw new TurnError( response.status, code );
 	}
 	const body = ( await response.json() ) as { stream: string };
 	return parseStream( body.stream ?? '' );
@@ -572,6 +620,11 @@ export function parseStream( stream: string ): Turn {
 			turn.meta = payload as TurnMeta;
 		} else if ( name[ 1 ] === 'block' ) {
 			turn.blocks.push( payload as Block );
+		} else if ( name[ 1 ] === 'attachment' ) {
+			turn.attachments = [
+				...( turn.attachments ?? [] ),
+				payload as AttachmentCard,
+			];
 		} else if ( name[ 1 ] === 'done' ) {
 			done = true;
 		}

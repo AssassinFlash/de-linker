@@ -42,6 +42,9 @@ And the price rule (#242):
 
 9. No text writes a price, not even through a price placeholder; the product card
    carries it (prices.fill).
+10. No text states an amount of money from a file the customer attached (#236): a
+    price list or delivery terms are the customer's paper, never our price or
+    delivery cost (the same rule `page.RULE` gives a page).
 
 Registered reading of guarantee 2: "推荐 ⊆ search-products 的 qualified"
 means qualified by this turn's tool results. That is search-products'
@@ -61,7 +64,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from linker_genie.facts import Fact, TurnFacts
-from linker_genie.figures import is_code
+from linker_genie.figures import AMOUNT, is_code
 from linker_genie.hydrate import leftover_placeholders
 from linker_genie.route import Route
 from linker_genie.schema import (
@@ -147,6 +150,7 @@ def check(
     failures.extend(_documents(output, facts))
     failures.extend(_domain_words(output))
     failures.extend(_no_price_in_text(output))
+    failures.extend(_no_amount_from_attachments(output, facts))
     if route is not None:
         failures.extend(_route(output, facts, route))
     return CheckResult(ok=not failures, failures=tuple(failures))
@@ -194,6 +198,27 @@ def _no_price_in_text(output: TurnOutput) -> list[str]:
         for fact_id in leftover_placeholders(text)
         if fact_id.endswith(".price")
     ]
+
+
+def _no_amount_from_attachments(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """Check 10. An amount of money read from the customer's file (a price list, an
+    offer, delivery terms) is never stated: not as our price, not as a delivery
+    cost. `figures.mark_amounts` keeps such a figure's currency in its value."""
+    failures: list[str] = []
+    for text in _model_texts(output):
+        for fact_id in leftover_placeholders(text):
+            fact = facts.facts.get(fact_id)
+            if (
+                fact is not None
+                and fact.source == "read-attachment"
+                and AMOUNT.search(fact.value)
+            ):
+                failures.append(
+                    f"placeholder {fact_id!r} states an amount of money from the "
+                    "customer's file; a price or a delivery cost never comes from an "
+                    "attached file"
+                )
+    return failures
 
 
 def _domain_words(output: TurnOutput) -> list[str]:

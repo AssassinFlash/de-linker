@@ -11,12 +11,13 @@ always runs the product search: a product word is never a greeting.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
 from linker_genie import page as page_tool
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
+from linker_genie.nameplate import Identified
 from linker_genie.schema import PageContext
 from linker_genie.tools import MAX_TOOL_CALLS, READ_PAGE
 
@@ -55,25 +56,27 @@ _LOGISTICS = re.compile(
 )
 
 PAGE_HINT = (
-    " The customer asks about the page they are on; the service read it "
-    "(read-page: the page's opening and the passages nearest the question, with "
-    "its outline). "
+    " The customer asks about the page they are on; its text is here: the page's "
+    "opening and the passages nearest the question, with its outline. "
     + page_tool.RULE
     + " A product, document or pairing question about the page's product is still "
-    "answered from the product tools and the documents. When no read-page result is "
-    "among the tool results, say that the page could not be read just now; never "
-    "guess what it says."
+    "answered from the product data and the documents. When the page's text is not "
+    "available this turn, say that the page could not be read just now; never "
+    "guess what it says. Speak to the customer about the page; never mention a "
+    "service, a reading, a tool or an id in the text."
 )
 DRAFT_HINT = (
-    " The customer asks about their solution draft: its products are in the "
-    "read-page result, and the pairings of its inverters and batteries are checked "
-    "(check-compatibility). Name the products, say which pairs are released, with "
-    "conditions, and which are not or unknown; cite the product IDs in refs. An "
-    "empty draft has no products: say so and offer to find products."
+    " The customer asks about their solution draft: its products are here, and "
+    "the pairings of its inverters and batteries have been checked. Name the "
+    "products, say which pairs are released, with conditions, and which are not "
+    "or unknown; cite the product IDs in refs. An empty draft has no products: "
+    "say so and offer to find products. Speak to the customer about their draft; "
+    "never mention a service, a reading, a tool or an id in the text."
 )
 ACCOUNT_HINT = (
     " The customer asks about their account page: it shows their inquiries, which "
-    "inquiry-status returned; answer from them."
+    "are here; answer from them. Never mention a service, a reading, a tool or an "
+    "id in the text."
 )
 SERVICE_HINT = (
     "This is a company, delivery or service question: answer with the "
@@ -87,6 +90,7 @@ DOCUMENTS_HINT = (
 )
 
 RouteName = Literal[
+    "nameplate",
     "products",
     "documents",
     "pairing",
@@ -118,6 +122,19 @@ _BACKUP = re.compile(r"backup|back-up|notstrom|ersatzstrom", re.IGNORECASE)
 class Call:
     ability: str
     arguments: dict[str, Any]
+    # The attachment reading whose text made these arguments (the nameplate
+    # search): the turn log purges the call with its reading when the
+    # conversation is deleted (log.TurnLog.forget, review round 1 of PR #309,
+    # item 6).
+    from_reading: str | None = None
+
+
+def _call_log(call: Call) -> dict[str, Any]:
+    """A call for the route log, naming the reading it came from when it did."""
+    entry: dict[str, Any] = {"name": call.ability, "arguments": call.arguments}
+    if call.from_reading:
+        entry["from_reading"] = call.from_reading
+    return entry
 
 
 @dataclass(frozen=True)
@@ -143,9 +160,7 @@ class Route:
     def as_log(self) -> dict[str, Any]:
         log: dict[str, Any] = {
             "route": self.name,
-            "calls": [
-                {"name": c.ability, "arguments": c.arguments} for c in self.calls
-            ],
+            "calls": [_call_log(c) for c in self.calls],
             "show_products": self.show_products,
             "action": self.action,
             "no_cards": self.no_cards,
@@ -153,9 +168,7 @@ class Route:
             "reasons": list(self.reasons),
         }
         if self.dropped:
-            log["dropped_calls"] = [
-                {"name": c.ability, "arguments": c.arguments} for c in self.dropped
-            ]
+            log["dropped_calls"] = [_call_log(c) for c in self.dropped]
         return log
 
 
@@ -388,6 +401,85 @@ def _family_hint(matches: list[Match]) -> str:
         "by naming each shown model with its figure as a placeholder (for "
         "example its ac_power_kw), never a lowest or highest value of the "
         "whole family, and ask which model or phase is wanted."
+    )
+
+
+# What the model is told about a nameplate turn. No internal wording: "the service
+# read it" came back in a German answer as "der Dienst" (review round 1 of PR #309,
+# item 10), so the hints speak of the photo and the customer only, and say not to
+# describe how it was read.
+_PLATE_VOICE = (
+    " Write to the customer about their photo; never mention a service, a reading, "
+    "a tool or an id in the text."
+)
+NAMEPLATE_HINTS = {
+    "exact": (
+        "The customer sent a photo of a nameplate ({id}); the model printed on it is "
+        "one of our products, fetched by search. Show that product as a card, say in "
+        "one sentence what the nameplate shows (put {id} in refs; brand and model are "
+        "names, a rating only as {{fact:{id}.nK}}), and ask the customer to confirm "
+        "that this is their device. The confirmation buttons are shown with the "
+        "answer: add no ask block." + _PLATE_VOICE
+    ),
+    "partial": (
+        "The customer sent a photo of a nameplate ({id}); the model printed on it "
+        "matches none of our models exactly, and the products of the same family are "
+        "fetched. Say what the nameplate shows (put {id} in refs), show the family's "
+        "products as cards and ask which one it is, or that the customer types the "
+        "model. Never claim that one of them is the device." + _PLATE_VOICE
+    ),
+    "none": (
+        "The customer sent a photo of a nameplate ({id}); the device is not in our "
+        "product range. Say what the nameplate shows (put {id} in refs) and that we "
+        "do not carry this model; when the search found products of the same brand, "
+        "you may offer them, never as the same device. Ask what the customer needs "
+        "for it (a battery, a replacement)." + _PLATE_VOICE
+    ),
+    "unreadable": (
+        "The customer sent a photo of a nameplate ({id}); its model cannot be made "
+        "out, so it is not known whether we carry the device. Say so plainly, naming "
+        "what can be made out, and ask for a sharp, straight photo of the whole label "
+        "in good light, or for the model typed in. No cards." + _PLATE_VOICE
+    ),
+}
+
+
+def nameplate(
+    identified: Identified, lang: str, subject: Subject, reasons: list[str]
+) -> Route:
+    """A nameplate photo: the product it names, for the customer to confirm (#236).
+
+    The grade is code's (nameplate.identify); the route fetches what the card and the
+    answer show: the exact model, the family of a partial match, or the brand's
+    products for a model we do not carry. An unreadable photo fetches nothing.
+    """
+    hint = NAMEPLATE_HINTS[identified.grade].format(id=identified.reading_id)
+    reason = (*reasons, f"nameplate {identified.reading_id}: {identified.grade}")
+    if identified.grade == "unreadable":
+        return Route(
+            "nameplate", no_cards=True, no_handoff=True, hint=hint, reasons=reason
+        )
+    matches = list(identified.matches)
+    search = _search_input(matches, lang)
+    if identified.grade == "none":
+        # Only the brand (and its device class) is ours: the model may offer them.
+        brands = [m for m in matches if m.kind in ("brand", "category")]
+        search = (
+            _search_input(brands, lang)
+            if any(m.kind == "brand" for m in brands)
+            else None
+        )
+    calls = _searches(search, matches, subject) if search is not None else ()
+    # Every search word of a nameplate route is the reading's (the model or the
+    # brand it printed), so the calls are marked as its: purged with it (#236).
+    calls = tuple(replace(c, from_reading=identified.reading_id) for c in calls)
+    return Route(
+        "nameplate",
+        calls,
+        show_products=identified.grade in ("exact", "partial") and bool(calls),
+        no_handoff=True,
+        hint=hint,
+        reasons=reason,
     )
 
 

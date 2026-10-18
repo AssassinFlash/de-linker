@@ -67,6 +67,18 @@ final class RateLimitTest extends TestCase {
 	}
 
 	/**
+	 * Several units are taken all at once or not at all (a turn's files, #236).
+	 */
+	public function test_several_units_are_taken_together_or_not_at_all(): void {
+		$limit = new RateLimit( $this->name, 5, HOUR_IN_SECONDS );
+
+		$this->assertTrue( $limit->take( 'a', 3 ) );
+		$this->assertFalse( $limit->take( 'a', 3 ), 'Three do not fit in the two left.' );
+		$this->assertTrue( $limit->take( 'a', 2 ), 'The refused take took nothing.' );
+		$this->assertFalse( $limit->take( 'a' ) );
+	}
+
+	/**
 	 * A limiter whose name starts with another's keeps its rows when the
 	 * shorter-windowed one moves to a new window.
 	 */

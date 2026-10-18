@@ -1035,6 +1035,111 @@ body:has(.linker-genie-workspace)
 	border-radius: 50%;
 }
 
+/* A picked file's state, and a file the proxy refused (#236). */
+.linker-genie-app__attachment--refused {
+	flex-wrap: wrap;
+	border-color: #e7c9c0;
+	border-radius: 12px;
+}
+
+.linker-genie-app__attachment-state {
+	color: #5d5d5d;
+}
+
+.linker-genie-app__attachment--refused .linker-genie-app__attachment-state,
+.linker-genie-app__refused {
+	color: var(--proto-sem-danger, #b85a45);
+}
+
+.linker-genie-app__refused {
+	flex-shrink: 0;
+	margin: 0;
+	padding: 0 16px 8px;
+	font-size: 13px;
+}
+
+/* Opened for a nameplate photo (the preview card's suggestion): the picker
+ * is one click away, over the composer. */
+.linker-genie-app__photo-prompt {
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	align-items: flex-start;
+	gap: 8px;
+	padding: 0 16px 10px;
+	font-size: 14px;
+	color: #5d5d5d;
+}
+
+.linker-genie-app__photo-prompt p {
+	margin: 0;
+}
+
+/* What Genie read from a file (#236): a card in the answer, like a product
+ * card's frame; its buttons are the opening prompts' pills. */
+.linker-genie-attachment {
+	margin: 12px 0;
+	padding: 12px 14px;
+	border: 1px solid #e5e5e5;
+	border-radius: 16px;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.linker-genie-attachment__title {
+	margin: 0 0 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #5d5d5d;
+}
+
+.linker-genie-attachment__facts {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 2px 12px;
+	margin: 0 0 8px;
+}
+
+.linker-genie-attachment__facts > div {
+	display: contents;
+}
+
+.linker-genie-attachment__facts dt {
+	color: #5d5d5d;
+}
+
+.linker-genie-attachment__facts dd {
+	margin: 0;
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+.linker-genie-attachment__status {
+	margin: 0;
+}
+
+.linker-genie-attachment__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+/* A model name runs to 26 characters ("It's the SAJ CB2-100.3-HV5"): the
+ * pills wrap instead of running out of the card. */
+.linker-genie-attachment__actions .linker-genie-app__prompt {
+	max-width: 100%;
+	white-space: normal;
+	text-align: left;
+}
+
+@media (max-width: 767px) {
+	.linker-genie-attachment__actions {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}
+
 /* The dock's composer zone — the Advisor's `.lia-composer-zone` (padding
  * 0 12px 10px): the bar carries the attach entry on its left now, so the
  * input's own 20px lead retires here; attach and dictation are the send
@@ -1393,6 +1498,16 @@ body:has(.pdp-buy-inner)
 		border-radius: 999px;
 		background: rgba(0, 0, 0, 0.15);
 		pointer-events: none;
+	}
+
+	/* The sheet's column carries its own white: the app's background sits
+	 * under the fixed backdrop (the app box is not positioned), and without
+	 * this the whole sheet showed through the 30% scrim, grey on grey (seen
+	 * on the 390 px screenshots of #236, on every dock entry). */
+	.linker-genie:has([data-linker-genie-open][aria-expanded="true"])
+		.linker-genie-app__main {
+		background: #fff;
+		border-radius: 16px 16px 0 0;
 	}
 
 	/* The backdrop under the sheet; a tap on it folds the dock away. */

@@ -19,6 +19,7 @@ const PAGE = `
 	<aside class="linker-genie-peek" data-linker-genie-peek data-anchor=".hero" hidden>
 		<button type="button" data-linker-genie-peek-close>×</button>
 		<button type="button" data-linker-genie-peek-ask="What pairs with the SAJ H2-10K-T3?">What pairs with the SAJ H2-10K-T3?</button>
+		<button type="button" data-linker-genie-peek-attach>Look up my device from a nameplate photo</button>
 	</aside>`;
 
 let stop: () => void = () => undefined;
@@ -224,6 +225,27 @@ describe( 'a suggestion', () => {
 		expect( visit().opened ).toBe( true );
 		// A suggestion is not a close: the 30 days do not start.
 		expect( window.localStorage.getItem( KEYS.dismissedUntil ) ).toBeNull();
+	} );
+} );
+
+describe( 'the nameplate suggestion', () => {
+	test( 'opens Genie with the photo picker on offer, asking nothing', () => {
+		const asked: unknown[] = [];
+		const listener = ( event: Event ) =>
+			asked.push( ( event as CustomEvent ).detail );
+		window.addEventListener( 'linker-genie-ask', listener );
+		start();
+		scrollHeroTo( 0 );
+		vi.advanceTimersByTime( DWELL_MS );
+
+		document
+			.querySelector< HTMLElement >( '[data-linker-genie-peek-attach]' )
+			?.click();
+
+		window.removeEventListener( 'linker-genie-ask', listener );
+		expect( asked ).toEqual( [ { attach: true } ] );
+		expect( card().hidden ).toBe( true );
+		expect( visit().opened ).toBe( true );
 	} );
 } );
 
