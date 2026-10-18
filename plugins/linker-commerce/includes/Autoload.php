@@ -48,6 +48,12 @@ final class Autoload {
 	 * Hooks the loader ahead of Composer's.
 	 */
 	public static function register(): void {
-		spl_autoload_register( array( self::class, 'load' ), true, true );
+		spl_autoload_register(
+			static function ( string $name ): void {
+				self::load( $name );
+			},
+			true,
+			true
+		);
 	}
 }
