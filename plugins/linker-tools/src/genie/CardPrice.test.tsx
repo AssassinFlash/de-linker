@@ -71,6 +71,7 @@ function config(): GenieConfig {
 		disclosure: "Hi, I'm Genie.",
 		accountUrl: '/my-account/',
 		workspaceUrl: '/genie/',
+		contactUrl: '/wp-json/linker-ai/v1/genie/contact',
 		prompts: [],
 		signedIn: false,
 		retentionDays: 90,
