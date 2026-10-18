@@ -37,7 +37,7 @@
 - PHP：linker-tools **214 passed**、linker-commerce **1054 passed**；PHPCS 干净；`i18n-coverage` clean；`msgfmt --check` 通过。
 - 评测：`summary-eval.json` 12 个 EN/DE 会话（数量、条件、数字词、价格注入、长文），记录逐例接受/拒绝与原因。阈值与边界（`MAX_*`、`TIMEOUT`、`MAX_TOKENS`）在 `summary.py` 逐项注明来源与实测值。
 
-## 隐私政策（需业主过目后写入）
+## 隐私政策（2026-10-18 已写入并读回）
 
 隐私政策页是站点内容（数据库），不在仓库。拟写入 EN/DE 各一段，位置：Genie 一节之后。
 
@@ -49,7 +49,9 @@ DE:
 
 > **Gespräche mit Genie und Anfragen.** Wenn Sie mit Genie sprechen, wird das Gespräch auf unserem Server gespeichert und mit Ihrem Browser oder Konto aufbewahrt. Senden Sie nach einem Gespräch eine Anfrage, kann diese eine Zusammenfassung des Gesprächs enthalten, die von einem KI-Modell erstellt wird, damit unser Team sieht, was Sie bereits mitgeteilt haben. Sie enthält Ihre Angaben aus dem Gespräch und die von Genie gezeigten Produkte; Preise enthält sie nicht. Die Zusammenfassung wird mit der Anfrage gespeichert und mit ihr gelöscht. Unser KI-Anbieter verarbeitet den Gesprächstext, um die Zusammenfassung zu erstellen; Ihren Namen, Ihre E-Mail-Adresse oder Kontodaten erhält er nicht.
 
-写入方式（业主同意后，部署时执行；先备份）：
+**写入记录（2026-10-18）**：业主同意开始写。同时改正了原文一处与事实不符的句子——"未登录对话只留在浏览器、不存服务器"（#235 之后访客对话存服务器、浏览器绑定、90 天删除）。备份在本机 `/tmp/privacy-backup-20261018/{en,de}.html`（页面 1673 / 6827）；读回：两页各命中新摘要句 1 次，旧句 0 次。
+
+写入方式（下次同样先备份）：
 
 ```sh
 ssh hostinger-de-linker 'cd ~/domains/de-linker.com/public_html && /usr/local/bin/wp post get <隐私页ID> --field=post_content > /tmp/privacy.before.html'
