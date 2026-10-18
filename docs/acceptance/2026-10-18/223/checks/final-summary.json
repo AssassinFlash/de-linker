@@ -47,7 +47,7 @@
     "historical_de_header_cases_retained": 10
   },
   "filled_draft_live_parity": "PASS all4, independent repeat4PASS",
-  "inline_hero_wiring": "\u672a\u5b8c\u6210 within223; no new split ticket",
+  "inline_hero_wiring": "delegated to #232 per owner ruling 2026-10-18; #223 does not claim it",
   "genie_changes": {
     "owner_approved_presentation_format_contract": true,
     "lossless_wp_meta_escaping": true,

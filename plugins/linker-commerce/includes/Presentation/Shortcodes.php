@@ -367,7 +367,7 @@ final class Shortcodes {
 				'{{products-url}}' => esc_url( false === $products ? '' : $products ),
 				'{{products}}'     => esc_html__( 'Browse products', 'linker-commerce' ),
 				'{{signin-url}}'   => esc_url( wc_get_page_permalink( 'myaccount' ) ),
-				'{{signin}}'       => is_user_logged_in() ? esc_html__( 'Sign in or register', 'linker-commerce' ) : esc_html__( 'Sign in', 'linker-commerce' ),
+				'{{signin}}'       => esc_html__( 'Sign in', 'linker-commerce' ),
 				'{{create}}'       => AccountLinks::create(),
 			)
 		);
