@@ -942,7 +942,7 @@ test( 'an unreadable nameplate offers another photo or the model typed', async (
 	render( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect(
-		await screen.findByText( 'The brand and model could not be read.' )
+		await screen.findByText( 'The model could not be read.' )
 	).toBeVisible();
 	const picker = document.querySelector(
 		'input[type="file"]'

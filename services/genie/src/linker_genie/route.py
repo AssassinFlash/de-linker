@@ -417,9 +417,10 @@ NAMEPLATE_HINTS = {
         "Ask what the customer needs for it (a battery, a replacement)."
     ),
     "unreadable": (
-        "The customer sent a photo of a nameplate; the service could not read its "
-        "brand or model ({id}). Say so plainly and ask for a sharp, straight photo "
-        "of the whole label in good light, or for the model typed in. No cards."
+        "The customer sent a photo of a nameplate; the service could not read the "
+        "model on it ({id}), so it is not known whether we carry the device. Say so "
+        "plainly, naming what was read, and ask for a sharp, straight photo of the "
+        "whole label in good light, or for the model typed in. No cards."
     ),
 }
 

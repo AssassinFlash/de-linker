@@ -22,6 +22,7 @@ import json
 import logging
 import time
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
 import httpx
@@ -37,8 +38,23 @@ TIMEOUT_SECONDS = 30.0
 ATTEMPTS = 2
 PAUSE_SECONDS = 0.25
 
-# Reads one JPEG with one instruction; returns the parsed JSON object.
-See = Callable[[bytes, str], dict[str, Any]]
+
+@dataclass(frozen=True)
+class Instruction:
+    """What deepseek-flash is asked about one image, and how it answers.
+
+    `json`: a JSON object (`response_format: json_object`); otherwise plain text,
+    returned as `{"text": …, "truncated": bool}`, so an answer cut at `max_tokens`
+    is still the text read so far (a cut JSON object is no answer at all).
+    """
+
+    text: str
+    json: bool = True
+    max_tokens: int | None = None
+
+
+# Reads one JPEG with one instruction; returns the answer as an object.
+See = Callable[[bytes, Instruction], dict[str, Any]]
 
 
 class VisionError(RuntimeError):
@@ -65,14 +81,14 @@ class Vision:
     def close(self) -> None:
         self._client.close()
 
-    def __call__(self, jpeg: bytes, instruction: str) -> dict[str, Any]:
-        payload = {
+    def __call__(self, jpeg: bytes, instruction: Instruction) -> dict[str, Any]:
+        payload: dict[str, Any] = {
             "model": self._model,
             "messages": [
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": instruction},
+                        {"type": "text", "text": instruction.text},
                         {
                             "type": "image_url",
                             "image_url": {
@@ -83,11 +99,29 @@ class Vision:
                     ],
                 }
             ],
-            "response_format": {"type": "json_object"},
+            # Transcription needs no reasoning: with thinking on, a nameplate took
+            # 6.5–25 s and one hard photo timed out twice (eval/attachments,
+            # 2026-10-18); with thinking disabled the same photos took 2.2–3.5 s and
+            # read the same model (docs/acceptance/2026-10-18/236/thinking.md). The
+            # switch is the official API's (research S16, "thinking"); the turn's
+            # agent keeps thinking on (agent.py).
+            "thinking": {"type": "disabled"},
         }
+        if instruction.json:
+            payload["response_format"] = {"type": "json_object"}
+        if instruction.max_tokens:
+            payload["max_tokens"] = instruction.max_tokens
         body = self._post(payload)
         try:
-            content = body["choices"][0]["message"]["content"]
+            choice = body["choices"][0]
+            content = choice["message"]["content"]
+            if not instruction.json:
+                if not isinstance(content, str):
+                    raise TypeError("no text")
+                return {
+                    "text": content,
+                    "truncated": choice.get("finish_reason") == "length",
+                }
             answer = json.loads(content)
         except (KeyError, IndexError, TypeError, json.JSONDecodeError) as error:
             log.error("genie vision: unreadable answer from deepseek-flash: %s", error)

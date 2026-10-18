@@ -37,6 +37,7 @@ from linker_genie.schema import (
     TurnRequest,
 )
 from linker_genie.understand import Understander
+from linker_genie.vision import Instruction
 
 
 def _reading(
@@ -59,6 +60,8 @@ def _reading(
         ("GoodWe", "GW10K-ETA-G20", "exact", (3556,)),
         # Our series, not our model (we carry the H2 T3, not the T2).
         ("SAJ", "H2-10K-T2", "partial", ()),
+        # A brand alone names no device.
+        ("PYLONTECH", None, "unreadable", ()),
         # Our brand, a model we do not carry (the eval photos' devices).
         ("SAJ", "Sununo Plus 4K-M", "none", ()),
         ("GOODWE", "GW10K-ET", "none", ()),
@@ -97,7 +100,7 @@ class See:
         self.answer = answer
         self.calls = 0
 
-    def __call__(self, jpeg: bytes, instruction: str) -> dict[str, Any]:
+    def __call__(self, jpeg: bytes, instruction: Instruction) -> dict[str, Any]:
         self.calls += 1
         return self.answer
 

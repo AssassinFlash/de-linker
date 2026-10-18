@@ -11,8 +11,8 @@ that is one of our products is decided here, by the product words of the Woo pro
   model is not certain): the customer picks from the family's products;
 - `none`: what the nameplate reads is not in our range (our brand perhaps, not this
   model);
-- `unreadable`: neither brand nor model could be read: a sharper photo or the model
-  typed in.
+- `unreadable`: the model could not be read (a brand alone names no device): a
+  sharper photo or the model typed in.
 
 The customer then confirms (the shell's buttons send a message naming the model), and
 the next turn goes to the product or its pairings by the usual route.
@@ -48,7 +48,8 @@ def identify(
     """The grade of a nameplate reading; None for any other reading."""
     if reading.kind != "nameplate" or reading.failed:
         return None
-    if not reading.brand and not reading.model:
+    if not reading.model:
+        # A brand alone names no device: "we do not carry it" would be a guess.
         return Identified(reading.id, "unreadable")
     if vocabulary is None:
         # Without the product words nothing can be matched; the turn log names why

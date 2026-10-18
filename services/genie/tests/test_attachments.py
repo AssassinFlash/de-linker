@@ -27,7 +27,7 @@ from linker_genie.schema import (
     AttachmentReading,
     Upload,
 )
-from linker_genie.vision import Vision, VisionError
+from linker_genie.vision import Instruction, Vision, VisionError
 
 PROBE_PDF = (
     Path(__file__).resolve().parents[3]
@@ -52,9 +52,9 @@ class See:
     def __init__(self, answer: dict[str, Any] | None = None, error: str | None = None):
         self.answer = answer if answer is not None else NAMEPLATE
         self.error = error
-        self.shown: list[tuple[bytes, str]] = []
+        self.shown: list[tuple[bytes, Instruction]] = []
 
-    def __call__(self, jpeg: bytes, instruction: str) -> dict[str, Any]:
+    def __call__(self, jpeg: bytes, instruction: Instruction) -> dict[str, Any]:
         self.shown.append((jpeg, instruction))
         if self.error:
             raise VisionError(self.error)
@@ -277,11 +277,12 @@ def test_vision_sends_one_image_url_block_for_json() -> None:
             200, json={"choices": [{"message": {"content": content}}]}
         )
 
-    answer = _vision(handle)(b"\xff\xd8\xffjpeg", "read it")
+    answer = _vision(handle)(b"\xff\xd8\xffjpeg", Instruction("read it"))
     assert answer == {"kind": "photo", "text": "a roof"}
     [body] = seen
     assert body["model"] == "deepseek-flash"
     assert body["response_format"] == {"type": "json_object"}
+    assert body["thinking"] == {"type": "disabled"}
     [message] = body["messages"]
     assert message["role"] == "user"
     assert message["content"][0] == {"type": "text", "text": "read it"}
@@ -303,7 +304,7 @@ def test_a_400_is_raised_at_once_with_the_apis_message(
 
     with caplog.at_level(logging.ERROR, logger="linker_genie.vision"):
         with pytest.raises(VisionError, match="HTTP 400: unsupported file"):
-            _vision(handle)(b"jpeg", "read it")
+            _vision(handle)(b"jpeg", Instruction("read it"))
     assert calls == [1]
     assert "refused the image" in caplog.text
 
@@ -318,7 +319,9 @@ def test_a_5xx_is_tried_once_more() -> None:
         ]
     )
     sleeps: list[float] = []
-    answer = _vision(lambda request: next(answers), sleeps)(b"jpeg", "read it")
+    answer = _vision(lambda request: next(answers), sleeps)(
+        b"jpeg", Instruction("read it")
+    )
     assert answer == {"text": "ok"}
     assert sleeps == [0.25]
 
@@ -328,7 +331,7 @@ def test_an_answer_that_is_not_json_is_an_error() -> None:
         return httpx.Response(200, json={"choices": [{"message": {"content": "hm"}}]})
 
     with pytest.raises(VisionError, match="unreadable answer"):
-        _vision(handle)(b"jpeg", "read it")
+        _vision(handle)(b"jpeg", Instruction("read it"))
 
 
 def test_the_proxy_checks_the_same_limits_as_the_service() -> None:
@@ -352,3 +355,56 @@ def test_the_proxy_checks_the_same_limits_as_the_service() -> None:
     assert constant(proxy, "MAX_TURN_BYTES") == schema.MAX_TURN_BYTES
     assert constant(proxy, "NAME_LENGTH") == schema.NAME_LENGTH
     assert constant(thread, "READINGS_LIMIT") == schema.MAX_READINGS
+
+
+def test_a_page_is_read_as_plain_text_capped_and_a_cut_page_says_so() -> None:
+    seen: list[dict[str, Any]] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {
+                        "message": {"content": "Line 1\nLine 2"},
+                        "finish_reason": "length",
+                    }
+                ]
+            },
+        )
+
+    answer = _vision(handle)(b"jpeg", PAGE)
+    assert answer == {"text": "Line 1\nLine 2", "truncated": True}
+    [body] = seen
+    assert "response_format" not in body
+    assert body["max_tokens"] == PAGE.max_tokens
+
+    class Cut(See):
+        def __call__(self, jpeg: bytes, instruction: Instruction) -> dict[str, Any]:
+            self.shown.append((jpeg, instruction))
+            return {"text": "Wiring: L1 L2 L3", "truncated": True}
+
+    [reading] = attachments.read(
+        [_upload(_image_pdf(1), "application/pdf", "scan.pdf")], 0, Cut()
+    )
+    assert "Wiring: L1 L2 L3\n[the rest of this page was not read]" in reading.text
+
+
+def test_a_ratings_glued_figures_are_spaced_so_they_can_be_cited() -> None:
+    see = See(
+        {
+            **NAMEPLATE,
+            "ratings": [
+                {"label": "Vmax PV", "value": "1000Vd.c."},
+                {"label": "MPPT range", "value": "200...850Vd.c."},
+                {"label": "Grid", "value": "3L/N/PE~400/380Va.c."},
+            ],
+        }
+    )
+    [reading] = attachments.read([_upload(_photo(400, 300), "image/jpeg")], 0, see)
+    # The rating keeps what the label prints; the text spaces it for the tags.
+    assert reading.ratings[0].value == "1000Vd.c."
+    _payload, gathered = attachments.record(reading)
+    values = {f.value for fid, f in gathered.facts.items() if ".n" in fid}
+    assert {"1000 Vdc", "200", "850 Vdc"} <= values

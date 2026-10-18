@@ -1763,8 +1763,8 @@ msgid "This model is not in our product range."
 msgstr "Dieses Modell führen wir nicht."
 
 #: build/genie.js
-msgid "The brand and model could not be read."
-msgstr "Marke und Modell konnten nicht gelesen werden."
+msgid "The model could not be read."
+msgstr "Das Modell konnte nicht gelesen werden."
 
 #. translators: %s is the confirmed model, e.g. "SAJ H2-10K-T3".
 #: build/genie.js

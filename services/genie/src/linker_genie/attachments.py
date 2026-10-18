@@ -54,7 +54,7 @@ from linker_genie.schema import (
     Upload,
 )
 from linker_genie.tools import READ_ATTACHMENT
-from linker_genie.vision import See, VisionError
+from linker_genie.vision import Instruction, See, VisionError
 
 log = logging.getLogger(__name__)
 
@@ -88,29 +88,47 @@ TEXT_PAGE_CHARS = 200
 # rendered pages.
 WORKERS = 6
 
-PHOTO = (
-    "A customer of a distributor of solar inverters and batteries sent this photo. "
-    "Say what it shows and transcribe it exactly as printed. Answer only with a JSON "
-    'object: {"kind": "nameplate"|"document"|"photo", "brand": string|null, '
-    '"model": string|null, "product_type": string|null, '
-    '"ratings": [{"label": string, "value": string}], "text": string}. '
-    'kind "nameplate": the rating label of a device (inverter, battery, charger, '
-    "meter), also when it is partly unreadable: brand, model and product_type as "
-    "printed, and every rating with its label and value, units included. "
-    'kind "document": a page, a datasheet, a list or a drawing: all printed text in '
-    '"text", line by line, a table row as "label: value". '
-    'kind "photo": anything else: one sentence in "text" saying what it shows, and a '
-    "brand or model printed on it in brand and model. "
-    "Never correct, complete or guess anything; write null for what you cannot read. "
-    "Leave out serial numbers, addresses, e-mail addresses and phone numbers."
+PHOTO = Instruction(
+    text=(
+        "A customer of a distributor of solar inverters and batteries sent this photo. "
+        "Say what it shows and transcribe it exactly as printed. Answer only with a JSON "
+        'object: {"kind": "nameplate"|"document"|"photo", "brand": string|null, '
+        '"model": string|null, "product_type": string|null, '
+        '"ratings": [{"label": string, "value": string}], "text": string}. '
+        'kind "nameplate": the rating label of a device (inverter, battery, charger, '
+        "meter), also when it is partly unreadable. brand: the maker's name or logo as "
+        "printed on the label, null when the label shows none (a model or series is "
+        "never the brand). model: the device's own model designation, usually after "
+        '"Model", "Type" or "Typ"; when the label lists several models with tick boxes, '
+        "the ticked one, and null when none is ticked; a cell or pack code is not the "
+        "model. product_type as printed, and every rating with its label and value, "
+        "units included. "
+        'kind "document": a page, a datasheet, a list or a drawing: all printed text in '
+        '"text", line by line, a table row as "label: value". '
+        'kind "photo": anything else: one sentence in "text" saying what it shows, and a '
+        "brand or model printed on it in brand and model. "
+        "Never correct, complete or guess anything; write null for what you cannot read. "
+        "Leave out serial numbers, addresses, e-mail addresses and phone numbers."
+    ),
 )
-PAGE = (
-    "This is one page of a PDF a customer sent to a distributor of solar inverters "
-    "and batteries: a scanned page or a drawing. Transcribe every word and figure "
-    'printed on it exactly, line by line; write a table row as "label: value"; for '
-    "a drawing, list its labels and what they point to. Never correct, complete or "
-    "guess; leave out what you cannot read. Answer only with a JSON object: "
-    '{"text": string}.'
+# A page's transcription, in plain text and capped: a dense page of the drawings
+# PDF of eval/attachments wrote 14,700 characters in 26.6 s, the others 2,400–9,800
+# in 4.8–17.5 s (about 550 characters a second, 2026-10-18). 2,500 tokens (about
+# 8,000 characters at 0.3 tokens a character, research §3.3) end a page in about
+# 15 s, so four pages read side by side leave the turn's agent half of the shell's
+# 60 s; a page cut there says so in the reading.
+PAGE_TOKENS = 2_500
+PAGE = Instruction(
+    text=(
+        "This is one page of a PDF a customer sent to a distributor of solar "
+        "inverters and batteries: a scanned page or a drawing. Transcribe every word "
+        "and figure printed on it exactly, line by line; write a table row as "
+        '"label: value"; for a drawing, list its labels and what they point to. '
+        "Never correct, complete or guess; leave out what you cannot read. Answer "
+        "with the transcription only, as plain text."
+    ),
+    json=False,
+    max_tokens=PAGE_TOKENS,
 )
 
 _Type = Literal["jpeg", "png", "webp", "pdf"]
@@ -364,11 +382,28 @@ def _photo_reading(
         )
         if value
     ]
-    lines.extend(f"{rating.label}: {rating.value}" for rating in reading.ratings)
+    lines.extend(
+        f"{rating.label}: {_spaced(rating.value)}" for rating in reading.ratings
+    )
     extra = _text(answer.get("text"))
     if extra:
         lines.append(extra)
     return reading.model_copy(update={"text": "\n".join(lines)[:MAX_READING_CHARS]})
+
+
+def _spaced(value: str) -> str:
+    """A rating as a nameplate prints it, spaced so that its figures can be cited.
+
+    Labels glue units and ranges to their numbers ("1000Vd.c.", "200...850Vd.c.",
+    "3L/N/PE~400/380Va.c.", eval/attachments' GoodWe photos); `figures.tag` reads a
+    word that mixes letters and digits as a model code and leaves it untagged, so an
+    answer could not state the figure. The words stay as printed: only spaces are
+    added between a number and its unit or range mark, and "d.c."/"a.c." become
+    the units "dc"/"ac".
+    """
+    value = re.sub(r"(?<=[A-Za-z])([dDaA])\.([cC])\.", r"\1\2", value)
+    value = re.sub(r"\s*(\.{2,}|~|～)\s*(?=-?\d)", r" \1 ", value)
+    return re.sub(r"(\d)([A-Za-z%°℃])", r"\1 \2", value)
 
 
 def _pdf_reading(item: _File, jobs: list[_Job]) -> AttachmentReading:
@@ -377,6 +412,8 @@ def _pdf_reading(item: _File, jobs: list[_Job]) -> AttachmentReading:
     for job in jobs:
         assert job.page is not None
         seen = _text((job.answer or {}).get("text"))
+        if seen and (job.answer or {}).get("truncated"):
+            seen += "\n[the rest of this page was not read]"
         if seen:
             pages[job.page] = (pages.get(job.page, "") + "\n" + seen).strip()
         elif job.answer is None:

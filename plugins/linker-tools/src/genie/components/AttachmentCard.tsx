@@ -148,7 +148,7 @@ export function AttachmentCard( {
 								'linker-tools'
 							),
 							unreadable: __(
-								'The brand and model could not be read.',
+								'The model could not be read.',
 								'linker-tools'
 							),
 						}[ card.match ] }
