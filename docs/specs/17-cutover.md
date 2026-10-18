@@ -59,6 +59,7 @@ PR #299 第 3 轮裁定的恢复边界：已有目录的失败恢复先 `mv live
 - [ ] 视觉验收：首页、产品页、配置器、Genie、账户 × EN/DE × 1440/390（线上）。
 
 ## 变更记录
+- 2026-10-18（#308，切换后清 PHP opcode 缓存）：首次原子部署（0.015 s 切换）在切换那一秒仍记下 2 条 fatal（旧 `Contact/Module.php` 引用新版已删除的类）——主机 PHP 每 2 秒才按时间戳复验已编译文件（`opcache.validate_timestamps=1`、`revalidate_freq=2`，主机实读）。切换 shell 在同一次连接里、恢复 trap 解除之后立即在主机上生成一次性令牌（私有目录、umask 077、经文件传给 curl，不上命令行），POST 给站点；新 mu-plugin `linker-deploy-reset.php` 比对后删除令牌并在 web 进程里 `opcache_reset()`；重试 15×0.2 s（长于一个复验周期），结果写进部署日志（`after switch: opcache-reset=…`）。CLI 的 opcode 缓存是另一个进程，故只能经 web 请求重置。
 - 2026-10-18（#305，部署前快照与增量完整备份）：部署第一步改为数据库快照（流到本机、主机不留文件、排除已退役的 `wp_genie_chunks`、失败即不切换）；`snapshot` / `snapshots` / `restore-snapshot` 三个命令；完整备份改增量（`--link-dest`），只在数据写入前与每周做。依据：业主 2026-10-18 的时间与服务器空间要求，及代码由原子切换保留上一版。
 - 2026-10-14（#145）：`just cutover verify` 之后再跑 `search-console` 段（`steps.search_console`）：Site Kit 启用、已连接 `https://de-linker.com/`、验证文件不带 cache-buster 可取；任一不成立退出码 1。只对生产主机跑（`--target local:…` 与 `drill` 都不跑：本地实例不连 Google）。规格 `docs/specs/145-search-console.md`。
 - 2026-10-14（#17 首跑生产）：预检把工具从没有跑过的生产路径都跑了一遍；六处修复，逐条有理由：

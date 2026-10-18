@@ -175,6 +175,44 @@ def deployment_id(repository: Path) -> str:
 FULL_BACKUP_DAYS = 7
 
 
+# The host revalidates compiled PHP every 2 s (opcache.revalidate_freq=2,
+# opcache.validate_timestamps=1, read on the host 2026-10-18, #308): the
+# deploy asks the site to reset its opcode cache straight after the switch
+# and retries for longer than one revalidation period.
+OPCACHE_RESET_ATTEMPTS = 15
+OPCACHE_RESET_PAUSE = 0.2  # seconds; 15 × 0.2 s = 3 s > the 2 s period
+
+
+def opcache_reset_script(target: Target) -> str:
+    """The after-switch step: a one-time token on the host, posted to the site.
+
+    The token is made, written and posted on the host; it is read by
+    `mu-plugins/linker-deploy-reset.php` from the same private directory and
+    deleted there. It travels in a header file, never on a command line other
+    accounts on the shared host could list.
+    """
+    url = shlex.quote(target.base_url.rstrip("/") + "/")
+    marker = atomic.AFTER_SWITCH_MARKER
+    return f"""(
+umask 077
+dir="$HOME/.config/terravolt-builder"
+mkdir -p "$dir"
+token="$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \\n')"
+printf '%s\\n' "$token" > "$dir/opcache-reset.token"
+printf 'X-Linker-Opcache-Reset: %s\\n' "$token" > "$dir/opcache-reset.header"
+outcome=none
+attempt=0
+while [ "$attempt" -lt {OPCACHE_RESET_ATTEMPTS} ]; do
+  attempt=$((attempt + 1))
+  answer="$(curl -sS -o /dev/null -D - --max-time 5 -X POST -H @"$dir/opcache-reset.header" {url} 2>/dev/null | tr -d '\\r' | sed -n 's/^[Xx]-[Ll]inker-[Oo]pcache-[Rr]eset: *//p')"
+  if [ -n "$answer" ]; then outcome="$answer"; break; fi
+  sleep {OPCACHE_RESET_PAUSE}
+done
+rm -f "$dir/opcache-reset.token" "$dir/opcache-reset.header"
+printf '{marker}opcache-reset=%s attempts=%s\\n' "$outcome" "$attempt"
+)"""
+
+
 def full_backup_reminder(home: Path, *, now: datetime | None = None) -> str | None:
     """A line for the deploy log when the weekly full backup is due, else None."""
     latest = backup_module.latest_complete(home)
@@ -227,6 +265,7 @@ def deploy(
         prepared,
         deploy_id=deploy_id or deployment_id(repository),
         on_switch=on_switch,
+        after_switch=opcache_reset_script(target),
     )
     assert receipt.switch_seconds is not None
     actions = [
@@ -239,6 +278,7 @@ def deploy(
         f"deploy id: {receipt.deploy_id}",
         f"total switch duration: {receipt.switch_seconds:.3f} s",
     ]
+    actions += [f"after switch: {line}" for line in receipt.after_switch]
     installed = {
         str(entry["name"])
         for entry in target.wp_json("plugin", "list", "--fields=name")

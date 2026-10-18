@@ -30,6 +30,8 @@ class Receipt:
     backup_directory: str
     paths: tuple[str, ...]
     readbacks: tuple[str, ...] = ()
+    # Lines the after-switch step reported, marked AFTER_SWITCH_MARKER.
+    after_switch: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -69,6 +71,10 @@ _IDENTITY = """identity() {
     stat -c '%d:%i' "$1" 2>/dev/null || stat -f '%d:%i' "$1"
 }
 """
+
+
+# Lines an after-switch step prints for the receipt start with this.
+AFTER_SWITCH_MARKER = "LINKER_AFTER_SWITCH "
 
 
 def _switch_seconds(output: str, deploy_id: str) -> float:
@@ -192,8 +198,14 @@ def publish(
     *,
     deploy_id: str,
     on_switch: Callable[[], None] | None = None,
+    after_switch: str = "",
 ) -> Receipt:
-    """Upload everything, then rename everything in one recovery-protected shell."""
+    """Upload everything, then rename everything in one recovery-protected shell.
+
+    `after_switch` runs in the same shell straight after the renames and after
+    the recovery trap is cleared: it can never undo the switch, and it starts
+    without another ssh round trip (#308's opcode-cache reset).
+    """
     _check_id(deploy_id)
     if not artifacts or len({item.relative for item in artifacts}) != len(artifacts):
         raise CutoverError("deployment inventory is empty or duplicated")
@@ -327,12 +339,22 @@ def publish(
         _write_manifest(manifest, directory)
         + f"\nprintf '%s' {shlex.quote(deploy_id)} > {pointer}\ntrap - EXIT HUP INT TERM\n"
     )
+    if after_switch:
+        script += "set +e\n" + after_switch + "\n"
     if on_switch is not None:
         on_switch()
     output = target.shell(script)
     elapsed = _switch_seconds(output, deploy_id)
     return Receipt(
-        deploy_id, elapsed, directory, tuple(item.relative for item in artifacts)
+        deploy_id,
+        elapsed,
+        directory,
+        tuple(item.relative for item in artifacts),
+        after_switch=tuple(
+            line[len(AFTER_SWITCH_MARKER) :]
+            for line in output.splitlines()
+            if line.startswith(AFTER_SWITCH_MARKER)
+        ),
     )
 
 

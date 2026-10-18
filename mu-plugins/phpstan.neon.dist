@@ -7,4 +7,5 @@ parameters:
 		- linker-error-recorder.php
 		- linker-engine-pin.php
 		- linker-site-guards.php
+		- linker-deploy-reset.php
 		- tests/php
