@@ -1,0 +1,13 @@
+instance: c229
+url: http://127.0.0.1:9099
+worktree: /Users/chesterjohn/Documents/de-linker-worktrees/c229
+base: 606b1883 (origin/main, fetched and rebased)
+snapshot: 20261018-0409
+snapshot created: 2026-10-17T20:17:30+00:00
+sync exit_code: 0
+present exit_code: 0
+windpress compile exit_code: 0
+cache last_generated: 1792268374
+cache file_size: 676880
+OS: macOS 26.6.2
+mail: local files only, no test send

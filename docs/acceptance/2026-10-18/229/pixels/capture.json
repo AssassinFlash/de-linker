@@ -1,0 +1,70 @@
+{
+  "cases": [
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 1280,
+      "language": "en",
+      "headerHeight": 89
+    },
+    {
+      "path": "/de/",
+      "stem": "de",
+      "width": 1280,
+      "language": "de",
+      "headerHeight": 89
+    },
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89
+    },
+    {
+      "path": "/de/",
+      "stem": "de",
+      "width": 1440,
+      "language": "de",
+      "headerHeight": 89
+    },
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 1920,
+      "language": "en",
+      "headerHeight": 89
+    },
+    {
+      "path": "/de/",
+      "stem": "de",
+      "width": 1920,
+      "language": "de",
+      "headerHeight": 89
+    },
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81
+    },
+    {
+      "path": "/de/",
+      "stem": "de",
+      "width": 390,
+      "language": "de",
+      "headerHeight": 81
+    }
+  ],
+  "allowedHeaderChanges": [
+    {
+      "path": "/de/",
+      "widths": [
+        1440,
+        1920
+      ],
+      "height": 89
+    }
+  ]
+}

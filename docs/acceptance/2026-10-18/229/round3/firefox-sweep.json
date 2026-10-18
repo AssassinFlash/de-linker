@@ -1,0 +1,2072 @@
+[
+  {
+    "width": 390,
+    "en": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1276,
+    "en": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1277,
+    "en": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1278,
+    "en": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1279,
+    "en": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1280,
+    "en": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    },
+    "de": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "4.54688px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1281,
+    "en": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    },
+    "de": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "4.54688px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1282,
+    "en": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "14px",
+      "headroom": null,
+      "overlap": false
+    },
+    "de": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "4.57813px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1283,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 0.8832282470702921,
+      "overlap": false
+    },
+    "de": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "4.65625px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1284,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 1.8334282470702874,
+      "overlap": false
+    },
+    "de": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "4.73438px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1285,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 2.783328247070358,
+      "overlap": false
+    },
+    "de": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "4.8125px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1286,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 3.783328247070358,
+      "overlap": false
+    },
+    "de": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "4.90625px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1287,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 4.733228247070201,
+      "overlap": false
+    },
+    "de": {
+      "folded": true,
+      "desktop": false,
+      "cta": false,
+      "toggle": true,
+      "links": 6,
+      "padding": "4.98438px",
+      "headroom": null,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1288,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 5.733228247070201,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "3.93333px",
+      "headroom": 13.283216040038951,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1289,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 6.683428247070424,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.01667px",
+      "headroom": 13.233416040039174,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1290,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 7.633328247070267,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.1px",
+      "headroom": 13.183316040039017,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1291,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 8.633328247070267,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.18333px",
+      "headroom": 13.183316040039017,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1292,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 9.583228247070338,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.26667px",
+      "headroom": 13.133216040039088,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1293,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 10.583228247070338,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.35px",
+      "headroom": 13.133216040039088,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1294,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 11.533428247070333,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.41667px",
+      "headroom": 13.283428247070333,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1295,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 12.483328247070403,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.5px",
+      "headroom": 13.233328247070403,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1296,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 13.483328247070403,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.6px",
+      "headroom": 13.033316040039153,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1297,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 14.433228247070247,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.66667px",
+      "headroom": 13.183228247070247,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1298,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 15.433228247070247,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.75px",
+      "headroom": 13.183228247070247,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1299,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 16.383428247070242,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.83333px",
+      "headroom": 13.133428247070242,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1300,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 17.333328247070312,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "4.9px",
+      "headroom": 13.283340454101562,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1310,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 27.033328247070358,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "5.71667px",
+      "headroom": 13.183352661132858,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1320,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 36.7333282470704,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "6.53333px",
+      "headroom": 13.083303833007903,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1330,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 46.43332824707022,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "7.33333px",
+      "headroom": 13.183328247070222,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1340,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 56.13332824707027,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "8.13333px",
+      "headroom": 13.283352661132767,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1350,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 65.83332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "8.95px",
+      "headroom": 13.183303833007812,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1360,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 75.53332824707036,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "9.76667px",
+      "headroom": 13.083316040039108,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1370,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 85.2333282470704,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "10.5667px",
+      "headroom": 13.183340454101653,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1380,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 94.93332824707022,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.3833px",
+      "headroom": 13.083352661132722,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1390,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 104.63332824707027,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.1833px",
+      "headroom": 13.183316040039017,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1400,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 106.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.3333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1410,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 106.03332824707036,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.3px",
+      "headroom": 13.183352661132858,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1420,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 105.7333282470704,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.2833px",
+      "headroom": 13.083303833007903,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1430,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 105.43332824707022,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.25px",
+      "headroom": 13.183328247070222,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1440,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 105.13332824707027,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.2167px",
+      "headroom": 13.283352661132767,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1450,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 104.83332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.2px",
+      "headroom": 13.183303833007812,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1460,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 104.53332824707036,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.1667px",
+      "headroom": 13.283328247070358,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1470,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 104.2333282470704,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.15px",
+      "headroom": 13.183340454101653,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1480,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 103.93332824707022,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.1333px",
+      "headroom": 13.083352661132722,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1490,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 103.63332824707027,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.1px",
+      "headroom": 13.183316040039017,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1500,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 103.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.0833px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1510,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 103.03332824707036,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.05px",
+      "headroom": 13.183352661132858,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1520,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 102.7333282470704,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12.0333px",
+      "headroom": 13.083303833007903,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1530,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 102.43332824707022,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "12px",
+      "headroom": 13.183328247070222,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1540,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 102.13332824707027,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.9667px",
+      "headroom": 13.283352661132767,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1550,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 101.83332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.95px",
+      "headroom": 13.183303833007812,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1560,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 101.53332824707036,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.9167px",
+      "headroom": 13.283328247070358,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1570,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 101.2333282470704,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.9px",
+      "headroom": 13.183340454101653,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1580,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.93332824707022,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8833px",
+      "headroom": 13.083352661132722,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1590,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.63332824707027,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.85px",
+      "headroom": 13.183316040039017,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1600,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1610,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1620,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1630,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1640,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1650,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1660,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1670,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1680,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1690,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1700,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1710,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1720,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1730,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1740,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1750,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1760,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1770,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1780,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1790,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1800,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1810,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1820,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1830,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1840,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1850,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1860,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1870,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1880,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1890,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1900,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1910,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1920,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1930,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  },
+  {
+    "width": 1940,
+    "en": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "14px",
+      "headroom": 100.33332824707031,
+      "overlap": false
+    },
+    "de": {
+      "folded": false,
+      "desktop": true,
+      "cta": true,
+      "toggle": false,
+      "links": 6,
+      "padding": "11.8333px",
+      "headroom": 13.083328247070312,
+      "overlap": false
+    }
+  }
+]
