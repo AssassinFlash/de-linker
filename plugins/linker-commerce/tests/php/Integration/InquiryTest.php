@@ -71,7 +71,7 @@ final class InquiryTest extends IntegrationTestCase {
 		$customer = $this->customer();
 		$this->as_user( $customer->get_id() );
 		wc_load_cart();
-		WC()->customer = new WC_Customer( $customer->get_id(), true );
+		WC()->customer = new \WC_Customer( $customer->get_id(), true );
 		WC()->cart->empty_cart();
 		$this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 2 ) );
 		WC()->cart->calculate_totals();
@@ -91,7 +91,11 @@ final class InquiryTest extends IntegrationTestCase {
 		);
 		$filter  = static fn () => $summary;
 		add_filter( 'linker_genie_inquiry_summary', $filter );
-		$this->later( static fn () => remove_filter( 'linker_genie_inquiry_summary', $filter ) );
+		$this->later(
+			static function () use ( $filter ): void {
+				remove_filter( 'linker_genie_inquiry_summary', $filter );
+			}
+		);
 
 		$submission = Submission::from_post(
 			array(
