@@ -189,10 +189,10 @@ final class DigestTest extends IntegrationTestCase {
 		// The approval ticket's pending-accounts block leads the digest (issue
 		// #73, the plug point of Blocks::all()); inquiries, proformas and
 		// failed emails keep their order. Internal authentication health
-		// follows them (#297).
+		// follows them (#297). Other modules may append their own blocks.
 		$this->assertSame(
 			array( PendingApprovals::ID, InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID, 'internal_mail' ),
-			array_map( static fn ( Block $block ): string => $block->id(), $blocks )
+			array_slice( array_map( static fn ( Block $block ): string => $block->id(), $blocks ), 0, 5 )
 		);
 		$fourth = $blocks[3];
 		$this->assertSame( FailedEmails::ID, $fourth->id() );

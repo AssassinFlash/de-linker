@@ -14,6 +14,7 @@ namespace Linker\Commerce\Tests\Integration;
 use Linker\Commerce\Mail\InternalSmtp;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Message;
+use Linker\Commerce\Mail\LocaleSwitch;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
@@ -78,11 +79,12 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$this->assertGreaterThanOrEqual( $before, $outcome['at'] );
 		$block = new \Linker\Commerce\Health\InternalMail( new InternalSmtp( $file ) );
 		$this->assertSame( 'The last SMTP attempt failed.', $block->entries()[0]['label'] );
-		switch_to_locale( 'de_DE_formal' );
+		$locale_switch = new LocaleSwitch();
+		$locale_switch->to( 'de_DE_formal' );
 		try {
 			$this->assertSame( 'Der letzte SMTP-Versuch ist fehlgeschlagen.', $block->entries()[0]['label'] );
 		} finally {
-			restore_previous_locale();
+			$locale_switch->back();
 		}
 		$this->assertStringNotContainsString( 'wrong-test-password', (string) wp_json_encode( $outcome ) );
 		$this->assertCount( 1, get_option( Throttle::OPTION ) );
@@ -224,7 +226,8 @@ final class InternalSmtpTest extends IntegrationTestCase {
 			'en_US'        => 'Internal mail not authenticated.',
 			'de_DE_formal' => 'Interne E-Mails sind nicht authentifiziert.',
 		) as $locale => $warning ) {
-			switch_to_locale( $locale );
+			$locale_switch = new LocaleSwitch();
+			$locale_switch->to( $locale );
 			try {
 				$block = new \Linker\Commerce\Health\InternalMail( new InternalSmtp( $directory . '/smtp.env' ) );
 				$this->assertCount( 1, $block->entries() );
@@ -247,7 +250,7 @@ final class InternalSmtpTest extends IntegrationTestCase {
 				$this->assertSame( 1, substr_count( $body, $warning ), 'The real digest template renders the warning once.' );
 				wp_mail( 'tester@example.test', 'Fallback fixture', $block->entries()[0]['label'], array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ) );
 			} finally {
-				restore_previous_locale();
+				$locale_switch->back();
 			}
 		}
 		$this->assertFileExists( $directory . '/mail.eml' );

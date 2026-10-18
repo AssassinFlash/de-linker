@@ -1,0 +1,23 @@
+
+Running 16 tests using 1 worker
+
+(node:75499) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › specs/public-inquiry.spec.ts:16:5 › en 1440 contact receipt: fresh guest can submit after Woo creates its cookie (9.2s)
+  ✓   2 [chromium] › specs/public-inquiry.spec.ts:16:5 › en 1440 contact capped: fresh guest can submit after Woo creates its cookie (7.5s)
+  ✓   3 [chromium] › specs/public-inquiry.spec.ts:16:5 › en 1440 request receipt: fresh guest can submit after Woo creates its cookie (7.5s)
+  ✓   4 [chromium] › specs/public-inquiry.spec.ts:16:5 › en 1440 request capped: fresh guest can submit after Woo creates its cookie (7.3s)
+  ✓   5 [chromium] › specs/public-inquiry.spec.ts:16:5 › en 390 contact receipt: fresh guest can submit after Woo creates its cookie (7.2s)
+  ✓   6 [chromium] › specs/public-inquiry.spec.ts:16:5 › en 390 contact capped: fresh guest can submit after Woo creates its cookie (7.2s)
+  ✓   7 [chromium] › specs/public-inquiry.spec.ts:16:5 › en 390 request receipt: fresh guest can submit after Woo creates its cookie (7.3s)
+  ✓   8 [chromium] › specs/public-inquiry.spec.ts:16:5 › en 390 request capped: fresh guest can submit after Woo creates its cookie (7.2s)
+  ✓   9 [chromium] › specs/public-inquiry.spec.ts:16:5 › de 1440 contact receipt: fresh guest can submit after Woo creates its cookie (7.7s)
+  ✓  10 [chromium] › specs/public-inquiry.spec.ts:16:5 › de 1440 contact capped: fresh guest can submit after Woo creates its cookie (8.6s)
+  ✓  11 [chromium] › specs/public-inquiry.spec.ts:16:5 › de 1440 request receipt: fresh guest can submit after Woo creates its cookie (7.2s)
+  ✓  12 [chromium] › specs/public-inquiry.spec.ts:16:5 › de 1440 request capped: fresh guest can submit after Woo creates its cookie (7.2s)
+  ✓  13 [chromium] › specs/public-inquiry.spec.ts:16:5 › de 390 contact receipt: fresh guest can submit after Woo creates its cookie (9.5s)
+  ✓  14 [chromium] › specs/public-inquiry.spec.ts:16:5 › de 390 contact capped: fresh guest can submit after Woo creates its cookie (8.7s)
+  ✓  15 [chromium] › specs/public-inquiry.spec.ts:16:5 › de 390 request receipt: fresh guest can submit after Woo creates its cookie (8.2s)
+  ✓  16 [chromium] › specs/public-inquiry.spec.ts:16:5 › de 390 request capped: fresh guest can submit after Woo creates its cookie (7.4s)
+
+  16 passed (2.1m)

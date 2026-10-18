@@ -1,0 +1,6 @@
+PHP=/opt/homebrew/opt/php@8.3/bin/php python3 "/Users/chesterjohn/Documents/de-linker-worktrees/c246/tools/checks/i18n-coverage.py"
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: untranslated=51 exempt=51 gap=0
+plugins/linker-i18n/languages/linker-i18n-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source gaps=0 JSON problems=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+i18n-coverage: clean
