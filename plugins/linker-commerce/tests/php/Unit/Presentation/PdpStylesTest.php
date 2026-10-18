@@ -103,14 +103,13 @@ final class PdpStylesTest extends TestCase {
 	}
 
 	/**
-	 * The document cards are a fluid grid: as many columns as the container
-	 * holds, so the row can never be wider than its container (the fixed
+	 * Document tracks remain fluid when the owner changes their count (the fixed
 	 * `repeat(2, 670px)` pair was what dug under the rail).
 	 */
 	public function test_the_document_grid_is_fluid(): void {
 		$css = $this->css( self::PDP_CSS );
 
-		$this->assertStringContainsString( 'repeat(auto-fit, minmax(300px, 1fr))', $css );
+		$this->assertDoesNotMatchRegularExpression( '/grid-template-columns:\s*repeat\(\s*\d+\s*,\s*\d+(?:\.\d+)?px\s*\)/', $css );
 		$this->assertStringNotContainsString( '670px', $css );
 	}
 

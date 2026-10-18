@@ -27,9 +27,9 @@
 	--pdp-font: "Plus Jakarta Sans", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
 	/* One container rule for the whole page (the four former insets collapse
 	   into this pair). */
-	--pdp-container: 1280px;
+	--pdp-container: 1360px;
 	--pdp-pad: clamp(20px, 4vw, 40px);
-	--pdp-gap: clamp(40px, 6vw, 72px);
+	--pdp-gap: clamp(48px, 7vw, 88px);
 
 	padding: 0 0 80px;
 	background: var(--pdp-paper);
