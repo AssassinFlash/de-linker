@@ -60,6 +60,7 @@ def fetch(path, cookie=""):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cookie-file", type=pathlib.Path, required=True, help="Owned local customer fixture cookie; never committed")
+    parser.add_argument("--output", type=pathlib.Path, default=pathlib.Path(__file__).parent / "route-results.json", help="Report path; use a separate file for concurrent acceptance runs")
     args = parser.parse_args()
     cookie = args.cookie_file.read_text().strip()
     rows = json.loads(ROUTES.read_text())
@@ -145,7 +146,7 @@ def main():
     if expected_de != current_de:
         defects.append(f'German sitemap mismatch: missing {sorted(expected_de-current_de)}, extra {sorted(current_de-expected_de)}')
     report = {"site": SITE, "routes": rows, "canonical_pages": len(pages), "duplicate_titles": duplicates, "sitemap": {"german": len(current_de), "english": len(current_en), "english_unchanged": original_en == current_en, "german_expected": expected_de == current_de}, "defects": sorted(set(defects))}
-    (pathlib.Path(__file__).parent / "route-results.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps({"routes": len(rows), "canonical_pages": len(pages), "defects": len(report["defects"])}, ensure_ascii=False))
     for defect in report["defects"][:30]:
         print(defect)
