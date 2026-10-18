@@ -182,7 +182,7 @@ final class InquirySummaryTest extends TestCase {
 				'conditions' => array( 'Lieferung im Dezember' ),
 				'note'       => '',
 			)
-		) )->answer( null, 5 );
+		) )->answer( null, 5 ) ?? array();
 
 		$this->assertSame( 'model', $summary['source'] );
 		$this->assertSame( 'Zwei Wechselrichter, Lieferung im Dezember.', $summary['note'] );
