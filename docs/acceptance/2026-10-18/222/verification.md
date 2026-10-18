@@ -1,60 +1,38 @@
-# 待审账号保持登录 · 本地验收
+# #222 第一轮修正 · 验收记录
 
-实例：`c222`，`http://127.0.0.1:9120`；工作树 `/Users/chesterjohn/Documents/de-linker-worktrees/c222`，分支 `feat/222-pending-signed-in`。快照 `20261018-1033`（记录时间 2026-10-18 02:42 UTC）；212 个已发布产品、2755 个附件，缺失文件 0。许可已施加，本地代码来自本分支。
+实例仅 `c222`（http://127.0.0.1:9120）；工作树 `/Users/chesterjohn/Documents/de-linker-worktrees/c222`，分支 `feat/222-pending-signed-in`。`just sync c222` 拉取并装入快照 `20261018-1220`（taken 2026-10-18T04:29:32Z），匿名化检查通过。员工审批与 WindPress 官方编译使用指定账号；本会话未合并、部署或写生产。
 
-WindPress 经管理员界面的官方 Generate 重新编译，产物 684089 bytes，模板与工具锚点齐全；`just present c222` 随后读回成功。最终 rebase 后又经指定员工重新编译，CSS 与验收截图所用产物逐字节一致（`windpress.json`）；再次 present 为 created 0 / updated 0 / unchanged 18，缓存新鲜且锚点齐全。页面组合由 LC 承接；账户状态是正常内容前的 h2 卡片，导航与联系卡仍在。
+## 实现与行为
 
-## 行为与状态
+`AccountStatusNotice` 在原生 Woo 内容 hook 输出 LC 局部状态卡，pending 与 restricted 共用组件；restricted 卡包含保存原因，工作台、导航、联系卡及原端点继续可用。原因片段同时用于询盘表单。价格由 `CommerceState` 决定，`PriceDisplay` 只映射提示；ProductView 复用同一映射。批准后原会话下一次导航见价，无轮询或新会话机制。
 
-完整浏览器链使用真实注册表单及其 nonce，保持客户自己的浏览器上下文，通过指定员工的本地 WP-CLI 审批。审批写入后读回 `approved`，原客户 cookie 不变，下一次导航的价格可见；没有在客户上下文调用登录辅助函数。
+账户列表、概览和 Woo 详情直接共用同一金额规则：approved 的历史无价询盘隐藏总额，pending/guest 隐藏金额，概览不留空 Amount 标签。独立评审进一步发现已有行价在账号受限后可能继续显示；三条失败测试复现后修正，真实 Woo 夹具也覆盖批准时有价、限制后原详情隐藏行价与总额。
 
-EN/DE × 1440×900、390×900 的 `run8`、`run9` 各 **4/4 通过**；后续带安全状态记录的 `run11`、`run12`、`run13` 也各 **4/4 通过**；rebase 到 `0fddf100` 后移除临时探针的 `run14` 再次 **4/4 通过**。但 `run10` 出现一次批准后账户仍为待审的失败，根因未确定，稳定性标准仍记为未完成。每个通过的矩阵包括：
+## 浏览器与真实夹具
 
-1. 注册并保留登录，账户正常内容与状态卡一起呈现。
-2. 产品无价格，价格位显示当前审核提示；桌面检查产品栏，手机检查实际可见的固定操作栏。
-3. 待审状态加入产品并真正提交询盘；Woo 记录的客户 id 与注册客户相同，状态为 Inquiry received、商品数量为 1。
-4. 账户、询盘、文档、保存方案、公司与资料端点均可访问；账户不输出货币金额。
-5. 批准后原 cookie 保持，产品价格出现，账户的审核提示消失；原无价询盘使用中性 Price on request / Preis auf Anfrage。
-6. 限制原因出现在可用询盘表单上方；拒绝后原会话失效，回到登录表单。
+EN/DE × 1440×900、390×900 初轮与重复轮分别 **4/4 通过**；纯 main 对照并恢复本分支后再次 **4/4 通过**。每组均通过真实注册表单建立登录会话，待审时浏览产品、加入草稿并发询盘，访问全部账户端点，经独立员工 CLI 批准后原 cookie 不变、下一次产品导航见价、账户状态卡消失。随后 restricted 在账户和可用询盘表单显示原因；rejected 结束会话并回登录。注册已收到及已批准邮件仍在 Outbox 中按主题和原始路由断言。
 
-`screens/` 保存最终重启后 `reboot16` 的 36 张全页状态截图；`run8/`、`run9/` 及 `run11/`–`run14/` 保存断言后的状态、队列路由与审批读回。`preview-*` 是便于目检的裁剪预览，原始全页图仍在，预览不用于像素门。
+`screens/` 为恢复分支后最终 40 张全页截图，含四组 restricted 账户页；`matrix.json` 为最终四行矩阵与安全响应读回。初轮与恢复后 CSS 逐字节相同；状态卡已人工查看两语言与两宽度，原因和联系方式换行正常，无水平溢出。文案对抗评审见 `copy-review.md`，裁定视觉变化见 `change-ledger.md`。
 
-## TDD 与真实夹具
+pending-account 与 public-inquiry 共用 `BrowserFixture`，两入口和 helper 均进入 PHPCS；入口兼容 WP-CLI eval-file，strict typing 在 include 的 helper 中。每次保存/恢复选项、限流计数与 contact transient，删除自己的客户、询盘、产品、Outbox 和调度动作。公共询盘共享夹具 EN/DE × 1440/390 × 两入口 × 收据/额度上限 **16/16 通过**，运行截图写入 scratch，不覆盖其他票的验收证据。
 
-- `test_render_is_the_review_card`：先复现整页 h1，再通过 LC 内 h2 状态片段。
-- 账户模块 hook 测试：先复现旧 template_redirect，再接入 Woo 内容 hook，正常端点继续执行。
-- 导航与联系槽：先复现 pending 被排除，再恢复完整工作台。
-- `test_texts_instead_of_prices`：先复现旧短提示，再加入审核状态。
-- `test_approved_account_reads_a_neutral_note_on_its_pending_inquiry`：先复现批准后历史行仍说审核中，再改为既有中性文案。
-- 真实浏览器断言先复现待审工作台显示 €0.00，再让总额读取共享价格可见性过滤器。
+## 测试与目录
 
-rebase 前 Commerce 单元测试为 **1057 tests / 5475 assertions**；rebase 后 `just test` 的 Commerce 全套 PHP 为 **1198 tests / 5475 assertions，126 skipped**（真实 WordPress 用例另外运行，见下）。`just check`、`just test` 均 exit 0；最后补充的浏览器用例通过 TypeScript 与 Prettier 检查。全仓测试最初出现部署探针采样 4 次而预期最多 3 次；单项及随后完整全仓复跑均通过（部署工具 143 tests）。rebase 后并行运行验收时，配置器 Steps 浏览器单测曾在 5 秒启动上限超时；无改码单独复跑为 3/3、2.9 秒，随后串行完整复跑通过，未放宽超时。
+- 已 fetch/rebase 到当前 `origin/main`（`0fddf100`）。`just check`、`just test` 均 exit 0；全仓 Commerce PHP 为 **1209 tests / 5493 assertions，127 skipped**，真实 WordPress 测试单独运行。
+- 真实 WordPress/Woo：**134 tests / 1402 assertions，0 failures，9 skipped**。跳过项为快照缺失的博客夹具，不是账号状态。
+- `just i18n-commerce c222` 正规生成 POT/PO/MO，按源文件排序，旧 `Prices after approval` 已过时；i18n-coverage 为 gap 0，i18n-validity 通过。相对当前 main 的 MO：**既有译文 changed 0**，仅移除不用的旧短句，加入新的完整审核提示；明细见 `catalog-comparison.json`。
+- 真实 Genie 价格浏览器矩阵 **16/16 通过**：EN/DE × 1440/390 × approved/pending/restricted/guest，卡片价格位逐字与产品页一致；见 `genie-prices.txt` 与 `screens/genie-prices/`。
 
-真实 WordPress/Woo 集成测试初轮为 **117 tests / 1231 assertions，0 failures，9 skipped**；rebase 后、最终浏览器链之后再次运行为 **133 tests / 1386 assertions，0 failures，9 skipped**。Genie 价格真实 HTTP 集成为 **10 tests / 124 assertions** 全过。跳过的是本快照未具备的博客夹具，不属于账户状态验收。
+测试邮件仅进入 c222 本地文件捕获，单次投递重写至 tester222@example.test，Cc/Bcc 为空；原始多收件路由仅在 Outbox 数据中断言。最终恢复读回见 `cleanup.json`。
 
-## 邮件与夹具恢复
+## run10 稳定性裁定
 
-注册已收到、已批准邮件保留，浏览器链均断言原始队列主题和客户收件人。每轮只选一封客户邮件交给本地文件捕获，To 只有 tester222@example.test，Cc/Bcc 为空；原始内部/客户路由保留在队列断言记录，不向真实邮箱投递。
+**已关闭，非代码缺陷。** Claude 第一轮确认本地共享 Redis DB 0 在审批秒发生 Predis 读错误，graceful 模式一次回退数据库、下次读到旧缓存。产品与卡片均读取 `Approval::status()` → `get_user_meta`，原生 `update_user_meta` 已负责失效。线上只读证据为无 object-cache drop-in、cache type Default、LiteSpeed Cache inactive、账户 `private, no-cache`，当前线上没有该故障路径。
 
-浏览器夹具只删除自身唯一客户邮箱对应的客户、询盘、邮件与调度动作，保存并恢复测试收件人与限流选项。中间复跑发现：SQL 选项已删除，但持久缓存仍返回旧夹具/测试收件人，随后 `update_option` 无法更新不存在的行。现在只失效夹具拥有的三个 option 键，捕获与恢复实际存储值；没有全实例或共享 Redis flush。中间一轮德语桌面审批旧读，以及 `run10` 德语手机“产品已见价、账户卡仍待审”的失败，均未认定已修复。
+裁定已进入规格 184；规格 17 要求未来启用 Redis 时先实证故障期间审批写读一致，满足后才启用 graceful。保留 `diagnostics/run10-failure.txt`、`cache-availability.json`、`readback.json` 支持该结论；run8–14、reboot15/16 的中间原始 JSON 已移除。不新增审批缓存或故障规避轮询。
 
-## 审批旧提示稳定性：未完成
+## 像素与交接边界
 
-`run10` 的审批 CLI 与 SQL 均为 approved，原客户产品页价格出现，紧接着账户页仍有一个待审卡，15 秒断言超时。`diagnostics/run10-failure.txt` 保留原始失败；`diagnostics/readback.json` 保存缩小复现与诊断结论。
+按指定 `tests/visual/pixel-parity.mjs`、同机同浏览器同视口、全页、禁动画并等字体图片重新拍摄全部 16 组。分支对 live 为 **11/16 零差异**；四组 DE 1440 页头各 13061 pixels，EN 390 产品页五个兼容产品缩略图区域 7597 pixels。全部差异无掩膜、无容差。纯 main 对 live 为 **12/16 零差异**，仍有相同的四组 DE 页头差异；EN 手机产品图在两次 live 捕获间变化，第二次 live 与 local 相同。**本分支 local vs 纯 main local 全部 16/16、每组 0 pixels**，证明本票未造成这些差异。绝对 live/local 门仍为未完成，关联现有页头 #229 与同步 #252 范围；完整逐页归因与双构建截图见 `pixel/`。对照后已恢复本分支，实际类路径读回正确，CSS 与对照前逐字节相同；恢复后 Approval 真实夹具再验为 **9 tests / 148 assertions，0 failures**。
 
-缩小用例连续 9 轮、108 次审批后账户/产品导航没有复现；其中后 3 轮使用与注册一致的显式 pending meta。完整链带临时本地只读探针连续 3 轮、12 组通过，记录中没有已存审批状态与用户缓存状态的分歧；集成测试后再次完整运行也通过。它们不能证明历史失败已消除。探针已经删除，没有引入新的审批缓存、轮询、强制登出或第二价格规则。永久浏览器用例只保存安全响应读回，仍要求原 cookie 不变、首次产品导航见价、首次账户导航不含审核卡；不重试页面以放宽条件。
-
-**未完成：偶发旧提示的根因与修复。** 当前环境无法稳定复现，提交供 Claude 评审时明确保留此项；不能用通过次数将它改记为完成。
-
-## 用户重启后的重试
-
-用户重启后只恢复 c222，先读回并清理被中断的 `tester222-fault-*` 客户及测试邮件选项，再从清洁夹具串行执行。`reboot15`、`reboot16` 的 EN/DE × 1440/390 均为 **4/4 通过**；记录保存在同名目录，最终 screens 采用 reboot16。两轮之后顺序执行真实 WordPress 集成为 **133 tests / 1386 assertions，9 skipped，0 failures**。期间本地 PHP 日志新增 Redis 连接异常为 0。最终清理与 Redis 连通状态见 `cleanup.json`，命令状态见 `gates.json`。GitHub 可达，fetch 后主线仍为 `0fddf100`。
-
-进一步读回历史日志发现：run10 审批记录为 03:12:12 UTC，产品截图为 03:12:14 UTC，本地 PHP 在其中的 03:12:13 UTC 记录 Redis 连接读失败；另一轮 03:19:37 UTC 记录 Redis BUSY。时间相关性保存在 `diagnostics/cache-availability.json`，不能据此认定完整根因已证明；故障模拟被重启打断，没有产出结论。历史异常仍保持未完成，不新增未经证实的审批缓存补丁。
-
-## 完成边界
-
-- 夹具恢复读回：`cleanup.json` 证明自身客户和邮件队列剩余 0、夹具与测试收件人选项已撤、临时探针已移除；实例绑定本工作树。
-- 文案与双评审：见 `copy-review.md`、`review.md`；裁定视觉变化见 `change-ledger.md`。
-- **未完成：live/local 像素门。** 16 组中 8 组零差异，其余差异数和尺寸不一致全部保留于 `pixel/results.json`；关联既有页头票 #229 与询盘开放/同步工作 #246 / #252。没有扩大掩膜或容差。
-- **未完成：线上注册与审批实走、已批准客户账户的 live/local 比对。** 本会话仅本地写入，留给 Claude 合并部署后的线上验收；票与地图没有关闭。
+线上注册与审批实走、approved 客户账户的 live/local 比对：**未完成，本轮仅本地写入授权，按第一轮交给 Claude 合并部署后执行**。本票和地图均未关闭。Spec/Standards 独立评审及修正记录见 `review.md`。

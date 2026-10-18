@@ -1,293 +1,219 @@
 [
   {
-    "path": "/my-account/",
-    "width": 1440,
-    "live_size": [
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
       1440,
       1419
     ],
-    "local_size": [
-      1440,
-      1419
-    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
     "masks": [],
-    "pass": false,
-    "different_pixels": 1597,
-    "difference_bounds": [
-      352,
-      464,
-      591,
-      478
-    ]
+    "ruled_change": false
   },
   {
-    "path": "/de/mein-konto/",
-    "width": 1440,
-    "live_size": [
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
       1440,
       1419
     ],
-    "local_size": [
-      1440,
-      1419
-    ],
-    "masks": [],
-    "pass": false,
-    "different_pixels": 14754,
-    "difference_bounds": [
-      188,
-      21,
-      1416,
-      503
-    ]
-  },
-  {
-    "path": "/my-account/register/",
-    "width": 1440,
-    "live_size": [
-      1440,
-      2268
-    ],
-    "local_size": [
-      1440,
-      2268
-    ],
-    "masks": [],
-    "pass": true,
-    "different_pixels": 0,
-    "difference_bounds": null
-  },
-  {
-    "path": "/de/mein-konto/register/",
-    "width": 1440,
-    "live_size": [
-      1440,
-      2268
-    ],
-    "local_size": [
-      1440,
-      2268
-    ],
-    "masks": [],
-    "pass": false,
-    "different_pixels": 13061,
+    "unmasked_different_pixels": 13061,
     "difference_bounds": [
       188,
       21,
       1416,
       67
-    ]
-  },
-  {
-    "path": "/product/saj-h2-10k-t3/",
-    "width": 1440,
-    "live_size": [
-      1440,
-      7737
-    ],
-    "local_size": [
-      1440,
-      7737
     ],
     "masks": [],
-    "pass": false,
-    "different_pixels": 11544,
-    "difference_bounds": [
-      116,
-      639,
-      1246,
-      6391
-    ]
+    "ruled_change": false
   },
   {
-    "path": "/de/produkt/saj-h2-10k-t3/",
-    "width": 1440,
-    "live_size": [
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
       1440,
-      7913
+      2268
     ],
-    "local_size": [
-      1440,
-      7913
-    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
     "masks": [],
-    "pass": false,
-    "different_pixels": 15125,
-    "difference_bounds": [
-      188,
-      21,
-      1416,
-      676
-    ]
+    "ruled_change": false
   },
   {
-    "path": "/product-category/inverters/",
-    "width": 1440,
-    "live_size": [
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
       1440,
-      9264
+      2268
     ],
-    "local_size": [
-      1440,
-      9264
-    ],
-    "masks": [],
-    "pass": true,
-    "different_pixels": 0,
-    "difference_bounds": null
-  },
-  {
-    "path": "/de/produkt-kategorie/wechselrichter/",
-    "width": 1440,
-    "live_size": [
-      1440,
-      9264
-    ],
-    "local_size": [
-      1440,
-      9264
-    ],
-    "masks": [],
-    "pass": false,
-    "different_pixels": 13061,
+    "unmasked_different_pixels": 13061,
     "difference_bounds": [
       188,
       21,
       1416,
       67
-    ]
-  },
-  {
-    "path": "/my-account/",
-    "width": 390,
-    "live_size": [
-      390,
-      1391
-    ],
-    "local_size": [
-      390,
-      1391
     ],
     "masks": [],
-    "pass": true,
-    "different_pixels": 0,
-    "difference_bounds": null
+    "ruled_change": false
   },
   {
-    "path": "/de/mein-konto/",
-    "width": 390,
-    "live_size": [
-      390,
-      1454
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      7737
     ],
-    "local_size": [
-      390,
-      1454
-    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
     "masks": [],
-    "pass": true,
-    "different_pixels": 0,
-    "difference_bounds": null
+    "ruled_change": false
   },
   {
-    "path": "/my-account/register/",
-    "width": 390,
-    "live_size": [
-      390,
-      2526
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      7913
     ],
-    "local_size": [
-      390,
-      2526
-    ],
-    "masks": [],
-    "pass": true,
-    "different_pixels": 0,
-    "difference_bounds": null
-  },
-  {
-    "path": "/de/mein-konto/register/",
-    "width": 390,
-    "live_size": [
-      390,
-      2612
-    ],
-    "local_size": [
-      390,
-      2612
-    ],
-    "masks": [],
-    "pass": true,
-    "different_pixels": 0,
-    "difference_bounds": null
-  },
-  {
-    "path": "/product/saj-h2-10k-t3/",
-    "width": 390,
-    "live_size": [
-      390,
-      11781
-    ],
-    "local_size": [
-      390,
-      11781
-    ],
-    "masks": [],
-    "pass": false,
-    "different_pixels": 1369,
+    "unmasked_different_pixels": 13061,
     "difference_bounds": [
-      228,
-      11721,
-      347,
-      11753
-    ]
+      188,
+      21,
+      1416,
+      67
+    ],
+    "masks": [],
+    "ruled_change": false
   },
   {
-    "path": "/de/produkt/saj-h2-10k-t3/",
-    "width": 390,
-    "live_size": [
-      390,
-      12545
+    "language": "en",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      9264
     ],
-    "local_size": [
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false
+  },
+  {
+    "language": "de",
+    "viewport_width": 1440,
+    "image_size": [
+      1440,
+      9264
+    ],
+    "unmasked_different_pixels": 13061,
+    "difference_bounds": [
+      188,
+      21,
+      1416,
+      67
+    ],
+    "masks": [],
+    "ruled_change": false
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1391
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false
+  },
+  {
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      1454
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      2526
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false
+  },
+  {
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      2612
+    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
+    "masks": [],
+    "ruled_change": false
+  },
+  {
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
+      390,
+      11781
+    ],
+    "unmasked_different_pixels": 7597,
+    "difference_bounds": [
+      51,
+      9186,
+      97,
+      9957
+    ],
+    "masks": [],
+    "ruled_change": false
+  },
+  {
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
       390,
       12561
     ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
     "masks": [],
-    "pass": false,
-    "different_pixels": null,
-    "reason": "Image dimensions differ; no cropping or tolerance applied."
+    "ruled_change": false
   },
   {
-    "path": "/product-category/inverters/",
-    "width": 390,
-    "live_size": [
+    "language": "en",
+    "viewport_width": 390,
+    "image_size": [
       390,
       12270
     ],
-    "local_size": [
-      390,
-      12270
-    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
     "masks": [],
-    "pass": true,
-    "different_pixels": 0,
-    "difference_bounds": null
+    "ruled_change": false
   },
   {
-    "path": "/de/produkt-kategorie/wechselrichter/",
-    "width": 390,
-    "live_size": [
+    "language": "de",
+    "viewport_width": 390,
+    "image_size": [
       390,
       12619
     ],
-    "local_size": [
-      390,
-      12619
-    ],
+    "unmasked_different_pixels": 0,
+    "difference_bounds": null,
     "masks": [],
-    "pass": true,
-    "different_pixels": 0,
-    "difference_bounds": null
+    "ruled_change": false
   }
 ]

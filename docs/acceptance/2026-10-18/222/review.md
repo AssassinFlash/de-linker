@@ -1,47 +1,25 @@
-# 全量 diff 双评审
+# #222 第一轮修正 · 全量 diff 双评审
 
-基线：`ac74d50b9236369027c3515c328dbe189cdfb5d1`。初审提交：`33ff1193`；修正复核：`39046f7e`。Spec 与 Standards 使用独立上下文，均只读代码与票据。
-
-## Spec
-
-初审 1 项 P2：待审询盘保存的 approval 原因会在批准后继续输出审核中。修正为已批准账号对尚未定价的历史行使用现有中性请求价格措辞；红绿回归覆盖实际 `order_line_subtotal()` 出口，浏览器链新增批准后打开原询盘。复核结论：该项已解决，无剩余发现。
-
-文案复核：EN/DE 短提示简明、术语一致，无额外时限或登录指令；仅用于真正 pending 的账号。修正与意见已进入 copy-review.md。
+固定基线 `origin/main = 0fddf100`，独立评审 HEAD `1581ac4c`，命令 `git diff origin/main...HEAD`。Spec 与 Standards 使用两个独立上下文，只读完整 diff、AGENTS、当前规格与 Claude 第一轮评审。修正见 `c19fa58d` 的后续提交链（以 git log 为准）；最终测试和运行时证据见 verification.md。
 
 ## Standards
 
-初审 2 项 P2：浏览器创建/关闭异常可能跳过夹具恢复；邮件清理选中了夹具之外的新队列。分别用嵌套 finally 保证恢复，以及唯一客户邮箱限定记录所有权修正。复核结论：两项已解决，无剩余发现。
+**0 项文档规范违规；1 项 P3 判断项，已修正。** restricted 同时加入 warning 与 danger 两个连续选择器，前者立即被覆盖。已移除重复选择器，保留既有 danger 状态样式。
 
-LC/WindPress 归属、PHP 数据装配、CommerceState 唯一价格规则均符合要求。新增浏览器断言证明自身询盘归属与会话连续性；跨客户资源拒绝由原有权限测试承载，不把“端点能打开”误记为权限测试。
+原生 Woo 内容 hook、LC 组合、WindPress 样式、PHP 转义数据、同模块直接共用金额规则、共享夹具进入 PHPCS 均符合 AGENTS §4/§5。`PriceDisplay::reason_text()` 只映射原因，pending 文案只有一处映射。
 
-## 全拆与通道
+旧代码缺失检查：新增可执行 diff 无 `tv_b2b_`、`Linker_AI_`、`dlk-` 实现；已有 `tv_b2b_product_mode` 是不变的数据兼容键。结构比较确认删除整页模板替换、静态适配器、端点重定向和模板抢占，改为原生内容 hook。引擎、翻译器、NLU 实现无变化；无新模型通道、inline style、snippet 或运行时模板接管。
 
-本票新增运行时与 LC/WindPress diff 无旧代码标识符。账户内容继续由现有 LC 模板承接，pending 适配器只在原生 Woo 内容 hook 提供状态；无新模板抢占或第二价格规则。运行时的真实呈现另由浏览器截图验证。
+## Spec
 
-## 真实视觉发现后的补充评审
+**1 项行为发现，已修正；无范围扩张。** 原生询盘详情对已有价格的历史行会直接返回金额，账号由 approved 改为 restricted 后仍可读行价，违反规格 184 的“restricted … 价格隐藏”。pending/restricted/guest 三条失败测试先复现（3 failures），随后让该出口读取 CommerceState 当前原因。针对性 **51 tests / 154 assertions** 通过；真实 Woo 新夹具证明批准时有价，限制后原详情行价与总额同时隐藏。
 
-`06957bad`：待审工作台新开放后暴露原有询盘 €0.00 金额。浏览器断言先复现，再让账户行数据读取既有 `linker_commerce_visitor_sees_prices` 答案；新增单测验证隐藏输出。Spec 与 Standards 分别复核通过：没有第二条价格政策，LC/WindPress 归属不变，邮件输出不受影响。
+其余第一轮要求的代码实现无遗漏：正常账户内容前的局部卡、pending/restricted 共用组件、保存原因位于联系信息之前、列表/概览/详情共用总额规则、历史无价原因由 CommerceState 决定、共享夹具只清理自己的记录。
 
-## 最终测试差异复核
+**独立 EN/DE 文案复核无修改意见。** pending 短句准确描述当前审核与之后价格权限，不要求再次登录，不承诺审核时限。restricted 卡使用 #246 的英文与德语 Sie 体条目，明确询盘可用，员工原因转义原文输出。
 
-两位独立评审均确认 fixture 的三个 option 键只恢复测试自身状态，不触及审批、用户或会话缓存；account-readback 不保存响应正文、Cookie、nonce 或密码，不重登、不重试。没有新增可执行问题。两者均要求 run10 旧提示异常继续标为“根因未确定、未修复”。
+## 第一轮裁定与最终门槛
 
-## rebase 后全量复核
+run10 按 Claude 第一轮裁定关闭为本地共享 Redis 故障，非账号代码缺陷，规格 184 和 17 已同步。POT/PO/MO 经正式命令重新生成，先前的手工追加状态不再作为交付目录。中间 run8–14、reboot15/16 原始 JSON 已移除。
 
-最终基线 `0fddf100`，复核 HEAD `15234521`。Spec 与 Standards 均重新只读检查全量 diff，无新增发现。POT/PO 逐字保留主线全文，仅追加本票一个新词条；MO 与重新编译结果逐字节一致，主线译文不变。运行时代码与此前已评审版本一致。
-
-## Claude 第一轮修正后的独立复核
-
-基线 `0fddf100`，初审 HEAD `1581ac4c`；Spec 与 Standards 分别使用独立代理只读审完整 diff。
-
-### Standards
-
-0 项文档规范违规；1 项 P3 判断项：restricted 同时加入 warning 与 danger 两个连续选择器，前者立即被覆盖。已移除重复选择器，保留既有 danger 状态样式。原生 Woo / LC / WindPress 归属、同模块直接共享金额规则、共享夹具纳入 PHPCS 符合规范。旧标识符新增可执行 diff 为 0；原有产品模式 meta 是数据兼容键，未移植旧实现。
-
-### Spec
-
-1 项行为发现：原生询盘详情对已有价格的历史行会直接返回金额，账号由 approved 改为 restricted 后可能泄漏旧行价。先增加 pending/restricted/guest 三条失败测试（3 failures），然后让原生行价出口读取 CommerceState 当前原因；针对性 51 tests / 154 assertions 通过。新增真实 Woo 夹具覆盖批准时有价、限制后行价与总额同时隐藏。无额外范围扩张。
-
-英德文案独立评审无修改意见：pending 短句描述当前审核与之后价格权限，无重登录或时限承诺；restricted 卡沿用 #246 的英文与德语 Sie 体条目，员工保存原因转义输出，顺序为状态、说明、原因、联系。
-
-前文“run10 未确定”和手工追加目录的历史复核结论由 Claude 第一轮裁定及本轮规范重新生成取代；当前结论见 verification.md。
+真实 WordPress、Computer Use、Genie、像素实测和目录比较分别保留实际结果；没有把静态实现或通过次数当成运行时证明。像素绝对门及线上实走的限制明确记在 verification.md。

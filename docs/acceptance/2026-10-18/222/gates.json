@@ -1,42 +1,80 @@
 {
-  "sourceCommit": "15234521",
-  "baseCommit": "0fddf100",
+  "instance": "c222",
+  "branch": "feat/222-pending-signed-in",
+  "baseCommit": "0fddf100c267581dd8d3e781fa498b5d1471bf47",
   "justCheck": {
     "exit": 0,
-    "log": ".scratch/check-222-post-rebase.log"
+    "log": ".scratch/round1-just-check-final.log"
   },
   "justTest": {
     "exit": 0,
-    "log": ".scratch/test-222-post-rebase-final.log"
+    "log": ".scratch/round1-just-test.log"
   },
-  "rebootBrowserMatrices": {
-    "reboot15": "4/4",
-    "reboot16": "4/4"
-  },
-  "realWordPressAfterReboot": {
+  "i18nCommerce": {
     "exit": 0,
-    "tests": 133,
-    "assertions": 1386,
+    "activeTranslationsChanged": 0,
+    "obsoleteRemoved": [
+      "Prices after approval"
+    ],
+    "newTranslations": 1
+  },
+  "commercePhp": {
+    "tests": 1209,
+    "assertions": 5493,
+    "skipped": 127
+  },
+  "realWordPress": {
+    "exit": 0,
+    "tests": 134,
+    "assertions": 1402,
     "skipped": 9,
     "skipReason": "blog fixtures absent in snapshot"
   },
-  "geniePricesHttp": {
-    "exit": 0,
-    "tests": 10,
-    "assertions": 124
+  "browserMatrices": {
+    "round1-final": "4/4",
+    "round1-repeat": "4/4",
+    "round1-restored": "4/4"
   },
-  "redisErrorsSinceRestart": [],
+  "publicInquirySharedFixture": "16/16",
+  "realGeniePrices": "16/16",
+  "pixels": {
+    "featureVsLiveZero": 11,
+    "mainVsLiveZero": 12,
+    "featureVsMainLocalZero": 16,
+    "totalPairs": 16,
+    "masks": []
+  },
+  "featureRuntimeRestored": {
+    "priceDisplay": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce/includes/Gating/PriceDisplay.php",
+    "accountStatusNotice": true
+  },
+  "featureCssByteIdenticalAfterRestore": true,
+  "restoredRealApproval": {
+    "tests": 9,
+    "assertions": 148,
+    "failures": 0
+  },
   "cleanup": {
     "instance": "c222",
     "url": "http://127.0.0.1:9120",
-    "fixtureOptionAbsent": true,
-    "fixtureSqlAbsent": true,
+    "options": {
+      "linker_222_browser": {
+        "cachedAbsent": true,
+        "sqlAbsent": true
+      },
+      "linker_246_round2_browser": {
+        "cachedAbsent": true,
+        "sqlAbsent": true
+      },
+      "linker_commerce_test_mail_to": {
+        "cachedAbsent": true,
+        "sqlAbsent": true
+      }
+    },
     "ownedCustomersRemaining": 0,
     "ownedMailJobsRemaining": 0,
-    "testMailRecipientOptionAbsent": true,
-    "testMailRecipientSqlAbsent": true,
     "localMailIsolation": true,
-    "temporaryProbeAbsent": true,
-    "redisConnected": true
+    "loadedAccountStatusNotice": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce/includes/Account/AccountStatusNotice.php",
+    "commercePlugin": "/Users/chesterjohn/Documents/de-linker-worktrees/c222/plugins/linker-commerce"
   }
 }

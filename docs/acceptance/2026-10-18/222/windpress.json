@@ -1,8 +1,6 @@
 {
-  "beforeSha256": "e8f373446bac692821dce3f462567d12315969275a65f853da712d211135de01",
-  "beforeBytes": 684089,
-  "afterSha256": "e8f373446bac692821dce3f462567d12315969275a65f853da712d211135de01",
-  "afterBytes": 684089,
-  "afterMtime": 1792294727,
-  "identicalCss": true
+  "featureCssBefore": "e8f373446bac692821dce3f462567d12315969275a65f853da712d211135de01",
+  "mainCss": "1fa3f592fb0bf35fbfcd214c83eef81275eae2b7adf63fb0b621b0dee4371905",
+  "featureCssRestored": "e8f373446bac692821dce3f462567d12315969275a65f853da712d211135de01",
+  "featureCssByteIdentical": true
 }

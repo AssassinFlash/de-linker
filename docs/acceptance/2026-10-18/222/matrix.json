@@ -1,0 +1,342 @@
+{
+  "instance": "c222",
+  "run": "round1-restored",
+  "previousIndependentMatrices": [
+    "round1-final 4/4",
+    "round1-repeat 4/4"
+  ],
+  "cases": [
+    {
+      "language": "en",
+      "width": 1440,
+      "registered": "pending",
+      "inquiry": [
+        {
+          "customer": 116,
+          "status": "inquiry-received",
+          "items": 1
+        }
+      ],
+      "approvalPreservedSession": true,
+      "approved": "approved",
+      "mail": [
+        {
+          "to": [
+            "sales@sunriverinverter.com"
+          ],
+          "subject": "New customer: 222 Browser Solar GmbH",
+          "headers": [
+            "X-Linker-Internal: yes",
+            "Reply-to: Maria Beispiel <tester222-en-1440-1792298993424@example.test>",
+            "Bcc: chester@de-linker.com",
+            "From: Linker <sales@sunriverinverter.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-en-1440-1792298993424@example.test"
+          ],
+          "subject": "We received your partner registration",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-en-1440-1792298993424@example.test"
+          ],
+          "subject": "Your inquiry #7588 has been received",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "sales@sunriverinverter.com"
+          ],
+          "subject": "New inquiry #7588 from 222 Browser Solar GmbH",
+          "headers": [
+            "X-Linker-Internal: yes",
+            "Reply-to: Maria Beispiel <tester222-en-1440-1792298993424@example.test>",
+            "Bcc: chester@de-linker.com",
+            "From: Linker <sales@sunriverinverter.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-en-1440-1792298993424@example.test"
+          ],
+          "subject": "Your partner account is approved",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        }
+      ],
+      "rejectedSessionEnded": true,
+      "restrictedAccountStatusAndReasonVisible": true,
+      "approvedUnpricedInquiryHasNoRowOrSummaryAmount": true,
+      "approvedAccountResponse": {
+        "responseStatus": 200,
+        "cacheControl": "no-cache, must-revalidate, max-age=0, no-store, private",
+        "pendingNoticeCount": 0
+      }
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "registered": "pending",
+      "inquiry": [
+        {
+          "customer": 117,
+          "status": "inquiry-received",
+          "items": 1
+        }
+      ],
+      "approvalPreservedSession": true,
+      "approved": "approved",
+      "mail": [
+        {
+          "to": [
+            "sales@sunriverinverter.com"
+          ],
+          "subject": "New customer: 222 Browser Solar GmbH",
+          "headers": [
+            "X-Linker-Internal: yes",
+            "Reply-to: Maria Beispiel <tester222-en-390-1792299015145@example.test>",
+            "Bcc: chester@de-linker.com",
+            "From: Linker <sales@sunriverinverter.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-en-390-1792299015145@example.test"
+          ],
+          "subject": "We received your partner registration",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-en-390-1792299015145@example.test"
+          ],
+          "subject": "Your inquiry #7596 has been received",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "sales@sunriverinverter.com"
+          ],
+          "subject": "New inquiry #7596 from 222 Browser Solar GmbH",
+          "headers": [
+            "X-Linker-Internal: yes",
+            "Reply-to: Maria Beispiel <tester222-en-390-1792299015145@example.test>",
+            "Bcc: chester@de-linker.com",
+            "From: Linker <sales@sunriverinverter.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-en-390-1792299015145@example.test"
+          ],
+          "subject": "Your partner account is approved",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        }
+      ],
+      "rejectedSessionEnded": true,
+      "restrictedAccountStatusAndReasonVisible": true,
+      "approvedUnpricedInquiryHasNoRowOrSummaryAmount": true,
+      "approvedAccountResponse": {
+        "responseStatus": 200,
+        "cacheControl": "no-cache, must-revalidate, max-age=0, no-store, private",
+        "pendingNoticeCount": 0
+      }
+    },
+    {
+      "language": "de",
+      "width": 1440,
+      "registered": "pending",
+      "inquiry": [
+        {
+          "customer": 118,
+          "status": "inquiry-received",
+          "items": 1
+        }
+      ],
+      "approvalPreservedSession": true,
+      "approved": "approved",
+      "mail": [
+        {
+          "to": [
+            "sales@sunriverinverter.com"
+          ],
+          "subject": "New customer: 222 Browser Solar GmbH",
+          "headers": [
+            "X-Linker-Internal: yes",
+            "Reply-to: Maria Beispiel <tester222-de-1440-1792299034584@example.test>",
+            "Bcc: chester@de-linker.com",
+            "From: Linker <sales@sunriverinverter.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-de-1440-1792299034584@example.test"
+          ],
+          "subject": "Wir haben Ihre Partner-Registrierung erhalten",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-de-1440-1792299034584@example.test"
+          ],
+          "subject": "Ihre Anfrage #7604 ist eingegangen",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "sales@sunriverinverter.com"
+          ],
+          "subject": "New inquiry #7604 from 222 Browser Solar GmbH",
+          "headers": [
+            "X-Linker-Internal: yes",
+            "Reply-to: Maria Beispiel <tester222-de-1440-1792299034584@example.test>",
+            "Bcc: chester@de-linker.com",
+            "From: Linker <sales@sunriverinverter.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-de-1440-1792299034584@example.test"
+          ],
+          "subject": "Ihr Partner-Konto ist freigegeben",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        }
+      ],
+      "rejectedSessionEnded": true,
+      "restrictedAccountStatusAndReasonVisible": true,
+      "approvedUnpricedInquiryHasNoRowOrSummaryAmount": true,
+      "approvedAccountResponse": {
+        "responseStatus": 200,
+        "cacheControl": "no-cache, must-revalidate, max-age=0, no-store, private",
+        "pendingNoticeCount": 0
+      }
+    },
+    {
+      "language": "de",
+      "width": 390,
+      "registered": "pending",
+      "inquiry": [
+        {
+          "customer": 119,
+          "status": "inquiry-received",
+          "items": 1
+        }
+      ],
+      "approvalPreservedSession": true,
+      "approved": "approved",
+      "mail": [
+        {
+          "to": [
+            "sales@sunriverinverter.com"
+          ],
+          "subject": "New customer: 222 Browser Solar GmbH",
+          "headers": [
+            "X-Linker-Internal: yes",
+            "Reply-to: Maria Beispiel <tester222-de-390-1792299058978@example.test>",
+            "Bcc: chester@de-linker.com",
+            "From: Linker <sales@sunriverinverter.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-de-390-1792299058978@example.test"
+          ],
+          "subject": "Wir haben Ihre Partner-Registrierung erhalten",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-de-390-1792299058978@example.test"
+          ],
+          "subject": "Ihre Anfrage #7612 ist eingegangen",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "sales@sunriverinverter.com"
+          ],
+          "subject": "New inquiry #7612 from 222 Browser Solar GmbH",
+          "headers": [
+            "X-Linker-Internal: yes",
+            "Reply-to: Maria Beispiel <tester222-de-390-1792299058978@example.test>",
+            "Bcc: chester@de-linker.com",
+            "From: Linker <sales@sunriverinverter.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        },
+        {
+          "to": [
+            "tester222-de-390-1792299058978@example.test"
+          ],
+          "subject": "Ihr Partner-Konto ist freigegeben",
+          "headers": [
+            "Reply-to: Linker <sales@de-linker.com>",
+            "From: Linker <sales@de-linker.com>",
+            "Content-Type: text/html; charset=UTF-8"
+          ]
+        }
+      ],
+      "rejectedSessionEnded": true,
+      "restrictedAccountStatusAndReasonVisible": true,
+      "approvedUnpricedInquiryHasNoRowOrSummaryAmount": true,
+      "approvedAccountResponse": {
+        "responseStatus": 200,
+        "cacheControl": "no-cache, must-revalidate, max-age=0, no-store, private",
+        "pendingNoticeCount": 0
+      }
+    }
+  ]
+}

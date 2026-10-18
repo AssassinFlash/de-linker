@@ -1,11 +1,10 @@
 <?php
 /**
  * Local browser fixture with isolated records and mail.
+ * The eval-file entry point keeps strict typing in the included helper.
  *
  * @package Linker\Commerce
  */
-
-declare( strict_types = 1 );
 
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Tests\E2E\BrowserFixture;

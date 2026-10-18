@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-18T02:22:47+00:00\n"
+"POT-Creation-Date: 2026-10-18T04:31:18+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -302,27 +302,27 @@ msgid ""
 "customer."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:53
+#: includes/Abilities/ProductCommerce.php:52
 msgid "Whether this visitor sees the stored price."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:57
+#: includes/Abilities/ProductCommerce.php:56
 msgid "Stored price when it is visible."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:61
+#: includes/Abilities/ProductCommerce.php:60
 msgid "What the product page prints where the price stands, for this visitor."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:66
+#: includes/Abilities/ProductCommerce.php:65
 msgid "Why this visitor sees no price."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:70
+#: includes/Abilities/ProductCommerce.php:69
 msgid "Whether the product is in stock (the stock the ERP pushed)."
 msgstr ""
 
-#: includes/Abilities/ProductCommerce.php:74
+#: includes/Abilities/ProductCommerce.php:73
 msgid "Whether the product is quoted per project."
 msgstr ""
 
@@ -388,7 +388,7 @@ msgstr "Abmelden und mit einem Mitarbeiterkonto anmelden"
 msgid "Go to my account"
 msgstr "Zu meinem Konto"
 
-#: includes/Account/AuthTemplates.php:153
+#: includes/Account/AuthTemplates.php:152
 msgid "You have been signed out."
 msgstr "Sie wurden abgemeldet."
 
@@ -475,7 +475,7 @@ msgid "View"
 msgstr "Ansehen"
 
 #: includes/Account/InquiryList.php:64
-#: includes/Presentation/AccountTemplates.php:518
+#: includes/Presentation/AccountTemplates.php:520
 msgid "Proforma invoice (PDF)"
 msgstr "Proformarechnung (PDF)"
 
@@ -487,7 +487,7 @@ msgstr "Erneut anfragen"
 msgid "Datasheet (PDF)"
 msgstr "Datenblatt (PDF)"
 
-#: includes/Account/Menu.php:48 includes/Presentation/AccountTemplates.php:164
+#: includes/Account/Menu.php:48 includes/Presentation/AccountTemplates.php:166
 #: includes/Presentation/AccountTemplates.php:452
 msgid "Overview"
 msgstr "Übersicht"
@@ -975,23 +975,23 @@ msgid ""
 msgstr ""
 "Für Produkte ohne Preisangabe nennen wir den Preis in Ihrer Proformarechnung."
 
-#: includes/Gating/PriceDisplay.php:217
+#: includes/Gating/PriceDisplay.php:230
 msgid "Log in for prices"
 msgstr "Preise nach Anmeldung"
 
-#: includes/Gating/PriceDisplay.php:222 includes/Storefront/ProductView.php:305
+#: includes/Gating/PriceDisplay.php:233
+msgid "Account under review. Prices after approval."
+msgstr "Ihr Konto wird geprüft. Preise nach Freigabe."
+
+#: includes/Gating/PriceDisplay.php:236
 msgid "Not available for your account"
 msgstr "Für Ihr Konto nicht verfügbar"
 
-#: includes/Gating/PriceDisplay.php:223 includes/Storefront/ProductView.php:304
-msgid "Prices after approval"
-msgstr "Preise nach Freigabe"
-
-#: includes/Gating/PriceDisplay.php:227 includes/Storefront/ProductView.php:300
+#: includes/Gating/PriceDisplay.php:239 includes/Storefront/ProductView.php:300
 msgid "Quoted per project"
 msgstr "Angebot pro Projekt"
 
-#: includes/Gating/PriceDisplay.php:228
+#: includes/Gating/PriceDisplay.php:240
 msgid "Price on request"
 msgstr "Preis auf Anfrage"
 
@@ -1308,7 +1308,7 @@ msgid "Source"
 msgstr "Eingang"
 
 #: includes/Inquiry/OrderAdmin.php:74
-#: templates/emails/linker-new-inquiry.php:47
+#: templates/emails/linker-new-inquiry.php:51
 msgid "Contact form"
 msgstr "Kontaktformular"
 
@@ -1447,14 +1447,14 @@ msgstr "Gespeichert am"
 
 #: includes/Presentation/AccountTemplates.php:465
 #: includes/Presentation/ProductShortcodes.php:626
-#: includes/Storefront/ProductView.php:316 includes/Vocabulary/Labels.php:33
+#: includes/Storefront/ProductView.php:314 includes/Vocabulary/Labels.php:33
 #: includes/Vocabulary/Terms.php:43
 #: templates/myaccount/linker-saved-solutions.php:54
 msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
 
 #: includes/Presentation/AccountTemplates.php:466
-#: includes/Presentation/AccountTemplates.php:593
+#: includes/Presentation/AccountTemplates.php:595
 #: templates/myaccount/linker-saved-solutions.php:57
 msgid "Design report (PDF)"
 msgstr "Auslegungsbericht (PDF)"
@@ -1464,7 +1464,7 @@ msgid "No inquiries yet."
 msgstr "Noch keine Anfragen."
 
 #: includes/Presentation/AccountTemplates.php:470
-#: includes/Presentation/LoginGate.php:70
+#: includes/Presentation/LoginGate.php:64
 #: includes/Presentation/Shortcodes.php:370 includes/Vocabulary/Terms.php:38
 #: templates/emails/linker-approval-approved.php:26
 #: templates/emails/linker-registration-received.php:38
@@ -1503,14 +1503,14 @@ msgid "View all"
 msgstr "Alle anzeigen"
 
 #. translators: %s: inquiry number.
-#: includes/Presentation/AccountTemplates.php:790
+#: includes/Presentation/AccountTemplates.php:792
 #: includes/Vocabulary/Terms.php:121
 #, php-format
 msgid "View inquiry %s"
 msgstr "Anfrage %s ansehen"
 
 #. translators: %s: number of products in the inquiry.
-#: includes/Presentation/AccountTemplates.php:806
+#: includes/Presentation/AccountTemplates.php:808
 #, php-format
 msgid "%s product"
 msgid_plural "%s products"
@@ -1545,7 +1545,7 @@ msgstr "Vergleichstabelle der Produkte"
 #: includes/Presentation/ProductShortcodes.php:153
 #: includes/Presentation/ProductShortcodes.php:1540
 #: includes/Storefront/ArchiveSchema.php:174
-#: includes/Storefront/ProductView.php:630
+#: includes/Storefront/ProductView.php:628
 #: templates/myaccount/linker-saved-solutions.php:29
 #: templates/myaccount/linker-saved-solutions.php:41
 msgid "Products"
@@ -1726,19 +1726,30 @@ msgid_plural "covers %d products"
 msgstr[0] "gilt für %d Produkt"
 msgstr[1] "gilt für %d Produkte"
 
-#: includes/Presentation/LoginGate.php:61
+#: includes/Presentation/LoginGate.php:54
+#: includes/Presentation/LoginGate.php:56
+#: includes/Presentation/LoginGate.php:77
+msgid "Access currently limited"
+msgstr "Zugriff derzeit eingeschränkt"
+
+#: includes/Presentation/LoginGate.php:54
 msgid "Account under review"
 msgstr "Konto in Prüfung"
 
-#: includes/Presentation/LoginGate.php:62
+#: includes/Presentation/LoginGate.php:55
+#: includes/Registration/Approval.php:229
+msgid "Restricted"
+msgstr "Eingeschränkt"
+
+#: includes/Presentation/LoginGate.php:55
 msgid "Under review"
 msgstr "In Prüfung"
 
-#: includes/Presentation/LoginGate.php:63
+#: includes/Presentation/LoginGate.php:56
 msgid "Your account is under review"
 msgstr "Ihr Konto wird geprüft"
 
-#: includes/Presentation/LoginGate.php:65
+#: includes/Presentation/LoginGate.php:57
 #: templates/emails/linker-registration-received.php:24
 msgid ""
 "We are reviewing your partner account and will email you when it is "
@@ -1748,19 +1759,8 @@ msgstr ""
 "Freigabe. Anfragen können Sie bereits senden; Nettopreise sehen Sie nach der "
 "Freigabe."
 
-#. translators: %s: the team's email address.
-#: includes/Presentation/LoginGate.php:68
-#: templates/emails/linker-registration-received.php:32
-#, php-format
-msgid "Until then, browse the products and write to %s with any question."
-msgstr ""
-"Bis dahin können Sie die Produkte ansehen und Ihre Fragen an %s schreiben."
-
-#: includes/Presentation/LoginGate.php:82
-msgid "Access currently limited"
-msgstr "Zugriff derzeit eingeschränkt"
-
-#: includes/Presentation/LoginGate.php:83
+#: includes/Presentation/LoginGate.php:57
+#: includes/Presentation/LoginGate.php:78
 msgid ""
 "You can send inquiries. Net prices are unavailable while your account is "
 "limited."
@@ -1768,7 +1768,15 @@ msgstr ""
 "Sie können Anfragen senden. Solange Ihr Konto eingeschränkt ist, werden "
 "keine Nettopreise angezeigt."
 
-#: includes/Presentation/LoginGate.php:158
+#. translators: %s: the team's email address.
+#: includes/Presentation/LoginGate.php:61
+#: templates/emails/linker-registration-received.php:32
+#, php-format
+msgid "Until then, browse the products and write to %s with any question."
+msgstr ""
+"Bis dahin können Sie die Produkte ansehen und Ihre Fragen an %s schreiben."
+
+#: includes/Presentation/LoginGate.php:111
 #: templates/emails/linker-approval-rejected.php:25
 #: templates/emails/linker-approval-restricted.php:26
 msgid "Our reason:"
@@ -2400,7 +2408,7 @@ msgstr ""
 msgid "Sign in or register"
 msgstr "Anmelden oder registrieren"
 
-#: includes/Products/Comparison.php:224 includes/Storefront/ProductView.php:307
+#: includes/Products/Comparison.php:224 includes/Storefront/ProductView.php:305
 msgid "Net price after partner sign-in"
 msgstr "Nettopreis nach Partner-Anmeldung"
 
@@ -3063,10 +3071,6 @@ msgstr "In Prüfung"
 #: includes/Registration/Approval.php:228
 msgid "Approved"
 msgstr "Freigegeben"
-
-#: includes/Registration/Approval.php:229
-msgid "Restricted"
-msgstr "Eingeschränkt"
 
 #: includes/Registration/Approval.php:230
 msgid "Rejected"
@@ -4175,7 +4179,7 @@ msgid "New inquiry %1$s from %2$s (%3$s)."
 msgstr "Neue Anfrage %1$s von %2$s (%3$s)."
 
 #. translators: %s: topic selected in the contact form.
-#: templates/emails/linker-new-inquiry.php:51
+#: templates/emails/linker-new-inquiry.php:55
 #, php-format
 msgid "This is about: %s"
 msgstr "Es geht um: %s"
@@ -4425,6 +4429,9 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#~ msgid "Prices after approval"
+#~ msgstr "Preise nach Freigabe"
 
 #~ msgid "Contact form receipt"
 #~ msgstr "Eingangsbestätigung des Kontaktformulars"
@@ -4710,7 +4717,3 @@ msgstr "Verwendungszweck"
 #~ msgstr ""
 #~ "Es wurde keine Bestätigungs-E-Mail versendet. Das Linker-Team antwortet "
 #~ "an die angegebene E-Mail-Adresse."
-
-#: includes/Gating/PriceDisplay.php:223 includes/Storefront/ProductView.php:304
-msgid "Account under review. Prices after approval."
-msgstr "Ihr Konto wird geprüft. Preise nach Freigabe."

@@ -240,12 +240,9 @@ for (const language of ['en', 'de'] as const) {
 					page.locator('.linker-account-main')
 				).not.toContainText(/€|EUR/);
 				await expect(
-					page
-						.locator('.linker-account-main dt')
-						.filter({
-							hasText:
-								language === 'de' ? /^Betrag$/ : /^Amount$/,
-						})
+					page.locator('.linker-account-main dt').filter({
+						hasText: language === 'de' ? /^Betrag$/ : /^Amount$/,
+					})
 				).toHaveCount(0);
 				await shot(page, `${prefix}-approved-account`);
 				await page
