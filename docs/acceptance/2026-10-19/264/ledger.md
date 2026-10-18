@@ -23,7 +23,7 @@ each at `-1440` and `-390`.
 
 | Page type | Before (live German) | After (local German) | Why |
 |---|---|---|---|
-| Shop `/de/produkte/` (H4) | `<title>Browse Inverters, Batteries and Systems | Linker</title>`; English description | German title "Wechselrichter, Speicher und Systeme | Linker"; German description and `og:description` | 2026-10-17 ruling: everything German-only; audit H4 |
+| Shop `/de/produkte/` (H4) | `<title>Browse Inverters, Batteries and Systems \| Linker</title>`; English description | German title "Wechselrichter, Speicher und Systeme \| Linker"; German description and `og:description` | 2026-10-17 ruling: everything German-only; audit H4 |
 | Category archives (H5) | Crumb `STARTSEITE / PRODUKTE / INVERTERS`, home links to `/` | `STARTSEITE / PRODUKTE / WECHSELRICHTER`, home links to `/de/`, German category names | Audit H5; the old `STARTSEITE` pointed at the English home |
 | Blog index/search/archive | English date `May 29, 2026` (old deployed template) | German date `29.05.2026` (the #254 German templates already carry `d.m.Y`; verified, no further change) | Audit M1 |
 | Blog single share row | `title="Share on Facebook"` etc. | `title/aria-label="Auf Facebook teilen"` etc. | Audit M1; LiveCanvas ships no German pack |
