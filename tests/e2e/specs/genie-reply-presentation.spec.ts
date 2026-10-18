@@ -1,11 +1,14 @@
 /** Frontend-only presentation fixtures; never change the Genie service/options. */
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { instance, REPO_ROOT } from '../lib/instance';
 
+const releases = new WeakMap<Page, () => void>();
 test.use({ video: 'on' });
 test.afterEach(async ({ page }, info) => {
+	releases.get(page)?.();
+	await page.unrouteAll({ behavior: 'wait' });
 	const video = page.video();
 	if (!video || info.status !== 'passed') return;
 	await page.context().close();
@@ -40,9 +43,10 @@ for (const locale of ['en', 'de'] as const) {
 				const held = new Promise<void>((resolve) => {
 					release = resolve;
 				});
+				releases.set(page, release);
 				let posted: {
 					messages: Array<{ role: string; content: string }>;
-				};
+				} = { messages: [] };
 				await page.route(
 					'**/wp-json/linker-ai/v1/genie/conversation',
 					(route) => route.fulfill({ json: { messages: [] } })
@@ -101,12 +105,12 @@ for (const locale of ['en', 'de'] as const) {
 					'linker-genie-thinking'
 				);
 				const started = await thinking.evaluate(
-					(el) => el.getAnimations()[0].currentTime as number
+					(el) => el.getAnimations()[0]?.currentTime as number
 				);
 				await expect
 					.poll(() =>
 						thinking.evaluate(
-							(el) => el.getAnimations()[0].currentTime as number
+							(el) => el.getAnimations()[0]?.currentTime as number
 						)
 					)
 					.toBeGreaterThan(started);
@@ -126,6 +130,11 @@ for (const locale of ['en', 'de'] as const) {
 						: 'Show full response',
 				});
 				await expect(showFull).toBeVisible();
+				const initialControl = await showFull.boundingBox();
+				await page.waitForTimeout(100);
+				const laterControl = await showFull.boundingBox();
+				expect(laterControl?.x).toBe(initialControl?.x);
+				expect(laterControl?.y).toBe(initialControl?.y);
 				await showFull.click();
 				await expect(
 					page.getByRole('heading', {
@@ -137,7 +146,7 @@ for (const locale of ['en', 'de'] as const) {
 				await expect(
 					page.locator('.linker-genie-message-body strong')
 				).toHaveText(german ? 'Kompatibilität' : 'compatibility');
-				expect(posted.messages.at(-1).role).toBe('user');
+				expect(posted.messages.at(-1)?.role).toBe('user');
 				const transcript = page.locator(
 					'.linker-genie-app__transcript'
 				);
@@ -204,6 +213,7 @@ test('reduced-motion: waiting stays static and a received answer appears immedia
 	const held = new Promise<void>((resolve) => {
 		release = resolve;
 	});
+	releases.set(page, release);
 	await page.route('**/wp-json/linker-ai/v1/genie/turn', async (route) => {
 		await held;
 		await route.fulfill({
