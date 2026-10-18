@@ -17,6 +17,7 @@ from typing import Any, Literal
 from linker_genie import page as page_tool
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
+from linker_genie.nameplate import Identified
 from linker_genie.schema import PageContext
 from linker_genie.tools import MAX_TOOL_CALLS, READ_PAGE
 
@@ -87,6 +88,7 @@ DOCUMENTS_HINT = (
 )
 
 RouteName = Literal[
+    "nameplate",
     "products",
     "documents",
     "pairing",
@@ -388,6 +390,73 @@ def _family_hint(matches: list[Match]) -> str:
         "by naming each shown model with its figure as a placeholder (for "
         "example its ac_power_kw), never a lowest or highest value of the "
         "whole family, and ask which model or phase is wanted."
+    )
+
+
+NAMEPLATE_HINTS = {
+    "exact": (
+        "The customer sent a photo of a nameplate; the service read it ({id}) and the "
+        "model printed on it is one of our products, fetched by search. Show that "
+        "product as a card, say in one sentence what the nameplate reads (put {id} "
+        "in refs; brand and model are names, a rating only as {{fact:{id}.nK}}), and "
+        "ask the customer to confirm that this is their device. The confirmation "
+        "buttons are the service's: add no ask block."
+    ),
+    "partial": (
+        "The customer sent a photo of a nameplate; the service read it ({id}), but "
+        "the model printed on it matches none of our models exactly: the products "
+        "of the same family are fetched. Say what the nameplate reads (put {id} in "
+        "refs), show the family's products as cards and ask which one it is, or that "
+        "the customer types the model. Never claim that one of them is the device."
+    ),
+    "none": (
+        "The customer sent a photo of a nameplate; the service read it ({id}), and "
+        "the device is not in our product range. Say what the nameplate reads (put "
+        "{id} in refs) and that we do not carry this model; when the search found "
+        "products of the same brand, you may offer them, never as the same device. "
+        "Ask what the customer needs for it (a battery, a replacement)."
+    ),
+    "unreadable": (
+        "The customer sent a photo of a nameplate; the service could not read its "
+        "brand or model ({id}). Say so plainly and ask for a sharp, straight photo "
+        "of the whole label in good light, or for the model typed in. No cards."
+    ),
+}
+
+
+def nameplate(
+    identified: Identified, lang: str, subject: Subject, reasons: list[str]
+) -> Route:
+    """A nameplate photo: the product it names, for the customer to confirm (#236).
+
+    The grade is code's (nameplate.identify); the route fetches what the card and the
+    answer show: the exact model, the family of a partial match, or the brand's
+    products for a model we do not carry. An unreadable photo fetches nothing.
+    """
+    hint = NAMEPLATE_HINTS[identified.grade].format(id=identified.reading_id)
+    reason = (*reasons, f"nameplate {identified.reading_id}: {identified.grade}")
+    if identified.grade == "unreadable":
+        return Route(
+            "nameplate", no_cards=True, no_handoff=True, hint=hint, reasons=reason
+        )
+    matches = list(identified.matches)
+    search = _search_input(matches, lang)
+    if identified.grade == "none":
+        # Only the brand (and its device class) is ours: the model may offer them.
+        brands = [m for m in matches if m.kind in ("brand", "category")]
+        search = (
+            _search_input(brands, lang)
+            if any(m.kind == "brand" for m in brands)
+            else None
+        )
+    calls = _searches(search, matches, subject) if search is not None else ()
+    return Route(
+        "nameplate",
+        calls,
+        show_products=identified.grade in ("exact", "partial") and bool(calls),
+        no_handoff=True,
+        hint=hint,
+        reasons=reason,
     )
 
 

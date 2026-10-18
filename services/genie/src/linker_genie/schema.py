@@ -225,12 +225,94 @@ class TurnMessage(Strict):
     content: str
 
 
+# What a customer may attach (#236, docs/specs/13-genie.md "附件与铭牌"). The shell turns
+# a photo into a JPEG (a HEIC photo too) before it is sent, so the wire carries the
+# formats deepseek-flash reads (JPEG, PNG, WebP; docs/research/2026-10-17-deepseek-
+# flash-vision/ §3.2) and PDF, which the service reads itself.
+UploadType = Literal["image/jpeg", "image/png", "image/webp", "application/pdf"]
+# A file's name as the thread shows it: the longest file name most file systems allow
+# is 255 bytes (ext4, APFS, NTFS); the shell and the proxy cut to the same length.
+NAME_LENGTH = 255
+# The limits of one turn's uploads, the same numbers as the proxy's
+# (plugins/linker-tools/includes/Genie/Attachments.php; tests/test_attachments.py locks
+# the two together):
+# - three files: a nameplate photo, a second angle of it and a datasheet;
+# - an image of at most 6 MiB: the shell sends a JPEG of about 1.69 megapixels (the
+#   size deepseek-flash scales every image to, research §3.3), a few hundred kilobytes;
+#   six mebibytes holds even an uncompressed 1.69-megapixel image (5.07 MB of RGB) sent
+#   by another client;
+# - a PDF of at most 16 MiB: the largest hosted datasheet is 5.09 MB and the median
+#   hosted manual 7.3 MB (uploads of the live snapshot 2026-10-18); a larger manual is
+#   better sent as the pages that matter;
+# - 20 MiB for the turn, well below deepseek-flash's 48 MiB request body (research §3.2).
+MAX_FILES = 3
+MAX_IMAGE_BYTES = 6 * 1024 * 1024
+MAX_PDF_BYTES = 16 * 1024 * 1024
+MAX_TURN_BYTES = 20 * 1024 * 1024
+# Base64 writes three bytes as four characters.
+_MAX_DATA_CHARS = -(-MAX_PDF_BYTES // 3) * 4
+# Readings kept per conversation and carried into every turn (Thread::READINGS); the
+# oldest go first. Ten covers a session of several devices and their datasheets.
+MAX_READINGS = 10
+# The text kept of one reading: sixty thousand characters (about eighteen thousand
+# tokens, 0.3 per character, research §3.3) hold a datasheet of every page the service
+# reads; the model reads only the passages nearest the question of a longer one.
+MAX_READING_CHARS = 60_000
+
+
+class Upload(Strict):
+    """One file the customer attached to this turn, as base64. Never stored."""
+
+    name: str = Field(max_length=NAME_LENGTH)
+    type: UploadType
+    data: str = Field(max_length=_MAX_DATA_CHARS, repr=False)
+
+
+class Rating(Strict):
+    """One line of a nameplate as printed: its label and its value."""
+
+    label: str = Field(max_length=200)
+    value: str = Field(max_length=200)
+
+
+ReadingKind = Literal["nameplate", "document", "photo"]
+
+
+class AttachmentReading(Strict):
+    """What the service read from one attachment (attachments.py).
+
+    The proxy keeps it with the conversation (Thread::READINGS) and sends it back with
+    every later turn, so the customer can ask about the file again without sending it
+    again; the file itself is never kept. `failed` names why nothing could be read.
+    """
+
+    id: str = Field(pattern=r"^att\d{1,3}$")
+    name: str = Field(max_length=NAME_LENGTH)
+    kind: ReadingKind
+    brand: str | None = Field(default=None, max_length=200)
+    model: str | None = Field(default=None, max_length=200)
+    product_type: str | None = Field(default=None, max_length=200)
+    ratings: list[Rating] = Field(default_factory=list, max_length=60)
+    text: str = Field(default="", max_length=MAX_READING_CHARS)
+    # A PDF's page count, and the pages read (text layer or rendered).
+    pages: int | None = None
+    pages_read: int | None = None
+    failed: str | None = Field(default=None, max_length=200)
+
+
 class TurnRequest(Strict):
     conversation_id: str
     messages: list[TurnMessage]
     locale: Locale = "en"
     page_context: PageContext = Field(default_factory=PageContext)
     user: UserContext = Field(default_factory=UserContext)
+    # The files of this turn (#236). Separate from `messages`, which the proxy stores
+    # as the thread: a file rides once and is read once.
+    attachments: list[Upload] = Field(default_factory=list, max_length=MAX_FILES)
+    # What earlier turns read from their files, kept by the proxy (Thread::READINGS).
+    readings: list[AttachmentReading] = Field(
+        default_factory=list, max_length=MAX_READINGS
+    )
 
 
 class VoteRequest(Strict):

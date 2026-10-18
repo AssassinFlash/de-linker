@@ -11,3 +11,6 @@ from __future__ import annotations
 MAX_TOOL_CALLS = 4
 # The page read this process runs itself (page.py, #234).
 READ_PAGE = "linker/read-page"
+# The attachments this process reads itself (attachments.py, #236): one tool call in
+# the turn log per file read, so the quality check sees what the answer read.
+READ_ATTACHMENT = "linker/read-attachment"

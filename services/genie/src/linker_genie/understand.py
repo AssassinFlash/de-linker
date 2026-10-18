@@ -22,15 +22,22 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from linker_genie import contact, knowledge, page
+from linker_genie import attachments, contact, knowledge, page
 from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.lexicon import Match, Vocabulary
-from linker_genie.route import Call, Route, Subject, person, plan, with_page
-from linker_genie.schema import PageContext, TurnRequest
+from linker_genie.nameplate import Identified, card, identify
+from linker_genie.route import Call, Route, Subject, nameplate, person, plan, with_page
+from linker_genie.schema import (
+    MAX_READINGS,
+    AttachmentReading,
+    PageContext,
+    TurnRequest,
+)
 from linker_genie.storeapi import VocabularyError
+from linker_genie.vision import See
 
 logger = logging.getLogger("linker_genie")
 
@@ -59,6 +66,12 @@ class Prepared:
     # Jev's answers, None when Jev did not run or failed: the contact offer reads
     # its "asks for a person or is frustrated" (contact.decide, #243).
     reading: Reading | None = None
+    # The files read this turn (#236): the proxy keeps them with the conversation.
+    readings: list[AttachmentReading] = field(default_factory=list)
+    # Every reading of the conversation as a tool result, for the model's prompt.
+    attachments: list[dict[str, Any]] = field(default_factory=list)
+    # What the shell shows for each file of this turn (nameplate.card).
+    cards: list[dict[str, Any]] = field(default_factory=list)
 
     @property
     def calls_made(self) -> int:
@@ -81,12 +94,16 @@ class Understander:
         jev_missing: str = "OPENROUTER_API_KEY is not configured",
         search: knowledge.Search | None = None,
         pages: page.Reader | None = None,
+        see: See | None = None,
     ) -> None:
         self._vocabulary = vocabulary
         self._jev = jev
         self._jev_missing = jev_missing
         self._search = search or knowledge.SEARCH
         self._pages = pages or no_pages
+        # deepseek-flash reading an image (vision.py); None without a key, and then
+        # every file of a turn is logged as not read.
+        self._see = see
 
     def prepare(self, request: TurnRequest, client: AbilityClient) -> Prepared:
         message = _last_customer_message(request)
@@ -105,26 +122,40 @@ class Understander:
             {"kind": m.kind, "value": m.value, "words": m.words} for m in matches
         ]
         subject = _subject(request, matches, vocabulary)
-        reading = self._read(request, message, vocabulary, log)
-        # Jev's yes/no answers count from 0.5, the cut the measurement scored
-        # about_this_page by (59 of 60 right, docs/research/2026-10-17-jev-intent/).
-        about_page = reading is not None and reading.about_this_page >= 0.5
-        if about_page and request.page_context.product_id:
-            subject = _with_page_product(subject, request, vocabulary)
-        bare = vocabulary.bare(message) if vocabulary else False
-        route = plan(message, matches, reading, subject, request.locale, bare)
-        # Jev's answer decides when the page's own content is read (#234).
-        route = with_page(
-            route,
-            request.page_context,
-            about_page,
-            request.user.logged_in,
-            subject,
-            message,
+        # This turn's files are read first (#236): a nameplate decides the route.
+        fresh = (
+            attachments.read(request.attachments, len(request.readings), self._see)
+            if request.attachments
+            else []
         )
+        plate = _first_nameplate(fresh, vocabulary)
+        reading: Reading | None = None
+        if plate is not None:
+            # A nameplate is confirmed before anything else is answered about it, so
+            # Jev is not asked: the route is the nameplate's (route.nameplate).
+            route = nameplate(plate, request.locale, subject, [])
+        else:
+            reading = self._read(request, message, vocabulary, log)
+            # Jev's yes/no answers count from 0.5, the cut the measurement scored
+            # about_this_page by (59 of 60 right, docs/research/2026-10-17-jev-intent/).
+            about_page = reading is not None and reading.about_this_page >= 0.5
+            if about_page and request.page_context.product_id:
+                subject = _with_page_product(subject, request, vocabulary)
+            bare = vocabulary.bare(message) if vocabulary else False
+            route = plan(message, matches, reading, subject, request.locale, bare)
+            # Jev's answer decides when the page's own content is read (#234).
+            route = with_page(
+                route,
+                request.page_context,
+                about_page,
+                request.user.logged_in,
+                subject,
+                message,
+            )
         log.update(route.as_log())
-        prepared = Prepared(route=route, log=log, reading=reading)
+        prepared = Prepared(route=route, log=log, reading=reading, readings=fresh)
         _run_calls(prepared, request, client, self._search, self._pages)
+        _add_readings(prepared, [*request.readings, *fresh], fresh, plate, vocabulary)
         return prepared
 
     def _load_vocabulary(self, log: dict[str, Any]) -> Vocabulary | None:
@@ -165,6 +196,70 @@ class Understander:
             return None
         log["jev"] = reading.as_log()
         return reading
+
+
+def _first_nameplate(
+    fresh: list[AttachmentReading], vocabulary: Vocabulary | None
+) -> Identified | None:
+    for reading in fresh:
+        found = identify(reading, vocabulary)
+        if found is not None:
+            return found
+    return None
+
+
+def _add_readings(
+    prepared: Prepared,
+    readings: list[AttachmentReading],
+    fresh: list[AttachmentReading],
+    plate: Identified | None,
+    vocabulary: Vocabulary | None,
+) -> None:
+    """Every reading of the conversation as this turn's facts; a card per new file.
+
+    The conversation keeps the latest `MAX_READINGS` (the proxy cuts the same way).
+    """
+    parts = [prepared.facts]
+    for item in readings[-MAX_READINGS:]:
+        payload, gathered = attachments.record(item)
+        parts.append(gathered)
+        prepared.attachments.append(payload)
+    prepared.facts = merge(parts)
+    shown = [
+        pid
+        for result in prepared.results
+        if result["name"] == "linker/search-products"
+        for pid in _qualified(result["result"])
+    ]
+    labels = dict(vocabulary.labels) if vocabulary else {}
+    for item in fresh:
+        identified = (
+            plate if plate is not None and plate.reading_id == item.id else None
+        )
+        if identified is None and item.kind == "nameplate":
+            identified = identify(item, vocabulary)
+        prepared.cards.append(card(item, identified, shown, labels))
+    if fresh:
+        prepared.log["attachments"] = [
+            {
+                "id": item.id,
+                "kind": item.kind,
+                "failed": item.failed,
+                "match": c.get("match"),
+            }
+            for item, c in zip(fresh, prepared.cards, strict=True)
+        ]
+
+
+def _qualified(result: Any) -> list[int]:
+    found: list[int] = []
+    for item in (
+        (result or {}).get("qualified") or [] if isinstance(result, dict) else []
+    ):
+        pid = item.get("product_id") if isinstance(item, dict) else None
+        if isinstance(pid, int) and pid not in found:
+            found.append(pid)
+    return found
 
 
 def _last_customer_message(request: TurnRequest) -> str:

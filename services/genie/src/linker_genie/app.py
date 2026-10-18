@@ -20,7 +20,13 @@ from fastapi.responses import StreamingResponse
 
 from linker_genie import contact, ground, jev, page
 from linker_genie.abilities import AbilityClient
-from linker_genie.agent import make_generate, model_name, provider_name
+from linker_genie.agent import (
+    DEFAULT_BASE_URL,
+    _env_with_credentials,
+    make_generate,
+    model_name,
+    provider_name,
+)
 from linker_genie.cycle import TurnResult, run
 from linker_genie.facts import TurnFacts
 from linker_genie.log import TurnLog
@@ -28,6 +34,7 @@ from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup
 from linker_genie.schema import TurnOutput, TurnRequest, VoteRequest
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.understand import Prepared, Understander
+from linker_genie.vision import Vision
 
 app = FastAPI(title="Genie - Linker's AI assistant")
 
@@ -35,6 +42,7 @@ _log: TurnLog | None = None
 _client: AbilityClient | None = None
 _understander: Understander | None = None
 _pages: page.PageReader | None = None
+_vision: Vision | None = None
 
 
 def _log_path() -> Path:
@@ -73,13 +81,33 @@ def page_reader() -> page.PageReader:
     return _pages
 
 
+def vision() -> Vision | None:
+    """deepseek-flash reading the customer's images (vision.py, #236), with the chat
+    model's own key, address and name; None when no key is configured."""
+    global _vision
+    if _vision is None:
+        env = _env_with_credentials()
+        key = env.get("GENIE_API_KEY") or env.get("DEEPSEEK_API_KEY") or ""
+        if key:
+            base = (
+                env.get("GENIE_BASE_URL")
+                or env.get("DEEPSEEK_BASE_URL")
+                or DEFAULT_BASE_URL
+            )
+            _vision = Vision(key, base, model_name())
+    return _vision
+
+
 def understander() -> Understander:
-    """Product words from the site's Store API, Jev on OpenRouter, and the customer's
-    page read from the site (understand.py)."""
+    """Product words from the site's Store API, Jev on OpenRouter, the customer's
+    page read from the site, and their files read by deepseek-flash (understand.py)."""
     global _understander
     if _understander is None:
         _understander = Understander(
-            StoreVocabulary(_wp_url()).get, jev.from_env(), pages=page_reader().read
+            StoreVocabulary(_wp_url()).get,
+            jev.from_env(),
+            pages=page_reader().read,
+            see=vision(),
         )
     return _understander
 
@@ -233,6 +261,12 @@ def _sse(
         "jev_error": prepared.log.get("jev_error"),
     }
     yield _event("meta", meta)
+    # This turn's files (#236): what the shell shows for each, and the reading the
+    # proxy keeps with the conversation (and takes out of the stream it stores).
+    for card in prepared.cards:
+        yield _event("attachment", card)
+    for reading in prepared.readings:
+        yield _event("reading", reading.model_dump())
     blocks = shipped.get("blocks")
     for block in blocks if isinstance(blocks, list) else []:
         yield _event("block", block)
