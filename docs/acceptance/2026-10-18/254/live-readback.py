@@ -36,24 +36,24 @@ if args.mode == 'start':
     page_function = r'''async function pageFunction({sendRequest, request}) {
       const result=[];
       for (const path of request.userData.paths) {
-        const r=await sendRequest({url:'https://de-linker.com'+path,followRedirect:false});
+        const r=await sendRequest({url:'https://de-linker.com'+path,followRedirect:false,http2:false,throwHttpErrors:false,retry:{limit:2}});
         const html=String(r.body); const title=html.match(/<title>([\s\S]*?)<\/title>/i)?.[1]||'';
         result.push({path,status:r.statusCode,location:r.headers.location||'',title,
           metadata:[...html.matchAll(/<(?:link|meta)\b[^>]*(?:canonical|hreflang|og:url)[^>]*>/gi)].map(m=>m[0])});
       }
       if (!request.userData.sitemaps) return result;
-      const index=await sendRequest({url:'https://de-linker.com/sitemaps.xml'});
+      const index=await sendRequest({url:'https://de-linker.com/sitemaps.xml',http2:false,throwHttpErrors:false,retry:{limit:2}});
       result.push({path:'/sitemaps.xml',status:index.statusCode,xml:index.body});
       for (const m of String(index.body).matchAll(/<loc>([^<]+)<\/loc>/g)) {
         if (!m[1].startsWith('https://de-linker.com/') || !m[1].endsWith('.xml')) throw new Error('Unexpected sitemap');
-        const r=await sendRequest({url:m[1]}); result.push({path:new URL(m[1]).pathname,status:r.statusCode,xml:r.body});
+        const r=await sendRequest({url:m[1],http2:false,throwHttpErrors:false,retry:{limit:2}}); result.push({path:new URL(m[1]).pathname,status:r.statusCode,xml:r.body});
       }
       return result;
     }'''
     batches = [paths[i:i+10] for i in range(0, len(paths), 10)]
     starts = [{'url':'https://de-linker.com/de/', 'uniqueKey':f'readback-{i}', 'userData':{'paths':batch, 'sitemaps':i == 0}} for i, batch in enumerate(batches)]
     run = api('acts/apify~playwright-scraper/runs', {'startUrls':starts,
-        'maxRequestsPerCrawl':len(starts), 'maxConcurrency':2, 'maxRequestRetries':0,
+        'maxRequestsPerCrawl':len(starts), 'maxConcurrency':2, 'maxRequestRetries':1,
         'pageFunctionTimeoutSecs':120,
         'maxScrollHeightPixels':0, 'waitUntil':'domcontentloaded',
         'preNavigationHooks':'[async ({page}, options) => { options.waitUntil="domcontentloaded"; }]',

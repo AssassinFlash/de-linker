@@ -25,6 +25,62 @@ final class GermanUrlsTest extends SiteTestCase {
 	 */
 	private mixed $migration_state = null;
 
+	/** Real owned inquiries and a native logout nonce survive the translated endpoints. */
+	public function test_owned_inquiry_details_and_native_logout_keep_their_identity(): void {
+		$fixture = self::php( '$id = wp_insert_user( array( "user_login" => "i254-detail-" . wp_generate_uuid4(), "user_pass" => wp_generate_password(), "user_email" => "i254-detail@example.test", "role" => "customer" ) ); if ( is_wp_error( $id ) ) { throw new RuntimeException( $id->get_error_message() ); } update_user_meta( $id, Linker\\Commerce\\Registration\\Approval::STATUS_META, "approved" ); $orders = array(); for ( $n = 0; $n < 2; ++$n ) { $order = new WC_Order(); $order->set_customer_id( $id ); $order->set_status( "inquiry-received" ); $order->update_meta_data( "_linker_locale", "de_DE_formal" ); $orders[] = $order->save(); } $cookie = wp_generate_auth_cookie( $id, time() + 600, "logged_in" ); $_COOKIE[LOGGED_IN_COOKIE] = $cookie; wp_set_current_user( $id ); return array( "id" => $id, "orders" => $orders, "cookie" => LOGGED_IN_COOKIE . "=" . $cookie, "nonce" => wp_create_nonce( "customer-logout" ) );' );
+		$applied = false;
+		try {
+			self::wp( array( 'linker-i18n', 'german-urls', '--apply' ) );
+			$applied = true;
+			$headers = array( 'Cookie' => $fixture['cookie'] );
+			$proof   = array();
+			$titles  = array();
+			foreach ( $fixture['orders'] as $id ) {
+				$old   = '/de/mein-konto/inquiry/' . $id . '/';
+				$new   = '/de/mein-konto/anfrage/' . $id . '/';
+				$alias = self::get( $old, $headers );
+				self::assertSame( 301, $alias['status'] );
+				self::assertSame( self::$site . $new, $alias['headers']['location'] ?? '' );
+				$page = self::get( $new, $headers );
+				self::assertSame( 200, $page['status'] );
+				preg_match( '#<title>(.*?)</title>#s', $page['body'], $match );
+				$title = html_entity_decode( $match[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+				self::assertSame( 'Anfrage ' . $id . ' | Linker', $title );
+				self::assertNotContains( $title, $titles );
+				$titles[] = $title;
+				$proof[]  = array(
+					'old'   => $old,
+					'new'   => $new,
+					'first' => $alias['status'],
+					'final' => $page['status'],
+					'title' => $title,
+				);
+			}
+			// Native Woo endpoint nonce for this owned session; the header keeps WordPress's one-click logout.
+			$logout = '/de/mein-konto/abmelden/?_wpnonce=' . $fixture['nonce'];
+			$old    = self::get( str_replace( '/abmelden/', '/customer-logout/', $logout ), $headers );
+			self::assertSame( 301, $old['status'] );
+			self::assertSame( self::$site . $logout, $old['headers']['location'] ?? '' );
+			$transition = self::get( $logout, $headers );
+			self::assertSame( 302, $transition['status'] );
+			self::assertStringStartsWith( self::$site . '/de/mein-konto/', $transition['headers']['location'] ?? '' );
+			$guest = self::get( '/de/mein-konto/', $headers );
+			self::assertStringContainsString( '<title>Beim Partnerkonto anmelden | Linker</title>', $guest['body'], 'The original session is invalid after native logout.' );
+			$proof[] = array(
+				'old'        => '/de/mein-konto/customer-logout/?_wpnonce=LOCAL_NONCE',
+				'new'        => '/de/mein-konto/abmelden/?_wpnonce=LOCAL_NONCE',
+				'first'      => $old['status'],
+				'transition' => $transition['status'],
+				'final'      => $guest['status'],
+			);
+			self::evidence( 'functional-http.json', (string) json_encode( $proof, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+		} finally {
+			if ( $applied ) {
+				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) ); }
+			self::php( 'foreach ( $input["orders"] as $id ) { wc_get_order( $id )->delete( true ); } require_once ABSPATH . "wp-admin/includes/user.php"; wp_delete_user( $input["id"] );', $fixture );
+		}
+	}
+
 	/** Native paging and language alternates keep both the page number and language. */
 	public function test_paginated_blog_and_category_addresses_have_german_paths_and_alternates(): void {
 		$per_page = self::php( '$old = get_option( "posts_per_page" ); update_option( "posts_per_page", 1 ); return $old;' );
@@ -330,6 +386,20 @@ final class GermanUrlsTest extends SiteTestCase {
 			self::assertSame( 200, $page['status'] );
 			preg_match( '#<title>(.*?)</title>#s', $page['body'], $match );
 			self::assertSame( 'Anfrage eingegangen – ' . $id . ' | Linker', html_entity_decode( $match[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+			self::evidence(
+				'confirmation-http.json',
+				(string) json_encode(
+					array(
+						'old'           => '/de/proforma-anfrage/inquiry-received/' . $id . '/',
+						'new'           => strtok( $path, '?' ),
+						'first'         => $legacy['status'],
+						'final'         => $page['status'],
+						'title'         => html_entity_decode( $match[1] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
+						'key_preserved' => true,
+					),
+					JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+				)
+			);
 		} finally {
 			if ( $applied ) {
 				self::wp( array( 'linker-i18n', 'german-urls', '--rollback', '--apply' ) ); }
@@ -339,6 +409,8 @@ final class GermanUrlsTest extends SiteTestCase {
 
 	/** Unreviewed source data fails the complete preflight before a first backup. */
 	public function test_unexpected_existing_slug_is_a_read_only_conflict(): void {
+		// This case is the first deployment; other cases exercise retained-backup conflicts.
+		self::php( 'delete_option( "linker_i18n_german_urls_backup" );' );
 		$fixture = self::php( '$en = get_page_by_path( "faq-download" ); $id = pll_get_post( $en->ID, "de" ); $old = get_post_field( "post_name", $id ); wp_update_post( array( "ID" => $id, "post_name" => "i254-unreviewed-faq" ) ); return array( "id" => $id, "old" => $old, "backup" => get_option( "linker_i18n_german_urls_backup", null ) );' );
 		try {
 			foreach ( array( '--dry-run', '--apply' ) as $flag ) {
