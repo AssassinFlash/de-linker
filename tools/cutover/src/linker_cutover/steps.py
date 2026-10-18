@@ -309,6 +309,13 @@ def deploy(
         "wp linker-commerce present --user=1 --allow-stale (now run the WindPress "
         "admin compile: npm tools/windpress-compile.mjs with an admin login)"
     )
+    # The switch-time reset covers the rename itself; present and the plugin
+    # activation run afterwards, and a request can still meet a tree the
+    # workers compiled before them (one 500 in the 2026-10-18 probe window).
+    # A second reset at the end leaves every worker compiling the final tree.
+    refresh = target.shell(opcache_reset_script(target))
+    line = refresh.replace(atomic.AFTER_SWITCH_MARKER, "").strip().splitlines()[-1:]
+    actions.append("after present: " + (" ".join(line) or "opcache-reset=unknown"))
     if reminder:
         # Last, so it is the line the log ends on and never shifts the others.
         actions.append(reminder)
