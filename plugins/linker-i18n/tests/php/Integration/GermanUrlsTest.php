@@ -614,7 +614,9 @@ final class GermanUrlsTest extends SiteTestCase {
 				}'
 			);
 			self::assertCount( 1, $result['mails'], 'Exactly one delivery, captured in a local file.' );
-			$mail = quoted_printable_decode( $result['mails'][0] );
+			$mail = $result['mails'][0];
+			self::assertStringContainsString( 'Content-Transfer-Encoding: 8bit', $mail );
+			self::assertSame( 1, preg_match( '//u', $mail ), 'The captured UTF-8 email must remain valid UTF-8.' );
 			self::evidence( 'approval.eml', $mail );
 			self::assertStringContainsString( 'To: tester@example.test', $mail );
 			self::assertStringContainsString( 'href="' . self::$site . '/de/mein-konto/"', $mail );
