@@ -1272,3 +1272,30 @@ def test_the_deploy_reports_the_after_switch_reset(tmp_path: Path) -> None:
         if line.startswith("total switch duration")
     )
     assert result.actions[timing + 1] == "after switch: opcache-reset=stub attempts=0"
+
+
+def test_a_second_staging_of_the_same_tree_skips_the_rebuild(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Composer ran on every deploy: the same tree must not be rebuilt twice."""
+    repository = tmp_path / "repo"
+    source = repository / plan.REPO / "linker-commerce"
+    source.mkdir(parents=True)
+    (source / "linker-commerce.php").write_text("<?php", encoding="utf-8")
+    staging = tmp_path / "staging"
+    steps.stage_plugin(repository, "linker-commerce", staging)
+
+    calls: list[list[str]] = []
+
+    def capture(command: list[str], *args: object, **kwargs: object) -> object:
+        del args, kwargs
+        calls.append(command)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("linker_cutover.steps.subprocess.run", capture)
+    steps.stage_plugin(repository, "linker-commerce", staging)
+    assert calls == [], "the unchanged tree must not run rsync or Composer"
+
+    (source / "linker-commerce.php").write_text("<?php // changed", encoding="utf-8")
+    steps.stage_plugin(repository, "linker-commerce", staging)
+    assert calls and calls[0][0] == "rsync", "a change rebuilds the tree"

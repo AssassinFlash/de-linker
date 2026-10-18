@@ -14,6 +14,7 @@ that assumes one would quietly match nothing on a site that changed it.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shlex
@@ -92,6 +93,21 @@ def stage_plugin(repository: Path, slug: str, staging: Path) -> Path:
     if not (source / f"{slug}.php").is_file():
         raise CutoverError(f"{source} does not look like the {slug} plugin")
     destination = Path(staging) / slug
+    stamp = Path(staging) / ".stage" / f"{slug}.sha256"
+    fingerprint = _stage_fingerprint(source)
+    if (
+        stamp.is_file()
+        and stamp.read_text(encoding="utf-8").strip() == fingerprint
+        and (
+            not (destination / "composer.json").is_file()
+            or (destination / "vendor").is_dir()
+        )
+    ):
+        # Nothing changed since the last build: the staged tree already is the
+        # source with its runtime vendor (the Composer build was ~8 minutes of
+        # every deploy, 2026-10-18). The fingerprint covers every source file,
+        # dev files included: a test edit rebuilds, which is merely slower.
+        return destination
     destination.mkdir(parents=True, exist_ok=True)
     excludes: list[str] = []
     for pattern in plan.DEPLOY_EXCLUDES:
@@ -128,7 +144,19 @@ def stage_plugin(repository: Path, slug: str, staging: Path) -> Path:
                 f"composer install --no-dev in {destination}: "
                 + (installed.stderr or installed.stdout).strip()
             )
+    stamp.parent.mkdir(parents=True, exist_ok=True)
+    stamp.write_text(fingerprint + "\n", encoding="utf-8")
     return destination
+
+
+def _stage_fingerprint(source: Path) -> str:
+    """sha256 over every source file's path and content: the staging cache key."""
+    digest = hashlib.sha256()
+    for path in sorted(item for item in source.rglob("*") if item.is_file()):
+        digest.update(path.relative_to(source).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
 
 
 def deployment_artifacts(repository: Path) -> list[atomic.Artifact]:
