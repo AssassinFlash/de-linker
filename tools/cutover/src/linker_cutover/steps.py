@@ -298,6 +298,12 @@ def deploy(
     target.wp("plugin", "activate", *plan.NEW_PLUGINS)
     actions.append("wp plugin activate " + " ".join(plan.NEW_PLUGINS))
     actions += deploy_language_packs(target)
+    # Templates and the WindPress volume are data, not files: without present a
+    # deploy keeps the previous volume, and a page whose fragment changed (the
+    # inquiry form on 2026-10-18) renders unstyled. Idempotent; present keeps its
+    # own rollback copy.
+    target.wp("linker-commerce", "present", "--user=1")
+    actions.append("wp linker-commerce present --user=1")
     if reminder:
         # Last, so it is the line the log ends on and never shifts the others.
         actions.append(reminder)
