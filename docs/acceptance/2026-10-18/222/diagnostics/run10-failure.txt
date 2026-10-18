@@ -9,7 +9,7 @@ Running 4 tests using 1 worker
   ✘  4 [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session (48.7s)
 
 
-  1) [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session 
+  1) [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session
 
     Error: expect(locator).toHaveCount(expected) failed
 
@@ -37,6 +37,6 @@ Running 4 tests using 1 worker
     Error Context: artifacts/test-results/pending-account-de-390-reg-a6326-approve-in-the-same-session-chromium/error-context.md
 
   1 failed
-    [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session 
+    [chromium] › specs/pending-account.spec.ts:43:3 › de 390: register → pending workspace and inquiry → approve in the same session
   3 passed (2.0m)
 error: recipe `e2e` failed with exit code 1
