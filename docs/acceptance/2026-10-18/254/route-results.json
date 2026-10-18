@@ -65,7 +65,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Anwendungen | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/anwendungen/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/applications-blog/",
         "de": "http://127.0.0.1:9129/de/kategorie/anwendungen/",
@@ -83,7 +83,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Anwendungen | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/anwendungen/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/applications-blog/",
         "de": "http://127.0.0.1:9129/de/kategorie/anwendungen/",
@@ -101,7 +101,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Batteriespeicher | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/batteriespeicher/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/battery-storage-blog/",
         "de": "http://127.0.0.1:9129/de/kategorie/batteriespeicher/",
@@ -119,7 +119,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Batteriespeicher | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/batteriespeicher/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/battery-storage-blog/",
         "de": "http://127.0.0.1:9129/de/kategorie/batteriespeicher/",
@@ -137,7 +137,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Installation & Inbetriebnahme | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/installation-inbetriebnahme/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/installation-commissioning/",
         "de": "http://127.0.0.1:9129/de/kategorie/installation-inbetriebnahme/",
@@ -155,7 +155,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Installation & Inbetriebnahme | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/installation-inbetriebnahme/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/installation-commissioning/",
         "de": "http://127.0.0.1:9129/de/kategorie/installation-inbetriebnahme/",
@@ -173,7 +173,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Überwachung & Energiemanagement | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/ueberwachung-energiemanagement/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/monitoring-energy-management/",
         "de": "http://127.0.0.1:9129/de/kategorie/ueberwachung-energiemanagement/",
@@ -191,7 +191,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Systemauslegung | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/systemauslegung/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/system-design/",
         "de": "http://127.0.0.1:9129/de/kategorie/systemauslegung/",
@@ -209,7 +209,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Systemauslegung | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/systemauslegung/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/system-design/",
         "de": "http://127.0.0.1:9129/de/kategorie/systemauslegung/",
@@ -227,7 +227,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Überwachung & Energiemanagement | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/ueberwachung-energiemanagement/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/monitoring-energy-management/",
         "de": "http://127.0.0.1:9129/de/kategorie/ueberwachung-energiemanagement/",
@@ -245,7 +245,7 @@
       "state": "guest",
       "final_status": 200,
       "title": "Beiträge: Überwachung & Energiemanagement | Linker",
-      "canonical": "",
+      "canonical": "http://127.0.0.1:9129/de/kategorie/ueberwachung-energiemanagement/",
       "hreflang": {
         "en": "http://127.0.0.1:9129/category/monitoring-energy-management/",
         "de": "http://127.0.0.1:9129/de/kategorie/ueberwachung-energiemanagement/",
@@ -679,9 +679,9 @@
       "title": "Unternehmensdaten | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/unternehmen/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/company/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/unternehmen/",
+        "x-default": "http://127.0.0.1:9129/my-account/company/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/unternehmen/"
     },
@@ -697,9 +697,9 @@
       "title": "Rechnungsadresse | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/unternehmen/rechnungsadresse/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/company/billing/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/unternehmen/rechnungsadresse/",
+        "x-default": "http://127.0.0.1:9129/my-account/company/billing/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/unternehmen/rechnungsadresse/"
     },
@@ -715,9 +715,9 @@
       "title": "Lieferadresse | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/unternehmen/lieferadresse/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/company/shipping/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/unternehmen/lieferadresse/",
+        "x-default": "http://127.0.0.1:9129/my-account/company/shipping/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/unternehmen/lieferadresse/"
     },
@@ -752,9 +752,9 @@
       "title": "Dokumente | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/dokumente/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/documents/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/dokumente/",
+        "x-default": "http://127.0.0.1:9129/my-account/documents/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/dokumente/"
     },
@@ -770,9 +770,9 @@
       "title": "Kontodaten | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/kontodaten/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/edit-account/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/kontodaten/",
+        "x-default": "http://127.0.0.1:9129/my-account/edit-account/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/kontodaten/"
     },
@@ -788,9 +788,9 @@
       "title": "Anfragen | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/anfragen/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/inquiries/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/anfragen/",
+        "x-default": "http://127.0.0.1:9129/my-account/inquiries/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/anfragen/"
     },
@@ -806,9 +806,9 @@
       "title": "Anfragen – Seite 2 | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/anfragen/2/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/inquiries/2/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/anfragen/2/",
+        "x-default": "http://127.0.0.1:9129/my-account/inquiries/2/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/anfragen/2/"
     },
@@ -824,9 +824,9 @@
       "title": "Passwort zurücksetzen | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/passwort-zuruecksetzen/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/lost-password/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/passwort-zuruecksetzen/",
+        "x-default": "http://127.0.0.1:9129/my-account/lost-password/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/passwort-zuruecksetzen/"
     },
@@ -842,9 +842,9 @@
       "title": "Partnerkonto erstellen | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/registrieren/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/register/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/registrieren/",
+        "x-default": "http://127.0.0.1:9129/my-account/register/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/registrieren/"
     },
@@ -860,9 +860,9 @@
       "title": "Gespeicherte Lösungen | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/gespeicherte-loesungen/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/saved-solutions/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/gespeicherte-loesungen/",
+        "x-default": "http://127.0.0.1:9129/my-account/saved-solutions/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/gespeicherte-loesungen/"
     },
@@ -878,9 +878,9 @@
       "title": "Rechnungsadresse | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/unternehmen/rechnungsadresse/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/company/billing/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/unternehmen/rechnungsadresse/",
+        "x-default": "http://127.0.0.1:9129/my-account/company/billing/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/unternehmen/rechnungsadresse/"
     },
@@ -896,9 +896,9 @@
       "title": "Lieferadresse | Linker",
       "canonical": "http://127.0.0.1:9129/de/mein-konto/unternehmen/lieferadresse/",
       "hreflang": {
-        "en": "http://127.0.0.1:9129/my-account/",
-        "de": "http://127.0.0.1:9129/de/mein-konto/",
-        "x-default": "http://127.0.0.1:9129/my-account/"
+        "en": "http://127.0.0.1:9129/my-account/company/shipping/",
+        "de": "http://127.0.0.1:9129/de/mein-konto/unternehmen/lieferadresse/",
+        "x-default": "http://127.0.0.1:9129/my-account/company/shipping/"
       },
       "share": "http://127.0.0.1:9129/de/mein-konto/unternehmen/lieferadresse/"
     },
