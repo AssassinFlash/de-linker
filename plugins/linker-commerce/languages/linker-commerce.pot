@@ -4144,3 +4144,7 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr ""
+
+#: includes/Presentation/AccountLinks.php
+msgid "Create account"
+msgstr ""

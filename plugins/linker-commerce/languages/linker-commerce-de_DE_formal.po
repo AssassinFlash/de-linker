@@ -4753,3 +4753,7 @@ msgstr "Mengen"
 #: templates/emails/linker-inquiry-summary.php
 msgid "Conditions"
 msgstr "Projektbedingungen"
+
+#: includes/Presentation/AccountLinks.php
+msgid "Create account"
+msgstr "Konto erstellen"

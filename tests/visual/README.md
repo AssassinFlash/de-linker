@@ -34,3 +34,18 @@ sRGB to avoid GPU dithering, disabled motion/caret, full-height layout before
 decoding lazy images, and loaded fonts. The preview card is dismissed only in
 each disposable browser context so the page is captured at rest. Historical
 acceptance artefacts stay in their ticket directories; new runs call this tool.
+
+For a disclosure or another state, use `--scenarios <json>` instead of
+`--paths`. Each scenario contains a unique `name`, `path`, optional `widths`,
+ordered `actions` (`click`, `fill: [selector, value]`, or `press: [selector, key]`),
+and `ruledRegions: [{name, selector, padding?}]`. Selectors may match repeated
+components; each matching rectangle is recorded separately, using the union of
+the live and local bounds. A new component may be absent on live; it must exist
+locally. Padding is an explicit part of the ruled region, for example the
+existing shadow of an expanded account menu, and needs ledger evidence.
+
+`--baseline` captures the local before images only (and reuses existing before
+images). It does not compare or change the site. Normal capture keeps full raw
+images and exact raw pixel counts. The comparator additionally reports
+`outside_ruled_different_pixels`; any nonzero value fails. Different image sizes
+are recorded as failures and are never cropped, padded or aligned away.

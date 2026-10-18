@@ -18,7 +18,7 @@ sign-in 页与注册页两张独立页面，保留互相跳转入口。设计基
 | 注册表单 action | `#linker-register`（回账号页锚点） | 注册页自身（空 action = 本页），Woo 的校验错误落回注册页 |
 | 端点注册 | 无 | `AuthTemplates` 经 `woocommerce_get_query_vars` 加 `register` 查询变量（与 `saved-solutions`/`documents` 同一机制） |
 | 菜单 | 不含注册 | 同样不含：`Menu::items()` 把 `register` 列入"已知"，Woo 的 `wc_get_account_menu_items()` 不再把它当陌生端点补成一行 |
-| 页脚 Konto 面板 `Anmelden` / `Sign in` | `/my-account/` | 不变（登录页），注册页从登录卡进入 |
+| 页脚 Konto 面板 `Anmelden` / `Sign in` | `/my-account/` | 登录仍到账号页；#223 在同一项目增加直达注册页的 `Create account` / `Konto erstellen` |
 
 ## 2. 选型：Woo 端点法（而非独立 WP 页 + LC 模板）
 
@@ -59,7 +59,7 @@ LC 模板法被否的理由：注册链的载体是 Woo 的模板与表单处理
 | 登录与注册拆成两个页面（`/my-account/` = 登录；`/my-account/register/` = 注册），两页互跳 | **业主 2026-10-16 指令**："现状一页一长串，拆成 sign in 页 + 注册页，保留互相跳转入口" | 账号链 guest 面：账号页 + 新端点页；卡内布局、字段、nonce、校验、处理链不动 |
 | 新增公开 URL `/my-account/register/`（DE `/de/mein-konto/register/`） | 同上（端点法，§2） | 站点 url 表新增一条端点 URL；canonical 仍指向 `/my-account/`（SEOPress 对账号页各端点的既有行为，与 `/my-account/documents/` 完全一致）；`<title>` 沿用账号页标题（同一既有行为） |
 | 空草稿页（cart）guest 框的 `No account yet? Register` 改指注册页 | 同上（该链接自称 Register，目标页就是注册页） | `Gating\DraftSummary::guest_totals()` 一处链接；文案不变 |
-| 页头 / 页脚 / 空 Proforma 门禁的入口 | 同上（最简优先） | **不改**：页头 guest 一条 `Sign in`、页脚 Konto 面板 `Anmelden`/`Sign in`、门禁主按钮 `Sign in or register` 全部指向登录页，由登录卡内的注册入口分流——与原型 `gates.html` 的单主按钮形态一致 |
+| 页头 / 页脚 / 访客登录提示的入口 | 业主 #223 指令推翻原来只经登录卡分流的选择 | 每个访客登录提示旁均有直接注册入口。询盘已对访客开放；空 Proforma 登录门禁不再存在，不恢复它 |
 
 ## 4. 实现映射
 
@@ -106,5 +106,4 @@ LC 模板法被否的理由：注册链的载体是 Woo 的模板与表单处理
 
 - 注册页沿用账号页的 SEO 标题与 canonical（站点对账号页全部端点的既有行为）。若业主希望
   注册页有自己的 `<title>`，落点是 SEO 标题层（SEOPress 模板 + `Labels`），与本票无关。
-- 门禁页主按钮仍是单条 `Sign in or register` → 登录页。若业主希望门禁直接给出两个按钮，
-  改动点是 `Presentation\LoginGate::action()` 的两处调用。
+- #223 已裁定全部访客登录提示旁提供独立注册入口，包括密码找回、文档 403 和 Genie。文档和询盘的账户归属检查不变；新建账户不授予原账户的权限。注册开关关闭或访客已登录时不提供创建账户入口。

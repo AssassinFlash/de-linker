@@ -9,6 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Account;
 
+use Linker\Commerce\Presentation\AccountLinks;
+use Linker\Commerce\Presentation\Tokens;
+
 use Linker\Commerce\Proforma\Issuer;
 use WC_Order;
 
@@ -127,11 +130,15 @@ final class DocumentDownload {
 	 */
 	private function deny(): void {
 		wp_die(
-			sprintf(
-				'<p>%1$s</p><p><a href="%2$s">%3$s</a></p>',
-				esc_html__( 'This document is available to the account it belongs to. Please log in with that account.', 'linker-commerce' ),
-				esc_url( wc_get_page_permalink( 'myaccount' ) ),
-				esc_html__( 'Log in', 'linker-commerce' )
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- All substitutions are escaped data or escaped LC fragments.
+			strtr(
+				Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/account/document-denied.html' ),
+				array(
+					'{{message}}'    => esc_html__( 'This document is available to the account it belongs to. Please log in with that account.', 'linker-commerce' ),
+					'{{signin-url}}' => esc_url( wc_get_page_permalink( 'myaccount' ) ),
+					'{{signin}}'     => esc_html__( 'Log in', 'linker-commerce' ),
+					'{{create}}'     => AccountLinks::create(),
+				)
 			),
 			esc_html__( 'Document', 'linker-commerce' ),
 			array( 'response' => 403 )

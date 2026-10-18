@@ -11,6 +11,27 @@ from PIL import Image
 
 
 class ExactPixelComparison(unittest.TestCase):
+    def test_only_declared_region_may_differ(self):
+        for point, expected_exit in (((0, 0), 0), ((1, 1), 1)):
+            with self.subTest(point=point), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "capture.json").write_text(json.dumps({
+                    "cases": [{"path": "/", "stem": "home", "width": 2,
+                               "language": "en", "headerHeight": 1,
+                               "ruledRegions": [{"name": "new registration entry",
+                                                 "bounds": [0, 0, 1, 1]}]}],
+                    "allowedHeaderChanges": [],
+                }))
+                image = Image.new("RGB", (2, 2))
+                image.save(root / "home-2-live.png")
+                image.putpixel(point, (0, 1, 0))
+                image.save(root / "home-2-local.png")
+                result = subprocess.run([sys.executable, str(Path(__file__).with_name("compare.py")), directory], capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, expected_exit, result.stderr)
+                row = json.loads((root / "results.json").read_text())[0]
+                self.assertEqual(row["unmasked_different_pixels"], 1)
+                self.assertEqual(row["outside_ruled_different_pixels"], expected_exit)
+
     def test_exact_rgb_and_dimensions(self):
         # A one-level green change rounds to zero with luminance conversion.
         # It must still fail the exact RGB contract, just like a size change.

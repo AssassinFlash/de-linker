@@ -50,7 +50,7 @@ $auth_notices = (string) ob_get_clean();
 
 			</form>
 
-			<p class="linker-auth-links"><a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>"><?php esc_html_e( 'Back to sign in', 'linker-commerce' ); ?></a></p>
+			<p class="linker-auth-links"><a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>"><?php esc_html_e( 'Back to sign in', 'linker-commerce' ); ?></a><?php echo \Linker\Commerce\Presentation\AccountLinks::create(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped data in the LC registration fragment. ?></p>
 		</section>
 	</div>
 </div>

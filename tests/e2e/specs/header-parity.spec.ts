@@ -14,7 +14,7 @@ import { expect, test } from '@playwright/test';
  */
 import { instance } from '../lib/instance';
 
-// Header-only checks never wait for a model. The 90-width sweep takes ~7s;
+// Header-only checks never wait for a model. The 95-width sweep takes ~7s;
 // 45s also allows snapshot page loads, instead of the suite's 300s model budget.
 test.describe.configure({ timeout: 45_000 });
 
@@ -117,9 +117,14 @@ test('EN/DE follow the ruled header fold boundaries', async ({
 	const expectedMismatches =
 		browserName === 'firefox' ? [1283, 1284, 1285, 1286, 1287] : [];
 	// Review round 1: every pixel around the 1282 fold boundary, then every
-	// 10px through 1940, plus mobile. 1300 is included once: 90 widths total.
+	// 10px through 1940, plus mobile. 1300 is included once: 95 widths total after #223 adds mobile and boundary neighbours.
 	const widths = [
+		389,
 		390,
+		391,
+		1275,
+		1301,
+		1366,
 		...Array.from({ length: 25 }, (_, index) => 1276 + index),
 		...Array.from({ length: 64 }, (_, index) => 1310 + index * 10),
 	];
@@ -198,6 +203,13 @@ test('EN/DE follow the ruled header fold boundaries', async ({
 							cta: getComputedStyle(cta).display !== 'none',
 							toggle: getComputedStyle(toggle).display !== 'none',
 							links: nav.querySelectorAll('.tv-nav-link').length,
+							registration: [
+								...header.querySelectorAll(
+									'.tv-b2b-acct-menu>.linker-create-account, .tv-mobile-utility-row>.linker-create-account'
+								),
+							].map(
+								(link) => (link as HTMLAnchorElement).pathname
+							),
 							padding: getComputedStyle(
 								header.querySelector('.tv-nav-link')!
 							).paddingLeft,
@@ -220,6 +232,15 @@ test('EN/DE follow the ruled header fold boundaries', async ({
 				})
 			);
 			const [english, german] = states;
+			expect
+				.soft(english!.registration, `${width}px: EN guest entries`)
+				.toEqual(['/my-account/register/', '/my-account/register/']);
+			expect
+				.soft(german!.registration, `${width}px: DE guest entries`)
+				.toEqual([
+					'/de/mein-konto/register/',
+					'/de/mein-konto/register/',
+				]);
 			rows.push({ width, en: english, de: german });
 			if (expectedMismatches.includes(width)) {
 				expect
@@ -349,9 +370,21 @@ for (const locale of ['en', 'de'] as const) {
 						'false'
 					);
 				}
+				const account = header.locator('.tv-b2b-acct-btn');
+				await account.press('End');
+				await expect(
+					header.locator('.tv-b2b-acct-menu>.linker-create-account')
+				).toBeFocused();
+				await account.press('Escape');
+				await expect(account).toBeFocused();
 			} else {
 				await header.locator('#tv-mobile-toggle').click();
 				await expect(header.locator('#tv-mobile-panel')).toBeVisible();
+				await expect(
+					header.locator(
+						'.tv-mobile-utility-row>.linker-create-account'
+					)
+				).toBeVisible();
 				for (const key of navKeys) {
 					const section = header.locator(
 						`details[data-tv-mobile-primary="${key}"]`

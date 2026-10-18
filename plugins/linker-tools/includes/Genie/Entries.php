@@ -511,7 +511,7 @@ JS,
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . ContactRequest::ROUTE ) ) ),
 			// The inquiry confirmation card's route (#250).
 			esc_attr( esc_url_raw( rest_url( Proxy::NAMESPACE . InquiryRequest::ROUTE ) ) )
-		);
+		) . ( shortcode_exists( 'linker_guest_account_links' ) ? do_shortcode( '[linker_guest_account_links]' ) : '' );
 	}
 
 	/**

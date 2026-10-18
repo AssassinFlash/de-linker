@@ -124,6 +124,9 @@ final class ShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'wc_get_page_id', array( 'return' => 12 ) );
 		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://example.test/products/' ) );
 		WP_Mock::userFunction( 'wc_get_page_permalink', array( 'return' => 'https://example.test/my-account/' ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		$this->options( array( 'woocommerce_enable_myaccount_registration' => 'yes' ) );
+		WP_Mock::userFunction( 'wc_get_account_endpoint_url', array( 'return' => 'https://example.test/my-account/register/' ) );
 		$this->cart_is( true );
 
 		$html = $this->shortcodes()->draft_empty();
@@ -133,7 +136,9 @@ final class ShortcodesTest extends TestCase {
 		$this->assertStringContainsString( 'Browse products and add them', $html );
 		$this->assertStringContainsString( 'href="https://example.test/products/"', $html );
 		$this->assertStringContainsString( 'href="https://example.test/my-account/"', $html );
-		$this->assertStringContainsString( 'Sign in or register', $html );
+		$this->assertStringContainsString( '>Sign in</a>', $html );
+		$this->assertStringContainsString( '>Create account</a>', $html );
+		$this->assertStringContainsString( 'href="https://example.test/my-account/register/"', $html );
 		$this->assertStringNotContainsString( 'bulk-order', $html );
 		$this->assertStringNotContainsString( 'Batch item-number import', $html );
 		$this->assertStringNotContainsString( 'item-number', $html );

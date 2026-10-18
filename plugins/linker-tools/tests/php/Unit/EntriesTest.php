@@ -23,6 +23,31 @@ final class EntriesTest extends TestCase {
 	use PageQuery;
 
 	/**
+	 * Whether the commerce account entry shortcode is active.
+	 *
+	 * @var bool
+	 */
+	private bool $account_entries = false;
+
+	/** The LC guest entries sit beside the workspace's React mount. */
+	public function test_workspace_includes_the_native_guest_account_entries(): void {
+		$this->frontend( 'de', array( 'type' => 'other' ) );
+		$this->account_entries = true;
+		WP_Mock::userFunction(
+			'do_shortcode',
+			array(
+				'args'   => array( '[linker_guest_account_links]' ),
+				'return' => '<div class="linker-guest-account-links">Anmelden / Konto erstellen</div>',
+			)
+		);
+
+		$html = ( new Entries( '/plugin/linker-tools.php' ) )->workspace_shortcode();
+
+		$this->assertStringContainsString( 'linker-guest-account-links', $html );
+		$this->assertStringContainsString( 'Anmelden / Konto erstellen', $html );
+	}
+
+	/**
 	 * A previous test's shortcode must not mark this request as a workspace.
 	 */
 	public function setUp(): void {
@@ -569,6 +594,7 @@ JS
 	 * @param string               $language Language layer's answer; empty when it has none.
 	 */
 	private function frontend( string $locale, array $page, string $slug = '', string $language = '' ): void {
+		WP_Mock::userFunction( 'shortcode_exists', array( 'return' => fn (): bool => $this->account_entries ) );
 		$kinds = array(
 			'product'  => 'product',
 			'draft'    => 'cart',
