@@ -51,6 +51,16 @@ final class CanonicalQueryTest extends TestCase {
 	}
 
 	/**
+	 * A fragment after the query survives the rebuild.
+	 */
+	public function test_a_fragment_survives(): void {
+		$requested = 'http://example.test/de/kontakt/?source=%2Fde%2Fprodukt%2Fsaj%2F#form';
+		$redirect  = 'http://example.test/de/kontakt/?source=%2Fprodukt%2Fsaj%2F#form';
+
+		$this->assertSame( $requested, ( new CanonicalQuery() )->restore( $redirect, $requested ) );
+	}
+
+	/**
 	 * A query WordPress itself rewrites stays rewritten: only the language
 	 * removal is undone.
 	 */

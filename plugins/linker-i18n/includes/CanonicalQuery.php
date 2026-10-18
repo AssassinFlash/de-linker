@@ -84,7 +84,9 @@ final class CanonicalQuery {
 		}
 		$parts    = preg_split( '/(?=[?#])/', $redirect, 2 );
 		$base     = is_array( $parts ) ? (string) $parts[0] : $redirect;
-		$fragment = is_array( $parts ) && isset( $parts[1] ) && str_starts_with( $parts[1], '#' ) ? $parts[1] : '';
+		$rest     = is_array( $parts ) && isset( $parts[1] ) ? (string) $parts[1] : '';
+		$hash     = strpos( $rest, '#' );
+		$fragment = false === $hash ? '' : substr( $rest, $hash );
 		return $base . '?' . http_build_query( $restored ) . $fragment;
 	}
 
