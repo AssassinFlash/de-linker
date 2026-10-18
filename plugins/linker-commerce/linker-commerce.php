@@ -22,6 +22,9 @@ namespace Linker\Commerce;
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
+// Ahead of Composer's classmap: a request that meets a switched tree still
+// loads this plugin's classes (the 2026-10-18 deploy-window fatals).
+\Linker\Commerce\Autoload::register();
 require_once __DIR__ . '/includes/Presentation/template-functions.php';
 
 ( new Plugin(
