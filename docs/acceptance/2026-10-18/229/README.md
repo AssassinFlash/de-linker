@@ -25,6 +25,8 @@ just test
 
 完整行表与原始 JSON：[Chromium](round3/chromium-sweep.md)、[WebKit](round3/webkit-sweep.md)、[Firefox](round3/firefox-sweep.md)。
 
+分支已无冲突 rebase 到 `origin/main` 的 `0a239ae2faaca907c05559953ef4c2df69bffb4e`。实现提交 `f1ad02afddac25cddae021d6db2f2cf008a34b65` 上的 [just check](round3/just-check.log) 与 [just test](round3/just-test.log) 均 exit 0；rebase 后另跑 [完整页头矩阵](round3/e2e-after-rebase.log)，**24 passed，50.4s**，0 failed / skipped / flaky，三引擎两类差异集合再次精确符合裁定，读回保存在 [集合汇总](round3/sweep-summary.json) 的 `afterRebase`。
+
 以下为第 2 轮历史取证；当时的 Firefox 失败已由第 3 轮裁定及上述严格集合契约取代。
 
 ## 第 2 轮记录（历史）：当时判据及边界异常
