@@ -33,7 +33,7 @@ default:
     @just --list --list-submodules
 
 # Lint and static analysis of every chain, and the build/ manifest.
-check: php-check js-check e2e-check py-check pull::check cutover::check banned-words internal-home-urls i18n-coverage i18n-validity build::check
+check: php-check js-check e2e-check py-check pull::check cutover::check german-copy internal-home-urls i18n-coverage i18n-validity build::check
 
 # Unit tests of every chain and the end-to-end tests.
 test: php-test js-test py-test pull::test cutover::test
@@ -355,32 +355,22 @@ py-test:
         PHP={{ php }} uv run --locked pytest
     done
 
-# Banned-word gate (owner rulings): customer-visible surfaces must not carry the
-# old project's concept vocabulary. Data values and allow-listed identifiers pass.
+# German copy gate (#265, owner rulings): the banned-word vocabulary (one
+# list, plugins/linker-i18n/data/banned-de.json — the same list the
+# auto-translation enforces on database content), the du form, English date
+# formats and the blog "Artikel" word, over every German surface the
+# repository ships: .po msgstr, generated JSON, German LiveCanvas exports
+# and the reviewed journal titles. Absorbs the old inline catalogue grep
+# (tools/checks/german-copy.py).
 [group('check')]
-banned-words:
-    #!/usr/bin/env bash
-    set -eu
-    cd "{{ justfile_directory() }}"
-    fails=0
-    while IFS=: read -r file line text; do
-        echo "banned word: $file:$line $text"
-        fails=$((fails+1))
-    done < <(grep -rniE 'catalogue|katalog' \
-            plugins/linker-commerce/content/livecanvas \
-            plugins/linker-commerce/templates \
-            plugins/linker-commerce/languages \
-            plugins/linker-tools/content 2>/dev/null \
-        | grep -vE 'Katalognummer|Artikelnummer|data/legacy-redirects' || true)
-    if [ "$fails" -gt 0 ]; then
-        echo "banned-words: $fails line(s) — purge them (owner 2026-10-11 domain-language ruling)"
-        exit 1
-    fi
-    echo "banned-words: clean"
+german-copy:
+    python3 "{{ justfile_directory() }}/tools/checks/german-copy.py"
 
 # No plugin writes an English address of this site into its own markup
 # (#263): home_url( '/…' ) is the root of H1/H5/M9; the language-aware entry
-# point is PageUrls (tools/checks/internal-home-urls.py).
+# point is PageUrls. Since #265 the same gate keeps the German LiveCanvas
+# exports' literal hrefs German (/de/…) — audit M2 (tools/checks/
+# internal-home-urls.py).
 [group('check')]
 internal-home-urls:
     python3 "{{ justfile_directory() }}/tools/checks/internal-home-urls.py" --root "{{ justfile_directory() }}"
