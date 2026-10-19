@@ -309,6 +309,30 @@ def test_an_empty_model_call_still_carries_the_stated_pv_size() -> None:
     assert _query(url) == {"pv_kwp": ["12"]}
 
 
+# b19/b43 (baseline #336): no figure, phase, backup or postcode. The ability
+# client raises unless the empty object is HTTP 200. The code route's object
+# stays that same dict: lang is not added (#365, #393).
+_EMPTY_SIZING = (
+    "How big a battery do I need for my home?",
+    "Wie groß muss ein Speicher für mein Einfamilienhaus sein?",
+    "Can you help me plan my whole solar project?",
+    "Können Sie mir bei der Planung meiner gesamten PV-Anlage helfen?",
+)
+
+
+@pytest.mark.parametrize("message", _EMPTY_SIZING)
+def test_an_empty_size_hint_is_accepted_on_the_model_route_and_the_code_route_is_unchanged(
+    vocabulary: Vocabulary, message: str
+) -> None:
+    code_arguments, code_url = _code_url(vocabulary, message, "en", 1.0)
+    model_arguments, model_url = _model_url(message, "en", {})
+
+    assert code_arguments == model_arguments == {}
+    assert code_url == model_url == "https://de-linker.com/solution-configurator/"
+    assert "lang" not in _query(code_url)
+    assert "lang" not in _query(model_url)
+
+
 def test_a_single_phase_catalogue_product_does_not_prefill_phase(
     vocabulary: Vocabulary,
 ) -> None:

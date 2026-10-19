@@ -62,9 +62,52 @@ final class SizeHintTest extends TestCase {
 		$this->assertStringContainsString( 'phase=3', $result['configurator_url'] );
 		$this->assertStringContainsString( 'plz=80538', $result['configurator_url'] );
 		$this->assertStringContainsString( '10 kWp PV', $result['summary'] );
+		$this->assertStringNotContainsString( 'lang', $result['configurator_url'] );
 		$this->assertTrue( ( new SizeHint() )->can_execute() );
 		$schema = ( new SizeHint() )->args()['output_schema'];
 		$this->assertSame( array( 'summary', 'configurator_url' ), $schema['required'] );
+	}
+
+	/**
+	 * An empty call, and a call that only carries the service language, both
+	 * open the configurator with no query (#393). lang is not a stated field.
+	 */
+	public function test_empty_object_and_lang_are_accepted(): void {
+		$schema = ( new SizeHint() )->args()['input_schema'];
+
+		$this->assertSame( array(), $schema['default'] );
+		$this->assertFalse( $schema['additionalProperties'] );
+		$this->assertSame( array(), $schema['required'] ?? array() );
+		$this->assertSame(
+			array(
+				'type' => 'string',
+				'enum' => array( 'en', 'de' ),
+			),
+			$schema['properties']['lang']
+		);
+
+		$bare     = ( new SizeHint() )->execute( array() );
+		$with_en  = ( new SizeHint() )->execute( array( 'lang' => 'en' ) );
+		$with_de  = ( new SizeHint() )->execute( array( 'lang' => 'de' ) );
+		$expected = array(
+			'summary'          => 'Open the Solution Configurator.',
+			'configurator_url' => 'https://de-linker.com/solution-configurator/',
+		);
+		$this->assertSame( $expected, $bare );
+		$this->assertSame( $expected, $with_en );
+		$this->assertSame( $expected, $with_de );
+
+		$stated = ( new SizeHint() )->execute(
+			array(
+				'lang'   => 'en',
+				'pv_kwp' => 12,
+			)
+		);
+		$this->assertSame(
+			'https://de-linker.com/solution-configurator/?pv_kwp=12',
+			$stated['configurator_url']
+		);
+		$this->assertStringNotContainsString( 'lang=', $stated['configurator_url'] );
 	}
 
 	/**
