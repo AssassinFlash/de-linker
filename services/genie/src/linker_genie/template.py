@@ -30,6 +30,13 @@ Three shapes, each inside the protocol set by construction
   turn's meta carries `fallback: true` with the failures for anything that
   reads the stream programmatically; the schema has no separate
   degradation block.
+- A tool whose pydantic-ai retry budget is spent (`exhausted`): the degraded
+  sentence only. The route may already hold product ids; they are not shown
+  as a normal match. Dossier 2026-10-19 §1.15: the recovery path matches the
+  failure (try again, or write to the team), which is this sentence.
+- A products route whose search qualified nothing: no cards from
+  `facts.product_ids`. A search that ran asks once; a search that did not
+  run is the outage sentence above.
 """
 
 from __future__ import annotations
@@ -169,14 +176,29 @@ def german_is_clean(text: str) -> bool:
     return not any(fragment in padded for fragment in _ENGLISH_FRAGMENT)
 
 
-def fallback(facts: TurnFacts, locale: str, route: Route | None = None) -> TurnOutput:
-    """A protocol-set answer for a turn grounding refused twice, in `locale`."""
+def fallback(
+    facts: TurnFacts,
+    locale: str,
+    route: Route | None = None,
+    *,
+    exhausted: bool = False,
+) -> TurnOutput:
+    """A protocol-set answer for a turn grounding refused twice, in `locale`.
+
+    `exhausted` is a tool call that spent pydantic-ai's tool retries
+    (`cycle._tool_retries_exhausted`). The answer is the degraded sentence,
+    not the product template.
+    """
     language = language_of(locale)
     # The login fact outranks every other shape. A guest Proforma question
     # that also called handoff-team must still ask for a login (R7), not
     # ship the mailbox sentence the handoff tool returned.
     if "inquiry.login_required" in facts.facts:
         return login_required(language)
+    # The tool never returned. Product ids the route already collected are
+    # not a match, and the matching-products sentence would hide the failure.
+    if exhausted:
+        return _degraded(language)
     # The applied winner is the whole fallback. The named-model clarification
     # would add the other cards (#363, #364), which an extreme answer refuses.
     extreme = _extreme_fallback(facts, language)
@@ -206,19 +228,16 @@ def fallback(facts: TurnFacts, locale: str, route: Route | None = None) -> TurnO
     if clarified is not None:
         return clarified
     qualified = sorted(facts.qualified_ids)
+    # A products search that qualified nothing does not borrow other ids.
+    # Those ids are a series hit, a page, or a get-product, not the model
+    # the customer asked for (#366, G5-EN card 3608).
+    if route is not None and route.name == "products" and not qualified:
+        if _search_succeeded(facts):
+            line = NO_MATCH_DE if language == "de" else NO_MATCH_EN
+            return _ask_answer(language, [line])
+        return _outage(facts, language)
     if not qualified and not facts.product_ids:
-        # The handoff-team sentence when the tool ran this turn; the degraded
-        # declaration only when it did not - the turn has nothing citable, so
-        # pretending to hand off normally would hide the outage.
-        sentence_id = (
-            "handoff.sentence_de" if language == "de" else "handoff.sentence_en"
-        )
-        sentence = facts.facts.get(sentence_id)
-        summary = sentence.value if sentence is not None else DEGRADED[language]
-        return TurnOutput(
-            language=language,
-            blocks=[HandoffBlock(summary=summary)],
-        )
+        return _outage(facts, language)
     ids = qualified or sorted(facts.product_ids)
     refs = [f"p{product_id}" for product_id in ids]
     text = (
@@ -385,6 +404,28 @@ def _outage_line(notes: list[NamedModel], facts: TurnFacts, language: Locale) ->
         return ""
     shown = ", ".join(note.code for note in notes)
     return f"{shown}. {_mailbox(facts, language)}"
+
+
+def _degraded(language: Locale) -> TurnOutput:
+    """The reviewed degraded sentence, and no cards."""
+    return TurnOutput(
+        language=language,
+        blocks=[HandoffBlock(summary=DEGRADED[language])],
+    )
+
+
+def _outage(facts: TurnFacts, language: Locale) -> TurnOutput:
+    """Nothing citable: the handoff sentence when that tool ran, else degraded.
+
+    Pretending to hand off when handoff-team did not run would hide the outage.
+    """
+    sentence_id = "handoff.sentence_de" if language == "de" else "handoff.sentence_en"
+    sentence = facts.facts.get(sentence_id)
+    summary = sentence.value if sentence is not None else DEGRADED[language]
+    return TurnOutput(
+        language=language,
+        blocks=[HandoffBlock(summary=summary)],
+    )
 
 
 def _mailbox(facts: TurnFacts, language: Locale) -> str:

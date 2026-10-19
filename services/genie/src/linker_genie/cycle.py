@@ -20,6 +20,11 @@ from linker_genie.route import SEARCH_LIMIT, Route
 from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
 from linker_genie.template import LOGIN_PLACEHOLDER, LOGIN_REQUIRED, fallback
 
+# pydantic-ai tool_manager._check_max_retries, on UnexpectedModelBehavior
+# after AgentRetries.tools is spent. Output retries use a different sentence
+# ("Exceeded maximum output retries"), so this phrase is the tool budget only.
+_TOOL_RETRIES_EXHAUSTED = "exceeded max retries count of"
+
 Generate = Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]
 
 
@@ -35,6 +40,11 @@ class TurnResult:
     retried: tuple[str, ...] = ()
     # Card price lookups that failed (prices.fill); their cards show no price line.
     price_failures: tuple[str, ...] = ()
+
+
+def _tool_retries_exhausted(failures: tuple[str, ...]) -> bool:
+    """True when a tool spent pydantic-ai's tool retries and the run stopped."""
+    return any(_TOOL_RETRIES_EXHAUSTED in failure for failure in failures)
 
 
 def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutput:
@@ -139,7 +149,12 @@ def run(
             price_failures=tuple(missed),
         )
     with timing.phase(clock, timing.TEMPLATE):
-        rendered = fallback(last_facts, expected, route)
+        rendered = fallback(
+            last_facts,
+            expected,
+            route,
+            exhausted=_tool_retries_exhausted(last_failures),
+        )
     with timing.phase(clock, timing.HYDRATE):
         # Login stays the login sentence. Any other pairing fallback keeps the
         # front of the released set, inside the template's six-card cap.
