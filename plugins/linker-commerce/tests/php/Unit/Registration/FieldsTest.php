@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Registration;
 
 use Linker\Commerce\Registration\CustomerRole;
 use Linker\Commerce\Registration\Fields;
+use Linker\Commerce\Registration\RoleField;
 use Linker\Commerce\Registration\VatProfile;
 use Linker\Commerce\Registration\ViesClient;
 use Linker\Commerce\Registration\Website;
@@ -115,7 +116,7 @@ final class FieldsTest extends TestCase {
 			array_keys( $fields )
 		);
 		$this->assertTrue( $fields['billing_company']['required'] );
-		$this->assertSame( 'radio', $fields[ CustomerRole::META ]['type'] );
+		$this->assertSame( RoleField::TYPE, $fields[ CustomerRole::META ]['type'], 'RoleField renders the options so each input stays a clickable native control (#351).' );
 		$this->assertTrue( $fields[ CustomerRole::META ]['required'] );
 		$this->assertSame( array( 'installer', 'epc', 'distributor' ), array_keys( $fields[ CustomerRole::META ]['options'] ) );
 		$this->assertSame( 'linker_country', $fields['billing_country']['type'] );

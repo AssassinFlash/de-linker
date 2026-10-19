@@ -40,6 +40,7 @@ final class Module {
 	 * @param AccountsController|null $accounts_controller Staff REST routes.
 	 * @param BotGuard                $bot_guard           The public form's bot checks.
 	 * @param CountryField            $country_field       The grouped country select.
+	 * @param RoleField               $role_field          The business-type radios.
 	 */
 	public function __construct(
 		private readonly string $plugin_file,
@@ -53,7 +54,8 @@ final class Module {
 		private readonly ?AccountsAdmin $accounts_admin = null,
 		private readonly ?AccountsController $accounts_controller = null,
 		private readonly BotGuard $bot_guard = new BotGuard(),
-		private readonly CountryField $country_field = new CountryField()
+		private readonly CountryField $country_field = new CountryField(),
+		private readonly RoleField $role_field = new RoleField()
 	) {}
 
 	/**
@@ -69,6 +71,7 @@ final class Module {
 		add_action( 'woocommerce_register_form', array( $this->bot_guard, 'fields' ) );
 		add_filter( 'woocommerce_process_registration_errors', array( $this->bot_guard, 'validate' ), 20 );
 		add_filter( 'woocommerce_form_field_' . CountryField::TYPE, array( $this->country_field, 'render' ), 10, 4 );
+		add_filter( 'woocommerce_form_field_' . RoleField::TYPE, array( $this->role_field, 'render' ), 10, 4 );
 
 		add_filter( 'woocommerce_billing_fields', array( $this->vat_field, 'billing_fields' ) );
 		add_filter( 'woocommerce_admin_billing_fields', array( $this->vat_field, 'admin_billing_fields' ) );

@@ -25,6 +25,7 @@ use Linker\Commerce\Registration\Emails\VatReviewEmail;
 use Linker\Commerce\Registration\Fields;
 use Linker\Commerce\Registration\Module;
 use Linker\Commerce\Registration\PendingApprovals;
+use Linker\Commerce\Registration\RoleField;
 use Linker\Commerce\Registration\VatProfile;
 use Linker\Commerce\Registration\ViesClient;
 use Linker\Commerce\Settings\Options;
@@ -78,6 +79,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_process_registration_errors', array( new WP_Mock\Matcher\AnyInstance( BotGuard::class ), 'validate' ), 20 );
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
 		WP_Mock::expectFilterAdded( 'woocommerce_form_field_linker_country', array( new WP_Mock\Matcher\AnyInstance( CountryField::class ), 'render' ), 10, 4 );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectFilterAdded( 'woocommerce_form_field_linker_role', array( new WP_Mock\Matcher\AnyInstance( RoleField::class ), 'render' ), 10, 4 );
 		WP_Mock::expectFilterAdded( 'woocommerce_billing_fields', array( $vat_field, 'billing_fields' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_admin_billing_fields', array( $vat_field, 'admin_billing_fields' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_admin_order_data_after_billing_address', array( $vat_field, 'admin_order_verdict' ) );

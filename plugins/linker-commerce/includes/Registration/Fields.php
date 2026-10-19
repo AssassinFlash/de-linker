@@ -87,7 +87,11 @@ final class Fields {
 				'class'        => array( 'form-row-wide' ),
 			),
 			CustomerRole::META   => array(
-				'type'     => 'radio',
+				// RoleField renders the options, each native input nested inside
+				// its own label (#351); WooCommerce's own radio markup keeps the
+				// input a sibling of the label, which the pill design could only
+				// dress by hiding the input off pointer events.
+				'type'     => RoleField::TYPE,
 				'label'    => __( 'Business type', 'linker-commerce' ),
 				'required' => true,
 				'options'  => CustomerRole::options(),
