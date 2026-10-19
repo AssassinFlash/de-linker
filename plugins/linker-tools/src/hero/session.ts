@@ -1,11 +1,10 @@
 /**
  * One Genie conversation, read by both surfaces (ticket #232): the proxy
  * keeps the thread on the conversation post and names it with the browser's
- * cookie, so the hero and the dock share it as long as each reads before it
- * writes. The hero reads on mount for its view, and re-reads before every
- * send: the dock may have answered while the hero was folded, and
- * Proxy::turn records the request's messages, so sending a stale thread
- * would replace the dock's history.
+ * cookie, so the hero and the dock share it. The hero reads on mount for
+ * its view, and re-reads before every send so the question is asked
+ * against the dock's latest turn. The server also keeps a stale snapshot
+ * from dropping that turn: the new user message is appended (#373).
  */
 
 /**
@@ -90,6 +89,19 @@ export class HeroSession {
 		} else {
 			await this.loading;
 		}
+		return this.snapshot();
+	}
+
+	/**
+	 * Reads the stored thread again.
+	 *
+	 * load() does not, once a read has finished. A 409 has to see the turn
+	 * the other tab just stored (#373).
+	 *
+	 * @return The stored thread.
+	 */
+	async reload(): Promise< HeroStoredThread > {
+		await this.refresh();
 		return this.snapshot();
 	}
 

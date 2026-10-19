@@ -9,6 +9,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import type { Locale } from '../../configurator/types';
@@ -209,6 +214,30 @@ export class TurnError extends Error {
 	) {
 		super( `turn ${ status } ${ code }` );
 	}
+}
+
+/**
+ * The commit was refused because the stored thread moved while Genie was
+ * answering (#373). The model did answer; the shell must not say it failed.
+ *
+ * @param error The rejection from sendTurn.
+ */
+export function isTurnConflict( error: unknown ): boolean {
+	return (
+		error instanceof TurnError &&
+		error.status === 409 &&
+		error.code === 'linker_genie_turn_conflict'
+	);
+}
+
+/**
+ * What the shell says on that refusal. The question stays in the field.
+ */
+export function turnConflictText(): string {
+	return __(
+		'The conversation changed while Genie was answering. Send your question again.',
+		'linker-tools'
+	);
 }
 
 export interface TurnMessage {

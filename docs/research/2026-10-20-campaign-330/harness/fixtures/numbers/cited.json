@@ -1,0 +1,57 @@
+{
+  "A2-DE": {
+    "file": "GW_ESA-5-30kW_User-Manual-DE_V1.4.pdf",
+    "page": "327",
+    "line": "GW9.999K-ETA-G20, GW10K-ETA-G20, GW12K-ETA-G20: dreiphasig. Datasheet p.1: Three Phase | All-in-One (HV)."
+  },
+  "A4-DE": {
+    "file": "DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+    "page": "2",
+    "line": "Rated Capacity [Ah] 100; Rated Energy [kWh] 5; Usable Energy [kWh] 4.8. Manual pp.114-121 also has Usable Energy [kWh] 4.5."
+  },
+  "B4-DE": {
+    "file": "SAJ_HS2_6-10K-T2_Datasheet_DE.pdf",
+    "page": "2",
+    "line": "HS2-10K-T2-X: Nennleistung AC [W] 10000; Max. Scheinleistung [VA] 11000; Spitzenleistung des Ausgangs [VA] 16500, 60s."
+  },
+  "C3-EN": {
+    "file": "SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+    "page": "37",
+    "line": "H2-10K-T3: Max. PV Array Power 20000 Wp; Rated AC Power 10000 W; Max. Apparent Power 11000 VA; Rated Output Current 14.5 A; Max. AC Output Current 16.0 A; Power Factor 0.8 leading - 0.8 lagging; Dimensions 576*659*242; Altitude 4000m (>3000m); noise <50 dBA; DC current 40 A; battery range starts at 180 V."
+  },
+  "D1-EN": {
+    "file": "GW_ESA-5-30kW_Datasheet-EN.pdf",
+    "page": "2",
+    "line": "GW5K column: Max. Efficiency 98.0%; European Efficiency 96.4%; Max. Battery to AC Efficiency 98.0%. DE manual GW5K-ETA-G20: 98.00% / 96.40% / 98.00%."
+  },
+  "D5-DE": {
+    "file": "SAJ_HS2_6-10K-T2_Datasheet_DE.pdf",
+    "page": "2",
+    "line": "Max. Wirkungsgrad 98.0%; Euro-Wirkungsgrad 97.6%."
+  },
+  "E2-DE": {
+    "file": "SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+    "page": "8",
+    "line": "H2-10K column: AC-Nennleistung [W] 10000; Max. Scheinleistung [VA] 11000."
+  },
+  "E3-EN": {
+    "file": "SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+    "page": "37",
+    "line": "H2-10K-T3: Rated AC Power 10000 W; Max. Apparent Power 11000 VA; Rated Output Current 14.5 A; Max. AC Output Current to Utility Grid 16.0 A."
+  },
+  "E5-EN": {
+    "file": "GW_ESA-5-30kW_Datasheet-EN.pdf",
+    "page": "3",
+    "line": "Rated Energy 5.12 kWh; Usable Energy 5.0 kWh; 350 ~ 550 and 700 ~ 950; Max. Input Current 12.0 A; Max. Output Current 13.2 A; charge -18 ~ +55; Dimensions 800 × 326 × 270; Scalability 12 pcs."
+  },
+  "I6-DE": {
+    "file": "SAJ_CHS2_Certificate_VDE-AR-N-4105.pdf",
+    "page": "3",
+    "line": "CHS2-29.9K-T4-X: max. Active power 29.999 kW; max. Apparent power 29.999 kVA. Manual p.11: 29900 VA. Datasheet p.2: 29999 W / 29999 VA."
+  },
+  "I6-EN": {
+    "file": "SAJ_CHS2_29.9-50K_User-Manual_EN_EU_V0.2.pdf",
+    "page": "11",
+    "line": "CHS2-29.9K-T4-X: Rated AC Power [VA] 29900; Max. Apparent Power [VA] 29900. Datasheet p.2: Rated AC Power [W] 29999; Max.Apparent Power[VA] 29999."
+  }
+}

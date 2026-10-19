@@ -27,10 +27,12 @@ import {
 	assistantMessage,
 	deleteConversation,
 	emailConversation,
+	isTurnConflict,
 	listConversations,
 	readThread,
 	selectConversation,
 	sendTurn,
+	turnConflictText,
 	type ContactBlock,
 	type ConversationSummary,
 	type SentContact,
@@ -194,6 +196,9 @@ export function App( { config }: { config: GenieConfig } ) {
 	const files = useAttachments();
 	// Why the last turn's files were refused by the proxy, if they were.
 	const [ refused, setRefused ] = useState( '' );
+	// The stored thread moved while Genie was answering (#373). The question
+	// was not stored; it stays in the field.
+	const [ conflict, setConflict ] = useState( '' );
 	// Opened to send a nameplate photo (the preview card's suggestion): the
 	// panel offers the picker, which only a click may open.
 	const [ photoPrompt, setPhotoPrompt ] = useState( false );
@@ -301,17 +306,34 @@ export function App( { config }: { config: GenieConfig } ) {
 			setRevealingAt( null );
 			setInput( '' );
 			setRefused( '' );
+			setConflict( '' );
 			setPhotoPrompt( false );
 			setListPrompt( false );
-			files.clear();
 			return enqueue( async () => {
 				// Claim the composer only once this ask is the lane's head.
 				// Setting it before the queue would drop a history click that
 				// arrives while a switch is still resolving.
 				sending.current = true;
-				// The lane already ran the mount restore and any switch, so the
-				// ref is the conversation this ask belongs to.
-				const before = currentThread.current;
+				// The dock re-reads before every send, as the hero does. A
+				// turn the other tab stored is the base; an empty read (the
+				// route failed, and readThread swallows that) keeps the
+				// thread already on screen.
+				const stored = await readThread(
+					config.threadUrl,
+					config.restNonce
+				);
+				let before = currentThread.current;
+				if ( stored.messages.length > 0 ) {
+					before = stored.messages;
+					currentThread.current = stored.messages;
+					setThread( stored.messages );
+					setTurn( stored.turn );
+					turnAt.current = stored.turn
+						? stored.messages.length - 1
+						: -1;
+					setContacts( stored.contacts ?? [] );
+					setInquiries( stored.inquiries ?? [] );
+				}
 				try {
 					const next: TurnMessage[] = [
 						...before,
@@ -327,6 +349,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						config.page,
 						uploads
 					);
+					files.clear();
 					const assistant = assistantMessage( answer );
 					currentThread.current = next.concat( assistant );
 					setThread( currentThread.current );
@@ -340,9 +363,12 @@ export function App( { config }: { config: GenieConfig } ) {
 					void refreshHistory();
 				} catch ( error ) {
 					// A file the proxy refused (Attachments.php) is said as
-					// such; anything else is Genie not answering.
+					// such. A 409 means the other turn was stored and this
+					// question was not: it goes back into the field, with
+					// its files. Anything else is Genie not answering.
 					const reason = attachmentRefusalReason( error );
 					if ( reason ) {
+						files.clear();
 						// Nothing was sent: the question leaves the thread and
 						// goes back into the field, to send again without
 						// the file or later.
@@ -360,7 +386,27 @@ export function App( { config }: { config: GenieConfig } ) {
 							)
 						);
 						setPhase( 'ask' );
+					} else if ( isTurnConflict( error ) ) {
+						const latest = await readThread(
+							config.threadUrl,
+							config.restNonce
+						);
+						const messages =
+							latest.messages.length > 0
+								? latest.messages
+								: before;
+						currentThread.current = messages;
+						setThread( messages );
+						setTurn( latest.turn );
+						turnAt.current = latest.turn ? messages.length - 1 : -1;
+						setContacts( latest.contacts ?? [] );
+						setInquiries( latest.inquiries ?? [] );
+						setInput( text );
+						setConflict( turnConflictText() );
+						setPhase( 'ask' );
+						void refreshHistory();
 					} else {
+						files.clear();
 						setPhase( 'error' );
 					}
 				} finally {
@@ -1237,6 +1283,11 @@ export function App( { config }: { config: GenieConfig } ) {
 								className="linker-genie-app__refused"
 							>
 								{ refused }
+							</p>
+						) : null }
+						{ ! historyView && conflict ? (
+							<p role="alert" className="linker-genie-app__error">
+								{ conflict }
 							</p>
 						) : null }
 						{ ! workspace &&

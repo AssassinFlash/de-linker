@@ -22,6 +22,8 @@ import { storeClient } from '../configurator/api/store';
 import type { SentInquiry } from '../genie/api/inquiry';
 import {
 	assistantMessage,
+	isTurnConflict,
+	turnConflictText,
 	type Block,
 	type ContactBlock,
 	type SentContact,
@@ -100,6 +102,9 @@ export function HeroConversation( {
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
 	const [ refused, setRefused ] = useState( '' );
+	// The stored thread moved while Genie was answering (#373). The question
+	// goes back into the page's field; it was not stored.
+	const [ conflict, setConflict ] = useState( '' );
 	// The newest answer, spoken by the live region when it arrives.
 	const [ live, setLive ] = useState( '' );
 	const [ pendingSend, setPendingSend ] = useState< {
@@ -191,6 +196,7 @@ export function HeroConversation( {
 			}
 			sending.current = true;
 			setRefused( '' );
+			setConflict( '' );
 			setLive( '' );
 			setPhase( 'waiting' );
 			setPrompt( '' );
@@ -230,6 +236,18 @@ export function HeroConversation( {
 								: 'unreadable'
 						)
 					);
+					setPhase( 'ask' );
+				} else if ( isTurnConflict( error ) ) {
+					const stored = await session.reload();
+					setThread( stored.messages );
+					setTurn( stored.turn );
+					setContacts( stored.contacts ?? [] );
+					setInquiries( stored.inquiries ?? [] );
+					turnAt.current = stored.turn
+						? stored.messages.length - 1
+						: -1;
+					setPrompt( text );
+					setConflict( turnConflictText() );
 					setPhase( 'ask' );
 				} else {
 					setThread( shown );
@@ -439,6 +457,11 @@ export function HeroConversation( {
 							</li>
 						) : null }
 					</ol>
+					{ conflict ? (
+						<p role="alert" className="linker-genie-app__error">
+							{ conflict }
+						</p>
+					) : null }
 					{ 'error' === phase ? (
 						<p role="alert" className="linker-genie-app__error">
 							{ __(

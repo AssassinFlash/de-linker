@@ -171,6 +171,13 @@ test( 'an ask that starts after select resolves still waits for the target threa
 		turn: null,
 		contacts: [],
 	} );
+	// The ask re-reads before it sends, the same read the hero does.
+	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 3 ) );
+	reads[ 2 ].resolve( {
+		messages: [ { role: 'user', content: 'eight' } ],
+		turn: null,
+		contacts: [],
+	} );
 
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
 	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 3 ] ).toEqual(
@@ -203,6 +210,12 @@ test( 'control: an ask after the switch settles carries the new thread', async (
 	const input = await screen.findByRole( 'textbox' );
 	fireEvent.change( input, { target: { value: 'question for eight' } } );
 	fireEvent.submit( input.closest( 'form' )! );
+	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 3 ) );
+	reads[ 2 ].resolve( {
+		messages: [ { role: 'user', content: 'eight' } ],
+		turn: null,
+		contacts: [],
+	} );
 
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
 	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 3 ] ).toEqual(
@@ -255,6 +268,12 @@ test( 'two history clicks in a row continue the last one, not the first', async 
 	const input = await screen.findByRole( 'textbox' );
 	fireEvent.change( input, { target: { value: 'question for seven' } } );
 	fireEvent.submit( input.closest( 'form' )! );
+	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 4 ) );
+	reads[ 3 ].resolve( {
+		messages: [ { role: 'user', content: 'seven' } ],
+		turn: null,
+		contacts: [],
+	} );
 
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
 	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 3 ] ).toEqual( [
@@ -315,6 +334,10 @@ test( 'a history refresh started by an ask cannot put the old conversation back'
 	const input = screen.getByRole( 'textbox' );
 	fireEvent.change( input, { target: { value: 'question for eight' } } );
 	fireEvent.submit( input.closest( 'form' )! );
+	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 2 ) );
+	await act( async () => {
+		reads[ 1 ].resolve( { messages: [], turn: null, contacts: [] } );
+	} );
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
 	await waitFor( () =>
 		expect( listConversations ).toHaveBeenCalledTimes( 2 )
@@ -350,8 +373,8 @@ test( 'a history refresh started by an ask cannot put the old conversation back'
 			{ id: 9, title: 'Nine', updated: '2026-10-12' },
 		],
 	} );
-	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 2 ) );
-	reads[ 1 ].resolve( { messages: [], turn: null, contacts: [] } );
+	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 3 ) );
+	reads[ 2 ].resolve( { messages: [], turn: null, contacts: [] } );
 	expect(
 		await screen.findByRole( 'button', { name: 'Nine' } )
 	).toHaveAttribute( 'aria-current', 'true' );

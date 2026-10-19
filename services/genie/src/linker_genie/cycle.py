@@ -13,11 +13,12 @@ from dataclasses import dataclass
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.ground import check
-from linker_genie.hydrate import hydrate
+from linker_genie.hydrate import complete_pairing_cards, hydrate
+from linker_genie.language import language_failure, turn_language
 from linker_genie.prices import Lookup, fill
-from linker_genie.route import Route
-from linker_genie.schema import TurnOutput, TurnRequest
-from linker_genie.template import fallback
+from linker_genie.route import SEARCH_LIMIT, Route
+from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
+from linker_genie.template import LOGIN_PLACEHOLDER, LOGIN_REQUIRED, fallback
 
 Generate = Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]
 
@@ -36,6 +37,35 @@ class TurnResult:
     price_failures: tuple[str, ...] = ()
 
 
+def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutput:
+    """Ship the login sentence in the answer language.
+
+    The sentence is the service's. A guest turn whose only block is either
+    exact sentence, or the `{fact:inquiry.login}` placeholder, is rewritten
+    to `LOGIN_REQUIRED` of `expected` before hydration and the language check.
+    Any other shape is left for grounding, which already refused it.
+    """
+    if "inquiry.login_required" not in facts.facts:
+        return output
+    if len(output.blocks) != 1 or not isinstance(output.blocks[0], TextBlock):
+        return output
+    block = output.blocks[0]
+    if block.refs or block.text not in {
+        LOGIN_REQUIRED["en"],
+        LOGIN_REQUIRED["de"],
+        LOGIN_PLACEHOLDER,
+    }:
+        return output
+    if block.text == LOGIN_REQUIRED[expected] and output.language == expected:
+        return output
+    return output.model_copy(
+        update={
+            "language": expected,
+            "blocks": [TextBlock(text=LOGIN_REQUIRED[expected])],
+        }
+    )
+
+
 def run(
     request: TurnRequest,
     generate: Generate,
@@ -52,7 +82,16 @@ def run(
     Every card of the shipped turn, the fallback's too, gets its price line from
     the turn's tools (prices.fill, #242); `commerce` reads the products no tool
     priced, as the customer. `clock` only times the phases (timing.py, #336).
+
+    The answer language is the last customer message when that message is
+    clearly one language, otherwise the page locale (language.py, #374). The
+    check reads the hydrated answer, price lines included. A mismatch is a
+    failed attempt: the model is asked once with that reason, and the template
+    then answers in the required language. The violating text is not shipped.
+    A grounding failure is retried on its own; the language check runs only
+    after grounding has passed.
     """
+    expected = turn_language(request)
     retry_reason: str | None = None
     seeded = seed or TurnFacts()
     last_facts = seeded
@@ -72,25 +111,41 @@ def run(
         last_facts = merge([seeded, facts])
         with timing.phase(clock, timing.GROUND):
             result = check(output, last_facts, route)
-        if result.ok:
-            with timing.phase(clock, timing.HYDRATE):
-                hydrated = hydrate(output, last_facts)
-                priced, priced_facts, missed = fill(hydrated, last_facts, commerce)
-            return TurnResult(
-                output=priced,
-                facts=priced_facts,
-                grounded=True,
-                failures=(),
-                fallback=False,
-                attempts=attempt,
-                retried=last_failures,
-                price_failures=tuple(missed),
-            )
-        last_failures = result.failures
-        retry_reason = result.reason
+        if not result.ok:
+            last_failures = result.failures
+            retry_reason = result.reason
+            continue
+        aligned = align_login(output, last_facts, expected)
+        with timing.phase(clock, timing.HYDRATE):
+            # One pairing set fills cards the attempt omitted, including the
+            # first attempt; the hydrated sentences follow the answer language
+            # (#382). Prose is not rewritten.
+            completed = complete_pairing_cards(aligned, last_facts, route)
+            hydrated = hydrate(completed, last_facts, expected)
+            priced, priced_facts, missed = fill(hydrated, last_facts, commerce)
+        mismatch = language_failure(priced, expected)
+        if mismatch is not None:
+            last_failures = (mismatch,)
+            retry_reason = mismatch
+            continue
+        return TurnResult(
+            output=priced,
+            facts=priced_facts,
+            grounded=True,
+            failures=(),
+            fallback=False,
+            attempts=attempt,
+            retried=last_failures,
+            price_failures=tuple(missed),
+        )
     with timing.phase(clock, timing.TEMPLATE):
-        rendered = fallback(last_facts, request.locale, route)
+        rendered = fallback(last_facts, expected, route)
     with timing.phase(clock, timing.HYDRATE):
+        # Login stays the login sentence. Any other pairing fallback keeps the
+        # front of the released set, inside the template's six-card cap.
+        rendered = complete_pairing_cards(
+            rendered, last_facts, route, card_limit=SEARCH_LIMIT
+        )
         priced, priced_facts, missed = fill(rendered, last_facts, commerce)
     return TurnResult(
         output=priced,

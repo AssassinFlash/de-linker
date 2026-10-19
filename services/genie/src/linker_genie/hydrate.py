@@ -3,9 +3,10 @@
 The model must not write numbers. Placeholders are filled here (Rufus). There
 is no rewriting of the rest of the text. Handoff summaries hydrate too: the
 prompt routes out-of-scope turns through handoff-team and puts the team
-mailbox sentence into the summary as `{fact:handoff.sentence_*}` — the
+mailbox sentence into the summary as `{fact:handoff.sentence}` — the
 customer must see the real sentence, not a model paraphrase (review
-2026-10-10, must-fix 1).
+2026-10-10, must-fix 1). The service picks the sentence of the answer
+language, including when the model named `sentence_en` or `sentence_de`.
 
 An answer that rests on documents links them, and the service adds those links
 (#257, docs/specs/10-knowledge-index.md 引用与核验): every chunk a text block names
@@ -19,11 +20,13 @@ from __future__ import annotations
 
 import re
 
-from linker_genie.facts import Document, Fact, TurnFacts
+from linker_genie.facts import Document, Fact, TurnFacts, pairing_card_sets
 from linker_genie.figures import chunk_of, localize
+from linker_genie.route import Route
 from linker_genie.schema import (
     ActionBlock,
     Block,
+    CardsBlock,
     DocumentBlock,
     HandoffBlock,
     TextBlock,
@@ -32,6 +35,11 @@ from linker_genie.schema import (
 
 # The page abbreviation of a document link, per language (copy review:
 # docs/acceptance/2026-10-17/233/copy-review.md).
+# A handoff placeholder names the mailbox sentence. Whichever id the model
+# wrote, the customer reads the sentence of the answer language.
+_HANDOFF_IDS = frozenset(
+    {"handoff.sentence", "handoff.sentence_en", "handoff.sentence_de"}
+)
 PAGE_WORD = {"en": "p.", "de": "S."}
 PAGES_WORD = {"en": "pp.", "de": "S."}
 
@@ -42,25 +50,121 @@ PLACEHOLDER = re.compile(r"\{fact:([^}]+)\}")
 # (issue #257 trial run, a range lost its upper figure).
 _PLACEHOLDER_AND_WORD = re.compile(r"\{fact:([^}]+)\}((?:\s?[A-Za-zÄÖÜäöü%°²µΩ℃]+)?)")
 _UNIT_TAIL = re.compile(r"\d\s?([^\s\d]+)$")
+# Routes whose tools the model may have chosen. `model` is the route when Jev
+# reads a pairing and code does not prefetch (route.plan), so the model calls
+# the tool itself. Any other route keeps the cards the model wrote.
+_PAIRING_ROUTES = frozenset({"pairing", "model"})
 
 
-def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
+def complete_pairing_cards(
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None,
+    card_limit: int | None = None,
+) -> TurnOutput:
+    """Fill one pairing answer's cards from the single released set (#376).
+
+    Campaign 331 `s4-repeat` asked the same question four times (DE turns
+    62–65, EN 35–38). The route and the search stayed put. The cards did not:
+    a German grounding retry, and a first attempt that simply left the
+    inverter out, shipped the batteries alone. The c376 replay before this
+    fill dropped product 4107 on `attempts=1` as well (rounds 1 and 3). No
+    shopping assistant publishes a rule for what a repeated turn must keep;
+    the evidence for the rule is that campaign.
+
+    The set comes from `facts.pairing_card_sets`, which reads the same
+    verdicts as `facts._from_search`. One search-products row with pairings
+    is the qualified product, then each released battery, in the tool's
+    order. One released check-compatibility call is the two products it was
+    given, in argument order. A verdict that is not released does not make a
+    set. The prose stays the model's. When the cards already are the set,
+    their order is kept. When they are a narrower subset, the block becomes
+    the set and the first text block cites every id in it.
+
+    The fill runs on the first attempt and on a retry: the c376 rounds that
+    dropped the inverter had not retried. It runs for a code route named
+    `pairing` and for a `model` route. It does not run for any other route.
+    Two pairing sets in one turn stay as the model wrote them. Independent
+    searches are not merged into one block.
+
+    `inquiry.login_required` outranks every shape (`template.fallback`): the
+    login sentence is the whole answer, and this function does not add cards.
+    A fallback passes `card_limit` of `route.SEARCH_LIMIT`. Trial question 11
+    caps that template at six cards. The six are the front of this set, so
+    the searched product is not sorted out of the window. A grounded answer
+    is not capped; the campaign ships the whole set.
+    """
+    if "inquiry.login_required" in facts.facts:
+        return output
+    if route is None or route.no_cards or route.name not in _PAIRING_ROUTES:
+        return output
+    sets = pairing_card_sets(facts)
+    if len(sets) != 1:
+        return output
+    released = sets[0] if card_limit is None else sets[0][:card_limit]
+    if not released:
+        return output
+    blocks: list[Block] = list(output.blocks)
+    card_at = [i for i, block in enumerate(blocks) if isinstance(block, CardsBlock)]
+    shown: list[int] = []
+    for index in card_at:
+        block = blocks[index]
+        if isinstance(block, CardsBlock):
+            shown.extend(block.product_ids)
+    if set(shown) == set(released) and len(shown) == len(released):
+        return output
+    cards = CardsBlock(product_ids=list(released))
+    if card_at:
+        blocks[card_at[0]] = cards
+        for index in reversed(card_at[1:]):
+            del blocks[index]
+    else:
+        after = next(
+            (i + 1 for i, block in enumerate(blocks) if isinstance(block, TextBlock)),
+            len(blocks),
+        )
+        blocks.insert(after, cards)
+    for index, block in enumerate(blocks):
+        if not isinstance(block, TextBlock):
+            continue
+        refs = list(block.refs)
+        have = set(refs)
+        for product_id in released:
+            token = str(product_id)
+            if token not in have and f"p{product_id}" not in have:
+                refs.append(token)
+                have.add(token)
+        blocks[index] = block.model_copy(update={"refs": refs})
+        break
+    return output.model_copy(update={"blocks": blocks})
+
+
+def hydrate(
+    output: TurnOutput, facts: TurnFacts, language: str | None = None
+) -> TurnOutput:
     """Return a copy whose text blocks and handoff summaries are filled.
+
+    `language` is the answer language. It selects owned sentences (the mailbox
+    sentence, the login sentence), document page labels and the decimal mark
+    of a document figure. Callers that omit it keep the output's own language.
 
     Document blocks become links, one per file: two refs to the same file (two
     batteries citing the same configuration instructions, trial question 4,
     2026-10-17) are one link, its cited pages joined ("pp. 3, 7").
     """
+    language = language or output.language
     blocks: list[Block] = []
     # File URL → (index of its link in `blocks`, the document, its cited pages).
     links: dict[str, tuple[int, Document, list[int]]] = {}
     for block in [*output.blocks, *cited_documents(output, facts)]:
         if isinstance(block, TextBlock):
-            text = fill(block.text, facts, output.language)
+            text = fill(block.text, facts, language)
             blocks.append(block.model_copy(update={"text": text}))
         elif isinstance(block, HandoffBlock):
             blocks.append(
-                block.model_copy(update={"summary": fill(block.summary, facts)})
+                block.model_copy(
+                    update={"summary": fill(block.summary, facts, language)}
+                )
             )
         elif (
             isinstance(block, ActionBlock)
@@ -87,7 +191,7 @@ def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
                 pages.append(document.page)
             blocks[index] = blocks[index].model_copy(
                 update={
-                    "label": document_label(first, output.language, pages),
+                    "label": document_label(first, language, pages),
                     "url": document_url(first, pages),
                 }
             )
@@ -176,7 +280,7 @@ def fill(text: str, facts: TurnFacts, locale: str = "en") -> str:
     """
 
     def replace(match: re.Match[str]) -> str:
-        fact = _lookup(facts, match.group(1))
+        fact = _render_fact(facts, match.group(1), locale)
         if fact is None:
             return match.group(0)
         after = match.group(2)
@@ -206,6 +310,32 @@ def _unit(fact_id: str) -> str | None:
         if fact_id.endswith(ending):
             return unit
     return None
+
+
+def _render_fact(facts: TurnFacts, fact_id: str, locale: str) -> Fact | None:
+    """The fact to print, with owned sentences forced to `locale`.
+
+    `handoff.sentence`, `handoff.sentence_en` and `handoff.sentence_de` all
+    print `handoff.sentence_<locale>` when that fact exists. `{fact:inquiry.login}`
+    prints the login sentence of `locale`, so a fact collected for the page
+    cannot leak the other language.
+    """
+    language = "de" if locale.startswith("de") else "en"
+    if fact_id in _HANDOFF_IDS:
+        preferred = facts.facts.get(f"handoff.sentence_{language}")
+        if preferred is not None:
+            return preferred
+    if fact_id == "inquiry.login" and (
+        "inquiry.login" in facts.facts or "inquiry.login_required" in facts.facts
+    ):
+        from linker_genie.template import LOGIN_REQUIRED
+
+        return Fact(
+            id="inquiry.login",
+            value=LOGIN_REQUIRED[language],
+            source="inquiry-status",
+        )
+    return _lookup(facts, fact_id)
 
 
 def _lookup(facts: TurnFacts, fact_id: str) -> Fact | None:

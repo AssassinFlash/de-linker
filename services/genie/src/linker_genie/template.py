@@ -70,14 +70,15 @@ DEGRADED = {
 # not the model's, so a German turn cannot drift into the team mailbox
 # sentence (PR #96 pending-main, measured 2026-10-11). Functional UI text.
 # Wording: docs/acceptance/2026-10-13/genie-facts-protocol/copy-review.md.
-# The same two sentences are quoted in prompts/en/system.md,
-# prompts/de/system.md and the per-turn reminder in agent.py — those three
-# copies have to stay byte-identical to this dict, because grounding
-# accepts only this text.
+# The prompts and the per-turn reminder name the placeholder. The service
+# fills it from this dict in the answer language (cycle.align_login,
+# hydrate._render_fact). Grounding also accepts either exact sentence.
 LOGIN_REQUIRED = {
     "en": "Please log in to your account to view this inquiry.",
     "de": "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.",
 }
+LOGIN_PLACEHOLDER = "{fact:inquiry.login}"
+HANDOFF_PLACEHOLDER = "{fact:handoff.sentence}"
 
 # The sizing and document shapes' sentences (#233). Functional UI text; wording:
 # docs/acceptance/2026-10-17/233/copy-review.md.
@@ -138,6 +139,30 @@ def login_required(locale: str) -> TurnOutput:
     )
 
 
+def _extreme_fallback(facts: TurnFacts, language: Locale) -> TurnOutput | None:
+    """The one product search-products aggregated, named by its model code."""
+    winner = facts.facts.get("search.extreme_product_id")
+    model = facts.facts.get("search.extreme_model")
+    if winner is None or model is None:
+        return None
+    try:
+        product_id = int(winner.value)
+    except ValueError:
+        return None
+    text = (
+        f"Das Modell {model.value} erfüllt die genannte Grenze."
+        if language == "de"
+        else f"The {model.value} meets the limit you named."
+    )
+    return TurnOutput(
+        language=language,
+        blocks=[
+            TextBlock(text=text, refs=[str(product_id)]),
+            CardsBlock(product_ids=[product_id]),
+        ],
+    )
+
+
 def german_is_clean(text: str) -> bool:
     """A German line carries none of the English function-word fragments."""
     padded = f" {text.lower()} "
@@ -152,6 +177,11 @@ def fallback(facts: TurnFacts, locale: str, route: Route | None = None) -> TurnO
     # ship the mailbox sentence the handoff tool returned.
     if "inquiry.login_required" in facts.facts:
         return login_required(language)
+    # The applied winner is the whole fallback. The named-model clarification
+    # would add the other cards (#363, #364), which an extreme answer refuses.
+    extreme = _extreme_fallback(facts, language)
+    if extreme is not None:
+        return extreme
     url = facts.facts.get("size.configurator_url")
     if route is not None and route.name == "sizing" and url is not None:
         return TurnOutput(

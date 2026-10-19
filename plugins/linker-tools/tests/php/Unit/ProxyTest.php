@@ -760,6 +760,35 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * A commit the store refuses is a conflict, not a stored turn (#373).
+	 * The answer is not written and the response says so.
+	 */
+	public function test_a_refused_commit_is_a_conflict(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$thread         = new RecordingThread();
+		$thread->accept = false;
+		$request        = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_param(
+			'messages',
+			array(
+				array(
+					'role'    => 'user',
+					'content' => 'EV chargers',
+				),
+			)
+		);
+
+		$result = $this->proxy( static fn(): string => "event: meta\ndata: {}\n\n", $thread )->turn( $request );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_genie_turn_conflict', $result->get_error_code() );
+		$this->assertSame( 409, $result->get_error_data()['status'] );
+		$this->assertNull( $thread->recorded );
+		$this->assertConditionsMet();
+	}
+
+	/**
 	 * An upstream failure is not a turn: nothing is written.
 	 */
 	public function test_a_failed_turn_records_nothing(): void {

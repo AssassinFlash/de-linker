@@ -180,6 +180,64 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 	}
 }
 
+if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
+	/**
+	 * Enough of WordPress's tag processor for the consent barrier tests.
+	 */
+	class WP_HTML_Tag_Processor {
+		private string $html;
+		private ?string $tag_name = null;
+		/** @var array<string, string> */
+		private array $updates = array();
+
+		public function __construct( string $html ) {
+			$this->html = $html;
+		}
+
+		/** @param array<string, string>|string|null $query */
+		public function next_tag( $query = null ): bool {
+			$name = is_array( $query ) ? (string) ( $query['tag_name'] ?? '' ) : '';
+			if ( '' === $name || 1 !== preg_match( '/<' . preg_quote( $name, '/' ) . '\b/i', $this->html ) ) {
+				return false;
+			}
+			$this->tag_name = $name;
+			$this->updates  = array();
+			return true;
+		}
+
+		public function set_attribute( $name, $value ): bool {
+			$this->updates[ (string) $name ] = (string) $value;
+			return true;
+		}
+
+		public function get_updated_html(): string {
+			if ( null === $this->tag_name ) {
+				return $this->html;
+			}
+			$updated = preg_replace_callback(
+				'/<' . preg_quote( $this->tag_name, '/' ) . '\b([^>]*)>/i',
+				function ( array $match ): string {
+					$attrs = $match[1];
+					foreach ( $this->updates as $name => $value ) {
+						$encoded = htmlspecialchars( $value, ENT_QUOTES );
+						$pattern = '/\s' . preg_quote( $name, '/' ) . '=("[^"]*"|\'[^\']*\')/i';
+						$replacement = ' ' . $name . '="' . $encoded . '"';
+						if ( 1 === preg_match( $pattern, $attrs ) ) {
+							$attrs = preg_replace( $pattern, $replacement, $attrs, 1 ) ?? $attrs;
+						} else {
+							$attrs .= $replacement;
+						}
+					}
+					return '<' . $this->tag_name . $attrs . '>';
+				},
+				$this->html,
+				1
+			);
+			return is_string( $updated ) ? $updated : $this->html;
+		}
+	}
+}
+
 if ( ! class_exists( 'WP_REST_Response' ) ) {
 	class WP_REST_Response {
 		public $data;

@@ -425,6 +425,52 @@ def test_a_request_for_a_person_is_answered_without_the_model(
     assert row[2] == "asked"
 
 
+@pytest.mark.parametrize(
+    ("message", "locale", "sentence"),
+    [
+        (
+            "the S2 one",
+            "en",
+            "S2 is a suffix on more than one model. Which model do you mean?",
+        ),
+        (
+            "die S2",
+            "de",
+            "S2 ist eine Endung mehrerer Modelle. Welches Modell meinen Sie?",
+        ),
+    ],
+)
+def test_a_suffix_only_question_is_answered_without_the_model(
+    log: TurnLog, vocabulary: Any, message: str, locale: str, sentence: str
+) -> None:
+    """The sentence is the service's. find_products does not reach the model."""
+    from linker_genie.jev import Reading
+    from linker_genie.understand import Understander
+
+    class Finder:
+        def read(
+            self, message: str, page: dict[str, Any], history: Any = ()
+        ) -> Reading:
+            del message, page, history
+            return Reading("find_products", 0.99, 0.1, 0.05, 0.2, 2.6, 0.00003)
+
+    def no_model(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        raise AssertionError("the model must not run for a suffix-only question")
+
+    app.state.prepare = lambda body: Understander(lambda: vocabulary, Finder()).prepare(
+        body,
+        None,  # type: ignore[arg-type]
+    )
+    app.state.generate = no_model
+    body = _post("sfx", message, locale=locale)
+    assert _blocks(body) == [{"type": "text", "text": sentence, "refs": []}]
+    assert _meta(body)["route"] == "clarify"
+    row = log._db.execute("SELECT provider, model FROM turns").fetchone()
+    assert row is not None and (row[0], row[1]) == ("service", "none")
+
+
 def _frustrated(request: TurnRequest) -> Any:
     from linker_genie.jev import Reading
     from linker_genie.route import Route

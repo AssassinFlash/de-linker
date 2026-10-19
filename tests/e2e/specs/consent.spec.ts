@@ -1,5 +1,5 @@
 /** Basic mode on the real CMP, Consent API, Site Kit and WooCommerce. */
-import { writeFileSync, unlinkSync, existsSync } from 'node:fs';
+import { writeFileSync, unlinkSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import { instance, instanceName, wp } from '../lib/instance';
@@ -17,22 +17,36 @@ const fixturePath = join(
 );
 const google =
 	/https:\/\/[^/]*(?:googletagmanager\.com|google-analytics\.com|doubleclick\.net)\//;
+const fixtureMark =
+	'Local-only fixture: Site Kit normally suppresses all tags in local environments.';
 
-test.use({ bypassCSP: true });
-
-test.beforeAll(() => {
-	if (existsSync(fixturePath))
-		throw new Error('Consent fixture already exists');
-	writeFileSync(
-		fixturePath,
-		`<?php
-// Local-only fixture: Site Kit normally suppresses all tags in local environments.
+function fixtureSource(): string {
+	return `<?php
+// ${fixtureMark}
 add_filter('googlesitekit_allowed_tag_environment_types', function ($types) {
  if (wp_get_environment_type() === 'local' && (get_option('googlesitekit_analytics-4_settings', [])['measurementID'] ?? '') === 'G-TEST201123') { $types[] = 'local'; }
  return $types;
 });
-`
-	);
+`;
+}
+
+/** A crashed run leaves this file and used to abort the next one. */
+function clearOwnedFixture(): void {
+	if (!existsSync(fixturePath)) return;
+	const body = readFileSync(fixturePath, 'utf8');
+	if (!body.includes(fixtureMark)) {
+		throw new Error(
+			`Refusing to replace an mu-plugin that is not the consent fixture: ${fixturePath}`
+		);
+	}
+	unlinkSync(fixturePath);
+}
+
+test.use({ bypassCSP: true });
+
+test.beforeAll(() => {
+	clearOwnedFixture();
+	writeFileSync(fixturePath, fixtureSource());
 	for (const key of keys) {
 		saved.set(
 			key,
@@ -67,7 +81,7 @@ add_filter('googlesitekit_allowed_tag_environment_types', function ($types) {
 });
 
 test.afterAll(() => {
-	if (existsSync(fixturePath)) unlinkSync(fixturePath);
+	clearOwnedFixture();
 	for (const [key, value] of saved) {
 		if (value === 'null') wp(['option', 'delete', key]);
 		else wp(['option', 'update', key, value, '--format=json']);
@@ -194,3 +208,37 @@ for (const source of [false, true]) {
 		expect(await trackingCookies(page)).toEqual([]);
 	});
 }
+
+test('withdraw marketing only: analytics stays denied and source cookies clear', async ({
+	page,
+}) => {
+	const requests = await observe(page);
+	await page.goto(
+		`${target.url}/?utm_source=consent-fixture&utm_medium=acceptance`
+	);
+	await page.locator('[data-cky-tag="settings-button"]').click();
+	await page.locator('#ckySwitchadvertisement').check();
+	await page.locator('[data-cky-tag="detail-save-button"]').click();
+	await expect
+		.poll(async () =>
+			(await page.context().cookies()).some(
+				(cookie) =>
+					cookie.name === 'sbjs_current' &&
+					cookie.value.includes('consent-fixture')
+			)
+		)
+		.toBe(true);
+	expect(requests.filter((url) => url.includes('/g/collect'))).toEqual([]);
+	expect(
+		(await page.context().cookies()).some((cookie) => cookie.name === '_ga')
+	).toBe(false);
+
+	await page.locator('.cky-banner-element').first().click();
+	await page.locator('#ckySwitchadvertisement').uncheck();
+	await page.locator('[data-cky-tag="detail-save-button"]').click();
+	await page.waitForTimeout(1200);
+	await page.goto(`${target.url}/de/`);
+	await page.waitForTimeout(900);
+	expect(requests.filter((url) => url.includes('/g/collect'))).toEqual([]);
+	expect(await trackingCookies(page)).toEqual([]);
+});

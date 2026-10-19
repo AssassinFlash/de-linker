@@ -54,6 +54,8 @@ And the price rule (#242):
     may sit in another sentence. A model nothing looked up is never described as
     absent. A later search or get-product updates that note. Each searched model
     whose products qualified is shown as a card when the route requires cards.
+    An applied extreme (#368) already requires that one card, so this card rule
+    does not also require the others.
 
 Registered reading of guarantee 2: "推荐 ⊆ search-products 的 qualified"
 means qualified by this turn's tool results. That is search-products'
@@ -181,6 +183,7 @@ def check(
     failures.extend(_no_price_in_text(output))
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
+    failures.extend(_extreme(output, facts))
     if route is not None:
         failures.extend(_route(output, facts, route))
         failures.extend(_named_models(output, facts, route))
@@ -280,6 +283,49 @@ def _no_sent_claim(output: TurnOutput) -> list[str]:
     ]
 
 
+# A cheapest claim next to a model code, when prices are hidden (#368).
+# Explaining that no cheapest product can be named has the word and no code.
+_CHEAPEST_WORD = re.compile(
+    r"\b(?:cheapest|günstigst\w*|guenstigst\w*|billigst\w*|preiswertest\w*)\b",
+    re.IGNORECASE,
+)
+
+
+def _extreme(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """An applied extreme names that one product. A hidden price names none.
+
+    The ability already filtered and sorted the catalogue. Grounding keeps the
+    answer on that result: one card, the model code, and no price ranking when
+    the account cannot see prices.
+    """
+    hidden = facts.facts.get("search.extreme_price_hidden")
+    winner = facts.facts.get("search.extreme_product_id")
+    if hidden is not None and winner is None:
+        failures: list[str] = []
+        for text in _model_texts(output):
+            plain = PLACEHOLDER.sub("", text)
+            if _CHEAPEST_WORD.search(plain) and _MODEL_CODE.search(plain):
+                failures.append(
+                    "prices are hidden for this account: do not name a cheapest product"
+                )
+        return failures
+    if winner is None:
+        return []
+    product_id = int(winner.value)
+    failures = []
+    cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
+    if len(cards) != 1 or cards[0].product_ids != [product_id]:
+        failures.append(
+            f"an extreme of the product range is product {product_id} and only that card"
+        )
+    model = facts.facts.get("search.extreme_model")
+    if model is not None and all(
+        model.value not in text for text in _model_texts(output)
+    ):
+        failures.append(f"an extreme of the product range is named {model.value}")
+    return failures
+
+
 def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
     failures: list[str] = []
     cards = [b for b in output.blocks if isinstance(b, CardsBlock)]
@@ -363,6 +409,8 @@ def _named_models(output: TurnOutput, facts: TurnFacts, route: Route) -> list[st
     absence clause only when that same sentence names both brands and the
     product is shown. An unsearched code is never absent. A failed search is
     an outage: absence is refused, and the note is not "not searched".
+    When an extreme was applied, that one card is already required: the
+    per-model card rule would demand the other cards as well, so it yields.
     """
     if not route.named_models:
         return []
@@ -373,6 +421,8 @@ def _named_models(output: TurnOutput, facts: TurnFacts, route: Route) -> list[st
     cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
     shown = {pid for block in cards for pid in block.product_ids}
     codes = [item.note.code for item in looked]
+    # The applied winner is the only card. Absence claims are still refused.
+    applied = facts.facts.get("search.extreme_product_id") is not None
     failures: list[str] = []
     for item in looked:
         note = item.note
@@ -405,7 +455,12 @@ def _named_models(output: TurnOutput, facts: TurnFacts, route: Route) -> list[st
                 f"do not say {note.code} has no entry; report that model's own "
                 "search result"
             )
-        if route.show_products and note.searched_known and note.product_ids:
+        if (
+            not applied
+            and route.show_products
+            and note.searched_known
+            and note.product_ids
+        ):
             wanted = {pid for pid in note.product_ids if pid in facts.qualified_ids}
             if wanted and not wanted & shown:
                 failures.append(f"show {note.code} as a card")
@@ -569,13 +624,15 @@ def _login_required_is_a_login_request(
     """
     if "inquiry.login_required" not in facts.facts:
         return []
-    from linker_genie.template import LOGIN_REQUIRED
+    from linker_genie.template import LOGIN_PLACEHOLDER, LOGIN_REQUIRED
 
-    expected = LOGIN_REQUIRED[output.language]
+    # Either exact sentence, or the placeholder. cycle.align_login rewrites
+    # the block to the answer language before the customer sees it.
+    accepted = {LOGIN_REQUIRED["en"], LOGIN_REQUIRED["de"], LOGIN_PLACEHOLDER}
     if (
         len(output.blocks) == 1
         and isinstance(output.blocks[0], TextBlock)
-        and output.blocks[0].text == expected
+        and output.blocks[0].text in accepted
         and not output.blocks[0].refs
     ):
         return []

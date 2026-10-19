@@ -73,8 +73,10 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
     a condition a placeholder hydrates into the answer is customer-visible
     text, and an English sentence in a German answer fails the row the way
     `german_is_clean` fails a fallback line (R6-de, measured 2026-10-11).
-    The locale is the request's, not the payload's; the abilities return
-    both sides and the choice belongs to the turn.
+    `locale` is the answer language: the question's language when that
+    question is clearly one language, otherwise the page. It is not always
+    the request locale. The abilities return both sides and the choice
+    belongs to the turn.
     """
     gathered = TurnFacts()
     if not isinstance(payload, dict):
@@ -92,14 +94,123 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
     elif name.endswith("search-knowledge"):
         _from_knowledge(gathered, payload)
     elif name.endswith("inquiry-status"):
-        _from_inquiry(gathered, payload)
+        _from_inquiry(gathered, payload, locale)
     elif name.endswith("handoff-team"):
-        _from_handoff(gathered, payload)
+        _from_handoff(gathered, payload, locale)
     elif name == READ_PAGE:
         _from_page(gathered, payload)
     elif name == READ_ATTACHMENT:
         _from_attachment(gathered, payload, locale)
     return gathered
+
+
+# Verdicts a pairing tool cleared for a card. `_from_search` qualifies those
+# batteries, and the card fill (#376) lists the same ones: one vocabulary.
+RELEASED_VERDICTS = frozenset({"released", "released_with_accessory"})
+
+
+def _as_product_id(value: Any) -> int | None:
+    if isinstance(value, int) and value >= 1:
+        return value
+    return None
+
+
+def pairing_entries(item: dict[str, Any]) -> list[dict[str, Any]] | None:
+    """The pairings on one qualified product, or None when the row has none.
+
+    An empty list is not a pairing row. check-compatibility is a different
+    tool and does not arrive as a `pairings` list.
+    """
+    pairings = item.get("pairings")
+    if not isinstance(pairings, list) or not pairings:
+        return None
+    return [entry for entry in pairings if isinstance(entry, dict)]
+
+
+def released_ids(item: dict[str, Any]) -> list[int] | None:
+    """The searched product, then each battery `RELEASED_VERDICTS` cleared.
+
+    Order is the tool's. None when `item` is not a pairing row. An id already
+    listed is not repeated.
+    """
+    entries = pairing_entries(item)
+    if entries is None:
+        return None
+    ids: list[int] = []
+    product_id = _as_product_id(item.get("product_id"))
+    if product_id is not None:
+        ids.append(product_id)
+    for entry in entries:
+        if entry.get("verdict") not in RELEASED_VERDICTS:
+            continue
+        paired = _as_product_id(entry.get("product_id"))
+        if paired is not None and paired not in ids:
+            ids.append(paired)
+    return ids or None
+
+
+def pairing_sets_in_search(payload: dict[str, Any]) -> list[list[int]]:
+    """One released-id list per qualified row that carries pairings."""
+    sets: list[list[int]] = []
+    for item in payload.get("qualified") or []:
+        if not isinstance(item, dict):
+            continue
+        ids = released_ids(item)
+        if ids:
+            sets.append(ids)
+    return sets
+
+
+def released_pair(call: dict[str, Any]) -> list[int] | None:
+    """The two products of one released check-compatibility call, argument order.
+
+    None when the call is not that tool, or the verdict is not a released one.
+    A pair that was not released is not a card set to fill.
+    """
+    name = str(call.get("name") or "")
+    if not name.endswith("check-compatibility"):
+        return None
+    result = call.get("result")
+    if not isinstance(result, dict) or result.get("verdict") not in RELEASED_VERDICTS:
+        return None
+    arguments = call.get("arguments")
+    if not isinstance(arguments, dict):
+        return None
+    inverter = _as_product_id(arguments.get("inverter_id"))
+    battery = _as_product_id(arguments.get("battery_id"))
+    if inverter is not None and battery is not None and inverter != battery:
+        return [inverter, battery]
+    raw = arguments.get("product_ids")
+    if not isinstance(raw, list) or len(raw) != 2:
+        return None
+    first = _as_product_id(raw[0])
+    second = _as_product_id(raw[1])
+    if first is None or second is None or first == second:
+        return None
+    return [first, second]
+
+
+def pairing_card_sets(facts: TurnFacts) -> list[list[int]]:
+    """Each independent pairing set in this turn's tool calls, in call order.
+
+    One search-products row with a pairings list is one set. One released
+    check-compatibility call is one set. Card fill uses this only when the
+    list holds a single set: two sets are two answers and are not merged.
+    """
+    sets: list[list[int]] = []
+    for call in facts.tool_calls:
+        if not isinstance(call, dict):
+            continue
+        name = str(call.get("name") or "")
+        if name.endswith("search-products"):
+            result = call.get("result")
+            if isinstance(result, dict):
+                sets.extend(pairing_sets_in_search(result))
+            continue
+        pair = released_pair(call)
+        if pair is not None:
+            sets.append(pair)
+    return sets
 
 
 def merge(parts: list[TurnFacts]) -> TurnFacts:
@@ -134,16 +245,16 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
         # The pairings the tool itself annotated on this inverter: the battery
         # ids become citable, a released verdict qualifies the battery for
         # cards (the tool cleared it — same rank as search qualification),
-        # and verdict plus conditions become placeholder-able facts.
-        for _index, pairing in enumerate(item.get("pairings") or []):
-            if not isinstance(pairing, dict):
-                continue
-            paired_id = pairing.get("product_id")
-            if not isinstance(paired_id, int) or paired_id < 1:
+        # and verdict plus conditions become placeholder-able facts. The row
+        # and the verdict set are `pairing_entries` / `RELEASED_VERDICTS`, the
+        # same ones the card fill reads.
+        for pairing in pairing_entries(item) or []:
+            paired_id = _as_product_id(pairing.get("product_id"))
+            if paired_id is None:
                 continue
             gathered.product_ids.add(paired_id)
             verdict = pairing.get("verdict")
-            if verdict in ("released", "released_with_accessory"):
+            if verdict in RELEASED_VERDICTS:
                 gathered.qualified_ids.add(paired_id)
             if isinstance(verdict, str) and verdict:
                 gathered.add(
@@ -176,6 +287,36 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
                 fact_id = f"compat.document.{paired_id}.{document_index}"
                 gathered.add(Fact(id=fact_id, value=value, source="search-products"))
                 gathered.documents[fact_id] = _document(document, url, page)
+    extreme = payload.get("extreme")
+    if isinstance(extreme, dict):
+        # The ability's aggregate (#368). The model names this product; grounding
+        # refuses a different card. A hidden price records no winner.
+        product_id = extreme.get("product_id")
+        if extreme.get("applied") is True and isinstance(product_id, int):
+            gathered.add(
+                Fact(
+                    id="search.extreme_product_id",
+                    value=str(product_id),
+                    source="search-products",
+                )
+            )
+            model = extreme.get("model")
+            if isinstance(model, str) and model:
+                gathered.add(
+                    Fact(
+                        id="search.extreme_model",
+                        value=model,
+                        source="search-products",
+                    )
+                )
+        elif extreme.get("reason") == "price_hidden":
+            gathered.add(
+                Fact(
+                    id="search.extreme_price_hidden",
+                    value="1",
+                    source="search-products",
+                )
+            )
     unknown = payload.get("unknown_fields")
     if isinstance(unknown, list):
         gathered.unknown_fields = [str(item) for item in unknown]
@@ -376,13 +517,25 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
                 gathered.add(Fact(id=figure, value=value, source="search-knowledge"))
 
 
-def _from_inquiry(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+def _from_inquiry(
+    gathered: TurnFacts, payload: dict[str, Any], locale: str = "en"
+) -> None:
     if payload.get("error") == "login_required":
         gathered.add(
             Fact(
                 id="inquiry.login_required",
                 value="login_required",
                 source="inquiry-status",
+            )
+        )
+        # The sentence the placeholder `{fact:inquiry.login}` names. Imported
+        # here: template imports hydrate, which imports this module.
+        from linker_genie.template import LOGIN_REQUIRED
+
+        side = "de" if locale.startswith("de") else "en"
+        gathered.add(
+            Fact(
+                id="inquiry.login", value=LOGIN_REQUIRED[side], source="inquiry-status"
             )
         )
         return
@@ -401,11 +554,22 @@ def _from_inquiry(gathered: TurnFacts, payload: dict[str, Any]) -> None:
             )
 
 
-def _from_handoff(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+def _from_handoff(
+    gathered: TurnFacts, payload: dict[str, Any], locale: str = "en"
+) -> None:
     for key in ("sentence_en", "sentence_de", "mailto"):
         value = payload.get(key)
         if isinstance(value, str) and value:
             gathered.add(Fact(id=f"handoff.{key}", value=value, source="handoff-team"))
+    # `{fact:handoff.sentence}` is the id both prompts write. The side is the
+    # answer language, with the other side as a fallback when one is missing.
+    side = "de" if locale.startswith("de") else "en"
+    other = "en" if side == "de" else "de"
+    chosen = payload.get(f"sentence_{side}")
+    if not isinstance(chosen, str) or not chosen:
+        chosen = payload.get(f"sentence_{other}")
+    if isinstance(chosen, str) and chosen:
+        gathered.add(Fact(id="handoff.sentence", value=chosen, source="handoff-team"))
 
 
 def _add_figures(

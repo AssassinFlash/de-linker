@@ -11,8 +11,9 @@ js_projects := "plugins/linker-tools plugins/linker-commerce"
 
 php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tools mu-plugins tools/local"
 
-# uv projects: the services, tools/local (linker-local), the data migrations (tools/migrate), and the FAQ tooling.
-py_projects := "services/genie services/engine tools/local tools/migrate tools/faq"
+# uv projects: the services, tools/local (linker-local), the data migrations (tools/migrate),
+# the FAQ tooling, and the #330 harness (its own uv project, package = false).
+py_projects := "services/genie services/engine tools/local tools/migrate tools/faq docs/research/2026-10-20-campaign-330/harness"
 
 # `just pull` takes a snapshot of the live site; `just pull load|diff|scan|…`
 # (tools/pull/pull.just, docs/specs/6-live-pull.md).
@@ -282,6 +283,18 @@ mu-smoke name:
     set -euo pipefail
     cd "{{ justfile_directory() }}/mu-plugins"
     LINKER_MU_WP="just wp {{ name }}" PHP={{ php }} {{ php }} vendor/bin/phpunit --testsuite integration
+
+# Two processes commit one Genie conversation on a real instance
+# (`just up <name>` first). The overlap case asserts the lock intervals,
+# not only the final transcript (#373). CI runs this in the mu-smoke job.
+[positional-arguments]
+genie-concurrency name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ justfile_directory() }}/plugins/linker-tools"
+    LINKER_WP_ROOT="$HOME/de-linker-local/{{ name }}/wordpress" \
+        {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist \
+        --filter ConversationConcurrencyTest
 
 # Installs node_modules from package-lock.json, unless the last install is newer than the lock file.
 [private]

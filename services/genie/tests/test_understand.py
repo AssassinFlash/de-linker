@@ -95,6 +95,20 @@ def test_saj_is_searched_by_code_before_the_model(vocabulary: Vocabulary) -> Non
     ]
 
 
+def test_an_english_question_on_a_german_page_is_searched_in_english(
+    vocabulary: Vocabulary,
+) -> None:
+    """#374: the route's lang and the HTTP input[lang] follow the question."""
+    seen: list[httpx.Request] = []
+    understander = Understander(lambda: vocabulary, FakeJev(_reading("find_products")))
+    prepared = understander.prepare(
+        _request("which batteries work with saj", "de"), _abilities(seen)
+    )
+    assert seen
+    assert {request.url.params.get("input[lang]") for request in seen} == {"en"}
+    assert {call.arguments.get("lang") for call in prepared.route.calls} == {"en"}
+
+
 def test_jev_failure_is_logged_and_the_product_word_still_searches(
     vocabulary: Vocabulary, caplog: pytest.LogCaptureFixture
 ) -> None:

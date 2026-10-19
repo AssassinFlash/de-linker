@@ -1,5 +1,5 @@
 {
-  "about": "When two customer messages ask the same question (#243, docs/specs/13-genie.md goal 6: 'the same question repeated three rounds'). Written 2026-10-18 from the shapes customers repeat in: case, punctuation, a dropped article or 'please', a model code typed with spaces instead of hyphens, a shortened restatement. The 'different' pairs keep most words and change what is asked (another model, another document, another value); the pairs marked follow_up are real follow-ups a customer sends after an answer: the same question refined with a feature or a quantity, or asked for a sibling model (review round 1 of #243). `a` is the earlier message, `b` the later one. contact.SAME is the Jaccard cut these pairs are measured against (tests/test_contact.py).",
+  "about": "When two customer messages ask the same question (#243, docs/specs/13-genie.md goal 6: 'the same question repeated three rounds'). Written 2026-10-18 from the shapes customers repeat in: case, punctuation, a dropped article or 'please', a model code typed with spaces instead of hyphens, a shortened restatement. The 'different' pairs keep most words and change what is asked (another model, another document, another value); the pairs marked follow_up are real follow-ups a customer sends after an answer: the same question refined with a feature or a quantity, or asked for a sibling model (review round 1 of #243). #375 round 2 adds the filler pairs (and the pairs that must stay different: a delivery day, noch, German still, a negation dropped either way) so #339 measures the 0-to-0.75 claim on a corpus that contains them. Round 3 adds the language-gate regressions, the inflected date verbs, keiner/keinem/keines, and a grammatical pair for every aktuell ending; currently, derzeit, momentan, zurzeit and yet stay different because they are not fillers. `a` is the earlier message, `b` the later one. contact.SAME is the Jaccard cut these pairs are measured against (tests/test_contact.py, test_339_filler_corpus_holds_for_every_cut_from_0_to_0_75).",
   "pairs": [
     {
       "a": "Which battery fits the SAJ H2-10K-T3?",
@@ -203,6 +203,216 @@
       "b": "Gibt es ein Datenblatt für den Deye SUN-10K?",
       "same": false,
       "follow_up": true
+    },
+    {
+      "a": "Which batteries work with the SAJ H2-10K-T3?",
+      "b": "Which batteries work with the SAJ H2-10K-T3 now?",
+      "same": true
+    },
+    {
+      "a": "Which batteries work with the SAJ H2-10K-T3?",
+      "b": "Which batteries work with the SAJ H2-10K-T3 today?",
+      "same": true
+    },
+    {
+      "a": "Which batteries work with the SAJ H2-10K-T3?",
+      "b": "Which batteries work with the SAJ H2-10K-T3 right now?",
+      "same": true
+    },
+    {
+      "a": "Which batteries work with the SAJ H2-10K-T3?",
+      "b": "Which batteries work with the SAJ H2-10K-T3 still?",
+      "same": true
+    },
+    {
+      "a": "Is the GW10K-ETA in stock?",
+      "b": "Is the GW10K-ETA in stock yet?",
+      "same": false
+    },
+    {
+      "a": "Is it in stock now?",
+      "b": "Is it in stock now?",
+      "same": true
+    },
+    {
+      "a": "Noch verfügbar?",
+      "b": "Noch verfügbar?",
+      "same": true
+    },
+    {
+      "a": "Welche Batterien passen zum SAJ H2-10K-T3?",
+      "b": "Welche Batterien passen zum SAJ H2-10K-T3 heute?",
+      "same": true
+    },
+    {
+      "a": "Welche Batterien passen zum SAJ H2-10K-T3?",
+      "b": "Welche Batterien passen zum SAJ H2-10K-T3 gerade?",
+      "same": true
+    },
+    {
+      "a": "Wie viele GW10K-ETA haben Sie auf Lager?",
+      "b": "Wie viele GW10K-ETA haben Sie aktuell auf Lager?",
+      "same": true
+    },
+    {
+      "a": "Wie viele GW10K-ETA haben Sie auf Lager?",
+      "b": "Wie viele GW10K-ETA haben Sie momentan auf Lager?",
+      "same": false
+    },
+    {
+      "a": "Wie viele GW10K-ETA haben Sie auf Lager?",
+      "b": "Wie viele GW10K-ETA haben Sie zurzeit auf Lager?",
+      "same": false
+    },
+    {
+      "a": "Wie viele GW10K-ETA haben Sie auf Lager?",
+      "b": "Wie viele GW10K-ETA haben Sie derzeit auf Lager?",
+      "same": false
+    },
+    {
+      "a": "Wie ist der Lagerbestand des GW10K-ETA?",
+      "b": "Wie ist der aktuelle Lagerbestand des GW10K-ETA?",
+      "same": true
+    },
+    {
+      "a": "Haben Sie den Lagerbestand des GW10K-ETA?",
+      "b": "Haben Sie den aktuellen Lagerbestand des GW10K-ETA?",
+      "same": true
+    },
+    {
+      "a": "How many GW10K-ETA units do you have in stock?",
+      "b": "How many GW10K-ETA units do you have in stock currently?",
+      "same": false
+    },
+    {
+      "a": "Ist ein Lagerbestand des GW10K-ETA bekannt?",
+      "b": "Ist ein aktueller Lagerbestand des GW10K-ETA bekannt?",
+      "same": true
+    },
+    {
+      "a": "Ist ein Lager des GW10K-ETA bekannt?",
+      "b": "Ist ein aktuelles Lager des GW10K-ETA bekannt?",
+      "same": true
+    },
+    {
+      "a": "Can you ship the GoodWe ET?",
+      "b": "Can you ship the GoodWe ET today?",
+      "same": false
+    },
+    {
+      "a": "Können Sie den GoodWe ET liefern?",
+      "b": "Können Sie den GoodWe ET heute liefern?",
+      "same": false
+    },
+    {
+      "a": "Wir brauchen zwei Module.",
+      "b": "Wir brauchen noch zwei Module.",
+      "same": false
+    },
+    {
+      "a": "Läuft der Wechselrichter?",
+      "b": "Läuft der Wechselrichter still?",
+      "same": false
+    },
+    {
+      "a": "Which batteries do not work with the SAJ H2-10K-T3?",
+      "b": "Which batteries work with the SAJ H2-10K-T3?",
+      "same": false
+    },
+    {
+      "a": "Which batteries work with the SAJ H2-10K-T3?",
+      "b": "Which batteries do not work with the SAJ H2-10K-T3?",
+      "same": false
+    },
+    {
+      "a": "Welcher Speicher passt nicht zum SAJ H2-10K-T3?",
+      "b": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+      "same": false
+    },
+    {
+      "a": "Welcher Speicher passt zum SAJ H2-10K-T3?",
+      "b": "Welcher Speicher passt nicht zum SAJ H2-10K-T3?",
+      "same": false
+    },
+    {
+      "a": "Welche Batterien passen zum SAJ H2-10K-T3?",
+      "b": "Welche Batterien passen zum SAJ H2-10K-T3 noch?",
+      "same": false
+    },
+    {
+      "a": "Welche Batterien passen zum SAJ H2-10K-T3?",
+      "b": "Welche Batterien passen zum SAJ H2-10K-T3 jetzt?",
+      "same": false
+    },
+    {
+      "a": "Ich will die SAJ H2-10K-T3 Batterie kaufen.",
+      "b": "Ich will die SAJ H2-10K-T3 Batterie kaufen aktuell.",
+      "same": true
+    },
+    {
+      "a": "GW10K-ETA stock?",
+      "b": "GW10K-ETA stock now?",
+      "same": true
+    },
+    {
+      "a": "Which batteries die fastest?",
+      "b": "Which batteries die fastest now?",
+      "same": true
+    },
+    {
+      "a": "Will er laden?",
+      "b": "Will er still laden?",
+      "same": false
+    },
+    {
+      "a": "Can the GoodWe ET be delivered?",
+      "b": "Can the GoodWe ET be delivered today?",
+      "same": false
+    },
+    {
+      "a": "Can the GoodWe ET be shipped?",
+      "b": "Can the GoodWe ET be shipped today?",
+      "same": false
+    },
+    {
+      "a": "Can the GoodWe ET be sent?",
+      "b": "Can the GoodWe ET be sent today?",
+      "same": false
+    },
+    {
+      "a": "Können Sie den GoodWe ET versenden?",
+      "b": "Können Sie den GoodWe ET heute versenden?",
+      "same": false
+    },
+    {
+      "a": "Ist der GoodWe ET lieferbar?",
+      "b": "Ist der GoodWe ET heute lieferbar?",
+      "same": false
+    },
+    {
+      "a": "Kann der GoodWe ET ausgeliefert werden?",
+      "b": "Kann der GoodWe ET heute ausgeliefert werden?",
+      "same": false
+    },
+    {
+      "a": "Wann wird der GoodWe ET versandt?",
+      "b": "Wann wird der GoodWe ET heute versandt?",
+      "same": false
+    },
+    {
+      "a": "Passt der Speicher zu keinem SAJ H2-10K-T3?",
+      "b": "Passt der Speicher zu einem SAJ H2-10K-T3?",
+      "same": false
+    },
+    {
+      "a": "Passt das zu keiner SAJ Batterie?",
+      "b": "Passt das zu einer SAJ Batterie?",
+      "same": false
+    },
+    {
+      "a": "Ist keines SAJ Modells kompatibel?",
+      "b": "Ist eines SAJ Modells kompatibel?",
+      "same": false
     }
   ]
 }
