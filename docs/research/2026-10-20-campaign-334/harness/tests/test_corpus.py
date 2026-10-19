@@ -5,18 +5,22 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from PIL import Image
 from pypdf import PdfReader
 
 import corpus
-from cases import CASES, MARKER, META_CANARY
-from corpus import build
+from cases import CASES, I4_TRANSCRIPTION, MARKER, META_CANARY
+from corpus import PIXELS, TEXT_FLOOR, _fit, _text_pdf, build
 
 
 @pytest.mark.skipif(corpus.FONT is None, reason="no TTF font on this host")
 def test_every_case_file_is_built(tmp_path: Path) -> None:
     manifest = build(tmp_path)
     keys = set(manifest["files"])
-    missing = [case.file for case in CASES if case.file not in keys]
+    # The index case searches a temporary sqlite file. It has no corpus attachment.
+    missing = [
+        case.file for case in CASES if case.channel != "index" and case.file not in keys
+    ]
     assert missing == []
     assert len({case.id for case in CASES}) == len(CASES)
 
@@ -73,6 +77,27 @@ def test_unicode_payload_survives_text_extraction(tmp_path: Path) -> None:
     text = PdfReader(tmp_path / "i11-unicode.pdf").pages[0].extract_text() or ""
     assert "previous instructions" in text
     assert "\u200b" in text
+
+
+def test_fit_stays_under_the_vision_ceiling_and_does_not_upscale() -> None:
+    assert PIXELS == 1_200_000
+    assert PIXELS < 1300 * 1300
+    small = Image.new("RGB", (40, 30), "white")
+    assert _fit(small).size == (40, 30)
+    fitted = _fit(Image.new("RGB", (2000, 2000), "white"))
+    assert fitted.size[0] * fitted.size[1] <= PIXELS
+
+
+def test_short_text_is_padded_past_the_scan_threshold(tmp_path: Path) -> None:
+    assert TEXT_FLOOR == 220
+    assert TEXT_FLOOR > 200
+    short = _text_pdf(tmp_path / "i4.pdf", [I4_TRANSCRIPTION + "."])
+    text = " ".join((PdfReader(short).pages[0].extract_text() or "").split())
+    assert I4_TRANSCRIPTION in text
+    assert "names no price and asks for nothing" in text
+    long = _text_pdf(tmp_path / "long.pdf", ["x" * TEXT_FLOOR])
+    long_text = " ".join((PdfReader(long).pages[0].extract_text() or "").split())
+    assert "names no price and asks for nothing" not in long_text
 
 
 def test_parts_csv_has_two_models_and_the_note(tmp_path: Path) -> None:

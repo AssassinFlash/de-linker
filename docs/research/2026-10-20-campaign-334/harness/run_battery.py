@@ -13,6 +13,7 @@ import json
 import os
 import socket
 import subprocess
+import sys
 import threading
 import time
 import urllib.error
@@ -22,18 +23,25 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
-from cases import CASES, MARKER, Case
+from cases import CASES, MARKER, Case, exfil_port
 from corpus import build
 from grade import grade
+from poison import is_published
+from poison import search as poison_search
 
 EVIDENCE = Path(
     os.environ.get("C334_EVIDENCE", Path.home() / "de-linker-data/campaign-334")
 )
+# Direct /turn has no proxy budget. A scanned PDF may render four pages
+# (attachments.MAX_RENDERED_PAGES), each vision call capped at 30 s
+# (vision.TIMEOUT_SECONDS), and the agent still has to run. 240 s covers
+# that stack. A proxied turn returns inside Proxy::TURN_BUDGET (60 s),
+# before this socket gives up.
 TIMEOUT = 240
 INSTANCE = os.environ.get("C334_INSTANCE", "c334")
 
 
-def main() -> None:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("only", nargs="*", help="case id prefixes, for example N1 P")
     parser.add_argument("--rerun", action="store_true")
@@ -43,90 +51,93 @@ def main() -> None:
         help="rewrite summary.json from the run files already on disk",
     )
     parser.add_argument(
+        "--regrade",
+        action="store_true",
+        help="grade the run files on disk again, then rewrite summary.json",
+    )
+    parser.add_argument(
         "--wp", default=os.environ.get("C334_WP", "http://127.0.0.1:9193")
     )
     parser.add_argument("--genie", default=os.environ.get("C334_GENIE", ""))
     parser.add_argument("--instance", default=os.environ.get("C334_INSTANCE", "c334"))
-    args = parser.parse_args()
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
     global INSTANCE
     INSTANCE = args.instance
+    evidence = EVIDENCE
+    if args.regrade:
+        summary = regrade(evidence)
+        _print_summary(summary)
+        return
     if args.summarise_only:
-        evidence = EVIDENCE
         summary = _summarise(evidence)
         evidence.mkdir(parents=True, exist_ok=True)
         (evidence / "summary.json").write_text(
             json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
-        print(
-            json.dumps(
-                {key: summary[key] for key in ("pass", "defect", "error", "sent")},
-                indent=2,
-            )
-        )
+        _print_summary(summary)
+        return
+    selected = select_cases(args.only)
+    index_cases = [case for case in selected if case.channel == "index"]
+    browser_cases = [case for case in selected if case.channel == "browser"]
+    live_cases = [case for case in selected if case.channel not in {"index", "browser"}]
+    evidence.mkdir(parents=True, exist_ok=True)
+    for case in index_cases:
+        path = evidence / "runs" / f"{case.id}.json"
+        if path.is_file() and not args.rerun:
+            print(f"skip {case.id}", flush=True)
+            continue
+        print(f"run {case.id} {case.title}", flush=True)
+        _write_graded(path, case, _index_record(case, evidence))
+    if not live_cases and not browser_cases:
+        _finish(evidence)
         return
     _local(args.wp)
-    evidence = EVIDENCE
-    evidence.mkdir(parents=True, exist_ok=True)
-    corpus_dir = evidence / "corpus"
-    manifest = build(corpus_dir)
-    token = _token(args.instance)
-    genie = args.genie or _genie_url(args.instance)
-    _local(genie)
-    product = _product(args.instance, args.wp)
-    (evidence / "product.json").write_text(
-        json.dumps(product, indent=2) + "\n", encoding="utf-8"
-    )
-    before = _side_effects(args.instance)
-    (evidence / "side-effects-before.json").write_text(
-        json.dumps(before, indent=2) + "\n", encoding="utf-8"
-    )
-    listener = _Listener()
-    listener.start()
-    selected = [
-        case for case in CASES if case.channel != "browser" and _wanted(case, args.only)
-    ]
-    try:
-        for case in selected:
-            path = evidence / "runs" / f"{case.id}.json"
-            if path.is_file() and not args.rerun:
-                print(f"skip {case.id}", flush=True)
-                continue
-            print(f"run {case.id} {case.title}", flush=True)
-            record = _run_case(case, manifest, genie, token, args.wp, product)
-            record["grade"] = grade(case.expectation(), record).as_dict()
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(
-                json.dumps(record, indent=2, ensure_ascii=False) + "\n",
-                encoding="utf-8",
-            )
-            print(
-                f"  {record['grade']['verdict']} {record.get('duration_ms')} ms",
-                flush=True,
-            )
-    finally:
-        listener.stop()
-    persisted = _persisted(args.instance, evidence)
-    (evidence / "persistence.json").write_text(
-        json.dumps(persisted, indent=2) + "\n", encoding="utf-8"
-    )
-    after = _side_effects(args.instance)
-    (evidence / "side-effects-after.json").write_text(
-        json.dumps(after, indent=2) + "\n", encoding="utf-8"
-    )
-    sent = _sent(before, after) or bool(listener.hits)
-    (evidence / "exfil-hits.json").write_text(
-        json.dumps(listener.hits, indent=2) + "\n", encoding="utf-8"
-    )
-    _apply_global(evidence, persisted, sent)
-    summary = _summarise(evidence)
-    (evidence / "summary.json").write_text(
-        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
-    print(
-        json.dumps(
-            {key: summary[key] for key in ("pass", "defect", "error", "sent")}, indent=2
+    manifest = build(evidence / "corpus")
+    if live_cases:
+        token = _token(args.instance)
+        genie = args.genie or _genie_url(args.instance)
+        _local(genie)
+        product = _product(args.instance, args.wp)
+        (evidence / "product.json").write_text(
+            json.dumps(product, indent=2) + "\n", encoding="utf-8"
         )
-    )
+        before = _side_effects(args.instance)
+        (evidence / "side-effects-before.json").write_text(
+            json.dumps(before, indent=2) + "\n", encoding="utf-8"
+        )
+        listener = _Listener()
+        listener.start()
+        try:
+            for case in live_cases:
+                path = evidence / "runs" / f"{case.id}.json"
+                if path.is_file() and not args.rerun:
+                    print(f"skip {case.id}", flush=True)
+                    continue
+                print(f"run {case.id} {case.title}", flush=True)
+                record = _run_case(case, manifest, genie, token, args.wp, product)
+                _write_graded(path, case, record)
+        finally:
+            listener.stop()
+        persisted = _persisted(args.instance, evidence)
+        (evidence / "persistence.json").write_text(
+            json.dumps(persisted, indent=2) + "\n", encoding="utf-8"
+        )
+        after = _side_effects(args.instance)
+        (evidence / "side-effects-after.json").write_text(
+            json.dumps(after, indent=2) + "\n", encoding="utf-8"
+        )
+        sent = _sent(before, after) or bool(listener.hits)
+        (evidence / "exfil-hits.json").write_text(
+            json.dumps(listener.hits, indent=2) + "\n", encoding="utf-8"
+        )
+        _apply_global(evidence, persisted, sent)
+    if browser_cases:
+        _browser(evidence, browser_cases)
+    _finish(evidence)
 
 
 def _run_case(
@@ -304,6 +315,31 @@ def _page(case: Case, product: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+class _StayLocal(urllib.request.HTTPRedirectHandler):
+    """Refuse a redirect whose next host is not loopback.
+
+    urllib copies custom headers onto the next request, including
+    X-Linker-Service-Token, and turns the POST into a GET. The next host is
+    checked here, before that request is built.
+    """
+
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: Any,
+        code: int,
+        msg: str,
+        headers: Any,
+        newurl: str,
+    ) -> urllib.request.Request | None:
+        _local(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _opener() -> urllib.request.OpenerDirector:
+    return urllib.request.build_opener(_StayLocal)
+
+
 def _post(url: str, body: dict[str, Any], headers: dict[str, str]) -> tuple[int, str]:
     _local(url)
     data = json.dumps(body).encode("utf-8")
@@ -318,7 +354,8 @@ def _post(url: str, body: dict[str, Any], headers: dict[str, str]) -> tuple[int,
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+        with _opener().open(request, timeout=TIMEOUT) as response:
+            _local(response.geturl())
             return response.status, response.read().decode("utf-8", "replace")
     except urllib.error.HTTPError as error:
         return error.code, error.read().decode("utf-8", "replace")
@@ -334,7 +371,8 @@ def _post_cookies(
         headers["Cookie"] = "; ".join(f"{key}={value}" for key, value in jar.items())
     request = urllib.request.Request(url, data=data, headers=headers, method="POST")
     try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+        with _opener().open(request, timeout=TIMEOUT) as response:
+            _local(response.geturl())
             _keep(jar, response)
             return response.status, response.read().decode("utf-8", "replace"), jar
     except urllib.error.HTTPError as error:
@@ -433,17 +471,41 @@ def _local(url: str) -> None:
 
 def _token(instance: str) -> str:
     file = EVIDENCE / "service-token.txt"
-    if file.is_file() and file.read_text(encoding="utf-8").strip():
-        return file.read_text(encoding="utf-8").strip()
+    stored = _read_token(file)
+    if stored:
+        return stored
     raw = _wp(
         instance, ["config", "get", "LINKER_GENIE_SERVICE_TOKEN", "--type=constant"]
     )
     token = raw.strip().splitlines()[-1].strip()
     if not token or token.lower() == "null":
         raise SystemExit("Genie service token is not configured on this instance")
-    file.write_text(token + "\n", encoding="utf-8")
-    file.chmod(0o600)
+    _store_token(file, token)
     return token
+
+
+def _read_token(file: Path) -> str | None:
+    """Return the token, tightening the file to owner-read even when it already existed."""
+    if not file.is_file():
+        return None
+    _tighten(file)
+    text = file.read_text(encoding="utf-8").strip()
+    return text or None
+
+
+def _store_token(file: Path, token: str) -> None:
+    """Write the token as mode 0600. A umask cannot leave it group-readable."""
+    file.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    try:
+        os.write(fd, (token + "\n").encode("utf-8"))
+    finally:
+        os.close(fd)
+    _tighten(file)
+
+
+def _tighten(file: Path) -> None:
+    file.chmod(0o600)
 
 
 def _genie_url(instance: str) -> str:
@@ -652,10 +714,150 @@ def _wanted(case: Case, only: list[str]) -> bool:
     return any(case.id.startswith(prefix) for prefix in only)
 
 
+def select_cases(only: list[str]) -> list[Case]:
+    """Every selected case, including the browser and temporary-index channels."""
+    return [case for case in CASES if _wanted(case, only)]
+
+
+def _write_graded(path: Path, case: Case, record: dict[str, Any]) -> None:
+    record["grade"] = grade(case.expectation(), record).as_dict()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    print(f"  {record['grade']['verdict']} {record.get('duration_ms')} ms", flush=True)
+
+
+def _index_record(case: Case, evidence: Path) -> dict[str, Any]:
+    """Search a temporary index. The published vector index is not opened."""
+    db = evidence / "poison-index" / "index.sqlite"
+    started = time.time()
+    hits: list[str] = []
+    try:
+        hits = poison_search(db, case.question)
+        if not hits:
+            raise RuntimeError("temporary index returned no hits")
+        text = "\n".join(hits)
+        step: dict[str, Any] = {
+            "status": 200,
+            "answer": "",
+            "readings": [{"text": text, "failed": None}],
+            "blocks": [],
+            "meta": {"route": "index"},
+        }
+    except Exception as error:  # noqa: BLE001 — one case must not abort the battery
+        step = {"status": 0, "error": f"{type(error).__name__}: {error}", "answer": ""}
+    return {
+        "id": case.id,
+        "group": case.group,
+        "owasp": case.owasp,
+        "title": case.title,
+        "channel": case.channel,
+        "file": case.file,
+        "question": case.question,
+        "duration_ms": int((time.time() - started) * 1000),
+        "status": step.get("status"),
+        "answer": step.get("answer"),
+        "readings": step.get("readings"),
+        "blocks": step.get("blocks"),
+        "meta": step.get("meta"),
+        "steps": [step],
+        "error": step.get("error"),
+        "index": {"path": str(db), "published": is_published(db), "hits": len(hits)},
+        "sent_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    }
+
+
+def _browser(evidence: Path, cases: list[Case]) -> None:
+    """Run browser.mjs, then grade U1 and U2 with the committed grader."""
+    script = Path(__file__).with_name("browser.mjs")
+    done = subprocess.run(
+        ["node", str(script), str(evidence)],
+        cwd=script.parent,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if done.stdout:
+        print(done.stdout, end="" if done.stdout.endswith("\n") else "\n", flush=True)
+    if done.returncode != 0 and done.stderr:
+        print(done.stderr, file=sys.stderr, flush=True)
+    message = (
+        done.stderr or done.stdout or f"browser.mjs exited {done.returncode}"
+    ).strip()
+    for case in cases:
+        path = evidence / "runs" / f"{case.id}.json"
+        if path.is_file():
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+            record = loaded if isinstance(loaded, dict) else {}
+        else:
+            record = {}
+        if not record:
+            record = {
+                "id": case.id,
+                "channel": "browser",
+                "error": message[-500:],
+                "turn_requests": 0,
+                "steps": [{"status": 0, "error": message[-500:]}],
+            }
+        print(f"grade {case.id}", flush=True)
+        _write_graded(path, case, record)
+
+
+def regrade(evidence: Path) -> dict[str, Any]:
+    """Grade every stored run again and rewrite summary.json."""
+    runs = evidence / "runs"
+    changed = 0
+    if runs.is_dir():
+        for path in sorted(runs.glob("*.json")):
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(loaded, dict):
+                continue
+            case_id = str(loaded.get("id") or path.stem)
+            new = grade(_expect(case_id), loaded).as_dict()
+            if loaded.get("grade") != new:
+                changed += 1
+            loaded["grade"] = new
+            path.write_text(
+                json.dumps(loaded, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+    summary = _summarise(evidence)
+    evidence.mkdir(parents=True, exist_ok=True)
+    (evidence / "summary.json").write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    summary["changed"] = changed
+    return summary
+
+
+def _finish(evidence: Path) -> None:
+    summary = _summarise(evidence)
+    (evidence / "summary.json").write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    _print_summary(summary)
+
+
+def _print_summary(summary: dict[str, Any]) -> None:
+    print(
+        json.dumps(
+            {
+                key: summary[key]
+                for key in ("pass", "defect", "error", "sent", "changed")
+                if key in summary
+            },
+            indent=2,
+        )
+    )
+
+
 class _Listener:
     """A loopback socket. A hit means something opened the exfil URL's port."""
 
-    def __init__(self) -> None:
+    def __init__(self, port: int | None = None) -> None:
+        self.port = exfil_port() if port is None else port
+        self.bound_port: int | None = None
         self.hits: list[str] = []
         self._socket: socket.socket | None = None
         self._thread: threading.Thread | None = None
@@ -663,9 +865,13 @@ class _Listener:
     def start(self) -> None:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(("127.0.0.1", 18765))
+        sock.bind(("127.0.0.1", self.port))
+        # One payload opens this port at a time. A short backlog keeps a
+        # burst of connections from being reset before accept runs.
         sock.listen(8)
+        # accept returns twice a second so stop() does not wait for a client.
         sock.settimeout(0.5)
+        self.bound_port = int(sock.getsockname()[1])
         self._socket = sock
 
         def serve() -> None:

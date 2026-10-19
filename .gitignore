@@ -7,6 +7,10 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Harness service tokens. C334_EVIDENCE can point inside this tree;
+# service-token.txt must stay untracked (campaign #334).
+service-token.txt
 build/
 dist/
 

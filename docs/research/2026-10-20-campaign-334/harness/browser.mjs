@@ -7,6 +7,10 @@
  * is the defect.
  *
  *   node browser.mjs [evidence-dir]
+ *
+ * This script writes the raw records only. run_battery.py grades them with
+ * grade.py, including when it runs this file. A grade in the evidence
+ * directory comes from that grader.
  */
 import { createRequire } from 'node:module';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
