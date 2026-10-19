@@ -66,6 +66,6 @@ final class Module {
 		add_action( 'woocommerce_email_after_order_table', array( $this->summary, 'inquiry_note' ), 10, 3 );
 		add_filter( 'woocommerce_catalog_orderby', array( $this->sorting, 'options' ) );
 		add_filter( 'woocommerce_get_catalog_ordering_args', array( $this->sorting, 'ordering' ), 10, 2 );
-		add_filter( 'rest_request_after_callbacks', array( $this->api, 'filter' ), 10, 3 );
+		add_filter( 'rest_request_after_callbacks', array( $this->api, 'filter' ), StoreApiPrices::PRIORITY, 3 );
 	}
 }

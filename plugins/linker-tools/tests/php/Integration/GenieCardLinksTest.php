@@ -25,6 +25,12 @@ namespace Linker\Tools\Tests\Integration;
  *     LINKER_TOOLS_SITE=http://127.0.0.1:9108 LINKER_TOOLS_WP=<wp wrapper> \
  *     vendor/bin/phpunit --testsuite integration --filter GenieCardLinksTest
  *
+ * CI runs `just test`, the unit suite (`phpunit.xml.dist` defaultTestSuite).
+ * This class is the integration suite. Without LINKER_TOOLS_SITE it skips in
+ * SiteTestCase, the same precedent as the other live-snapshot integration
+ * tests — the suite note in phpunit.xml.dist. That skip is expected in CI;
+ * this file is not a unit test the check job runs.
+ *
  * @coversNothing
  */
 final class GenieCardLinksTest extends SiteTestCase {

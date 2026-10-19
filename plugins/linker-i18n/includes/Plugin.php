@@ -174,9 +174,11 @@ final class Plugin {
 		add_filter( 'woocommerce_product_get_name', array( $storefront, 'name' ), 10, 2 );
 		add_filter( 'woocommerce_add_to_cart_item_name_in_quotes', array( $storefront, 'quoted_item_name' ), 10, 2 );
 		add_filter( 'woocommerce_cart_item_permalink', array( $storefront, 'cart_item_permalink' ), 10, 2 );
-		// Before RestLang::leave restores the language, so a German product
-		// response still counts as German when its permalink is rewritten.
-		add_filter( 'rest_request_after_callbacks', array( $storefront, 'store_product_links' ), 9, 3 );
+		// Before RestLang::leave and StoreApiPrices (both priority 10). The
+		// language is the request's `lang`, and a null `prices` is still a
+		// product, so either neighbour moving earlier still leaves the German
+		// permalink in place. The priority itself is locked by a test.
+		add_filter( 'rest_request_after_callbacks', array( $storefront, 'store_product_links' ), Storefront::PRODUCT_LINKS_PRIORITY, 3 );
 		add_filter( 'woocommerce_product_get_sku', array( $storefront, 'sku' ), 10, 2 );
 		foreach ( array( 'shop', 'cart', 'checkout', 'myaccount', 'terms' ) as $page ) {
 			add_filter( "woocommerce_get_{$page}_page_id", array( $storefront, 'page_id' ) );

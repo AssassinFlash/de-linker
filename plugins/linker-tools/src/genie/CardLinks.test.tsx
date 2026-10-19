@@ -15,6 +15,7 @@ import { expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import type { storeClient } from '../configurator/api/store';
+import type { Locale } from '../configurator/types';
 import type { CardPrice } from './api/turn';
 import { GenieCard } from './components/GenieCard';
 
@@ -29,7 +30,7 @@ const LINKS = {
 
 const ACCOUNTS: {
 	state: 'approved' | 'pending' | 'restricted' | 'guest';
-	locale: 'en' | 'de';
+	locale: Locale;
 	price: CardPrice;
 }[] = [
 	{
@@ -101,7 +102,7 @@ const ACCOUNTS: {
 test.each( ACCOUNTS )(
 	'a $state $locale card links to that language’s product page',
 	async ( { locale, price } ) => {
-		const products = vi.fn( async ( ids: number[], asked: 'en' | 'de' ) => [
+		const products = vi.fn( async ( ids: number[], asked: Locale ) => [
 			{
 				id: ids[ 0 ],
 				name: 'SAJ H2-10K-T3',
