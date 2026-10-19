@@ -128,6 +128,7 @@ final class AdminBoxTest extends TestCase {
 		$box->render( $this->inquiry( 'cancelled' ) );
 		$this->assertSame( '<p>Only a received inquiry gets a Proforma invoice.</p>', ob_get_clean() );
 
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
 		WP_Mock::userFunction( 'wp_date', array( 'return' => static fn ( string $format, int $time ): string => gmdate( 'Y-m-d', $time ) ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
 		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );

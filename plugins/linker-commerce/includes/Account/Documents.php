@@ -42,11 +42,16 @@ final class Documents {
 			if ( ! InquiryList::has_proforma( $order ) ) {
 				continue;
 			}
+			$url = DocumentDownload::proforma_url( $order );
+			// An empty href is still a download control (#425).
+			if ( '' === $url ) {
+				continue;
+			}
 			$documents[] = array(
 				/* translators: 1: Proforma number, 2: inquiry number. */
 				'title' => sprintf( __( 'Proforma invoice %1$s (inquiry #%2$s)', 'linker-commerce' ), InquiryList::proforma_number( $order ), $order->get_order_number() ),
 				'date'  => self::issued_at( $order ),
-				'url'   => DocumentDownload::proforma_url( $order ),
+				'url'   => $url,
 				'kind'  => 'proforma',
 			);
 		}

@@ -56,6 +56,7 @@ final class ProformaIssuedEmailTest extends TestCase {
 		$this->assertSame( 'PI-2026-0001', $email->placeholders['{proforma_number}'] );
 		$this->assertSame( 'Your Proforma invoice {proforma_number} for inquiry #{order_number}', $email->get_default_subject() );
 
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
 		WP_Mock::userFunction( 'wp_date', array( 'return' => static fn ( string $format, int $time ): string => gmdate( 'Y-m-d', $time ) ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
 		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );

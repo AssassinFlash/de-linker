@@ -31,6 +31,7 @@ final class InquiryListTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
 		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( $key, $value, $url = '' ) => is_array( $key ) ? $value . '?' . http_build_query( $key ) : $url . '?' . $key . '=' . $value ) );
 		WP_Mock::userFunction( 'wc_get_cart_url', array( 'return' => 'https://example.test/cart/' ) );

@@ -170,13 +170,29 @@ jobs:
       # builds its own account and inquiry on this bare instance. It is not
       # a #339 conversation case: Genie copies inquiry id and status only
       # (facts._from_inquiry), so a dialogue fixture would not show a leaked
-      # total. The Proforma PDF is #425.
+      # total. The Proforma download is the next step.
       - name: inquiry status price gate
         working-directory: plugins/linker-commerce
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter InquiryStatusRestTest
+
+      # #425: an issued Proforma priced at 1680. Pending and restricted
+      # accounts get no link and a 404 with no PDF bytes, in EN and DE,
+      # including a direct request that does not use the link. Not a #339
+      # conversation case, for the same reason as #414. pdftotext reads the
+      # PDF: dompdf draws glyph ids, so the amount is not in the raw bytes.
+      - name: proforma price gate
+        working-directory: plugins/linker-commerce
+        run: |
+          if ! command -v pdftotext >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y poppler-utils
+          fi
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter ProformaPriceGateTest
 
       # The cleanup runs even when an earlier step failed and the instance was
       # never built, so it reports rather than failing the job twice.

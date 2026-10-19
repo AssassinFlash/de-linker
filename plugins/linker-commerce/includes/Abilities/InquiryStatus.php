@@ -153,8 +153,8 @@ final class InquiryStatus {
 		// Account-page parity (#414): shows_order_total(), not sees_prices()
 		// alone. A pending or restricted account, and an approved account's
 		// contact message or unpriced line, get no amount. The field is
-		// absent, so English and German stay one payload. The Proforma PDF
-		// is a separate surface (#425).
+		// absent, so English and German stay one payload. The Proforma file
+		// is DocumentDownload (#425); this payload does not carry its URL.
 		if ( $prices->shows_order_total( $order ) ) {
 			$item['total'] = (string) $order->get_total();
 		}

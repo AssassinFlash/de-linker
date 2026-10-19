@@ -511,11 +511,16 @@ final class AccountTemplates {
 				if ( ! $order instanceof WC_Order || ! InquiryList::has_proforma( $order ) ) {
 					return '';
 				}
+				$url = DocumentDownload::proforma_url( $order );
+				// An empty href is still a download control (#425).
+				if ( '' === $url ) {
+					return '';
+				}
 				return $this->fragment(
 					'proforma',
 					array(
 						'number' => InquiryList::proforma_number( $order ),
-						'url'    => DocumentDownload::proforma_url( $order ),
+						'url'    => $url,
 						'name'   => __( 'Proforma invoice (PDF)', 'linker-commerce' ),
 					)
 				);

@@ -13,6 +13,7 @@ use Linker\Commerce\Account\DocumentDownload;
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Proforma\Issuer;
+use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use RuntimeException;
@@ -128,6 +129,12 @@ final class DocumentDownloadTest extends TestCase {
 	 * The owner passes the check (here the file is missing, so the answer is 404).
 	 */
 	public function test_owner_passes(): void {
+		WP_Mock::userFunction(
+			'get_user_meta',
+			array(
+				'return' => static fn ( int $user_id, string $key ): string => 5 === $user_id && Approval::STATUS_META === $key ? Approval::APPROVED : '',
+			)
+		);
 		$this->assertSame( '404', $this->status( true, 5 ) );
 	}
 
@@ -151,6 +158,7 @@ final class DocumentDownloadTest extends TestCase {
 	 * Links name the kind of document and its id.
 	 */
 	public function test_urls(): void {
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
 		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );
 		$order = Mockery::mock( WC_Order::class );

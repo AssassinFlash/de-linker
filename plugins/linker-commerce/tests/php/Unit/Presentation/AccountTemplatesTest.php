@@ -223,6 +223,7 @@ final class AccountTemplatesTest extends TestCase {
 	 */
 	public function test_proforma_issued_renders_the_download_and_the_number(): void {
 		$this->visible_prices( true );
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => false ) );
 		$this->plain_text();
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
@@ -263,6 +264,7 @@ final class AccountTemplatesTest extends TestCase {
 		 */
 	public function test_detail_and_documents_both_carry_the_number_and_the_link(): void {
 		$this->visible_prices( true );
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => false ) );
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
 		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $number ): string => (string) $number ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://example.test/' ) );
@@ -409,6 +411,7 @@ final class AccountTemplatesTest extends TestCase {
 	 */
 	public function test_dashboard_tiles_rows_and_documents_entry(): void {
 		$this->visible_prices( true );
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => false ) );
 		$this->plain_text();
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 		WP_Mock::userFunction( 'wc_get_order_status_name', array( 'return' => static fn ( string $status ): string => $status ) );
