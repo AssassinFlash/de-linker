@@ -147,6 +147,7 @@ final class SearchProductsTest extends TestCase {
 
 		$this->assertSame( array( 4107, 6480 ), $ids );
 		$this->assertContains( 'application', $result['unknown_fields'] );
+		$this->assertArrayNotHasKey( 'extreme', $result );
 	}
 
 	/**
@@ -214,5 +215,170 @@ final class SearchProductsTest extends TestCase {
 		foreach ( $h2['pairings'] as $pair ) {
 			$this->assertNotSame( 'not_released', $pair['verdict'] );
 		}
+	}
+
+	/**
+	 * "Smallest inverter with at least 30 kW" is GW30K-ETA-G20 (30.0 kW).
+	 * H2-30K-T3-DE is 29.999 kW and stays out. The 30 kW all-in-one is not an inverter.
+	 */
+	public function test_smallest_inverter_at_least_30_kw_is_gw30k_eta_g20(): void {
+		$ids = array_keys( LiveProducts::published() );
+		$this->mock_live_products( $ids );
+		$result = ( new SearchProducts() )->select(
+			$ids,
+			array(
+				'device_class' => 'inverters',
+				'ac_power_min' => 30,
+				'extreme'      => 'smallest',
+				'lang'         => 'en',
+			),
+			'en',
+			12
+		);
+
+		$this->assertSame( array( 6518 ), array_column( $result['qualified'], 'product_id' ) );
+		$this->assertStringContainsString( 'GW30K-ETA-G20', $result['qualified'][0]['title'] );
+		$this->assertSame( 30.0, $result['qualified'][0]['facts']['ac_power_kw'] );
+		$this->assertSame(
+			array(
+				'kind'       => 'smallest',
+				'applied'    => true,
+				'product_id' => 6518,
+				'field'      => 'ac_power_kw',
+				'value'      => 30.0,
+				'model'      => 'GW30K-ETA-G20',
+			),
+			$this->require_extreme( $result )
+		);
+		$qualified = array_column( $result['qualified'], 'product_id' );
+		$this->assertNotContains( 1181, $qualified );
+		$this->assertNotContains( 6517, $qualified );
+		$this->assertNotContains( 1960, $qualified );
+		$this->assertNotContains( 6506, $qualified );
+		$this->assertGreaterThan( 0, $result['excluded']['by_reason']['ac_power'] );
+	}
+
+	/**
+	 * The same aggregate at 20 kW is the catalogue minimum, H2-20K-T3.
+	 */
+	public function test_smallest_inverter_at_least_20_kw_is_the_catalogue_minimum(): void {
+		$ids = array_keys( LiveProducts::published() );
+		$this->mock_live_products( $ids );
+		$result = ( new SearchProducts() )->select(
+			$ids,
+			array(
+				'device_class' => 'inverters',
+				'ac_power_min' => 20,
+				'extreme'      => 'smallest',
+			),
+			'en',
+			12
+		);
+
+		$extreme = $this->require_extreme( $result );
+		$this->assertSame( 2064, $result['qualified'][0]['product_id'] );
+		$this->assertSame( 20.0, $extreme['value'] );
+		$this->assertSame( 'H2-20K-T3', $extreme['model'] );
+		$this->assertTrue( $extreme['applied'] );
+	}
+
+	/**
+	 * Largest inverter is the maximum AC power, GW125K-ETR-G10.
+	 */
+	public function test_largest_inverter_is_the_maximum_ac_power(): void {
+		$ids = array_keys( LiveProducts::published() );
+		$this->mock_live_products( $ids );
+		$result = ( new SearchProducts() )->select(
+			$ids,
+			array(
+				'device_class' => 'inverters',
+				'extreme'      => 'largest',
+			),
+			'en',
+			12
+		);
+
+		$extreme = $this->require_extreme( $result );
+		$this->assertSame( 3595, $extreme['product_id'] );
+		$this->assertSame( 125.0, $extreme['value'] );
+		$this->assertSame( array( 3595 ), array_column( $result['qualified'], 'product_id' ) );
+	}
+
+	/**
+	 * A guest's "cheapest" request does not rank by the stored price.
+	 * The mock price is the product ID, so price order would lead with 1954.
+	 */
+	public function test_cheapest_does_not_rank_by_a_hidden_price(): void {
+		$ids = array( 1954, 2068, 2069 );
+		$this->mock_live_products( $ids );
+		$result = ( new SearchProducts() )->select(
+			$ids,
+			array(
+				'device_classes' => array( 'home-storage', 'battery-systems' ),
+				'kwh_min'        => 10,
+				'extreme'        => 'cheapest',
+				'limit'          => 12,
+			),
+			'en',
+			12
+		);
+
+		$extreme = $this->require_extreme( $result );
+		$this->assertFalse( $extreme['applied'] );
+		$this->assertSame( 'price_hidden', $extreme['reason'] );
+		$this->assertArrayNotHasKey( 'product_id', $extreme );
+		$this->assertSame( array( 2068, 2069, 1954 ), array_column( $result['qualified'], 'product_id' ) );
+		foreach ( $result['qualified'] as $card ) {
+			$this->assertFalse( $card['commerce']['price_visible'] );
+			$this->assertArrayNotHasKey( 'price', $card['commerce'] );
+		}
+	}
+
+	/**
+	 * An approved account's cheapest battery at or above 10 kWh is the lowest visible price.
+	 * The fixture price is the product ID, so 1954 wins, and it is the only row returned.
+	 */
+	public function test_cheapest_battery_at_least_10_kwh_uses_the_visible_price(): void {
+		$ids = array( 1954, 2068, 2069 );
+		$this->mock_live_products( $ids, false, true );
+		$result = ( new SearchProducts() )->select(
+			$ids,
+			array(
+				'device_classes' => array( 'home-storage', 'battery-systems' ),
+				'kwh_min'        => 10,
+				'extreme'        => 'cheapest',
+			),
+			'en',
+			12
+		);
+
+		$this->assertSame(
+			array(
+				'kind'       => 'cheapest',
+				'applied'    => true,
+				'product_id' => 1954,
+				'field'      => 'usable_kwh',
+				'value'      => 60.0,
+				'model'      => 'GW61.4-BAT-AC-G10',
+			),
+			$this->require_extreme( $result )
+		);
+		$this->assertSame( array( 1954 ), array_column( $result['qualified'], 'product_id' ) );
+		$this->assertTrue( $result['qualified'][0]['commerce']['price_visible'] );
+	}
+
+	/**
+	 * The extreme object, or a failed assertion when the search omitted it.
+	 *
+	 * @param array{extreme?: array<string, mixed>} $result Search result.
+	 * @return array<string, mixed>
+	 * @throws \RuntimeException When the result has no extreme object.
+	 */
+	private function require_extreme( array $result ): array {
+		if ( isset( $result['extreme'] ) && is_array( $result['extreme'] ) ) {
+			return $result['extreme'];
+		}
+
+		throw new \RuntimeException( 'The search did not return an extreme.' );
 	}
 }

@@ -144,6 +144,54 @@ def test_the_goodwe_model_without_a_stored_brand_is_still_named(
         assert route.show_products and route.no_handoff
 
 
+def test_a_brand_conflict_is_not_swallowed_by_an_extreme(
+    vocabulary: Vocabulary,
+) -> None:
+    message = "Is the SAJ GW10K-ETA-G20 your smallest inverter?"
+    route = _route(vocabulary, message, "en")
+    assert _texts(route) == ["GW10K-ETA-G20"]
+    assert "extreme" not in route.calls[0].arguments
+    assert "brand" not in route.calls[0].arguments
+    (note,) = route.named_models
+    assert note.written_brand == "SAJ"
+    assert note.catalog_brand == "GoodWe"
+    assert "brand and model disagree" in route.reasons
+
+
+def test_an_extreme_over_a_brand_stays_one_aggregate(vocabulary: Vocabulary) -> None:
+    route = _route(vocabulary, "What is your smallest GoodWe inverter?", "en")
+    (call,) = route.calls
+    assert call.arguments["extreme"] == "smallest"
+    assert call.arguments["brand"] == "goodwe"
+    assert call.arguments["device_class"] == "inverters"
+    assert "text" not in call.arguments
+    assert route.named_models == ()
+    assert "brand and model disagree" not in route.reasons
+
+
+def test_an_extreme_over_a_series_stays_one_aggregate(vocabulary: Vocabulary) -> None:
+    route = _route(vocabulary, "What is your largest SAJ H2 inverter?", "en")
+    (call,) = route.calls
+    assert call.arguments["extreme"] == "largest"
+    assert call.arguments.get("series") == "saj-h2"
+    assert "text" not in call.arguments
+    assert route.named_models == ()
+    assert "brand and model disagree" not in route.reasons
+
+
+def test_several_models_and_an_extreme_search_each_model(
+    vocabulary: Vocabulary,
+) -> None:
+    message = (
+        "Which is the smallest inverter, HS3-5K-T2-W/G-PX or "
+        "HS3-12K-T2-W/G-PX, with at least 5 kW?"
+    )
+    route = _route(vocabulary, message, "en")
+    assert _texts(route)[:2] == [HS3[0], HS3[2]]
+    assert all("extreme" not in call.arguments for call in route.calls)
+    assert "several models" in route.reasons
+
+
 def test_an_agreeing_brand_stays_on_the_search(vocabulary: Vocabulary) -> None:
     message = "Is the SAJ HS3-5K-T2-W/G-PX in stock?"
     route = _route(vocabulary, message, "en")

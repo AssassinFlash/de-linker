@@ -84,6 +84,23 @@ SERVICE_HINT = (
     "This is a company, delivery or service question: answer with the "
     "handoff block from the handoff-team result."
 )
+# Smallest, largest and cheapest questions aggregate the qualified catalogue
+# in search-products (#368). Dossier §1.1 has only a directional note on
+# parameter correction, and §1.11 has no precedent for near-value
+# disambiguation, so the floor and the extreme are decided here and in the
+# ability, then the model names that one product.
+EXTREME_HINT = (
+    "The customer asks for an extreme of the product range (smallest, largest "
+    "or cheapest) under the floor the message states. search-products already "
+    "aggregated the published products. When extreme.applied is true, "
+    "qualified holds that one product: name the model code extreme.model "
+    "gives, exactly as written, cite that product id in refs, show only that "
+    "card, and state the figure extreme.field names as a placeholder. When "
+    "extreme.applied is false and extreme.reason is price_hidden, this "
+    "account does not see prices: do not rank by price and do not name a "
+    "cheapest product; say that approved partner accounts see net prices. "
+    "English and German use this same shape."
+)
 
 DOCUMENTS_HINT = (
     "This is a question about documents or technical values. Answer from the "
@@ -122,6 +139,47 @@ _ONE_PHASE = re.compile(
     r"\b(?:1|single|one|ein)[\s-]*(?:phase|phasen|phasig)", re.IGNORECASE
 )
 _BACKUP = re.compile(r"backup|back-up|notstrom|ersatzstrom", re.IGNORECASE)
+# Extreme words, EN and DE. Comparatives (kleiner, größer, günstiger) are not
+# extremes. ß and ss both occur.
+_SMALLEST = re.compile(
+    r"\b(?:smallest|lowest(?:[-\s]+power)?|"
+    r"kleinst(?:e(?:r|n|m|s)?|er|es|em)?|"
+    r"geringst(?:e(?:r|n|m|s)?|er|es|em)?|"
+    r"niedrigst(?:e(?:r|n|m|s)?|er|es|em)?)\b",
+    re.IGNORECASE,
+)
+_LARGEST = re.compile(
+    r"\b(?:largest|biggest|"
+    r"gr(?:ö|oe|o)(?:ß|ss)t(?:e(?:r|n|m|s)?|er|es|em)?|"
+    r"h(?:ö|oe)chst(?:e(?:r|n|m|s)?|er|es|em)?|"
+    r"st(?:ä|ae)rkst(?:e(?:r|n|m|s)?|er|es|em)?)\b",
+    re.IGNORECASE,
+)
+_CHEAPEST = re.compile(
+    r"\b(?:cheapest|lowest[-\s]+pric(?:e|ed)|"
+    r"g(?:ü|ue)nstigst(?:e(?:r|n|m|s)?|er|es|em)?|"
+    r"preiswertest(?:e(?:r|n|m|s)?|er|es|em)?|"
+    r"billigst(?:e(?:r|n|m|s)?|er|es|em)?)\b",
+    re.IGNORECASE,
+)
+_EXTREME_KINDS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (_CHEAPEST, "cheapest"),
+    (_LARGEST, "largest"),
+    (_SMALLEST, "smallest"),
+)
+_INVERTER_WORD = re.compile(r"\b(?:inverters?|wechselrichter(?:n|s)?)\b", re.IGNORECASE)
+_BATTERY_WORD = re.compile(
+    r"\b(?:batter(?:y|ies)|batterie(?:n)?|speicher)\b", re.IGNORECASE
+)
+_NUMBER = r"(\d+(?:[.,]\d+)?)"
+_FLOOR_MARK = (
+    r"(?:at\s+least|minimum|min\.?|>=|≥|over|above|more\s+than|"
+    r"mindestens|wenigstens|ab|über|ueber|mehr\s+als)"
+)
+_MARKED_KW = re.compile(rf"{_FLOOR_MARK}\s*{_NUMBER}\s*k\s*w(?!h)\b", re.IGNORECASE)
+_MARKED_KWH = re.compile(rf"{_FLOOR_MARK}\s*{_NUMBER}\s*k\s*wh\b", re.IGNORECASE)
+_ANY_KW = re.compile(rf"{_NUMBER}\s*k\s*w(?!h)\b", re.IGNORECASE)
+_ANY_KWH = re.compile(rf"{_NUMBER}\s*k\s*wh\b", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -274,6 +332,22 @@ def plan(
             (Call("linker/inquiry-status", {}),),
             no_handoff=True,
             hint="The inquiry-status result is fetched; answer from it.",
+            reasons=tuple(reasons),
+        )
+    # A brand or series extreme is one aggregate (#368), not a brand/model
+    # conflict. Two model codes in the message, or one code whose products
+    # belong to another brand, stay on the per-model searches (#363, #364):
+    # one class aggregate would hide those codes, and the two grounding rules
+    # would require different cards.
+    extreme = _catalogue_extreme(message, matches, subject, lang)
+    if extreme is not None:
+        reasons.append(f"extreme: {extreme['extreme']}")
+        return Route(
+            "products",
+            (Call("linker/search-products", extreme),),
+            show_products=True,
+            no_handoff=True,
+            hint=EXTREME_HINT,
             reasons=tuple(reasons),
         )
     if intent == "sizing":
@@ -674,6 +748,101 @@ def _customer_phrase(message: str, keys: frozenset[str]) -> str | None:
             if "".join(normalize(word) for word in piece) in keys:
                 return " ".join(piece)
     return None
+def _extreme_kind(message: str) -> str | None:
+    """The extreme word that occurs first, or None."""
+    found: list[tuple[int, str]] = []
+    for pattern, kind in _EXTREME_KINDS:
+        match = pattern.search(message)
+        if match:
+            found.append((match.start(), kind))
+    if not found:
+        return None
+    found.sort()
+    return found[0][1]
+
+
+def _floor_number(
+    marked: re.Pattern[str], plain: re.Pattern[str], message: str
+) -> float | None:
+    """The marked floor when the message states one, else the smaller plain figure."""
+    hit = marked.search(message)
+    if hit:
+        return float(hit.group(1).replace(",", "."))
+    numbers = [
+        float(item.group(1).replace(",", ".")) for item in plain.finditer(message)
+    ]
+    if not numbers:
+        return None
+    return min(numbers)
+
+
+def _catalogue_extreme(
+    message: str, matches: list[Match], subject: Subject, lang: str
+) -> dict[str, Any] | None:
+    """The class aggregate, or None when the named models have to be searched.
+
+    `extreme_input` builds the aggregate. This decides whether that aggregate
+    is the turn: a brand or series narrows it and is not a conflict; two codes
+    written in the message are searched one by one; one code that conflicts
+    with the written brand is that conflict, not the class extreme.
+    """
+    written = _written_models(matches, message)
+    if len(written) >= 2 or _conflicts_with_written_brand(written, matches, subject):
+        return None
+    return extreme_input(message, matches, lang)
+
+
+def extreme_input(
+    message: str, matches: list[Match], lang: str
+) -> dict[str, Any] | None:
+    """search-products arguments for a smallest, largest or cheapest question.
+
+    A kWp or annual-consumption figure stays a sizing question. The floor is
+    AC power for an inverter (or a kW figure) and energy for a battery (or a
+    kWh figure). A named model is not a filter: the extreme is taken over the
+    class, narrowed by a single brand or series when the message names one.
+    `plan` does not use this when `_catalogue_extreme` returns None.
+    """
+    if _KWP.search(message) or _ANNUAL.search(message):
+        return None
+    kind = _extreme_kind(message)
+    if kind is None:
+        return None
+    inverter = _INVERTER_WORD.search(message) is not None
+    battery = _BATTERY_WORD.search(message) is not None
+    kw = _floor_number(_MARKED_KW, _ANY_KW, message)
+    kwh = _floor_number(_MARKED_KWH, _ANY_KWH, message)
+    if not inverter and not battery and kw is None and kwh is None:
+        return None
+    if inverter and not battery:
+        kwh = None
+    elif battery and not inverter:
+        kw = None
+    elif kw is not None and kwh is not None:
+        # Both figures and no single class word: the question is an AC floor.
+        kwh = None
+    found: dict[str, Any] = {
+        "lang": lang,
+        "extreme": kind,
+        "limit": SEARCH_LIMIT if kind == "cheapest" else 1,
+    }
+    if kw is not None:
+        found["ac_power_min"] = kw
+    if kwh is not None:
+        found["kwh_min"] = kwh
+    if (battery and not inverter) or (kwh is not None and kw is None):
+        found["device_classes"] = ["home-storage", "battery-systems"]
+    elif inverter or kw is not None:
+        found["device_class"] = "inverters"
+    brands = [item for item in matches if item.kind == "brand"]
+    if len({item.value for item in brands}) == 1:
+        found["brand"] = brands[0].value
+    series = [item for item in matches if item.kind == "series"]
+    if len({item.value for item in series}) == 1 and not any(
+        item.kind == "model" for item in matches
+    ):
+        found["series"] = series[0].value
+    return found
 
 
 def stated_size_hint(message: str) -> dict[str, Any]:
@@ -846,6 +1015,36 @@ def _ordered_models(models: list[Match], message: str) -> list[Match]:
         return (at, order.index(value))
 
     return [grouped[value] for value in sorted(order, key=position)]
+
+
+def _written_models(matches: list[Match], message: str) -> list[Match]:
+    """Model codes that stand in the message, one per code, in message order.
+
+    A match attached without its code in the text is not written. The catalogue
+    extreme ignores that match as a filter (#368) and does not treat it as one
+    of several models (#364).
+    """
+    models = [match for match in matches if match.kind == "model"]
+    if not models:
+        return []
+    folded = message.casefold()
+    return [
+        model
+        for model in _ordered_models(models, message)
+        if model.value.casefold() in folded or model.words.casefold() in folded
+    ]
+
+
+def _conflicts_with_written_brand(
+    written: list[Match], matches: list[Match], subject: Subject
+) -> bool:
+    """Whether the one written model belongs to a brand other than the one named."""
+    if len(written) != 1:
+        return False
+    brands = [match for match in matches if match.kind == "brand"]
+    if len({match.value for match in brands}) != 1:
+        return False
+    return _conflicts(written[0], brands[0].value, subject)
 
 
 def _conflicts(model: Match, brand_slug: str, subject: Subject) -> bool:

@@ -176,6 +176,36 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
                 fact_id = f"compat.document.{paired_id}.{document_index}"
                 gathered.add(Fact(id=fact_id, value=value, source="search-products"))
                 gathered.documents[fact_id] = _document(document, url, page)
+    extreme = payload.get("extreme")
+    if isinstance(extreme, dict):
+        # The ability's aggregate (#368). The model names this product; grounding
+        # refuses a different card. A hidden price records no winner.
+        product_id = extreme.get("product_id")
+        if extreme.get("applied") is True and isinstance(product_id, int):
+            gathered.add(
+                Fact(
+                    id="search.extreme_product_id",
+                    value=str(product_id),
+                    source="search-products",
+                )
+            )
+            model = extreme.get("model")
+            if isinstance(model, str) and model:
+                gathered.add(
+                    Fact(
+                        id="search.extreme_model",
+                        value=model,
+                        source="search-products",
+                    )
+                )
+        elif extreme.get("reason") == "price_hidden":
+            gathered.add(
+                Fact(
+                    id="search.extreme_price_hidden",
+                    value="1",
+                    source="search-products",
+                )
+            )
     unknown = payload.get("unknown_fields")
     if isinstance(unknown, list):
         gathered.unknown_fields = [str(item) for item in unknown]

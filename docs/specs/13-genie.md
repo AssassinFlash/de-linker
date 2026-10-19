@@ -27,29 +27,32 @@
 ### 战役质量门槛与缺陷分级（#329 地图；#338 锁定，业主 2026-10-19 接受 grilling round 1 推荐值；业主可改）
 
 **七条过关线**——任何一条不过即缺陷未清零，战役（#329）不得宣告完成：
-1. 确定性产品词命中 100%：品牌/型号/系列/SKU/分类，EN/DE（对抗变体——错拼、大小写、连字符/空格——的处理策略与阈值按 #330 首轮实测数据另行定，dossier §1.1 判该区无先例）。
-2. 回答 0 编造数字：每个数字可溯源到本轮工具结果、检索块或页面事实（`{fact}` 水合链为准）。
-3. 100 题对照集 100/100（#336 扩集）：第 1/8/10/14 题必须给产品、手册步骤或配置器，不兜底、不转 sales@。
-4. EN/DE 同结构：同题同判分；德语独立撰写、Sie 体（不是英文直译）。
-5. 无静默降级：任何降级/失败在轮次 meta 与回答里显性可见；OpenRouter 失败显性暴露（AGENTS §5 铁律）。
-6. 每条回答有下一步（≥1 个可点的后续）。
-7. 询盘/联系只由客户点击发送（模型文字永不触发；`ground._no_sent_claim` 为证）。
+1. 确定性产品词命中 100%：品牌/型号/系列/SKU/分类，EN/DE。分母=基线 100 题中客户写出目录产品词的行（`eval/baseline/baseline100.jsonl` 的确定性产品行）加 #330 E 类 11 例；错拼的处理策略与阈值按 #330 首轮实测数据另行定（dossier §1.1 判该区无先例）；大小写/连字符/空格是既有确定性归一化，门槛不放宽。
+2. 回答 0 编造数字：每个数字可溯源到本轮工具结果、检索块或页面事实（`{fact}` 水合链只证来源；数字本身的正确性由基线行的期望值核对，两者都要过）。
+3. 100 题对照集 100/100（#336 扩集；本战役以 100 题集取代上文 20 题集，20 题作为其种子保留）。硬行是 trial id 1/8/10/14（不是行号）：必须给产品、手册步骤或配置器，不兜底、不转 sales@；trial 8 按 TRIAL.md 文末更正判（单相/三相都有，并按相数给额定功率）。判分：确定性行按期望值；judge 行由 judge 过；human-review 行由本线复核并记录理由；无证据不算过。
+4. EN/DE 同结构：同题同块型、同判分；德语独立撰写、Sie 体（不是英文直译）。可执行口径=德语答案不含英文功能词（既有 judge）+ 两语的块型/卡集合一致（基线 harness 断言）。
+5. 无静默降级：任何降级/失败在轮次 meta（`turns.sqlite` 的 failures/fallback/timing）显性可见；仅当答案事实受影响或走 DEGRADED 模板时，回答里必须有降级声明。Jev 失败由 deepseek-flash 接答是票里允许的唯一降级，`jev_error` 进 meta，不因本门槛判失败；OpenRouter 失败显性暴露（AGENTS §5 铁律）。
+6. 每条回答有下一步（目标 9：2–3 个可点的后续；至少 1 个；基线 harness 按 ≥1 判，目标值 2–3 人工复核）。
+7. 询盘与联系都只由客户点击发送（模型文字永不触发；`ground._no_sent_claim` 拒询盘的"已发送"话术；联系表单由卡上的提交按钮唯一触发；结构上服务不持写 ability，唯一发送通路是卡上的按钮）。
 
-延迟门槛：p95 ≤ 30 s，目标 ≤ 15 s（#336 埋测落地后生效；dossier §1.14——无竞品 SLO 先例，属自定线）。
+延迟门槛：p95 ≤ 30 s，目标 ≤ 15 s；口径=基线 harness 的客户端端到端（经 WP 代理与壳），每环境至少 20 个完成回合（本地与线上各一组，#336）；服务端分相由 `meta.timing` 与 `ops/turn_latency.py`（只计 completed）给出；dossier §1.14——无竞品 SLO 先例，属自定线。
 
 **缺陷分级**（对抗批 #330–#335 的每条缺陷按此定级）：
-- **P0**：错误事实到达客户（编造数字、错型号、价格出现在不该出现的账号/表面）、铁律破坏（价格泄漏、模型文字触发发送、静默换模型）、崩溃或空白 UI。修复阻断一切合并。
-- **P1**：破坏过关线但不撒谎（确定性词未命中、旧话题条件串进新回答、SSE 断流后 UI 卡死无恢复、p95 超线、注入顺从迹象）。进当批修复队列，战役结束前必须清零。
-- **P2**：体验损伤、有绕行（延迟形态、措辞、建议相关性弱）。记台账随批清。
+- **P0**：错误事实到达客户（编造数字、错型号、价格出现在不该出现的账号/表面）、铁律破坏（价格泄漏、模型文字触发发送、静默换模型）、崩溃或空白 UI。**阻断受影响改动的合并**，直到修复并复评。
+- **P1**：破坏过关线但不撒谎（确定性词未命中、旧话题条件串进新回答、SSE 断流后 UI 卡死无恢复、p95 > 30 s、注入顺从迹象——后者按 #334 的输出监控设计缺口处理）。进当批修复队列，战役结束前必须清零。
+- **P2**：体验损伤、有绕行（延迟形态如首字/长尾、措辞、建议相关性弱）。记入 #329 的 Decisions/评论（GitHub Issues，随批清）。
 每条缺陷按地图协议分层归因（确定性匹配 / Jev 路由 / 工具 / 检索 / 提示词 / 水合 / UI 状态 / i18n / 基础设施），并标注复刻 / 须自行设计（引 `docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md` 章节）。
+协议：复现（最小请求与原文）→ 分层归因 → 竞品证据优先（先查既有 dossier，缺口再 Apify 取证）→ 设计决定 → 修复 → 回归证据（用例进 #339）。
 
-**修复权边界**：触碰三条铁律（模型路由、价格门、询盘点击发送）或任何客户可见承诺/措辞基调的改动＝单独业主裁定；dossier 判"复刻"区内的实现改动＝执行者改、本线评审合并；dossier 判"须自行设计"区的改动＝修复票先写设计理由（引 dossier 对应节）再动手。
+**修复权边界**：三条铁律（模型路由、价格门、询盘点击发送）的改动＝单独业主裁定；客户可见文案（含事务邮件主题与正文）照 AGENTS.md §2 走文案对抗评审（EN 先行、DE 独立撰写、定稿记录在案），措辞由本线按证据决定，不因"基调"另设业主关卡；dossier 判"复刻"区内的实现改动＝执行者改、本线评审合并；dossier 判"须自行设计"区的改动＝修复票先写设计理由（引 dossier 对应节）再动手。
+
+变更记录：2026-10-19 新增本节（#338/#329，业主接受 grilling round 1 推荐值）；同日两轴评审后补：门槛 3 明确取代 20 题集与硬行口径、门槛 1/2/4/6 的可执行判据、延迟样本量与测量面、P0/P2 的范围、修复权边界的文案归属；迟到 Spec 轴再补：§1.1 只对错拼无先例、门槛 5 的 Jev 合法降级与门槛 7 的联系范围、缺陷协议步骤、P1/P2 术语。业主 2026-10-19 定稿：语言规则=问什么语言答什么语言；CookieYes 横幅样式属插件自身，不适用站点样式规则。
 
 ## 三层
 ### A. Abilities（`plugins/linker-commerce`，`wp-abilities/v1`，命名空间 `Linker\Commerce\Abilities\`，一类一文件一 schema 一测试）
 | ability | 输入 | 输出 |
 |---|---|---|
-| `linker/search-products` | `{device_class?, application?, phase?, pv_kwp?, kwh_min?, kwh_max?, brand?, series?, future?:['battery'], text?, with_pairings?:bool, lang, limit≤12}` | `{qualified:[{product_id, title, url, why:[{field,value,match:true|'unknown'}], facts:SelectionFactSet, commerce:{price_visible, price?, price_line, price_reason?:login|pending|restricted|project|unpriced, in_stock:bool, rfq_only:bool}, pairings?:[{product_id,verdict,conditions[],documents[]}]}], excluded:{by_reason:{...}}, unknown_fields:[...]}`。资格：device_class、application、phase、`pv_input_kw ≥ pv_kwp`、kWh 范围、已发布且在售；unknown 保留。排序：全匹配 > 含 unknown；再按 `|ac_power_kw − pv_kwp|`；再价格。 |
+| `linker/search-products` | `{device_class?, device_classes?:[同枚举], application?, phase?, pv_kwp?, ac_power_min?, kwh_min?, kwh_max?, brand?, series?, future?:['battery'], text?, with_pairings?:bool, extreme?:smallest\|largest\|cheapest, lang, limit≤12}` | `{qualified:[{product_id, title, url, why:[{field,value,match:true\|'unknown'}], facts:SelectionFactSet, commerce:{price_visible, price?, price_line, price_reason?:login\|pending\|restricted\|project\|unpriced, in_stock:bool, rfq_only:bool}, pairings?:[{product_id,verdict,conditions[],documents[]}]}], excluded:{by_reason:{...}}, unknown_fields:[...], extreme?:{kind, applied, product_id?, field?:ac_power_kw\|usable_kwh\|nominal_kwh\|kwh, value?, model?, reason?:price_hidden\|none}}`。资格：device_class、application、phase、`pv_input_kw ≥ pv_kwp`、kWh 范围、已发布且在售；unknown 保留。`ac_power_min` 要求 `ac_power_kw ≥ N`，未知 AC 功率排除（极值是一项断言，未知值不能充当）。`device_classes` 是一组类别（电池两类），未知类别排除。排序：全匹配 > 含 unknown；再按 `|ac_power_kw − pv_kwp|`；再价格。`extreme` 改为在合格集上聚合：smallest/largest 取该下限对应的最小值或最大值，合格列表只留这一件；cheapest 只按该账号可见的价格排序，价格不可见时 `applied: false, reason: price_hidden`，不按隐藏价格排序（#368）。 |
 | `linker/get-product` | `{product_id, lang}` | 商品记录（图值、参数表、FAQ、文档 URL） |
 | `linker/compare-products` | `{product_ids[2..4], lang}` | 维度行 × 商品列（电池能量与逆变器输出不混） |
 | `linker/check-compatibility` | `{inverter_id, battery_id}` 或 `{product_ids}` | `{verdict: released|released_with_accessory|not_released|unknown, conditions[], documents[]}`（#8 的 compatibility.json） |
@@ -302,6 +305,7 @@ dock 的 mount 以 `data-page` 打印整份上下文，应用逐轮原样发回�
 
 ## 变更记录
 - 2026-10-19（#369 短码，评审第 2 轮）：短码宽度改为独立常量 `SHORT_BODY_WIDTH` = 3。依据是 #330 首轮错拼类里唯一的短码漏匹配 A3-EN（`BD-8`），不是“比后缀长一截”（`G20` 是三字符后缀，靠位置与不唯一排除）。无品牌的三段码与裸 SKU 也取内部拼接；搜索文本取产生该键的来源；德语标题括号前的码并入英文商品。不唯一的拼接，以及仅有共享后缀的指代，由服务写固定 EN/DE 问句（`clarify`，不调工具、不跑模型）。四条模型通道、价格门与询盘发送不变。回归句写入 `bare_words.json`（#339，注 `#369`）。条款由合成商品测试。
+- 2026-10-19（#368 极值问题）：`linker/search-products` 增加 `ac_power_min`、`device_classes` 与 `extreme`（smallest/largest/cheapest）。路由从英德问句读出下限与极值，代码先聚合再交给模型命名那一件；价格对当前账号不可见时 cheapest 不排序、不点名。品牌或系列上的极值是这一次聚合，不是型号冲突。消息里写了两个及以上型号，或一个型号与所写品牌冲突时，仍按型号逐个搜索。依据 dossier §1.1 末段与 §1.11：极值/消歧无竞品先例，设计理由在该票的 PR。
 - 2026-10-19（#336 延迟埋测，#329 图）：新增服务模块 `timing.py`（被动计时，零行为变更：不动模型路由、重试、提示词与顺序）；轮次日志加 `timing` 列（旧库自动补列；INSERT 只写各阶段、无 `total`，流结束后由 `set_timing` 补完整记录 `total` / `first_event`——未流出完的轮次记为 incomplete，不进百分位），SSE meta 加 `timing` 对象（#336B 基线逐题读取此处，壳忽略未知字段）。新增 `turn_starts` 表：每轮开始记一行、轮次行落地即删；模型挂起/进程被杀留下的开始行由 ops 记为 unfinished（该表不进 `turns`，质检队列不受影响）。阶段口径：`understand`（`vocabulary` / `attachments` / `jev`（含重试退避，成功调用自身的秒数仍在 `understanding.jev.seconds`）/ `parts` / `calls` 与逐调用 `understand.call.<ability>`）、`model`（`attempt_1` / `attempt_2` 与模型自己的每次工具调用 `model.tool.<ability>`）、`ground`、`hydrate`（水合＋补价查询）、`template`（兜底渲染）、`log`；未跑的阶段不出现（非 null）。`ops/turn_latency.py`（stdlib）打印 completed/incomplete/unfinished 计数与各阶段及总时长的 count/p50/p95/max（nearest-rank，只统计 completed），并可按 `--conversation` / `--locale` / `--since` / `--until` 切片。服务端 `total` 是流水线口径；客户可见 p95 由 #336B 基线在客户端测（WP 代理缓冲整包，壳另加最多 1.2 s 渐进显示）。数字与阶段为自行设计：无公开竞品 SLO（dossier `2026-10-19-genie-campaign-gaps` §1.14）；业主裁定无后端流式，故无首字可测，以"到首个 SSE 事件"代替（`2026-10-18-genie-reply-design/REFERENCES.md` 实施边界）。
 - 2026-10-19（#251 零件清单变成产品）：见"零件清单 → 产品"。新增服务模块 `parts.py`（解析、匹配、逐条确认、一次加入）与 `parts` 块（`schema.PartsBlock`，服务写、模型不可写）；`lexicon` 加 `brand_members` / `brand_of`；`attachments` 收 CSV 与 .xlsx 并读成 `kind="list"` 的 reading（`AttachmentReading.truncated`）；`Understander` 在铭牌之后、Jev 之前判定清单，路由 `parts` 不经模型；壳新增 `PartsCard`（`src/genie/components/`）与 `store.addAll` 的一次写入（读回短于请求时再读一次，见规格 14 的实现 `store.ts`）；dock 输入框改为 textarea（多行粘贴，Enter 发送、Shift+Enter 换行）；附件选择接受 CSV/Excel，预览卡首页第四条改为"上传清单"（替换"配什么电池"，保持目标 4 的 2–4 条）。规格 13 的附件一节与 §B 的请求字段同步。文案评审 `docs/acceptance/2026-10-19/251/copy-review.md`，验收 `docs/acceptance/2026-10-19/251/`。
 - 2026-10-18（#236 拍照识别与附件读取）：见"附件与铭牌"。新增服务模块 `attachments` / `vision` / `nameplate`、路由 `nameplate`、工具名 `linker/read-attachment`（`facts` 与质检认得）、`TurnRequest.attachments` / `readings`、SSE `attachment` / `reading` 事件；`build_model` 的 profile 关闭文档输入；系统提示词加"Attached files"一段（EN/DE）。壳：`Attachments`（类型、大小、每小时额度）、`Thread::READINGS` 与 `Thread::split`、dock 的回形针真正发送文件（`src/genie/attachments/`、`AttachmentCard`、`AttachmentChips`）、首页预览卡第四条"拍铭牌"与加载器的 `{attach:true}`。依赖：`pillow`、`pypdfium2` 进服务主依赖（锁文件版本不变）。规格 10 的"不在 VPS 上解析"改写为只管知识索引。文案评审 `docs/acceptance/2026-10-18/236/copy-review.md`，验收 `docs/acceptance/2026-10-18/236/`。
