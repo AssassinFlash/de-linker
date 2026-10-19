@@ -74,6 +74,9 @@ try {
 		$config['settings']['type']      = 'banner';
 		$config['settings']['position']  = 'bottom';
 		$config['settings']['languages'] = $desired['languages'];
+		// Owner ruling 2026-10-19: these colours stay in CookieYes's own
+		// settings. AGENTS.md §5 styles site pages, not this CMP surface.
+		// Do not move the colours to WindPress and do not change them.
 		foreach ( array( 'notice', 'preferenceCenter' ) as $panel ) {
 			foreach ( array( 'accept', 'reject', 'save' ) as $button ) {
 				if ( isset( $config['config'][ $panel ]['elements']['buttons']['elements'][ $button ] ) ) {
@@ -228,31 +231,71 @@ try {
 		if ( $english_content !== $english->post_content || $german_content !== $german->post_content ) {
 			$drift[] = 'privacy: cookies and Google recipient, EN/DE';
 			if ( $write ) {
-				// The pair is supplied together. Do not enqueue an automatic
-				// translation between the English write and native adoption.
-				$updated = wp_update_post(
-					array(
-						'ID'           => $english->ID,
-						'post_content' => wp_slash( $english_content ),
-					),
-					true,
-					false
-				);
-				if ( is_wp_error( $updated ) ) {
+				// Captured before either language is written. A failure restores both.
+				$previous_en     = $english->post_content;
+				$previous_de     = $german->post_content;
+				$restore         = static function () use ( $english, $german, $previous_en, $previous_de ): void {
+					foreach ( array( array( $english->ID, $previous_en ), array( $german->ID, $previous_de ) ) as $pair ) {
+						$restored = wp_update_post(
+							array(
+								'ID'           => $pair[0],
+								'post_content' => wp_slash( $pair[1] ),
+							),
+							true,
+							false
+						);
+						if ( is_wp_error( $restored ) ) {
+							// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- CLI exception text goes to stderr, never an HTML response.
+							throw new RuntimeException( 'Could not restore privacy page ' . $pair[0] . ': ' . $restored->get_error_message() );
+						}
+					}
+				};
+				$privacy_failure = null;
+				try {
+					// The pair is supplied together. Do not enqueue an automatic
+					// translation between the English write and native adoption.
+					$updated = wp_update_post(
+						array(
+							'ID'           => $english->ID,
+							'post_content' => wp_slash( $english_content ),
+						),
+						true,
+						false
+					);
+					if ( is_wp_error( $updated ) ) {
+						throw new RuntimeException( $updated->get_error_message() );
+					}
+					$languages  = new Languages();
+					$tokenizer  = new HtmlTokenizer();
+					$links      = new LinkLocalizer( $languages, $tokenizer );
+					$rules      = Rules::load( WP_PLUGIN_DIR . '/linker-i18n/data' );
+					$translator = new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), new State(), DeepSeekClient::from_environment( $rules ), new Validator( $rules ), new Twins( $languages, $links, new Projection( $languages ) ), $links );
+					$fields     = array();
+					foreach ( ( new Fields() )->of_post( $english ) as $field => $definition ) {
+						$fields[ $field ] = str_starts_with( $field, Fields::META ) ? (string) get_post_meta( $german->ID, substr( $field, strlen( Fields::META ) ), true ) : $german->$field;
+					}
+					$fields['post_content'] = $german_content;
+					$translator->adopt( State::POST, $english->ID, $fields );
+					clean_post_cache( $english->ID );
+					clean_post_cache( $german->ID );
+					$read_en = get_post( $english->ID );
+					$read_de = get_post( $german->ID );
+					if ( ! $read_en instanceof WP_Post || $read_en->post_content !== $english_content || ! $read_de instanceof WP_Post || $read_de->post_content !== $german_content ) {
+						throw new RuntimeException( 'Privacy pages did not read back.' );
+					}
+				} catch ( Throwable $failure ) {
+					$privacy_failure = $failure;
+				}
+				if ( $privacy_failure instanceof Throwable ) {
+					try {
+						$restore();
+					} catch ( Throwable $restore_failure ) {
+						// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- CLI exception text goes to stderr, never an HTML response.
+						throw new RuntimeException( $privacy_failure->getMessage() . ' Restore also failed: ' . $restore_failure->getMessage(), 0, $privacy_failure );
+					}
 					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- CLI exception text goes to stderr, never an HTML response.
-					throw new RuntimeException( $updated->get_error_message() );
+					throw new RuntimeException( $privacy_failure->getMessage() . ' Previous privacy sections were restored.', 0, $privacy_failure );
 				}
-				$languages  = new Languages();
-				$tokenizer  = new HtmlTokenizer();
-				$links      = new LinkLocalizer( $languages, $tokenizer );
-				$rules      = Rules::load( WP_PLUGIN_DIR . '/linker-i18n/data' );
-				$translator = new Translator( $languages, new Planner( new Segmenter( $tokenizer ), new Aligner() ), new Fields(), new State(), DeepSeekClient::from_environment( $rules ), new Validator( $rules ), new Twins( $languages, $links, new Projection( $languages ) ), $links );
-				$fields     = array();
-				foreach ( ( new Fields() )->of_post( $english ) as $field => $definition ) {
-					$fields[ $field ] = str_starts_with( $field, Fields::META ) ? (string) get_post_meta( $german->ID, substr( $field, strlen( Fields::META ) ), true ) : $german->$field;
-				}
-				$fields['post_content'] = $german_content;
-				$translator->adopt( State::POST, $english->ID, $fields );
 			}
 		}
 		$consent_settings = get_option( 'googlesitekit_consent_mode', array() );
@@ -266,6 +309,52 @@ try {
 		if ( $write ) {
 			delete_option( 'cky_banner_template' );
 			\CookieYes\Lite\Includes\Cache::delete( 'banner_template' );
+		}
+		if ( ! empty( $payload['export'] ?? null ) ) {
+			$cookie_rows = array();
+			foreach ( $cookies->get_items() as $row ) {
+				$registered    = new \CookieYes\Lite\Admin\Modules\Cookies\Includes\Cookie( (int) $row->cookie_id );
+				$cookie_rows[] = array(
+					'name'        => (string) $row->name,
+					'category'    => $registered->get_category(),
+					'url_pattern' => $registered->get_url_pattern(),
+				);
+			}
+			$category_rows = array();
+			foreach ( $categories->get_items() as $row ) {
+				$category        = new \CookieYes\Lite\Admin\Modules\Cookies\Includes\Cookie_Categories( $row );
+				$category_rows[] = array(
+					'slug'        => $category->get_slug(),
+					'name'        => $category->get_name(),
+					'description' => $category->get_description(),
+					'visibility'  => $category->get_visibility(),
+				);
+			}
+			$encoded_snapshot = wp_json_encode(
+				array(
+					'home'                       => home_url(),
+					'settings'                   => $settings->get(),
+					'banner'                     => array(
+						'settings' => $banner->get_settings(),
+						'contents' => $banner->get_contents(),
+					),
+					'categories'                 => $category_rows,
+					'cookies'                    => $cookie_rows,
+					'privacy'                    => array(
+						'en_id' => $english->ID,
+						'de_id' => $german->ID,
+						'en'    => $english->post_content,
+						'de'    => $german->post_content,
+					),
+					'googlesitekit_consent_mode' => get_option( 'googlesitekit_consent_mode', array() ),
+					'cky_banner_template'        => get_option( 'cky_banner_template', null ),
+				)
+			);
+			if ( false === $encoded_snapshot ) {
+				throw new RuntimeException( 'Could not encode the consent backup.' );
+			}
+			WP_CLI::log( '@@201-consent@@' . $encoded_snapshot );
+			return;
 		}
 		$output = wp_json_encode(
 			array(
