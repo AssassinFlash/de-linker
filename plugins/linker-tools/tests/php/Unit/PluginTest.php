@@ -19,6 +19,7 @@ use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Hero;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\InquiryRequest;
+use Linker\Tools\Genie\PageCache;
 use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\RateLimit;
 use Linker\Tools\Genie\Proxy;
@@ -85,6 +86,7 @@ final class PluginTest extends TestCase {
 		$inquiry       = new \Linker\Tools\Genie\InquirySummary( $conversations, new Thread() );
 		$inquiry_card  = new InquiryRequest( $conversations, new Thread(), new PageContext() );
 		$hero          = new Hero();
+		$page_cache    = new PageCache( null, 'token' );
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
@@ -126,8 +128,13 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectFilterAdded( \Linker\Tools\Genie\InquirySummary::FILTER, array( $inquiry, 'answer' ), 10, 2 );
 		// The home hero's entry (#232).
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $hero, 'assets' ) );
+		// A saved page drops Genie's cached copy (#405).
+		WP_Mock::expectActionAdded( 'pre_post_update', array( $page_cache, 'before_post_saved' ) );
+		WP_Mock::expectActionAdded( 'wp_after_insert_post', array( $page_cache, 'post_saved' ), 10, 4 );
+		WP_Mock::expectActionAdded( 'edit_terms', array( $page_cache, 'before_term_saved' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'edited_term', array( $page_cache, 'term_saved' ), 10, 3 );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero, $page_cache ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );

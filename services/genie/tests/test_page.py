@@ -1,19 +1,25 @@
 """The page reader reads what the visitor's page shows (#234).
 
+A save drops the cached page (#405); a page that was not saved stays cached.
+
 The fixtures are the `<main>` of real pages of the live snapshot 2026-10-18
 (eval/page/capture_pages.py): the FAQ page (longer than the reader's budget), a blog post,
 the German residential storage page and a GoodWe ESA product page.
 """
 
+import threading
 from collections.abc import Iterator
 from pathlib import Path
 
 import httpx
 import pytest
+from conftest import SHELL
+from fastapi.testclient import TestClient
 
+from linker_genie import app as genie_app
 from linker_genie import page
 from linker_genie.page import PAGE_CHARS, PageReader, PageUnavailable
-from linker_genie.schema import PageContext
+from linker_genie.schema import PageContext, PageInvalidate
 
 PAGES = Path(__file__).resolve().parent / "fixtures" / "pages"
 
@@ -143,6 +149,113 @@ def test_a_page_that_fails_is_unavailable_with_its_cause() -> None:
     reader = _reader({"/x/": httpx.Response(500, text="boom")})
     with pytest.raises(PageUnavailable, match="returned 500"):
         reader.read(PageContext(type="other", url="/x/"), "q", False)
+
+
+def test_saving_one_page_drops_it_and_leaves_the_other_cached() -> None:
+    seen: list[str] = []
+    pages = {
+        "/product/a/": "<main><h1>Alpha</h1></main>",
+        "/blog/b/": "<main><h1>Beta</h1></main>",
+        "/de/produkt/a/": "<main><h1>Alpha DE</h1></main>",
+    }
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        return _ok(pages[request.url.path])
+
+    reader = PageReader("http://site.test", transport=httpx.MockTransport(handle))
+    product = PageContext(type="product", url="/product/a/", post_id=4107)
+    post = PageContext(type="blog", url="/blog/b/", post_id=551)
+    german = PageContext(type="product", url="/de/produkt/a/", post_id=8200)
+    reader.read(product, "q", False)
+    reader.read(post, "q", False)
+    reader.read(german, "q", False)
+    assert reader.invalidate(["/product/a", "/de/produkt/a/"]) == 2
+    pages["/product/a/"] = "<main><h1>Alpha C405</h1></main>"
+    pages["/de/produkt/a/"] = "<main><h1>Alpha DE C405</h1></main>"
+    assert "Alpha C405" in reader.read(product, "q", False)["text"]
+    assert "Alpha DE C405" in reader.read(german, "q", False)["text"]
+    assert reader.read(post, "q", False)["text"] == "## Beta"
+    # The blog post was not saved, so it was not fetched again.
+    assert seen.count("/blog/b/") == 1
+    assert seen.count("/product/a/") == 2
+    assert seen.count("/de/produkt/a/") == 2
+
+
+def test_a_read_in_flight_during_a_save_does_not_store_the_old_page() -> None:
+    started = threading.Event()
+    release = threading.Event()
+    bodies = {"/edited/": "<main><p>OLD</p></main>"}
+    seen: list[str] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        # The body is taken before the wait: the save changes the page while
+        # this fetch is still open, and the fetch must return the page it started.
+        if request.url.path == "/edited/" and not started.is_set():
+            body = bodies[request.url.path]
+            started.set()
+            assert release.wait(2)
+            return _ok(body)
+        return _ok(bodies[request.url.path])
+
+    reader = PageReader("http://site.test", transport=httpx.MockTransport(handle))
+    context = PageContext(type="blog", url="/edited/", post_id=551)
+    found: list[str] = []
+
+    def read() -> None:
+        found.append(reader.read(context, "q", False)["text"])
+
+    thread = threading.Thread(target=read)
+    thread.start()
+    assert started.wait(2)
+    assert reader.invalidate(["/edited/"]) == 0
+    bodies["/edited/"] = "<main><p>NEW</p></main>"
+    release.set()
+    thread.join(2)
+    assert not thread.is_alive()
+    assert found == ["OLD"]
+    assert reader.read(context, "q", False)["text"] == "NEW"
+    assert seen.count("/edited/") == 2
+
+
+def test_an_address_that_is_not_a_page_is_not_a_cache_key() -> None:
+    reader = _reader({"/": _ok("<main><p>Home</p></main>")})
+    reader.read(PageContext(type="home", url="/"), "q", False)
+    assert reader.invalidate(["/wp-admin/", "", "not a path"]) == 0
+    assert reader.invalidate(["/"]) == 1
+
+
+def test_the_service_drops_a_cached_page_for_the_shell(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    seen: list[str] = []
+    pages = {"/product/a/": "<main><h1>Alpha</h1></main>"}
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        return _ok(pages[request.url.path])
+
+    reader = PageReader("http://site.test", transport=httpx.MockTransport(handle))
+    monkeypatch.setattr(genie_app, "_pages", reader)
+    context = PageContext(type="product", url="/product/a/", post_id=4107)
+    reader.read(context, "q", False)
+    client = TestClient(genie_app.app, headers=SHELL)
+    response = client.post("/pages/invalidate", json={"paths": ["/product/a/"]})
+    assert response.status_code == 200
+    assert response.json() == {"forgotten": 1}
+    pages["/product/a/"] = "<main><h1>Alpha C405</h1></main>"
+    assert "Alpha C405" in reader.read(context, "q", False)["text"]
+    assert seen.count("/product/a/") == 2
+    denied = TestClient(genie_app.app).post(
+        "/pages/invalidate", json={"paths": ["/product/a/"]}
+    )
+    assert denied.status_code == 401
+    empty = client.post("/pages/invalidate", json={"paths": []})
+    assert empty.status_code == 422
+    assert PageInvalidate.model_json_schema()["properties"]["paths"]["maxItems"] == (
+        page.INVALIDATE_LIMIT
+    )
 
 
 def test_a_page_is_read_once_within_the_cache_time() -> None:

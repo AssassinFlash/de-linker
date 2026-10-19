@@ -12,9 +12,11 @@ content was an older page body with unrendered shortcodes, while
 the page shows 244 questions and 159 documents; the shop, the product categories, the
 solution draft, the account and the blog index have no post content at all
 (docs/specs/13-genie.md, 页面感知). A generated content pack would have to be rebuilt
-and deployed on every edit and every German translation. The page read needs no code
-on the WordPress side (AGENTS.md §5: native mechanisms first) and is cached for
-`TTL_SECONDS`.
+and deployed on every edit and every German translation. Reading the page needs no
+code on the WordPress side (AGENTS.md §5: native mechanisms first). The text is
+cached for `TTL_SECONDS`, and a save drops that page: WordPress tells this process
+(`invalidate`, `POST /pages/invalidate`) so the next read is the page as it is now.
+The TTL remains the backstop when that call does not land.
 
 The address is never fetched as the browser sent it: only its path is taken, joined to
 the site this service serves (`GENIE_WP_URL`), and a redirect is followed only on that
@@ -38,7 +40,7 @@ import re
 import threading
 import time
 from collections import OrderedDict
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from http.cookiejar import CookieJar, DefaultCookiePolicy
@@ -67,10 +69,16 @@ RULE = (
     "or a delivery cost never comes from a page."
 )
 
-# Pages change when staff edit them and when the German auto-translation syncs; ten
-# minutes is the vocabulary's starting value too (storeapi.TTL_SECONDS), and one read
-# is one page view of the site.
+# Pages change when staff edit them and when the German auto-translation syncs.
+# A save drops the cached page and its language twin (invalidate). Ten minutes
+# remains the backstop when that call does not land, and for a page the save does
+# not name (a listing that only embeds the edited product, a filtered query). It
+# is the vocabulary's starting value too (storeapi.TTL_SECONDS), and one read is
+# one page view of the site.
 TTL_SECONDS = 600.0
+# Paths one invalidation accepts (schema.PageInvalidate, the shell's PageCache).
+# A save names a page and its language twin, sometimes the previous slug.
+INVALIDATE_LIMIT = 256
 # Pages kept in the cache: the site has 25 pages per language, a few blog posts, 16
 # product categories and 106 products (snapshot 2026-10-18); 256 holds the pages
 # customers ask from without growing without bound.
@@ -447,9 +455,29 @@ class PageReader:
         self._ttl = ttl
         self._lock = threading.Lock()
         self._cache: OrderedDict[str, tuple[float, Any]] = OrderedDict()
+        # Bumped when a key is invalidated, including when it was not cached.
+        # A read that started before the bump does not store its body afterwards:
+        # that body is the page from before the save (#405).
+        self._epoch: dict[str, int] = {}
 
     def close(self) -> None:
         self._client.close()
+
+    def invalidate(self, paths: Iterable[str]) -> int:
+        """Drop the cached text of these pages. Returns how many entries were stored.
+
+        A path and its trailing-slash twin are one page (`/product/a` and
+        `/product/a/`). A listing's query is part of its key and is dropped only
+        when the path includes it. An address that is not a page is ignored.
+        """
+        forgotten = 0
+        with self._lock:
+            for raw in paths:
+                for key in self._keys(raw):
+                    self._epoch[key] = self._epoch.get(key, 0) + 1
+                    if self._cache.pop(key, None) is not None:
+                        forgotten += 1
+        return forgotten
 
     def read(self, page: PageContext, question: str, logged_in: bool) -> dict[str, Any]:
         """The page's content for `question`: its passages, or a draft's products.
@@ -489,6 +517,19 @@ class PageReader:
         )
         return result
 
+    def _keys(self, raw: str) -> list[str]:
+        """The cache keys `raw` names, or none when it is not a page path."""
+        path = page_path(raw.strip(), keep_query=True)
+        if path is None:
+            return []
+        keys = [f"page:{path}"]
+        if "?" not in path and path != "/":
+            other = path.rstrip("/") if path.endswith("/") else f"{path}/"
+            alternate = page_path(other)
+            if alternate is not None and alternate != path:
+                keys.append(f"page:{alternate}")
+        return keys
+
     def _cached(self, key: str, load: Callable[[], Any]) -> Any:
         with self._lock:
             now = self._clock()
@@ -496,8 +537,13 @@ class PageReader:
             if hit is not None and now - hit[0] < self._ttl:
                 self._cache.move_to_end(key)
                 return hit[1]
+            epoch = self._epoch.get(key, 0)
         value = load()
         with self._lock:
+            # A save landed while this page was being fetched. Keep the value for
+            # this caller and leave the cache empty, so the next read fetches again.
+            if self._epoch.get(key, 0) != epoch:
+                return value
             self._cache[key] = (self._clock(), value)
             self._cache.move_to_end(key)
             while len(self._cache) > CACHE_SIZE:

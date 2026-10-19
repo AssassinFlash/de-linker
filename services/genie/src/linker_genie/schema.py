@@ -455,3 +455,13 @@ class VoteRequest(Strict):
     """A customer's feedback on one logged turn: +1 or -1."""
 
     vote: Literal[1, -1]
+
+
+class PageInvalidate(Strict):
+    """Pages whose cached text the shell asks the service to drop (#405).
+
+    One save names a page and its language twin. `page.INVALIDATE_LIMIT` is the
+    most paths one call carries; the shell sends another call past that.
+    """
+
+    paths: list[str] = Field(min_length=1, max_length=256)
