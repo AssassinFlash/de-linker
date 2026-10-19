@@ -142,25 +142,29 @@ final class StorefrontTest extends TestCase {
 	 * A German Store API answer that was asked for English products
 	 * (`include=` keeps those ids, `lang=de`) links each English product that
 	 * has a twin. Registered for #339 as s1-card-permalink-locale (#413).
-	 * The count is permalinks that differ, not whether set_data() ran.
+	 *
+	 * Two twins change and two rows do not, so the count is 2. A flag that is
+	 * merely "set_data() ran" is 1 for the whole payload and cannot pass.
 	 */
 	public function test_german_store_products_link_to_the_german_page(): void {
 		$storefront = $this->german_products();
 		$body       = array(
 			$this->product( 24, 'http://example.test/product/saj/', 'Preise nach Anmeldung' ),
+			$this->product( 26, 'http://example.test/product/other/', 'Preise nach Anmeldung' ),
 			$this->product( 25, 'http://example.test/product/lone/', 'Angebot pro Projekt' ),
 			$this->product( 249, 'http://example.test/de/produkt/saj/', 'Preise nach Anmeldung' ),
 		);
 
 		$linked = $this->dispatch( $storefront, '/wc/store/v1/products', $body );
 
-		$this->assertSame( 1, $linked['changed'] );
-		$this->assertSame( array( 24, 25, 249 ), array_column( $linked['body'], 'id' ) );
+		$this->assertSame( 2, $linked['changed'] );
+		$this->assertSame( array( 24, 26, 25, 249 ), array_column( $linked['body'], 'id' ) );
 		$this->assertSame( 'http://example.test/de/produkt/saj/', $linked['body'][0]['permalink'] );
-		$this->assertSame( 'http://example.test/product/lone/', $linked['body'][1]['permalink'] );
-		$this->assertSame( 'http://example.test/de/produkt/saj/', $linked['body'][2]['permalink'] );
+		$this->assertSame( 'http://example.test/de/produkt/other/', $linked['body'][1]['permalink'] );
+		$this->assertSame( 'http://example.test/product/lone/', $linked['body'][2]['permalink'] );
+		$this->assertSame( 'http://example.test/de/produkt/saj/', $linked['body'][3]['permalink'] );
 		$this->assertSame( 'Preise nach Anmeldung', $linked['body'][0]['price_html'] );
-		$this->assertSame( 'Angebot pro Projekt', $linked['body'][1]['price_html'] );
+		$this->assertSame( 'Angebot pro Projekt', $linked['body'][2]['price_html'] );
 	}
 
 	/**
@@ -338,7 +342,8 @@ final class StorefrontTest extends TestCase {
 	}
 
 	/**
-	 * The products of a German shop: 24 has German twin 249, 25 has none.
+	 * The products of a German shop: 24 has German twin 249, 26 has German
+	 * twin 269, and 25 has none.
 	 */
 	private function german_products(): Storefront {
 		self::$admin = false;
@@ -346,9 +351,14 @@ final class StorefrontTest extends TestCase {
 			array(
 				24  => 'en',
 				25  => 'en',
+				26  => 'en',
 				249 => 'de',
+				269 => 'de',
 			),
-			array( 24 => 249 ),
+			array(
+				24 => 249,
+				26 => 269,
+			),
 			array(),
 			array(),
 			'de'
@@ -356,7 +366,13 @@ final class StorefrontTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_permalink',
 			array(
-				'return' => static fn( $id ): string|false => 249 === (int) $id ? 'http://example.test/de/produkt/saj/' : false,
+				'return' => static function ( $id ): string|false {
+					$links = array(
+						249 => 'http://example.test/de/produkt/saj/',
+						269 => 'http://example.test/de/produkt/other/',
+					);
+					return $links[ (int) $id ] ?? false;
+				},
 			)
 		);
 		return $this->storefront();
