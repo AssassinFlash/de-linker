@@ -21,7 +21,9 @@ _NS_PKG = "http://schemas.openxmlformats.org/package/2006/relationships"
 
 def _escape(text: str) -> str:
     return (
-        text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
         .replace('"', "&quot;")
     )
 
@@ -35,24 +37,22 @@ def _column_letters(number: int) -> str:
     return letters
 
 
-def workbook(rows: list[list[str]], huge_sheet: str | None = None,
-             doctype: str | None = None) -> bytes:
+def workbook(
+    rows: list[list[str]], huge_sheet: str | None = None, doctype: str | None = None
+) -> bytes:
     """A one-sheet workbook of string cells; `huge_sheet`/`doctype` replace the
     sheet part with the hostile forms."""
-    shared = []
+    shared: list[str] = []
     index_of: dict[str, int] = {}
-    sheet_rows = []
+    sheet_rows: list[str] = []
     for row_number, row in enumerate(rows, start=1):
-        cells = []
+        cells: list[str] = []
         for column, value in enumerate(row, start=1):
             if value not in index_of:
                 index_of[value] = len(shared)
                 shared.append(value)
             reference = f"{_column_letters(column)}{row_number}"
-            cells.append(
-                f'<c r="{reference}" t="s">'
-                f"<v>{index_of[value]}</v></c>"
-            )
+            cells.append(f'<c r="{reference}" t="s"><v>{index_of[value]}</v></c>')
         sheet_rows.append(f'<row r="{row_number}">' + "".join(cells) + "</row>")
     sheet = (
         f'<?xml version="1.0" encoding="UTF-8"?>'
@@ -167,12 +167,13 @@ def build(kind: str) -> tuple[str, bytes]:
     if kind == "zip_bomb":
         # ~10 MiB of decompressed repetitive sheet in a tiny archive; the
         # reader's 8 MiB streamed-read ceiling must refuse it.
-        row = '<row r="{}"><c r="R{}C1" t="inlineStr"><is><t>'
         huge = (
             '<?xml version="1.0" encoding="UTF-8"?>'
             f'<worksheet xmlns="{_NS_MAIN}"><sheetData>'
-            + ('<row r="1"><c t="inlineStr"><is><t>H2-10K-T3 padding padding '
-               "padding padding padding padding padding</t></is></c></row>" * 90000)
+            + (
+                '<row r="1"><c t="inlineStr"><is><t>H2-10K-T3 padding padding '
+                "padding padding padding padding padding</t></is></c></row>" * 90000
+            )
             + "</sheetData></worksheet>"
         )
         assert len(huge) > 8 * 1024 * 1024, len(huge)
@@ -180,11 +181,11 @@ def build(kind: str) -> tuple[str, bytes]:
     if kind == "billion_laughs":
         evil = (
             '<?xml version="1.0" encoding="UTF-8"?>'
-            "<!DOCTYPE worksheet [<!ENTITY x0 \"HA\">"
+            '<!DOCTYPE worksheet [<!ENTITY x0 "HA">'
             '<!ENTITY x1 "&x0;&x0;&x0;&x0;&x0;&x0;&x0;&x0;&x0;&x0;">'
             '<!ENTITY x2 "&x1;&x1;&x1;&x1;&x1;&x1;&x1;&x1;&x1;&x1;">]>'
             f'<worksheet xmlns="{_NS_MAIN}"><sheetData>'
-            "<row r=\"1\"><c t=\"inlineStr\"><is><t>H2-10K-T3 &x2;</t></is></c></row>"
+            '<row r="1"><c t="inlineStr"><is><t>H2-10K-T3 &x2;</t></is></c></row>'
             "</sheetData></worksheet>"
         )
         return ("laughs.xlsx", workbook([["Model"]], doctype=evil))
