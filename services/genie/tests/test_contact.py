@@ -109,6 +109,19 @@ def test_same_question_matches_the_measured_cases(case: dict[str, object]) -> No
     assert same_question(str(case["a"]), str(case["b"])) is case["same"]
 
 
+def test_339_filler_corpus_holds_for_every_cut_from_0_to_0_75() -> None:
+    """#339: repeats.json, including the #375 filler pairs, matches every cut.
+
+    The spec's claim is any Jaccard cut from 0 through 0.75. Above 0.75 the
+    shortened "Garantie GoodWe ET?" stops counting, because its overlap is 3/4.
+    """
+    assert len(CASES["pairs"]) == 66
+    for cut_hundredths in range(76):
+        cut = cut_hundredths / 100
+        for case in CASES["pairs"]:
+            assert same_question(str(case["a"]), str(case["b"]), cut) is case["same"]
+
+
 def test_three_rounds_of_the_same_question_count_three() -> None:
     messages = _thread(
         "Which battery fits the SAJ H2-10K-T3?",
@@ -207,9 +220,10 @@ def test_two_rounds_are_not_yet_a_repeat() -> None:
 
 
 # #375. The #331 attack adds one time word per round to one pairing question
-# (s5-en-never-offer-attack: now, today, right now) and the card never appears.
-# The German rounds use the same slot (jetzt, heute, gerade). please and bitte
-# are already stopwords; they stay in the table so that path cannot regress.
+# (s5-en-never-offer-attack: now, today, right now). German uses heute, gerade,
+# aktuell and the present-stock adverbs. please and bitte are already stopwords.
+# Round 2: the length gate is the raw words; today/heute stay on a delivery day;
+# noch and jetzt stay; English and German fillers are separate sets.
 @pytest.mark.parametrize(
     ("earlier", "later"),
     [
@@ -238,8 +252,12 @@ def test_two_rounds_are_not_yet_a_repeat() -> None:
             "Which batteries work with the SAJ H2-10K-T3 please?",
         ),
         (
-            "Welche Batterien passen zum SAJ H2-10K-T3?",
-            "Welche Batterien passen zum SAJ H2-10K-T3 jetzt?",
+            "Is the GW10K-ETA in stock?",
+            "Is the GW10K-ETA in stock yet?",
+        ),
+        (
+            "We have 42 units of the GW10K-ETA in stock.",
+            "We currently have 42 units of the GW10K-ETA in stock.",
         ),
         (
             "Welche Batterien passen zum SAJ H2-10K-T3?",
@@ -254,17 +272,58 @@ def test_two_rounds_are_not_yet_a_repeat() -> None:
             "Welche Batterien passen zum SAJ H2-10K-T3 bitte?",
         ),
         (
-            "Welche Batterien passen zum SAJ H2-10K-T3?",
-            "Welche Batterien passen zum SAJ H2-10K-T3 noch?",
+            "Wie viele GW10K-ETA haben Sie auf Lager?",
+            "Wie viele GW10K-ETA haben Sie aktuell auf Lager?",
         ),
         (
             "Wie viele GW10K-ETA haben Sie auf Lager?",
-            "Wie viele GW10K-ETA haben Sie aktuell auf Lager?",
+            "Wie viele GW10K-ETA haben Sie momentan auf Lager?",
+        ),
+        (
+            "Wie viele GW10K-ETA haben Sie auf Lager?",
+            "Wie viele GW10K-ETA haben Sie zurzeit auf Lager?",
+        ),
+        (
+            "Wie ist der Lagerbestand des GW10K-ETA?",
+            "Wie ist der aktuelle Lagerbestand des GW10K-ETA?",
+        ),
+        (
+            "Haben Sie den Lagerbestand des GW10K-ETA?",
+            "Haben Sie den aktuellen Lagerbestand des GW10K-ETA?",
+        ),
+        (
+            "Wie ist der Lagerbestand des GW10K-ETA?",
+            "Wie ist der aktueller Lagerbestand des GW10K-ETA?",
+        ),
+        (
+            "Ist das Lager des GW10K-ETA bekannt?",
+            "Ist das aktuelles Lager des GW10K-ETA bekannt?",
+        ),
+        # The seed's German gloss (oos-stock de.answered).
+        (
+            "Wir haben 42 Stück des GW10K-ETA auf Lager.",
+            "Wir haben derzeit 42 Stück des GW10K-ETA auf Lager.",
+        ),
+        # Both sides already negated: a filler does not open a new question.
+        (
+            "Which batteries do not work with the SAJ H2-10K-T3?",
+            "Which batteries do not work with the SAJ H2-10K-T3 now?",
+        ),
+        (
+            "Welcher Speicher passt nicht zum SAJ H2-10K-T3?",
+            "Welcher Speicher passt nicht zum SAJ H2-10K-T3 gerade?",
         ),
     ],
 )
 def test_a_filler_does_not_make_the_question_new(earlier: str, later: str) -> None:
     assert same_question(earlier, later)
+
+
+@pytest.mark.parametrize("question", ["Is it in stock now?", "Noch verfügbar?"])
+def test_a_verbatim_short_question_still_counts(question: str) -> None:
+    # Fillers used to be removed before MIN_WORDS, so both fell under the gate.
+    assert same_question(question, question)
+    assert repeats(_thread(question, question, question)) == 3
 
 
 @pytest.mark.parametrize(
@@ -289,6 +348,41 @@ def test_a_filler_does_not_make_the_question_new(earlier: str, later: str) -> No
         (
             "Welche Batterien passen zum SAJ H2-10K-T3?",
             "Welche Batterien passen noch nicht zum SAJ H2-10K-T3?",
+        ),
+        # Later drops the negation. The added-not direction is above.
+        (
+            "Which batteries do not work with the SAJ H2-10K-T3?",
+            "Which batteries work with the SAJ H2-10K-T3?",
+        ),
+        (
+            "Welcher Speicher passt nicht zum SAJ H2-10K-T3?",
+            "Welcher Speicher passt zum SAJ H2-10K-T3?",
+        ),
+        # today/heute name a delivery day. noch adds. German still is quiet.
+        # jetzt has no sourced filler sense, so it stays a word.
+        (
+            "Can you ship the GoodWe ET?",
+            "Can you ship the GoodWe ET today?",
+        ),
+        (
+            "Können Sie den GoodWe ET liefern?",
+            "Können Sie den GoodWe ET heute liefern?",
+        ),
+        (
+            "Wir brauchen zwei Module.",
+            "Wir brauchen noch zwei Module.",
+        ),
+        (
+            "Läuft der Wechselrichter?",
+            "Läuft der Wechselrichter still?",
+        ),
+        (
+            "Welche Batterien passen zum SAJ H2-10K-T3?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 noch?",
+        ),
+        (
+            "Welche Batterien passen zum SAJ H2-10K-T3?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 jetzt?",
         ),
         (
             "Which battery fits the SAJ H2-10K-T3?",
@@ -339,7 +433,7 @@ def test_negation_codes_and_new_words_stay_a_different_question(
         ),
         (
             "Welche Batterien passen zum SAJ H2-10K-T3?",
-            "Welche Batterien passen zum SAJ H2-10K-T3 jetzt?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 aktuell?",
             "Welche Batterien passen zum SAJ H2-10K-T3 heute?",
             "Welche Batterien passen zum SAJ H2-10K-T3 gerade?",
         ),
@@ -369,6 +463,7 @@ def test_the_third_filler_round_offers_once_and_not_again(
 
 def test_a_negated_third_round_is_not_a_repeat() -> None:
     # "not" / "nicht" stay content words, including when a filler rides along.
+    # Dropping one is test_dropping_a_negation_is_not_a_repeat_either.
     # The person-phrase negation is test_ordinary_questions_do_not_match.
     en = decide(
         Route("model"),
@@ -387,6 +482,32 @@ def test_a_negated_third_round_is_not_a_repeat() -> None:
             "Welcher Speicher passt zum SAJ H2-10K-T3?",
             "Welcher Speicher passt zum SAJ H2-10K-T3 jetzt?",
             "Welcher Speicher passt nicht zum SAJ H2-10K-T3 heute?",
+        ),
+        (False, False),
+    )
+    assert en is None
+    assert de is None
+
+
+def test_dropping_a_negation_is_not_a_repeat_either() -> None:
+    # The earlier rounds say "not" / "nicht"; the third takes the word out.
+    en = decide(
+        Route("model"),
+        _reading(),
+        _thread(
+            "Which batteries do not work with the SAJ H2-10K-T3?",
+            "Which batteries do not work with the SAJ H2-10K-T3 now?",
+            "Which batteries work with the SAJ H2-10K-T3?",
+        ),
+        (False, False),
+    )
+    de = decide(
+        Route("model"),
+        _reading(),
+        _thread(
+            "Welcher Speicher passt nicht zum SAJ H2-10K-T3?",
+            "Welcher Speicher passt nicht zum SAJ H2-10K-T3 gerade?",
+            "Welcher Speicher passt zum SAJ H2-10K-T3?",
         ),
         (False, False),
     )

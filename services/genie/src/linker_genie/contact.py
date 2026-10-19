@@ -37,13 +37,14 @@ from linker_genie.schema import ContactBlock, ContactReason, TextBlock, TurnMess
 REPEATS = 3
 # The share of words (Jaccard) two messages must still have in common to be one
 # question, once the later adds no word and no model code (same_question). Measured on
-# eval/contact/repeats.json: 39 pairs EN/DE incl. 8 real follow-up negatives (a feature
-# or quantity added, a sibling model), written 2026-10-18 and extended in review round
-# 1 of #243. All 39 are right for any cut from 0 to 0.75 (above 0.75 the shortened
-# "Garantie GoodWe ET?" stops counting as a repeat); 0.5 sits in the middle.
+# eval/contact/repeats.json: 66 pairs EN/DE, the original 39 (incl. 8 real follow-up
+# negatives) plus the #375 filler pairs registered for #339. Every pair is right for
+# any cut from 0 to 0.75 (above 0.75 the shortened "Garantie GoodWe ET?" stops counting
+# as a repeat: its overlap is 3/4); 0.5 sits in the middle.
 SAME = 0.5
-# Fewer content words than this is no question to repeat ("ok", "danke"): the same
-# pairs ("warranty GoodWe ET?" has three).
+# Fewer content words than this is no question to repeat ("ok", "danke"). Counted
+# before fillers are removed, so a verbatim "Is it in stock now?" (stock, now) and
+# "Noch verfügbar?" still have two words, as they did before the filler table.
 MIN_WORDS = 2
 
 # Words that do not make the question: articles, pronouns, auxiliaries and politeness,
@@ -62,47 +63,104 @@ _STOPWORDS = frozenset(
 )
 
 # Time and filler words that do not change what is asked. Removed only while
-# comparing two messages (same_question), never in normalize() or asks_for_person().
-# "not" / "nicht" / "kein" are absent on purpose, and so is every token with a
-# digit: a negation, a model code or a quantity still makes the later message a
-# new question. "right" alone stays ("the right inverter"); only the phrase
+# comparing two messages (same_question), and only from the language of that
+# message, never in normalize() or asks_for_person(). The MIN_WORDS gate runs
+# on the raw content words, before this table.
+#
+# "not" / "nicht" / "kein" are absent on purpose. A negation on one side only
+# is a new question, and so is a new model code or quantity (any token with a
+# digit). "right" alone stays ("the right inverter"); only the English phrase
 # "right now" goes.
 #
-# Calibration of the three-round repeat (#375), not a new handoff rule
+# Calibration of the three-round repeat (#375, round 2), not a new handoff rule
 # (docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md §1.8: Intercom's
 # three rounds, filler normalization is calibration). please and bitte are
 # already politeness stopwords above (eval/contact/repeats.json).
 #
-# now, today, "right now"
-#     Campaign #331 case s5-en-never-offer-attack: the same pairing question
-#     plus one of these each round, four rounds, no contact card.
+# English. A message is English when it has an English function word and no
+# German one (the marker sets below).
+# now, "right now", today
+#     Campaign #331 s5-en-never-offer-attack, the customer questions: "Which
+#     batteries work with the SAJ H2-10K-T3 now?", then "… today?", then
+#     "… right now?". today is not removed when the message names shipping or
+#     delivery: "Can you ship the GoodWe ET today?" is a day, not a tag.
 # currently
-#     eval/judges/data/seeds.json oos-stock, the English gloss beside
-#     "in stock right now" ("We currently have").
+#     The present-stock adverb of seeds.json oos-stock. The customer question
+#     is "How many GW10K-ETA units do you have in stock right now?"; the
+#     English answer restates that fact as "We currently have 42 units of the
+#     GW10K-ETA in stock." The word removed is the adverb in that restatement.
 # still
-#     docs/faq/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger.md:
-#     "Does the 11 kW charger still need …", the time adverb on the same ask.
-# jetzt
-#     Campaign #331 s1-de-inverter-to-ev ("Jetzt etwas ganz anderes") and
-#     eval/contact/cases.json ("jetzt schon").
+#     docs/faq/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger.md, the
+#     English question "Does the 11 kW charger still need an external Type A
+#     RCD?". German "still" means quiet and is not in the German set.
+# yet
+#     The optional time adverb of eval/page/questions.json draft-many-pairs
+#     ("not (yet )?(been )?checked" is one expectation) and of the customer
+#     sentence "Sent, but the draft does not show it yet."
+#     (docs/specs/14-solution-configurator.md). "not" stays.
+#
+# German.
 # heute
-#     The German of "today": eval/judges/src/linker_judges/templates.py
-#     "Wenn Sie heute bestellen", and linker-tools-de_DE_formal.po
-#     "Das E-Mail-Limit für heute".
+#     The German of the attack's "today", on the same pairing question. Kept
+#     when the message names delivery ("heute liefern"), same rule as today.
 # gerade
 #     The German of "right now" in the site's own copy (acceptance 2026-10-18
 #     243/copy-review.md B12 and 250/copy-review.md C6).
+# derzeit, momentan, zurzeit
+#     The German of "currently". The attested sentence is the oos-stock answer
+#     "Wir haben derzeit 42 Stück des GW10K-ETA auf Lager." momentan and
+#     zurzeit are that same adverb; the repo has no separate sentence for
+#     them. "zur Zeit" (two words) is not this row.
+# aktuell, aktuelle, aktuellen, aktueller, aktuelles
+#     oos-stock's German question "Wie viele GW10K-ETA haben Sie aktuell auf
+#     Lager?". The inflected forms are the same adjective: "der aktuelle
+#     Strommarkt" (docs/faq/goodwe-ezmanager3000-hems-gateway.json) and
+#     "die aktuellen Zertifikate" (docs/faq/goodwe-gw80k-et-g10.json).
+#
+# Not fillers, after round 2:
 # noch
-#     eval/page/questions.json "noch nicht" and template.py "noch einmal".
-#     Dropping noch leaves nicht, so the negation stays a different question.
-# aktuell
-#     eval/judges/data/seeds.json oos-stock, the German question paired with
-#     English "right now": "aktuell auf Lager".
-_FILLER_PHRASES = re.compile(r"\bright now\b")
-_FILLERS = frozenset(
+#     "Wir brauchen noch zwei Module" adds a quantity. The FAQ's German of
+#     "still need" is "Braucht das 11-kW-Ladegerät noch einen externen FI Typ A?".
+#     "noch nicht" and "noch einmal" are other senses and are not a source.
+# jetzt
+#     The in-repo sentences are a topic switch (campaign #331
+#     s1-de-inverter-to-ev, "Jetzt etwas ganz anderes") and a complaint
+#     (eval/contact/cases.json, "jetzt schon"). Neither is "now" on the same
+#     question, so the row is not in the table.
+_RIGHT_NOW = re.compile(r"\bright now\b")
+_EN_FILLERS = frozenset("now today currently still yet".split())
+_DE_FILLERS = frozenset(
     """
-    now today currently still
-    jetzt heute gerade noch aktuell
+    heute gerade derzeit momentan zurzeit
+    aktuell aktuelle aktuellen aktueller aktuelles
+    """.split()
+)
+# A delivery day is not a tag. Present only to cancel today/heute.
+_DATE_FILLERS = frozenset({"today", "heute"})
+_LOGISTICS = frozenset(
+    """
+    ship ships shipping deliver delivers delivering delivery dispatch dispatched
+    send sends sending arrive arrives arrival
+    liefern liefert lieferung geliefert versenden versendet versand
+    schicken schickt geschickt senden sendet gesendet
+    ankommen ankommt ankunft
+    """.split()
+)
+# Function words of one language. "an" and "am" are both languages and stay out,
+# so a mixed or unmarked message loses no filler ("still" stays unless the
+# message is English).
+_EN_MARKERS = frozenset(
+    """
+    a the of for to on at with and or is are be do does did can could would
+    should will i me my we you your it its this that there please pls hi hello
+    thanks thank how what which who whom why when where
+    """.split()
+)
+_DE_MARKERS = frozenset(
+    """
+    der die das den dem des ein eine einen einem einer eines zum zur für von vom
+    bei beim im und oder ist sind hat haben ich mir mich wir sie ihr ihre ihnen
+    bitte danke es wie welche welcher welches wer warum wann
     """.split()
 )
 
@@ -212,31 +270,82 @@ def asks_for_person(message: str) -> str | None:
     return None
 
 
-def _words(message: str) -> frozenset[str]:
-    """Content words: stopwords and the filler table above are not content."""
-    text = _FILLER_PHRASES.sub(" ", normalize(message))
-    return frozenset(
-        w for w in text.split() if w not in _STOPWORDS and w not in _FILLERS
+def _message_lang(tokens: list[str]) -> str | None:
+    """ "en" or "de" when the function words are of one language, else None."""
+    english = any(word in _EN_MARKERS for word in tokens)
+    german = any(word in _DE_MARKERS for word in tokens)
+    if english and not german:
+        return "en"
+    if german and not english:
+        return "de"
+    return None
+
+
+def _fillers_of(tokens: list[str]) -> frozenset[str]:
+    """The filler words that apply to this message, after the language and the day rule."""
+    lang = _message_lang(tokens)
+    if lang == "en":
+        fillers = _EN_FILLERS
+    elif lang == "de":
+        fillers = _DE_FILLERS
+    else:
+        return frozenset()
+    if any(word in _LOGISTICS for word in tokens):
+        return fillers - _DATE_FILLERS
+    return fillers
+
+
+def _content(message: str) -> tuple[list[str], frozenset[str]]:
+    """Raw content words, then the words the comparison uses.
+
+    Raw words have lost stopwords only. MIN_WORDS reads that list, so stripping
+    a filler cannot push a verbatim question under the gate. The comparison set
+    also drops the language's fillers. "right now" drops only from an English
+    message.
+    """
+    tokens = normalize(message).split()
+    raw = [word for word in tokens if word not in _STOPWORDS]
+    fillers = _fillers_of(tokens)
+    compared = tokens
+    if _message_lang(tokens) == "en":
+        compared = _RIGHT_NOW.sub(" ", " ".join(tokens)).split()
+    words = frozenset(
+        word for word in compared if word not in _STOPWORDS and word not in fillers
     )
+    return raw, words
 
 
-def same_question(earlier: str, later: str) -> bool:
+def _negated(message: str) -> bool:
+    """Whether the normalized message has a negation word (either side of a pair)."""
+    return _NEGATION.search(normalize(message)) is not None
+
+
+def same_question(earlier: str, later: str, cut: float = SAME) -> bool:
     """Whether a later customer message asks the earlier one's question again.
 
     A repeat says nothing new: the later message adds no content word to the earlier
     one (a feature such as "backup" or a quantity such as "15 kWh" makes it a new,
     refined question), names the same model codes (H2-10K-T3 and H2-8K-T3 are two
-    questions), and still shares SAME of the words (a cut-down "SAJ battery?" is
-    another question). A filler or a time word ("now", "today", "right now",
-    "heute", "gerade") is not a content word. Messages of fewer than MIN_WORDS
-    content words are no question to repeat.
+    questions), and still shares `cut` of the words (a cut-down "SAJ battery?" is
+    another question). A filler of that message's language is not a content word.
+    Messages of fewer than MIN_WORDS raw content words are no question to repeat.
+    A negation on one side only ("do not work" against "work", or the reverse) is
+    a new question. `cut` is SAME in production; the #339 calibration passes the
+    other cuts from 0 to 0.75.
     """
-    left, right = _words(earlier), _words(later)
-    if len(left) < MIN_WORDS or len(right) < MIN_WORDS:
+    left_raw, left = _content(earlier)
+    right_raw, right = _content(later)
+    if len(left_raw) < MIN_WORDS or len(right_raw) < MIN_WORDS:
+        return False
+    if _negated(earlier) != _negated(later):
+        return False
+    if not left and not right:
+        return set(left_raw) == set(right_raw)
+    if not left or not right:
         return False
     if right - left or _codes(left) != _codes(right):
         return False
-    return len(left & right) / len(left | right) >= SAME
+    return len(left & right) / len(left | right) >= cut
 
 
 def _codes(words: frozenset[str]) -> frozenset[str]:
