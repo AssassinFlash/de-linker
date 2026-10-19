@@ -188,6 +188,154 @@ def test_a_family_of_one_phase_is_one_search(vocabulary: Vocabulary) -> None:
     assert call.arguments == {"series": "saj-h2", "lang": "en", "limit": 6}
 
 
+# Ticket #369. The body of EF BD-8-S2 is written "BD-8" / "BD8"; case, hyphen
+# and space are the same key. BD-5 is the only other join the snapshot produces.
+SHORT_BODIES = [
+    ("BD-8", "EF BD-8-S2", 3582),
+    ("BD8", "EF BD-8-S2", 3582),
+    ("bd-8", "EF BD-8-S2", 3582),
+    ("Bd 8", "EF BD-8-S2", 3582),
+    ("the BD-8 one", "EF BD-8-S2", 3582),
+    ("BD-8-S2", "EF BD-8-S2", 3582),
+    ("Ich suche den BD-8", "EF BD-8-S2", 3582),
+    ("BD-5", "EF BD-5-S2", 3581),
+    ("BD5", "EF BD-5-S2", 3581),
+]
+
+
+@pytest.mark.parametrize(
+    ("message", "label", "product_id"),
+    SHORT_BODIES,
+    ids=[case[0] for case in SHORT_BODIES],
+)
+def test_a_hyphenated_model_body_matches_its_product(
+    vocabulary: Vocabulary, message: str, label: str, product_id: int
+) -> None:
+    models = [m for m in vocabulary.match(message) if m.kind == "model"]
+    assert [(m.value, m.product_ids) for m in models] == [
+        (label, frozenset({product_id}))
+    ]
+
+
+# The repro (#369): EcoFlow and OCEAN are in the sentence, and without the body
+# the series hit is the Battery Base family. EN and DE use the same match.
+BD8_QUESTIONS = [
+    ("en", "Looking for Ecoflow Ocean two batteries, the BD-8 one."),
+    ("de", "Ich suche zwei EcoFlow OCEAN Batterien, die BD-8."),
+]
+
+
+@pytest.mark.parametrize(
+    ("lang", "message"), BD8_QUESTIONS, ids=[case[0] for case in BD8_QUESTIONS]
+)
+@pytest.mark.parametrize(
+    "reading", [_reading("find_products"), None], ids=["jev", "down"]
+)
+def test_the_bd8_question_searches_that_battery(
+    vocabulary: Vocabulary, lang: str, message: str, reading: Reading | None
+) -> None:
+    route = _route(vocabulary, {"lang": lang, "message": message}, reading)
+    assert route.calls
+    assert {call.arguments.get("text") for call in route.calls} == {"EF BD-8-S2"}
+    assert all(call.arguments.get("brand") == "ecoflow" for call in route.calls)
+    assert all("series" not in call.arguments for call in route.calls)
+
+
+def test_the_full_model_still_beats_its_short_body(vocabulary: Vocabulary) -> None:
+    (match,) = [m for m in vocabulary.match("EF BD-8-S2") if m.kind == "model"]
+    assert match.value == "EF BD-8-S2"
+    assert match.product_ids == frozenset({3582})
+    assert normalize(match.words) == "efbd8s2"
+
+
+# Suffixes and other short tokens that must not become a model. "S2" sits on 24
+# products, "G20" on 21; "AC", "DC" and "2" are ordinary words; "20K" is inside
+# both H2-20K-T3 and GW20K; "G2F" is a unique trailing suffix.
+NOT_A_MODEL = [
+    "S2",
+    "s2",
+    "G20",
+    "G10",
+    "P3",
+    "AC",
+    "DC",
+    "2",
+    "the S2 one",
+    "EcoFlow S2",
+    "8-S2",
+    "8S2",
+    "G2F",
+    "20K",
+    "10K",
+    "HV1",
+    "BD",
+    "8",
+    "what is the AC output?",
+    "48 V DC",
+    "OCEAN 2",
+]
+
+
+@pytest.mark.parametrize("message", NOT_A_MODEL)
+def test_a_suffix_or_bare_short_token_is_not_a_model(
+    vocabulary: Vocabulary, message: str
+) -> None:
+    assert [m for m in vocabulary.match(message) if m.kind == "model"] == []
+
+
+def test_an_embedded_power_token_does_not_replace_the_full_code(
+    vocabulary: Vocabulary,
+) -> None:
+    """A bare 20K names no product; the full codes that contain it still do."""
+    assert vocabulary.match("20K") == []
+    (h2,) = [m for m in vocabulary.match("H2-20K-T3") if m.kind == "model"]
+    assert h2.value == "H2-20K-T3"
+    (gw,) = [m for m in vocabulary.match("GW20K-ETA-G20") if m.kind == "model"]
+    assert gw.value == "GW20K-ETA-G20"
+
+
+# Campaign #330 class E: case, the hyphen and the space. Eleven messages.
+E_CLASS = [
+    ("is the gw10k eta g20 single-phase?", "model", "GW10K-ETA-G20"),
+    ("Do you have Gw10k-Eta-G20 in stock?", "model", "GW10K-ETA-G20"),
+    ("H210KT3 - what is the AC output?", "model", "H2-10K-T3"),
+    ("h2 10k t3 availability please", "model", "H2-10K-T3"),
+    ("Tell me about gw 5.1 bat d g20", "model", "GW5.1-BAT-D-G20"),
+    ("GOODWE inverters - which GOODWE models do you carry?", "brand", "goodwe"),
+    ("ist der gw10k eta g20 dreiphasig?", "model", "GW10K-ETA-G20"),
+    ("H210KT3 - welche Nennleistung?", "model", "H2-10K-T3"),
+    ("Haben Sie GW5,1-BAT-D-G20 auf Lager?", "model", "GW5.1-BAT-D-G20"),
+    ("saj hs2 5k t2 x verfügbar?", "model", "HS2-5K-T2-X"),
+    ("Zeigen Sie mir GOODWE GW25K-ETA-G20", "model", "GW25K-ETA-G20"),
+]
+
+
+@pytest.mark.parametrize(
+    ("message", "kind", "value"),
+    E_CLASS,
+    ids=[
+        "E1-EN",
+        "E2-EN",
+        "E3-EN",
+        "E4-EN",
+        "E5-EN",
+        "E6-EN",
+        "E1-DE",
+        "E2-DE",
+        "E3-DE",
+        "E4-DE",
+        "E5-DE",
+    ],
+)
+def test_e_class_case_hyphen_and_space_variants_still_match(
+    vocabulary: Vocabulary, message: str, kind: str, value: str
+) -> None:
+    matches = vocabulary.match(message)
+    assert (kind, value) in {(m.kind, m.value) for m in matches}
+    models = {m.value for m in matches if m.kind == "model"}
+    assert models == ({value} if kind == "model" else set())
+
+
 def test_a_brand_and_a_series_name_their_products(vocabulary: Vocabulary) -> None:
     """The parts list needs the products behind a brand or series word (#251).
 
