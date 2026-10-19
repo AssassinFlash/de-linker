@@ -387,7 +387,14 @@ def deploy_language_packs(target: Target) -> list[str]:
 
 
 def configure_consent(target: Target, *, repository: str | Path) -> list[str]:
-    """Replay the native CMP settings after every deployment, then read them back."""
+    """Replay the native CMP settings after every deployment, then read them back.
+
+    Idempotent: every deploy sends the same write-then-verify pair, and the
+    migration writes only where the site still differs. The database snapshot
+    taken before the switch is the backup for this path. A standalone
+    ``201-consent.py --write`` is a different entry and refuses to run without
+    ``--backup-dir``.
+    """
     directory = Path(repository) / "tools" / "migrate"
     source = (directory / "201-consent.php").read_text().removeprefix("<?php")
     settings = json.loads((directory / "201-consent.json").read_text())
@@ -405,6 +412,12 @@ def configure_consent(target: Target, *, repository: str | Path) -> list[str]:
             "eval", source.replace("__LINKER_CONSENT_PAYLOAD__", payload), "--user=1"
         )
     return ["consent: native CMP settings replayed and verified"]
+
+
+# Unauthenticated deploy reads carry no consent cookie, so analytics is denied.
+# The product pages are the same pair ``verify`` already fetches.
+CONSENT_PAGES = ("/", "/de/", *plan.VERIFY_PRODUCT_PATHS)
+GOOGLE_TAG_HANDLE = "google_gtagjs"
 
 
 def consent(target: Target) -> Result:
@@ -447,7 +460,7 @@ def consent(target: Target) -> Result:
         or not settings.get("useSnippet")
     ):
         notes.append("consent: Analytics must be connected with its snippet enabled")
-    for path in ("/", "/de/"):
+    for path in CONSENT_PAGES:
         status, html = target.http(path, cache_buster=None)
         actions.append(f"consent: GET {path} -> {status}")
         if status != 200 or "ckyBannerTemplate" not in html:
@@ -461,6 +474,16 @@ def consent(target: Target) -> Result:
         ):
             notes.append(
                 f"consent: {path} must hold every Google tag behind statistics consent"
+            )
+        if f'id="{GOOGLE_TAG_HANDLE}-js"' not in html:
+            notes.append(
+                f"consent: {path} google_gtagjs handle is absent while analytics "
+                "consent is denied. Fallback: while CookieYes is active, hold every "
+                "googletagmanager.com/gtag/js tag by URL and log a linker-consent "
+                "warning. This check still fails until the handle is present. "
+                "Deactivating CookieYes leaves the tag unchanged because nothing "
+                "could release it; that request logs the same warning and the "
+                "carrier check above fails closed."
             )
         if "linker-consent-withdrawal" not in html:
             notes.append(f"consent: {path} is missing the withdrawal adapter")
