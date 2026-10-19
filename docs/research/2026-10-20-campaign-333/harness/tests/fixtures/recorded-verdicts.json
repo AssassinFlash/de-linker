@@ -1,0 +1,491 @@
+[
+  {
+    "id": "ability-visitor-priced-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-visitor-priced-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-visitor-rfq-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-visitor-rfq-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "search-visitor-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-pending-priced-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-pending-priced-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-pending-rfq-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-pending-rfq-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "search-pending-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-restricted-priced-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-restricted-priced-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-restricted-rfq-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-restricted-rfq-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "search-restricted-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-approved-priced-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-approved-priced-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-approved-rfq-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "ability-approved-rfq-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "search-approved-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "token-expired-get-product",
+    "verdict": "pass"
+  },
+  {
+    "id": "token-forged-get-product",
+    "verdict": "pass"
+  },
+  {
+    "id": "token-query-only-get-product",
+    "verdict": "defect"
+  },
+  {
+    "id": "token-missing-user-get-product",
+    "verdict": "pass"
+  },
+  {
+    "id": "token-forged-query-string",
+    "verdict": "pass"
+  },
+  {
+    "id": "token-post-not-signed-in",
+    "verdict": "pass"
+  },
+  {
+    "id": "inquiry-status-visitor",
+    "verdict": "pass"
+  },
+  {
+    "id": "inquiry-status-pending",
+    "verdict": "pass"
+  },
+  {
+    "id": "inquiry-status-restricted",
+    "verdict": "pass"
+  },
+  {
+    "id": "inquiry-status-approved",
+    "verdict": "pass"
+  },
+  {
+    "id": "inquiry-status-expired",
+    "verdict": "pass"
+  },
+  {
+    "id": "inquiry-status-forged",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-visitor-priced-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-visitor-priced-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-visitor-rfq-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-visitor-rfq-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-visitor-compare-en",
+    "verdict": "defect"
+  },
+  {
+    "id": "page-visitor-compare-de",
+    "verdict": "defect"
+  },
+  {
+    "id": "page-visitor-config-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-visitor-config-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "store-visitor-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "store-visitor-de",
+    "verdict": "defect"
+  },
+  {
+    "id": "page-pending-priced-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-pending-priced-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-pending-rfq-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-pending-rfq-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-pending-compare-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-pending-compare-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-pending-config-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-pending-config-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "store-pending-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "store-pending-de",
+    "verdict": "defect"
+  },
+  {
+    "id": "page-restricted-priced-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-restricted-priced-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-restricted-rfq-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-restricted-rfq-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-restricted-compare-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-restricted-compare-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-restricted-config-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-restricted-config-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "store-restricted-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "store-restricted-de",
+    "verdict": "defect"
+  },
+  {
+    "id": "page-approved-priced-en",
+    "verdict": "defect"
+  },
+  {
+    "id": "page-approved-priced-de",
+    "verdict": "defect"
+  },
+  {
+    "id": "page-approved-rfq-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-approved-rfq-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-approved-compare-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-approved-compare-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-approved-config-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "page-approved-config-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "store-approved-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "store-approved-de",
+    "verdict": "defect"
+  },
+  {
+    "id": "inquiry-own-pending",
+    "verdict": "defect"
+  },
+  {
+    "id": "inquiry-own-restricted",
+    "verdict": "defect"
+  },
+  {
+    "id": "inquiry-own-approved",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-visitor-en-home",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-visitor-de-product",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-visitor-en-pageprice",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-pending-en-dock",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-pending-de-home",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-restricted-en-product",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-restricted-de-dock",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-approved-en-home",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-approved-de-product",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-approved-en-pageprice",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-approved-en-compare",
+    "verdict": "defect"
+  },
+  {
+    "id": "turn-approved-en-config",
+    "verdict": "defect"
+  },
+  {
+    "id": "turn-approved-en-rfq",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-approved-de-rfq",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-visitor-en-stock",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-approved-en-stock",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-visitor-de-stock",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-approved-after-price-change",
+    "verdict": "defect"
+  },
+  {
+    "id": "inquiry-flow",
+    "verdict": "defect",
+    "note": "flow script failed"
+  },
+  {
+    "id": "stock-negative-qty",
+    "verdict": "pass"
+  },
+  {
+    "id": "stock-qty-on-unmanaged",
+    "verdict": "pass"
+  },
+  {
+    "id": "stock-reject-backorder",
+    "verdict": "pass"
+  },
+  {
+    "id": "stock-state-out",
+    "verdict": "pass"
+  },
+  {
+    "id": "stock-ability-after-out",
+    "verdict": "pass"
+  },
+  {
+    "id": "stock-store-after-out",
+    "verdict": "pass"
+  },
+  {
+    "id": "turn-visitor-en-stock-after-out",
+    "verdict": "defect"
+  },
+  {
+    "id": "stock-state-restore",
+    "verdict": "pass"
+  },
+  {
+    "id": "stock-backorder-product-1957",
+    "verdict": "defect"
+  },
+  {
+    "id": "stock-backorder-product-6800",
+    "verdict": "defect"
+  },
+  {
+    "id": "logout-guest-replay",
+    "verdict": "pass"
+  },
+  {
+    "id": "logout-other-account-replay",
+    "verdict": "pass"
+  },
+  {
+    "id": "logout-owner-still-sees-history",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-token-query-only",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-page-visitor-compare-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-page-visitor-compare-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-page-approved-priced-en",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-page-approved-priced-de",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-store-visitor-de-links",
+    "verdict": "defect"
+  },
+  {
+    "id": "retest-turn-approved-en-compare",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-turn-approved-en-config",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-turn-approved-after-price-change",
+    "verdict": "pass"
+  },
+  {
+    "id": "price-change-confirmation",
+    "verdict": "defect"
+  },
+  {
+    "id": "stock-change-confirmation",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-stock-backorder-1957",
+    "verdict": "pass"
+  },
+  {
+    "id": "retest-stock-backorder-6800",
+    "verdict": "pass"
+  },
+  {
+    "id": "price-change-confirmation",
+    "verdict": "pass"
+  },
+  {
+    "id": "stock-change-confirmation",
+    "verdict": "pass"
+  }
+]

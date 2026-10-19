@@ -13,7 +13,7 @@ php_projects := "plugins/linker-commerce plugins/linker-i18n plugins/linker-tool
 
 # uv projects: the services, tools/local (linker-local), the data migrations (tools/migrate),
 # the FAQ tooling, and the campaign harnesses (each its own uv project, package = false).
-py_projects := "services/genie services/engine tools/local tools/migrate tools/faq docs/research/2026-10-20-campaign-330/harness docs/research/2026-10-20-campaign-332/harness docs/research/2026-10-20-campaign-334/harness docs/research/2026-10-20-campaign-335/harness"
+py_projects := "services/genie services/engine tools/local tools/migrate tools/faq docs/research/2026-10-20-campaign-330/harness docs/research/2026-10-20-campaign-332/harness docs/research/2026-10-20-campaign-333/harness docs/research/2026-10-20-campaign-334/harness docs/research/2026-10-20-campaign-335/harness"
 
 # `just pull` takes a snapshot of the live site; `just pull load|diff|scan|…`
 # (tools/pull/pull.just, docs/specs/6-live-pull.md).

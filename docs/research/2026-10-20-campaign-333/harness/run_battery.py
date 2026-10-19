@@ -4,6 +4,11 @@
 Testing only. Never POSTs a matching inquiry digest, never calls the contact
 route, and never sends mail. Evidence goes to ~/de-linker-data/campaign-333/.
 
+Catalogue mutations run inside one PHP process (catalog.php and the
+eval-file scripts). The shutdown hook restores the snapshot when this
+process is SIGKILL'd. The finally block below still forces the known-good
+catalogue and reads it back.
+
     python3 run_battery.py              # local instance c333
     python3 run_battery.py --self-test  # graders only
     python3 run_battery.py --production # question-only smoke, after the local run
@@ -16,47 +21,89 @@ import base64
 import json
 import re
 import subprocess
+import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from html import unescape
 from pathlib import Path
+from typing import Any
+
+from grade import (
+    AMOUNT,
+    CARD_LOGIN,
+    CHANGED_PRICE,
+    D1_NOTE,
+    D2_NOTE,
+    FORGED_QUERY_PATH,
+    GATE,
+    MISSING_USER,
+    PRICE,
+    PRICED,
+    PRICED_DE,
+    QTY,
+    RFQ,
+    RFQ_DE,
+    RFQ_LINE,
+    TURN_TIMEOUT,
+    ability_matrix,
+    catalog_ok,
+    check_fixture,
+    euro,
+    grade_approved_price_turn,
+    grade_changed_price_turn,
+    grade_commerce,
+    grade_forged_query,
+    grade_price_confirmation,
+    grade_stock_after_out,
+    grade_stock_confirmation,
+    grade_stock_words,
+    price_is,
+    priced_amount,
+    store_includes,
+    summarize_rows,
+)
 
 ROOT = Path(__file__).resolve().parents[4]
+HARNESS = Path(__file__).resolve().parent
 EVIDENCE = Path.home() / "de-linker-data" / "campaign-333"
 WP = "http://127.0.0.1:9184"
 INSTANCE = "c333"
-PRICED = 4107
-PRICED_DE = 6628
-RFQ = 1957
-RFQ_DE = 6800
-PRICE = "1680"
-RFQ_AMOUNT = "33250"
-GATE = {
-    ("visitor", "en"): "Net price after partner sign-in",
-    ("visitor", "de"): "Nettopreis nach Partner-Anmeldung",
-    ("pending", "en"): "Account under review. Prices after approval.",
-    ("pending", "de"): "Ihr Konto wird geprüft. Preise nach Freigabe.",
-    ("restricted", "en"): "Not available for your account",
-    ("restricted", "de"): "Für Ihr Konto nicht verfügbar",
-}
-RFQ_LINE = {"en": "Quoted per project", "de": "Angebot pro Projekt"}
-CARD_LOGIN = {"en": "Log in for prices", "de": "Preise nach Anmeldung"}
-EURO = re.compile(r"€|(?:\bEUR\b)", re.I)
-AMOUNT = re.compile(
-    r"1[.,]680(?:[.,]00)?|\b1680(?:[.,]00)?\b|33[.,]250(?:[.,]00)?|\b33250(?:[.,]00)?\b"
-)
-QTY = re.compile(
-    r"\b\d+\s*(?:pcs|pieces|units|stück|stueck|stk)\b|\b(?:qty|quantity|menge)\s*[:=]?\s*\d+",
-    re.I,
-)
 
 ACCOUNTS = ("visitor", "pending", "restricted", "approved")
 
 
-def euro(text: str) -> bool:
-    return bool(EURO.search(text) or AMOUNT.search(text))
+def php_quote(value: str) -> str:
+    return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
+
+
+def catalog_require() -> str:
+    """The one C333Mint. wp eval cannot see the harness unless it is required."""
+    return "require " + php_quote(str(HARNESS / "catalog.php")) + ";"
+
+
+def account_id(accounts: dict[str, Any], state: str) -> int:
+    return int(accounts["users"][state]["id"])
+
+
+def mint_map(rows: dict[str, tuple[int, int | str]]) -> str:
+    """Token name to (user id, seconds from now). ``TTL`` uses the product constant."""
+    lines = [
+        catalog_require(),
+        "$mint = new C333Mint();",
+        "$now = time();",
+        "$out = array();",
+    ]
+    for name, (user, offset) in rows.items():
+        key = json.dumps(name)
+        if offset == "TTL":
+            expiry = r"$now + Linker\Tools\Genie\UserContext::TTL"
+        else:
+            expiry = f"$now + ({int(offset)})"
+        lines.append(f"$out[{key}] = $mint->make({int(user)}, {expiry});")
+    lines.append("echo wp_json_encode($out);")
+    return "\n".join(lines)
 
 
 def compare_price_row(html: str) -> str:
@@ -76,7 +123,7 @@ def visible_text(html: str) -> str:
     return unescape(re.sub(r"\s+", " ", text))
 
 
-def record(bucket: str, entry: dict) -> dict:
+def record(bucket: str, entry: dict[str, Any]) -> dict[str, Any]:
     path = EVIDENCE / "evidence" / f"{bucket}.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
@@ -84,13 +131,19 @@ def record(bucket: str, entry: dict) -> dict:
     return entry
 
 
-def request(url: str, method: str = "GET", headers: dict | None = None, body: bytes | None = None, timeout: float = 60):
+def request(
+    url: str,
+    method: str = "GET",
+    headers: dict[str, str] | None = None,
+    body: bytes | None = None,
+    timeout: float = 60,
+) -> dict[str, Any]:
     req = urllib.request.Request(url, data=body, headers=headers or {}, method=method)
     started = time.perf_counter()
     try:
         with urllib.request.urlopen(req, timeout=timeout) as response:
             payload = response.read()
-            info = {
+            return {
                 "status": response.status,
                 "url": response.geturl(),
                 "headers": dict(response.headers.items()),
@@ -98,7 +151,6 @@ def request(url: str, method: str = "GET", headers: dict | None = None, body: by
                 "body": payload,
                 "duration_s": round(time.perf_counter() - started, 3),
             }
-            return info
     except urllib.error.HTTPError as error:
         payload = error.read()
         return {
@@ -111,7 +163,7 @@ def request(url: str, method: str = "GET", headers: dict | None = None, body: by
         }
 
 
-def set_cookies(headers) -> list[str]:
+def set_cookies(headers: Any) -> list[str]:
     """Every Set-Cookie, intact. Joining on commas splits an Expires date."""
     if headers is None:
         return []
@@ -121,7 +173,7 @@ def set_cookies(headers) -> list[str]:
     return [raw] if raw else []
 
 
-def absorb_cookies(jar: dict[str, str], result: dict) -> None:
+def absorb_cookies(jar: dict[str, str], result: dict[str, Any]) -> None:
     for raw in result.get("set_cookie") or []:
         pair = raw.split(";", 1)[0]
         if "=" not in pair:
@@ -131,10 +183,10 @@ def absorb_cookies(jar: dict[str, str], result: dict) -> None:
             jar[name.strip()] = value.strip()
 
 
-def json_body(result: dict):
+def json_body(result: dict[str, Any]) -> Any:
     try:
         return json.loads(result["body"].decode())
-    except (UnicodeDecodeError, json.JSONDecodeError):
+    except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
         return None
 
 
@@ -162,34 +214,66 @@ def wp_eval(code: str) -> str:
     return "\n".join(lines)
 
 
-def load_accounts() -> dict:
-    return json.loads((EVIDENCE / "accounts.json").read_text())
+def eval_file(name: str) -> dict[str, Any]:
+    """Run one harness PHP file. The last JSON line is the report."""
+    path = HARNESS / name
+    done = subprocess.run(
+        ["just", "wp", INSTANCE, "eval-file", str(path)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    raw_path = EVIDENCE / "evidence" / f"{path.stem}.raw.txt"
+    raw_path.parent.mkdir(parents=True, exist_ok=True)
+    raw_path.write_text(done.stdout + "\n--- stderr ---\n" + done.stderr)
+    blob = ""
+    for line in reversed(done.stdout.splitlines()):
+        if line.startswith("{"):
+            blob = line
+            break
+    if done.returncode != 0 or not blob:
+        detail = (
+            done.stderr[-2000:] or done.stdout[-2000:] or f"{name} returned no JSON"
+        )
+        raise RuntimeError(detail)
+    parsed = json.loads(blob)
+    if not isinstance(parsed, dict):
+        raise RuntimeError(f"{name} did not return an object")
+    if "error" in parsed and len(parsed) == 1:
+        raise RuntimeError(str(parsed["error"]))
+    return parsed
 
 
-def mint(accounts: dict) -> dict:
-    """Fresh customer tokens (TTL 120s) and front-end cookies. Secrets stay in the evidence dir."""
-    code = r'''
-class C333Mint extends Linker\Tools\Genie\UserContext {
-  public function make(int $user, int $expiry): string {
-    $payload = $user . "|" . $expiry;
-    return $payload . "|" . $this->sign($payload);
-  }
-}
+def load_accounts() -> dict[str, Any]:
+    loaded = json.loads((EVIDENCE / "accounts.json").read_text())
+    if not isinstance(loaded, dict):
+        raise RuntimeError("accounts.json is not an object")
+    return loaded
+
+
+def mint(accounts: dict[str, Any]) -> dict[str, Any]:
+    """Fresh customer tokens (the product TTL) and front-end cookies."""
+    pending = account_id(accounts, "pending")
+    restricted = account_id(accounts, "restricted")
+    approved = account_id(accounts, "approved")
+    code = f"""
+{catalog_require()}
 $mint = new C333Mint();
 $now = time();
-$ids = array("pending" => 43, "restricted" => 44, "approved" => 45);
+$ids = array("pending" => {pending}, "restricted" => {restricted}, "approved" => {approved});
 $out = array("tokens" => array(), "cookies" => array(), "cookie_name" => LOGGED_IN_COOKIE);
-foreach ($ids as $state => $id) {
-  $out["tokens"][$state] = $mint->make($id, $now + Linker\Tools\Genie\UserContext::TTL);
+foreach ($ids as $state => $id) {{
+  $out["tokens"][$state] = $mint->make($id, $now + Linker\\Tools\\Genie\\UserContext::TTL);
   $out["tokens"][$state . "_expired"] = $mint->make($id, $now - 30);
   $expiration = $now + DAY_IN_SECONDS;
   $session = WP_Session_Tokens::get_instance($id)->create($expiration);
   $out["cookies"][$state] = wp_generate_auth_cookie($id, $expiration, "logged_in", $session);
-}
-$out["tokens"]["missing_user"] = $mint->make(999999, $now + Linker\Tools\Genie\UserContext::TTL);
-$out["tokens"]["forged"] = "45|" . ($now + 600) . "|deadbeef";
+}}
+$out["tokens"]["missing_user"] = $mint->make({MISSING_USER}, $now + Linker\\Tools\\Genie\\UserContext::TTL);
+$out["tokens"]["forged"] = "{approved}|" . ($now + 600) . "|deadbeef";
 echo wp_json_encode($out);
-'''
+"""
     secrets = json.loads(wp_eval(code))
     path = EVIDENCE / "secrets.json"
     path.write_text(json.dumps(secrets))
@@ -198,7 +282,9 @@ echo wp_json_encode($out);
     return secrets
 
 
-def auth_headers(state: str, secrets: dict, extra: dict | None = None) -> dict:
+def auth_headers(
+    state: str, secrets: dict[str, Any], extra: dict[str, str] | None = None
+) -> dict[str, str]:
     headers = {"Accept": "application/json"}
     if state != "visitor":
         user = secrets["accounts"]["users"][state]
@@ -208,76 +294,56 @@ def auth_headers(state: str, secrets: dict, extra: dict | None = None) -> dict:
     return headers
 
 
-def cookie_header(state: str, secrets: dict) -> dict:
+def cookie_header(state: str, secrets: dict[str, str]) -> dict[str, str]:
     if state == "visitor":
         return {}
     return {"Cookie": f"{secrets['cookie_name']}={secrets['cookies'][state]}"}
 
 
-def ability(name: str, args: dict, headers: dict) -> dict:
-    query = urllib.parse.urlencode({f"input[{key}]": value for key, value in args.items()})
+def ability(name: str, args: dict[str, Any], headers: dict[str, str]) -> dict[str, Any]:
+    query = urllib.parse.urlencode(
+        {f"input[{key}]": value for key, value in args.items()}
+    )
     url = f"{WP}/wp-json/wp-abilities/v1/abilities/{name}/run?{query}"
     result = request(url, headers=headers)
-    body = json_body(result)
-    result["json"] = body
+    result["json"] = json_body(result)
     result["body"] = None
     return result
 
 
-def commerce_of(result: dict) -> dict:
+def commerce_of(result: dict[str, Any]) -> dict[str, Any]:
     body = result.get("json") or {}
     if isinstance(body, dict) and "result" in body:
         body = body["result"]
     if not isinstance(body, dict):
         return {}
-    return body.get("commerce") or {}
+    commerce = body.get("commerce") or {}
+    return commerce if isinstance(commerce, dict) else {}
 
 
-def expect_line(state: str, lang: str, kind: str) -> str:
-    if state == "approved" and kind == "priced":
-        return ""
-    if state == "approved":
-        return RFQ_LINE[lang]
-    return GATE[(state, lang)]
-
-
-def grade_commerce(state: str, lang: str, kind: str, commerce: dict, page_text: str | None = None) -> tuple[str, str]:
-    line = str(commerce.get("price_line") or "")
-    visible = commerce.get("price_visible")
-    reason = commerce.get("price_reason")
-    if state != "approved" or kind == "rfq":
-        if visible or "price" in commerce or euro(line):
-            return "defect", "price visible to a closed account or an RFQ product"
-        expected = expect_line(state, lang, kind)
-        if line != expected:
-            return "defect", f"price line {line!r} != {expected!r}"
-        if page_text is not None and expected not in page_text:
-            return "defect", "product page does not carry the same sentence"
-        if kind == "rfq" and page_text is not None and AMOUNT.search(page_text):
-            return "defect", "RFQ page still shows the stored amount"
-        return "pass", line
-    if not visible or commerce.get("price") != PRICE or not euro(line):
-        return "defect", f"approved price missing: {commerce}"
-    if page_text is not None:
-        # The ability line glues the currency symbol in its own span. The page
-        # shows the same amount with a space or NBSP, so the raw line is not a
-        # substring. Parity is the amount on the page and the visitor gate gone.
-        compact = page_text.replace("\xa0", " ").replace("\u00a0", " ")
-        amount_on_page = bool(re.search(r"1[.,]680", compact))
-        gate_on_page = GATE[("visitor", lang)] in compact
-        if not amount_on_page or gate_on_page:
-            return "defect", "approved page missed the amount or still showed the visitor gate"
-    return "pass", line
-
-
-def case(case_id: str, state: str, req: dict, result: dict, verdict: str, note: str, price: str = "", stock: str = "", stale: bool = False, meta=None, blocks=None) -> dict:
+def case(
+    case_id: str,
+    *,
+    state: str,
+    req: dict[str, Any],
+    result: dict[str, Any],
+    verdict: str,
+    note: str,
+    price: str = "",
+    stock: str = "",
+    stale: bool = False,
+    meta: Any = None,
+    blocks: list[Any] | None = None,
+) -> dict[str, Any]:
     return record(
         "cases",
         {
             "id": case_id,
             "account": state,
             "request": req,
-            "meta": meta if meta is not None else {"status": result.get("status"), "url": result.get("url")},
+            "meta": meta
+            if meta is not None
+            else {"status": result.get("status"), "url": result.get("url")},
             "blocks": blocks or [],
             "price_shown": price,
             "stock_shown": stock,
@@ -289,31 +355,49 @@ def case(case_id: str, state: str, req: dict, result: dict, verdict: str, note: 
     )
 
 
-def run_abilities(secrets: dict) -> None:
+def script_failed(case_id: str, state: str, name: str, error: BaseException) -> None:
+    case(
+        case_id,
+        state=state,
+        req={"script": name},
+        result={"status": 1, "duration_s": None, "url": "wp eval-file"},
+        verdict="defect",
+        note=str(error)[:500],
+    )
+
+
+def run_abilities(secrets: dict[str, Any]) -> None:
     for state in ACCOUNTS:
         headers = auth_headers(state, secrets)
         if state != "visitor":
             headers["X-Linker-User-Context"] = secrets["tokens"][state]
-        for lang, product, kind in (
-            ("en", PRICED, "priced"),
-            ("de", PRICED, "priced"),
-            ("en", RFQ, "rfq"),
-            ("de", RFQ, "rfq"),
-        ):
-            result = ability("linker/get-product", {"product_id": product, "lang": lang}, headers)
+        for lang, product, kind, suffix in ability_matrix():
+            result = ability(
+                "linker/get-product",
+                {"product_id": product, "lang": lang},
+                headers,
+            )
             commerce = commerce_of(result)
             verdict, note = grade_commerce(state, lang, kind, commerce)
             case(
-                f"ability-{state}-{kind}-{lang}",
-                state,
-                {"ability": "linker/get-product", "product_id": product, "lang": lang},
-                result,
-                verdict,
-                note,
+                f"ability-{state}-{kind}-{lang}{suffix}",
+                state=state,
+                req={
+                    "ability": "linker/get-product",
+                    "product_id": product,
+                    "lang": lang,
+                },
+                result=result,
+                verdict=verdict,
+                note=note,
                 price=str(commerce.get("price_line") or ""),
                 stock="in_stock" if commerce.get("in_stock") else "out_of_stock",
             )
-        search = ability("linker/search-products", {"text": "H2-10K-T3", "lang": "en"}, headers)
+        search = ability(
+            "linker/search-products",
+            {"text": "H2-10K-T3", "lang": "en"},
+            headers,
+        )
         body = search.get("json") or {}
         if isinstance(body, dict) and "result" in body:
             body = body["result"]
@@ -325,19 +409,26 @@ def run_abilities(secrets: dict) -> None:
             verdict, note = "defect", f"search missed {PRICED}: {ids}"
         case(
             f"search-{state}-en",
-            state,
-            {"ability": "linker/search-products", "text": "H2-10K-T3", "lang": "en"},
-            search,
-            verdict,
-            note,
+            state=state,
+            req={
+                "ability": "linker/search-products",
+                "text": "H2-10K-T3",
+                "lang": "en",
+            },
+            result=search,
+            verdict=verdict,
+            note=note,
             price=str(first.get("price_line") or ""),
             stock="in_stock" if first.get("in_stock") else "out_of_stock",
         )
 
 
-def run_tokens(secrets: dict) -> None:
-    approved_line = None
-    guest = ability("linker/get-product", {"product_id": PRICED, "lang": "en"}, {"Accept": "application/json"})
+def run_tokens(secrets: dict[str, Any]) -> None:
+    guest = ability(
+        "linker/get-product",
+        {"product_id": PRICED, "lang": "en"},
+        {"Accept": "application/json"},
+    )
     guest_line = str(commerce_of(guest).get("price_line") or "")
     probes = {
         "expired": {"X-Linker-User-Context": secrets["tokens"]["approved_expired"]},
@@ -359,59 +450,103 @@ def run_tokens(secrets: dict) -> None:
             result = request(url, headers=headers)
             result["json"] = json_body(result)
             result["body"] = None
-            blob = json.dumps(result["json"], ensure_ascii=False) if result["json"] is not None else ""
+            blob = (
+                json.dumps(result["json"], ensure_ascii=False)
+                if result["json"] is not None
+                else ""
+            )
             leaked = euro(blob)
             case(
                 "token-query-only-get-product",
-                "visitor",
-                {"probe": name, "where": "query parameter, not the header"},
-                result,
-                "defect" if leaked else "pass",
-                f"status {result['status']}; leaked={leaked}",
+                state="visitor",
+                req={"probe": name, "where": "query parameter, not the header"},
+                result=result,
+                verdict="defect" if leaked else "pass",
+                note=f"status {result['status']}; leaked={leaked}",
                 price="leaked" if leaked else "",
             )
             continue
-        result = ability("linker/get-product", {"product_id": PRICED, "lang": "en"}, headers)
+        result = ability(
+            "linker/get-product", {"product_id": PRICED, "lang": "en"}, headers
+        )
         line = str(commerce_of(result).get("price_line") or "")
         if name == "missing-user":
-            # A signature needs the auth salt. Record what an unknown id does; grade below.
             leaked = euro(line) or commerce_of(result).get("price_visible") is True
             verdict = "defect" if leaked else "pass"
-            note = "signed token for user 999999 " + ("opened net prices" if leaked else "stayed closed")
+            note = f"signed token for user {MISSING_USER} " + (
+                "opened net prices" if leaked else "stayed closed"
+            )
         else:
             verdict = "pass" if line == guest_line and not euro(line) else "defect"
             note = f"line {line!r}; guest {guest_line!r}"
-        case(f"token-{name}-get-product", "visitor", {"probe": name}, result, verdict, note, price=line)
+        case(
+            f"token-{name}-get-product",
+            state="visitor",
+            req={"probe": name},
+            result=result,
+            verdict=verdict,
+            note=note,
+            price=line,
+        )
 
+    # GET of the POST-only turn route is 404. That is not the forged-query
+    # contract. The 401 probe below is the one the spec names.
     forged_route = request(
-        f"{WP}/wp-json/linker-ai/v1/genie/turn?x=/wp-abilities/v1/abilities/linker/get-product/run",
-        headers={"Accept": "application/json", "X-Linker-User-Context": secrets["tokens"]["approved"]},
+        f"{WP}/wp-json/linker-ai/v1/genie/turn"
+        "?x=/wp-abilities/v1/abilities/linker/get-product/run",
+        headers={
+            "Accept": "application/json",
+            "X-Linker-User-Context": secrets["tokens"]["approved"],
+        },
     )
     leaked = euro(forged_route["body"].decode(errors="replace"))
     case(
         "token-forged-query-string",
-        "visitor",
-        {"method": "GET", "url": forged_route["url"]},
-        forged_route,
-        "defect" if leaked else "pass",
-        f"status {forged_route['status']}; price leaked={leaked}",
+        state="visitor",
+        req={"method": "GET", "url": forged_route["url"]},
+        result=forged_route,
+        verdict="defect" if leaked else "pass",
+        note=f"status {forged_route['status']}; price leaked={leaked}",
         price="leaked" if leaked else "",
     )
 
+    forged_user = request(
+        WP + FORGED_QUERY_PATH,
+        headers={
+            "Accept": "application/json",
+            "X-Linker-User-Context": secrets["tokens"]["approved"],
+        },
+    )
+    body = forged_user["body"].decode(errors="replace")
+    verdict, note = grade_forged_query(forged_user["status"], body)
+    case(
+        "token-forged-query-string-401",
+        state="visitor",
+        req={"method": "GET", "url": forged_user["url"]},
+        result=forged_user,
+        verdict=verdict,
+        note=note,
+        price="leaked" if "leaked=True" in note else "",
+    )
+
     post = request(
-        f"{WP}/wp-json/wp-abilities/v1/abilities/linker/get-product/run?input[product_id]={PRICED}&input[lang]=en",
+        f"{WP}/wp-json/wp-abilities/v1/abilities/linker/get-product/run"
+        f"?input[product_id]={PRICED}&input[lang]=en",
         method="POST",
-        headers={"Accept": "application/json", "X-Linker-User-Context": secrets["tokens"]["approved"]},
+        headers={
+            "Accept": "application/json",
+            "X-Linker-User-Context": secrets["tokens"]["approved"],
+        },
         body=b"{}",
     )
     posted = post["body"].decode(errors="replace")
     case(
         "token-post-not-signed-in",
-        "visitor",
-        {"method": "POST", "ability": "linker/get-product"},
-        post,
-        "defect" if euro(posted) else "pass",
-        f"status {post['status']}",
+        state="visitor",
+        req={"method": "POST", "ability": "linker/get-product"},
+        result=post,
+        verdict="defect" if euro(posted) else "pass",
+        note=f"status {post['status']}",
         price="leaked" if euro(posted) else "",
     )
 
@@ -427,7 +562,11 @@ def run_tokens(secrets: dict) -> None:
         if token:
             headers["X-Linker-User-Context"] = token
         result = ability("linker/inquiry-status", {}, headers)
-        code = (result.get("json") or {}).get("code") if isinstance(result.get("json"), dict) else None
+        code = (
+            (result.get("json") or {}).get("code")
+            if isinstance(result.get("json"), dict)
+            else None
+        )
         inquiries = None
         body = result.get("json") or {}
         if isinstance(body, dict) and isinstance(body.get("result"), dict):
@@ -439,50 +578,43 @@ def run_tokens(secrets: dict) -> None:
             verdict = "pass" if result["status"] == 401 else "defect"
             note = f"status {result['status']} code {code}"
         else:
-            verdict = "pass" if result["status"] == 200 and isinstance(inquiries, list) else "defect"
+            verdict = (
+                "pass"
+                if result["status"] == 200 and isinstance(inquiries, list)
+                else "defect"
+            )
             note = f"status {result['status']} inquiries {inquiries!r}"[:500]
-            blob = json.dumps(inquiries, ensure_ascii=False) if inquiries is not None else ""
+            blob = (
+                json.dumps(inquiries, ensure_ascii=False)
+                if inquiries is not None
+                else ""
+            )
             if euro(blob):
                 verdict = "defect"
                 note = "inquiry status carried an amount for " + state
         case(
             f"inquiry-status-{state}",
-            "visitor" if closed else state,
-            {"ability": "linker/inquiry-status"},
-            result,
-            verdict,
-            note,
+            state="visitor" if closed else state,
+            req={"ability": "linker/inquiry-status"},
+            result=result,
+            verdict=verdict,
+            note=note,
             price=note if "amount" in note else "",
         )
-    _ = approved_line
 
 
-def remint(secrets: dict) -> None:
-    fresh = json.loads(
-        wp_eval(
-            r'''
-class C333Mint extends Linker\Tools\Genie\UserContext {
-  public function make(int $user, int $expiry): string {
-    $payload = $user . "|" . $expiry;
-    return $payload . "|" . $this->sign($payload);
-  }
-}
-$mint = new C333Mint();
-$now = time();
-echo wp_json_encode(array(
-  "pending" => $mint->make(43, $now + 120),
-  "restricted" => $mint->make(44, $now + 120),
-  "approved" => $mint->make(45, $now + 120),
-  "approved_expired" => $mint->make(45, $now - 30),
-  "missing_user" => $mint->make(999999, $now + 120),
-));
-'''
-        )
-    )
+def remint(secrets: dict[str, Any]) -> None:
+    accounts = secrets["accounts"]
+    rows: dict[str, tuple[int, int | str]] = {}
+    for state in ("pending", "restricted", "approved"):
+        rows[state] = (account_id(accounts, state), "TTL")
+    rows["approved_expired"] = (account_id(accounts, "approved"), -30)
+    rows["missing_user"] = (MISSING_USER, "TTL")
+    fresh = json.loads(wp_eval(mint_map(rows)))
     secrets["tokens"].update(fresh)
 
 
-def run_surfaces(secrets: dict) -> None:
+def run_surfaces(secrets: dict[str, Any]) -> None:
     remint(secrets)
     pages = {
         "priced-en": f"{WP}/product/saj-h2-10k-t3/",
@@ -494,17 +626,19 @@ def run_surfaces(secrets: dict) -> None:
         "config-en": f"{WP}/solution-configurator/",
         "config-de": f"{WP}/de/loesungskonfigurator/",
     }
-    texts: dict[tuple[str, str], str] = {}
     for state in ACCOUNTS:
         headers = {"Accept": "text/html", **cookie_header(state, secrets)}
         for name, url in pages.items():
             result = request(url, headers=headers)
             text = visible_text(result["body"].decode(errors="replace"))
-            texts[(state, name)] = text
             kind, lang = name.split("-")
             if kind == "config":
                 verdict = "defect" if euro(text) else "pass"
-                note = "configurator HTML has a price" if verdict == "defect" else "no price in the server HTML"
+                note = (
+                    "configurator HTML has a price"
+                    if verdict == "defect"
+                    else "no price in the server HTML"
+                )
                 shown = "euro" if verdict == "defect" else ""
             elif kind == "compare":
                 # A guest's price cell keeps the gate sentence in the sign-in
@@ -512,13 +646,28 @@ def run_surfaces(secrets: dict) -> None:
                 # that attribute, so the row is graded from its own markup.
                 raw = result["body"].decode(errors="replace")
                 row = compare_price_row(raw)
-                priced_ok = GATE[(state, lang)] in row if state != "approved" else bool(re.search(r"1[.,]680", row))
-                rfq_sentence = (RFQ_LINE[lang] if state == "approved" else GATE[(state, lang)]) in row
+                priced_ok = (
+                    GATE[(state, lang)] in row
+                    if state != "approved"
+                    else priced_amount(row)
+                )
+                rfq_sentence = (
+                    RFQ_LINE[lang] if state == "approved" else GATE[(state, lang)]
+                ) in row
                 amount = bool(AMOUNT.search(row))
                 if state != "approved":
-                    verdict = "pass" if priced_ok and rfq_sentence and not amount else "defect"
+                    verdict = (
+                        "pass"
+                        if priced_ok and rfq_sentence and not amount
+                        else "defect"
+                    )
                 else:
-                    verdict = "pass" if priced_ok and rfq_sentence and not re.search(r"33[.,]250|33250", row) else "defect"
+                    rfq_amount = bool(re.search(r"33[.,]250|33250", row))
+                    verdict = (
+                        "pass"
+                        if priced_ok and rfq_sentence and not rfq_amount
+                        else "defect"
+                    )
                 note = f"priced_sentence={priced_ok} rfq_sentence={rfq_sentence} amount={amount}"
                 shown = "see note"
             else:
@@ -526,21 +675,32 @@ def run_surfaces(secrets: dict) -> None:
                 headers_json = auth_headers(state, secrets)
                 if state != "visitor":
                     headers_json["X-Linker-User-Context"] = secrets["tokens"][state]
-                product_id = {"priced-en": PRICED, "priced-de": PRICED, "rfq-en": RFQ, "rfq-de": RFQ}[name]
-                looked = ability("linker/get-product", {"product_id": product_id, "lang": lang}, headers_json)
-                verdict, note = grade_commerce(state, lang, product_kind, commerce_of(looked), text)
+                product_id = {
+                    "priced-en": PRICED,
+                    "priced-de": PRICED,
+                    "rfq-en": RFQ,
+                    "rfq-de": RFQ,
+                }[name]
+                looked = ability(
+                    "linker/get-product",
+                    {"product_id": product_id, "lang": lang},
+                    headers_json,
+                )
+                verdict, note = grade_commerce(
+                    state, lang, product_kind, commerce_of(looked), text
+                )
                 shown = str(commerce_of(looked).get("price_line") or "")
                 result = looked
             case(
                 f"page-{state}-{name}",
-                state,
-                {"url": url},
-                result,
-                verdict,
-                note,
+                state=state,
+                req={"url": url},
+                result=result,
+                verdict=verdict,
+                note=note,
                 price=shown if kind != "compare" else note,
             )
-        for lang, ids in (("en", f"{PRICED},{RFQ}"), ("de", f"{PRICED},{RFQ}")):
+        for lang, ids, suffix in store_includes():
             url = f"{WP}/wp-json/wc/store/v1/products?include={ids}&per_page=2&lang={lang}"
             result = request(url, headers=auth_headers(state, secrets))
             products = json_body(result) or []
@@ -548,9 +708,13 @@ def run_surfaces(secrets: dict) -> None:
             verdict = "pass"
             if not isinstance(products, list) or len(products) < 2:
                 verdict = "defect"
-                notes.append(f"store status {result['status']} body {str(products)[:200]}")
+                notes.append(
+                    f"store status {result['status']} body {str(products)[:200]}"
+                )
             for product in products if isinstance(products, list) else []:
-                html = unescape(re.sub(r"<[^>]+>", " ", str(product.get("price_html") or "")))
+                html = unescape(
+                    re.sub(r"<[^>]+>", " ", str(product.get("price_html") or ""))
+                )
                 html = re.sub(r"\s+", " ", html).strip()
                 pid = int(product.get("id") or 0)
                 kind = "rfq" if pid in (RFQ, RFQ_DE) else "priced"
@@ -558,23 +722,31 @@ def run_surfaces(secrets: dict) -> None:
                     if kind == "rfq":
                         ok = RFQ_LINE[lang] in html and not euro(html)
                     else:
-                        ok = (GATE[(state, lang)] in html or CARD_LOGIN[lang] in html) and not euro(html)
+                        ok = (
+                            GATE[(state, lang)] in html or CARD_LOGIN[lang] in html
+                        ) and not euro(html)
                 elif kind == "rfq":
                     ok = RFQ_LINE[lang] in html and not AMOUNT.search(html)
                 else:
-                    ok = euro(html) and bool(re.search(r"1[.,]680", html))
+                    ok = euro(html) and priced_amount(html)
                 permalink = str(product.get("permalink") or "")
-                link_ok = ("/de/" in permalink) if lang == "de" else ("/de/" not in permalink and "/product/" in permalink)
+                if lang == "de":
+                    link_ok = "/de/" in permalink
+                else:
+                    link_ok = "/de/" not in permalink and "/product/" in permalink
                 if not ok or not link_ok:
                     verdict = "defect"
                 notes.append(f"{pid}:{html}:{permalink}:ok={ok}:link={link_ok}")
+            note = " | ".join(notes)
+            if lang == "de":
+                note = f"{note} | {D1_NOTE}"
             case(
-                f"store-{state}-{lang}",
-                state,
-                {"url": url},
-                result,
-                verdict,
-                " | ".join(notes),
+                f"store-{state}-{lang}{suffix}",
+                state=state,
+                req={"url": url},
+                result=result,
+                verdict=verdict,
+                note=note,
                 price=" | ".join(notes),
                 stock=" ".join(
                     f"{item.get('id')}:{'in' if item.get('is_in_stock') else 'out'}"
@@ -583,9 +755,9 @@ def run_surfaces(secrets: dict) -> None:
             )
 
 
-def parse_stream(stream: str) -> tuple[dict | None, list]:
+def parse_stream(stream: str) -> tuple[dict[str, Any] | None, list[Any]]:
     meta = None
-    blocks = []
+    blocks: list[Any] = []
     for event in stream.split("\n\n"):
         name = re.search(r"^event: (.+)$", event, re.M)
         data = re.search(r"^data: (.+)$", event, re.M)
@@ -599,11 +771,13 @@ def parse_stream(stream: str) -> tuple[dict | None, list]:
     return meta, blocks
 
 
-def answer_text(blocks: list) -> str:
-    return "\n".join(block.get("text", "") for block in blocks if block.get("type") == "text")
+def answer_text(blocks: list[Any]) -> str:
+    return "\n".join(
+        block.get("text", "") for block in blocks if block.get("type") == "text"
+    )
 
 
-def price_texts(blocks: list) -> list[str]:
+def price_texts(blocks: list[Any]) -> list[str]:
     found = []
     for block in blocks:
         for price in block.get("prices") or []:
@@ -612,38 +786,182 @@ def price_texts(blocks: list) -> list[str]:
     return found
 
 
-def run_turns(secrets: dict) -> dict:
+def run_turns(secrets: dict[str, Any]) -> dict[str, str]:
     cookies: dict[str, str] = {}
     turns = [
-        ("turn-visitor-en-home", "visitor", "en", "home", "What is the net price of the SAJ H2-10K-T3?", "priced"),
-        ("turn-visitor-de-product", "visitor", "de", "product", "Was kostet der SAJ H2-10K-T3?", "priced"),
-        ("turn-visitor-en-pageprice", "visitor", "en", "product", "What price is printed on this page for the SAJ H2-10K-T3?", "priced"),
-        ("turn-pending-en-dock", "pending", "en", "dock", "What is the net price of the SAJ H2-10K-T3?", "priced"),
-        ("turn-pending-de-home", "pending", "de", "home", "Was kostet der SAJ H2-10K-T3?", "priced"),
-        ("turn-restricted-en-product", "restricted", "en", "product", "What is the net price of the SAJ H2-10K-T3?", "priced"),
-        ("turn-restricted-de-dock", "restricted", "de", "dock", "Was kostet der SAJ H2-10K-T3?", "priced"),
-        ("turn-approved-en-home", "approved", "en", "home", "What is the net price of the SAJ H2-10K-T3?", "priced"),
-        ("turn-approved-de-product", "approved", "de", "product", "Was kostet der SAJ H2-10K-T3?", "priced"),
-        ("turn-approved-en-pageprice", "approved", "en", "product", "What price is printed on this page?", "priced"),
-        ("turn-approved-en-compare", "approved", "en", "compare", "What is the net price of the SAJ H2-10K-T3?", "priced"),
-        ("turn-approved-en-config", "approved", "en", "configurator", "What is the net price of the SAJ H2-10K-T3?", "priced"),
-        ("turn-approved-en-rfq", "approved", "en", "product", "What is the price of the GoodWe GW208.9-BAT-LCD-G10?", "rfq"),
-        ("turn-approved-de-rfq", "approved", "de", "product", "Was kostet das GoodWe GW208.9-BAT-LCD-G10?", "rfq"),
-        ("turn-visitor-en-stock", "visitor", "en", "product", "Is the SAJ H2-10K-T3 in stock?", "stock"),
-        ("turn-approved-en-stock", "approved", "en", "home", "Is the SAJ H2-10K-T3 in stock?", "stock"),
-        ("turn-visitor-de-stock", "visitor", "de", "product", "Ist der SAJ H2-10K-T3 auf Lager?", "stock"),
+        (
+            "turn-visitor-en-home",
+            "visitor",
+            "en",
+            "home",
+            "What is the net price of the SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-visitor-de-product",
+            "visitor",
+            "de",
+            "product",
+            "Was kostet der SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-visitor-en-pageprice",
+            "visitor",
+            "en",
+            "product",
+            "What price is printed on this page for the SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-pending-en-dock",
+            "pending",
+            "en",
+            "dock",
+            "What is the net price of the SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-pending-de-home",
+            "pending",
+            "de",
+            "home",
+            "Was kostet der SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-restricted-en-product",
+            "restricted",
+            "en",
+            "product",
+            "What is the net price of the SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-restricted-de-dock",
+            "restricted",
+            "de",
+            "dock",
+            "Was kostet der SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-approved-en-home",
+            "approved",
+            "en",
+            "home",
+            "What is the net price of the SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-approved-de-product",
+            "approved",
+            "de",
+            "product",
+            "Was kostet der SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-approved-en-pageprice",
+            "approved",
+            "en",
+            "product",
+            "What price is printed on this page?",
+            "priced",
+        ),
+        (
+            "turn-approved-en-compare",
+            "approved",
+            "en",
+            "compare",
+            "What is the net price of the SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-approved-en-config",
+            "approved",
+            "en",
+            "configurator",
+            "What is the net price of the SAJ H2-10K-T3?",
+            "priced",
+        ),
+        (
+            "turn-approved-en-rfq",
+            "approved",
+            "en",
+            "product",
+            "What is the price of the GoodWe GW208.9-BAT-LCD-G10?",
+            "rfq",
+        ),
+        (
+            "turn-approved-de-rfq",
+            "approved",
+            "de",
+            "product",
+            "Was kostet das GoodWe GW208.9-BAT-LCD-G10?",
+            "rfq",
+        ),
+        (
+            "turn-visitor-en-stock",
+            "visitor",
+            "en",
+            "product",
+            "Is the SAJ H2-10K-T3 in stock?",
+            "stock",
+        ),
+        (
+            "turn-approved-en-stock",
+            "approved",
+            "en",
+            "home",
+            "Is the SAJ H2-10K-T3 in stock?",
+            "stock",
+        ),
+        (
+            "turn-visitor-de-stock",
+            "visitor",
+            "de",
+            "product",
+            "Ist der SAJ H2-10K-T3 auf Lager?",
+            "stock",
+        ),
     ]
     pages = {
         ("home", "en"): {"type": "home", "url": f"{WP}/", "title": "Linker"},
         ("home", "de"): {"type": "home", "url": f"{WP}/de/", "title": "Linker"},
-        ("product", "en"): {"type": "product", "url": f"{WP}/product/saj-h2-10k-t3/", "title": "SAJ H2-10K-T3", "product_id": PRICED},
-        ("product", "de"): {"type": "product", "url": f"{WP}/de/produkt/saj-h2-10k-t3/", "title": "SAJ H2-10K-T3", "product_id": PRICED_DE},
-        ("dock", "en"): {"type": "other", "url": f"{WP}/faq-download/", "title": "Downloads"},
-        ("dock", "de"): {"type": "other", "url": f"{WP}/de/faq-download/", "title": "Downloads"},
-        ("compare", "en"): {"type": "other", "url": f"{WP}/compare-products/?ids={PRICED},{RFQ}", "title": "Compare"},
-        ("configurator", "en"): {"type": "solution", "url": f"{WP}/solution-configurator/", "title": "Solution Configurator"},
+        ("product", "en"): {
+            "type": "product",
+            "url": f"{WP}/product/saj-h2-10k-t3/",
+            "title": "SAJ H2-10K-T3",
+            "product_id": PRICED,
+        },
+        ("product", "de"): {
+            "type": "product",
+            "url": f"{WP}/de/produkt/saj-h2-10k-t3/",
+            "title": "SAJ H2-10K-T3",
+            "product_id": PRICED_DE,
+        },
+        ("dock", "en"): {
+            "type": "other",
+            "url": f"{WP}/faq-download/",
+            "title": "Downloads",
+        },
+        ("dock", "de"): {
+            "type": "other",
+            "url": f"{WP}/de/faq-download/",
+            "title": "Downloads",
+        },
+        ("compare", "en"): {
+            "type": "other",
+            "url": f"{WP}/compare-products/?ids={PRICED},{RFQ}",
+            "title": "Compare",
+        },
+        ("configurator", "en"): {
+            "type": "solution",
+            "url": f"{WP}/solution-configurator/",
+            "title": "Solution Configurator",
+        },
     }
-    saved = {}
     threads: dict[str, list[dict[str, str]]] = {state: [] for state in ACCOUNTS}
     for case_id, state, lang, where, question, kind in turns:
         page = pages[(where, lang)]
@@ -659,15 +977,15 @@ def run_turns(secrets: dict) -> dict:
             method="POST",
             headers=headers,
             body=json.dumps(payload).encode(),
-            timeout=180,
+            timeout=TURN_TIMEOUT,
         )
-        raw_cookie = result["headers"].get("Set-Cookie") or result["headers"].get("set-cookie") or ""
+        raw_cookie = "\n".join(result.get("set_cookie") or [])
         match = re.search(r"linker_conversation=([^;]+)", raw_cookie)
         if match and state == "approved":
             cookies["approved"] = urllib.parse.unquote(match.group(1))
         body = json_body(result) or {}
         stream = body.get("stream") or ""
-        meta, blocks = parse_stream(stream) if stream else ({}, [])
+        meta, blocks = parse_stream(stream) if stream else (None, [])
         text = answer_text(blocks)
         if result["status"] == 200 and text:
             threads[state].append({"role": "assistant", "content": text})
@@ -681,36 +999,44 @@ def run_turns(secrets: dict) -> dict:
         elif euro(text):
             verdict, note = "defect", "price amount in the prose"
         elif kind == "stock":
-            lowered = text.lower()
-            says_in = ("in stock" in lowered) or ("auf lager" in lowered) or ("lieferbar" in lowered)
-            says_out = ("unavailable" in lowered) or ("out of stock" in lowered) or ("nicht verfügbar" in lowered) or ("nicht auf lager" in lowered)
-            if says_in and not says_out:
-                verdict, note = "pass", "says in stock"
-            else:
-                verdict, note = "defect", f"stock wording unclear: {text[:240]}"
-            if QTY.search(text):
-                verdict, note = "defect", "stock answer gave a quantity"
+            verdict, note = grade_stock_words(text, expect="in")
         elif kind == "rfq":
             expected = RFQ_LINE[lang]
-            if any(expected in price for price in prices) and not any(euro(price) for price in prices):
+            if any(expected in price for price in prices) and not any(
+                euro(price) for price in prices
+            ):
                 verdict, note = "pass", shown
             else:
                 verdict, note = "defect", f"RFQ card {prices!r}"
         else:
             expected = GATE[(state, lang)] if state != "approved" else None
             if state == "approved":
-                ok = any(re.search(r"1[.,]680", price) for price in prices)
-                verdict, note = ("pass", shown) if ok else ("defect", f"approved card {prices!r}")
+                verdict, note, stale = grade_approved_price_turn(
+                    result["status"], text, prices
+                )
+                if verdict == "pass":
+                    note = shown
             else:
-                ok = any(price == expected for price in prices) and not any(euro(price) for price in prices)
-                verdict, note = ("pass", shown or text[:180]) if ok else ("defect", f"card {prices!r} text {text[:180]}")
-        saved[case_id] = case(
+                ok = any(price == expected for price in prices) and not any(
+                    euro(price) for price in prices
+                )
+                verdict, note = (
+                    ("pass", shown or text[:180])
+                    if ok
+                    else ("defect", f"card {prices!r} text {text[:180]}")
+                )
+        case(
             case_id,
-            state,
-            {"locale": lang, "page": page["type"], "url": page["url"], "message": question},
-            result,
-            verdict,
-            note,
+            state=state,
+            req={
+                "locale": lang,
+                "page": page["type"],
+                "url": page["url"],
+                "message": question,
+            },
+            result=result,
+            verdict=verdict,
+            note=note,
             price=shown,
             stock=note if kind == "stock" else "",
             stale=stale,
@@ -721,432 +1047,460 @@ def run_turns(secrets: dict) -> dict:
     return cookies
 
 
-def run_mutation(secrets: dict) -> None:
-    done = subprocess.run(
-        ["just", "wp", INSTANCE, "eval-file", str(Path(__file__).with_name("inquiry_flow.php"))],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    (EVIDENCE / "evidence").mkdir(parents=True, exist_ok=True)
-    (EVIDENCE / "evidence" / "inquiry-flow.raw.txt").write_text(done.stdout + "\n--- stderr ---\n" + done.stderr)
-    blob = ""
-    for line in reversed(done.stdout.splitlines()):
-        if line.startswith("{"):
-            blob = line
-            break
-    if done.returncode != 0 or not blob:
-        case(
-            "inquiry-flow",
-            "approved",
-            {"script": "inquiry_flow.php"},
-            {"status": done.returncode, "duration_s": None, "url": "wp eval-file"},
-            "defect",
-            "flow script failed",
-        )
+def run_mutation(secrets: dict[str, Any]) -> None:
+    del secrets
+    try:
+        report = eval_file("inquiry_flow.php")
+    except RuntimeError as error:
+        script_failed("inquiry-flow", "approved", "inquiry_flow.php", error)
         return
-    report = json.loads(blob)
-    before_lines = json.dumps(report.get("visible_lines_before"), ensure_ascii=False)
-    after_lines = json.dumps((report.get("after_price") or {}).get("data", {}).get("lines"), ensure_ascii=False)
-    price_changed = report.get("price_digest_changed")
-    posted = report.get("posted_price") or {}
-    shows_new = any(token in after_lines for token in ("1701", "1,701", "1.701"))
-    shows_old = "1,680" in after_lines or "1.680" in after_lines
-    stale_price = (not shows_new) or shows_old
-    sent = report["orders_after"] != report["orders_before"]
-    if sent:
-        verdict = "defect"
-        note = "stale confirmation created an order"
-    elif not price_changed:
-        verdict = "defect"
-        note = "price change left the confirmation digest unchanged"
-    elif posted.get("status") != 409:
-        verdict = "defect"
-        note = f"stale POST status {posted.get('status')} {posted.get('data')}"
-    elif stale_price:
-        verdict = "defect"
-        note = "confirmation card kept the old price"
-    else:
-        verdict = "pass"
-        note = "new price on the card; stale digest refused; no order"
+    verdict, note, stale = grade_price_confirmation(report)
+    posted = (
+        report.get("posted_price")
+        if isinstance(report.get("posted_price"), dict)
+        else {}
+    )
+    after_lines = json.dumps(
+        (report.get("after_price") or {}).get("data", {}).get("lines"),
+        ensure_ascii=False,
+    )
     case(
         "price-change-confirmation",
-        "approved",
-        {"product": PRICED, "from": PRICE, "to": "1701"},
-        {"status": posted.get("status"), "duration_s": None, "url": "/linker-ai/v1/genie/inquiry"},
-        verdict,
-        note,
+        state="approved",
+        req={"product": PRICED, "from": PRICE, "to": CHANGED_PRICE},
+        result={
+            "status": posted.get("status"),
+            "duration_s": None,
+            "url": "/linker-ai/v1/genie/inquiry",
+        },
+        verdict=verdict,
+        note=note,
         price=after_lines[:500],
-        stale="1,680" in after_lines or "1.680" in after_lines,
-        meta={"orders_before": report["orders_before"], "orders_after": report["orders_after"], "posted": posted},
+        stale=stale,
+        meta={
+            "orders_before": report.get("orders_before"),
+            "orders_after": report.get("orders_after"),
+            "posted": posted,
+        },
     )
-    stock_lines = json.dumps((report.get("stock_card") or {}).get("data", {}).get("lines"), ensure_ascii=False)
-    stock_posted = report.get("posted_stock") or {}
-    if sent:
-        stock_verdict, stock_note = "defect", "an order exists after the stock probe"
-    elif not report.get("stock_digest_changed"):
-        stock_verdict, stock_note = "defect", "stock change left the confirmation digest unchanged"
-    elif stock_posted.get("status") != 409:
-        stock_verdict, stock_note = "defect", f"stale stock POST {stock_posted.get('status')}"
-    else:
-        stock_verdict, stock_note = "pass", "out-of-stock digest refused; no order"
+    stock_verdict, stock_note = grade_stock_confirmation(report)
+    stock_posted = (
+        report.get("posted_stock")
+        if isinstance(report.get("posted_stock"), dict)
+        else {}
+    )
+    stock_lines = json.dumps(
+        (report.get("stock_card") or {}).get("data", {}).get("lines"),
+        ensure_ascii=False,
+    )
     case(
         "stock-change-confirmation",
-        "approved",
-        {"product": PRICED, "to": "outofstock"},
-        {"status": stock_posted.get("status"), "duration_s": None, "url": "/linker-ai/v1/genie/inquiry"},
-        stock_verdict,
-        stock_note,
+        state="approved",
+        req={"product": PRICED, "to": "outofstock"},
+        result={
+            "status": stock_posted.get("status"),
+            "duration_s": None,
+            "url": "/linker-ai/v1/genie/inquiry",
+        },
+        verdict=stock_verdict,
+        note=stock_note,
         price=stock_lines[:500],
         stock="outofstock",
-        stale=False,
-        meta={"posted": stock_posted, "digest_changed": report.get("stock_digest_changed")},
+        meta={
+            "posted": stock_posted,
+            "digest_changed": report.get("stock_digest_changed"),
+        },
     )
-    _ = before_lines
 
 
-def run_stock_edges(secrets: dict) -> None:
-    """Push boundaries, then a fresh Genie answer. Restores status afterwards."""
-    code = r'''
-add_filter("pre_wp_mail", static function () { return true; });
-$key = Linker\Commerce\Stock\PushKey::generate();
-Linker\Commerce\Stock\PushKey::set($key);
-$back = array();
-foreach (wc_get_products(array("status" => "publish", "stock_status" => "onbackorder", "limit" => 5, "return" => "ids")) as $id) {
-  $back[] = (int) $id;
-}
-echo wp_json_encode(array("key" => $key, "backorder" => $back));
-'''
-    setup = json.loads(wp_eval(code))
-    key = setup["key"]
-    header = {"Content-Type": "application/json", "X-Linker-Stock-Key": key, "Accept": "application/json"}
-
-    def push(items, case_id, note_expect):
-        result = request(
-            f"{WP}/wp-json/linker/v1/stock",
-            method="POST",
-            headers=header,
-            body=json.dumps({"items": items}).encode(),
-        )
-        body = json_body(result) or {}
-        text = json.dumps(body, ensure_ascii=False)
-        ok = note_expect in text
+def run_stock_edges(secrets: dict[str, Any]) -> None:
+    """Push boundaries and one fresh Genie answer. PHP restores on the way out."""
+    del secrets
+    try:
+        report = eval_file("stock_edges.php")
+    except RuntimeError as error:
+        script_failed("stock-edges", "erp", "stock_edges.php", error)
+        return
+    for push in report.get("pushes") or []:
+        text = json.dumps(push.get("body"), ensure_ascii=False)
+        ok = str(push.get("expect") or "") in text
         case(
-            case_id,
-            "erp",
-            {"items": items},
-            result,
-            "pass" if ok else "defect",
-            text[:800],
+            str(push.get("id")),
+            state="erp",
+            req={"expect": push.get("expect")},
+            result={
+                "status": push.get("status"),
+                "duration_s": None,
+                "url": "/linker/v1/stock",
+            },
+            verdict="pass" if ok else "defect",
+            note=text[:800],
             stock=text[:300],
-            meta={"status": result["status"]},
+            meta={"status": push.get("status")},
         )
-        return body
-
-    push([{"sku": "DLK-SAJ-H210KT3", "qty": -1}], "stock-negative-qty", "invalid_qty")
-    push([{"sku": "DLK-SAJ-H210KT3", "qty": 0}], "stock-qty-on-unmanaged", "not_stock_managed")
-    push([{"sku": "DLK-SAJ-H210KT3", "state": "onbackorder"}], "stock-reject-backorder", "invalid_state")
-    push(
-        [
-            {"sku": "DLK-SAJ-H210KT3", "state": "outofstock"},
-            {"sku": "DLK-GOODWE-GW2089BATLCDG10", "state": "outofstock"},
-        ],
-        "stock-state-out",
-        "outofstock",
-    )
-    headers = auth_headers("approved", secrets)
-    headers["X-Linker-User-Context"] = secrets["tokens"]["approved"]
-    # Token may have expired during the turns. Remint.
-    fresh = json.loads(wp_eval(r'''
-class C333Mint extends Linker\Tools\Genie\UserContext {
-  public function make(int $user, int $expiry): string {
-    $payload = $user . "|" . $expiry;
-    return $payload . "|" . $this->sign($payload);
-  }
-}
-echo wp_json_encode(array("approved" => (new C333Mint())->make(45, time() + 120)));
-'''))
-    headers["X-Linker-User-Context"] = fresh["approved"]
-    looked = ability("linker/get-product", {"product_id": PRICED, "lang": "en"}, headers)
-    commerce = commerce_of(looked)
-    page = request(f"{WP}/product/saj-h2-10k-t3/", headers={"Accept": "text/html", **cookie_header("visitor", secrets)})
-    text = visible_text(page["body"].decode(errors="replace"))
-    out = commerce.get("in_stock") is False and "Currently unavailable" in text
+    ability_row = report.get("ability_after_out") or {}
+    commerce = ability_row.get("commerce") or {}
+    page_text = str(ability_row.get("page_text") or "")
+    out = commerce.get("in_stock") is False and "Currently unavailable" in page_text
     case(
         "stock-ability-after-out",
-        "approved",
-        {"product_id": PRICED},
-        looked,
-        "pass" if out else "defect",
-        f"in_stock={commerce.get('in_stock')} page_unavailable={'Currently unavailable' in text}",
+        state="approved",
+        req={"product_id": PRICED},
+        result={"status": 200, "duration_s": None, "url": "stock_edges.php"},
+        verdict="pass" if out else "defect",
+        note=(
+            f"in_stock={commerce.get('in_stock')} "
+            f"page_unavailable={'Currently unavailable' in page_text}"
+        ),
         price=str(commerce.get("price_line") or ""),
         stock="out_of_stock" if commerce.get("in_stock") is False else "in_stock",
     )
-    store = request(
-        f"{WP}/wp-json/wc/store/v1/products?include={PRICED}&lang=en",
-        headers=auth_headers("visitor", secrets),
+    products = report.get("store_after_out")
+    hidden = products == [] or (
+        isinstance(products, list)
+        and bool(products)
+        and isinstance(products[0], dict)
+        and products[0].get("is_in_stock") is False
     )
-    products = json_body(store) or []
-    hidden = products == [] or (isinstance(products, list) and products and products[0].get("is_in_stock") is False)
     case(
         "stock-store-after-out",
-        "visitor",
-        {"url": store["url"]},
-        store,
-        "pass" if hidden else "defect",
-        json.dumps(products, ensure_ascii=False)[:500],
+        state="visitor",
+        req={"include": PRICED},
+        result={"status": 200, "duration_s": None, "url": "/wc/store/v1/products"},
+        verdict="pass" if hidden else "defect",
+        note=json.dumps(products, ensure_ascii=False)[:500],
         stock="hidden_or_out" if hidden else "still_in",
     )
-    question = "Is the SAJ H2-10K-T3 in stock right now?"
-    payload = {
-        "locale": "en",
-        "messages": [{"role": "user", "content": question}],
-        "page": {"type": "product", "url": f"{WP}/product/saj-h2-10k-t3/", "title": "SAJ H2-10K-T3", "product_id": PRICED},
-    }
-    turn_headers = auth_headers("visitor", secrets)
-    turn_headers["Content-Type"] = "application/json"
-    turn = request(
-        f"{WP}/wp-json/linker-ai/v1/genie/turn",
-        method="POST",
-        headers=turn_headers,
-        body=json.dumps(payload).encode(),
-        timeout=180,
-    )
-    body = json_body(turn) or {}
-    meta, blocks = parse_stream(body.get("stream") or "")
+    turn = report.get("turn_after_out") or {}
+    meta, blocks = parse_stream(str(turn.get("stream") or ""))
     text = answer_text(blocks)
-    lowered = text.lower()
-    says_out = any(phrase in lowered for phrase in ("unavailable", "out of stock", "not in stock", "nicht verfügbar"))
-    says_in = (("in stock" in lowered) or ("auf lager" in lowered)) and not says_out
-    verdict = "pass" if says_out and not says_in and not QTY.search(text) else "defect"
+    verdict, note, says_in = grade_stock_after_out(text, meta)
     case(
         "turn-visitor-en-stock-after-out",
-        "visitor",
-        {"message": question},
-        turn,
-        verdict,
-        text[:400],
+        state="visitor",
+        req={"message": "Is the SAJ H2-10K-T3 in stock right now?"},
+        result={
+            "status": turn.get("status"),
+            "duration_s": None,
+            "url": "/linker-ai/v1/genie/turn",
+        },
+        verdict=verdict,
+        note=note,
         stock=text[:200],
-        stale=bool(says_in),
+        stale=says_in,
         meta=meta,
         blocks=blocks,
     )
-    push([{"sku": "DLK-SAJ-H210KT3", "state": "instock"}], "stock-state-restore", "instock")
-    wp_eval('Linker\\Commerce\\Stock\\PushKey::clear(); echo "cleared";')
-    # The out-of-stock push above also moved the RFQ SKU. The snapshot's
-    # onbackorder rows go back before they are read. is_in_stock() is true
-    # for any status other than outofstock, and spec 69's badge follows it.
-    if setup["backorder"]:
-        id_list = ",".join(str(int(product_id)) for product_id in setup["backorder"])
-        wp_eval(
-            "foreach (array("
-            + id_list
-            + ') as $id) { $product = wc_get_product((int) $id); if ($product instanceof WC_Product) { $product->set_stock_status("onbackorder"); $product->save(); } } echo "back";'
+    for row in report.get("backorder") or []:
+        product_id = int(row.get("product_id") or 0)
+        commerce = row.get("commerce") or {}
+        text = str(row.get("page_text") or "")
+        badge_in = "In stock" in text or "Auf Lager" in text
+        badge_out = "Currently unavailable" in text or "Derzeit nicht verfügbar" in text
+        agrees = (commerce.get("in_stock") is True and badge_in and not badge_out) or (
+            commerce.get("in_stock") is False and badge_out and not badge_in
         )
-        for product_id in setup["backorder"]:
-            looked = ability("linker/get-product", {"product_id": product_id, "lang": "en"}, {"Accept": "application/json"})
-            commerce = commerce_of(looked)
-            page = request(
-                f"{WP}/?p={int(product_id)}",
-                headers={"Accept": "text/html"},
-            )
-            text = visible_text(page["body"].decode(errors="replace"))
-            badge_in = "In stock" in text or "Auf Lager" in text
-            badge_out = "Currently unavailable" in text or "Derzeit nicht verfügbar" in text
-            agrees = (commerce.get("in_stock") is True and badge_in and not badge_out) or (
-                commerce.get("in_stock") is False and badge_out and not badge_in
-            )
-            case(
-                f"stock-backorder-product-{product_id}",
-                "visitor",
-                {"product_id": product_id, "woo_status": "onbackorder"},
-                looked,
-                "pass" if agrees else "defect",
-                f"Genie in_stock={commerce.get('in_stock')} page_in={badge_in} page_out={badge_out}; badge follows is_in_stock()",
-                stock="in_stock" if commerce.get("in_stock") else "out_of_stock",
-            )
+        case(
+            f"stock-backorder-product-{product_id}",
+            state="visitor",
+            req={"product_id": product_id, "woo_status": "onbackorder"},
+            result={"status": 200, "duration_s": None, "url": "stock_edges.php"},
+            verdict="pass" if agrees else "defect",
+            note=(
+                f"Genie in_stock={commerce.get('in_stock')} page_in={badge_in} "
+                f"page_out={badge_out}; badge follows is_in_stock()"
+            ),
+            stock="in_stock" if commerce.get("in_stock") else "out_of_stock",
+        )
+    if not catalog_ok(report.get("catalog") or {}):
+        case(
+            "stock-restore",
+            state="erp",
+            req={"readback": report.get("catalog")},
+            result={"status": 0, "duration_s": None, "url": "stock_edges.php"},
+            verdict="defect",
+            note="catalogue was not restored inside the stock script",
+        )
 
 
-def run_logout(secrets: dict, cookies: dict) -> None:
+def run_logout(secrets: dict[str, Any], cookies: dict[str, str]) -> None:
     cookie = cookies.get("approved") or ""
     if not cookie:
-        case("logout-missing-cookie", "approved", {}, {"status": 0, "duration_s": 0, "url": ""}, "defect", "approved turn set no conversation cookie")
+        case(
+            "logout-missing-cookie",
+            state="approved",
+            req={},
+            result={"status": 0, "duration_s": 0, "url": ""},
+            verdict="defect",
+            note="approved turn set no conversation cookie",
+        )
         return
     owned = request(
         f"{WP}/wp-json/linker-ai/v1/genie/conversation",
-        headers={**auth_headers("approved", secrets), "Cookie": f"linker_conversation={cookie}"},
+        headers={
+            **auth_headers("approved", secrets),
+            "Cookie": f"linker_conversation={cookie}",
+        },
     )
     guest = request(
         f"{WP}/wp-json/linker-ai/v1/genie/conversation",
-        headers={"Accept": "application/json", "Cookie": f"linker_conversation={cookie}"},
+        headers={
+            "Accept": "application/json",
+            "Cookie": f"linker_conversation={cookie}",
+        },
     )
     other = request(
         f"{WP}/wp-json/linker-ai/v1/genie/conversation",
-        headers={**auth_headers("pending", secrets), "Cookie": f"linker_conversation={cookie}"},
+        headers={
+            **auth_headers("pending", secrets),
+            "Cookie": f"linker_conversation={cookie}",
+        },
     )
     owned_text = owned["body"].decode(errors="replace")
     guest_text = guest["body"].decode(errors="replace")
     other_text = other["body"].decode(errors="replace")
     guest_leaks = euro(guest_text)
-    other_leaks = euro(other_text) and ("1,680" in other_text or "1.680" in other_text)
+    other_leaks = euro(other_text) and priced_amount(other_text)
     case(
         "logout-guest-replay",
-        "visitor",
-        {"cookie": "approved conversation replayed signed out"},
-        guest,
-        "defect" if guest_leaks else "pass",
-        f"status {guest['status']}; euro={guest_leaks}",
+        state="visitor",
+        req={"cookie": "approved conversation replayed signed out"},
+        result=guest,
+        verdict="defect" if guest_leaks else "pass",
+        note=f"status {guest['status']}; euro={guest_leaks}",
         price="leaked" if guest_leaks else "",
         stale=guest_leaks,
     )
     case(
         "logout-other-account-replay",
-        "pending",
-        {"cookie": "approved conversation replayed as pending"},
-        other,
-        "defect" if other_leaks else "pass",
-        f"status {other['status']}; euro={other_leaks}",
+        state="pending",
+        req={"cookie": "approved conversation replayed as pending"},
+        result=other,
+        verdict="defect" if other_leaks else "pass",
+        note=f"status {other['status']}; euro={other_leaks}",
         price="leaked" if other_leaks else "",
         stale=other_leaks,
     )
     case(
         "logout-owner-still-sees-history",
-        "approved",
-        {"cookie": "owner reload"},
-        owned,
-        "pass" if owned["status"] == 200 else "defect",
-        "historical thread kept for the owner" if "1,680" in owned_text or "1680" in owned_text else "owner thread had no stored price line",
+        state="approved",
+        req={"cookie": "owner reload"},
+        result=owned,
+        verdict="pass" if owned["status"] == 200 else "defect",
+        note=(
+            "historical thread kept for the owner"
+            if priced_amount(owned_text)
+            else "owner thread had no stored price line"
+        ),
         price="historical" if euro(owned_text) else "",
     )
 
 
-def run_own_order_isolation(secrets: dict) -> None:
-    code = r'''
-add_filter("pre_wp_mail", static function () { return true; });
-$made = array();
-foreach (array(43 => "pending", 44 => "restricted", 45 => "approved") as $id => $state) {
-  $order = wc_create_order(array("customer_id" => $id));
-  $order->set_status("inquiry-received");
-  $order->set_currency("EUR");
-  $order->set_total("1680");
-  $order->save();
-  $made[$state] = $order->get_id();
-}
-echo wp_json_encode($made);
-'''
-    made = json.loads(wp_eval(code))
-    fresh = json.loads(wp_eval(r'''
-class C333Mint extends Linker\Tools\Genie\UserContext {
-  public function make(int $user, int $expiry): string {
-    $payload = $user . "|" . $expiry;
-    return $payload . "|" . $this->sign($payload);
-  }
-}
-$mint = new C333Mint();
-$now = time() + 120;
-echo wp_json_encode(array(
-  "pending" => $mint->make(43, $now),
-  "restricted" => $mint->make(44, $now),
-  "approved" => $mint->make(45, $now),
-));
-'''))
-    seen = {}
-    for state, token in fresh.items():
-        result = ability("linker/inquiry-status", {}, {"Accept": "application/json", "X-Linker-User-Context": token})
-        body = result.get("json") or {}
-        if isinstance(body, dict) and "result" in body:
-            body = body["result"]
-        inquiries = body.get("inquiries") if isinstance(body, dict) else None
-        ids = [item.get("id") for item in inquiries] if isinstance(inquiries, list) else []
-        totals = [item.get("total") for item in inquiries] if isinstance(inquiries, list) else []
-        seen[state] = {"ids": ids, "totals": totals}
-        own = made[state] in ids
+def run_own_order_isolation(secrets: dict[str, Any]) -> None:
+    del secrets
+    try:
+        report = eval_file("orders.php")
+    except RuntimeError as error:
+        script_failed("inquiry-orders", "approved", "orders.php", error)
+        return
+    made = report.get("made") or {}
+    seen = report.get("seen") or {}
+    for state, payload in seen.items():
+        inquiries = payload.get("inquiries") if isinstance(payload, dict) else None
+        ids = (
+            [item.get("id") for item in inquiries]
+            if isinstance(inquiries, list)
+            else []
+        )
+        totals = (
+            [item.get("total") for item in inquiries]
+            if isinstance(inquiries, list)
+            else []
+        )
+        own = made.get(state) in ids
         foreign = any(value in ids for key, value in made.items() if key != state)
-        amount = any(euro(str(total)) or "1680" in str(total) for total in totals)
+        amount = any(euro(str(total)) or PRICE in str(total) for total in totals)
         if not own or foreign:
-            verdict, note = "defect", f"list {ids} expected only {made[state]}"
+            verdict, note = "defect", f"list {ids} expected only {made.get(state)}"
         elif state != "approved" and amount:
             verdict, note = "defect", f"closed account received totals {totals}"
         else:
             verdict, note = "pass", f"own inquiry only; totals {totals}"
+        note = f"{note} {D2_NOTE}"
         case(
             f"inquiry-own-{state}",
-            state,
-            {"created_order": made[state]},
-            result,
-            verdict,
-            note,
+            state=state,
+            req={"created_order": made.get(state)},
+            result={
+                "status": payload.get("status") if isinstance(payload, dict) else 0,
+                "duration_s": None,
+                "url": "/wp-abilities/v1/abilities/linker/inquiry-status/run",
+            },
+            verdict=verdict,
+            note=note,
             price="" if not amount or state == "approved" else str(totals),
         )
-    wp_eval(
-        "foreach (array(" + ",".join(str(value) for value in made.values()) + ") as $id) { wp_delete_post((int) $id, true); } echo 'deleted';"
-    )
-
-
-def run_price_turn_after_change(secrets: dict) -> None:
-    wp_eval(
-        r'''
-foreach (array(4107, 6628) as $id) {
-  $product = wc_get_product($id);
-  $product->set_regular_price("1701");
-  $product->set_price("1701");
-  $product->save();
-}
-echo "set";
-'''
-    )
-    try:
-        question = "What is the net price of the SAJ H2-10K-T3?"
-        payload = {
-            "locale": "en",
-            "messages": [{"role": "user", "content": question}],
-            "page": {"type": "home", "url": f"{WP}/", "title": "Linker"},
-        }
-        headers = auth_headers("approved", secrets)
-        headers["Content-Type"] = "application/json"
-        result = request(
-            f"{WP}/wp-json/linker-ai/v1/genie/turn",
-            method="POST",
-            headers=headers,
-            body=json.dumps(payload).encode(),
-            timeout=180,
-        )
-        body = json_body(result) or {}
-        meta, blocks = parse_stream(body.get("stream") or "")
-        text = answer_text(blocks)
-        prices = price_texts(blocks)
-        shown = " | ".join(prices)
-        stale = any(re.search(r"1[.,]680", price) for price in prices) or bool(re.search(r"1[.,]680", text))
-        current = any("1,701" in price or "1701" in price for price in prices)
-        prose = euro(text)
-        if prose or stale or not current:
-            verdict = "defect"
-        else:
-            verdict = "pass"
+    remaining = report.get("remaining") or []
+    if remaining:
         case(
-            "turn-approved-after-price-change",
-            "approved",
-            {"message": question, "price": "1701"},
-            result,
-            verdict,
-            shown or text[:240],
-            price=shown,
-            stale=stale,
-            meta=meta,
-            blocks=blocks,
+            "inquiry-orders-cleanup",
+            state="approved",
+            req={"remaining": remaining},
+            result={"status": 0, "duration_s": None, "url": "orders.php"},
+            verdict="defect",
+            note=f"HPOS readback still has {remaining}",
         )
-    finally:
-        wp_eval(
-            r'''
-foreach (array(4107, 6628) as $id) {
-  $product = wc_get_product($id);
-  $product->set_regular_price("1680");
-  $product->set_price("1680");
-  $product->save();
-}
-echo "restored";
-'''
+
+
+def _commerce_closed(state: str, commerce: dict[str, Any]) -> bool:
+    line = str(commerce.get("price_line") or "")
+    return (
+        not commerce.get("price_visible")
+        and line == GATE[(state, "en")]
+        and not euro(line)
+    )
+
+
+def _commerce_open(commerce: dict[str, Any]) -> bool:
+    line = str(commerce.get("price_line") or "")
+    return (
+        bool(commerce.get("price_visible"))
+        and price_is(commerce.get("price"), PRICE)
+        and euro(line)
+    )
+
+
+def run_transition() -> None:
+    """A local rejected account, then approval, without touching users 43-45."""
+    try:
+        report = eval_file("transition.php")
+    except RuntimeError as error:
+        script_failed("transition-script", "rejected", "transition.php", error)
+        return
+    empty: dict[str, Any] = {"status": 0, "duration_s": None, "url": "transition.php"}
+    roles = report.get("roles")
+    subject = roles == ["customer"]
+    case(
+        "transition-subject",
+        state="rejected",
+        req={"login": "c333-transition"},
+        result=empty,
+        verdict="pass" if subject else "defect",
+        note=f"roles {roles}",
+    )
+    pending = report.get("pending_commerce") or {}
+    pending_ok = bool(report.get("pending_cookie_valid")) and _commerce_closed(
+        "pending", pending
+    )
+    case(
+        "transition-pending-closed",
+        state="pending",
+        req={"cookie": "fresh session"},
+        result=empty,
+        verdict="pass" if pending_ok else "defect",
+        note=json.dumps(pending, ensure_ascii=False),
+        price=str(pending.get("price_line") or ""),
+    )
+    approved = report.get("approved_commerce") or {}
+    approved_ok = bool(report.get("approved_cookie_valid")) and _commerce_open(approved)
+    case(
+        "transition-approved-without-relogin",
+        state="approved",
+        req={"cookie": "the pending session, no new login"},
+        result=empty,
+        verdict="pass" if approved_ok else "defect",
+        note=json.dumps(approved, ensure_ascii=False),
+        price=str(approved.get("price_line") or ""),
+    )
+    rejected_login = (
+        report.get("rejected_cookie_valid") is False
+        and report.get("rejected_auth_code") == "linker_approval_rejected"
+    )
+    case(
+        "transition-rejected-login",
+        state="rejected",
+        req={"auth": "wp_authenticate"},
+        result=empty,
+        verdict="pass" if rejected_login else "defect",
+        note=(
+            f"cookie_valid={report.get('rejected_cookie_valid')} "
+            f"code={report.get('rejected_auth_code')}"
+        ),
+    )
+    forced = report.get("rejected_commerce") or {}
+    forced_ok = _commerce_closed("rejected", forced)
+    case(
+        "transition-rejected-no-prices",
+        state="rejected",
+        req={"user": "forced current user after the cookie died"},
+        result=empty,
+        verdict="pass" if forced_ok else "defect",
+        note=json.dumps(forced, ensure_ascii=False),
+        price=str(forced.get("price_line") or ""),
+    )
+    reopened = report.get("reapproved_commerce") or {}
+    relogin_ok = bool(report.get("reapproved_auth_ok")) and _commerce_open(reopened)
+    case(
+        "transition-relogin-after-approval",
+        state="approved",
+        req={"auth": "wp_authenticate after the rejection was lifted"},
+        result=empty,
+        verdict="pass" if relogin_ok else "defect",
+        note=json.dumps(reopened, ensure_ascii=False),
+        price=str(reopened.get("price_line") or ""),
+    )
+    case(
+        "transition-user-deleted",
+        state="rejected",
+        req={"login": "c333-transition"},
+        result=empty,
+        verdict="pass" if report.get("user_gone") is True else "defect",
+        note=f"user_gone={report.get('user_gone')}",
+    )
+
+
+def run_price_turn_after_change(secrets: dict[str, Any]) -> None:
+    del secrets
+    try:
+        report = eval_file("price_turn.php")
+    except RuntimeError as error:
+        script_failed(
+            "turn-approved-after-price-change", "approved", "price_turn.php", error
+        )
+        return
+    meta, blocks = parse_stream(str(report.get("stream") or ""))
+    text = answer_text(blocks)
+    prices = price_texts(blocks)
+    verdict, note, stale = grade_changed_price_turn(
+        int(report.get("status") or 0), text, prices
+    )
+    case(
+        "turn-approved-after-price-change",
+        state="approved",
+        req={
+            "message": "What is the net price of the SAJ H2-10K-T3?",
+            "price": CHANGED_PRICE,
+        },
+        result={
+            "status": report.get("status"),
+            "duration_s": None,
+            "url": "/linker-ai/v1/genie/turn",
+        },
+        verdict=verdict,
+        note=note if note else text[:240],
+        price=" | ".join(prices),
+        stale=stale,
+        meta=meta,
+        blocks=blocks,
+    )
+    if not catalog_ok(report.get("catalog") or {}):
+        case(
+            "price-turn-restore",
+            state="approved",
+            req={"readback": report.get("catalog")},
+            result={"status": 0, "duration_s": None, "url": "price_turn.php"},
+            verdict="defect",
+            note="catalogue was not restored inside the price turn",
         )
 
 
@@ -1155,22 +1509,40 @@ def run_production() -> None:
     probes = [
         ("prod-en-price", "en", "/", "What is the net price of the SAJ H2-10K-T3?"),
         ("prod-de-price", "de", "/de/", "Was kostet der SAJ H2-10K-T3?"),
-        ("prod-en-stock", "en", "/product/saj-h2-10k-t3/", "Is the SAJ H2-10K-T3 in stock?"),
-        ("prod-en-rfq", "en", "/product/goodwe-gw208-9-bat-lcd-g10/", "What is the price of the GoodWe GW208.9-BAT-LCD-G10?"),
+        (
+            "prod-en-stock",
+            "en",
+            "/product/saj-h2-10k-t3/",
+            "Is the SAJ H2-10K-T3 in stock?",
+        ),
+        (
+            "prod-en-rfq",
+            "en",
+            "/product/goodwe-gw208-9-bat-lcd-g10/",
+            "What is the price of the GoodWe GW208.9-BAT-LCD-G10?",
+        ),
     ]
     jar: dict[str, str] = {}
     for case_id, lang, path, question in probes:
         payload = {
             "locale": lang,
             "messages": [{"role": "user", "content": question}],
-            "page": {"type": "home" if path in ("/", "/de/") else "product", "url": base + path, "title": "Linker"},
+            "page": {
+                "type": "home" if path in ("/", "/de/") else "product",
+                "url": base + path,
+                "title": "Linker",
+            },
         }
         result = request(
             base + "/wp-json/linker-ai/v1/genie/turn",
             method="POST",
-            headers={"Content-Type": "application/json", "Accept": "application/json", "Cookie": "; ".join(f"{k}={v}" for k, v in jar.items())},
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Cookie": "; ".join(f"{k}={v}" for k, v in jar.items()),
+            },
             body=json.dumps(payload).encode(),
-            timeout=180,
+            timeout=TURN_TIMEOUT,
         )
         absorb_cookies(jar, result)
         body = json_body(result) or {}
@@ -1181,14 +1553,28 @@ def run_production() -> None:
         header_keep = {
             key: result["headers"].get(key)
             for key in result["headers"]
-            if key.lower() in ("date", "server", "x-powered-by", "content-type", "x-robots-tag", "link", "cache-control")
+            if key.lower()
+            in (
+                "date",
+                "server",
+                "x-powered-by",
+                "content-type",
+                "x-robots-tag",
+                "link",
+                "cache-control",
+            )
         }
         record(
             "production",
             {
                 "id": case_id,
                 "account": "visitor",
-                "request": {"url": base + "/wp-json/linker-ai/v1/genie/turn", "locale": lang, "message": question, "page": path},
+                "request": {
+                    "url": base + "/wp-json/linker-ai/v1/genie/turn",
+                    "locale": lang,
+                    "message": question,
+                    "page": path,
+                },
                 "final_url": result["url"],
                 "status": result["status"],
                 "headers": header_keep,
@@ -1208,30 +1594,30 @@ def run_production() -> None:
             deleted = request(
                 f"{base}/wp-json/linker-ai/v1/genie/conversations/{conversation}",
                 method="DELETE",
-                headers={"Accept": "application/json", "Cookie": "; ".join(f"{k}={v}" for k, v in jar.items())},
+                headers={
+                    "Accept": "application/json",
+                    "Cookie": "; ".join(f"{k}={v}" for k, v in jar.items()),
+                },
             )
             record(
                 "production",
-                {"id": case_id + "-delete", "conversation_id": conversation, "status": deleted["status"], "final_url": deleted["url"]},
+                {
+                    "id": case_id + "-delete",
+                    "conversation_id": conversation,
+                    "status": deleted["status"],
+                    "final_url": deleted["url"],
+                },
             )
 
 
 def summarize() -> None:
     path = EVIDENCE / "evidence" / "cases.jsonl"
     rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
-    counts: dict[str, int] = {}
-    for row in rows:
-        counts[row["verdict"]] = counts.get(row["verdict"], 0) + 1
-    durations = sorted(row["duration_s"] for row in rows if isinstance(row.get("duration_s"), (int, float)))
-    summary = {
-        "cases": len(rows),
-        "counts": counts,
-        "defects": [row["id"] + ": " + row["note"] for row in rows if row["verdict"] == "defect"],
-    }
-    if durations:
-        summary["p50_s"] = durations[len(durations) // 2]
-        summary["max_s"] = durations[-1]
-    (EVIDENCE / "evidence" / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2))
+    summary = summarize_rows(rows)
+    (EVIDENCE / "evidence" / "summary.json").write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2)
+    )
+    print(summary["notes"])
     print(json.dumps(summary, ensure_ascii=False, indent=2))
 
 
@@ -1245,7 +1631,19 @@ def self_test() -> None:
     assert AMOUNT.search("33.250,00 €")
     assert not QTY.search("It is in stock.")
     assert QTY.search("12 pcs in the warehouse")
+    fixture = json.loads(
+        (HARNESS / "tests" / "fixtures" / "recorded-verdicts.json").read_text()
+    )
+    assert summarize_rows(fixture)["notes"] == "counted 108: 101 pass, 7 defect"
     print("self-test ok")
+
+
+def force_restore() -> dict[str, Any]:
+    code = catalog_require() + "\necho wp_json_encode(c333_force_known_good());\n"
+    report = json.loads(wp_eval(code))
+    if not isinstance(report, dict):
+        raise RuntimeError("catalogue read was not an object")
+    return report
 
 
 def main() -> None:
@@ -1261,47 +1659,39 @@ def main() -> None:
         run_production()
         return
     accounts = load_accounts()
+    check_fixture(accounts)
     secrets = mint(accounts)
     phases = [
         ("abilities", lambda: run_abilities(secrets)),
         ("tokens", lambda: run_tokens(secrets)),
         ("surfaces", lambda: run_surfaces(secrets)),
         ("orders", lambda: run_own_order_isolation(secrets)),
+        ("transition", run_transition),
         ("turns", lambda: run_turns(secrets)),
         ("price-turn", lambda: run_price_turn_after_change(secrets)),
         ("inquiry", lambda: run_mutation(secrets)),
         ("stock", lambda: run_stock_edges(secrets)),
     ]
     cookies: dict[str, str] = {}
-    started = False
+    dirty = False
     try:
         _run_phases(args, phases, cookies, secrets)
     finally:
-        wp_eval(
-            r'''
-Linker\Commerce\Stock\PushKey::clear();
-foreach (array(4107 => "1680", 6628 => "1680") as $id => $price) {
-  $product = wc_get_product($id);
-  if ($product instanceof WC_Product) {
-    $product->set_regular_price($price);
-    $product->set_price($price);
-    $product->set_stock_status("instock");
-    $product->save();
-  }
-}
-foreach (array(1957, 6800) as $id) {
-  $product = wc_get_product($id);
-  if ($product instanceof WC_Product) {
-    $product->set_stock_status("onbackorder");
-    $product->save();
-  }
-}
-echo "restored";
-'''
-        )
+        catalog = force_restore()
+        if not catalog_ok(catalog):
+            print(json.dumps(catalog, ensure_ascii=False, indent=2), file=sys.stderr)
+            dirty = True
+    if dirty:
+        raise SystemExit("catalogue was not restored")
 
 
-def _run_phases(args, phases, cookies, secrets) -> None:
+def _run_phases(
+    args: argparse.Namespace,
+    phases: list[tuple[str, Any]],
+    cookies: dict[str, str],
+    secrets: dict[str, Any],
+) -> None:
+    started = False
     for name, fn in phases:
         if name == args.from_phase:
             started = True
@@ -1314,7 +1704,7 @@ def _run_phases(args, phases, cookies, secrets) -> None:
         else:
             fn()
     print("phase logout", flush=True)
-    run_logout(secrets, cookies)  # noqa: the caller passes this run's secrets
+    run_logout(secrets, cookies)
     summarize()
 
 

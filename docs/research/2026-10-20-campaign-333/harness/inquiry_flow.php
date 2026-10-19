@@ -9,9 +9,13 @@
  *
  * File-level const is illegal here: `wp eval-file` includes this file from
  * inside a method, and PHP compiles const only in the global scope.
+ * Snapshots and the token helper live in catalog.php. 1701 is the probe
+ * figure, not the catalogue price.
  *
  * Usage: just wp c333 eval-file <absolute path to this file>
  */
+
+require __DIR__ . '/catalog.php';
 
 add_filter(
 	'pre_wp_mail',
@@ -20,44 +24,24 @@ add_filter(
 	}
 );
 
-$c333_product = 4107;
-$c333_twin    = 6628;
-$c333_user    = 45;
+$c333_ids     = c333_product_ids();
+$c333_product = $c333_ids['priced'];
+$c333_twin    = $c333_ids['priced_de'];
+$c333_user    = c333_user_id( 'approved' );
 $c333_new     = '1701';
 
-/**
- * @return array{price: string, status: string}
- */
-function c333_snap( int $id ): array {
-	$product = wc_get_product( $id );
-	return array(
-		'price'  => $product instanceof WC_Product ? (string) $product->get_regular_price( 'edit' ) : '',
-		'status' => $product instanceof WC_Product ? (string) $product->get_stock_status() : '',
-	);
-}
-
-/**
- * @param array{price: string, status: string} $snap
- */
-function c333_restore( int $id, array $snap ): void {
-	$product = wc_get_product( $id );
-	if ( ! $product instanceof WC_Product ) {
-		return;
-	}
-	$product->set_regular_price( $snap['price'] );
-	$product->set_price( $snap['price'] );
-	$product->set_stock_status( $snap['status'] );
-	$product->save();
-}
-
-$snapshots = array(
+$snapshots          = array(
 	$c333_product => c333_snap( $c333_product ),
 	$c333_twin    => c333_snap( $c333_twin ),
 );
+$c333_conversation  = 0;
 register_shutdown_function(
-	static function () use ( $snapshots ): void {
+	static function () use ( $snapshots, &$c333_conversation ): void {
 		foreach ( $snapshots as $id => $snap ) {
 			c333_restore( (int) $id, $snap );
+		}
+		if ( $c333_conversation > 0 ) {
+			wp_delete_post( $c333_conversation, true );
 		}
 	}
 );
@@ -72,6 +56,7 @@ try {
 			'post_title'  => 'c333 inquiry flow',
 		)
 	);
+	$c333_conversation = (int) $post_id;
 	$cookie = 'linker_conversation';
 	$_COOKIE[ $cookie ] = (int) $post_id . '.' . hash_hmac( 'sha256', $cookie . '|' . (int) $post_id, wp_salt( 'auth' ) );
 
@@ -171,7 +156,9 @@ try {
 	);
 
 	if ( (int) $post_id > 0 ) {
+		$c333_conversation = (int) $post_id;
 		wp_delete_post( (int) $post_id, true );
+		$c333_conversation = 0;
 	}
 
 	echo wp_json_encode(
