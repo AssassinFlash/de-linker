@@ -13,7 +13,7 @@
 
 设计理由：dossier `docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md` §1.1、§1.11 没有「极端问法同时点名若干型号」的成句可抄。赢家句和范围句沿用既有兜底；点名句和价格门是服务自己写的。
 
-Coordinator sign-off: pending
+Coordinator sign-off: approved (2026-10-20)
 
 ## 英文
 
@@ -61,3 +61,13 @@ Coordinator sign-off: pending
 3. 这两句留在对话兜底里，不作为邮件主题。
 
 协调者若要改字，改 `template.py` 里的这两句，并改这篇记录。#368 的赢家句和 #379 的范围句不在此列。
+
+## 协调者对抗评审（2026-10-20）
+
+逐条复核核对清单，并对照 `template.py` 实际写出的句子：
+
+- 英文 "You named {codes}." 只复述客户自己写下的型号，不加排序、不引出第二张卡；单型号时读作 "You named HS3-5K-T2." 成立。
+- 德文 "Sie haben {codes} genannt." 是独立句式，Sie 体，型号码原样，不出现 „ich“；不是英文逐词对译。
+- 价格门英文沿用 #242 提示里已经在用的 "Approved partner accounts see net prices."，德文以账户作主语，两句都不含金额、不称某型号最便宜。
+- 与 `template.py:199/201/254/255` 的实际字符串一致；Hard Stop 1–9 与 §3 用词复核通过。
+- 无改动。这两句按本记录定稿。
