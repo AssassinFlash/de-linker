@@ -56,6 +56,13 @@ final class TitleChangeTest extends TestCase {
 	private array $meta = array();
 
 	/**
+	 * How many times the German post was written.
+	 *
+	 * @var int
+	 */
+	private int $writes = 0;
+
+	/**
 	 * The changed title is translated and the untouched excerpt stays German.
 	 */
 	public function test_a_title_change_writes_german_and_keeps_the_excerpt(): void {
@@ -89,6 +96,26 @@ final class TitleChangeTest extends TestCase {
 	}
 
 	/**
+	 * A later successful run replaces a failed status with synced.
+	 */
+	public function test_a_failed_run_syncs_when_the_next_run_succeeds(): void {
+		$written = null;
+		$this->wordpress( $written );
+		$this->jobs( $this->client( true ) )->run( State::POST, 5 );
+		$this->assertSame( 0, $this->writes );
+		$this->assertSame( State::FAILED, $this->meta['post'][5][ State::STATUS ] );
+		$this->assertSame( 'stand-in refused', $this->meta['post'][5][ State::NOTE ] );
+
+		$this->jobs( $this->client( false ) )->run( State::POST, 5 );
+		$this->assertSame( 1, $this->writes );
+		$this->assertIsArray( $written );
+		$this->assertSame( '[de] Workshop meter C406', $written['post_title'] );
+		$this->assertSame( self::GERMAN_EXCERPT, $written['post_excerpt'] );
+		$this->assertSame( State::SYNCED, $this->meta['post'][5][ State::STATUS ] );
+		$this->assertArrayNotHasKey( State::NOTE, $this->meta['post'][5] );
+	}
+
+	/**
 	 * Runs one translation of the changed title.
 	 *
 	 * @param bool $fail Whether the client refuses.
@@ -116,7 +143,8 @@ final class TitleChangeTest extends TestCase {
 	 * @param array<string, mixed>|null $written German post fields passed to wp_update_post().
 	 */
 	private function wordpress( ?array &$written ): void {
-		$segmenter = new Segmenter( new HtmlTokenizer() );
+		$this->writes = 0;
+		$segmenter    = new Segmenter( new HtmlTokenizer() );
 		PolylangDouble::mock(
 			array(
 				5 => 'en',
@@ -168,12 +196,14 @@ final class TitleChangeTest extends TestCase {
 		WP_Mock::userFunction( 'is_post_type_hierarchical', array( 'return' => false ) );
 		WP_Mock::userFunction( 'wc_get_product', array( 'return' => null ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
+		WP_Mock::userFunction( 'clean_post_cache', array( 'return' => null ) );
 		WP_Mock::passthruFunction( '__' );
 		WP_Mock::userFunction(
 			'wp_update_post',
 			array(
-				'return' => static function ( array $postarr ) use ( &$written ): int {
+				'return' => function ( array $postarr ) use ( &$written ): int {
 					$written = $postarr;
+					++$this->writes;
 					return (int) $postarr['ID'];
 				},
 			)

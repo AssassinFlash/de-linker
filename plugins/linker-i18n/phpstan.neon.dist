@@ -10,6 +10,9 @@ parameters:
 		- linker-i18n.php
 		- includes
 		- tests/php
+	excludePaths:
+		# Runtime stand-in for WP-CLI. PHPStan reads tests/phpstan/wp-cli.php.
+		- tests/php/Doubles
 	scanFiles:
 		# Optional commerce digest boundary; no runtime dependency before its filter runs.
 		- ../linker-commerce/includes/Digest/Block.php

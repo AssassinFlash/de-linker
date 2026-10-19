@@ -19,6 +19,13 @@ namespace {
 	class WP_CLI {
 
 		/**
+		 * Stream the runtime test double writes error lines to.
+		 *
+		 * @var resource|null
+		 */
+		public static $stderr;
+
+		/**
 		 * Registers a command.
 		 *
 		 * @param string                 $name     Command name.
@@ -47,9 +54,17 @@ namespace {
 		 * @param string|WP_Error $message Message.
 		 * @param bool|int        $exit    Exit code, or whether to exit.
 		 * @return never
+		 * @throws \WP_CLI\ExitException The test double stops the command so the exit code can be asserted.
 		 */
 		public static function error( $message, $exit = true ) {}
 	}
+}
+
+namespace WP_CLI {
+	/**
+	 * The exception the test double throws instead of exit().
+	 */
+	class ExitException extends \Exception {}
 }
 
 namespace WP_CLI\Utils {

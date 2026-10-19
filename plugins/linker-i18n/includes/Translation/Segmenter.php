@@ -108,7 +108,7 @@ final class Segmenter {
 	 * @return list<string>
 	 */
 	public function block_hashes( string $value, bool $html ): array {
-		return ( $html ? $this->html( $value, false ) : $this->plain( $value ) )->hashes();
+		return ( $html ? $this->paragraphs( $value ) : $this->plain( $value ) )->hashes();
 	}
 
 	/**
@@ -137,10 +137,28 @@ final class Segmenter {
 	/**
 	 * An HTML value (a body, an excerpt) as a document.
 	 *
-	 * @param string $html      HTML.
-	 * @param bool   $sentences Split paragraphs into sentences. False reproduces the paragraph fingerprints stored before that split.
+	 * @param string $html HTML.
 	 */
-	public function html( string $html, bool $sentences = true ): Document {
+	public function html( string $html ): Document {
+		return $this->markup( $html, true );
+	}
+
+	/**
+	 * One segment per paragraph, the fingerprints stored before sentences were split.
+	 *
+	 * @param string $html HTML.
+	 */
+	private function paragraphs( string $html ): Document {
+		return $this->markup( $html, false );
+	}
+
+	/**
+	 * An HTML value as a document.
+	 *
+	 * @param string $html      HTML.
+	 * @param bool   $sentences Whether to split paragraphs into sentences.
+	 */
+	private function markup( string $html, bool $sentences ): Document {
 		$tokens   = $this->tokenizer->tokens( $html );
 		$parts    = array();
 		$segments = array();
