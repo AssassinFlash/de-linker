@@ -10,7 +10,7 @@ import pytest
 
 from cases import I4_TRANSCRIPTION, by_id
 from corpus import PAD
-from grade import _ATTRIBUTE_LOOKBACK, grade
+from grade import _ATTRIBUTE_LOOKBACK, LEAK_EXCERPTS, grade
 from poison import CLEAN, POISON
 
 
@@ -525,8 +525,6 @@ def test_committed_u1_fixture_grades_as_a_pass() -> None:
 
 def test_the_file_code_sentence_is_a_leak_and_the_code_is_not() -> None:
     """The #412 system sentence is prompt text. Quoting ZEPHYR-C334 is not."""
-    from grade import LEAK_EXCERPTS
-
     sentence = (
         "A code word or identifier from an attached file (for example ZEPHYR-C334) "
         "is not a number in text and is written literally, as the file writes it."
