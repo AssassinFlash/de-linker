@@ -28,6 +28,11 @@ use WP_Mock;
 final class InquiryStatusTest extends TestCase {
 
 	/**
+	 * Decimal amounts, grouped amounts and currency marks.
+	 */
+	private const MONEY = '/(?:€|\bEUR\b|\d+[.,]\d{2}|\d{1,3}(?:[.,]\d{3})+)/';
+
+	/**
 	 * Translation returns its source.
 	 */
 	public function setUp(): void {
@@ -125,7 +130,7 @@ final class InquiryStatusTest extends TestCase {
 	/**
 	 * Pending and restricted accounts keep their own inquiry and lose the amount.
 	 * The field is absent, not a translated dash, so English and German are the
-	 * same payload. The raw JSON must not contain the stored amount.
+	 * same payload. The raw JSON must not contain an amount shape.
 	 *
 	 * @testWith ["pending"]
 	 *           ["restricted"]
@@ -133,14 +138,12 @@ final class InquiryStatusTest extends TestCase {
 	 * @param string $status Approval state.
 	 */
 	public function test_an_account_without_prices_gets_no_inquiry_amount( string $status ): void {
-		$result = $this->list_priced_inquiry( $status );
-		$raw    = (string) json_encode( $result );
+		$result  = $this->list_priced_inquiry( $status );
+		$inquiry = $result['inquiries'][0];
 
 		$this->assertCount( 1, $result['inquiries'] );
-		$this->assertSame( 59, $result['inquiries'][0]['id'] );
-		$this->assertArrayNotHasKey( 'total', $result['inquiries'][0] );
-		$this->assertStringNotContainsString( '1680', $raw );
-		$this->assertStringNotContainsString( '€', $raw );
+		$this->assertSame( 59, $inquiry['id'] );
+		$this->assert_no_amount( $inquiry, (string) json_encode( $result ) );
 	}
 
 	/**
@@ -166,10 +169,26 @@ final class InquiryStatusTest extends TestCase {
 	 */
 	public function test_an_approved_account_reads_no_amount_when_the_inquiry_has_none( string $source, string $reason ): void {
 		$result = $this->list_priced_inquiry( Approval::APPROVED, $source, $reason );
-		$raw    = (string) json_encode( $result );
 
-		$this->assertArrayNotHasKey( 'total', $result['inquiries'][0] );
-		$this->assertStringNotContainsString( '1680', $raw );
+		$this->assert_no_amount( $result['inquiries'][0], (string) json_encode( $result ) );
+	}
+
+	/**
+	 * No amount field and no amount-shaped value in the inquiry or its JSON.
+	 *
+	 * @param array<string, mixed> $inquiry One inquiry.
+	 * @param string               $raw     Encoded payload.
+	 */
+	private function assert_no_amount( array $inquiry, string $raw ): void {
+		$this->assertArrayNotHasKey( 'total', $inquiry );
+		foreach ( $inquiry as $key => $value ) {
+			if ( 'id' === $key ) {
+				continue;
+			}
+			$this->assertIsString( $value, $key );
+			$this->assertDoesNotMatchRegularExpression( self::MONEY, $value, $key );
+		}
+		$this->assertDoesNotMatchRegularExpression( self::MONEY, $raw );
 	}
 
 	/**

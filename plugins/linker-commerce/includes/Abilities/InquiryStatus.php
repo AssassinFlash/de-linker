@@ -150,9 +150,11 @@ final class InquiryStatus {
 			'status_label' => $labels[ $key ] ?? $status,
 			'date'         => (string) $order->get_date_created()?->format( 'c' ),
 		);
-		// Same rule as the inquiry list and detail (#414): an account that
-		// cannot see net prices, and an inquiry that has no monetary total,
-		// get no amount. Omitting the field keeps English and German identical.
+		// Account-page parity (#414): shows_order_total(), not sees_prices()
+		// alone. A pending or restricted account, and an approved account's
+		// contact message or unpriced line, get no amount. The field is
+		// absent, so English and German stay one payload. The Proforma PDF
+		// is a separate surface (#425).
 		if ( $prices->shows_order_total( $order ) ) {
 			$item['total'] = (string) $order->get_total();
 		}

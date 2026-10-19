@@ -435,18 +435,6 @@ final class ApprovalTest extends IntegrationTestCase {
 		return WC()->payment_gateways()->payment_gateways();
 	}
 
-		/**
-		 * Applies one action as the admin-post handler does.
-		 *
-		 * @param WC_Customer $customer The account.
-		 * @param string      $status   The state to set.
-		 * @param string      $reason   The reason, required for restrict and reject.
-		 */
-	private function set_state( WC_Customer $customer, string $status, string $reason = '' ): void {
-		wp_set_current_user( 1 );
-		$this->assertTrue( ( new Approval() )->set( $customer->get_id(), $status, $reason ), "The {$status} action was written" );
-	}
-
 	/**
 	 * Records every wp_mail() call while a test runs; a queue retry of an
 	 * earlier test's message may land in the same window, so the assertions

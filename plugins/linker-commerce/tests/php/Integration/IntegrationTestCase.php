@@ -235,6 +235,20 @@ abstract class IntegrationTestCase extends TestCase {
 	}
 
 	/**
+	 * Applies one approval action as the admin-post handler does. The actor
+	 * is user 1, so the audit stamp is the staff account and not the customer.
+	 *
+	 * @param WC_Customer $customer The account.
+	 * @param string      $status   The state to set.
+	 * @param string      $reason   The reason, required for restrict and reject.
+	 */
+	protected function set_state( WC_Customer $customer, string $status, string $reason = '' ): void {
+		wp_set_current_user( 1 );
+		$written = ( new \Linker\Commerce\Registration\Approval() )->set( $customer->get_id(), $status, $reason );
+		$this->assertTrue( $written, "The {$status} action was written" );
+	}
+
+	/**
 	 * An inquiry the customer sends from a solution draft, through WooCommerce's
 	 * checkout and the Proforma gateway, as the request page does.
 	 *
