@@ -28,6 +28,7 @@ from typing import Any, get_args
 
 from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.facts import TurnFacts, merge
+from linker_genie.language import turn_language, with_tool_lang
 from linker_genie.schema import (
     CardPrice,
     CardsBlock,
@@ -62,6 +63,10 @@ def commerce_lookup(
     """get-product for each product, as the customer of this turn, side by side,
     until `deadline` (a `time.monotonic()` instant)."""
 
+    # The price line's language is the answer language. Visibility and the
+    # account reasons are unchanged.
+    language = turn_language(request)
+
     def lookup(product_ids: list[int]) -> tuple[TurnFacts, list[str]]:
         if not product_ids:
             return TurnFacts(), []
@@ -69,9 +74,11 @@ def commerce_lookup(
         def one(product_id: int) -> TurnFacts:
             _payload, gathered = client.record(
                 "linker/get-product",
-                {"product_id": product_id, "lang": request.locale},
+                with_tool_lang(
+                    "linker/get-product", {"product_id": product_id}, language
+                ),
                 request.user.context,
-                request.locale,
+                language,
             )
             return gathered
 

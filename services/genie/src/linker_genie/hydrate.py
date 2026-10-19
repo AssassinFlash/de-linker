@@ -3,9 +3,10 @@
 The model must not write numbers. Placeholders are filled here (Rufus). There
 is no rewriting of the rest of the text. Handoff summaries hydrate too: the
 prompt routes out-of-scope turns through handoff-team and puts the team
-mailbox sentence into the summary as `{fact:handoff.sentence_*}` — the
+mailbox sentence into the summary as `{fact:handoff.sentence}` — the
 customer must see the real sentence, not a model paraphrase (review
-2026-10-10, must-fix 1).
+2026-10-10, must-fix 1). The service picks the sentence of the answer
+language, including when the model named `sentence_en` or `sentence_de`.
 
 An answer that rests on documents links them, and the service adds those links
 (#257, docs/specs/10-knowledge-index.md 引用与核验): every chunk a text block names
@@ -34,6 +35,11 @@ from linker_genie.schema import (
 
 # The page abbreviation of a document link, per language (copy review:
 # docs/acceptance/2026-10-17/233/copy-review.md).
+# A handoff placeholder names the mailbox sentence. Whichever id the model
+# wrote, the customer reads the sentence of the answer language.
+_HANDOFF_IDS = frozenset(
+    {"handoff.sentence", "handoff.sentence_en", "handoff.sentence_de"}
+)
 PAGE_WORD = {"en": "p.", "de": "S."}
 PAGES_WORD = {"en": "pp.", "de": "S."}
 
@@ -133,23 +139,32 @@ def complete_pairing_cards(
     return output.model_copy(update={"blocks": blocks})
 
 
-def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
+def hydrate(
+    output: TurnOutput, facts: TurnFacts, language: str | None = None
+) -> TurnOutput:
     """Return a copy whose text blocks and handoff summaries are filled.
+
+    `language` is the answer language. It selects owned sentences (the mailbox
+    sentence, the login sentence), document page labels and the decimal mark
+    of a document figure. Callers that omit it keep the output's own language.
 
     Document blocks become links, one per file: two refs to the same file (two
     batteries citing the same configuration instructions, trial question 4,
     2026-10-17) are one link, its cited pages joined ("pp. 3, 7").
     """
+    language = language or output.language
     blocks: list[Block] = []
     # File URL → (index of its link in `blocks`, the document, its cited pages).
     links: dict[str, tuple[int, Document, list[int]]] = {}
     for block in [*output.blocks, *cited_documents(output, facts)]:
         if isinstance(block, TextBlock):
-            text = fill(block.text, facts, output.language)
+            text = fill(block.text, facts, language)
             blocks.append(block.model_copy(update={"text": text}))
         elif isinstance(block, HandoffBlock):
             blocks.append(
-                block.model_copy(update={"summary": fill(block.summary, facts)})
+                block.model_copy(
+                    update={"summary": fill(block.summary, facts, language)}
+                )
             )
         elif (
             isinstance(block, ActionBlock)
@@ -176,7 +191,7 @@ def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
                 pages.append(document.page)
             blocks[index] = blocks[index].model_copy(
                 update={
-                    "label": document_label(first, output.language, pages),
+                    "label": document_label(first, language, pages),
                     "url": document_url(first, pages),
                 }
             )
@@ -265,7 +280,7 @@ def fill(text: str, facts: TurnFacts, locale: str = "en") -> str:
     """
 
     def replace(match: re.Match[str]) -> str:
-        fact = _lookup(facts, match.group(1))
+        fact = _render_fact(facts, match.group(1), locale)
         if fact is None:
             return match.group(0)
         after = match.group(2)
@@ -295,6 +310,32 @@ def _unit(fact_id: str) -> str | None:
         if fact_id.endswith(ending):
             return unit
     return None
+
+
+def _render_fact(facts: TurnFacts, fact_id: str, locale: str) -> Fact | None:
+    """The fact to print, with owned sentences forced to `locale`.
+
+    `handoff.sentence`, `handoff.sentence_en` and `handoff.sentence_de` all
+    print `handoff.sentence_<locale>` when that fact exists. `{fact:inquiry.login}`
+    prints the login sentence of `locale`, so a fact collected for the page
+    cannot leak the other language.
+    """
+    language = "de" if locale.startswith("de") else "en"
+    if fact_id in _HANDOFF_IDS:
+        preferred = facts.facts.get(f"handoff.sentence_{language}")
+        if preferred is not None:
+            return preferred
+    if fact_id == "inquiry.login" and (
+        "inquiry.login" in facts.facts or "inquiry.login_required" in facts.facts
+    ):
+        from linker_genie.template import LOGIN_REQUIRED
+
+        return Fact(
+            id="inquiry.login",
+            value=LOGIN_REQUIRED[language],
+            source="inquiry-status",
+        )
+    return _lookup(facts, fact_id)
 
 
 def _lookup(facts: TurnFacts, fact_id: str) -> Fact | None:

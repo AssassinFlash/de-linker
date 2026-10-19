@@ -1,0 +1,166 @@
+{
+  "ticket": 339,
+  "about": "Campaign #330 defect and parity rows after the round-3 recount. This harness fixture is the #339 registration for those cases. services/genie/tests/fixtures/339/manifest.json belongs to unmerged PR #383 and is not edited here.",
+  "cases": [
+    {
+      "id": "A3-EN",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D7",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#A3-EN"
+    },
+    {
+      "id": "A4-EN",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D12",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#A4-EN"
+    },
+    {
+      "id": "A8-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "round-3",
+      "evidence": "docs/research/2026-10-20-campaign-330/round3-runs.jsonl#A8-DE"
+    },
+    {
+      "id": "C1-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D11",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#C1-DE"
+    },
+    {
+      "id": "C1-EN",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D11",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#C1-EN"
+    },
+    {
+      "id": "F1-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "parity",
+      "defect": "parity",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#F1-DE"
+    },
+    {
+      "id": "F1-EN",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D1",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#F1-EN"
+    },
+    {
+      "id": "F3-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D8",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#F3-DE"
+    },
+    {
+      "id": "F4-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D5",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#F4-DE"
+    },
+    {
+      "id": "G1-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D1",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#G1-DE"
+    },
+    {
+      "id": "G1-EN",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D1",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#G1-EN"
+    },
+    {
+      "id": "G4-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D9",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#G4-DE"
+    },
+    {
+      "id": "G5-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "parity",
+      "defect": "parity",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#G5-DE"
+    },
+    {
+      "id": "G5-EN",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D4",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#G5-EN"
+    },
+    {
+      "id": "H4-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "parity",
+      "defect": "parity",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#H4-DE"
+    },
+    {
+      "id": "H4-EN",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D2",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#H4-EN"
+    },
+    {
+      "id": "I1-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D10",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#I1-DE"
+    },
+    {
+      "id": "I5-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D3",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#I5-DE"
+    },
+    {
+      "id": "J5-DE",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "parity",
+      "defect": "parity",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#J5-DE"
+    },
+    {
+      "id": "J5-EN",
+      "issue": 330,
+      "campaign": "330",
+      "grade": "defect",
+      "defect": "D6",
+      "evidence": "docs/research/2026-10-20-campaign-330/verdicts.jsonl#J5-EN"
+    }
+  ]
+}

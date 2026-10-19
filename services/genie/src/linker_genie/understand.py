@@ -28,6 +28,7 @@ from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.jev import JevError, Reading, page_state
+from linker_genie.language import turn_language, with_tool_lang
 from linker_genie.lexicon import Match, Vocabulary
 from linker_genie.nameplate import Identified, card, identify, with_known_brand
 from linker_genie.route import (
@@ -124,6 +125,9 @@ class Understander:
     def prepare(self, request: TurnRequest, client: AbilityClient) -> Prepared:
         messages = customer_messages(request)
         message = messages[-1] if messages else ""
+        # Route calls, fact collection and attachment decimals follow the
+        # answer language. The page locale stays on the request for the prompt.
+        language = turn_language(request)
         log: dict[str, Any] = {}
         # The layer's own clock (#336, timing.py): measurement only; it travels
         # with the Prepared, and the app adopts it into the turn's record.
@@ -191,14 +195,14 @@ class Understander:
                 fresh,
                 None,
                 vocabulary,
-                request.locale,
+                language,
             )
             return prepared
         reading: Reading | None = None
         if plate is not None:
             # A nameplate is confirmed before anything else is answered about it, so
             # Jev is not asked: the route is the nameplate's (route.nameplate).
-            route = nameplate(plate, request.locale, subject, [])
+            route = nameplate(plate, language, subject, [])
         else:
             reading = self._read(request, message, vocabulary, log, clock)
             # Jev's yes/no answers count from 0.5, the cut the measurement scored
@@ -212,7 +216,7 @@ class Understander:
                 matches,
                 reading,
                 subject,
-                request.locale,
+                language,
                 bare,
                 earlier=tuple(messages[:-1]),
             )
@@ -236,7 +240,7 @@ class Understander:
             fresh,
             plate,
             vocabulary,
-            request.locale,
+            language,
         )
         return prepared
 
@@ -432,19 +436,23 @@ def _run_calls(
                     pages, request.page_context, question, request.user.logged_in
                 )
                 return call.arguments, payload, gathered
+            language = turn_language(request)
             if call.ability == knowledge.NAME:
                 # The document search runs in this process (knowledge.py, #257).
-                payload, gathered = knowledge.record(
-                    search, call.arguments, request.locale
-                )
-                return call.arguments, payload, gathered
+                arguments = with_tool_lang(knowledge.NAME, call.arguments, language)
+                payload, gathered = knowledge.record(search, arguments, language)
+                return arguments or {}, payload, gathered
             # Size-hint arguments are the dict plan() put on the call
             # (prefill.stated_size_hint). Sending that object keeps the route
             # log and the wire the same dict (#365). The model's own call is
             # stripped in agent._ability_runner, which reads the same messages.
-            arguments = call.arguments
+            arguments = (
+                call.arguments
+                if call.ability == "linker/size-hint"
+                else with_tool_lang(call.ability, call.arguments, language) or {}
+            )
             payload, gathered = client.record(
-                call.ability, arguments, request.user.context, request.locale
+                call.ability, arguments, request.user.context, language
             )
             return arguments, payload, gathered
 

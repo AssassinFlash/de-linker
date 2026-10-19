@@ -30,6 +30,8 @@
 | `terravolt` | 25 行/13 文件 | 数据。`~/.config/terravolt-builder/*.env` 本机凭据路径、pull 工具的 live 插件路径、`TokensTest.php:32` 的反向护栏（断言 CSS 不含 `terravolt-b2b-core`） |
 | `dlk-` / `dlk_` | 9/11 | 数据。SKU 前缀、CSS 变量 `--dlk-radius`、pull 工具的 live DB option 名 |
 
+2026-10-20 补记（#330 第二轮）：上表 9/11 是 2026-10-11 的代码面计数，不改。活动装具不再把商店前缀用在编造型号上。2026-10-19 那次回合的客户原话留在 `docs/research/2026-10-20-campaign-330/verdicts.jsonl` 的 G4 行，是当时的提问，不是在售 SKU。现行夹具用 `NEX-` 前缀。
+
 旧特有函数名 8 个全部 **0 命中**：`resolve_class`、`family_evidence`、`families_in_sales_range`、`tv_b2b_product_commerce_state`、`build_linker_ai_knowledge`、`extract_design_inputs`、`model_task_proposals`、`without_reference_classes`。
 JS/Python 键：`design-canvas.bundle`、`lit-html`、`linker_engine.design`、`valid_until: 2027-01-31` 全 0（旧 tariffs.yaml 未携带，新引擎无此文件）。`quote-configurator` 11 行 = URL 重定向映射（`Redirects.php:37`）+ 迁移脚本，属数据。
 

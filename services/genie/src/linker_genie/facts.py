@@ -73,8 +73,10 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
     a condition a placeholder hydrates into the answer is customer-visible
     text, and an English sentence in a German answer fails the row the way
     `german_is_clean` fails a fallback line (R6-de, measured 2026-10-11).
-    The locale is the request's, not the payload's; the abilities return
-    both sides and the choice belongs to the turn.
+    `locale` is the answer language: the question's language when that
+    question is clearly one language, otherwise the page. It is not always
+    the request locale. The abilities return both sides and the choice
+    belongs to the turn.
     """
     gathered = TurnFacts()
     if not isinstance(payload, dict):
@@ -92,9 +94,9 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
     elif name.endswith("search-knowledge"):
         _from_knowledge(gathered, payload)
     elif name.endswith("inquiry-status"):
-        _from_inquiry(gathered, payload)
+        _from_inquiry(gathered, payload, locale)
     elif name.endswith("handoff-team"):
-        _from_handoff(gathered, payload)
+        _from_handoff(gathered, payload, locale)
     elif name == READ_PAGE:
         _from_page(gathered, payload)
     elif name == READ_ATTACHMENT:
@@ -515,13 +517,25 @@ def _from_knowledge(gathered: TurnFacts, payload: dict[str, Any]) -> None:
                 gathered.add(Fact(id=figure, value=value, source="search-knowledge"))
 
 
-def _from_inquiry(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+def _from_inquiry(
+    gathered: TurnFacts, payload: dict[str, Any], locale: str = "en"
+) -> None:
     if payload.get("error") == "login_required":
         gathered.add(
             Fact(
                 id="inquiry.login_required",
                 value="login_required",
                 source="inquiry-status",
+            )
+        )
+        # The sentence the placeholder `{fact:inquiry.login}` names. Imported
+        # here: template imports hydrate, which imports this module.
+        from linker_genie.template import LOGIN_REQUIRED
+
+        side = "de" if locale.startswith("de") else "en"
+        gathered.add(
+            Fact(
+                id="inquiry.login", value=LOGIN_REQUIRED[side], source="inquiry-status"
             )
         )
         return
@@ -540,11 +554,22 @@ def _from_inquiry(gathered: TurnFacts, payload: dict[str, Any]) -> None:
             )
 
 
-def _from_handoff(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+def _from_handoff(
+    gathered: TurnFacts, payload: dict[str, Any], locale: str = "en"
+) -> None:
     for key in ("sentence_en", "sentence_de", "mailto"):
         value = payload.get(key)
         if isinstance(value, str) and value:
             gathered.add(Fact(id=f"handoff.{key}", value=value, source="handoff-team"))
+    # `{fact:handoff.sentence}` is the id both prompts write. The side is the
+    # answer language, with the other side as a fallback when one is missing.
+    side = "de" if locale.startswith("de") else "en"
+    other = "en" if side == "de" else "de"
+    chosen = payload.get(f"sentence_{side}")
+    if not isinstance(chosen, str) or not chosen:
+        chosen = payload.get(f"sentence_{other}")
+    if isinstance(chosen, str) and chosen:
+        gathered.add(Fact(id="handoff.sentence", value=chosen, source="handoff-team"))
 
 
 def _add_figures(
