@@ -66,8 +66,15 @@ final class SizeHint {
 						'type'    => 'string',
 						'pattern' => '^[0-9]{5}$',
 					),
+					'lang'            => array(
+						'type' => 'string',
+						'enum' => array( 'en', 'de' ),
+					),
 				),
 				'additionalProperties' => false,
+				// A GET with no parameters means "empty input" (the abilities
+				// REST controller reads null without a declared default).
+				'default'              => array(),
 			),
 			'output_schema'       => array(
 				'type'                 => 'object',
@@ -100,11 +107,15 @@ final class SizeHint {
 	/**
 	 * The configurator URL with the given fields as query arguments.
 	 *
-	 * @param array<string, mixed>|object $input Optional pv_kwp, annual_load_kwh, phase, backup, plz.
+	 * `lang` is accepted and ignored. It is not a configurator field, so it
+	 * never appears in the URL (#365, #393).
+	 *
+	 * @param array<string, mixed>|object $input Optional pv_kwp, annual_load_kwh, phase, backup, plz, lang.
 	 * @return array{summary: string, configurator_url: string}
 	 */
 	public function execute( $input = array() ): array {
 		$input = (array) $input;
+		unset( $input['lang'] );
 		$query = array();
 		$parts = array();
 		if ( is_numeric( $input['pv_kwp'] ?? null ) && (float) $input['pv_kwp'] > 0 ) {
