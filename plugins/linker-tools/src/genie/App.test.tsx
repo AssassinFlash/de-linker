@@ -30,6 +30,8 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		// a live one is; the calls around it are doubles.
 		assistantMessage: actual.assistantMessage,
 		emailOutcome: actual.emailOutcome,
+		isTurnConflict: actual.isTurnConflict,
+		turnConflictText: actual.turnConflictText,
 		readThread: vi.fn( async () => ( { messages: [], turn: null } ) ),
 		listConversations: vi.fn( async () => ( {
 			currentId: 0,
@@ -224,6 +226,126 @@ test( 'a failed proxy call shows the retry sentence, not a fake answer', async (
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
+} );
+
+test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', async () => {
+	resetTurnLane();
+	const server = [
+		{ role: 'user' as const, content: 'Which inverter?' },
+		{
+			role: 'assistant' as const,
+			content: 'The hybrid inverter is three-phase.',
+		},
+	];
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: server,
+		turn: null,
+		contacts: [],
+		inquiries: [],
+	} );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockRejectedValue(
+			new TurnError( 409, 'linker_genie_turn_conflict' )
+		);
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await waitFor( () => expect( listConversations ).toHaveBeenCalled() );
+	vi.mocked( listConversations ).mockClear();
+	const field = screen.getByLabelText( 'Ask Genie' );
+	fireEvent.change( field, { target: { value: 'EV chargers' } } );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'The conversation changed while Genie was answering. Send your question again.'
+	);
+	expect(
+		screen.queryByText( 'Genie did not answer. Please try again.' )
+	).toBeNull();
+	expect( field ).toHaveValue( 'EV chargers' );
+	expect(
+		screen.queryByText( 'EV chargers', {
+			selector: '.linker-genie-app__message',
+		} )
+	).toBeNull();
+	expect( sendTurn ).toHaveBeenCalledWith(
+		'/wp-json/linker-ai/v1/genie/turn',
+		'n',
+		'en',
+		[ ...server, { role: 'user', content: 'EV chargers' } ],
+		{ type: 'category' },
+		[]
+	);
+	await waitFor( () => expect( listConversations ).toHaveBeenCalled() );
+} );
+
+test( 'the next send uses the thread re-read from the server', async () => {
+	resetTurnLane();
+	vi.mocked( readThread )
+		.mockResolvedValueOnce( { messages: [], turn: null } )
+		.mockResolvedValue( {
+			messages: [
+				{ role: 'user', content: 'Peer question' },
+				{ role: 'assistant', content: 'Peer answer' },
+			],
+			turn: null,
+		} );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'Stored with the peer.', refs: [] },
+			],
+		} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', {
+				name: 'I need a three-phase hybrid inverter for a home.',
+			} )
+		);
+	} );
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+		{ role: 'user', content: 'Peer question' },
+		{ role: 'assistant', content: 'Peer answer' },
+		{
+			role: 'user',
+			content: 'I need a three-phase hybrid inverter for a home.',
+		},
+	] );
+} );
+
+test( 'a conflicting attachment turn keeps the upload', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockRejectedValue(
+			new TurnError( 409, 'linker_genie_turn_conflict' )
+		);
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const fileInput = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	const datasheet = new File( [ '%PDF-1.7' ], 'gw10k-et-datenblatt.pdf', {
+		type: 'application/pdf',
+	} );
+	fireEvent.change( fileInput, { target: { files: [ datasheet ] } } );
+	await screen.findByText( 'gw10k-et-datenblatt.pdf' );
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	await waitFor( () => expect( send ).toBeEnabled() );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'The conversation changed while Genie was answering. Send your question again.'
+	);
+	expect( screen.getByText( 'gw10k-et-datenblatt.pdf' ) ).toBeInTheDocument();
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );
 
 test( 'the assistant message carries the vote buttons and posts the vote', async () => {

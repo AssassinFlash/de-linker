@@ -22,7 +22,7 @@ import { expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import type { GenieConfig } from '../genie/config';
-import type { Turn, TurnMessage } from '../genie/api/turn';
+import { TurnError, type Turn, type TurnMessage } from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession, type HeroSessionConfig } from './session';
@@ -244,6 +244,46 @@ test( 'a failed first turn keeps the question and shows the retry sentence', asy
 		'Genie did not answer. Please try again.'
 	);
 	expect( screen.getByText( 'saj' ) ).toBeInTheDocument();
+} );
+
+test( 'a conflicting turn puts the question back and re-reads the thread', async () => {
+	const read = vi
+		.fn()
+		.mockResolvedValueOnce( { messages: [], turn: null } )
+		.mockResolvedValueOnce( { messages: [], turn: null } )
+		.mockResolvedValueOnce( {
+			messages: [
+				{ role: 'user', content: 'Which inverter?' },
+				{
+					role: 'assistant',
+					content: 'The hybrid inverter is three-phase.',
+				},
+			],
+			turn: null,
+		} );
+	const send = vi.fn( async () => {
+		throw new TurnError( 409, 'linker_genie_turn_conflict' );
+	} );
+	const setPrompt = vi.fn();
+	const { bridge } = renderHero(
+		new HeroSession( SESSION_CONFIG, read, send ),
+		{ setPrompt }
+	);
+
+	await act( async () => {
+		bridge().ask( 'EV chargers' );
+	} );
+
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'The conversation changed while Genie was answering. Send your question again.'
+	);
+	expect(
+		screen.queryByText( 'Genie did not answer. Please try again.' )
+	).toBeNull();
+	expect( screen.queryByText( 'EV chargers' ) ).toBeNull();
+	expect( screen.getByText( 'Which inverter?' ) ).toBeInTheDocument();
+	expect( setPrompt ).toHaveBeenCalledWith( 'EV chargers' );
+	expect( read ).toHaveBeenCalledTimes( 3 );
 } );
 
 test( 'the nameplate card confirms into an ordinary question', async () => {

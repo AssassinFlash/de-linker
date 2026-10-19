@@ -65,6 +65,18 @@ class Proxy {
 	public const TOKEN_HEADER = 'X-Linker-Service-Token';
 
 	/**
+	 * Seconds one turn may take, the model call and the commit lock together.
+	 *
+	 * The wp_remote_post timeout is this number: a turn makes at most four
+	 * ability calls, each capped at twenty seconds in the service, plus the
+	 * model, and the browser's one request is this long. The commit lock
+	 * waits only for the seconds left after the model returns, so the two
+	 * waits do not add (#373). Thread::record's own ceiling is this same
+	 * number, used only when a commit has no model call in front of it.
+	 */
+	public const TURN_BUDGET = 60;
+
+	/**
 	 * Sets up the proxy.
 	 *
 	 * @param Conversations                                                                               $conversations Conversation posts.
@@ -484,7 +496,8 @@ class Proxy {
 		if ( array() !== $readings ) {
 			$body['readings'] = $readings;
 		}
-		$stream = $this->post( $base . '/assistant/turn', $body );
+		$started = microtime( true );
+		$stream  = $this->post( $base . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}
@@ -504,14 +517,20 @@ class Proxy {
 		// The readings are the conversation's store (Thread::split, once per
 		// turn); the browser gets what each file is, not its whole text again.
 		$split = Thread::split( (string) $stream );
-		if ( ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'] ) ) {
+		// The model call already spent part of TURN_BUDGET. The lock waits
+		// only for the rest, so the worst case stays one turn, not two.
+		$left = (int) floor( self::TURN_BUDGET - ( microtime( true ) - $started ) );
+		if ( $left < 0 ) {
+			$left = 0;
+		}
+		if ( ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left ) ) {
 			// The answer was produced and is not stored. The other turn
-			// stays. The shell already says the turn did not go through
-			// and leaves the question in the thread, so the customer can
-			// send it again (App.tsx, the non-attachment error path).
+			// stays. The shell re-reads the thread, puts the question back
+			// in the field, and keeps the uploads so the customer can send
+			// it again (App.tsx / Hero.tsx, the 409 path).
 			return new WP_Error(
 				'linker_genie_turn_conflict',
-				'This conversation changed while Genie was answering.',
+				'The conversation changed while Genie was answering. Send your question again.',
 				array( 'status' => 409 )
 			);
 		}
@@ -628,11 +647,12 @@ class Proxy {
 					self::TOKEN_HEADER => $this->token,
 				),
 				'body'    => (string) wp_json_encode( $body ),
-				// Sixty seconds: one turn makes at most four ability calls
-				// (each capped at twenty seconds in the service) plus the
-				// model's own latency, so the browser's single request must
-				// outlast the worst legitimate turn.
-				'timeout' => 60.0,
+				// TURN_BUDGET: one turn makes at most four ability calls (each
+				// capped at twenty seconds in the service) plus the model's
+				// own latency, so the browser's single request must outlast
+				// the worst legitimate turn. The commit lock uses what is
+				// left of this same budget.
+				'timeout' => (float) self::TURN_BUDGET,
 			)
 		);
 		if ( is_wp_error( $response ) ) {

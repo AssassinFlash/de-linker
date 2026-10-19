@@ -93,6 +93,19 @@ export class HeroSession {
 	}
 
 	/**
+	 * Reads the stored thread again.
+	 *
+	 * load() does not, once a read has finished. A 409 has to see the turn
+	 * the other tab just stored (#373).
+	 *
+	 * @return The stored thread.
+	 */
+	async reload(): Promise< HeroStoredThread > {
+		await this.refresh();
+		return this.snapshot();
+	}
+
+	/**
 	 * Re-reads the shared thread before a send.
 	 */
 	private async refresh(): Promise< void > {
