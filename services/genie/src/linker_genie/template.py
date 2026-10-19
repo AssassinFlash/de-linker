@@ -43,7 +43,14 @@ from __future__ import annotations
 
 from linker_genie.facts import TurnFacts
 from linker_genie.hydrate import hydrate
-from linker_genie.route import SEARCH_LIMIT, NamedModel, Route, lookup_models, several
+from linker_genie.route import (
+    SEARCH_LIMIT,
+    ModelLookup,
+    NamedModel,
+    Route,
+    lookup_models,
+    several,
+)
 from linker_genie.schema import (
     ASK_FIELDS,
     ActionBlock,
@@ -192,16 +199,15 @@ def _hidden_codes_answer(
     """Name the codes. Do not call one of them the cheapest, and write no price.
 
     The price sentence and "You named" are customer-visible. The record is
-    docs/acceptance/2026-10-20/384/copy-review.md. The coordinator has not
-    signed off.
+    docs/acceptance/2026-10-20/384/copy-review.md, signed off on 2026-10-20.
     """
     price = (
         "Freigegebene Partnerkonten sehen die Nettopreise."
         if language == "de"
         else "Approved partner accounts see net prices."
     )
-    codes = _extreme_code_lines(facts, language, route, skip="")
     looked = lookup_models(route.named_models, facts.tool_calls, facts.qualified_ids)
+    codes = _extreme_code_lines(facts, language, route, skip=None, looked=looked)
     ids: list[int] = []
     for item in looked:
         if not item.note.searched_known:
@@ -222,10 +228,22 @@ def _hidden_codes_answer(
 
 
 def _extreme_code_lines(
-    facts: TurnFacts, language: Locale, route: Route, *, skip: str
+    facts: TurnFacts,
+    language: Locale,
+    route: Route,
+    *,
+    skip: str | None,
+    looked: tuple[ModelLookup, ...] | None = None,
 ) -> list[str]:
-    """One line per code that still has to be said, without a cheapest claim."""
-    looked = lookup_models(route.named_models, facts.tool_calls, facts.qualified_ids)
+    """One line per code that still has to be said, without a cheapest claim.
+
+    `skip` is a code already named by the winner sentence. None names every
+    searched code. `looked` is the join this caller already made.
+    """
+    if looked is None:
+        looked = lookup_models(
+            route.named_models, facts.tool_calls, facts.qualified_ids
+        )
     lines: list[str] = []
     named: list[str] = []
     missed: list[NamedModel] = []

@@ -53,6 +53,7 @@ EXPECTED = (
     "339-384-unknown-de",
     "339-384-mix-en",
     "339-384-mix-de",
+    "339-384-several-unknown-en",
     "339-384-cheapest-en",
     "339-384-cheapest-de",
     "339-384-applied-en",

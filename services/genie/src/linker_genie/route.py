@@ -516,45 +516,25 @@ def plan(
             reasons=tuple(reasons),
         )
     # A brand or series extreme is one aggregate (#368), not a brand/model
-    # conflict. Two written models, or one code whose products belong to
-    # another brand, stay on the per-model searches for smallest and largest:
-    # one class aggregate would hide those codes. An unknown code beside a
-    # class extreme keeps the aggregate and a search for every written code,
-    # known or unknown (#384). A cheapest question over written models also
-    # keeps the aggregate, so a hidden price still returns price_hidden.
+    # conflict. Two catalog models stay on the per-model searches for
+    # smallest and largest: one class aggregate would hide those codes. An
+    # unknown code beside a class extreme keeps the aggregate and a search
+    # for every written code, known or unknown, including when several
+    # catalog models are written beside it (#384). A cheapest question over
+    # written models also keeps the aggregate, so a hidden price still
+    # returns price_hidden, unless one written model conflicts with the
+    # written brand. That conflict stays off the aggregate: the aggregate
+    # is brand-filtered, so it cannot be the conflicting product, and the
+    # conflict hint would also demand that product's card.
     # Dossier §1.1 and §1.11 have no procedure for either mix.
-    # Written codes and the aggregate are read once. A brand conflict is only
-    # defined for one written code, so it is not consulted when several are.
+    # Written codes, unknown codes and the aggregate are read once.
     written = _written_models(matches, message)
     several_written = len(written) >= SEVERAL_MODELS
-    brand_conflict = not several_written and _conflicts_with_written_brand(
-        written, matches, subject
-    )
+    unknown_codes = _unknown_codes(message, subject)
+    brand_conflict = _conflicts_with_written_brand(written, matches, subject)
     aggregate = None if brand_conflict else extreme_input(message, matches, lang)
-    if aggregate is not None and not several_written:
-        if _unknown_codes(message, subject):
-            return _composite_extreme(
-                aggregate,
-                reasons,
-                matches,
-                subject,
-                lang,
-                message,
-                search_matched_models=bool(written),
-            )
-        reasons.append(f"extreme: {aggregate['extreme']}")
-        return Route(
-            "products",
-            (Call("linker/search-products", aggregate),),
-            show_products=True,
-            no_handoff=True,
-            hint=EXTREME_HINT,
-            reasons=tuple(reasons),
-        )
-    if (
-        aggregate is not None
-        and several_written
-        and aggregate.get("extreme") == "cheapest"
+    if aggregate is not None and (
+        unknown_codes or (several_written and aggregate.get("extreme") == "cheapest")
     ):
         return _composite_extreme(
             aggregate,
@@ -563,7 +543,18 @@ def plan(
             subject,
             lang,
             message,
-            search_matched_models=True,
+            search_matched_models=bool(written),
+            unknown_codes=unknown_codes,
+        )
+    if aggregate is not None and not several_written:
+        reasons.append(f"extreme: {aggregate['extreme']}")
+        return Route(
+            "products",
+            (Call("linker/search-products", aggregate),),
+            show_products=True,
+            no_handoff=True,
+            hint=EXTREME_HINT,
+            reasons=tuple(reasons),
         )
     if intent == "sizing":
         return Route(
@@ -1010,28 +1001,30 @@ def _composite_extreme(
     message: str,
     *,
     search_matched_models: bool,
+    unknown_codes: tuple[str, ...],
 ) -> Route:
     """The class aggregate, then one search per written code (#384).
 
     `search_matched_models` is true when the message writes catalog models.
-    Those models are searched as well as any code the catalog does not list.
-    Dossier §1.1 has no procedure for a sentence that is both an extreme and
-    a list of codes, and §1.11 has none for separating those codes. Each part
-    keeps the call it already had. The aggregate is first and is the only
-    call that carries `extreme`, so a hidden price is recorded once and a
-    per-code search cannot name a second winner. The hint names every code
-    and still allows only the winner card when the aggregate is applied.
+    Those models are searched as well as `unknown_codes`, the codes this
+    turn already read. Dossier §1.1 has no procedure for a sentence that is
+    both an extreme and a list of codes, and §1.11 has none for separating
+    those codes. Each part keeps the call it already had. The aggregate is
+    first and is the only call that carries `extreme`, so a hidden price is
+    recorded once and a per-code search cannot name a second winner. The
+    hint names each unknown code, and it names known codes when at least
+    two of them were searched. One known code beside one unknown code is
+    not repeated in the known-code sentence. The hint still allows only the
+    winner card when the aggregate is applied.
     """
     reasons.append(f"extreme: {extreme['extreme']}")
     if search_matched_models:
         calls, notes = _search_plan(matches, lang, subject, message)
-        extra_calls, extra_notes = _unknown_calls(
-            _unknown_codes(message, subject), lang, subject
-        )
+        extra_calls, extra_notes = _unknown_calls(unknown_codes, lang, subject)
         calls = (*calls, *extra_calls)
         notes = (*notes, *extra_notes)
     else:
-        calls, notes = _unknown_calls(_unknown_codes(message, subject), lang, subject)
+        calls, notes = _unknown_calls(unknown_codes, lang, subject)
     calls, notes = _limit_route_calls(
         (Call("linker/search-products", extreme), *calls),
         notes,
@@ -1266,13 +1259,19 @@ def _written_models(matches: list[Match], message: str) -> list[Match]:
 def _conflicts_with_written_brand(
     written: list[Match], matches: list[Match], subject: Subject
 ) -> bool:
-    """Whether the one written model belongs to a brand other than the one named."""
-    if len(written) != 1:
+    """Whether any written model belongs to a brand other than the one named.
+
+    One conflicting code used to be the only case (#368). Several written
+    models can carry the same conflict (#384): the aggregate is filtered to
+    the written brand, so it can never be that product.
+    """
+    if not written:
         return False
     brands = [match for match in matches if match.kind == "brand"]
     if len({match.value for match in brands}) != 1:
         return False
-    return _conflicts(written[0], brands[0].value, subject)
+    brand = brands[0].value
+    return any(_conflicts(model, brand, subject) for model in written)
 
 
 def _conflicts(model: Match, brand_slug: str, subject: Subject) -> bool:
