@@ -33,7 +33,7 @@ default:
     @just --list --list-submodules
 
 # Lint and static analysis of every chain, and the build/ manifest.
-check: php-check js-check e2e-check py-check pull::check cutover::check banned-words i18n-coverage i18n-validity build::check
+check: php-check js-check e2e-check py-check pull::check cutover::check banned-words internal-home-urls i18n-coverage i18n-validity build::check
 
 # Unit tests of every chain and the end-to-end tests.
 test: php-test js-test py-test pull::test cutover::test
@@ -377,6 +377,13 @@ banned-words:
         exit 1
     fi
     echo "banned-words: clean"
+
+# No plugin writes an English address of this site into its own markup
+# (#263): home_url( '/…' ) is the root of H1/H5/M9; the language-aware entry
+# point is PageUrls (tools/checks/internal-home-urls.py).
+[group('check')]
+internal-home-urls:
+    python3 "{{ justfile_directory() }}/tools/checks/internal-home-urls.py" --root "{{ justfile_directory() }}"
 
 # German formal catalogs: untranslated entries minus the developer-facing
 # exemption list must be zero. linker-tools also checks source coverage and

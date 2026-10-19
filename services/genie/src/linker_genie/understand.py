@@ -22,7 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from linker_genie import attachments, contact, knowledge, page
+from linker_genie import attachments, contact, knowledge, page, parts
 from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
@@ -72,6 +72,10 @@ class Prepared:
     attachments: list[dict[str, Any]] = field(default_factory=list)
     # What the shell shows for each file of this turn (nameplate.card).
     cards: list[dict[str, Any]] = field(default_factory=list)
+    # The parts list this turn works on (#251): the rows, their states and the one
+    # add-to-draft action. The turn is the service's own (parts.answer), no model
+    # writes it, so nothing here can be invented.
+    parts_list: parts.PartsList | None = None
 
     @property
     def calls_made(self) -> int:
@@ -132,6 +136,43 @@ class Understander:
             )
         ]
         plate = _first_nameplate(fresh, vocabulary)
+        source = (
+            None
+            if plate is not None or vocabulary is None
+            else parts.find(request.messages, fresh, request.readings, vocabulary)
+        )
+        if source is not None:
+            # A parts list is code's whole turn (#251): the rows are matched here,
+            # the answer and the card are parts.answer's, and the model does not
+            # run. Jev is not asked, as for a nameplate: the list decides.
+            assert vocabulary is not None  # parts.find requires it
+            result = parts.build(source, list(request.messages), vocabulary)
+            log["parts"] = {
+                "kind": source.kind,
+                "reading": source.reading_id,
+                "rows": len(result.rows),
+                "matched": sum(1 for row in result.rows if row.status == "matched"),
+                "uncertain": sum(1 for row in result.rows if row.status == "uncertain"),
+                "missing": sum(1 for row in result.rows if row.status == "missing"),
+                "truncated": result.truncated,
+            }
+            route = Route(
+                "parts",
+                no_cards=True,
+                no_handoff=True,
+                reasons=(f"parts list: {len(result.rows)} rows",),
+            )
+            log.update(route.as_log())
+            prepared = Prepared(route=route, log=log, readings=fresh, parts_list=result)
+            _add_readings(
+                prepared,
+                [*request.readings, *fresh],
+                fresh,
+                None,
+                vocabulary,
+                request.locale,
+            )
+            return prepared
         reading: Reading | None = None
         if plate is not None:
             # A nameplate is confirmed before anything else is answered about it, so
@@ -230,16 +271,16 @@ def _add_readings(
 
     The conversation keeps the latest `MAX_READINGS` (the proxy cuts the same way).
     """
-    parts = [prepared.facts]
+    pieces = [prepared.facts]
     new = {item.id for item in fresh}
     for item in readings[-MAX_READINGS:]:
         payload, gathered = attachments.record(item, locale)
         if item.id not in new:
             # Logged in full with the turn that read it; named here (log once).
             gathered.tool_calls = [attachments.recorded(item.id)]
-        parts.append(gathered)
+        pieces.append(gathered)
         prepared.attachments.append(payload)
-    prepared.facts = merge(parts)
+    prepared.facts = merge(pieces)
     shown = [
         pid
         for result in prepared.results

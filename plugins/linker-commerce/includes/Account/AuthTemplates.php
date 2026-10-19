@@ -14,8 +14,9 @@ namespace Linker\Commerce\Account;
  * where Woo and the registration module put it. This class points the guest
  * templates at this plugin's copies, whose markup arranges the same form into
  * the account's card, and the register form's own fields (printed by
- * Registration\Fields on woocommerce_register_form_start) into the three steps
- * the account sign-up reads: company, contact and address, sign-in details.
+ * Registration\Fields on woocommerce_register_form_start) into the two steps
+ * the account sign-up reads: the company with its verification values, and the
+ * person with the sign-in details (owner ruling 2026-10-17, ticket #225).
  * The reset form is included (ticket #184): the live chain landed on Woo's
  * bare markup, the one page of the chain without a card.
  *
@@ -178,13 +179,14 @@ final class AuthTemplates {
 	}
 
 	/**
-	 * The register form's own fields in their two blocks: the company block
-	 * (company, role, VAT ID) and the contact-and-address block, split where
-	 * the first name field starts. Buffered from Woo's hook so the fields and
-	 * their order stay Registration\Fields's own; an unknown layout returns
-	 * one block, so the fields can never be lost by a cosmetic split.
+	 * The register form's own fields in the two steps the account sign-up
+	 * reads (owner ruling 2026-10-17, ticket #225): step 1's company fields,
+	 * its verification pair (website or VAT ID), and step 2's names. Buffered
+	 * from Woo's hook so the fields and their order stay Registration\Fields's
+	 * own; an unknown layout keeps every field in the earlier block, so the
+	 * fields can never be lost by a cosmetic split.
 	 *
-	 * @return array{company: string, contact: string}
+	 * @return array{company: string, verify: string, you: string}
 	 */
 	public static function register_field_blocks(): array {
 		ob_start();
@@ -194,31 +196,39 @@ final class AuthTemplates {
 	}
 
 	/**
-	 * Splits the buffered register fields before the paragraph that holds the
-	 * first-name field: everything before it is the company block, the rest is
-	 * contact and address. Anything unexpected keeps all fields in one block.
+	 * Splits the buffered register fields before the first-name paragraph and
+	 * the company block before the website paragraph. Anything unexpected
+	 * keeps the remaining fields together.
 	 *
 	 * @param string $html Buffered woocommerce_register_form_start output.
-	 * @return array{company: string, contact: string}
+	 * @return array{company: string, verify: string, you: string}
 	 */
 	public static function split_field_blocks( string $html ): array {
-		$marker = strpos( $html, 'id="billing_first_name_field"' );
-		if ( false === $marker ) {
-			return array(
-				'company' => '',
-				'contact' => $html,
-			);
-		}
-		$start = strrpos( substr( $html, 0, $marker ), '<p' );
-		if ( false === $start || 0 === $start ) {
-			return array(
-				'company' => '',
-				'contact' => $html,
-			);
-		}
+		list( $company_and_verify, $you ) = self::split_before( $html, 'id="billing_first_name_field"' );
+		list( $company, $verify )         = self::split_before( $company_and_verify, 'id="linker_company_website_field"' );
 		return array(
-			'company' => substr( $html, 0, $start ),
-			'contact' => substr( $html, $start ),
+			'company' => $company,
+			'verify'  => $verify,
+			'you'     => $you,
 		);
+	}
+
+	/**
+	 * Everything before the paragraph that holds a field id, and the rest.
+	 *
+	 * @param string $html   Markup.
+	 * @param string $marker The id attribute of the first field of the second block.
+	 * @return array{0: string, 1: string}
+	 */
+	private static function split_before( string $html, string $marker ): array {
+		$position = strpos( $html, $marker );
+		if ( false === $position ) {
+			return array( $html, '' );
+		}
+		$start = strrpos( substr( $html, 0, $position ), '<p' );
+		if ( false === $start || 0 === $start ) {
+			return array( $html, '' );
+		}
+		return array( substr( $html, 0, $start ), substr( $html, $start ) );
 	}
 }

@@ -20,12 +20,24 @@ import type { Upload } from '../attachments/prepare';
  * The message a turn carries: the typed question and one line per file. A
  * file with no text is still a question (the file is what Genie reads).
  *
- * @param text    What the customer typed.
- * @param uploads The files of this turn.
+ * @param text       What the customer typed.
+ * @param uploads    The files of this turn.
+ * @param listPrompt Whether the composer opened for a parts list (#251): with
+ *                   a file and nothing typed, the message says what the file
+ *                   is, so a photo of a handwritten list is read as one
+ *                   (parts.find).
  */
-export function buildQuestion( text: string, uploads: Upload[] ): string {
+export function buildQuestion(
+	text: string,
+	uploads: Upload[],
+	listPrompt = false
+): string {
+	const typed = text.trim();
 	return [
-		text.trim(),
+		typed ||
+			( uploads.length > 0 && listPrompt
+				? __( 'Here is my parts list.', 'linker-tools' )
+				: '' ),
 		...uploads.map( ( upload ) =>
 			// translators: %s is the name of a file the visitor attached.
 			__( 'Attached: %s', 'linker-tools' ).replace( '%s', upload.name )

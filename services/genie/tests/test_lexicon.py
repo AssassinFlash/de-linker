@@ -186,3 +186,16 @@ def test_a_family_of_one_phase_is_one_search(vocabulary: Vocabulary) -> None:
     route = _route(vocabulary, {"lang": "en", "message": "SAJ H2"}, None)
     (call,) = route.calls
     assert call.arguments == {"series": "saj-h2", "lang": "en", "limit": 6}
+
+
+def test_a_brand_and_a_series_name_their_products(vocabulary: Vocabulary) -> None:
+    """The parts list needs the products behind a brand or series word (#251).
+
+    A row that names only a brand or a family is not one product; the candidates
+    come from these maps (the fixture is the live snapshot of 2026-10-15).
+    """
+    assert 3556 in vocabulary.brand_members["goodwe"]
+    assert vocabulary.series_members["goodwe-hca"] == {3587, 3586, 3557}
+    assert vocabulary.brand_members["saj"] >= {4107, 4108}
+    assert "goodwe" in vocabulary.brand_of[3556]
+    assert vocabulary.series_of[3556] == {"goodwe-esa-5-30kw-eta-g20"}

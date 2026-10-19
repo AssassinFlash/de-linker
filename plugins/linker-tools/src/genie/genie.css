@@ -815,6 +815,10 @@ body:has(.linker-genie-workspace)
 	min-width: 0;
 	height: 24px;
 	min-height: 24px;
+	/* A pasted parts list (#251) needs its newlines: the composer is a
+	 * textarea (the prototype's own `.gp-composer textarea`), grown by the
+	 * app up to six lines, then scrolled. */
+	max-height: 144px;
 	margin: 10px 0;
 	padding: 0;
 	border: 0;
@@ -826,6 +830,8 @@ body:has(.linker-genie-workspace)
 	font-size: 17px;
 	line-height: 24px;
 	color: #0d0d0d;
+	resize: none;
+	overflow-y: hidden;
 }
 
 /* `.gp-composer textarea::placeholder` */
@@ -1148,6 +1154,115 @@ body:has(.linker-genie-workspace)
 
 @media (max-width: 767px) {
 	.linker-genie-attachment__actions {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}
+
+/* The parts list (#251): rows with their state, the first unclear row's
+ * model chips, and the one add button. Same card frame as an attachment. */
+.linker-genie-parts {
+	margin: 12px 0;
+	padding: 12px 14px;
+	border: 1px solid #e5e5e5;
+	border-radius: 16px;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.linker-genie-parts__title {
+	margin: 0 0 8px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #5d5d5d;
+}
+
+.linker-genie-parts__rows {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.linker-genie-parts__row {
+	padding-top: 8px;
+	border-top: 1px solid #efefef;
+}
+
+.linker-genie-parts__row:first-child {
+	padding-top: 0;
+	border-top: 0;
+}
+
+.linker-genie-parts__line {
+	display: flex;
+	gap: 8px;
+	align-items: baseline;
+}
+
+.linker-genie-parts__number {
+	flex: 0 0 auto;
+	min-width: 1.5em;
+	color: #8a8a8a;
+	font-variant-numeric: tabular-nums;
+	text-align: right;
+}
+
+.linker-genie-parts__quantity {
+	flex: 0 0 auto;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.linker-genie-parts__text {
+	overflow-wrap: anywhere;
+}
+
+.linker-genie-parts__status {
+	margin: 2px 0 0 2.5em;
+	color: #5d5d5d;
+}
+
+.linker-genie-parts__row--uncertain .linker-genie-parts__status {
+	color: #8a5a00;
+}
+
+.linker-genie-parts__row--missing .linker-genie-parts__status {
+	color: #9b1c1c;
+}
+
+.linker-genie-parts__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 8px 0 0 2.5em;
+}
+
+/* A model name runs long ("HS3-10K-T2-W/G-PX"): the pills wrap instead of
+ * running out of the card, as the attachment card's do. */
+.linker-genie-parts__actions .linker-genie-app__prompt {
+	max-width: 100%;
+	white-space: normal;
+	text-align: left;
+}
+
+.linker-genie-parts__add {
+	display: flex;
+	margin-top: 12px;
+}
+
+.linker-genie-parts__add .linker-genie-app__action {
+	cursor: pointer;
+}
+
+.linker-genie-parts__add button:disabled {
+	cursor: default;
+	opacity: 0.7;
+}
+
+@media (max-width: 767px) {
+	.linker-genie-parts__actions {
 		flex-direction: column;
 		align-items: stretch;
 	}

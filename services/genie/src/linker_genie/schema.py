@@ -140,6 +140,68 @@ class ContactBlock(Strict):
     reason: ContactReason
 
 
+# A parts list (#251): the service's block, never the model's. The model does not
+# write a parts turn at all (app._answer); the rows and the one add action come from
+# `parts.py` alone.
+class PartsCandidate(Strict):
+    """One product an uncertain row may be: its ID and the names the card shows."""
+
+    product_id: int
+    # The model as our titles write it ("H2-10K-T3"): what a chip sends back.
+    label: str
+    # The product's full title, for the card's second line.
+    name: str = ""
+
+
+PartsStatus = Literal["matched", "uncertain", "missing", "skipped"]
+# The longest row text the parts card shows and the facts carry (parts.TEXT_CHARS,
+# where the source of the number is written).
+PARTS_TEXT_CHARS = 300
+
+
+class PartsRow(Strict):
+    """One line of the customer's list and what code made of it."""
+
+    # The row's position in the list, from 1: a chip answers "Row N: ...".
+    line: int
+    text: str = Field(max_length=PARTS_TEXT_CHARS)
+    quantity: int
+    status: PartsStatus
+    product_id: int | None = None
+    label: str | None = None
+    # The candidates of an uncertain row, at most `parts.MAX_OPTIONS`.
+    options: list[PartsCandidate] = Field(default_factory=list)
+
+
+class PartsItem(Strict):
+    """One line of the solution draft the add action writes."""
+
+    product_id: int
+    quantity: int
+
+
+class PartsAdd(Strict):
+    """The one native WooCommerce write: every confirmed row, merged by product."""
+
+    items: list[PartsItem]
+    # Distinct products and the rows they came from, for the button's words.
+    products: int
+    rows: int
+
+
+class PartsBlock(Strict):
+    """The parts list as the shell shows it: statuses, one question, one action."""
+
+    type: Literal["parts"] = "parts"
+    rows: list[PartsRow]
+    # The first uncertain row the customer is being asked about, if any.
+    ask_line: int | None = None
+    # Filled only when at least one row is confirmed; the shell's one add.
+    add: PartsAdd | None = None
+    # The list had more than `parts.MAX_ROWS` rows and was cut there.
+    truncated: bool = False
+
+
 Block = Annotated[
     TextBlock
     | AskBlock
@@ -231,8 +293,16 @@ class TurnMessage(Strict):
 # What a customer may attach (#236, docs/specs/13-genie.md "附件与铭牌"). The shell turns
 # a photo into a JPEG (a HEIC photo too) before it is sent, so the wire carries the
 # formats deepseek-flash reads (JPEG, PNG, WebP; docs/research/2026-10-17-deepseek-
-# flash-vision/ §3.2) and PDF, which the service reads itself.
-UploadType = Literal["image/jpeg", "image/png", "image/webp", "application/pdf"]
+# flash-vision/ §3.2) and PDF, which the service reads itself. A parts list travels as
+# CSV or .xlsx (#251): text and a zip of XML, read in this process, never sent to a model.
+UploadType = Literal[
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "application/pdf",
+    "text/csv",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+]
 # A file's name as the thread shows it: the longest file name most file systems allow
 # is 255 bytes (ext4, APFS, NTFS); the shell and the proxy cut to the same length.
 NAME_LENGTH = 255
@@ -251,6 +321,14 @@ NAME_LENGTH = 255
 MAX_FILES = 3
 MAX_IMAGE_BYTES = 6 * 1024 * 1024
 MAX_PDF_BYTES = 16 * 1024 * 1024
+# A list file (#251): a 20-row list is two kilobytes; one mebibyte holds about
+# twenty thousand lines of the shape customers paste, and no real parts list of
+# MAX_ROWS rows comes near it. An Excel workbook may carry images and styles, so it
+# keeps the image ceiling. Sources: the fixture lists of docs/research/
+# 2026-10-17-ai-assistants/ (61 rows is the largest, Taobao, CN.md S32) and the
+# 2026-10-15 snapshot's product titles.
+MAX_CSV_BYTES = 1 * 1024 * 1024
+MAX_XLSX_BYTES = 6 * 1024 * 1024
 MAX_TURN_BYTES = 20 * 1024 * 1024
 
 
@@ -314,6 +392,7 @@ FailedReason = Literal[
     "too_many_pixels",
     "unreadable_image",
     "unreadable_pdf",
+    "unreadable_list",
     "pdf_timeout",
     "pdf_failed",
     "unread",
@@ -329,7 +408,7 @@ class Rating(Strict):
     value: str = Field(max_length=FIELD_CHARS)
 
 
-ReadingKind = Literal["nameplate", "document", "photo"]
+ReadingKind = Literal["nameplate", "document", "photo", "list"]
 
 
 class AttachmentReading(Strict):
@@ -351,6 +430,9 @@ class AttachmentReading(Strict):
     # A PDF's page count, and the pages read (text layer or rendered).
     pages: int | None = None
     pages_read: int | None = None
+    # A CSV/Excel list had more rows than parts.MAX_ROWS; the reading keeps the
+    # first MAX_ROWS and says so (parts.py, #251).
+    truncated: bool = False
     failed: FailedReason | None = None
 
 

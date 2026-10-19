@@ -112,6 +112,13 @@ final class Preview {
 				esc_html( $copy['photo'] )
 			);
 		}
+		if ( isset( $copy['list'] ) ) {
+			// The parts list (#251): the same picker, offered for a list file.
+			$asks .= sprintf(
+				'<li><button type="button" class="linker-genie-peek__ask" data-linker-genie-peek-attach-list>%s</button></li>',
+				esc_html( $copy['list'] )
+			);
+		}
 		printf(
 			'<aside class="linker-genie-peek" data-linker-genie-peek data-anchor="%1$s" aria-labelledby="linker-genie-peek-title" aria-live="polite" hidden><div class="linker-genie-peek__head"><span class="linker-genie-peek__mark" aria-hidden="true">&#10022;</span><span class="linker-genie-peek__name">Genie</span><button type="button" class="linker-genie-peek__close" data-linker-genie-peek-close aria-label="%2$s"><span aria-hidden="true">&times;</span></button></div><p class="linker-genie-peek__title" id="linker-genie-peek-title">%3$s</p><p class="linker-genie-peek__lead">%4$s</p><ul class="linker-genie-peek__asks">%5$s</ul><p class="linker-genie-peek__ai">%6$s<span aria-hidden="true"> · </span>%7$s</p></aside>',
 			esc_attr( self::ANCHORS[ $context['type'] ] ),
@@ -291,11 +298,12 @@ final class Preview {
 	 * copy review of docs/acceptance/2026-10-18/249/copy-review.md; German is
 	 * written on its own in languages/linker-tools-de_DE_formal.po.
 	 *
-	 * The home page's card also offers a nameplate photo (`photo`, #236): it
-	 * opens Genie with the photo picker on offer instead of asking.
+	 * The home page's card also offers a nameplate photo (`photo`, #236) and a
+	 * parts list (`list`, #251): either opens Genie with the file picker on
+	 * offer instead of asking.
 	 *
 	 * @param array{type: string, name: string} $context The page.
-	 * @return array{title: string, lead: string, asks: list<string>, photo?: string}
+	 * @return array{title: string, lead: string, asks: list<string>, photo?: string, list?: string}
 	 */
 	public function copy( array $context ): array {
 		$name = $context['name'];
@@ -344,14 +352,20 @@ final class Preview {
 				if ( '' !== $name ) {
 					/* translators: %s: an inverter from the current product range, e.g. "SAJ H2-10K-T3". */
 					$asks[] = sprintf( __( 'Tell me about the %s', 'linker-tools' ), $name );
+				} else {
+					// An empty range (no published inverter) would leave the dock
+					// one message suggestion; goal 3 asks for two on every page.
+					// The photo and list entries are attach actions, not messages,
+					// so the existing battery question fills the second slot.
+					$asks[] = __( 'Which batteries work with my inverter?', 'linker-tools' );
 				}
-				$asks[] = __( 'Which batteries work with my inverter?', 'linker-tools' );
 				$asks[] = __( 'Compare SAJ and GoodWe hybrid inverters', 'linker-tools' );
 				return array(
 					'title' => __( 'Ask Genie about our products', 'linker-tools' ),
 					'lead'  => __( 'Genie finds any model in our range and checks what works with it.', 'linker-tools' ),
 					'asks'  => $asks,
 					'photo' => __( 'Look up my device from a nameplate photo', 'linker-tools' ),
+					'list'  => __( 'Turn a parts list into products', 'linker-tools' ),
 				);
 		}
 	}

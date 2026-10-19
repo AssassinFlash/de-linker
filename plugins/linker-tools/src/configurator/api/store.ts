@@ -19,6 +19,20 @@ type Fetch = typeof fetch;
 
 export type AddStatus = 'pending' | 'added' | 'unverified' | 'retry';
 
+/**
+ * How long a short readback waits before reading the draft once more: a burst of
+ * line writes can be a moment behind the cart read (seen once in the #251 e2e,
+ * 2026-10-19, 16 lines; the Store API itself answered every line). A quarter
+ * second is one paint of the card's "Adding…" and far below the customer's
+ * patience; the reads settle `added` or `unverified`.
+ */
+const SETTLE_MS = 250;
+// Reads after a short one, 250 ms apart: three retries cover a cart read that
+// lagged a burst of 16 writes in the #251 e2e (seen in a few hundred runs on
+// 2026-10-19; the Store API itself answered every line). The waits only happen
+// when a line reads short, and each is followed by a real read.
+const SETTLE_READS = 3;
+
 export interface DraftLine {
 	productId: number;
 	quantity: number;
@@ -127,6 +141,29 @@ export function storeClient(
 				held.forEach( ( id ) => onStatus( id, 'added' ) );
 				sent.forEach( ( id ) => onStatus( id, 'unverified' ) );
 				return false;
+			}
+			const short = () =>
+				lines.some(
+					( line ) =>
+						sent.has( line.productId ) &&
+						( after.quantities.get( line.productId ) ?? 0 ) <
+							line.quantity
+				);
+			for (
+				let attempt = 0;
+				attempt < SETTLE_READS && short();
+				attempt++
+			) {
+				// A line the first read did not show yet gets settled reads.
+				await new Promise( ( resolve ) =>
+					setTimeout( resolve, SETTLE_MS )
+				);
+				try {
+					after = await cart();
+				} catch {
+					// Keep the last read: its statuses are the honest ones.
+					break;
+				}
 			}
 			let complete = sent.size + held.size === lines.length;
 			for ( const line of lines ) {

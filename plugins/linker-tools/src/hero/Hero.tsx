@@ -121,6 +121,7 @@ export function HeroConversation( {
 	const {
 		statusFor,
 		addToDraft: addCardToDraft,
+		addPartsToDraft,
 		saveCardSolution,
 	} = useCardActions( {
 		restUrl: config.restUrl,
@@ -462,6 +463,14 @@ export function HeroConversation( {
 								block={ block }
 								accountUrl={ config.accountUrl }
 								onAsk={ ( message ) => bridgeAsk( message ) }
+								parts={ {
+									onAsk: ( message ) => bridgeAsk( message ),
+									onAdd: addPartsToDraft,
+									onTypeModel: () => {
+										setPrompt( typeModelPrompt() );
+										focusPrompt();
+									},
+								} }
 							/>
 						) ) }
 					{ hasCards ? (

@@ -17,6 +17,7 @@ import { __ } from '@wordpress/i18n';
 import { saveSolution } from '../../configurator/api/solutions';
 import type { storeClient } from '../../configurator/api/store';
 import type { Locale } from '../../configurator/types';
+import type { PartsAddResult } from '../components/PartsCard';
 import type { CardState } from '../../shared/ProductCard';
 
 export interface CardItem {
@@ -88,6 +89,32 @@ export function useCardActions( {
 		[ status, store ]
 	);
 
+	// A parts list's one write (#251): every confirmed row in one `store.addAll`
+	// call, which adds each line through the Store API and reads the draft back
+	// (configurator/api/store.ts). The card shows the worst outcome of the lines.
+	const addPartsToDraft = useCallback(
+		async (
+			items: { product_id: number; quantity: number }[]
+		): Promise< PartsAddResult > => {
+			let result: PartsAddResult = 'added';
+			const complete = await store.addAll(
+				items.map( ( item ) => ( {
+					productId: item.product_id,
+					quantity: item.quantity,
+				} ) ),
+				( _id, state ) => {
+					if ( state === 'retry' ) {
+						result = 'retry';
+					} else if ( state === 'unverified' && result !== 'retry' ) {
+						result = 'unverified';
+					}
+				}
+			);
+			return complete && result === 'added' ? 'added' : result;
+		},
+		[ store ]
+	);
+
 	const saveCardSolution = useCallback(
 		async ( productId: number, title: string ) => {
 			status( productId, 'pending', __( 'Saving…', 'linker-tools' ) );
@@ -132,5 +159,5 @@ export function useCardActions( {
 		[ cards ]
 	);
 
-	return { cards, statusFor, addToDraft, saveCardSolution };
+	return { cards, statusFor, addToDraft, addPartsToDraft, saveCardSolution };
 }

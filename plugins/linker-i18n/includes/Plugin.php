@@ -100,6 +100,14 @@ final class Plugin {
 		add_filter( 'post_type_archive_link', array( $segments, 'link' ), 30 );
 		add_filter( 'pll_translation_url', array( $segments, 'link' ) );
 
+		// Stored content keeps the request's language even before a translation
+		// job has rewritten its links (docs/research/2026-10-17-i18n-audit/
+		// AUDIT.md, H3, M2; the render-time fallback of S2).
+		$render_links = new RenderLinks( $links, $languages );
+		add_filter( 'the_content', array( $render_links, 'content' ), 20 );
+		add_filter( 'the_excerpt', array( $render_links, 'content' ), 20 );
+		add_filter( 'widget_text_content', array( $render_links, 'content' ), 20 );
+
 		// hreflang and 404.
 		$seo           = new Seo();
 		$german_titles = new GermanTitles( $languages );
@@ -118,6 +126,13 @@ final class Plugin {
 		add_filter( 'woocommerce_edit_address_slugs', array( $german_routes, 'addresses' ) );
 		add_filter( 'pll_translation_url', array( $german_routes, 'translation_url' ), 40 );
 		add_filter( 'pll_rel_hreflang_attributes', array( $german_routes, 'hreflangs' ), 40 );
+
+		// A same-site address in a query value keeps its /de/ through the
+		// canonical redirect (AUDIT.md M8); the team's source link must not
+		// become a 404.
+		$canonical_query = new CanonicalQuery();
+		add_filter( 'pll_check_canonical_url', array( $canonical_query, 'url' ), 99, 2 );
+		add_filter( 'redirect_canonical', array( $canonical_query, 'redirect' ), 99, 2 );
 		add_filter( 'old_slug_redirect_post_id', array( $german_urls, 'old_post' ) );
 		add_filter( 'old_slug_redirect_url', array( $german_urls, 'old_url' ) );
 		add_filter( 'linker_tools_retired_url', array( $german_urls, 'retired_url' ), 10, 2 );

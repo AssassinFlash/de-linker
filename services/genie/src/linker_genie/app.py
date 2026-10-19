@@ -26,7 +26,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from linker_genie import contact, ground, inquiry, jev, page, summary
+from linker_genie import contact, ground, inquiry, jev, page, parts, summary
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import (
     deepseek_access,
@@ -145,7 +145,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         ability_client(), body, started + LOOKUP_DEADLINE
     )
     try:
-        result = _answer(body, prepared, request, commerce)
+        result, service_block = _answer(body, prepared, request, commerce)
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
         turn_log().record(
             conversation_id=body.conversation_id,
@@ -170,27 +170,38 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         # logged with the turn, never swallowed (prices.fill).
         prepared.log["price_failures"] = list(result.price_failures)
     shipped = result.output.model_dump()
-    # The inquiry confirmation card (#250): the model may ask for it, and an
-    # explicit "send an inquiry" adds the action when the model did not
-    # (inquiry.decide). Only the card's Send button writes the inquiry.
-    if inquiry.decide(_question(body), shipped["blocks"]):
-        shipped["blocks"].append({"type": "action", "name": inquiry.ACTION, "args": {}})
-        prepared.log["inquiry"] = True
-    offer = contact.decide(prepared.route, prepared.reading, body.messages, offers)
-    if offer is not None:
-        # The offer follows the answer; the model never writes it (contact.py).
-        shipped["blocks"].append(offer.block().model_dump())
-        problems = ground.shipped(shipped, prepared.route, offer.reason)
-        if problems:
-            # The service's own mistake: the answer ships without the card.
-            shipped["blocks"] = [
-                b for b in shipped["blocks"] if b.get("type") != "contact"
-            ]
-            prepared.log["contact_failures"] = problems
-            offer = None
-        else:
-            prepared.log["contact"] = offer.reason
-    code_made = prepared.route.name == "person"
+    offer = None
+    if service_block is not None:
+        # A parts list's card (#251): code's block, never the model's. The inquiry
+        # and contact cards are the model turns' shapes and do not apply here; the
+        # customer can ask for either in a later turn.
+        shipped["blocks"].append(service_block)
+    else:
+        # The inquiry confirmation card (#250): the model may ask for it, and an
+        # explicit "send an inquiry" adds the action when the model did not
+        # (inquiry.decide). Only the card's Send button writes the inquiry.
+        if inquiry.decide(_question(body), shipped["blocks"]):
+            shipped["blocks"].append(
+                {"type": "action", "name": inquiry.ACTION, "args": {}}
+            )
+            prepared.log["inquiry"] = True
+        offer = contact.decide(prepared.route, prepared.reading, body.messages, offers)
+        if offer is not None:
+            # The offer follows the answer; the model never writes it (contact.py).
+            shipped["blocks"].append(offer.block().model_dump())
+            problems = ground.shipped(shipped, prepared.route, offer.reason)
+            if problems:
+                # The service's own mistake: the answer ships without the card.
+                shipped["blocks"] = [
+                    b for b in shipped["blocks"] if b.get("type") != "contact"
+                ]
+                prepared.log["contact_failures"] = problems
+                offer = None
+            else:
+                prepared.log["contact"] = offer.reason
+    # A request for a person and a parts list are answered by the service alone:
+    # no model ran (model-routing audits read provider/model).
+    code_made = prepared.route.name in ("person", "parts")
     turn_id = turn_log().record(
         conversation_id=body.conversation_id,
         locale=body.locale,
@@ -252,24 +263,41 @@ def forget(conversation_id: str) -> dict[str, int]:
 
 def _answer(
     body: TurnRequest, prepared: Prepared, request: Request, commerce: Lookup
-) -> TurnResult:
-    """The turn's answer: the model's, or the service's own for a request for a person
-    (contact.answer; #243 — no model runs, and none can claim it sent anything)."""
+) -> tuple[TurnResult, dict[str, object] | None]:
+    """The turn's answer: the model's; the service's own for a request for a person
+    (contact.answer; #243); or the parts list's (parts.answer; #251). With a service
+    block, no model runs and none can claim it sent anything."""
     if prepared.route.name == "person":
-        return TurnResult(
-            output=TurnOutput(
-                language=body.locale, blocks=[contact.answer(body.locale)]
+        return (
+            TurnResult(
+                output=TurnOutput(
+                    language=body.locale, blocks=[contact.answer(body.locale)]
+                ),
+                facts=TurnFacts(),
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
             ),
-            facts=TurnFacts(),
-            grounded=True,
-            failures=(),
-            fallback=False,
-            attempts=0,
+            None,
+        )
+    if prepared.parts_list is not None:
+        output, block = parts.answer(prepared.parts_list, body.locale)
+        return (
+            TurnResult(
+                output=output,
+                facts=TurnFacts(),
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ),
+            block.model_dump(),
         )
     generate = getattr(request.app.state, "generate", None) or make_generate(
         ability_client(), prepared=prepared, pages=page_reader().read
     )
-    return run(body, generate, prepared.route, prepared.facts, commerce)
+    return run(body, generate, prepared.route, prepared.facts, commerce), None
 
 
 def _question(body: TurnRequest) -> str:

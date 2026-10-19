@@ -292,6 +292,8 @@ class Entries {
 		var pendingAsk = '';
 		// Opened to send a nameplate photo (#236): the app offers the picker.
 		var pendingAttach = false;
+		// Opened for a parts list (#251): the picker expects the list's file.
+		var pendingList = false;
 		// Opening from the home hero (#232): re-read the thread the hero
 		// wrote, and mark it as asked from the homepage.
 		var pendingRefresh = false;
@@ -341,17 +343,20 @@ class Entries {
 		}
 		var message = pendingAsk;
 		var attach = pendingAttach;
+		var list = pendingList;
 		var refresh = pendingRefresh;
 		var fromHome = pendingFromHome;
 		pendingOpen = false;
 		pendingAsk = '';
 		pendingAttach = false;
+		pendingList = false;
 		pendingRefresh = false;
 		pendingFromHome = false;
 		window.dispatchEvent(new CustomEvent('linker-genie-open', {
 			detail: {
 				message: message,
 				attach: attach,
+				list: list,
 				refresh: refresh,
 				fromHome: fromHome
 			}
@@ -391,6 +396,7 @@ class Entries {
 			open(detail.message, refresh, fromHome);
 		} else if (detail && true === detail.attach) {
 			pendingAttach = true;
+			pendingList = true === detail.list;
 			open('', refresh, fromHome);
 		} else if (refresh) {
 			// The home hero hands its conversation to the dock without a
@@ -524,7 +530,7 @@ JS,
 			esc_attr( esc_url_raw( rest_url() ) ),
 			esc_attr( wp_create_nonce( 'wp_rest' ) ),
 			esc_attr( $this->disclosure( $locale ) ),
-			esc_attr( esc_url_raw( home_url( '/my-account/' ) ) ),
+			esc_attr( esc_url_raw( self::page_url_for( 'my-account', $locale ) ) ),
 			esc_attr( esc_url_raw( $this->workspace_url() ) ),
 			esc_attr( (string) wp_json_encode( $this->prompts( $page ) ) ),
 			// The whole page context, sent back with every turn (#234).
@@ -801,17 +807,30 @@ JS,
 	 * @param string $lang `en` or `de`.
 	 */
 	public static function workspace_url_for( string $lang ): string {
-		$fallback = home_url( '/genie/' );
-		if ( 'de' !== $lang ) {
-			return $fallback;
+		return self::page_url_for( 'genie', $lang );
+	}
+
+	/**
+	 * One of the site's own pages in a language: its Polylang twin when it
+	 * has one, the language's own path otherwise. A plugin that runs without
+	 * the language layer still answers its interface language's address.
+	 *
+	 * @param string $slug Page path.
+	 * @param string $lang `en` or `de`.
+	 */
+	public static function page_url_for( string $slug, string $lang ): string {
+		if ( function_exists( 'get_page_by_path' ) && function_exists( 'pll_get_post' ) ) {
+			$page = get_page_by_path( $slug );
+			if ( $page instanceof \WP_Post ) {
+				$id   = 'en' === $lang ? (int) $page->ID : (int) pll_get_post( (int) $page->ID, $lang );
+				$link = $id > 0 ? get_permalink( $id ) : false;
+				if ( is_string( $link ) && '' !== $link ) {
+					return $link;
+				}
+			}
 		}
-		$page = get_page_by_path( 'genie' );
-		if ( ! $page instanceof \WP_Post || ! function_exists( 'pll_get_post' ) ) {
-			return home_url( '/de/genie/' );
-		}
-		$twin = (int) pll_get_post( (int) $page->ID, 'de' );
-		$link = $twin > 0 ? get_permalink( $twin ) : false;
-		return is_string( $link ) && '' !== $link ? $link : home_url( '/de/genie/' );
+		$path = ( 'en' === $lang ? '/' : '/' . $lang . '/' ) . $slug . '/';
+		return (string) home_url( $path );
 	}
 
 	/**

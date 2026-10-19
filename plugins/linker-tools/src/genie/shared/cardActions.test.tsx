@@ -108,3 +108,67 @@ test( 'a failed save asks for a retry', async () => {
 		text: 'Not saved. Try again.',
 	} );
 } );
+
+test( 'a parts list writes every row in one call and reports added', async () => {
+	const client = {
+		addAll: vi.fn( async ( _lines, onStatus ) => onStatus( 5, 'added' ) ),
+	} as unknown as ReturnType< typeof storeClient >;
+	const { result } = hook( client );
+
+	let outcome: string = '';
+	await act( async () => {
+		outcome = await result.current.addPartsToDraft( [
+			{ product_id: 5, quantity: 2 },
+			{ product_id: 6, quantity: 1 },
+		] );
+	} );
+
+	expect( client.addAll ).toHaveBeenCalledWith(
+		[
+			{ productId: 5, quantity: 2 },
+			{ productId: 6, quantity: 1 },
+		],
+		expect.any( Function )
+	);
+	expect( outcome ).toBe( 'added' );
+} );
+
+test( "a parts list reports the rows' worst outcome", async () => {
+	const client = {
+		addAll: vi.fn( async ( _lines, onStatus ) => {
+			onStatus( 5, 'added' );
+			onStatus( 6, 'unverified' );
+		} ),
+	} as unknown as ReturnType< typeof storeClient >;
+	const { result } = hook( client );
+
+	let outcome: string = '';
+	await act( async () => {
+		outcome = await result.current.addPartsToDraft( [
+			{ product_id: 5, quantity: 1 },
+			{ product_id: 6, quantity: 1 },
+		] );
+	} );
+
+	expect( outcome ).toBe( 'unverified' );
+} );
+
+test( 'a parts list retry outranks an unverified row', async () => {
+	const client = {
+		addAll: vi.fn( async ( _lines, onStatus ) => {
+			onStatus( 5, 'unverified' );
+			onStatus( 6, 'retry' );
+		} ),
+	} as unknown as ReturnType< typeof storeClient >;
+	const { result } = hook( client );
+
+	let outcome: string = '';
+	await act( async () => {
+		outcome = await result.current.addPartsToDraft( [
+			{ product_id: 5, quantity: 1 },
+			{ product_id: 6, quantity: 1 },
+		] );
+	} );
+
+	expect( outcome ).toBe( 'retry' );
+} );

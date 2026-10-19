@@ -14,6 +14,8 @@ use Linker\Commerce\Registration\AddressForm;
 use Linker\Commerce\Registration\Approval;
 use Linker\Commerce\Registration\ApprovalAdmin;
 use Linker\Commerce\Registration\BillingVatField;
+use Linker\Commerce\Registration\BotGuard;
+use Linker\Commerce\Registration\CountryField;
 use Linker\Commerce\Registration\Emails\ApprovedEmail;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
 use Linker\Commerce\Registration\Emails\RegistrationReceivedEmail;
@@ -67,6 +69,15 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'woocommerce_register_form_start', array( $fields, 'render' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_process_registration_errors', array( $fields, 'validate' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_created_customer', array( $fields, 'save' ), 5 );
+		// The public form's traps and the refusal that runs after the fields
+		// but before WooCommerce creates the account (#225).
+
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectActionAdded( 'woocommerce_register_form', array( new WP_Mock\Matcher\AnyInstance( BotGuard::class ), 'fields' ) );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectFilterAdded( 'woocommerce_process_registration_errors', array( new WP_Mock\Matcher\AnyInstance( BotGuard::class ), 'validate' ), 20 );
+		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
+		WP_Mock::expectFilterAdded( 'woocommerce_form_field_linker_country', array( new WP_Mock\Matcher\AnyInstance( CountryField::class ), 'render' ), 10, 4 );
 		WP_Mock::expectFilterAdded( 'woocommerce_billing_fields', array( $vat_field, 'billing_fields' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_admin_billing_fields', array( $vat_field, 'admin_billing_fields' ) );
 		WP_Mock::expectActionAdded( 'woocommerce_admin_order_data_after_billing_address', array( $vat_field, 'admin_order_verdict' ) );

@@ -177,14 +177,29 @@ export function App( { config }: { config: GenieConfig } ) {
 	// rides in the question, so the thread says what was sent. What the
 	// dictation heard lands in the field.
 	const attachInput = useRef< HTMLInputElement >( null );
-	const field = useRef< HTMLInputElement >( null );
+	const field = useRef< HTMLTextAreaElement >( null );
 	const dictation = useRef< DictationSession | null >( null );
+	// The composer grows with a pasted parts list (#251) up to six 24px lines,
+	// then scrolls; a one-line question keeps the bar's 44px height.
+	useEffect( () => {
+		const node = field.current;
+		if ( ! node ) {
+			return;
+		}
+		node.style.height = '24px';
+		const height = Math.min( node.scrollHeight, 144 );
+		node.style.height = `${ height }px`;
+		node.style.overflowY = node.scrollHeight > 144 ? 'auto' : 'hidden';
+	}, [ input ] );
 	const files = useAttachments();
 	// Why the last turn's files were refused by the proxy, if they were.
 	const [ refused, setRefused ] = useState( '' );
 	// Opened to send a nameplate photo (the preview card's suggestion): the
 	// panel offers the picker, which only a click may open.
 	const [ photoPrompt, setPhotoPrompt ] = useState( false );
+	// Opened for a parts list (the preview card's suggestion, #251): the
+	// picker is offered for a CSV, an Excel file or a photo of the list.
+	const [ listPrompt, setListPrompt ] = useState( false );
 	const [ dictating, setDictating ] = useState( false );
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
@@ -205,6 +220,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const {
 		statusFor: cardStatusFor,
 		addToDraft: addCardToDraft,
+		addPartsToDraft,
 		saveCardSolution,
 	} = useCardActions( {
 		restUrl: config.restUrl,
@@ -275,7 +291,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const ask = useCallback(
 		async ( text: string ) => {
 			const uploads = files.uploads;
-			const question = buildQuestion( text, uploads );
+			const question = buildQuestion( text, uploads, listPrompt );
 			if ( ! question || sending.current || files.busy ) {
 				return;
 			}
@@ -286,6 +302,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			setInput( '' );
 			setRefused( '' );
 			setPhotoPrompt( false );
+			setListPrompt( false );
 			files.clear();
 			return enqueue( async () => {
 				// Claim the composer only once this ask is the lane's head.
@@ -351,7 +368,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 			} );
 		},
-		[ config, refreshHistory, files ]
+		[ config, refreshHistory, files, listPrompt ]
 	);
 
 	// "Type the model": the way out of a nameplate the customer does not
@@ -566,6 +583,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					attach?: unknown;
 					refresh?: unknown;
 					fromHome?: unknown;
+					list?: unknown;
 				} >
 			 ).detail;
 			if ( detail && true === detail.fromHome ) {
@@ -590,9 +608,14 @@ export function App( { config }: { config: GenieConfig } ) {
 				typeof detail.message === 'string' &&
 				detail.message
 			) {
+				setPhotoPrompt( false );
+				setListPrompt( false );
 				void ask( detail.message );
 			} else if ( detail && true === detail.attach ) {
-				setPhotoPrompt( true );
+				// The photo suggestion (#236) or the parts-list one (#251): the
+				// picker is offered, with the words for the file it expects.
+				setPhotoPrompt( true !== detail.list );
+				setListPrompt( true === detail.list );
 			}
 		}
 		window.addEventListener( 'linker-genie-open', onOpen );
@@ -1107,6 +1130,12 @@ export function App( { config }: { config: GenieConfig } ) {
 											block={ block }
 											accountUrl={ config.accountUrl }
 											onAsk={ ask }
+											parts={ {
+												onAsk: ask,
+												onAdd: addPartsToDraft,
+												onTypeModel: () =>
+													field.current?.focus(),
+											} }
 										/>
 									) ) }
 								{ turn?.blocks.some(
@@ -1213,14 +1242,19 @@ export function App( { config }: { config: GenieConfig } ) {
 						) : null }
 						{ ! workspace &&
 						! historyView &&
-						photoPrompt &&
+						( photoPrompt || listPrompt ) &&
 						files.picked.length === 0 ? (
 							<div className="linker-genie-app__photo-prompt">
 								<p>
-									{ __(
-										'Genie reads the brand and model from a nameplate photo and checks them against our range.',
-										'linker-tools'
-									) }
+									{ listPrompt
+										? __(
+												'Genie checks every line of a parts list against our products. You can use a CSV or Excel (.xlsx) file, or a photo of the list.',
+												'linker-tools'
+											)
+										: __(
+												'Genie reads the brand and model from a nameplate photo and checks them against our range.',
+												'linker-tools'
+											) }
 								</p>
 								<button
 									type="button"
@@ -1230,7 +1264,12 @@ export function App( { config }: { config: GenieConfig } ) {
 									}
 								>
 									<AttachIcon />
-									{ __( 'Choose a photo', 'linker-tools' ) }
+									{ listPrompt
+										? __( 'Choose a file', 'linker-tools' )
+										: __(
+												'Choose a photo',
+												'linker-tools'
+											) }
 								</button>
 							</div>
 						) : null }
@@ -1289,10 +1328,11 @@ export function App( { config }: { config: GenieConfig } ) {
 								>
 									{ __( 'Ask Genie', 'linker-tools' ) }
 								</label>
-								<input
+								<textarea
 									ref={ field }
 									id="linker-genie-input"
 									className="linker-genie-app__input"
+									rows={ 1 }
 									placeholder={ __(
 										'Ask Genie',
 										'linker-tools'
@@ -1301,6 +1341,19 @@ export function App( { config }: { config: GenieConfig } ) {
 									onChange={ ( event ) =>
 										setInput( event.target.value )
 									}
+									onKeyDown={ ( event ) => {
+										// Enter sends, Shift+Enter is a new line:
+										// a pasted parts list (#251) needs its
+										// newlines, and a one-line question
+										// still sends as before.
+										if (
+											'Enter' === event.key &&
+											! event.shiftKey
+										) {
+											event.preventDefault();
+											void ask( input );
+										}
+									} }
 								/>
 								{ ! workspace && canDictate ? (
 									<button

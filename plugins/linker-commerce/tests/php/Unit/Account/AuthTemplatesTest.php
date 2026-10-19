@@ -248,33 +248,38 @@ final class AuthTemplatesTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
-	/** The split puts the company fields before the first-name row and the rest after. */
-	public function test_register_field_split_at_the_first_name_row(): void {
+	/** The split puts the company fields before the website row, the verification pair next, and the name after. */
+	public function test_register_field_split_at_the_website_and_first_name_rows(): void {
 		$company = '<p class="form-row" id="billing_company_field">company</p>' . "\n"
 			. '<p class="form-row" id="linker_customer_role_field">role</p>' . "\n"
+			. '<p class="form-row" id="billing_country_field">country</p>' . "\n";
+		$verify  = '<p class="form-row" id="linker_company_website_field">website</p>' . "\n"
 			. '<p class="form-row" id="billing_vat_id_field">vat</p>' . "\n";
-		$contact = '<p class="form-row" id="billing_first_name_field">first</p>' . "\n"
-			. '<p class="form-row" id="billing_last_name_field">last</p>' . "\n"
-			. '<p class="form-row" id="billing_city_field">city</p>';
-		$blocks  = AuthTemplates::split_field_blocks( $company . $contact );
+		$you     = '<p class="form-row" id="billing_first_name_field">first</p>' . "\n"
+			. '<p class="form-row" id="billing_last_name_field">last</p>';
+		$blocks  = AuthTemplates::split_field_blocks( $company . $verify . $you );
 		$this->assertSame( $company, $blocks['company'] );
-		$this->assertSame( $contact, $blocks['contact'] );
+		$this->assertSame( $verify, $blocks['verify'] );
+		$this->assertSame( $you, $blocks['you'] );
 	}
 
-	/** A layout without the first-name row keeps every field in one block. */
+	/** A layout without one of the markers keeps every field in the earlier block. */
 	public function test_register_field_split_never_loses_a_field(): void {
 		$html   = '<div class="something-unexpected">fields</div>';
 		$blocks = AuthTemplates::split_field_blocks( $html );
-		$this->assertSame( '', $blocks['company'] );
-		$this->assertSame( $html, $blocks['contact'] );
+		$this->assertSame( $html, $blocks['company'] );
+		$this->assertSame( '', $blocks['verify'] );
+		$this->assertSame( '', $blocks['you'] );
 
-		$direct = '<p id="billing_first_name_field">first</p>';
+		// Without the first-name row the company part still splits at the website.
+		$no_name = '<p id="billing_company_field">company</p><p id="linker_company_website_field">website</p>';
 		$this->assertSame(
 			array(
-				'company' => '',
-				'contact' => $direct,
+				'company' => '<p id="billing_company_field">company</p>',
+				'verify'  => '<p id="linker_company_website_field">website</p>',
+				'you'     => '',
 			),
-			AuthTemplates::split_field_blocks( $direct )
+			AuthTemplates::split_field_blocks( $no_name )
 		);
 	}
 }

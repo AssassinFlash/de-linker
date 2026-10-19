@@ -54,6 +54,11 @@
 			if ( ! ( form instanceof HTMLFormElement ) || ! form.matches( FORMS ) ) {
 				return;
 			}
+			// The register card's step 1 is not a submission: the step script
+			// below opens step 2 instead, before this handler marks the form.
+			if ( form.matches( '[data-linker-register].is-split' ) && '1' === form.dataset.activeStep ) {
+				return;
+			}
 			const error = form.querySelector( '[data-password-mismatch]' );
 			const pair = passwordPair( form );
 			if ( error && pair && '' !== pair.second.value && pair.first.value !== pair.second.value ) {
@@ -95,5 +100,211 @@
 		const paint = () => showMismatch( error, pair.second, '' !== pair.second.value && pair.first.value !== pair.second.value );
 		pair.first.addEventListener( 'input', paint );
 		pair.second.addEventListener( 'input', paint );
+	}
+
+	// WooCommerce's strength meter listens to keyup. A pasted or
+	// password-manager-filled value fires input/change only, so the meter would
+	// appear on blur and move the submit button out from under the click. A
+	// synthetic keyup on input lets Woo's own meter settle while the visitor is
+	// still in the field.
+	for ( const password of document.querySelectorAll( '#reg_password, #password_1' ) ) {
+		password.addEventListener( 'input', () => password.dispatchEvent( new KeyboardEvent( 'keyup', { bubbles: true } ) ) );
+	}
+
+	// ── The register card's two steps (ticket #225) ─────────────────────────
+	// One WooCommerce form, two panes. Without this file both panes stay
+	// visible and the single Register button posts the whole form; with it the
+	// progress bar and the step note report the pane, step 1's own fields are
+	// checked before it opens step 2, and the hidden pane's controls are
+	// disabled so the browser never validates a field the visitor cannot see.
+	const register = document.querySelector( 'form[data-linker-register]' );
+	if ( register ) {
+		const pane = ( number ) => register.querySelector( `[data-pane="${ number }"]` );
+		const panes = { 1: pane( 1 ), 2: pane( 2 ) };
+		const note = ( number ) => register.querySelector( `[data-stepnote="${ number }"]` );
+		const next = register.querySelector( '[data-next]' );
+		const back = register.querySelector( '[data-back]' );
+		const progress = register.querySelector( '[data-progress]' );
+		const oneof = register.querySelector( '[data-oneof-error]' );
+		const clientError = register.querySelector( '[data-client-error]' );
+		const website = register.querySelector( '[name="linker_company_website"]' );
+		const vat = register.querySelector( '[name="billing_vat_id"]' );
+		let step = 2 === Number( register.dataset.activeStep ) ? 2 : 1;
+
+		const controls = ( root ) => [ ...root.querySelectorAll( 'input, select, textarea, button' ) ].filter( ( control ) => ! control.matches( 'input[type="hidden"]' ) );
+
+		// The accepted prototype's own address test (registration-prototype.js:257),
+		// tightened so another scheme cannot pass as a bare host. The server
+		// repeats the check; this only saves a round trip.
+		const websiteOk = ( value ) => {
+			const rest = value.replace( /^https?:\/\//i, '' );
+			return ! /^[a-z][a-z0-9+.-]*:/i.test( rest ) && /^[^\s/?#.]+\.[^\s/?#.]{2,}(?:[/?#]\S*)?$/i.test( rest );
+		};
+
+		const mark = ( row, invalid ) => {
+			row.classList.toggle( 'woocommerce-invalid', invalid );
+			for ( const control of row.querySelectorAll( 'input, select' ) ) {
+				if ( invalid ) {
+					control.setAttribute( 'aria-invalid', 'true' );
+				} else {
+					control.removeAttribute( 'aria-invalid' );
+				}
+			}
+		};
+
+		const validStepOne = () => {
+			let first = null;
+			let bad = false;
+			for ( const row of panes[ 1 ].querySelectorAll( '.validate-required' ) ) {
+				const radios = row.querySelectorAll( 'input[type="radio"]' );
+				// A required row always names its control: aria-required is the
+				// card's own marker, the fallback covers a field whose attributes
+				// came from another renderer.
+				const control = radios.length
+					? radios[ 0 ]
+					: row.querySelector( 'input[aria-required="true"], select[aria-required="true"]' ) || row.querySelector( 'input:not([type="hidden"]), select, textarea' );
+				if ( ! control ) {
+					continue;
+				}
+				const empty = radios.length ? ! [ ...radios ].some( ( radio ) => radio.checked ) : '' === control.value.trim();
+				mark( row, empty );
+				if ( empty ) {
+					bad = true;
+					first = first || ( radios.length ? row.querySelector( 'label' ) : control );
+				}
+			}
+			const site = website ? website.value.trim() : '';
+			const number = vat ? vat.value.trim() : '';
+			const one = '' !== site || '' !== number;
+			if ( oneof ) {
+				oneof.hidden = one;
+			}
+			if ( website && vat ) {
+				if ( ! one ) {
+					website.setAttribute( 'aria-invalid', 'true' );
+					vat.setAttribute( 'aria-invalid', 'true' );
+					bad = true;
+					first = first || website;
+				} else if ( '' !== site && ! websiteOk( site ) ) {
+					website.setAttribute( 'aria-invalid', 'true' );
+					bad = true;
+					first = first || website;
+				}
+			}
+			if ( clientError ) {
+				clientError.hidden = ! bad;
+			}
+			if ( first && typeof first.focus === 'function' ) {
+				first.focus();
+			}
+			return ! bad;
+		};
+
+		const paint = ( focus ) => {
+			register.dataset.activeStep = String( step );
+			if ( progress ) {
+				progress.hidden = false;
+				progress.setAttribute( 'aria-valuenow', String( step ) );
+			}
+			for ( const number of [ 1, 2 ] ) {
+				const current = note( number );
+				if ( current ) {
+					current.hidden = number !== step;
+				}
+				const segment = register.querySelector( `[data-progress-segment="${ number }"]` );
+				if ( segment ) {
+					segment.classList.toggle( 'is-on', number <= step );
+				}
+				for ( const control of controls( panes[ number ] ) ) {
+					control.disabled = 2 === number && 1 === step;
+				}
+			}
+			if ( next ) {
+				next.hidden = 1 !== step;
+			}
+			if ( back ) {
+				back.hidden = 2 !== step;
+			}
+			if ( focus ) {
+				const target = panes[ step ].querySelector( 'input:not([type="hidden"]), select, textarea' );
+				if ( target ) {
+					target.focus();
+				}
+			}
+		};
+
+		register.classList.add( 'is-split' );
+		paint( false );
+
+		if ( next ) {
+			next.addEventListener( 'click', () => {
+				if ( validStepOne() ) {
+					step = 2;
+					paint( true );
+				}
+			} );
+		}
+		if ( back ) {
+			back.addEventListener( 'click', () => {
+				step = 1;
+				paint( true );
+			} );
+		}
+
+		register.addEventListener( 'input', ( event ) => {
+			const row = event.target.closest( '.form-row' );
+			if ( row ) {
+				mark( row, false );
+			}
+			if ( clientError ) {
+				clientError.hidden = true;
+			}
+			if ( event.target === website || event.target === vat ) {
+				const one = ( website && '' !== website.value.trim() ) || ( vat && '' !== vat.value.trim() );
+				if ( oneof ) {
+					oneof.hidden = one;
+				}
+			}
+		} );
+		register.addEventListener( 'change', ( event ) => {
+			const row = event.target.closest( '.form-row' );
+			if ( row ) {
+				mark( row, false );
+			}
+		} );
+
+		document.addEventListener(
+			'submit',
+			( event ) => {
+				if ( event.target !== register || ! register.classList.contains( 'is-split' ) || '1' !== register.dataset.activeStep ) {
+					return;
+				}
+				event.preventDefault();
+				if ( validStepOne() ) {
+					step = 2;
+					paint( true );
+				}
+			},
+			true
+		);
+
+		// WooCommerce's searchable select (selectWoo, already enqueued on the
+		// account pages) with the site's translations. Without it the select
+		// stays a native select and still works.
+		const country = register.querySelector( 'select.linker-country-select' );
+		const $ = window.jQuery;
+		const params = window.wc_country_select_params;
+		if ( country && $ && $.fn && $.fn.selectWoo ) {
+			const language = params
+				? {
+						noResults: () => params.i18n_no_matches,
+						searching: () => params.i18n_searching,
+						errorLoading: () => params.i18n_ajax_error,
+						inputTooShort: () => params.i18n_input_too_short_1,
+						inputTooLong: () => params.i18n_input_too_long_1,
+				  }
+				: undefined;
+			$( country ).selectWoo( { width: '100%', minimumResultsForSearch: 0, dropdownCssClass: 'linker-country-dropdown', language } );
+		}
 	}
 } )();

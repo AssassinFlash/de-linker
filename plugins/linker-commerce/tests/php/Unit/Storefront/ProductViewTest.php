@@ -99,4 +99,63 @@ final class ProductViewTest extends TestCase {
 
 		$this->assertSame( array(), ( new ProductView( new CommerceState() ) )->scenarios( 6521 ) );
 	}
+
+	/**
+	 * The "Ask about this product" button opens the contact page of the
+	 * product page's language, so the contact form's receipt speaks it too
+	 * (AUDIT.md H1).
+	 */
+	public function test_ask_url_opens_the_contact_page_of_the_current_language(): void {
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
+		WP_Mock::userFunction(
+			'pll_home_url',
+			array(
+				'args'   => array( 'de' ),
+				'return' => 'http://linker.test/de/',
+			)
+		);
+		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn( string $url ): string => rtrim( $url, '/' ) . '/' ) );
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'args'   => array( 'contact' ),
+				'return' => new \WP_Post( (object) array( 'ID' => 33 ) ),
+			)
+		);
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 33, 'de' ),
+				'return' => 58,
+			)
+		);
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'args'   => array( 58 ),
+				'return' => 'http://linker.test/de/kontakt/',
+			)
+		);
+		WP_Mock::userFunction(
+			'add_query_arg',
+			array(
+				'return' => static function ( array $args, string $url ): string {
+					return $url . '?' . http_build_query( $args );
+				},
+			)
+		);
+		WP_Mock::userFunction( 'esc_url_raw', array( 'return' => static fn( string $url ): string => $url ) );
+		$product = \Mockery::mock( \WC_Product::class );
+		$product->allows( 'get_id' )->andReturn( 7 );
+		$product->allows( 'get_name' )->andReturn( 'GoodWe GW10K-ET' );
+		$product->allows( 'get_permalink' )->andReturn( 'http://linker.test/de/produkt/goodwe-gw10k-et/' );
+
+		$view   = new ProductView( new CommerceState() );
+		$method = new \ReflectionMethod( ProductView::class, 'ask_url' );
+		$url    = $method->invoke( $view, $product );
+
+		$this->assertStringStartsWith( 'http://linker.test/de/kontakt/?', $url );
+		$this->assertStringContainsString( 'intent=product', $url );
+		$this->assertStringContainsString( 'product_id=7', $url );
+	}
 }

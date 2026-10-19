@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Contact;
 
+use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Settings\Options;
 
 /**
@@ -241,25 +242,12 @@ final class Form {
 	}
 
 	/**
-	 * The Genie page in the page's language.
-	 *
-	 * The live card linked the assistant the same way (its advisor page);
-	 * the resolution is the one the Genie entries use — the language layer
-	 * (`pll_current_language`) decides, German gets the twin
-	 * (`pll_get_post`), everything else stays on /genie/
-	 * (linker-tools\includes\Genie\Entries::workspace_url()).
+	 * The Genie page in the page's language, the language's home when the
+	 * page does not exist. The live card linked the assistant the same way
+	 * (its advisor page).
 	 */
 	private function genie_url(): string {
-		if ( ! function_exists( 'pll_current_language' ) || 'de' !== pll_current_language() ) {
-			return home_url( '/genie/' );
-		}
-		$page = get_page_by_path( 'genie' );
-		if ( ! $page instanceof \WP_Post || ! function_exists( 'pll_get_post' ) ) {
-			return home_url( '/de/genie/' );
-		}
-		$twin = \Linker\Commerce\Presentation\PageUrls::twin( (int) $page->ID, 'de_DE_formal' );
-		$link = $twin > 0 ? get_permalink( $twin ) : false;
-		return is_string( $link ) && '' !== $link ? $link : home_url( '/de/genie/' );
+		return PageUrls::page( 'genie' );
 	}
 
 	/**
@@ -309,6 +297,6 @@ final class Form {
 		if ( $page instanceof \WP_Post ) {
 			return (string) get_permalink( $page );
 		}
-		return home_url( '/contact/' );
+		return PageUrls::page( 'contact' );
 	}
 }

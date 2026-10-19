@@ -12,7 +12,13 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MAX_FILES, MAX_PDF_BYTES } from '../attachments/prepare';
+import {
+	MAX_CSV_BYTES,
+	MAX_FILES,
+	MAX_IMAGE_BYTES,
+	MAX_PDF_BYTES,
+	MAX_XLSX_BYTES,
+} from '../attachments/prepare';
 import type { PickRefusal, Picked } from '../attachments/useAttachments';
 import { CloseIcon } from './Icons';
 
@@ -28,18 +34,25 @@ export function refusalText( reason: PickRefusal | 'throttled' ): string {
 	switch ( reason ) {
 		case 'type':
 			return __(
-				'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC) and PDFs.',
+				'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC), PDFs and parts lists (CSV or .xlsx).',
 				'linker-tools'
 			);
 		case 'size':
-		case 'turn_size':
 			return sprintf(
-				// translators: %d is the largest PDF in megabytes.
+				// translators: 1: the largest PDF in megabytes, 2: a photo, 3: an Excel file, 4: a CSV file.
 				__(
-					'This file is too large. A PDF can be up to %d MB.',
+					'This file is too large. A PDF can be up to %1$d MB, a photo up to %2$d MB, an Excel list up to %3$d MB and a CSV list up to %4$d MB.',
 					'linker-tools'
 				),
-				MAX_PDF_BYTES / MEBIBYTE
+				MAX_PDF_BYTES / MEBIBYTE,
+				MAX_IMAGE_BYTES / MEBIBYTE,
+				MAX_XLSX_BYTES / MEBIBYTE,
+				MAX_CSV_BYTES / MEBIBYTE
+			);
+		case 'turn_size':
+			return __(
+				'The files are too large in total. Use fewer or smaller files.',
+				'linker-tools'
 			);
 		case 'heic':
 			return __(

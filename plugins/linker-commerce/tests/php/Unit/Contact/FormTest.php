@@ -261,7 +261,10 @@ final class FormTest extends TestCase {
 			array(
 				'return' => static function ( $post = null ): string {
 					$id = $post instanceof \WP_Post ? (int) $post->ID : (int) $post;
-					return 41 === $id ? 'http://site/de/genie/' : 'http://site/contact/';
+					if ( 41 === $id ) {
+						return 'http://site/de/genie/';
+					}
+					return 60 === $id ? 'http://site/genie/' : 'http://site/contact/';
 				},
 			)
 		);
@@ -275,6 +278,13 @@ final class FormTest extends TestCase {
 	private function english_site(): void {
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => false ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => static fn ( string $path = '/' ): string => 'http://site' . $path ) );
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'args'   => array( 'genie' ),
+				'return' => new \WP_Post( (object) array( 'ID' => 60 ) ),
+			)
+		);
 		$this->settings_environment();
 	}
 

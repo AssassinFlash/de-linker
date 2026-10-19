@@ -349,3 +349,114 @@ def test_the_log_keeps_the_offer_as_a_plain_field(tmp_path: Path) -> None:
     log.record(conversation_id="d", contact="asked", **common)
     assert log.offers("c", 5) == [True, False]
     log.close()
+
+
+def test_a_parts_turn_streams_its_card_and_no_model_writes(
+    log: TurnLog, vocabulary: Any
+) -> None:
+    """#251: the service writes a parts turn; the card carries rows and the write."""
+    from linker_genie import parts
+    from linker_genie.route import Route
+    from linker_genie.understand import Prepared
+
+    source = parts.Source(
+        "text",
+        tuple(
+            parts.parse_text(
+                "2x SAJ H2-10K-T3\n3 x GoodWe GW10K-ETA-G20\n1 x SMA Sunny Boy 5.0"
+            )
+        ),
+        since=0,
+    )
+    result = parts.build(source, [], vocabulary)
+
+    def prepare(request: TurnRequest) -> Prepared:
+        del request
+        return Prepared(
+            route=Route("parts", no_cards=True, no_handoff=True), parts_list=result
+        )
+
+    app.state.prepare = prepare
+    client = TestClient(app, headers=SHELL)
+    response = client.post(
+        "/assistant/turn",
+        json={
+            "conversation_id": "c1",
+            "messages": [{"role": "user", "content": "2x SAJ H2-10K-T3"}],
+            "locale": "en",
+        },
+    )
+    assert response.status_code == 200
+    body = response.text
+    meta = _meta(body)
+    assert meta["route"] == "parts"
+    assert meta["grounded"] and not meta["fallback"]
+    assert '"type": "parts"' in body
+    assert '"product_id": 4107' in body
+    assert '"quantity": 2' in body
+    assert "not in our product range" in body
+    assert '"provider"' not in body
+    # The turn log says the service wrote it (no model, no tool calls).
+    row = log._db.execute("SELECT provider, model, tool_calls FROM turns").fetchone()
+    assert row is not None and (row[0], row[1]) == ("service", "none")
+    assert row[2] in ("[]", None)
+
+
+def test_forget_purges_the_rows_a_file_parts_list_read(log: TurnLog) -> None:
+    """#251: a list read from a file is the file's words; deleting the
+    conversation takes its row texts, as it takes the reading (#236)."""
+    log.record(
+        conversation_id="c1",
+        locale="en",
+        grounded=True,
+        failures=(),
+        fallback=False,
+        provider="service",
+        model="none",
+        tool_calls=[
+            {
+                "name": "linker/read-attachment",
+                "arguments": {"id": "att1"},
+                "ok": True,
+                "result": {
+                    "id": "att1",
+                    "kind": "list",
+                    "text": "SAJ H2-10K-T3\t2",
+                },
+            }
+        ],
+        output={
+            "language": "en",
+            "blocks": [
+                {"type": "text", "text": "I checked your list.", "refs": []},
+                {
+                    "type": "parts",
+                    "rows": [
+                        {
+                            "line": 1,
+                            "text": "SAJ H2-10K-T3",
+                            "quantity": 2,
+                            "status": "matched",
+                            "product_id": 4107,
+                            "label": "H2-10K-T3",
+                            "options": [],
+                        }
+                    ],
+                    "ask_line": None,
+                    "add": None,
+                    "truncated": False,
+                },
+            ],
+        },
+        question="Attached: list.csv",
+        understanding={"parts": {"kind": "table", "reading": "att1", "rows": 1}},
+    )
+    assert log.forget("c1") == 1
+    row = log._db.execute("SELECT output, question FROM turns").fetchone()
+    assert row is not None
+    output = json.loads(row[0])
+    block = next(b for b in output["blocks"] if b["type"] == "parts")
+    assert block["rows"][0]["text"] == ""
+    assert block["rows"][0]["purged"] is True
+    # The customer's own message stays; it names the file, not its rows.
+    assert row[1] == "Attached: list.csv"

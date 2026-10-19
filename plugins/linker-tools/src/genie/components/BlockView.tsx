@@ -11,15 +11,18 @@ import { ActionView } from './ActionView';
 import { Ask } from './Ask';
 import { DocumentLink } from './DocumentLink';
 import { Handoff } from './Handoff';
+import { PartsCard, type PartsActions } from './PartsCard';
 
 export function BlockView( {
 	block,
 	accountUrl,
 	onAsk,
+	parts,
 }: {
 	block: Block;
 	accountUrl: string;
 	onAsk: ( text: string ) => void;
+	parts: PartsActions;
 } ) {
 	if ( block.type === 'ask' ) {
 		return <Ask block={ block } onAsk={ onAsk } />;
@@ -35,6 +38,9 @@ export function BlockView( {
 	}
 	if ( block.type === 'document' ) {
 		return <DocumentLink block={ block } />;
+	}
+	if ( block.type === 'parts' ) {
+		return <PartsCard block={ block } { ...parts } />;
 	}
 	return null;
 }

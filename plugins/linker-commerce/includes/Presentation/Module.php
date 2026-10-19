@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
+use Linker\Commerce\Account\AuthTemplates;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductView;
 
@@ -60,11 +61,15 @@ final class Module {
 	}
 
 	/**
-	 * The account chain's interaction layer (ticket #184): the submit state and
+	 * The account chain's interaction layer (ticket #184): the submit state,
 	 * the two-field password check of the guest cards, the gates and the
-	 * workspace forms. The strength meter is WooCommerce's own
-	 * (wc-password-strength-meter), which Woo enqueues on the pages that carry
-	 * a password field. Only the account chain loads this file.
+	 * workspace forms, and the register card's two steps (ticket #225, which
+	 * initializes WooCommerce's selectWoo on the country field). The strength
+	 * meter is WooCommerce's own (wc-password-strength-meter), which Woo
+	 * enqueues on the pages that carry a password field. Only the account
+	 * chain loads this file. selectWoo and country-select are WooCommerce's
+	 * scripts: the latter also localizes the select's translations, and both
+	 * must precede this file (the register script is appended after them).
 	 */
 	public function enqueue_account_scripts(): void {
 		$is_chain = ( function_exists( 'is_account_page' ) && is_account_page() )
@@ -73,7 +78,14 @@ final class Module {
 			return;
 		}
 		$base = plugins_url( 'assets/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
-		wp_enqueue_script( 'linker-account-ui', $base . 'account-ui.js', array(), (string) filemtime( dirname( __DIR__, 2 ) . '/assets/account-ui.js' ), true );
+		// The register card initializes WooCommerce's selectWoo on its country
+		// field; the country-select script also carries that field's
+		// translations. Every other account/checkout page keeps this file's
+		// original dependency list (none), exactly as it was.
+		$deps = AuthTemplates::is_register_request()
+			? array( 'jquery', 'selectWoo', 'wc-country-select' )
+			: array();
+		wp_enqueue_script( 'linker-account-ui', $base . 'account-ui.js', $deps, (string) filemtime( dirname( __DIR__, 2 ) . '/assets/account-ui.js' ), true );
 	}
 
 	/**

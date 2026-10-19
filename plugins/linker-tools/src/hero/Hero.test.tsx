@@ -354,7 +354,7 @@ test( 'a file type Genie cannot read is refused before any turn', async () => {
 
 	expect(
 		await screen.findByText(
-			'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC) and PDFs.'
+			'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC), PDFs and parts lists (CSV or .xlsx).'
 		)
 	).toBeInTheDocument();
 	expect( answers.send ).not.toHaveBeenCalled();
