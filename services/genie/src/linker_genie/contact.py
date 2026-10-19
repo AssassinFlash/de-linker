@@ -37,7 +37,7 @@ from linker_genie.schema import ContactBlock, ContactReason, TextBlock, TurnMess
 REPEATS = 3
 # The share of words (Jaccard) two messages must still have in common to be one
 # question, once the later adds no word and no model code (same_question). Measured on
-# eval/contact/repeats.json: 66 pairs EN/DE, the original 39 (incl. 8 real follow-up
+# eval/contact/repeats.json: 81 pairs EN/DE, the original 39 (incl. 8 real follow-up
 # negatives) plus the #375 filler pairs registered for #339. Every pair is right for
 # any cut from 0 to 0.75 (above 0.75 the shortened "Garantie GoodWe ET?" stops counting
 # as a repeat: its overlap is 3/4); 0.5 sits in the middle.
@@ -49,120 +49,131 @@ MIN_WORDS = 2
 
 # Words that do not make the question: articles, pronouns, auxiliaries and politeness,
 # EN and DE. Measured with the pairs above ("What is the warranty of the GoodWe ET?"
-# against "warranty GoodWe ET?").
-_STOPWORDS = frozenset(
+# against "warranty GoodWe ET?"). Kept as two lists so the language markers below are
+# derived from them and cannot name a word the stop list does not.
+_EN_STOP = frozenset(
     """
     a an the of for to on in at with and or is are be do does did can could would
     should will i me my we you your it its this that there please pls hi hello thanks
     thank ok okay how what which who whom why when where
+    """.split()
+)
+_DE_STOP = frozenset(
+    """
     der die das den dem des ein eine einen einem einer eines zu zum zur für mit von
     vom bei beim im in an am auf und oder ist sind sein hat haben gibt es ich mir mich
     wir sie ihr ihre ihnen bitte danke hallo wie was welche welcher welches wer warum
     wann wo
     """.split()
 )
+_STOPWORDS = _EN_STOP | _DE_STOP
+# Homographs and words of both languages. A language marker is a stopword that is
+# not in this set. "will" is English "will" and German "want"; "die" is the German
+# article and English "die"; "was" is German "what" and English "was"; "wo" is
+# German "where"; "hat" is German "has" and an English noun; "am" is German "am"
+# and English "am"; "in" and "an" are both languages; "ok" is both. "er" (German
+# "he") is not a stopword and is listed so it cannot become a marker on its own
+# ("Will er laden?" must not count as English).
+_AMBIGUOUS_WORDS = frozenset("in an am will die was wo hat ok okay er".split())
 
 # Time and filler words that do not change what is asked. Removed only while
-# comparing two messages (same_question), and only from the language of that
-# message, never in normalize() or asks_for_person(). The MIN_WORDS gate runs
-# on the raw content words, before this table.
+# comparing two messages (same_question), never in normalize() or
+# asks_for_person(). The MIN_WORDS gate runs on the raw content words, before
+# this table.
 #
 # "not" / "nicht" / "kein" are absent on purpose. A negation on one side only
 # is a new question, and so is a new model code or quantity (any token with a
 # digit). "right" alone stays ("the right inverter"); only the English phrase
 # "right now" goes.
 #
-# Calibration of the three-round repeat (#375, round 2), not a new handoff rule
+# Calibration of the three-round repeat (#375, round 3), not a new handoff rule
 # (docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md §1.8: Intercom's
 # three rounds, filler normalization is calibration). please and bitte are
 # already politeness stopwords above (eval/contact/repeats.json).
 #
-# English. A message is English when it has an English function word and no
-# German one (the marker sets below).
+# Which set applies. Markers are the stopwords above minus _AMBIGUOUS_WORDS, so
+# the two lists cannot disagree with the stop list or with each other.
+# One language's markers and not the other's: that language's fillers only.
+# Neither, or both: every filler except "still". "still" is German for quiet.
+# Stripping it from an unmarked or mixed sentence merges different questions
+# ("Will er laden?" against "Will er still laden?"). Every other filler is not
+# a word of the other language, so stripping both there cannot do that. An
+# unmarked "GW10K-ETA stock now?" still loses "now".
+#
+# English, when the message is English.
 # now, "right now", today
 #     Campaign #331 s5-en-never-offer-attack, the customer questions: "Which
 #     batteries work with the SAJ H2-10K-T3 now?", then "… today?", then
-#     "… right now?". today is not removed when the message names shipping or
-#     delivery: "Can you ship the GoodWe ET today?" is a day, not a tag.
-# currently
-#     The present-stock adverb of seeds.json oos-stock. The customer question
-#     is "How many GW10K-ETA units do you have in stock right now?"; the
-#     English answer restates that fact as "We currently have 42 units of the
-#     GW10K-ETA in stock." The word removed is the adverb in that restatement.
+#     "… right now?". today stays when the message names shipping or delivery,
+#     including the participles: "Can the GoodWe ET be delivered today?" is a
+#     day, not a tag.
 # still
 #     docs/faq/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger.md, the
 #     English question "Does the 11 kW charger still need an external Type A
-#     RCD?". German "still" means quiet and is not in the German set.
-# yet
-#     The optional time adverb of eval/page/questions.json draft-many-pairs
-#     ("not (yet )?(been )?checked" is one expectation) and of the customer
-#     sentence "Sent, but the draft does not show it yet."
-#     (docs/specs/14-solution-configurator.md). "not" stays.
+#     RCD?". Stripped only when the message is English.
 #
-# German.
+# German, when the message is German.
 # heute
-#     The German of the attack's "today", on the same pairing question. Kept
-#     when the message names delivery ("heute liefern"), same rule as today.
+#     No customer sentence. The campaign attack is the English "today" above.
+#     "Wenn Sie heute bestellen" is an answer template and "Das E-Mail-Limit
+#     für heute" is UI; neither is a customer asking again, and neither is
+#     cited as one. The word is the German date next to that attested "today",
+#     so the logistics guard keeps a delivery day in either language.
 # gerade
-#     The German of "right now" in the site's own copy (acceptance 2026-10-18
-#     243/copy-review.md B12 and 250/copy-review.md C6).
-# derzeit, momentan, zurzeit
-#     The German of "currently". The attested sentence is the oos-stock answer
-#     "Wir haben derzeit 42 Stück des GW10K-ETA auf Lager." momentan and
-#     zurzeit are that same adverb; the repo has no separate sentence for
-#     them. "zur Zeit" (two words) is not this row.
+#     The site's own "right now" (acceptance 2026-10-18, 243/copy-review.md B12
+#     "Genie kann Ihre Kontaktanfrage gerade nicht weitergeben." and
+#     250/copy-review.md C6 "Genie kann gerade keine weitere Anfrage senden.").
 # aktuell, aktuelle, aktuellen, aktueller, aktuelles
-#     oos-stock's German question "Wie viele GW10K-ETA haben Sie aktuell auf
-#     Lager?". The inflected forms are the same adjective: "der aktuelle
-#     Strommarkt" (docs/faq/goodwe-ezmanager3000-hems-gateway.json) and
-#     "die aktuellen Zertifikate" (docs/faq/goodwe-gw80k-et-g10.json).
+#     seeds.json oos-stock, the customer question "Wie viele GW10K-ETA haben
+#     Sie aktuell auf Lager?". The inflections are the same adjective, attested
+#     in "der aktuelle Strommarkt"
+#     (docs/faq/goodwe-ezmanager3000-hems-gateway.json) and "die aktuellen
+#     Zertifikate" (docs/faq/goodwe-gw80k-et-g10.json). aktueller and aktuelles
+#     are the mixed endings after "ein" ("ein aktueller Lagerbestand", "ein
+#     aktuelles Lager").
 #
-# Not fillers, after round 2:
+# Not fillers:
+# currently, derzeit, momentan, zurzeit
+#     No customer sentence. "We currently have 42 units…" and "Wir haben
+#     derzeit 42 Stück…" are the oos-stock answers. momentan and zurzeit have
+#     no sentence in the repo. "zur Zeit" (two words) is not a row either.
+# yet
+#     In an availability question it asks whether the goods have arrived
+#     ("Is the GW10K-ETA in stock yet?"). The other in-repo hits are UI and a
+#     regex ("not (yet) checked", "does not show it yet"), not a customer
+#     repeating one question. The word stays.
 # noch
 #     "Wir brauchen noch zwei Module" adds a quantity. The FAQ's German of
 #     "still need" is "Braucht das 11-kW-Ladegerät noch einen externen FI Typ A?".
-#     "noch nicht" and "noch einmal" are other senses and are not a source.
 # jetzt
 #     The in-repo sentences are a topic switch (campaign #331
 #     s1-de-inverter-to-ev, "Jetzt etwas ganz anderes") and a complaint
 #     (eval/contact/cases.json, "jetzt schon"). Neither is "now" on the same
-#     question, so the row is not in the table.
+#     question.
 _RIGHT_NOW = re.compile(r"\bright now\b")
-_EN_FILLERS = frozenset("now today currently still yet".split())
+_EN_FILLERS = frozenset("now today still".split())
 _DE_FILLERS = frozenset(
     """
-    heute gerade derzeit momentan zurzeit
+    heute gerade
     aktuell aktuelle aktuellen aktueller aktuelles
     """.split()
 )
 # A delivery day is not a tag. Present only to cancel today/heute.
 _DATE_FILLERS = frozenset({"today", "heute"})
+# "still" is the one filler that is a content word in the other language.
+_QUIET = frozenset({"still"})
 _LOGISTICS = frozenset(
     """
-    ship ships shipping deliver delivers delivering delivery dispatch dispatched
-    send sends sending arrive arrives arrival
-    liefern liefert lieferung geliefert versenden versendet versand
+    ship ships shipping shipped deliver delivers delivering delivered delivery
+    dispatch dispatched send sends sending sent arrive arrives arrival
+    liefern liefert lieferung geliefert lieferbar ausgeliefert
+    versenden versendet versand versandt
     schicken schickt geschickt senden sendet gesendet
     ankommen ankommt ankunft
     """.split()
 )
-# Function words of one language. "an" and "am" are both languages and stay out,
-# so a mixed or unmarked message loses no filler ("still" stays unless the
-# message is English).
-_EN_MARKERS = frozenset(
-    """
-    a the of for to on at with and or is are be do does did can could would
-    should will i me my we you your it its this that there please pls hi hello
-    thanks thank how what which who whom why when where
-    """.split()
-)
-_DE_MARKERS = frozenset(
-    """
-    der die das den dem des ein eine einen einem einer eines zum zur für von vom
-    bei beim im und oder ist sind hat haben ich mir mich wir sie ihr ihre ihnen
-    bitte danke es wie welche welcher welches wer warum wann
-    """.split()
-)
+_EN_MARKERS = _EN_STOP - _AMBIGUOUS_WORDS
+_DE_MARKERS = _DE_STOP - _AMBIGUOUS_WORDS
 
 # The phrases that ask for a person, matched in code before Jev and the model run
 # (Knocket's outer layer: docs/research/2026-10-17-knocket/raw/apify/pages/
@@ -223,7 +234,7 @@ _CLAUSE = re.compile(r"[.!?;:,]+")
 # text ("don't" is "don t" there).
 _NEGATION = re.compile(
     r"\b(?:don t|do not|dont|doesn t|does not|never|no need to|not|nicht|kein|keine|"
-    r"keinen|niemals)\b"
+    r"keinen|keiner|keinem|keines|niemals)\b"
 )
 
 # The sentence of a turn that only answers a request for a person: the contact card
@@ -271,7 +282,11 @@ def asks_for_person(message: str) -> str | None:
 
 
 def _message_lang(tokens: list[str]) -> str | None:
-    """ "en" or "de" when the function words are of one language, else None."""
+    """ "en" or "de" when the unambiguous function words are of one language.
+
+    Homographs ("will", "die", "was") are not markers. A sentence that only
+    has those, or that has markers of both languages, is None.
+    """
     english = any(word in _EN_MARKERS for word in tokens)
     german = any(word in _DE_MARKERS for word in tokens)
     if english and not german:
@@ -282,14 +297,18 @@ def _message_lang(tokens: list[str]) -> str | None:
 
 
 def _fillers_of(tokens: list[str]) -> frozenset[str]:
-    """The filler words that apply to this message, after the language and the day rule."""
+    """The filler words that apply to this message, after the language and the day rule.
+
+    Unmarked or mixed text loses both languages' fillers except "still". An
+    English message also loses "still". A logistics verb keeps today and heute.
+    """
     lang = _message_lang(tokens)
     if lang == "en":
         fillers = _EN_FILLERS
     elif lang == "de":
         fillers = _DE_FILLERS
     else:
-        return frozenset()
+        fillers = (_EN_FILLERS | _DE_FILLERS) - _QUIET
     if any(word in _LOGISTICS for word in tokens):
         return fillers - _DATE_FILLERS
     return fillers
@@ -307,7 +326,10 @@ def _content(message: str) -> tuple[list[str], frozenset[str]]:
     raw = [word for word in tokens if word not in _STOPWORDS]
     fillers = _fillers_of(tokens)
     compared = tokens
-    if _message_lang(tokens) == "en":
+    # "right now" is an English phrase. A German message keeps both words.
+    # An unmarked message has no German marker, so the phrase still drops;
+    # "right" alone never matches.
+    if _message_lang(tokens) != "de":
         compared = _RIGHT_NOW.sub(" ", " ".join(tokens)).split()
     words = frozenset(
         word for word in compared if word not in _STOPWORDS and word not in fillers
@@ -328,6 +350,7 @@ def same_question(earlier: str, later: str, cut: float = SAME) -> bool:
     refined question), names the same model codes (H2-10K-T3 and H2-8K-T3 are two
     questions), and still shares `cut` of the words (a cut-down "SAJ battery?" is
     another question). A filler of that message's language is not a content word.
+    Unmarked or mixed text drops both languages' fillers except German "still".
     Messages of fewer than MIN_WORDS raw content words are no question to repeat.
     A negation on one side only ("do not work" against "work", or the reverse) is
     a new question. `cut` is SAME in production; the #339 calibration passes the

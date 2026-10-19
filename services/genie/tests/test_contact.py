@@ -1,10 +1,12 @@
 """'Let Linker contact me' (#243): when Genie offers it, and the turn that offers it."""
 
 import json
+import re
 from pathlib import Path
 
 import pytest
 
+import linker_genie.contact as contact_mod
 from linker_genie.contact import (
     asks_for_person,
     decide,
@@ -109,17 +111,57 @@ def test_same_question_matches_the_measured_cases(case: dict[str, object]) -> No
     assert same_question(str(case["a"]), str(case["b"])) is case["same"]
 
 
+def _sweep_mismatches() -> list[str]:
+    """Pairs the 0-to-0.75 sweep gets wrong, as short labels."""
+    missed: list[str] = []
+    for cut_hundredths in range(76):
+        cut = cut_hundredths / 100
+        for case in CASES["pairs"]:
+            if same_question(str(case["a"]), str(case["b"]), cut) is not case["same"]:
+                missed.append(f"{cut}: {case['b']}")
+                return missed
+    return missed
+
+
 def test_339_filler_corpus_holds_for_every_cut_from_0_to_0_75() -> None:
     """#339: repeats.json, including the #375 filler pairs, matches every cut.
 
     The spec's claim is any Jaccard cut from 0 through 0.75. Above 0.75 the
     shortened "Garantie GoodWe ET?" stops counting, because its overlap is 3/4.
     """
-    assert len(CASES["pairs"]) == 66
-    for cut_hundredths in range(76):
-        cut = cut_hundredths / 100
-        for case in CASES["pairs"]:
-            assert same_question(str(case["a"]), str(case["b"]), cut) is case["same"]
+    assert len(CASES["pairs"]) == 81
+    assert _sweep_mismatches() == []
+
+
+def test_language_markers_are_the_unambiguous_stopwords() -> None:
+    """Markers are derived from the stop lists, minus homographs."""
+    assert contact_mod._EN_MARKERS <= contact_mod._EN_STOP
+    assert contact_mod._DE_MARKERS <= contact_mod._DE_STOP
+    assert contact_mod._EN_MARKERS.isdisjoint(contact_mod._DE_MARKERS)
+    assert contact_mod._EN_MARKERS.isdisjoint(contact_mod._AMBIGUOUS_WORDS)
+    assert contact_mod._DE_MARKERS.isdisjoint(contact_mod._AMBIGUOUS_WORDS)
+    covered = (
+        contact_mod._EN_MARKERS | contact_mod._DE_MARKERS | contact_mod._AMBIGUOUS_WORDS
+    )
+    assert contact_mod._STOPWORDS <= covered
+    for homograph in ("will", "die", "was", "wo", "hat", "am", "er"):
+        assert homograph not in contact_mod._EN_MARKERS
+        assert homograph not in contact_mod._DE_MARKERS
+
+
+def test_removing_any_filler_row_fails_the_calibration_sweep(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Each filler row is the only reason some corpus pair survives 0 to 0.75."""
+    rows = [("_EN_FILLERS", word) for word in sorted(contact_mod._EN_FILLERS)]
+    rows += [("_DE_FILLERS", word) for word in sorted(contact_mod._DE_FILLERS)]
+    for name, word in rows:
+        current = getattr(contact_mod, name)
+        monkeypatch.setattr(contact_mod, name, current - {word})
+        assert _sweep_mismatches(), word
+        monkeypatch.setattr(contact_mod, name, current)
+    monkeypatch.setattr(contact_mod, "_RIGHT_NOW", re.compile(r"(?!)"))
+    assert _sweep_mismatches()
 
 
 def test_three_rounds_of_the_same_question_count_three() -> None:
@@ -220,10 +262,10 @@ def test_two_rounds_are_not_yet_a_repeat() -> None:
 
 
 # #375. The #331 attack adds one time word per round to one pairing question
-# (s5-en-never-offer-attack: now, today, right now). German uses heute, gerade,
-# aktuell and the present-stock adverbs. please and bitte are already stopwords.
-# Round 2: the length gate is the raw words; today/heute stay on a delivery day;
-# noch and jetzt stay; English and German fillers are separate sets.
+# (s5-en-never-offer-attack: now, today, right now). German uses heute, gerade
+# and aktuell. please and bitte are already stopwords.
+# Round 3: homographs are not language markers; unmarked text still drops
+# fillers other than German "still"; today/heute stay on a delivery participle.
 @pytest.mark.parametrize(
     ("earlier", "later"),
     [
@@ -241,23 +283,25 @@ def test_two_rounds_are_not_yet_a_repeat() -> None:
         ),
         (
             "Which batteries work with the SAJ H2-10K-T3?",
-            "Which batteries work with the SAJ H2-10K-T3 currently?",
-        ),
-        (
-            "Which batteries work with the SAJ H2-10K-T3?",
             "Which batteries work with the SAJ H2-10K-T3 still?",
         ),
         (
             "Which batteries work with the SAJ H2-10K-T3?",
             "Which batteries work with the SAJ H2-10K-T3 please?",
         ),
+        # Round 3. "will" / "die" are homographs, and "stock now?" has no
+        # function word. None of these may block the filler.
         (
-            "Is the GW10K-ETA in stock?",
-            "Is the GW10K-ETA in stock yet?",
+            "Ich will die SAJ H2-10K-T3 Batterie kaufen.",
+            "Ich will die SAJ H2-10K-T3 Batterie kaufen aktuell.",
         ),
         (
-            "We have 42 units of the GW10K-ETA in stock.",
-            "We currently have 42 units of the GW10K-ETA in stock.",
+            "GW10K-ETA stock?",
+            "GW10K-ETA stock now?",
+        ),
+        (
+            "Which batteries die fastest?",
+            "Which batteries die fastest now?",
         ),
         (
             "Welche Batterien passen zum SAJ H2-10K-T3?",
@@ -276,14 +320,6 @@ def test_two_rounds_are_not_yet_a_repeat() -> None:
             "Wie viele GW10K-ETA haben Sie aktuell auf Lager?",
         ),
         (
-            "Wie viele GW10K-ETA haben Sie auf Lager?",
-            "Wie viele GW10K-ETA haben Sie momentan auf Lager?",
-        ),
-        (
-            "Wie viele GW10K-ETA haben Sie auf Lager?",
-            "Wie viele GW10K-ETA haben Sie zurzeit auf Lager?",
-        ),
-        (
             "Wie ist der Lagerbestand des GW10K-ETA?",
             "Wie ist der aktuelle Lagerbestand des GW10K-ETA?",
         ),
@@ -292,17 +328,12 @@ def test_two_rounds_are_not_yet_a_repeat() -> None:
             "Haben Sie den aktuellen Lagerbestand des GW10K-ETA?",
         ),
         (
-            "Wie ist der Lagerbestand des GW10K-ETA?",
-            "Wie ist der aktueller Lagerbestand des GW10K-ETA?",
+            "Ist ein Lagerbestand des GW10K-ETA bekannt?",
+            "Ist ein aktueller Lagerbestand des GW10K-ETA bekannt?",
         ),
         (
-            "Ist das Lager des GW10K-ETA bekannt?",
-            "Ist das aktuelles Lager des GW10K-ETA bekannt?",
-        ),
-        # The seed's German gloss (oos-stock de.answered).
-        (
-            "Wir haben 42 Stück des GW10K-ETA auf Lager.",
-            "Wir haben derzeit 42 Stück des GW10K-ETA auf Lager.",
+            "Ist ein Lager des GW10K-ETA bekannt?",
+            "Ist ein aktuelles Lager des GW10K-ETA bekannt?",
         ),
         # Both sides already negated: a filler does not open a new question.
         (
@@ -358,15 +389,93 @@ def test_a_verbatim_short_question_still_counts(question: str) -> None:
             "Welcher Speicher passt nicht zum SAJ H2-10K-T3?",
             "Welcher Speicher passt zum SAJ H2-10K-T3?",
         ),
-        # today/heute name a delivery day. noch adds. German still is quiet.
-        # jetzt has no sourced filler sense, so it stays a word.
+        # today/heute name a delivery day, including the participles.
+        # noch adds. German still is quiet, including when "will" is the only
+        # English-looking word. jetzt, yet, currently, derzeit, momentan and
+        # zurzeit are not fillers. Dropping keiner/keinem/keines is a new question.
         (
             "Can you ship the GoodWe ET?",
             "Can you ship the GoodWe ET today?",
         ),
         (
+            "Can the GoodWe ET be delivered?",
+            "Can the GoodWe ET be delivered today?",
+        ),
+        (
+            "Can the GoodWe ET be shipped?",
+            "Can the GoodWe ET be shipped today?",
+        ),
+        (
+            "Can the GoodWe ET be sent?",
+            "Can the GoodWe ET be sent today?",
+        ),
+        (
             "Können Sie den GoodWe ET liefern?",
             "Können Sie den GoodWe ET heute liefern?",
+        ),
+        (
+            "Können Sie den GoodWe ET versenden?",
+            "Können Sie den GoodWe ET heute versenden?",
+        ),
+        (
+            "Ist der GoodWe ET lieferbar?",
+            "Ist der GoodWe ET heute lieferbar?",
+        ),
+        (
+            "Kann der GoodWe ET ausgeliefert werden?",
+            "Kann der GoodWe ET heute ausgeliefert werden?",
+        ),
+        (
+            "Wann wird der GoodWe ET versandt?",
+            "Wann wird der GoodWe ET heute versandt?",
+        ),
+        (
+            "Will er laden?",
+            "Will er still laden?",
+        ),
+        (
+            "Is the GW10K-ETA in stock?",
+            "Is the GW10K-ETA in stock yet?",
+        ),
+        (
+            "How many GW10K-ETA units do you have in stock?",
+            "How many GW10K-ETA units do you have in stock currently?",
+        ),
+        (
+            "Wie viele GW10K-ETA haben Sie auf Lager?",
+            "Wie viele GW10K-ETA haben Sie derzeit auf Lager?",
+        ),
+        (
+            "Wie viele GW10K-ETA haben Sie auf Lager?",
+            "Wie viele GW10K-ETA haben Sie momentan auf Lager?",
+        ),
+        (
+            "Wie viele GW10K-ETA haben Sie auf Lager?",
+            "Wie viele GW10K-ETA haben Sie zurzeit auf Lager?",
+        ),
+        (
+            "Passt der Speicher zu einem SAJ H2-10K-T3?",
+            "Passt der Speicher zu keinem SAJ H2-10K-T3?",
+        ),
+        (
+            "Passt der Speicher zu keinem SAJ H2-10K-T3?",
+            "Passt der Speicher zu einem SAJ H2-10K-T3?",
+        ),
+        (
+            "Passt das zu einer SAJ Batterie?",
+            "Passt das zu keiner SAJ Batterie?",
+        ),
+        (
+            "Passt das zu keiner SAJ Batterie?",
+            "Passt das zu einer SAJ Batterie?",
+        ),
+        (
+            "Ist eines SAJ Modells kompatibel?",
+            "Ist keines SAJ Modells kompatibel?",
+        ),
+        (
+            "Ist keines SAJ Modells kompatibel?",
+            "Ist eines SAJ Modells kompatibel?",
         ),
         (
             "Wir brauchen zwei Module.",
