@@ -9,11 +9,13 @@ from pathlib import Path
 import regrade
 
 
-def test_overturns_are_six_defects_and_two_parity() -> None:
-    assert len(regrade.OVERTURNS) == 8
+def test_overturns_are_six_defects_and_four_parity() -> None:
+    assert len(regrade.OVERTURNS) == 10
     grades = Counter(item["grade"] for item in regrade.OVERTURNS.values())
     assert grades["defect"] == 6
-    assert grades["parity"] == 2
+    assert grades["parity"] == 4
+    assert regrade.OVERTURNS["H4-DE"]["grade"] == "parity"
+    assert regrade.OVERTURNS["G5-DE"]["grade"] == "parity"
     assert set(
         regrade.NUMBER_CHECKS
     )  # recorded, and import did not need the evidence file
@@ -73,9 +75,9 @@ def test_committed_verdicts_match_the_recount() -> None:
     ]
     assert len(rows) == 111
     grades = Counter(str(row["grade"]) for row in rows)
-    assert grades["pass"] == 94
+    assert grades["pass"] == 92
     assert grades["defect"] == 15
-    assert grades["parity"] == 2
+    assert grades["parity"] == 4
     by_id = {str(row["case"]): row for row in rows}
     for case_id, over in regrade.OVERTURNS.items():
         assert by_id[case_id]["grade"] == over["grade"]
@@ -90,3 +92,24 @@ def test_committed_verdicts_match_the_recount() -> None:
     assert "220/380" in by_id["A4-EN"]["numbers_verification"]["record"]
     assert by_id["A4-EN"]["numbers_verification"].get("pdf_reread") is True
     assert "220/380" in by_id["A4-EN"]["numbers_verification"].get("pdf_line", "")
+    assert by_id["H4-DE"]["grade"] == "parity"
+    assert by_id["G5-DE"]["grade"] == "parity"
+
+
+def test_cited_numbers_were_reread_and_the_certificate_fixture_stands_in() -> None:
+    cited = regrade.load_cited()
+    for case_id, check in regrade.NUMBER_CHECKS.items():
+        if check["status"] != "cited-document":
+            continue
+        assert "not re-read" not in check["method"]
+        assert case_id in cited
+        assert cited[case_id]["line"]
+    missing = Path("/no/such-certificate.pdf")
+    line, read_now = regrade.certificate_voltage_line(missing)
+    assert read_now is False
+    assert line == regrade.vendored_voltage_line()
+    assert "220/380" in line and "230/400" in line
+    if regrade.CERTIFICATE.is_file():
+        live, read_pdf = regrade.certificate_voltage_line()
+        assert read_pdf is True
+        assert live == regrade.vendored_voltage_line()

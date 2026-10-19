@@ -168,6 +168,49 @@ def test_fake_model_shown() -> None:
     assert "fake model CHS2-75K-T8-X shown" in _flags(result)
 
 
+def test_fake_model_absent_from_the_feed_is_still_flagged() -> None:
+    """The fake string is not a catalogue row. Answer text and compare count."""
+    absent = {"products": [FEED["products"][0]]}
+    case = _case(expect={"fake": "GW50K-ETA-G20"})
+    quoted = triage(
+        case,
+        _meta(),
+        [{"type": "text", "text": "The GW50K-ETA-G20 is in stock?"}],
+        absent,
+        1.0,
+        200,
+        None,
+    )
+    assert "fake model GW50K-ETA-G20 shown in the answer" in _flags(quoted)
+    compared = triage(
+        case,
+        _meta(),
+        [
+            {"type": "text", "text": "Nearest real models?"},
+            {"type": "compare", "values": {"model": "GW50K-ETA-G20"}},
+        ],
+        absent,
+        1.0,
+        200,
+        None,
+    )
+    assert "fake model GW50K-ETA-G20 shown in compare" in _flags(compared)
+    assert "shown in the answer" not in _flags(compared)
+    nearest = triage(
+        case,
+        _meta(),
+        [
+            {"type": "text", "text": "The H2-10K-T3 is the nearest real model?"},
+            {"type": "cards", "product_ids": [1]},
+        ],
+        absent,
+        1.0,
+        200,
+        None,
+    )
+    assert "fake model" not in _flags(nearest)
+
+
 def test_sizing_action_missing() -> None:
     result = _cut(
         _case(expect={"sizing": {"pv_kwp": 8.0}}),
@@ -357,7 +400,7 @@ def test_workers_default_is_one() -> None:
 
 
 def test_battery_size_and_no_shop_prefixed_fake() -> None:
-    assert len(cases.CASES) == 109
+    assert len(cases.CASES) == 111
     assert len(cases.PARTS_CASES) == 8
     token = "DLK" + "-"
     root = Path(run_battery.__file__).resolve().parent
@@ -365,6 +408,8 @@ def test_battery_size_and_no_shop_prefixed_fake() -> None:
         assert token not in case["request"]
         assert token not in case["id"]
     for path in root.rglob("*.py"):
+        if any(part in {".venv", "__pycache__"} for part in path.parts):
+            continue
         assert token not in path.read_text(encoding="utf-8"), path.name
     g4 = [case for case in cases.CASES if case["id"] == "G4-EN"]
     assert g4[0]["request"].startswith("Can you quote 20 pieces of NEX-")

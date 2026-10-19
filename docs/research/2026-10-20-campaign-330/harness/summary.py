@@ -81,7 +81,13 @@ def render(rows: list[dict[str, Any]]) -> str:
             f"| {grades.count('defect')} | {grades.count('parity')} "
             f"| {grades.count('obs')} |"
         )
-    durations = sorted(float(row.get("duration_s") or 0) for row in rows)
+    durations: list[float] = []
+    for row in rows:
+        value = row.get("duration_s")
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            continue
+        durations.append(float(value))
+    durations.sort()
     if durations:
         p95 = nearest_rank(durations, 0.95)
         lines.append(

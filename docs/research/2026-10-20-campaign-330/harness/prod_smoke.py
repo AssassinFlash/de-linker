@@ -25,12 +25,18 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-from run_battery import answer_text, parse_stream, shown_ids
+from run_battery import answer_text, parse_stream, shown_ids, stream_record
 
 ROUTE = "/wp-json/linker-ai/v1/genie/turn"
 DELETE_ROUTE = "/wp-json/linker-ai/v1/genie/conversations"
-# de-linker.com is the public site. Anything else, including a local instance
-# of the same route, is not this gate.
+# GET existing_id(). It does not open a conversation (Proxy::conversation).
+READ_ROUTE = "/wp-json/linker-ai/v1/genie/conversation"
+# Cookie value is `id.signature` (Conversations::from_cookie).
+CONVERSATION_COOKIE = "linker_conversation"
+# Public HTTP hosts. A trailing dot is the same host; urlparse keeps it, so
+# the check strips it. staging.de-linker.com and the Hostinger preview host
+# were removed 2026-10-14 (docs/acceptance/2026-10-14/17/README.md) and are
+# not production. The SSH name hostinger-de-linker is not an HTTP origin.
 PRODUCTION_HOSTS = frozenset({"de-linker.com", "www.de-linker.com"})
 # Headers the smoke is willing to cite. A name absent from the response is
 # omitted; it is not filled in from another probe.
@@ -181,7 +187,8 @@ class RedirectRecord(urllib.request.HTTPRedirectHandler):
 
 
 def is_production(site: str) -> bool:
-    host = (urllib.parse.urlparse(site).hostname or "").lower()
+    """True for the public site, including a trailing-dot or uppercase host."""
+    host = (urllib.parse.urlparse(site).hostname or "").lower().rstrip(".")
     return host in PRODUCTION_HOSTS
 
 
@@ -197,17 +204,103 @@ def selected_headers(headers: list[tuple[str, str]]) -> dict[str, str]:
 def delete_conversation(
     opener: urllib.request.OpenerDirector, site: str, conversation_id: int
 ) -> int | None:
-    """DELETE the conversation this probe's cookie opened. Not an email."""
+    """DELETE the conversation this probe's cookie opened. Not an email.
+
+    before_delete_post can call the service forget endpoint inside the proxy's
+    60 s bound (Proxy::forget). The client waits PROD_TIMEOUT, the same 180 s
+    as the turn, so that forget is not cut by an unsourced 30 s. 180 does not
+    extend the proxy's 60 s.
+    """
     url = f"{site.rstrip('/')}{DELETE_ROUTE}/{conversation_id}"
     request = urllib.request.Request(url, method="DELETE")
     try:
-        with opener.open(request, timeout=30) as reply:
+        with opener.open(request, timeout=PROD_TIMEOUT) as reply:
             reply.read()
             return int(reply.status)
     except urllib.error.HTTPError as failure:
-        return int(failure.code)
+        try:
+            return int(failure.code)
+        finally:
+            failure.close()
     except urllib.error.URLError:
         return None
+
+
+def cookie_conversation_id(jar: http.cookiejar.CookieJar) -> int | None:
+    """The integer before the dot in `linker_conversation`, when the jar has one."""
+    for cookie in jar:
+        if cookie.name != CONVERSATION_COOKIE:
+            continue
+        # Cookie.value is optional in the cookie jar types.
+        head = (cookie.value or "").split(".", 1)[0]
+        if head.isdigit() and int(head) > 0:
+            return int(head)
+    return None
+
+
+def envelope_of(body: str) -> dict[str, Any] | None:
+    """The turn body Proxy::turn returns: conversation_id plus the SSE stream."""
+    try:
+        parsed = json.loads(body)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(parsed, dict):
+        return None
+    if not isinstance(parsed.get("conversation_id"), int):
+        return None
+    if parsed["conversation_id"] <= 0:
+        return None
+    if not isinstance(parsed.get("stream"), str):
+        return None
+    return parsed
+
+
+def read_conversation_id(
+    opener: urllib.request.OpenerDirector, site: str, timeout: float
+) -> int | None:
+    """GET the read-only thread route. existing_id() does not mint a post."""
+    url = site.rstrip("/") + READ_ROUTE
+    request = urllib.request.Request(url, method="GET")
+    try:
+        with opener.open(request, timeout=timeout) as reply:
+            body = reply.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as failure:
+        try:
+            body = failure.read().decode("utf-8", "replace")
+        finally:
+            failure.close()
+    except urllib.error.URLError:
+        return None
+    try:
+        parsed = json.loads(body)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(parsed, dict):
+        return None
+    raw = parsed.get("conversation_id")
+    if isinstance(raw, int) and raw > 0:
+        return raw
+    return None
+
+
+def failed_probes(results: list[dict[str, Any]]) -> list[str]:
+    """Probe ids that errored, or that opened a conversation and did not delete it."""
+    failed: list[str] = []
+    for result in results:
+        probe_id = str(result.get("probe"))
+        if result.get("error"):
+            failed.append(probe_id)
+        elif result.get("writes_conversation") and result.get("delete_http") != 200:
+            failed.append(probe_id)
+    return failed
+
+
+def _reply_parts(reply: Any) -> tuple[int, str, list[tuple[str, str]], str]:
+    status = int(getattr(reply, "status", None) or reply.code)
+    final_url = str(reply.geturl())
+    header_pairs = [(str(key), str(value)) for key, value in reply.headers.items()]
+    body = reply.read().decode("utf-8", "replace")
+    return status, final_url, header_pairs, body
 
 
 def probe(
@@ -215,7 +308,13 @@ def probe(
     site: str,
     timeout: float,
 ) -> dict[str, Any]:
-    """One POST. The conversation it creates is deleted before this returns."""
+    """One POST. Any outcome is recorded, and a known conversation is deleted.
+
+    Proxy::turn opens the conversation before the service call. A 502 body has
+    no conversation id. The cookie jar still has `id.signature` when Set-Cookie
+    was processed, and GET /genie/conversation reads existing_id() without
+    opening another post. A 200 that is not the envelope is an error.
+    """
     jar = http.cookiejar.CookieJar()
     recorder = RedirectRecord()
     opener = urllib.request.build_opener(
@@ -229,70 +328,124 @@ def probe(
         headers={"Content-Type": "application/json", "Accept": "text/event-stream"},
         method="POST",
     )
+    status: int | None = None
+    final_url = url
+    header_pairs: list[tuple[str, str]] = []
+    raw_body = ""
+    error: str | None = None
     conversation_id: int | None = None
-    result: dict[str, Any] = {}
+    result: dict[str, Any] = {
+        "probe": item["id"],
+        "local_case": item["local"],
+        "locale": item["locale"],
+        "requested_url": url,
+        "final_url": url,
+        "redirect_chain": [],
+        "http": None,
+        "selected_headers": {},
+        "header_names": [],
+        "conversation_id": None,
+        "turn_id": None,
+        "delete_http": None,
+        "writes_conversation": False,
+        "duration_s": None,
+        "meta": None,
+        "blocks": [],
+        "answer_text": "",
+        "product_ids": [],
+        "error": None,
+        **stream_record(""),
+    }
+    started = time.monotonic()
     try:
-        started = time.monotonic()
-        with opener.open(request, timeout=timeout) as reply:
-            # geturl() is the URL after redirects. The request URL is not.
-            final_url = str(reply.geturl())
-            header_pairs = [
-                (str(key), str(value)) for key, value in reply.headers.items()
-            ]
-            status = int(reply.status)
-            stream = reply.read().decode("utf-8", "replace")
-        duration = time.monotonic() - started
-        envelope: dict[str, Any] = {}
         try:
-            parsed = json.loads(stream)
-            if isinstance(parsed, dict):
-                envelope = parsed
-        except json.JSONDecodeError:
-            envelope = {}
-        raw_id = envelope.get("conversation_id")
-        if isinstance(raw_id, int):
-            conversation_id = raw_id
-        inner = envelope.get("stream", "") if envelope else stream
-        if not isinstance(inner, str):
-            inner = stream
-        meta, blocks = parse_stream(inner)
+            with opener.open(request, timeout=timeout) as reply:
+                status, final_url, header_pairs, raw_body = _reply_parts(reply)
+        except urllib.error.HTTPError as failure:
+            try:
+                status, final_url, header_pairs, raw_body = _reply_parts(failure)
+            finally:
+                failure.close()
+            error = f"HTTP {status}"
+        except urllib.error.URLError as failure:
+            error = f"URLError: {failure.reason}"
+        duration = time.monotonic() - started
+        envelope = envelope_of(raw_body) if status == 200 else None
+        if status == 200 and envelope is None:
+            error = "HTTP 200 body is not a conversation envelope"
+        elif status is not None and status != 200 and error is None:
+            error = f"HTTP {status}"
+        inner = ""
+        if envelope is not None:
+            stream_value = envelope.get("stream", "")
+            inner = stream_value if isinstance(stream_value, str) else ""
+        if envelope is not None and isinstance(envelope.get("conversation_id"), int):
+            conversation_id = int(envelope["conversation_id"])
+        if conversation_id is None:
+            conversation_id = cookie_conversation_id(jar)
+        if conversation_id is None:
+            conversation_id = read_conversation_id(opener, site, timeout)
+        meta, blocks = parse_stream(inner) if inner else (None, [])
         turn_id = meta.get("turn_id") if meta else None
-        result = {
-            "probe": item["id"],
-            "local_case": item["local"],
-            "locale": item["locale"],
-            "requested_url": url,
-            "final_url": final_url,
-            "redirect_chain": list(recorder.hops),
-            "http": status,
-            "selected_headers": selected_headers(header_pairs),
-            "header_names": sorted({name for name, _value in header_pairs}),
-            "conversation_id": conversation_id,
-            "turn_id": turn_id,
-            "delete_http": None,
-            "writes_conversation": conversation_id is not None,
-            "duration_s": round(duration, 1),
-            "meta": meta,
-            "blocks": blocks,
-            "answer_text": answer_text(blocks),
-            "product_ids": shown_ids(blocks),
-            "stream": inner if len(inner) < 20000 else inner[:20000] + "…",
-        }
-        return result
+        result.update(
+            {
+                "final_url": final_url,
+                "redirect_chain": list(recorder.hops),
+                "http": status,
+                "selected_headers": selected_headers(header_pairs),
+                "header_names": sorted({name for name, _value in header_pairs}),
+                "conversation_id": conversation_id,
+                "turn_id": turn_id,
+                "writes_conversation": conversation_id is not None,
+                "duration_s": round(duration, 1),
+                "meta": meta,
+                "blocks": blocks,
+                "answer_text": answer_text(blocks),
+                "product_ids": shown_ids(blocks),
+                "error": error,
+                **stream_record(inner),
+            }
+        )
+    except Exception as failure:  # noqa: BLE001 - one probe must not abort the run
+        result["error"] = error or f"{type(failure).__name__}: {failure}"
+        if conversation_id is None:
+            conversation_id = cookie_conversation_id(jar)
+        if conversation_id is None:
+            conversation_id = read_conversation_id(opener, site, timeout)
+        result["conversation_id"] = conversation_id
+        result["writes_conversation"] = conversation_id is not None
     finally:
-        if conversation_id is not None and result.get("delete_http") is None:
+        if isinstance(conversation_id, int) and result.get("delete_http") is None:
             result["delete_http"] = delete_conversation(opener, site, conversation_id)
+            result["conversation_id"] = conversation_id
+            result["writes_conversation"] = True
+    return result
 
 
 def run(
     site: str,
     probes: list[dict[str, Any]] | None = None,
     timeout: float = PROD_TIMEOUT,
+    sink: Path | None = None,
 ) -> list[dict[str, Any]]:
-    return [
-        probe(item, site, timeout)
-        for item in (probes if probes is not None else PROBES)
-    ]
+    """Run every probe. Each line is flushed before the next probe starts."""
+    chosen = probes if probes is not None else PROBES
+    results: list[dict[str, Any]] = []
+    handle = None
+    try:
+        if sink is not None:
+            sink.parent.mkdir(parents=True, exist_ok=True)
+            handle = sink.open("w", encoding="utf-8")
+        for item in chosen:
+            result = probe(item, site, timeout)
+            results.append(result)
+            if handle is not None:
+                handle.write(json.dumps(result, ensure_ascii=False) + "\n")
+                handle.flush()
+        return results
+    finally:
+        if handle is not None:
+            handle.close()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -325,25 +478,20 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     out_dir = Path(arguments.out).expanduser()
     out_dir.mkdir(parents=True, exist_ok=True)
-    results = run(arguments.site)
-    with (out_dir / "smoke.jsonl").open("w", encoding="utf-8") as handle:
-        for result in results:
-            handle.write(json.dumps(result, ensure_ascii=False) + "\n")
+    smoke_path = out_dir / "smoke.jsonl"
+    results = run(arguments.site, sink=smoke_path)
     for result in results:
-        route = result["meta"].get("route") if result["meta"] else None
+        meta = result.get("meta")
+        route = meta.get("route") if isinstance(meta, dict) else None
         print(
-            f"{result['probe']:<10} {result['http']} {result['duration_s']:>6}s "
+            f"{result['probe']:<10} {result['http']} {result['duration_s']!s:>6}s "
             f"conversation={result['conversation_id']} turn={result['turn_id']} "
-            f"deleted={result['delete_http']} route={route}"
+            f"deleted={result['delete_http']} route={route} error={result.get('error')}"
         )
-    print(f"evidence: {out_dir / 'smoke.jsonl'}")
-    undeleted = [
-        result["conversation_id"]
-        for result in results
-        if result.get("writes_conversation") and result.get("delete_http") != 200
-    ]
-    if undeleted:
-        print(f"conversations not deleted: {undeleted}", file=sys.stderr)
+    print(f"evidence: {smoke_path}")
+    failed = failed_probes(results)
+    if failed:
+        print(f"probes failed: {failed}", file=sys.stderr)
         return 1
     return 0
 

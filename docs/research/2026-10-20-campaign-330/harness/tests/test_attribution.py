@@ -118,6 +118,43 @@ def test_question_mismatch() -> None:
     )
 
 
+def test_turn_index_joins_the_second_turn() -> None:
+    rows = [
+        _row(20, "c330-multi", "first question", "first answer"),
+        _row(21, "c330-multi", "second question", "second answer"),
+    ]
+    by_id, by_conversation = attribution.index_turns(rows)
+    second = _case("M2", "second question", "second answer", 99, "c330-multi")
+    second["turn_index"] = 1
+    missing = _case("M0", "first question", "first answer", 99, "c330-multi")
+    resolved = attribution.attribute([second, missing], by_id, by_conversation)
+    by_case = {item["case"]: item for item in resolved}
+    assert by_case["M2"]["turn_id"] == 21
+    assert by_case["M2"]["joined_by"] == "conversation_id"
+    assert by_case["M2"]["mismatch"] is False
+    assert by_case["M0"]["mismatch"] is True
+    assert any(
+        "turn_index missing" in reason for reason in by_case["M0"]["mismatch_reasons"]
+    )
+    assert by_case["M0"]["turn_id"] != 20
+    assert by_case["M0"]["joined_by"] != "conversation_id"
+
+
+def test_bad_log_json_does_not_raise() -> None:
+    row = _row(1, "c", "q", "a")
+    row["understanding"] = "not-json"
+    row["tool_calls"] = "{"
+    row["failures"] = "nope"
+    by_id, by_conversation = attribution.index_turns([row])
+    resolved = attribution.attribute(
+        [_case("A", "q", "a", 1, "c")], by_id, by_conversation
+    )
+    assert resolved[0]["turn_id"] == 1
+    assert resolved[0]["calls"] == []
+    assert resolved[0]["tool_calls"] == []
+    assert resolved[0]["failures"] == []
+
+
 def test_main_exits_nonzero_on_mismatch(tmp_path: Any, monkeypatch: Any) -> None:
     database = tmp_path / "turns.sqlite"
     connection = sqlite3.connect(database)

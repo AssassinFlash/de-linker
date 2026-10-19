@@ -4,7 +4,10 @@ The turn log (services/genie log.py) records what code did before the model:
 lexicon matches, Jev's answers, the route and its calls. Defect attribution
 reads that row.
 
-Join on (conversation_id, turn index), which the battery stores on the case.
+Join on (conversation_id, turn_index). run_battery writes turn_index on every
+case (0 for the one turn that case posts). A stored row with no turn_index
+joins index 0 only when that conversation has exactly one turn. More than one
+turn and a missing index is a mismatch: it does not silently join turn 0.
 The SSE `turn_id` is only a fallback: with `--workers 3`, K3's stream carried
 K1's turn_id (117) while K3's own log row is 116. A logged question or answer
 that is not the case's is a mismatch, and the process exits 1 when any case
@@ -65,6 +68,18 @@ def logged_answer(row: dict[str, Any]) -> str:
     return answer_text(blocks).strip()
 
 
+def _json_field(raw: Any, fallback: Any) -> Any:
+    """Parse a log column. A bad string is the fallback, not a crash."""
+    if isinstance(raw, (dict, list)):
+        return raw
+    if not isinstance(raw, str) or not raw.strip():
+        return fallback
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return fallback
+
+
 def _record(case: dict[str, Any], logged: dict[str, Any] | None) -> dict[str, Any]:
     if logged is None:
         meta = case.get("meta") or {}
@@ -73,8 +88,18 @@ def _record(case: dict[str, Any], logged: dict[str, Any] | None) -> dict[str, An
             "turn_id": meta.get("turn_id"),
             "logged": None,
         }
-    understanding = json.loads(logged["understanding"] or "{}")
+    understanding = _json_field(logged.get("understanding"), {})
+    if not isinstance(understanding, dict):
+        understanding = {}
     calls = understanding.get("calls") or []
+    if not isinstance(calls, list):
+        calls = []
+    tool_calls = _json_field(logged.get("tool_calls"), [])
+    if not isinstance(tool_calls, list):
+        tool_calls = []
+    failures = _json_field(logged.get("failures"), [])
+    if not isinstance(failures, list):
+        failures = []
     return {
         "case": case["case"],
         "turn_id": int(logged["id"]),
@@ -87,9 +112,9 @@ def _record(case: dict[str, Any], logged: dict[str, Any] | None) -> dict[str, An
         "route": understanding.get("route"),
         "reasons": understanding.get("reasons"),
         "calls": [call.get("name") for call in calls if isinstance(call, dict)],
-        "tool_calls": json.loads(logged["tool_calls"] or "[]"),
+        "tool_calls": tool_calls,
         "fallback": bool(logged["fallback"]),
-        "failures": json.loads(logged["failures"] or "[]"),
+        "failures": failures,
         "provider": logged["provider"],
         "model": logged["model"],
     }
@@ -112,12 +137,25 @@ def resolve(
     conversation_id = case.get("conversation_id")
     if isinstance(conversation_id, str) and conversation_id in by_conversation:
         turns = by_conversation[conversation_id]
-        index = int(case.get("turn_index") or 0)
-        if 0 <= index < len(turns):
-            logged = turns[index]
-            joined_by = "conversation_id"
+        raw_index = case.get("turn_index")
+        if raw_index is None:
+            if len(turns) == 1:
+                logged = turns[0]
+                joined_by = "conversation_id"
+            else:
+                reasons.append(
+                    f"turn_index missing for {conversation_id} ({len(turns)} turns)"
+                )
         else:
-            reasons.append(f"no turn index {index} in {conversation_id}")
+            try:
+                index = int(raw_index)
+            except (TypeError, ValueError):
+                index = -1
+            if 0 <= index < len(turns):
+                logged = turns[index]
+                joined_by = "conversation_id"
+            else:
+                reasons.append(f"no turn index {index} in {conversation_id}")
 
     if logged is None and isinstance(sse_turn, int):
         logged = by_id.get(sse_turn)
@@ -190,7 +228,11 @@ def main(argv: list[str] | None = None) -> int:
     for line in sys.stdin:
         if not line.strip():
             continue
-        parsed = json.loads(line)
+        try:
+            parsed = json.loads(line)
+        except json.JSONDecodeError:
+            print("attribution: a case line is not JSON", file=sys.stderr)
+            return 1
         if isinstance(parsed, dict):
             cases.append(parsed)
     # The battery writes "case"; a hand file may use the same key.

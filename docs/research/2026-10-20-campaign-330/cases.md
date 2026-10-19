@@ -4,9 +4,9 @@
 `verdicts.jsonl`（一行一例，不含原始 SSE）。`evidence` 指向本机
 `final.jsonl` 里该 case 的那一行。
 
-已评分 111 例：pass 94，defect 15，parity 2。
-装具里另有 6 例尚未开跑（A6-EN、A6-DE、A7-EN、A7-DE、I7-EN、I7-DE），
-不计入这 111 例。
+已评分 111 例：pass 92，defect 15，parity 4。
+第三轮另记在 `round3-runs.jsonl`：A6、A7、A8（系列错拼）、I7，
+以及现行 G4 的 NEX- 措辞。那些行不并进这 111 例。
 
 | class | EN | DE | pass | defect | parity | obs |
 |---|---|---|---|---|---|---|
@@ -16,14 +16,14 @@
 | 混合语言 | 5 | 5 | 10 | 0 | 0 | 0 |
 | 大小写/连字符/空格 | 6 | 5 | 11 | 0 | 0 | 0 |
 | 品牌+型号冲突 | 5 | 5 | 6 | 3 | 1 | 0 |
-| 不存在的型号 | 5 | 5 | 6 | 4 | 0 | 0 |
-| 多产品同句 | 5 | 5 | 9 | 1 | 0 | 0 |
+| 不存在的型号 | 5 | 5 | 5 | 4 | 1 | 0 |
+| 多产品同句 | 5 | 5 | 8 | 1 | 1 | 0 |
 | 数量/单位 | 6 | 6 | 10 | 2 | 0 | 0 |
 | 矛盾条件 | 5 | 5 | 8 | 1 | 1 | 0 |
 | 零件清单边界 | 7 | 1 | 8 | 0 | 0 | 0 |
 
 111 turns; duration p50 8.2s, p95 22.5s, max 28.5s
-graded: {'pass': 94, 'defect': 15, 'parity': 2, 'obs': 0, 'review': 0}
+graded: {'pass': 92, 'defect': 15, 'parity': 4, 'obs': 0, 'review': 0}
 
 | case | class | lang | grade | defect | s | evidence |
 |---|---|---|---|---|---|---|
@@ -97,7 +97,7 @@ graded: {'pass': 94, 'defect': 15, 'parity': 2, 'obs': 0, 'review': 0}
 | G2-DE | fake-model | de | pass |  | 9.0 | ~/de-linker-data/campaign-330/evidence/final.jsonl#G2-DE |
 | G3-DE | fake-model | de | pass |  | 11.7 | ~/de-linker-data/campaign-330/evidence/final.jsonl#G3-DE |
 | G4-DE | fake-model | de | defect | D9 | 6.8 | ~/de-linker-data/campaign-330/evidence/final.jsonl#G4-DE |
-| G5-DE | fake-model | de | pass |  | 28.5 | ~/de-linker-data/campaign-330/evidence/final.jsonl#G5-DE |
+| G5-DE | fake-model | de | parity | parity | 28.5 | ~/de-linker-data/campaign-330/evidence/final.jsonl#G5-DE |
 | H1-EN | multi-product | en | pass |  | 5.1 | ~/de-linker-data/campaign-330/evidence/final.jsonl#H1-EN |
 | H2-EN | multi-product | en | pass |  | 8.1 | ~/de-linker-data/campaign-330/evidence/final.jsonl#H2-EN |
 | H3-EN | multi-product | en | pass |  | 3.1 | ~/de-linker-data/campaign-330/evidence/final.jsonl#H3-EN |
@@ -106,7 +106,7 @@ graded: {'pass': 94, 'defect': 15, 'parity': 2, 'obs': 0, 'review': 0}
 | H1-DE | multi-product | de | pass |  | 6.9 | ~/de-linker-data/campaign-330/evidence/final.jsonl#H1-DE |
 | H2-DE | multi-product | de | pass |  | 9.4 | ~/de-linker-data/campaign-330/evidence/final.jsonl#H2-DE |
 | H3-DE | multi-product | de | pass |  | 3.5 | ~/de-linker-data/campaign-330/evidence/final.jsonl#H3-DE |
-| H4-DE | multi-product | de | pass |  | 12.4 | ~/de-linker-data/campaign-330/evidence/final.jsonl#H4-DE |
+| H4-DE | multi-product | de | parity | parity | 12.4 | ~/de-linker-data/campaign-330/evidence/final.jsonl#H4-DE |
 | H5-DE | multi-product | de | pass |  | 6.8 | ~/de-linker-data/campaign-330/evidence/final.jsonl#H5-DE |
 | I1-EN | units | en | pass |  | 10.2 | ~/de-linker-data/campaign-330/evidence/final.jsonl#I1-EN |
 | I2-EN | units | en | pass |  | 14.5 | ~/de-linker-data/campaign-330/evidence/final.jsonl#I2-EN |

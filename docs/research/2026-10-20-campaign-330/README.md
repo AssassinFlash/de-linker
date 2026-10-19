@@ -1,18 +1,18 @@
 # #330 对抗测试矩阵 · 输入边界批 — 执行记录
 
-- 日期：2026-10-19 跑批，2026-10-20 第二轮改判。票 #330（地图 #329）。本目录只动装具与笔记，服务与插件代码不改。
-- 环境：本地实例 `c330`（快照 20261019-1409 + 当时的 live 代码，WP 127.0.0.1:9162，Genie 127.0.0.1:9164，文档索引 build 20261018T173840Z）。第二轮不重放已改判的回合：产品修复落地之后的 main 答不出 2026-10-19 存档里的原文。
-- 已评分的是那 111 个回合（103 条对话 + 8 条零件清单）。装具现在是 117 例 = 109 条对话 + 8 条零件清单。多出的 6 例（A6、A7、I7 的 EN/DE：SKU 尾号错拼、品类词错拼、证书电压）还没有成绩，不计入下面的 94 / 15 / 2。
+- 日期：2026-10-19 跑批，2026-10-20 第二轮改判。第三轮补装具、改判 parity，并补跑当时没开的用例。票 #330（地图 #329）。本目录只动装具与笔记，服务与插件代码不改。
+- 环境：本地实例 `c330`（快照 20261019-1409，WP 127.0.0.1:9162，Genie 127.0.0.1:9164，文档索引 build 20261018T173840Z）。第二轮不重放已改判的回合。第三轮十例打在仍活着的 c330 Genie 上，提示词按该进程的提交 `21020e09` 补回，进程没有重启。没有请求 `https://de-linker.com`。
+- 存档 111 个回合：pass 92，defect 15，parity 4（F1-DE、J5-DE、H4-DE、G5-DE）。装具现在是 119 例 = 111 条对话 + 8 条零件清单。第三轮十例（A6、A7、A8、I7 的 EN/DE，以及现行 G4 的 `NEX-` 措辞）在 `round3-runs.jsonl`：9 pass，1 defect（A8-DE）。不并进 92 / 15 / 4。
 - 证据在 `~/de-linker-data/campaign-330/`。仓库里的 `verdicts.jsonl` 是可复现摘要：case、完整请求、meta、blocks、判定、数字复核、指向 `final.jsonl#<case>` 的指针。原始 SSE 不入库。`cases.md` 只做索引，不再用截断的请求列充当原文。
 - 每条结论引该次回答的原文。"Genie 答得还行"不是过。门槛按第二轮改判后的记录写，见 `NOTES.md`。
 
 ## 装具
 
-- `harness/cases.py` — 117 例。零件清单是 K1–K7（EN）和 K8（DE），共 8 例。编造型号用 `NEX-` 前缀。
+- `harness/cases.py` — 119 例（111 对话 + 8 零件）。零件清单是 K1–K7（EN）和 K8（DE）。编造型号用 `NEX-` 前缀。A8 是系列错拼：ESA 写成 EZA。
 - `harness/xlsxgen.py` — 零件清单 .xlsx 探针（空表、重复行、超长行、250 行、zip 炸弹、billion laughs）。
 - `harness/run_battery.py` — 按壳的 TurnRequest 直接 POST 服务的 `/turn`，收 SSE。`--workers` 默认 1：三个并发时 K3 的 SSE 带上了 K1 的 `turn_id`。
-- `harness/attribution.py` — 用 `(conversation_id, 回合序号)` 连接 turn log。问题或答案对不上、或两条用例落到同一行，进程退出码 1。
-- `harness/prod_smoke.py` — `POST /genie/turn` 会经 `Proxy::turn` 新建私密对话。生产主机（`de-linker.com`、`www.de-linker.com`）没有 `--confirm-production` 就拒绝，退出码 2，且不发起连接。每个探针记录 `geturl()` 的最终 URL、跳转链、选定响应头、conversation id、turn id，再用同一 cookie `DELETE` 该对话。这是一次有记录的写入。询盘与联系发送不调用。
+- `harness/attribution.py` — 用 `(conversation_id, turn_index)` 连接 turn log。索引缺失且该对话有多条 turn 时记 mismatch，不默认接第 0 条。问题或答案对不上、或两条用例落到同一行，进程退出码 1。
+- `harness/prod_smoke.py` — `POST /genie/turn` 会经 `Proxy::turn` 新建私密对话。主机转成小写并去掉末尾的点；`de-linker.com` 与 `www.de-linker.com`（含 `de-linker.com.`）没有 `--confirm-production` 就拒绝，退出码 2，且不发起连接。任一探针失败都留下记录并继续后面的探针；能认出对话 id 就删除。200 但正文不是对话信封，记为错误，退出码 1。询盘与联系发送不调用。
 - `harness/regrade.py` — 读存档 `final.jsonl`，套用第二轮改判，写出 `verdicts.jsonl` 与 `cases.md`。导入该模块不需要证据文件。
 - 本目录是独立 uv 工程（`package = false`，与 `tools/faq` 相同）。`just check` 的 `py-check` 与 `just test` 的 `py-test` 会跑这里的 ruff、mypy、pytest。
 
@@ -58,4 +58,4 @@ uv run --locked python regrade.py
 
 ## 结论
 
-见 `NOTES.md` 与 `cases.md`。已评分 111 例：pass 94，defect 15，parity 2。耗时 p50 8.2 s，nearest-rank p95 22.5 s，最大 28.5 s。
+见 `NOTES.md` 与 `cases.md`。存档 111 例：pass 92，defect 15，parity 4。耗时 p50 8.2 s，nearest-rank p95 22.5 s，最大 28.5 s。第三轮十例：9 pass，1 defect（A8-DE），见 `round3-runs.jsonl`。#339 清单在 `harness/fixtures/339/manifest.json`。

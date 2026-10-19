@@ -38,6 +38,10 @@ import xlsxgen
 # to 240). 180 stays the direct-service bound: the slowest recorded #330 turn
 # was 28.5 s, and the client must not cut a turn the proxy would still accept.
 TURN_TIMEOUT = 180.0
+# Evidence files keep this many characters of the SSE. Parsing uses the full
+# stream before the cut. No proxy, service, or schema constant names 20000;
+# this is a file prefix, not a protocol limit.
+STREAM_PREFIX = 20_000
 GERMAN_MARKERS = re.compile(
     r"(?<![\w-])(?:der|die|das|und|für|mit|nicht|ist|auf|eine|einen|dem|den|von|"
     r"wird|werden|welche|haben|hat|bitte|Lager|Wechselrichter|Batterie)(?![\w-])",
@@ -167,6 +171,24 @@ def numbers_in(text: str) -> list[str]:
     return re.findall(r"\d+(?:[.,]\d+)?", text)
 
 
+def stream_record(stream: str) -> dict[str, Any]:
+    """The stored prefix of an SSE body, plus how much was cut."""
+    truncated = len(stream) >= STREAM_PREFIX
+    kept = stream if not truncated else stream[:STREAM_PREFIX] + "…"
+    return {
+        "stream": kept,
+        "stream_chars": len(stream),
+        "stream_truncated": truncated,
+    }
+
+
+def _block_text(block: dict[str, Any]) -> str:
+    try:
+        return json.dumps(block, ensure_ascii=False)
+    except TypeError:
+        return str(block)
+
+
 def triage(
     case: dict[str, Any],
     meta: dict[str, Any] | None,
@@ -219,17 +241,19 @@ def triage(
     if expect.get("no_products") and ids:
         flags.append(f"products shown for small talk: {ids}")
     if "fake" in expect:
-        fake = expect["fake"]
+        fake = str(expect["fake"])
+        if fake and fake in text:
+            flags.append(f"fake model {fake} shown in the answer")
         for block in blocks:
-            if block.get("type") == "cards":
+            kind = block.get("type")
+            if kind == "cards":
                 for pid in block.get("product_ids", []):
                     product = by_id.get(pid, {})
-                    if fake.split("-")[-1].rstrip("X") in str(
-                        product.get("model", "")
-                    ) and fake in str(product.get("model", "")):
-                        flags.append(
-                            f"fake model {fake} shown as {product.get('model')}"
-                        )
+                    model = str(product.get("model", ""))
+                    if fake.split("-")[-1].rstrip("X") in model and fake in model:
+                        flags.append(f"fake model {fake} shown as {model}")
+            if kind in ("cards", "compare") and fake and fake in _block_text(block):
+                flags.append(f"fake model {fake} shown in {kind}")
 
     sizing_args = action_args(blocks, "open_configurator")
     if "sizing" in expect:
@@ -364,13 +388,16 @@ def run_case(
         "class": case["class"],
         "lang": case["lang"],
         "conversation_id": conversation_id,
+        # One POST per case, so this row is turn 0 of that conversation.
+        # A later multi-turn runner must set the index of the turn it posted.
+        "turn_index": 0,
         "request": case["request"],
         "request_chars": len(case["request"]),
         "http": status,
         "duration_s": round(duration, 1),
         "meta": meta,
         "blocks": blocks,
-        "stream": stream if len(stream) < 20000 else stream[:20000] + "…",
+        **stream_record(stream),
         **verdict,
     }
 

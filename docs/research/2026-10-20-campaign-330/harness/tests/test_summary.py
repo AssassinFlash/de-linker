@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from typing import Any
 
 from summary import grade_of, nearest_rank, render
 
@@ -38,3 +39,20 @@ def test_render_counts_parity() -> None:
     assert "'parity': 1" in text
     assert "'pass': 1" in text
     assert "'defect': 1" in text
+
+
+def test_missing_duration_is_left_out() -> None:
+    rows: list[dict[str, Any]] = [
+        {"class": "units", "lang": "en", "grade": "pass", "duration_s": 4.0},
+        {"class": "units", "lang": "de", "grade": "pass"},
+    ]
+    text = render(rows)
+    assert "p50 4.0s" in text
+    assert "p95 4.0s" in text
+    assert "max 4.0s" in text
+
+
+def test_no_durations_do_not_invent_a_zero_percentile() -> None:
+    text = render([{"class": "units", "lang": "en", "grade": "pass"}])
+    assert "p95" not in text
+    assert "0.0s" not in text

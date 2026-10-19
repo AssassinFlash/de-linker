@@ -187,6 +187,23 @@ CASES: list[dict[str, Any]] = [
             "intended": "Hybridwechselrichter",
         },
     },
+    # Series misspelling. ESA written as EZA. A real 5 kW hybrid from that
+    # series still found, or one decisive follow-up, is a pass. Treating
+    # "EZA" as its own series with invented specs is a defect.
+    {
+        "id": "A8-EN",
+        "class": "misspelling",
+        "lang": "en",
+        "request": "Do you stock the GoodWe EZA series, the 5 kW hybrid?",
+        "expect": {"any_ids": [GW5K_ETA], "intended": "ESA"},
+    },
+    {
+        "id": "A8-DE",
+        "class": "misspelling",
+        "lang": "de",
+        "request": "Führen Sie die GoodWe-Serie EZA, den 5-kW-Hybrid?",
+        "expect": {"any_ids": [GW5K_ETA], "intended": "ESA"},
+    },
     # -- B. Emoji ------------------------------------------------------------
     # Pure emoji: a short, in-language answer that asks what is needed. Emoji
     # mixed into a real question: the question is still answered (product hit).

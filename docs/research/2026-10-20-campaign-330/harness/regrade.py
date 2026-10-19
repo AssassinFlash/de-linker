@@ -4,8 +4,10 @@ Importing this module does not read the evidence directory. ``main`` reads
 ``final.jsonl``, drops the raw SSE, and writes ``verdicts.jsonl`` plus the
 ``cases.md`` index.
 
-The six cases added after that run (A6, A7, I7, each EN and DE) are not in
-the graded file and are not invented here.
+A6, A7, A8, I7 and the NEX- wording of G4 are not in the graded file.
+Round 3 records those runs in round3-runs.jsonl. They are not invented here.
+A local final.jsonl may also carry later `*-postfix` probes. Those are not
+part of the 111 and are left out of verdicts.jsonl.
 """
 
 from __future__ import annotations
@@ -24,9 +26,18 @@ CERTIFICATE = Path(
     "~/de-linker-local/c330/wordpress/wp-content/uploads/2026/10/"
     "GW_ESA-5-30kW_Certificate_IEC-62109.pdf"
 ).expanduser()
+CERTIFICATE_LINE = (
+    Path(__file__).resolve().parent
+    / "fixtures"
+    / "certificate"
+    / "esa-5-30kw-rated-output.txt"
+)
+CITED_LINES = Path(__file__).resolve().parent / "fixtures" / "numbers" / "cited.json"
 
-# Eight stored passes the two-axis review overturned: six content defects,
-# two parity failures. A parity row is not a pass and not a new product defect.
+# Stored passes the review overturned: six content defects and four parity
+# failures. A parity row is not a pass and not a new product defect.
+# H4-DE and G5-DE were counted pass in round 2; the same-question rule
+# (DE correct, EN a defect) makes them parity. `wave` is round-3 for those two.
 OVERTURNS: dict[str, dict[str, str]] = {
     "F3-DE": {
         "grade": "defect",
@@ -77,6 +88,22 @@ OVERTURNS: dict[str, dict[str, str]] = {
         "pair": "J5",
         "repro": "Smallest inverter of at least 30 kW. EN answers GW75K-ET-G10 after application=commercial. DE answers GW30K-ETA-G20 (6518).",
         "note": "DE is the correct product. Counting it as a pass hides the EN/DE split. Not a separate pass.",
+    },
+    "H4-DE": {
+        "grade": "parity",
+        "defect": "parity",
+        "pair": "H4",
+        "wave": "round-3",
+        "repro": "HS3-5K, HS3-8K and HS3-12K in one sentence. DE names all three and shows cards 2198, 1187, 1185. EN (D2) searches only HS3-5K and keeps card 2198.",
+        "note": "DE is the correct multi-product answer. EN is D2. Same question, DE correct, EN a defect. Not a pass.",
+    },
+    "G5-DE": {
+        "grade": "parity",
+        "defect": "parity",
+        "pair": "G5",
+        "wave": "round-3",
+        "repro": "EcoFlow OCEAN 3 HD-P3-20K0-S2. DE says the code is not in stock and shows the real OCEAN series. EN (D4) is the fallback sentence plus card 3608.",
+        "note": "DE refuses the fake code. EN is D4. Same question, DE correct, EN a defect. Not a pass.",
     },
 }
 
@@ -131,20 +158,21 @@ OBSERVATIONS: dict[str, str] = {
 }
 
 # One recorded check per row whose triage flag starts with "numbers to verify".
-# cited-document means the answer names a document. This round did not re-read
-# those PDF bytes. feed-field was checked against the 20261019-1409 snapshot.
+# cited-document rows were re-read with pdftotext in round 3. The quoted lines
+# are in fixtures/numbers/cited.json so a checkout without the PDFs still has
+# the record. feed-field was checked against the 20261019-1409 snapshot.
 # A4-EN is the one recorded fabrication.
 NUMBER_CHECKS: dict[str, dict[str, str]] = {
     "A2-DE": {
         "status": "cited-document",
         "numbers": "10,12,9.999",
-        "method": "The answer cites the user-manual model table and the datasheet series line. Those PDF bytes were not re-read.",
+        "method": "pdftotext of GW_ESA-5-30kW_User-Manual-DE_V1.4.pdf p.327 (dreiphasig on GW9.999K-ETA-G20, GW10K-ETA-G20, GW12K-ETA-G20) and GW_ESA-5-30kW_Datasheet-EN.pdf p.1 (Three Phase | All-in-One (HV)). Quoted in fixtures/numbers/cited.json#A2-DE.",
         "record": "Named models GW10K-ETA-G20, GW9.999K-ETA-G20, GW12K-ETA-G20. Feed has GW9.999K-ETA-G20 as id 6514. Not a fabrication record.",
     },
     "A4-DE": {
         "status": "feed-field",
         "numbers": "100,4.5,4.8,5",
-        "method": "Feed product 2093 (BU3-5.0-TV2-PRO): nominal_kwh 5, usable_kwh 4.8. 100 Ah and the alternate 4.5 kWh are cited from the manual table. Manual PDF bytes were not re-read.",
+        "method": "Feed product 2093: nominal_kwh 5, usable_kwh 4.8. pdftotext of the BU3-5.0-TV2-PRO datasheet p.2: Rated Capacity 100 Ah, Rated Energy 5 kWh, Usable Energy 4.8 kWh. SAJ HS3 user manual EN V4 pp.114-121: the module table says 100 Ah / 5.0 / 4.8, and a later pack row says Usable Energy 4.5 kWh. Quoted in fixtures/numbers/cited.json#A4-DE.",
         "record": "5 and 4.8 match the snapshot. 100 and 4.5 stay on the cited manual sentence.",
     },
     "A4-EN": {
@@ -156,19 +184,19 @@ NUMBER_CHECKS: dict[str, dict[str, str]] = {
     "B4-DE": {
         "status": "cited-document",
         "numbers": "10000,11000,16500,60",
-        "method": "The answer cites the HS2-10K-T2-X datasheet (W, VA, peak for 60 s). Feed product 1182 has empty figures and ac_power_kw 10. Datasheet PDF bytes were not re-read.",
+        "method": "pdftotext of SAJ_HS2_6-10K-T2_Datasheet_DE.pdf p.2, HS2-10K-T2-X column: Nennleistung AC 10000 W, Max. Scheinleistung 11000 VA, Spitzenleistung des Ausgangs 16500, 60s. Feed product 1182 has empty figures and ac_power_kw 10. Quoted in fixtures/numbers/cited.json#B4-DE.",
         "record": "10000 W / 11000 VA / 16500 VA / 60 s are the cited datasheet sentence, not snapshot fields.",
     },
     "C3-EN": {
         "status": "cited-document",
         "numbers": "0.8,10000,11000,14.5,180,20000,242,3000,40,4000,45,50",
-        "method": "The answer cites the SAJ H2 10-30K datasheet and user manual and shows card 4107. Feed figures for 4107 are empty. Those PDF bytes were not re-read.",
+        "method": "pdftotext of SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf p.37, H2-10K-T3 column: 20000 Wp, 10000 W, 11000 VA, 14.5 A, 16.0 A, power factor 0.8, battery 180 V, dimensions 576*659*242, altitude 4000m (>3000m), temperature derating from 45℃, noise <50 dBA, DC current 40 A. Feed figures for 4107 are empty. Quoted in fixtures/numbers/cited.json#C3-EN.",
         "record": "The flagged set is the datasheet block in the answer (power, current, voltage window, altitude, temperatures, dimensions).",
     },
     "D1-EN": {
         "status": "cited-document",
         "numbers": "96.4,98.0,98.00",
-        "method": "The answer cites the GW5K-ETA-G20 datasheet and user manual for max, European and battery-to-AC efficiency. Feed product 6512 has empty figures. Those PDF bytes were not re-read.",
+        "method": "pdftotext of GW_ESA-5-30kW_Datasheet-EN.pdf p.2, GW5K column: Max. Efficiency 98.0%, European Efficiency 96.4%, Max. Battery to AC Efficiency 98.0%. GW_ESA-5-30kW_User-Manual-DE_V1.4.pdf table for GW5K-ETA-G20: Wirkungsgrad 98.00% / 96.40% / 98.00%. Feed product 6512 has empty figures. Quoted in fixtures/numbers/cited.json#D1-EN.",
         "record": "96.4 / 98.0 / 98.00 are the three efficiency sentences. No snapshot field holds them.",
     },
     "D4-DE": {
@@ -180,25 +208,25 @@ NUMBER_CHECKS: dict[str, dict[str, str]] = {
     "D5-DE": {
         "status": "cited-document",
         "numbers": "97.6,98.0",
-        "method": "The answer cites the HS2 datasheet efficiency row. Feed product 1182 has empty figures. Datasheet PDF bytes were not re-read.",
+        "method": "pdftotext of SAJ_HS2_6-10K-T2_Datasheet_DE.pdf p.2: Max. Wirkungsgrad 98.0%, Euro-Wirkungsgrad 97.6%. The EN datasheet page 2 has the same two figures. Feed product 1182 has empty figures. Quoted in fixtures/numbers/cited.json#D5-DE.",
         "record": "98.0% max and 97.6% Euro are the cited datasheet sentence.",
     },
     "E2-DE": {
         "status": "cited-document",
         "numbers": "10000,11000",
-        "method": "The answer cites the H2 datasheet and the manual table (page cited in the document block). Feed product 4107 has empty figures and ac_power_kw 10. PDF bytes were not re-read.",
+        "method": "pdftotext of SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf p.8, H2-10K column: AC-Nennleistung 10000 W, Max. Scheinleistung 11000 VA. Feed product 4107 has empty figures and ac_power_kw 10. Quoted in fixtures/numbers/cited.json#E2-DE.",
         "record": "10000 W and 11000 VA are the cited rated-power sentence.",
     },
     "E3-EN": {
         "status": "cited-document",
         "numbers": "10000,11000,14.5,16.0",
-        "method": "The answer cites the H2-10K-T3 datasheet section and the manual. Feed product 4107 has empty figures. PDF bytes were not re-read.",
+        "method": "pdftotext of SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf p.37, H2-10K-T3 column: Rated AC Power 10000 W, Max. Apparent Power 11000 VA, Rated Output Current 14.5 A, Max. AC Output Current 16.0 A. Feed product 4107 has empty figures. Quoted in fixtures/numbers/cited.json#E3-EN.",
         "record": "Rated power, apparent power and the two current figures are the cited datasheet sentences.",
     },
     "E5-EN": {
         "status": "cited-document",
         "numbers": "108,12,12.0,13.2,18,270,326,350,4,5.0,55,550",
-        "method": "108 is feed kwh_range.max on GW5.1-BAT-D-G20 id 6519 (also nominal 5.12, usable 5). The module currents, voltages and temperatures are cited from the ESA datasheet p.3 and the manual pp.334-335. Those PDF bytes were not re-read.",
+        "method": "108 is feed kwh_range.max on GW5.1-BAT-D-G20 id 6519. pdftotext of GW_ESA-5-30kW_Datasheet-EN.pdf p.3: Rated Energy 5.12 kWh, Usable 5.0, voltage 350~550 and 700~950, currents 12.0 A and 13.2 A, charge -18~+55, dimensions 800×326×270, scalability 12 pcs. Manual EN V1.5 pp.334-335 repeats 12 pcs and 700~950. Quoted in fixtures/numbers/cited.json#E5-EN.",
         "record": "5-108 kWh matches the snapshot range. The other flagged figures stay on the cited document blocks.",
     },
     "H1-DE": {
@@ -222,13 +250,13 @@ NUMBER_CHECKS: dict[str, dict[str, str]] = {
     "I6-DE": {
         "status": "mixed",
         "numbers": "29.999,29900,29999",
-        "method": "29.999 is feed ac_power_kw on CHS2-29.9K-T4-X id 1959. 29900 and 29999 are cited from the manual, the datasheet and the certificate. Those PDF bytes were not re-read. The card list missed id 1959, which is a separate flag.",
+        "method": "29.999 is feed ac_power_kw on CHS2-29.9K-T4-X id 1959. pdftotext: SAJ_CHS2_Certificate_VDE-AR-N-4105.pdf p.3 max active power 29.999 kW and max apparent power 29.999 kVA; manual EN V0.2 p.11 rated and max apparent 29900 VA; datasheet EN-BEU p.2 rated 29999 W and max apparent 29999 VA. The card list missed id 1959, which is a separate flag. Quoted in fixtures/numbers/cited.json#I6-DE.",
         "record": "29.999 kW matches the snapshot. 29900 VA and 29999 VA stay on the cited document sentences.",
     },
     "I6-EN": {
         "status": "cited-document",
         "numbers": "29900,29999",
-        "method": "The answer cites the user-manual system table (29900 VA) and the datasheet (29999 VA) and shows card 1959. Feed ac_power_kw is 29.999, which triage did not flag. PDF bytes were not re-read.",
+        "method": "pdftotext of SAJ_CHS2_29.9-50K_User-Manual_EN_EU_V0.2.pdf p.11, CHS2-29.9K-T4-X column: Rated AC Power 29900 VA and Max. Apparent Power 29900 VA. Datasheet EN-BEU p.2: Rated AC Power 29999 W and Max. Apparent Power 29999 VA. Card 1959 is shown. Feed ac_power_kw is 29.999, which triage did not flag. Quoted in fixtures/numbers/cited.json#I6-EN.",
         "record": "29900 and 29999 are the two document sentences. The product AC figure in the snapshot is 29.999 kW.",
     },
     "J5-DE": {
@@ -270,7 +298,7 @@ def verdict_of(row: dict[str, Any]) -> dict[str, Any]:
         out["defect"] = over["defect"]
         out["grade_note"] = over["note"]
         out["repro"] = over["repro"]
-        out["regrade"] = "round-2"
+        out["regrade"] = over.get("wave", "round-2")
         if "pair" in over:
             out["pair"] = over["pair"]
     elif case_id in KEPT_DEFECTS:
@@ -302,11 +330,30 @@ def verdict_of(row: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
-def certificate_voltage_line(path: Path | None = None) -> str | None:
-    """The Rated Output Volt line, when pdftotext can read the local certificate."""
+def vendored_voltage_line() -> str:
+    """The Rated Output Volt line re-read from the IEC 62109 certificate."""
+    return CERTIFICATE_LINE.read_text(encoding="utf-8").strip()
+
+
+def load_cited() -> dict[str, Any]:
+    """Quoted pdftotext lines for the cited-document number checks."""
+    parsed = json.loads(CITED_LINES.read_text(encoding="utf-8"))
+    if not isinstance(parsed, dict):
+        return {}
+    return parsed
+
+
+def certificate_voltage_line(path: Path | None = None) -> tuple[str, bool]:
+    """(line, read_from_this_pdf). A missing PDF or pdftotext returns the fixture.
+
+    The fixture is the round-3 re-read, so a checkout without the certificate
+    still records 220/380, 230/400. When the PDF is present the live line is
+    returned and the caller can compare it with the fixture.
+    """
+    vendored = vendored_voltage_line()
     pdf = CERTIFICATE if path is None else path
     if not pdf.is_file():
-        return None
+        return vendored, False
     done = subprocess.run(
         ["pdftotext", "-f", "2", "-l", "2", "-layout", str(pdf), "-"],
         check=False,
@@ -314,24 +361,24 @@ def certificate_voltage_line(path: Path | None = None) -> str | None:
         text=True,
     )
     if done.returncode != 0:
-        return None
+        return vendored, False
     for line in done.stdout.splitlines():
         if "Rated Output Volt" in line and "Backup" not in line:
-            return line.strip()
-    return None
+            return line.strip(), True
+    return vendored, False
 
 
 def attach_certificate(
     verdicts: list[dict[str, Any]], path: Path | None = None
 ) -> None:
-    line = certificate_voltage_line(path)
+    line, read_now = certificate_voltage_line(path)
     for verdict in verdicts:
         if verdict["case"] != "A4-EN":
             continue
         check = verdict["numbers_verification"]
-        check["pdf_reread"] = line is not None
-        if line is not None:
-            check["pdf_line"] = line
+        check["pdf_line"] = line
+        check["pdf_reread"] = "220/380" in line and "230/400" in line
+        check["pdf_source"] = "local-pdf" if read_now else "vendored-fixture"
 
 
 def check_flag_coverage(rows: list[dict[str, Any]]) -> list[str]:
@@ -361,8 +408,8 @@ def render_cases(verdicts: list[dict[str, Any]]) -> str:
         "",
         f"已评分 {len(verdicts)} 例：pass {counts['pass']}，"
         f"defect {counts['defect']}，parity {counts['parity']}。",
-        "装具里另有 6 例尚未开跑（A6-EN、A6-DE、A7-EN、A7-DE、I7-EN、I7-DE），",
-        "不计入这 111 例。",
+        "第三轮另记在 `round3-runs.jsonl`：A6、A7、A8（系列错拼）、I7，",
+        "以及现行 G4 的 NEX- 措辞。那些行不并进这 111 例。",
         "",
         summary.render(verdicts),
         "",
@@ -400,7 +447,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cases", default=str(CAMPAIGN / "cases.md"))
     arguments = parser.parse_args(argv)
     source = Path(arguments.final).expanduser()
-    rows = load_jsonl(source)
+    # Later local probes appended `*-postfix` rows to final.jsonl. They are
+    # not part of the 111 graded turns.
+    rows = [
+        row
+        for row in load_jsonl(source)
+        if not str(row.get("case", "")).endswith("-postfix")
+    ]
     problems = check_flag_coverage(rows)
     if problems:
         for problem in problems:
