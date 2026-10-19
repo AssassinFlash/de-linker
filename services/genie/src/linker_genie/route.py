@@ -268,7 +268,7 @@ def plan(
     if intent == "sizing":
         return Route(
             "sizing",
-            (Call("linker/size-hint", sizing_input(message)),),
+            (Call("linker/size-hint", stated_size_hint(message)),),
             action="open_configurator",
             no_cards=True,
             no_handoff=True,
@@ -276,7 +276,10 @@ def plan(
                 "This is a sizing question. The Solution Configurator sizes the "
                 "system from the customer's PV and consumption: say so in one or "
                 "two sentences and add the open_configurator action (the "
-                "service fills its URL). No product cards."
+                "service fills its URL from the customer's own words; a field "
+                "they did not state is absent). No product cards. Do not call "
+                "size-hint with a phase, backup, yearly load or postcode they "
+                "did not state."
             ),
             reasons=tuple(reasons),
         )
@@ -538,6 +541,20 @@ def person(reasons: list[str]) -> Route:
     sentence and the contact card (contact.answer, app.assistant_turn).
     """
     return Route("person", reasons=tuple(reasons))
+
+
+def stated_size_hint(message: str) -> dict[str, Any]:
+    """The size-hint object a configurator URL may be built from (#365).
+
+    `sizing_input` is the only source: kWp, yearly kWh, phase and backup as
+    this message writes them. Callers pass this dict on and drop whatever
+    object they were given — the model's, when the route did not call the
+    tool and the model calls it itself. A catalogue fact is not a source
+    either: no rule copies a named product's phase into this prefill
+    (docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md §1.12; the read
+    stays deterministic, §1.1).
+    """
+    return sizing_input(message)
 
 
 def sizing_input(message: str) -> dict[str, Any]:
