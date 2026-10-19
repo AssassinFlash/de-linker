@@ -298,6 +298,45 @@ def test_trial_6_rejects_the_nominal_number_used_as_usable_capacity() -> None:
     assert check(german, borrowed_de, FEED_TOKENS)
 
 
+def test_trial_6_allows_nominal_and_dod_beside_the_denial() -> None:
+    """The nominal sentence and the L260 heading are not a usable-capacity figure.
+    A number bound to that phrase still fails."""
+
+    english = next(row for row in ROWS if row["id"] == "b20-en")
+    stated = turn(
+        _document(
+            "### Usable capacity of the L260-OMNI\n"
+            "Our documents do not state a separate usable-capacity figure for the "
+            "L260-OMNI. The closest values the datasheet gives are the nominal "
+            "capacity of 260 kWh and a depth of discharge of 98% for a single "
+            "string, so the usable share of the nominal energy follows from that "
+            "depth of discharge rather than from a stated usable figure."
+        )
+    )
+    assert check(english, stated, FEED_TOKENS) == []
+    bound = turn(_document("The usable capacity is the nominal 260 kWh."))
+    assert check(english, bound, FEED_TOKENS)
+
+    german = next(row for row in ROWS if row["id"] == "b20-de")
+    stated_de = turn(
+        _document(
+            "Unsere Unterlagen weisen für den L260-OMNI keine eigene **nutzbare "
+            "Kapazität** aus. Die Nennkapazität beträgt 260 kWh, die Entladetiefe 98%."
+        ),
+        language="de",
+    )
+    assert check(german, stated_de, FEED_TOKENS) == []
+    verb_final = turn(
+        _document(
+            "Eine ausdrücklich als **nutzbare Kapazität** bezeichnete Angabe nennen "
+            "unsere Unterlagen für den L260-OMNI nicht. Die Nennkapazität beträgt "
+            "260 kWh, die Entladetiefe 98%."
+        ),
+        language="de",
+    )
+    assert check(german, verb_final, FEED_TOKENS) == []
+
+
 def test_trial_6_states_nominal_and_refuses_a_usable_figure() -> None:
     """The L260 sheets state nominal 260 kWh and DoD 98%, not a usable kWh."""
 
@@ -350,6 +389,45 @@ def test_trial_19_rejects_support_beside_a_negation() -> None:
         language="de",
     )
     assert check(german, both_de, FEED_TOKENS)
+
+
+def test_trial_19_allows_supports_inside_the_absence_sentence() -> None:
+    """'do not state whether … supports' is the absence, not a support claim.
+    A later clause that asserts support still fails."""
+
+    english = next(row for row in ROWS if row["id"] == "b25-en")
+    absence = turn(
+        _document(
+            "The documents do not state whether the SAJ H2 supports EnWG 14a dimming."
+        )
+    )
+    assert check(english, absence, FEED_TOKENS) == []
+    contrasted = turn(
+        _document(
+            "The documents do not state whether it is dimmed, but the SAJ H2 "
+            "supports EnWG 14a."
+        )
+    )
+    failures = check(english, contrasted, FEED_TOKENS)
+    assert any("supports" in failure for failure in failures)
+
+    german = next(row for row in ROWS if row["id"] == "b25-de")
+    absence_de = turn(
+        _document(
+            "Die Unterlagen nennen keine Unterstützung, und sie sagen nicht, "
+            "ob der SAJ H2 das Dimmen nach §14a EnWG unterstützt."
+        ),
+        language="de",
+    )
+    assert check(german, absence_de, FEED_TOKENS) == []
+    claimed_de = turn(
+        _document(
+            "Die Unterlagen nennen keine Unterstützung. "
+            "Der SAJ H2 unterstützt das Dimmen nach §14a EnWG."
+        ),
+        language="de",
+    )
+    assert check(german, claimed_de, FEED_TOKENS)
 
 
 def test_trial_19_does_not_assert_enwg_14a_support() -> None:
@@ -695,24 +773,120 @@ def test_the_inquiry_row_answers_with_the_login_sentence() -> None:
     assert any("sales@de-linker.com" in failure for failure in failures)
 
 
-def test_the_page_row_cites_the_page_and_the_page_product_answers() -> None:
+def test_the_page_mppt_row_names_the_model_and_does_not_require_a_card() -> None:
+    """b46 is a documents question about the page's own product. The answer
+    names GW10K-EHA-G20 and its 4 MPPTs. A card may be present; it is not
+    what the row requires."""
+
     row = next(item for item in ROWS if item["id"] == "b46-en")
-    answer = turn(
+    prose = turn([text("The GW10K-EHA-G20 has 4 MPPTs.")])
+    assert check(row, prose, FEED_TOKENS) == []
+    with_card = turn(
         [
-            text("This one has 4 MPPTs.", ["6528"]),
+            text("The GW10K-EHA-G20 has 4 MPPTs."),
             {"type": "cards", "product_ids": [6528]},
         ]
     )
-    assert check(row, answer, FEED_TOKENS) == []
-    # The German twin requires the same product on a card. Text alone is not it.
+    assert check(row, with_card, FEED_TOKENS) == []
     german = next(item for item in ROWS if item["id"] == "b46-de")
-    prose = turn([text("Dieses Gerät hat 4 MPPT.")], language="de")
+    german_prose = turn([text("Der GW10K-EHA-G20 hat 4 MPPT.")], language="de")
+    assert check(german, german_prose, FEED_TOKENS) == []
+    unnamed = turn([text("This one has 4 MPPTs.")])
     assert any(
-        "cards or compare" in failure for failure in check(german, prose, FEED_TOKENS)
+        "GW10K-EHA-G20" in failure for failure in check(row, unnamed, FEED_TOKENS)
     )
     vague = turn([text("Which model do you mean?")])
     failures = check(row, vague, FEED_TOKENS)
     assert any("4" in failure or "MPPT" in failure for failure in failures)
+
+
+def test_the_datasheet_row_accepts_the_document_without_a_card() -> None:
+    """b05 asks where the L260 datasheet is. The documents route shows the
+    document. A product card is optional."""
+
+    row = next(item for item in ROWS if item["id"] == "b05-en")
+    hosted = turn(
+        _document(
+            "The datasheet for the L260-OMNI states a nominal capacity of 260 kWh."
+        )
+    )
+    assert check(row, hosted, FEED_TOKENS) == []
+    with_card = turn(
+        [
+            *_document("The L260-OMNI datasheet states 260 kWh nominal."),
+            {"type": "cards", "product_ids": [2003]},
+        ]
+    )
+    assert check(row, with_card, FEED_TOKENS) == []
+    nameless = turn(_document("The datasheet is hosted below."))
+    assert any("L260" in failure for failure in check(row, nameless, FEED_TOKENS))
+
+
+def test_the_pairing_row_still_requires_an_inverter_card() -> None:
+    """b10's route is pairing. Text that names a released inverter is not the card."""
+
+    row = next(item for item in ROWS if item["id"] == "b10-en")
+    prose = turn([text("The GW10K-EHA-G20 is released with the GW9.0-BAT-D-G20.")])
+    assert any(
+        "cards or compare" in failure for failure in check(row, prose, FEED_TOKENS)
+    )
+    shown = turn(
+        [
+            text("Released pairing."),
+            {"type": "cards", "product_ids": [6528]},
+        ]
+    )
+    assert check(row, shown, FEED_TOKENS) == []
+
+
+def test_the_rfq_row_reads_the_guest_page_sentence() -> None:
+    """1957 is rfq_only. A guest Genie card uses the PAGE line, the partner
+    sign-in sentence, not the approved-account 'Quoted per project'."""
+
+    row = next(item for item in ROWS if item["id"] == "b22-en")
+    guest = turn(
+        [
+            text("The GW208.9-BAT-LCD-G10 is a commercial battery."),
+            {
+                "type": "cards",
+                "product_ids": [1957],
+                "prices": [
+                    {
+                        "product_id": 1957,
+                        "text": "Net price after partner sign-in",
+                        "reason": "login",
+                    }
+                ],
+            },
+        ]
+    )
+    assert check(row, guest, FEED_TOKENS) == []
+    quoted = turn(
+        [
+            text("The GW208.9-BAT-LCD-G10 is quoted per project."),
+            {
+                "type": "cards",
+                "product_ids": [1957],
+                "prices": [{"product_id": 1957, "text": "Quoted per project"}],
+            },
+        ]
+    )
+    assert any("price line" in failure for failure in check(row, quoted, FEED_TOKENS))
+    german = next(item for item in ROWS if item["id"] == "b22-de")
+    guest_de = turn(
+        [
+            text("Der GW208.9-BAT-LCD-G10 ist ein Gewerbespeicher."),
+            {
+                "type": "cards",
+                "product_ids": [1957],
+                "prices": [
+                    {"product_id": 1957, "text": "Nettopreis nach Partner-Anmeldung"}
+                ],
+            },
+        ],
+        language="de",
+    )
+    assert check(german, guest_de, FEED_TOKENS) == []
 
 
 def test_citing_the_page_counts_only_with_a_page_ref() -> None:
