@@ -17,6 +17,7 @@ namespace CookieYes\Lite\Includes {
      * @method int get_id()
      * @method bool get_visibility()
      * @method void set_visibility(bool $value)
+     * @method int get_category()
      * @method string get_url_pattern()
      * @method void set_url_pattern(string $value)
      * @method void set_category(int $value)

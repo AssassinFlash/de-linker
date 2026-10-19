@@ -163,10 +163,11 @@ try {
 		foreach ( array( array( '_ga', 'analytics', 'googletagmanager.com' ), array( '_ga_*', 'analytics', 'google-analytics.com' ), array( 'sbjs_*', 'advertisement', '' ) ) as $definition ) {
 			if ( isset( $existing[ $definition[0] ] ) ) {
 				$registered = new \CookieYes\Lite\Admin\Modules\Cookies\Includes\Cookie( (int) $existing[ $definition[0] ]->cookie_id );
-				if ( $registered->get_url_pattern() !== $definition[2] ) {
-					$drift[] = 'cookie provider: ' . $definition[0];
+				if ( $registered->get_url_pattern() !== $definition[2] || $registered->get_category() !== $category_ids[ $definition[1] ] ) {
+					$drift[] = 'cookie provider/category: ' . $definition[0];
 					if ( $write ) {
 						$registered->set_url_pattern( $definition[2] );
+						$registered->set_category( $category_ids[ $definition[1] ] );
 						$registered->save(); }
 				}
 				continue;
