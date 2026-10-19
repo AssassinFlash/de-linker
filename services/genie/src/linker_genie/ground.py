@@ -47,12 +47,13 @@ And the price rule (#242):
     delivery cost (the same rule `page.RULE` gives a page).
 11. No text claims an inquiry, request or quote was sent (#250, A8): only the
     customer's Send button on the confirmation card sends.
-12. A model the route searched is not described as absent from the product data
-    when that search returned products (#364). The exemption is one sentence that
-    names the brand the customer wrote and the catalog brand, with the product
-    shown (#363, #367). A model the route did not search is never described as
-    absent. Each searched model whose products qualified is shown as a card when
-    the route requires cards.
+12. A model is not described as absent unless that model's own search succeeded
+    and returned none of its products (#364). A failed search is an outage, not
+    an absence. The exemption is one sentence that names the brand the customer
+    wrote and the catalog brand, with the product shown (#363, #367); the code
+    may sit in another sentence. A model nothing looked up is never described as
+    absent. A later search or get-product updates that note. Each searched model
+    whose products qualified is shown as a card when the route requires cards.
 
 Registered reading of guarantee 2: "推荐 ⊆ search-products 的 qualified"
 means qualified by this turn's tool results. That is search-products'
@@ -74,7 +75,7 @@ from typing import Any
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.figures import AMOUNT, is_code
 from linker_genie.hydrate import leftover_placeholders
-from linker_genie.route import NamedModel, Route
+from linker_genie.route import NamedModel, Route, absence_allowed, lookup_models
 from linker_genie.schema import (
     ActionBlock,
     AskBlock,
@@ -310,21 +311,30 @@ def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
 # A clause that says a model is missing from the catalog. The range phrases are
 # the fallback's own sentences (template.NOT_IN_RANGE_*): imported, not copied,
 # so a rewording cannot leave this check matching text the customer no longer
-# sees. The other phrases are ones campaign answers used and the model may
-# still write (#364 "no entry" / "product data"; #367 "kein Produkt",
-# "nicht in unserem Sortiment", "nicht geführt", "finde ich … kein Produkt").
-# "our documents do not state" is a document answer and is not one of them.
-# "finde ich … kein Produkt" is bounded by the clause split below. A character
-# window would be an unsourced threshold (AGENTS.md §4), so the clause is the
-# bound.
+# sees. The other phrases are ones campaign answers used and the prompts invite
+# (#364 "no entry" / "product data"; the German prompt's "keinen Eintrag";
+# #367 "kein Produkt", "nicht in unserem Sortiment", "nicht geführt",
+# "finde ich … kein Produkt"). "our documents do not state" is a document
+# answer and is not one of them. "finde ich … kein Produkt" is bounded by the
+# clause split below. A character window would be an unsourced threshold
+# (AGENTS.md §4), so the clause is the bound.
 _ABSENCE = re.compile(
     "|".join(
         (
             r"no entry",
             re.escape(NOT_IN_RANGE_EN),
             r"not in our product data",
+            r"we don'?t (?:carry|stock)",
+            r"we do not (?:carry|stock)",
+            r"not available",
             r"kein Produkt\b",
+            r"keine Produkte\b",
             re.escape(NOT_IN_RANGE_DE),
+            r"keinen Eintrag",
+            r"nicht in den Produktdaten",
+            r"gibt es bei uns nicht",
+            r"führen wir nicht",
+            r"nicht verfügbar",
             r"nicht in unserem Sortiment",
             r"nicht geführt",
             r"finde ich\b.*?kein Produkt\b",
@@ -351,20 +361,23 @@ def _named_models(output: TurnOutput, facts: TurnFacts, route: Route) -> list[st
     text. Absence is a clause, including one that points at a code named
     elsewhere ("these two model codes", "it is not"). A conflict may use an
     absence clause only when that same sentence names both brands and the
-    product is shown. An unsearched code is never absent.
+    product is shown. An unsearched code is never absent. A failed search is
+    an outage: absence is refused, and the note is not "not searched".
     """
     if not route.named_models:
         return []
+    looked = lookup_models(route.named_models, facts.tool_calls, facts.qualified_ids)
     full = "\n".join(_model_texts(output))
     folded = full.casefold()
     clauses = [clause.strip() for clause in _CLAUSE.findall(full) if clause.strip()]
     cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
     shown = {pid for block in cards for pid in block.product_ids}
-    codes = [note.code for note in route.named_models]
+    codes = [item.note.code for item in looked]
     failures: list[str] = []
-    for note in route.named_models:
+    for item in looked:
+        note = item.note
         about = _absence_about(note.code, clauses, codes, folded)
-        if not note.searched:
+        if item.outcome == "unsearched":
             if note.code.casefold() not in folded:
                 failures.append(f"say that {note.code} was not searched")
             if about:
@@ -372,13 +385,22 @@ def _named_models(output: TurnOutput, facts: TurnFacts, route: Route) -> list[st
                     f"say that {note.code} was not searched, not that it is absent"
                 )
             continue
-        if note.is_conflict and not _conflict_pointed(note, clauses):
+        if item.outcome == "failed" and about:
+            failures.append(
+                f"do not say {note.code} has no entry; that search did not succeed"
+            )
+            continue
+        if (
+            note.is_conflict
+            and item.outcome == "products"
+            and not _conflict_pointed(note, clauses, shown)
+        ):
             failures.append(
                 f"name {note.written_brand} and {note.catalog_brand} for "
-                f"{note.code} in the same sentence"
+                f"{note.code} in the same sentence, and show the product"
             )
         exempt = note.is_conflict and _conflict_exempt(note, about, shown, facts)
-        if about and not (note.reported_absent_allowed or exempt):
+        if about and not (absence_allowed(item) or exempt):
             failures.append(
                 f"do not say {note.code} has no entry; report that model's own "
                 "search result"
@@ -419,17 +441,19 @@ def _absence_about(
     return found
 
 
-def _conflict_pointed(note: NamedModel, clauses: list[str]) -> bool:
-    """One sentence names the written brand, the catalog brand and the code."""
+def _conflict_pointed(note: NamedModel, clauses: list[str], shown: set[int]) -> bool:
+    """Both brands in one sentence, and the product on a card.
+
+    The code may sit in that sentence or in another. The route hint and the
+    German prompt ask for the two brands together and the product shown.
+    """
     written = note.written_brand.casefold()
     catalog = note.catalog_brand.casefold()
-    code = note.code.casefold()
-    return any(
-        written in clause.casefold()
-        and catalog in clause.casefold()
-        and code in clause.casefold()
+    together = any(
+        written in clause.casefold() and catalog in clause.casefold()
         for clause in clauses
     )
+    return together and bool(set(note.product_ids) & shown)
 
 
 def _conflict_exempt(

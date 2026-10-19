@@ -195,17 +195,129 @@ class NamedModel:
         """Searched, and the catalog lists the code."""
         return self.searched and not self.unknown
 
-    @property
-    def reported_absent_allowed(self) -> bool:
-        """The answer may say this code is not in the product data.
 
-        Only a searched code the catalog does not list, or whose own search
-        returned no product. An unsearched code is never absent. A brand
-        conflict is named (`is_conflict`), not called absent.
-        """
-        if not self.searched or self.is_conflict:
-            return False
-        return self.unknown or not self.product_ids
+# How one named model's calls turned out, once the turn's tool log is known.
+# `product_ids` are lexicon ids, not the search result, so they cannot say
+# "searched and returned nothing". That state is the `empty` outcome.
+LookupOutcome = Literal["products", "empty", "failed", "unsearched"]
+
+
+@dataclass(frozen=True)
+class ModelLookup:
+    """One named model joined to this turn's tool calls."""
+
+    note: NamedModel
+    outcome: LookupOutcome
+
+
+def lookup_models(
+    notes: tuple[NamedModel, ...],
+    calls: list[dict[str, Any]],
+    qualified_ids: set[int],
+) -> tuple[ModelLookup, ...]:
+    """Join each note to the calls that looked its code up.
+
+    A covering call is search-products whose `text` is the code, or
+    get-product for one of its product ids. A call the model makes later
+    counts the same way: a note the budget left unsearched becomes searched
+    when that call is in the log.
+
+    - `products`: a covering call succeeded and returned one of the model's
+      products, or get-product fetched one.
+    - `empty`: a covering search succeeded and qualified none of the model's
+      products. That is "searched and returned nothing". An unknown code has
+      no catalog ids, so a successful search of that code is this outcome.
+    - `failed`: the route searched the code, or a covering call came back not
+      ok, and no covering call succeeded. A route call that raises
+      AbilityError is omitted from the log (understand.py); the note stays
+      searched and the outcome is `failed`.
+    - `unsearched`: nothing looked the code up.
+
+    A successful search-products call with no `text` confirms notes the route
+    already marked searched. It does not look up a code the route left out.
+    Production search calls carry `text` (abilities.record).
+    """
+    qualified = set(qualified_ids)
+    legacy_ok = any(
+        _search_call(call) and _call_ok(call) and _call_text(call) is None
+        for call in calls
+    )
+    found: list[ModelLookup] = []
+    for note in notes:
+        specific_ok = False
+        specific_bad = False
+        got_product = False
+        for call in calls:
+            if _search_call(call) and _call_text(call) == note.code:
+                if _call_ok(call):
+                    specific_ok = True
+                else:
+                    specific_bad = True
+            elif _get_call(call) and _call_product(call) in note.product_ids:
+                if _call_ok(call):
+                    specific_ok = True
+                    got_product = True
+                else:
+                    specific_bad = True
+        covered = specific_ok or (legacy_ok and note.searched)
+        if covered:
+            own = bool(set(note.product_ids) & qualified)
+            outcome: LookupOutcome = "products" if own or got_product else "empty"
+            searched = True
+        elif specific_bad or note.searched:
+            outcome = "failed"
+            searched = True
+        else:
+            outcome = "unsearched"
+            searched = False
+        refreshed = (
+            replace(note, searched=searched) if note.searched != searched else note
+        )
+        found.append(ModelLookup(refreshed, outcome))
+    return tuple(found)
+
+
+def absence_allowed(lookup: ModelLookup) -> bool:
+    """Whether the answer may say this code is absent from the product data.
+
+    Only an `empty` outcome: this code's own search succeeded and qualified
+    none of its products. A failed search is an outage. A conflict is named
+    (`is_conflict`), not called absent. An unsearched code is never absent.
+    """
+    if lookup.note.is_conflict:
+        return False
+    return lookup.outcome == "empty"
+
+
+def _call_name(call: dict[str, Any]) -> str:
+    return str(call.get("name", ""))
+
+
+def _call_args(call: dict[str, Any]) -> dict[str, Any]:
+    arguments = call.get("arguments")
+    return arguments if isinstance(arguments, dict) else {}
+
+
+def _call_ok(call: dict[str, Any]) -> bool:
+    return call.get("ok") is True
+
+
+def _call_text(call: dict[str, Any]) -> str | None:
+    text = _call_args(call).get("text")
+    return text if isinstance(text, str) and text else None
+
+
+def _call_product(call: dict[str, Any]) -> int | None:
+    product_id = _call_args(call).get("product_id")
+    return product_id if isinstance(product_id, int) else None
+
+
+def _search_call(call: dict[str, Any]) -> bool:
+    return _call_name(call).endswith("search-products")
+
+
+def _get_call(call: dict[str, Any]) -> bool:
+    return _call_name(call).endswith("get-product")
 
 
 def several(notes: tuple[NamedModel, ...], *, searched: bool = False) -> bool:
@@ -423,6 +535,7 @@ def plan(
                 ),
             ),
             notes,
+            limit=MAX_TOOL_CALLS - DOCUMENTS_SPARE,
         )
         return Route(
             "documents",
@@ -860,7 +973,7 @@ def _unknown_codes(message: str, subject: Subject) -> tuple[str, ...]:
     if not subject.catalog_models:
         return ()
     known = {normalize(code) for code in subject.catalog_models}
-    prefixes, suffixes = _catalog_shapes(subject)
+    prefixes = _catalog_shapes(subject)
     found: list[str] = []
     seen: set[str] = set()
     for match in _ASKED_CODE.finditer(message):
@@ -870,24 +983,27 @@ def _unknown_codes(message: str, subject: Subject) -> tuple[str, ...]:
             continue
         if not any(ch.isalpha() for ch in key) or not any(ch.isdigit() for ch in key):
             continue
-        if not _catalog_shaped(code, prefixes, suffixes):
+        if not _catalog_shaped(code, prefixes):
             continue
         seen.add(key)
         found.append(code)
     return tuple(found)
 
 
-def _catalog_shapes(subject: Subject) -> tuple[set[str], set[str]]:
-    """Leading tokens and trailing segments of the catalog's model codes.
+def _catalog_shapes(subject: Subject) -> set[str]:
+    """Leading tokens of the catalog's brands and model codes.
 
-    A brand's letter run counts as a prefix too (subject.brand_names). The
-    shapes come from the published catalog, not from a hand-written list.
+    A prefix is at least two characters. The shortest brand letter-run in the
+    published catalog is two (GW, HS, EF; snapshot 2026-10-15, the store
+    snapshot lexicon.MIN_CODE cites for the four-character code "L260"). A
+    one-letter run is not a brand or a series. MIN_CODE is the full code, not
+    this prefix. The shapes come from the catalog, not from a hand-written list.
     """
     prefixes: set[str] = set()
-    suffixes: set[str] = set()
     for slug, label in subject.brand_names.items():
         for word in (slug, label):
             letters = _LEADING_LETTERS.match(word)
+            # Two: shortest brand letter-run in that snapshot. Not a new cut.
             if letters and len(letters.group(0)) >= 2:
                 prefixes.add(letters.group(0).casefold())
     for code in subject.catalog_models:
@@ -899,19 +1015,15 @@ def _catalog_shapes(subject: Subject) -> tuple[set[str], set[str]]:
             prefixes.add(letters.group(0).casefold())
         if len(parts[0]) >= 2 and any(ch.isalpha() for ch in parts[0]):
             prefixes.add(parts[0].casefold())
-        tail = parts[-1]
-        # A suffix the catalog uses carries a letter ("G20", "T2", "PX"). A
-        # pure number ("456") is an order or invoice fragment, not a suffix.
-        if len(tail) >= 2 and any(ch.isalpha() for ch in tail):
-            suffixes.add(tail.casefold())
-    return prefixes, suffixes
+    return prefixes
 
 
-def _catalog_shaped(code: str, prefixes: set[str], suffixes: set[str]) -> bool:
-    """Whether `code` starts like a catalog model or ends with one of its suffixes.
+def _catalog_shaped(code: str, prefixes: set[str]) -> bool:
+    """Whether `code` starts with a known brand, series, or model token.
 
-    "GW" from GW10K-ETA-G20 makes GW50K-ETA-G20 catalog-shaped. "ABC-123-456"
-    matches neither a prefix nor a letter-bearing suffix (review round 2).
+    "GW" from GW10K-ETA-G20 makes GW50K-ETA-G20 catalog-shaped. A catalog
+    suffix alone does not: ORDER-2026-G20 ends in G20 and DLK-2026-001 has
+    the shop prefix, and neither is a model. "ABC-123-456" matches no prefix.
     """
     parts = [part for part in _CODE_SPLIT.split(code) if part]
     if not parts:
@@ -920,14 +1032,7 @@ def _catalog_shaped(code: str, prefixes: set[str], suffixes: set[str]) -> bool:
     lead = letters.group(0).casefold() if letters else ""
     if len(lead) >= 2 and lead in prefixes:
         return True
-    if parts[0].casefold() in prefixes:
-        return True
-    tail = parts[-1]
-    return (
-        len(tail) >= 2
-        and any(ch.isalpha() for ch in tail)
-        and tail.casefold() in suffixes
-    )
+    return len(parts[0]) >= 2 and parts[0].casefold() in prefixes
 
 
 def _unknown_calls(
@@ -1056,10 +1161,9 @@ def _documents_calls(
     search-products runs on its code. Search calls for a code get-product
     already covers are left out, so a single known model stays
     search-knowledge plus get-product. The list is then cut to
-    `MAX_TOOL_CALLS` (spec 13 §B, at most four ability calls a turn): a
-    documents route used to append search-knowledge on top of a list that
-    had already spent the four, and to fetch only the first two subject
-    products while logging every model as searched.
+    `MAX_TOOL_CALLS - DOCUMENTS_SPARE` (spec 13 §B is four ability calls a
+    turn; one stays for the model's follow-up, trial question 10). A model
+    that does not fit is searched=False.
     """
     knowledge = Call(
         "linker/search-knowledge",
@@ -1082,7 +1186,9 @@ def _documents_calls(
         if call.ability == "linker/search-products" and text in covered:
             continue
         body.append(call)
-    return _limit_route_calls((knowledge, *body), notes)
+    return _limit_route_calls(
+        (knowledge, *body), notes, limit=MAX_TOOL_CALLS - DOCUMENTS_SPARE
+    )
 
 
 def _limit_route_calls(
