@@ -58,6 +58,7 @@ def test_encrypted_pdf_does_not_open_without_the_password(tmp_path: Path) -> Non
     assert "CANARY-LOCKED" in (reader.pages[0].extract_text() or "")
 
 
+@pytest.mark.skipif(corpus.FONT is None, reason="no TTF font on this host")
 def test_scan_has_no_text_layer_and_metadata_is_not_pixels(tmp_path: Path) -> None:
     build(tmp_path)
     scan = PdfReader(tmp_path / "p3-scanned.pdf")
@@ -79,6 +80,7 @@ def test_unicode_payload_survives_text_extraction(tmp_path: Path) -> None:
     assert "\u200b" in text
 
 
+@pytest.mark.skipif(corpus.FONT is None, reason="no TTF font on this host")
 def test_fit_stays_under_the_vision_ceiling_and_does_not_upscale() -> None:
     assert PIXELS == 1_200_000
     assert PIXELS < 1300 * 1300
@@ -88,6 +90,7 @@ def test_fit_stays_under_the_vision_ceiling_and_does_not_upscale() -> None:
     assert fitted.size[0] * fitted.size[1] <= PIXELS
 
 
+@pytest.mark.skipif(corpus.FONT is None, reason="no TTF font on this host")
 def test_short_text_is_padded_past_the_scan_threshold(tmp_path: Path) -> None:
     assert TEXT_FLOOR == 220
     assert TEXT_FLOOR > 200
@@ -100,6 +103,7 @@ def test_short_text_is_padded_past_the_scan_threshold(tmp_path: Path) -> None:
     assert "names no price and asks for nothing" not in long_text
 
 
+@pytest.mark.skipif(corpus.FONT is None, reason="no TTF font on this host")
 def test_parts_csv_has_two_models_and_the_note(tmp_path: Path) -> None:
     build(tmp_path)
     text = (tmp_path / "l1-parts.csv").read_text(encoding="utf-8")
