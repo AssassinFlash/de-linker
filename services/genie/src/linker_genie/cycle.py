@@ -12,8 +12,9 @@ from dataclasses import dataclass
 
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
-from linker_genie.ground import check
+from linker_genie.ground import CheckResult, check
 from linker_genie.hydrate import hydrate
+from linker_genie.language import answer_language, customer_message, language_failure
 from linker_genie.prices import Lookup, fill
 from linker_genie.route import Route
 from linker_genie.schema import TurnOutput, TurnRequest
@@ -52,7 +53,14 @@ def run(
     Every card of the shipped turn, the fallback's too, gets its price line from
     the turn's tools (prices.fill, #242); `commerce` reads the products no tool
     priced, as the customer. `clock` only times the phases (timing.py, #336).
+
+    The answer language is the last customer message when that message is
+    clearly one language, otherwise the page locale (language.py, #374). A
+    mismatch is a failed attempt: the model is asked once with that reason,
+    and the template then answers in the required language. The violating
+    text is not shipped.
     """
+    expected = answer_language(customer_message(request), request.locale)
     retry_reason: str | None = None
     seeded = seed or TurnFacts()
     last_facts = seeded
@@ -72,6 +80,9 @@ def run(
         last_facts = merge([seeded, facts])
         with timing.phase(clock, timing.GROUND):
             result = check(output, last_facts, route)
+        mismatch = language_failure(output, expected)
+        if mismatch is not None:
+            result = CheckResult(ok=False, failures=(mismatch, *result.failures))
         if result.ok:
             with timing.phase(clock, timing.HYDRATE):
                 hydrated = hydrate(output, last_facts)
@@ -89,7 +100,7 @@ def run(
         last_failures = result.failures
         retry_reason = result.reason
     with timing.phase(clock, timing.TEMPLATE):
-        rendered = fallback(last_facts, request.locale, route)
+        rendered = fallback(last_facts, expected, route)
     with timing.phase(clock, timing.HYDRATE):
         priced, priced_facts, missed = fill(rendered, last_facts, commerce)
     return TurnResult(

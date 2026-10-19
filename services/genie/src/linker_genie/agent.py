@@ -25,6 +25,7 @@ from typing import Any
 from linker_genie import attachments, knowledge, page, timing
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
 from linker_genie.facts import TurnFacts, merge
+from linker_genie.language import LANGUAGE_RETRY_PREFIX
 from linker_genie.route import stated_size_hint
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
 from linker_genie.tools import MAX_TOOL_CALLS as TOOL_LIMIT
@@ -493,7 +494,13 @@ def _user_prompt(
             )
         )
     if retry_reason:
-        lines.append("The previous answer failed grounding: " + retry_reason)
+        # A language miss is its own re-ask (#374). Grounding failures keep the
+        # older line. A turn that failed both starts with the language prefix,
+        # and the grounding reasons follow in the same sentence.
+        if retry_reason.startswith(LANGUAGE_RETRY_PREFIX):
+            lines.append("The previous answer used the wrong language. " + retry_reason)
+        else:
+            lines.append("The previous answer failed grounding: " + retry_reason)
         lines.append("Produce a new structured turn that passes the checks.")
     for message in request.messages:
         lines.append(f"{message.role}: {message.content}")
