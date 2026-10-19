@@ -2,7 +2,7 @@
 
 Usage (from this directory):
     GENIE_URL=http://127.0.0.1:9164 GENIE_TOKEN=<token> \
-        python3 run_battery.py [evidence_dir] [--ids A1-EN,...] [--workers 3]
+        python3 run_battery.py [evidence_dir] [--ids A1-EN,...] [--workers 1]
 
 One SSE turn per case, exactly as the shell sends it (schema.TurnRequest); the
 raw stream, the parsed meta and blocks, product hits, number provenance and the
@@ -21,13 +21,22 @@ import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from typing import Any
 
 import cases as cases_mod
 import xlsxgen
 
+# The battery posts straight at the Genie service, not through the site proxy.
+# The proxy gives up after 60 s (plugins/linker-tools includes/Genie/Proxy.php
+# `post()`, `'timeout' => 60.0`, the same bound as prices.SHELL_TIMEOUT).
+# The original trial client waited 180 s (services/genie/eval/baseline/run.py
+# records that the trial script used 180; that eval's own client later moved
+# to 240). 180 stays the direct-service bound: the slowest recorded #330 turn
+# was 28.5 s, and the client must not cut a turn the proxy would still accept.
 TURN_TIMEOUT = 180.0
 GERMAN_MARKERS = re.compile(
     r"(?<![\w-])(?:der|die|das|und|für|mit|nicht|ist|auf|eine|einen|dem|den|von|"
@@ -41,10 +50,10 @@ ENGLISH_MARKERS = re.compile(
 )
 
 
-def parse_stream(stream: str) -> tuple[dict | None, list[dict]]:
+def parse_stream(stream: str) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
     """SSE text -> (meta, blocks), the same way tests/e2e/lib/genie.ts reads it."""
-    meta = None
-    blocks: list[dict] = []
+    meta: dict[str, Any] | None = None
+    blocks: list[dict[str, Any]] = []
     for event in stream.split("\n\n"):
         found = re.search(r"^data: (.+)$", event, re.MULTILINE)
         if not found:
@@ -60,7 +69,7 @@ def parse_stream(stream: str) -> tuple[dict | None, list[dict]]:
     return meta, blocks
 
 
-def answer_text(blocks: list[dict]) -> str:
+def answer_text(blocks: list[dict[str, Any]]) -> str:
     parts = []
     for block in blocks:
         if block.get("type") == "text":
@@ -70,7 +79,7 @@ def answer_text(blocks: list[dict]) -> str:
     return "\n".join(parts)
 
 
-def shown_ids(blocks: list[dict]) -> list[int]:
+def shown_ids(blocks: list[dict[str, Any]]) -> list[int]:
     ids: list[int] = []
     for block in blocks:
         if block.get("type") in ("cards", "compare"):
@@ -78,19 +87,95 @@ def shown_ids(blocks: list[dict]) -> list[int]:
     return ids
 
 
-def action_args(blocks: list[dict], name: str) -> dict | None:
+def action_args(blocks: list[dict[str, Any]], name: str) -> dict[str, Any] | None:
     for block in blocks:
         if block.get("type") == "action" and block.get("name") == name:
-            return block.get("args") or {}
+            args = block.get("args") or {}
+            return args if isinstance(args, dict) else {}
     return None
+
+
+# Size-hint's annual_load_kwh is written on the configurator URL as annual_kwh
+# (services/genie/tests/test_prefill.py, `_configurator_url`). The action block
+# is `{"url": "...?pv_kwp=&annual_kwh=&phase="}`, not the tool's flat arguments.
+_URL_TO_PREFILL = {"annual_kwh": "annual_load_kwh"}
+_FLOAT_KEYS = frozenset({"pv_kwp", "annual_load_kwh"})
+_INT_KEYS = frozenset({"phase"})
+
+
+def _coerce_prefill(key: str, raw: str) -> object:
+    if key in _FLOAT_KEYS:
+        try:
+            return float(raw)
+        except ValueError:
+            return raw
+    if key in _INT_KEYS:
+        try:
+            return int(float(raw))
+        except ValueError:
+            return raw
+    return raw
+
+
+def configurator_prefill(args: dict[str, Any]) -> dict[str, Any]:
+    """The prefill a click on open_configurator would actually carry.
+
+    Query keys are the configurator's names. A flat key is kept only when the
+    URL did not already set that name, so a URL of `?pv_kwp=8` is pv_kwp 8
+    and not the missing flat key the old check read.
+    """
+    found: dict[str, Any] = {}
+    url = args.get("url")
+    if isinstance(url, str) and url:
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        for key, values in query.items():
+            if not values:
+                continue
+            name = _URL_TO_PREFILL.get(key, key)
+            found[name] = _coerce_prefill(name, values[0])
+    for key, value in args.items():
+        if key == "url":
+            continue
+        name = _URL_TO_PREFILL.get(str(key), str(key))
+        found.setdefault(name, value)
+    return found
+
+
+def _as_number(found: object) -> float | None:
+    if isinstance(found, bool) or found is None:
+        return None
+    if isinstance(found, (int, float)):
+        return float(found)
+    if isinstance(found, str):
+        try:
+            return float(found)
+        except ValueError:
+            return None
+    return None
+
+
+def _prefill_equal(found: object, wanted: object) -> bool:
+    if isinstance(wanted, bool) or found is None:
+        return found == wanted
+    if isinstance(wanted, (int, float)):
+        number = _as_number(found)
+        return number is not None and number == float(wanted)
+    return found == wanted
 
 
 def numbers_in(text: str) -> list[str]:
     return re.findall(r"\d+(?:[.,]\d+)?", text)
 
 
-def triage(case: dict, meta: dict | None, blocks: list[dict], feed: dict,
-           duration: float, http_status: int | None, error: str | None) -> dict:
+def triage(
+    case: dict[str, Any],
+    meta: dict[str, Any] | None,
+    blocks: list[dict[str, Any]],
+    feed: dict[str, Any],
+    duration: float,
+    http_status: int | None,
+    error: str | None,
+) -> dict[str, Any]:
     """Machine first cut; flags feed the hand review, they do not replace it."""
     flags: list[str] = []
     expect = case.get("expect", {})
@@ -121,8 +206,8 @@ def triage(case: dict, meta: dict | None, blocks: list[dict], feed: dict,
 
     ask = any(b.get("type") == "ask" for b in blocks)
     other_block = any(
-        b.get("type") in ("cards", "compare", "action", "document", "parts",
-                          "handoff", "contact")
+        b.get("type")
+        in ("cards", "compare", "action", "document", "parts", "handoff", "contact")
         for b in blocks
     )
     next_step = "?" in text or ask or other_block
@@ -142,20 +227,30 @@ def triage(case: dict, meta: dict | None, blocks: list[dict], feed: dict,
                     if fake.split("-")[-1].rstrip("X") in str(
                         product.get("model", "")
                     ) and fake in str(product.get("model", "")):
-                        flags.append(f"fake model {fake} shown as {product.get('model')}")
+                        flags.append(
+                            f"fake model {fake} shown as {product.get('model')}"
+                        )
 
-    sizing = action_args(blocks, "open_configurator")
+    sizing_args = action_args(blocks, "open_configurator")
     if "sizing" in expect:
         wanted = expect["sizing"]
-        if sizing is None:
+        if sizing_args is None:
             flags.append("sizing case without open_configurator action")
         else:
+            sizing = configurator_prefill(sizing_args)
             for key, value in wanted.items():
                 if key == "no_annual":
-                    if "annual_load_kwh" in sizing:
+                    if value and "annual_load_kwh" in sizing:
                         flags.append(f"storage kWh bled into annual_load_kwh: {sizing}")
-                elif sizing.get(key) != value:
+                elif not _prefill_equal(sizing.get(key), value):
                     flags.append(f"prefill {key}={sizing.get(key)!r}, want {value!r}")
+            asked = {key for key in wanted if key != "no_annual"}
+            # annual_load_kwh already has its own flag when no_annual is set.
+            if wanted.get("no_annual"):
+                asked.add("annual_load_kwh")
+            for key, value in sizing.items():
+                if key not in asked:
+                    flags.append(f"prefill {key}={value!r} was not asked for")
 
     if "parts_rows" in expect:
         parts_blocks = [b for b in blocks if b.get("type") == "parts"]
@@ -215,9 +310,15 @@ def triage(case: dict, meta: dict | None, blocks: list[dict], feed: dict,
     return {"verdict": verdict, "flags": flags, "duration_s": round(duration, 1)}
 
 
-def run_case(case: dict, genie: str, token: str, feed: dict) -> dict:
-    body: dict = {
-        "conversation_id": f"c330-{case['id']}-{int(time.time())}",
+def run_case(
+    case: dict[str, Any], genie: str, token: str, feed: dict[str, Any]
+) -> dict[str, Any]:
+    # The case id is in the conversation id, so two cases that finish in the
+    # same second still have different ids. Attribution joins on this, not on
+    # the SSE turn_id: with three workers, K3's stream carried K1's turn_id.
+    conversation_id = f"c330-{case['id']}-{int(time.time())}"
+    body: dict[str, Any] = {
+        "conversation_id": conversation_id,
         "messages": [{"role": "user", "content": case["request"]}],
         "locale": case["lang"],
         "page_context": {"type": "other"},
@@ -225,11 +326,13 @@ def run_case(case: dict, genie: str, token: str, feed: dict) -> dict:
     }
     if case.get("file"):
         name, data = xlsxgen.build(case["file"])
-        body["attachments"] = [{
-            "name": name,
-            "type": xlsxgen.XLSX_TYPE,
-            "data": base64.b64encode(data).decode("ascii"),
-        }]
+        body["attachments"] = [
+            {
+                "name": name,
+                "type": xlsxgen.XLSX_TYPE,
+                "data": base64.b64encode(data).decode("ascii"),
+            }
+        ]
     request = urllib.request.Request(
         f"{genie}/turn",
         data=json.dumps(body).encode("utf-8"),
@@ -254,12 +357,13 @@ def run_case(case: dict, genie: str, token: str, feed: dict) -> dict:
     except Exception as failure:  # noqa: BLE001 - recorded as evidence
         error = f"{type(failure).__name__}: {failure}"
     duration = time.monotonic() - started
-    meta, blocks = (parse_stream(stream) if stream else (None, []))
+    meta, blocks = parse_stream(stream) if stream else (None, [])
     verdict = triage(case, meta, blocks, feed, duration, status, error)
     return {
         "case": case["id"],
         "class": case["class"],
         "lang": case["lang"],
+        "conversation_id": conversation_id,
         "request": case["request"],
         "request_chars": len(case["request"]),
         "http": status,
@@ -271,12 +375,23 @@ def run_case(case: dict, genie: str, token: str, feed: dict) -> dict:
     }
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("evidence", nargs="?", default=None)
     parser.add_argument("--ids", default=None, help="comma-separated case ids")
-    parser.add_argument("--workers", type=int, default=3)
-    arguments = parser.parse_args()
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="parallel turns. The default is 1: under --workers 3 the service "
+        "wrote K1's turn_id into K3's SSE meta (attribution joins on "
+        "conversation_id, and reports that mismatch)",
+    )
+    return parser
+
+
+def main() -> int:
+    arguments = build_parser().parse_args()
     genie = os.environ.get("GENIE_URL", "http://127.0.0.1:9164")
     token = os.environ.get("GENIE_TOKEN", "")
     if not token:
@@ -291,11 +406,13 @@ def main() -> int:
     if arguments.ids:
         wanted = {name.strip() for name in arguments.ids.split(",")}
         battery = [case for case in battery if case["id"] in wanted]
-    evidence = Path(arguments.evidence or "~/de-linker-data/campaign-330/evidence").expanduser()
+    evidence = Path(
+        arguments.evidence or "~/de-linker-data/campaign-330/evidence"
+    ).expanduser()
     evidence.mkdir(parents=True, exist_ok=True)
 
     print(f"{len(battery)} cases -> {evidence}", flush=True)
-    results: list[dict] = []
+    results: list[dict[str, Any]] = []
     with ThreadPoolExecutor(max_workers=arguments.workers) as pool:
         for result in pool.map(
             lambda case: run_case(case, genie, token, feed), battery
