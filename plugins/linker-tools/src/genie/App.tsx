@@ -1133,8 +1133,7 @@ export function App( { config }: { config: GenieConfig } ) {
 											parts={ {
 												onAsk: ask,
 												onAdd: addPartsToDraft,
-												onTypeModel: () =>
-													field.current?.focus(),
+												onTypeModel: typeModel,
 											} }
 										/>
 									) ) }

@@ -267,6 +267,18 @@ export function HeroConversation( {
 		[]
 	);
 
+	// One ask and one "type the model" for every card in the hero — the same
+	// action whether the card is an attachment, a parts block or a product, so
+	// the surfaces cannot drift apart (the dock's typeModel does the same).
+	const askCard = useCallback(
+		( message: string ) => bridgeAsk( message ),
+		[ bridgeAsk ]
+	);
+	const typeModelCard = useCallback( () => {
+		setPrompt( typeModelPrompt() );
+		focusPrompt();
+	}, [ setPrompt, focusPrompt ] );
+
 	useEffect( () => {
 		onReady( { ask: bridgeAsk } );
 	}, [ onReady, bridgeAsk ] );
@@ -440,13 +452,8 @@ export function HeroConversation( {
 								<AttachmentCard
 									key={ card.id }
 									card={ card }
-									onAsk={ ( message ) =>
-										bridgeAsk( message )
-									}
-									onTypeModel={ () => {
-										setPrompt( typeModelPrompt() );
-										focusPrompt();
-									} }
+									onAsk={ askCard }
+									onTypeModel={ typeModelCard }
 									onPhoto={ () => requestPicker() }
 								/>
 							) )
@@ -462,14 +469,11 @@ export function HeroConversation( {
 								key={ index }
 								block={ block }
 								accountUrl={ config.accountUrl }
-								onAsk={ ( message ) => bridgeAsk( message ) }
+								onAsk={ askCard }
 								parts={ {
-									onAsk: ( message ) => bridgeAsk( message ),
+									onAsk: askCard,
 									onAdd: addPartsToDraft,
-									onTypeModel: () => {
-										setPrompt( typeModelPrompt() );
-										focusPrompt();
-									},
+									onTypeModel: typeModelCard,
 								} }
 							/>
 						) ) }
