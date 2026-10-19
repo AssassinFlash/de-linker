@@ -6,7 +6,7 @@
 
 计数：**15 通过 / 5 缺陷 / 2 备注**。语言主跑 6 条只报告，都通过。home-de 补测的 L-switch-en 是兜底句，按门 5 另记一条只报告的缺陷，不进入这 5 条。37 轮最近秩 p95 25.4 秒，最大 34.2 秒（T-sie 德语）。
 
-`~/de-linker-data/campaign-335/` 里 2026-10-19 的 `summary.json` 保持原样。下面几处和那份文件不一致：T-mppt、T-pair 的机械结果，产品标题的漂移归因，T-address 里的邮箱和 33824，补测 L-switch-en 的通过。装具按这次重判来跑，不回写那批证据。
+`~/de-linker-data/campaign-335/` 里 2026-10-19 的 `summary.json` 保持原样。下面几处和那份文件不一致：T-mppt、T-pair 的机械结果，产品标题的漂移归因，T-address 里的邮箱和 33824，discover.json 的 `plz` 把 HRB 33824 算进邮编，补测 L-switch-en 的通过，T-sie 的通过。T-sie 德语轮 `fallback` 为真，那份文件仍写通过。装具现在把兜底记成缺陷。装具按这次重判来跑，不回写那批证据。
 
 ## 通过
 
@@ -54,7 +54,7 @@ route `products`。工具 `linker/search-products`、`linker/read-page`、`linke
 
 英语孪生 "Tell me about the SAJ H2-10K-T3." 写出 10 kW、3 路 MPPT、98.0%，以及随附的 eSolar AIO3、电表和说明书。
 
-分层：模型把这句德语答成了英语；语言门丢掉整段；兜底句没有页面事实。Sie 守住了。这一轮 34.2 秒。
+分层：模型把这句德语答成了英语；语言门丢掉整段；兜底句没有页面事实。Sie 守住了。这一轮 34.2 秒。2026-10-19 的 summary.json 把 T-sie 写成通过，因为当时的机械结果不读 `meta.fallback`。装具现在把这一侧的兜底记成缺陷。
 
 须自行设计。门是 #374。丢掉之后用空兜底，而不是用已经读到的页面重写一句德语，没有公开先例。
 
@@ -123,7 +123,7 @@ route `products`。工具 `linker/search-products`、`linker/read-page`、`linke
 
 英文标题收回为 `SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)`。德语标题仍是上面那条。博客 551 文末没有 `C335DRIFT`。
 
-装具在改标题之前把原文写入 `title-original-<id>.txt`，博客正文写入 `blog-original.html`，恢复读这些文件。邮件目录有新增，或漂移阶段跑过而 `restored` 不是真，进程退出码为 1。没有英语产品可改时记 `restored: true`，退出码为 0。
+装具在改标题之前把原文写入 `title-original-<id>.txt`，博客正文写入 `blog-original.html`，恢复读这些文件。写回用 `wp_update_post` 的 WP_Error：返回错误，或没有写回这篇，eval 以 1 退出。恢复之后再读标题、德语标题和博客正文，和快照不一致时 `restored` 不是真。邮件目录有新增，漂移阶段跑过而标题和快照不一致，或没有英语产品可改，进程退出码为 1。没有英语产品时没有编辑，也没有恢复。
 
 ## 线上冒烟
 

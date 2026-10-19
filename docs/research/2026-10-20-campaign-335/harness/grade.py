@@ -12,7 +12,7 @@ and reported, not repaired.
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import Any, NamedTuple
 
 # ground.BANNED_WORDS, plus Einkaufswagen (banned-de.json). Whole words.
 # Artikel stays banned in a Genie answer: the legal-citation allowance is for
@@ -207,9 +207,16 @@ def handoff_summary(blocks: list[dict[str, Any]]) -> str | None:
     return None
 
 
+class _Split(NamedTuple):
+    """One graded difference: a defect, a note, or neither."""
+
+    defect: str | None
+    note: str | None
+
+
 def _structure_split(
     en_blocks: list[dict[str, Any]], de_blocks: list[dict[str, Any]]
-) -> tuple[str | None, str | None]:
+) -> _Split:
     """A block-type defect, or a document-count note.
 
     An ask block is optional on either side. A document-count difference is
@@ -219,19 +226,22 @@ def _structure_split(
     en_types = [kind for kind in block_types(en_blocks) if kind != "ask"]
     de_types = [kind for kind in block_types(de_blocks) if kind != "ask"]
     if en_types == de_types:
-        return None, None
+        return _Split(None, None)
     en_core = [kind for kind in en_types if kind != "document"]
     de_core = [kind for kind in de_types if kind != "document"]
     if en_core == de_core:
-        return None, (
-            f"document count en {en_types.count('document')} "
-            f"de {de_types.count('document')}; retrieval can add a document "
-            "without changing the card set"
+        return _Split(
+            None,
+            (
+                f"document count en {en_types.count('document')} "
+                f"de {de_types.count('document')}; retrieval can add a document "
+                "without changing the card set"
+            ),
         )
-    return f"block types en {en_types} de {de_types}", None
+    return _Split(f"block types en {en_types} de {de_types}", None)
 
 
-def _figure_split(en_text: str, de_text: str) -> tuple[str | None, str | None]:
+def _figure_split(en_text: str, de_text: str) -> _Split:
     """A number defect, or a note when one side only adds figures.
 
     The shared figures were graded. Extras on one side (the German voltage
@@ -243,14 +253,16 @@ def _figure_split(en_text: str, de_text: str) -> tuple[str | None, str | None]:
     en_set = set(en_nums)
     de_set = set(de_nums)
     if en_set == de_set:
-        return None, None
+        return _Split(None, None)
     shared = en_set & de_set
     en_only = en_set - de_set
     de_only = de_set - en_set
     rendered = "numbers en " + ",".join(en_nums) + " de " + ",".join(de_nums)
     if shared and (not en_only or not de_only):
-        return None, (rendered + "; shared figures match and one side adds figures")
-    return rendered, None
+        return _Split(
+            None, rendered + "; shared figures match and one side adds figures"
+        )
+    return _Split(rendered, None)
 
 
 def twin_notes(
@@ -262,12 +274,12 @@ def twin_notes(
     """Justified notes. These are graded, and they are not defects."""
     notes: list[str] = []
     if expect_numbers:
-        _defect, note = _figure_split(visible_text(en_blocks), visible_text(de_blocks))
-        if note:
-            notes.append(note)
-    _structure_defect, structure_note = _structure_split(en_blocks, de_blocks)
-    if structure_note:
-        notes.append(structure_note)
+        figures = _figure_split(visible_text(en_blocks), visible_text(de_blocks))
+        if figures.note:
+            notes.append(figures.note)
+    structure = _structure_split(en_blocks, de_blocks)
+    if structure.note:
+        notes.append(structure.note)
     return notes
 
 
@@ -321,12 +333,12 @@ def twin_reasons(
     if en_handoff is not None and de_handoff is not None:
         reasons.extend(handoff_reasons(en_handoff, de_handoff))
     if expect_numbers:
-        defect, _note = _figure_split(en_text, de_text)
-        if defect:
-            reasons.append(defect)
-    structure_defect, _structure_note = _structure_split(en_blocks, de_blocks)
-    if structure_defect:
-        reasons.append(structure_defect)
+        figures = _figure_split(en_text, de_text)
+        if figures.defect:
+            reasons.append(figures.defect)
+    structure = _structure_split(en_blocks, de_blocks)
+    if structure.defect:
+        reasons.append(structure.defect)
     return reasons
 
 

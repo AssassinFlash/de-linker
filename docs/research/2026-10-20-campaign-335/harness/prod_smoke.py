@@ -45,12 +45,14 @@ SELECTED_HEADERS = (
     "X-LiteSpeed-Cache-Control",
     "X-LiteSpeed-Tag",
 )
-# Client socket timeout. The site proxy stops at 60 s
-# (plugins/linker-tools includes/Genie/Proxy.php `post()`, `'timeout' => 60.0`,
-# prices.SHELL_TIMEOUT). 180 is the original trial client's bound
-# (services/genie/eval/baseline/run.py: the trial script used 180), so the
-# client is still waiting when a slow proxy returns its own 60 s timeout.
-# It does not extend that proxy timeout.
+# Client socket timeout. A turn goes through Proxy::post(), which passes
+# `'timeout' => (float) self::TURN_BUDGET` (TURN_BUDGET = 60,
+# plugins/linker-tools/includes/Genie/Proxy.php). The literal
+# `'timeout' => 60.0` is post_status() at line 702, used by forget and vote,
+# not by the turn. The turn bound matches prices.SHELL_TIMEOUT. 180 is the
+# original trial client's bound (services/genie/eval/baseline/run.py: the
+# trial script used 180), so the client is still waiting when a slow proxy
+# returns its own 60 s timeout. It does not extend that proxy timeout.
 PROD_TIMEOUT = 180.0
 
 PROBES: list[dict[str, Any]] = [
@@ -124,6 +126,30 @@ def is_production(site: str) -> bool:
     return host in PRODUCTION_HOSTS
 
 
+def production_refusal(
+    *, allow_production: bool, blocked_production: str | None, final_url: str
+) -> str | None:
+    """Why this probe must not write, or None when the write is allowed.
+
+    A blocked hop is a redirect that was not followed. The final URL is the
+    host after hops that were followed. Either one on the public site,
+    without --confirm-production, is the same refusal.
+    """
+    if allow_production:
+        return None
+    if blocked_production:
+        return (
+            "refusing: a redirect would POST to the public site "
+            f"({blocked_production}) without --confirm-production"
+        )
+    if is_production(final_url):
+        return (
+            "refusing: the final host is the public site "
+            f"({final_url}) without --confirm-production"
+        )
+    return None
+
+
 def selected_headers(headers: list[tuple[str, str]]) -> dict[str, str]:
     by_lower = {name.lower(): value for name, value in headers}
     picked: dict[str, str] = {}
@@ -138,10 +164,10 @@ def delete_conversation(
 ) -> int | None:
     """DELETE the conversation this probe's cookie opened.
 
-    before_delete_post can call the service forget endpoint inside the proxy's
-    60 s bound (Proxy::forget). The client waits PROD_TIMEOUT, the same 180 s
-    as the turn, so that forget is not cut by an unsourced 30 s. 180 does not
-    extend the proxy's 60 s.
+    before_delete_post calls Proxy::forget, which uses post_status() and the
+    literal `'timeout' => 60.0` (Proxy.php line 702). The client waits
+    PROD_TIMEOUT, the same 180 s as the turn, so that forget is not cut by an
+    unsourced 30 s. 180 does not extend the proxy's 60 s.
     """
     url = f"{site.rstrip('/')}{DELETE_ROUTE}/{conversation_id}"
     request = urllib.request.Request(url, method="DELETE")
@@ -323,16 +349,13 @@ def probe(
             error = "HTTP 200 body is not a conversation envelope"
         elif status is not None and status != 200 and error is None:
             error = f"HTTP {status}"
-        if recorder.blocked_production and not allow_production:
-            error = (
-                "refusing: a redirect would POST to the public site "
-                f"({recorder.blocked_production}) without --confirm-production"
-            )
-        elif not allow_production and is_production(final_url):
-            error = (
-                "refusing: the final host is the public site "
-                f"({final_url}) without --confirm-production"
-            )
+        refused = production_refusal(
+            allow_production=allow_production,
+            blocked_production=recorder.blocked_production,
+            final_url=final_url,
+        )
+        if refused is not None:
+            error = refused
         inner = ""
         if envelope is not None:
             stream_value = envelope.get("stream", "")
@@ -365,16 +388,13 @@ def probe(
             }
         )
     except Exception as failure:  # noqa: BLE001 - one probe must not abort the run
-        if recorder.blocked_production and not allow_production:
-            error = (
-                "refusing: a redirect would POST to the public site "
-                f"({recorder.blocked_production}) without --confirm-production"
-            )
-        elif not allow_production and is_production(final_url):
-            error = (
-                "refusing: the final host is the public site "
-                f"({final_url}) without --confirm-production"
-            )
+        refused = production_refusal(
+            allow_production=allow_production,
+            blocked_production=recorder.blocked_production,
+            final_url=final_url,
+        )
+        if refused is not None:
+            error = refused
         result["error"] = error or f"{type(failure).__name__}: {failure}"
         if conversation_id is None:
             conversation_id = cookie_conversation_id(jar)

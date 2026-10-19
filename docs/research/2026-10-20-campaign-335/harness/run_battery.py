@@ -180,18 +180,32 @@ def wp(instance: str, *args: str, timeout: float = WP_TIMEOUT) -> str:
     return result.stdout.strip()
 
 
+def update_php(path: Path, post_id: int, field: str) -> str:
+    """wp eval that writes one field and fails when the write does not land.
+
+    wp_update_post returns 0, and keeps going, unless the second argument
+    asks for a WP_Error. Echoing 'ok' after that made a missed write look
+    restored.
+    """
+    file_arg = json.dumps(str(path))
+    field_arg = json.dumps(field)
+    return (
+        f"$value = file_get_contents({file_arg}); "
+        'if ($value === false) { WP_CLI::error("snapshot unreadable"); } '
+        f"$result = wp_update_post(array('ID' => {post_id}, {field_arg} => $value), true); "
+        "if (is_wp_error($result)) { WP_CLI::error($result->get_error_message()); } "
+        f'if ((int) $result !== {post_id}) {{ WP_CLI::error("wp_update_post failed"); }} '
+        "echo 'ok';"
+    )
+
+
 def wp_update(
     instance: str, post_id: int, field: str, value: str, directory: Path
 ) -> None:
     """Write a post field from a file. A title or a post body can break argv."""
     path = directory / f"update-{post_id}-{field}.txt"
     path.write_text(value, encoding="utf-8")
-    php = (
-        f"$value = file_get_contents({json.dumps(str(path))}); "
-        f"wp_update_post(array('ID' => {post_id}, {json.dumps(field)} => $value)); "
-        "echo 'ok';"
-    )
-    wp(instance, "eval", php)
+    wp(instance, "eval", update_php(path, post_id, field))
 
 
 def wp_json(instance: str, php: str) -> Any:
@@ -272,7 +286,9 @@ def load_page(origin: str, url: str) -> dict[str, Any]:
         "de_url": localize(parsed["de_url"], origin) if parsed["de_url"] else None,
         "main": main,
         "emails": grade.emails_in(main),
-        "plz": re.findall(r"\b\d{5}\b", main),
+        # The same postal-code rule as address_gap. A bare five-digit token
+        # such as HRB 33824 is a register number, not a second PLZ.
+        "plz": postal_codes(main),
     }
 
 
@@ -411,6 +427,10 @@ def grade_twin(
             if isinstance(page_text, str) and page_text:
                 for reason in address_gap(page_text, turn["answer"]):
                     reasons.append(f"{side} {reason}")
+    for side, turn in (("en", en), ("de", de)):
+        meta = turn.get("meta")
+        if isinstance(meta, dict) and meta.get("fallback") is True:
+            reasons.append(f"{side} fallback is not a pass under gate 5")
     if case["id"] == "T-mail":
         record_mail: dict[str, Any] = {
             "mailto_limitation": MAILTO_LIMITATION,
@@ -418,7 +438,8 @@ def grade_twin(
                 "en": str((en.get("log") or {}).get("mailto") or ""),
                 "de": str((de.get("log") or {}).get("mailto") or ""),
             },
-            "customer_mailto_link": False,
+            "customer_mailto_link": customer_sees_mailto(en["blocks"])
+            or customer_sees_mailto(de["blocks"]),
         }
     else:
         record_mail = {}
@@ -454,6 +475,16 @@ def grade_twin(
         **record_mail,
     }
     return record
+
+
+def customer_sees_mailto(blocks: list[dict[str, Any]]) -> bool:
+    """True when the rendered text contains a mailto URL.
+
+    Handoff.tsx prints block.summary as a paragraph. It does not render an
+    href, so the tool result's mailto is not a link the customer can see.
+    A mailto written into that sentence is.
+    """
+    return "mailto:" in grade.visible_text(blocks).lower()
 
 
 # A postal address is a five-digit PLZ before a place name. HRB 33824 on the
@@ -627,17 +658,41 @@ def restore_snapshot(
     wp_update(instance, post_id, field, snapshot.read_text(encoding="utf-8"), directory)
 
 
+def title_matches(read_back: str | None, snapshot: str | None) -> bool:
+    """The title read after restore is the snapshot written before the edit."""
+    return read_back is not None and snapshot is not None and read_back == snapshot
+
+
+def confirm_restore(
+    title_now: str, title_expected: str, extras: list[tuple[str, str]]
+) -> bool:
+    """True when the title and every other restored field equal the snapshot."""
+    if not title_matches(title_now, title_expected):
+        return False
+    return all(read_back == expected for read_back, expected in extras)
+
+
 def exit_code(
     *,
     mail_before: list[str],
     mail_after: list[str],
     drift_ran: bool,
     restored: bool | None,
+    title_restored_to: str | None = None,
+    title_snapshot: str | None = None,
 ) -> int:
-    """1 when the mail spool changed or a drift edit was not restored."""
+    """1 when mail grew, drift did not restore, or the title differs.
+
+    `restored=True` is not enough. A requested drift phase that never edited
+    has no snapshot, and a write that echoed ok can still leave the old title.
+    """
     if mail_before != mail_after:
         return 1
-    if drift_ran and restored is not True:
+    if not drift_ran:
+        return 0
+    if restored is not True:
+        return 1
+    if not title_matches(title_restored_to, title_snapshot):
         return 1
     return 0
 
@@ -1159,8 +1214,10 @@ def run_drift(
     blog_id = ((found["surfaces"].get("blog") or {}).get("ids") or {}).get("id")
     evidence: dict[str, Any] = {"marker": MARKER, "restored": False}
     if not isinstance(product, dict) or not isinstance(en_id, int):
+        # No edit and no restore. A requested drift phase that stops here
+        # fails: restored stays false, there is no snapshot, and the process
+        # exits 1.
         evidence["error"] = "no english product to edit"
-        evidence["restored"] = True
         return evidence
     original_title = wp(instance, "post", "get", str(en_id), "--field=post_title")
     new_title = grade.title_with_marker(original_title, MARKER)
@@ -1409,12 +1466,26 @@ def run_drift(
                 restore_snapshot(
                     instance, blog_id, "post_content", blog_snapshot, journal.directory
                 )
-            evidence["restored"] = True
-            evidence["title_restored_to"] = wp(
-                instance, "post", "get", str(en_id), "--field=post_title"
-            )
+            expected_title = title_snapshot.read_text(encoding="utf-8")
+            title_now = wp(instance, "post", "get", str(en_id), "--field=post_title")
+            evidence["title_snapshot"] = expected_title
+            evidence["title_restored_to"] = title_now
+            extras: list[tuple[str, str]] = []
+            if de_snapshot is not None and de_id:
+                de_now = wp(instance, "post", "get", str(de_id), "--field=post_title")
+                extras.append((de_now, de_snapshot.read_text(encoding="utf-8")))
+            if blog_snapshot is not None and isinstance(blog_id, int):
+                blog_now = wp(
+                    instance, "post", "get", str(blog_id), "--field=post_content"
+                )
+                extras.append((blog_now, blog_snapshot.read_text(encoding="utf-8")))
+            matched = confirm_restore(title_now, expected_title, extras)
+            evidence["restored"] = matched
+            if not matched:
+                evidence["restore_error"] = "read-back does not match the snapshot"
         except RuntimeError as error:
             evidence["restore_error"] = str(error)
+            evidence["restored"] = False
     return evidence
 
 
@@ -1533,6 +1604,8 @@ def main(argv: list[str] | None = None) -> int:
     }
     journal.dump("summary.json", summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
+    title_now = drift.get("title_restored_to")
+    title_expected = drift.get("title_snapshot")
     code = exit_code(
         mail_before=mail_before,
         mail_after=mail_after,
@@ -1540,10 +1613,13 @@ def main(argv: list[str] | None = None) -> int:
         restored=drift.get("restored")
         if isinstance(drift.get("restored"), bool)
         else None,
+        title_restored_to=title_now if isinstance(title_now, str) else None,
+        title_snapshot=title_expected if isinstance(title_expected, str) else None,
     )
     if code:
         print(
-            "mail spool changed or the drift edit was not restored",
+            "mail spool changed, the drift phase did not restore the snapshot, "
+            "or the restored title does not match it",
             file=sys.stderr,
         )
     return code

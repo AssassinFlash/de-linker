@@ -7,6 +7,7 @@ from typing import Any
 
 import pytest
 
+import client
 import grade
 import run_battery
 
@@ -76,6 +77,16 @@ def test_mail_grade_checks_the_rendered_sentence_not_the_tool_link() -> None:
     assert row["customer_mailto_link"] is False
     assert "Handoff.tsx" in row["mailto_limitation"]
     assert row["tool_mailto"]["en"] == ""
+    linked = dict(en)
+    linked["blocks"] = [
+        {
+            "type": "handoff",
+            "summary": grade.HANDOFF_EN.format(email=email) + " mailto:" + email,
+        }
+    ]
+    derived = run_battery.grade_twin(case, linked, de, None)
+    assert derived["customer_mailto_link"] is True
+    assert derived["tool_mailto"]["en"] == ""
 
 
 def test_mppt_document_count_is_a_note_in_the_twin_record() -> None:
@@ -135,6 +146,39 @@ def test_pair_numbers_are_graded() -> None:
     assert row["mechanical"] == "note"
     assert row["reasons"] == []
     assert "10" in row["notes"][0]
+
+
+def test_twin_fallback_is_a_defect() -> None:
+    case = next(item for item in run_battery.TWINS if item["id"] == "T-sie")
+    en = {
+        "blocks": [
+            {"type": "text", "text": "The H2-10K-T3 is a hybrid inverter."},
+            {"type": "cards", "product_ids": [4107]},
+        ],
+        "answer": "The H2-10K-T3 is a hybrid inverter.",
+        "meta": {"fallback": False},
+        "log": {},
+    }
+    de = {
+        "blocks": [
+            {
+                "type": "text",
+                "text": "Hier sind passende Produkte aus unserem Sortiment.",
+            },
+            {"type": "cards", "product_ids": [4107]},
+        ],
+        "answer": "Hier sind passende Produkte aus unserem Sortiment.",
+        "meta": {"fallback": True, "failures": ["answer in German"]},
+        "log": {},
+    }
+    row = run_battery.grade_twin(case, en, de, 4107)
+    assert row["mechanical"] == "defect"
+    assert row["reasons"] == ["de fallback is not a pass under gate 5"]
+    clean = dict(de)
+    clean["meta"] = {"fallback": False}
+    passed = run_battery.grade_twin(case, en, clean, 4107)
+    assert passed["mechanical"] == "pass"
+    assert passed["reasons"] == []
 
 
 def test_fallback_is_not_a_language_pass() -> None:
@@ -286,6 +330,8 @@ def test_restore_reads_the_snapshot_not_a_later_string(
 
 
 def test_exit_code_asserts_mail_growth_and_a_missed_restore() -> None:
+    original = "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+    drifted = "SAJ H2-10K-T3 C335DRIFT (10 kW three-phase hybrid inverter)"
     assert (
         run_battery.exit_code(
             mail_before=[], mail_after=[], drift_ran=False, restored=None
@@ -306,9 +352,103 @@ def test_exit_code_asserts_mail_growth_and_a_missed_restore() -> None:
     )
     assert (
         run_battery.exit_code(
-            mail_before=[], mail_after=[], drift_ran=True, restored=True
+            mail_before=[],
+            mail_after=[],
+            drift_ran=True,
+            restored=True,
+            title_restored_to=original,
+            title_snapshot=original,
         )
         == 0
+    )
+    assert (
+        run_battery.exit_code(
+            mail_before=[],
+            mail_after=[],
+            drift_ran=True,
+            restored=True,
+            title_restored_to=drifted,
+            title_snapshot=original,
+        )
+        == 1
+    )
+    assert (
+        run_battery.exit_code(
+            mail_before=[], mail_after=[], drift_ran=True, restored=True
+        )
+        == 1
+    )
+
+
+def test_confirm_restore_compares_the_title_with_the_snapshot() -> None:
+    original = "SAJ H2-10K-T3 (10 kW three-phase hybrid inverter)"
+    blog = "<p>The post.</p>"
+    assert run_battery.confirm_restore(original, original, [(blog, blog)]) is True
+    assert (
+        run_battery.confirm_restore(
+            "SAJ H2-10K-T3 C335DRIFT (10 kW three-phase hybrid inverter)",
+            original,
+            [(blog, blog)],
+        )
+        is False
+    )
+    assert (
+        run_battery.confirm_restore(original, original, [(blog + "x", blog)]) is False
+    )
+
+
+def test_update_php_fails_on_wp_error(tmp_path: Path) -> None:
+    php = run_battery.update_php(tmp_path / "title.txt", 4107, "post_title")
+    assert "is_wp_error($result)" in php
+    assert "WP_CLI::error" in php
+    assert "wp_update_post(array('ID' => 4107, \"post_title\" => $value), true)" in php
+    assert "echo 'ok'" in php
+
+
+def test_load_page_keeps_the_postal_code_and_drops_the_register_number(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    html = (
+        "<main><p>Linker Technology GmbH, Steinfeldstraße 3, "
+        "39179 Barleben. HRB 33824. sales@de-linker.com</p></main>"
+    )
+
+    def fake_fetch(*_args: object, **_kwargs: object) -> dict[str, Any]:
+        return {
+            "url": "http://127.0.0.1:9190/imprint/",
+            "status": 200,
+            "error": None,
+            "html": html,
+        }
+
+    monkeypatch.setattr(client, "fetch", fake_fetch)
+    page = run_battery.load_page(
+        "http://127.0.0.1:9190", "http://127.0.0.1:9190/imprint/"
+    )
+    assert page["plz"] == ["39179"]
+
+
+def test_drift_without_an_english_product_is_not_restored(tmp_path: Path) -> None:
+    journal = run_battery.Journal(tmp_path)
+    service = client.ServiceClient("http://127.0.0.1:9", "token")
+    evidence = run_battery.run_drift(
+        journal,
+        service,
+        tmp_path / "turns.sqlite",
+        "c335",
+        "http://127.0.0.1:9190",
+        {"surfaces": {}, "product_en": None},
+    )
+    assert evidence["restored"] is False
+    assert evidence["error"] == "no english product to edit"
+    assert (
+        run_battery.exit_code(
+            mail_before=[],
+            mail_after=[],
+            drift_ran=True,
+            restored=evidence["restored"],
+        )
+        == 1
     )
 
 
