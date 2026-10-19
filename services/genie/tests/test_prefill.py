@@ -14,7 +14,9 @@ Registered for #339 (the campaign fixture ticket): the cases in this module
 are the #365 prefill regressions — the campaign sentence, a negated backup,
 a question that must not become phase or backup, the figures the first reader
 dropped (year-word either side, kW peak, Drehstrom, spaced thousands), a
-stated postcode, and a value stated on an earlier user message. #339 should
+stated postcode, a value stated on an earlier user message, and the round-3
+clauses: a later denial, a comma, a wh-statement, an indirect question,
+mixed polarity, the year-word gap, and a leading-zero postcode. #339 should
 fold these sentences into the campaign suite; until then they stay here.
 """
 
@@ -30,20 +32,25 @@ import httpx
 import pytest
 
 from linker_genie.abilities import AbilityClient
-from linker_genie.agent import INPUT_DOCS, ToolBudget, _ability_runner, instructions
+from linker_genie.agent import (
+    INPUT_DOCS,
+    ToolBudget,
+    _ability_runner,
+    _page_runner,
+    _user_prompt,
+    instructions,
+)
 from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Vocabulary
+from linker_genie.prefill import sizing_input, stated_size_hint
 from linker_genie.route import (
-    Call,
     Route,
     Subject,
     plan,
-    sizing_input,
-    stated_size_hint,
 )
 from linker_genie.schema import TurnRequest
-from linker_genie.understand import Prepared, Understander, _run_calls
+from linker_genie.understand import Prepared, Understander
 
 # Produced by SizeHint.php. See the module docstring for the choice.
 _FIXTURE = json.loads(
@@ -245,23 +252,36 @@ def test_low_confidence_stays_on_the_model_and_the_url_still_omits_phase(
     assert _query(url) == {"pv_kwp": ["12"]}
 
 
-def test_a_dirty_code_call_is_stripped_before_size_hint_runs() -> None:
-    box = _Client()
-    prepared = Prepared(
-        route=Route(
-            "sizing",
-            (Call("linker/size-hint", dict(UNSAFE)),),
-            action="open_configurator",
-        )
+def test_the_route_log_and_the_wire_are_one_size_hint(
+    vocabulary: Vocabulary,
+) -> None:
+    """plan() derives the size-hint dict once. The log and the wire hold it."""
+    earlier = "12 kWp, dreiphasig"
+    later = "und die Speichergröße?"
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "c-365",
+            "locale": "de",
+            "messages": [
+                {"role": "user", "content": earlier},
+                {"role": "assistant", "content": "Der Konfigurator legt das aus."},
+                {"role": "user", "content": later},
+            ],
+        }
     )
+    box = _Client()
     try:
-        _run_calls(prepared, _request(DE, "de"), box.client)
+        prepared = Understander(lambda: vocabulary, _Jev(1.0)).prepare(
+            request, box.client
+        )
     finally:
         box.close()
-    assert prepared.results[0]["arguments"] == {"pv_kwp": 12.0}
+    logged = prepared.log["calls"][0]["arguments"]
+    sent = prepared.results[0]["arguments"]
+    assert logged is sent
+    assert logged == {"pv_kwp": 12.0, "phase": 3}
     url = prepared.facts.facts["size.configurator_url"].value
-    assert _query(str(url)) == {"pv_kwp": ["12"]}
-    assert "phase" not in _wire(box.requests[0])
+    assert _query(str(url)) == {"pv_kwp": ["12"], "phase": ["3"]}
 
 
 @pytest.mark.parametrize(
@@ -344,6 +364,8 @@ def test_both_prompts_state_the_five_field_conversation_contract() -> None:
         "kein Ersatzstrom",
         "backup is not required",
         "Notstrom ist nicht nötig",
+        "do not need backup",
+        "don't need backup",
     ],
 )
 def test_a_negated_backup_is_none_and_never_needed(message: str) -> None:
@@ -405,6 +427,17 @@ def test_a_question_does_not_prefill_phase_or_backup(message: str) -> None:
         ("postcode 80538", {"plz": "80538"}),
         ("ZIP 80538", {"plz": "80538"}),
         ("80538 PLZ", {"plz": "80538"}),
+        ("PLZ 01067", {"plz": "01067"}),
+        ("01067 PLZ", {"plz": "01067"}),
+        ("Jahresstromverbrauch 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("Stromverbrauch 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("annual consumption of about 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("6000 kWh p.a.", {"annual_load_kwh": 6000.0}),
+        ("Unser Jahresverbrauch liegt bei 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("Our annual consumption is 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("Jahresverbrauch beträgt 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("yearly consumption are 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("6000 kWh, jährlich", {"annual_load_kwh": 6000.0}),
     ],
 )
 def test_stated_figures_the_first_reader_dropped(
@@ -500,30 +533,117 @@ def test_a_stated_postcode_reaches_the_url() -> None:
     assert _query(url) == {"plz": ["80538"], "pv_kwp": ["12"], "phase": ["3"]}
 
 
-def test_the_customer_message_scan_lives_in_one_module() -> None:
-    root = Path(__file__).parents[1] / "src" / "linker_genie"
-    for name in ("agent.py", "understand.py", "app.py"):
-        text = (root / name).read_text(encoding="utf-8")
-        assert "def _customer_message" not in text
-        assert "def _last_customer_message" not in text
-        assert "def _question" not in text
-        assert "from linker_genie.conversation import" in text
+def test_a_later_denial_clears_the_earlier_value() -> None:
+    short = stated_size_hint(["12 kWp, dreiphasig", "kein Drehstrom"])
+    assert short == {"pv_kwp": 12.0}
+    assert "phase" not in short
+    sentence = stated_size_hint(["12 kWp, Drehstrom", "Ich habe keinen Drehstrom"])
+    assert sentence == {"pv_kwp": 12.0}
+    assert "phase" not in sentence
+    assert stated_size_hint(["mit Notstrom", "kein Notstrom"]) == {"backup": "none"}
+    assert stated_size_hint(["12 kWp, mit Notstrom", "Ich habe keinen Notstrom"]) == {
+        "pv_kwp": 12.0,
+        "backup": "none",
+    }
+
+
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        ("Ich habe Drehstrom, ist das möglich?", {"phase": 3}),
+        ("I have three-phase, is that supported?", {"phase": 3}),
+        ("Was ich brauche: 12 kWp, Drehstrom", {"pv_kwp": 12.0, "phase": 3}),
+        ("What I need is three-phase", {"phase": 3}),
+        ("Wie gesagt, der Anschluss ist dreiphasig", {"phase": 3}),
+        ("Mein Haus ist dreiphasig, kann es auch Notstrom?", {"phase": 3}),
+        ("ohne Netz und mit Notstrom", {"backup": "needed"}),
+    ],
+)
+def test_a_declarative_clause_keeps_its_value(
+    message: str, expected: dict[str, object]
+) -> None:
+    assert sizing_input(message) == expected
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "ob Notstrom möglich ist",
+        "whether backup is possible",
+        "if backup is possible",
+        "geht das mit Drehstrom",
+        "und kann es Notstrom",
+        "nicht nur Notstrom, sondern auch Eigenverbrauch",
+        "kein Problem ich brauche Notstrom",
+    ],
+)
+def test_a_question_or_a_mixed_polarity_does_not_fill_phase_or_backup(
+    message: str,
+) -> None:
+    found = sizing_input(message)
+    assert "phase" not in found
+    assert "backup" not in found
+
+
+def test_a_negation_across_long_compounds_still_denies_phase() -> None:
+    """Three words, longer than a 48-character slice, still govern the keyword."""
+    gap = "innerhalb bestehenden Sonderhaushaltsanschlussvertrags"
+    message = f"nicht {gap} Drehstrom"
+    keyword = message.rindex("Drehstrom")
+    assert keyword - message.index("nicht") > 48
+    assert "phase" not in sizing_input(message)
+
+
+def test_customer_words_are_read_through_one_list() -> None:
+    """The page read, the file cut and the prefill all use the customer list.
+
+    Assistant text that states a phase, a backup and a postcode is not a source.
+    The page tool and a long attachment are cut to the last user message.
+    """
+    last = "ZZSTORAGEQUESTION"
     request = TurnRequest.model_validate(
         {
             "conversation_id": "c-365",
-            "locale": "en",
+            "locale": "de",
             "messages": [
-                {"role": "user", "content": "earlier"},
-                {"role": "assistant", "content": "reply"},
-                {"role": "user", "content": "later"},
-                {"role": "assistant", "content": "again"},
+                {"role": "user", "content": "earlier 12 kWp"},
+                {
+                    "role": "assistant",
+                    "content": "dreiphasig, mit Notstrom, PLZ 01067",
+                },
+                {"role": "user", "content": last},
             ],
         }
     )
-    assert customer_messages(request) == ["earlier", "later"]
-    assert last_customer_message(request) == "later"
+    assert customer_messages(request) == ["earlier 12 kWp", last]
+    assert last_customer_message(request) == last
+    assert stated_size_hint(customer_messages(request)) == {"pv_kwp": 12.0}
     empty = TurnRequest.model_validate(
         {"conversation_id": "c-365", "locale": "en", "messages": []}
     )
     assert last_customer_message(empty) == ""
     assert customer_messages(empty) == []
+
+    seen: dict[str, str] = {}
+
+    def reader(_page: object, question: str, _logged_in: bool) -> dict[str, Any]:
+        seen["question"] = question
+        return {"text": "page body", "title": "Page"}
+
+    runner = _page_runner(reader, ToolBudget(), request)
+    assert runner(None)["text"] == "page body"
+    assert seen["question"] == last
+
+    lead = "opening passage. " * 120
+    filler = ("neutral filler sentence. " * 40 + "\n") * 16
+    decoy = "ASSISTANTONLYTOKEN sits in this passage. " * 20
+    hit = "ZZSTORAGEQUESTION markerphrase sits in this passage. " * 20
+    text = "\n".join((lead, filler, decoy, hit))
+    assert len(text) > 12_000
+    prepared = Prepared(
+        route=Route("model"),
+        attachments=[{"id": "r1", "text": text}],
+    )
+    prompt = _user_prompt(request, None, prepared)
+    assert "markerphrase" in prompt
+    assert "ASSISTANTONLYTOKEN" not in prompt

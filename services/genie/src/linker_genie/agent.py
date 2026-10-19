@@ -24,9 +24,9 @@ from typing import Any
 
 from linker_genie import attachments, knowledge, page, timing
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
-from linker_genie.conversation import customer_messages
+from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.facts import TurnFacts, merge
-from linker_genie.route import stated_size_hint
+from linker_genie.prefill import stated_size_hint
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
 from linker_genie.tools import MAX_TOOL_CALLS as TOOL_LIMIT
 from linker_genie.understand import Prepared
@@ -375,9 +375,7 @@ def _page_runner(
     def call(arguments: dict[str, Any] | None) -> Any:
         del arguments
         assert pages is not None  # run guards it; a refused read never gets here
-        question = next(
-            (m.content for m in reversed(request.messages) if m.role == "user"), ""
-        )
+        question = last_customer_message(request)
         try:
             payload, gathered = page.record(
                 pages, request.page_context, question, request.user.logged_in
@@ -462,9 +460,7 @@ def _user_prompt(
     if prepared is not None and prepared.attachments:
         # The customer's files as the service read them (#236): the text of each, the
         # long ones cut to the passages nearest the question (attachments.model_view).
-        question = next(
-            (m.content for m in reversed(request.messages) if m.role == "user"), ""
-        )
+        question = last_customer_message(request)
         files = json.dumps(
             [attachments.model_view(item, question) for item in prepared.attachments],
             ensure_ascii=False,

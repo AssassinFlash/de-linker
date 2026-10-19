@@ -4,7 +4,8 @@ import pytest
 
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
-from linker_genie.route import CONFIDENT, Subject, plan, sizing_input
+from linker_genie.prefill import sizing_input
+from linker_genie.route import CONFIDENT, Subject, plan
 
 NONE = Subject((), {}, {})
 H2 = Subject((4107,), {4107: "inverters", 1832: "home-storage"}, {4107: "H2-10K-T3"})

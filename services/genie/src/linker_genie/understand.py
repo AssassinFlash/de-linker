@@ -37,7 +37,6 @@ from linker_genie.route import (
     nameplate,
     person,
     plan,
-    stated_size_hint,
     with_page,
 )
 from linker_genie.schema import (
@@ -422,7 +421,6 @@ def _run_calls(
     enclosing `understand.calls` phase, which is what the turn waited for.
     """
     question = last_customer_message(request)
-    stated = customer_messages(request)
 
     def one(call: Call) -> tuple[dict[str, Any], Any, TurnFacts]:
         with timing.phase(clock, timing.call_key(call.ability)):
@@ -438,12 +436,11 @@ def _run_calls(
                     search, call.arguments, request.locale
                 )
                 return call.arguments, payload, gathered
+            # Size-hint arguments are the dict plan() put on the call
+            # (prefill.stated_size_hint). Sending that object keeps the route
+            # log and the wire the same dict (#365). The model's own call is
+            # stripped in agent._ability_runner, which reads the same messages.
             arguments = call.arguments
-            if call.ability == "linker/size-hint":
-                # Same gate as the model's own call (agent._ability_runner, #365):
-                # the URL is built from the customer's stated values, not from
-                # a richer object the route or the model put on the call.
-                arguments = stated_size_hint(stated)
             payload, gathered = client.record(
                 call.ability, arguments, request.user.context, request.locale
             )
