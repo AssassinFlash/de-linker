@@ -734,3 +734,13 @@ export function parseStream( stream: string ): Turn {
 	}
 	return turn;
 }
+
+/**
+ * A stream the service never finished. The shell shows the failure
+ * sentence and does not render the blocks that arrived before `done`.
+ *
+ * @param error The rejection from parseStream.
+ */
+export function isUnfinishedStream( error: unknown ): boolean {
+	return error instanceof Error && 'stream without done' === error.message;
+}

@@ -19,7 +19,8 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import type { Turn, TurnMessage } from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
 import type { GenieConfig } from '../genie/config';
-import { startHero } from './controller';
+import { FAILURE_KEY } from '../genie/shared/failure';
+import { OPEN_CLASS, startHero } from './controller';
 import { HeroSession, type HeroSessionConfig } from './session';
 
 const CONFIG: GenieConfig = {
@@ -123,12 +124,36 @@ function start( heroSession: HeroSession ) {
 }
 
 beforeEach( () => {
+	sessionStorage.clear();
 	document.body.innerHTML = HERO;
 	window.history.replaceState( null, '', '/' );
 } );
 
 afterEach( () => {
+	sessionStorage.clear();
 	document.body.innerHTML = '';
+} );
+
+test( 'a stored failure unfolds the hero and restores the question', async () => {
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: 'upstream',
+			text: 'EV chargers',
+			question: 'EV chargers',
+			uploads: [],
+			base: 0,
+		} )
+	);
+	const { hero } = start( session().session );
+
+	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( true );
+	const prompt = hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+	await waitFor( () => expect( prompt.value ).toBe( 'EV chargers' ) );
+	expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
 } );
 
 test( 'the resting hero is left visually as it was; the hidden surface is ready', () => {

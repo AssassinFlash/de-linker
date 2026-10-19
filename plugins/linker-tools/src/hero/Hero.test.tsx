@@ -16,7 +16,7 @@ import {
 	screen,
 	waitFor,
 } from '@testing-library/react';
-import { expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 /**
  * Internal dependencies
@@ -138,6 +138,14 @@ function session( stored: TurnMessage[] = [], turn: Turn | null = null ) {
 	};
 }
 
+beforeEach( () => {
+	sessionStorage.clear();
+} );
+
+afterEach( () => {
+	sessionStorage.clear();
+} );
+
 function renderHero(
 	heroSession: HeroSession,
 	overrides: Partial< {
@@ -227,13 +235,15 @@ test( 'a question asked through the hero gets a real answer and counts as a conv
 	expect( screen.getByRole( 'status' ) ).toHaveTextContent( 'Answer 1' );
 } );
 
-test( 'a failed first turn keeps the question and shows the retry sentence', async () => {
+test( 'a failed first turn puts the question back and shows the retry sentence', async () => {
 	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
 	const send = vi.fn( async () => {
 		throw new Error( 'turn 502' );
 	} );
+	const setPrompt = vi.fn();
 	const { bridge } = renderHero(
-		new HeroSession( SESSION_CONFIG, read, send )
+		new HeroSession( SESSION_CONFIG, read, send ),
+		{ setPrompt }
 	);
 
 	await act( async () => {
@@ -243,7 +253,62 @@ test( 'a failed first turn keeps the question and shows the retry sentence', asy
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
-	expect( screen.getByText( 'saj' ) ).toBeInTheDocument();
+	expect( setPrompt ).toHaveBeenLastCalledWith( 'saj' );
+	expect( screen.queryByText( 'saj' ) ).toBeNull();
+	expect(
+		screen.getByRole( 'button', { name: 'Try again' } )
+	).toBeInTheDocument();
+} );
+
+test( 'retrying a failed hero turn sends it once', async () => {
+	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
+	const send = vi
+		.fn()
+		.mockRejectedValueOnce( new Error( 'turn 502' ) )
+		.mockResolvedValueOnce( reply( 'Recovered' ) );
+	const { bridge } = renderHero(
+		new HeroSession( SESSION_CONFIG, read, send )
+	);
+
+	await act( async () => {
+		bridge().ask( 'saj' );
+	} );
+	const retry = await screen.findByRole( 'button', { name: 'Try again' } );
+	fireEvent.click( retry );
+	fireEvent.click( retry );
+
+	await waitFor( () => expect( send ).toHaveBeenCalledTimes( 2 ) );
+	expect( send.mock.calls[ 1 ][ 3 ] ).toEqual( [
+		{ role: 'user', content: 'saj' },
+	] );
+	expect(
+		( await screen.findAllByText( 'Recovered' ) ).length
+	).toBeGreaterThan( 0 );
+	expect(
+		screen.queryByText( 'Genie did not answer. Please try again.' )
+	).toBeNull();
+} );
+
+test( 'a cut stream on the hero keeps the question and not the partial answer', async () => {
+	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
+	const send = vi.fn( async () => {
+		throw new Error( 'stream without done' );
+	} );
+	const setPrompt = vi.fn();
+	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ), {
+		setPrompt,
+	} );
+
+	await act( async () => {
+		view.bridge().ask( 'backup for 10 kW' );
+	} );
+
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
+	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
+	expect( setPrompt ).toHaveBeenLastCalledWith( '' );
 } );
 
 test( 'a conflicting turn puts the question back and re-reads the thread', async () => {

@@ -52,6 +52,20 @@ import {
 	buildQuestion,
 	typeModelPrompt,
 } from '../genie/shared/conversation';
+import {
+	failureReducer,
+	failureText,
+	pageFailureStore,
+	presentFailure,
+	readFailure,
+	reconcile,
+	retryMessages,
+	shownFailureKind,
+	writeFailure,
+	type FailureDraft,
+	type FailureEvent,
+	type FailureState,
+} from '../genie/shared/failure';
 import { HeroSession } from './session';
 
 /** The controller's way into the conversation while it is unfolded. */
@@ -115,6 +129,17 @@ export function HeroConversation( {
 	const [ inquiries, setInquiries ] = useState< SentInquiryCard[] >( [] );
 	const turnAt = useRef( -1 );
 	const sending = useRef( false );
+	const failureState = useRef< FailureState >( {
+		phase: 'clear',
+		draft: null,
+		kind: null,
+	} );
+	const commitFailure = useCallback( ( event: FailureEvent ) => {
+		const next = failureReducer( failureState.current, event );
+		failureState.current = next;
+		writeFailure( pageFailureStore(), next );
+		return next;
+	}, [] );
 	const closeRef = useRef< HTMLButtonElement >( null );
 	const files = useAttachments();
 	// The bridge is registered once; the refs keep it calling the latest
@@ -143,21 +168,43 @@ export function HeroConversation( {
 		void session
 			.load()
 			.then( ( stored ) => {
-				if ( ! cancelled ) {
-					setThread( stored.messages );
-					setTurn( stored.turn );
-					setContacts( stored.contacts ?? [] );
-					setInquiries( stored.inquiries ?? [] );
-					turnAt.current = stored.turn
-						? stored.messages.length - 1
-						: -1;
+				if ( cancelled || 'clear' !== failureState.current.phase ) {
+					// A send on this mount already owns the thread. Applying
+					// the read that started earlier would wipe it.
+					return;
+				}
+				setThread( stored.messages );
+				setTurn( stored.turn );
+				setContacts( stored.contacts ?? [] );
+				setInquiries( stored.inquiries ?? [] );
+				turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
+				const restored = reconcile(
+					readFailure( pageFailureStore() ),
+					stored.messages
+				);
+				failureState.current = restored;
+				writeFailure( pageFailureStore(), restored );
+				if (
+					'failed' === restored.phase &&
+					restored.draft &&
+					restored.kind
+				) {
+					if ( 'upstream' === restored.kind ) {
+						setPrompt( restored.draft.text );
+						if ( restored.draft.uploads.length > 0 ) {
+							filesRef.current.restore( restored.draft.uploads );
+						}
+					} else {
+						setPrompt( '' );
+					}
+					setPhase( 'error' );
 				}
 			} )
 			.catch( () => undefined );
 		return () => {
 			cancelled = true;
 		};
-	}, [ session ] );
+	}, [ session, setPrompt ] );
 
 	// The conversation has the focus when it unfolds; the page's trigger gets
 	// it back when it closes (the controller restores it).
@@ -187,6 +234,64 @@ export function HeroConversation( {
 		);
 	}, [] );
 
+	const handleTurnError = useCallback(
+		async (
+			error: unknown,
+			before: TurnMessage[],
+			draft: FailureDraft
+		) => {
+			const reason = attachmentRefusalReason( error );
+			if ( reason ) {
+				commitFailure( { type: 'abandon' } );
+				setThread( before );
+				setPrompt( draft.text );
+				setRefused(
+					refusalText(
+						reason === 'throttled' ||
+							reason === 'count' ||
+							reason === 'size' ||
+							reason === 'type'
+							? reason
+							: 'unreadable'
+					)
+				);
+				setPhase( 'ask' );
+				return;
+			}
+			if ( isTurnConflict( error ) ) {
+				commitFailure( { type: 'abandon' } );
+				const stored = await session.reload();
+				setThread( stored.messages );
+				setTurn( stored.turn );
+				setContacts( stored.contacts ?? [] );
+				setInquiries( stored.inquiries ?? [] );
+				turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
+				setPrompt( draft.text );
+				setConflict( turnConflictText() );
+				setPhase( 'ask' );
+				return;
+			}
+			const showKind =
+				shownFailureKind( error, before, draft.question ) ?? 'upstream';
+			commitFailure( { type: showKind } );
+			const view = presentFailure(
+				showKind,
+				before,
+				retryMessages( before, draft.question ),
+				draft
+			);
+			setThread( view.messages as TurnMessage[] );
+			setPrompt( view.field );
+			if ( view.chips.length > 0 ) {
+				filesRef.current.restore( view.chips );
+			} else {
+				filesRef.current.clear();
+			}
+			setPhase( 'error' );
+		},
+		[ commitFailure, session, setPrompt ]
+	);
+
 	const send = useCallback(
 		async ( text: string ) => {
 			const picked = filesRef.current.uploads;
@@ -194,23 +299,29 @@ export function HeroConversation( {
 			if ( ! question || sending.current || filesRef.current.busy ) {
 				return;
 			}
+			const draft: FailureDraft = {
+				text,
+				question,
+				uploads: picked,
+				base: session.messages.length,
+			};
+			commitFailure( { type: 'send', draft } );
 			sending.current = true;
 			setRefused( '' );
 			setConflict( '' );
 			setLive( '' );
 			setPhase( 'waiting' );
 			setPrompt( '' );
-			let shown: TurnMessage[] = [];
+			setThread( [
+				...session.messages,
+				{ role: 'user', content: question },
+			] );
 			try {
-				shown = [
-					...session.messages,
-					{ role: 'user', content: question },
-				];
-				setThread( shown );
 				// session.ask re-reads the shared thread before it sends, so
 				// a dock turn is neither lost nor overwritten (session.ts).
 				const result = await session.ask( question, picked );
 				filesRef.current.clear();
+				commitFailure( { type: 'answered' } );
 				setThread( result.messages );
 				setTurn( result.answer );
 				setContacts( result.contacts ?? [] );
@@ -219,47 +330,53 @@ export function HeroConversation( {
 				setLive( assistantMessage( result.answer ).content );
 				setPhase( 'ask' );
 			} catch ( error ) {
-				// A file the proxy refused is said as such and the question
-				// goes back into the field; anything else is no answer, and
-				// the question stays so the error has something to stand under.
-				const reason = attachmentRefusalReason( error );
-				if ( reason ) {
-					setThread( session.messages );
-					setPrompt( text );
-					setRefused(
-						refusalText(
-							reason === 'throttled' ||
-								reason === 'count' ||
-								reason === 'size' ||
-								reason === 'type'
-								? reason
-								: 'unreadable'
-						)
-					);
-					setPhase( 'ask' );
-				} else if ( isTurnConflict( error ) ) {
-					const stored = await session.reload();
-					setThread( stored.messages );
-					setTurn( stored.turn );
-					setContacts( stored.contacts ?? [] );
-					setInquiries( stored.inquiries ?? [] );
-					turnAt.current = stored.turn
-						? stored.messages.length - 1
-						: -1;
-					setPrompt( text );
-					setConflict( turnConflictText() );
-					setPhase( 'ask' );
-				} else {
-					setThread( shown );
-					setPhase( 'error' );
-				}
+				// ask() commits the thread only after the proxy answered, so
+				// session.messages is the thread this question was not added to.
+				await handleTurnError( error, session.messages, draft );
 			} finally {
 				sending.current = false;
 			}
 		},
-		[ session, setPrompt ]
+		[ session, setPrompt, commitFailure, handleTurnError ]
 	);
 	sendRef.current = send;
+
+	// One resend. The machine leaves `failed` before the request, so a
+	// second click does not send.
+	const retry = useCallback( async () => {
+		const current = failureState.current;
+		if (
+			'failed' !== current.phase ||
+			! current.draft ||
+			sending.current
+		) {
+			return;
+		}
+		const draft = current.draft;
+		commitFailure( { type: 'retry' } );
+		sending.current = true;
+		setRefused( '' );
+		setConflict( '' );
+		setLive( '' );
+		setPhase( 'waiting' );
+		setPrompt( '' );
+		try {
+			const result = await session.retry( draft.question, draft.uploads );
+			filesRef.current.clear();
+			commitFailure( { type: 'answered' } );
+			setThread( result.messages );
+			setTurn( result.answer );
+			setContacts( result.contacts ?? [] );
+			setInquiries( result.inquiries ?? [] );
+			turnAt.current = result.messages.length - 1;
+			setLive( assistantMessage( result.answer ).content );
+			setPhase( 'ask' );
+		} catch ( error ) {
+			await handleTurnError( error, session.messages, draft );
+		} finally {
+			sending.current = false;
+		}
+	}, [ session, setPrompt, commitFailure, handleTurnError ] );
 
 	// Files were picked for the hero: once they are prepared, send them as
 	// the turn's question (a photo or a document is itself the question).
@@ -462,14 +579,6 @@ export function HeroConversation( {
 							{ conflict }
 						</p>
 					) : null }
-					{ 'error' === phase ? (
-						<p role="alert" className="linker-genie-app__error">
-							{ __(
-								'Genie did not answer. Please try again.',
-								'linker-tools'
-							) }
-						</p>
-					) : null }
 					{ 'waiting' !== phase
 						? turn?.attachments?.map( ( card ) => (
 								<AttachmentCard
@@ -551,6 +660,20 @@ export function HeroConversation( {
 				<p role="alert" className="linker-genie-app__refused">
 					{ refused }
 				</p>
+			) : null }
+			{ 'error' === phase ? (
+				<>
+					<p role="alert" className="linker-genie-app__error">
+						{ failureText() }
+					</p>
+					<button
+						type="button"
+						className="linker-genie-app__prompt"
+						onClick={ () => void retry() }
+					>
+						{ __( 'Try again', 'linker-tools' ) }
+					</button>
+				</>
 			) : null }
 		</div>
 	);

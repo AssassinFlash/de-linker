@@ -22,6 +22,7 @@ import {
 	type TurnMessage,
 } from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
+import { retryMessages } from '../genie/shared/failure';
 
 /** What the hero's mount point gives the session (config.ts). */
 export interface HeroSessionConfig {
@@ -155,6 +156,40 @@ export class HeroSession {
 			...this.messagesValue,
 			{ role: 'user', content: text },
 		];
+		const answer = await this.send(
+			this.config.turnUrl,
+			this.config.nonce,
+			this.config.locale,
+			next,
+			this.config.page,
+			uploads
+		);
+		this.messagesValue = next.concat( assistantMessage( answer ) );
+		this.turnValue = answer;
+		return {
+			...this.snapshot(),
+			answer,
+		};
+	}
+
+	/**
+	 * Sends a failed question again. The question is appended only when the
+	 * stored thread does not already end with it (ticket #411).
+	 *
+	 * @param text    The question, file names already named in it.
+	 * @param uploads The turn's files.
+	 */
+	async retry(
+		text: string,
+		uploads: Upload[] = []
+	): Promise< {
+		messages: TurnMessage[];
+		answer: Turn;
+		contacts?: SentContact[];
+		inquiries?: SentInquiryCard[];
+	} > {
+		await this.refresh();
+		const next = retryMessages( this.messagesValue, text );
 		const answer = await this.send(
 			this.config.turnUrl,
 			this.config.nonce,

@@ -22,6 +22,21 @@ import {
 	buildQuestion,
 	typeModelPrompt,
 } from './shared/conversation';
+import {
+	failureReducer,
+	failureText,
+	pageFailureStore,
+	presentFailure,
+	readFailure,
+	reconcile,
+	retryMessages,
+	shownFailureKind,
+	writeFailure,
+	type FailureDraft,
+	type FailureEvent,
+	type FailureKind,
+	type FailureState,
+} from './shared/failure';
 import { startDictation, type DictationSession } from './shared/dictation';
 import {
 	assistantMessage,
@@ -194,6 +209,8 @@ export function App( { config }: { config: GenieConfig } ) {
 		node.style.overflowY = node.scrollHeight > 144 ? 'auto' : 'hidden';
 	}, [ input ] );
 	const files = useAttachments();
+	const filesRef = useRef( files );
+	filesRef.current = files;
 	// Why the last turn's files were refused by the proxy, if they were.
 	const [ refused, setRefused ] = useState( '' );
 	// The stored thread moved while Genie was answering (#373). The question
@@ -208,6 +225,18 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ dictating, setDictating ] = useState( false );
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
+	// The failed turn, also in sessionStorage, so a reload still shows it.
+	const failureState = useRef< FailureState >( {
+		phase: 'clear',
+		draft: null,
+		kind: null,
+	} );
+	const commitFailure = useCallback( ( event: FailureEvent ) => {
+		const next = failureReducer( failureState.current, event );
+		failureState.current = next;
+		writeFailure( pageFailureStore(), next );
+		return next;
+	}, [] );
 	// The conversation on screen, for the lane jobs: a delete that clears
 	// it must empty the panel, and the state value is a render behind.
 	const shownId = useRef( 0 );
@@ -279,6 +308,49 @@ export function App( { config }: { config: GenieConfig } ) {
 		);
 	}, [] );
 
+	// A reload, or the hero handing the thread over, shows a failed turn
+	// again: the error, and for a 502 the question back in the field.
+	const applyRecord = useCallback(
+		( messages: TurnMessage[], resetField = false ) => {
+			// A send that is already in flight owns the record. The mount's
+			// read can resolve after that send started; reconciling it here
+			// would show a failure for a turn that has not failed.
+			if ( 'pending' === failureState.current.phase ) {
+				return;
+			}
+			const record = readFailure( pageFailureStore() );
+			const restored = reconcile( record, messages );
+			failureState.current = restored;
+			writeFailure( pageFailureStore(), restored );
+			if (
+				'failed' === restored.phase &&
+				restored.draft &&
+				restored.kind
+			) {
+				if ( 'upstream' === restored.kind ) {
+					setInput( restored.draft.text );
+					if ( restored.draft.uploads.length > 0 ) {
+						filesRef.current.restore( restored.draft.uploads );
+					}
+				} else {
+					setInput( '' );
+					filesRef.current.clear();
+				}
+				setPhase( 'error' );
+				setOpen( true );
+				return;
+			}
+			// A mount with no record must not wipe a question the visitor
+			// already started typing. A refresh, or a record the server has
+			// since answered, clears the field.
+			if ( resetField || record ) {
+				setPhase( 'ask' );
+				setInput( '' );
+			}
+		},
+		[]
+	);
+
 	const showStored = useCallback( async () => {
 		setRevealingAt( null );
 		const stored = await readThread( config.threadUrl, config.restNonce );
@@ -288,10 +360,95 @@ export function App( { config }: { config: GenieConfig } ) {
 		turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
 		setContacts( stored.contacts ?? [] );
 		setInquiries( stored.inquiries ?? [] );
-		setPhase( 'ask' );
-		setInput( '' );
+		applyRecord( stored.messages, true );
 		setMail( 'idle' );
-	}, [ config.threadUrl, config.restNonce ] );
+	}, [ config.threadUrl, config.restNonce, applyRecord ] );
+
+	const paintFailure = useCallback(
+		(
+			showKind: FailureKind,
+			before: TurnMessage[],
+			draft: FailureDraft
+		) => {
+			commitFailure( { type: showKind } );
+			const view = presentFailure(
+				showKind,
+				before,
+				retryMessages( before, draft.question ),
+				draft
+			);
+			currentThread.current = view.messages as TurnMessage[];
+			setThread( currentThread.current );
+			setInput( view.field );
+			if ( view.chips.length > 0 ) {
+				filesRef.current.restore( view.chips );
+			} else {
+				filesRef.current.clear();
+			}
+			setPhase( 'error' );
+			setOpen( true );
+		},
+		[ commitFailure ]
+	);
+
+	const onTurnError = useCallback(
+		async (
+			error: unknown,
+			before: TurnMessage[],
+			draft: FailureDraft
+		) => {
+			const reason = attachmentRefusalReason( error );
+			if ( reason ) {
+				commitFailure( { type: 'abandon' } );
+				filesRef.current.clear();
+				currentThread.current = before;
+				setThread( before );
+				setInput( draft.text );
+				setRefused(
+					refusalText(
+						reason === 'throttled' ||
+							reason === 'count' ||
+							reason === 'size' ||
+							reason === 'type'
+							? reason
+							: 'unreadable'
+					)
+				);
+				setPhase( 'ask' );
+				return;
+			}
+			if ( isTurnConflict( error ) ) {
+				commitFailure( { type: 'abandon' } );
+				const latest = await readThread(
+					config.threadUrl,
+					config.restNonce
+				);
+				const messages =
+					latest.messages.length > 0 ? latest.messages : before;
+				currentThread.current = messages;
+				setThread( messages );
+				setTurn( latest.turn );
+				turnAt.current = latest.turn ? messages.length - 1 : -1;
+				setContacts( latest.contacts ?? [] );
+				setInquiries( latest.inquiries ?? [] );
+				setInput( draft.text );
+				setConflict( turnConflictText() );
+				setPhase( 'ask' );
+				void refreshHistory();
+				return;
+			}
+			const showKind =
+				shownFailureKind( error, before, draft.question ) ?? 'upstream';
+			paintFailure( showKind, before, draft );
+		},
+		[
+			commitFailure,
+			config.threadUrl,
+			config.restNonce,
+			paintFailure,
+			refreshHistory,
+		]
+	);
 
 	const ask = useCallback(
 		async ( text: string ) => {
@@ -300,6 +457,15 @@ export function App( { config }: { config: GenieConfig } ) {
 			if ( ! question || sending.current || files.busy ) {
 				return;
 			}
+			const draft: FailureDraft = {
+				text,
+				question,
+				uploads,
+				base: currentThread.current.length,
+			};
+			// Before the request leaves: a reload while it is in flight can
+			// still put the question back.
+			commitFailure( { type: 'send', draft } );
 			setOpen( true );
 			setDockHistory( false );
 			setPhase( 'waiting' );
@@ -334,6 +500,20 @@ export function App( { config }: { config: GenieConfig } ) {
 					setContacts( stored.contacts ?? [] );
 					setInquiries( stored.inquiries ?? [] );
 				}
+				if (
+					'pending' === failureState.current.phase &&
+					failureState.current.draft?.question === question
+				) {
+					const updated: FailureState = {
+						...failureState.current,
+						draft: {
+							...failureState.current.draft,
+							base: before.length,
+						},
+					};
+					failureState.current = updated;
+					writeFailure( pageFailureStore(), updated );
+				}
 				try {
 					const next: TurnMessage[] = [
 						...before,
@@ -349,7 +529,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						config.page,
 						uploads
 					);
-					files.clear();
+					filesRef.current.clear();
+					commitFailure( { type: 'answered' } );
 					const assistant = assistantMessage( answer );
 					currentThread.current = next.concat( assistant );
 					setThread( currentThread.current );
@@ -365,57 +546,86 @@ export function App( { config }: { config: GenieConfig } ) {
 					// A file the proxy refused (Attachments.php) is said as
 					// such. A 409 means the other turn was stored and this
 					// question was not: it goes back into the field, with
-					// its files. Anything else is Genie not answering.
-					const reason = attachmentRefusalReason( error );
-					if ( reason ) {
-						files.clear();
-						// Nothing was sent: the question leaves the thread and
-						// goes back into the field, to send again without
-						// the file or later.
-						currentThread.current = before;
-						setThread( before );
-						setInput( text );
-						setRefused(
-							refusalText(
-								reason === 'throttled' ||
-									reason === 'count' ||
-									reason === 'size' ||
-									reason === 'type'
-									? reason
-									: 'unreadable'
-							)
-						);
-						setPhase( 'ask' );
-					} else if ( isTurnConflict( error ) ) {
-						const latest = await readThread(
-							config.threadUrl,
-							config.restNonce
-						);
-						const messages =
-							latest.messages.length > 0
-								? latest.messages
-								: before;
-						currentThread.current = messages;
-						setThread( messages );
-						setTurn( latest.turn );
-						turnAt.current = latest.turn ? messages.length - 1 : -1;
-						setContacts( latest.contacts ?? [] );
-						setInquiries( latest.inquiries ?? [] );
-						setInput( text );
-						setConflict( turnConflictText() );
-						setPhase( 'ask' );
-						void refreshHistory();
-					} else {
-						files.clear();
-						setPhase( 'error' );
-					}
+					// its files. A cut stream keeps the question in the
+					// thread. A 502 puts it back in the field (#411).
+					await onTurnError( error, before, draft );
 				} finally {
 					sending.current = false;
 				}
 			} );
 		},
-		[ config, refreshHistory, files, listPrompt ]
+		[
+			config,
+			refreshHistory,
+			files,
+			listPrompt,
+			commitFailure,
+			onTurnError,
+		]
 	);
+
+	// One resend of the failed question. The machine leaves `failed` before
+	// this returns, so a second click does not send.
+	const retry = useCallback( () => {
+		const current = failureState.current;
+		if ( 'failed' !== current.phase || ! current.draft ) {
+			return;
+		}
+		const draft = current.draft;
+		commitFailure( { type: 'retry' } );
+		setOpen( true );
+		setDockHistory( false );
+		setPhase( 'waiting' );
+		setRevealingAt( null );
+		setInput( '' );
+		setRefused( '' );
+		setConflict( '' );
+		return enqueue( async () => {
+			sending.current = true;
+			let before = currentThread.current;
+			try {
+				const stored = await readThread(
+					config.threadUrl,
+					config.restNonce
+				);
+				if ( stored.messages.length > 0 ) {
+					before = stored.messages;
+					currentThread.current = stored.messages;
+					setTurn( stored.turn );
+					turnAt.current = stored.turn
+						? stored.messages.length - 1
+						: -1;
+					setContacts( stored.contacts ?? [] );
+					setInquiries( stored.inquiries ?? [] );
+				}
+				const next = retryMessages( before, draft.question );
+				currentThread.current = next;
+				setThread( next );
+				const answer = await sendTurn(
+					config.turnUrl,
+					config.restNonce,
+					config.locale,
+					next,
+					config.page,
+					draft.uploads
+				);
+				filesRef.current.clear();
+				commitFailure( { type: 'answered' } );
+				const assistant = assistantMessage( answer );
+				currentThread.current = next.concat( assistant );
+				setThread( currentThread.current );
+				turnAt.current = currentThread.current.length - 1;
+				setRevealingAt( turnAt.current );
+				setTurn( answer );
+				setPhase( 'ask' );
+				void refreshHistory();
+			} catch ( error ) {
+				await onTurnError( error, before, draft );
+			} finally {
+				sending.current = false;
+			}
+		} );
+	}, [ config, refreshHistory, commitFailure, onTurnError ] );
 
 	// "Type the model": the way out of a nameplate the customer does not
 	// confirm, or one that could not be read.
@@ -455,6 +665,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					setTurn( stored.turn );
 				}
 			}
+			applyRecord( stored.messages );
 		} )
 			.then( () => {
 				if ( ! cancelled ) {
@@ -474,7 +685,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				inquiries: [],
 			} );
 		};
-	}, [ config.threadUrl, config.restNonce, refreshHistory ] );
+	}, [ config.threadUrl, config.restNonce, refreshHistory, applyRecord ] );
 
 	const continueConversation = useCallback(
 		( id?: number ) => {
@@ -490,6 +701,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						config.restNonce,
 						id
 					);
+					// The failed turn belonged to the conversation just left.
+					commitFailure( { type: 'abandon' } );
 					setHistoryPhase( 'ready' );
 					setHistory( selected.conversations );
 					show( selected.currentId );
@@ -506,7 +719,13 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 			} );
 		},
-		[ config.conversationsUrl, config.restNonce, showStored, show ]
+		[
+			config.conversationsUrl,
+			config.restNonce,
+			showStored,
+			show,
+			commitFailure,
+		]
 	);
 
 	// Clearing a conversation (ticket #235): the server deletes it with its
@@ -531,6 +750,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				if ( id !== shownId.current ) {
 					return;
 				}
+				commitFailure( { type: 'abandon' } );
 				show( remaining.currentId );
 				if ( remaining.currentId > 0 ) {
 					await showStored();
@@ -548,7 +768,13 @@ export function App( { config }: { config: GenieConfig } ) {
 				() => removed
 			);
 		},
-		[ config.conversationsUrl, config.restNonce, showStored, show ]
+		[
+			config.conversationsUrl,
+			config.restNonce,
+			showStored,
+			show,
+			commitFailure,
+		]
 	);
 
 	// "Email this conversation": a signed-in customer's goes straight to the
@@ -1131,17 +1357,6 @@ export function App( { config }: { config: GenieConfig } ) {
 										</li>
 									) : null }
 								</ol>
-								{ 'error' === phase ? (
-									<p
-										role="alert"
-										className="linker-genie-app__error"
-									>
-										{ __(
-											'Genie did not answer. Please try again.',
-											'linker-tools'
-										) }
-									</p>
-								) : null }
 								{ /* The turn's text already stands in the thread
 								 * item above (assistantMessage carries the text
 								 * blocks); rendering the blocks verbatim printed
@@ -1289,6 +1504,23 @@ export function App( { config }: { config: GenieConfig } ) {
 							<p role="alert" className="linker-genie-app__error">
 								{ conflict }
 							</p>
+						) : null }
+						{ ! historyView && 'error' === phase ? (
+							<>
+								<p
+									role="alert"
+									className="linker-genie-app__error"
+								>
+									{ failureText() }
+								</p>
+								<button
+									type="button"
+									className="linker-genie-app__prompt"
+									onClick={ () => void retry() }
+								>
+									{ __( 'Try again', 'linker-tools' ) }
+								</button>
+							</>
 						) : null }
 						{ ! workspace &&
 						! historyView &&

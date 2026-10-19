@@ -15,7 +15,7 @@ import {
 	screen,
 	waitFor,
 } from '@testing-library/react';
-import { expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 /**
  * Internal dependencies
@@ -31,6 +31,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		assistantMessage: actual.assistantMessage,
 		emailOutcome: actual.emailOutcome,
 		isTurnConflict: actual.isTurnConflict,
+		isUnfinishedStream: actual.isUnfinishedStream,
 		turnConflictText: actual.turnConflictText,
 		readThread: vi.fn( async () => ( { messages: [], turn: null } ) ),
 		listConversations: vi.fn( async () => ( {
@@ -135,6 +136,16 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 	};
 }
 
+beforeEach( () => {
+	sessionStorage.clear();
+	resetTurnLane();
+} );
+
+afterEach( () => {
+	sessionStorage.clear();
+	resetTurnLane();
+} );
+
 test( 'the disclosure is spoken once and a prompt sends the first turn', async () => {
 	vi.mocked( sendTurn ).mockResolvedValue( {
 		meta: {
@@ -223,6 +234,165 @@ test( 'a failed proxy call shows the retry sentence, not a fake answer', async (
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Ask Genie' } ) );
 	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( 'Ask Genie' );
+	expect(
+		screen.queryByText( 'Ask Genie', {
+			selector: '.linker-genie-app__message',
+		} )
+	).toBeNull();
+} );
+
+test( 'a 502 keeps the question across a reload and retries once', async () => {
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new TurnError( 502, 'linker_genie_upstream' )
+	);
+	const first = render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const field = screen.getByLabelText( 'Ask Genie' );
+	fireEvent.change( field, { target: { value: 'EV chargers' } } );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( field ).toHaveValue( 'EV chargers' );
+	expect(
+		screen.queryByText( 'EV chargers', {
+			selector: '.linker-genie-app__message',
+		} )
+	).toBeNull();
+
+	first.unmount();
+	resetTurnLane();
+	vi.mocked( sendTurn ).mockReset();
+	let release!: ( value: Awaited< ReturnType< typeof sendTurn > > ) => void;
+	vi.mocked( sendTurn ).mockImplementation(
+		() =>
+			new Promise( ( resolve ) => {
+				release = resolve;
+			} )
+	);
+	render( <App config={ config() } /> );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( 'EV chargers' );
+	const retry = screen.getByRole( 'button', { name: 'Try again' } );
+	fireEvent.click( retry );
+	fireEvent.click( retry );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 1 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+		{ role: 'user', content: 'EV chargers' },
+	] );
+	await act( async () => {
+		release( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Recovered.', refs: [] } ],
+		} );
+	} );
+	expect( await screen.findByText( 'Recovered.' ) ).toBeInTheDocument();
+	expect(
+		screen.queryByText( 'Genie did not answer. Please try again.' )
+	).toBeNull();
+} );
+
+test( 'a cut stream keeps the question, hides the partial answer, and retries the stored turn', async () => {
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new Error( 'stream without done' )
+	);
+	const first = render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'backup for 10 kW' },
+	} );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
+	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( '' );
+
+	first.unmount();
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [ { role: 'user', content: 'backup for 10 kW' } ],
+		turn: null,
+	} );
+	vi.mocked( sendTurn ).mockReset();
+	vi.mocked( sendTurn ).mockResolvedValue( {
+		meta: null,
+		blocks: [ { type: 'text', text: 'A hybrid covers that.', refs: [] } ],
+	} );
+	render( <App config={ config() } /> );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
+	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( '' );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 1 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+		{ role: 'user', content: 'backup for 10 kW' },
+	] );
+	expect(
+		await screen.findByText( 'A hybrid covers that.' )
+	).toBeInTheDocument();
+} );
+
+test( 'a 502 keeps an attached file across a reload', async () => {
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new TurnError( 502, 'linker_genie_upstream' )
+	);
+	const first = render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Check this datasheet' },
+	} );
+	const fileInput = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	fireEvent.change( fileInput, {
+		target: {
+			files: [
+				new File( [ '%PDF-1.7' ], 'gw10k-et-datenblatt.pdf', {
+					type: 'application/pdf',
+				} ),
+			],
+		},
+	} );
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	await waitFor( () => expect( send ).toBeEnabled() );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'gw10k-et-datenblatt.pdf' ) ).toBeInTheDocument();
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+		'Check this datasheet'
+	);
+
+	first.unmount();
+	resetTurnLane();
+	render( <App config={ config() } /> );
+	expect(
+		await screen.findByText( 'gw10k-et-datenblatt.pdf' )
+	).toBeInTheDocument();
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+		'Check this datasheet'
+	);
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);

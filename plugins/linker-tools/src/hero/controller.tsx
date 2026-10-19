@@ -26,6 +26,7 @@ import {
 	startDictation,
 	type DictationSession,
 } from '../genie/shared/dictation';
+import { readFailure, pageFailureStore } from '../genie/shared/failure';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession } from './session';
 import {
@@ -427,6 +428,11 @@ export function startHero(
 	// The suite's readiness signal: the controls are bound (no visual change).
 	hero.setAttribute( 'data-linker-genie-hero', 'ready' );
 	onScroll();
+	// A failed turn from before this load unfolds the conversation, so the
+	// error is on the page without another click (ticket #411).
+	if ( readFailure( pageFailureStore() ) ) {
+		update( { type: 'ask' } );
+	}
 
 	return () => {
 		prompt.removeEventListener( 'keydown', onKeyDown );

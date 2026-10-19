@@ -16,6 +16,7 @@ import { afterEach, expect, test, vi } from 'vitest';
 import {
 	assistantMessage,
 	emailConversation,
+	isUnfinishedStream,
 	parseStream,
 	readThread,
 	sendVote,
@@ -55,12 +56,19 @@ test( 'meta and every block come out in order', () => {
 
 test( 'a stream without done is an error, not a partial answer', () => {
 	expect( () => parseStream( '' ) ).toThrow( 'stream without done' );
-	expect( () =>
+	let unfinished: unknown;
+	try {
 		parseStream(
 			'event: meta\n' +
-				'data: {"grounded":true,"fallback":false,"attempts":1,"failures":[],"language":"en"}\n\n'
-		)
-	).toThrow( 'stream without done' );
+				'data: {"grounded":true,"fallback":false,"attempts":1,"failures":[],"language":"en"}\n\n' +
+				'event: block\n' +
+				'data: {"type":"text","text":"10 kW from a cut stream","refs":[]}\n\n'
+		);
+	} catch ( error ) {
+		unfinished = error;
+	}
+	expect( isUnfinishedStream( unfinished ) ).toBe( true );
+	expect( isUnfinishedStream( new Error( 'turn 502' ) ) ).toBe( false );
 } );
 
 test( 'sendVote posts to the turn and reports the answer', async () => {
