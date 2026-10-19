@@ -1,0 +1,8 @@
+
+Running 3 tests using 1 worker
+
+  ✓  1 [chromium] › specs/registration-two-step.spec.ts:46:2 › a bare host registers through the real button and starts pending (11.1s)
+  ✓  2 [chromium] › specs/registration-two-step.spec.ts:46:2 › a full URL registers through the real button and starts pending (11.4s)
+  ✓  3 [chromium] › specs/registration-two-step.spec.ts:110:1 › only the register page adds the country-select script to the account chain (599ms)
+
+  3 passed (23.7s)

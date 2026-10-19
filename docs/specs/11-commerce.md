@@ -4,7 +4,7 @@
 
 ## 用户旅程（EN / DE 文案按 AGENTS.md 规则逐处写，此处只给语义）
 1. **访客**：看产品分类与产品，看不到价格（价格位显示 "Log in for prices" / "Preise nach Anmeldung"）；可用 Genie 与配置器；可把产品加入 Lösungsentwurf（按会话保存）。
-2. **注册**（Woo 原生 My Account 注册表单 + 字段）：公司名、增值税号（VIES 实时校验，失败可提交但标记）、地址、角色（安装商 / EPC / 经销商）、姓名、邮箱、密码。**注册即 pending（票据 73）**：账号在团队批准前读站如访客；客户语言随注册写入 WP 用户 `locale`（询盘同源的取语规则）。邮件：注册确认（RegistrationReceivedEmail，Woo 原生欢迎信已关）+ 公司"新客户"提醒（含审批状态行与后台直达链接）。
+2. **注册**（Woo 原生 My Account 注册表单 + 字段；#225 两步，业主 2026-10-17 裁定）：第 1 步 `Your company`：公司名、业务类型（安装商 / EPC / 经销商，三单选，`linker_customer_role` 三值不变）、国家（全部国家，德国置顶，Europe 大洲其后，Woo selectWoo 搜索）、公司网站或 VAT ID 至少一项（VAT 继续 VIES 实时校验，失败可提交但标记）；第 2 步 `You and your sign-in`：名、姓、邮箱、密码。街道、邮编、城市与电话不在注册，由 Proforma 请求页的原生账单字段收。防机器人复用 `Inquiry\PublicGuard`（蜜罐 + 签名起始时间 + 每连接原子限额），在 `woocommerce_register_form` 渲染、`woocommerce_process_registration_errors` 建号与发信之前拦截；被拒计数可观测（`wp linker-commerce registration-blocks`）。**注册即 pending（票据 73）**：账号在团队批准前读站如访客；客户语言随注册写入 WP 用户 `locale`（询盘同源的取语规则）。邮件：注册确认（RegistrationReceivedEmail，Woo 原生欢迎信已关）+ 公司"新客户"提醒（与后台账户页读同一套注册字段，含网站，另含审批状态行与后台直达链接）。
 3. **审批**：后台首页原生仪表盘小工具展示待审卡片，顶栏红旗在任意后台页打开同一审核抽屉；Accounts 菜单通向原生列表历史。全部状态随时可再决定，Restrict / Reject 必须带客户可读原因，经既有邮件链告知；相同决定重复提交不重复发信，限制/拒绝的原因变更也通知。资料页与用户列表保留状态及深链，原 GET / 资料表单写入通道在对等验证后移除。权限为 `edit_users` 加每用户 `edit_user`，只审核纯 customer。详情与原生优先证明见 `accounts-admin.md`。
 4. **四态 × 界面**：
    - **approved**：看价；Lösungsentwurf 合并会话内容；产品页按钮 "Add to solution draft / Zum Lösungsentwurf hinzufügen"；可提交询盘。

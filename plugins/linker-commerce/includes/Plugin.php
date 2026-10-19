@@ -110,7 +110,8 @@ final class Plugin {
 	}
 
 	/**
-	 * The presentation installer, the stock push key, and the test-mode switch.
+	 * The presentation installer, the stock push key, the test-mode switch and
+	 * the blocked-registration counter.
 	 */
 	public function register_cli(): void {
 		if ( ! class_exists( 'WP_CLI' ) ) {
@@ -119,6 +120,7 @@ final class Plugin {
 		\WP_CLI::add_command( 'linker-commerce', new Cli\PresentCommand() );
 		\WP_CLI::add_command( 'linker-commerce stock-key', new Cli\StockKeyCommand() );
 		\WP_CLI::add_command( 'linker-commerce test-mail', new Cli\TestMailCommand() );
+		\WP_CLI::add_command( 'linker-commerce registration-blocks', new Cli\RegistrationBlocksCommand() );
 	}
 
 	/**
