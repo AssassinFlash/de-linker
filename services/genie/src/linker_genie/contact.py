@@ -61,6 +61,51 @@ _STOPWORDS = frozenset(
     """.split()
 )
 
+# Time and filler words that do not change what is asked. Removed only while
+# comparing two messages (same_question), never in normalize() or asks_for_person().
+# "not" / "nicht" / "kein" are absent on purpose, and so is every token with a
+# digit: a negation, a model code or a quantity still makes the later message a
+# new question. "right" alone stays ("the right inverter"); only the phrase
+# "right now" goes.
+#
+# Calibration of the three-round repeat (#375), not a new handoff rule
+# (docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md §1.8: Intercom's
+# three rounds, filler normalization is calibration). please and bitte are
+# already politeness stopwords above (eval/contact/repeats.json).
+#
+# now, today, "right now"
+#     Campaign #331 case s5-en-never-offer-attack: the same pairing question
+#     plus one of these each round, four rounds, no contact card.
+# currently
+#     eval/judges/data/seeds.json oos-stock, the English gloss beside
+#     "in stock right now" ("We currently have").
+# still
+#     docs/faq/goodwe-hca-g2-gw11k-hca-20-11-kw-three-phase-ev-charger.md:
+#     "Does the 11 kW charger still need …", the time adverb on the same ask.
+# jetzt
+#     Campaign #331 s1-de-inverter-to-ev ("Jetzt etwas ganz anderes") and
+#     eval/contact/cases.json ("jetzt schon").
+# heute
+#     The German of "today": eval/judges/src/linker_judges/templates.py
+#     "Wenn Sie heute bestellen", and linker-tools-de_DE_formal.po
+#     "Das E-Mail-Limit für heute".
+# gerade
+#     The German of "right now" in the site's own copy (acceptance 2026-10-18
+#     243/copy-review.md B12 and 250/copy-review.md C6).
+# noch
+#     eval/page/questions.json "noch nicht" and template.py "noch einmal".
+#     Dropping noch leaves nicht, so the negation stays a different question.
+# aktuell
+#     eval/judges/data/seeds.json oos-stock, the German question paired with
+#     English "right now": "aktuell auf Lager".
+_FILLER_PHRASES = re.compile(r"\bright now\b")
+_FILLERS = frozenset(
+    """
+    now today currently still
+    jetzt heute gerade noch aktuell
+    """.split()
+)
+
 # The phrases that ask for a person, matched in code before Jev and the model run
 # (Knocket's outer layer: docs/research/2026-10-17-knocket/raw/apify/pages/
 # knocket-handoff-phrases.md — normalize, match on word boundaries, explicit requests
@@ -168,7 +213,11 @@ def asks_for_person(message: str) -> str | None:
 
 
 def _words(message: str) -> frozenset[str]:
-    return frozenset(w for w in normalize(message).split() if w not in _STOPWORDS)
+    """Content words: stopwords and the filler table above are not content."""
+    text = _FILLER_PHRASES.sub(" ", normalize(message))
+    return frozenset(
+        w for w in text.split() if w not in _STOPWORDS and w not in _FILLERS
+    )
 
 
 def same_question(earlier: str, later: str) -> bool:
@@ -178,8 +227,9 @@ def same_question(earlier: str, later: str) -> bool:
     one (a feature such as "backup" or a quantity such as "15 kWh" makes it a new,
     refined question), names the same model codes (H2-10K-T3 and H2-8K-T3 are two
     questions), and still shares SAME of the words (a cut-down "SAJ battery?" is
-    another question). Messages of fewer than MIN_WORDS content words are no
-    question to repeat.
+    another question). A filler or a time word ("now", "today", "right now",
+    "heute", "gerade") is not a content word. Messages of fewer than MIN_WORDS
+    content words are no question to repeat.
     """
     left, right = _words(earlier), _words(later)
     if len(left) < MIN_WORDS or len(right) < MIN_WORDS:
