@@ -25,6 +25,7 @@ from typing import Any
 from linker_genie import attachments, knowledge, page, timing
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
 from linker_genie.facts import TurnFacts, merge
+from linker_genie.language import LANGUAGE_RETRY_PREFIX, turn_language, with_tool_lang
 from linker_genie.route import stated_size_hint
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
 from linker_genie.tools import MAX_TOOL_CALLS as TOOL_LIMIT
@@ -246,12 +247,13 @@ def make_generate(
             raise knowledge.KnowledgeUnavailable(prepared.knowledge_error)
         budget = ToolBudget(used=prepared.calls_made if prepared else 0)
         customer = _customer_message(request)
+        # Instructions, tool lang and fact collection follow the answer
+        # language. The user prompt still names the page as locale=.
+        expected = turn_language(request)
         tools = []
         for name in TOOL_NAMES:
             if name == knowledge.NAME:
-                runner = _knowledge_runner(
-                    document_search, budget, request.locale, clock
-                )
+                runner = _knowledge_runner(document_search, budget, expected, clock)
             elif name == page.NAME:
                 runner = _page_runner(pages, budget, request, clock)
             else:
@@ -260,7 +262,7 @@ def make_generate(
                     budget,
                     name,
                     request.user.context,
-                    request.locale,
+                    expected,
                     customer,
                     clock,
                 )
@@ -281,7 +283,7 @@ def make_generate(
         agent: Agent[None, TurnOutput] = Agent(
             chosen_model,
             output_type=TurnOutput,
-            instructions=instructions(request.locale),
+            instructions=instructions(expected),
             tools=tools,
             model_settings=settings,
             retries={"output": 1, "tools": 1},
@@ -340,7 +342,11 @@ def _ability_runner(
         # size-hint ignores `arguments` (#365): the model's object is not a
         # source. Phase, backup, yearly load and postcode reach the tool only
         # when this message states them. The code route sends the same dict.
-        sent = stated_size_hint(message) if name == "linker/size-hint" else arguments
+        sent = (
+            stated_size_hint(message)
+            if name == "linker/size-hint"
+            else with_tool_lang(name, arguments, locale)
+        )
         payload, gathered = client.record(name, sent, user_context, locale)
         budget.parts.append(gathered)
         return payload
@@ -366,7 +372,9 @@ def _knowledge_runner(
     clock: timing.Timing | None = None,
 ) -> Callable[[dict[str, Any] | None], Any]:
     def call(arguments: dict[str, Any] | None) -> Any:
-        payload, gathered = knowledge.record(search, arguments, locale)
+        payload, gathered = knowledge.record(
+            search, with_tool_lang(knowledge.NAME, arguments, locale), locale
+        )
         budget.parts.append(gathered)
         return knowledge.model_view(payload)
 
@@ -501,7 +509,13 @@ def _user_prompt(
             )
         )
     if retry_reason:
-        lines.append("The previous answer failed grounding: " + retry_reason)
+        # A language miss is its own re-ask (#374). Grounding failures keep the
+        # older line. A turn that failed both starts with the language prefix,
+        # and the grounding reasons follow in the same sentence.
+        if retry_reason.startswith(LANGUAGE_RETRY_PREFIX):
+            lines.append("The previous answer used the wrong language. " + retry_reason)
+        else:
+            lines.append("The previous answer failed grounding: " + retry_reason)
         lines.append("Produce a new structured turn that passes the checks.")
     for message in request.messages:
         lines.append(f"{message.role}: {message.content}")
@@ -515,8 +529,8 @@ def _user_prompt(
         "the fact keys the tools returned (device_class, application, "
         "phase, ac_power_kw, pv_input_kw, usable_kwh, nominal_kwh, "
         "kwh_range, compat.verdict, compat.verdict.BATTERYID, "
-        "compat.condition.N, handoff.sentence_en, "
-        "handoff.sentence_de); never a subfield like kwh_range.min. A range "
+        "compat.condition.N, handoff.sentence, inquiry.login); never a "
+        "subfield like kwh_range.min. A range "
         "placeholder renders the whole range. A figure from a document chunk "
         "goes in {fact:CHUNK_ID.nK}, the [nK=…] tag shown in that chunk's text; "
         "put the chunk IDs you rely on in refs, the service links their "
@@ -534,13 +548,13 @@ def _user_prompt(
         "Warenkorb): say product, product category, solution draft. "
         "Every ID of a cards block must appear in the text block's refs. "
         "Out-of-scope turns: call handoff-team, then one handoff block "
-        "summarized as {fact:handoff.sentence_en} or "
-        "{fact:handoff.sentence_de}. A guest inquiry (inquiry-status "
-        "returned login_required, logged_in=false) is not out of scope: "
-        "do not call handoff-team; answer with exactly one text block, "
-        "'Please log in to your account to view this inquiry.' in English or "
-        "'Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.' "
-        "in German, and nothing else. Several models in one message are each "
+        "summarized as {fact:handoff.sentence}. The service fills that "
+        "placeholder with the mailbox sentence in the answer language. "
+        "A guest inquiry (inquiry-status returned login_required, "
+        "logged_in=false) is not out of scope: do not call handoff-team; "
+        "answer with exactly one text block whose text is exactly "
+        "{fact:inquiry.login}, and nothing else. Several models in one "
+        "message are each "
         "searched on their own. Report every searched model from its own result "
         "and show each product returned. Say a model has no entry only when that "
         "model's search returned nothing. A model the routing note marks as not "

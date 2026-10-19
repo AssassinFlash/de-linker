@@ -37,6 +37,7 @@ from linker_genie.agent import (
 from linker_genie.cycle import TurnResult, run
 from linker_genie.facts import TurnFacts
 from linker_genie.gate import Gate
+from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup
 from linker_genie.schema import (
@@ -301,12 +302,13 @@ def _answer(
     (contact.answer; #243); a short-code clarification (route.answer); or the parts
     list's (parts.answer; #251). With a service block, no model runs and none can
     claim it sent anything."""
+    # A person request and a parts list are written by the service. Their
+    # sentences follow the question, the same rule as a model answer.
+    language = turn_language(body)
     if prepared.route.name == "person":
         return (
             TurnResult(
-                output=TurnOutput(
-                    language=body.locale, blocks=[contact.answer(body.locale)]
-                ),
+                output=TurnOutput(language=language, blocks=[contact.answer(language)]),
                 facts=TurnFacts(),
                 grounded=True,
                 failures=(),
@@ -321,7 +323,7 @@ def _answer(
         return (
             TurnResult(
                 output=TurnOutput(
-                    language=body.locale,
+                    language=language,
                     blocks=[TextBlock(text=prepared.route.answer)],
                 ),
                 facts=TurnFacts(),
@@ -333,7 +335,7 @@ def _answer(
             None,
         )
     if prepared.parts_list is not None:
-        output, block = parts.answer(prepared.parts_list, body.locale)
+        output, block = parts.answer(prepared.parts_list, language)
         return (
             TurnResult(
                 output=output,

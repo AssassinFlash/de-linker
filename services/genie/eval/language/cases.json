@@ -1,0 +1,111 @@
+{
+  "about": "Answer language follows the question (#374), registered for the #339 regression corpus. The whole visible answer — prose, price line, compatibility sentence, handoff and login — uses the question's language. A bare model code, an emoji or a number follows the page. A mixed question follows the page. A mixed answer fails. Production question-only smoke (harness/smoke-production.mjs) runs after deploy, not in this suite.",
+  "issue": 374,
+  "corpus": 339,
+  "cases": [
+    {
+      "id": "en-question-de-page",
+      "message": "Which batteries work with the SAJ H2-10K-T3?",
+      "locale": "de",
+      "expected": "en"
+    },
+    {
+      "id": "de-question-en-page",
+      "message": "Welche Batterien passen zum SAJ H2-10K-T3?",
+      "locale": "en",
+      "expected": "de"
+    },
+    {
+      "id": "mixed-question-follows-page",
+      "message": "Welche battery für den H2-10K-T3?",
+      "locale": "de",
+      "expected": "de"
+    },
+    {
+      "id": "mixed-question-on-english-page",
+      "message": "Welche battery für den H2-10K-T3?",
+      "locale": "en",
+      "expected": "en"
+    },
+    {
+      "id": "neutral-code",
+      "message": "H2-10K-T3",
+      "locale": "de",
+      "expected": "de"
+    },
+    {
+      "id": "neutral-emoji",
+      "message": "😀",
+      "locale": "en",
+      "expected": "en"
+    },
+    {
+      "id": "neutral-number",
+      "message": "42",
+      "locale": "en",
+      "expected": "en"
+    },
+    {
+      "id": "content-price",
+      "message": "Price?",
+      "locale": "de",
+      "expected": "en"
+    },
+    {
+      "id": "content-preis",
+      "message": "Preis?",
+      "locale": "en",
+      "expected": "de"
+    },
+    {
+      "id": "content-datasheet",
+      "message": "Datasheet?",
+      "locale": "de",
+      "expected": "en"
+    },
+    {
+      "id": "content-empfehlung",
+      "message": "Empfehlung?",
+      "locale": "en",
+      "expected": "de"
+    },
+    {
+      "id": "content-kosten",
+      "message": "Kosten?",
+      "locale": "en",
+      "expected": "de"
+    },
+    {
+      "id": "content-lieferzeit",
+      "message": "Lieferzeit?",
+      "locale": "en",
+      "expected": "de"
+    },
+    {
+      "id": "content-availability",
+      "message": "Availability?",
+      "locale": "de",
+      "expected": "en"
+    },
+    {
+      "id": "content-verfuegbarkeit",
+      "message": "Verfügbarkeit?",
+      "locale": "en",
+      "expected": "de"
+    },
+    {
+      "id": "mixed-answer-rejected",
+      "answer": "Diese Batterien work with the H2-10K-T3.",
+      "language": "en",
+      "expected": "en",
+      "fails": true
+    },
+    {
+      "id": "model-code-is-not-mixed",
+      "answer": "These batteries work with the H2-10K-T3.",
+      "language": "en",
+      "expected": "en",
+      "fails": false
+    }
+  ]
+}
