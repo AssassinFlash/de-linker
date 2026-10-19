@@ -29,7 +29,16 @@ from linker_genie.facts import TurnFacts, merge
 from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.lexicon import Match, Vocabulary
 from linker_genie.nameplate import Identified, card, identify, with_known_brand
-from linker_genie.route import Call, Route, Subject, nameplate, person, plan, with_page
+from linker_genie.route import (
+    Call,
+    Route,
+    Subject,
+    nameplate,
+    person,
+    plan,
+    stated_size_hint,
+    with_page,
+)
 from linker_genie.schema import (
     MAX_READINGS,
     AttachmentReading,
@@ -411,19 +420,29 @@ def _run_calls(
     """
     question = _last_customer_message(request)
 
-    def one(call: Call) -> tuple[dict[str, Any], TurnFacts]:
+    def one(call: Call) -> tuple[dict[str, Any], Any, TurnFacts]:
         with timing.phase(clock, timing.call_key(call.ability)):
             if call.ability == page.NAME:
                 # The page is read in this process from the site (page.py, #234).
-                return page.record(
+                payload, gathered = page.record(
                     pages, request.page_context, question, request.user.logged_in
                 )
+                return call.arguments, payload, gathered
             if call.ability == knowledge.NAME:
                 # The document search runs in this process (knowledge.py, #257).
-                return knowledge.record(search, call.arguments, request.locale)
-            return client.record(
-                call.ability, call.arguments, request.user.context, request.locale
+                payload, gathered = knowledge.record(
+                    search, call.arguments, request.locale
+                )
+                return call.arguments, payload, gathered
+            arguments = call.arguments
+            if call.ability == "linker/size-hint":
+                # Same gate as the model's own call (agent._ability_runner, #365):
+                # the URL is built from the message, not from a richer object.
+                arguments = stated_size_hint(question)
+            payload, gathered = client.record(
+                call.ability, arguments, request.user.context, request.locale
             )
+            return arguments, payload, gathered
 
     calls = prepared.route.calls
     if not calls:
@@ -436,7 +455,7 @@ def _run_calls(
     failures: list[str] = []
     for call, future in zip(calls, futures, strict=True):
         try:
-            payload, gathered = future.result()
+            arguments, payload, gathered = future.result()
         except (EmbeddingError, knowledge.KnowledgeUnavailable) as error:
             failures.append(f"{call.ability}: {error}")
             prepared.knowledge_error = f"{call.ability}: {error}"
@@ -460,7 +479,7 @@ def _run_calls(
             for entry in gathered.tool_calls:
                 entry["from_reading"] = call.from_reading
         prepared.results.append(
-            {"name": call.ability, "arguments": call.arguments, "result": payload}
+            {"name": call.ability, "arguments": arguments, "result": payload}
         )
     prepared.facts = merge(parts)
     if failures:
