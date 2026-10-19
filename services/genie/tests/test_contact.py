@@ -206,6 +206,194 @@ def test_two_rounds_are_not_yet_a_repeat() -> None:
     )
 
 
+# #375. The #331 attack adds one time word per round to one pairing question
+# (s5-en-never-offer-attack: now, today, right now) and the card never appears.
+# The German rounds use the same slot (jetzt, heute, gerade). please and bitte
+# are already stopwords; they stay in the table so that path cannot regress.
+@pytest.mark.parametrize(
+    ("earlier", "later"),
+    [
+        (
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries work with the SAJ H2-10K-T3 now?",
+        ),
+        (
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries work with the SAJ H2-10K-T3 today?",
+        ),
+        (
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries work with the SAJ H2-10K-T3 right now?",
+        ),
+        (
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries work with the SAJ H2-10K-T3 currently?",
+        ),
+        (
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries work with the SAJ H2-10K-T3 still?",
+        ),
+        (
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries work with the SAJ H2-10K-T3 please?",
+        ),
+        (
+            "Welche Batterien passen zum SAJ H2-10K-T3?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 jetzt?",
+        ),
+        (
+            "Welche Batterien passen zum SAJ H2-10K-T3?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 heute?",
+        ),
+        (
+            "Welche Batterien passen zum SAJ H2-10K-T3?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 gerade?",
+        ),
+        (
+            "Welche Batterien passen zum SAJ H2-10K-T3?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 bitte?",
+        ),
+        (
+            "Welche Batterien passen zum SAJ H2-10K-T3?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 noch?",
+        ),
+        (
+            "Wie viele GW10K-ETA haben Sie auf Lager?",
+            "Wie viele GW10K-ETA haben Sie aktuell auf Lager?",
+        ),
+    ],
+)
+def test_a_filler_does_not_make_the_question_new(earlier: str, later: str) -> None:
+    assert same_question(earlier, later)
+
+
+@pytest.mark.parametrize(
+    ("earlier", "later"),
+    [
+        (
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries do not work with the SAJ H2-10K-T3?",
+        ),
+        (
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries do not work with the SAJ H2-10K-T3 now?",
+        ),
+        (
+            "Welcher Speicher passt zum SAJ H2-10K-T3?",
+            "Welcher Speicher passt nicht zum SAJ H2-10K-T3?",
+        ),
+        (
+            "Welcher Speicher passt zum SAJ H2-10K-T3?",
+            "Welcher Speicher passt nicht zum SAJ H2-10K-T3 heute?",
+        ),
+        (
+            "Welche Batterien passen zum SAJ H2-10K-T3?",
+            "Welche Batterien passen noch nicht zum SAJ H2-10K-T3?",
+        ),
+        (
+            "Which battery fits the SAJ H2-10K-T3?",
+            "Which battery fits the SAJ H2-10K-T3 with backup now?",
+        ),
+        (
+            "Which battery fits the SAJ H2-10K-T3?",
+            "Which battery fits the SAJ H2-8K-T3 today?",
+        ),
+        (
+            "Which battery fits the SAJ H2-10K-T3?",
+            "Which battery fits the SAJ H2-10K-T3 for 15 kWh right now?",
+        ),
+        (
+            "Welcher Speicher passt zum SAJ H2-10K-T3?",
+            "Welcher Speicher passt zum SAJ H2-10K-T3 für 15 kWh jetzt?",
+        ),
+        # "right" alone is not the phrase "right now".
+        (
+            "Is the GoodWe ET three-phase?",
+            "Is the right GoodWe ET three-phase?",
+        ),
+        # A topic switch that opens with the filler (campaign #331 s1).
+        (
+            "The SAJ H2-10K-T3 looks right. Which batteries pair with it?",
+            "Now something completely different: which EV chargers do you carry?",
+        ),
+        (
+            "Der SAJ H2-10K-T3 sieht passend aus. Welche Batterien passen dazu?",
+            "Jetzt etwas ganz anderes: welche Wallboxen führen Sie?",
+        ),
+    ],
+)
+def test_negation_codes_and_new_words_stay_a_different_question(
+    earlier: str, later: str
+) -> None:
+    assert not same_question(earlier, later)
+
+
+@pytest.mark.parametrize(
+    "rounds",
+    [
+        (
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries work with the SAJ H2-10K-T3 now?",
+            "Which batteries work with the SAJ H2-10K-T3 today?",
+            "Which batteries work with the SAJ H2-10K-T3 right now?",
+        ),
+        (
+            "Welche Batterien passen zum SAJ H2-10K-T3?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 jetzt?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 heute?",
+            "Welche Batterien passen zum SAJ H2-10K-T3 gerade?",
+        ),
+    ],
+    ids=["en", "de"],
+)
+def test_the_third_filler_round_offers_once_and_not_again(
+    rounds: tuple[str, ...],
+) -> None:
+    # Two rounds are not yet the offer, filler or not. The verbatim triple is
+    # test_the_third_round_of_one_question_offers_contact_once.
+    assert decide(Route("model"), _reading(), _thread(*rounds[:2]), (False,)) is None
+    third = decide(Route("model"), _reading(), _thread(*rounds[:3]), (False, False))
+    assert third is not None and third.reason == "repeat"
+    # The fourth follows the offer: never two in a row.
+    fourth = decide(Route("model"), _reading(), _thread(*rounds), (True, False, False))
+    assert fourth is None
+    # Offered once for this run already, even when the previous turn had no card.
+    fifth = decide(
+        Route("model"),
+        _reading(),
+        _thread(*rounds, rounds[-1]),
+        (False, True, False, False),
+    )
+    assert fifth is None
+
+
+def test_a_negated_third_round_is_not_a_repeat() -> None:
+    # "not" / "nicht" stay content words, including when a filler rides along.
+    # The person-phrase negation is test_ordinary_questions_do_not_match.
+    en = decide(
+        Route("model"),
+        _reading(),
+        _thread(
+            "Which batteries work with the SAJ H2-10K-T3?",
+            "Which batteries work with the SAJ H2-10K-T3 now?",
+            "Which batteries do not work with the SAJ H2-10K-T3 today?",
+        ),
+        (False, False),
+    )
+    de = decide(
+        Route("model"),
+        _reading(),
+        _thread(
+            "Welcher Speicher passt zum SAJ H2-10K-T3?",
+            "Welcher Speicher passt zum SAJ H2-10K-T3 jetzt?",
+            "Welcher Speicher passt nicht zum SAJ H2-10K-T3 heute?",
+        ),
+        (False, False),
+    )
+    assert en is None
+    assert de is None
+
+
 def test_without_jev_the_repeat_rule_still_offers() -> None:
     question = "Welcher Speicher passt zum SAJ H2-10K-T3?"
     offer = decide(Route("model"), None, _thread(question, question, question), ())
