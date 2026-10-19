@@ -87,6 +87,7 @@ final class Plugin {
 		$this->contact->register();
 		( new ProductSchema() )->register();
 		( new ArchiveSchema() )->register();
+		( new Consent\BasicMode() )->register();
 		( new Monitor( $this->file, new Settings\Options() ) )->register();
 	}
 

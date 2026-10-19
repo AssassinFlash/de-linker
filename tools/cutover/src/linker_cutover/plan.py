@@ -61,7 +61,7 @@ THEMES_DIR = "wp-content/themes"
 # (docs/specs/9-i18n.md). WP-CLI's own installer is the native mechanism, and it
 # verifies the package against wordpress.org; a copy rsynced from a checkout
 # would be an unverifiable second source of the same plugin.
-INSTALLED_PLUGINS = ("polylang",)
+INSTALLED_PLUGINS = ("polylang", "cookie-law-info", "wp-consent-api")
 
 # The German (Formal) language packs, installed by WP-CLI from the translation
 # API (like INSTALLED_PLUGINS, the native installer is the verified channel):
@@ -76,7 +76,7 @@ INSTALLED_PLUGINS = ("polylang",)
 # step the window runs. Install only, never activate: Polylang switches the
 # front-end locale per page, the site's own default stays English.
 LANGUAGE_PACK_LOCALE = "de_DE_formal"
-LANGUAGE_PACK_PLUGINS = ("woocommerce",)
+LANGUAGE_PACK_PLUGINS = ("woocommerce", "cookie-law-info")
 
 # Deactivated and deleted: the old tree's plugins, plus the two the new tree
 # does not use. Order matters — deactivate everything first, then delete, so a

@@ -1,0 +1,34 @@
+[
+  {
+    "language": "en",
+    "viewport": 1440,
+    "outside_legal_bar_pixels": 0,
+    "before_height": 8248,
+    "after_height": 8248,
+    "legal_bar_y": 8154
+  },
+  {
+    "language": "en",
+    "viewport": 390,
+    "outside_legal_bar_pixels": 0,
+    "before_height": 8809,
+    "after_height": 8809,
+    "legal_bar_y": 8704
+  },
+  {
+    "language": "de",
+    "viewport": 1440,
+    "outside_legal_bar_pixels": 0,
+    "before_height": 8560,
+    "after_height": 8560,
+    "legal_bar_y": 8467
+  },
+  {
+    "language": "de",
+    "viewport": 390,
+    "outside_legal_bar_pixels": 0,
+    "before_height": 9265,
+    "after_height": 9265,
+    "legal_bar_y": 9127
+  }
+]

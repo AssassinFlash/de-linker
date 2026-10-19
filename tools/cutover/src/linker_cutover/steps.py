@@ -14,6 +14,7 @@ that assumes one would quietly match nothing on a site that changed it.
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import re
@@ -337,6 +338,7 @@ def deploy(
     target.wp("plugin", "activate", *plan.NEW_PLUGINS)
     actions.append("wp plugin activate " + " ".join(plan.NEW_PLUGINS))
     actions += deploy_language_packs(target)
+    actions += configure_consent(target, repository=repository)
     # Templates and the WindPress volume are data, not files: without present a
     # deploy keeps the previous volume, and a page whose fragment changed (the
     # inquiry form on 2026-10-18) renders unstyled. Idempotent; present keeps its
@@ -384,13 +386,97 @@ def deploy_language_packs(target: Target) -> list[str]:
     return actions
 
 
+def configure_consent(target: Target, *, repository: str | Path) -> list[str]:
+    """Replay the native CMP settings after every deployment, then read them back."""
+    directory = Path(repository) / "tools" / "migrate"
+    source = (directory / "201-consent.php").read_text().removeprefix("<?php")
+    settings = json.loads((directory / "201-consent.json").read_text())
+    for write in (True, False):
+        payload = base64.b64encode(
+            json.dumps(
+                {
+                    "plan": settings,
+                    "write": write,
+                    "production": target.rsync_remote is not None,
+                }
+            ).encode()
+        ).decode()
+        target.wp(
+            "eval", source.replace("__LINKER_CONSENT_PAYLOAD__", payload), "--user=1"
+        )
+    return ["consent: native CMP settings replayed and verified"]
+
+
+def consent(target: Target) -> Result:
+    """Check production's carrier and the actual HTML, without issuing consent."""
+    actions: list[str] = []
+    notes: list[str] = []
+    for slug in ("cookie-law-info", "wp-consent-api", plan.SITE_KIT):
+        entries = target.wp_json(
+            "plugin", "list", f"--name={slug}", "--fields=name,status"
+        )
+        active = isinstance(entries, list) and any(
+            isinstance(entry, dict) and entry.get("status") == "active"
+            for entry in entries
+        )
+        actions.append(f"consent: {slug} active: {active}")
+        if not active:
+            notes.append(f"consent: {slug} must remain active")
+    for option, field, expected in (("googlesitekit_consent_mode", "enabled", True),):
+        raw = target.wp("option", "get", option, "--format=json", check=False)
+        try:
+            value = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            value = {}
+        if not isinstance(value, dict) or value.get(field) != expected:
+            notes.append(f"consent: {option}.{field} differs from its contract")
+    raw = target.wp(
+        "option",
+        "get",
+        "googlesitekit_analytics-4_settings",
+        "--format=json",
+        check=False,
+    )
+    try:
+        settings = json.loads(raw)
+    except (json.JSONDecodeError, TypeError):
+        settings = {}
+    if (
+        not isinstance(settings, dict)
+        or not settings.get("measurementID")
+        or not settings.get("useSnippet")
+    ):
+        notes.append("consent: Analytics must be connected with its snippet enabled")
+    for path in ("/", "/de/"):
+        status, html = target.http(path, cache_buster=None)
+        actions.append(f"consent: GET {path} -> {status}")
+        if status != 200 or "ckyBannerTemplate" not in html:
+            notes.append(f"consent: {path} does not include the CMP banner")
+        tags = re.findall(r"<script\b[^>]*>", html, flags=re.I)
+        google_tags = [tag for tag in tags if "googletagmanager.com/gtag/js" in tag]
+        if not google_tags or any(
+            'type="text/plain"' not in tag
+            or 'data-cookieyes="cookieyes-analytics"' not in tag
+            for tag in google_tags
+        ):
+            notes.append(
+                f"consent: {path} must hold every Google tag behind statistics consent"
+            )
+        if "linker-consent-withdrawal" not in html:
+            notes.append(f"consent: {path} is missing the withdrawal adapter")
+    return Result("consent", actions, notes)
+
+
 def verify_site(target: Target, *, cache_buster: str) -> Result:
     """The existing site and production Search Console checks, shared by callers."""
     result = verify(target, cache_buster=cache_buster)
     if target.rsync_remote is not None:
         ownership = search_console(target)
+        privacy = consent(target)
         return Result(
-            "verify", result.actions + ownership.actions, result.notes + ownership.notes
+            "verify",
+            result.actions + ownership.actions + privacy.actions,
+            result.notes + ownership.notes + privacy.notes,
         )
     return result
 

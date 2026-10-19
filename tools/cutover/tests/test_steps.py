@@ -218,6 +218,14 @@ def _repository(tmp_path: Path, *, recorder: bool = True, themes: bool = True) -
         (theme / "functions.php").write_text(
             "<?php // the theme file", encoding="utf-8"
         )
+    # Consent is replayed from the checkout after every deployment. The test
+    # target records eval calls; the real migration is exercised on WordPress.
+    migrations = repository / "tools" / "migrate"
+    migrations.mkdir(parents=True)
+    (migrations / "201-consent.php").write_text(
+        "<?php /* __LINKER_CONSENT_PAYLOAD__ */"
+    )
+    (migrations / "201-consent.json").write_text("{}")
     return repository
 
 
@@ -912,7 +920,7 @@ def test_the_deploy_installs_polylang_and_activates_the_three() -> None:
     """A site whose i18n base is installed but inactive serves one language."""
     plan_plugins = plan.NEW_PLUGINS
     assert len(plan_plugins) == 3
-    assert plan.INSTALLED_PLUGINS == ("polylang",)
+    assert plan.INSTALLED_PLUGINS == ("polylang", "cookie-law-info", "wp-consent-api")
 
 
 def test_the_product_pages_must_carry_exactly_one_product_node(tmp_path: Path) -> None:
