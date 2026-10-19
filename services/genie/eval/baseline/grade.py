@@ -337,9 +337,11 @@ def phase_power_failures(text: str, bindings: list[dict[str, Any]]) -> list[str]
         body_offset = line_start + (marker.end() if marker else 0)
         body = text[body_offset : line_end if line_end != -1 else len(text)]
         label_text = text[start:end]
-        heading_like = body.startswith(("#", "**")) or re.match(
-            rf"(?i)^{re.escape(label_text)}[^\n:]{{0,10}}:", body
-        ) is not None
+        heading_like = (
+            body.startswith(("#", "**"))
+            or re.match(rf"(?i)^{re.escape(label_text)}[^\n:]{{0,10}}:", body)
+            is not None
+        )
         if heading_like:
             headings.append((start, binding))
     headings.sort(key=lambda item: item[0])
