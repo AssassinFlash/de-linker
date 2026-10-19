@@ -1,24 +1,50 @@
-/* Admin-only layout around native WordPress controls. No storefront selectors. */
+/*
+ * Admin-only layout and visual language around native WordPress controls.
+ * No storefront selectors.
+ *
+ * Visual tokens are the owner-selected prototype variant C
+ * (docs/prototypes/2026-10-17-accounts/accounts-prototype.css, #353):
+ * capsule signal chips (.lap-chip), capsule look-up buttons (.lap-links),
+ * card shape (.lap-c), review widget (.lap-widget), drawer (.lap-drawer),
+ * top-bar flag (.lap-flag) and status pills (.lap-status).
+ */
+
+/* Cards grid: prototype .lap-cards — auto-fill 300px columns, 12px gutters.
+ * Below 612px of content width (drawer, focus card, mobile) this is one
+ * column, matching the prototype's stacked drawer. */
 .linker-account-cards {
 	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 	gap: 12px;
 }
+
+/* Card: prototype .lap-c — 1px #dcdcde border, 6px radius, 12px padding,
+ * column flex with a uniform 6px gap; actions pin to the card bottom. */
 .linker-account-card {
 	background: #fff;
-	border: 1px solid #c3c4c7;
-	padding: 16px;
-	margin: 12px 0;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
 	overflow-wrap: anywhere;
 }
+.linker-account-card > .linker-account-actions {
+	margin-top: auto;
+	padding-top: 6px;
+}
 .linker-account-card.is-focused {
-	border-left: 4px solid #2271b1;
+	/* Prototype .lap-focus-card: whole border blue plus a 1px ring. */
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
 }
 .linker-account-card h3 {
-	margin: 0 0 10px;
-	font-size: 16px;
+	margin: 0;
+	font-size: 14px;
 }
 .linker-account-card p {
-	margin: 10px 0;
+	margin: 0;
 }
 .linker-account-card summary {
 	cursor: pointer;
@@ -29,40 +55,162 @@
 	outline: 2px solid #2271b1;
 	outline-offset: 2px;
 }
+
+/* Signal chips: prototype .lap-chip — 11px capsule, 2px 8px padding,
+ * 999px radius, one tone per check outcome. */
 .linker-account-signals {
-	margin: 12px 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 }
 .linker-account-signals .notice {
-	padding: 6px 10px;
-	margin: 6px 0;
+	display: inline-block;
+	margin: 0 4px 4px 0;
+	padding: 2px 8px;
+	border: 1px solid;
+	border-radius: 999px;
+	font-size: 11px;
+	line-height: 1.4;
 	box-shadow: none;
 }
+.linker-account-signals .notice-success {
+	/* Prototype .lap-chip--ok. */
+	color: #00661b;
+	border-color: #9ad3a8;
+	background: #edfaef;
+}
+.linker-account-signals .notice-warning {
+	/* Prototype .lap-chip--warn. */
+	color: #7a5200;
+	border-color: #f0c33c;
+	background: #fcf9e8;
+}
+.linker-account-signals .notice-error {
+	/* Prototype .lap-chip--bad. */
+	color: #8a2424;
+	border-color: #e6a6a8;
+	background: #fcf0f1;
+}
+.linker-account-signals .notice-info {
+	/* Prototype .lap-chip--info. */
+	color: #1d4f7c;
+	border-color: #a7c6e6;
+	background: #f0f6fc;
+}
+
+/* Status pill: prototype .lap-status — 12px, 600 weight, 2px 8px padding,
+ * 3px radius; the tone follows the decided state. */
+.linker-status {
+	display: inline-block;
+	font-weight: 600;
+	font-size: 12px;
+	padding: 2px 8px;
+	border-radius: 3px;
+}
+.linker-status-pending {
+	/* Prototype .lap-status--pending. */
+	background: #fcf9e8;
+	color: #7a5200;
+}
+.linker-status-approved {
+	/* Prototype .lap-status--approved. */
+	background: #edfaef;
+	color: #00661b;
+}
+.linker-status-restricted {
+	/* Prototype .lap-status--restricted. */
+	background: #fcf9e8;
+	color: #7a5200;
+}
+.linker-status-rejected {
+	/* Prototype .lap-status--rejected. */
+	background: #fcf0f1;
+	color: #8a2424;
+}
+
 .linker-account-links,
 .linker-account-actions {
 	display: flex;
-	gap: 10px;
+	gap: 8px;
 	flex-wrap: wrap;
 	align-items: center;
 }
+
+/* Look-up links: capsule buttons (#353) in WordPress's admin blue; the
+ * prototype renders them as .button in the review card (.lap-links). */
+.linker-account-links a {
+	display: inline-block;
+	padding: 3px 12px;
+	border: 1px solid #2271b1;
+	border-radius: 999px;
+	background: #f0f6fc;
+	color: #2271b1;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.8;
+	text-decoration: none;
+}
+.linker-account-links a:hover {
+	background: #2271b1;
+	color: #fff;
+}
+
+/* Decision buttons: strongly colored per #353 — approve green, restrict
+ * amber, reject red. Anchors are the prototype's own solid fills
+ * (.lap-pill--done green, .lap-danger-solid red, .lap-check--warn amber);
+ * hover shades darken the base following WordPress's primary-button
+ * convention; #1d2327 text on amber keeps 7:1 contrast where white fails. */
+.linker-account-actions .linker-decide-approve,
+.linker-account-actions .linker-decide-approve:hover:not(:disabled) {
+	background: #00a32a;
+	border-color: #00a32a;
+	color: #fff;
+}
+.linker-account-actions .linker-decide-approve:hover:not(:disabled) {
+	background: #008a20;
+	border-color: #008a20;
+}
+.linker-account-actions .linker-decide-restrict,
+.linker-account-actions .linker-decide-restrict:hover:not(:disabled) {
+	background: #dba617;
+	border-color: #dba617;
+	color: #1d2327;
+}
+.linker-account-actions .linker-decide-restrict:hover:not(:disabled) {
+	background: #c79512;
+	border-color: #c79512;
+}
+.linker-account-actions .linker-decide-reject,
+.linker-account-actions .linker-decide-reject:hover:not(:disabled) {
+	background: #b32d2e;
+	border-color: #b32d2e;
+	color: #fff;
+}
+.linker-account-actions .linker-decide-reject:hover:not(:disabled) {
+	background: #8f2425;
+	border-color: #8f2425;
+}
+
+/* Registration fields: prototype .lap-dl — 110px label column, 4px 12px
+ * gap, quiet labels. */
 .linker-account-fields {
-	margin: 12px 0;
+	margin: 6px 0 0;
 }
 .linker-account-fields > div {
 	display: grid;
-	grid-template-columns: minmax(100px, 1fr) minmax(0, 2fr);
-	gap: 12px;
-	padding: 7px 0;
-	border-bottom: 1px solid #f0f0f1;
+	grid-template-columns: 110px 1fr;
+	gap: 4px 12px;
 }
 .linker-account-fields dt {
-	font-weight: 600;
+	font-weight: 400;
+	color: #646970;
 }
 .linker-account-fields dd {
 	margin: 0;
 	white-space: pre-wrap;
 }
 .linker-account-reason {
-	margin-top: 16px;
+	margin-top: 6px;
 }
 .linker-account-reason label {
 	font-weight: 600;
@@ -73,6 +221,27 @@
 	width: 100%;
 	margin: 10px 0;
 }
+
+/* Dashboard widget: prototype .lap-widget — the native postbox keeps its
+ * 1px #c3c4c7 border and gains the 4px red attention edge, a 16px heading
+ * and the capsule count badge (.lap-badge). */
+#linker-accounts-widget {
+	border-left: 4px solid #d63638;
+}
+#linker-accounts-widget .postbox-header .hndle {
+	font-size: 16px;
+}
+#linker-accounts-widget .linker-count-badge {
+	display: inline-block;
+	background: #d63638;
+	color: #fff;
+	border-radius: 999px;
+	padding: 1px 8px;
+	font-size: 12px;
+	margin-left: 6px;
+	vertical-align: 1px;
+}
+
 #linker-accounts-focus {
 	/* Core admin-bar.css defines its height (32px desktop, 46px <=782px).
 	 * One text line of clearance keeps the focused card below that bar. */
@@ -85,13 +254,15 @@
 #linker-accounts-history tr[hidden] {
 	display: none;
 }
+/* Drawer: prototype .lap-drawer colors on the native dialog — #f0f0f1
+ * surface, 10px stack gap, -8px edge shadow, 35% mask. The 520px width and
+ * 20px gutters stay the documented readable layout (accounts-admin.md,
+ * Layout dimensions). */
 #linker-accounts-dialog {
 	position: fixed;
 	box-sizing: border-box;
 	/* Native WP bar-height variable follows core's desktop/mobile breakpoint. */
 	inset: var(--wp-admin--admin-bar--height) 0 0 auto;
-	/* Variant C layout choice: 480px card + two 20px drawer gutters. This fits
-	 * the native German reason actions; see accounts-admin.md, Layout dimensions. */
 	width: min(520px, 100%);
 	max-width: 100%;
 	height: calc(100dvh - var(--wp-admin--admin-bar--height));
@@ -102,9 +273,17 @@
 	background: #f0f0f1;
 	color: #1d2327;
 	overflow: auto;
+	box-shadow: -8px 0 24px rgba(0, 0, 0, 0.2);
+}
+/* Only the open dialog stacks its children: an author display rule would
+ * otherwise override the user agent's dialog:not([open]) { display: none }. */
+#linker-accounts-dialog[open] {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 #linker-accounts-dialog::backdrop {
-	background: rgb(0 0 0 / 40%);
+	background: rgba(0, 0, 0, 0.35);
 }
 #linker-accounts-dialog > header {
 	display: flex;
@@ -119,12 +298,26 @@
 body:has(#linker-accounts-dialog[open]) {
 	overflow: hidden;
 }
-#wpadminbar #wp-admin-bar-linker-accounts.linker-has-pending > .ab-item {
-	background: #b32d2e;
+/* Top-bar flag: prototype .lap-flag — a red capsule on the label, not a
+ * full-width red menu node. Colors only; the compact count keeps the
+ * original hidden-by-default / shown-at-782px display pair below. */
+#wpadminbar
+	#wp-admin-bar-linker-accounts.linker-has-pending
+	.linker-review-label,
+#wpadminbar
+	#wp-admin-bar-linker-accounts.linker-has-pending
+	.linker-review-compact {
+	background: #d63638;
 	color: #fff;
+	padding: 3px 10px;
+	border-radius: 999px;
+	font-weight: 600;
+	line-height: 1.4;
 }
-#wpadminbar #wp-admin-bar-linker-accounts.linker-has-pending .ab-icon::before {
-	color: #fff;
+#wpadminbar
+	#wp-admin-bar-linker-accounts.linker-has-pending
+	.linker-review-label {
+	display: inline-block;
 }
 #wpadminbar .linker-review-compact {
 	display: none;
@@ -158,7 +351,7 @@ body:has(#linker-accounts-dialog[open]) {
 		clip-path: inset(50%);
 	}
 	#wpadminbar .linker-review-compact {
-		display: inline;
+		display: inline-block;
 	}
 	#linker-accounts-dialog {
 		padding: 12px;

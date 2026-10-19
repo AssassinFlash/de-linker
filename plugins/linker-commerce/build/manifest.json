@@ -2,20 +2,20 @@
 	"sources": {
 		"package-lock.json": "16207311b49189439199031c2a5ae681d0d58babf8d67c49f6f9e13f448f46ad",
 		"package.json": "125d1577d3a4f1ec2093bb2488cfe1ab7e831db881331475ba583680a05c6c79",
-		"src/accounts/AccountCard.tsx": "95bc1f467348379726bc42140fdf9b7b02664a08bc38e00d07b0c7783fc810a5",
-		"src/accounts/AccountsApp.tsx": "93953250ff3e77e904fa803821b844a242f5cf7f19d3907620e14c00a6882598",
+		"src/accounts/AccountCard.tsx": "0ec5481c235df93faa6707050d7e635801ce26b82d1e9851bed051ecc9b3722d",
+		"src/accounts/AccountsApp.tsx": "1b73e6f158b379c20fb51880831e1349737e751c4c82e6734450574d4631281f",
 		"src/accounts/AccountsView.tsx": "09b2cf2469892b6827e7265b61dfe2d8b9b4a2e88c169da7d3a61fee6e1c786e",
 		"src/accounts/api.ts": "3ddc0792eb27f022e34c625a5937e3e13975c5d5a45c0713e5e27aa252930d2d",
 		"src/accounts/index.tsx": "02465c6d31199b1ddbf5f5e4de2f49da9e1b71c72b00ada997fcb79fb04be242",
-		"src/accounts/style.css": "f8e1d1981cfe3ba869be6310461121d0178e2b2ba6e70e27de819e1dbb49454a",
+		"src/accounts/style.css": "4c94db9ad8053256d4a0dff433e50f29d24cbf313507650aac9b9e3511267b40",
 		"src/accounts/types.ts": "d3d3b5d1f8a691f990bbf3cec1a2510c4aec1132fd7af7c969d0602caeea5dab",
 		"src/css.d.ts": "da5bf71d48cf909584a01c80b445f730507068f5b34c920f352e2bfcf0315e4c",
 		"webpack.config.js": "a726fb4f973d3cffb0d5fc10d2e441fc42992db2dfc3c75a4768897014f51110"
 	},
 	"build": {
-		"build/accounts.asset.php": "f4950fb416b3a8d9c14c8387fb6bfd9c073cb08e52426e1a7adf3fd507a397d7",
-		"build/accounts.js": "4021ef1c930a8eb168d557b4cf8ce66dc6b2a585cbefb2b15f8c09bae79a332e",
-		"build/style-accounts-rtl.css": "710e89f1b72141b7ee7b5a61149a84a27442bd352a47d21828938994c07565e0",
-		"build/style-accounts.css": "ec88888a9ea1101c0d1abe0c3767db1e165974d84938b2e1a3be93f925acae42"
+		"build/accounts.asset.php": "1124301479c1da8772674e03ca70b8ca898f1b913642162222a0ea381ce51960",
+		"build/accounts.js": "b218e5fb42efd2bcf5d801f9cffeea684a8327f13ec63b5d2f78bbf279fb7f6d",
+		"build/style-accounts-rtl.css": "76b9f280e93eec63bcf3e2e18a0c4f7fe191002c3bc9c01642b63983ee4d02ea",
+		"build/style-accounts.css": "bf3039f48fd4dfb07f9752fe763d29f52eee185031f5217edf999ea6fa62e516"
 	}
 }

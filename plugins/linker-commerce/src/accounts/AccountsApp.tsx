@@ -105,6 +105,8 @@ export function AccountsApp( {
 		const value = row?.querySelector( '.linker-account-reason-value' );
 		if ( label ) {
 			label.textContent = result.account.statusLabel;
+			// The status pill recolors with the live decision (#353).
+			label.className = `linker-account-status-label linker-status linker-status-${ result.account.status }`;
 		}
 		if ( value ) {
 			value.textContent = result.account.reason;

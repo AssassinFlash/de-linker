@@ -51,7 +51,8 @@ final class AccountsAdmin {
 	public function dashboard(): void {
 		if ( current_user_can( 'edit_users' ) ) {
 			$count = $this->accounts->counts()[ Approval::PENDING ];
-			$title = '<span>' . esc_html__( 'Accounts waiting for you', 'linker-commerce' ) . ' (<span data-linker-account-count="pending">' . $count . '</span>)</span>';
+			// The count renders as the prototype's red capsule badge (.lap-badge), #353.
+			$title = '<span>' . esc_html__( 'Accounts waiting for you', 'linker-commerce' ) . ' <span class="linker-count-badge" data-linker-account-count="pending">' . $count . '</span></span>';
 			wp_add_dashboard_widget( 'linker-accounts-widget', $title, array( $this, 'widget' ), null, null, 'normal', 'high' );
 		}
 	}
