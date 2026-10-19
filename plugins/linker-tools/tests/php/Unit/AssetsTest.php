@@ -45,7 +45,7 @@ final class AssetsTest extends TestCase {
 			)
 		);
 
-		foreach ( array( 'configurator', 'genie', 'preview' ) as $entry ) {
+		foreach ( array( 'configurator', 'genie', 'hero', 'preview' ) as $entry ) {
 			$asset = require $plugin_dir . 'build/' . $entry . '.asset.php';
 
 			if ( 'preview' === $entry ) {

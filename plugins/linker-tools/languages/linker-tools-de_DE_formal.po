@@ -26,7 +26,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: hand-written, reviewed\n"
 
-#: includes/Genie/Entries.php build/genie.js:19
+#: includes/Genie/Entries.php build/genie.js:19 build/hero.js
 msgid "Ask Genie"
 msgstr "Genie fragen"
 
@@ -58,87 +58,87 @@ msgstr "Wo steht meine Proforma?"
 msgid "Genie could not load."
 msgstr "Genie konnte nicht geladen werden."
 
-#: includes/Genie/Entries.php build/genie.js:19
+#: includes/Genie/Entries.php build/genie.js:19 build/hero.js
 #: src/configurator/residential/ResidentialPanel.tsx:308 src/genie/App.tsx:1351
 #: build/configurator.js
 msgid "Try again"
 msgstr "Erneut versuchen"
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Open full page"
 msgstr "Vollständige Seite öffnen"
 
-#: build/genie.js:16 build/genie.js:19
+#: build/genie.js:16 build/genie.js:19 build/hero.js
 msgid "Conversations"
 msgstr "Gespräche"
 
-#: build/genie.js:16 build/genie.js:19
+#: build/genie.js:16 build/genie.js:19 build/hero.js
 msgid "New conversation"
 msgstr "Neues Gespräch"
 
-#: build/genie.js:16 build/genie.js:19
+#: build/genie.js:16 build/genie.js:19 build/hero.js
 msgid "Close sidebar"
 msgstr "Seitenleiste schließen"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Loading conversations…"
 msgstr "Gespräche werden geladen …"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "No earlier conversation."
 msgstr "Kein früheres Gespräch."
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Conversations could not be loaded."
 msgstr "Gespräche konnten nicht geladen werden."
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Get help with your solar project"
 msgstr "Hilfe bei Ihrem Solarprojekt"
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Products, documents and your next step."
 msgstr "Produkte, Unterlagen und Ihr nächster Schritt."
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Back"
 msgstr "Zurück"
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Close"
 msgstr "Schließen"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Attach a file"
 msgstr "Datei anhängen"
 
 #. translators: %s is the name of a file the visitor attached.
-#: build/genie.js:13
+#: build/genie.js:13 build/hero.js
 msgid "Attached: %s"
 msgstr "Anhang: %s"
 
 #. translators: %s is the attached file's name.
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Remove attachment %s"
 msgstr "Anhang %s entfernen"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Dictate"
 msgstr "Diktieren"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Stop dictation"
 msgstr "Diktat beenden"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "FAQ & Downloads"
 msgstr "FAQ & Downloads"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Contact Linker"
 msgstr "Linker kontaktieren"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Privacy Policy"
 msgstr "Datenschutzerklärung"
 
@@ -516,60 +516,60 @@ msgstr "Gibt es ein Datenblatt zu meinem Modell?"
 msgid "Which products fit my project?"
 msgstr "Welche Produkte passen zu meinem Projekt?"
 
-#: build/genie.js:1
+#: build/genie.js:1 build/hero.js
 msgid "Open the configurator"
 msgstr "Konfigurator öffnen"
 
-#: build/genie.js:1
+#: build/genie.js:1 build/hero.js
 msgid "View your inquiry"
 msgstr "Anfrage ansehen"
 
-#: build/genie.js:1
+#: build/genie.js:1 build/hero.js
 msgid "Model"
 msgstr "Modell"
 
-#: build/genie.js:1 src/configurator/solution/Solution.tsx:256
+#: build/genie.js:1 src/configurator/solution/Solution.tsx:256 build/hero.js
 #: src/genie/components/Compare.tsx:55 src/genie/components/GenieCard.tsx:86
 #: build/configurator.js
 msgid "In stock"
 msgstr "Auf Lager"
 
-#: build/genie.js:1
+#: build/genie.js:1 build/hero.js
 msgid "Yes"
 msgstr "Ja"
 
-#: build/genie.js:1
+#: build/genie.js:1 build/hero.js
 msgid "On request"
 msgstr "Auf Anfrage"
 
-#: build/genie.js:1
+#: build/genie.js:1 build/hero.js
 msgid "Genie could not load this product."
 msgstr "Genie konnte dieses Produkt nicht laden."
 
-#: build/genie.js:1
+#: build/genie.js:1 build/hero.js
 msgid "Product"
 msgstr "Produkt"
 
-#: build/genie.js:1
+#: build/genie.js:1 build/hero.js
 msgid "Add to solution draft"
 msgstr "Zum Lösungsentwurf hinzufügen"
 
-#: build/genie.js:1 src/configurator/solution/Solution.tsx:334
+#: build/genie.js:1 src/configurator/solution/Solution.tsx:334 build/hero.js
 #: src/genie/components/GenieCard.tsx:109 build/configurator.js
 msgid "Save solution"
 msgstr "Lösung speichern"
 
-#: build/genie.js:1
+#: build/genie.js:1 build/hero.js
 msgid "Sending…"
 msgstr "Wird gesendet …"
 
 #. translators: %s is the email address the conversation goes to.
-#: build/genie.js:4
+#: build/genie.js:4 build/hero.js
 msgid "Your email to %s is on its way."
 msgstr "Die E-Mail an %s ist unterwegs."
 
 #. translators: %s is the email address the confirmation link went to.
-#: build/genie.js:7
+#: build/genie.js:7 build/hero.js
 msgid ""
 "A confirmation link is on its way to %s. The conversation follows once the "
 "link is opened."
@@ -577,12 +577,12 @@ msgstr ""
 "Ein Bestätigungslink an %s ist unterwegs. Das Gespräch folgt, sobald der "
 "Link geöffnet wird."
 
-#: build/genie.js:7
+#: build/genie.js:7 build/hero.js
 msgid "Please enter a valid email address."
 msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
 
 #. translators: %d is how many emails one connection may ask for per hour (ConversationMail::LIMIT).
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid ""
 "This connection has reached the limit of %d emails per hour. Please try "
 "again later."
@@ -590,81 +590,81 @@ msgstr ""
 "Über diese Verbindung wurde das Limit von %d E-Mails pro Stunde erreicht. "
 "Bitte versuchen Sie es später erneut."
 
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid "Today's email limit has been reached. Please try again tomorrow."
 msgstr ""
 "Das E-Mail-Limit für heute ist erreicht. Bitte versuchen Sie es morgen "
 "erneut."
 
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid "The email could not be sent. Please try again."
 msgstr ""
 "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
 
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid "Your email address"
 msgstr "Ihre E-Mail-Adresse"
 
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid "Send email"
 msgstr "E-Mail senden"
 
-#: build/genie.js:10 build/genie.js:19
+#: build/genie.js:10 build/genie.js:19 build/hero.js
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid "Email me this conversation"
 msgstr "Gespräch per E-Mail erhalten"
 
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid "Email address confirmed. The conversation is on its way."
 msgstr "E-Mail-Adresse bestätigt. Das Gespräch ist unterwegs."
 
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid "This link has expired or has already been used."
 msgstr "Dieser Link ist abgelaufen oder wurde bereits verwendet."
 
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid "Helpful"
 msgstr "Hilfreich"
 
-#: build/genie.js:10
+#: build/genie.js:10 build/hero.js
 msgid "Not helpful"
 msgstr "Nicht hilfreich"
 
-#: build/genie.js:13 src/configurator/solution/Solution.tsx:90
+#: build/genie.js:13 src/configurator/solution/Solution.tsx:90 build/hero.js
 #: src/genie/App.tsx:509 src/genie/App.tsx:517 build/configurator.js
 msgid "Adding…"
 msgstr "Wird hinzugefügt …"
 
-#: build/genie.js:13
+#: build/genie.js:13 build/hero.js
 msgid "In your solution draft."
 msgstr "Im Lösungsentwurf."
 
-#: build/genie.js:13 src/genie/App.tsx:520
+#: build/genie.js:13 src/genie/App.tsx:520 build/hero.js
 msgid "Sent, but the draft does not show it yet. Please check."
 msgstr "Gesendet, aber der Entwurf zeigt es noch nicht. Bitte prüfen."
 
-#: build/genie.js:13 src/genie/App.tsx:523
+#: build/genie.js src/genie/components/PartsCard.tsx
 msgid "Not everything was added. Try again."
 msgstr "Nicht alles wurde hinzugefügt. Bitte erneut versuchen."
 
-#: build/genie.js:13 src/configurator/solution/Solution.tsx:333
+#: build/genie.js:13 src/configurator/solution/Solution.tsx:333 build/hero.js
 #: src/genie/App.tsx:531 build/configurator.js
 msgid "Saving…"
 msgstr "Wird gespeichert …"
 
-#: build/genie.js:13 src/genie/App.tsx:551
+#: build/genie.js:13 src/genie/App.tsx:551 build/hero.js
 msgid "Saved to your account."
 msgstr "Im Konto gespeichert."
 
-#: build/genie.js:13
+#: build/genie.js:13 build/hero.js
 msgid "Not saved. Try again."
 msgstr "Nicht gespeichert. Bitte erneut versuchen."
 
 #. translators: %d is the number of days a guest's conversation is kept from its start (Retention::RETENTION_DAYS).
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid ""
 "Each conversation stays in this browser for %d day from its start. Signing "
 "in moves all of them to your account."
@@ -678,52 +678,79 @@ msgstr[1] ""
 "Jedes Gespräch bleibt ab Beginn %d Tage in diesem Browser gespeichert. Wenn "
 "Sie sich anmelden, werden alle in Ihr Konto übernommen."
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Hide"
 msgstr "Ausblenden"
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Open"
 msgstr "Öffnen"
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Where should we begin?"
 msgstr "Womit möchten Sie beginnen?"
 
-#: build/genie.js:16 build/genie.js:19
+#: build/genie.js:16 build/genie.js:19 build/hero.js
 msgid "Genie"
 msgstr "Genie"
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Genie is thinking…"
 msgstr "Genie denkt nach …"
 
-#: build/genie.js:16
+#: build/genie.js:16 build/hero.js
 msgid "Genie did not answer. Please try again."
 msgstr "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut."
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Send"
 msgstr "Senden"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Genie - Linker's AI assistant"
 msgstr "Genie – der KI-Assistent von Linker"
 
-#: build/genie.js:19
+#: build/hero.js
+msgid "Genie is Linker's AI assistant."
+msgstr "Genie ist der KI-Assistent von Linker."
+
+#: build/hero.js
+msgid ""
+"Answers come from our product data and documents, and can still be wrong."
+msgstr ""
+"Antworten stammen aus unseren Produktdaten und Dokumenten und können "
+"trotzdem falsch sein."
+
+#: build/hero.js
+msgid "Continue in the side panel"
+msgstr "In der Seitenleiste fortsetzen"
+
+#: build/hero.js
+msgid "Your Genie conversation · continue"
+msgstr "Ihre Genie-Unterhaltung · fortsetzen"
+
+#: build/hero.js build/genie.js
+msgid "Asked from the homepage"
+msgstr "Auf der Startseite begonnen"
+
+#: build/hero.js
+msgid "Ask a follow-up…"
+msgstr "Stellen Sie eine Rückfrage …"
+
+#: build/genie.js:19 build/hero.js
 msgid "Not deleted. Try again."
 msgstr "Nicht gelöscht. Bitte erneut versuchen."
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Delete this conversation permanently?"
 msgstr "Dieses Gespräch endgültig löschen?"
 
-#: build/genie.js:19
+#: build/genie.js:19 build/hero.js
 msgid "Delete"
 msgstr "Löschen"
 
 #. translators: %s is the conversation's title (its first message).
-#: build/genie.js:22
+#: build/genie.js:22 build/hero.js
 msgid "Delete conversation: %s"
 msgstr "Gespräch löschen: %s"
 
@@ -1108,7 +1135,7 @@ msgstr "Stattdessen kWp eingeben"
 msgid "No PV figure yet? Estimate from the roof"
 msgstr "Noch keine PV-Leistung? Aus dem Dach abschätzen"
 
-#: src/configurator/residential/ResidentialForm.tsx:271
+#: src/configurator/residential/ResidentialForm.tsx:271 build/hero.js
 #: src/configurator/utility/UtilityForm.tsx:45 build/configurator.js build/genie.js
 msgid "Grid connection"
 msgstr "Netzanschluss"
@@ -1608,30 +1635,30 @@ msgstr ""
 "liegt außerhalb Deutschlands."
 
 #. #302: retain the configurator wording independently of Genie.
-#: src/configurator/solution/Solution.tsx build/configurator.js
+#: src/configurator/solution/Solution.tsx build/configurator.js build/hero.js
 msgctxt "configurator"
 msgid "Sent, but the draft does not show it yet. Please check."
 msgstr ""
 "Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf."
 
 #. #302: retain the configurator wording independently of Genie.
-#: src/configurator/solution/Solution.tsx build/configurator.js
+#: src/configurator/solution/Solution.tsx build/configurator.js build/hero.js
 msgctxt "configurator"
 msgid "Not added. Try again."
 msgstr "Nicht hinzugefügt. Versuchen Sie es erneut."
 
 #. #302: retain the configurator wording independently of Genie.
-#: src/configurator/solution/Solution.tsx build/configurator.js
+#: src/configurator/solution/Solution.tsx build/configurator.js build/hero.js
 msgctxt "configurator"
 msgid "Saved to your account."
 msgstr "In Ihrem Konto gespeichert."
 
 # "Let Linker contact me" (#243): copy review docs/acceptance/2026-10-18/243/copy-review.md.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Sending did not work. Please try again."
 msgstr "Das Senden ist fehlgeschlagen. Bitte versuchen Sie es erneut."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 #, javascript-format
 msgid ""
 "Genie cannot pass on your request right now. Please try again later or write "
@@ -1640,40 +1667,40 @@ msgstr ""
 "Genie kann Ihre Kontaktanfrage gerade nicht weitergeben. Bitte versuchen Sie "
 "es später erneut oder schreiben Sie an %s."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Genie cannot pass on your request right now. Please try again later."
 msgstr ""
 "Genie kann Ihre Kontaktanfrage gerade nicht weitergeben. Bitte versuchen Sie "
 "es später erneut."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 #, javascript-format
 msgid "The team replies to %s within one business day."
 msgstr "Das Team schreibt Ihnen innerhalb eines Arbeitstags an %s."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Let the Linker team contact you"
 msgstr "Rückmeldung vom Linker-Team"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Your request is with the Linker team"
 msgstr "Ihre Kontaktanfrage liegt beim Linker-Team"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Should someone from the Linker team get in touch?"
 msgstr "Soll sich jemand aus dem Linker-Team bei Ihnen melden?"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Leave your email address and the team replies within one business day."
 msgstr ""
 "Hinterlassen Sie Ihre E-Mail-Adresse, und das Team schreibt Ihnen innerhalb "
 "eines Arbeitstags."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Genie keeps answering your questions in the meantime."
 msgstr "Genie beantwortet Ihre Fragen in der Zwischenzeit weiter."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Contact me"
 msgstr "Kontakt anfordern"
 
@@ -1703,106 +1730,106 @@ msgstr "Wirkte unzufrieden oder wollte einen Menschen"
 msgid "Asked the same question three times in a row"
 msgstr "Stellte dieselbe Frage dreimal hintereinander"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "We have not sent a confirmation email."
 msgstr "Es wurde keine Bestätigungs-E-Mail versendet."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 "Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser "
 "Nachricht verwendet werden."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Please agree to the use of your details for the reply."
 msgstr "Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu."
 
 # #236 attachments and nameplates: copy review docs/acceptance/2026-10-18/236/copy-review.md
 #. translators: %s is the name of the file the customer attached.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "%s could not be read."
 msgstr "%s konnte nicht gelesen werden."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Choose another photo"
 msgstr "Anderes Foto auswählen"
 
 #. translators: %s is the name of the file the customer attached.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Read: %s"
 msgstr "Gelesen: %s"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Read from your nameplate photo"
 msgstr "Vom Foto Ihres Typenschilds gelesen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Brand"
 msgstr "Marke"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Device"
 msgstr "Geräteart"
 
 #. translators: %s is one of our models, e.g. "SAJ H2-10K-T3".
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "In our range: %s. Is this your device?"
 msgstr "In unserem Sortiment: %s. Ist das Ihr Gerät?"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "No exact match. Is it one of these?"
 msgstr "Kein genauer Treffer. Ist es eines dieser Modelle?"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "This model is not in our product range."
 msgstr "Dieses Modell führen wir nicht."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "The model could not be read."
 msgstr "Das Modell konnte nicht gelesen werden."
 
 #. translators: %s is the confirmed model, e.g. "SAJ H2-10K-T3".
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Yes, it's the %s. Show me its documents."
 msgstr "Ja, es ist das Modell %s. Bitte zeigen Sie mir die Unterlagen dazu."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Yes, show its documents"
 msgstr "Ja, Unterlagen anzeigen"
 
 #. translators: %s is the confirmed model, e.g. "SAJ H2-10K-T3".
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Yes, it's the %s. What works with it?"
 msgstr "Ja, es ist das Modell %s. Was passt dazu?"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Yes, what works with it?"
 msgstr "Ja, was passt dazu?"
 
 #. translators: %s is the chosen model, e.g. "SAJ H2-10K-T3".
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "It's the %s."
 msgstr "Es ist das Modell %s."
 
 #. translators: %s is one of our models, e.g. "H2-10K-T3".
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "It's the %s"
 msgstr "Es ist das Modell %s"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "No, type the model"
 msgstr "Nein, Modell eingeben"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Type the model"
 msgstr "Modell eingeben"
 
 #. translators: %s stays empty: the customer types the model after the words.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "My device is the %s"
 msgstr "Mein Gerät ist das Modell %s"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid ""
 "This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC), "
 "PDFs and parts lists (CSV or .xlsx)."
@@ -1811,7 +1838,7 @@ msgstr ""
 "WebP oder HEIC), PDFs und Teilelisten (CSV oder .xlsx)."
 
 #. translators: 1: the largest PDF in megabytes, 2: a photo, 3: an Excel file, 4: a CSV file.
-#: build/genie.js
+#: build/genie.js build/hero.js src/genie/components/AttachmentChips.tsx
 msgid ""
 "This file is too large. A PDF can be up to %1$d MB, a photo up to %2$d MB, an "
 "Excel list up to %3$d MB and a CSV list up to %4$d MB."
@@ -1819,25 +1846,25 @@ msgstr ""
 "Diese Datei ist zu groß. Ein PDF darf bis zu %1$d MB haben, ein Foto bis zu "
 "%2$d MB, eine Excel-Liste bis zu %3$d MB und eine CSV-Liste bis zu %4$d MB."
 
-#: build/genie.js
+#: build/genie.js build/hero.js src/genie/components/AttachmentChips.tsx
 msgid "The files are too large in total. Use fewer or smaller files."
 msgstr ""
 "Die Dateien sind insgesamt zu groß. Verwenden Sie weniger oder kleinere "
 "Dateien."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid ""
 "This browser cannot open HEIC photos. Please attach the photo as a JPEG."
 msgstr ""
 "Dieser Browser kann HEIC-Fotos nicht öffnen. Bitte hängen Sie das Foto als "
 "JPEG an."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "This photo could not be opened. Please choose another one."
 msgstr ""
 "Dieses Foto konnte nicht geöffnet werden. Bitte wählen Sie ein anderes."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid ""
 "You have reached the hourly limit for files. Please try again later; typed "
 "questions still work."
@@ -1845,11 +1872,11 @@ msgstr ""
 "Sie haben das stündliche Limit für Dateien erreicht. Bitte versuchen Sie es "
 "später erneut. Fragen per Text beantwortet Genie weiterhin."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Preparing file…"
 msgstr "Datei wird vorbereitet …"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid ""
 "Genie reads the brand and model from a nameplate photo and checks them "
 "against our range."
@@ -1857,19 +1884,19 @@ msgstr ""
 "Genie liest Marke und Modell vom Foto des Typenschilds und gleicht sie mit "
 "unserem Sortiment ab."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Choose a photo"
 msgstr "Foto auswählen"
 
 #. translators: 1: the file's name, 2: pages read, 3: pages in the file.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Read: %1$s (%2$d of %3$d page)"
 msgid_plural "Read: %1$s (%2$d of %3$d pages)"
 msgstr[0] "Gelesen: %1$s (%2$d von %3$d Seite)"
 msgstr[1] "Gelesen: %1$s (%2$d von %3$d Seiten)"
 
 #. translators: %d is the number of files one message can carry.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "You can attach up to %d file at a time."
 msgid_plural "You can attach up to %d files at a time."
 msgstr[0] "Sie können bis zu %d Datei auf einmal anhängen."
@@ -1881,127 +1908,127 @@ msgstr "Welches Modell steht auf meinem Typenschild?"
 
 # "The inquiry confirmation card" (#250): copy review docs/acceptance/2026-10-18/250/copy-review.md.
 #. translators: 1: inquiry number, 2: the inquiry's status.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Inquiry #%1$s · %2$s"
 msgstr "Anfrage Nr. %1$s · %2$s"
 
 #. translators: %s: inquiry number.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Inquiry #%s"
 msgstr "Anfrage Nr. %s"
 
 #. translators: %d: quantity of a product in the solution draft.
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "× %d"
 msgstr "× %d"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Your inquiry"
 msgstr "Ihre Anfrage"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Check the details and send the inquiry to the Linker team."
 msgstr "Prüfen Sie die Angaben und senden Sie die Anfrage an das Linker-Team."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Products and quantities"
 msgstr "Produkte und Mengen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "No products in your solution draft."
 msgstr "Keine Produkte im Lösungsentwurf."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Message"
 msgstr "Nachricht"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Attach the conversation summary"
 msgstr "Zusammenfassung des Gesprächs anhängen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Read the summary"
 msgstr "Zusammenfassung lesen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Name"
 msgstr "Name"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Reply email"
 msgstr "E-Mail für die Antwort"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Company (optional)"
 msgstr "Unternehmen (optional)"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Send inquiry"
 msgstr "Anfrage senden"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Open the inquiry page"
 msgstr "Anfrageseite öffnen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Your inquiry is with the Linker team"
 msgstr "Ihre Anfrage liegt beim Linker-Team"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Inquiry received"
 msgstr "Anfrage eingegangen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Proforma invoice issued"
 msgstr "Proformarechnung ausgestellt"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Completed"
 msgstr "Abgeschlossen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Cancelled"
 msgstr "Storniert"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Not sent"
 msgstr "Nicht gesendet"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "The team replies within one business day."
 msgstr "Das Team schreibt Ihnen innerhalb eines Arbeitstags."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Please add your name."
 msgstr "Bitte geben Sie Ihren Namen an."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Please add an email address we can reply to."
 msgstr "Bitte geben Sie eine E-Mail-Adresse an, an die wir antworten können."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid ""
 "Your solution draft changed. Check the lines and send the inquiry again."
 msgstr ""
 "Ihr Lösungsentwurf hat sich geändert. Prüfen Sie die Angaben und senden Sie "
 "die Anfrage erneut."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Add a product to your solution draft or write a message."
 msgstr ""
 "Fügen Sie Ihrem Lösungsentwurf ein Produkt hinzu oder schreiben Sie eine "
 "Nachricht."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Genie cannot send an inquiry right now. Please use the inquiry page."
 msgstr ""
 "Genie kann gerade keine Anfrage senden. Bitte nutzen Sie die Anfrageseite."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid ""
 "The inquiry could not be sent. Please check your solution draft on the "
 "inquiry page."
@@ -2009,50 +2036,50 @@ msgstr ""
 "Die Anfrage konnte nicht gesendet werden. Prüfen Sie Ihren Lösungsentwurf "
 "auf der Anfrageseite."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Sending did not work. Please try again, or use the inquiry page."
 msgstr ""
 "Das Senden ist fehlgeschlagen. Bitte versuchen Sie es erneut oder nutzen Sie "
 "die Anfrageseite."
 
-#: src/genie/components/HelperFooter.tsx build/genie.js
+#: src/genie/components/HelperFooter.tsx build/genie.js build/hero.js
 msgid "Genie is an AI assistant."
 msgstr "Genie ist ein KI-Assistent."
 
-#: src/genie/components/HelperFooter.tsx build/genie.js
+#: src/genie/components/HelperFooter.tsx build/genie.js build/hero.js
 msgid "Help & privacy"
 msgstr "Hilfe & Datenschutz"
 
-#: src/genie/components/Reply.tsx build/genie.js
+#: src/genie/components/Reply.tsx build/genie.js build/hero.js
 msgid "Show full response"
 msgstr "Vollständige Antwort anzeigen"
 
-#: src/genie/components/Transcript.tsx build/genie.js
+#: src/genie/components/Transcript.tsx build/genie.js build/hero.js
 msgid "Jump to latest"
 msgstr "Zur neuesten Nachricht"
 
-#: src/genie/components/CopyReply.tsx build/genie.js
+#: src/genie/components/CopyReply.tsx build/genie.js build/hero.js
 msgid "Copy response"
 msgstr "Antwort kopieren"
 
-#: src/genie/components/CopyReply.tsx build/genie.js
+#: src/genie/components/CopyReply.tsx build/genie.js build/hero.js
 msgid "Copied"
 msgstr "Kopiert"
 
-#: src/genie/components/CopyReply.tsx build/genie.js
+#: src/genie/components/CopyReply.tsx build/genie.js build/hero.js
 msgid "Copy failed. Select the text and copy it manually."
 msgstr ""
 "Kopieren fehlgeschlagen. Markieren Sie den Text und kopieren Sie ihn manuell."
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Continue with your project"
 msgstr "Weiter mit Ihrem Projekt"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Reply with an option"
 msgstr "Antwort auswählen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js
 msgid "Your selection is sent to Genie."
 msgstr "Ihre Auswahl wird an Genie gesendet."
 
@@ -2129,10 +2156,10 @@ msgstr ""
 msgid "Choose a file"
 msgstr "Datei auswählen"
 
-#: build/genie.js
+#: build/genie.js build/hero.js src/genie/shared/conversation.ts
 msgid "Here is my parts list."
 msgstr "Hier ist meine Teileliste."
 
-#: build/genie.js
+#: build/genie.js src/genie/shared/cardActions.ts build/hero.js
 msgid "Not added. Try again."
 msgstr "Nicht hinzugefügt. Bitte erneut versuchen."

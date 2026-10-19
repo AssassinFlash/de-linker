@@ -16,5 +16,8 @@ module.exports = {
 		// Not an app: the small script of Genie's preview card (ticket #249),
 		// loaded with the pages that carry the card, before any app.
 		preview: './src/preview/index.ts',
+		// Not an app either: the home hero's controls (ticket #232), which
+		// mount their conversation into the page's own hero.
+		hero: './src/hero/index.tsx',
 	},
 };

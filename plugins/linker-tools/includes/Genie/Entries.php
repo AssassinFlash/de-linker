@@ -292,7 +292,12 @@ class Entries {
 		var pendingAsk = '';
 		// Opened to send a nameplate photo (#236): the app offers the picker.
 		var pendingAttach = false;
+		// Opened for a parts list (#251): the picker expects the list's file.
 		var pendingList = false;
+		// Opening from the home hero (#232): re-read the thread the hero
+		// wrote, and mark it as asked from the homepage.
+		var pendingRefresh = false;
+		var pendingFromHome = false;
 		var failure = null;
 		function clearFailure() {
 			if (failure) {
@@ -339,19 +344,35 @@ class Entries {
 		var message = pendingAsk;
 		var attach = pendingAttach;
 		var list = pendingList;
+		var refresh = pendingRefresh;
+		var fromHome = pendingFromHome;
 		pendingOpen = false;
 		pendingAsk = '';
 		pendingAttach = false;
 		pendingList = false;
+		pendingRefresh = false;
+		pendingFromHome = false;
 		window.dispatchEvent(new CustomEvent('linker-genie-open', {
-			detail: { message: message, attach: attach, list: list }
+			detail: {
+				message: message,
+				attach: attach,
+				list: list,
+				refresh: refresh,
+				fromHome: fromHome
+			}
 		}));
 	}
-	function open(message) {
+	function open(message, refresh, fromHome) {
 		pendingOpen = true;
 		// A plain reopen during loading must not erase the first question.
 		if (message && !pendingAsk) {
 			pendingAsk = message;
+		}
+		if (refresh) {
+			pendingRefresh = true;
+		}
+		if (fromHome) {
+			pendingFromHome = true;
 		}
 		boot();
 		deliver();
@@ -369,12 +390,18 @@ class Entries {
 	});
 	window.addEventListener('linker-genie-ask', function (event) {
 		var detail = event.detail;
+		var refresh = !!detail && true === detail.refresh;
+		var fromHome = !!detail && true === detail.fromHome;
 		if (detail && typeof detail.message === 'string' && detail.message.trim()) {
-			open(detail.message);
+			open(detail.message, refresh, fromHome);
 		} else if (detail && true === detail.attach) {
 			pendingAttach = true;
 			pendingList = true === detail.list;
-			open('');
+			open('', refresh, fromHome);
+		} else if (refresh) {
+			// The home hero hands its conversation to the dock without a
+			// new question (#232).
+			open('', true, fromHome);
 		}
 	});
 			function boot() {

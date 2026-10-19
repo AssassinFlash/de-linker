@@ -16,6 +16,7 @@ use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\PageContext;
 use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\Hero;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\Preview;
@@ -83,6 +84,7 @@ final class PluginTest extends TestCase {
 		$contact       = new ContactRequest( $conversations, new Thread(), new PageContext() );
 		$inquiry       = new \Linker\Tools\Genie\InquirySummary( $conversations, new Thread() );
 		$inquiry_card  = new InquiryRequest( $conversations, new Thread(), new PageContext() );
+		$hero          = new Hero();
 
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'register' ) );
 		WP_Mock::expectActionAdded( 'init', array( $assets, 'load_text_domain' ) );
@@ -122,8 +124,10 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'admin_post_' . ConversationMail::CONFIRM_ACTION, array( $mail, 'handle_link' ) );
 		// The inquiry's conversation summary (#244).
 		WP_Mock::expectFilterAdded( \Linker\Tools\Genie\InquirySummary::FILTER, array( $inquiry, 'answer' ), 10, 2 );
+		// The home hero's entry (#232).
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $hero, 'assets' ) );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card ) )->register();
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );

@@ -920,6 +920,19 @@ body:has(.linker-genie-workspace)
 	min-height: 0;
 }
 
+/* The conversation began in the home hero (#232): the prototype's
+ * `.hp-origin` line, said above the thread. */
+.linker-genie-app__origin {
+	flex-shrink: 0;
+	margin: 0;
+	padding: 6px 16px;
+	border-bottom: 1px solid #e3f1ef;
+	background: #f2faf9;
+	color: #087c73;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
 /* The message list is a list; nothing here numbers or indents it. */
 .linker-genie-app__thread {
 	margin: 0;

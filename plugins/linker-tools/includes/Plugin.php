@@ -15,6 +15,7 @@ use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Entries;
+use Linker\Tools\Genie\Hero;
 use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\InquirySummary;
 use Linker\Tools\Genie\Preview;
@@ -53,6 +54,7 @@ final class Plugin {
 	 * @param ContactRequest   $contact       "Let Linker contact me": the contact card's route (#243).
 	 * @param InquirySummary   $inquiry       The conversation summary an inquiry carries (#244).
 	 * @param InquiryRequest   $inquiry_card  The inquiry confirmation card's route (#250).
+	 * @param Hero             $hero          The home hero's Genie entry (#232).
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -73,7 +75,8 @@ final class Plugin {
 		private readonly ConversationMail $mail,
 		private readonly ContactRequest $contact,
 		private readonly InquirySummary $inquiry,
-		private readonly InquiryRequest $inquiry_card
+		private readonly InquiryRequest $inquiry_card,
+		private readonly Hero $hero
 	) {}
 
 	/**
@@ -104,5 +107,6 @@ final class Plugin {
 		$this->preview->register();
 		$this->mail->register();
 		$this->inquiry->register();
+		$this->hero->register();
 	}
 }

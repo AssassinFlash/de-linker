@@ -322,6 +322,47 @@ test( 'a reload opens with the thread and the last answer restored', async () =>
 	);
 } );
 
+test( 'the dock reads the thread the home hero wrote and says where it began (#232)', async () => {
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [
+			{
+				role: 'user',
+				content: 'Which inverters fit a three-phase home?',
+			},
+			{ role: 'assistant', content: 'These three fit.' },
+		],
+		turn: {
+			meta: {
+				turn_id: 9,
+				grounded: true,
+				fallback: false,
+				attempts: 1,
+				failures: [],
+				language: 'en',
+			},
+			blocks: [
+				{ type: 'text', text: 'These three fit.', refs: [ '3556' ] },
+			],
+		},
+	} );
+
+	render( <App config={ config() } /> );
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: { refresh: true, fromHome: true },
+			} )
+		);
+	} );
+
+	await waitFor( () =>
+		expect(
+			screen.getByText( 'Which inverters fit a three-phase home?' )
+		).toBeInTheDocument()
+	);
+	expect( screen.getByText( 'Asked from the homepage' ) ).toBeInTheDocument();
+} );
+
 test( 'a first visit with no stored conversation opens empty', async () => {
 	vi.mocked( readThread ).mockResolvedValue( {
 		messages: [],

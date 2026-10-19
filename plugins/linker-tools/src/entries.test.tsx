@@ -18,6 +18,9 @@ const titles: Record< string, string > = {
 };
 const scripts: Record< string, string > = {
 	preview: './src/preview/index.ts',
+	// The home hero mounts into the page's own `.hero-cinematic` (ticket #232),
+	// not into a `data-linker-app` mount.
+	hero: './src/hero/index.tsx',
 };
 const entries = Object.keys( webpackConfig.entry ).filter(
 	( entry ) => ! ( entry in scripts )
