@@ -320,11 +320,39 @@ def phase_power_failures(text: str, bindings: list[dict[str, Any]]) -> list[str]
     for binding in bindings:
         for match in re.finditer(str(binding["label"]), text):
             labels.append((match.start(), match.end(), binding))
+    # A heading names the section that follows it ("### Einphasige
+    # Ausführung"). A prose sentence that mentions both phase words ("both
+    # single- and three-phase") must not capture the bullets below it.
+    headings: list[tuple[int, dict[str, Any]]] = []
+    for start, end, binding in labels:
+        line_start = text.rfind("\n", 0, start) + 1
+        line_end = text.find("\n", end)
+        line = text[line_start : line_end if line_end != -1 else len(text)]
+        # Strip the bullet marker so "- **Einphasig:** …" reads as a heading,
+        # while a long intro sentence that happens to end with ":" and mentions
+        # both phase words is not one (#336B review, local smoke). A plain
+        # "Einphasig: …" only heads a section when the label is followed by a
+        # colon near the start of the line.
+        marker = re.match(r"[ \t]*(?:[-*+]\s+)?", line)
+        body_offset = line_start + (marker.end() if marker else 0)
+        body = text[body_offset : line_end if line_end != -1 else len(text)]
+        label_text = text[start:end]
+        heading_like = body.startswith(("#", "**")) or re.match(
+            rf"(?i)^{re.escape(label_text)}[^\n:]{{0,10}}:", body
+        ) is not None
+        if heading_like:
+            headings.append((start, binding))
+    headings.sort(key=lambda item: item[0])
     failures: list[str] = []
     seen = {str(binding["phase"]): False for binding in bindings}
     for match in _KW.finditer(text):
         nearest: dict[str, Any] | None = None
         nearest_distance: int | None = None
+        if headings:
+            before = [binding for start, binding in headings if start <= match.start()]
+            if before:
+                nearest = before[-1]
+                nearest_distance = 0
         for start, end, binding in labels:
             if match.start() < start:
                 distance = start - match.end()
