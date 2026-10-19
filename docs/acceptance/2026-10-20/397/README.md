@@ -51,3 +51,39 @@ Both rows cleared the floors: no handoff block, no mailbox, no numbers, one text
 |---|---|
 | b45-en | "Thank you for reaching out. If anything else comes up — product details, documents, pairings or a solution draft — just get in touch. Have a good day!" |
 | b45-de | "Gern geschehen! Wenn Ihnen später noch etwas einfällt – zu Produkten, Pairings, Dokumenten oder einem Lösungsentwurf – bin ich jederzeit für Sie da. Einen schönen Tag noch!" |
+
+## Round 4 — the remaining figure binders
+
+Checks on this commit, from `services/genie`: `uv run --locked pytest` 1555 passed; `ruff check .`, `ruff format --check .`, and `mypy .` clean. The repo-wide `just check` / `just test` was not run.
+
+Same local stack: WordPress `http://127.0.0.1:9177`, Genie `http://127.0.0.1:9179`. Production was not run. `b44-b45.json` is still the judged record from the round-3 file above. This run's labels sit in the new jsonl and are not copied over that file.
+
+| Path | What |
+|---|---|
+| `full/baseline-20261020T022113.jsonl` | All 100 rows, with `--judge`, after the binder fixes. 76 pass, 22 fail, 2 needs-review. Client p50 5.1 s, p95 26.5 s, max 40.7 s. Gate p95 ≤ 30 s held. Hard gate still failing: b02-en, b15-de. |
+
+The eight rows on this file:
+
+| Row | Verdict | Seconds | Failure |
+|---|---|---|---|
+| b03-en | pass | 6.9 | |
+| b03-de | fail | 17.3 | fell back to the template; ungrounded numbers `2`, `2` |
+| b20-en | pass | 8.4 | |
+| b20-de | pass | 11.0 | |
+| b25-en | pass | 26.7 | 4105 is allowlisted; the live answer names VDE-AR-N 4105 and passes |
+| b25-de | fail | 20.8 | missing `Unterlagen/Dokumente nennen keine Unterstützung` (answer wording) |
+| b47-en | pass | 13.8 | |
+| b47-de | pass | 7.9 | |
+
+b14-en and b14-de failed in 0.2 s with HTTP 502 `linker_genie_upstream` ("Genie did not answer."). Both are transport. The other 98 rows completed. Those two lines were left as recorded.
+
+b44 and b45 on this file (not written back into `b44-b45.json`):
+
+| Row | grounded | appropriate | Verdict | Answer |
+|---|---|---|---|---|
+| b44-en | 2 | yes | pass | "I can't help with a weather forecast…" then the sales@ handoff. |
+| b44-de | 2 | no | fail | "Unser Team beantwortet das unter sales@de-linker.com." |
+| b45-en | | | needs-review | "You're welcome. Feel free to come back any time…" |
+| b45-de | | | needs-review | "Gern geschehen! Melden Sie sich jederzeit wieder…" |
+
+The other failures are the same answer and judge misses as before (three-phase wording, 1000 mm, BAT-D-G2, not_released, ask block, next step, one working day, grounded 0). They are not figure-binder misses.
