@@ -14,10 +14,15 @@ per row (question, seconds, meta, blocks, verdict) and prints the score per
 category and language.
 
 `--judge` adds the jev → deepseek-flash cascade (eval/judges, the same one the
-quality worker runs) to the rows whose assertion is `judge`; without it they
-are recorded as needing one, and `human-review` rows always are. The full
-baseline (100 rows against live and local, with latency percentiles) is the
-ticket's second half and follows the latency instrumentation PR.
+quality worker runs) to the rows whose assertion is `judge`. It does not waive
+the row's content assertions: those failures still fail the row. Without
+`--judge`, judge rows are `needs-judge` and `human-review` rows are
+`needs-review`, both in the same table as the passes. They are not passes, so
+the report cannot print 100/100 while any of them is still open.
+
+The client p95 (request sent → last SSE event) is the gate: above 30 s fails
+`--strict`. The target is 15 s. `meta.timing.first_event` is reported the same
+way. `--qualitative` runs the Top-10 gap rows instead of the 100.
 
 Model routing is never touched: Jev stays on OpenRouter's /v1/systemone,
 deepseek-flash on api.deepseek.com (AGENTS.md §5).
@@ -48,7 +53,13 @@ from baseline.grade import (  # noqa: E402
 )
 
 SET = Path(__file__).with_name("baseline100.jsonl")
+QUALITATIVE = Path(__file__).with_name("qualitative.jsonl")
 ROUTE = "/wp-json/linker-ai/v1/genie/turn"
+# Map #329: customer-visible p95 ≤ 30 s, target ≤ 15 s.
+CLIENT_P95_GATE_SECONDS = 30
+CLIENT_P95_TARGET_SECONDS = 15
+# Below this many measured rows the p95 is not a distribution yet.
+P95_MIN_ROWS = 20
 # The shell gives up on a turn after 60 s (SHELL_TIMEOUT); the trial's slowest
 # answer was 27.5 s. Four minutes bounds a wedged turn without losing a slow
 # honest one (the original trial script used 180).
@@ -62,12 +73,16 @@ def load_rows(
     only: list[str] | None = None,
     lang: str | None = None,
     category: str | None = None,
+    *,
+    qualitative: bool = False,
 ) -> list[dict[str, Any]]:
-    """The set in file order (the smoke slice first), cut by the filters."""
+    """The scored set in file order (the smoke slice first), or the qualitative
+    Top-10 section. Cut by the filters."""
 
+    source = QUALITATIVE if qualitative else SET
     rows = [
         json.loads(line)
-        for line in SET.read_text(encoding="utf-8").splitlines()
+        for line in source.read_text(encoding="utf-8").splitlines()
         if line
     ]
     if only:
@@ -117,6 +132,22 @@ def model_terms(item: dict[str, Any]) -> list[str]:
     return terms
 
 
+def messages_of(row: dict[str, Any]) -> list[dict[str, str]]:
+    """The thread this row sends: an optional earlier history, then the question.
+
+    Topic-switch rows carry the previous turn in `history`. The scored set
+    does not, and sends the one customer message.
+    """
+
+    history = row.get("history") or []
+    messages = [
+        {"role": str(message["role"]), "content": str(message["content"])}
+        for message in history
+    ]
+    messages.append({"role": "user", "content": str(row["question"])})
+    return messages
+
+
 def ask(wp: str, row: dict[str, Any]) -> tuple[Turn, str | None]:
     """One turn through the site's own REST route; the error string is set when
     the route itself failed (no turn happened)."""
@@ -125,7 +156,7 @@ def ask(wp: str, row: dict[str, Any]) -> tuple[Turn, str | None]:
     if page.get("url"):
         page["url"] = wp.rstrip("/") + page["url"]
     body = {
-        "messages": [{"role": "user", "content": row["question"]}],
+        "messages": messages_of(row),
         "locale": row["lang"],
         "page": page,
     }
@@ -223,13 +254,113 @@ def phase_medians(timings: list[dict[str, Any]]) -> dict[str, float]:
     }
 
 
+def grade_verdict(
+    assertion: str,
+    failures: list[str],
+    *,
+    judge: bool,
+    judged: tuple[str, list[str]] | None = None,
+) -> tuple[str, list[str]]:
+    """The row's verdict.
+
+    Content failures always fail the row. `--judge` adds the cascade on top of
+    them; it does not turn a row that missed its assertions into a pass.
+    Judge and human-review rows that clear the assertions stay `needs-judge`
+    or `needs-review` until a judge or a person scores them. Those verdicts
+    are not passes.
+    """
+
+    if failures:
+        extra = judged[1] if judged is not None else []
+        return "fail", failures + [item for item in extra if item not in failures]
+    if assertion == "deterministic":
+        return "pass", []
+    if assertion == "human-review":
+        return "needs-review", []
+    if not judge or judged is None:
+        return "needs-judge", []
+    verdict, judge_failures = judged
+    if verdict == "pass" and not judge_failures:
+        return "pass", []
+    if verdict == "needs-judge":
+        return "needs-judge", judge_failures
+    return "fail", judge_failures
+
+
+def _latency_values(values: list[float]) -> str:
+    """p50, p95 when there are enough rows, and the map's gate and target."""
+
+    p50 = percentile(values, 0.5)
+    p95 = percentile(values, 0.95) if len(values) >= P95_MIN_ROWS else None
+    text = f"p50 {p50}"
+    if p95 is not None:
+        text += f" p95 {p95}"
+    else:
+        text += f" (p95 needs >= {P95_MIN_ROWS} rows)"
+    text += f" max {max(values)}"
+    text += (
+        f"  [gate p95 <= {CLIENT_P95_GATE_SECONDS:g} s, "
+        f"target <= {CLIENT_P95_TARGET_SECONDS:g} s]"
+    )
+    return text
+
+
+def first_event_seconds(records: list[dict[str, Any]]) -> list[float]:
+    """`meta.timing.first_event` from the rows whose meta carried it."""
+
+    values = []
+    for record in records:
+        timing = record.get("timing")
+        if not isinstance(timing, dict):
+            continue
+        value = timing.get("first_event")
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            values.append(float(value))
+    return values
+
+
+def strict_status(records: list[dict[str, Any]]) -> tuple[int, str | None]:
+    """Exit status for `--strict`: a failed row, or a client p95 over 30 s.
+
+    The message names the 15 s target beside the gate. A run with fewer than
+    20 measured rows has no p95 yet and is not failed for latency.
+    """
+
+    seconds = [
+        float(record["seconds"])
+        for record in records
+        if record.get("seconds") is not None
+    ]
+    p95 = percentile(seconds, 0.95) if len(seconds) >= P95_MIN_ROWS else None
+    message = None
+    if p95 is not None and p95 > CLIENT_P95_GATE_SECONDS:
+        message = (
+            f"client p95 {p95} s exceeds the {CLIENT_P95_GATE_SECONDS:g} s gate "
+            f"(target <= {CLIENT_P95_TARGET_SECONDS:g} s)"
+        )
+    failed = any(record["verdict"] == "fail" for record in records)
+    if message is not None or failed:
+        return 1, message
+    return 0, None
+
+
 def report(records: list[dict[str, Any]]) -> str:
-    """The score per category and language, and the assertion split."""
+    """The score per category and language, judge rows included.
+
+    `needs-judge` and `needs-review` sit in the same table. They are counted
+    by name, never folded into a pass, so a line of N/N cannot hide them.
+    """
 
     lines = []
-    auto = [r for r in records if r["verdict"] in {"pass", "fail"}]
-    passed = sum(1 for r in auto if r["verdict"] == "pass")
-    lines.append(f"auto-graded {passed}/{len(auto)}")
+    counts = {name: 0 for name in ("pass", "fail", "needs-judge", "needs-review")}
+    for record in records:
+        if record["verdict"] in counts:
+            counts[record["verdict"]] += 1
+    lines.append(
+        f"rows {len(records)}: {counts['pass']} pass, {counts['fail']} fail, "
+        f"{counts['needs-judge']} needs-judge, {counts['needs-review']} needs-review"
+    )
+    marks = {"pass": ".", "fail": "!", "needs-judge": "J", "needs-review": "R"}
     categories = sorted({r["category"] for r in records})
     for category in categories:
         for lang in ("en", "de"):
@@ -238,26 +369,30 @@ def report(records: list[dict[str, Any]]) -> str:
             ]
             if not rows:
                 continue
-            ok = sum(1 for r in rows if r["verdict"] == "pass")
-            flags = "".join("!" if r["verdict"] == "fail" else " " for r in rows)
-            lines.append(f"  {category:<20} {lang}  {ok}/{len(rows)}  {flags}")
-    for verdict in ("needs-judge", "needs-review"):
-        count = sum(1 for r in records if r["verdict"] == verdict)
-        if count:
-            lines.append(f"{verdict}: {count} (not in the score)")
+            parts = [
+                f"{sum(1 for r in rows if r['verdict'] == verdict)} {verdict}"
+                for verdict in ("pass", "fail", "needs-judge", "needs-review")
+                if any(r["verdict"] == verdict for r in rows)
+            ]
+            flags = "".join(marks.get(r["verdict"], "?") for r in rows)
+            lines.append(f"  {category:<20} {lang}  {', '.join(parts)}  {flags}")
     hard = [r for r in records if r.get("hard") and r["verdict"] == "fail"]
     if hard:
         lines.append("HARD GATE FAILING: " + ", ".join(r["id"] for r in hard))
     seconds = [float(r["seconds"]) for r in records if r.get("seconds") is not None]
     if seconds:
-        p50 = percentile(seconds, 0.5)
-        p95 = percentile(seconds, 0.95) if len(seconds) >= 20 else None
         lines.append(
             "client seconds (gate number, request sent -> last event): "
-            f"p50 {p50}"
-            + (f" p95 {p95}" if p95 is not None else " (p95 needs >= 20 rows)")
-            + f" max {max(seconds)}  [gate p95 <= 30 s, target <= 15 s]"
+            + _latency_values(seconds)
         )
+    first = first_event_seconds(records)
+    if first:
+        lines.append(
+            "first_event seconds (handler entry -> first SSE event): "
+            + _latency_values(first)
+        )
+    else:
+        lines.append("first_event: meta.timing absent")
     timings = [r["timing"] for r in records if isinstance(r.get("timing"), dict)]
     if timings:
         phases = phase_medians(timings)
@@ -266,8 +401,8 @@ def report(records: list[dict[str, Any]]) -> str:
             + ", ".join(f"{phase} {value:.2f}" for phase, value in phases.items())
         )
     else:
-        lines.append("service timing: meta.timing absent (latency instrumentation PR)")
-    for record in auto:
+        lines.append("service timing: meta.timing absent")
+    for record in records:
         if record["verdict"] == "fail":
             lines.append(f"FAIL {record['id']} {'; '.join(record['failures'])[:180]}")
     return "\n".join(lines)
@@ -287,11 +422,20 @@ def main(argv: list[str] | None = None) -> int:
         help="run the judge cascade on judge rows (needs the model keys)",
     )
     parser.add_argument(
-        "--strict", action="store_true", help="exit 1 when any graded row fails"
+        "--qualitative",
+        action="store_true",
+        help="run the Top-10 qualitative section instead of the 100 scored rows",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="exit 1 when a row fails or the client p95 exceeds 30 s",
     )
     args = parser.parse_args(argv)
 
-    rows = load_rows(args.limit, args.only, args.lang, args.category)
+    rows = load_rows(
+        args.limit, args.only, args.lang, args.category, qualitative=args.qualitative
+    )
     if not rows:
         print("no rows selected", file=sys.stderr)
         return 2
@@ -313,20 +457,16 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 failures = check(row, turn, catalog)
                 meta = turn.meta
-                if row["assertion"] == "deterministic":
-                    verdict = "pass" if not failures else "fail"
-                elif row["assertion"] == "human-review":
-                    if failures:
-                        verdict = "fail"
-                    else:
-                        verdict = "needs-review"
-                        failures = []
-                elif args.judge:
-                    verdict, judge_failures, labels = judge_row(row, turn)
-                    failures = failures + judge_failures
+                judged: tuple[str, list[str]] | None = None
+                # The cascade only runs once the content assertions hold. A miss
+                # there already fails the row, judge rows included.
+                if row["assertion"] == "judge" and args.judge and not failures:
+                    judge_verdict, judge_failures, labels = judge_row(row, turn)
+                    judged = (judge_verdict, judge_failures)
                     meta = {**meta, "judged": labels}
-                else:
-                    verdict = "needs-judge" if not failures else "fail"
+                verdict, failures = grade_verdict(
+                    row["assertion"], failures, judge=args.judge, judged=judged
+                )
             record = {
                 "id": row["id"],
                 "slot": row["slot"],
@@ -338,9 +478,11 @@ def main(argv: list[str] | None = None) -> int:
                 "question": row["question"],
                 "page": row.get("page"),
                 "seconds": seconds,
-                # The service's own phase breakdown, when the SSE meta carries it
-                # (latency instrumentation PR); the runner never invents one.
-                "timing": meta.get("timing"),
+                # The service's per-turn timing object from the SSE meta. Absent
+                # when that event did not carry one; the runner never invents it.
+                "timing": meta.get("timing")
+                if isinstance(meta.get("timing"), dict)
+                else None,
                 "verdict": verdict,
                 "failures": failures,
                 "meta": meta,
@@ -361,10 +503,12 @@ def main(argv: list[str] | None = None) -> int:
     print()
     print(report(records))
     print(f"rows: {path}")
-    graded_fail = [r for r in records if r["verdict"] == "fail"]
-    if args.strict and graded_fail:
-        return 1
-    return 0
+    if not args.strict:
+        return 0
+    code, message = strict_status(records)
+    if message:
+        print(message, file=sys.stderr)
+    return code
 
 
 if __name__ == "__main__":

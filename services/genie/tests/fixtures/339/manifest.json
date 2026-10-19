@@ -1,0 +1,29 @@
+{
+  "ticket": 339,
+  "about": "Regression fixtures. A CI test names each case.",
+  "cases": [
+    {
+      "id": "s4-repeat-h2-10k-t3",
+      "issue": 376,
+      "campaign": "campaign-331/s4-repeat",
+      "rounds": 4,
+      "locales": ["de", "en"],
+      "questions": {
+        "de": "Welche Batterien passen zum SAJ H2-10K-T3?",
+        "en": "Which batteries work with the SAJ H2-10K-T3?"
+      },
+      "route": "pairing",
+      "intent": "pairing_compatibility",
+      "search": {
+        "ability": "linker/search-products",
+        "device_class": "inverters",
+        "with_pairings": true,
+        "text": "H2-10K-T3",
+        "limit": 1
+      },
+      "inverter": 4107,
+      "released": [4107, 1832, 2067, 2068, 2069, 2070, 2090, 2092],
+      "pass": "Four rounds, DE and EN, thread carried forward. Every round ships this released card set. A German grounding retry does not shrink it."
+    }
+  ]
+}

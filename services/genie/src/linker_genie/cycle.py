@@ -13,10 +13,10 @@ from dataclasses import dataclass
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.ground import check
-from linker_genie.hydrate import hydrate
+from linker_genie.hydrate import complete_pairing_cards, hydrate
 from linker_genie.language import language_failure, turn_language
 from linker_genie.prices import Lookup, fill
-from linker_genie.route import Route
+from linker_genie.route import SEARCH_LIMIT, Route
 from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
 from linker_genie.template import LOGIN_PLACEHOLDER, LOGIN_REQUIRED, fallback
 
@@ -117,7 +117,11 @@ def run(
             continue
         aligned = align_login(output, last_facts, expected)
         with timing.phase(clock, timing.HYDRATE):
-            hydrated = hydrate(aligned, last_facts, expected)
+            # One pairing set fills cards the attempt omitted, including the
+            # first attempt; the hydrated sentences follow the answer language
+            # (#382). Prose is not rewritten.
+            completed = complete_pairing_cards(aligned, last_facts, route)
+            hydrated = hydrate(completed, last_facts, expected)
             priced, priced_facts, missed = fill(hydrated, last_facts, commerce)
         mismatch = language_failure(priced, expected)
         if mismatch is not None:
@@ -137,6 +141,11 @@ def run(
     with timing.phase(clock, timing.TEMPLATE):
         rendered = fallback(last_facts, expected, route)
     with timing.phase(clock, timing.HYDRATE):
+        # Login stays the login sentence. Any other pairing fallback keeps the
+        # front of the released set, inside the template's six-card cap.
+        rendered = complete_pairing_cards(
+            rendered, last_facts, route, card_limit=SEARCH_LIMIT
+        )
         priced, priced_facts, missed = fill(rendered, last_facts, commerce)
     return TurnResult(
         output=priced,

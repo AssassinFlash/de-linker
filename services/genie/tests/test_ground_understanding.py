@@ -410,6 +410,46 @@ def test_the_shipped_company_turn_is_the_mailbox_sentence_and_the_card() -> None
     )
 
 
+def test_the_extreme_fallback_names_one_product_in_both_languages() -> None:
+    facts = TurnFacts()
+    facts.product_ids = {6518}
+    facts.qualified_ids = {6518}
+    facts.add(
+        Fact(id="search.extreme_product_id", value="6518", source="search-products")
+    )
+    facts.add(
+        Fact(id="search.extreme_model", value="GW30K-ETA-G20", source="search-products")
+    )
+    expected = {
+        "en": "The GW30K-ETA-G20 meets the limit you named.",
+        "de": "Das Modell GW30K-ETA-G20 erfüllt die genannte Grenze.",
+    }
+    for locale, sentence in expected.items():
+        output = fallback(facts, locale)
+        text, cards = output.blocks
+        assert isinstance(text, TextBlock)
+        assert isinstance(cards, CardsBlock)
+        assert text.text == sentence
+        assert text.refs == ["6518"]
+        assert cards.product_ids == [6518]
+        assert check(output, facts).ok
+
+
+def test_a_hidden_price_keeps_the_ordinary_fallback() -> None:
+    facts = TurnFacts()
+    facts.product_ids = {2068, 2069}
+    facts.qualified_ids = {2068, 2069}
+    facts.add(
+        Fact(id="search.extreme_price_hidden", value="1", source="search-products")
+    )
+    output = fallback(facts, "en")
+    text, cards = output.blocks[0], output.blocks[1]
+    assert isinstance(text, TextBlock)
+    assert isinstance(cards, CardsBlock)
+    assert text.text == "Here are matching products from our range."
+    assert cards.product_ids == [2068, 2069]
+
+
 def test_the_contact_card_is_the_offer_the_service_decided() -> None:
     from linker_genie.ground import shipped
 

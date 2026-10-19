@@ -40,7 +40,13 @@ from linker_genie.gate import Gate
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup
-from linker_genie.schema import MAX_REQUEST_BYTES, TurnOutput, TurnRequest, VoteRequest
+from linker_genie.schema import (
+    MAX_REQUEST_BYTES,
+    TextBlock,
+    TurnOutput,
+    TurnRequest,
+    VoteRequest,
+)
 from linker_genie.storeapi import StoreVocabulary
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
@@ -215,9 +221,11 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
                 offer = None
             else:
                 prepared.log["contact"] = offer.reason
-    # A request for a person and a parts list are answered by the service alone:
-    # no model ran (model-routing audits read provider/model).
-    code_made = prepared.route.name in ("person", "parts")
+    # A request for a person, a parts list, and a short-code clarification are
+    # answered by the service alone: no model ran (model-routing audits read
+    # provider/model). The four model channels are unchanged; this route is a
+    # sentence, not a channel.
+    code_made = prepared.route.name in ("person", "parts", "clarify")
     with timing.phase(clock, timing.LOG):
         turn_id = turn_log().record(
             conversation_id=body.conversation_id,
@@ -291,8 +299,9 @@ def _answer(
     clock: timing.Timing | None = None,
 ) -> tuple[TurnResult, dict[str, object] | None]:
     """The turn's answer: the model's; the service's own for a request for a person
-    (contact.answer; #243); or the parts list's (parts.answer; #251). With a service
-    block, no model runs and none can claim it sent anything."""
+    (contact.answer; #243); a short-code clarification (route.answer); or the parts
+    list's (parts.answer; #251). With a service block, no model runs and none can
+    claim it sent anything."""
     # A person request and a parts list are written by the service. Their
     # sentences follow the question, the same rule as a model answer.
     language = turn_language(body)
@@ -300,6 +309,23 @@ def _answer(
         return (
             TurnResult(
                 output=TurnOutput(language=language, blocks=[contact.answer(language)]),
+                facts=TurnFacts(),
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ),
+            None,
+        )
+    if prepared.route.name == "clarify" and prepared.route.answer:
+        # The question is fixed in route.py. No tool call ran, and the model
+        # does not invent one. Price lookup and inquiry send are untouched.
+        return (
+            TurnResult(
+                output=TurnOutput(
+                    language=language,
+                    blocks=[TextBlock(text=prepared.route.answer)],
+                ),
                 facts=TurnFacts(),
                 grounded=True,
                 failures=(),

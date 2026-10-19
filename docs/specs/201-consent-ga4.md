@@ -52,3 +52,19 @@ CookieYes 原生 Polylang 语言选择、原生双语 banner settings/contents�
 ## 当前最终呈现与批准
 
 操作者要求改善默认样式及德文密度，最终批准“可以了，英德两版一起上线”。最终截图见验收cookieyes目录内`*-redesign.png`与`de-*-refined.png`，旧默认截图只保留为迭代证据。站点字体/圆角通过WindPress卷consent.css管理；CookieYes只保留原生UI/存储/交互，页脚入口替代多余悬浮圆钮。原生德语错误关闭文案与英语ARIA标签已修正，ARIA引用实际译文标题。
+
+## 2026-10-19 样式例外（业主裁定）
+
+CookieYes 横幅是插件自己的界面。横幅、按钮和标题的颜色写在 CookieYes 原生设置里（`tools/migrate/201-consent.php`），不迁到 WindPress，也不改这些颜色。AGENTS.md §5 的「客户可见页面的样式只在 WindPress」约束站点页面，不约束第三方 CMP 的原生设置。`content/windpress/consent.css` 继续只管已批准的字体、圆角和页脚入口，不接管上述颜色。
+
+## 2026-10-19 复核后的门
+
+部署校验除 `/` 与 `/de/` 外还读取产品页 `/product/saj-b2-10-0-hv1/` 与 `/de/produkt/saj-b2-10-0-hv1/`。这些未带同意 Cookie 的读取里，分析同意是拒绝，页面必须带有 `id="google_gtagjs-js"`。
+
+Handle 改名而 CookieYes 仍激活时，屏障按 `googletagmanager.com/gtag/js` 继续把标签设为 `text/plain`，并写一条 `linker-consent` 警告。部署校验仍因 handle 缺失而失败，不把 URL 兜底当成 handle 还在。
+
+CookieYes 停用（没有 `CLI_VERSION`）时不改写标签，因为没有放行方；同一次请求写一条警告。部署校验因插件未激活、且标签没有被拦住而失败。
+
+独立运行 `tools/migrate/201-consent.py --write` 必须带 `--backup-dir`。它先导出受影响的设置、横幅、分类、Cookie、两份隐私政策和 Site Kit consent 选项，再写入，再读回；读回仍有漂移则失败。部署路径 `configure_consent` 不使用这个参数：切换前的数据库快照是它的备份，每次部署写一次再读回一次，重复部署发送同一对调用。
+
+隐私政策先写英文，再由原生 adopt 写入德文。写入前记下两页正文。任一步失败或读回与计划不一致时，两页都恢复成写入前的正文。

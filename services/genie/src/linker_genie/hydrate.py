@@ -20,11 +20,13 @@ from __future__ import annotations
 
 import re
 
-from linker_genie.facts import Document, Fact, TurnFacts
+from linker_genie.facts import Document, Fact, TurnFacts, pairing_card_sets
 from linker_genie.figures import chunk_of, localize
+from linker_genie.route import Route
 from linker_genie.schema import (
     ActionBlock,
     Block,
+    CardsBlock,
     DocumentBlock,
     HandoffBlock,
     TextBlock,
@@ -48,6 +50,93 @@ PLACEHOLDER = re.compile(r"\{fact:([^}]+)\}")
 # (issue #257 trial run, a range lost its upper figure).
 _PLACEHOLDER_AND_WORD = re.compile(r"\{fact:([^}]+)\}((?:\s?[A-Za-zÄÖÜäöü%°²µΩ℃]+)?)")
 _UNIT_TAIL = re.compile(r"\d\s?([^\s\d]+)$")
+# Routes whose tools the model may have chosen. `model` is the route when Jev
+# reads a pairing and code does not prefetch (route.plan), so the model calls
+# the tool itself. Any other route keeps the cards the model wrote.
+_PAIRING_ROUTES = frozenset({"pairing", "model"})
+
+
+def complete_pairing_cards(
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None,
+    card_limit: int | None = None,
+) -> TurnOutput:
+    """Fill one pairing answer's cards from the single released set (#376).
+
+    Campaign 331 `s4-repeat` asked the same question four times (DE turns
+    62–65, EN 35–38). The route and the search stayed put. The cards did not:
+    a German grounding retry, and a first attempt that simply left the
+    inverter out, shipped the batteries alone. The c376 replay before this
+    fill dropped product 4107 on `attempts=1` as well (rounds 1 and 3). No
+    shopping assistant publishes a rule for what a repeated turn must keep;
+    the evidence for the rule is that campaign.
+
+    The set comes from `facts.pairing_card_sets`, which reads the same
+    verdicts as `facts._from_search`. One search-products row with pairings
+    is the qualified product, then each released battery, in the tool's
+    order. One released check-compatibility call is the two products it was
+    given, in argument order. A verdict that is not released does not make a
+    set. The prose stays the model's. When the cards already are the set,
+    their order is kept. When they are a narrower subset, the block becomes
+    the set and the first text block cites every id in it.
+
+    The fill runs on the first attempt and on a retry: the c376 rounds that
+    dropped the inverter had not retried. It runs for a code route named
+    `pairing` and for a `model` route. It does not run for any other route.
+    Two pairing sets in one turn stay as the model wrote them. Independent
+    searches are not merged into one block.
+
+    `inquiry.login_required` outranks every shape (`template.fallback`): the
+    login sentence is the whole answer, and this function does not add cards.
+    A fallback passes `card_limit` of `route.SEARCH_LIMIT`. Trial question 11
+    caps that template at six cards. The six are the front of this set, so
+    the searched product is not sorted out of the window. A grounded answer
+    is not capped; the campaign ships the whole set.
+    """
+    if "inquiry.login_required" in facts.facts:
+        return output
+    if route is None or route.no_cards or route.name not in _PAIRING_ROUTES:
+        return output
+    sets = pairing_card_sets(facts)
+    if len(sets) != 1:
+        return output
+    released = sets[0] if card_limit is None else sets[0][:card_limit]
+    if not released:
+        return output
+    blocks: list[Block] = list(output.blocks)
+    card_at = [i for i, block in enumerate(blocks) if isinstance(block, CardsBlock)]
+    shown: list[int] = []
+    for index in card_at:
+        block = blocks[index]
+        if isinstance(block, CardsBlock):
+            shown.extend(block.product_ids)
+    if set(shown) == set(released) and len(shown) == len(released):
+        return output
+    cards = CardsBlock(product_ids=list(released))
+    if card_at:
+        blocks[card_at[0]] = cards
+        for index in reversed(card_at[1:]):
+            del blocks[index]
+    else:
+        after = next(
+            (i + 1 for i, block in enumerate(blocks) if isinstance(block, TextBlock)),
+            len(blocks),
+        )
+        blocks.insert(after, cards)
+    for index, block in enumerate(blocks):
+        if not isinstance(block, TextBlock):
+            continue
+        refs = list(block.refs)
+        have = set(refs)
+        for product_id in released:
+            token = str(product_id)
+            if token not in have and f"p{product_id}" not in have:
+                refs.append(token)
+                have.add(token)
+        blocks[index] = block.model_copy(update={"refs": refs})
+        break
+    return output.model_copy(update={"blocks": blocks})
 
 
 def hydrate(
