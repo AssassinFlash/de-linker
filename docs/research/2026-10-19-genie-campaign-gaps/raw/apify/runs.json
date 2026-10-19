@@ -1,0 +1,35 @@
+[
+  {
+    "actor": "apify/google-search-scraper",
+    "runId": "q32x8vIZndjm2fFuo",
+    "datasetId": "FxjaaIBhYabicTZiT",
+    "tokenVar": "APIFY_TOKEN",
+    "startedAt": "2026-10-19T06:01:25Z",
+    "finishedAt": "2026-10-19T06:02:43Z",
+    "purpose": "10 targeted queries on the five failure classes not covered by existing dossiers (topic switch, in-file prompt injection, latency SLO, failure UX, concurrency)",
+    "input": "queries as one newline-joined string, maxPagesPerQuery=1, resultsPerPage=8",
+    "output": "search-failure-classes.json (slimmed: search-slim.json)"
+  },
+  {
+    "actor": "apify/website-content-crawler",
+    "runId": "UWWDChtbjysNqrGxf",
+    "datasetId": "vqU5nh34BOnAnLpEK",
+    "tokenVar": "APIFY_TOKEN",
+    "startedAt": "2026-10-19T06:03:49Z",
+    "finishedAt": "2026-10-19T06:04:24Z",
+    "purpose": "full text of the four load-bearing hits: Lasso Rufus write-up, arXiv Ctrip Wendao study, OWASP prompt-injection cheat sheet, uxpatterns.dev AI error states",
+    "input": "4 startUrls, maxCrawlDepth=0",
+    "output": "pages-raw.json -> pages/*.md"
+  },
+  {
+    "actor": "apify/website-content-crawler",
+    "runId": "GOKFFBR95cVkdmAU4",
+    "datasetId": "VRtMFdoNeihzryx8e",
+    "tokenVar": "APIFY_TOKEN",
+    "startedAt": "2026-10-19T06:05:51Z",
+    "finishedAt": "2026-10-19T06:06:08Z",
+    "purpose": "NN/g AI chatbot design guidelines: check for any public latency guidance",
+    "input": "1 startUrl, maxCrawlDepth=0",
+    "output": "nng-ai-chatbots.json -> pages/nngroup-ai-chatbots-design-guidelines.md"
+  }
+]
