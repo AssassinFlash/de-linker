@@ -2,11 +2,14 @@
 
 Grounding does not rewrite the model text (docs/specs/13-genie.md). A failed
 check is a reason to ask the model again with the error list, then to fall
-back to qualified cards plus one ask.
+back to qualified cards plus one ask. A fatal failure (model 5xx/429/empty
+stream, a missing or corrupt index, an ability 5xx or timeout) is classified
+and the template says so with the reviewed degraded sentence (#410).
 """
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -14,16 +17,30 @@ from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.ground import check
 from linker_genie.hydrate import complete_pairing_cards, hydrate
-from linker_genie.language import language_failure, turn_language
+from linker_genie.language import (
+    LANGUAGE_RETRY_PREFIX,
+    language_failure,
+    turn_language,
+)
 from linker_genie.prices import Lookup, fill
 from linker_genie.route import SEARCH_LIMIT, Route
 from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
-from linker_genie.template import LOGIN_PLACEHOLDER, LOGIN_REQUIRED, fallback
+from linker_genie.template import (
+    LOGIN_PLACEHOLDER,
+    LOGIN_REQUIRED,
+    FailureClass,
+    fallback,
+)
 
 # pydantic-ai tool_manager._check_max_retries, on UnexpectedModelBehavior
 # after AgentRetries.tools is spent. Output retries use a different sentence
 # ("Exceeded maximum output retries"), so this phrase is the tool budget only.
 _TOOL_RETRIES_EXHAUSTED = "exceeded max retries count of"
+# ModelHTTPError.__str__ (`status_code: 500, model_name: deepseek-flash, body: …`).
+# An ability 5xx is `returned 500`, so the model_name marker keeps the two apart.
+_MODEL_HTTP = re.compile(r"status_code: (?:429|5\d\d)\b")
+# AbilityError after the client's own retries (abilities.py).
+_ABILITY_5XX = re.compile(r"returned 5\d\d\b")
 
 Generate = Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]
 
@@ -45,6 +62,54 @@ class TurnResult:
 def _tool_retries_exhausted(failures: tuple[str, ...]) -> bool:
     """True when a tool spent pydantic-ai's tool retries and the run stopped."""
     return any(_TOOL_RETRIES_EXHAUSTED in failure for failure in failures)
+
+
+def fatal_class(failures: tuple[str, ...]) -> FailureClass | None:
+    """The fatal class of this turn, or None for an ordinary grounding miss.
+
+    `model`: a chat 5xx, a 429, or an empty stream (ChatCompletion `model`
+    is None). `retrieval`: the document index is missing or not a database
+    (`document index unavailable`). `ability`: an ability 5xx, a timeout,
+    or the retries giving up (`returned 5xx`, `could not be reached`,
+    `did not answer after`). A grounding sentence such as "a products turn
+    is not a question for the team" is none of these (#410, #332 D1/D2).
+    """
+    found: FailureClass | None = None
+    rank = {"ability": 1, "retrieval": 2, "model": 3}
+    for failure in failures:
+        kind = _one_failure(failure)
+        if kind is not None and (found is None or rank[kind] > rank[found]):
+            found = kind
+            if found == "model":
+                return found
+    return found
+
+
+def _one_failure(failure: str) -> FailureClass | None:
+    if _is_model_failure(failure):
+        return "model"
+    if "document index unavailable" in failure:
+        return "retrieval"
+    if _is_ability_failure(failure):
+        return "ability"
+    return None
+
+
+def _is_model_failure(failure: str) -> bool:
+    if _MODEL_HTTP.search(failure) and "model_name:" in failure:
+        return True
+    lowered = failure.lower()
+    if "chatcompletion" in lowered and "input_value=none" in lowered:
+        return True
+    return "invalid response from" in lowered and "chat completions" in lowered
+
+
+def _is_ability_failure(failure: str) -> bool:
+    return (
+        _ABILITY_5XX.search(failure) is not None
+        or "could not be reached" in failure
+        or "did not answer after" in failure
+    )
 
 
 def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutput:
@@ -83,6 +148,8 @@ def run(
     seed: TurnFacts | None = None,
     commerce: Lookup | None = None,
     clock: timing.Timing | None = None,
+    *,
+    call_failures: tuple[str, ...] = (),
 ) -> TurnResult:
     """Produce a grounded, hydrated turn. `generate` may call tools.
 
@@ -100,12 +167,20 @@ def run(
     then answers in the required language. The violating text is not shipped.
     A grounding failure is retried on its own; the language check runs only
     after grounding has passed.
+
+    `call_failures` are the understanding layer's route-call failures
+    (`prepared.log["call_failures"]`). A products search that returned 500
+    is recorded there, while the model's later handoff fails grounding, so
+    the fallback still has to see the ability failure (#410, AB-500).
     """
     expected = turn_language(request)
     retry_reason: str | None = None
     seeded = seed or TurnFacts()
     last_facts = seeded
     last_failures: tuple[str, ...] = ()
+    # Every failed attempt, plus the route's own call failures. The shipped
+    # `failures` stay the last attempt; this list only classifies the turn.
+    noted: list[str] = list(call_failures)
     for attempt in (1, 2):
         try:
             with (
@@ -115,6 +190,7 @@ def run(
                 output, facts = generate(request, retry_reason)
         except (ValueError, TypeError, RuntimeError) as error:
             last_failures = (str(error),)
+            noted.extend(last_failures)
             retry_reason = last_failures[0]
             last_facts = seeded
             continue
@@ -123,6 +199,7 @@ def run(
             result = check(output, last_facts, route)
         if not result.ok:
             last_failures = result.failures
+            noted.extend(last_failures)
             retry_reason = result.reason
             continue
         aligned = align_login(output, last_facts, expected)
@@ -136,6 +213,7 @@ def run(
         mismatch = language_failure(priced, expected)
         if mismatch is not None:
             last_failures = (mismatch,)
+            noted.extend(last_failures)
             retry_reason = mismatch
             continue
         return TurnResult(
@@ -149,11 +227,18 @@ def run(
             price_failures=tuple(missed),
         )
     with timing.phase(clock, timing.TEMPLATE):
+        # A grounded answer in the wrong language is repaired by the template
+        # in the required language (#374). An earlier 500 must not turn that
+        # repair into the outage sentence.
+        kind = fatal_class(tuple(noted))
+        if any(failure.startswith(LANGUAGE_RETRY_PREFIX) for failure in last_failures):
+            kind = None
         rendered = fallback(
             last_facts,
             expected,
             route,
             exhausted=_tool_retries_exhausted(last_failures),
+            failure_class=kind,
         )
     with timing.phase(clock, timing.HYDRATE):
         # Login stays the login sentence. Any other pairing fallback keeps the

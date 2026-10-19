@@ -351,7 +351,24 @@ def _answer(
     generate = getattr(request.app.state, "generate", None) or make_generate(
         ability_client(), prepared=prepared, pages=page_reader().read, clock=clock
     )
-    return run(body, generate, prepared.route, prepared.facts, commerce, clock), None
+    logged = prepared.log.get("call_failures")
+    call_failures = (
+        tuple(item for item in logged if isinstance(item, str))
+        if isinstance(logged, list)
+        else ()
+    )
+    return (
+        run(
+            body,
+            generate,
+            prepared.route,
+            prepared.facts,
+            commerce,
+            clock,
+            call_failures=call_failures,
+        ),
+        None,
+    )
 
 
 def _sse(
