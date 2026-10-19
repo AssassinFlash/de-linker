@@ -13,6 +13,7 @@ word, is a fixed question: the service writes it and the model does not run.
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
@@ -20,6 +21,7 @@ from linker_genie import page as page_tool
 from linker_genie.jev import Reading
 from linker_genie.lexicon import MAX_WORDS, MIN_CODE, Match, _words, normalize
 from linker_genie.nameplate import Identified
+from linker_genie.prefill import stated_size_hint
 from linker_genie.schema import PageContext
 from linker_genie.tools import MAX_TOOL_CALLS, READ_PAGE
 
@@ -125,20 +127,15 @@ RouteName = Literal[
     "clarify",
 ]
 
-# Words of a sizing question, read in code so the configurator opens prefilled.
+# A kWp or a yearly kWh keeps the turn on sizing. The extreme search uses
+# these two shapes only as that gate. The configurator fields are read in
+# prefill.py.
 _KWP = re.compile(r"(\d+(?:[.,]\d+)?)\s*kwp\b", re.IGNORECASE)
 _ANNUAL = re.compile(
     r"(\d{1,3}(?:[.,]\d{3})+|\d{3,6})\s*kwh\s*(?:/\s*(?:a|yr|year|jahr)\b|per\s+year|a\s+year|"
     r"pro\s+jahr|im\s+jahr|jährlich|yearly|annual)",
     re.IGNORECASE,
 )
-_THREE_PHASE = re.compile(
-    r"\b(?:3|three|drei)[\s-]*(?:phase|phasen|phasig)", re.IGNORECASE
-)
-_ONE_PHASE = re.compile(
-    r"\b(?:1|single|one|ein)[\s-]*(?:phase|phasen|phasig)", re.IGNORECASE
-)
-_BACKUP = re.compile(r"backup|back-up|notstrom|ersatzstrom", re.IGNORECASE)
 # Extreme words, EN and DE. Comparatives (kleiner, größer, günstiger) are not
 # extremes. ß and ss both occur.
 _SMALLEST = re.compile(
@@ -303,11 +300,15 @@ def plan(
     subject: Subject,
     lang: str,
     bare: bool = False,
+    earlier: Sequence[str] = (),
 ) -> Route:
     """The route of one turn (module docstring).
 
     `bare` is true when the message is nothing but product words: then a category
     word ("EMS", "Zubehör") searches its products as a brand or model word does.
+    `earlier` is the conversation's previous user messages: a sizing prefill may
+    carry figures the customer already stated, and this message wins on a field
+    both name (#365, dossier §1.12).
     """
     intent = reading.intent if reading and reading.confidence >= CONFIDENT else None
     named = [m for m in matches if m.kind in ("brand", "series", "model")]
@@ -353,18 +354,25 @@ def plan(
     if intent == "sizing":
         return Route(
             "sizing",
-            (Call("linker/size-hint", stated_size_hint(message)),),
+            (
+                # This dict is the only size-hint derivation. The route log
+                # stores it, and understand sends the same object (#365).
+                Call(
+                    "linker/size-hint",
+                    stated_size_hint((*earlier, message)),
+                ),
+            ),
             action="open_configurator",
             no_cards=True,
             no_handoff=True,
             hint=(
                 "This is a sizing question. The Solution Configurator sizes the "
                 "system from the customer's PV and consumption: say so in one or "
-                "two sentences and add the open_configurator action (the "
-                "service fills its URL from the customer's own words; a field "
-                "they did not state is absent). No product cards. Do not call "
-                "size-hint with a phase, backup, yearly load or postcode they "
-                "did not state."
+                "two sentences and add the open_configurator action (the service "
+                "fills its URL from pv_kwp, annual_load_kwh, phase, backup and "
+                "plz the customer stated in the conversation, and leaves out "
+                "every field they did not state). No product cards. Call "
+                "size-hint with an empty object."
             ),
             reasons=tuple(reasons),
         )
@@ -844,38 +852,6 @@ def extreme_input(
         item.kind == "model" for item in matches
     ):
         found["series"] = series[0].value
-    return found
-
-
-def stated_size_hint(message: str) -> dict[str, Any]:
-    """The size-hint object a configurator URL may be built from (#365).
-
-    `sizing_input` is the only source: kWp, yearly kWh, phase and backup as
-    this message writes them. Callers pass this dict on and drop whatever
-    object they were given — the model's, when the route did not call the
-    tool and the model calls it itself. A catalogue fact is not a source
-    either: no rule copies a named product's phase into this prefill
-    (docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md §1.12; the read
-    stays deterministic, §1.1).
-    """
-    return sizing_input(message)
-
-
-def sizing_input(message: str) -> dict[str, Any]:
-    """The size-hint input the message states in figures (kWp, kWh a year, phase, backup)."""
-    found: dict[str, Any] = {}
-    kwp = _KWP.search(message)
-    if kwp:
-        found["pv_kwp"] = float(kwp.group(1).replace(",", "."))
-    annual = _ANNUAL.search(message)
-    if annual:
-        found["annual_load_kwh"] = float(re.sub(r"[.,]", "", annual.group(1)))
-    if _THREE_PHASE.search(message):
-        found["phase"] = 3
-    elif _ONE_PHASE.search(message):
-        found["phase"] = 1
-    if _BACKUP.search(message):
-        found["backup"] = "needed"
     return found
 
 

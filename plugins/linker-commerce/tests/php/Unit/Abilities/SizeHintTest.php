@@ -66,4 +66,24 @@ final class SizeHintTest extends TestCase {
 		$schema = ( new SizeHint() )->args()['output_schema'];
 		$this->assertSame( array( 'summary', 'configurator_url' ), $schema['required'] );
 	}
+
+	/**
+	 * The query mapping genie looks up (#365 round 2).
+	 *
+	 * The file services/genie/tests/fixtures/size-hint-urls.json is produced
+	 * by this class (home_url https://de-linker.com, add_query_arg as
+	 * http_build_query, the doubles above). The Python tests read that file
+	 * and do not reimplement (string)(float), the annual_kwh rename, or the
+	 * whitelist.
+	 */
+	public function test_the_committed_fixture_is_the_query_mapping(): void {
+		$path    = dirname( __DIR__, 6 ) . '/services/genie/tests/fixtures/size-hint-urls.json';
+		$fixture = json_decode( (string) file_get_contents( $path ), true );
+		$this->assertIsArray( $fixture );
+		$this->assertNotEmpty( $fixture['cases'] );
+		foreach ( $fixture['cases'] as $case ) {
+			$result = ( new SizeHint() )->execute( $case['input'] );
+			$this->assertSame( $case['configurator_url'], $result['configurator_url'] );
+		}
+	}
 }

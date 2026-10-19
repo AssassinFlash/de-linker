@@ -1,0 +1,175 @@
+{
+    "produced_by": "Linker\\Commerce\\Abilities\\SizeHint::execute",
+    "home": "https://de-linker.com",
+    "query": "http_build_query, the add_query_arg double in SizeHintTest",
+    "note": "Python tests look URLs up here and do not reimplement the mapping (#365 round 2). SizeHintTest asserts this file still matches the class.",
+    "cases": [
+        {
+            "input": {},
+            "configurator_url": "https://de-linker.com/solution-configurator/"
+        },
+        {
+            "input": {
+                "pv_kwp": 12
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12"
+        },
+        {
+            "input": {
+                "pv_kwp": 12.5
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12.5"
+        },
+        {
+            "input": {
+                "pv_kwp": 8,
+                "annual_load_kwh": 6000
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=8&annual_kwh=6000"
+        },
+        {
+            "input": {
+                "pv_kwp": 12.5,
+                "annual_load_kwh": 4500,
+                "phase": 3,
+                "backup": "needed"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12.5&annual_kwh=4500&phase=3&backup=needed"
+        },
+        {
+            "input": {
+                "pv_kwp": 5,
+                "phase": 1
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=5&phase=1"
+        },
+        {
+            "input": {
+                "pv_kwp": 10,
+                "annual_load_kwh": 4000,
+                "phase": 3,
+                "backup": "needed",
+                "plz": "80538"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4000&phase=3&backup=needed&plz=80538"
+        },
+        {
+            "input": {
+                "pv_kwp": 12,
+                "phase": 1
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&phase=1"
+        },
+        {
+            "input": {
+                "pv_kwp": 12,
+                "phase": 3
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&phase=3"
+        },
+        {
+            "input": {
+                "pv_kwp": 12,
+                "phase": 3,
+                "plz": "80538"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=12&phase=3&plz=80538"
+        },
+        {
+            "input": {
+                "annual_load_kwh": 6000
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?annual_kwh=6000"
+        },
+        {
+            "input": {
+                "annual_load_kwh": 12000
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?annual_kwh=12000"
+        },
+        {
+            "input": {
+                "backup": "none"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?backup=none"
+        },
+        {
+            "input": {
+                "backup": "needed"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?backup=needed"
+        },
+        {
+            "input": {
+                "backup": "needed_accessory_ok"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?backup=needed_accessory_ok"
+        },
+        {
+            "input": {
+                "backup": "sometimes"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/"
+        },
+        {
+            "input": {
+                "plz": "80538"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?plz=80538"
+        },
+        {
+            "input": {
+                "pv_kwp": 0
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/"
+        },
+        {
+            "input": {
+                "annual_load_kwh": 0
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/"
+        },
+        {
+            "input": {
+                "pv_kwp": -1
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/"
+        },
+        {
+            "input": {
+                "phase": 2
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/"
+        },
+        {
+            "input": {
+                "phase": 1
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?phase=1"
+        },
+        {
+            "input": {
+                "phase": 3
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/?phase=3"
+        },
+        {
+            "input": {
+                "plz": "8053"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/"
+        },
+        {
+            "input": {
+                "plz": "805381"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/"
+        },
+        {
+            "input": {
+                "plz": "ABCDE"
+            },
+            "configurator_url": "https://de-linker.com/solution-configurator/"
+        }
+    ]
+}
