@@ -1,5 +1,5 @@
 {
- "_about": "Bare product words, EN and DE (#233): each must show products of its expectation as cards and never be taken for a name or a greeting. Used by tests/test_lexicon.py (offline, against tests/fixtures/storeapi.json) and eval/understanding/run.py (live, against a local instance). \"bare\": false marks a product word with a describing word beside it (\"hybrid inverter\"): Jev routes it, code alone does not.",
+ "_about": "Bare product words, EN and DE (#233): each must show products of its expectation as cards and never be taken for a name or a greeting. Used by tests/test_lexicon.py (offline, against tests/fixtures/storeapi.json) and eval/understanding/run.py (live, against a local instance). \"bare\": false marks a product word with a describing word beside it (\"hybrid inverter\"): Jev routes it, code alone does not. Two further sentences (note \"#369\") are the #339 regression for the short body BD-8.",
  "cases": [
   {
    "lang": "en",
@@ -527,6 +527,24 @@
    "expect": {
     "category": "ems-monitoring"
    }
+  },
+  {
+   "lang": "en",
+   "message": "Looking for Ecoflow Ocean two batteries, the BD-8 one.",
+   "expect": {
+    "model": "EF BD-8-S2"
+   },
+   "bare": false,
+   "note": "#369"
+  },
+  {
+   "lang": "de",
+   "message": "Ich suche zwei EcoFlow OCEAN Batterien, die BD-8.",
+   "expect": {
+    "model": "EF BD-8-S2"
+   },
+   "bare": false,
+   "note": "#369"
   }
  ]
 }

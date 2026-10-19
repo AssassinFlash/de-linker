@@ -5,7 +5,9 @@
 answer must then show. deepseek-flash only writes the answer from those results.
 When Jev is unsure (confidence below `CONFIDENT`) or did not answer, the route makes
 no call of its own and the model decides — except that a brand, series or model word
-always runs the product search: a product word is never a greeting.
+always runs the product search: a product word is never a greeting. A short body
+that more than one product holds, or a shared trailing suffix with no other product
+word, is a fixed question: the service writes it and the model does not run.
 """
 
 from __future__ import annotations
@@ -16,7 +18,7 @@ from typing import Any, Literal
 
 from linker_genie import page as page_tool
 from linker_genie.jev import Reading
-from linker_genie.lexicon import MIN_CODE, Match, normalize
+from linker_genie.lexicon import MAX_WORDS, MIN_CODE, Match, _words, normalize
 from linker_genie.nameplate import Identified
 from linker_genie.schema import PageContext
 from linker_genie.tools import MAX_TOOL_CALLS, READ_PAGE
@@ -118,6 +120,9 @@ RouteName = Literal[
     "person",
     "service",
     "model",
+    # A fixed question: an unmatched short body, or a shared suffix alone.
+    # The service writes `Route.answer`. No tool call, no model.
+    "clarify",
 ]
 
 # Words of a sizing question, read in code so the configurator opens prefilled.
@@ -236,6 +241,8 @@ class Route:
     dropped: tuple[Call, ...] = ()
     # Models the customer named, in the order of the message (#363, #364, #367).
     named_models: tuple[NamedModel, ...] = ()
+    # The service's own sentence for a `clarify` route. Empty on every other route.
+    answer: str = ""
 
     def as_log(self) -> dict[str, Any]:
         log: dict[str, Any] = {
@@ -283,6 +290,10 @@ class Subject:
     brand_names: dict[str, str] = field(default_factory=dict)
     names: dict[int, str] = field(default_factory=dict)
     catalog_models: tuple[str, ...] = ()
+    # Short bodies that named more than one product, and trailing suffixes shared
+    # by two or more products (lexicon.py). Empty when the subject has no catalog.
+    unresolved_bodies: frozenset[str] = frozenset()
+    shared_suffixes: frozenset[str] = frozenset()
 
 
 def plan(
@@ -357,6 +368,12 @@ def plan(
             ),
             reasons=tuple(reasons),
         )
+    # An unmatched short body, or a suffix with no product word, is a question.
+    # It does not search the family the other words name, and it does not hand
+    # the model a generic hint. A named model still searches.
+    clarify = _clarify(message, matches, subject, lang, reasons)
+    if clarify is not None:
+        return clarify
     family = _family_hint(matches)
     calls, notes = _search_plan(matches, lang, subject, message)
     hint_extra = _model_hint(notes)
@@ -615,6 +632,122 @@ def person(reasons: list[str]) -> Route:
     sentence and the contact card (contact.answer, app.assistant_turn).
     """
     return Route("person", reasons=tuple(reasons))
+
+
+# Words that may stand beside a suffix or a short body without naming a product.
+# "the S2 one", "die S2", "das G20". A brand or a question word is not in here.
+_DEICTIC = frozenset(
+    {
+        "the",
+        "a",
+        "an",
+        "one",
+        "this",
+        "that",
+        "please",
+        "der",
+        "die",
+        "das",
+        "den",
+        "dem",
+        "des",
+        "ein",
+        "eine",
+        "einen",
+        "einem",
+        "einer",
+        "bitte",
+        "modell",
+        "model",
+        "variante",
+        "version",
+    }
+)
+# A hyphenated token as the customer wrote it ("BD-8"), so the question can
+# repeat their word. The matcher's own cut drops the hyphen.
+_HYPHENATED = re.compile(r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*")
+
+
+def _clarify(
+    message: str,
+    matches: list[Match],
+    subject: Subject,
+    lang: str,
+    reasons: list[str],
+) -> Route | None:
+    """A fixed question when a short body or a lone suffix cannot be matched.
+
+    A model word wins: the customer named something the catalog lists. An
+    unresolved body asks even when a brand or a series also matches, so the
+    turn does not search that family. A suffix asks only when the message has
+    no product word and the other words are pointers ("the S2 one").
+    """
+    if any(match.kind == "model" for match in matches):
+        return None
+    body = _customer_phrase(message, subject.unresolved_bodies)
+    if body is not None:
+        return _clarify_route(body, lang, "body", reasons)
+    if matches:
+        return None
+    suffix = _suffix_only(message, subject.shared_suffixes)
+    if suffix is None:
+        return None
+    return _clarify_route(suffix, lang, "suffix", reasons)
+
+
+def _clarify_route(phrase: str, lang: str, kind: str, reasons: list[str]) -> Route:
+    """The service's sentence. German is Sie and carries no English fragment."""
+    if lang.startswith("de"):
+        if kind == "suffix":
+            text = (
+                f"{phrase} ist eine Endung mehrerer Modelle. Welches Modell meinen Sie?"
+            )
+        else:
+            text = (
+                f"{phrase} passt zu mehr als einem Produkt. Welches Modell meinen Sie?"
+            )
+    elif kind == "suffix":
+        text = f"{phrase} is a suffix on more than one model. Which model do you mean?"
+    else:
+        text = f"{phrase} matches more than one product. Which model do you mean?"
+    reasons.append(f"clarify: {kind} {phrase}")
+    return Route(
+        "clarify",
+        no_cards=True,
+        no_handoff=True,
+        answer=text,
+        reasons=tuple(reasons),
+    )
+
+
+def _suffix_only(message: str, suffixes: frozenset[str]) -> str | None:
+    """The one shared suffix, when every other word is a pointer."""
+    words = _words(message)
+    hits = [word for word in words if normalize(word) in suffixes]
+    if len(hits) != 1:
+        return None
+    rest = [word for word in words if normalize(word) not in suffixes]
+    if any(normalize(word) not in _DEICTIC for word in rest):
+        return None
+    return hits[0]
+
+
+def _customer_phrase(message: str, keys: frozenset[str]) -> str | None:
+    """The customer's own token for one of `keys`, hyphen kept when they wrote one."""
+    if not keys:
+        return None
+    for token in _HYPHENATED.findall(message):
+        written = str(token)
+        if normalize(written) in keys:
+            return written
+    words = _words(message)
+    limit = min(MAX_WORDS, len(words))
+    for size in range(limit, 0, -1):
+        for start in range(len(words) - size + 1):
+            piece = words[start : start + size]
+            if "".join(normalize(word) for word in piece) in keys:
+                return " ".join(piece)
+    return None
 
 
 def _extreme_kind(message: str) -> str | None:
@@ -1192,15 +1325,16 @@ def with_page(
     Jev's `about_this_page` decides (#234). A signed-in customer's account page is
     their inquiries (inquiry-status); a solution draft is its products and the
     pairings among them; any other page is read (read-page). A request for a person,
-    a company question or an inquiry status reads nothing, and a delivery question
-    about a page goes to the team whatever Jev says (`_LOGISTICS`).
+    a company question, an inquiry status or a clarifying question reads nothing,
+    and a delivery question about a page goes to the team whatever Jev says
+    (`_LOGISTICS`).
 
     The calls fit the turn's budget in a fixed priority: the route's own calls (the
     subject's get-product among them) first, then the page, then the draft's pairs; a
     documents route leaves one call to the model (`DOCUMENTS_SPARE`). What does not
     fit is dropped, named in the turn log and, for a pair, in the hint.
     """
-    if not about_page or route.name in ("person", "service", "inquiry"):
+    if not about_page or route.name in ("person", "service", "inquiry", "clarify"):
         return route
     if _LOGISTICS.search(message):
         return service(message, [*route.reasons, "about this page: delivery"])
@@ -1272,6 +1406,7 @@ def with_page(
         reasons=(*route.reasons, f"about this page: {page.type}"),
         dropped=dropped,
         named_models=named,
+        answer=route.answer,
     )
 
 
