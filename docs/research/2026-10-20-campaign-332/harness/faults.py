@@ -31,14 +31,11 @@ TINY_JPEG = (
 
 
 def chat_payload(mode: str, body: bytes, slow_s: float) -> tuple[int, bytes, str]:
-    """The status, body and content type for one chat-completions call."""
-    stream = False
-    try:
-        parsed = json.loads(body.decode("utf-8") or "{}")
-    except json.JSONDecodeError:
-        parsed = {}
-    if isinstance(parsed, dict) and parsed.get("stream") is True:
-        stream = True
+    """The status, body and content type for one chat-completions call.
+
+    `body` is the client's request. The recorded empty turn did not ask for
+    a stream, so the empty modes do not branch on it.
+    """
     if mode == "slow":
         time.sleep(slow_s)
         mode = "500"
@@ -60,17 +57,15 @@ def chat_payload(mode: str, body: bytes, slow_s: float) -> tuple[int, bytes, str
             }
         }
         return 429, json.dumps(limited).encode(), "application/json"
-    if mode == "empty" and stream:
-        text = (
-            'data: {"id":"c332","object":"chat.completion.chunk",'
-            '"choices":[{"index":0,"delta":{"role":"assistant"},'
-            '"finish_reason":null}]}\n\n'
-            'data: {"id":"c332","object":"chat.completion.chunk",'
-            '"choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}\n\n'
-            "data: [DONE]\n\n"
-        )
-        return 200, text.encode(), "text/event-stream"
+    # `empty-stream` is an SSE body with no events. It does not depend on the
+    # request's stream flag: the recorded M-EMPTY turn never set that flag, so
+    # the branch below it (a JSON completion with no `model`) is what ran.
+    if mode == "empty-stream":
+        return 200, b"", "text/event-stream"
     if mode == "empty":
+        # Non-stream validation shape. The chat client parses this as
+        # ChatCompletion and rejects it because `model` is missing. That is
+        # the recorded M-EMPTY failure, not an empty event stream.
         empty: dict[str, Any] = {
             "id": "c332",
             "object": "chat.completion",
@@ -106,6 +101,8 @@ class FaultServer:
         self,
         kind: str,
         mode: str = "500",
+        # 65s is past Proxy::TURN_BUDGET (60, Proxy.php). The proxy returns
+        # 502 before this stub finishes the slow chat call.
         slow_s: float = 65.0,
         upstream: str = "",
         cut: str = "cut",
@@ -173,7 +170,9 @@ class FaultServer:
                 if state.cut == "reset":
                     self._reset(raw)
                     return
-                shortened = cut_sse(raw) if status < 400 else raw
+                # "cut" is the recorded SSE-CUT: the first block is complete.
+                where = "after-block" if state.cut == "cut" else state.cut
+                shortened = cut_sse(raw, where) if status < 400 else raw
                 self._send(
                     status if status >= 400 else 200,
                     shortened,

@@ -66,20 +66,56 @@ def answer_text(blocks: list[dict[str, Any]]) -> str:
     return "\n".join(parts)
 
 
-def cut_sse(raw: bytes) -> bytes:
-    """Keep bytes through the first `block` event and drop `done`.
+# Dossier §2 item 4 (2026-10-19): cut inside a half-written block, and cut
+# inside an attachment event. The reading event is the pair the proxy stores
+# with that attachment (app.py `_sse`). `after-block` is the cut the recorded
+# SSE-CUT turn used: the first block event is complete, and `done` is gone.
+CUTS = ("after-block", "partial-block", "attachment", "reading")
 
-    A clean close after this body is the mid-stream cut: the HTTP status can
-    still be 200, and the shell's parser must refuse the unfinished stream.
+
+def cut_sse(raw: bytes, where: str = "after-block") -> bytes:
+    """Shorten a Genie SSE body and drop `done`.
+
+    `after-block` keeps every complete event through the first `block`.
+    `partial-block`, `attachment` and `reading` stop inside that event, so
+    the event's own payload is not a finished SSE record.
     """
+    if where not in CUTS:
+        raise ValueError(f"unknown cut {where}")
     text = raw.decode("utf-8", "replace")
+    if where == "after-block":
+        return _cut_after(text, "event: block")
+    marker = {
+        "partial-block": "event: block",
+        "attachment": "event: attachment",
+        "reading": "event: reading",
+    }[where]
+    return _cut_inside(text, marker)
+
+
+def _cut_after(text: str, marker: str) -> bytes:
     kept: list[str] = []
     for part in text.split("\n\n"):
         if not part.strip():
             continue
         kept.append(part)
-        if part.startswith("event: block"):
+        if part.startswith(marker):
             break
     if not kept:
         return b""
     return ("\n\n".join(kept) + "\n\n").encode()
+
+
+def _cut_inside(text: str, marker: str) -> bytes:
+    """Bytes through the middle of `marker`'s event, with no closing blank line."""
+    start = text.find(marker)
+    if start < 0:
+        return b""
+    end = text.find("\n\n", start)
+    if end < 0:
+        end = len(text)
+    event = text[start:end]
+    # Past the event name, inside the data line, so the JSON does not close
+    # and the following events (including `done`) are not in the body.
+    midpoint = start + max(len(marker) + 1, len(event) // 2)
+    return text[:midpoint].encode()

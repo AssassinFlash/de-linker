@@ -1,9 +1,15 @@
 """Grade one recorded failure case. The rules are the campaign's checks.
 
-A case passes only when the failure is explicit, the chat model did not
-change, a failed turn did not state a measurement, and a retry — when one
-was run — succeeded. UI blankness is graded from the HTTP body the shell
-would parse; a browser note can override it.
+A case passes only when the failure is explicit, a failed turn did not
+state a measurement, and a retry — when one was run — succeeded. UI
+blankness is graded from the HTTP body the shell would parse; a browser
+note can override it.
+
+The turn log's provider and model are not graded. app.py writes them from
+provider_name() and model_name() (agent.py: CHAT_PROVIDER is the constant
+"deepseek"; model_name() is GENIE_MODEL or "deepseek-flash"). Those columns
+are the configured names, not the model that produced the tokens, so a
+check against them cannot show a silent switch.
 """
 
 from __future__ import annotations
@@ -31,8 +37,6 @@ MEASUREMENT = re.compile(
     r"\d+(?:[.,]\d+)?\s*(?:kwh|kw|w|v|a|€|eur|mm)\b",
     re.IGNORECASE,
 )
-CHAT_MODEL = "deepseek-flash"
-CHAT_PROVIDER = "deepseek"
 
 
 def _text(row: dict[str, Any]) -> str:
@@ -43,22 +47,6 @@ def _text(row: dict[str, Any]) -> str:
         str(row.get("ui_text") or ""),
     ]
     return "\n".join(parts).lower()
-
-
-def explicit(row: dict[str, Any]) -> bool:
-    """The failure is visible as an error status, a failure sentence, or meta."""
-    http = row.get("http")
-    if isinstance(http, int) and http >= 400:
-        return True
-    if any(bit in _text(row) for bit in EXPLICIT_BITS):
-        return True
-    meta = row.get("meta")
-    if isinstance(meta, dict):
-        if meta.get("fallback") is True and _has_failure_sentence(row):
-            return True
-        if row.get("explicit_channel") == "meta" and meta.get("jev_error"):
-            return True
-    return False
 
 
 def _has_failure_sentence(row: dict[str, Any]) -> bool:
@@ -95,17 +83,6 @@ def fabricated(row: dict[str, Any]) -> bool:
     return MEASUREMENT.search(str(row.get("answer_text") or "")) is not None
 
 
-def silent_model_switch(row: dict[str, Any]) -> bool:
-    """The logged chat model is neither deepseek-flash nor an explicit no-model turn."""
-    provider = row.get("provider")
-    model = row.get("model")
-    if provider in (None, "") and model in (None, ""):
-        return False
-    if provider == "service" and model == "none":
-        return False
-    return provider != CHAT_PROVIDER or model != CHAT_MODEL
-
-
 def blank(row: dict[str, Any]) -> bool:
     """A finished success with nothing to read and no error."""
     http = row.get("http")
@@ -140,10 +117,6 @@ def grade(row: dict[str, Any]) -> dict[str, Any]:
     if kind == "control":
         if not healthy(row):
             reasons.append("healthy turn did not answer")
-        if silent_model_switch(row):
-            reasons.append(
-                f"chat model is {row.get('provider')}/{row.get('model')}, not deepseek-flash"
-            )
     elif kind == "burst":
         children = row.get("children")
         if not isinstance(children, list) or not children:
@@ -154,10 +127,6 @@ def grade(row: dict[str, Any]) -> dict[str, Any]:
                     reasons.append("burst child is not a record")
                     continue
                 if healthy(child) or customer_visible_outage(child):
-                    if silent_model_switch(child):
-                        reasons.append(
-                            f"burst turn switched model to {child.get('model')}"
-                        )
                     if not healthy(child) and fabricated(child):
                         reasons.append(
                             "burst turn states a measurement after a failure"
@@ -172,18 +141,10 @@ def grade(row: dict[str, Any]) -> dict[str, Any]:
             meta = row.get("meta") if isinstance(row.get("meta"), dict) else {}
             if not (isinstance(meta, dict) and meta.get("jev_error")):
                 reasons.append("jev failure is not in SSE meta")
-            if silent_model_switch(row):
-                reasons.append(
-                    f"chat model is {row.get('provider')}/{row.get('model')}, not deepseek-flash"
-                )
         elif not customer_visible_outage(row):
             reasons.append("failure is not visible to the customer")
         if kind != "fault":
             reasons.append(f"unknown kind {kind}")
-        if channel != "meta" and silent_model_switch(row):
-            reasons.append(
-                f"chat model is {row.get('provider')}/{row.get('model')}, not deepseek-flash"
-            )
         if fabricated(row):
             reasons.append("answer states a measurement on a failed turn")
         if blank(row) and not customer_visible_outage(row):

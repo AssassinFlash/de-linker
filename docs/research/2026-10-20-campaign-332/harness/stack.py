@@ -1,4 +1,17 @@
-"""Control this worktree's c332 instance. Faults stay on 127.0.0.1."""
+"""Control this worktree's c332 instance. Faults stay on 127.0.0.1.
+
+Waits, and where they come from:
+
+- The ability mu-plugin sleeps 25s. AbilityClient times out at 20s
+  (linker_genie.abilities) and tries ABILITY_ATTEMPTS (3) times, so one
+  attempt expires inside the service and Proxy::TURN_BUDGET (60s,
+  Proxy.php) is what ends the customer's request.
+- 8s after SIGTERM, then SIGKILL: harness shutdown, not a product timeout.
+- 20s for /health and for Redis to answer PONG: harness startup waits.
+- 180s for `just serve`: harness ceiling for bringing the instance up.
+- `just wp` uses 60s, the same number as TURN_BUDGET, so wp-cli is not
+  shorter than one turn.
+"""
 
 from __future__ import annotations
 
@@ -65,6 +78,9 @@ add_filter(
 			return new WP_Error( 'c332_fault', 'injected ability 500', array( 'status' => 500 ) );
 		}
 		if ( 'timeout' === $mode ) {
+			// 25s is past AbilityClient's 20s timeout (abilities.py) and inside
+			// Proxy::TURN_BUDGET (60s), so the proxy, not this sleep, is what
+			// the customer waits out after three attempts.
 			sleep( 25 );
 			return new WP_Error( 'c332_fault', 'injected ability timeout', array( 'status' => 504 ) );
 		}

@@ -4,6 +4,24 @@ Usage:
     uv run --locked python run_faults.py [evidence_dir] [--only M500-EN,VPS-DOWN]
 
 Evidence stays under ~/de-linker-data. This script does not call de-linker.com.
+
+Timeouts and waits, and where the numbers come from:
+
+- Proxy::TURN_BUDGET is 60s (plugins/linker-tools/includes/Genie/Proxy.php).
+  A proxy call uses 90s so the observed result is the proxy's own 502, not
+  a client TimeoutError. A direct service call uses 180s because that path
+  has no proxy budget; the model plus tools can outlast 60s.
+- AbilityClient times out at 20s and tries ABILITY_ATTEMPTS (3) times
+  (services/genie/src/linker_genie/abilities.py). The ability fault sleeps
+  25s, past one client timeout, so the proxy's 60s budget is what the
+  customer hits (stack.MU_SOURCE).
+- The slow chat stub sleeps 65s, past TURN_BUDGET (faults.FaultServer).
+- VPS-KILL waits 3s and REDIS-FLAP waits 2s so the request is in flight.
+  Those are harness waits, not product timeouts.
+- VPS-DOWN's client timeout is 20s: a stopped port refuses at once.
+- The attachment refusal uses 30s: the limiter answers before any model call.
+- Redis stopped for a whole turn uses 70s, just above TURN_BUDGET, in case
+  the turn still completes.
 """
 
 from __future__ import annotations
@@ -33,6 +51,19 @@ from sse import parse_sse
 PRODUCT_EN = "Do you stock the SAJ H2-10K-T2?"
 PRODUCT_DE = "Haben Sie den SAJ H2-10K-T2 auf Lager?"
 DOC_EN = "What is the maximum PV input power of the SAJ H2-10K-T2? Use the datasheet."
+# See the module docstring for the source of each of these.
+SERVICE_TIMEOUT_S = 180.0
+PROXY_TIMEOUT_S = 90.0
+VPS_DOWN_TIMEOUT_S = 20.0
+ATTACHMENT_TIMEOUT_S = 30.0
+REDIS_DOWN_TIMEOUT_S = 70.0
+KILL_AFTER_S = 3.0
+REDIS_FLAP_AFTER_S = 2.0
+LATE_LOG_WAIT_S = 45.0
+# A chat-fault service turn. Above TURN_BUDGET, under the 180s direct-service ceiling.
+CHAT_TIMEOUT_S = 120.0
+# Collect the in-flight worker after the proxy timeout, so a hung client is not left behind.
+JOIN_TIMEOUT_S = 100.0
 PROXY_TURN = stack.WP + "/wp-json/linker-ai/v1/genie/turn"
 PROXY_THREAD = stack.WP + "/wp-json/linker-ai/v1/genie/conversation"
 SERVICE_TURN = stack.GENIE + "/assistant/turn"
@@ -68,32 +99,40 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if wanted("BASE-EN"):
-            keep(control("BASE-EN", PRODUCT_EN, "en", token))
+            keep(control("BASE-EN", PRODUCT_EN, "en"))
         if wanted("BASE-DOC"):
-            keep(control("BASE-DOC", DOC_EN, "en", token, allow_measurements=True))
+            keep(control("BASE-DOC", DOC_EN, "en", allow_measurements=True))
         if wanted("RATE-BURST"):
             keep(burst(token))
         if wanted("ATT-LIMIT"):
-            keep(attachment_limit(token))
+            keep(attachment_limit())
         if wanted("SSE-CUT"):
-            keep(sse_case("SSE-CUT", "cut", token))
+            keep(sse_case("SSE-CUT", "cut"))
         if wanted("SSE-RESET"):
-            keep(sse_case("SSE-RESET", "reset", token))
+            keep(sse_case("SSE-RESET", "reset"))
         if wanted("VPS-DOWN"):
-            keep(vps_down(token))
+            keep(vps_down())
         if wanted("VPS-KILL"):
-            keep(vps_kill(token))
+            keep(vps_kill())
         if wanted("REDIS-FLAP"):
-            keep(redis_flap(token))
+            keep(redis_flap())
         if wanted("REDIS-DOWN"):
-            keep(redis_down(token))
+            keep(redis_down())
         if wanted("AB-500"):
             keep(ability("AB-500", "500", token))
         if wanted("AB-TIMEOUT"):
-            keep(ability_timeout(token))
+            keep(ability_timeout())
         if any(
             wanted(item)
-            for item in ("M500-EN", "M500-DE", "M500-DOC", "M-EMPTY", "M-429", "M-SLOW")
+            for item in (
+                "M500-EN",
+                "M500-DE",
+                "M500-DOC",
+                "M-EMPTY",
+                "M-EMPTY-STREAM",
+                "M-429",
+                "M-SLOW",
+            )
         ):
             chat(token, only, keep)
         if wanted("JEV-502"):
@@ -114,15 +153,23 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def retry_record(row: dict[str, Any]) -> dict[str, Any]:
+    """The recovery turn, in the one shape every fault case stores."""
+    return {
+        "ok": healthy(row),
+        "http": row.get("http"),
+        "answer_text": row.get("answer_text"),
+    }
+
+
 def control(
     case_id: str,
     question: str,
     locale: str,
-    token: str,
     allow_measurements: bool = False,
 ) -> dict[str, Any]:
     before = stack.max_turn_id()
-    row = ask_proxy(case_id, question, locale, token)
+    row = ask_proxy(case_id, question, locale)
     row.update(
         {
             "id": case_id,
@@ -143,7 +190,9 @@ def burst(token: str) -> dict[str, Any]:
     for index in range(1, 7):
         question = f"{PRODUCT_EN} Burst {index}."
         before = stack.max_turn_id()
-        child = ask_service(f"RATE-{index}", question, "en", token, timeout=180)
+        child = ask_service(
+            f"RATE-{index}", question, "en", token, timeout=SERVICE_TIMEOUT_S
+        )
         child["id"] = f"RATE-{index}"
         child.update(_log(question, before))
         children.append(child)
@@ -159,7 +208,7 @@ def burst(token: str) -> dict[str, Any]:
     }
 
 
-def attachment_limit(token: str) -> dict[str, Any]:
+def attachment_limit() -> dict[str, Any]:
     stack.seed_upload_limit(20)
     try:
         jpeg = TINY_JPEG.decode() if isinstance(TINY_JPEG, bytes) else TINY_JPEG
@@ -167,11 +216,10 @@ def attachment_limit(token: str) -> dict[str, Any]:
             "ATT-LIMIT",
             "Please read this nameplate.",
             "en",
-            token,
             attachment={"name": "plate.jpg", "type": "image/jpeg", "data": jpeg},
-            timeout=30,
+            timeout=ATTACHMENT_TIMEOUT_S,
         )
-        typed = ask_proxy("ATT-AFTER", PRODUCT_EN, "en", token)
+        typed = ask_proxy("ATT-AFTER", PRODUCT_EN, "en")
     finally:
         stack.clear_upload_limit()
     refused.update(
@@ -183,17 +231,13 @@ def attachment_limit(token: str) -> dict[str, Any]:
             "layer": "infrastructure",
             "precedent": "复刻 — hourly file allowance is this repo's own limit (Attachments::LIMIT 20); uxpatterns recovery is a visible refusal",
             "explicit_channel": "customer",
-            "retry": {
-                "ok": healthy(typed),
-                "http": typed.get("http"),
-                "answer_text": typed.get("answer_text"),
-            },
+            "retry": retry_record(typed),
         }
     )
     return refused
 
 
-def sse_case(case_id: str, cut: str, token: str) -> dict[str, Any]:
+def sse_case(case_id: str, cut: str) -> dict[str, Any]:
     proxy = FaultServer("cut", upstream=stack.GENIE, cut=cut)
     url = proxy.start()
     before = stack.max_turn_id()
@@ -204,7 +248,7 @@ def sse_case(case_id: str, cut: str, token: str) -> dict[str, Any]:
             PROXY_TURN,
             proxy_body(PRODUCT_EN, "en", None),
             {},
-            180,
+            SERVICE_TIMEOUT_S,
             opener,
         )
         row = describe(result)
@@ -213,7 +257,7 @@ def sse_case(case_id: str, cut: str, token: str) -> dict[str, Any]:
         stack.set_genie_url(stack.GENIE)
         proxy.stop()
     logged = _log(PRODUCT_EN, before)
-    retry = ask_proxy(case_id + "-RETRY", PRODUCT_EN, "en", token)
+    retry = ask_proxy(case_id + "-RETRY", PRODUCT_EN, "en")
     row.update(logged)
     # Thread::answer renders assistant text only when the stored stream
     # contains done. A cut stream's block is not a shown answer.
@@ -225,7 +269,7 @@ def sse_case(case_id: str, cut: str, token: str) -> dict[str, Any]:
             "fault": f"proxy {cut} of the service SSE",
             "question": PRODUCT_EN,
             "layer": "UI 状态",
-            "precedent": "须自行设计 — dossier §1.15",
+            "precedent": "须自行设计 — dossier §1.15; fix ticket #411",
             "explicit_channel": "customer",
             "partial_shown": shown,
             "reload_hides_error": bool(stored.get("user_messages"))
@@ -233,54 +277,46 @@ def sse_case(case_id: str, cut: str, token: str) -> dict[str, Any]:
             and not shown,
             "stored": stored,
             "cookie_count": len(list(jar)),
-            "retry": {
-                "ok": healthy(retry),
-                "http": retry.get("http"),
-                "answer_text": retry.get("answer_text"),
-            },
+            "retry": retry_record(retry),
         }
     )
     return row
 
 
-def vps_down(token: str) -> dict[str, Any]:
+def vps_down() -> dict[str, Any]:
     stack.stop_genie()
     try:
-        row = ask_proxy("VPS-DOWN", PRODUCT_EN, "en", token, timeout=20)
+        row = ask_proxy("VPS-DOWN", PRODUCT_EN, "en", timeout=VPS_DOWN_TIMEOUT_S)
     finally:
         stack.start_genie()
-    retry = ask_proxy("VPS-DOWN-RETRY", PRODUCT_EN, "en", token)
+    retry = ask_proxy("VPS-DOWN-RETRY", PRODUCT_EN, "en")
     row.update(
         {
             "id": "VPS-DOWN",
             "kind": "fault",
             "fault": "local genie process stopped before the turn",
             "question": PRODUCT_EN,
-            "layer": "基础设施",
-            "precedent": "须自行设计 — dossier §1.15 VPS down; uxpatterns error state is the pattern language",
+            "layer": "UI 状态",
+            "precedent": "须自行设计 — dossier §1.15 VPS down; fix ticket #411",
             "explicit_channel": "customer",
-            "retry": {
-                "ok": healthy(retry),
-                "http": retry.get("http"),
-                "answer_text": retry.get("answer_text"),
-            },
+            "retry": retry_record(retry),
         }
     )
     return row
 
 
-def vps_kill(token: str) -> dict[str, Any]:
+def vps_kill() -> dict[str, Any]:
     holder: dict[str, Any] = {}
     before = stack.max_turn_id()
 
     def call() -> None:
-        holder["row"] = ask_proxy("VPS-KILL", PRODUCT_EN, "en", token, timeout=90)
+        holder["row"] = ask_proxy("VPS-KILL", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S)
 
     thread = threading.Thread(target=call)
     thread.start()
-    time.sleep(3)
+    time.sleep(KILL_AFTER_S)
     stack.stop_genie()
-    thread.join(timeout=100)
+    thread.join(timeout=JOIN_TIMEOUT_S)
     stack.start_genie()
     row = holder.get("row") or {
         "http": None,
@@ -288,41 +324,39 @@ def vps_kill(token: str) -> dict[str, Any]:
         "answer_text": "",
     }
     logged = _log(PRODUCT_EN, before)
-    retry = ask_proxy("VPS-KILL-RETRY", PRODUCT_EN, "en", token)
+    retry = ask_proxy("VPS-KILL-RETRY", PRODUCT_EN, "en")
     row.update(
         {
             "id": "VPS-KILL",
             "kind": "fault",
             "fault": "genie killed 3s after the proxy request started",
             "question": PRODUCT_EN,
-            "layer": "基础设施",
-            "precedent": "须自行设计 — dossier §1.15 restart window",
+            "layer": "UI 状态",
+            "precedent": "须自行设计 — dossier §1.15 restart window; fix ticket #411",
             "explicit_channel": "customer",
-            "retry": {
-                "ok": healthy(retry),
-                "http": retry.get("http"),
-                "answer_text": retry.get("answer_text"),
-            },
+            "retry": retry_record(retry),
         }
     )
     row.update(logged)
     return row
 
 
-def redis_flap(token: str) -> dict[str, Any]:
+def redis_flap() -> dict[str, Any]:
     holder: dict[str, Any] = {}
     before = stack.max_turn_id()
 
     def call() -> None:
-        holder["row"] = ask_proxy("REDIS-FLAP", PRODUCT_EN, "en", token, timeout=90)
+        holder["row"] = ask_proxy(
+            "REDIS-FLAP", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S
+        )
 
     thread = threading.Thread(target=call)
     thread.start()
-    time.sleep(2)
+    time.sleep(REDIS_FLAP_AFTER_S)
     try:
         stack.redis_restart()
     finally:
-        thread.join(timeout=100)
+        thread.join(timeout=JOIN_TIMEOUT_S)
         stack.ensure_redis()
     row = holder.get("row") or {
         "http": None,
@@ -337,12 +371,8 @@ def redis_flap(token: str) -> dict[str, Any]:
         retry: dict[str, Any] | None = None
     else:
         row["kind"] = "fault"
-        again = ask_proxy("REDIS-FLAP-RETRY", PRODUCT_EN, "en", token)
-        retry = {
-            "ok": healthy(again),
-            "http": again.get("http"),
-            "answer_text": again.get("answer_text"),
-        }
+        again = ask_proxy("REDIS-FLAP-RETRY", PRODUCT_EN, "en")
+        retry = retry_record(again)
     row.update(logged)
     row.update(
         {
@@ -358,11 +388,11 @@ def redis_flap(token: str) -> dict[str, Any]:
     return row
 
 
-def redis_down(token: str) -> dict[str, Any]:
+def redis_down() -> dict[str, Any]:
     before = stack.max_turn_id()
     stack.redis_stop()
     try:
-        row = ask_proxy("REDIS-DOWN", PRODUCT_EN, "en", token, timeout=70)
+        row = ask_proxy("REDIS-DOWN", PRODUCT_EN, "en", timeout=REDIS_DOWN_TIMEOUT_S)
     finally:
         stack.ensure_redis()
     logged = _log(PRODUCT_EN, before)
@@ -372,12 +402,8 @@ def redis_down(token: str) -> dict[str, Any]:
         retry: dict[str, Any] | None = None
     else:
         row["kind"] = "fault"
-        again = ask_proxy("REDIS-DOWN-RETRY", PRODUCT_EN, "en", token)
-        retry = {
-            "ok": healthy(again),
-            "http": again.get("http"),
-            "answer_text": again.get("answer_text"),
-        }
+        again = ask_proxy("REDIS-DOWN-RETRY", PRODUCT_EN, "en")
+        retry = retry_record(again)
     row.update(logged)
     row.update(
         {
@@ -397,11 +423,13 @@ def ability(case_id: str, mode: str, token: str) -> dict[str, Any]:
     before = stack.max_turn_id()
     stack.set_ability_mode(mode)
     try:
-        row = ask_service(case_id, PRODUCT_EN, "en", token, timeout=180)
+        row = ask_service(case_id, PRODUCT_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
     finally:
         stack.clear_ability_mode()
     logged = _log(PRODUCT_EN, before)
-    retry = ask_service(case_id + "-RETRY", PRODUCT_EN, "en", token, timeout=180)
+    retry = ask_service(
+        case_id + "-RETRY", PRODUCT_EN, "en", token, timeout=SERVICE_TIMEOUT_S
+    )
     row.update(logged)
     row.update(
         {
@@ -409,34 +437,26 @@ def ability(case_id: str, mode: str, token: str) -> dict[str, Any]:
             "kind": "fault",
             "fault": f"search-products answers {mode}",
             "question": PRODUCT_EN,
-            "layer": "工具",
-            "precedent": "复刻 — ability 5xx retries then DEGRADED (#103); a success-shaped card without the outage is the §1.15 gap",
+            "layer": "template.fallback",
+            "precedent": "the 500 is the ability call; the customer sentence is template.fallback _outage, not the prompt (#410)",
             "explicit_channel": "customer",
-            "retry": {
-                "ok": healthy(retry),
-                "http": retry.get("http"),
-                "answer_text": retry.get("answer_text"),
-            },
+            "retry": retry_record(retry),
         }
     )
     return row
 
 
-def ability_timeout(token: str) -> dict[str, Any]:
+def ability_timeout() -> dict[str, Any]:
     before = stack.max_turn_id()
     stack.set_ability_mode("timeout")
     try:
-        row = ask_proxy("AB-TIMEOUT", PRODUCT_EN, "en", token, timeout=90)
-        late = _wait_log(PRODUCT_EN, 45, before)
+        row = ask_proxy("AB-TIMEOUT", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S)
+        late = _wait_log(PRODUCT_EN, LATE_LOG_WAIT_S, before)
     finally:
         stack.clear_ability_mode()
-    retry = ask_proxy("AB-TIMEOUT-RETRY", PRODUCT_EN, "en", token)
+    retry = ask_proxy("AB-TIMEOUT-RETRY", PRODUCT_EN, "en")
     row.update(late)
-    row["retry"] = {
-        "ok": healthy(retry),
-        "http": retry.get("http"),
-        "answer_text": retry.get("answer_text"),
-    }
+    row["retry"] = retry_record(retry)
     row.update(
         {
             "id": "AB-TIMEOUT",
@@ -444,7 +464,7 @@ def ability_timeout(token: str) -> dict[str, Any]:
             "fault": "search-products sleeps 25s; client times out at 20s, three attempts",
             "question": PRODUCT_EN,
             "layer": "工具",
-            "precedent": "须自行设计 — proxy budget is 60s (Proxy::TURN_BUDGET); the ability timeout stack can outlive it",
+            "precedent": "须自行设计 — Proxy::TURN_BUDGET is 60s; AbilityClient is 20s times ABILITY_ATTEMPTS 3, so the proxy budget ends the turn",
             "explicit_channel": "customer",
         }
     )
@@ -456,11 +476,14 @@ def chat(token: str, only: set[str], keep: Any) -> None:
     url = stub.start()
     try:
         stack.restart_genie({"GENIE_BASE_URL": url})
+        # M-EMPTY is the non-stream validation error (no `model` on the JSON
+        # completion). M-EMPTY-STREAM is an SSE body with no events.
         plan = [
             ("M500-EN", "500", PRODUCT_EN, "en"),
             ("M500-DE", "500", PRODUCT_DE, "de"),
             ("M500-DOC", "500", DOC_EN, "en"),
             ("M-EMPTY", "empty", PRODUCT_EN, "en"),
+            ("M-EMPTY-STREAM", "empty-stream", PRODUCT_EN, "en"),
             ("M-429", "429", PRODUCT_EN, "en"),
         ]
         for case_id, mode, question, locale in plan:
@@ -468,7 +491,7 @@ def chat(token: str, only: set[str], keep: Any) -> None:
                 continue
             stub.set_mode(mode)
             before = stack.max_turn_id()
-            row = ask_service(case_id, question, locale, token, timeout=120)
+            row = ask_service(case_id, question, locale, token, timeout=CHAT_TIMEOUT_S)
             row.update(_log(question, before))
             row.update(
                 {
@@ -476,8 +499,8 @@ def chat(token: str, only: set[str], keep: Any) -> None:
                     "kind": "fault",
                     "fault": f"chat completions mode {mode}",
                     "question": question,
-                    "layer": "基础设施",
-                    "precedent": "部分复刻 — #103 DEGRADED when nothing is citable; dossier §1.15 says the customer-facing state for a model 5xx is still 须自行设计",
+                    "layer": "template.fallback",
+                    "precedent": "the customer sentence is template.fallback, not the prompt (#410). #103 DEGRADED only when nothing is citable",
                     "explicit_channel": "customer",
                 }
             )
@@ -485,7 +508,7 @@ def chat(token: str, only: set[str], keep: Any) -> None:
         if not only or "M-SLOW" in only:
             stub.set_mode("slow")
             before = stack.max_turn_id()
-            row = ask_proxy("M-SLOW", PRODUCT_EN, "en", token, timeout=90)
+            row = ask_proxy("M-SLOW", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S)
             stack.stop_genie()
             row.update(_log(PRODUCT_EN, before))
             row.update(
@@ -495,7 +518,7 @@ def chat(token: str, only: set[str], keep: Any) -> None:
                     "fault": "chat completions sleeps 65s, past Proxy::TURN_BUDGET 60s",
                     "question": PRODUCT_EN,
                     "layer": "UI 状态",
-                    "precedent": "须自行设计 — dossier §1.15",
+                    "precedent": "须自行设计 — dossier §1.15; fix ticket #411",
                     "explicit_channel": "customer",
                 }
             )
@@ -505,7 +528,9 @@ def chat(token: str, only: set[str], keep: Any) -> None:
         stack.restart_genie()
     if not only or "M500-EN" in only:
         before = stack.max_turn_id()
-        retry = ask_service("M500-RETRY", PRODUCT_EN, "en", token, timeout=180)
+        retry = ask_service(
+            "M500-RETRY", PRODUCT_EN, "en", token, timeout=SERVICE_TIMEOUT_S
+        )
         # Attach the retry onto a small control row so a failed recovery is visible.
         keep(
             {
@@ -532,7 +557,7 @@ def jev(token: str) -> dict[str, Any]:
                 "OPENROUTER_API_KEY": "local-fault-not-a-real-key",
             }
         )
-        row = ask_service("JEV-502", PRODUCT_EN, "en", token, timeout=180)
+        row = ask_service("JEV-502", PRODUCT_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
     finally:
         stub.stop()
         stack.restart_genie()
@@ -544,7 +569,7 @@ def jev(token: str) -> dict[str, Any]:
             "fault": "OpenRouter /systemone answers 502; key is a local dummy",
             "question": PRODUCT_EN,
             "layer": "Jev 路由",
-            "precedent": "复刻 — spec 13: Jev failure is the one allowed degradation; jev_error in meta; chat model stays deepseek-flash",
+            "precedent": "复刻 — spec 13: Jev failure is the one allowed degradation, and jev_error is in SSE meta. The turn log's provider/model are the names app.py writes, not the answering model",
             "explicit_channel": "meta",
             "allow_measurements": True,
         }
@@ -562,7 +587,7 @@ def index_cases(token: str, only: set[str], keep: Any) -> None:
         ran = True
         before = stack.max_turn_id()
         stack.restart_genie({"GENIE_INDEX": str(missing)})
-        row = ask_service("IDX-MISS", DOC_EN, "en", token, timeout=180)
+        row = ask_service("IDX-MISS", DOC_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
         row.update(_log(DOC_EN, before))
         row.update(
             {
@@ -570,8 +595,8 @@ def index_cases(token: str, only: set[str], keep: Any) -> None:
                 "kind": "fault",
                 "fault": "GENIE_INDEX points at a path that is not a file",
                 "question": DOC_EN,
-                "layer": "检索",
-                "precedent": "复刻 — spec 13: a failed document search ends the turn in the fallback and does not fall back to keywords",
+                "layer": "template.fallback",
+                "precedent": "the index error is in failures[]; the customer sentence is template.fallback (#410). Spec 13: no keyword fallback",
                 "explicit_channel": "customer",
             }
         )
@@ -580,7 +605,7 @@ def index_cases(token: str, only: set[str], keep: Any) -> None:
         ran = True
         before = stack.max_turn_id()
         stack.restart_genie({"GENIE_INDEX": str(bad)})
-        row = ask_service("IDX-BAD", DOC_EN, "en", token, timeout=180)
+        row = ask_service("IDX-BAD", DOC_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
         row.update(_log(DOC_EN, before))
         row.update(
             {
@@ -588,8 +613,8 @@ def index_cases(token: str, only: set[str], keep: Any) -> None:
                 "kind": "fault",
                 "fault": "GENIE_INDEX is a file of garbage bytes",
                 "question": DOC_EN,
-                "layer": "检索",
-                "precedent": "复刻 — spec 13 document-search failure is an explicit fallback",
+                "layer": "template.fallback",
+                "precedent": "the index error is in failures[]; the customer sentence is template.fallback (#410)",
                 "explicit_channel": "customer",
             }
         )
@@ -597,7 +622,7 @@ def index_cases(token: str, only: set[str], keep: Any) -> None:
     if ran:
         stack.restart_genie()
         before = stack.max_turn_id()
-        retry = ask_service("IDX-RETRY", DOC_EN, "en", token, timeout=180)
+        retry = ask_service("IDX-RETRY", DOC_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
         keep(
             {
                 "id": "IDX-RETRY",
@@ -630,12 +655,10 @@ def ask_proxy(
     case_id: str,
     question: str,
     locale: str,
-    token: str,
     attachment: dict[str, str] | None = None,
-    timeout: float = 90,
+    timeout: float = PROXY_TIMEOUT_S,
 ) -> dict[str, Any]:
     print(f"ask-proxy {case_id}", flush=True)
-    del token
     result = request_json(
         PROXY_TURN, proxy_body(question, locale, attachment), {}, timeout
     )
@@ -645,7 +668,7 @@ def ask_proxy(
 def _read_thread(opener: urllib.request.OpenerDirector) -> dict[str, Any]:
     request = urllib.request.Request(PROXY_THREAD, method="GET")
     try:
-        with opener.open(request, timeout=20) as reply:
+        with opener.open(request, timeout=VPS_DOWN_TIMEOUT_S) as reply:
             raw = reply.read().decode("utf-8", "replace")
     except (urllib.error.URLError, TimeoutError):
         return {}

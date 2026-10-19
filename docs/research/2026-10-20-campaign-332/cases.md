@@ -1,6 +1,6 @@
 # #332 场景索引
 
-手判。自动评分里 `RATE-BURST` 的 defect 不采用。第一轮 `AB-500` / `AB-TIMEOUT` 的桩没有打中，不采用；下表是第二轮。原始行在 `~/de-linker-data/campaign-332/evidence/cases.jsonl`（同一 id 取最后一行）。摘要在 `verdicts.jsonl`。
+手判，写在 `verdicts.jsonl` 的 `verdict` 和 `reasons`。第一轮自动分里 `RATE-BURST` 的 defect 已撤回。第一轮 `AB-500` / `AB-TIMEOUT` 的桩没有打中，不采用；下表是第二轮。原始行在 `~/de-linker-data/campaign-332/evidence/cases.jsonl`（同一 id 取最后一行）。AB-500 的注入 500 在摘要的 `injected_error`。
 
 | 场景 | 故障 | 手判 | 顾客看见 | 重试 | 模型 |
 |---|---|---|---|---|---|
@@ -11,7 +11,7 @@
 | SSE-CUT | 代理截掉 `done` | defect | 当场 “Genie did not answer.”；刷新后问题还在，错误和答案都没有 | 代理撤掉后健康 | 日志 deepseek-flash；块未渲染 |
 | SSE-RESET | 代理在正文前重置 | pass | 502，`Genie did not answer.` | 健康 | 服务侧 deepseek-flash，顾客没收到正文 |
 | VPS-DOWN | 停本地 Genie | defect | 当场同一句 502；刷新后问题、错误、输入框都空 | 服务恢复后重打健康 | 故障时无日志行 |
-| VPS-KILL | 杀掉本地 Genie | defect | 同一 502。浏览器复现做在 VPS-DOWN | API 重试健康 | 故障时无日志行 |
+| VPS-KILL | 杀掉本地 Genie | defect | 同一 502。没有单独看屏，界面从 VPS-DOWN 推得 | API 重试健康 | 故障时无日志行 |
 | REDIS-FLAP | 重启本机 Redis | pass | 正常产品回答 | — | deepseek-flash |
 | REDIS-DOWN | Redis 停一阵再拉起 | pass | 正常产品回答 | — | deepseek-flash |
 | AB-500 | `linker/search-products` 返回 500 | defect | `Our team will answer that at sales@de-linker.com.` | 旗标撤掉后健康 | deepseek-flash |
@@ -19,7 +19,7 @@
 | M500-EN | 聊天补全 500 | defect | “Here are matching products from our range.” + 六张卡 | 见 M500-RETRY | deepseek-flash（日志；模型调用失败） |
 | M500-DE | 聊天补全 500，德语 | defect | “Hier sind passende Produkte aus unserem Sortiment.” + 卡 | 见 M500-RETRY | deepseek-flash |
 | M500-DOC | 聊天补全 500，文档问句 | defect | “Here is what I found for your question.” + 手册块 | 见 M500-RETRY | deepseek-flash |
-| M-EMPTY | 空的聊天流 | defect | 与 M500-EN 相同的产品句和卡 | 见 M500-RETRY | deepseek-flash |
+| M-EMPTY | 非流式补全缺 `model`（不是空 SSE） | defect | 与 M500-EN 相同的产品句和卡 | 见 M500-RETRY | 日志列 deepseek-flash |
 | M-429 | 聊天补全 429 | defect | 与 M500-EN 相同的产品句和卡 | 见 M500-RETRY | deepseek-flash |
 | M-SLOW | 聊天桩先睡 65s | pass | 代理 60.3s 返回 502 | 桩撤掉后的 M500-RETRY 健康 | 无完整流 |
 | M500-RETRY | 桩已撤 | pass | T2 不在目录，列出 T3 | — | deepseek-flash |
@@ -28,4 +28,4 @@
 | IDX-BAD | 索引文件损坏（`file is not a database`） | defect | 同上 | 见 IDX-RETRY | deepseek-flash |
 | IDX-RETRY | 真索引恢复 | pass | 手册覆盖 T3，T2 无最大 PV 输入数字 | — | deepseek-flash |
 
-浏览器看过的三态：`~/de-linker-data/campaign-332/ui/`（`vps-down-error.png`、`model-500-cards.png`、`model-500-cards-scrolled.png`、`sse-cut-live-error.png`、`sse-cut-reload.png`、`sse-cut-retry.png`）。
+浏览器看过的只有英语、桌面宽度：`~/de-linker-data/campaign-332/ui/` 里 `model-500-cards.png`、`model-500-cards-scrolled.png`、`sse-cut-live-error.png`、`sse-cut-reload.png`、`sse-cut-retry.png`、`vps-down-error.png`。没有 390 宽，没有德语界面，没有 VPS-KILL 的截图，没有 VPS-DOWN 刷新后的截图。半条 block 和 attachment / reading 事件的截断只在装具测试里，没有对 c332 重放。`M-EMPTY` 记录的是非流式校验错误；装具的 `empty-stream` 才是零事件的 SSE，这一轮没有重放，不计入上面 23 条。

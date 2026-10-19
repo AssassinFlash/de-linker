@@ -5,7 +5,7 @@ from __future__ import annotations
 from grade import customer_visible_outage, grade
 
 
-def test_http_error_is_explicit_and_passes_without_a_model_switch() -> None:
+def test_http_error_is_a_visible_failure() -> None:
     row = grade(
         {
             "id": "VPS-DOWN",
@@ -81,7 +81,7 @@ def test_reload_without_an_error_is_a_defect() -> None:
     assert any("reload" in reason for reason in row["reasons"])
 
 
-def test_jev_failure_must_be_in_meta_and_must_not_switch_model() -> None:
+def test_jev_failure_must_be_in_meta() -> None:
     hidden = grade(
         {
             "kind": "fault",
@@ -96,7 +96,9 @@ def test_jev_failure_must_be_in_meta_and_must_not_switch_model() -> None:
         }
     )
     assert hidden["verdict"] == "defect"
-    switched = grade(
+    # provider/model here are the columns app.py writes from constants.
+    # A different pair is not graded as a silent switch.
+    other = grade(
         {
             "kind": "fault",
             "explicit_channel": "meta",
@@ -109,7 +111,8 @@ def test_jev_failure_must_be_in_meta_and_must_not_switch_model() -> None:
             "allow_measurements": True,
         }
     )
-    assert any("chat model" in reason for reason in switched["reasons"])
+    assert other["verdict"] == "pass"
+    assert other["reasons"] == []
 
 
 def test_a_healthy_control_needs_a_finished_answer() -> None:
