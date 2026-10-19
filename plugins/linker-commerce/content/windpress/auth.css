@@ -573,25 +573,24 @@
 .linker-auth-verify { margin-top: 14px; padding: 14px 16px 16px; border: 1px solid var(--acct-line-soft); border-radius: 16px; background: #f7f9f9; }
 .linker-auth-verify .linker-auth-fields > :first-child { margin-top: 6px; }
 
-/* The business type: WooCommerce's radios drawn as the prototype's three
- * pills (registration-prototype.css:29-33). Woo repeats its required marker
- * on every option; the field's own label already carries it, so the copies
- * are hidden. */
+/* The business type: the prototype's three pills (registration-prototype.css
+ * 29-33) drawn the accessible way (#351): RoleField nests each native input
+ * inside its option label, and the input overlays the whole pill — the input
+ * itself is the pill's hit area, so a pointer, Playwright's actionability
+ * check, Tab focus and the checked-state announcement all land on the real
+ * control. The same nesting the configurator's choice cards use
+ * (plugins/linker-tools/src/configurator/configurator.css,
+ * .linker-form__choice label with label:has(input:checked)). The input is
+ * hidden with opacity alone: pointer-events or display would take the hit
+ * area away again, the very defect this replaced. */
 .linker-auth .form-row:has(input[type="radio"]) .woocommerce-input-wrapper {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 10px;
 }
 
-.linker-auth .form-row input[type="radio"] {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	opacity: 0;
-	pointer-events: none;
-}
-
 .linker-auth .form-row label.radio {
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -611,15 +610,27 @@
 	cursor: pointer;
 }
 
-.linker-auth .form-row label.radio .required { display: none; }
+/* The pill's whole area is the input's own box: focusable, clickable, and
+ * large enough to be a 44px touch target. Its focus ring is the label's
+ * (below) because the generic field focus rule above resets the outline of
+ * a focused input — the label ring is the one a keyboard user sees. */
+.linker-auth .form-row label.radio input[type="radio"] {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	opacity: 0;
+	cursor: pointer;
+}
 
-.linker-auth .form-row input[type="radio"]:checked + label.radio {
+.linker-auth .form-row label.radio:has(input[type="radio"]:checked) {
 	border-color: var(--proto-teal-600);
 	background: #e6f4f1;
 	color: #0a5f56;
 }
 
-.linker-auth .form-row input[type="radio"]:focus-visible + label.radio {
+.linker-auth .form-row label.radio:has(input[type="radio"]:focus-visible) {
 	outline: 2px solid var(--proto-teal-600);
 	outline-offset: 2px;
 }

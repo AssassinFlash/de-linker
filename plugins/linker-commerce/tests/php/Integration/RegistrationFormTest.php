@@ -185,6 +185,44 @@ final class RegistrationFormTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * The business type keeps native radios (#351): each input is nested inside
+	 * its own option label, so the input itself — not a sibling label — is the
+	 * pill's click and focus target for pointers, keyboards and Playwright's
+	 * actionability check alike.
+	 */
+	public function test_the_business_type_inputs_are_nested_native_radios(): void {
+		$_POST = array();
+		ob_start();
+		( new Fields( new VatProfile( new ViesClient() ) ) )->render();
+		$html = (string) ob_get_clean();
+
+		$document = new \DOMDocument();
+		libxml_use_internal_errors( true );
+		$document->loadHTML( '<?xml encoding="utf-8" ?>' . $html );
+		libxml_clear_errors();
+		$radios = ( new \DOMXPath( $document ) )->query( '//input[@type="radio"]' );
+		$this->assertNotFalse( $radios );
+		$this->assertSame( 3, $radios->length, 'The three business types render.' );
+		foreach ( $radios as $radio ) {
+			if ( ! $radio instanceof \DOMElement ) {
+				$this->fail( 'A business-type radio did not come back as an element.' );
+			}
+			$this->assertSame( CustomerRole::META, $radio->getAttribute( 'name' ) );
+			$this->assertSame( 'true', $radio->getAttribute( 'aria-required' ) );
+			// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- the DOM API's own property names.
+			$parent = $radio->parentNode;
+			if ( ! $parent instanceof \DOMElement ) {
+				$this->fail( 'The radio input has no parent element.' );
+			}
+			$this->assertSame( 'label', $parent->tagName, 'The input sits inside its option label, its own hit area.' );
+			$this->assertSame( $radio->getAttribute( 'id' ), $parent->getAttribute( 'for' ) );
+			$this->assertStringContainsString( 'radio', $parent->getAttribute( 'class' ) );
+			$this->assertSame( CustomerRole::label( $radio->getAttribute( 'value' ) ), trim( $parent->textContent ) );
+			// phpcs:enable
+		}
+	}
+
+	/**
 	 * A bot that fills everything but the trap, or posts too fast, or comes
 	 * back over the shared limit, is refused before any account or mail and
 	 * the refusal is counted.

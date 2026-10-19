@@ -107,6 +107,60 @@ for (const [label, website, stored] of [
 	});
 }
 
+test('the business-type radios answer on the input itself, in English and German', async ({
+	page,
+}) => {
+	// #351: the pill styling had parked the native inputs at 1px with
+	// pointer-events:none, so only the wrapping label answered — Playwright's
+	// actionability check, keyboard users and screen readers hit the same
+	// wall. The fix keeps the input the pill's own hit and focus target
+	// (RoleField nests it inside its label, auth.css overlays the label with
+	// it), and this walk repeats the original repro against both languages.
+	for (const locale of ['en', 'de'] as const) {
+		const path =
+			locale === 'de'
+				? '/de/mein-konto/register/'
+				: '/my-account/register/';
+		await page.goto(instance().url + path);
+		await expect(page.locator('form[data-linker-register]')).toHaveClass(
+			/is-split/
+		);
+
+		// The ticket's repro: check() runs the full actionability gauntlet on
+		// the INPUT (visible, stable, receiving events) before clicking it.
+		const epc = page.locator('#linker_customer_role_epc');
+		await epc.check();
+		await expect(epc).toBeChecked();
+		await expect(
+			page.locator('label.radio[for="linker_customer_role_epc"]')
+		).toHaveCSS('border-color', 'rgb(12, 127, 115)');
+
+		// The keyboard path: Tab from the company name reaches the group —
+		// the browser's tab stop is the checked input — and the arrows move
+		// the checked state along with focus, with the chain's focus ring on
+		// the focused pill.
+		await page.locator('[name="billing_company"]').focus();
+		await page.keyboard.press('Tab');
+		expect(await page.evaluate(() => document.activeElement?.id)).toBe(
+			'linker_customer_role_epc'
+		);
+		const installerPill = page.locator(
+			'label.radio[for="linker_customer_role_installer"]'
+		);
+		const epcPill = page.locator(
+			'label.radio[for="linker_customer_role_epc"]'
+		);
+		await expect(epcPill).toHaveCSS('outline-style', 'solid');
+		await expect(epcPill).toHaveCSS('outline-color', 'rgb(12, 127, 115)');
+		await page.keyboard.press('ArrowLeft');
+		await expect(
+			page.locator('#linker_customer_role_installer')
+		).toBeChecked();
+		await expect(installerPill).toHaveCSS('outline-style', 'solid');
+		await expect(epcPill).toHaveCSS('outline-style', 'none');
+	}
+});
+
 test('only the register page adds the country-select script to the account chain', async ({
 	page,
 }) => {
