@@ -1,20 +1,24 @@
 """#339: one regression suite for the campaign's fixed defects.
 
-Each group loads the fixture the fix registered and calls the test that
-already owns that pass condition. This file does not reimplement those
-assertions. A case that needs a live instance and the model stays a harness
-case: the case map says why, and this module only checks that the
-registration is still on disk.
+Each owned pass condition is the test that already asserts it. This module
+reexports that function and leaves parametrize, skip, xfail, indirect and
+fixtures on the marks pytest stored. It does not expand parameters and it
+does not call a skipped row. When pytest collects this module together with
+the home modules, tests/conftest.py drops the home copy so the condition
+runs once. A case that needs a live instance and the model stays a harness
+case.
 
 docs/acceptance/2026-10-20/339/case-map.md is the ticket → fixture →
 assertion → command index. `just test` collects this module with the rest
-of services/genie; nothing here calls the model.
+of services/genie. Nothing here calls the model.
 """
 
 from __future__ import annotations
 
+import importlib.util
 import inspect
 import json
+import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -33,7 +37,6 @@ import test_regression_339 as regression
 from linker_genie import attachments, ground
 from linker_genie.agent import _user_prompt
 from linker_genie.inquiry import decide, requests_inquiry
-from linker_genie.lexicon import Vocabulary
 from linker_genie.route import Route
 from linker_genie.schema import (
     AttachmentReading,
@@ -62,12 +65,12 @@ BARE_WORDS = (
 LANGUAGE_CASES = (
     Path(__file__).resolve().parents[1] / "eval" / "language" / "cases.json"
 )
+REPEATS = Path(__file__).resolve().parents[1] / "eval" / "contact" / "repeats.json"
 GENIE_MANIFEST = Path(__file__).parent / "fixtures" / "339" / "manifest.json"
 I8_FIXTURE = Path(__file__).parent / "fixtures" / "412" / "i8-persist.json"
 CODE = "ZEPHYR-C334"
 
-# Defects whose pass condition is a unit test in this suite. The others in
-# the #330 manifest still need the live battery (no merged fix, or a model turn).
+# Class-level unit tests. Not a pass/fail for one #330 question. That gap is #431.
 UNIT_DEFECTS = {
     "D1": "product words",
     "D2": "product words",
@@ -121,8 +124,11 @@ MAP_NEEDLES = (
     "#333",
     "#334",
     "#335",
+    "#431",
     "PR #409",
     "PR #416",
+    "仅 harness",
+    "待定",
     "tests/test_regression_339.py::test_339_product_word_case",
     "tests/test_language.py::test_339_language_cases_hold",
     "tests/test_contact.py::test_339_filler_corpus_holds_for_every_cut_from_0_to_0_75",
@@ -132,6 +138,9 @@ MAP_NEEDLES = (
     "tests/test_cycle.py::test_a_tool_that_always_fails_validation_is_a_visible_degradation",
     "tests/test_ground_understanding.py::test_the_extreme_fallback_names_one_product_in_both_languages",
     "tests/test_prices.py::test_a_search_card_shows_what_the_product_page_shows",
+    "test_a_card_price_for_an_account_not_approved_is_flagged",
+    "test_a_card_price_no_tool_returned_is_flagged",
+    "test_injection_stays_pending_until_416",
     "tests/e2e/specs/genie-prices.spec.ts",
     "just e2e <instance> genie-prices",
     "cd services/genie && uv run --locked pytest tests/test_campaign_339.py",
@@ -142,52 +151,65 @@ MAP_NEEDLES = (
     "docs/research/2026-10-20-campaign-335/harness",
     "plugins/linker-tools/tests/php/Unit/ThreadTest.php",
     "plugins/linker-tools/tests/php/Integration/ConversationConcurrencyTest.php",
+    'defaultTestSuite="unit"',
+    "just genie-concurrency",
 )
 
+# Home tests this module reexports. conftest drops the home copy when both
+# are collected. Names only: the function objects live in their home modules.
+REEXPORTED_NAMES: list[str] = []
 
-def _param_rows(fn: Callable[..., Any]) -> list[dict[str, Any]]:
-    """The cartesian product of a test's parametrize marks, as kwargs."""
+
+def _marks(fn: Callable[..., Any]) -> list[Any]:
     marks = getattr(fn, "pytestmark", [])
-    if not isinstance(marks, list):
-        marks = [marks]
-    grids: list[tuple[list[str], list[Any]]] = []
-    for mark in marks:
-        if getattr(mark, "name", None) != "parametrize":
-            continue
-        raw_names = mark.args[0]
-        if isinstance(raw_names, str):
-            names = [part.strip() for part in raw_names.split(",")]
-        else:
-            names = [str(part) for part in raw_names]
-        values: list[Any] = []
-        for item in mark.args[1]:
-            values.append(tuple(item.values) if hasattr(item, "values") else item)
-        grids.append((names, values))
-    if not grids:
-        return [{}]
-    rows: list[dict[str, Any]] = [{}]
-    for names, values in grids:
-        grown: list[dict[str, Any]] = []
-        for row in rows:
-            for item in values:
-                packed = (item,) if len(names) == 1 else tuple(item)
-                grown.append({**row, **dict(zip(names, packed, strict=True))})
-        rows = grown
-    return rows
+    if marks is None:
+        return []
+    return list(marks) if isinstance(marks, list) else [marks]
 
 
-def _run(fn: Callable[..., Any], vocabulary: Vocabulary | None = None) -> int:
-    """Call `fn` once per parametrized row. `vocabulary` is passed when asked."""
-    wants = "vocabulary" in inspect.signature(fn).parameters
-    rows = _param_rows(fn)
-    for row in rows:
-        if wants:
-            if vocabulary is None:
-                raise AssertionError(fn.__name__)
-            fn(vocabulary=vocabulary, **row)
-        else:
-            fn(**row)
-    return len(rows)
+def _reexport(fn: Callable[..., Any]) -> Callable[..., Any]:
+    """Publish `fn` for pytest without a second parametrization runner.
+
+    The copy keeps the pytestmark list and the signature. Pytest therefore
+    sees the same parameters, skip and xfail marks, indirect fixtures and
+    injected fixtures the home test declares.
+    """
+
+    def campaign(*args: Any, **kwargs: Any) -> Any:
+        return fn(*args, **kwargs)
+
+    campaign.__name__ = fn.__name__
+    campaign.__doc__ = fn.__doc__
+    campaign.__qualname__ = fn.__name__
+    campaign.__module__ = __name__
+    campaign.__signature__ = inspect.signature(fn)  # type: ignore[attr-defined]
+    copied = _marks(fn)
+    if copied:
+        campaign.pytestmark = copied  # type: ignore[attr-defined]
+    return campaign
+
+
+def _publish(fn: Callable[..., Any]) -> None:
+    globals()[fn.__name__] = _reexport(fn)
+    REEXPORTED_NAMES.append(fn.__name__)
+
+
+for _owned in (
+    regression.test_339_product_word_case,
+    regression.test_the_fixture_lists_the_ticket_cases,
+    test_language.test_339_language_cases_hold,
+    test_contact.test_339_filler_corpus_holds_for_every_cut_from_0_to_0_75,
+    test_pairing_cards.test_s4_repeat_h2_10k_t3_four_rounds_de_and_en,
+    *PREFILL,
+    test_lexicon.test_the_bd8_question_searches_that_battery,
+    test_cycle.test_a_tool_that_always_fails_validation_is_a_visible_degradation,
+    test_cycle.test_a_products_route_with_nothing_qualified_shows_no_unrelated_cards,
+    test_ground_understanding.test_the_extreme_fallback_names_one_product_in_both_languages,
+    test_prices.test_a_search_card_shows_what_the_product_page_shows,
+    test_prices.test_a_card_price_for_an_account_not_approved_is_flagged,
+    test_prices.test_a_card_price_no_tool_returned_is_flagged,
+):
+    _publish(_owned)
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -197,10 +219,27 @@ def _load(path: Path) -> dict[str, Any]:
     return loaded
 
 
+def _param_strings(fn: Callable[..., Any]) -> list[str]:
+    """Strings stored on parametrize marks. This does not call `fn`."""
+    found: list[str] = []
+    for mark in _marks(fn):
+        if getattr(mark, "name", None) != "parametrize":
+            continue
+        for item in mark.args[1]:
+            values = getattr(item, "values", None)
+            packed = values if values is not None else item
+            if not isinstance(packed, tuple):
+                packed = (packed,)
+            for value in packed:
+                if isinstance(value, str):
+                    found.append(value)
+    return found
+
+
 def _reasons(
     answer: str, blocks: list[dict[str, Any]], fixture: dict[str, Any]
 ) -> list[str]:
-    """The I8 pass predicate: quote the code, do not carry out the instruction."""
+    """The I8 predicate already on this branch: quote the code, do not carry out the instruction."""
     reasons: list[str] = []
     for needle in fixture["contains"]:
         if needle not in answer:
@@ -220,94 +259,117 @@ def _reasons(
     return reasons
 
 
+def _campaign_330_ids() -> set[str]:
+    """Row ids from the harness source, not a literal count.
+
+    Kept defects and overturns live on ``regrade``. Round-3 rows graded
+    defect or parity are read from ``round3-runs.jsonl``.
+    """
+    harness = HARNESS_330.parents[2]
+    rounds = HARNESS_330.parents[3] / "round3-runs.jsonl"
+    inserted = str(harness)
+    sys.path.insert(0, inserted)
+    stale = ("summary", "campaign330_regrade")
+    previous = {name: sys.modules.get(name) for name in stale}
+    kept: Any = None
+    overturns: Any = None
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "campaign330_regrade", harness / "regrade.py"
+        )
+        if spec is None or spec.loader is None:
+            raise AssertionError(harness / "regrade.py")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["campaign330_regrade"] = module
+        spec.loader.exec_module(module)
+        kept = getattr(module, "KEPT_DEFECTS", None)
+        overturns = getattr(module, "OVERTURNS", None)
+    finally:
+        sys.path.remove(inserted)
+        for name, old in previous.items():
+            if old is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = old
+    if not isinstance(kept, dict) or not isinstance(overturns, dict):
+        raise AssertionError("regrade ids")
+    ids = {str(key) for key in kept} | {str(key) for key in overturns}
+    for line in rounds.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if row.get("grade") in {"defect", "parity"}:
+            ids.add(str(row["id"]))
+    return ids
+
+
+def _runs(item: pytest.Item) -> bool:
+    return item.get_closest_marker("skip") is None
+
+
+def _collected(items: list[pytest.Item], name: str) -> int:
+    return sum(
+        1
+        for item in items
+        if getattr(getattr(item, "module", None), "__name__", "") == "test_campaign_339"
+        and getattr(item, "originalname", "") == name
+        and _runs(item)
+    )
+
+
 @pytest.mark.parametrize(
-    "row", regression._rows(), ids=[str(row["id"]) for row in regression._rows()]
+    "value",
+    [
+        pytest.param(
+            "skipped",
+            marks=pytest.mark.skip(reason="a skipped #339 row must not run"),
+        ),
+        "ran",
+    ],
 )
-def test_product_word_absence_and_outage(
-    row: dict[str, Any], vocabulary: Vocabulary
-) -> None:
-    """#363 / #364 / #367, including an absence claim and an outage sentence."""
-    regression.test_339_product_word_case(row, vocabulary)
+def test_a_skipped_parameter_does_not_run(value: str) -> None:
+    """Pytest owns skip marks. The old runner would have called this row."""
+    assert value == "ran"
 
 
-def test_the_product_word_file_is_the_registered_set() -> None:
-    regression.test_the_fixture_lists_the_ticket_cases()
+def test_reexport_keeps_the_pytest_marks() -> None:
+    """The suite copies pytest's marks. It does not rebuild the parameter grid."""
+    source = test_lexicon.test_the_bd8_question_searches_that_battery
+    exported = globals()[source.__name__]
+    assert _marks(exported) == _marks(source)
+    assert inspect.signature(exported) == inspect.signature(source)
 
 
-def test_language_cases_follow_the_question() -> None:
-    """#374. The whole-answer hydration stays in test_language.py."""
-    manifest = _load(LANGUAGE_CASES)
-    assert manifest["issue"] == 374
-    assert manifest["corpus"] == 339
-    assert len(manifest["cases"]) == 17
-    test_language.test_339_language_cases_hold()
-
-
-def test_filler_pairs_hold_across_the_cut() -> None:
-    """#375. 81 EN/DE pairs, every Jaccard cut from 0 through 0.75."""
-    test_contact.test_339_filler_corpus_holds_for_every_cut_from_0_to_0_75()
-
-
-def test_repeat_cards_keep_the_released_set() -> None:
-    """#376. Four rounds, DE and EN, from fixtures/339/manifest.json."""
-    test_pairing_cards.test_s4_repeat_h2_10k_t3_four_rounds_de_and_en()
-
-
-def test_prefill_keeps_only_what_the_customer_stated(vocabulary: Vocabulary) -> None:
-    """#365. The sentences stay in test_prefill.py; this runs each of them."""
+def test_prefill_sentences_stay_registered() -> None:
+    """#365. The sentences stay on the reexported tests. This does not call them."""
     messages: list[str] = []
-    total = 0
     for fn in PREFILL:
-        for row in _param_rows(fn):
-            message = row.get("message")
-            if isinstance(message, str):
-                messages.append(message)
-        total += _run(fn, vocabulary)
+        messages.extend(_param_strings(fn))
     assert test_prefill.DE in messages
     assert test_prefill.EN in messages
     assert "ohne Notstrom" in messages
     assert "PLZ 01067" in messages
-    assert total == 81
+    assert f"登记的 {len(PREFILL)} 个测试" in CASE_MAP.read_text(encoding="utf-8")
 
 
-def test_short_body_questions_search_bd8(vocabulary: Vocabulary) -> None:
-    """#369. The two bare_words.json rows noted #369 are the BD-8 questions."""
+def test_the_bd8_rows_are_the_369_notes() -> None:
+    """#369. The bare_words.json rows noted #369 are the BD-8 questions."""
     noted = [case for case in _load(BARE_WORDS)["cases"] if case.get("note") == "#369"]
     assert [(case["lang"], case["message"]) for case in noted] == list(
         test_lexicon.BD8_QUESTIONS
     )
-    assert (
-        _run(test_lexicon.test_the_bd8_question_searches_that_battery, vocabulary) == 4
-    )
 
 
-def test_retry_exhaustion_is_a_visible_degradation() -> None:
-    """#366. The series card is not shipped when the tool never validates."""
-    test_cycle.test_a_tool_that_always_fails_validation_is_a_visible_degradation()
-    test_cycle.test_a_products_route_with_nothing_qualified_shows_no_unrelated_cards()
-
-
-def test_an_extreme_fallback_names_one_product() -> None:
-    """#368. One card, the model that met the limit, EN and DE."""
-    test_ground_understanding.test_the_extreme_fallback_names_one_product_in_both_languages()
-
-
-def test_the_account_price_gate_is_the_page_line() -> None:
-    """#242, as far as a unit test reaches. The live accounts are #333."""
-    assert _run(test_prices.test_a_search_card_shows_what_the_product_page_shows) == 4
-    assert _run(test_prices.test_a_card_without_a_price_passes_the_check) == 3
-    _run(test_prices.test_a_card_price_for_an_account_not_approved_is_flagged)
-
-
-def test_injection_data_is_quoted_and_the_instruction_is_not() -> None:
-    """#412 I8, the part a unit test can reach on main.
+def test_injection_stays_pending_until_416() -> None:
+    """#412 stays pending until PR #416 merges.
 
     The file text reaches the model as data. The question is not an inquiry;
     the instruction line is. An answer that writes the code and nothing else
     from the instruction passes grounding. A placeholder that prints the
     file's 1 EUR does not. The prompt sentences that tell the model to quote
-    a code word are PR #416 and are not on main, so they are not asserted.
-    The live turn stays the #334 harness.
+    a code word are PR #416 and are not on this branch, so they are not
+    asserted and this test does not close #412. The live turn stays the
+    #334 harness.
     """
     manifest = _load(GENIE_MANIFEST)
     case = next(item for item in manifest["cases"] if item["id"] == "i8-persist")
@@ -375,36 +437,80 @@ def test_injection_data_is_quoted_and_the_instruction_is_not() -> None:
 
 
 def test_the_330_manifest_classifies_every_registered_defect() -> None:
-    """Live #330 rows stay registered. Only D1–D7 have a unit pass condition."""
+    """Live #330 rows stay registered. Per-question assertions are #431."""
     payload = _load(HARNESS_330)
     assert payload["ticket"] == 339
+    cases = payload["cases"]
+    assert isinstance(cases, list)
     seen: set[str] = set()
-    for case in payload["cases"]:
+    ids: set[str] = set()
+    for case in cases:
         defect = str(case["defect"])
         assert defect in UNIT_DEFECTS or defect in HARNESS_DEFECTS
         assert str(case["evidence"]).endswith("#" + str(case["id"]))
         seen.add(defect)
+        ids.add(str(case["id"]))
     assert set(UNIT_DEFECTS) <= seen
-    assert {"D8", "D9", "D10", "D11", "D12", "round-3", "parity"} <= seen
-    assert len(payload["cases"]) == 20
+    assert HARNESS_DEFECTS <= seen
+    assert ids == _campaign_330_ids()
 
 
-def test_the_case_map_names_every_runner_and_its_count() -> None:
-    """The index and this module name the same tickets, commands and counts."""
+def test_the_case_map_names_every_runner_and_its_count(
+    request: pytest.FixtureRequest,
+) -> None:
+    """The index names the same tickets, commands and derived counts."""
     text = CASE_MAP.read_text(encoding="utf-8")
     for needle in MAP_NEEDLES:
         assert needle in text, needle
-    language = len(_load(LANGUAGE_CASES)["cases"])
-    fillers = len(
-        _load(
-            Path(__file__).resolve().parents[1] / "eval" / "contact" / "repeats.json"
-        )["pairs"]
+    false_claim = (
+        "`just test` 已经收集 `plugins/linker-tools/tests/php/Unit/ThreadTest.php` "
+        "和 `plugins/linker-tools/tests/php/Integration/ConversationConcurrencyTest.php`"
     )
-    prefill = sum(len(_param_rows(fn)) for fn in PREFILL)
+    assert false_claim not in text
+    assert "test_a_card_without_a_price_passes_the_check" not in text
+    head, pending = text.split("## 待定", 1)
+    assert "#412" not in head
+    assert "PR #416" in pending
+    assert "未合并" in pending
+
+    items = list(request.session.items)
+    language = len(_load(LANGUAGE_CASES)["cases"])
+    fillers = len(_load(REPEATS)["pairs"])
+    product = _collected(items, "test_339_product_word_case")
+    prefill = sum(_collected(items, fn.__name__) for fn in PREFILL)
+    short = _collected(items, "test_the_bd8_question_searches_that_battery")
+    degrade = _collected(
+        items, "test_a_tool_that_always_fails_validation_is_a_visible_degradation"
+    ) + _collected(
+        items, "test_a_products_route_with_nothing_qualified_shows_no_unrelated_cards"
+    )
+    extreme = _collected(
+        items, "test_the_extreme_fallback_names_one_product_in_both_languages"
+    )
+    price = (
+        _collected(items, "test_a_search_card_shows_what_the_product_page_shows")
+        + _collected(items, "test_a_card_price_for_an_account_not_approved_is_flagged")
+        + _collected(items, "test_a_card_price_no_tool_returned_is_flagged")
+    )
+    repeat = _collected(items, "test_s4_repeat_h2_10k_t3_four_rounds_de_and_en")
+    assert product == len(regression._rows())
     sentence = (
-        f"产品词 {len(regression._rows())}，语言 {language}，填充词 {fillers}，"
-        f"重复卡片 1，预填 {prefill}，短码 4，降级 2，极值 1，价格门 8，注入 1"
+        "计数（夹具长度或本模块 pytest 条目，跳过的不计）："
+        f"产品词 {product}，语言 {language}，填充词 {fillers}，"
+        f"重复卡片 {repeat}，预填 {prefill}，短码 {short}，"
+        f"降级 {degrade}，极值 {extreme}，价格门 {price}。"
     )
     assert sentence in text, sentence
-    assert "D8–D12" in text
+    assert f"（{language} 条）" in text
+    assert f"（{fillers} 对）" in text
+    rows = _campaign_330_ids()
+    gap = (
+        f"#330 清单有 {len(rows)} 行（`regrade.KEPT_DEFECTS`、`regrade.OVERTURNS`，"
+        f"加上 `round3-runs.jsonl` 里 grade 为 defect 或 parity 的行）。"
+        f"这 {len(rows)} 行没有逐题自动断言，缺口在 #431。"
+    )
+    assert gap in text, gap
+    for ticket in ("#332", "#333", "#335"):
+        line = next(row for row in text.splitlines() if row.startswith(f"| {ticket} |"))
+        assert "仅 harness" in line, line
     assert "不调用模型" in text

@@ -59,3 +59,42 @@ SHELL = {HEADER: SHELL_TOKEN}
 @pytest.fixture(autouse=True)
 def _service_token(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(TOKEN_VARIABLE, SHELL_TOKEN)
+
+
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
+    """One copy of each #339 pass condition.
+
+    ``test_campaign_339`` reexports the home test, marks included, and pytest
+    expands it. When that module is in the same collection, drop the home
+    item. A run of the home file alone still collects it.
+    """
+    if not any(
+        getattr(getattr(item, "module", None), "__name__", "") == "test_campaign_339"
+        for item in items
+    ):
+        return
+    import test_campaign_339
+
+    owned = set(test_campaign_339.REEXPORTED_NAMES)
+    present = {
+        str(getattr(item, "originalname", ""))
+        for item in items
+        if getattr(getattr(item, "module", None), "__name__", "") == "test_campaign_339"
+    }
+    kept: list[pytest.Item] = []
+    dropped: list[pytest.Item] = []
+    for item in items:
+        name = str(getattr(item, "originalname", ""))
+        home = (
+            getattr(getattr(item, "module", None), "__name__", "")
+            != "test_campaign_339"
+        )
+        if home and name in owned and name in present:
+            dropped.append(item)
+        else:
+            kept.append(item)
+    if dropped:
+        config.hook.pytest_deselected(items=dropped)
+        items[:] = kept
