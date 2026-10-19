@@ -15,9 +15,16 @@ import urllib.error
 import urllib.request
 from typing import Any
 
-# The shell's proxy stops at 60 s. 180 is the direct-service bound #330 used,
-# so a slow turn is recorded rather than cut.
+# The shell's proxy stops at 60 s (plugins/linker-tools includes/Genie/Proxy.php
+# `post()`, `'timeout' => 60.0`, the same bound as prices.SHELL_TIMEOUT).
+# 180 is the direct-service bound #330 used (services/genie/eval/baseline/run.py
+# records that the trial script used 180), so a slow turn is recorded rather
+# than cut. It does not extend the proxy's 60 s.
 TURN_TIMEOUT = 180.0
+# page.py TIMEOUT_SECONDS is 10 s for one LiveCanvas read (0.5–3.4 s measured
+# 2026-10-18) and MAX_REDIRECTS is 3. 30 s is three of those reads, so this
+# GET still finishes when a page follows that redirect budget. It is not a
+# product timeout.
 PAGE_TIMEOUT = 30.0
 TOKEN_HEADER = "X-Linker-Service-Token"
 
