@@ -36,6 +36,12 @@ LIKELY = 0.8
 # failure of trial question 8 (docs/research/2026-10-17-knocket/TRIAL.md §2). Six
 # fill two rows of the card grid; the answer asks one question to narrow the rest.
 SEARCH_LIMIT = 6
+# The smallest count that is "several models in one message" (#364). The
+# acceptance case is three codes; two is already enough to report one and
+# invent the other. Dossier 2026-10-19 §1.11 and §2 item 10: aggregating
+# several models has no published implementation to copy, so the cut is this
+# ticket's — one named model stays a single search.
+SEVERAL_MODELS = 2
 # Products a document search is narrowed to: search-knowledge takes product_ids, and
 # a question names one or two models in practice; four keeps a family question
 # (OCEAN 2) inside the documents of the cards it shows.
@@ -108,6 +114,29 @@ DOCUMENTS_HINT = (
     "This is a question about documents or technical values. Answer from the "
     "search-knowledge chunks (cite them) and the product facts; show the "
     "documents as document blocks. It is not a question for the team."
+)
+
+# The three obligations for a message that names models (#363, #364, #367).
+# prompts/en/system.md carries this paragraph unchanged. The German prompt
+# states the same three obligations in its own words. The per-turn reminder
+# (agent.py) appends this paragraph, so the English wording has one source.
+# Dossier 2026-10-19 §1.1, §1.11 and §2 item 10: no competitor publishes the
+# aggregation, so the obligations are this ticket's design.
+NAMED_MODEL_RULE = (
+    "Several models in one message are each searched on their own. "
+    "Report every searched model from its own result and show each product "
+    "returned. Say a model has no entry only when that model's search returned "
+    "nothing. A model the routing note marks as not searched must be described "
+    "as not searched, never as absent. When the note says the customer named a "
+    "brand the product data does not list for that model, name the brand the "
+    "customer wrote and the brand from the product data in the same sentence, "
+    "and show the product. A code the product data does not contain is outside "
+    "the range; offer the closest products the search returned. None of these "
+    "is a question for the team."
+)
+# The short form of the first obligation, for a route hint that names the codes.
+_NOT_SEARCHED_HINT = (
+    "Say they were not searched. Never say they are absent from the product data."
 )
 
 RouteName = Literal[
@@ -215,6 +244,154 @@ class NamedModel:
     written_brand: str = ""
     catalog_brand: str = ""
     unknown: bool = False
+
+    @property
+    def is_conflict(self) -> bool:
+        """The customer wrote a brand the catalog does not list for this model."""
+        return bool(self.written_brand and self.catalog_brand)
+
+    @property
+    def searched_known(self) -> bool:
+        """Searched, and the catalog lists the code."""
+        return self.searched and not self.unknown
+
+
+# How one named model's calls turned out, once the turn's tool log is known.
+# `product_ids` are lexicon ids, not the search result, so they cannot say
+# "searched and returned nothing". That state is the `empty` outcome.
+LookupOutcome = Literal["products", "empty", "failed", "unsearched"]
+
+
+@dataclass(frozen=True)
+class ModelLookup:
+    """One named model joined to this turn's tool calls."""
+
+    note: NamedModel
+    outcome: LookupOutcome
+
+
+def lookup_models(
+    notes: tuple[NamedModel, ...],
+    calls: list[dict[str, Any]],
+    qualified_ids: set[int],
+) -> tuple[ModelLookup, ...]:
+    """Join each note to the calls that looked its code up.
+
+    A covering call is search-products whose `text` is the code, or
+    get-product for one of its product ids. A call the model makes later
+    counts the same way: a note the budget left unsearched becomes searched
+    when that call is in the log.
+
+    - `products`: a covering call succeeded and returned one of the model's
+      products, or get-product fetched one.
+    - `empty`: a covering search succeeded and qualified none of the model's
+      products. That is "searched and returned nothing". An unknown code has
+      no catalog ids, so a successful search of that code is this outcome.
+    - `failed`: the route searched the code, or a covering call came back not
+      ok, and no covering call succeeded. A route call that raises
+      AbilityError is omitted from the log (understand.py); the note stays
+      searched and the outcome is `failed`.
+    - `unsearched`: nothing looked the code up.
+
+    A successful search-products call with no `text` confirms notes the route
+    already marked searched. It does not look up a code the route left out.
+    Production search calls carry `text` (abilities.record).
+    """
+    qualified = set(qualified_ids)
+    legacy_ok = any(
+        _search_call(call) and _call_ok(call) and _call_text(call) is None
+        for call in calls
+    )
+    found: list[ModelLookup] = []
+    for note in notes:
+        specific_ok = False
+        specific_bad = False
+        got_product = False
+        for call in calls:
+            if _search_call(call) and _call_text(call) == note.code:
+                if _call_ok(call):
+                    specific_ok = True
+                else:
+                    specific_bad = True
+            elif _get_call(call) and _call_product(call) in note.product_ids:
+                if _call_ok(call):
+                    specific_ok = True
+                    got_product = True
+                else:
+                    specific_bad = True
+        covered = specific_ok or (legacy_ok and note.searched)
+        if covered:
+            own = bool(set(note.product_ids) & qualified)
+            outcome: LookupOutcome = "products" if own or got_product else "empty"
+            searched = True
+        elif specific_bad or note.searched:
+            outcome = "failed"
+            searched = True
+        else:
+            outcome = "unsearched"
+            searched = False
+        refreshed = (
+            replace(note, searched=searched) if note.searched != searched else note
+        )
+        found.append(ModelLookup(refreshed, outcome))
+    return tuple(found)
+
+
+def absence_allowed(lookup: ModelLookup) -> bool:
+    """Whether the answer may say this code is absent from the product data.
+
+    Only an `empty` outcome: this code's own search succeeded and qualified
+    none of its products. A failed search is an outage. A conflict is named
+    (`is_conflict`), not called absent. An unsearched code is never absent.
+    """
+    if lookup.note.is_conflict:
+        return False
+    return lookup.outcome == "empty"
+
+
+def _call_name(call: dict[str, Any]) -> str:
+    return str(call.get("name", ""))
+
+
+def _call_args(call: dict[str, Any]) -> dict[str, Any]:
+    arguments = call.get("arguments")
+    return arguments if isinstance(arguments, dict) else {}
+
+
+def _call_ok(call: dict[str, Any]) -> bool:
+    return call.get("ok") is True
+
+
+def _call_text(call: dict[str, Any]) -> str | None:
+    text = _call_args(call).get("text")
+    return text if isinstance(text, str) and text else None
+
+
+def _call_product(call: dict[str, Any]) -> int | None:
+    product_id = _call_args(call).get("product_id")
+    return product_id if isinstance(product_id, int) else None
+
+
+def _search_call(call: dict[str, Any]) -> bool:
+    return _call_name(call).endswith("search-products")
+
+
+def _get_call(call: dict[str, Any]) -> bool:
+    return _call_name(call).endswith("get-product")
+
+
+def several(notes: tuple[NamedModel, ...], *, searched: bool = False) -> bool:
+    """Whether `notes` reaches `SEVERAL_MODELS`.
+
+    `searched` counts only models this turn looked up. The route's "show
+    cards" decision counts every catalog model the customer named, including
+    one the budget left out.
+    """
+    if searched:
+        count = sum(1 for note in notes if note.searched_known)
+    else:
+        count = sum(1 for note in notes if not note.unknown)
+    return count >= SEVERAL_MODELS
 
 
 @dataclass(frozen=True)
@@ -384,27 +561,20 @@ def plan(
         return clarify
     family = _family_hint(matches)
     calls, notes = _search_plan(matches, lang, subject, message)
-    hint_extra = _model_hint(notes)
     reasons.extend(_note_reasons(notes))
     if intent == "documents_specs":
-        doc_calls = [
-            Call(
-                "linker/search-knowledge",
-                _knowledge_input(message, matches, subject, lang),
-            )
-        ]
-        if subject.ids:
-            doc_calls.extend(
-                Call("linker/get-product", {"product_id": pid, "lang": lang})
-                for pid in subject.ids[:2]
-            )
-        elif calls:
-            doc_calls.extend(calls)
+        # Known products are fetched with get-product; a code with no product
+        # id is searched. Either call counts as searched. What does not fit
+        # the four-call budget is searched=False — never reported absent.
+        # Dossier 2026-10-19 §1.11: no competitor publishes this aggregation.
+        doc_calls, notes = _documents_calls(
+            calls, notes, message, matches, subject, lang
+        )
         return Route(
             "documents",
-            tuple(doc_calls),
+            doc_calls,
             no_handoff=True,
-            hint=DOCUMENTS_HINT + family + hint_extra,
+            hint=DOCUMENTS_HINT + family + _model_hint(notes),
             reasons=tuple(reasons),
             named_models=notes,
         )
@@ -431,6 +601,7 @@ def plan(
             hint="The comparison is fetched; answer with a compare block.",
             reasons=tuple(reasons),
         )
+    hint_extra = _model_hint(notes)
     unknown = any(note.unknown for note in notes)
     if (calls or notes) and (bare or intent == "find_products" or unknown):
         return Route(
@@ -452,8 +623,9 @@ def plan(
         # to look (trial question 9, "How do I set the export limit on an SAJ H2
         # inverter?", Jev documents_specs 0.67 — the model did not look and
         # answered that the documents had nothing; review of PR #279).
-        return Route(
-            "documents",
+        # search-knowledge shares the four-call budget with those searches
+        # (spec 13 §B). A model whose search does not fit is not searched.
+        doc_calls, notes = _limit_route_calls(
             (
                 *calls,
                 Call(
@@ -461,8 +633,14 @@ def plan(
                     _knowledge_input(message, matches, subject, lang),
                 ),
             ),
+            notes,
+            limit=MAX_TOOL_CALLS - DOCUMENTS_SPARE,
+        )
+        return Route(
+            "documents",
+            doc_calls,
             no_handoff=True,
-            hint=DOCUMENTS_HINT + family + hint_extra,
+            hint=DOCUMENTS_HINT + family + _model_hint(notes),
             reasons=tuple(reasons),
             named_models=notes,
         )
@@ -883,14 +1061,18 @@ def _search_input(matches: list[Match], lang: str) -> dict[str, Any] | None:
     return found
 
 
-# A code in the raw message: a letter, a digit, and at least two "-" or "/" joins.
-# One join is a phase or a rating ("3-phase", "10-20"); the unknown-model case in
-# #363 is GW50K-ETA-G20. MIN_CODE (lexicon.py) is the shortest real code, four
-# characters ("L260", snapshot 2026-10-15).
+# A code-shaped token in the raw message: a letter, a digit, and at least two
+# "-" or "/" joins. One join is a phase or a rating ("3-phase", "10-20"); the
+# unknown-model case in #363 is GW50K-ETA-G20. MIN_CODE (lexicon.py) is the
+# shortest real code, four characters ("L260", snapshot 2026-10-15). The token
+# is a model only when it also has a catalog prefix or suffix (`_catalog_shaped`):
+# an order number ("ABC-123-456") has the joins and is not a model.
 _ASKED_CODE = re.compile(
     r"(?<![\w.])(?=[A-Za-z0-9]*[A-Za-z])[A-Za-z0-9]+(?:[./][A-Za-z0-9]+)*"
     r"(?:[-/][A-Za-z0-9]+(?:[./][A-Za-z0-9]+)*){2,}(?![\w])"
 )
+_CODE_SPLIT = re.compile(r"[-/]")
+_LEADING_LETTERS = re.compile(r"[A-Za-z]+")
 
 
 def _search_plan(
@@ -1101,6 +1283,7 @@ def _unknown_codes(message: str, subject: Subject) -> tuple[str, ...]:
     if not subject.catalog_models:
         return ()
     known = {normalize(code) for code in subject.catalog_models}
+    prefixes = _catalog_shapes(subject)
     found: list[str] = []
     seen: set[str] = set()
     for match in _ASKED_CODE.finditer(message):
@@ -1110,9 +1293,56 @@ def _unknown_codes(message: str, subject: Subject) -> tuple[str, ...]:
             continue
         if not any(ch.isalpha() for ch in key) or not any(ch.isdigit() for ch in key):
             continue
+        if not _catalog_shaped(code, prefixes):
+            continue
         seen.add(key)
         found.append(code)
     return tuple(found)
+
+
+def _catalog_shapes(subject: Subject) -> set[str]:
+    """Leading tokens of the catalog's brands and model codes.
+
+    A prefix is at least two characters. The shortest brand letter-run in the
+    published catalog is two (GW, HS, EF; snapshot 2026-10-15, the store
+    snapshot lexicon.MIN_CODE cites for the four-character code "L260"). A
+    one-letter run is not a brand or a series. MIN_CODE is the full code, not
+    this prefix. The shapes come from the catalog, not from a hand-written list.
+    """
+    prefixes: set[str] = set()
+    for slug, label in subject.brand_names.items():
+        for word in (slug, label):
+            letters = _LEADING_LETTERS.match(word)
+            # Two: shortest brand letter-run in that snapshot. Not a new cut.
+            if letters and len(letters.group(0)) >= 2:
+                prefixes.add(letters.group(0).casefold())
+    for code in subject.catalog_models:
+        parts = [part for part in _CODE_SPLIT.split(code) if part]
+        if not parts:
+            continue
+        letters = _LEADING_LETTERS.match(parts[0])
+        if letters and len(letters.group(0)) >= 2:
+            prefixes.add(letters.group(0).casefold())
+        if len(parts[0]) >= 2 and any(ch.isalpha() for ch in parts[0]):
+            prefixes.add(parts[0].casefold())
+    return prefixes
+
+
+def _catalog_shaped(code: str, prefixes: set[str]) -> bool:
+    """Whether `code` starts with a known brand, series, or model token.
+
+    "GW" from GW10K-ETA-G20 makes GW50K-ETA-G20 catalog-shaped. A catalog
+    suffix alone does not: ORDER-2026-G20 ends in G20 and DLK-2026-001 has
+    the shop prefix, and neither is a model. "ABC-123-456" matches no prefix.
+    """
+    parts = [part for part in _CODE_SPLIT.split(code) if part]
+    if not parts:
+        return False
+    letters = _LEADING_LETTERS.match(parts[0])
+    lead = letters.group(0).casefold() if letters else ""
+    if len(lead) >= 2 and lead in prefixes:
+        return True
+    return len(parts[0]) >= 2 and parts[0].casefold() in prefixes
 
 
 def _unknown_calls(
@@ -1170,18 +1400,18 @@ def _family_stem(code: str, catalog: tuple[str, ...]) -> str | None:
 
 def _must_show(notes: tuple[NamedModel, ...]) -> bool:
     """Cards for a conflict, an unknown code, or two or more named models."""
-    if any(note.written_brand or note.unknown for note in notes):
+    if any(note.is_conflict or note.unknown for note in notes):
         return True
-    return len([note for note in notes if not note.unknown]) >= 2
+    return several(notes)
 
 
 def _note_reasons(notes: tuple[NamedModel, ...]) -> list[str]:
     reasons: list[str] = []
-    if any(note.written_brand for note in notes):
+    if any(note.is_conflict for note in notes):
         reasons.append("brand and model disagree")
     if any(note.unknown for note in notes):
         reasons.append("model code not in the product data")
-    if len([note for note in notes if not note.unknown]) >= 2:
+    if several(notes):
         reasons.append("several models")
     return reasons
 
@@ -1189,7 +1419,7 @@ def _note_reasons(notes: tuple[NamedModel, ...]) -> list[str]:
 def _model_hint(notes: tuple[NamedModel, ...]) -> str:
     """What the model is told about each named code. English, both locales."""
     parts: list[str] = []
-    conflicts = [note for note in notes if note.written_brand and note.catalog_brand]
+    conflicts = [note for note in notes if note.is_conflict and note.searched]
     if conflicts:
         named = "; ".join(
             f"{note.code} is {note.catalog_brand} in the product data; "
@@ -1197,9 +1427,9 @@ def _model_hint(notes: tuple[NamedModel, ...]) -> str:
             for note in conflicts
         )
         parts.append(
-            named + ". Name the brand from the product data, show that product as a "
-            "card, and do not say the model is missing. This is not a question for "
-            "the team."
+            named + ". Name the brand the customer wrote and the brand from the "
+            "product data in the same sentence, show that product as a card, and "
+            "do not say the model is missing. This is not a question for the team."
         )
     unknown = [note.code for note in notes if note.unknown and note.searched]
     if unknown:
@@ -1209,8 +1439,8 @@ def _model_hint(notes: tuple[NamedModel, ...]) -> str:
             + ". Say that plainly and offer the closest products the search returned. "
             "Do not hand the question to the team."
         )
-    known = [note.code for note in notes if note.searched and not note.unknown]
-    if len(known) >= 2:
+    known = [note.code for note in notes if note.searched_known]
+    if len(known) >= SEVERAL_MODELS:
         parts.append(
             "Every named model was searched on its own: "
             + ", ".join(known)
@@ -1220,14 +1450,109 @@ def _model_hint(notes: tuple[NamedModel, ...]) -> str:
     missed = [note.code for note in notes if not note.searched]
     if missed:
         parts.append(
-            "Not searched this turn: "
-            + ", ".join(missed)
-            + ". Say they were not searched. Never say they are absent from the "
-            "product data."
+            "Not searched this turn: " + ", ".join(missed) + ". " + _NOT_SEARCHED_HINT
         )
     if not parts:
         return ""
     return " " + " ".join(parts)
+
+
+def _documents_calls(
+    calls: tuple[Call, ...],
+    notes: tuple[NamedModel, ...],
+    message: str,
+    matches: list[Match],
+    subject: Subject,
+    lang: str,
+) -> tuple[tuple[Call, ...], tuple[NamedModel, ...]]:
+    """Knowledge, then get-product for known ids, then searches that are still needed.
+
+    A model is searched when get-product fetches one of its products or
+    search-products runs on its code. Search calls for a code get-product
+    already covers are left out, so a single known model stays
+    search-knowledge plus get-product. The list is then cut to
+    `MAX_TOOL_CALLS - DOCUMENTS_SPARE` (spec 13 §B is four ability calls a
+    turn; one stays for the model's follow-up, trial question 10). A model
+    that does not fit is searched=False.
+    """
+    knowledge = Call(
+        "linker/search-knowledge",
+        _knowledge_input(message, matches, subject, lang),
+    )
+    body: list[Call] = []
+    fetched: set[int] = set()
+    for product_id in subject.ids:
+        body.append(
+            Call("linker/get-product", {"product_id": product_id, "lang": lang})
+        )
+        fetched.add(product_id)
+    covered = {
+        note.code
+        for note in notes
+        if note.product_ids and set(note.product_ids) <= fetched
+    }
+    for call in calls:
+        text = call.arguments.get("text")
+        if call.ability == "linker/search-products" and text in covered:
+            continue
+        body.append(call)
+    return _limit_route_calls(
+        (knowledge, *body), notes, limit=MAX_TOOL_CALLS - DOCUMENTS_SPARE
+    )
+
+
+def _limit_route_calls(
+    calls: tuple[Call, ...],
+    notes: tuple[NamedModel, ...],
+    limit: int = MAX_TOOL_CALLS,
+) -> tuple[tuple[Call, ...], tuple[NamedModel, ...]]:
+    """Keep at most `limit` calls. A knowledge call is never the one dropped.
+
+    Spec 13 §B: at most four ability calls a turn. Dropping a later search
+    marks that model not searched (`_notes_after_calls`).
+    """
+    knowledge = sum(1 for call in calls if call.ability == "linker/search-knowledge")
+    room = limit - knowledge
+    kept: list[Call] = []
+    others = 0
+    for call in calls:
+        if call.ability == "linker/search-knowledge":
+            kept.append(call)
+            continue
+        if others >= room:
+            continue
+        kept.append(call)
+        others += 1
+    kept_calls = tuple(kept)
+    return kept_calls, _notes_after_calls(notes, kept_calls)
+
+
+def _notes_after_calls(
+    notes: tuple[NamedModel, ...], calls: tuple[Call, ...]
+) -> tuple[NamedModel, ...]:
+    """A searched note stays searched only when a kept call looked the code up.
+
+    search-products whose text is the code, or get-product for one of its
+    product ids. A family-suffix search is not the code.
+    """
+    texts = {
+        call.arguments.get("text")
+        for call in calls
+        if call.ability == "linker/search-products"
+    }
+    fetched = {
+        call.arguments.get("product_id")
+        for call in calls
+        if call.ability == "linker/get-product"
+    }
+    updated: list[NamedModel] = []
+    for note in notes:
+        found = note.code in texts or any(pid in fetched for pid in note.product_ids)
+        if note.searched and not found:
+            updated.append(replace(note, searched=False))
+        else:
+            updated.append(note)
+    return tuple(updated)
 
 
 def _knowledge_input(
@@ -1345,32 +1670,13 @@ def with_page(
             + ", ".join(unchecked)
             + "; say that they were not checked yet and offer to check them."
         )
-    kept_texts = {
-        call.arguments.get("text")
-        for call in calls
-        if call.ability == "linker/search-products"
-    }
     # A dropped search whose text is the model code was not searched. A family
     # suffix (ETA-G20) is not the code, so dropping only that search leaves the
-    # code searched.
-    named = tuple(
-        replace(note, searched=False)
-        if note.searched and note.code not in kept_texts
-        else note
-        for note in route.named_models
-    )
-    flipped = [
-        note.code
-        for previous, note in zip(route.named_models, named, strict=True)
-        if previous.searched and not note.searched
-    ]
-    if flipped:
-        hint += (
-            " Not searched this turn: "
-            + ", ".join(flipped)
-            + ". Say they were not searched. Never say they are absent from the "
-            "product data."
-        )
+    # code searched. get-product for one of the model's products also counts.
+    # Rebuild the model paragraph so a code the page budget dropped is not
+    # still described as searched earlier in the same hint.
+    named = _notes_after_calls(route.named_models, calls)
+    base = _hint_with_models(route.hint, route.named_models, named)
     return Route(
         route.name,
         calls,
@@ -1378,12 +1684,25 @@ def with_page(
         action=route.action,
         no_cards=route.no_cards,
         no_handoff=route.no_handoff,
-        hint=(route.hint + hint).strip(),
+        hint=(base + hint).strip(),
         reasons=(*route.reasons, f"about this page: {page.type}"),
         dropped=dropped,
         named_models=named,
         answer=route.answer,
     )
+
+
+def _hint_with_models(
+    hint: str, before: tuple[NamedModel, ...], after: tuple[NamedModel, ...]
+) -> str:
+    """Swap the named-model paragraph after the page budget drops a call."""
+    old = _model_hint(before)
+    new = _model_hint(after)
+    if old and old in hint:
+        return hint.replace(old, new, 1)
+    if new.strip() == old.strip():
+        return hint
+    return (hint + new).strip()
 
 
 def _draft_pairs(ids: list[int], subject: Subject) -> list[Call]:
