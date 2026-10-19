@@ -10,7 +10,8 @@
   - `evidence/graded.jsonl` — 人工终判（pass/defect + 缺陷号 + 观察）
   - `evidence/final.jsonl` — graded + `product_hits`（id/SKU/model）+ 数字复核字段
   - `smoke/smoke.jsonl` — 生产 10 探针（最终 URL、响应头、原文）
-- 判定标准见 `README.md`。规则：每条结论以该次回答原文为证；"答得还行"不算过。
+- 判定标准见 `README.md`；逐例压缩表见 `cases.md`（请求、路由、命中型号、数字
+  复核、耗时、判定）。规则：每条结论以该次回答原文为证；"答得还行"不算过。
 
 ## 1. 结果总览（111 例 / 111 个真实回合）
 

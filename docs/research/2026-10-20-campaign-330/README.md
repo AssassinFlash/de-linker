@@ -61,4 +61,5 @@ python3 run_battery.py ~/de-linker-data/campaign-330/evidence
 
 ## 结论
 
-见 `NOTES.md`（逐例表 + 缺陷清单 + 阳性发现）与 #330 的 issue comment。
+见 `NOTES.md`（缺陷清单 + 阳性发现 + 生产证据）、`cases.md`（111 例压缩表）
+与 #330 的 issue comment。
