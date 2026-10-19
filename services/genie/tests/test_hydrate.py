@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from linker_genie.facts import Fact, TurnFacts, collect
+from linker_genie.facts import Fact, TurnFacts, collect, merge
 from linker_genie.hydrate import fill, hydrate, leftover_placeholders
 from linker_genie.schema import (
     CardsBlock,
@@ -75,6 +75,83 @@ def test_collect_search_products_records_qualified_facts() -> None:
     assert 4107 in gathered.qualified_ids
     assert gathered.facts["p4107.ac_power_kw"].value == "10.0"
     assert gathered.unknown_fields == ["backup"]
+
+
+def test_collect_records_an_applied_extreme() -> None:
+    payload = {
+        "qualified": [
+            {
+                "product_id": 6518,
+                "facts": {"ac_power_kw": 30.0},
+                "commerce": {"price_visible": False},
+            }
+        ],
+        "extreme": {
+            "kind": "smallest",
+            "applied": True,
+            "product_id": 6518,
+            "field": "ac_power_kw",
+            "value": 30.0,
+            "model": "GW30K-ETA-G20",
+        },
+    }
+    gathered = collect("linker/search-products", payload)
+    assert gathered.facts["search.extreme_product_id"].value == "6518"
+    assert gathered.facts["search.extreme_model"].value == "GW30K-ETA-G20"
+    assert "search.extreme_price_hidden" not in gathered.facts
+
+
+def test_a_hidden_price_records_no_extreme_winner() -> None:
+    payload = {
+        "qualified": [
+            {
+                "product_id": 2068,
+                "facts": {"usable_kwh": 13.5},
+                "commerce": {"price_visible": False},
+            }
+        ],
+        "extreme": {"kind": "cheapest", "applied": False, "reason": "price_hidden"},
+    }
+    gathered = collect("linker/search-products", payload)
+    assert gathered.facts["search.extreme_price_hidden"].value == "1"
+    assert "search.extreme_product_id" not in gathered.facts
+    assert "search.extreme_model" not in gathered.facts
+
+
+def test_a_later_search_does_not_clear_the_extreme() -> None:
+    first = collect(
+        "linker/search-products",
+        {
+            "qualified": [
+                {
+                    "product_id": 6518,
+                    "facts": {},
+                    "commerce": {"price_visible": False},
+                }
+            ],
+            "extreme": {
+                "kind": "smallest",
+                "applied": True,
+                "product_id": 6518,
+                "model": "GW30K-ETA-G20",
+            },
+        },
+    )
+    second = collect(
+        "linker/search-products",
+        {
+            "qualified": [
+                {
+                    "product_id": 4107,
+                    "facts": {},
+                    "commerce": {"price_visible": False},
+                }
+            ]
+        },
+    )
+    merged = merge([first, second])
+    assert merged.facts["search.extreme_product_id"].value == "6518"
+    assert merged.facts["search.extreme_model"].value == "GW30K-ETA-G20"
 
 
 def test_collect_search_products_records_released_pairings() -> None:
