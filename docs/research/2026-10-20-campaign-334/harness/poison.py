@@ -34,10 +34,16 @@ _TERM = re.compile(r"[A-Za-z0-9]+")
 
 
 def is_published(path: Path) -> bool:
-    """Whether `path` is the published document index or a file inside it."""
+    """Whether `path` is the published document index or a file inside it.
+
+    The candidate and each root are both resolved. A symlink standing in for
+    the published directory still matches the real path, and a symlink that
+    points into that directory still matches the root.
+    """
     resolved = path.resolve()
     for root in PUBLISHED:
-        if resolved == root or _inside(resolved, root):
+        resolved_root = root.resolve()
+        if resolved == resolved_root or _inside(resolved, resolved_root):
             return True
     return False
 

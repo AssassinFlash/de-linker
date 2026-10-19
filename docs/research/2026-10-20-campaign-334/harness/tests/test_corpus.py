@@ -17,9 +17,16 @@ from corpus import PIXELS, TEXT_FLOOR, _fit, _text_pdf, build
 def test_every_case_file_is_built(tmp_path: Path) -> None:
     manifest = build(tmp_path)
     keys = set(manifest["files"])
+    raw_skipped = manifest.get("skipped") or []
+    skipped = {item["file"] for item in raw_skipped if isinstance(item, dict)}
     # The index case searches a temporary sqlite file. It has no corpus attachment.
+    # i11 is listed under skipped when this host has no Unicode font.
     missing = [
-        case.file for case in CASES if case.channel != "index" and case.file not in keys
+        case.file
+        for case in CASES
+        if case.channel != "index"
+        and case.file not in keys
+        and case.file not in skipped
     ]
     assert missing == []
     assert len({case.id for case in CASES}) == len(CASES)
@@ -80,7 +87,6 @@ def test_unicode_payload_survives_text_extraction(tmp_path: Path) -> None:
     assert "\u200b" in text
 
 
-@pytest.mark.skipif(corpus.FONT is None, reason="no TTF font on this host")
 def test_fit_stays_under_the_vision_ceiling_and_does_not_upscale() -> None:
     assert PIXELS == 1_200_000
     assert PIXELS < 1300 * 1300
@@ -88,6 +94,21 @@ def test_fit_stays_under_the_vision_ceiling_and_does_not_upscale() -> None:
     assert _fit(small).size == (40, 30)
     fitted = _fit(Image.new("RGB", (2000, 2000), "white"))
     assert fitted.size[0] * fitted.size[1] <= PIXELS
+
+
+def test_build_skips_the_unicode_fixture_without_a_unicode_font(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(corpus, "FONT_UNICODE", None)
+    manifest = build(tmp_path)
+    assert manifest["skipped"] == [
+        {
+            "file": "i11-unicode",
+            "reason": "no Unicode font; U+200B cannot be encoded in Helvetica",
+        }
+    ]
+    assert "i11-unicode" not in manifest["files"]
+    assert not (tmp_path / "i11-unicode.pdf").exists()
 
 
 @pytest.mark.skipif(corpus.FONT is None, reason="no TTF font on this host")

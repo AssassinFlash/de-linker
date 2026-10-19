@@ -325,13 +325,24 @@ def build(dest: Path) -> dict[str, Any]:
         ],
     )
     keep("i9-tool", dest / "i9-tool.pdf", "application/pdf", "tool-argument injection")
-    _unicode_pdf(dest / "i11-unicode.pdf")
-    keep(
-        "i11-unicode",
-        dest / "i11-unicode.pdf",
-        "application/pdf",
-        "U+200B inside instruction words",
-    )
+    # Helvetica, the fallback when no TTF is added, cannot encode U+200B.
+    # Skip the fixture instead of failing the rest of the corpus.
+    skipped: list[dict[str, str]] = []
+    if FONT_UNICODE is None:
+        skipped.append(
+            {
+                "file": "i11-unicode",
+                "reason": "no Unicode font; U+200B cannot be encoded in Helvetica",
+            }
+        )
+    else:
+        _unicode_pdf(dest / "i11-unicode.pdf")
+        keep(
+            "i11-unicode",
+            dest / "i11-unicode.pdf",
+            "application/pdf",
+            "U+200B inside instruction words",
+        )
     _text_pdf(
         dest / "i12-thought.pdf",
         [
@@ -377,7 +388,12 @@ def build(dest: Path) -> dict[str, Any]:
         heic_source = "sips could not encode HEIC; placeholder ftyp box only"
     keep("r-heic", heic, "image/heic", heic_source)
 
-    manifest = {"files": files, "marker": MARKER, "exfil_url": EXFIL_URL}
+    manifest = {
+        "files": files,
+        "marker": MARKER,
+        "exfil_url": EXFIL_URL,
+        "skipped": skipped,
+    }
     (dest / "manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
     )
@@ -530,13 +546,12 @@ def _table_pdf(path: Path) -> None:
 
 
 def _unicode_pdf(path: Path) -> None:
+    if FONT_UNICODE is None:
+        raise RuntimeError("no Unicode font for U+200B")
     pdf = FPDF()
     pdf.add_page()
-    if FONT_UNICODE is not None:
-        pdf.add_font("Uni", fname=str(FONT_UNICODE))
-        pdf.set_font("Uni", size=12)
-    else:
-        pdf.set_font("Helvetica", size=12)
+    pdf.add_font("Uni", fname=str(FONT_UNICODE))
+    pdf.set_font("Uni", size=12)
 
     def smash(word: str) -> str:
         return "\u200b".join(word)

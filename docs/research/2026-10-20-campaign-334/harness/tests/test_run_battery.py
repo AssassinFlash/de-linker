@@ -15,6 +15,7 @@ import pytest
 
 from cases import I4_TRANSCRIPTION, by_id, exfil_port
 from grade import grade
+from poison import CLEAN, POISON
 from run_battery import (
     _browser,
     _error_code,
@@ -323,19 +324,54 @@ def test_regrade_flips_a_missing_transcription_and_leaves_a_clean_case(
 def test_browser_records_are_graded_by_the_runner(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    u2 = tmp_path / "runs" / "U2.json"
+    u2.parent.mkdir()
+    u2.write_text('{"id": "U2", "grade": {"verdict": "pass"}}\n', encoding="utf-8")
+    before = u2.read_bytes()
+    seen: dict[str, list[str]] = {}
+
     def fake_run(cmd: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
         del kwargs
-        runs = tmp_path / "runs"
-        runs.mkdir()
-        (runs / "U1.json").write_text(
+        seen["cmd"] = cmd
+        (tmp_path / "runs" / "U1.json").write_text(
             FIXTURE.read_text(encoding="utf-8"), encoding="utf-8"
         )
         return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
 
     monkeypatch.setattr("run_battery.subprocess.run", fake_run)
-    _browser(tmp_path, [by_id()["U1"]])
+    _browser(tmp_path, [by_id()["U1"]], "http://127.0.0.1:9199")
+    command = seen["cmd"]
+    assert command[command.index("--wp") + 1] == "http://127.0.0.1:9199"
+    assert command[command.index("--only") + 1] == "U1"
     stored = json.loads((tmp_path / "runs" / "U1.json").read_text(encoding="utf-8"))
     assert stored["grade"]["verdict"] == "pass"
+    assert u2.read_bytes() == before
+
+
+def test_browser_failure_does_not_keep_a_stale_pass(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    runs = tmp_path / "runs"
+    runs.mkdir()
+    stale = {
+        "id": "U1",
+        "channel": "browser",
+        "refusal_text": "old pass",
+        "turn_requests": 0,
+        "grade": {"verdict": "pass", "reasons": []},
+        "steps": [{"status": None, "answer": "", "readings": [], "blocks": []}],
+    }
+    (runs / "U1.json").write_text(json.dumps(stale), encoding="utf-8")
+
+    def fake_run(cmd: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        del cmd, kwargs
+        return subprocess.CompletedProcess([], 1, stdout="", stderr="no browser")
+
+    monkeypatch.setattr("run_battery.subprocess.run", fake_run)
+    _browser(tmp_path, [by_id()["U1"]], "http://127.0.0.1:9193")
+    stored = json.loads((runs / "U1.json").read_text(encoding="utf-8"))
+    assert stored["grade"]["verdict"] == "error"
+    assert any("no browser" in reason for reason in stored["grade"]["reasons"])
 
 
 def test_missing_browser_record_is_an_error(
@@ -346,9 +382,37 @@ def test_missing_browser_record_is_an_error(
         return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="no browser")
 
     monkeypatch.setattr("run_battery.subprocess.run", fake_run)
-    _browser(tmp_path, [by_id()["U1"]])
+    _browser(tmp_path, [by_id()["U1"]], "http://127.0.0.1:9193")
     stored = json.loads((tmp_path / "runs" / "U1.json").read_text(encoding="utf-8"))
     assert stored["grade"]["verdict"] == "error"
+
+
+def test_browser_script_reads_the_target_and_the_selection() -> None:
+    harness = Path(__file__).resolve().parents[1]
+    done = subprocess.run(
+        [
+            "node",
+            "--input-type=module",
+            "-e",
+            "import { parseArgs } from './browser.mjs';"
+            "const selected = parseArgs("
+            "['node','browser.mjs','/tmp/ev','--wp','http://127.0.0.1:9199','--only','U1'],"
+            "{});"
+            "const both = parseArgs(['node','browser.mjs'], {HOME:'/tmp'});"
+            "console.log(JSON.stringify({selected, both}));",
+        ],
+        cwd=harness,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert done.returncode == 0, done.stderr
+    parsed = json.loads(done.stdout)
+    assert parsed["selected"]["evidence"] == "/tmp/ev"
+    assert parsed["selected"]["wp"] == "http://127.0.0.1:9199"
+    assert parsed["selected"]["only"] == ["U1"]
+    assert parsed["both"]["only"] == ["U1", "U2"]
+    assert parsed["both"]["wp"] == "http://127.0.0.1:9193"
 
 
 def test_index_only_run_does_not_ask_for_the_token(
@@ -363,10 +427,22 @@ def test_index_only_run_does_not_ask_for_the_token(
     monkeypatch.setattr("run_battery._token", boom)
     main(["V1"])
     stored = json.loads((tmp_path / "runs" / "V1.json").read_text(encoding="utf-8"))
+    text = stored["readings"][0]["text"]
+    assert POISON in text
+    assert CLEAN in text
+    assert stored["answer"] == ""
+    assert stored.get("meta") is None
+    assert stored["self_test"] is True
     assert stored["grade"]["verdict"] == "pass"
     assert stored["index"]["published"] is False
     assert "/de-linker-data/index/" not in str(stored["index"]["path"])
     assert (tmp_path / "poison-index" / "index.sqlite").is_file()
+    summary = json.loads((tmp_path / "summary.json").read_text(encoding="utf-8"))
+    assert summary["pass"] == 0
+    assert summary["defect"] == 0
+    assert summary["error"] == 0
+    assert [row["id"] for row in summary["self_test"]] == ["V1"]
+    assert summary["self_test"][0]["verdict"] == "pass"
 
 
 def test_regrade_flag_does_not_open_a_browser_or_a_token(

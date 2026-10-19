@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
-from cases import CASES, MARKER, Case, exfil_port
+from cases import CASES, MARKER, Case, by_id, exfil_port
 from corpus import build
 from grade import grade
 from poison import is_published
@@ -136,7 +136,7 @@ def main(argv: list[str] | None = None) -> None:
         )
         _apply_global(evidence, persisted, sent)
     if browser_cases:
-        _browser(evidence, browser_cases)
+        _browser(evidence, browser_cases, args.wp)
     _finish(evidence)
 
 
@@ -682,30 +682,42 @@ def _expect(case_id: str) -> dict[str, Any]:
 
 def _summarise(evidence: Path) -> dict[str, Any]:
     rows = []
+    self_tests = []
     counts = {"pass": 0, "defect": 0, "error": 0}
     sent = 0
+    known = by_id()
     for path in sorted((evidence / "runs").glob("*.json")):
         record = json.loads(path.read_text(encoding="utf-8"))
         verdict = str((record.get("grade") or {}).get("verdict") or "error")
+        row = {
+            "id": record.get("id"),
+            "verdict": verdict,
+            "owasp": record.get("owasp"),
+            "instruction_followed": (record.get("grade") or {}).get(
+                "instruction_followed"
+            ),
+            "sent": (record.get("grade") or {}).get("sent"),
+            "leaked": (record.get("grade") or {}).get("leaked"),
+            "fabricated": (record.get("grade") or {}).get("fabricated"),
+            "duration_ms": record.get("duration_ms"),
+            "reasons": (record.get("grade") or {}).get("reasons"),
+        }
+        if _self_test(record, known):
+            self_tests.append(row)
+            continue
         counts[verdict] = counts.get(verdict, 0) + 1
         if (record.get("grade") or {}).get("sent"):
             sent += 1
-        rows.append(
-            {
-                "id": record.get("id"),
-                "verdict": verdict,
-                "owasp": record.get("owasp"),
-                "instruction_followed": (record.get("grade") or {}).get(
-                    "instruction_followed"
-                ),
-                "sent": (record.get("grade") or {}).get("sent"),
-                "leaked": (record.get("grade") or {}).get("leaked"),
-                "fabricated": (record.get("grade") or {}).get("fabricated"),
-                "duration_ms": record.get("duration_ms"),
-                "reasons": (record.get("grade") or {}).get("reasons"),
-            }
-        )
-    return {**counts, "sent": sent, "cases": rows}
+        rows.append(row)
+    return {**counts, "sent": sent, "self_test": self_tests, "cases": rows}
+
+
+def _self_test(record: dict[str, Any], known: dict[str, Case]) -> bool:
+    """V1 searches a temporary index. It has no customer answer to grade."""
+    if record.get("self_test") is True:
+        return True
+    case = known.get(str(record.get("id") or ""))
+    return case is not None and case.self_test
 
 
 def _wanted(case: Case, only: list[str]) -> bool:
@@ -729,7 +741,12 @@ def _write_graded(path: Path, case: Case, record: dict[str, Any]) -> None:
 
 
 def _index_record(case: Case, evidence: Path) -> dict[str, Any]:
-    """Search a temporary index. The published vector index is not opened."""
+    """Search a temporary index. The published vector index is not opened.
+
+    The hit text is the reading. There is no model answer and no turn route,
+    so the security and attribution checks have nothing to read. The row is a
+    self-test and stays out of the graded counts.
+    """
     db = evidence / "poison-index" / "index.sqlite"
     started = time.time()
     hits: list[str] = []
@@ -743,7 +760,6 @@ def _index_record(case: Case, evidence: Path) -> dict[str, Any]:
             "answer": "",
             "readings": [{"text": text, "failed": None}],
             "blocks": [],
-            "meta": {"route": "index"},
         }
     except Exception as error:  # noqa: BLE001 — one case must not abort the battery
         step = {"status": 0, "error": f"{type(error).__name__}: {error}", "answer": ""}
@@ -760,19 +776,46 @@ def _index_record(case: Case, evidence: Path) -> dict[str, Any]:
         "answer": step.get("answer"),
         "readings": step.get("readings"),
         "blocks": step.get("blocks"),
-        "meta": step.get("meta"),
         "steps": [step],
         "error": step.get("error"),
+        "self_test": True,
         "index": {"path": str(db), "published": is_published(db), "hits": len(hits)},
         "sent_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
     }
 
 
-def _browser(evidence: Path, cases: list[Case]) -> None:
-    """Run browser.mjs, then grade U1 and U2 with the committed grader."""
+def _mtime_ns(path: Path) -> int | None:
+    if not path.is_file():
+        return None
+    return path.stat().st_mtime_ns
+
+
+def _browser_error(case: Case, message: str) -> dict[str, Any]:
+    detail = (message or "browser.mjs failed").strip()[-500:]
+    return {
+        "id": case.id,
+        "channel": "browser",
+        "error": detail,
+        "turn_requests": 0,
+        "steps": [{"status": 0, "error": detail}],
+    }
+
+
+def _browser(evidence: Path, cases: list[Case], wp: str) -> None:
+    """Run the selected browser cases, then grade those records.
+
+    browser.mjs receives the evidence directory, `--wp`, and `--only`. A run
+    asked for U1 does not rewrite U2. A non-zero exit does not keep a pass
+    left by an earlier run: a selected file that this invocation did not
+    rewrite is graded as an error.
+    """
     script = Path(__file__).with_name("browser.mjs")
+    ids = [case.id for case in cases]
+    stamps = {
+        case.id: _mtime_ns(evidence / "runs" / f"{case.id}.json") for case in cases
+    }
     done = subprocess.run(
-        ["node", str(script), str(evidence)],
+        ["node", str(script), str(evidence), "--wp", wp, "--only", ",".join(ids)],
         cwd=script.parent,
         capture_output=True,
         text=True,
@@ -787,19 +830,15 @@ def _browser(evidence: Path, cases: list[Case]) -> None:
     ).strip()
     for case in cases:
         path = evidence / "runs" / f"{case.id}.json"
-        if path.is_file():
+        fresh = path.is_file() and _mtime_ns(path) != stamps[case.id]
+        stale_pass = done.returncode != 0 and not fresh
+        record: dict[str, Any] = {}
+        if path.is_file() and not stale_pass:
             loaded = json.loads(path.read_text(encoding="utf-8"))
-            record = loaded if isinstance(loaded, dict) else {}
-        else:
-            record = {}
+            if isinstance(loaded, dict):
+                record = loaded
         if not record:
-            record = {
-                "id": case.id,
-                "channel": "browser",
-                "error": message[-500:],
-                "turn_requests": 0,
-                "steps": [{"status": 0, "error": message[-500:]}],
-            }
+            record = _browser_error(case, message)
         print(f"grade {case.id}", flush=True)
         _write_graded(path, case, record)
 
@@ -808,6 +847,7 @@ def regrade(evidence: Path) -> dict[str, Any]:
     """Grade every stored run again and rewrite summary.json."""
     runs = evidence / "runs"
     changed = 0
+    known = by_id()
     if runs.is_dir():
         for path in sorted(runs.glob("*.json")):
             loaded = json.loads(path.read_text(encoding="utf-8"))
@@ -818,6 +858,9 @@ def regrade(evidence: Path) -> dict[str, Any]:
             if loaded.get("grade") != new:
                 changed += 1
             loaded["grade"] = new
+            case = known.get(case_id)
+            if case is not None and case.self_test:
+                loaded["self_test"] = True
             path.write_text(
                 json.dumps(loaded, indent=2, ensure_ascii=False) + "\n",
                 encoding="utf-8",
@@ -844,7 +887,7 @@ def _print_summary(summary: dict[str, Any]) -> None:
         json.dumps(
             {
                 key: summary[key]
-                for key in ("pass", "defect", "error", "sent", "changed")
+                for key in ("pass", "defect", "error", "sent", "changed", "self_test")
                 if key in summary
             },
             indent=2,
@@ -866,9 +909,9 @@ class _Listener:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind(("127.0.0.1", self.port))
-        # One payload opens this port at a time. A short backlog keeps a
-        # burst of connections from being reset before accept runs.
-        sock.listen(8)
+        # socket.socket.listen() with no backlog uses the runtime's default
+        # queue (docs.python.org/3/library/socket.html#socket.socket.listen).
+        sock.listen()
         # accept returns twice a second so stop() does not wait for a client.
         sock.settimeout(0.5)
         self.bound_port = int(sock.getsockname()[1])
