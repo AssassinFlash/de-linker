@@ -553,7 +553,9 @@ def _user_prompt(
         "A guest inquiry (inquiry-status returned login_required, "
         "logged_in=false) is not out of scope: do not call handoff-team; "
         "answer with exactly one text block whose text is exactly "
-        "{fact:inquiry.login}, and nothing else. " + NAMED_MODEL_RULE + " Ask at most one "
+        "{fact:inquiry.login}, and nothing else. "
+        + NAMED_MODEL_RULE
+        + " Ask at most one "
         f"question and only with field in {'|'.join(ASK_FIELDS)}."
     )
     return "\n".join(lines)
