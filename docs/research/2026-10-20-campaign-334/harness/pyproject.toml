@@ -1,0 +1,33 @@
+[project]
+name = "campaign-334-harness"
+version = "0.1.0"
+description = "Attachment and prompt-injection battery for campaign #334. Scripts run as files, not an installed package."
+requires-python = ">=3.12"
+dependencies = [
+    "cryptography>=3.1",
+    "fpdf2>=2.8.3",
+    "pillow>=11.0.0",
+    "pypdf>=5.4.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+mypy_path = "."
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+filterwarnings = ["error"]
