@@ -3,11 +3,12 @@
 The口径 is the Knocket trial's (docs/research/2026-10-17-knocket/TRIAL.md §1-2,
 kept by docs/specs/13-genie.md "对照题集") turned into code:
 
-- a product is hit when a cards/compare block shows it, or a text block cites
-  its product id (the model writes no model codes into the text);
+- a product is hit when a cards or compare block shows it. Text `refs` are
+  not rendered, so a numeric ref is not a shown product;
 - every number in the hydrated answer must be traceable: to the row's expected
-  values (unit conversions count, as the judge rubric words it), or to a
-  catalogue model/SKU token the answer names;
+  values (an empty list means no number may appear; unit conversions count, as
+  the judge rubric words it), or to a catalogue model/SKU token the answer
+  names;
 - every answer carries a next step (goal 9);
 - the map's hard rows (#329: trials 1, 8, 10, 14) never fall back and never
   deflect to the team mailbox;
@@ -67,21 +68,38 @@ class Turn:
     done: bool = False
 
 
+def _field(line: str, name: str) -> str | None:
+    """The value of one SSE field. One leading space after the colon is the
+    separator the spec strips; further spaces belong to the value."""
+
+    prefix = name + ":"
+    if not line.startswith(prefix):
+        return None
+    value = line[len(prefix) :]
+    if value.startswith(" "):
+        value = value[1:]
+    return value.rstrip("\r")
+
+
 def parse_stream(stream: str) -> Turn:
-    """Read the service's SSE text (`event:`/`data:` pairs) into a Turn."""
+    """Read the service's SSE text (`event:`/`data:` pairs) into a Turn.
+
+    Continued `data:` lines are joined with a newline, as the SSE spec
+    concatenates them. The meta object's `timing` sits at the end of a long
+    line; keeping only the first data line would drop it when a proxy wraps
+    the event.
+    """
 
     turn = Turn()
     for chunk in stream.split("\n\n"):
-        lines = chunk.strip().splitlines()
-        name = next(
-            (line[7:].strip() for line in lines if line.startswith("event: ")), None
-        )
-        payload = next(
-            (line[6:].strip() for line in lines if line.startswith("data: ")), None
-        )
-        if name is None or payload is None:
+        lines = [line.rstrip("\r") for line in chunk.strip().splitlines()]
+        name = next((value for line in lines if (value := _field(line, "event"))), None)
+        data_lines = [
+            value for line in lines if (value := _field(line, "data")) is not None
+        ]
+        if name is None or not data_lines:
             continue
-        data: Any = json.loads(payload)
+        data: Any = json.loads("\n".join(data_lines))
         if name == "meta" and isinstance(data, dict):
             turn.meta = data
         elif name == "block" and isinstance(data, dict):
@@ -108,21 +126,17 @@ def block_types(blocks: list[dict[str, Any]]) -> set[str]:
 
 
 def shown_ids(blocks: list[dict[str, Any]]) -> set[int]:
-    """Product ids the turn shows: cards, comparisons and text citations.
+    """Product ids the customer can see: a cards or compare block.
 
-    A text block's `refs` carry product ids and fact ids (docs/specs/13-genie.md
-    "结构保证": 卡片 ⊆ 正文引用), so a cited id counts as shown.
+    The shell renders those blocks. A text block's `refs` are stored and not
+    drawn, so a numeric ref is not a shown product (the map's hard rows and
+    every row that requires a product fail without the block).
     """
 
     ids: set[int] = set()
     for block in blocks:
-        kind = block.get("type")
-        if kind in {"cards", "compare"}:
+        if block.get("type") in {"cards", "compare"}:
             ids.update(int(pid) for pid in block.get("product_ids") or [])
-        elif kind == "text":
-            for ref in block.get("refs") or []:
-                if str(ref).isdigit():
-                    ids.add(int(ref))
     return ids
 
 
@@ -244,6 +258,107 @@ def untraceable_numbers(
     return untraceable
 
 
+def clauses(text: str) -> list[str]:
+    """Sentences and semicolon-separated claims, so a later negation cannot
+    license an earlier one."""
+
+    return [part.strip() for part in re.split(r"[.!?;\n]+", text) if part.strip()]
+
+
+def numbered_claim_failures(text: str, patterns: list[str]) -> list[str]:
+    """A clause matching `patterns` may not also carry a number.
+
+    Trial 6 names "usable capacity" only to say the documents do not state
+    one. Writing the nominal 260 kWh onto that phrase is the figure the rubric
+    bans, including when another clause says the documents are silent.
+    """
+
+    failures = []
+    for clause in clauses(text):
+        if any(re.search(pattern, clause) for pattern in patterns) and _NUMBER.search(
+            clause
+        ):
+            failures.append(f"a banned figure is stated in '{clause[:120]}'")
+    return failures
+
+
+def clause_failures(text: str, patterns: list[str]) -> list[str]:
+    """Patterns no clause may match.
+
+    Trial 19: "supports EnWG 14a; the documents do not state it explicitly"
+    is a support claim. The absence sentence has to be true of the answer,
+    and it does not cancel another clause that asserts support.
+    """
+
+    failures = []
+    for clause in clauses(text):
+        for pattern in patterns:
+            if re.search(pattern, clause):
+                failures.append(f"clause asserts /{pattern}/: '{clause[:120]}'")
+    return failures
+
+
+# A rated-power figure, including a range ("3–6 kW", "5 to 15 kW").
+_KW = re.compile(
+    r"(\d+(?:[.,]\d+)?)\s*(?:(?:[–\-]|to|bis)\s*(\d+(?:[.,]\d+)?)\s*)?kW\b",
+    re.IGNORECASE,
+)
+# How far a power may sit from the phase label it belongs to.
+_PHASE_WINDOW = 80
+
+
+def phase_power_failures(text: str, bindings: list[dict[str, Any]]) -> list[str]:
+    """Each kW figure must belong to the nearest phase label, and each phase
+    must have at least one of its own powers stated with it.
+
+    Trial 8: single-phase is 3–6 kW (Plus up to 12) and three-phase is 5–15 kW.
+    Listing both phase words and both families of numbers is not enough:
+    "single-phase 15 kW, three-phase 3.68 kW" swaps them.
+    """
+
+    labels: list[tuple[int, int, dict[str, Any]]] = []
+    for binding in bindings:
+        for match in re.finditer(str(binding["label"]), text):
+            labels.append((match.start(), match.end(), binding))
+    failures: list[str] = []
+    seen = {str(binding["phase"]): False for binding in bindings}
+    for match in _KW.finditer(text):
+        nearest: dict[str, Any] | None = None
+        nearest_distance: int | None = None
+        for start, end, binding in labels:
+            if match.start() < start:
+                distance = start - match.end()
+            elif match.start() > end:
+                distance = match.start() - end
+            else:
+                distance = 0
+            if nearest_distance is None or distance < nearest_distance:
+                nearest = binding
+                nearest_distance = distance
+        allowed: set[float] = set()
+        phase = None
+        if (
+            nearest is not None
+            and nearest_distance is not None
+            and nearest_distance <= _PHASE_WINDOW
+        ):
+            phase = str(nearest["phase"])
+            for value in nearest["powers"]:
+                allowed.update(number_variants(str(value)))
+        for raw in (group for group in match.groups() if group):
+            readings = number_variants(raw)
+            if phase is None:
+                failures.append(f"power {raw} kW is not tied to a phase")
+            elif not readings & allowed:
+                failures.append(f"power {raw} kW is not a {phase}-phase rating")
+            else:
+                seen[phase] = True
+    for phase, stated in seen.items():
+        if not stated:
+            failures.append(f"no {phase}-phase power is tied to that phase")
+    return failures
+
+
 def _floors(row: dict[str, Any], turn: Turn) -> list[str]:
     """The checks every row of the set shares (TRIAL.md's zero-error lines)."""
 
@@ -285,10 +400,10 @@ def check(
 
     for product_id in expect.get("products", []):
         if int(product_id) not in shown:
-            failures.append(f"product {product_id} is neither shown nor cited")
+            failures.append(f"product {product_id} is not in a cards or compare block")
     any_of = expect.get("products_any")
     if any_of and not {int(pid) for pid in any_of} & shown:
-        failures.append(f"none of products {any_of} is shown or cited")
+        failures.append(f"none of products {any_of} is in a cards or compare block")
 
     groups = expect.get("compare")
     if groups is not None:
@@ -348,8 +463,21 @@ def check(
     if expect.get("cites_page") and "page" not in cited_refs(blocks):
         failures.append("the answer does not cite the page")
 
-    numbers = expect.get("numbers")
-    if numbers is not None:
-        for token in untraceable_numbers(text, numbers, catalog):
-            failures.append(f"number {token} is in no expected fact")
+    # Every row carries `numbers`. Missing means the same as empty: no number
+    # may appear, apart from a catalogue model/SKU and a unit conversion of an
+    # expected value. The check always runs (#329: 0 fabricated numbers).
+    for token in untraceable_numbers(
+        text, [str(value) for value in expect.get("numbers") or []], catalog
+    ):
+        failures.append(f"number {token} is in no expected fact")
+
+    phase_powers = expect.get("phase_powers")
+    if phase_powers:
+        failures.extend(phase_power_failures(text, phase_powers))
+    no_figure = expect.get("no_figure_on")
+    if no_figure:
+        failures.extend(numbered_claim_failures(text, [str(p) for p in no_figure]))
+    no_clause = expect.get("no_clause")
+    if no_clause:
+        failures.extend(clause_failures(text, [str(p) for p in no_clause]))
     return failures
