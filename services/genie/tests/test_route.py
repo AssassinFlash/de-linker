@@ -372,6 +372,10 @@ def test_cheapest_over_two_written_models_still_sends_the_aggregate(
     assert "several models" in route.reasons
     assert "price_hidden" in route.hint
     assert "HS3-5K-T2" in route.hint and "HS3-12K-T2" in route.hint
+    # Visible prices apply the aggregate. The hint may name both codes and
+    # still must not ask for a card per code.
+    assert "show each found product" not in route.hint
+    assert "show only the winner card" in route.hint
 
 
 def test_several_written_models_keep_their_searches_beside_an_extreme() -> None:

@@ -519,37 +519,20 @@ def plan(
     # conflict. Two written models, or one code whose products belong to
     # another brand, stay on the per-model searches for smallest and largest:
     # one class aggregate would hide those codes. An unknown code beside a
-    # class extreme keeps both calls (#384). A cheapest question over written
-    # models also keeps the aggregate, so a hidden price still returns
-    # price_hidden. Dossier §1.1 and §1.11 have no procedure for either mix.
-    extreme = _catalogue_extreme(message, matches, subject, lang)
-    if extreme is not None:
-        unknown_codes = _unknown_codes(message, subject)
-        if unknown_codes:
-            return _composite_extreme(
-                extreme,
-                reasons,
-                matches,
-                subject,
-                lang,
-                message,
-                written=False,
-            )
-        reasons.append(f"extreme: {extreme['extreme']}")
-        return Route(
-            "products",
-            (Call("linker/search-products", extreme),),
-            show_products=True,
-            no_handoff=True,
-            hint=EXTREME_HINT,
-            reasons=tuple(reasons),
-        )
+    # class extreme keeps the aggregate and a search for every written code,
+    # known or unknown (#384). A cheapest question over written models also
+    # keeps the aggregate, so a hidden price still returns price_hidden.
+    # Dossier §1.1 and §1.11 have no procedure for either mix.
+    # Written codes and the aggregate are read once. A brand conflict is only
+    # defined for one written code, so it is not consulted when several are.
     written = _written_models(matches, message)
-    if len(written) >= SEVERAL_MODELS and not _conflicts_with_written_brand(
+    several_written = len(written) >= SEVERAL_MODELS
+    brand_conflict = not several_written and _conflicts_with_written_brand(
         written, matches, subject
-    ):
-        aggregate = extreme_input(message, matches, lang)
-        if aggregate is not None and aggregate.get("extreme") == "cheapest":
+    )
+    aggregate = None if brand_conflict else extreme_input(message, matches, lang)
+    if aggregate is not None and not several_written:
+        if _unknown_codes(message, subject):
             return _composite_extreme(
                 aggregate,
                 reasons,
@@ -557,8 +540,31 @@ def plan(
                 subject,
                 lang,
                 message,
-                written=True,
+                search_matched_models=bool(written),
             )
+        reasons.append(f"extreme: {aggregate['extreme']}")
+        return Route(
+            "products",
+            (Call("linker/search-products", aggregate),),
+            show_products=True,
+            no_handoff=True,
+            hint=EXTREME_HINT,
+            reasons=tuple(reasons),
+        )
+    if (
+        aggregate is not None
+        and several_written
+        and aggregate.get("extreme") == "cheapest"
+    ):
+        return _composite_extreme(
+            aggregate,
+            reasons,
+            matches,
+            subject,
+            lang,
+            message,
+            search_matched_models=True,
+        )
     if intent == "sizing":
         return Route(
             "sizing",
@@ -1003,18 +1009,21 @@ def _composite_extreme(
     lang: str,
     message: str,
     *,
-    written: bool,
+    search_matched_models: bool,
 ) -> Route:
-    """The class aggregate, then one search per code (#384).
+    """The class aggregate, then one search per written code (#384).
 
+    `search_matched_models` is true when the message writes catalog models.
+    Those models are searched as well as any code the catalog does not list.
     Dossier §1.1 has no procedure for a sentence that is both an extreme and
     a list of codes, and §1.11 has none for separating those codes. Each part
     keeps the call it already had. The aggregate is first and is the only
     call that carries `extreme`, so a hidden price is recorded once and a
-    per-code search cannot name a second winner.
+    per-code search cannot name a second winner. The hint names every code
+    and still allows only the winner card when the aggregate is applied.
     """
     reasons.append(f"extreme: {extreme['extreme']}")
-    if written:
+    if search_matched_models:
         calls, notes = _search_plan(matches, lang, subject, message)
         extra_calls, extra_notes = _unknown_calls(
             _unknown_codes(message, subject), lang, subject
@@ -1033,28 +1042,10 @@ def _composite_extreme(
         calls,
         show_products=True,
         no_handoff=True,
-        hint=EXTREME_HINT + _model_hint(notes),
+        hint=EXTREME_HINT + _model_hint(notes, winner_only=True),
         reasons=tuple(reasons),
         named_models=notes,
     )
-
-
-def _catalogue_extreme(
-    message: str, matches: list[Match], subject: Subject, lang: str
-) -> dict[str, Any] | None:
-    """The class aggregate, or None when written models replace it.
-
-    `extreme_input` builds the aggregate. A brand or series narrows it and is
-    not a conflict. Two codes written in the message, or one code that
-    conflicts with the written brand, are searched one by one (#368). An
-    unknown code is not a written model: `plan` keeps this aggregate and adds
-    that code's search (#384). A cheapest question over two written models is
-    composed there as well, so this function still returns None for it.
-    """
-    written = _written_models(matches, message)
-    if len(written) >= 2 or _conflicts_with_written_brand(written, matches, subject):
-        return None
-    return extreme_input(message, matches, lang)
 
 
 def extreme_input(
@@ -1493,8 +1484,12 @@ def _note_reasons(notes: tuple[NamedModel, ...]) -> list[str]:
     return reasons
 
 
-def _model_hint(notes: tuple[NamedModel, ...]) -> str:
-    """What the model is told about each named code. English, both locales."""
+def _model_hint(notes: tuple[NamedModel, ...], *, winner_only: bool = False) -> str:
+    """What the model is told about each named code. English, both locales.
+
+    `winner_only` is an extreme whose aggregate may be applied. Grounding then
+    allows exactly that card, so this hint must not ask for a card per code.
+    """
     parts: list[str] = []
     conflicts = [note for note in notes if note.is_conflict and note.searched]
     if conflicts:
@@ -1510,19 +1505,37 @@ def _model_hint(notes: tuple[NamedModel, ...]) -> str:
         )
     unknown = [note.code for note in notes if note.unknown and note.searched]
     if unknown:
-        parts.append(
-            "These model codes are not in the product data: "
-            + ", ".join(unknown)
-            + ". Say that plainly and offer the closest products the search returned. "
-            "Do not hand the question to the team."
-        )
+        if winner_only:
+            parts.append(
+                "These model codes are not in the product data: "
+                + ", ".join(unknown)
+                + ". Say that plainly. When extreme.applied is true, show only "
+                "the winner card. Do not hand the question to the team."
+            )
+        else:
+            parts.append(
+                "These model codes are not in the product data: "
+                + ", ".join(unknown)
+                + ". Say that plainly and offer the closest products the search "
+                "returned. Do not hand the question to the team."
+            )
     known = [note.code for note in notes if note.searched_known]
     if len(known) >= SEVERAL_MODELS:
+        listed = ", ".join(known)
+        if winner_only:
+            report = (
+                "Name each one from its own result. "
+                "When extreme.applied is true, show only the winner card. "
+            )
+        else:
+            report = "Report each one from its own result and show each found product. "
         parts.append(
             "Every named model was searched on its own: "
-            + ", ".join(known)
-            + ". Report each one from its own result and show each found product. "
-            "Never say a model has no entry unless that model's search returned nothing."
+            + listed
+            + ". "
+            + report
+            + "Never say a model has no entry unless that model's search "
+            "returned nothing."
         )
     missed = [note.code for note in notes if not note.searched]
     if missed:
@@ -1773,8 +1786,12 @@ def _hint_with_models(
     hint: str, before: tuple[NamedModel, ...], after: tuple[NamedModel, ...]
 ) -> str:
     """Swap the named-model paragraph after the page budget drops a call."""
-    old = _model_hint(before)
-    new = _model_hint(after)
+    # An extreme hint already requires the winner card. Rebuilding the model
+    # paragraph must keep that rule, or a dropped call puts "show each found
+    # product" back beside it.
+    winner_only = "extreme.applied" in hint
+    old = _model_hint(before, winner_only=winner_only)
+    new = _model_hint(after, winner_only=winner_only)
     if old and old in hint:
         return hint.replace(old, new, 1)
     if new.strip() == old.strip():

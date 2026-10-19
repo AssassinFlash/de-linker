@@ -311,6 +311,45 @@ def test_the_unknown_code_extreme_answer_names_the_winner_and_the_code(
     assert shapes[0] == shapes[1]
 
 
+def test_one_known_and_one_unknown_code_are_both_searched_beside_an_extreme(
+    vocabulary: Vocabulary,
+) -> None:
+    # The prompt says every written code in an extreme question is searched.
+    # One catalog code plus one unknown code used to search only the unknown.
+    messages = (
+        (
+            "en",
+            "What is your smallest inverter with at least 30 kW, "
+            "the HS3-5K-T2-W/G-PX or the GW50K-ETA-G20?",
+        ),
+        (
+            "de",
+            "Was ist Ihr kleinster Wechselrichter mit mindestens 30 kW, "
+            "der HS3-5K-T2-W/G-PX oder der GW50K-ETA-G20?",
+        ),
+    )
+    for lang, message in messages:
+        route = _route(vocabulary, message, lang)
+        aggregate, *rest = route.calls
+        assert aggregate.arguments["extreme"] == "smallest"
+        assert aggregate.arguments["ac_power_min"] == 30.0
+        assert "text" not in aggregate.arguments
+        assert [call.arguments.get("text") for call in rest] == [
+            "HS3-5K-T2-W/G-PX",
+            "GW50K-ETA-G20",
+            "ETA-G20",
+        ]
+        assert all("extreme" not in call.arguments for call in rest)
+        known, unknown = route.named_models
+        assert known.code == "HS3-5K-T2-W/G-PX"
+        assert known.searched and not known.unknown
+        assert 2198 in known.product_ids
+        assert unknown.code == "GW50K-ETA-G20"
+        assert unknown.searched and unknown.unknown
+        assert "extreme: smallest" in route.reasons
+        assert "model code not in the product data" in route.reasons
+
+
 def test_several_models_and_an_extreme_search_each_model(
     vocabulary: Vocabulary,
 ) -> None:
@@ -1213,6 +1252,19 @@ def test_a_later_get_product_clears_a_budget_block() -> None:
     assert not any("not searched" in failure for failure in result.failures)
     rendered = fallback(facts, "en", route)
     assert "was not searched" not in _sentence(rendered)
+
+
+def test_extreme_prompts_search_every_written_code_and_keep_the_winner_card() -> None:
+    from linker_genie.agent import instructions
+
+    english = instructions("en")
+    german = instructions("de")
+    assert "each of those written codes is searched on its own" in english
+    assert "is not a separate search" in english
+    assert "does not add a card" in english
+    assert "für sich gesucht" in german
+    assert "keine eigene Suche" in german
+    assert "keine weitere Karte" in german
 
 
 def test_en_and_de_prompts_carry_the_same_three_obligations() -> None:

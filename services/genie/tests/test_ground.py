@@ -441,9 +441,32 @@ def test_cheapest_over_written_models_names_the_codes_and_no_price() -> None:
         assert check(output, facts, route).ok
         if lang == "de":
             assert german_is_clean(joined)
-            assert "Freigegebene Partnerkonten sehen die Nettopreise." in texts
+            price = "Freigegebene Partnerkonten sehen die Nettopreise."
+            named = "Sie haben HS3-5K-T2, HS3-12K-T2 genannt."
         else:
-            assert "Approved partner accounts see net prices." in texts
+            price = "Approved partner accounts see net prices."
+            named = "You named HS3-5K-T2, HS3-12K-T2."
+        assert price in texts
+        assert named in texts
+        # The price sentence alone, with the cards, still omits the codes.
+        # This fails if the hidden arm of the naming condition is removed:
+        # known codes beside a hidden price would no longer have to be named.
+        omitted = TurnOutput(
+            language=lang,  # type: ignore[arg-type]
+            blocks=[
+                TextBlock(text=price, refs=["2198", "1185"]),
+                CardsBlock(product_ids=[2198, 1185]),
+            ],
+        )
+        refused_names = check(omitted, facts, route)
+        assert any(
+            "name HS3-5K-T2 as well as the extreme result" in failure
+            for failure in refused_names.failures
+        )
+        assert any(
+            "name HS3-12K-T2 as well as the extreme result" in failure
+            for failure in refused_names.failures
+        )
         shapes.append([type(block).__name__ for block in output.blocks])
         claim = (
             "The cheapest one is the HS3-5K-T2."
@@ -456,6 +479,68 @@ def test_cheapest_over_written_models_names_the_codes_and_no_price() -> None:
             route,
         )
         assert any("cheapest" in failure for failure in refused.failures)
+    assert shapes[0] == shapes[1]
+
+
+def test_a_visible_price_extreme_names_the_codes_on_the_winner_card() -> None:
+    # The aggregate is applied, so grounding allows exactly the winner card.
+    # The codes written beside that question are still named. EN and DE use
+    # the service sentences, not a paraphrase.
+    messages = (
+        (
+            "en",
+            "Which is the cheapest inverter, HS3-5K-T2 or HS3-12K-T2?",
+            "The GW30K-ETA-G20 meets the limit you named.",
+            "You named HS3-5K-T2, HS3-12K-T2.",
+        ),
+        (
+            "de",
+            "Welcher ist der günstigste Wechselrichter, HS3-5K-T2 oder HS3-12K-T2?",
+            "Das Modell GW30K-ETA-G20 erfüllt die genannte Grenze.",
+            "Sie haben HS3-5K-T2, HS3-12K-T2 genannt.",
+        ),
+    )
+    matches = [
+        Match("model", "HS3-5K-T2", "HS3-5K-T2", frozenset({2198}), "HS3-5K-T2"),
+        Match("model", "HS3-12K-T2", "HS3-12K-T2", frozenset({1185}), "HS3-12K-T2"),
+        Match("category", "inverters", "inverters", frozenset(), "inverter"),
+    ]
+    reading = Reading("find_products", 0.95, 0.1, 0.05, 0.2, 2.6, 0.0)
+    shapes: list[list[str]] = []
+    for lang, message, winner_sentence, named_sentence in messages:
+        route = plan(message, matches, reading, Subject((), {}, {}), lang)
+        assert "show each found product" not in route.hint
+        assert "show only the winner card" in route.hint
+        facts = _extreme_facts()
+        facts.product_ids.update({2198, 1185})
+        facts.qualified_ids.update({2198, 1185})
+        for code, product_id in (("HS3-5K-T2", 2198), ("HS3-12K-T2", 1185)):
+            facts.tool_calls.append(
+                {
+                    "name": "linker/search-products",
+                    "arguments": {"text": code, "lang": lang, "limit": 6},
+                    "ok": True,
+                    "result": {"qualified": [{"product_id": product_id}]},
+                }
+            )
+        output = fallback(facts, lang, route)
+        texts = [block.text for block in output.blocks if isinstance(block, TextBlock)]
+        joined = " ".join(texts)
+        assert winner_sentence in joined
+        assert named_sentence in joined
+        assert "€" not in joined and "$" not in joined and "{fact:" not in joined
+        cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
+        assert len(cards) == 1 and cards[0].product_ids == [6518]
+        assert check(output, facts, route).ok
+        if lang == "de":
+            assert german_is_clean(joined)
+        extra = _named(
+            f"{winner_sentence} {named_sentence}",
+            [6518, 2198, 1185],
+        )
+        refused = check(extra, facts, route)
+        assert any("only that card" in failure for failure in refused.failures)
+        shapes.append([type(block).__name__ for block in output.blocks])
     assert shapes[0] == shapes[1]
 
 

@@ -189,7 +189,12 @@ def _extreme_fallback(
 def _hidden_codes_answer(
     facts: TurnFacts, language: Locale, route: Route
 ) -> TurnOutput:
-    """Name the codes. Do not call one of them the cheapest, and write no price."""
+    """Name the codes. Do not call one of them the cheapest, and write no price.
+
+    The price sentence and "You named" are customer-visible. The record is
+    docs/acceptance/2026-10-20/384/copy-review.md. The coordinator has not
+    signed off.
+    """
     price = (
         "Freigegebene Partnerkonten sehen die Nettopreise."
         if language == "de"
