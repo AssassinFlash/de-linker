@@ -133,6 +133,9 @@ class Vocabulary:
     # these maps.
     brand_members: dict[str, set[int]] = field(default_factory=dict)
     brand_of: dict[int, set[str]] = field(default_factory=dict)
+    # Brand slug → the name the store publishes, for naming a catalog brand when
+    # the customer's brand word and the model disagree (route.py, #363).
+    brand_names: dict[str, str] = field(default_factory=dict)
     series_of: dict[int, set[str]] = field(default_factory=dict)
     # Category keys are compared by their plural-less forms as well (_forms).
     category_forms: dict[str, list[Entry]] = field(default_factory=dict)
@@ -160,6 +163,19 @@ class Vocabulary:
     def match(self, text: str) -> list[Match]:
         """Every product word of `text`, longest first, without overlaps."""
         return self._scan(text)[0]
+
+    def model_codes(self) -> tuple[str, ...]:
+        """Model codes as the titles and pa_model write them, each once.
+
+        A code the customer types that is not among these is not a product word
+        (route.py): the lexicon only matches codes it has seen.
+        """
+        seen: list[str] = []
+        for entries in self.entries.values():
+            for entry in entries:
+                if entry.kind == "model" and entry.value not in seen:
+                    seen.append(entry.value)
+        return tuple(seen)
 
     def bare(self, text: str) -> bool:
         """Whether `text` is nothing but product words ("EMS", "SAJ H2", "Zubehör")."""
@@ -334,6 +350,7 @@ def _add_product(vocabulary: Vocabulary, product: Product) -> None:
     for name, slug in product.brands:
         vocabulary.add(normalize(name), Entry("brand", name, slug))
         vocabulary.add(normalize(slug), Entry("brand", name, slug))
+        vocabulary.brand_names.setdefault(slug, name)
     brand_slugs = [slug for _name, slug in product.brands]
     for slug in product.series:
         entry = Entry("series", slug, slug)

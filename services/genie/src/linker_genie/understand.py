@@ -19,7 +19,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Protocol
 
 from linker_genie import attachments, contact, knowledge, page, parts, timing
@@ -377,6 +377,12 @@ def _subject(
         labels=dict(vocabulary.labels) if vocabulary else {},
         phase=dict(vocabulary.phase) if vocabulary else {},
         series_members=dict(vocabulary.series_members) if vocabulary else {},
+        brand_of={k: set(v) for k, v in vocabulary.brand_of.items()}
+        if vocabulary
+        else {},
+        brand_names=dict(vocabulary.brand_names) if vocabulary else {},
+        names=dict(vocabulary.names) if vocabulary else {},
+        catalog_models=vocabulary.model_codes() if vocabulary else (),
     )
 
 
@@ -386,13 +392,7 @@ def _with_page_product(
     product_id = request.page_context.product_id
     if product_id is None or product_id in subject.ids:
         return subject
-    return Subject(
-        ids=(product_id, *subject.ids),
-        device_class=subject.device_class,
-        labels=subject.labels,
-        phase=subject.phase,
-        series_members=subject.series_members,
-    )
+    return replace(subject, ids=(product_id, *subject.ids))
 
 
 def no_pages(context: PageContext, question: str, logged_in: bool) -> dict[str, Any]:

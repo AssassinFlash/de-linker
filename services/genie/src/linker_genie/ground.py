@@ -47,6 +47,11 @@ And the price rule (#242):
     delivery cost (the same rule `page.RULE` gives a page).
 11. No text claims an inquiry, request or quote was sent (#250, A8): only the
     customer's Send button on the confirmation card sends.
+12. A model the route searched is not described as absent from the product data,
+    unless the answer also names the catalog brand of a brand/model conflict
+    (#363, #367). A model the route did not search is described as not searched,
+    never as absent (#364). Each searched model whose products qualified is shown
+    as a card when the route requires cards.
 
 Registered reading of guarantee 2: "推荐 ⊆ search-products 的 qualified"
 means qualified by this turn's tool results. That is search-products'
@@ -175,6 +180,7 @@ def check(
     failures.extend(_no_sent_claim(output))
     if route is not None:
         failures.extend(_route(output, facts, route))
+        failures.extend(_named_models(output, facts, route))
     return CheckResult(ok=not failures, failures=tuple(failures))
 
 
@@ -297,6 +303,78 @@ def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
             # printed it twice: a text block and the handoff block).
             failures.append("a handoff turn is the handoff block alone")
     return failures
+
+
+# A clause that says a model is missing from the catalog. Kept to the phrases the
+# campaign answers used ("no entry", "kein Produkt", "nicht in unserem Sortiment");
+# "our documents do not state" is a document answer and is not one of them.
+_ABSENCE = re.compile(
+    r"no entry"
+    r"|not in our product (?:range|data)"
+    r"|kein Produkt\b"
+    r"|nicht in unserem Sortiment"
+    r"|nicht geführt"
+    r"|finde ich\b.{0,80}?kein Produkt\b",
+    re.IGNORECASE,
+)
+_CLAUSE = re.compile(r"[^\n.!?]+")
+
+
+def _named_models(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
+    """Each named model is reported from its own search (#363, #364, #367).
+
+    The check is structural, like the sent-claim check: it does not rewrite the
+    text. A conflict may say the written brand's reading is absent once the
+    catalog brand is named. A code that was not searched must be called not
+    searched.
+    """
+    if not route.named_models:
+        return []
+    full = "\n".join(_model_texts(output))
+    folded = full.casefold()
+    clauses = [clause.strip() for clause in _CLAUSE.findall(full) if clause.strip()]
+    cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
+    shown = {pid for block in cards for pid in block.product_ids}
+    failures: list[str] = []
+    for note in route.named_models:
+        if not note.searched:
+            if note.code.casefold() not in folded:
+                failures.append(f"say that {note.code} was not searched")
+            elif _code_absent(note.code, clauses):
+                failures.append(
+                    f"say that {note.code} was not searched, not that it is absent"
+                )
+            continue
+        catalog = note.catalog_brand.casefold()
+        if note.written_brand and catalog and catalog not in folded:
+            carried = [pid for pid in note.product_ids if pid in facts.qualified_ids]
+            if carried:
+                failures.append(
+                    f"name {note.catalog_brand} for {note.code}: the product data "
+                    "lists it there"
+                )
+        if (
+            note.product_ids
+            and not note.unknown
+            and not (catalog and catalog in folded)
+            and _code_absent(note.code, clauses)
+        ):
+            failures.append(
+                f"do not say {note.code} has no entry; report that model's own "
+                "search result"
+            )
+        if route.show_products and note.product_ids and not note.unknown:
+            wanted = {pid for pid in note.product_ids if pid in facts.qualified_ids}
+            if wanted and not wanted & shown:
+                failures.append(f"show {note.code} as a card")
+    return failures
+
+
+def _code_absent(code: str, clauses: list[str]) -> bool:
+    folded = code.casefold()
+    return any(
+        folded in clause.casefold() and _ABSENCE.search(clause) for clause in clauses
+    )
 
 
 def _refs_and_placeholders(output: TurnOutput, facts: TurnFacts) -> list[str]:
