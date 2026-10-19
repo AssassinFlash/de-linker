@@ -16,7 +16,7 @@ from typing import Any, Literal
 
 from linker_genie import page as page_tool
 from linker_genie.jev import Reading
-from linker_genie.lexicon import Match
+from linker_genie.lexicon import MIN_CODE, Match, normalize
 from linker_genie.nameplate import Identified
 from linker_genie.schema import PageContext
 from linker_genie.tools import MAX_TOOL_CALLS, READ_PAGE
@@ -197,6 +197,25 @@ def _call_log(call: Call) -> dict[str, Any]:
 
 
 @dataclass(frozen=True)
+class NamedModel:
+    """One model code the customer wrote, and what the catalog says about it.
+
+    `searched` is false when the turn's tool budget left the code out: the answer
+    says it was not searched, and never that the product data lacks it (#364).
+    `unknown` is a code the catalog does not list. `written_brand` and
+    `catalog_brand` are set when the written brand and the catalog brand disagree
+    (#363, #367).
+    """
+
+    code: str
+    product_ids: tuple[int, ...] = ()
+    searched: bool = True
+    written_brand: str = ""
+    catalog_brand: str = ""
+    unknown: bool = False
+
+
+@dataclass(frozen=True)
 class Route:
     """What code runs before the model, and what the answer must contain."""
 
@@ -215,6 +234,8 @@ class Route:
     reasons: tuple[str, ...] = field(default=())
     # Calls the turn's budget left out (with_page), kept for the turn log.
     dropped: tuple[Call, ...] = ()
+    # Models the customer named, in the order of the message (#363, #364, #367).
+    named_models: tuple[NamedModel, ...] = ()
 
     def as_log(self) -> dict[str, Any]:
         log: dict[str, Any] = {
@@ -228,6 +249,18 @@ class Route:
         }
         if self.dropped:
             log["dropped_calls"] = [_call_log(c) for c in self.dropped]
+        if self.named_models:
+            log["named_models"] = [
+                {
+                    "code": note.code,
+                    "searched": note.searched,
+                    "unknown": note.unknown,
+                    "written_brand": note.written_brand,
+                    "catalog_brand": note.catalog_brand,
+                    "product_ids": list(note.product_ids),
+                }
+                for note in self.named_models
+            ]
         return log
 
 
@@ -242,6 +275,14 @@ class Subject:
     # The phase of each product, and the products of each series (lexicon.py).
     phase: dict[int, int] = field(default_factory=dict)
     series_members: dict[str, set[int]] = field(default_factory=dict)
+    # Product → brand slugs, brand slug → the published name, product → title,
+    # and the catalog's model codes. Empty on a subject built without a catalog,
+    # which keeps a brand filter (the unit fixtures). route.py reads them to tell
+    # a brand/model conflict from a model the catalog does not list.
+    brand_of: dict[int, set[str]] = field(default_factory=dict)
+    brand_names: dict[str, str] = field(default_factory=dict)
+    names: dict[int, str] = field(default_factory=dict)
+    catalog_models: tuple[str, ...] = ()
 
 
 def plan(
@@ -282,7 +323,12 @@ def plan(
             hint="The inquiry-status result is fetched; answer from it.",
             reasons=tuple(reasons),
         )
-    extreme = extreme_input(message, matches, lang)
+    # A brand or series extreme is one aggregate (#368), not a brand/model
+    # conflict. Two model codes in the message, or one code whose products
+    # belong to another brand, stay on the per-model searches (#363, #364):
+    # one class aggregate would hide those codes, and the two grounding rules
+    # would require different cards.
+    extreme = _catalogue_extreme(message, matches, subject, lang)
     if extreme is not None:
         reasons.append(f"extreme: {extreme['extreme']}")
         return Route(
@@ -296,7 +342,7 @@ def plan(
     if intent == "sizing":
         return Route(
             "sizing",
-            (Call("linker/size-hint", sizing_input(message)),),
+            (Call("linker/size-hint", stated_size_hint(message)),),
             action="open_configurator",
             no_cards=True,
             no_handoff=True,
@@ -304,32 +350,38 @@ def plan(
                 "This is a sizing question. The Solution Configurator sizes the "
                 "system from the customer's PV and consumption: say so in one or "
                 "two sentences and add the open_configurator action (the "
-                "service fills its URL). No product cards."
+                "service fills its URL from the customer's own words; a field "
+                "they did not state is absent). No product cards. Do not call "
+                "size-hint with a phase, backup, yearly load or postcode they "
+                "did not state."
             ),
             reasons=tuple(reasons),
         )
     family = _family_hint(matches)
+    calls, notes = _search_plan(matches, lang, subject, message)
+    hint_extra = _model_hint(notes)
+    reasons.extend(_note_reasons(notes))
     if intent == "documents_specs":
-        calls = [
+        doc_calls = [
             Call(
                 "linker/search-knowledge",
                 _knowledge_input(message, matches, subject, lang),
             )
         ]
-        search = _search_input(matches, lang)
         if subject.ids:
-            calls.extend(
+            doc_calls.extend(
                 Call("linker/get-product", {"product_id": pid, "lang": lang})
                 for pid in subject.ids[:2]
             )
-        elif search is not None:
-            calls.extend(_searches(search, matches, subject))
+        elif calls:
+            doc_calls.extend(calls)
         return Route(
             "documents",
-            tuple(calls),
+            tuple(doc_calls),
             no_handoff=True,
-            hint=DOCUMENTS_HINT + family,
+            hint=DOCUMENTS_HINT + family + hint_extra,
             reasons=tuple(reasons),
+            named_models=notes,
         )
     if intent == "pairing_compatibility":
         pairing = _pairing(subject, lang)
@@ -354,26 +406,22 @@ def plan(
             hint="The comparison is fetched; answer with a compare block.",
             reasons=tuple(reasons),
         )
-    search = _search_input(matches, lang)
-    if search is not None and (bare or intent == "find_products"):
+    unknown = any(note.unknown for note in notes)
+    if (calls or notes) and (bare or intent == "find_products" or unknown):
         return Route(
             "products",
-            _searches(search, matches, subject),
+            calls,
             show_products=True,
             no_handoff=True,
             hint=(
                 "The customer named products; the search result is fetched. Show "
                 "its products as cards, cited in the text refs. A product word is "
-                "never a name or a greeting." + family
+                "never a name or a greeting." + family + hint_extra
             ),
             reasons=tuple(reasons),
+            named_models=notes,
         )
-    if (
-        search is not None
-        and named
-        and reading is not None
-        and reading.intent == "documents_specs"
-    ):
+    if calls and named and reading is not None and reading.intent == "documents_specs":
         # Product words in a question Jev reads as a document question, however
         # sure it is: code runs both searches, the model does not decide whether
         # to look (trial question 9, "How do I set the export limit on an SAJ H2
@@ -382,21 +430,23 @@ def plan(
         return Route(
             "documents",
             (
-                *_searches(search, matches, subject),
+                *calls,
                 Call(
                     "linker/search-knowledge",
                     _knowledge_input(message, matches, subject, lang),
                 ),
             ),
             no_handoff=True,
-            hint=DOCUMENTS_HINT + family,
+            hint=DOCUMENTS_HINT + family + hint_extra,
             reasons=tuple(reasons),
+            named_models=notes,
         )
-    if search is not None and named:
+    if (calls or notes) and named:
         # Product words inside a longer question that Jev could not place: code
         # still searches the named products (they are never small talk), and the
         # model decides the shape — cards are not forced on a how-to question
-        # (trial question 9, Jev documents_specs 0.67, 2026-10-17).
+        # (trial question 9, Jev documents_specs 0.67, 2026-10-17). A brand/model
+        # conflict, or two or more models, still shows cards.
         leaning = (
             f" Jev leans to {reading.intent} ({reading.confidence:.2f}): call "
             "search-knowledge if this is a document or technical question."
@@ -405,13 +455,18 @@ def plan(
         )
         return Route(
             "products",
-            _searches(search, matches, subject),
+            calls,
+            show_products=_must_show(notes),
             no_handoff=True,
             hint=(
                 "The customer named products; the search result is fetched. A "
-                "product word is never a name or a greeting." + leaning + family
+                "product word is never a name or a greeting."
+                + leaning
+                + family
+                + hint_extra
             ),
             reasons=tuple(reasons),
+            named_models=notes,
         )
     if intent == "find_products":
         return Route(
@@ -590,6 +645,22 @@ def _floor_number(
     return min(numbers)
 
 
+def _catalogue_extreme(
+    message: str, matches: list[Match], subject: Subject, lang: str
+) -> dict[str, Any] | None:
+    """The class aggregate, or None when the named models have to be searched.
+
+    `extreme_input` builds the aggregate. This decides whether that aggregate
+    is the turn: a brand or series narrows it and is not a conflict; two codes
+    written in the message are searched one by one; one code that conflicts
+    with the written brand is that conflict, not the class extreme.
+    """
+    written = _written_models(matches, message)
+    if len(written) >= 2 or _conflicts_with_written_brand(written, matches, subject):
+        return None
+    return extreme_input(message, matches, lang)
+
+
 def extreme_input(
     message: str, matches: list[Match], lang: str
 ) -> dict[str, Any] | None:
@@ -599,6 +670,7 @@ def extreme_input(
     AC power for an inverter (or a kW figure) and energy for a battery (or a
     kWh figure). A named model is not a filter: the extreme is taken over the
     class, narrowed by a single brand or series when the message names one.
+    `plan` does not use this when `_catalogue_extreme` returns None.
     """
     if _KWP.search(message) or _ANNUAL.search(message):
         return None
@@ -640,6 +712,20 @@ def extreme_input(
     ):
         found["series"] = series[0].value
     return found
+
+
+def stated_size_hint(message: str) -> dict[str, Any]:
+    """The size-hint object a configurator URL may be built from (#365).
+
+    `sizing_input` is the only source: kWp, yearly kWh, phase and backup as
+    this message writes them. Callers pass this dict on and drop whatever
+    object they were given — the model's, when the route did not call the
+    tool and the model calls it itself. A catalogue fact is not a source
+    either: no rule copies a named product's phase into this prefill
+    (docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md §1.12; the read
+    stays deterministic, §1.1).
+    """
+    return sizing_input(message)
 
 
 def sizing_input(message: str) -> dict[str, Any]:
@@ -686,6 +772,353 @@ def _search_input(matches: list[Match], lang: str) -> dict[str, Any] | None:
     found["lang"] = lang
     found["limit"] = SEARCH_LIMIT
     return found
+
+
+# A code in the raw message: a letter, a digit, and at least two "-" or "/" joins.
+# One join is a phase or a rating ("3-phase", "10-20"); the unknown-model case in
+# #363 is GW50K-ETA-G20. MIN_CODE (lexicon.py) is the shortest real code, four
+# characters ("L260", snapshot 2026-10-15).
+_ASKED_CODE = re.compile(
+    r"(?<![\w.])(?=[A-Za-z0-9]*[A-Za-z])[A-Za-z0-9]+(?:[./][A-Za-z0-9]+)*"
+    r"(?:[-/][A-Za-z0-9]+(?:[./][A-Za-z0-9]+)*){2,}(?![\w])"
+)
+
+
+def _search_plan(
+    matches: list[Match], lang: str, subject: Subject, message: str = ""
+) -> tuple[tuple[Call, ...], tuple[NamedModel, ...]]:
+    """The product searches for this message, and a note for every model code.
+
+    A sentence that names several models searches each one (search-products takes
+    one `text`). A model the catalog lists under another brand is searched without
+    the written brand: ANDing them returns no product (campaign #330, F1/F4). The
+    wording of that clarification is fixed in template.py; dossier 2026-10-19 §1.1,
+    §1.11 and §2 item 10 mark the resolution as having no competitor precedent.
+    Nameplate keeps `_search_input` (nameplate.py).
+    """
+    models = [match for match in matches if match.kind == "model"]
+    if models:
+        return _model_calls(models, matches, lang, subject, message)
+    found = _search_input(matches, lang)
+    if found is not None:
+        return _searches(found, matches, subject), ()
+    return _unknown_calls(_unknown_codes(message, subject), lang, subject)
+
+
+def _model_calls(
+    models: list[Match],
+    matches: list[Match],
+    lang: str,
+    subject: Subject,
+    message: str,
+) -> tuple[tuple[Call, ...], tuple[NamedModel, ...]]:
+    brands = [match for match in matches if match.kind == "brand"]
+    brand = brands[0] if len({match.value for match in brands}) == 1 else None
+    categories = [match for match in matches if match.kind == "category"]
+    category = (
+        categories[0].value if len({match.value for match in categories}) == 1 else None
+    )
+    calls: list[Call] = []
+    notes: list[NamedModel] = []
+    for model in _ordered_models(models, message):
+        arguments: dict[str, Any] = {
+            "text": model.value,
+            "lang": lang,
+            "limit": SEARCH_LIMIT,
+        }
+        written = ""
+        catalog = ""
+        if brand is not None and _conflicts(model, brand.value, subject):
+            # The catalog brand wins the filter. The answer names both (template.py).
+            written = brand.label
+            catalog = _catalog_label(model.product_ids, subject)
+        elif brand is not None:
+            arguments["brand"] = brand.value
+        if category is not None and _category_fits(
+            model.product_ids, category, subject
+        ):
+            arguments["device_class"] = category
+        # The turn's tool budget (tools.MAX_TOOL_CALLS, spec 13: at most four
+        # ability calls). A model past it is named as not searched.
+        searched = len(calls) < MAX_TOOL_CALLS
+        if searched:
+            calls.append(Call("linker/search-products", arguments))
+        notes.append(
+            NamedModel(
+                code=model.value,
+                product_ids=tuple(sorted(model.product_ids)),
+                searched=searched,
+                written_brand=written,
+                catalog_brand=catalog,
+            )
+        )
+    return tuple(calls), tuple(notes)
+
+
+def _ordered_models(models: list[Match], message: str) -> list[Match]:
+    """One match per model code, product ids joined, in message order."""
+    grouped: dict[str, Match] = {}
+    order: list[str] = []
+    for model in models:
+        previous = grouped.get(model.value)
+        if previous is None:
+            grouped[model.value] = model
+            order.append(model.value)
+        else:
+            grouped[model.value] = Match(
+                previous.kind,
+                previous.label,
+                previous.value,
+                previous.product_ids | model.product_ids,
+                previous.words,
+            )
+    folded = message.casefold()
+
+    def position(value: str) -> tuple[int, int]:
+        model = grouped[value]
+        at = folded.find(model.value.casefold())
+        if at < 0:
+            at = folded.find(model.words.casefold())
+        if at < 0:
+            at = len(message)
+        return (at, order.index(value))
+
+    return [grouped[value] for value in sorted(order, key=position)]
+
+
+def _written_models(matches: list[Match], message: str) -> list[Match]:
+    """Model codes that stand in the message, one per code, in message order.
+
+    A match attached without its code in the text is not written. The catalogue
+    extreme ignores that match as a filter (#368) and does not treat it as one
+    of several models (#364).
+    """
+    models = [match for match in matches if match.kind == "model"]
+    if not models:
+        return []
+    folded = message.casefold()
+    return [
+        model
+        for model in _ordered_models(models, message)
+        if model.value.casefold() in folded or model.words.casefold() in folded
+    ]
+
+
+def _conflicts_with_written_brand(
+    written: list[Match], matches: list[Match], subject: Subject
+) -> bool:
+    """Whether the one written model belongs to a brand other than the one named."""
+    if len(written) != 1:
+        return False
+    brands = [match for match in matches if match.kind == "brand"]
+    if len({match.value for match in brands}) != 1:
+        return False
+    return _conflicts(written[0], brands[0].value, subject)
+
+
+def _conflicts(model: Match, brand_slug: str, subject: Subject) -> bool:
+    """Whether every known product of `model` belongs to some other brand.
+
+    An empty brand map keeps the brand filter: the unit fixtures build a subject
+    without a catalog. A product whose brand cannot be read is not treated as a
+    conflict.
+    """
+    if not model.product_ids:
+        return False
+    if not subject.brand_of and not subject.brand_names:
+        return False
+    found = [_brands_of(pid, subject) for pid in model.product_ids]
+    if any(not brands for brands in found):
+        return False
+    return all(brand_slug not in brands for brands in found)
+
+
+def _brands_of(product_id: int, subject: Subject) -> set[str]:
+    """Brand slugs recorded for the product, else a brand name standing in its title.
+
+    The store snapshot of 2026-10-15 has GW5K-ETA-G20 (product 6512) with no
+    pa_brand; its title begins with GoodWe, and other GoodWe products publish
+    that brand name. The lexicon's own brand map is left unchanged.
+    """
+    recorded = subject.brand_of.get(product_id)
+    if recorded:
+        return set(recorded)
+    words = {
+        normalize(word)
+        for word in re.split(r"[^\w]+", subject.names.get(product_id, ""))
+        if word
+    }
+    found: set[str] = set()
+    for slug, label in subject.brand_names.items():
+        if normalize(label) in words or normalize(slug) in words:
+            found.add(slug)
+    return found
+
+
+def _catalog_label(product_ids: frozenset[int], subject: Subject) -> str:
+    slugs: set[str] = set()
+    for product_id in product_ids:
+        slugs |= _brands_of(product_id, subject)
+    if not slugs:
+        return ""
+    slug = next(iter(slugs)) if len(slugs) == 1 else sorted(slugs)[0]
+    return subject.brand_names.get(slug) or slug
+
+
+def _category_fits(
+    product_ids: frozenset[int], device_class: str, subject: Subject
+) -> bool:
+    """Keep a category filter unless every known product is a different class.
+
+    An empty device-class map, or a product with no class, keeps the filter.
+    """
+    if not product_ids or not subject.device_class:
+        return True
+    classes: list[str] = []
+    for product_id in product_ids:
+        device = subject.device_class.get(product_id)
+        if not device:
+            return True
+        classes.append(device)
+    return any(device == device_class for device in classes)
+
+
+def _unknown_codes(message: str, subject: Subject) -> tuple[str, ...]:
+    """Model-like codes in `message` that the catalog does not list.
+
+    Without a catalog (the unit fixtures) nothing here is searched. A code the
+    catalog already lists is a lexicon match and is handled with the other models.
+    """
+    if not subject.catalog_models:
+        return ()
+    known = {normalize(code) for code in subject.catalog_models}
+    found: list[str] = []
+    seen: set[str] = set()
+    for match in _ASKED_CODE.finditer(message):
+        code = match.group(0)
+        key = normalize(code)
+        if key in seen or key in known or len(key) < MIN_CODE:
+            continue
+        if not any(ch.isalpha() for ch in key) or not any(ch.isdigit() for ch in key):
+            continue
+        seen.add(key)
+        found.append(code)
+    return tuple(found)
+
+
+def _unknown_calls(
+    codes: tuple[str, ...], lang: str, subject: Subject
+) -> tuple[tuple[Call, ...], tuple[NamedModel, ...]]:
+    """Search each unknown code, then the closest family suffix that the budget allows.
+
+    The suffix is a tail of the code that already occurs inside a catalog model
+    (`ETA-G20` inside `GW10K-ETA-G20`). It is not an edit-distance guess: dossier
+    2026-10-19 §1.1 leaves typos out of scope.
+    """
+    if not codes:
+        return (), ()
+    calls: list[Call] = []
+    searched: list[str] = []
+    for code in codes:
+        if len(calls) >= MAX_TOOL_CALLS:
+            break
+        calls.append(
+            Call(
+                "linker/search-products",
+                {"text": code, "lang": lang, "limit": SEARCH_LIMIT},
+            )
+        )
+        searched.append(code)
+    for code in searched:
+        stem = _family_stem(code, subject.catalog_models)
+        if stem is None or len(calls) >= MAX_TOOL_CALLS:
+            continue
+        calls.append(
+            Call(
+                "linker/search-products",
+                {"text": stem, "lang": lang, "limit": SEARCH_LIMIT},
+            )
+        )
+    notes = tuple(
+        NamedModel(code=code, searched=code in searched, unknown=True) for code in codes
+    )
+    return tuple(calls), notes
+
+
+def _family_stem(code: str, catalog: tuple[str, ...]) -> str | None:
+    """The longest '-'/'/' tail of `code` that a catalog model already contains."""
+    cuts = [index for index, ch in enumerate(code) if ch in "-/"]
+    folded = [model.casefold() for model in catalog]
+    for index in cuts:
+        tail = code[index + 1 :]
+        key = normalize(tail)
+        if len(key) < MIN_CODE or tail.casefold() == code.casefold():
+            continue
+        if any(tail.casefold() in model for model in folded):
+            return tail
+    return None
+
+
+def _must_show(notes: tuple[NamedModel, ...]) -> bool:
+    """Cards for a conflict, an unknown code, or two or more named models."""
+    if any(note.written_brand or note.unknown for note in notes):
+        return True
+    return len([note for note in notes if not note.unknown]) >= 2
+
+
+def _note_reasons(notes: tuple[NamedModel, ...]) -> list[str]:
+    reasons: list[str] = []
+    if any(note.written_brand for note in notes):
+        reasons.append("brand and model disagree")
+    if any(note.unknown for note in notes):
+        reasons.append("model code not in the product data")
+    if len([note for note in notes if not note.unknown]) >= 2:
+        reasons.append("several models")
+    return reasons
+
+
+def _model_hint(notes: tuple[NamedModel, ...]) -> str:
+    """What the model is told about each named code. English, both locales."""
+    parts: list[str] = []
+    conflicts = [note for note in notes if note.written_brand and note.catalog_brand]
+    if conflicts:
+        named = "; ".join(
+            f"{note.code} is {note.catalog_brand} in the product data; "
+            f"the customer wrote {note.written_brand}"
+            for note in conflicts
+        )
+        parts.append(
+            named + ". Name the brand from the product data, show that product as a "
+            "card, and do not say the model is missing. This is not a question for "
+            "the team."
+        )
+    unknown = [note.code for note in notes if note.unknown and note.searched]
+    if unknown:
+        parts.append(
+            "These model codes are not in the product data: "
+            + ", ".join(unknown)
+            + ". Say that plainly and offer the closest products the search returned. "
+            "Do not hand the question to the team."
+        )
+    known = [note.code for note in notes if note.searched and not note.unknown]
+    if len(known) >= 2:
+        parts.append(
+            "Every named model was searched on its own: "
+            + ", ".join(known)
+            + ". Report each one from its own result and show each found product. "
+            "Never say a model has no entry unless that model's search returned nothing."
+        )
+    missed = [note.code for note in notes if not note.searched]
+    if missed:
+        parts.append(
+            "Not searched this turn: "
+            + ", ".join(missed)
+            + ". Say they were not searched. Never say they are absent from the "
+            "product data."
+        )
+    if not parts:
+        return ""
+    return " " + " ".join(parts)
 
 
 def _knowledge_input(
@@ -802,6 +1235,32 @@ def with_page(
             + ", ".join(unchecked)
             + "; say that they were not checked yet and offer to check them."
         )
+    kept_texts = {
+        call.arguments.get("text")
+        for call in calls
+        if call.ability == "linker/search-products"
+    }
+    # A dropped search whose text is the model code was not searched. A family
+    # suffix (ETA-G20) is not the code, so dropping only that search leaves the
+    # code searched.
+    named = tuple(
+        replace(note, searched=False)
+        if note.searched and note.code not in kept_texts
+        else note
+        for note in route.named_models
+    )
+    flipped = [
+        note.code
+        for previous, note in zip(route.named_models, named, strict=True)
+        if previous.searched and not note.searched
+    ]
+    if flipped:
+        hint += (
+            " Not searched this turn: "
+            + ", ".join(flipped)
+            + ". Say they were not searched. Never say they are absent from the "
+            "product data."
+        )
     return Route(
         route.name,
         calls,
@@ -812,6 +1271,7 @@ def with_page(
         hint=(route.hint + hint).strip(),
         reasons=(*route.reasons, f"about this page: {page.type}"),
         dropped=dropped,
+        named_models=named,
     )
 
 

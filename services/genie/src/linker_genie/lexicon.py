@@ -10,7 +10,10 @@ therefore never read as a name or as small talk ("saj" answered "Hello saj" on
 Keys are compared after normalization: lower case, letters and digits only, so
 "H2-10K-T3", "h2 10k t3" and "H210KT3" are one key. A message is cut into words on
 whitespace and on hyphens, and every run of one to `MAX_WORDS` consecutive words is
-looked up; a longer hit wins over the shorter hits inside it.
+looked up; a longer hit wins over the shorter hits inside it. A hyphenated body
+inside a longer code is its own key when those pieces are too short to be codes
+and the body names one product ("BD-8" of "EF BD-8-S2"). A trailing suffix
+("S2", "G20") is not.
 """
 
 from __future__ import annotations
@@ -29,8 +32,12 @@ MAX_WORDS = 6
 # A model code taken from a title must be at least four letters and digits long: the
 # shortest real code is four ("L260", "GM330" is five; snapshot 2026-10-15), while
 # two- and three-character tokens of titles ("S2", "P3", "G20") are suffixes that a
-# customer types inside other words and would match by accident.
+# customer types inside other words and would match by accident. A body the hyphen
+# itself splits into those short pieces ("BD-8") is recovered by _short_bodies.
 MIN_CODE = 4
+# The one length below MIN_CODE that is still longer than a suffix token ("S2",
+# "P3", "AC"). "BD" + "8" lands here; a two-character join does not.
+SHORT_BODY = MIN_CODE - 1
 # A series alias without its brand ("h2" of saj-h2) must carry a digit or be at least
 # three characters: "et" (goodwe-et) and "ci" (saj-ci-line) are ordinary letter pairs
 # in English and German text, "h2", "b2", "hs3" and "esa" are not (_series_aliases).
@@ -126,6 +133,9 @@ class Vocabulary:
     # these maps.
     brand_members: dict[str, set[int]] = field(default_factory=dict)
     brand_of: dict[int, set[str]] = field(default_factory=dict)
+    # Brand slug → the name the store publishes, for naming a catalog brand when
+    # the customer's brand word and the model disagree (route.py, #363).
+    brand_names: dict[str, str] = field(default_factory=dict)
     series_of: dict[int, set[str]] = field(default_factory=dict)
     # Category keys are compared by their plural-less forms as well (_forms).
     category_forms: dict[str, list[Entry]] = field(default_factory=dict)
@@ -153,6 +163,19 @@ class Vocabulary:
     def match(self, text: str) -> list[Match]:
         """Every product word of `text`, longest first, without overlaps."""
         return self._scan(text)[0]
+
+    def model_codes(self) -> tuple[str, ...]:
+        """Model codes as the titles and pa_model write them, each once.
+
+        A code the customer types that is not among these is not a product word
+        (route.py): the lexicon only matches codes it has seen.
+        """
+        seen: list[str] = []
+        for entries in self.entries.values():
+            for entry in entries:
+                if entry.kind == "model" and entry.value not in seen:
+                    seen.append(entry.value)
+        return tuple(seen)
 
     def bare(self, text: str) -> bool:
         """Whether `text` is nothing but product words ("EMS", "SAJ H2", "Zubehör")."""
@@ -292,6 +315,7 @@ def build(
         vocabulary.entries[key] = [
             entry for entry in vocabulary.entries[key] if entry.kind != "series"
         ]
+    _add_short_bodies(vocabulary, products)
     return vocabulary
 
 
@@ -326,6 +350,7 @@ def _add_product(vocabulary: Vocabulary, product: Product) -> None:
     for name, slug in product.brands:
         vocabulary.add(normalize(name), Entry("brand", name, slug))
         vocabulary.add(normalize(slug), Entry("brand", name, slug))
+        vocabulary.brand_names.setdefault(slug, name)
     brand_slugs = [slug for _name, slug in product.brands]
     for slug in product.series:
         entry = Entry("series", slug, slug)
@@ -378,6 +403,102 @@ def _codes(title: str) -> list[str]:
         ):
             codes.append(token)
     return codes
+
+
+def _add_short_bodies(vocabulary: Vocabulary, products: list[Product]) -> None:
+    """Index a hyphenated model body that names exactly one product.
+
+    See `_short_bodies` for the rule. The search text stays the product's own
+    model label ("EF BD-8-S2"), which the title and `pa_model` contain. A key
+    that already names something else (a series alias, a full code) is left as
+    it is.
+    """
+    for key, product_id in _short_bodies(products).items():
+        if key in vocabulary.entries:
+            continue
+        label = vocabulary.labels.get(product_id, "")
+        if not label:
+            continue
+        vocabulary.add(key, Entry("model", label, label, frozenset({product_id})))
+
+
+def _short_bodies(products: list[Product]) -> dict[str, int]:
+    """Interior joins of a model code that name one product ("BD-8" → 3582).
+
+    The matcher cuts on hyphens, so "EF BD-8-S2" is the words EF, BD, 8, S2.
+    "BD" and "8" are each shorter than `MIN_CODE` and were never keys; their
+    join "BD8" is the body a customer writes. A join is a key only when all of
+    the following hold (snapshot 2026-10-15, 106 products; no competitor
+    precedent for short codes, docs/research/2026-10-19-genie-campaign-gaps/
+    DOSSIER.md §1.1):
+
+    - two or more segments, strictly inside the code: after the leading
+      segment and before the trailing one. The trailing segment is the shared
+      suffix ("S2" is a substring of 24 products' name, SKU or model, "G20" of
+      21, "G10" of 19).
+    - each piece shorter than `MIN_CODE`, and the join `SHORT_BODY` characters
+      with both a letter and a digit. Two-character joins ("S2", "P3", "AC",
+      "DC") and a bare digit ("2") stay out.
+    - that join is a substring of exactly one product's name, SKU and model.
+      BD8 and BD5 each occur in one product. A fragment that also occurs
+      inside another model ("20K" inside GW20K-ETA-G20 as well as H2-20K-T3)
+      is not a key.
+
+    On that snapshot the only such joins are BD8 (product 3582, EF BD-8-S2)
+    and BD5 (product 3581, EF BD-5-S2).
+    """
+    identity = {product.id: _code_identity(product) for product in products}
+    owners: dict[str, set[int]] = {}
+    for product in products:
+        for source in _code_sources(product):
+            segments = _segments(source)
+            if len(segments) < 3:
+                continue
+            last = len(segments) - 1
+            for start in range(1, last):
+                for end in range(start + 2, last + 1):
+                    piece = segments[start:end]
+                    if any(len(normalize(part)) >= MIN_CODE for part in piece):
+                        continue
+                    key = normalize("".join(piece))
+                    if len(key) != SHORT_BODY or not _mixed(key):
+                        continue
+                    owners.setdefault(key, set()).add(product.id)
+    chosen: dict[str, int] = {}
+    for key, ids in owners.items():
+        holders = {pid for pid, text in identity.items() if key in text}
+        if holders == ids and len(ids) == 1:
+            chosen[key] = next(iter(ids))
+    return chosen
+
+
+def _code_sources(product: Product) -> list[str]:
+    """The hyphenated model strings, not the marketing words around them."""
+    brand_slugs = [slug for _name, slug in product.brands]
+    sources = list(product.models)
+    sources.extend(_codes(product.name))
+    tail = _sku_tail(product.sku, brand_slugs)
+    if tail:
+        sources.append(tail)
+    return sources
+
+
+def _segments(code: str) -> list[str]:
+    """Pieces of a model code on spaces and hyphens ("EF BD-8-S2")."""
+    segments: list[str] = []
+    for token in code.split():
+        segments.extend(part for part in token.split("-") if part)
+    return segments
+
+
+def _code_identity(product: Product) -> str:
+    """Name, SKU and model, normalized, for the one-product check."""
+    return normalize(" ".join((product.name, product.sku, *product.models)))
+
+
+def _mixed(key: str) -> bool:
+    """Whether a key has both a letter and a digit."""
+    return any(ch.isalpha() for ch in key) and any(ch.isdigit() for ch in key)
 
 
 def _series_aliases(slug: str, brand_slugs: list[str], title: str) -> list[str]:

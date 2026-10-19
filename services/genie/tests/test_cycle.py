@@ -17,6 +17,7 @@ from linker_genie.template import (
     fallback,
     german_is_clean,
 )
+from linker_genie.timing import Timing
 
 
 def _request() -> TurnRequest:
@@ -281,3 +282,61 @@ def test_fallback_after_grounding_stays_inside_the_protocol_set() -> None:
     assert german_is_clean(empty.summary)
     assert "sales@" not in empty.summary
     assert " the " not in f" {empty.summary.lower()} "
+
+
+def test_the_clock_times_a_grounded_turn_without_changing_it() -> None:
+    """#336: the model attempt, grounding and hydration are timed as phases; the
+    turn's result is the one the same generate produces without a clock."""
+    facts = _facts()
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        assert retry is None
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[
+                    TextBlock(
+                        text="This inverter is {fact:p4107.ac_power_kw} kW.",
+                        refs=["4107"],
+                    ),
+                    CardsBlock(product_ids=[4107]),
+                ],
+            ),
+            facts,
+        )
+
+    clock = Timing()
+    result = run(_request(), generate, clock=clock)
+    assert result.fallback is False
+    assert "10 kW" in result.output.blocks[0].text  # type: ignore[union-attr]
+    record = clock.as_log()
+    # A grounded first attempt: exactly these phases, nothing skipped.
+    assert set(record) == {
+        "model",
+        "model.attempt_1",
+        "ground",
+        "hydrate",
+        "total",
+    }
+    assert all(value >= 0 for value in record.values())
+
+
+def test_the_clock_times_both_attempts_and_the_fallback_render() -> None:
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        raise ValueError("not a TurnOutput")
+
+    clock = Timing()
+    result = run(_request(), generate, clock=clock)
+    assert result.fallback is True
+    assert set(clock.as_log()) == {
+        "model",
+        "model.attempt_1",
+        "model.attempt_2",
+        "template",
+        "hydrate",
+        "total",
+    }

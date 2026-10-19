@@ -288,6 +288,67 @@ def test_a_matched_model_does_not_narrow_the_extreme() -> None:
     assert args["ac_power_min"] == 30.0
 
 
+def test_one_written_model_does_not_replace_the_extreme() -> None:
+    # The code is in the question and still is not a text filter. Two codes
+    # would be searched on their own; one is not.
+    message = "What is your smallest inverter with at least 30 kW, the GW75K-ET-G10?"
+    matches = [_model("GW75K-ET-G10", 6506), INVERTERS]
+    args = _search_args(message, "en", _reading("find_products"), matches)
+    assert "text" not in args
+    assert args["ac_power_min"] == 30.0
+    assert args["extreme"] == "smallest"
+
+
+def test_an_extreme_over_a_brand_or_series_is_not_a_model_conflict() -> None:
+    brand = Match("brand", "GoodWe", "goodwe", frozenset(), "GoodWe")
+    smallest = plan(
+        "What is your smallest GoodWe inverter?",
+        [brand, INVERTERS],
+        _reading("find_products"),
+        NONE,
+        "en",
+    )
+    assert smallest.named_models == ()
+    assert "brand and model disagree" not in smallest.reasons
+    (call,) = smallest.calls
+    assert call.arguments["brand"] == "goodwe"
+    assert call.arguments["extreme"] == "smallest"
+    assert call.arguments["device_class"] == "inverters"
+    assert "text" not in call.arguments
+
+    series = Match("series", "SAJ H2", "saj-h2", frozenset({1}), "SAJ H2")
+    saj = Match("brand", "SAJ", "saj", frozenset(), "SAJ")
+    largest = plan(
+        "What is your largest SAJ H2 inverter?",
+        [series, saj, INVERTERS],
+        _reading("find_products"),
+        NONE,
+        "en",
+    )
+    assert largest.named_models == ()
+    assert "brand and model disagree" not in largest.reasons
+    (call,) = largest.calls
+    assert call.arguments["series"] == "saj-h2"
+    assert call.arguments["brand"] == "saj"
+    assert call.arguments["extreme"] == "largest"
+    assert "text" not in call.arguments
+
+
+def test_several_written_models_keep_their_searches_beside_an_extreme() -> None:
+    message = (
+        "Which is the smallest inverter, HS3-5K-T2 or HS3-12K-T2, with at least 5 kW?"
+    )
+    matches = [_model("HS3-5K-T2", 2198), _model("HS3-12K-T2", 1185), INVERTERS]
+    route = plan(message, matches, _reading("find_products"), NONE, "en")
+    assert [call.arguments.get("text") for call in route.calls] == [
+        "HS3-5K-T2",
+        "HS3-12K-T2",
+    ]
+    assert all("extreme" not in call.arguments for call in route.calls)
+    assert [note.code for note in route.named_models] == ["HS3-5K-T2", "HS3-12K-T2"]
+    assert "several models" in route.reasons
+
+
 def test_smallest_inverter_at_least_20_kw_uses_that_floor() -> None:
     args = _search_args(
         "What is your smallest inverter with at least 20 kW?",

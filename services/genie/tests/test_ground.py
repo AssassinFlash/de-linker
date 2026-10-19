@@ -2,6 +2,7 @@
 
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.ground import check
+from linker_genie.route import NamedModel, Route
 from linker_genie.schema import (
     ActionBlock,
     CardsBlock,
@@ -384,3 +385,38 @@ def test_a_hidden_price_names_no_cheapest_model() -> None:
     assert any("cheapest" in failure for failure in check(named, facts).failures)
     assert any("cheapest" in failure for failure in check(german, facts).failures)
     assert check(plain, facts).ok
+
+
+def test_an_applied_extreme_is_the_only_card_beside_other_named_models() -> None:
+    # The winner card satisfies the extreme. The other searched model is not
+    # also required as a card. An absence claim for it is still refused, and
+    # a code the route did not search must still be called not searched.
+    route = Route(
+        "products",
+        show_products=True,
+        no_handoff=True,
+        named_models=(
+            NamedModel(code="HS3-5K-T2", product_ids=(2198,), searched=True),
+            NamedModel(code="GW30K-ETA-G20", product_ids=(6518,), searched=True),
+            NamedModel(code="HS3-12K-T2", product_ids=(1185,), searched=False),
+        ),
+    )
+    facts = _extreme_facts()
+    facts.product_ids.add(2198)
+    facts.qualified_ids.add(2198)
+    winner = _named("The GW30K-ETA-G20 meets the limit you named.", [6518])
+    absent = _named(
+        "The GW30K-ETA-G20 meets the limit you named. HS3-5K-T2 has no entry.",
+        [6518],
+    )
+    missed = _named(
+        "The GW30K-ETA-G20 meets the limit you named. HS3-12K-T2 was not searched.",
+        [6518],
+    )
+    assert check(missed, facts, route).ok
+    assert any(
+        "no entry" in failure for failure in check(absent, facts, route).failures
+    )
+    assert any(
+        "not searched" in failure for failure in check(winner, facts, route).failures
+    )
