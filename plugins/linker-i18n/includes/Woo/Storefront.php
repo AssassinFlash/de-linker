@@ -20,6 +20,16 @@ use Linker\I18n\Languages;
  * with the German name and link, and WooCommerce's pages (shop, cart,
  * checkout, account) are their German versions
  * (docs/research/2026-10-09/i18n-opensource-replication.md §6.2).
+ *
+ * The Store API product `permalink` is that German link (#413). Genie asks
+ * for the English ids (`include=`), and RestLang leaves a query by id on
+ * those records, so `lang=de` was already making the price copy German while
+ * `permalink` stayed `get_permalink()` of the English product (`/product/…`).
+ * {@see self::store_product_links()} replaces it with the German twin's
+ * permalink: `pll_get_post` through {@see Languages::post_translation()}, then
+ * `get_permalink` (`/de/produkt/…`). The card, the configurator and the hero
+ * read that field and do not resolve a second URL. English requests keep
+ * `/product/…`.
  */
 final class Storefront {
 
@@ -122,6 +132,36 @@ final class Storefront {
 	}
 
 	/**
+	 * The German permalink on a Store API product (filter
+	 * `rest_request_after_callbacks`).
+	 *
+	 * Priority 9, while RestLang still holds the request language. See the
+	 * class note for why the link is resolved here and not in the card.
+	 *
+	 * @param mixed                $response Response so far.
+	 * @param array<string, mixed> $handler  Route handler.
+	 * @param mixed                $request  Request.
+	 * @return mixed
+	 */
+	public function store_product_links( $response, array $handler, $request ) {
+		unset( $handler );
+		if ( ! $response instanceof \WP_REST_Response || ! $request instanceof \WP_REST_Request ) {
+			return $response;
+		}
+		// 400 is the first HTTP client error: an error body is not a product
+		// payload, so its permalink is left as WooCommerce wrote it.
+		if ( ! $this->store_product_route( (string) $request->get_route() ) || ! $this->german_request() || 400 <= $response->get_status() ) {
+			return $response;
+		}
+		$data = $response->get_data();
+		if ( ! is_array( $data ) ) {
+			return $response;
+		}
+		$response->set_data( $this->german_product_links( $data ) );
+		return $response;
+	}
+
+	/**
 	 * The English SKU on a German product (filter `woocommerce_product_get_sku`):
 	 * the German product stores none, so a SKU names one product, and shows
 	 * the one it shares.
@@ -183,5 +223,66 @@ final class Storefront {
 	 */
 	private function german_request(): bool {
 		return ! is_admin() && Languages::TARGET === $this->languages->current();
+	}
+
+	/**
+	 * A Store API product route: the collection, or one product by id or slug.
+	 *
+	 * @param string $route REST route.
+	 */
+	private function store_product_route( string $route ): bool {
+		if ( '/wc/store/v1/products' === $route ) {
+			return true;
+		}
+		return 1 === preg_match( '#^/wc/store/v1/products/(?!categories$|tags$|attributes$|brands$|collection-data$|reviews$)[^/]+$#', $route );
+	}
+
+	/**
+	 * Product payloads with the German permalink of each English product.
+	 *
+	 * @param array<mixed> $data One product or a list of them.
+	 * @return array<mixed>
+	 */
+	private function german_product_links( array $data ): array {
+		if ( $this->is_store_product( $data ) ) {
+			return $this->relink_store_product( $data );
+		}
+		foreach ( $data as $key => $item ) {
+			if ( is_array( $item ) && $this->is_store_product( $item ) ) {
+				$data[ $key ] = $this->relink_store_product( $item );
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * Whether the value is one Store API product.
+	 *
+	 * @param array<mixed> $data Response data.
+	 */
+	private function is_store_product( array $data ): bool {
+		return isset( $data['id'], $data['permalink'], $data['prices'] ) && is_numeric( $data['id'] ) && is_string( $data['permalink'] );
+	}
+
+	/**
+	 * The product with its German permalink, when it has a German twin.
+	 *
+	 * @param array<mixed> $product Product payload.
+	 * @return array<mixed>
+	 */
+	private function relink_store_product( array $product ): array {
+		$id = $product['id'] ?? null;
+		if ( ! is_numeric( $id ) || ! is_string( $product['permalink'] ?? null ) ) {
+			return $product;
+		}
+		$german = $this->german_of_id( (int) $id );
+		if ( null === $german ) {
+			return $product;
+		}
+		$link = get_permalink( $german );
+		if ( is_string( $link ) && '' !== $link ) {
+			$product['permalink'] = $link;
+		}
+		return $product;
 	}
 }

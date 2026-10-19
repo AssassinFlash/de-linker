@@ -12,6 +12,7 @@ namespace Linker\I18n\Tests\Unit\Woo;
 use Linker\I18n\Languages;
 use Linker\I18n\Tests\Unit\PolylangDouble;
 use Linker\I18n\Woo\Storefront;
+use Mockery;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
@@ -135,5 +136,158 @@ final class StorefrontTest extends TestCase {
 		PolylangDouble::mock( array( 24 => 'en' ), array( 24 => 249 ), array(), array(), 'de' );
 		$this->names( array() );
 		$this->assertSame( $english, $this->storefront()->quoted_item_name( $english, 24 ), 'Admin request' );
+	}
+
+	/**
+	 * A German Store API answer that was asked for English products
+	 * (`include=` keeps those ids) links each one to its German page.
+	 * Registered for #339 as s1-card-permalink-locale (#413).
+	 */
+	public function test_german_store_products_link_to_the_german_page(): void {
+		$storefront = $this->german_products();
+		$body       = array(
+			$this->product( 24, 'http://example.test/product/saj/', 'Preise nach Anmeldung' ),
+			$this->product( 25, 'http://example.test/product/lone/', 'Angebot pro Projekt' ),
+			$this->product( 249, 'http://example.test/de/produkt/saj/', 'Preise nach Anmeldung' ),
+		);
+
+		$linked = $this->dispatch( $storefront, '/wc/store/v1/products', $body );
+
+		$this->assertTrue( $linked['wrote'] );
+		$this->assertSame( array( 24, 25, 249 ), array_column( $linked['body'], 'id' ) );
+		$this->assertSame( 'http://example.test/de/produkt/saj/', $linked['body'][0]['permalink'] );
+		$this->assertSame( 'http://example.test/product/lone/', $linked['body'][1]['permalink'] );
+		$this->assertSame( 'http://example.test/de/produkt/saj/', $linked['body'][2]['permalink'] );
+		$this->assertSame( 'Preise nach Anmeldung', $linked['body'][0]['price_html'] );
+		$this->assertSame( 'Angebot pro Projekt', $linked['body'][1]['price_html'] );
+	}
+
+	/**
+	 * One product, by id or by slug, gets the same German link. English, an
+	 * admin screen, another route and an error stay as WooCommerce wrote them.
+	 */
+	public function test_only_a_german_product_response_is_relinked(): void {
+		$storefront = $this->german_products();
+		$one        = $this->product( 24, 'http://example.test/product/saj/' );
+		$by_id      = $this->dispatch( $storefront, '/wc/store/v1/products/24', $one );
+		$by_slug    = $this->dispatch( $storefront, '/wc/store/v1/products/saj-slug', $one );
+
+		$this->assertSame( 'http://example.test/de/produkt/saj/', $by_id['body']['permalink'] );
+		$this->assertSame( 'http://example.test/de/produkt/saj/', $by_slug['body']['permalink'] );
+
+		self::$admin = false;
+		PolylangDouble::mock(
+			array(
+				24  => 'en',
+				249 => 'de',
+			),
+			array( 24 => 249 ),
+			array(),
+			array(),
+			'en'
+		);
+		$this->assertFalse( $this->dispatch( $this->storefront(), '/wc/store/v1/products', $one )['wrote'] );
+
+		self::$admin = true;
+		PolylangDouble::mock(
+			array(
+				24  => 'en',
+				249 => 'de',
+			),
+			array( 24 => 249 ),
+			array(),
+			array(),
+			'de'
+		);
+		$this->assertFalse( $this->dispatch( $this->storefront(), '/wc/store/v1/products', $one )['wrote'] );
+
+		self::$admin = false;
+		PolylangDouble::mock(
+			array(
+				24  => 'en',
+				25  => 'en',
+				249 => 'de',
+			),
+			array( 24 => 249 ),
+			array(),
+			array(),
+			'de'
+		);
+		$storefront = $this->storefront();
+		$this->assertFalse( $this->dispatch( $storefront, '/wc/store/v1/cart', $one )['wrote'] );
+		$this->assertFalse( $this->dispatch( $storefront, '/wc/store/v1/products/categories', $one )['wrote'] );
+		$this->assertFalse( $this->dispatch( $storefront, '/wc/store/v1/products/24', $one, 404 )['wrote'] );
+	}
+
+	/**
+	 * The products of a German shop: 24 has German twin 249, 25 has none.
+	 */
+	private function german_products(): Storefront {
+		self::$admin = false;
+		PolylangDouble::mock(
+			array(
+				24  => 'en',
+				25  => 'en',
+				249 => 'de',
+			),
+			array( 24 => 249 ),
+			array(),
+			array(),
+			'de'
+		);
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'return' => static fn( $id ): string|false => 249 === (int) $id ? 'http://example.test/de/produkt/saj/' : false,
+			)
+		);
+		return $this->storefront();
+	}
+
+	/**
+	 * One Store API product, as the schema gives it.
+	 *
+	 * @param int    $id         Product ID.
+	 * @param string $permalink  Permalink WooCommerce wrote.
+	 * @param string $price_html Price copy, when the test names one.
+	 * @return array<string, mixed>
+	 */
+	private function product( int $id, string $permalink, string $price_html = '' ): array {
+		return array(
+			'id'         => $id,
+			'permalink'  => $permalink,
+			'prices'     => array( 'price' => '168000' ),
+			'price_html' => $price_html,
+		);
+	}
+
+	/**
+	 * Runs the product-link filter.
+	 *
+	 * @param Storefront   $storefront Storefront under test.
+	 * @param string       $route      REST route.
+	 * @param array<mixed> $body       Response body.
+	 * @param int          $status     HTTP status.
+	 * @return array{wrote: bool, body: array<mixed>}
+	 */
+	private function dispatch( Storefront $storefront, string $route, array $body, int $status = 200 ): array {
+		$request = Mockery::mock( 'WP_REST_Request' );
+		$request->shouldReceive( 'get_route' )->andReturn( $route );
+		$response = Mockery::mock( 'WP_REST_Response' );
+		$response->shouldReceive( 'get_status' )->andReturn( $status )->byDefault();
+		$response->shouldReceive( 'get_data' )->andReturn( $body )->byDefault();
+		$written = null;
+		$response->shouldReceive( 'set_data' )->andReturnUsing(
+			static function ( $next ) use ( &$written ): void {
+				$written = $next;
+			}
+		);
+
+		$storefront->store_product_links( $response, array(), $request );
+
+		return array(
+			'wrote' => is_array( $written ),
+			'body'  => is_array( $written ) ? $written : $body,
+		);
 	}
 }

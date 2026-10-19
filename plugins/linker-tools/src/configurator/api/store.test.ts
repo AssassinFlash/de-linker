@@ -43,6 +43,57 @@ function cartFetch(
 	} );
 }
 
+test( 'product display is asked in the page language and the permalink is kept', async () => {
+	const german = [
+		{
+			id: 4107,
+			name: 'SAJ H2-10K-T3',
+			permalink: 'https://de-linker.test/de/produkt/saj-h2-10k-t3/',
+			images: [],
+			is_in_stock: true,
+		},
+		{
+			id: 1957,
+			name: 'GoodWe GW208.9-BAT-LCD-G10',
+			permalink: 'https://de-linker.test/de/produkt/gw208-9-bat-lcd-g10/',
+			images: [],
+			is_in_stock: true,
+		},
+	];
+	const fetcher = vi.fn< typeof fetch >( async () => json( german ) );
+	const products = await storeClient( '/wp-json/', fetcher ).products(
+		[ 4107, 1957 ],
+		'de'
+	);
+	expect( fetcher ).toHaveBeenCalledWith(
+		'/wp-json/wc/store/v1/products?include=4107,1957&per_page=2&lang=de',
+		{ credentials: 'same-origin' }
+	);
+	expect( products.map( ( product ) => product.permalink ) ).toEqual( [
+		'https://de-linker.test/de/produkt/saj-h2-10k-t3/',
+		'https://de-linker.test/de/produkt/gw208-9-bat-lcd-g10/',
+	] );
+
+	fetcher.mockResolvedValueOnce(
+		json( [
+			{
+				...german[ 0 ],
+				permalink: 'https://de-linker.test/product/saj-h2-10k-t3/',
+			},
+		] )
+	);
+	const english = await storeClient( '/wp-json/', fetcher ).products(
+		[ 4107 ],
+		'en'
+	);
+	expect( String( fetcher.mock.calls.at( -1 )?.[ 0 ] ) ).toBe(
+		'/wp-json/wc/store/v1/products?include=4107&per_page=1&lang=en'
+	);
+	expect( english[ 0 ].permalink ).toBe(
+		'https://de-linker.test/product/saj-h2-10k-t3/'
+	);
+} );
+
 test( 'lines the draft shows afterwards are added', async () => {
 	const fetcher = cartFetch( [
 		{ id: 7, quantity: 2 },
