@@ -21,9 +21,11 @@ import re
 
 from linker_genie.facts import Document, Fact, TurnFacts
 from linker_genie.figures import chunk_of, localize
+from linker_genie.route import Route
 from linker_genie.schema import (
     ActionBlock,
     Block,
+    CardsBlock,
     DocumentBlock,
     HandoffBlock,
     TextBlock,
@@ -42,6 +44,101 @@ PLACEHOLDER = re.compile(r"\{fact:([^}]+)\}")
 # (issue #257 trial run, a range lost its upper figure).
 _PLACEHOLDER_AND_WORD = re.compile(r"\{fact:([^}]+)\}((?:\s?[A-Za-zÄÖÜäöü%°²µΩ℃]+)?)")
 _UNIT_TAIL = re.compile(r"\d\s?([^\s\d]+)$")
+# Verdicts the pairing tool cleared for a card (facts._from_search).
+_RELEASED = frozenset({"released", "released_with_accessory"})
+
+
+def released_pairing_ids(facts: TurnFacts) -> list[int]:
+    """The searched product, then each battery the pairing search released.
+
+    Order is the tool's. A search without a `pairings` list does not contribute:
+    check-compatibility of two named products is not this set.
+    """
+    ids: list[int] = []
+    seen: set[int] = set()
+    for call in facts.tool_calls:
+        name = str(call.get("name") or "")
+        if not name.endswith("search-products"):
+            continue
+        result = call.get("result")
+        if not isinstance(result, dict):
+            continue
+        for item in result.get("qualified") or []:
+            if not isinstance(item, dict):
+                continue
+            pairings = item.get("pairings")
+            if not isinstance(pairings, list) or not pairings:
+                continue
+            product_id = item.get("product_id")
+            if (
+                isinstance(product_id, int)
+                and product_id >= 1
+                and product_id not in seen
+            ):
+                ids.append(product_id)
+                seen.add(product_id)
+            for pairing in pairings:
+                if not isinstance(pairing, dict):
+                    continue
+                if pairing.get("verdict") not in _RELEASED:
+                    continue
+                paired = pairing.get("product_id")
+                if isinstance(paired, int) and paired >= 1 and paired not in seen:
+                    ids.append(paired)
+                    seen.add(paired)
+    return ids
+
+
+def complete_pairing_cards(
+    output: TurnOutput, facts: TurnFacts, route: Route | None
+) -> TurnOutput:
+    """A pairing answer shows the tool's released set, not a narrower subset.
+
+    The prose stays the model's. Cards are filled the way a cited document is
+    linked: when the set already matches, the model's order is kept; when the
+    model omitted a released product, the block becomes the tool's list and
+    the first text block cites every id. Dossier 2026-10-19 §1.16 records no
+    public rule for what a repeated turn keeps; the set is this tool result,
+    so the same question cannot drop a product the search still returns.
+    """
+    if route is None or route.name != "pairing" or route.no_cards:
+        return output
+    released = released_pairing_ids(facts)
+    if not released:
+        return output
+    blocks: list[Block] = list(output.blocks)
+    card_at = [i for i, block in enumerate(blocks) if isinstance(block, CardsBlock)]
+    shown: list[int] = []
+    for index in card_at:
+        block = blocks[index]
+        if isinstance(block, CardsBlock):
+            shown.extend(block.product_ids)
+    if set(shown) == set(released) and len(shown) == len(released):
+        return output
+    cards = CardsBlock(product_ids=list(released))
+    if card_at:
+        blocks[card_at[0]] = cards
+        for index in reversed(card_at[1:]):
+            del blocks[index]
+    else:
+        after = next(
+            (i + 1 for i, block in enumerate(blocks) if isinstance(block, TextBlock)),
+            len(blocks),
+        )
+        blocks.insert(after, cards)
+    for index, block in enumerate(blocks):
+        if not isinstance(block, TextBlock):
+            continue
+        refs = list(block.refs)
+        have = set(refs)
+        for product_id in released:
+            token = str(product_id)
+            if token not in have and f"p{product_id}" not in have:
+                refs.append(token)
+                have.add(token)
+        blocks[index] = block.model_copy(update={"refs": refs})
+        break
+    return output.model_copy(update={"blocks": blocks})
 
 
 def hydrate(output: TurnOutput, facts: TurnFacts) -> TurnOutput:

@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.ground import check
-from linker_genie.hydrate import hydrate
+from linker_genie.hydrate import complete_pairing_cards, hydrate
 from linker_genie.prices import Lookup, fill
 from linker_genie.route import Route
 from linker_genie.schema import TurnOutput, TurnRequest
@@ -74,7 +74,10 @@ def run(
             result = check(output, last_facts, route)
         if result.ok:
             with timing.phase(clock, timing.HYDRATE):
-                hydrated = hydrate(output, last_facts)
+                # The card set is the pairing tool's, not whichever subset this
+                # attempt kept. Prose is not rewritten (hydrate.complete_pairing_cards).
+                completed = complete_pairing_cards(output, last_facts, route)
+                hydrated = hydrate(completed, last_facts)
                 priced, priced_facts, missed = fill(hydrated, last_facts, commerce)
             return TurnResult(
                 output=priced,
@@ -91,6 +94,7 @@ def run(
     with timing.phase(clock, timing.TEMPLATE):
         rendered = fallback(last_facts, request.locale, route)
     with timing.phase(clock, timing.HYDRATE):
+        rendered = complete_pairing_cards(rendered, last_facts, route)
         priced, priced_facts, missed = fill(rendered, last_facts, commerce)
     return TurnResult(
         output=priced,
