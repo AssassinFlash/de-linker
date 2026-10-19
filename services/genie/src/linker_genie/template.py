@@ -34,8 +34,9 @@ Three shapes, each inside the protocol set by construction
   `ability`; #410, dossier 2026-10-19 §1.15): the same degraded sentence,
   even when this turn already has cards or documents. Cards and document
   links may stay. The matching-products sentence and the document success
-  sentence do not. An ability failure is not the sales mailbox unless the
-  route is a request for a person. Login still outranks this.
+  sentence do not. An ability failure is not the sales mailbox. A request
+  for a person is answered before this template (app._answer). Login still
+  outranks this.
 - A tool whose pydantic-ai retry budget is spent (`exhausted`): the degraded
   sentence only, and no cards. The route may already hold product ids; they
   are not shown as a normal match. This is stricter than a fatal failure
@@ -308,8 +309,8 @@ def fallback(
     not the product template, and the route's ids are not shown.
 
     `failure_class` is a fatal failure of this turn (`cycle.fatal_class`):
-    the model returned 5xx/429/an empty stream, the document index could
-    not be read, or an ability returned 5xx or timed out. The customer
+    the model returned 5xx/429/an empty stream, the document index or the
+    encoder failed, or an ability returned 5xx or timed out. The customer
     sentence is the degraded sentence even when cards or documents exist.
     """
     language = language_of(locale)
@@ -324,11 +325,8 @@ def fallback(
     if exhausted:
         return _degraded(language)
     if failure_class is not None:
-        # The customer asked for a person: the mailbox is the answer they
-        # asked for. Every other fatal failure says it failed. A products
-        # search that died must not be printed as a sales handoff (#410).
-        if failure_class == "ability" and _asked_for_person(route):
-            return _outage(facts, language)
+        # A products search that died must not be printed as a sales
+        # handoff (#410). A request for a person never reaches here.
         return _failed_turn(facts, language, route)
     # The applied winner is the whole fallback. The named-model clarification
     # would add the other cards (#363, #364), which an extreme answer refuses.
@@ -349,31 +347,23 @@ def fallback(
             ],
         )
     if route is not None and route.name == "documents" and facts.documents:
-        refs = [ref for ref in facts.documents if ref in facts.chunk_ids] or list(
-            facts.documents
-        )
-        document_blocks: list[Block] = [
-            TextBlock(text=DOCUMENTS[language], refs=refs[:FALLBACK_DOCUMENTS])
-        ]
-        document_blocks.extend(
-            DocumentBlock(ref=ref) for ref in refs[:FALLBACK_DOCUMENTS]
-        )
+        refs = _document_refs(facts)
+        document_blocks: list[Block] = [TextBlock(text=DOCUMENTS[language], refs=refs)]
+        document_blocks.extend(DocumentBlock(ref=ref) for ref in refs)
         return hydrate(TurnOutput(language=language, blocks=document_blocks), facts)
     clarified = _clarify(facts, language, route)
     if clarified is not None:
         return clarified
-    qualified = sorted(facts.qualified_ids)
-    # A products search that qualified nothing does not borrow other ids.
-    # Those ids are a series hit, a page, or a get-product, not the model
-    # the customer asked for (#366, G5-EN card 3608).
-    if route is not None and route.name == "products" and not qualified:
+    # Which ids may be shown lives in `_card_ids` (#366). This branch only
+    # chooses the sentence when a products search qualified nothing.
+    if route is not None and route.name == "products" and not facts.qualified_ids:
         if _search_succeeded(facts):
             line = NO_MATCH_DE if language == "de" else NO_MATCH_EN
             return _ask_answer(language, [line])
         return _outage(facts, language)
-    if not qualified and not facts.product_ids:
+    ids = _card_ids(facts, route)
+    if not ids:
         return _outage(facts, language)
-    ids = qualified or sorted(facts.product_ids)
     refs = [f"p{product_id}" for product_id in ids]
     text = (
         "Hier sind passende Produkte aus unserem Sortiment."
@@ -549,26 +539,40 @@ def _degraded(language: Locale) -> TurnOutput:
     )
 
 
-def _asked_for_person(route: Route | None) -> bool:
-    """True when this route is the customer's request for a person (#243)."""
-    return route is not None and route.name == "person"
+def _document_refs(facts: TurnFacts) -> list[str]:
+    """Document links the fallback shows, search order, capped at three."""
+    refs = [ref for ref in facts.documents if ref in facts.chunk_ids] or list(
+        facts.documents
+    )
+    return refs[:FALLBACK_DOCUMENTS]
+
+
+def _card_ids(facts: TurnFacts, route: Route | None) -> list[int]:
+    """Ids a fallback may show. The card block caps them at the route's six.
+
+    Qualified ids first. A products search that qualified nothing does not
+    borrow `facts.product_ids` (#366): those are a series hit, a page, or a
+    get-product, not the model the customer asked for.
+    """
+    qualified = sorted(facts.qualified_ids)
+    if qualified:
+        return qualified
+    if route is not None and route.name == "products":
+        return []
+    return sorted(facts.product_ids)
 
 
 def _failed_turn(facts: TurnFacts, language: Locale, route: Route | None) -> TurnOutput:
     """The degraded sentence. Qualified cards and found documents may follow.
 
-    A products search that qualified nothing does not borrow
-    `facts.product_ids` (#366). The sentence is never the matching-products
-    line or the document success line (#410).
+    The sentence is never the matching-products line or the document success
+    line (#410). Which cards and which documents is `_card_ids` / `_document_refs`.
     """
     if route is not None and route.name == "documents" and facts.documents:
-        refs = [ref for ref in facts.documents if ref in facts.chunk_ids] or list(
-            facts.documents
-        )
         blocks: list[Block] = [HandoffBlock(summary=DEGRADED[language])]
-        blocks.extend(DocumentBlock(ref=ref) for ref in refs[:FALLBACK_DOCUMENTS])
+        blocks.extend(DocumentBlock(ref=ref) for ref in _document_refs(facts))
         return hydrate(TurnOutput(language=language, blocks=blocks), facts, language)
-    ids = _failed_card_ids(facts, route)
+    ids = _card_ids(facts, route)[:SEARCH_LIMIT]
     if not ids:
         return _degraded(language)
     return TurnOutput(
@@ -578,16 +582,6 @@ def _failed_turn(facts: TurnFacts, language: Locale, route: Route | None) -> Tur
             CardsBlock(product_ids=ids),
         ],
     )
-
-
-def _failed_card_ids(facts: TurnFacts, route: Route | None) -> list[int]:
-    """Cards a fatal failure may still show, capped at the route's six."""
-    qualified = sorted(facts.qualified_ids)
-    if qualified:
-        return qualified[:SEARCH_LIMIT]
-    if route is not None and route.name == "products":
-        return []
-    return sorted(facts.product_ids)[:SEARCH_LIMIT]
 
 
 def _outage(facts: TurnFacts, language: Locale) -> TurnOutput:

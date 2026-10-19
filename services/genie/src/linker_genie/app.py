@@ -351,24 +351,38 @@ def _answer(
     generate = getattr(request.app.state, "generate", None) or make_generate(
         ability_client(), prepared=prepared, pages=page_reader().read, clock=clock
     )
-    logged = prepared.log.get("call_failures")
-    call_failures = (
-        tuple(item for item in logged if isinstance(item, str))
-        if isinstance(logged, list)
-        else ()
-    )
-    return (
-        run(
+    # The same list the model tools append to during `generate` (inside
+    # `run`). A tuple taken here would miss a search-products 500 the model
+    # hit, and the later handoff would ship (#410).
+    recorded = _recorded_call_failures(prepared)
+    try:
+        result = run(
             body,
             generate,
             prepared.route,
             prepared.facts,
             commerce,
             clock,
-            call_failures=call_failures,
-        ),
-        None,
+            call_failures=recorded,
+        )
+    finally:
+        # A turn with no tool failure does not grow an empty key, including
+        # when `run` raises before it returns.
+        if not recorded:
+            prepared.log.pop("call_failures", None)
+    return result, None
+
+
+def _recorded_call_failures(prepared: Prepared) -> list[str]:
+    """The live `call_failures` list, created when the route recorded none."""
+    logged = prepared.log.get("call_failures")
+    recorded = (
+        [item for item in logged if isinstance(item, str)]
+        if isinstance(logged, list)
+        else []
     )
+    prepared.log["call_failures"] = recorded
+    return recorded
 
 
 def _sse(
