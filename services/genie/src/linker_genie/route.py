@@ -748,6 +748,8 @@ def _customer_phrase(message: str, keys: frozenset[str]) -> str | None:
             if "".join(normalize(word) for word in piece) in keys:
                 return " ".join(piece)
     return None
+
+
 def _extreme_kind(message: str) -> str | None:
     """The extreme word that occurs first, or None."""
     found: list[tuple[int, str]] = []
