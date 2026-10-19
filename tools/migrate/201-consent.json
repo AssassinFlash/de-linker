@@ -1,0 +1,49 @@
+{
+  "versions": {
+    "wp-consent-api": "2.1.0",
+    "google-site-kit": "1.189.0",
+    "cookie-law-info": "3.5.7"
+  },
+  "copy": {
+    "en": {
+      "header": "Your cookie choices",
+      "message_optin": "We use essential cookies to keep this website working. With your permission, Google Analytics helps us understand how the site is used, and separate cookies record the source of your visit. Google Ireland Limited may process analytics data outside the European Economic Area, including in the USA. You can reject optional cookies or choose each purpose. Change or withdraw your choice at any time using Cookie settings in the footer.",
+      "accept": "Accept all",
+      "dismiss": "Reject all",
+      "view_preferences": "Choose purposes",
+      "save_preferences": "Save choices",
+      "revoke": "Cookie settings",
+      "category_functional": "Essential",
+      "category_stats": "Website analytics",
+      "category_all": "Visit source",
+      "functional_text": "Needed for your solution draft, sign-in and cookie choices. These cookies are always active.",
+      "statistics_text": "Google Analytics measures page views and site interactions. This is optional.",
+      "marketing_text": "WooCommerce records how you reached this website. These are first-party cookies set by this website. This choice does not enable Google advertising."
+    },
+    "de": {
+      "header": "Ihre Cookie-Auswahl",
+      "message_optin": "Wir verwenden notwendige Cookies für den Betrieb dieser Website. Mit Ihrer Einwilligung analysieren wir die Nutzung mit Google Analytics. Die Besuchsquelle erfassen wir nur mit gesonderter Einwilligung. Google Ireland Limited kann Analysedaten außerhalb des EWR verarbeiten, auch in den USA. Sie können optionale Cookies ablehnen oder die Zwecke einzeln wählen. Ihre Auswahl ändern oder widerrufen Sie jederzeit über Cookie-Einstellungen in der Fußzeile.",
+      "accept": "Alle akzeptieren",
+      "dismiss": "Alle ablehnen",
+      "view_preferences": "Zwecke auswählen",
+      "save_preferences": "Auswahl speichern",
+      "revoke": "Cookie-Einstellungen",
+      "category_functional": "Notwendig",
+      "category_stats": "Website-Analyse",
+      "category_all": "Besuchsquelle",
+      "functional_text": "Für Ihren Lösungsentwurf, die Anmeldung und Ihre Cookie-Auswahl erforderlich. Diese Cookies sind immer aktiv.",
+      "statistics_text": "Google Analytics erfasst Seitenaufrufe und Interaktionen auf der Website. Diese Analyse ist optional.",
+      "marketing_text": "WooCommerce erfasst, wie Sie auf diese Website gelangt sind. Diese Cookies werden von dieser Website gesetzt. Ihre Auswahl aktiviert keine Google-Werbefunktionen."
+    }
+  },
+  "privacy": {
+    "en": {
+      "cookies": "<p>Essential cookies keep your solution draft, sign-in and cookie choices working. They are always active. Optional cookies are used only after you consent to the relevant purpose.</p><p><strong>Website analytics:</strong> Google Analytics measures page views and interactions. Its <code>_ga</code> and <code>_ga_*</code> cookies recognise a browser and its sessions and can remain for up to 400 days; a new visit can renew this period. Event-level data in Google Analytics is retained for 14 months.</p><p><strong>Visit source:</strong> WooCommerce uses <code>sbjs_*</code> cookies to record the source of your visit, including campaign parameters. Source cookies last for the browser session; <code>sbjs_session</code> expires after 30 minutes without activity. This choice does not enable Google advertising.</p><p>We use these optional cookies on the basis of your consent. You can change or withdraw consent at any time through <button type=\"button\" class=\"cky-banner-element border-0 bg-transparent p-0 text-inherit [font:inherit] underline cursor-pointer\">Cookie settings</button> in the footer. Withdrawal does not affect processing that took place before you withdrew. Your cookie choices are stored for up to one year.</p>",
+      "recipient": "<p data-linker-ga4-privacy=\"1\">If you consent to website analytics, Google Ireland Limited receives usage data, including pages viewed, interactions, browser and device information. Google may process this data outside the European Economic Area, including in the USA. We do not enable Google Signals or Google advertising features. See <a href=\"https://policies.google.com/privacy\" rel=\"noopener noreferrer\">Google’s privacy information</a>. Rejecting analytics prevents the Google measurement tag from loading.</p>"
+    },
+    "de": {
+      "cookies": "<p>Notwendige Cookies ermöglichen Ihren Lösungsentwurf, die Anmeldung und das Speichern Ihrer Cookie-Auswahl. Sie sind immer aktiv. Optionale Cookies setzen wir erst ein, wenn Sie dem jeweiligen Zweck zugestimmt haben.</p><p><strong>Website-Analyse:</strong> Google Analytics erfasst Seitenaufrufe und Interaktionen. Die Cookies <code>_ga</code> und <code>_ga_*</code> erkennen einen Browser und seine Sitzungen. Sie können bis zu 400 Tage gespeichert bleiben; ein erneuter Besuch kann die Frist verlängern. Ereignisdaten in Google Analytics werden 14 Monate aufbewahrt.</p><p><strong>Besuchsquelle:</strong> WooCommerce erfasst mit <code>sbjs_*</code>-Cookies, woher Ihr Besuch stammt, einschließlich Kampagnenparametern. Die Herkunfts-Cookies gelten für die Browser-Sitzung; <code>sbjs_session</code> läuft nach 30 Minuten ohne Aktivität ab. Diese Auswahl aktiviert keine Google-Werbefunktionen.</p><p>Die Grundlage für diese optionalen Cookies ist Ihre Einwilligung. Unter <button type=\"button\" class=\"cky-banner-element border-0 bg-transparent p-0 text-inherit [font:inherit] underline cursor-pointer\">Cookie-Einstellungen</button> in der Fußzeile können Sie Ihre Auswahl jederzeit ändern oder widerrufen. Der Widerruf berührt die Rechtmäßigkeit der vorherigen Verarbeitung nicht. Ihre Cookie-Auswahl wird bis zu einem Jahr gespeichert.</p>",
+      "recipient": "<p data-linker-ga4-privacy=\"1\">Wenn Sie der Website-Analyse zustimmen, erhält Google Ireland Limited Nutzungsdaten wie besuchte Seiten, Interaktionen sowie Browser- und Geräteinformationen. Eine Verarbeitung außerhalb des Europäischen Wirtschaftsraums ist möglich, auch in den USA. Google Signals und Google-Werbefunktionen aktivieren wir nicht. Weitere Angaben finden Sie in den <a href=\"https://policies.google.com/privacy\" rel=\"noopener noreferrer\">Datenschutzhinweisen von Google</a>. Ohne Ihre Einwilligung wird das Google-Messskript nicht geladen.</p>"
+    }
+  }
+}

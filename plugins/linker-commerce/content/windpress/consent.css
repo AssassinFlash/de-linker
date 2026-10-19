@@ -1,0 +1,158 @@
+/* CookieYes uses its own semantic UI; its presentation follows the site tokens.
+ * User requested the redesign on 2026-10-19. Accept and reject share styling.
+ */
+body .cky-consent-container {
+  width: calc(100% - 48px);
+  max-width: 1240px;
+  left: 50%;
+  right: auto;
+  bottom: 24px;
+  transform: translateX(-50%);
+  font-family: var(--proto-font-sans);
+}
+body .cky-consent-container .cky-consent-bar {
+  padding: 24px 28px;
+  border: 1px solid var(--proto-line-journal);
+  border-radius: var(--proto-radius-panel);
+  box-shadow: 0 12px 48px rgb(12 40 36 / 14%);
+}
+body .cky-notice .cky-title {
+  margin-bottom: 10px;
+  padding: 0;
+  font-family: var(--proto-font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -.02em;
+}
+body .cky-notice-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 32px;
+}
+body .cky-notice-des,
+body .cky-notice-des p {
+  margin: 0;
+  padding: 0;
+  font-family: var(--proto-font-sans);
+  font-size: 13px;
+  line-height: 1.75;
+}
+body .cky-notice-btn-wrapper {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  flex-wrap: nowrap;
+  padding: 0;
+}
+body .cky-notice-btn-wrapper .cky-btn,
+body .cky-prefrence-btn-wrapper .cky-btn {
+  min-height: 44px;
+  min-width: 112px;
+  margin: 0;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-family: var(--proto-font-sans);
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+body .cky-btn:focus-visible,
+body .cky-btn-close:focus-visible {
+  outline: 2px solid var(--proto-accent);
+  outline-offset: 3px;
+}
+body .cky-preference-center {
+  font-family: var(--proto-font-sans);
+  border: 1px solid var(--proto-line-journal);
+  border-radius: var(--proto-radius-panel);
+  box-shadow: 0 20px 80px rgb(12 40 36 / 18%);
+}
+body .cky-preference-title,
+body .cky-accordion-btn {
+  font-family: var(--proto-font-sans);
+  letter-spacing: -.02em;
+}
+body .cky-preference-content-wrapper,
+body .cky-accordion-header-des {
+  font-family: var(--proto-font-sans);
+  line-height: 1.75;
+}
+@media (max-width: 900px) {
+  body .cky-notice-group {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  body .cky-notice-btn-wrapper .cky-btn {
+    flex: 1;
+  }
+}
+@media (max-width: 600px) {
+  body .cky-consent-container {
+    left: 12px;
+    bottom: 12px;
+    width: calc(100% - 24px);
+    transform: none;
+  }
+  body .cky-consent-container .cky-consent-bar {
+    padding: 20px;
+    border-radius: 20px;
+  }
+  body .cky-notice-des,
+  body .cky-notice-des p {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  body .cky-notice-btn-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  body .cky-notice-btn-wrapper [data-cky-tag="reject-button"] {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  body .cky-notice-btn-wrapper [data-cky-tag="accept-button"] {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  body .cky-notice-btn-wrapper [data-cky-tag="settings-button"] {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    border-color: transparent;
+    min-height: 36px;
+    padding: 7px 12px;
+  }
+  body .cky-prefrence-btn-wrapper .cky-btn {
+    min-width: 0;
+    font-size: 11px;
+    padding: 10px 8px;
+  }
+}
+body button.cky-banner-element {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+/* Match the existing legal links; theme button defaults otherwise enlarge it. */
+#tv-footer-v2 .tv-footer-bar-legal .cky-banner-element {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-decoration: none;
+  padding: 5px 0;
+  margin: 0;
+  cursor: pointer;
+}
+#tv-footer-v2 .tv-footer-bar-legal .cky-banner-element:hover {
+  color: #087f79;
+}

@@ -20,12 +20,16 @@ parameters:
 		# Stand-ins for WordPress and WooCommerce classes; PHPStan reads the real ones from the stubs.
 		- tests/php/Doubles
 	scanDirectories:
+		# Native bilingual adoption records the consent-policy pair and baseline.
+		- ../linker-i18n/includes
 		# Genie's routes of the companion plugin: the filter and action contracts of
 		# "email me this conversation" (#235) and "Let Linker contact me" (#243)
 		# span both plugins, and the integration tests drive linker-tools' side
 		# with this plugin's mail (ContactRequest, FormGuard, RateLimit).
 		- ../linker-tools/includes/Genie
 	scanFiles:
+		# Native CMP API, supplied by its wordpress.org plugin at runtime.
+		- ../../tools/php/cookieyes-stubs.php
 		# The existing language helper is supplied by the companion plugin;
 		# the mail-language fixture configures Polylang through its Setup.
 		- ../linker-i18n/includes/Languages.php

@@ -1,0 +1,263 @@
+[
+  {
+    "test": "independent purposes: statistics",
+    "type": "cookie-expiry-evidence",
+    "evidence": {
+      "purpose": "statistics",
+      "observedAt": 1792396363.956,
+      "cookies": [
+        {
+          "name": "cookieyes-consent",
+          "value": "consentid:VXp2Q3ZldlZzWHM2NXJ0WENXRllWSzk3Z0RSVFpNeEE,consent:yes,action:yes,necessary:yes,functional:no,analytics:yes,performance:no,advertisement:no",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": 1823932360,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Strict"
+        },
+        {
+          "name": "_ga_TEST201123",
+          "value": "GS2.1.s1792396363$o1$g0$t1792396363$j60$l0$h0",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": 1826956363.65934,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "_ga",
+          "value": "GA1.1.2018897451.1792396364",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": 1826956363.659512,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        }
+      ]
+    }
+  },
+  {
+    "test": "independent purposes: statistics",
+    "type": "google-requests",
+    "evidence": [
+      "https://www.googletagmanager.com/gtag/js?id=G-TEST201123",
+      "https://www.google-analytics.com/g/collect?v=2&tid=G-TEST201123&gtm=45je6ae1z8d_G-TEST201123za208xf1&_p=1792396358292&gcs=G101&gcd=13p3r3p3p5l1&npa=1&dma_cps=-&dma=0&gdid=dZTNiMT&cid=2018897451.1792396364&frm=0&pscdl=denied&rcb=19&sr=1920x1080&uaa=x86&uab=64&uafvl=Not%253AA-Brand%3B8.0.0.0%7CChromium%3B156.0.8078.4%7CHeadlessChrome%3B156.0.8078.4&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=en-us&_s=1&tag_exp=115938465~115938469~118897920~118897930~120385422~120469145~120469153~121246026~121246034&sid=1792396363&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2F%3Futm_source%3Dconsent-fixture%26utm_medium%3Dacceptance&dt=PV%20%26%20Storage%20Solutions%20for%20Installers%20and%20EPCs%20%7C%20Linker&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&tfd=6203"
+    ]
+  },
+  {
+    "test": "independent purposes: marketing",
+    "type": "cookie-expiry-evidence",
+    "evidence": {
+      "purpose": "marketing",
+      "observedAt": 1792396367.096,
+      "cookies": [
+        {
+          "name": "cookieyes-consent",
+          "value": "consentid:eTZobFJaR1lSMU1XY0o0bUVwNzVyekVNS2lWT1pTbnA,consent:yes,action:yes,necessary:yes,functional:no,analytics:no,performance:no,advertisement:yes",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": 1823932366,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Strict"
+        },
+        {
+          "name": "sbjs_migrations",
+          "value": "1418474375998%3D1",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_current_add",
+          "value": "fd%3D2026-10-19%2007%3A52%3A46%7C%7C%7Cep%3Dhttp%3A%2F%2F127.0.0.1%3A9156%2F%3Futm_source%3Dconsent-fixture%26utm_medium%3Dacceptance%7C%7C%7Crf%3D%28none%29",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_first_add",
+          "value": "fd%3D2026-10-19%2007%3A52%3A46%7C%7C%7Cep%3Dhttp%3A%2F%2F127.0.0.1%3A9156%2F%3Futm_source%3Dconsent-fixture%26utm_medium%3Dacceptance%7C%7C%7Crf%3D%28none%29",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_current",
+          "value": "typ%3Dutm%7C%7C%7Csrc%3Dconsent-fixture%7C%7C%7Cmdm%3Dacceptance%7C%7C%7Ccmp%3D%28none%29%7C%7C%7Ccnt%3D%28none%29%7C%7C%7Ctrm%3D%28none%29%7C%7C%7Cid%3D%28none%29%7C%7C%7Cplt%3D%28none%29%7C%7C%7Cfmt%3D%28none%29%7C%7C%7Ctct%3D%28none%29",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_first",
+          "value": "typ%3Dutm%7C%7C%7Csrc%3Dconsent-fixture%7C%7C%7Cmdm%3Dacceptance%7C%7C%7Ccmp%3D%28none%29%7C%7C%7Ccnt%3D%28none%29%7C%7C%7Ctrm%3D%28none%29%7C%7C%7Cid%3D%28none%29%7C%7C%7Cplt%3D%28none%29%7C%7C%7Cfmt%3D%28none%29%7C%7C%7Ctct%3D%28none%29",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_udata",
+          "value": "vst%3D1%7C%7C%7Cuip%3D%28none%29%7C%7C%7Cuag%3DMozilla%2F5.0%20%28Windows%20NT%2010.0%3B%20Win64%3B%20x64%29%20AppleWebKit%2F537.36%20%28KHTML%2C%20like%20Gecko%29%20Chrome%2F156.0.8078.4%20Safari%2F537.36",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_session",
+          "value": "pgs%3D1%7C%7C%7Ccpg%3Dhttp%3A%2F%2F127.0.0.1%3A9156%2F%3Futm_source%3Dconsent-fixture%26utm_medium%3Dacceptance",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": 1792398166,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        }
+      ]
+    }
+  },
+  {
+    "test": "independent purposes: marketing",
+    "type": "google-requests",
+    "evidence": []
+  },
+  {
+    "test": "independent purposes: both",
+    "type": "cookie-expiry-evidence",
+    "evidence": {
+      "purpose": "both",
+      "observedAt": 1792396373.288,
+      "cookies": [
+        {
+          "name": "cookieyes-consent",
+          "value": "consentid:OEtOYmN6VjVmaUlVV1RtcW1zRUE3QXZMVmVTaTlNM2I,consent:yes,action:yes,necessary:yes,functional:no,analytics:yes,performance:no,advertisement:yes",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": 1823932369,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Strict"
+        },
+        {
+          "name": "sbjs_migrations",
+          "value": "1418474375998%3D1",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_current_add",
+          "value": "fd%3D2026-10-19%2007%3A52%3A49%7C%7C%7Cep%3Dhttp%3A%2F%2F127.0.0.1%3A9156%2F%3Futm_source%3Dconsent-fixture%26utm_medium%3Dacceptance%7C%7C%7Crf%3D%28none%29",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_first_add",
+          "value": "fd%3D2026-10-19%2007%3A52%3A49%7C%7C%7Cep%3Dhttp%3A%2F%2F127.0.0.1%3A9156%2F%3Futm_source%3Dconsent-fixture%26utm_medium%3Dacceptance%7C%7C%7Crf%3D%28none%29",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_current",
+          "value": "typ%3Dutm%7C%7C%7Csrc%3Dconsent-fixture%7C%7C%7Cmdm%3Dacceptance%7C%7C%7Ccmp%3D%28none%29%7C%7C%7Ccnt%3D%28none%29%7C%7C%7Ctrm%3D%28none%29%7C%7C%7Cid%3D%28none%29%7C%7C%7Cplt%3D%28none%29%7C%7C%7Cfmt%3D%28none%29%7C%7C%7Ctct%3D%28none%29",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_first",
+          "value": "typ%3Dutm%7C%7C%7Csrc%3Dconsent-fixture%7C%7C%7Cmdm%3Dacceptance%7C%7C%7Ccmp%3D%28none%29%7C%7C%7Ccnt%3D%28none%29%7C%7C%7Ctrm%3D%28none%29%7C%7C%7Cid%3D%28none%29%7C%7C%7Cplt%3D%28none%29%7C%7C%7Cfmt%3D%28none%29%7C%7C%7Ctct%3D%28none%29",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_udata",
+          "value": "vst%3D1%7C%7C%7Cuip%3D%28none%29%7C%7C%7Cuag%3DMozilla%2F5.0%20%28Windows%20NT%2010.0%3B%20Win64%3B%20x64%29%20AppleWebKit%2F537.36%20%28KHTML%2C%20like%20Gecko%29%20Chrome%2F156.0.8078.4%20Safari%2F537.36",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": -1,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "sbjs_session",
+          "value": "pgs%3D1%7C%7C%7Ccpg%3Dhttp%3A%2F%2F127.0.0.1%3A9156%2F%3Futm_source%3Dconsent-fixture%26utm_medium%3Dacceptance",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": 1792398169,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "_ga_TEST201123",
+          "value": "GS2.1.s1792396372$o1$g0$t1792396372$j60$l0$h0",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": 1826956372.696496,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        },
+        {
+          "name": "_ga",
+          "value": "GA1.1.310009753.1792396373",
+          "domain": "127.0.0.1",
+          "path": "/",
+          "expires": 1826956372.696673,
+          "httpOnly": false,
+          "secure": false,
+          "sameSite": "Lax"
+        }
+      ]
+    }
+  },
+  {
+    "test": "independent purposes: both",
+    "type": "google-requests",
+    "evidence": [
+      "https://www.googletagmanager.com/gtag/js?id=G-TEST201123",
+      "https://www.google-analytics.com/g/collect?v=2&tid=G-TEST201123&gtm=45je6ae1h1z8d_G-TEST201123za208xf1&_p=1792396367735&gcs=G101&gcd=13p3r3p3p5l1&npa=1&dma_cps=-&dma=0&gdid=dZTNiMT&cid=310009753.1792396373&frm=0&pscdl=denied&rcb=13&sr=1920x1080&uaa=x86&uab=64&uafvl=Not%253AA-Brand%3B8.0.0.0%7CChromium%3B156.0.8078.4%7CHeadlessChrome%3B156.0.8078.4&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=en-us&_s=1&tag_exp=115616985~115938465~115938469~118897920~118897930~119860443~120385423~120469145~120469153~121246026~121246034&sid=1792396372&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2F%3Futm_source%3Dconsent-fixture%26utm_medium%3Dacceptance&dt=PV%20%26%20Storage%20Solutions%20for%20Installers%20and%20EPCs%20%7C%20Linker&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&gap.plf=4.3&tfd=5144"
+    ]
+  }
+]
