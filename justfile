@@ -296,6 +296,26 @@ genie-concurrency name:
         {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist \
         --filter ConversationConcurrencyTest
 
+# A save drops the cached page on a real instance (`just up <name>` first):
+# wp_update_post through wp_remote_post, the gate, and the next read, for a
+# product, a blog post, and each German twin (#405, registered for #339).
+# CI runs this in the mu-smoke job. The recipe configures Polylang when the
+# instance does not have en and de yet.
+[positional-arguments]
+page-cache-chain name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # PageCache reads LINKER_GENIE_SERVICE_TOKEN when WordPress loads. `just up`
+    # does not write it; `just serve` does. Make it here so the chain does not skip.
+    if ! PHP={{ php }} {{ linker_local }} wp "$1" config get LINKER_GENIE_SERVICE_TOKEN --type=constant >/dev/null; then
+        PHP={{ php }} {{ linker_local }} wp "$1" config set LINKER_GENIE_SERVICE_TOKEN "$({{ php }} -r 'echo bin2hex(random_bytes(32));')" --type=constant --quiet
+    fi
+    PHP={{ php }} {{ linker_local }} wp "$1" linker-i18n setup --user=local-admin
+    cd "{{ justfile_directory() }}/plugins/linker-tools"
+    LINKER_WP_ROOT="$HOME/de-linker-local/$1/wordpress" \
+        {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist \
+        --filter PageCacheChainTest
+
 # Installs node_modules from package-lock.json, unless the last install is newer than the lock file.
 [private]
 js-install:

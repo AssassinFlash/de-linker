@@ -304,14 +304,21 @@ def forget(conversation_id: str) -> dict[str, int]:
 
 @app.post("/pages/invalidate")
 def invalidate_pages(body: PageInvalidate) -> dict[str, int]:
-    """Drop the cached text of these pages (page.PageReader.invalidate, #405).
+    """Drop cached page text and every cached solution draft (page.py, #405).
 
     The shell calls this when a page, product, post or term is saved, including
-    when the German auto-translation writes the twin. A path that was not cached
-    is a no-op. Unchanged pages stay cached.
+    when the German auto-translation writes the twin. The paths are the object,
+    its language twin, a previous slug, and the listings that show it (the blog
+    index, the post's categories and tags, the shop, the product's categories).
+    A path that was not cached does not add to the count. Pages that are none of
+    those stay cached. Filtered, searched, and paginated listings are not named;
+    they expire with the ten-minute TTL. Every cached solution draft is dropped:
+    the body names paths, not which draft contains a product.
     """
     forgotten = page_reader().invalidate(body.paths)
-    logger.info("page cache: forgot %d of %d paths", forgotten, len(body.paths))
+    logger.info(
+        "page cache: forgot %d entries for %d paths", forgotten, len(body.paths)
+    )
     return {"forgotten": forgotten}
 
 

@@ -1,12 +1,15 @@
 """The page reader reads what the visitor's page shows (#234).
 
-A save drops the cached page (#405); a page that was not saved stays cached.
+A save drops the cached page, the listings the shell names, and every cached
+solution draft (#405). A filtered, searched, or paginated listing stays until
+the TTL, and so does a page the save does not name.
 
 The fixtures are the `<main>` of real pages of the live snapshot 2026-10-18
 (eval/page/capture_pages.py): the FAQ page (longer than the reader's budget), a blog post,
 the German residential storage page and a GoodWe ESA product page.
 """
 
+import re
 import threading
 from collections.abc import Iterator
 from pathlib import Path
@@ -17,9 +20,9 @@ from conftest import SHELL
 from fastapi.testclient import TestClient
 
 from linker_genie import app as genie_app
-from linker_genie import page
+from linker_genie import page, schema
 from linker_genie.page import PAGE_CHARS, PageReader, PageUnavailable
-from linker_genie.schema import PageContext, PageInvalidate
+from linker_genie.schema import CACHE_SIZE, PageContext, PageInvalidate
 
 PAGES = Path(__file__).resolve().parent / "fixtures" / "pages"
 
@@ -256,6 +259,14 @@ def test_the_service_drops_a_cached_page_for_the_shell(
     assert PageInvalidate.model_json_schema()["properties"]["paths"]["maxItems"] == (
         page.INVALIDATE_LIMIT
     )
+    held = client.post(
+        "/pages/invalidate", json={"paths": ["/product/a/"] * CACHE_SIZE}
+    )
+    assert held.status_code == 200
+    extra = client.post(
+        "/pages/invalidate", json={"paths": ["/product/a/"] * (CACHE_SIZE + 1)}
+    )
+    assert extra.status_code == 422
 
 
 def test_a_page_is_read_once_within_the_cache_time() -> None:
@@ -284,6 +295,84 @@ def test_hidden_and_non_text_elements_are_left_out() -> None:
     )
     found = page.passages(html)
     assert page.render(found) == "## Title\nShown copy"
+
+
+def test_the_cache_size_is_the_one_invalidation_limit() -> None:
+    source = (
+        Path(__file__).resolve().parents[3]
+        / "plugins/linker-tools/includes/Genie/PageCache.php"
+    ).read_text(encoding="utf-8")
+    found = re.search(r"public const MAX_PATHS = (\d+);", source)
+    assert found is not None
+    assert int(found.group(1)) == CACHE_SIZE
+    assert page.INVALIDATE_LIMIT == CACHE_SIZE
+    assert schema.CACHE_SIZE == CACHE_SIZE
+    assert (
+        PageInvalidate.model_json_schema()["properties"]["paths"]["maxItems"]
+        == CACHE_SIZE
+    )
+
+
+def test_invalidating_any_page_drops_every_cached_draft() -> None:
+    names = [{"id": 4109, "name": "Old name"}]
+    pages = {"/blog/post/": "<main><p>Post</p></main>"}
+    seen: list[str] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        if request.url.path == "/wp-json/wc/store/v1/products":
+            return httpx.Response(200, json=list(names))
+        return _ok(pages[request.url.path])
+
+    reader = PageReader("http://site.test", transport=httpx.MockTransport(handle))
+    draft = PageContext(type="draft", draft_ids=[4109], title="Solution draft")
+    blog = PageContext(type="blog", url="/blog/post/", post_id=551)
+    assert reader.read(draft, "q", True)["products"][0]["title"] == "Old name"
+    reader.read(blog, "q", False)
+    names[0]["name"] = "New name"
+    pages["/blog/post/"] = "<main><p>Post NEW</p></main>"
+    assert reader.invalidate(["/blog/post/"]) == 2
+    assert reader.read(draft, "q", True)["products"][0]["title"] == "New name"
+    assert "NEW" in reader.read(blog, "q", False)["text"]
+    assert seen.count("/wp-json/wc/store/v1/products") == 2
+    assert seen.count("/blog/post/") == 2
+
+
+def test_a_draft_fetch_in_flight_during_a_save_does_not_store_the_old_names() -> None:
+    started = threading.Event()
+    release = threading.Event()
+    names = [{"id": 4109, "name": "Old name"}]
+    seen: list[str] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        # The names are taken before the wait: the save renames the product
+        # while this fetch is still open, and the fetch returns what it started.
+        snapshot = [{"id": item["id"], "name": item["name"]} for item in names]
+        if not started.is_set():
+            started.set()
+            assert release.wait(2)
+            return httpx.Response(200, json=snapshot)
+        return httpx.Response(200, json=list(names))
+
+    reader = PageReader("http://site.test", transport=httpx.MockTransport(handle))
+    draft = PageContext(type="draft", draft_ids=[4109], title="Solution draft")
+    found: list[str] = []
+
+    def read() -> None:
+        found.append(reader.read(draft, "q", True)["products"][0]["title"])
+
+    thread = threading.Thread(target=read)
+    thread.start()
+    assert started.wait(2)
+    assert reader.invalidate(["/blog/post/"]) == 0
+    names[0]["name"] = "New name"
+    release.set()
+    thread.join(2)
+    assert not thread.is_alive()
+    assert found == ["Old name"]
+    assert reader.read(draft, "q", True)["products"][0]["title"] == "New name"
+    assert seen.count("/wp-json/wc/store/v1/products") == 2
 
 
 def test_the_draft_is_its_products_by_name() -> None:

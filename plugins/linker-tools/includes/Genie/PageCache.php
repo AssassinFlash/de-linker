@@ -18,12 +18,17 @@ use WP_Post;
  * copy, so the next question was still answered from the old text until the
  * process restarted (#405).
  *
- * This hooks the save and POSTs the public path, and the path of each
- * language twin, to the service (`POST /pages/invalidate`, the same shared
- * token as every other call). Pages that were not saved stay cached. The
- * ten minutes remain the backstop when the service cannot be reached, and
- * for a page this save does not name (a listing that only embeds the
- * product, a filtered query).
+ * This hooks the save and POSTs the public path, the path of each language
+ * twin, and the listings that show the object, to the service
+ * (`POST /pages/invalidate`, the same shared token as every other call).
+ * A post names the blog index, its categories and its tags. A product names
+ * the shop and its product categories. A page names neither the blog index
+ * nor the shop. The service also drops every cached solution draft on that
+ * call (`page.py`): the body is paths, not which draft holds the product.
+ * The ten minutes remain the backstop when the service cannot be reached,
+ * and for a filtered, searched, or paginated listing this save does not name.
+ * A single page that was not saved, and that is not one of those listings,
+ * stays cached.
  *
  * WordPress's object cache is not that copy. A normal save already drops
  * the post's own object-cache keys, and the next anonymous GET renders
@@ -48,15 +53,27 @@ final class PageCache {
 	public const ROUTE = '/pages/invalidate';
 
 	/**
-	 * Paths one request carries. The same number as `page.INVALIDATE_LIMIT`:
-	 * past it, this sends another request.
+	 * Paths one request carries. The same number as `schema.CACHE_SIZE`
+	 * (services/genie/src/linker_genie/schema.py): the page cache holds that
+	 * many entries, so one invalidation need not name more paths than the
+	 * process can hold. Past it, this sends another request. PHP cannot
+	 * import the Python constant; services/genie/tests/test_page.py reads
+	 * this line and pins the two.
 	 */
 	public const MAX_PATHS = 256;
 
 	/**
-	 * Seconds the save will wait for the service. The service is on this
-	 * machine; a longer wait would hold the editor's request for a Genie
-	 * that is not answering. The ten-minute cache is the backstop.
+	 * Seconds the save will wait for the service.
+	 *
+	 * Production Genie is not in the WordPress host. The site on Hostinger
+	 * calls nginx on the VPS, port 8443, `location /genie/`, which proxies
+	 * to `linker-genie.service` on 127.0.0.1:8902
+	 * (services/genie/src/linker_genie/gate.py, docs/specs/17-cutover.md, the
+	 * §5 run-face note). Locally `just serve` writes `linker_genie_url` to
+	 * loopback. Either way the save waits on one hop. Two seconds sits far
+	 * under the shell's turn budget (`Proxy::TURN_BUDGET`, 60): a Genie that
+	 * is not answering must not hold the editor's save. The ten-minute cache
+	 * is the backstop.
 	 */
 	public const TIMEOUT = 2.0;
 
@@ -204,11 +221,32 @@ final class PageCache {
 	}
 
 	/**
-	 * Notes the post's path and each language twin's path.
+	 * Notes the post's path, each language twin's path, and the listings that
+	 * show them. Called before the save and after it, so a renamed slug and a
+	 * category move each drop both addresses.
 	 *
 	 * @param int $post_id Post ID.
 	 */
 	private function note_post( int $post_id ): void {
+		foreach ( $this->post_ids( $post_id ) as $id ) {
+			$link = get_permalink( $id );
+			if ( is_string( $link ) ) {
+				$this->note( $this->path_of( $link ) );
+			}
+			$post = get_post( $id );
+			if ( $post instanceof WP_Post ) {
+				$this->note_listings( $post );
+			}
+		}
+	}
+
+	/**
+	 * The post and each language twin. Zeros are dropped.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return list<int>
+	 */
+	private function post_ids( int $post_id ): array {
 		$ids = array( $post_id );
 		if ( function_exists( 'pll_get_post_translations' ) ) {
 			$translations = pll_get_post_translations( $post_id );
@@ -218,15 +256,153 @@ final class PageCache {
 				}
 			}
 		}
-		foreach ( array_unique( $ids ) as $id ) {
-			if ( $id <= 0 ) {
-				continue;
-			}
+		return $this->positive_ids( $ids );
+	}
+
+	/**
+	 * Listings whose HTML embeds this object.
+	 *
+	 * A post: the blog index, its categories, its tags. A product: the shop,
+	 * its product categories. A page: nothing else. Filtered queries, search
+	 * and pagination are not named; they expire with the ten-minute TTL.
+	 *
+	 * @param WP_Post $post Post.
+	 */
+	private function note_listings( WP_Post $post ): void {
+		if ( 'post' === $post->post_type ) {
+			$this->note_posts_index();
+			$this->note_assigned_terms( $post->ID, 'category' );
+			$this->note_assigned_terms( $post->ID, 'post_tag' );
+			return;
+		}
+		if ( 'product' === $post->post_type ) {
+			$this->note_shop();
+			$this->note_assigned_terms( $post->ID, 'product_cat' );
+		}
+	}
+
+	/**
+	 * The blog index. The posts page and its language twins when the site has
+	 * one; otherwise the front page in each language when that front page is
+	 * the post list; otherwise the post type archive link when WordPress has one.
+	 */
+	private function note_posts_index(): void {
+		$page = (int) get_option( 'page_for_posts' );
+		if ( $page > 0 ) {
+			$this->note_post_paths( $page );
+			return;
+		}
+		if ( 'posts' === (string) get_option( 'show_on_front' ) ) {
+			$this->note_homes();
+			return;
+		}
+		$this->note_archive( 'post' );
+	}
+
+	/**
+	 * The shop. The shop page and its language twins when WooCommerce has one;
+	 * otherwise the product archive link.
+	 */
+	private function note_shop(): void {
+		$shop = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : 0;
+		if ( $shop > 0 ) {
+			$this->note_post_paths( $shop );
+			return;
+		}
+		$this->note_archive( 'product' );
+	}
+
+	/**
+	 * Paths of a page and its language twins, without that page's own listings.
+	 *
+	 * The shop page and the posts page are pages. Noting them must not walk
+	 * back into the shop or the blog index.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	private function note_post_paths( int $post_id ): void {
+		foreach ( $this->post_ids( $post_id ) as $id ) {
 			$link = get_permalink( $id );
 			if ( is_string( $link ) ) {
 				$this->note( $this->path_of( $link ) );
 			}
 		}
+	}
+
+	/**
+	 * Each language's home, the blog index when the front page lists posts.
+	 */
+	private function note_homes(): void {
+		if ( function_exists( 'pll_languages_list' ) && function_exists( 'pll_home_url' ) ) {
+			$languages = pll_languages_list();
+			if ( is_array( $languages ) && array() !== $languages ) {
+				foreach ( $languages as $language ) {
+					if ( ! is_string( $language ) || '' === $language ) {
+						continue;
+					}
+					$link = pll_home_url( $language );
+					if ( is_string( $link ) ) {
+						$this->note( $this->path_of( $link ) );
+					}
+				}
+				return;
+			}
+		}
+		// No language layer: the front page is the only blog index. home_url()
+		// is the host; the path is the root.
+		$home = $this->path_of( home_url() );
+		$this->note( '' === $home ? '/' : $home );
+	}
+
+	/**
+	 * A post type archive link, when WordPress has one.
+	 *
+	 * @param string $post_type Post type.
+	 */
+	private function note_archive( string $post_type ): void {
+		$link = get_post_type_archive_link( $post_type );
+		if ( is_string( $link ) ) {
+			$this->note( $this->path_of( $link ) );
+		}
+	}
+
+	/**
+	 * The terms assigned to the post, and each term's language twin.
+	 *
+	 * @param int    $post_id  Post ID.
+	 * @param string $taxonomy Taxonomy.
+	 */
+	private function note_assigned_terms( int $post_id, string $taxonomy ): void {
+		if ( ! taxonomy_exists( $taxonomy ) ) {
+			return;
+		}
+		$terms = wp_get_object_terms( $post_id, $taxonomy, array( 'fields' => 'ids' ) );
+		if ( is_wp_error( $terms ) ) {
+			return;
+		}
+		foreach ( $terms as $term_id ) {
+			$this->note_term( (int) $term_id, $taxonomy );
+		}
+	}
+
+	/**
+	 * Positive IDs, once each, in first-seen order.
+	 *
+	 * @param int[] $ids IDs.
+	 * @return list<int>
+	 */
+	private function positive_ids( array $ids ): array {
+		$unique = array();
+		foreach ( $ids as $id ) {
+			if ( $id > 0 ) {
+				$unique[ $id ] = true;
+			}
+		}
+		$found = array();
+		foreach ( array_keys( $unique ) as $id ) {
+			$found[] = (int) $id;
+		}
+		return $found;
 	}
 
 	/**
@@ -248,10 +424,7 @@ final class PageCache {
 				}
 			}
 		}
-		foreach ( array_unique( $ids ) as $id ) {
-			if ( $id <= 0 ) {
-				continue;
-			}
+		foreach ( $this->positive_ids( $ids ) as $id ) {
 			$link = get_term_link( $id, $taxonomy );
 			if ( is_string( $link ) ) {
 				$this->note( $this->path_of( $link ) );

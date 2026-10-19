@@ -177,6 +177,10 @@ jobs:
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter InquiryStatusRestTest
+      # #405: an edit drops the cached page through wp_remote_post. After the
+      # mail tests, so Polylang setup does not change their instance.
+      - name: page cache follows a save
+        run: just page-cache-chain smoke
 
       # #425: an issued Proforma priced at 1680. Pending and restricted
       # accounts get no link and a 404 with no PDF bytes, in EN and DE,
