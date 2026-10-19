@@ -44,6 +44,24 @@ test( 'nothing typed and no files is no question', () => {
 	expect( buildQuestion( '   ', [] ) ).toBe( '' );
 } );
 
+test( 'opened for a parts list, a file with nothing typed says what it is', () => {
+	// #251: the picker offered the list's file, and a photo of a handwritten
+	// list must be read as one (parts.find).
+	expect( buildQuestion( '  ', [ PDF ], true ) ).toBe(
+		'Here is my parts list.\nAttached: datasheet.pdf'
+	);
+} );
+
+test( 'a typed question wins over the parts-list default words', () => {
+	expect( buildQuestion( 'my list', [ PDF ], true ) ).toBe(
+		'my list\nAttached: datasheet.pdf'
+	);
+} );
+
+test( 'the parts-list default words need a file', () => {
+	expect( buildQuestion( '', [], true ) ).toBe( '' );
+} );
+
 test( 'the proxy attachment refusal keeps its reason code', () => {
 	expect(
 		attachmentRefusalReason(

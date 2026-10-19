@@ -634,15 +634,15 @@ msgid "Not helpful"
 msgstr "Nicht hilfreich"
 
 #: build/genie.js:13 src/configurator/solution/Solution.tsx:90 build/hero.js
-#: src/genie/App.tsx:509 src/genie/App.tsx:517 build/configurator.js
+#: src/genie/shared/cardActions.ts src/configurator/solution/Solution.tsx build/configurator.js build/genie.js build/hero.js
 msgid "Adding…"
 msgstr "Wird hinzugefügt …"
 
-#: build/genie.js:13 build/hero.js
+#: build/genie.js src/genie/shared/cardActions.ts build/hero.js
 msgid "In your solution draft."
 msgstr "Im Lösungsentwurf."
 
-#: build/genie.js:13 src/genie/App.tsx:520 build/hero.js
+#: build/genie.js src/genie/shared/cardActions.ts build/hero.js
 msgid "Sent, but the draft does not show it yet. Please check."
 msgstr "Gesendet, aber der Entwurf zeigt es noch nicht. Bitte prüfen."
 
@@ -651,15 +651,15 @@ msgid "Not everything was added. Try again."
 msgstr "Nicht alles wurde hinzugefügt. Bitte erneut versuchen."
 
 #: build/genie.js:13 src/configurator/solution/Solution.tsx:333 build/hero.js
-#: src/genie/App.tsx:531 build/configurator.js
+#: src/genie/shared/cardActions.ts src/configurator/solution/Solution.tsx build/configurator.js build/genie.js build/hero.js
 msgid "Saving…"
 msgstr "Wird gespeichert …"
 
-#: build/genie.js:13 src/genie/App.tsx:551 build/hero.js
+#: build/genie.js src/genie/shared/cardActions.ts build/hero.js
 msgid "Saved to your account."
 msgstr "Im Konto gespeichert."
 
-#: build/genie.js:13 build/hero.js
+#: build/genie.js src/genie/shared/cardActions.ts build/hero.js
 msgid "Not saved. Try again."
 msgstr "Nicht gespeichert. Bitte erneut versuchen."
 
