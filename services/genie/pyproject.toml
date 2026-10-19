@@ -78,7 +78,7 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # The index build (`index/`) and its release scripts (`ops/`) live beside the package.
-pythonpath = [".", "ops"]
+pythonpath = [".", "ops", "eval"]
 # A deprecation is fixed when it appears, not when the API is removed.
 filterwarnings = ["error"]
 

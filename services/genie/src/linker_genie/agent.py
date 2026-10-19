@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from linker_genie import attachments, knowledge, page
+from linker_genie import attachments, knowledge, page, timing
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.route import stated_size_hint
@@ -213,6 +213,7 @@ def make_generate(
     prepared: Prepared | None = None,
     search: knowledge.Search | None = None,
     pages: page.Reader | None = None,
+    clock: timing.Timing | None = None,
 ) -> Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]:
     """A `cycle.Generate` that runs the Pydantic AI agent with the ability client.
 
@@ -224,6 +225,7 @@ def make_generate(
     and the cycle answers with its fallback, never with an answer that lacks the
     documents it needed (#257, docs/specs/10-knowledge-index.md 失败显式).
     `pages` reads the customer's page (page.py, #234) when the model asks for it.
+    `clock` only times each tool call the model makes (timing.py, #336).
     """
     document_search = search or knowledge.SEARCH
 
@@ -239,9 +241,11 @@ def make_generate(
         tools = []
         for name in TOOL_NAMES:
             if name == knowledge.NAME:
-                runner = _knowledge_runner(document_search, budget, request.locale)
+                runner = _knowledge_runner(
+                    document_search, budget, request.locale, clock
+                )
             elif name == page.NAME:
-                runner = _page_runner(pages, budget, request)
+                runner = _page_runner(pages, budget, request, clock)
             else:
                 runner = _ability_runner(
                     client,
@@ -250,6 +254,7 @@ def make_generate(
                     request.user.context,
                     request.locale,
                     customer,
+                    clock,
                 )
             doc = INPUT_DOCS.get(name)
             runner.__doc__ = f"Call the WordPress ability {name}." + (
@@ -298,6 +303,22 @@ def _customer_message(request: TurnRequest) -> str:
     )
 
 
+def _timed(
+    clock: timing.Timing | None,
+    key: str,
+    work: Callable[[dict[str, Any] | None], Any],
+) -> Callable[[dict[str, Any] | None], Any]:
+    """`work` inside `key`'s phase. A refused call never reaches here (the
+    runners guard first), so it is absent from the record, not timed as an
+    instant: skipped is not fast (#336, timing.py)."""
+
+    def run(arguments: dict[str, Any] | None = None) -> Any:
+        with timing.phase(clock, key):
+            return work(arguments)
+
+    return run
+
+
 def _ability_runner(
     client: AbilityClient,
     budget: ToolBudget,
@@ -305,11 +326,9 @@ def _ability_runner(
     user_context: str | None = None,
     locale: str = "en",
     message: str = "",
+    clock: timing.Timing | None = None,
 ) -> Callable[[dict[str, Any] | None], Any]:
-    def run(arguments: dict[str, Any] | None = None) -> Any:
-        """Call a Linker commerce ability and return its JSON result."""
-        if not budget.allow():
-            return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
+    def call(arguments: dict[str, Any] | None) -> Any:
         # size-hint ignores `arguments` (#365): the model's object is not a
         # source. Phase, backup, yearly load and postcode reach the tool only
         # when this message states them. The code route sends the same dict.
@@ -317,6 +336,14 @@ def _ability_runner(
         payload, gathered = client.record(name, sent, user_context, locale)
         budget.parts.append(gathered)
         return payload
+
+    timed = _timed(clock, timing.tool_key(name), call)
+
+    def run(arguments: dict[str, Any] | None = None) -> Any:
+        """Call a Linker commerce ability and return its JSON result."""
+        if not budget.allow():
+            return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
+        return timed(arguments)
 
     run.__name__ = _tool_name(name)
     # The docstring is set by make_generate from INPUT_DOCS; setting it here
@@ -328,29 +355,34 @@ def _knowledge_runner(
     search: knowledge.Search,
     budget: ToolBudget,
     locale: str = "en",
+    clock: timing.Timing | None = None,
 ) -> Callable[[dict[str, Any] | None], Any]:
+    def call(arguments: dict[str, Any] | None) -> Any:
+        payload, gathered = knowledge.record(search, arguments, locale)
+        budget.parts.append(gathered)
+        return knowledge.model_view(payload)
+
+    timed = _timed(clock, timing.tool_key(knowledge.NAME), call)
+
     def run(arguments: dict[str, Any] | None = None) -> Any:
         """Search the hosted documents and return the matching chunks."""
         if not budget.allow():
             return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
-        payload, gathered = knowledge.record(search, arguments, locale)
-        budget.parts.append(gathered)
-        return knowledge.model_view(payload)
+        return timed(arguments)
 
     run.__name__ = _tool_name(knowledge.NAME)
     return run
 
 
 def _page_runner(
-    pages: page.Reader | None, budget: ToolBudget, request: TurnRequest
+    pages: page.Reader | None,
+    budget: ToolBudget,
+    request: TurnRequest,
+    clock: timing.Timing | None = None,
 ) -> Callable[[dict[str, Any] | None], Any]:
-    def run(arguments: dict[str, Any] | None = None) -> Any:
-        """Read the page the customer is on and return what it says."""
+    def call(arguments: dict[str, Any] | None) -> Any:
         del arguments
-        if not budget.allow():
-            return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
-        if pages is None:
-            return {"error": "the page cannot be read in this turn"}
+        assert pages is not None  # run guards it; a refused read never gets here
         question = next(
             (m.content for m in reversed(request.messages) if m.role == "user"), ""
         )
@@ -362,6 +394,16 @@ def _page_runner(
             return {"error": f"the page could not be read: {error}"}
         budget.parts.append(gathered)
         return page.model_view(payload)
+
+    timed = _timed(clock, timing.tool_key(page.NAME), call)
+
+    def run(arguments: dict[str, Any] | None = None) -> Any:
+        """Read the page the customer is on and return what it says."""
+        if not budget.allow():
+            return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
+        if pages is None:
+            return {"error": "the page cannot be read in this turn"}
+        return timed(arguments)
 
     run.__name__ = _tool_name(page.NAME)
     return run

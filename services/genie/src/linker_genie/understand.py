@@ -22,7 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from linker_genie import attachments, contact, knowledge, page, parts
+from linker_genie import attachments, contact, knowledge, page, parts, timing
 from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
@@ -85,6 +85,9 @@ class Prepared:
     # add-to-draft action. The turn is the service's own (parts.answer), no model
     # writes it, so nothing here can be invented.
     parts_list: parts.PartsList | None = None
+    # This layer's own phase timings (#336, timing.py); the app adopts them into
+    # the turn's clock. None when the layer did not time itself.
+    timing: timing.Timing | None = None
 
     @property
     def calls_made(self) -> int:
@@ -121,6 +124,9 @@ class Understander:
     def prepare(self, request: TurnRequest, client: AbilityClient) -> Prepared:
         message = _last_customer_message(request)
         log: dict[str, Any] = {}
+        # The layer's own clock (#336, timing.py): measurement only; it travels
+        # with the Prepared, and the app adopts it into the turn's record.
+        clock = timing.Timing()
         phrase = contact.asks_for_person(message)
         if phrase is not None:
             # A request for a person is answered in code, before Jev and the model
@@ -128,22 +134,24 @@ class Understander:
             log["person_phrase"] = phrase
             route = person([f"person phrase: {phrase}"])
             log.update(route.as_log())
-            return Prepared(route=route, log=log)
-        vocabulary = self._load_vocabulary(log)
+            return Prepared(route=route, log=log, timing=clock)
+        with timing.phase(clock, timing.VOCABULARY):
+            vocabulary = self._load_vocabulary(log)
         matches = vocabulary.match(message) if vocabulary else []
         log["matches"] = [
             {"kind": m.kind, "value": m.value, "words": m.words} for m in matches
         ]
         subject = _subject(request, matches, vocabulary)
         # This turn's files are read first (#236): a nameplate decides the route.
-        fresh = [
-            with_known_brand(item, vocabulary)
-            for item in (
-                attachments.read(request.attachments, request.readings, self._see)
-                if request.attachments
-                else []
-            )
-        ]
+        with timing.phase(clock, timing.ATTACHMENTS):
+            fresh = [
+                with_known_brand(item, vocabulary)
+                for item in (
+                    attachments.read(request.attachments, request.readings, self._see)
+                    if request.attachments
+                    else []
+                )
+            ]
         plate = _first_nameplate(fresh, vocabulary)
         source = (
             None
@@ -155,7 +163,8 @@ class Understander:
             # the answer and the card are parts.answer's, and the model does not
             # run. Jev is not asked, as for a nameplate: the list decides.
             assert vocabulary is not None  # parts.find requires it
-            result = parts.build(source, list(request.messages), vocabulary)
+            with timing.phase(clock, timing.PARTS):
+                result = parts.build(source, list(request.messages), vocabulary)
             log["parts"] = {
                 "kind": source.kind,
                 "reading": source.reading_id,
@@ -172,7 +181,9 @@ class Understander:
                 reasons=(f"parts list: {len(result.rows)} rows",),
             )
             log.update(route.as_log())
-            prepared = Prepared(route=route, log=log, readings=fresh, parts_list=result)
+            prepared = Prepared(
+                route=route, log=log, readings=fresh, parts_list=result, timing=clock
+            )
             _add_readings(
                 prepared,
                 [*request.readings, *fresh],
@@ -188,7 +199,7 @@ class Understander:
             # Jev is not asked: the route is the nameplate's (route.nameplate).
             route = nameplate(plate, request.locale, subject, [])
         else:
-            reading = self._read(request, message, vocabulary, log)
+            reading = self._read(request, message, vocabulary, log, clock)
             # Jev's yes/no answers count from 0.5, the cut the measurement scored
             # about_this_page by (59 of 60 right, docs/research/2026-10-17-jev-intent/).
             about_page = reading is not None and reading.about_this_page >= 0.5
@@ -206,8 +217,10 @@ class Understander:
                 message,
             )
         log.update(route.as_log())
-        prepared = Prepared(route=route, log=log, reading=reading, readings=fresh)
-        _run_calls(prepared, request, client, self._search, self._pages)
+        prepared = Prepared(
+            route=route, log=log, reading=reading, readings=fresh, timing=clock
+        )
+        _run_calls(prepared, request, client, self._search, self._pages, clock)
         _add_readings(
             prepared,
             [*request.readings, *fresh],
@@ -234,6 +247,7 @@ class Understander:
         message: str,
         vocabulary: Vocabulary | None,
         log: dict[str, Any],
+        clock: timing.Timing | None = None,
     ) -> Reading | None:
         if self._jev is None:
             log["jev_error"] = self._jev_missing
@@ -242,18 +256,24 @@ class Understander:
         product_id = request.page_context.product_id
         name = vocabulary.names.get(product_id) if vocabulary and product_id else None
         history = [(m.role, m.content) for m in request.messages[:-1]]
-        try:
-            reading = self._jev.read(
-                message,
-                page_state(request.page_context.type, name, request.page_context.title),
-                history,
-            )
-        except JevError as error:
-            log["jev_error"] = str(error)
-            logger.warning(
-                "genie jev failed, deepseek-flash decides this turn: %s", error
-            )
-            return None
+        # The phase covers the read as the turn waited for it — retries and backoff
+        # included; the successful call's own seconds stay in the reading's log
+        # (jev.Reading.as_log), which is a different, narrower number.
+        with timing.phase(clock, timing.JEV):
+            try:
+                reading = self._jev.read(
+                    message,
+                    page_state(
+                        request.page_context.type, name, request.page_context.title
+                    ),
+                    history,
+                )
+            except JevError as error:
+                log["jev_error"] = str(error)
+                logger.warning(
+                    "genie jev failed, deepseek-flash decides this turn: %s", error
+                )
+                return None
         log["jev"] = reading.as_log()
         return reading
 
@@ -387,43 +407,50 @@ def _run_calls(
     client: AbilityClient,
     search: knowledge.Search = knowledge.SEARCH,
     pages: page.Reader = no_pages,
+    clock: timing.Timing | None = None,
 ) -> None:
     """Run the route's calls side by side; results and facts keep the route's order.
 
     The calls do not depend on each other (route.py makes them from the message, the
     page and the subject alone), so the page read runs while the abilities and the
     document search do (review of PR #295: the page read added its time to every
-    page question when it ran first).
+    page question when it ran first). Each call is timed under its own ability
+    key from its worker thread (#336, timing.py); the block's wall is the
+    enclosing `understand.calls` phase, which is what the turn waited for.
     """
     question = _last_customer_message(request)
 
     def one(call: Call) -> tuple[dict[str, Any], Any, TurnFacts]:
-        if call.ability == page.NAME:
-            # The page is read in this process from the site (page.py, #234).
-            payload, gathered = page.record(
-                pages, request.page_context, question, request.user.logged_in
+        with timing.phase(clock, timing.call_key(call.ability)):
+            if call.ability == page.NAME:
+                # The page is read in this process from the site (page.py, #234).
+                payload, gathered = page.record(
+                    pages, request.page_context, question, request.user.logged_in
+                )
+                return call.arguments, payload, gathered
+            if call.ability == knowledge.NAME:
+                # The document search runs in this process (knowledge.py, #257).
+                payload, gathered = knowledge.record(
+                    search, call.arguments, request.locale
+                )
+                return call.arguments, payload, gathered
+            arguments = call.arguments
+            if call.ability == "linker/size-hint":
+                # Same gate as the model's own call (agent._ability_runner, #365):
+                # the URL is built from the message, not from a richer object.
+                arguments = stated_size_hint(question)
+            payload, gathered = client.record(
+                call.ability, arguments, request.user.context, request.locale
             )
-            return call.arguments, payload, gathered
-        if call.ability == knowledge.NAME:
-            # The document search runs in this process (knowledge.py, #257).
-            payload, gathered = knowledge.record(search, call.arguments, request.locale)
-            return call.arguments, payload, gathered
-        arguments = call.arguments
-        if call.ability == "linker/size-hint":
-            # Same gate as the model's own call (agent._ability_runner, #365):
-            # the URL is built from the message, not from a richer object.
-            arguments = stated_size_hint(question)
-        payload, gathered = client.record(
-            call.ability, arguments, request.user.context, request.locale
-        )
-        return arguments, payload, gathered
+            return arguments, payload, gathered
 
     calls = prepared.route.calls
     if not calls:
         prepared.facts = merge([])
         return
-    with ThreadPoolExecutor(max_workers=len(calls)) as pool:
-        futures = [pool.submit(one, call) for call in calls]
+    with timing.phase(clock, timing.CALLS):
+        with ThreadPoolExecutor(max_workers=len(calls)) as pool:
+            futures = [pool.submit(one, call) for call in calls]
     parts: list[TurnFacts] = []
     failures: list[str] = []
     for call, future in zip(calls, futures, strict=True):
