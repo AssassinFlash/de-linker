@@ -5,7 +5,7 @@ import pytest
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
 from linker_genie.prefill import sizing_input
-from linker_genie.route import CONFIDENT, Subject, plan
+from linker_genie.route import CONFIDENT, SEARCH_LIMIT, Subject, plan
 
 NONE = Subject((), {}, {})
 H2 = Subject((4107,), {4107: "inverters", 1832: "home-storage"}, {4107: "H2-10K-T3"})
@@ -335,6 +335,43 @@ def test_an_extreme_over_a_brand_or_series_is_not_a_model_conflict() -> None:
     assert call.arguments["brand"] == "saj"
     assert call.arguments["extreme"] == "largest"
     assert "text" not in call.arguments
+
+
+@pytest.mark.parametrize(
+    ("message", "lang"),
+    [
+        ("Which is the cheapest inverter, HS3-5K-T2 or HS3-12K-T2?", "en"),
+        (
+            "Welcher ist der günstigste Wechselrichter, HS3-5K-T2 oder HS3-12K-T2?",
+            "de",
+        ),
+    ],
+)
+def test_cheapest_over_two_written_models_still_sends_the_aggregate(
+    message: str, lang: str
+) -> None:
+    # #339 registration (#384). Two written models used to drop extreme=cheapest,
+    # so the hidden-price result never appeared. EN and DE use the same calls.
+    matches = [_model("HS3-5K-T2", 2198), _model("HS3-12K-T2", 1185), INVERTERS]
+    route = plan(message, matches, _reading("find_products"), NONE, lang)
+    assert route.name == "products"
+    assert route.show_products and route.no_handoff
+    aggregate, *rest = route.calls
+    assert aggregate.ability == "linker/search-products"
+    assert aggregate.arguments == {
+        "lang": lang,
+        "device_class": "inverters",
+        "extreme": "cheapest",
+        "limit": SEARCH_LIMIT,
+    }
+    assert [call.arguments.get("text") for call in rest] == ["HS3-5K-T2", "HS3-12K-T2"]
+    assert all("extreme" not in call.arguments for call in rest)
+    assert all("price" not in call.arguments for call in route.calls)
+    assert [note.code for note in route.named_models] == ["HS3-5K-T2", "HS3-12K-T2"]
+    assert "extreme: cheapest" in route.reasons
+    assert "several models" in route.reasons
+    assert "price_hidden" in route.hint
+    assert "HS3-5K-T2" in route.hint and "HS3-12K-T2" in route.hint
 
 
 def test_several_written_models_keep_their_searches_beside_an_extreme() -> None:

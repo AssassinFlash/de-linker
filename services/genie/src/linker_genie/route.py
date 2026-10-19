@@ -107,6 +107,9 @@ EXTREME_HINT = (
     "extreme.applied is false and extreme.reason is price_hidden, this "
     "account does not see prices: do not rank by price and do not name a "
     "cheapest product; say that approved partner accounts see net prices. "
+    "When this note also names model codes, name each of those codes in the "
+    "same answer. Naming them does not add a card while extreme.applied is "
+    "true, and it does not name a cheapest product while prices are hidden. "
     "English and German use this same shape."
 )
 
@@ -513,12 +516,25 @@ def plan(
             reasons=tuple(reasons),
         )
     # A brand or series extreme is one aggregate (#368), not a brand/model
-    # conflict. Two model codes in the message, or one code whose products
-    # belong to another brand, stay on the per-model searches (#363, #364):
-    # one class aggregate would hide those codes, and the two grounding rules
-    # would require different cards.
+    # conflict. Two written models, or one code whose products belong to
+    # another brand, stay on the per-model searches for smallest and largest:
+    # one class aggregate would hide those codes. An unknown code beside a
+    # class extreme keeps both calls (#384). A cheapest question over written
+    # models also keeps the aggregate, so a hidden price still returns
+    # price_hidden. Dossier §1.1 and §1.11 have no procedure for either mix.
     extreme = _catalogue_extreme(message, matches, subject, lang)
     if extreme is not None:
+        unknown_codes = _unknown_codes(message, subject)
+        if unknown_codes:
+            return _composite_extreme(
+                extreme,
+                reasons,
+                matches,
+                subject,
+                lang,
+                message,
+                written=False,
+            )
         reasons.append(f"extreme: {extreme['extreme']}")
         return Route(
             "products",
@@ -528,6 +544,21 @@ def plan(
             hint=EXTREME_HINT,
             reasons=tuple(reasons),
         )
+    written = _written_models(matches, message)
+    if len(written) >= SEVERAL_MODELS and not _conflicts_with_written_brand(
+        written, matches, subject
+    ):
+        aggregate = extreme_input(message, matches, lang)
+        if aggregate is not None and aggregate.get("extreme") == "cheapest":
+            return _composite_extreme(
+                aggregate,
+                reasons,
+                matches,
+                subject,
+                lang,
+                message,
+                written=True,
+            )
     if intent == "sizing":
         return Route(
             "sizing",
@@ -964,15 +995,61 @@ def _floor_number(
     return min(numbers)
 
 
+def _composite_extreme(
+    extreme: dict[str, Any],
+    reasons: list[str],
+    matches: list[Match],
+    subject: Subject,
+    lang: str,
+    message: str,
+    *,
+    written: bool,
+) -> Route:
+    """The class aggregate, then one search per code (#384).
+
+    Dossier §1.1 has no procedure for a sentence that is both an extreme and
+    a list of codes, and §1.11 has none for separating those codes. Each part
+    keeps the call it already had. The aggregate is first and is the only
+    call that carries `extreme`, so a hidden price is recorded once and a
+    per-code search cannot name a second winner.
+    """
+    reasons.append(f"extreme: {extreme['extreme']}")
+    if written:
+        calls, notes = _search_plan(matches, lang, subject, message)
+        extra_calls, extra_notes = _unknown_calls(
+            _unknown_codes(message, subject), lang, subject
+        )
+        calls = (*calls, *extra_calls)
+        notes = (*notes, *extra_notes)
+    else:
+        calls, notes = _unknown_calls(_unknown_codes(message, subject), lang, subject)
+    calls, notes = _limit_route_calls(
+        (Call("linker/search-products", extreme), *calls),
+        notes,
+    )
+    reasons.extend(_note_reasons(notes))
+    return Route(
+        "products",
+        calls,
+        show_products=True,
+        no_handoff=True,
+        hint=EXTREME_HINT + _model_hint(notes),
+        reasons=tuple(reasons),
+        named_models=notes,
+    )
+
+
 def _catalogue_extreme(
     message: str, matches: list[Match], subject: Subject, lang: str
 ) -> dict[str, Any] | None:
-    """The class aggregate, or None when the named models have to be searched.
+    """The class aggregate, or None when written models replace it.
 
-    `extreme_input` builds the aggregate. This decides whether that aggregate
-    is the turn: a brand or series narrows it and is not a conflict; two codes
-    written in the message are searched one by one; one code that conflicts
-    with the written brand is that conflict, not the class extreme.
+    `extreme_input` builds the aggregate. A brand or series narrows it and is
+    not a conflict. Two codes written in the message, or one code that
+    conflicts with the written brand, are searched one by one (#368). An
+    unknown code is not a written model: `plan` keeps this aggregate and adds
+    that code's search (#384). A cheapest question over two written models is
+    composed there as well, so this function still returns None for it.
     """
     written = _written_models(matches, message)
     if len(written) >= 2 or _conflicts_with_written_brand(written, matches, subject):
@@ -989,7 +1066,7 @@ def extreme_input(
     AC power for an inverter (or a kW figure) and energy for a battery (or a
     kWh figure). A named model is not a filter: the extreme is taken over the
     class, narrowed by a single brand or series when the message names one.
-    `plan` does not use this when `_catalogue_extreme` returns None.
+    `plan` uses this for the aggregate half of a composite question as well.
     """
     if _KWP.search(message) or _ANNUAL.search(message):
         return None

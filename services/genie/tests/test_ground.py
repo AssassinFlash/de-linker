@@ -2,7 +2,9 @@
 
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.ground import check
-from linker_genie.route import NamedModel, Route
+from linker_genie.jev import Reading
+from linker_genie.lexicon import Match
+from linker_genie.route import NamedModel, Route, Subject, plan
 from linker_genie.schema import (
     ActionBlock,
     CardsBlock,
@@ -10,6 +12,7 @@ from linker_genie.schema import (
     TextBlock,
     TurnOutput,
 )
+from linker_genie.template import fallback, german_is_clean
 
 
 def _facts() -> TurnFacts:
@@ -385,6 +388,75 @@ def test_a_hidden_price_names_no_cheapest_model() -> None:
     assert any("cheapest" in failure for failure in check(named, facts).failures)
     assert any("cheapest" in failure for failure in check(german, facts).failures)
     assert check(plain, facts).ok
+
+
+def test_cheapest_over_written_models_names_the_codes_and_no_price() -> None:
+    # #339 registration (#384). The aggregate carries extreme=cheapest, so a
+    # hidden price is recorded. The answer names both codes and no price.
+    messages = (
+        ("en", "Which is the cheapest inverter, HS3-5K-T2 or HS3-12K-T2?"),
+        (
+            "de",
+            "Welcher ist der günstigste Wechselrichter, HS3-5K-T2 oder HS3-12K-T2?",
+        ),
+    )
+    matches = [
+        Match("model", "HS3-5K-T2", "HS3-5K-T2", frozenset({2198}), "HS3-5K-T2"),
+        Match("model", "HS3-12K-T2", "HS3-12K-T2", frozenset({1185}), "HS3-12K-T2"),
+        Match("category", "inverters", "inverters", frozenset(), "inverter"),
+    ]
+    reading = Reading("find_products", 0.95, 0.1, 0.05, 0.2, 2.6, 0.0)
+    shapes: list[list[str]] = []
+    for lang, message in messages:
+        route = plan(message, matches, reading, Subject((), {}, {}), lang)
+        assert route.calls[0].arguments["extreme"] == "cheapest"
+        facts = _facts()
+        facts.product_ids = {2198, 1185}
+        facts.qualified_ids = {2198, 1185}
+        facts.add(
+            Fact(id="search.extreme_price_hidden", value="1", source="search-products")
+        )
+        for code, product_id in (("HS3-5K-T2", 2198), ("HS3-12K-T2", 1185)):
+            facts.tool_calls.append(
+                {
+                    "name": "linker/search-products",
+                    "arguments": {"text": code, "lang": lang, "limit": 6},
+                    "ok": True,
+                    "result": {"qualified": [{"product_id": product_id}]},
+                }
+            )
+        output = fallback(facts, lang, route)
+        texts = [block.text for block in output.blocks if isinstance(block, TextBlock)]
+        joined = " ".join(texts)
+        assert "HS3-5K-T2" in joined and "HS3-12K-T2" in joined
+        assert "€" not in joined and "$" not in joined and "{fact:" not in joined
+        for text in texts:
+            folded = text.casefold()
+            if "HS3-" in text:
+                assert "cheapest" not in folded
+                assert "günstig" not in folded
+                assert "guenstig" not in folded
+        cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
+        assert len(cards) == 1 and cards[0].product_ids == [2198, 1185]
+        assert check(output, facts, route).ok
+        if lang == "de":
+            assert german_is_clean(joined)
+            assert "Freigegebene Partnerkonten sehen die Nettopreise." in texts
+        else:
+            assert "Approved partner accounts see net prices." in texts
+        shapes.append([type(block).__name__ for block in output.blocks])
+        claim = (
+            "The cheapest one is the HS3-5K-T2."
+            if lang == "en"
+            else "Das günstigste Modell ist das HS3-5K-T2."
+        )
+        refused = check(
+            TurnOutput(language=lang, blocks=[TextBlock(text=claim)]),  # type: ignore[arg-type]
+            facts,
+            route,
+        )
+        assert any("cheapest" in failure for failure in refused.failures)
+    assert shapes[0] == shapes[1]
 
 
 def test_an_applied_extreme_is_the_only_card_beside_other_named_models() -> None:

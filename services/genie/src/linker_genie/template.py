@@ -146,28 +146,108 @@ def login_required(locale: str) -> TurnOutput:
     )
 
 
-def _extreme_fallback(facts: TurnFacts, language: Locale) -> TurnOutput | None:
-    """The one product search-products aggregated, named by its model code."""
+def _extreme_fallback(
+    facts: TurnFacts, language: Locale, route: Route | None = None
+) -> TurnOutput | None:
+    """The aggregate, plus every code the same question named (#384).
+
+    An applied extreme still shows that one card. A hidden price names no
+    cheapest product. Either way the codes are in the text. Dossier §1.1 and
+    §1.11 have no wording for this mix, so the sentences are the existing
+    extreme line, the existing range line, and one line that names the codes.
+    """
+    hidden = facts.facts.get("search.extreme_price_hidden")
     winner = facts.facts.get("search.extreme_product_id")
     model = facts.facts.get("search.extreme_model")
+    if hidden is not None and winner is None:
+        if route is None or not route.named_models:
+            return None
+        return _hidden_codes_answer(facts, language, route)
     if winner is None or model is None:
         return None
     try:
         product_id = int(winner.value)
     except ValueError:
         return None
-    text = (
+    lead = (
         f"Das Modell {model.value} erfüllt die genannte Grenze."
         if language == "de"
         else f"The {model.value} meets the limit you named."
     )
+    lines = [lead]
+    if route is not None and route.named_models:
+        lines.extend(_extreme_code_lines(facts, language, route, skip=model.value))
     return TurnOutput(
         language=language,
         blocks=[
-            TextBlock(text=text, refs=[str(product_id)]),
+            TextBlock(text=" ".join(lines), refs=[str(product_id)]),
             CardsBlock(product_ids=[product_id]),
         ],
     )
+
+
+def _hidden_codes_answer(
+    facts: TurnFacts, language: Locale, route: Route
+) -> TurnOutput:
+    """Name the codes. Do not call one of them the cheapest, and write no price."""
+    price = (
+        "Freigegebene Partnerkonten sehen die Nettopreise."
+        if language == "de"
+        else "Approved partner accounts see net prices."
+    )
+    codes = _extreme_code_lines(facts, language, route, skip="")
+    looked = lookup_models(route.named_models, facts.tool_calls, facts.qualified_ids)
+    ids: list[int] = []
+    for item in looked:
+        if not item.note.searched_known:
+            continue
+        for product_id in item.note.product_ids:
+            if product_id in facts.qualified_ids and product_id not in ids:
+                ids.append(product_id)
+    if not ids and facts.qualified_ids:
+        ids = sorted(facts.qualified_ids)
+    shown = ids[:SEARCH_LIMIT]
+    blocks: list[Block] = [TextBlock(text=price)]
+    blocks.append(
+        TextBlock(text=" ".join(codes), refs=[str(product_id) for product_id in shown])
+    )
+    if shown:
+        blocks.append(CardsBlock(product_ids=shown))
+    return TurnOutput(language=language, blocks=blocks)
+
+
+def _extreme_code_lines(
+    facts: TurnFacts, language: Locale, route: Route, *, skip: str
+) -> list[str]:
+    """One line per code that still has to be said, without a cheapest claim."""
+    looked = lookup_models(route.named_models, facts.tool_calls, facts.qualified_ids)
+    lines: list[str] = []
+    named: list[str] = []
+    missed: list[NamedModel] = []
+    unknown_empty: list[str] = []
+    for item in looked:
+        code = item.note.code
+        if item.outcome == "unsearched":
+            missed.append(item.note)
+            continue
+        if item.note.unknown and item.outcome == "empty":
+            unknown_empty.append(code)
+            continue
+        if item.note.searched and code != skip:
+            named.append(code)
+    if unknown_empty:
+        lines.append(_range_sentence(unknown_empty, language))
+    if named:
+        lines.append(_named_codes_sentence(named, language))
+    lines.extend(_missed_sentences(missed, language))
+    return lines
+
+
+def _named_codes_sentence(codes: list[str], language: Locale) -> str:
+    shown = ", ".join(codes)
+    if language == "de":
+        return f"Sie haben {shown} genannt."
+    return f"You named {shown}."
 
 
 def german_is_clean(text: str) -> bool:
@@ -199,9 +279,10 @@ def fallback(
     # not a match, and the matching-products sentence would hide the failure.
     if exhausted:
         return _degraded(language)
-    # The applied winner is the whole fallback. The named-model clarification
-    # would add the other cards (#363, #364), which an extreme answer refuses.
-    extreme = _extreme_fallback(facts, language)
+    # An applied extreme shows that one card. Codes named in the same question
+    # are written beside it (#384). A hidden price names no cheapest product;
+    # when the question also named codes, those codes are still named.
+    extreme = _extreme_fallback(facts, language, route)
     if extreme is not None:
         return extreme
     url = facts.facts.get("size.configurator_url")

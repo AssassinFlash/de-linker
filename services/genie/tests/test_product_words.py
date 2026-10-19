@@ -15,7 +15,7 @@ from dataclasses import replace
 import pytest
 
 from linker_genie.cycle import run
-from linker_genie.facts import TurnFacts
+from linker_genie.facts import Fact, TurnFacts
 from linker_genie.ground import check
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match, Vocabulary
@@ -198,6 +198,117 @@ def test_an_extreme_over_a_series_stays_one_aggregate(vocabulary: Vocabulary) ->
     assert "text" not in call.arguments
     assert route.named_models == ()
     assert "brand and model disagree" not in route.reasons
+
+
+SMALLEST_CLASS = "What is your smallest inverter with at least 30 kW?"
+SMALLEST_CLASS_DE = "Was ist Ihr kleinster Wechselrichter mit mindestens 30 kW?"
+SMALLEST_UNKNOWN = (
+    "What is your smallest inverter with at least 30 kW, the GW50K-ETA-G20?"
+)
+SMALLEST_UNKNOWN_DE = (
+    "Was ist Ihr kleinster Wechselrichter mit mindestens 30 kW, der GW50K-ETA-G20?"
+)
+
+
+@pytest.mark.parametrize(
+    ("composite", "alone", "lang"),
+    [
+        (SMALLEST_UNKNOWN, SMALLEST_CLASS, "en"),
+        (SMALLEST_UNKNOWN_DE, SMALLEST_CLASS_DE, "de"),
+    ],
+)
+def test_a_class_extreme_also_searches_an_unknown_code(
+    vocabulary: Vocabulary, composite: str, alone: str, lang: str
+) -> None:
+    # #339 registration (#384). The class aggregate used to be the only call,
+    # so the unknown code was never searched and the answer never named it.
+    route = _route(vocabulary, composite, lang)
+    alone_route = _route(vocabulary, alone, lang)
+    assert route.name == "products"
+    assert route.show_products and route.no_handoff
+    aggregate, *rest = route.calls
+    (class_call,) = alone_route.calls
+    assert aggregate.arguments == class_call.arguments
+    assert aggregate.arguments["extreme"] == "smallest"
+    assert aggregate.arguments["ac_power_min"] == 30.0
+    assert "text" not in aggregate.arguments
+    assert [call.arguments.get("text") for call in rest] == ["GW50K-ETA-G20", "ETA-G20"]
+    assert all(call.arguments["lang"] == lang for call in route.calls)
+    assert all("extreme" not in call.arguments for call in rest)
+    assert all("price" not in call.arguments for call in route.calls)
+    (note,) = route.named_models
+    assert note.code == "GW50K-ETA-G20"
+    assert note.unknown and note.searched
+    assert "extreme: smallest" in route.reasons
+    assert "model code not in the product data" in route.reasons
+    assert "GW50K-ETA-G20" in route.hint
+
+
+def test_the_unknown_code_extreme_answer_names_the_winner_and_the_code(
+    vocabulary: Vocabulary,
+) -> None:
+    # Same block shape in both languages: the winner sentence, the code, one card.
+    expected = {
+        "en": (
+            SMALLEST_UNKNOWN,
+            "The GW30K-ETA-G20 meets the limit you named.",
+            "GW50K-ETA-G20 is not in our product range.",
+        ),
+        "de": (
+            SMALLEST_UNKNOWN_DE,
+            "Das Modell GW30K-ETA-G20 erfüllt die genannte Grenze.",
+            "Für GW50K-ETA-G20 haben wir kein Produkt.",
+        ),
+    }
+    shapes: list[list[str]] = []
+    for lang, (message, winner_sentence, range_sentence) in expected.items():
+        route = _route(vocabulary, message, lang)
+        facts = TurnFacts()
+        facts.product_ids = {6518}
+        facts.qualified_ids = {6518}
+        facts.add(
+            Fact(
+                id="search.extreme_product_id",
+                value="6518",
+                source="search-products",
+            )
+        )
+        facts.add(
+            Fact(
+                id="search.extreme_model",
+                value="GW30K-ETA-G20",
+                source="search-products",
+            )
+        )
+        facts.tool_calls.append(
+            {
+                "name": "linker/search-products",
+                "arguments": {"text": "GW50K-ETA-G20", "lang": lang, "limit": 6},
+                "ok": True,
+                "result": {"qualified": []},
+            }
+        )
+        output = fallback(facts, lang, route)
+        text = _sentence(output)
+        assert winner_sentence in text
+        assert range_sentence in text
+        assert "€" not in text and "$" not in text and "{fact:" not in text
+        cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
+        assert len(cards) == 1 and cards[0].product_ids == [6518]
+        assert check(output, facts, route).ok
+        if lang == "de":
+            assert german_is_clean(text)
+        shapes.append([type(block).__name__ for block in output.blocks])
+        omitted = TurnOutput(
+            language=lang,  # type: ignore[arg-type]
+            blocks=[
+                TextBlock(text=winner_sentence, refs=["6518"]),
+                CardsBlock(product_ids=[6518]),
+            ],
+        )
+        refused = check(omitted, facts, route)
+        assert any("GW50K-ETA-G20" in failure for failure in refused.failures)
+    assert shapes[0] == shapes[1]
 
 
 def test_several_models_and_an_extreme_search_each_model(

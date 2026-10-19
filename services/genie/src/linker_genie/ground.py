@@ -422,7 +422,12 @@ def _named_models(output: TurnOutput, facts: TurnFacts, route: Route) -> list[st
     shown = {pid for block in cards for pid in block.product_ids}
     codes = [item.note.code for item in looked]
     # The applied winner is the only card. Absence claims are still refused.
+    # A code searched beside that winner, or beside a hidden price, is named
+    # in the text (#384). Known models beside an applied winner stay optional
+    # here: the card rule already yielded, and requiring them would refuse the
+    # one-card answer the extreme check demands.
     applied = facts.facts.get("search.extreme_product_id") is not None
+    hidden = facts.facts.get("search.extreme_price_hidden") is not None
     failures: list[str] = []
     for item in looked:
         note = item.note
@@ -435,6 +440,12 @@ def _named_models(output: TurnOutput, facts: TurnFacts, route: Route) -> list[st
                     f"say that {note.code} was not searched, not that it is absent"
                 )
             continue
+        if (
+            note.searched
+            and note.code.casefold() not in folded
+            and (hidden or (applied and note.unknown))
+        ):
+            failures.append(f"name {note.code} as well as the extreme result")
         if item.outcome == "failed" and about:
             failures.append(
                 f"do not say {note.code} has no entry; that search did not succeed"
