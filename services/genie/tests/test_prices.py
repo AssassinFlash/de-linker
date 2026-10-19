@@ -56,11 +56,21 @@ EXPECTED = {
 }
 
 
-def _request(locale: str = "en", state: str = "guest") -> TurnRequest:
+def _request(
+    locale: str = "en", state: str = "guest", content: str | None = None
+) -> TurnRequest:
     signed_in = state != "guest"
+    if content is None:
+        # The question's language is the answer language (#374). A German page
+        # with this English question would read the English price line.
+        content = (
+            "Was kostet der H2-10K-T3?"
+            if locale.startswith("de")
+            else "What does the H2-10K-T3 cost?"
+        )
     return TurnRequest(
         conversation_id="c242",
-        messages=[TurnMessage(role="user", content="What does the H2-10K-T3 cost?")],
+        messages=[TurnMessage(role="user", content=content)],
         locale=locale,  # type: ignore[arg-type]
         user=UserContext(
             logged_in=signed_in,
@@ -70,11 +80,12 @@ def _request(locale: str = "en", state: str = "guest") -> TurnRequest:
     )
 
 
-def _answer(*ids: int) -> TurnOutput:
+def _answer(*ids: int, language: str = "en") -> TurnOutput:
+    text = "Hier ist das Produkt." if language == "de" else "Here is the product."
     return TurnOutput(
-        language="en",
+        language=language,  # type: ignore[arg-type]
         blocks=[
-            TextBlock(text="Here is the product.", refs=[str(i) for i in ids]),
+            TextBlock(text=text, refs=[str(i) for i in ids]),
             CardsBlock(product_ids=list(ids)),
         ],
     )
@@ -97,7 +108,10 @@ def test_a_search_card_shows_what_the_product_page_shows(state: str) -> None:
 def test_a_german_card_shows_the_german_price_line() -> None:
     facts = collect("linker/get-product", FIXTURE["approved"]["product_4107_de"], "de")
 
-    result = run(_request("de", "approved"), lambda _r, _x: (_answer(4107), facts))
+    result = run(
+        _request("de", "approved"),
+        lambda _r, _x: (_answer(4107, language="de"), facts),
+    )
 
     assert _cards(result.output).prices == [
         CardPrice(product_id=4107, text="1.680,00 €")
@@ -119,7 +133,9 @@ def test_a_product_quoted_per_project_has_no_price_for_anybody(
     """In German too: the line is the German product page's sentence."""
     facts = collect("linker/get-product", FIXTURE[state]["product_1957_de"], "de")
 
-    result = run(_request("de", state), lambda _r, _x: (_answer(1957), facts))
+    result = run(
+        _request("de", state), lambda _r, _x: (_answer(1957, language="de"), facts)
+    )
 
     assert _cards(result.output).prices == [
         CardPrice(product_id=1957, text=line, reason=reason)
@@ -172,6 +188,39 @@ def test_a_card_no_tool_priced_is_read_as_the_customer(state: str) -> None:
     assert [call["name"] for call in result.facts.tool_calls] == ["linker/get-product"]
     logged = json.dumps(result.facts.tool_calls)
     assert "token-" not in logged
+
+
+def test_an_english_question_on_a_german_page_reads_the_english_price_line() -> None:
+    """#374: get-product lang follows the question, so the price line does too."""
+    site = Site()
+    client = AbilityClient(
+        "http://wp.test", transport=httpx.MockTransport(site.handler)
+    )
+    request = _request("de", "approved", content="What does the H2-10K-T3 cost?")
+    result = run(
+        request,
+        lambda _r, _x: (_answer(4107), TurnFacts(product_ids={4107})),
+        commerce=commerce_lookup(client, request, time.monotonic() + 30),
+    )
+    assert site.requests[0].url.params["input[lang]"] == "en"
+    assert _cards(result.output).prices == [EXPECTED["approved"]]
+
+
+def test_a_german_question_on_an_english_page_reads_the_german_price_line() -> None:
+    site = Site()
+    client = AbilityClient(
+        "http://wp.test", transport=httpx.MockTransport(site.handler)
+    )
+    request = _request("en", "approved", content="Was kostet der H2-10K-T3?")
+    result = run(
+        request,
+        lambda _r, _x: (_answer(4107, language="de"), TurnFacts(product_ids={4107})),
+        commerce=commerce_lookup(client, request, time.monotonic() + 30),
+    )
+    assert site.requests[0].url.params["input[lang]"] == "de"
+    assert _cards(result.output).prices == [
+        CardPrice(product_id=4107, text="1.680,00\u00a0€")
+    ]
 
 
 def test_the_lookups_run_side_by_side() -> None:

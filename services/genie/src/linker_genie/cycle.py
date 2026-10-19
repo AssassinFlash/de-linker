@@ -12,13 +12,13 @@ from dataclasses import dataclass
 
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
-from linker_genie.ground import CheckResult, check
+from linker_genie.ground import check
 from linker_genie.hydrate import hydrate
-from linker_genie.language import answer_language, customer_message, language_failure
+from linker_genie.language import language_failure, turn_language
 from linker_genie.prices import Lookup, fill
 from linker_genie.route import Route
-from linker_genie.schema import TurnOutput, TurnRequest
-from linker_genie.template import fallback
+from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
+from linker_genie.template import LOGIN_PLACEHOLDER, LOGIN_REQUIRED, fallback
 
 Generate = Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]
 
@@ -35,6 +35,35 @@ class TurnResult:
     retried: tuple[str, ...] = ()
     # Card price lookups that failed (prices.fill); their cards show no price line.
     price_failures: tuple[str, ...] = ()
+
+
+def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutput:
+    """Ship the login sentence in the answer language.
+
+    The sentence is the service's. A guest turn whose only block is either
+    exact sentence, or the `{fact:inquiry.login}` placeholder, is rewritten
+    to `LOGIN_REQUIRED` of `expected` before hydration and the language check.
+    Any other shape is left for grounding, which already refused it.
+    """
+    if "inquiry.login_required" not in facts.facts:
+        return output
+    if len(output.blocks) != 1 or not isinstance(output.blocks[0], TextBlock):
+        return output
+    block = output.blocks[0]
+    if block.refs or block.text not in {
+        LOGIN_REQUIRED["en"],
+        LOGIN_REQUIRED["de"],
+        LOGIN_PLACEHOLDER,
+    }:
+        return output
+    if block.text == LOGIN_REQUIRED[expected] and output.language == expected:
+        return output
+    return output.model_copy(
+        update={
+            "language": expected,
+            "blocks": [TextBlock(text=LOGIN_REQUIRED[expected])],
+        }
+    )
 
 
 def run(
@@ -55,12 +84,14 @@ def run(
     priced, as the customer. `clock` only times the phases (timing.py, #336).
 
     The answer language is the last customer message when that message is
-    clearly one language, otherwise the page locale (language.py, #374). A
-    mismatch is a failed attempt: the model is asked once with that reason,
-    and the template then answers in the required language. The violating
-    text is not shipped.
+    clearly one language, otherwise the page locale (language.py, #374). The
+    check reads the hydrated answer, price lines included. A mismatch is a
+    failed attempt: the model is asked once with that reason, and the template
+    then answers in the required language. The violating text is not shipped.
+    A grounding failure is retried on its own; the language check runs only
+    after grounding has passed.
     """
-    expected = answer_language(customer_message(request), request.locale)
+    expected = turn_language(request)
     retry_reason: str | None = None
     seeded = seed or TurnFacts()
     last_facts = seeded
@@ -80,25 +111,29 @@ def run(
         last_facts = merge([seeded, facts])
         with timing.phase(clock, timing.GROUND):
             result = check(output, last_facts, route)
-        mismatch = language_failure(output, expected)
+        if not result.ok:
+            last_failures = result.failures
+            retry_reason = result.reason
+            continue
+        aligned = align_login(output, last_facts, expected)
+        with timing.phase(clock, timing.HYDRATE):
+            hydrated = hydrate(aligned, last_facts, expected)
+            priced, priced_facts, missed = fill(hydrated, last_facts, commerce)
+        mismatch = language_failure(priced, expected)
         if mismatch is not None:
-            result = CheckResult(ok=False, failures=(mismatch, *result.failures))
-        if result.ok:
-            with timing.phase(clock, timing.HYDRATE):
-                hydrated = hydrate(output, last_facts)
-                priced, priced_facts, missed = fill(hydrated, last_facts, commerce)
-            return TurnResult(
-                output=priced,
-                facts=priced_facts,
-                grounded=True,
-                failures=(),
-                fallback=False,
-                attempts=attempt,
-                retried=last_failures,
-                price_failures=tuple(missed),
-            )
-        last_failures = result.failures
-        retry_reason = result.reason
+            last_failures = (mismatch,)
+            retry_reason = mismatch
+            continue
+        return TurnResult(
+            output=priced,
+            facts=priced_facts,
+            grounded=True,
+            failures=(),
+            fallback=False,
+            attempts=attempt,
+            retried=last_failures,
+            price_failures=tuple(missed),
+        )
     with timing.phase(clock, timing.TEMPLATE):
         rendered = fallback(last_facts, expected, route)
     with timing.phase(clock, timing.HYDRATE):

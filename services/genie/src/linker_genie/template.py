@@ -70,14 +70,15 @@ DEGRADED = {
 # not the model's, so a German turn cannot drift into the team mailbox
 # sentence (PR #96 pending-main, measured 2026-10-11). Functional UI text.
 # Wording: docs/acceptance/2026-10-13/genie-facts-protocol/copy-review.md.
-# The same two sentences are quoted in prompts/en/system.md,
-# prompts/de/system.md and the per-turn reminder in agent.py — those three
-# copies have to stay byte-identical to this dict, because grounding
-# accepts only this text.
+# The prompts and the per-turn reminder name the placeholder. The service
+# fills it from this dict in the answer language (cycle.align_login,
+# hydrate._render_fact). Grounding also accepts either exact sentence.
 LOGIN_REQUIRED = {
     "en": "Please log in to your account to view this inquiry.",
     "de": "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.",
 }
+LOGIN_PLACEHOLDER = "{fact:inquiry.login}"
+HANDOFF_PLACEHOLDER = "{fact:handoff.sentence}"
 
 # The sizing and document shapes' sentences (#233). Functional UI text; wording:
 # docs/acceptance/2026-10-17/233/copy-review.md.

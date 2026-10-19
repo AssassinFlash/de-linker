@@ -111,9 +111,47 @@ def test_the_runner_hands_the_turn_language_to_the_ability_client() -> None:
         None,
         "de",
     )
-    runner({"lang": "de"})
+    runner({"lang": "en", "text": "H2"})
 
     assert seen == ["de"]
+
+
+def test_the_runner_does_not_let_the_model_pick_the_tool_language() -> None:
+    """#374: tool lang and the collect locale are the answer language."""
+    seen: list[tuple[dict[str, Any] | None, str]] = []
+
+    class RecordingClient:
+        def record(
+            self,
+            name: str,
+            arguments: dict[str, Any] | None,
+            user_context: str | None = None,
+            locale: str = "en",
+        ) -> tuple[dict[str, Any], TurnFacts]:
+            seen.append((arguments, locale))
+            return {"ok": name}, TurnFacts()
+
+    runner = _ability_runner(
+        RecordingClient(),  # type: ignore[arg-type]
+        ToolBudget(),
+        "linker/get-product",
+        None,
+        "en",
+    )
+    runner({"product_id": 4107, "lang": "de"})
+    assert seen == [({"product_id": 4107, "lang": "en"}, "en")]
+
+    seen.clear()
+    sizing = _ability_runner(
+        RecordingClient(),  # type: ignore[arg-type]
+        ToolBudget(),
+        "linker/size-hint",
+        None,
+        "de",
+        "hello",
+    )
+    sizing({"lang": "en", "pv_kwp": 10})
+    assert seen == [({}, "de")]
 
 
 def test_budget_facts_merge_the_parts_of_all_calls() -> None:
@@ -223,13 +261,17 @@ def test_a_page_read_without_a_reader_is_absent_from_the_record() -> None:
 
 
 def test_the_prompt_tells_a_guest_inquiry_to_ask_for_a_login() -> None:
-    """C2-anon-de: the German system prompt and the per-turn reminder both
-    name the login sentence and forbid the team handoff for this fact."""
+    """C2-anon-de: both prompts and the per-turn reminder name the login
+    placeholder. The service fills the sentence in the answer language."""
+    from linker_genie.template import HANDOFF_PLACEHOLDER, LOGIN_PLACEHOLDER
+
+    for locale in ("en", "de"):
+        prompt = instructions(locale)
+        assert LOGIN_PLACEHOLDER in prompt
+        assert HANDOFF_PLACEHOLDER in prompt
+        assert "{fact:handoff.sentence_en}" not in prompt
+        assert "{fact:handoff.sentence_de}" not in prompt
     german = instructions("de")
-    assert (
-        "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen."
-        in german
-    )
     assert "login_required" in german
     assert "handoff-team dafür nicht" in german
 
@@ -242,10 +284,10 @@ def test_the_prompt_tells_a_guest_inquiry_to_ask_for_a_login() -> None:
     reminder = _user_prompt(request, None)
     assert "logged_in=False" in reminder
     assert "login_required" in reminder
-    assert (
-        "Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen."
-        in reminder
-    )
+    assert LOGIN_PLACEHOLDER in reminder
+    assert HANDOFF_PLACEHOLDER in reminder
+    assert "{fact:handoff.sentence_en}" not in reminder
+    assert "{fact:handoff.sentence_de}" not in reminder
     assert "do not call handoff-team" in reminder
 
 

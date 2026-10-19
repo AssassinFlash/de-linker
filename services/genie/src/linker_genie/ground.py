@@ -471,13 +471,15 @@ def _login_required_is_a_login_request(
     """
     if "inquiry.login_required" not in facts.facts:
         return []
-    from linker_genie.template import LOGIN_REQUIRED
+    from linker_genie.template import LOGIN_PLACEHOLDER, LOGIN_REQUIRED
 
-    expected = LOGIN_REQUIRED[output.language]
+    # Either exact sentence, or the placeholder. cycle.align_login rewrites
+    # the block to the answer language before the customer sees it.
+    accepted = {LOGIN_REQUIRED["en"], LOGIN_REQUIRED["de"], LOGIN_PLACEHOLDER}
     if (
         len(output.blocks) == 1
         and isinstance(output.blocks[0], TextBlock)
-        and output.blocks[0].text == expected
+        and output.blocks[0].text in accepted
         and not output.blocks[0].refs
     ):
         return []

@@ -5,25 +5,38 @@ message that mixes English and German. A model that answers in the other
 language is asked once; a second miss is not shipped.
 """
 
+import json
+from pathlib import Path
+
 import pytest
 
 from linker_genie.agent import _user_prompt, instructions
 from linker_genie.cycle import run
-from linker_genie.facts import TurnFacts
+from linker_genie.facts import Fact, TurnFacts, collect
 from linker_genie.language import (
     _ENGLISH,
     _GERMAN,
+    _WORD,
     answer_language,
     clear_language,
+    language_failure,
+    visible_text,
 )
 from linker_genie.schema import (
+    CardsBlock,
     HandoffBlock,
     TextBlock,
     TurnMessage,
     TurnOutput,
     TurnRequest,
 )
-from linker_genie.template import DEGRADED, german_is_clean
+from linker_genie.template import (
+    DEGRADED,
+    HANDOFF_PLACEHOLDER,
+    LOGIN_PLACEHOLDER,
+    LOGIN_REQUIRED,
+    german_is_clean,
+)
 
 ENGLISH_QUESTION = "Which batteries work with the SAJ H2-10K-T3?"
 GERMAN_QUESTION = "Welche Batterien passen zum SAJ H2-10K-T3?"
@@ -237,3 +250,278 @@ def test_a_neutral_message_is_accepted_in_the_page_language(locale: str) -> None
     assert result.fallback is False
     assert result.output.language == locale
     assert result.output.blocks[0].text == text  # type: ignore[union-attr]
+
+
+@pytest.mark.parametrize(
+    ("message", "language"),
+    [
+        ("Price?", "en"),
+        ("Datasheet?", "en"),
+        ("Availability?", "en"),
+        ("Preis?", "de"),
+        ("Empfehlung?", "de"),
+        ("Kosten?", "de"),
+        ("Lieferzeit?", "de"),
+        ("Verfügbarkeit?", "de"),
+    ],
+)
+def test_one_content_word_is_that_language(message: str, language: str) -> None:
+    """A bare code, emoji or number stays neutral. One clear word does not."""
+    assert clear_language(message) == language
+    assert answer_language(message, "en" if language == "de" else "de") == language
+
+
+def test_mixed_prose_fails_even_when_the_language_field_matches() -> None:
+    mixed = "Diese Batterien work with the H2-10K-T3."
+    assert clear_language(mixed) is None
+    assert language_failure(_output("en", mixed), "en") is not None
+    assert language_failure(_output("de", mixed), "de") is not None
+    # A model code beside one language is not mixed.
+    assert language_failure(_output("en", ENGLISH_ANSWER), "en") is None
+    assert language_failure(_output("de", GERMAN_ANSWER), "de") is None
+
+
+def _closed(text: str, words: frozenset[str], *, umlauts: bool) -> list[str]:
+    found: list[str] = []
+    for word in _WORD.findall(text.lower()):
+        if word in words or (umlauts and any(letter in word for letter in "äöüß")):
+            found.append(word)
+    return found
+
+
+def _pairing(language: str, condition: str, price: str) -> tuple[TurnOutput, TurnFacts]:
+    prose = (
+        "These batteries work with the H2-10K-T3. {fact:compat.condition.0}"
+        if language == "en"
+        else "Diese Batterien passen zu Ihrem H2-10K-T3. {fact:compat.condition.0}"
+    )
+    facts = TurnFacts()
+    facts.product_ids.add(4107)
+    facts.qualified_ids.add(4107)
+    facts.add(
+        Fact(id="compat.condition.0", value=condition, source="check-compatibility")
+    )
+    facts.commerce[4107] = {"price_line": price, "price_reason": "pending"}
+    output = TurnOutput(
+        language=language,  # type: ignore[arg-type]
+        blocks=[
+            TextBlock(text=prose, refs=["4107"]),
+            CardsBlock(product_ids=[4107]),
+        ],
+    )
+    return output, facts
+
+
+def test_the_hydrated_answer_follows_the_question_on_either_page() -> None:
+    """English on a DE page, and German on an EN page.
+
+    The first attempt's model text is already the right language, but the
+    hydrated condition and the price line are the page's language. The check
+    reads that final text, asks once, and ships the second attempt. The
+    assertion is the hydrated answer, not the model's placeholder.
+    """
+    cases = (
+        (
+            ENGLISH_QUESTION,
+            "de",
+            "en",
+            "Die Module stehen in einer Säule",
+            "Preise nach Freigabe",
+            "The modules stand in one column.",
+            "Prices after approval",
+            _GERMAN,
+            True,
+        ),
+        (
+            GERMAN_QUESTION,
+            "en",
+            "de",
+            "The modules stand in one column.",
+            "Prices after approval",
+            "Die Module stehen in einer Säule",
+            "Preise nach Freigabe",
+            _ENGLISH,
+            False,
+        ),
+    )
+    for (
+        question,
+        locale,
+        language,
+        wrong_condition,
+        wrong_price,
+        right_condition,
+        right_price,
+        foreign,
+        umlauts,
+    ) in cases:
+        reasons: list[str | None] = []
+
+        def generate(
+            _request: TurnRequest,
+            retry: str | None,
+            language: str = language,
+            wrong_condition: str = wrong_condition,
+            wrong_price: str = wrong_price,
+            right_condition: str = right_condition,
+            right_price: str = right_price,
+            reasons: list[str | None] = reasons,
+        ) -> tuple[TurnOutput, TurnFacts]:
+            reasons.append(retry)
+            condition, price = (
+                (wrong_condition, wrong_price)
+                if retry is None
+                else (right_condition, right_price)
+            )
+            return _pairing(language, condition, price)
+
+        result = run(_request(question, locale), generate)
+        shipped = visible_text(result.output)
+
+        assert reasons[0] is None
+        assert reasons[1] is not None and reasons[1].startswith("answer in ")
+        assert result.fallback is False
+        assert result.attempts == 2
+        assert result.output.language == language
+        assert right_condition in shipped
+        assert right_price in shipped
+        assert wrong_condition not in shipped
+        assert wrong_price not in shipped
+        assert _closed(shipped, foreign, umlauts=umlauts) == []
+        if language == "de":
+            assert "Ihr" in shipped
+            assert german_is_clean(shipped)
+
+
+def test_a_page_language_handoff_placeholder_hydrates_in_the_question_language() -> (
+    None
+):
+    english = "Please write to our team."
+    german = "Bitte schreiben Sie an unser Team."
+    facts = TurnFacts()
+    for fact_id, value in (
+        ("handoff.sentence_en", english),
+        ("handoff.sentence_de", german),
+        ("handoff.sentence", german),
+    ):
+        facts.add(Fact(id=fact_id, value=value, source="handoff-team"))
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[HandoffBlock(summary="{fact:handoff.sentence_de}")],
+            ),
+            facts,
+        )
+
+    result = run(_request(ENGLISH_QUESTION, "de"), generate)
+    summary = result.output.blocks[0]
+    assert isinstance(summary, HandoffBlock)
+    assert summary.summary == english
+    assert _closed(summary.summary, _GERMAN, umlauts=True) == []
+    assert result.fallback is False
+
+    def german_turn(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        return (
+            TurnOutput(
+                language="de",
+                blocks=[HandoffBlock(summary="{fact:handoff.sentence_en}")],
+            ),
+            facts,
+        )
+
+    mirrored = run(_request(GERMAN_QUESTION, "en"), german_turn)
+    mirrored_summary = mirrored.output.blocks[0]
+    assert isinstance(mirrored_summary, HandoffBlock)
+    assert mirrored_summary.summary == german
+    assert _closed(mirrored_summary.summary, _ENGLISH, umlauts=False) == []
+    assert "Sie" in mirrored_summary.summary
+
+
+def test_the_login_sentence_follows_the_question_not_the_page() -> None:
+    facts = collect("linker/inquiry-status", {"error": "login_required"}, "de")
+
+    def exact(_request: TurnRequest, retry: str | None) -> tuple[TurnOutput, TurnFacts]:
+        return _output("de", LOGIN_REQUIRED["de"]), facts
+
+    def placeholder(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        return _output("de", LOGIN_PLACEHOLDER), facts
+
+    for generate in (exact, placeholder):
+        result = run(_request(ENGLISH_QUESTION, "de"), generate)
+        block = result.output.blocks[0]
+        assert isinstance(block, TextBlock)
+        assert block.text == LOGIN_REQUIRED["en"]
+        assert result.output.language == "en"
+        assert result.fallback is False
+        assert result.attempts == 1
+        assert _closed(block.text, _GERMAN, umlauts=True) == []
+
+    english_facts = collect("linker/inquiry-status", {"error": "login_required"}, "en")
+
+    def german_login(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        return _output("en", LOGIN_REQUIRED["en"]), english_facts
+
+    mirrored = run(_request(GERMAN_QUESTION, "en"), german_login)
+    mirrored_block = mirrored.output.blocks[0]
+    assert isinstance(mirrored_block, TextBlock)
+    assert mirrored_block.text == LOGIN_REQUIRED["de"]
+    assert "Sie" in mirrored_block.text
+    assert mirrored.fallback is False
+    assert _closed(mirrored_block.text, _ENGLISH, umlauts=False) == []
+
+
+def test_mixed_prose_is_reasked_once_and_a_second_miss_uses_the_template() -> None:
+    mixed = "Diese Batterien work with the H2-10K-T3."
+    reasons: list[str | None] = []
+
+    def once(_request: TurnRequest, retry: str | None) -> tuple[TurnOutput, TurnFacts]:
+        reasons.append(retry)
+        text = mixed if retry is None else ENGLISH_ANSWER
+        return _output("en", text), TurnFacts()
+
+    repaired = run(_request(ENGLISH_QUESTION, "de"), once)
+    assert reasons[1] is not None and reasons[1].startswith("answer in ")
+    assert repaired.fallback is False
+    assert repaired.output.blocks[0].text == ENGLISH_ANSWER  # type: ignore[union-attr]
+
+    def twice(_request: TurnRequest, retry: str | None) -> tuple[TurnOutput, TurnFacts]:
+        return _output("de", mixed), TurnFacts()
+
+    fallen = run(_request(GERMAN_QUESTION, "en"), twice)
+    assert fallen.fallback is True
+    assert fallen.output.language == "de"
+    shipped = fallen.output.blocks[0]
+    assert isinstance(shipped, HandoffBlock)
+    assert shipped.summary == DEGRADED["de"]
+    assert mixed not in shipped.summary
+    assert german_is_clean(shipped.summary)
+    assert "Sie" in shipped.summary
+    assert "Ihre" in shipped.summary
+
+
+def test_339_language_cases_hold() -> None:
+    """The #374 cases registered for the #339 regression corpus."""
+    path = Path(__file__).resolve().parents[1] / "eval" / "language" / "cases.json"
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    assert manifest["issue"] == 374
+    assert manifest["corpus"] == 339
+    for case in manifest["cases"]:
+        if "message" in case:
+            assert answer_language(case["message"], case["locale"]) == case["expected"]
+        if "answer" in case:
+            failure = language_failure(
+                _output(case["language"], case["answer"]), case["expected"]
+            )
+            assert (failure is not None) is case["fails"]
+    assert HANDOFF_PLACEHOLDER == "{fact:handoff.sentence}"
+    assert LOGIN_PLACEHOLDER == "{fact:inquiry.login}"
