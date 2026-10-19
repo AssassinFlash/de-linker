@@ -26,8 +26,10 @@ parameters:
 		# with this plugin's mail (ContactRequest, FormGuard, RateLimit).
 		- ../linker-tools/includes/Genie
 	scanFiles:
-		# The existing language helper is supplied by the companion plugin.
+		# The existing language helper is supplied by the companion plugin;
+		# the mail-language fixture configures Polylang through its Setup.
 		- ../linker-i18n/includes/Languages.php
+		- ../linker-i18n/includes/Setup.php
 		# WP_CLI (the commands call WP_CLI::error/warning/log/success and catch
 		# WP_CLI\ExitException); wp-cli is not in the WordPress stubs. The
 		# runtime doubles live in wordpress.php, which stays out of analysis so

@@ -38,6 +38,8 @@ final class Module {
 	 * @param PendingApprovals        $pending             The waiting accounts of the daily digest.
 	 * @param AccountsAdmin|null      $accounts_admin      Native review surfaces.
 	 * @param AccountsController|null $accounts_controller Staff REST routes.
+	 * @param BotGuard                $bot_guard           The public form's bot checks.
+	 * @param CountryField            $country_field       The grouped country select.
 	 */
 	public function __construct(
 		private readonly string $plugin_file,
@@ -49,7 +51,9 @@ final class Module {
 		private readonly ApprovalAdmin $admin = new ApprovalAdmin( new Approval() ),
 		private readonly PendingApprovals $pending = new PendingApprovals(),
 		private readonly ?AccountsAdmin $accounts_admin = null,
-		private readonly ?AccountsController $accounts_controller = null
+		private readonly ?AccountsController $accounts_controller = null,
+		private readonly BotGuard $bot_guard = new BotGuard(),
+		private readonly CountryField $country_field = new CountryField()
 	) {}
 
 	/**
@@ -59,6 +63,12 @@ final class Module {
 		add_action( 'woocommerce_register_form_start', array( $this->fields, 'render' ) );
 		add_filter( 'woocommerce_process_registration_errors', array( $this->fields, 'validate' ) );
 		add_action( 'woocommerce_created_customer', array( $this->fields, 'save' ), 5 );
+		// The public form's traps print inside Woo's own form; the refusal runs
+		// after the fields (a form to correct is not a bot) and before WooCommerce
+		// creates the account, so a refused request writes no customer and no mail.
+		add_action( 'woocommerce_register_form', array( $this->bot_guard, 'fields' ) );
+		add_filter( 'woocommerce_process_registration_errors', array( $this->bot_guard, 'validate' ), 20 );
+		add_filter( 'woocommerce_form_field_' . CountryField::TYPE, array( $this->country_field, 'render' ), 10, 4 );
 
 		add_filter( 'woocommerce_billing_fields', array( $this->vat_field, 'billing_fields' ) );
 		add_filter( 'woocommerce_admin_billing_fields', array( $this->vat_field, 'admin_billing_fields' ) );
@@ -117,7 +127,7 @@ final class Module {
 	 * @return array<string, object>
 	 */
 	public function add_emails( array $emails ): array {
-		$emails[ NewCustomerEmail::class ]          = new NewCustomerEmail( $this->plugin_file, $this->options );
+		$emails[ NewCustomerEmail::class ]          = new NewCustomerEmail( $this->plugin_file, $this->options, new RegistrationInformation( $this->fields ) );
 		$emails[ RegistrationReceivedEmail::class ] = new RegistrationReceivedEmail( $this->plugin_file );
 		$emails[ VatReviewEmail::class ]            = new VatReviewEmail( $this->plugin_file, $this->options );
 		$emails[ ApprovedEmail::class ]             = new ApprovedEmail( $this->plugin_file );

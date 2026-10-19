@@ -91,6 +91,7 @@ DOCUMENTS_HINT = (
 
 RouteName = Literal[
     "nameplate",
+    "parts",
     "products",
     "documents",
     "pairing",

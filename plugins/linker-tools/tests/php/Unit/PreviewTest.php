@@ -133,12 +133,13 @@ final class PreviewTest extends TestCase {
 			)
 		);
 
-		// The nameplate photo (#236) is one more suggestion on the home card,
-		// inside the two to four of goal 4.
-		$offered = count( $copy['asks'] ) + ( isset( $copy['photo'] ) ? 1 : 0 );
+		// The nameplate photo (#236) and the parts list (#251) are two more
+		// suggestions on the home card, inside the two to four of goal 4.
+		$offered = count( $copy['asks'] ) + ( isset( $copy['photo'] ) ? 1 : 0 ) + ( isset( $copy['list'] ) ? 1 : 0 );
 		$this->assertGreaterThanOrEqual( 2, $offered );
 		$this->assertLessThanOrEqual( 4, $offered );
 		$this->assertSame( 'home' === $type, isset( $copy['photo'] ) );
+		$this->assertSame( 'home' === $type, isset( $copy['list'] ) );
 		$this->assertNotSame( '', $copy['lead'] );
 		if ( '' !== $name && 'home' !== $type ) {
 			$this->assertStringContainsStringIgnoringCase( $name, $copy['title'] );

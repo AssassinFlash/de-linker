@@ -22,6 +22,7 @@ use Linker\Commerce\Registration\CustomerRole;
 use Linker\Commerce\Registration\Fields;
 use Linker\Commerce\Registration\VatProfile;
 use Linker\Commerce\Registration\ViesClient;
+use Linker\Commerce\Registration\Website;
 use WC_Customer;
 use WP_Error;
 use WP_User;
@@ -309,13 +310,11 @@ final class ApprovalTest extends IntegrationTestCase {
 		$_POST   = array(
 			'billing_company'    => 'Solarbau Beispiel GmbH',
 			CustomerRole::META   => 'installer',
+			'billing_country'    => 'DE',
+			Website::META        => 'example.com',
 			VatProfile::VAT_META => '',
 			'billing_first_name' => 'Maria',
 			'billing_last_name'  => 'Beispiel',
-			'billing_country'    => 'DE',
-			'billing_address_1'  => 'Teststraße 1',
-			'billing_postcode'   => '39179',
-			'billing_city'       => 'Barleben',
 		);
 		$created = wc_create_new_customer( 'linker-it-' . self::tag() . '@example.test', 'linker-it-' . self::tag(), 'x' );
 		$this->assertIsInt( $created );

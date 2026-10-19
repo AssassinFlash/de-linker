@@ -12,6 +12,7 @@ namespace Linker\Commerce\Contact;
 use Linker\Commerce\Inquiry\PublicGuard;
 use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\ReceiptLimit;
+use Linker\Commerce\Presentation\PageUrls;
 use WP_Error;
 
 /**
@@ -86,11 +87,11 @@ final class Handler {
 	private function back_url( array $post ): string {
 		$posted = isset( $post[ Form::BACK_FIELD ] ) ? esc_url_raw( (string) $post[ Form::BACK_FIELD ] ) : '';
 		if ( '' === $posted ) {
-			return home_url( '/contact/' );
+			return PageUrls::page( 'contact' );
 		}
 		$host = (string) wp_parse_url( $posted, PHP_URL_HOST );
 		if ( '' !== $host && strtolower( $host ) !== strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) ) {
-			return home_url( '/contact/' );
+			return PageUrls::page( 'contact' );
 		}
 		return $posted;
 	}

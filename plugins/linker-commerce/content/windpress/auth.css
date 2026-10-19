@@ -197,14 +197,30 @@
 .linker-gate :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) ul,
 .linker-account :is(.woocommerce-error, .woocommerce-message, .woocommerce-info) ul { margin: 0; padding-left: 18px; }
 
+/* A WooCommerce notice is a list of messages (the register card can produce
+ * several at once, #225). The frame's flex row above suits a single message;
+ * the list becomes a grid with the icon in its own column and every message
+ * in the second column, one row each. Scoped to the register card: the login
+ * and lost-password cards keep the single-message layout they had. */
+.linker-auth .linker-auth-register :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	column-gap: 12px;
+	row-gap: 4px;
+	padding-left: 0;
+}
+
+.linker-auth .linker-auth-register :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info)::before { grid-column: 1; grid-row: 1; }
+
+.linker-auth .linker-auth-register :is(ul.woocommerce-error, ul.woocommerce-message, ul.woocommerce-info) > li { grid-column: 2; }
+
 .linker-auth .woocommerce-notices-wrapper:empty,
 .linker-account .woocommerce-notices-wrapper:empty { display: none; }
 
 /* WooCommerce's own notice element (wc_print_notice), used unwrapped by the
- * lost-password confirmation. */
-.linker-auth > .linker-auth-inner .woocommerce-message,
-.linker-auth > .linker-auth-inner .woocommerce-info,
-.linker-auth > .linker-auth-inner .woocommerce-error { display: flex; }
+ * lost-password confirmation. The register card's list notices keep the grid
+ * of the rule above. */
+.linker-auth > .linker-auth-inner :is(.woocommerce-message, .woocommerce-info, .woocommerce-error):not(ul) { display: flex; }
 
 /* ── The guest chain: the frame ────────────────────────────────────────── */
 .linker-auth {
@@ -530,41 +546,181 @@
 .linker-auth input[type="checkbox"]:focus-visible,
 .linker-account input[type="checkbox"]:focus-visible { outline: 2px solid var(--proto-teal-600); outline-offset: 2px; }
 
-/* ── The register card's three steps ───────────────────────────────────── */
-.linker-auth-steps { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+/* ── The register card's two steps (owner ruling 2026-10-17, #225) ──────── */
+/* The progress bar, its note and the panes exist only after account-ui.js
+ * adds .is-split; without the script both panes show and the single Register
+ * button posts the form. The bar's values are the accepted prototype's
+ * (docs/prototypes/2026-10-17-registration/registration-prototype.css:55-58). */
+.linker-auth-progress { display: flex; gap: 8px; margin: 22px 0 0; }
+.linker-auth-progress[hidden] { display: none; }
+.linker-auth-progress-segment { flex: 1; height: 4px; border-radius: 4px; background: var(--acct-line-soft); }
+.linker-auth-progress-segment.is-on { background: var(--proto-teal-600); }
 
-.linker-auth-step { padding-top: 20px; }
+.linker-auth-stepnote { margin: 8px 0 0; font-size: 12.5px; color: var(--acct-muted); }
+.linker-auth-stepnote[hidden] { display: none; }
 
-.linker-auth-step + .linker-auth-step { margin-top: 4px; border-top: 1px solid var(--acct-line-soft); }
+.linker-auth-pane { display: block; }
+.linker-auth-register-form.is-split [data-pane="2"] { display: none; }
+.linker-auth-register-form.is-split[data-active-step="2"] [data-pane="1"] { display: none; }
+.linker-auth-register-form.is-split[data-active-step="2"] [data-pane="2"] { display: block; }
 
-.linker-auth-step-title { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-size: 15px; font-weight: 600; color: var(--acct-ink); }
+.linker-auth-pane-title { margin: 20px 0 4px; font-size: 15px; font-weight: 600; color: var(--acct-ink); }
 
-.linker-auth-step-index {
+.linker-auth-note { margin: 4px 0 6px; font-size: 13px; color: var(--acct-muted); }
+
+/* The verification pair sits in one soft box (prototype line 36-37): the two
+ * fields are each optional, one of them is required. */
+.linker-auth-verify { margin-top: 14px; padding: 14px 16px 16px; border: 1px solid var(--acct-line-soft); border-radius: 16px; background: #f7f9f9; }
+.linker-auth-verify .linker-auth-fields > :first-child { margin-top: 6px; }
+
+/* The business type: WooCommerce's radios drawn as the prototype's three
+ * pills (registration-prototype.css:29-33). Woo repeats its required marker
+ * on every option; the field's own label already carries it, so the copies
+ * are hidden. */
+.linker-auth .form-row:has(input[type="radio"]) .woocommerce-input-wrapper {
 	display: grid;
-	place-items: center;
-	flex: none;
-	width: 26px;
-	height: 26px;
-	border-radius: var(--proto-radius-round);
-	background: var(--proto-teal-100);
-	color: var(--proto-teal-800);
-	font-size: 13px;
-	font-weight: 700;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
 }
 
-/* WooCommerce prints one form row per field, and two of the pairs stand side
- * by side on a wide screen (the field ids are WooCommerce's own). */
-.linker-auth-step-fields { display: grid; gap: 0 14px; grid-template-columns: minmax(0, 1fr); }
+.linker-auth .form-row input[type="radio"] {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.linker-auth .form-row label.radio {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	min-width: 0;
+	min-height: 52px;
+	margin: 0;
+	padding: 0 8px;
+	border: 1.5px solid transparent;
+	border-radius: var(--acct-r-md);
+	background: var(--acct-fill);
+	color: var(--acct-ink-2);
+	font-size: 14.5px;
+	font-weight: 500;
+	line-height: 1.2;
+	text-align: center;
+	cursor: pointer;
+}
+
+.linker-auth .form-row label.radio .required { display: none; }
+
+.linker-auth .form-row input[type="radio"]:checked + label.radio {
+	border-color: var(--proto-teal-600);
+	background: #e6f4f1;
+	color: #0a5f56;
+}
+
+.linker-auth .form-row input[type="radio"]:focus-visible + label.radio {
+	outline: 2px solid var(--proto-teal-600);
+	outline-offset: 2px;
+}
+
+/* WooCommerce prints one form row per field, and the name pair stands side by
+ * side on a wide screen (the field ids are WooCommerce's own). */
+.linker-auth-fields { display: grid; gap: 0 14px; grid-template-columns: minmax(0, 1fr); }
 
 @media (min-width: 560px) {
-	.linker-auth-step-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+	.linker-auth-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 
-	.linker-auth-step-fields > * { grid-column: 1 / -1; }
+	.linker-auth-fields > * { grid-column: 1 / -1; }
 
-	.linker-auth-step-fields > :is(#billing_first_name_field, #billing_last_name_field, #billing_postcode_field, #billing_city_field) { grid-column: auto; }
+	.linker-auth-fields > :is(#billing_first_name_field, #billing_last_name_field) { grid-column: auto; }
 }
 
-.linker-auth-step-fields .form-row:last-child { margin-bottom: 0; }
+.linker-auth-fields .form-row:last-child { margin-bottom: 0; }
+
+/* The step buttons: Continue is the primary pill, Back the ghost the prototype
+ * draws under it (registration-prototype.css:51-52). */
+.linker-auth .linker-auth-card .linker-auth-btn[data-next],
+.linker-auth .linker-auth-card .linker-auth-btn[data-back] { width: 100%; margin-top: 18px; }
+
+.linker-auth .linker-auth-card .linker-auth-btn.is-ghost {
+	border: 1.5px solid var(--proto-teal-600);
+	background: var(--acct-card);
+	color: var(--proto-teal-700);
+	box-shadow: none;
+}
+
+.linker-auth .linker-auth-card .linker-auth-btn.is-ghost:hover { background: var(--proto-teal-50); color: var(--proto-teal-800); }
+
+/* WooCommerce's searchable country select (selectWoo) in the card's own field
+ * language: 52px, the soft fill and the teal focus ring of auth.css:371-437.
+ * The dropdown frame follows the chain's popover (--acct-shadow-pop). */
+.linker-auth .select2-container { width: 100% !important; }
+
+.linker-auth .select2-container .select2-selection--single {
+	height: 52px;
+	border: 1.5px solid transparent;
+	border-radius: var(--acct-r-md);
+	background: var(--acct-fill);
+}
+
+.linker-auth .select2-container .select2-selection--single .select2-selection__rendered {
+	padding: 0 44px 0 18px;
+	color: var(--acct-ink);
+	font-size: 15px;
+	line-height: 49px;
+}
+
+.linker-auth .select2-container .select2-selection--single .select2-selection__arrow { top: 0; right: 12px; height: 49px; }
+
+.linker-auth .select2-container--focus .select2-selection--single,
+.linker-auth .select2-container--open .select2-selection--single {
+	border-color: var(--proto-teal-600);
+	background: var(--acct-card);
+	box-shadow: 0 0 0 4px var(--proto-teal-100);
+}
+
+/* selectWoo attaches its dropdown to <body>, outside the card; the dropdown
+ * is identified by its own class (dropdownCssClass in account-ui.js). The
+ * option and group spacing follows the prototype's list
+ * (registration-prototype.css:44-47); the 44px search field is the chain's
+ * touch floor (auth.css:492-506 uses the same floor for Woo's own controls). */
+.select2-dropdown.linker-country-dropdown {
+	border: 1px solid var(--acct-line);
+	border-radius: var(--acct-r-md);
+	background: var(--acct-card);
+	box-shadow: var(--acct-shadow-pop);
+	color: var(--acct-ink);
+	font-family: inherit;
+	font-size: 14.5px;
+}
+
+.linker-country-dropdown .select2-search--dropdown { padding: 8px; }
+
+.linker-country-dropdown .select2-search__field {
+	height: 44px;
+	padding: 0 14px;
+	border: 1.5px solid transparent;
+	border-radius: var(--acct-r-sm);
+	background: var(--acct-fill);
+	color: var(--acct-ink);
+	font-family: inherit;
+	font-size: 14.5px;
+}
+
+.linker-country-dropdown .select2-search__field:focus {
+	border-color: var(--proto-teal-600);
+	background: var(--acct-card);
+	box-shadow: 0 0 0 4px var(--proto-teal-100);
+	outline: none;
+}
+
+.linker-country-dropdown .select2-results__option { padding: 9px 12px; }
+
+.linker-country-dropdown .select2-results__group { padding: 8px 12px 4px; color: var(--acct-muted); font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.linker-country-dropdown .select2-results__option.select2-results__option--highlighted,
+.linker-country-dropdown .select2-results__option--highlighted[aria-selected] { background: #e6f4f1; color: #0a5f56; }
 
 /* ── The guest cards' links ────────────────────────────────────────────── */
 .linker-auth-links {
@@ -779,13 +935,11 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 
 	.linker-auth-card { border-radius: var(--acct-r-lg); box-shadow: none; padding: 1.5rem 1rem; }
 
-	.linker-auth-steps { gap: var(--proto-space-6); }
+	.linker-auth-pane-title { margin-top: var(--proto-space-5); }
 
-	.linker-auth-step { padding-top: var(--proto-space-5); }
-
-	.linker-auth-step-title { margin-bottom: var(--proto-space-5); }
-
-	.linker-account .linker-auth-step-index { width: var(--proto-space-6); height: var(--proto-space-6); }
+	/* The prototype stacks the three business-type pills on the phone
+	 * (registration-prototype.css:72). */
+	.linker-auth .form-row:has(input[type="radio"]) .woocommerce-input-wrapper { grid-template-columns: minmax(0, 1fr); }
 
 	.linker-gate { border-radius: var(--acct-r-lg); }
 

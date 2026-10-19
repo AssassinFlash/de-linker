@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
+use Linker\Commerce\Presentation\LanguageLinks;
 use Linker\Commerce\Presentation\ProductShortcodes;
 use Linker\Commerce\Storefront\ProductFilters;
 use Linker\Commerce\Storefront\ProductView;
@@ -163,6 +164,32 @@ final class ProductShortcodesTest extends TestCase {
 		$this->filter_returns( 'pll_translation_url', $expected, array( $expected, 'de' ) );
 		$this->assertSame( $expected, $this->url( 'de' ) );
 		$this->assertSame( 'http://linker.test' . $request, $this->url( 'en' ) );
+	}
+
+	/**
+	 * The footer's switcher is the header's implementation: on an English
+	 * account page "Deutsch" opens the German account page, not /de/, and
+	 * "English" stays on the page the visitor is on (AUDIT.md H2).
+	 */
+	public function test_the_footer_switcher_uses_the_same_language_targets_as_the_header(): void {
+		$this->page(
+			1037,
+			'http://linker.test/my-account/',
+			array( 'de' => 6869 )
+		);
+		$this->permalink( 6869, 'http://linker.test/de/mein-konto/' );
+		$_SERVER['REQUEST_URI'] = '/my-account/';
+		$_GET                   = array();
+		WP_Mock::userFunction( 'pll_the_languages', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_home_url', array( 'return' => 'http://linker.test/' ) );
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/mein-konto/', array( 'http://linker.test/de/mein-konto/', 'de' ) );
+
+		$html = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->language_switch();
+
+		$this->assertStringContainsString( 'href="http://linker.test/my-account/"', $html );
+		$this->assertStringContainsString( 'href="http://linker.test/de/mein-konto/"', $html );
+		$this->assertStringContainsString( 'data-lnk-flang="en"', $html );
+		$this->assertStringContainsString( 'data-lnk-flang="de"', $html );
 	}
 
 	/**
@@ -335,8 +362,14 @@ final class ProductShortcodesTest extends TestCase {
 			)
 		);
 		// Polylang's home URL carries the request's language segment (/de/ on
-		// German); the breadcrumb follows it (#264 H5).
+		// German); the breadcrumb follows it (#264 H5). PageUrls::home() (#263)
+		// names the language itself and trails the slash, so both halves are
+		// answered here: the language the request runs in (read off the home
+		// URL the fixture wants, so the stub cannot inherit a prior test's) and
+		// the slash shape it prints.
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => str_contains( $home, '/de/' ) ? 'de' : 'en' ) );
 		WP_Mock::userFunction( 'pll_home_url', array( 'return' => $home ) );
+		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn( string $url ): string => rtrim( $url, '/' ) . '/' ) );
 		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn( string $value ): string => $value ) );
@@ -1153,9 +1186,9 @@ final class ProductShortcodesTest extends TestCase {
 	 * @param string $lang Language code.
 	 */
 	private function url( string $lang ): string {
-		$shortcodes = new ProductShortcodes( new ProductFilters(), new ProductView() );
-		$method     = new \ReflectionMethod( ProductShortcodes::class, 'language_url' );
-		return $method->invoke( $shortcodes, $lang );
+		$links  = new LanguageLinks();
+		$method = new \ReflectionMethod( LanguageLinks::class, 'url' );
+		return $method->invoke( $links, $lang );
 	}
 
 	/**

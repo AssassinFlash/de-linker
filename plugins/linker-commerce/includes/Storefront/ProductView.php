@@ -11,6 +11,7 @@ namespace Linker\Commerce\Storefront;
 
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Gating\PriceDisplay;
+use Linker\Commerce\Presentation\PageUrls;
 
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\SelectionFactSet;
@@ -349,7 +350,9 @@ final class ProductView {
 	}
 
 	/**
-	 * The "Ask about this product" contact URL, as the live page links it.
+	 * The "Ask about this product" contact URL, in the product page's own
+	 * language: a German page opens the German contact form, whose receipt
+	 * then speaks German (AUDIT.md H1).
 	 *
 	 * @param \WC_Product $product The product.
 	 */
@@ -364,7 +367,7 @@ final class ProductView {
 					'product_id' => $product->get_id(),
 					'source'     => $product->get_permalink(),
 				),
-				home_url( '/contact/' )
+				PageUrls::page( 'contact' )
 			)
 		);
 	}

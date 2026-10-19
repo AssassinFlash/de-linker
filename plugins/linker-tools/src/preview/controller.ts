@@ -153,7 +153,7 @@ export function startPreview(
 
 	function onCardClick( event: MouseEvent ) {
 		const target = ( event.target as Element | null )?.closest?.(
-			'[data-linker-genie-peek-close], [data-linker-genie-peek-ask], [data-linker-genie-peek-attach]'
+			'[data-linker-genie-peek-close], [data-linker-genie-peek-ask], [data-linker-genie-peek-attach], [data-linker-genie-peek-attach-list]'
 		);
 		if ( ! target ) {
 			return;
@@ -162,13 +162,20 @@ export function startPreview(
 			dismiss();
 			return;
 		}
-		if ( target.hasAttribute( 'data-linker-genie-peek-attach' ) ) {
-			// The nameplate photo (#236): Genie opens with its photo picker
-			// on offer, through the same loader event.
+		if (
+			target.hasAttribute( 'data-linker-genie-peek-attach' ) ||
+			target.hasAttribute( 'data-linker-genie-peek-attach-list' )
+		) {
+			// The nameplate photo (#236) or the parts list (#251): Genie opens
+			// with its file picker on offer, through the same loader event.
 			onOpened();
 			win.dispatchEvent(
 				new CustomEvent( 'linker-genie-ask', {
-					detail: { attach: true },
+					detail: target.hasAttribute(
+						'data-linker-genie-peek-attach-list'
+					)
+						? { attach: true, list: true }
+						: { attach: true },
 				} )
 			);
 			return;

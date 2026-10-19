@@ -20,6 +20,7 @@ const PAGE = `
 		<button type="button" data-linker-genie-peek-close>×</button>
 		<button type="button" data-linker-genie-peek-ask="What pairs with the SAJ H2-10K-T3?">What pairs with the SAJ H2-10K-T3?</button>
 		<button type="button" data-linker-genie-peek-attach>Look up my device from a nameplate photo</button>
+		<button type="button" data-linker-genie-peek-attach-list>Turn a parts list into products</button>
 	</aside>`;
 
 let stop: () => void = () => undefined;
@@ -244,6 +245,29 @@ describe( 'the nameplate suggestion', () => {
 
 		window.removeEventListener( 'linker-genie-ask', listener );
 		expect( asked ).toEqual( [ { attach: true } ] );
+		expect( card().hidden ).toBe( true );
+		expect( visit().opened ).toBe( true );
+	} );
+} );
+
+describe( 'the parts-list suggestion', () => {
+	test( 'opens Genie with the file picker on offer, asking nothing', () => {
+		const asked: unknown[] = [];
+		const listener = ( event: Event ) =>
+			asked.push( ( event as CustomEvent ).detail );
+		window.addEventListener( 'linker-genie-ask', listener );
+		start();
+		scrollHeroTo( 0 );
+		vi.advanceTimersByTime( DWELL_MS );
+
+		document
+			.querySelector< HTMLElement >(
+				'[data-linker-genie-peek-attach-list]'
+			)
+			?.click();
+
+		window.removeEventListener( 'linker-genie-ask', listener );
+		expect( asked ).toEqual( [ { attach: true, list: true } ] );
 		expect( card().hidden ).toBe( true );
 		expect( visit().opened ).toBe( true );
 	} );

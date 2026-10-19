@@ -1,0 +1,2 @@
+# German link audit (2026-10-18T18:38:30Z, instance c263, snapshot 20261019-0141)
+audit clean: 156 German URLs checked

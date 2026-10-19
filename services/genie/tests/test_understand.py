@@ -199,3 +199,56 @@ def test_the_reading_is_kept_for_the_contact_offer(vocabulary: Vocabulary) -> No
         _request("This is useless."), _abilities([])
     )
     assert prepared.reading == reading
+
+
+def test_a_pasted_parts_list_is_the_services_own_turn(vocabulary: Vocabulary) -> None:
+    """#251: the rows are matched in code, Jev is not asked, no ability runs."""
+    jev = FakeJev(_reading("find_products"))
+    seen: list[httpx.Request] = []
+    understander = Understander(lambda: vocabulary, jev)
+    prepared = understander.prepare(
+        _request(
+            "2x SAJ H2-10K-T3\n"
+            "1 x GoodWe GW10K-ETA-G20\n"
+            "3 Stk. SAJ H2\n"
+            "1 x SMA Sunny Boy 5.0"
+        ),
+        _abilities(seen),
+    )
+    assert prepared.route.name == "parts"
+    assert jev.seen == []
+    assert seen == []
+    assert prepared.parts_list is not None
+    assert [
+        (row.status, row.product_id, row.quantity) for row in prepared.parts_list.rows
+    ] == [
+        ("matched", 4107, 2),
+        ("matched", 3556, 1),
+        ("uncertain", None, 3),
+        ("missing", None, 1),
+    ]
+    assert prepared.log["parts"]["rows"] == 4
+    assert prepared.log["parts"]["uncertain"] == 1
+
+
+def test_a_csv_attachment_becomes_a_parts_turn(vocabulary: Vocabulary) -> None:
+    """#251: the CSV rides #236's channel, is read in-process, and its rows match."""
+    import base64
+
+    from linker_genie.schema import Upload
+
+    upload = Upload(
+        name="list.csv",
+        type="text/csv",
+        data=base64.b64encode(b"Produkt;Menge\nSAJ H2-10K-T3;2\n").decode(),
+    )
+    request = _request("Attached: list.csv")
+    request.attachments.append(upload)
+    prepared = Understander(lambda: vocabulary, None).prepare(request, _abilities([]))
+    assert prepared.route.name == "parts"
+    assert prepared.parts_list is not None
+    assert [(row.status, row.product_id) for row in prepared.parts_list.rows] == [
+        ("matched", 4107)
+    ]
+    assert [reading.kind for reading in prepared.readings] == ["list"]
+    assert prepared.cards[0]["kind"] == "list"

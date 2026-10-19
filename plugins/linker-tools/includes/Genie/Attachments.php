@@ -16,8 +16,9 @@ use WP_Error;
  *
  * The browser sends each file as base64 in the turn's `attachments`, apart from
  * its messages. Here, before anything reaches the service: at most MAX_FILES
- * files; each a JPEG, PNG, WebP or PDF by its first bytes, whatever its name or
- * declared type; each under its type's size and the turn under MAX_TURN_BYTES;
+ * files; each a JPEG, PNG, WebP or PDF by its first bytes, or a CSV or Excel
+ * parts list (#251), whatever its name or declared type; each under its type's
+ * size and the turn under MAX_TURN_BYTES;
  * and every file counts against the caller's hourly allowance (RateLimit, one
  * statement per take), so nobody can spend the site's deepseek-flash budget by
  * uploading in a loop; a refused turn counts too, so nobody can repeat refused
@@ -48,6 +49,19 @@ class Attachments {
 	 * hosted manual 7.3 MB (uploads of the live snapshot 2026-10-18).
 	 */
 	public const MAX_PDF_BYTES = 16777216;
+
+	/**
+	 * Bytes of one parts list (#251). A 20-row list is two kilobytes; one mebibyte
+	 * holds about twenty thousand lines of the shape customers paste, and the
+	 * largest list in the research is 61 rows (Taobao, CN.md S32).
+	 */
+	public const MAX_CSV_BYTES = 1048576;
+
+	/**
+	 * Bytes of one Excel list: a workbook may carry images and styles, so it keeps
+	 * the image ceiling (Attachments::MAX_IMAGE_BYTES).
+	 */
+	public const MAX_XLSX_BYTES = 6291456;
 
 	/**
 	 * Bytes of one turn's files: well below deepseek-flash's 48 MiB request body
@@ -81,6 +95,10 @@ class Attachments {
 		'image/png'       => "\x89PNG\r\n\x1A\n",
 		'image/webp'      => 'RIFF',
 		'application/pdf' => '%PDF-',
+		// A parts list (#251): CSV is text with no first bytes (checked by
+		// is_csv), Excel is a zip of XML (the service checks the workbook).
+		'text/csv'        => '',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => "PK\x03\x04",
 	);
 
 	/**
@@ -164,7 +182,12 @@ class Attachments {
 			if ( ! isset( self::MAGIC[ $type ] ) ) {
 				return $this->refusal( 'type', 415 );
 			}
-			$max = 'application/pdf' === $type ? self::MAX_PDF_BYTES : self::MAX_IMAGE_BYTES;
+			$max = match ( $type ) {
+				'application/pdf' => self::MAX_PDF_BYTES,
+				'text/csv' => self::MAX_CSV_BYTES,
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => self::MAX_XLSX_BYTES,
+				default => self::MAX_IMAGE_BYTES,
+			};
 			// The size is known from the base64 length: a file past its cap is
 			// refused before anything is decoded.
 			if ( strlen( $data ) > self::encoded( $max ) ) {
@@ -209,6 +232,11 @@ class Attachments {
 	private static function is( string $bytes, string $type ): bool {
 		if ( ! str_starts_with( $bytes, self::MAGIC[ $type ] ) ) {
 			return false;
+		}
+		if ( 'text/csv' === $type ) {
+			// Text, not a binary file renamed: no NUL byte and at least one letter
+			// (the service decodes UTF-8 or Windows-1252 and parses the rows).
+			return false === strpos( $bytes, "\0" ) && 1 === preg_match( '/[A-Za-z]/', $bytes );
 		}
 		return 'image/webp' !== $type || self::WEBP_MARK === substr( $bytes, self::WEBP_OFFSET, strlen( self::WEBP_MARK ) );
 	}

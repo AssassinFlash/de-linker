@@ -25,6 +25,15 @@ abstract class TestCase extends WP_Mock\Tools\TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		WP_Mock::userFunction( 'pll_languages_list' )->andReturn( array() )->byDefault();
+		// PageUrls asks for a page by its English path; a fixture names the
+		// pages it has, every other test has none. The language functions are
+		// the absent-language answers unless a fixture opts in.
+		WP_Mock::userFunction( 'get_page_by_path' )->andReturn( null )->byDefault();
+		WP_Mock::userFunction( 'pll_current_language' )->andReturn( false )->byDefault();
+		WP_Mock::userFunction( 'pll_home_url' )->andReturn( '' )->byDefault();
+		WP_Mock::userFunction( 'pll_the_languages' )->andReturn( false )->byDefault();
+		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn( string $url ): string => rtrim( $url, '/' ) . '/' ) )->byDefault();
+		WP_Mock::userFunction( 'home_url' )->andReturn( 'http://linker.test/' )->byDefault();
 	}
 
 	/**

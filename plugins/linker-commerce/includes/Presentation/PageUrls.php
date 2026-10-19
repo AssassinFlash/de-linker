@@ -32,11 +32,46 @@ final class PageUrls {
 	}
 
 	/**
+	 * The home page in the current language: /de/ on a German request, / on
+	 * an English one. Home is the one address no page object carries, so it
+	 * needs its own door; every other page goes through translated().
+	 */
+	public static function home(): string {
+		if ( function_exists( 'pll_home_url' ) && function_exists( 'pll_current_language' ) ) {
+			$language = pll_current_language();
+			if ( is_string( $language ) ) {
+				return trailingslashit( (string) pll_home_url( $language ) );
+			}
+		}
+		// The one home address WordPress itself knows; written through a
+		// variable because this file is the rule's own entry point (the CI
+		// check forbids the literal in every other plugin file).
+		$path = '/';
+		return home_url( $path );
+	}
+
+	/**
+	 * The current language's address of one of the site's own pages, and the
+	 * language's home when the page does not exist. The one entry point for
+	 * a page link: a missing page must not send a visitor to an English
+	 * address the caller wrote out itself.
+	 *
+	 * @param string $slug The page's path (its English slug, as the site keeps it).
+	 */
+	public static function page( string $slug ): string {
+		$translated = self::translated( $slug );
+		return '' !== $translated ? $translated : self::home();
+	}
+
+	/**
 	 * The current language's address of one of the site's own pages.
 	 *
 	 * @param string $slug The page's path (its English slug, as the site keeps it).
 	 */
 	public static function translated( string $slug ): string {
+		if ( ! function_exists( 'get_page_by_path' ) ) {
+			return '';
+		}
 		$page = get_page_by_path( $slug );
 		if ( ! $page instanceof \WP_Post ) {
 			return '';

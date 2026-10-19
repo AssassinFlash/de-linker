@@ -81,7 +81,20 @@ final class LibraryPageTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://de-linker.test/genie/' ) );
-		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => null ) );
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'args'   => array( 'genie' ),
+				'return' => new \WP_Post( (object) array( 'ID' => 60 ) ),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'args'   => array( 60 ),
+				'return' => 'https://de-linker.test/genie/',
+			)
+		);
 		WP_Mock::userFunction( 'plugins_url', array( 'return' => static fn ( string $path ): string => 'https://de-linker.test/wp-content/plugins/linker-commerce/' . $path ) );
 		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => '0+' ) );
 		WP_Mock::userFunction( 'esc_html__', array( 'return' => static fn ( string $text ): string => $text ) );

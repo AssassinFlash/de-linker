@@ -146,12 +146,13 @@ class TurnLog:
         check. Returns how many turns changed.
         """
         rows = self._db.execute(
-            "SELECT id, tool_calls, understanding FROM turns WHERE conversation_id = ?",
+            "SELECT id, tool_calls, understanding, output FROM turns "
+            "WHERE conversation_id = ?",
             (conversation_id,),
         ).fetchall()
         # The readings this conversation logged in full: the ids whose text goes.
         purged: set[str] = set()
-        for _turn_id, raw, _understanding in rows:
+        for _turn_id, raw, _understanding, _output in rows:
             for call in _calls(raw):
                 result = call.get("result")
                 if (
@@ -163,7 +164,7 @@ class TurnLog:
                 ):
                     purged.add(result["id"])
         changed = 0
-        for turn_id, raw, raw_understanding in rows:
+        for turn_id, raw, raw_understanding, raw_output in rows:
             calls = _calls(raw)
             touched = False
             derived: set[str] = set()
@@ -215,12 +216,30 @@ class TurnLog:
                 if len(kept) != len(failures):
                     understanding["call_failures"] = kept
                     touched = True
+            # A parts list read from a file keeps the rows it matched (#251): the
+            # row texts are the file's words and go with its reading; the statuses,
+            # quantities and our product labels stay for the quality check.
+            output = json.loads(raw_output) if raw_output else {}
+            if not isinstance(output, dict):
+                output = {}
+            parts = understanding.get("parts")
+            if isinstance(parts, dict) and parts.get("reading") in purged:
+                for block in output.get("blocks") or []:
+                    if not (isinstance(block, dict) and block.get("type") == "parts"):
+                        continue
+                    for row in block.get("rows") or []:
+                        if isinstance(row, dict) and row.get("text"):
+                            row["text"] = ""
+                            row["purged"] = True
+                            touched = True
             if touched:
                 self._db.execute(
-                    "UPDATE turns SET tool_calls = ?, understanding = ? WHERE id = ?",
+                    "UPDATE turns SET tool_calls = ?, understanding = ?, output = ? "
+                    "WHERE id = ?",
                     (
                         json.dumps(calls),
                         json.dumps(understanding, ensure_ascii=False),
+                        json.dumps(output, ensure_ascii=False),
                         turn_id,
                     ),
                 )

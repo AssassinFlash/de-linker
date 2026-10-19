@@ -9,8 +9,10 @@ declare( strict_types = 1 );
 
 namespace Linker\I18n\Tests\Unit;
 
+use Linker\I18n\CanonicalQuery;
 use Linker\I18n\DynamicTemplates;
 use Linker\I18n\Plugin;
+use Linker\I18n\RenderLinks;
 use Linker\I18n\Admin\StatusColumn;
 use Linker\I18n\Jobs;
 use Linker\I18n\GermanTitles;
@@ -126,6 +128,11 @@ final class PluginTest extends TestCase {
 		array( 'action', 'admin_post_linker_i18n_retranslate', StatusColumn::class, 'retranslate', 10, 1 ),
 		array( 'action', 'admin_notices', StatusColumn::class, 'notice', 10, 1 ),
 		array( 'filter', 'linker_commerce_digest_blocks', Plugin::class, 'digest_blocks', 10, 1 ),
+		array( 'filter', 'the_content', RenderLinks::class, 'content', 20, 1 ),
+		array( 'filter', 'the_excerpt', RenderLinks::class, 'content', 20, 1 ),
+		array( 'filter', 'widget_text_content', RenderLinks::class, 'content', 20, 1 ),
+		array( 'filter', 'pll_check_canonical_url', CanonicalQuery::class, 'url', 99, 2 ),
+		array( 'filter', 'redirect_canonical', CanonicalQuery::class, 'redirect', 99, 2 ),
 	);
 
 	/**

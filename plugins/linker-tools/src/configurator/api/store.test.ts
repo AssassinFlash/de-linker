@@ -178,3 +178,31 @@ test( 'a sent line the draft does not bring up to the scheme quantity stays unve
 	expect( complete ).toBe( false );
 	expect( statuses.get( 9 ) ).toBe( 'unverified' );
 } );
+
+test( 'a short readback is read once more before a line is called unverified', async () => {
+	let reads = 0;
+	const fetcher = vi.fn< typeof fetch >( async ( input ) => {
+		const url = String( input );
+		if ( url.endsWith( '/cart' ) ) {
+			reads += 1;
+			return json(
+				{
+					items:
+						reads < 3
+							? [ { id: 7, quantity: 0 } ]
+							: [ { id: 7, quantity: 2 } ],
+				},
+				reads === 1 ? { Nonce: 'abc' } : {}
+			);
+		}
+		return new Response( '{}', { status: 201 } );
+	} );
+	const statuses = new Map< number, AddStatus >();
+	const complete = await storeClient( '/wp-json/', fetcher ).addAll(
+		[ { productId: 7, quantity: 2 } ],
+		( id, status ) => statuses.set( id, status )
+	);
+	expect( complete ).toBe( true );
+	expect( statuses.get( 7 ) ).toBe( 'added' );
+	expect( reads ).toBe( 3 );
+} );
