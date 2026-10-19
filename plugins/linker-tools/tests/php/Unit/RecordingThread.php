@@ -41,6 +41,14 @@ final class RecordingThread extends Thread {
 	public array $kept_readings = array();
 
 	/**
+	 * When false, `record()` refuses and writes nothing. The proxy then
+	 * answers 409 instead of pretending the turn was stored (#373).
+	 *
+	 * @var bool
+	 */
+	public bool $accept = true;
+
+	/**
 	 * Answers with what the test installed.
 	 *
 	 * @param int $conversation Conversation post ID.
@@ -58,14 +66,19 @@ final class RecordingThread extends Thread {
 	 * @param array<array-key, mixed>    $messages     The request's messages.
 	 * @param string                     $stream       The service's SSE text, split.
 	 * @param list<array<string, mixed>> $readings  The turn's readings, split.
+	 * @return bool False when the test set `accept` to refuse the commit.
 	 */
-	public function record( int $conversation, array $messages, string $stream, array $readings = array() ): void {
+	public function record( int $conversation, array $messages, string $stream, array $readings = array() ): bool {
+		if ( ! $this->accept ) {
+			return false;
+		}
 		$this->recorded = array(
 			'conversation' => $conversation,
 			'messages'     => array_values( $messages ),
 			'stream'       => $stream,
 			'readings'     => $readings,
 		);
+		return true;
 	}
 
 	/**

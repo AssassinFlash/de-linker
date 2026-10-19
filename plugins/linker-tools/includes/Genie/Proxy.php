@@ -488,10 +488,11 @@ class Proxy {
 		if ( is_wp_error( $stream ) ) {
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}
-		// An answered turn is the conversation's record: the thread the
-		// browser sent plus the answer, kept so a reload restores both.
-		// The first customer message names the conversation, which is
-		// the only title the history rail has.
+		// An answered turn is the conversation's record, kept so a reload
+		// restores it. A second turn that snapped the same history is
+		// appended, not dropped (#373, Thread::record). The first customer
+		// message names the conversation, which is the only title the
+		// history rail has.
 		$messages = is_array( $body['messages'] ) ? $body['messages'] : array();
 		$first    = $messages[0] ?? null;
 		if ( is_array( $first ) && isset( $first['content'] ) ) {
@@ -503,7 +504,17 @@ class Proxy {
 		// The readings are the conversation's store (Thread::split, once per
 		// turn); the browser gets what each file is, not its whole text again.
 		$split = Thread::split( (string) $stream );
-		$this->thread->record( $conversation, $messages, $split['stream'], $split['readings'] );
+		if ( ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'] ) ) {
+			// The answer was produced and is not stored. The other turn
+			// stays. The shell already says the turn did not go through
+			// and leaves the question in the thread, so the customer can
+			// send it again (App.tsx, the non-attachment error path).
+			return new WP_Error(
+				'linker_genie_turn_conflict',
+				'This conversation changed while Genie was answering.',
+				array( 'status' => 409 )
+			);
+		}
 		return new WP_REST_Response(
 			array(
 				'conversation_id' => $conversation,

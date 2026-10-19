@@ -2022,6 +2022,46 @@ test( 'an assistant reply renders its semantic Markdown instead of raw markers',
 	).not.toBeNull();
 } );
 
+test( 'a second submit while a turn is in flight does not send another', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	let finish!: ( value: Awaited< ReturnType< typeof sendTurn > > ) => void;
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockImplementation(
+			() =>
+				new Promise( ( resolve ) => {
+					finish = resolve;
+				} )
+		);
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'EV chargers' },
+	} );
+	const form = screen
+		.getByRole( 'button', { name: 'Send' } )
+		.closest( 'form' );
+	if ( ! form ) {
+		throw new Error( 'composer form missing' );
+	}
+	await act( async () => {
+		fireEvent.submit( form );
+	} );
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Wallboxen' },
+	} );
+	fireEvent.submit( form );
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+	await act( async () =>
+		finish( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
+		} )
+	);
+} );
+
 test( 'waiting for the unchanged turn request gives an accessible thinking status', async () => {
 	let finish!: ( value: Awaited< ReturnType< typeof sendTurn > > ) => void;
 	vi.mocked( sendTurn ).mockImplementation(
