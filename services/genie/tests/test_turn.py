@@ -116,6 +116,105 @@ def test_meta_carries_the_logged_turn_id(log: TurnLog) -> None:
     assert log.vote(meta["turn_id"], 1)
 
 
+def _timings(body: str) -> dict[str, float]:
+    timing = _meta(body)["timing"]
+    assert isinstance(timing, dict)
+    return timing
+
+
+def test_meta_carries_the_turn_timing_record(log: TurnLog) -> None:
+    """#336: a fake-fast turn still shows every phase it ran, non-negative, the
+    phases nested inside the wall clock, and the completed record in the log."""
+    app.state.generate = _generate
+    body = (
+        TestClient(app, headers=SHELL)
+        .post(
+            "/assistant/turn",
+            json={
+                "conversation_id": "c1",
+                "messages": [{"role": "user", "content": "hello"}],
+            },
+        )
+        .text
+    )
+    timing = _timings(body)
+    # The key set of one full model turn is stable (timing.py's vocabulary);
+    # a skipped phase would be absent, not null.
+    assert set(timing) == {
+        "total",
+        "first_event",
+        "understand",
+        "model",
+        "model.attempt_1",
+        "ground",
+        "hydrate",
+        "log",
+    }
+    assert all(
+        isinstance(value, int | float) and value >= 0 for value in timing.values()
+    )
+    assert timing["total"] >= timing["model"]
+    assert timing["model"] >= timing["model.attempt_1"]
+    assert timing["total"] >= timing["understand"] + timing["model"]
+    # The stream's `done` completes the row with the same phases and the final
+    # wall clock (the wait the customer experienced; app._sse's finally).
+    [(stored,)] = log._db.execute("SELECT timing FROM turns").fetchall()
+    record = json.loads(stored)
+    assert set(record) == set(timing)
+    assert record["total"] >= timing["total"]
+
+
+def test_a_turn_that_falls_back_times_the_template_and_both_attempts(
+    log: TurnLog,
+) -> None:
+    """A phase the turn skipped is absent: grounding never ran (the model raised
+    both times), while the retry, the fallback render and hydration are timed."""
+
+    def broken(request: TurnRequest, retry: str | None) -> tuple[TurnOutput, TurnFacts]:
+        raise ValueError("not a TurnOutput")
+
+    app.state.generate = broken
+    body = (
+        TestClient(app, headers=SHELL)
+        .post(
+            "/assistant/turn",
+            json={
+                "conversation_id": "c1",
+                "messages": [{"role": "user", "content": "hello"}],
+            },
+        )
+        .text
+    )
+    timing = _timings(body)
+    assert {"model.attempt_1", "model.attempt_2", "template", "hydrate"} <= set(timing)
+    assert "ground" not in timing
+    # Both attempts together are the model's time (three-decimal rounding).
+    assert timing["model"] == pytest.approx(
+        timing["model.attempt_1"] + timing["model.attempt_2"], abs=0.001
+    )
+
+
+def test_a_person_turn_times_no_model(log: TurnLog) -> None:
+    """A request for a person is answered in code (#243): no model, grounding,
+    hydration or template phase exists to time — only the layer and the log."""
+    from linker_genie.understand import Understander
+
+    app.state.prepare = lambda body: Understander(None, None).prepare(body, None)  # type: ignore[arg-type]
+    app.state.generate = _generate
+    body = (
+        TestClient(app, headers=SHELL)
+        .post(
+            "/assistant/turn",
+            json={
+                "conversation_id": "c1",
+                "messages": [{"role": "user", "content": "Can I talk to a person?"}],
+            },
+        )
+        .text
+    )
+    assert set(_timings(body)) == {"total", "first_event", "understand", "log"}
+
+
 def test_vote_stores_a_thumbs_up_or_down(log: TurnLog) -> None:
     app.state.generate = _generate
     client = TestClient(app, headers=SHELL)
@@ -220,8 +319,9 @@ def test_an_old_log_gains_the_understanding_column(tmp_path: Path) -> None:
     upgraded.record("c", "en", True, (), False, "deepseek", "deepseek-flash", [], {})
     columns = [r[1] for r in upgraded._db.execute("PRAGMA table_info(turns)")]
     upgraded.close()
-    # #258 adds the account flag after it.
-    assert columns[-3:] == ["understanding", "approved", "contact"]
+    # #258 adds the account flag after it; #336 the passive timing record after
+    # that (NULL for the turns logged before it).
+    assert columns[-4:] == ["understanding", "approved", "contact", "timing"]
 
 
 def _blocks(body: str) -> list[dict[str, Any]]:

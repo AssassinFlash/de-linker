@@ -17,6 +17,7 @@ from linker_genie.prices import Lookup, fill
 from linker_genie.route import Route
 from linker_genie.schema import TurnOutput, TurnRequest
 from linker_genie.template import fallback
+from linker_genie.timing import Timing, phase
 
 Generate = Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]
 
@@ -41,6 +42,7 @@ def run(
     route: Route | None = None,
     seed: TurnFacts | None = None,
     commerce: Lookup | None = None,
+    clock: Timing | None = None,
 ) -> TurnResult:
     """Produce a grounded, hydrated turn. `generate` may call tools.
 
@@ -49,7 +51,7 @@ def run(
     model that fails twice, so the fallback still shows what code found.
     Every card of the shipped turn, the fallback's too, gets its price line from
     the turn's tools (prices.fill, #242); `commerce` reads the products no tool
-    priced, as the customer.
+    priced, as the customer. `clock` only times the phases (timing.py, #336).
     """
     retry_reason: str | None = None
     seeded = seed or TurnFacts()
@@ -57,18 +59,20 @@ def run(
     last_failures: tuple[str, ...] = ()
     for attempt in (1, 2):
         try:
-            output, facts = generate(request, retry_reason)
+            with phase(clock, "model"), phase(clock, f"model.attempt_{attempt}"):
+                output, facts = generate(request, retry_reason)
         except (ValueError, TypeError, RuntimeError) as error:
             last_failures = (str(error),)
             retry_reason = last_failures[0]
             last_facts = seeded
             continue
         last_facts = merge([seeded, facts])
-        result = check(output, last_facts, route)
+        with phase(clock, "ground"):
+            result = check(output, last_facts, route)
         if result.ok:
-            priced, priced_facts, missed = fill(
-                hydrate(output, last_facts), last_facts, commerce
-            )
+            with phase(clock, "hydrate"):
+                hydrated = hydrate(output, last_facts)
+                priced, priced_facts, missed = fill(hydrated, last_facts, commerce)
             return TurnResult(
                 output=priced,
                 facts=priced_facts,
@@ -81,9 +85,10 @@ def run(
             )
         last_failures = result.failures
         retry_reason = result.reason
-    priced, priced_facts, missed = fill(
-        fallback(last_facts, request.locale, route), last_facts, commerce
-    )
+    with phase(clock, "template"):
+        rendered = fallback(last_facts, request.locale, route)
+    with phase(clock, "hydrate"):
+        priced, priced_facts, missed = fill(rendered, last_facts, commerce)
     return TurnResult(
         output=priced,
         facts=priced_facts,

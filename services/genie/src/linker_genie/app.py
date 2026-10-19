@@ -41,6 +41,7 @@ from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup
 from linker_genie.schema import MAX_REQUEST_BYTES, TurnOutput, TurnRequest, VoteRequest
 from linker_genie.storeapi import StoreVocabulary
+from linker_genie.timing import Timing, phase
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 
@@ -128,12 +129,18 @@ def health() -> dict[str, str]:
 def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     """One conversation turn, grounded and hydrated, as SSE."""
     started = time.monotonic()
+    # The turn's passive phase timings (#336, timing.py): measurement only, no
+    # decision reads them.
+    clock = Timing()
     prepare = getattr(request.app.state, "prepare", None)
-    prepared: Prepared = (
-        prepare(body)
-        if prepare is not None
-        else understander().prepare(body, ability_client())
-    )
+    with phase(clock, "understand"):
+        prepared: Prepared = (
+            prepare(body)
+            if prepare is not None
+            else understander().prepare(body, ability_client())
+        )
+    if prepared.timing is not None:
+        clock.adopt(prepared.timing)
     # Which earlier turns of this conversation offered the team's contact, newest
     # first: one per customer message is all the repeat rule can look back on.
     offers = turn_log().offers(
@@ -145,23 +152,25 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         ability_client(), body, started + LOOKUP_DEADLINE
     )
     try:
-        result, service_block = _answer(body, prepared, request, commerce)
+        result, service_block = _answer(body, prepared, request, commerce, clock)
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
-        turn_log().record(
-            conversation_id=body.conversation_id,
-            locale=body.locale,
-            grounded=False,
-            failures=(f"internal: {error}",),
-            fallback=True,
-            provider=provider_name(),
-            model=model_name(),
-            tool_calls=[],
-            output={},
-            question=_question(body),
-            page=body.page_context.model_dump(),
-            understanding=prepared.log,
-            approved=body.user.partner,
-        )
+        with phase(clock, "log"):
+            turn_log().record(
+                conversation_id=body.conversation_id,
+                locale=body.locale,
+                grounded=False,
+                failures=(f"internal: {error}",),
+                fallback=True,
+                provider=provider_name(),
+                model=model_name(),
+                tool_calls=[],
+                output={},
+                question=_question(body),
+                page=body.page_context.model_dump(),
+                understanding=prepared.log,
+                approved=body.user.partner,
+                timing=clock.as_log(),
+            )
         raise
     if result.retried and result.attempts > 1:
         prepared.log["retried"] = list(result.retried)
@@ -202,26 +211,28 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     # A request for a person and a parts list are answered by the service alone:
     # no model ran (model-routing audits read provider/model).
     code_made = prepared.route.name in ("person", "parts")
-    turn_id = turn_log().record(
-        conversation_id=body.conversation_id,
-        locale=body.locale,
-        grounded=result.grounded,
-        failures=result.failures,
-        fallback=result.fallback,
-        # A request for a person is answered by the service alone: no model ran.
-        provider="service" if code_made else provider_name(),
-        # "none": no model wrote this turn (model-routing audits read the field).
-        model="none" if code_made else model_name(),
-        tool_calls=result.facts.tool_calls,
-        output=shipped,
-        question=_question(body),
-        page=body.page_context.model_dump(),
-        understanding=prepared.log,
-        approved=body.user.partner,
-        contact=offer.reason if offer is not None else None,
-    )
+    with phase(clock, "log"):
+        turn_id = turn_log().record(
+            conversation_id=body.conversation_id,
+            locale=body.locale,
+            grounded=result.grounded,
+            failures=result.failures,
+            fallback=result.fallback,
+            # A request for a person is answered by the service alone: no model ran.
+            provider="service" if code_made else provider_name(),
+            # "none": no model wrote this turn (model-routing audits read the field).
+            model="none" if code_made else model_name(),
+            tool_calls=result.facts.tool_calls,
+            output=shipped,
+            question=_question(body),
+            page=body.page_context.model_dump(),
+            understanding=prepared.log,
+            approved=body.user.partner,
+            contact=offer.reason if offer is not None else None,
+            timing=clock.as_log(),
+        )
     return StreamingResponse(
-        _sse(result, shipped, turn_id, prepared),
+        _sse(result, shipped, turn_id, prepared, clock),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache"},
     )
@@ -262,7 +273,11 @@ def forget(conversation_id: str) -> dict[str, int]:
 
 
 def _answer(
-    body: TurnRequest, prepared: Prepared, request: Request, commerce: Lookup
+    body: TurnRequest,
+    prepared: Prepared,
+    request: Request,
+    commerce: Lookup,
+    clock: Timing | None = None,
 ) -> tuple[TurnResult, dict[str, object] | None]:
     """The turn's answer: the model's; the service's own for a request for a person
     (contact.answer; #243); or the parts list's (parts.answer; #251). With a service
@@ -295,9 +310,9 @@ def _answer(
             block.model_dump(),
         )
     generate = getattr(request.app.state, "generate", None) or make_generate(
-        ability_client(), prepared=prepared, pages=page_reader().read
+        ability_client(), prepared=prepared, pages=page_reader().read, clock=clock
     )
-    return run(body, generate, prepared.route, prepared.facts, commerce), None
+    return run(body, generate, prepared.route, prepared.facts, commerce, clock), None
 
 
 def _question(body: TurnRequest) -> str:
@@ -309,8 +324,15 @@ def _question(body: TurnRequest) -> str:
 
 
 def _sse(
-    result: TurnResult, shipped: dict[str, object], turn_id: int, prepared: Prepared
+    result: TurnResult,
+    shipped: dict[str, object],
+    turn_id: int,
+    prepared: Prepared,
+    clock: Timing,
 ) -> Iterator[str]:
+    # The generator's first step is the earliest the response path can mark the
+    # first SSE event (#336); the meta event is built here, so it can carry it.
+    clock.first_event()
     meta = {
         "turn_id": turn_id,
         "grounded": result.grounded,
@@ -323,18 +345,34 @@ def _sse(
         "route": prepared.route.name,
         "intent": (prepared.log.get("jev") or {}).get("intent"),
         "jev_error": prepared.log.get("jev_error"),
+        # The turn's passive phase timings (#336, timing.py): `total` here is the
+        # wall clock to this first event; the completed record lands in the turn
+        # log's row after the stream ends. Additive — the shell ignores it.
+        "timing": clock.as_log(),
     }
-    yield _event("meta", meta)
-    # This turn's files (#236): what the shell shows for each, and the reading the
-    # proxy keeps with the conversation (and takes out of the stream it stores).
-    for card in prepared.cards:
-        yield _event("attachment", card)
-    for reading in prepared.readings:
-        yield _event("reading", reading.model_dump())
-    blocks = shipped.get("blocks")
-    for block in blocks if isinstance(blocks, list) else []:
-        yield _event("block", block)
-    yield _event("done", {"ok": True})
+    try:
+        yield _event("meta", meta)
+        # This turn's files (#236): what the shell shows for each, and the reading
+        # the proxy keeps with the conversation (and takes out of the stream it
+        # stores).
+        for card in prepared.cards:
+            yield _event("attachment", card)
+        for reading in prepared.readings:
+            yield _event("reading", reading.model_dump())
+        blocks = shipped.get("blocks")
+        for block in blocks if isinstance(blocks, list) else []:
+            yield _event("block", block)
+        yield _event("done", {"ok": True})
+    finally:
+        # The stream ended — `done`, or the customer went away and the generator
+        # is closed early: the row's timing is completed with the turn's true
+        # wall clock, the wait the customer experienced (a passive second write,
+        # one UPDATE of the same row; #336). Measurement never breaks the
+        # stream, so a failed write is logged and let go.
+        try:
+            turn_log().set_timing(turn_id, clock.as_log())
+        except Exception:  # noqa: BLE001 - passive by contract (timing.py)
+            logger.warning("genie timing record could not be completed", exc_info=True)
 
 
 def _event(name: str, payload: object) -> str:

@@ -127,6 +127,53 @@ def test_budget_facts_merge_the_parts_of_all_calls() -> None:
     assert merged.product_ids == {4100, 4101, 4102}
 
 
+def test_a_runner_times_each_call_on_the_clock() -> None:
+    """#336: a tool call the model makes is timed as model.tool.<ability>."""
+    from linker_genie.timing import Timing
+
+    class RecordingClient:
+        def record(
+            self,
+            name: str,
+            arguments: dict[str, Any] | None,
+            user_context: str | None = None,
+            locale: str = "en",
+        ) -> tuple[dict[str, Any], TurnFacts]:
+            return {"ok": name}, TurnFacts()
+
+    clock = Timing()
+    runner = _ability_runner(
+        RecordingClient(),  # type: ignore[arg-type]
+        ToolBudget(),
+        "linker/get-product",
+        clock=clock,
+    )
+    runner({"product_id": 4107})
+    record = clock.as_log()
+    # The ability's own name, the one the turn log's tool_calls carry too.
+    assert set(record) == {"model.tool.linker/get-product", "total"}
+    assert record["model.tool.linker/get-product"] >= 0
+
+
+def test_a_runner_without_a_clock_answers_as_before() -> None:
+    class RecordingClient:
+        def record(
+            self,
+            name: str,
+            arguments: dict[str, Any] | None,
+            user_context: str | None = None,
+            locale: str = "en",
+        ) -> tuple[dict[str, Any], TurnFacts]:
+            return {"ok": name}, TurnFacts()
+
+    runner = _ability_runner(
+        RecordingClient(),  # type: ignore[arg-type]
+        ToolBudget(),
+        "linker/get-product",
+    )
+    assert runner({"product_id": 4107}) == {"ok": "linker/get-product"}
+
+
 def test_the_prompt_tells_a_guest_inquiry_to_ask_for_a_login() -> None:
     """C2-anon-de: the German system prompt and the per-turn reminder both
     name the login sentence and forbid the team handoff for this fact."""

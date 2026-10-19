@@ -7,7 +7,9 @@ against what the turn's abilities returned (`tool_calls[*].result`), so those
 are logged with the turn. The understanding layer's record (product words,
 Jev's reading, the route, its failures) is logged with it too (#233), and
 whether the customer's account is an approved one (`approved`, #258): the
-judges' remit lets an approved account see prices and nobody else.
+judges' remit lets an approved account see prices and nobody else. The turn's
+passive phase timings are one JSON object per row (`timing`, #336, timing.py) —
+the numbers the latency work reads (ops/turn_latency.py).
 """
 
 from __future__ import annotations
@@ -37,7 +39,8 @@ CREATE TABLE IF NOT EXISTS turns (
     page TEXT,
     understanding TEXT,
     approved INTEGER,
-    contact TEXT
+    contact TEXT,
+    timing TEXT
 );
 """
 
@@ -50,6 +53,10 @@ ADDED_COLUMNS = (
     ("approved", "INTEGER"),
     # Why the turn offered the team's contact (contact.py, #243), NULL when it did not.
     ("contact", "TEXT"),
+    # The turn's passive phase timings (#336, timing.py): a JSON object of
+    # phase→seconds, written when the row is recorded and completed with the
+    # final totals when the turn's stream ends (set_timing).
+    ("timing", "TEXT"),
 )
 
 
@@ -96,14 +103,15 @@ class TurnLog:
         understanding: dict[str, Any] | None = None,
         approved: bool = False,
         contact: str | None = None,
+        timing: dict[str, float] | None = None,
     ) -> int:
         cursor = self._db.execute(
             """
             INSERT INTO turns (
                 conversation_id, locale, grounded, failures, fallback,
                 provider, model, tool_calls, output, question, page,
-                understanding, approved, contact
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                understanding, approved, contact, timing
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 conversation_id,
@@ -120,10 +128,21 @@ class TurnLog:
                 json.dumps(understanding or {}, ensure_ascii=False),
                 int(approved),
                 contact,
+                json.dumps(timing) if timing else None,
             ),
         )
         self._db.commit()
         return int(cursor.lastrowid or 0)
+
+    def set_timing(self, turn_id: int, timing: dict[str, float]) -> None:
+        """Complete a turn's timing record when its stream ends (#336): the phases
+        were written with the row, the final `total` and `first_event` exist only
+        after the customer's stream is done. A passive second write of the row."""
+        self._db.execute(
+            "UPDATE turns SET timing = ? WHERE id = ?",
+            (json.dumps(timing), turn_id),
+        )
+        self._db.commit()
 
     def offers(self, conversation_id: str, limit: int) -> list[bool]:
         """Whether each of the conversation's last `limit` turns carried the contact

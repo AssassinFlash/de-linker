@@ -252,3 +252,61 @@ def test_a_csv_attachment_becomes_a_parts_turn(vocabulary: Vocabulary) -> None:
     ]
     assert [reading.kind for reading in prepared.readings] == ["list"]
     assert prepared.cards[0]["kind"] == "list"
+
+
+def test_the_layer_times_its_own_phases(vocabulary: Vocabulary) -> None:
+    """#336: the layer's clock travels with the Prepared; the app adopts it."""
+    understander = Understander(lambda: vocabulary, FakeJev(_reading("find_products")))
+    prepared = understander.prepare(_request("saj"), _abilities([]))
+    assert prepared.timing is not None
+    record = prepared.timing.as_log()
+    assert {
+        "understand.vocabulary",
+        "understand.jev",
+        "understand.calls",
+        "understand.call.linker/search-products",
+        "total",
+    } <= set(record)
+    assert all(value >= 0 for value in record.values())
+
+
+def test_a_route_call_failure_is_timed_like_any_call(vocabulary: Vocabulary) -> None:
+    """The failed call's duration is the one latency work needs (the retries the
+    ability client makes happen inside it); it is observed in the finally."""
+    understander = Understander(lambda: vocabulary, FakeJev(_reading("find_products")))
+    prepared = understander.prepare(_request("goodwe"), _abilities([], status=500))
+    assert prepared.log["call_failures"]
+    assert prepared.timing is not None
+    assert "understand.call.linker/search-products" in prepared.timing.as_log()
+
+
+def test_a_page_read_is_timed_under_its_ability_name(vocabulary: Vocabulary) -> None:
+    """A route's page read is `understand.call.linker/read-page` — the dossier's
+    first suspect in the serial stack (§1.14), so the key names it directly."""
+    from linker_genie.jev import Reading as JevReading
+
+    def pages(page: Any, question: str, logged_in: bool) -> dict[str, Any]:
+        return {
+            "type": page.type,
+            "title": page.title or "",
+            "url": "/blog/",
+            "outline": ["What is AC coupling?"],
+            "text": "## What is AC coupling?\nAC coupling adds a battery inverter.",
+            "figures": {},
+            "complete": True,
+        }
+
+    jev = FakeJev(JevReading("other", 0.9, 0.97, 0.05, 0.1, 2.6, 0.0))
+    understander = Understander(lambda: vocabulary, jev, pages=pages)
+    prepared = understander.prepare(
+        _request(
+            "What does this page mean by AC coupling?",
+            type="blog",
+            title="Blog",
+            url="/blog/",
+        ),
+        _abilities([]),
+    )
+    assert [call.ability for call in prepared.route.calls] == ["linker/read-page"]
+    assert prepared.timing is not None
+    assert "understand.call.linker/read-page" in prepared.timing.as_log()
