@@ -1,0 +1,71 @@
+{
+  "run": "docs/acceptance/2026-10-20/397/full/baseline-20261020T013329.jsonl",
+  "wp": "http://127.0.0.1:9177",
+  "judge": "jev then deepseek-flash, --judge",
+  "b45_human_score": "not assigned on this sample",
+  "prior_run": "/Users/chesterjohn/de-linker-data/baseline-100/fix-397/baseline-20261019T234236.jsonl",
+  "rows": [
+    {
+      "id": "b44-en",
+      "assertion": "judge",
+      "verdict": "fail",
+      "seconds": 5.2,
+      "failures": ["judge appropriate: no"],
+      "judged": {"grounded": "2", "appropriate": "no"},
+      "blocks": ["handoff"],
+      "answer": "Our team will answer that at sales@de-linker.com.",
+      "prior_2026_10_19": {
+        "verdict": "fail",
+        "judged": {"grounded": "2", "appropriate": "no"},
+        "answer": "Our team will answer that at sales@de-linker.com."
+      }
+    },
+    {
+      "id": "b44-de",
+      "assertion": "judge",
+      "verdict": "fail",
+      "seconds": 6.7,
+      "failures": ["judge grounded: 1"],
+      "judged": {"grounded": "1", "appropriate": "yes"},
+      "blocks": ["handoff"],
+      "answer": "Unser Team beantwortet das unter sales@de-linker.com.",
+      "prior_2026_10_19": {
+        "verdict": "pass",
+        "judged": {"grounded": "2", "appropriate": "yes"},
+        "answer": "Unser Team beantwortet das unter sales@de-linker.com."
+      }
+    },
+    {
+      "id": "b45-en",
+      "assertion": "human-review",
+      "verdict": "needs-review",
+      "seconds": 4.7,
+      "failures": [],
+      "floors": "pass: no handoff, no mailbox, no numbers, text block only",
+      "human_score": null,
+      "blocks": ["text"],
+      "answer": "Thank you for reaching out. If anything else comes up — product details, documents, pairings or a solution draft — just get in touch. Have a good day!",
+      "prior_2026_10_19": {
+        "verdict": "needs-review",
+        "human_score": null,
+        "note": "polite close, no handoff, no numbers; floors passed; nobody scored it beyond needs-review"
+      }
+    },
+    {
+      "id": "b45-de",
+      "assertion": "human-review",
+      "verdict": "needs-review",
+      "seconds": 2.1,
+      "failures": [],
+      "floors": "pass: no handoff, no mailbox, no numbers, text block only",
+      "human_score": null,
+      "blocks": ["text"],
+      "answer": "Gern geschehen! Wenn Ihnen später noch etwas einfällt – zu Produkten, Pairings, Dokumenten oder einem Lösungsentwurf – bin ich jederzeit für Sie da. Einen schönen Tag noch!",
+      "prior_2026_10_19": {
+        "verdict": "needs-review",
+        "human_score": null,
+        "note": "polite close, no handoff, no numbers; floors passed; nobody scored it beyond needs-review"
+      }
+    }
+  ]
+}
