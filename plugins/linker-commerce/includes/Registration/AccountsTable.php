@@ -102,7 +102,7 @@ final class AccountsTable extends WP_List_Table {
 			case 'contact':
 				return esc_html( $item->display_name ) . '<br>' . esc_html( $item->user_email );
 			case 'status':
-				return '<span class="linker-account-status-label">' . esc_html( Approval::label( $this->approval->status( $item->ID ) ) ) . '</span>';
+				return '<span class="linker-account-status-label linker-status linker-status-' . esc_attr( $this->approval->status( $item->ID ) ) . '">' . esc_html( Approval::label( $this->approval->status( $item->ID ) ) ) . '</span>';
 			case 'reason':
 				return '<span class="linker-account-reason-value">' . esc_html( $this->approval->reason( $item->ID ) ) . '</span>';
 			case 'registered':

@@ -87,7 +87,11 @@ export function AccountCard( { account, focused = false, onSave }: Props ) {
 				<a href={ `mailto:${ account.email }` }>{ account.email }</a>
 			</p>
 			<p>
-				<strong>{ account.statusLabel }</strong>
+				<strong
+					className={ `linker-status linker-status-${ account.status }` }
+				>
+					{ account.statusLabel }
+				</strong>
 				{ account.audit && (
 					<span className="description"> · { account.audit }</span>
 				) }
@@ -156,7 +160,7 @@ export function AccountCard( { account, focused = false, onSave }: Props ) {
 			<div className="linker-account-actions">
 				<button
 					type="button"
-					className="button button-primary"
+					className="button linker-decide linker-decide-approve"
 					disabled={ busy }
 					onClick={ () => choose( 'approved' ) }
 				>
@@ -164,7 +168,7 @@ export function AccountCard( { account, focused = false, onSave }: Props ) {
 				</button>
 				<button
 					type="button"
-					className="button"
+					className="button linker-decide linker-decide-restrict"
 					disabled={ busy }
 					onClick={ () => choose( 'restricted' ) }
 				>
@@ -172,7 +176,7 @@ export function AccountCard( { account, focused = false, onSave }: Props ) {
 				</button>
 				<button
 					type="button"
-					className="button button-link-delete"
+					className="button linker-decide linker-decide-reject"
 					disabled={ busy }
 					onClick={ () => choose( 'rejected' ) }
 				>
@@ -210,7 +214,11 @@ export function AccountCard( { account, focused = false, onSave }: Props ) {
 					<div className="linker-account-actions">
 						<button
 							type="submit"
-							className="button button-primary"
+							className={ `button linker-decide ${
+								decision === 'restricted'
+									? 'linker-decide-restrict'
+									: 'linker-decide-reject'
+							}` }
 							disabled={ busy }
 						>
 							{ decision === 'restricted'
