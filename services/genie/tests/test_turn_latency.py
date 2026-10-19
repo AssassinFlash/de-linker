@@ -168,3 +168,30 @@ def test_a_log_without_completed_turns_says_so(
     out = capsys.readouterr().out
     assert _counts(out) == {"completed": 0, "incomplete": 1, "unfinished": 0}
     assert "no completed turns" in out
+
+
+def test_a_log_from_before_336_reads_unfinished_as_zero(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#336 review: an old log has no turn_starts table; the summary must not
+    raise for it (the start notes are simply absent)."""
+    path = tmp_path / "old.sqlite"
+    db = sqlite3.connect(path)
+    db.execute(
+        "CREATE TABLE turns (id INTEGER PRIMARY KEY, conversation_id TEXT NOT NULL,"
+        " created_at TEXT NOT NULL DEFAULT (datetime('now')), locale TEXT NOT NULL,"
+        " grounded INTEGER NOT NULL, failures TEXT NOT NULL, fallback INTEGER NOT NULL,"
+        " provider TEXT NOT NULL, model TEXT NOT NULL, tool_calls TEXT NOT NULL,"
+        " output TEXT NOT NULL, vote INTEGER, timing TEXT)"
+    )
+    db.execute(
+        "INSERT INTO turns (conversation_id, locale, grounded, failures, fallback,"
+        " provider, model, tool_calls, output, timing)"
+        " VALUES ('c1', 'en', 1, '[]', 0, 'deepseek', 'deepseek-flash', '[]', '{}',"
+        " '{\"total\": 2.0}')"
+    )
+    db.commit()
+    db.close()
+    assert turn_latency.main([str(path)]) == 0
+    out = capsys.readouterr().out
+    assert _counts(out) == {"completed": 1, "incomplete": 0, "unfinished": 0}
