@@ -104,7 +104,7 @@ def test_build_skips_the_unicode_fixture_without_a_unicode_font(
     assert manifest["skipped"] == [
         {
             "file": "i11-unicode",
-            "reason": "no Unicode font; U+200B cannot be encoded in Helvetica",
+            "reason": "no font on this host encodes U+200B",
         }
     ]
     assert "i11-unicode" not in manifest["files"]
@@ -122,6 +122,64 @@ def test_short_text_is_padded_past_the_scan_threshold(tmp_path: Path) -> None:
     long = _text_pdf(tmp_path / "long.pdf", ["x" * TEXT_FLOOR])
     long_text = " ".join((PdfReader(long).pages[0].extract_text() or "").split())
     assert "names no price and asks for nothing" not in long_text
+
+
+def test_a_font_without_u200b_is_not_a_unicode_font(tmp_path: Path) -> None:
+    # A TTF can exist and still lack U+200B. `or FONT` used to treat any
+    # existing file as Unicode-capable.
+    bare = tmp_path / "bare.ttf"
+    marked = tmp_path / "marked.ttf"
+    _write_font(bare, [])
+    _write_font(marked, [corpus.ZWSP])
+    assert corpus._cmap_has(bare, corpus.ZWSP) is False
+    assert corpus._cmap_has(marked, corpus.ZWSP) is True
+    assert corpus._select_unicode_font([str(bare)], None) is None
+    assert corpus._select_unicode_font([str(bare)], bare) is None
+    assert corpus._select_unicode_font([str(bare), str(marked)], bare) == marked
+    assert corpus._select_unicode_font([], marked) == marked
+
+
+def test_known_host_font_cmap_matches_the_file() -> None:
+    known = [
+        Path("/System/Library/Fonts/Supplemental/Arial Unicode.ttf"),
+        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+    ]
+    present = [path for path in known if path.is_file()]
+    if not present:
+        pytest.skip("no Arial Unicode or DejaVu on this host")
+    assert corpus._cmap_has(present[0], corpus.ZWSP) is True
+
+
+def _write_font(path: Path, extra: list[int]) -> None:
+    """A tiny TTF whose cmap is space plus `extra`."""
+    from fontTools.fontBuilder import FontBuilder  # type: ignore[import-untyped]
+    from fontTools.pens.ttGlyphPen import TTGlyphPen  # type: ignore[import-untyped]
+
+    pen = TTGlyphPen(None)
+    pen.moveTo((0, 0))
+    pen.lineTo((400, 0))
+    pen.lineTo((400, 600))
+    pen.closePath()
+    box = pen.glyph()
+    empty = TTGlyphPen(None).glyph()
+    order = [".notdef", "space"]
+    glyphs = {".notdef": empty, "space": box}
+    cmap = {32: "space"}
+    for codepoint in extra:
+        name = f"u{codepoint:04X}"
+        order.append(name)
+        glyphs[name] = box
+        cmap[codepoint] = name
+    builder = FontBuilder(1000, isTTF=True)
+    builder.setupGlyphOrder(order)
+    builder.setupCharacterMap(cmap)
+    builder.setupGlyf(glyphs)
+    builder.setupHorizontalMetrics({name: (500, 50) for name in order})
+    builder.setupHorizontalHeader(ascent=800, descent=-200)
+    builder.setupNameTable({"familyName": "C334Probe", "styleName": "Regular"})
+    builder.setupOS2()
+    builder.setupPost()
+    builder.save(path)
 
 
 @pytest.mark.skipif(corpus.FONT is None, reason="no TTF font on this host")

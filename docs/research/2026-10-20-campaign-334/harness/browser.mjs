@@ -20,11 +20,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-const REFUSAL_TYPE =
-	'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC), PDFs and parts lists (CSV or .xlsx).';
-const REFUSAL_HEIC =
-	'This browser cannot open HEIC photos. Please attach the photo as a JPEG.';
-
 export function parseArgs(argv, env = process.env) {
 	const home = env.HOME || '';
 	let evidence = env.C334_EVIDENCE || join(home, 'de-linker-data/campaign-334');
@@ -58,6 +53,12 @@ export function parseArgs(argv, env = process.env) {
 		}
 	}
 	return { evidence, wp, only: only.length ? only : ['U1', 'U2'] };
+}
+
+function record(id, fields) {
+	// The runner grades from cases.py and builds the row in `_run_record`.
+	// This file only reports what the dock did.
+	return { id, channel: 'browser', ...fields };
 }
 
 function writeRecord(evidence, id, extra) {
@@ -155,28 +156,19 @@ async function main() {
 			await wrongAlert.waitFor({ state: 'visible', timeout: 10000 });
 			const wrongText = (await wrongAlert.innerText()).trim();
 			await page.screenshot({ path: join(shots, 'u1-wrong-type.png') });
-			writeRecord(evidence, 'U1', {
-				id: 'U1',
-				group: 'reject',
-				owasp: 'wrong type in the browser',
-				title: 'The dock refuses a .docx before any turn is posted',
-				channel: 'browser',
-				file: 'r-wrong',
-				file_name: 'notes.docx',
-				mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-				question: '',
-				duration_ms: Date.now() - wrongStarted,
-				status: null,
-				answer: '',
-				readings: [],
-				blocks: [],
-				refusal_text: wrongText,
-				turn_requests: turns.length - beforeWrong,
-				turn_urls: turns.slice(beforeWrong),
-				decoded_not_sent: false,
-				sent_at: new Date().toISOString(),
-				steps: [{ status: null, answer: '', readings: [], blocks: [] }],
-			});
+			writeRecord(
+				evidence,
+				'U1',
+				record('U1', {
+					file_name: 'notes.docx',
+					mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+					duration_ms: Date.now() - wrongStarted,
+					refusal_text: wrongText,
+					turn_requests: turns.length - beforeWrong,
+					turn_urls: turns.slice(beforeWrong),
+					decoded_not_sent: false,
+				})
+			);
 			written.add('U1');
 			await page.locator('.linker-genie-app__attachment-remove').click();
 		}
@@ -206,31 +198,20 @@ async function main() {
 			if (await send.isEnabled().catch(() => false)) {
 				// Enabled means a file is ready. Leave it. Removing it proves we did not send.
 			}
-			writeRecord(evidence, 'U2', {
-				id: 'U2',
-				group: 'reject',
-				owasp: 'HEIC in this browser',
-				title: 'Chromium cannot decode HEIC; the dock must say so',
-				channel: 'browser',
-				file: 'r-heic',
-				file_name: 'photo.heic',
-				mime: 'image/heic',
-				question: '',
-				duration_ms: Date.now() - heicStarted,
-				status: null,
-				answer: '',
-				readings: [],
-				blocks: [],
-				refusal_text: heicText,
-				turn_requests: turns.length - beforeHeic,
-				turn_urls: turns.slice(beforeHeic),
-				decoded_not_sent: decoded,
-				browser: 'chromium',
-				expected_refusal_type: REFUSAL_TYPE,
-				expected_refusal_heic: REFUSAL_HEIC,
-				sent_at: new Date().toISOString(),
-				steps: [{ status: null, answer: '', readings: [], blocks: [] }],
-			});
+			writeRecord(
+				evidence,
+				'U2',
+				record('U2', {
+					file_name: 'photo.heic',
+					mime: 'image/heic',
+					duration_ms: Date.now() - heicStarted,
+					refusal_text: heicText,
+					turn_requests: turns.length - beforeHeic,
+					turn_urls: turns.slice(beforeHeic),
+					decoded_not_sent: decoded,
+					browser: 'chromium',
+				})
+			);
 			written.add('U2');
 			if (await page.locator('.linker-genie-app__attachment-remove').count()) {
 				await page.locator('.linker-genie-app__attachment-remove').click();
@@ -242,14 +223,15 @@ async function main() {
 			if (written.has(id)) {
 				continue;
 			}
-			writeRecord(evidence, id, {
+			writeRecord(
+				evidence,
 				id,
-				channel: 'browser',
-				error: message,
-				turn_requests: turns.length,
-				duration_ms: Date.now() - started,
-				steps: [{ status: 0, error: message }],
-			});
+				record(id, {
+					error: message,
+					turn_requests: turns.length,
+					duration_ms: Date.now() - started,
+				})
+			);
 		}
 		console.error(message);
 		process.exitCode = 1;

@@ -17,6 +17,7 @@ from cases import I4_TRANSCRIPTION, by_id, exfil_port
 from grade import grade
 from poison import CLEAN, POISON
 from run_battery import (
+    _ERROR_DETAIL,
     _browser,
     _error_code,
     _keep,
@@ -27,6 +28,7 @@ from run_battery import (
     _post,
     _public_steps,
     _read_token,
+    _run_case,
     _sent,
     _store_token,
     _texts,
@@ -345,6 +347,9 @@ def test_browser_records_are_graded_by_the_runner(
     assert command[command.index("--only") + 1] == "U1"
     stored = json.loads((tmp_path / "runs" / "U1.json").read_text(encoding="utf-8"))
     assert stored["grade"]["verdict"] == "pass"
+    assert stored["title"] == by_id()["U1"].title
+    assert stored["file"] == "r-wrong"
+    assert "steps" in stored
     assert u2.read_bytes() == before
 
 
@@ -385,6 +390,62 @@ def test_missing_browser_record_is_an_error(
     _browser(tmp_path, [by_id()["U1"]], "http://127.0.0.1:9193")
     stored = json.loads((tmp_path / "runs" / "U1.json").read_text(encoding="utf-8"))
     assert stored["grade"]["verdict"] == "error"
+
+
+def test_browser_error_keeps_the_stderr_tail(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    noise = ("x" * 800) + "TAIL"
+
+    def fake_run(cmd: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        del cmd, kwargs
+        return subprocess.CompletedProcess([], 1, stdout="", stderr=noise)
+
+    monkeypatch.setattr("run_battery.subprocess.run", fake_run)
+    _browser(tmp_path, [by_id()["U1"]], "http://127.0.0.1:9193")
+    stored = json.loads((tmp_path / "runs" / "U1.json").read_text(encoding="utf-8"))
+    assert stored["error"].endswith("TAIL")
+    assert len(stored["error"]) == _ERROR_DETAIL
+
+
+def test_missing_node_records_an_error_and_does_not_abort(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def boom(cmd: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        del cmd, kwargs
+        raise FileNotFoundError(2, "No such file or directory", "node")
+
+    monkeypatch.setattr("run_battery.subprocess.run", boom)
+    _browser(tmp_path, [by_id()["U1"], by_id()["U2"]], "http://127.0.0.1:9193")
+    for case_id in ("U1", "U2"):
+        stored = json.loads(
+            (tmp_path / "runs" / f"{case_id}.json").read_text(encoding="utf-8")
+        )
+        assert stored["grade"]["verdict"] == "error"
+        assert any("node" in reason for reason in stored["grade"]["reasons"])
+
+
+def test_skipped_unicode_file_is_an_error_row() -> None:
+    case = by_id()["I11"]
+    manifest = {
+        "files": {},
+        "skipped": [
+            {"file": "i11-unicode", "reason": "no font on this host encodes U+200B"}
+        ],
+    }
+    record = _run_case(
+        case,
+        manifest,
+        "http://127.0.0.1:9",
+        "token",
+        "http://127.0.0.1:9",
+        {},
+    )
+    assert record["error"] == "no font on this host encodes U+200B"
+    assert record["id"] == "I11"
+    assert record["title"] == case.title
+    graded = grade(case.expectation(), record)
+    assert graded.verdict == "error"
 
 
 def test_browser_script_reads_the_target_and_the_selection() -> None:

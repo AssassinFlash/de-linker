@@ -1,21 +1,8 @@
 {
   "id": "U1",
-  "group": "reject",
   "channel": "browser",
   "file": "r-wrong",
-  "status": null,
-  "answer": "",
-  "readings": [],
-  "blocks": [],
   "refusal_text": "This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC), PDFs and parts lists (CSV or .xlsx).",
   "turn_requests": 0,
-  "decoded_not_sent": false,
-  "steps": [
-    {
-      "status": null,
-      "answer": "",
-      "readings": [],
-      "blocks": []
-    }
-  ]
+  "decoded_not_sent": false
 }

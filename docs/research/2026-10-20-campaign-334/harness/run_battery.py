@@ -38,6 +38,12 @@ EVIDENCE = Path(
 # that stack. A proxied turn returns inside Proxy::TURN_BUDGET (60 s),
 # before this socket gives up.
 TIMEOUT = 240
+# Error text stored on a run record. A transport failure keeps the first
+# 500 characters of the HTTP body. A browser failure keeps the last 500 of
+# the message: the useful part of stderr is at the end, the same tail
+# `pdfwork.convert` logs when the worker dies
+# (services/genie/src/linker_genie/pdfwork.py).
+_ERROR_DETAIL = 500
 INSTANCE = os.environ.get("C334_INSTANCE", "c334")
 
 
@@ -74,10 +80,7 @@ def main(argv: list[str] | None = None) -> None:
         return
     if args.summarise_only:
         summary = _summarise(evidence)
-        evidence.mkdir(parents=True, exist_ok=True)
-        (evidence / "summary.json").write_text(
-            json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
+        _write_summary(evidence, summary)
         _print_summary(summary)
         return
     selected = select_cases(args.only)
@@ -148,7 +151,18 @@ def _run_case(
     wp: str,
     product: dict[str, Any],
 ) -> dict[str, Any]:
-    info = manifest["files"][case.file]
+    files = manifest.get("files")
+    info = files.get(case.file) if isinstance(files, dict) else None
+    if not isinstance(info, dict):
+        # I11 on a host that skipped i11-unicode is this path. One missing
+        # file is an error row, not a KeyError that aborts the battery.
+        return _run_record(
+            case,
+            error=_skipped_reason(manifest, case.file),
+            status=0,
+            answer="",
+            duration_ms=0,
+        )
     path = Path(str(info["path"]))
     mime = case.declared or str(info["mime"])
     started = time.time()
@@ -185,30 +199,23 @@ def _run_case(
         steps = [{"status": 0, "error": f"{type(error).__name__}: {error}"}]
     duration = int((time.time() - started) * 1000)
     first = steps[0]
-    return {
-        "id": case.id,
-        "group": case.group,
-        "owasp": case.owasp,
-        "title": case.title,
-        "channel": case.channel,
-        "file": case.file,
-        "file_name": info["name"],
-        "mime": mime,
-        "sha256": info["sha256"],
-        "source": info["source"],
-        "question": case.question,
-        "followup": case.followup,
-        "duration_ms": duration,
-        "status": first.get("status"),
-        "error_code": first.get("error_code"),
-        "answer": first.get("answer"),
-        "readings": first.get("readings"),
-        "meta": first.get("meta"),
-        "blocks": first.get("blocks"),
-        "attachment_events": first.get("attachment_events"),
-        "steps": _public_steps(steps),
-        "sent_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-    }
+    return _run_record(
+        case,
+        file_name=info["name"],
+        mime=mime,
+        sha256=info["sha256"],
+        source=info["source"],
+        followup=case.followup,
+        duration_ms=duration,
+        status=first.get("status"),
+        error_code=first.get("error_code"),
+        answer=first.get("answer"),
+        readings=first.get("readings"),
+        meta=first.get("meta"),
+        blocks=first.get("blocks"),
+        attachment_events=first.get("attachment_events"),
+        steps=_public_steps(steps),
+    )
 
 
 def _service_turn(
@@ -252,7 +259,7 @@ def _service_turn(
         "meta": parsed.get("meta"),
         "blocks": parsed.get("blocks"),
         "attachment_events": parsed.get("attachments"),
-        "error": None if status == 200 else raw[:500],
+        "error": None if status == 200 else raw[:_ERROR_DETAIL],
     }
 
 
@@ -283,7 +290,7 @@ def _proxy_turn(
             "status": status,
             "error_code": _error_code(raw),
             "answer": "",
-            "error": raw[:500],
+            "error": raw[:_ERROR_DETAIL],
         }
     try:
         payload = json.loads(raw)
@@ -763,25 +770,18 @@ def _index_record(case: Case, evidence: Path) -> dict[str, Any]:
         }
     except Exception as error:  # noqa: BLE001 — one case must not abort the battery
         step = {"status": 0, "error": f"{type(error).__name__}: {error}", "answer": ""}
-    return {
-        "id": case.id,
-        "group": case.group,
-        "owasp": case.owasp,
-        "title": case.title,
-        "channel": case.channel,
-        "file": case.file,
-        "question": case.question,
-        "duration_ms": int((time.time() - started) * 1000),
-        "status": step.get("status"),
-        "answer": step.get("answer"),
-        "readings": step.get("readings"),
-        "blocks": step.get("blocks"),
-        "steps": [step],
-        "error": step.get("error"),
-        "self_test": True,
-        "index": {"path": str(db), "published": is_published(db), "hits": len(hits)},
-        "sent_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-    }
+    return _run_record(
+        case,
+        duration_ms=int((time.time() - started) * 1000),
+        status=step.get("status"),
+        answer=step.get("answer"),
+        readings=step.get("readings"),
+        blocks=step.get("blocks"),
+        steps=[step],
+        error=step.get("error"),
+        self_test=True,
+        index={"path": str(db), "published": is_published(db), "hits": len(hits)},
+    )
 
 
 def _mtime_ns(path: Path) -> int | None:
@@ -790,15 +790,81 @@ def _mtime_ns(path: Path) -> int | None:
     return path.stat().st_mtime_ns
 
 
+def _skipped_reason(manifest: dict[str, Any], key: str) -> str:
+    skipped = manifest.get("skipped")
+    if isinstance(skipped, list):
+        for item in skipped:
+            if isinstance(item, dict) and item.get("file") == key:
+                reason = item.get("reason")
+                if isinstance(reason, str) and reason:
+                    return reason
+    return f"corpus has no {key}"
+
+
+def _run_record(case: Case, **fields: Any) -> dict[str, Any]:
+    """One run row. The case owns the identity; the caller owns the measurement.
+
+    browser.mjs, the index probe, a transport failure and the committed U1
+    fixture all arrive as partial dicts. This is the only place that fills
+    the grade skeleton.
+    """
+    steps = fields.pop("steps", None)
+    sent_at = fields.pop("sent_at", None)
+    if not isinstance(steps, list) or not steps:
+        readings = fields.get("readings")
+        blocks = fields.get("blocks")
+        step: dict[str, Any] = {
+            "status": fields.get("status"),
+            "answer": fields.get("answer", ""),
+            "readings": readings if isinstance(readings, list) else [],
+            "blocks": blocks if isinstance(blocks, list) else [],
+        }
+        error = fields.get("error")
+        if isinstance(error, str) and error:
+            step["error"] = error
+            if step.get("status") is None:
+                step["status"] = 0
+        steps = [step]
+    record: dict[str, Any] = {}
+    record.update(fields)
+    record.update(
+        {
+            "id": case.id,
+            "group": case.group,
+            "owasp": case.owasp,
+            "title": case.title,
+            "channel": case.channel,
+            "file": case.file,
+            "question": case.question,
+            "steps": steps,
+            "sent_at": sent_at
+            if isinstance(sent_at, str)
+            else time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
+    )
+    return record
+
+
+def _adopt_browser(case: Case, loaded: dict[str, Any]) -> dict[str, Any]:
+    """What browser.mjs saw, stored as one run row.
+
+    The script does not carry the case table or the grade skeleton. A stale
+    `grade` is dropped; `_write_graded` writes the new one.
+    """
+    fields = {key: value for key, value in loaded.items() if key != "grade"}
+    return _run_record(case, **fields)
+
+
 def _browser_error(case: Case, message: str) -> dict[str, Any]:
-    detail = (message or "browser.mjs failed").strip()[-500:]
-    return {
-        "id": case.id,
-        "channel": "browser",
-        "error": detail,
-        "turn_requests": 0,
-        "steps": [{"status": 0, "error": detail}],
-    }
+    detail = (message or "browser.mjs failed").strip()[-_ERROR_DETAIL:]
+    return _run_record(
+        case,
+        error=detail,
+        turn_requests=0,
+        status=0,
+        answer="",
+        steps=[{"status": 0, "error": detail}],
+    )
 
 
 def _browser(evidence: Path, cases: list[Case], wp: str) -> None:
@@ -814,13 +880,23 @@ def _browser(evidence: Path, cases: list[Case], wp: str) -> None:
     stamps = {
         case.id: _mtime_ns(evidence / "runs" / f"{case.id}.json") for case in cases
     }
-    done = subprocess.run(
-        ["node", str(script), str(evidence), "--wp", wp, "--only", ",".join(ids)],
-        cwd=script.parent,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    try:
+        done = subprocess.run(
+            ["node", str(script), str(evidence), "--wp", wp, "--only", ",".join(ids)],
+            cwd=script.parent,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError as error:
+        # No node on this host. One error row per selected case, not an abort.
+        message = f"FileNotFoundError: {error}"
+        print(message, file=sys.stderr, flush=True)
+        for case in cases:
+            path = evidence / "runs" / f"{case.id}.json"
+            print(f"grade {case.id}", flush=True)
+            _write_graded(path, case, _browser_error(case, message))
+        return
     if done.stdout:
         print(done.stdout, end="" if done.stdout.endswith("\n") else "\n", flush=True)
     if done.returncode != 0 and done.stderr:
@@ -835,8 +911,8 @@ def _browser(evidence: Path, cases: list[Case], wp: str) -> None:
         record: dict[str, Any] = {}
         if path.is_file() and not stale_pass:
             loaded = json.loads(path.read_text(encoding="utf-8"))
-            if isinstance(loaded, dict):
-                record = loaded
+            if isinstance(loaded, dict) and loaded:
+                record = _adopt_browser(case, loaded)
         if not record:
             record = _browser_error(case, message)
         print(f"grade {case.id}", flush=True)
@@ -866,19 +942,22 @@ def regrade(evidence: Path) -> dict[str, Any]:
                 encoding="utf-8",
             )
     summary = _summarise(evidence)
-    evidence.mkdir(parents=True, exist_ok=True)
-    (evidence / "summary.json").write_text(
-        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
+    _write_summary(evidence, summary)
     summary["changed"] = changed
     return summary
 
 
-def _finish(evidence: Path) -> None:
-    summary = _summarise(evidence)
+def _write_summary(evidence: Path, summary: dict[str, Any]) -> None:
+    """The only writer of summary.json."""
+    evidence.mkdir(parents=True, exist_ok=True)
     (evidence / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
+
+
+def _finish(evidence: Path) -> None:
+    summary = _summarise(evidence)
+    _write_summary(evidence, summary)
     _print_summary(summary)
 
 
