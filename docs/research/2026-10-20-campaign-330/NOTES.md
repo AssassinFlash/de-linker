@@ -8,6 +8,7 @@
   - `evidence/attribution.jsonl` — 与服务 turn log 的 join（词表命中、Jev 答案、
     路由、每次工具调用与结果）
   - `evidence/graded.jsonl` — 人工终判（pass/defect + 缺陷号 + 观察）
+  - `evidence/final.jsonl` — graded + `product_hits`（id/SKU/model）+ 数字复核字段
   - `smoke/smoke.jsonl` — 生产 10 探针（最终 URL、响应头、原文）
 - 判定标准见 `README.md`。规则：每条结论以该次回答原文为证；"答得还行"不算过。
 
