@@ -350,8 +350,9 @@ final class ProductShortcodesTest extends TestCase {
 	 * @param array<int, int>                    $product_ids The archive's products, in the order get_posts() answers them.
 	 * @param array<string, array<int, WP_Term>> $by_slug   The terms the rail's display map looks up by English slug; they answer get_term() by id too, so the English anchors of a translated lookup resolve.
 	 * @param callable(int, string): int|null    $twin        The twin the language layer links for a term id and the language a lookup asks for ('' for the language on display); null while the fixture runs without a language layer, where every lookup answers 0 — the definition of a stubbed pll_* function outlives the test that made it, so the rail's reads have to be answered here either way.
+	 * @param string                             $home        Polylang's home URL for the request's language.
 	 */
-	private function mock_catalog_query( ?WP_Term $term, array $top = array(), array $children = array(), array $product_ids = array(), array $by_slug = array(), ?callable $twin = null ): void {
+	private function mock_catalog_query( ?WP_Term $term, array $top = array(), array $children = array(), array $product_ids = array(), array $by_slug = array(), ?callable $twin = null, string $home = 'http://linker.test/' ): void {
 		WP_Mock::userFunction(
 			'pll_get_term',
 			array(
@@ -360,6 +361,15 @@ final class ProductShortcodesTest extends TestCase {
 				'return' => static fn ( int $id, string $language = '' ): int => null === $twin ? 0 : $twin( $id, $language ),
 			)
 		);
+		// Polylang's home URL carries the request's language segment (/de/ on
+		// German); the breadcrumb follows it (#264 H5). PageUrls::home() (#263)
+		// names the language itself and trails the slash, so both halves are
+		// answered here: the language the request runs in (read off the home
+		// URL the fixture wants, so the stub cannot inherit a prior test's) and
+		// the slash shape it prints.
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => str_contains( $home, '/de/' ) ? 'de' : 'en' ) );
+		WP_Mock::userFunction( 'pll_home_url', array( 'return' => $home ) );
+		WP_Mock::userFunction( 'trailingslashit', array( 'return' => static fn( string $url ): string => rtrim( $url, '/' ) . '/' ) );
 		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $term ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn( $value ) => $value ) );
 		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn( string $value ): string => $value ) );
@@ -484,6 +494,45 @@ final class ProductShortcodesTest extends TestCase {
 		$head = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_head();
 
 		$this->assertStringContainsString( 'HOME</a> / <a href="http://linker.test/products/">PRODUCTS</a> / <a href="http://linker.test/product-category/commercial-storage/">COMMERCIAL STORAGE</a> / <b>ALL-IN-ONE SYSTEMS</b>', $head );
+	}
+
+	/**
+	 * The German crumb is German-only (owner ruling 2026-10-17; ticket #264
+	 * H5): the home link carries the language segment and the category names
+	 * are the queried German terms, not their English twins. The old tree
+	 * printed the English names on purpose to match the live site; the ruling
+	 * makes that defect the change.
+	 */
+	public function test_german_head_breadcrumb_uses_german_names_and_the_german_home(): void {
+		$parent = $this->term( 451, 'Gewerbespeicher', 'gewerbespeicher' );
+		$child  = $this->term( 452, 'Komplettsysteme', 'komplettsysteme', 451 );
+		$this->mock_catalog_query( $child, array( $parent ), array(), array(), array(), null, 'http://linker.test/de/' );
+		$_GET = array();
+
+		$head = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_head();
+
+		$this->assertStringContainsString( 'href="http://linker.test/de/">HOME</a>', $head );
+		$this->assertStringContainsString( '<a href="http://linker.test/product-category/gewerbespeicher/">GEWERBESPEICHER</a>', $head );
+		$this->assertStringContainsString( '<b>KOMPLETTSYSTEME</b>', $head );
+		$this->assertStringNotContainsString( 'COMMERCIAL STORAGE', $head );
+		$this->assertStringNotContainsString( 'ALL-IN-ONE SYSTEMS', $head );
+	}
+
+	/**
+	 * A term name stored HTML-encoded ("&amp;") is decoded before the crumb
+	 * uppercases it, so the page prints "&" and not "&AMP;".
+	 */
+	public function test_a_category_name_with_an_entity_uppercases_cleanly(): void {
+		$term = $this->term( 453, 'Energiezähler &amp; Stromwandler', 'energiezaehler-stromwandler' );
+		$this->mock_catalog_query( $term, array(), array(), array(), array(), null, 'http://linker.test/de/' );
+		$_GET = array();
+
+		$head = ( new ProductShortcodes( new ProductFilters(), new ProductView() ) )->products_head();
+
+		// The unit process passes esc_html() through, so the clean name prints
+		// the decoded "&"; the defect this pins is the uppercased entity.
+		$this->assertStringContainsString( '<b>ENERGIEZÄHLER & STROMWANDLER</b>', $head );
+		$this->assertStringNotContainsString( '&AMP;', $head );
 	}
 
 	/**

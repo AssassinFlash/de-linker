@@ -1,0 +1,222 @@
+{
+  "cases": [
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/products/",
+      "stem": "products",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/product-category/inverters/",
+      "stem": "product_category_inverters",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/product/goodwe-gw80k-et-g10/",
+      "stem": "product_goodwe_gw80k_et_g10",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/blog/",
+      "stem": "blog",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/hybrid-inverter-vs-ac-coupled-storage/",
+      "stem": "hybrid_inverter_vs_ac_coupled_storage",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/compare-products/",
+      "stem": "compare_products",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/faq-download/",
+      "stem": "faq_download",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/for-installer/",
+      "stem": "for_installer",
+      "width": 1440,
+      "language": "en",
+      "headerHeight": 89,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/",
+      "stem": "home",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/products/",
+      "stem": "products",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/product-category/inverters/",
+      "stem": "product_category_inverters",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/product/goodwe-gw80k-et-g10/",
+      "stem": "product_goodwe_gw80k_et_g10",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/blog/",
+      "stem": "blog",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/hybrid-inverter-vs-ac-coupled-storage/",
+      "stem": "hybrid_inverter_vs_ac_coupled_storage",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/compare-products/",
+      "stem": "compare_products",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/faq-download/",
+      "stem": "faq_download",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    },
+    {
+      "path": "/for-installer/",
+      "stem": "for_installer",
+      "width": 390,
+      "language": "en",
+      "headerHeight": 81,
+      "ruledRegions": [],
+      "imageSources": {
+        "live": [],
+        "local": []
+      }
+    }
+  ],
+  "allowedHeaderChanges": [],
+  "networkRoute": "system default"
+}

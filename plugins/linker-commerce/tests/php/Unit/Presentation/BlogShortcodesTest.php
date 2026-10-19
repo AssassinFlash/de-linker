@@ -46,7 +46,7 @@ final class BlogShortcodesTest extends TestCase {
 	}
 
 	/**
-	 * The two shortcodes this plugin adds for the blog template.
+	 * The shortcodes this plugin adds for the blog template.
 	 */
 	public function test_register_adds_the_blog_shortcodes(): void {
 		$codes = new BlogShortcodes();
@@ -64,11 +64,50 @@ final class BlogShortcodesTest extends TestCase {
 				'args'  => array( 'linker_blog_related_posts', array( $codes, 'related_posts' ) ),
 			)
 		);
+		WP_Mock::userFunction(
+			'add_shortcode',
+			array(
+				'times' => 1,
+				'args'  => array( 'linker_blog_share', array( $codes, 'share' ) ),
+			)
+		);
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		$codes->register();
 
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The share row names each network through the catalog (#264 M1): the
+	 * template calls this shortcode instead of LiveCanvas's English one, the
+	 * link text is what the template's script turns into the accessible name,
+	 * and the German catalog carries the German sentence.
+	 */
+	public function test_the_share_row_carries_the_german_network_labels(): void {
+		WP_Mock::userFunction(
+			'shortcode_atts',
+			array(
+				'return' => static fn( array $defaults, array $given ): array => array_merge( $defaults, $given ),
+			)
+		);
+		WP_Mock::userFunction( 'get_queried_object_id', array( 'return' => 551 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'return' => 'https://linker.test/de/beitrag/' ) );
+		WP_Mock::userFunction( 'get_the_title', array( 'return' => 'Ein Beitrag' ) );
+
+		$html = ( new BlogShortcodes() )->share( array( 'class' => 'reader-share-links' ) );
+
+		$this->assertStringContainsString( 'class="lc-sharing-buttons reader-share-links"', $html );
+		$this->assertStringContainsString( 'title="Share on Facebook" aria-label="Share on Facebook"', $html );
+		$this->assertStringContainsString( 'title="Share on WhatsApp" aria-label="Share on WhatsApp"', $html );
+		$this->assertStringContainsString( 'title="Share on Telegram" aria-label="Share on Telegram"', $html );
+		$this->assertStringContainsString( 'title="Share on Twitter" aria-label="Share on Twitter"', $html );
+		$this->assertStringContainsString( 'https://www.facebook.com/sharer.php?u=https%3A%2F%2Flinker.test%2Fde%2Fbeitrag%2F', $html );
+		$this->assertStringContainsString( 'https://twitter.com/share?url=https%3A%2F%2Flinker.test%2Fde%2Fbeitrag%2F&text=Ein%20Beitrag', $html );
+		// The unit process renders the English source; the German sentence the
+		// instance prints is the catalog's (the coverage gate holds it).
+		$catalog = (string) file_get_contents( \dirname( __DIR__, 4 ) . '/languages/linker-commerce-de_DE_formal.po' );
+		$this->assertStringContainsString( "msgid \"Share on %s\"\nmsgstr \"Auf %s teilen\"", $catalog );
 	}
 
 	/**

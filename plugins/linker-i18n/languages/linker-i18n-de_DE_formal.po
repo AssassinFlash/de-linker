@@ -88,6 +88,16 @@ msgstr "Anfrage eingegangen – %s"
 msgid "Inverters, storage and systems"
 msgstr "Wechselrichter, Speicher und Systeme"
 
+#: includes/GermanTitles.php:84
+msgid ""
+"Filter inverters, LFP batteries, all-in-one systems, meters and controllers "
+"by brand, or find an item by number or nameplate photo. Net prices for "
+"partners."
+msgstr ""
+"Filtern Sie Wechselrichter, LFP-Batterien, Komplettsysteme, Zähler und "
+"Steuerungen nach Marke oder finden Sie ein Produkt per Produktnummer oder "
+"Typenschildfoto. Nettopreise für Partner."
+
 #. translators: %s: German product category name.
 #: includes/GermanTitles.php:62
 #, php-format

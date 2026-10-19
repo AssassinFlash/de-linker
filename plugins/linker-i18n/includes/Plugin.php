@@ -113,6 +113,9 @@ final class Plugin {
 		$german_titles = new GermanTitles( $languages );
 		add_filter( 'seopress_titles_title', array( $german_titles, 'title' ), 40 );
 		add_filter( 'pre_get_document_title', array( $german_titles, 'title' ), 40 );
+		add_filter( 'seopress_titles_desc', array( $german_titles, 'shop_description' ), 40 );
+		add_filter( 'seopress_social_og_desc', array( $german_titles, 'shop_social_description' ), 40 );
+		add_filter( 'seopress_social_twitter_card_desc', array( $german_titles, 'shop_social_description' ), 40 );
 		add_filter( 'seopress_titles_canonical', array( $german_titles, 'canonical' ), 40 );
 		add_filter( 'seopress_social_og_url', array( $german_titles, 'canonical' ), 40 );
 		add_filter( 'seopress_titles_canonical_on_noindex', array( $german_titles, 'category_canonical' ) );
@@ -200,6 +203,7 @@ final class Plugin {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'linker-i18n', new Command( $languages, new Setup(), $translator, $jobs, $state, $links, $twins ) );
 			\WP_CLI::add_command( 'linker-i18n german-urls', new \Linker\I18n\Cli\GermanUrlsCommand() );
+			\WP_CLI::add_command( 'linker-i18n german-copy', new \Linker\I18n\Cli\GermanCopyCommand( $translator ) );
 		}
 	}
 	/**

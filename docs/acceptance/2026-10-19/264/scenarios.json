@@ -1,0 +1,36 @@
+[
+  { "name": "home", "path": "/" },
+  { "name": "products", "path": "/products/" },
+  { "name": "product_category_inverters", "path": "/product-category/inverters/" },
+  { "name": "product_goodwe_gw80k_et_g10", "path": "/product/goodwe-gw80k-et-g10/" },
+  { "name": "blog", "path": "/blog/" },
+  {
+    "name": "hybrid_inverter_vs_ac_coupled_storage_1440",
+    "path": "/hybrid-inverter-vs-ac-coupled-storage/",
+    "widths": [1440]
+  },
+  {
+    "name": "hybrid_inverter_vs_ac_coupled_storage_390",
+    "path": "/hybrid-inverter-vs-ac-coupled-storage/",
+    "widths": [390],
+    "ruledRegions": [
+      { "name": "animated site footer", "selector": ".tv-footer-root", "padding": 0 }
+    ]
+  },
+  { "name": "compare_products", "path": "/compare-products/" },
+  { "name": "faq_download", "path": "/faq-download/" },
+  {
+    "name": "for_installer_1440",
+    "path": "/for-installer/",
+    "widths": [1440],
+    "ruledRegions": [
+      { "name": "two autoplaying product videos", "selector": "video", "padding": 2 },
+      { "name": "lazy package photo edge", "selector": ".installer-pkg-photo", "padding": 2 }
+    ]
+  },
+  {
+    "name": "for_installer_390",
+    "path": "/for-installer/",
+    "widths": [390]
+  }
+]

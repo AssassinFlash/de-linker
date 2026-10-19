@@ -116,7 +116,7 @@ final class DocumentLibrary {
 				$key = (string) $document['url'];
 				if ( ! isset( $files[ $key ] ) ) {
 					$files[ $key ] = array(
-						'title'    => '' !== trim( $document['title'] ) ? $document['title'] : __( 'Document', 'linker-commerce' ),
+						'title'    => Materials::document_title_display( '' !== trim( $document['title'] ) ? $document['title'] : __( 'Document', 'linker-commerce' ) ),
 						'url'      => (string) $document['url'],
 						'type'     => self::type( (string) $document['type'], (string) $document['role'] ),
 						'language' => self::language( (string) $document['language'] ),
