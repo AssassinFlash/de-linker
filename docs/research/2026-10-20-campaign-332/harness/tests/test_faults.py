@@ -12,22 +12,22 @@ from sse import parse_sse
 
 
 def test_chat_modes() -> None:
-    status, body, content = chat_payload("500", b"{}", 0)
+    status, body, content = chat_payload("500", 0)
     assert status == 500
     assert content == "application/json"
     assert json.loads(body)["error"]["code"] == "internal_error"
-    status, body, content = chat_payload("empty", b'{"stream": true}', 0)
+    status, body, content = chat_payload("empty", 0)
     assert status == 200
     assert content == "application/json"
     parsed = json.loads(body)
     assert "model" not in parsed
-    status, body, content = chat_payload("empty-stream", b"{}", 0)
+    status, body, content = chat_payload("empty-stream", 0)
     assert status == 200
     assert content == "text/event-stream"
     assert body == b""
     assert parse_sse(body.decode())["event_names"] == []
     assert parse_sse(body.decode())["done"] is False
-    status, body, _content = chat_payload("429", b"{}", 0)
+    status, body, _content = chat_payload("429", 0)
     assert status == 429
     assert b"429" in body
 

@@ -140,10 +140,14 @@ def deletion_holds(http: int | None, body_id: int | None, deleted: int) -> bool:
 
     404 means the thread route refused the id. 200 with a different id
     (including 0, the empty guest thread) means the deleted post is gone.
+    A 200 whose body has no parseable conversation_id does not count:
+    the check could not see that the deleted id was gone.
     """
     if http == 404:
         return True
-    return http == 200 and body_id != deleted
+    if http != 200 or body_id is None:
+        return False
+    return body_id != deleted
 
 
 def probe(item: dict[str, str], site: str) -> dict[str, Any]:

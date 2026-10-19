@@ -58,3 +58,40 @@ def test_only_runs_the_named_case_and_writes_a_verdict(
     assert rows[0]["reasons"] == []
     summary = json.loads((tmp_path / "summary.json").read_text())
     assert summary == {"pass": 1, "defect": 0, "defects": []}
+
+
+def test_only_runs_the_new_sse_cuts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(stack, "service_token", lambda: "ab" * 32)
+    monkeypatch.setattr(stack, "restore", lambda: None)
+    monkeypatch.setattr(stack, "clear_upload_limit", lambda: None)
+    seen: list[tuple[str, str, bool]] = []
+
+    def fake_sse(
+        case_id: str,
+        cut: str,
+        attachment: dict[str, str] | None = None,
+    ) -> dict[str, object]:
+        seen.append((case_id, cut, attachment is not None))
+        return {
+            "id": case_id,
+            "kind": "fault",
+            "http": 502,
+            "done": False,
+            "answer_text": "",
+            "error_message": "Genie did not answer.",
+            "explicit_channel": "customer",
+            "question": "q",
+        }
+
+    monkeypatch.setattr(run_faults, "sse_case", fake_sse)
+    code = run_faults.main(
+        [str(tmp_path), "--only", "SSE-PARTIAL,SSE-ATTACHMENT,SSE-READING"]
+    )
+    assert code == 0
+    assert seen == [
+        ("SSE-PARTIAL", "partial-block", False),
+        ("SSE-ATTACHMENT", "attachment", True),
+        ("SSE-READING", "reading", True),
+    ]

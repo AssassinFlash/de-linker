@@ -66,6 +66,7 @@ def test_deletion_holds_when_the_get_no_longer_names_the_id() -> None:
     assert deletion_holds(200, 7572, 7572) is False
     assert deletion_holds(404, None, 7572) is True
     assert deletion_holds(None, None, 7572) is False
+    assert deletion_holds(200, None, 7572) is False
     assert thread_id('{"conversation_id": 0}') == 0
     assert thread_id("not json") is None
 

@@ -17,7 +17,7 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
-from sse import cut_sse
+from sse import cut_sse, parse_sse
 
 # A 1x1 JPEG. Magic is FF D8 FF, which Attachments::MAGIC requires.
 TINY_JPEG = (
@@ -30,11 +30,12 @@ TINY_JPEG = (
 )
 
 
-def chat_payload(mode: str, body: bytes, slow_s: float) -> tuple[int, bytes, str]:
+def chat_payload(mode: str, slow_s: float) -> tuple[int, bytes, str]:
     """The status, body and content type for one chat-completions call.
 
-    `body` is the client's request. The recorded empty turn did not ask for
-    a stream, so the empty modes do not branch on it.
+    The mode does not read the request. The recorded M-EMPTY turn was a
+    JSON completion with no `model`. `empty-stream` is the other empty
+    mode: HTTP 200 and an SSE body with no events.
     """
     if mode == "slow":
         time.sleep(slow_s)
@@ -90,7 +91,7 @@ class _State:
         self.slow_s = slow_s
         self.upstream = upstream.rstrip("/")
         self.cut = cut
-        self.calls = 0
+        self.last_cut: dict[str, Any] | None = None
         self.lock = threading.Lock()
 
 
@@ -121,12 +122,8 @@ class FaultServer:
             def do_POST(self) -> None:  # noqa: N802
                 length = int(self.headers.get("Content-Length", "0") or "0")
                 body = self.rfile.read(length) if length else b""
-                with state.lock:
-                    state.calls += 1
                 if kind_name == "chat":
-                    status, payload, content = chat_payload(
-                        state.mode, body, state.slow_s
-                    )
+                    status, payload, content = chat_payload(state.mode, state.slow_s)
                     self._send(status, payload, content)
                     return
                 if kind_name == "openrouter":
@@ -168,16 +165,43 @@ class FaultServer:
                     raw = failure.read()
                     status = int(failure.code)
                 if state.cut == "reset":
+                    self._remember(raw, raw[:120], status, "reset")
                     self._reset(raw)
                     return
                 # "cut" is the recorded SSE-CUT: the first block is complete.
+                # partial-block, attachment and reading are the other cuts.
                 where = "after-block" if state.cut == "cut" else state.cut
                 shortened = cut_sse(raw, where) if status < 400 else raw
+                self._remember(raw, shortened, status, where)
                 self._send(
                     status if status >= 400 else 200,
                     shortened,
                     "text/event-stream",
                 )
+
+            def _remember(
+                self, raw: bytes, shortened: bytes, status: int, where: str
+            ) -> None:
+                """What the cut did, without the SSE text."""
+                upstream = raw.decode("utf-8", "replace")
+                short = shortened.decode("utf-8", "replace")
+                marker = {
+                    "after-block": "event: block",
+                    "partial-block": "event: block",
+                    "attachment": "event: attachment",
+                    "reading": "event: reading",
+                }.get(where, "")
+                report: dict[str, Any] = {
+                    "where": where,
+                    "upstream_status": status,
+                    "marker_present": bool(marker) and marker in upstream,
+                    "done_in_upstream": "event: done" in upstream,
+                    "done_in_shortened": "event: done" in short,
+                    "shortened_has_marker": bool(marker) and marker in short,
+                    "shortened_events": parse_sse(short)["event_names"],
+                }
+                with state.lock:
+                    state.last_cut = report
 
             def _reset(self, raw: bytes) -> None:
                 self.send_response(200)
@@ -217,3 +241,11 @@ class FaultServer:
     def set_mode(self, mode: str) -> None:
         with self.state.lock:
             self.state.mode = mode
+
+    def cut_report(self) -> dict[str, Any]:
+        """The last proxy cut: marker, done, event names. No SSE text."""
+        with self.state.lock:
+            report = self.state.last_cut
+        if not isinstance(report, dict):
+            return {}
+        return dict(report)

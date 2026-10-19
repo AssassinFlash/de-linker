@@ -38,6 +38,35 @@ def test_every_row_has_a_published_verdict_and_reasons() -> None:
             assert row["reasons"] == []
 
 
+def test_the_replayed_cuts_and_empty_stream_are_recorded() -> None:
+    rows = {row["id"]: row for row in _rows()}
+    for case_id in ("SSE-PARTIAL", "SSE-ATTACHMENT", "SSE-READING", "M-EMPTY-STREAM"):
+        row = rows[case_id]
+        assert row["verdict"] == "defect"
+        assert row["evidence"] == f"cases.jsonl#{case_id}"
+    partial = rows["SSE-PARTIAL"]["cut_observed"]
+    assert isinstance(partial, dict)
+    assert partial["where"] == "partial-block"
+    assert partial["marker_present"] is True
+    assert partial["done_in_shortened"] is False
+    attachment = rows["SSE-ATTACHMENT"]["cut_observed"]
+    assert isinstance(attachment, dict)
+    assert attachment["where"] == "attachment"
+    assert attachment["marker_present"] is True
+    assert "reading" not in attachment["shortened_events"]
+    reading = rows["SSE-READING"]["cut_observed"]
+    assert isinstance(reading, dict)
+    assert reading["marker_present"] is True
+    assert "reading" in reading["shortened_events"]
+    assert reading["done_in_shortened"] is False
+    empty = rows["M-EMPTY-STREAM"]
+    failures = empty["failures"]
+    assert empty["done"] is True
+    assert empty["fallback"] is True
+    assert isinstance(failures, list)
+    assert any("JSON" in str(item) for item in failures)
+
+
 def test_ab_500_records_the_injected_500() -> None:
     row = next(item for item in _rows() if item["id"] == "AB-500")
     assert row["injected_error"] == AB_500_INJECTED

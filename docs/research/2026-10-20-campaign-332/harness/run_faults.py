@@ -22,11 +22,23 @@ Timeouts and waits, and where the numbers come from:
 - The attachment refusal uses 30s: the limiter answers before any model call.
 - Redis stopped for a whole turn uses 70s, just above TURN_BUDGET, in case
   the turn still completes.
+- LATE_LOG_WAIT_S is 45s. AB-TIMEOUT's customer request ends at
+  Proxy::TURN_BUDGET (60s) while the service can still be inside an
+  ability attempt: AbilityClient times out at 20s, the mu-plugin sleeps
+  25s, and ABILITY_ATTEMPTS is 3. 45s is the harness wait for the
+  turn-log row that lands after that 502. It is longer than one injected
+  sleep (25s) and shorter than TURN_BUDGET (60s). It is not a product
+  timeout.
+- JOIN_TIMEOUT_S is 100s. The in-flight client uses PROXY_TIMEOUT_S (90).
+  The join is longer than that timeout so the worker is collected after
+  the client gives up, not left running. It is a harness wait, not a
+  product timeout.
 """
 
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import sys
 import threading
@@ -51,6 +63,15 @@ from sse import parse_sse
 PRODUCT_EN = "Do you stock the SAJ H2-10K-T2?"
 PRODUCT_DE = "Haben Sie den SAJ H2-10K-T2 auf Lager?"
 DOC_EN = "What is the maximum PV input power of the SAJ H2-10K-T2? Use the datasheet."
+# A one-row CSV. The service treats text/csv as a parts list and emits
+# `attachment` then `reading` before any block (app.py `_sse`), with no
+# vision call. The attachment and reading cuts need those two events.
+_PARTS_CSV_BYTES = b"model,qty\nSAJ H2-10K-T3,1\n"
+PARTS_CSV = {
+    "name": "h2.csv",
+    "type": "text/csv",
+    "data": base64.b64encode(_PARTS_CSV_BYTES).decode("ascii"),
+}
 # See the module docstring for the source of each of these.
 SERVICE_TIMEOUT_S = 180.0
 PROXY_TIMEOUT_S = 90.0
@@ -59,10 +80,11 @@ ATTACHMENT_TIMEOUT_S = 30.0
 REDIS_DOWN_TIMEOUT_S = 70.0
 KILL_AFTER_S = 3.0
 REDIS_FLAP_AFTER_S = 2.0
+# See the module docstring. Longer than the 25s ability sleep, under TURN_BUDGET.
 LATE_LOG_WAIT_S = 45.0
 # A chat-fault service turn. Above TURN_BUDGET, under the 180s direct-service ceiling.
 CHAT_TIMEOUT_S = 120.0
-# Collect the in-flight worker after the proxy timeout, so a hung client is not left behind.
+# See the module docstring. Longer than PROXY_TIMEOUT_S (90).
 JOIN_TIMEOUT_S = 100.0
 PROXY_TURN = stack.WP + "/wp-json/linker-ai/v1/genie/turn"
 PROXY_THREAD = stack.WP + "/wp-json/linker-ai/v1/genie/conversation"
@@ -108,6 +130,16 @@ def main(argv: list[str] | None = None) -> int:
             keep(attachment_limit())
         if wanted("SSE-CUT"):
             keep(sse_case("SSE-CUT", "cut"))
+        if wanted("SSE-PARTIAL"):
+            keep(sse_case("SSE-PARTIAL", "partial-block"))
+        if wanted("SSE-ATTACHMENT") or wanted("SSE-READING"):
+            # A seeded hourly ceiling would 429 the file before Genie emits
+            # the attachment and reading events the cuts look for.
+            stack.clear_upload_limit()
+        if wanted("SSE-ATTACHMENT"):
+            keep(sse_case("SSE-ATTACHMENT", "attachment", PARTS_CSV))
+        if wanted("SSE-READING"):
+            keep(sse_case("SSE-READING", "reading", PARTS_CSV))
         if wanted("SSE-RESET"):
             keep(sse_case("SSE-RESET", "reset"))
         if wanted("VPS-DOWN"):
@@ -237,7 +269,11 @@ def attachment_limit() -> dict[str, Any]:
     return refused
 
 
-def sse_case(case_id: str, cut: str) -> dict[str, Any]:
+def sse_case(
+    case_id: str,
+    cut: str,
+    attachment: dict[str, str] | None = None,
+) -> dict[str, Any]:
     proxy = FaultServer("cut", upstream=stack.GENIE, cut=cut)
     url = proxy.start()
     before = stack.max_turn_id()
@@ -246,7 +282,7 @@ def sse_case(case_id: str, cut: str) -> dict[str, Any]:
         jar, opener = cookie_opener()
         result = request_json(
             PROXY_TURN,
-            proxy_body(PRODUCT_EN, "en", None),
+            proxy_body(PRODUCT_EN, "en", attachment),
             {},
             SERVICE_TIMEOUT_S,
             opener,
@@ -254,6 +290,7 @@ def sse_case(case_id: str, cut: str) -> dict[str, Any]:
         row = describe(result)
         stored = _read_thread(opener)
     finally:
+        observed = proxy.cut_report()
         stack.set_genie_url(stack.GENIE)
         proxy.stop()
     logged = _log(PRODUCT_EN, before)
@@ -262,12 +299,16 @@ def sse_case(case_id: str, cut: str) -> dict[str, Any]:
     # Thread::answer renders assistant text only when the stored stream
     # contains done. A cut stream's block is not a shown answer.
     shown = bool(stored.get("assistant_text")) and stored.get("done") is True
+    fault = f"proxy {cut} of the service SSE"
+    if attachment is not None:
+        fault += f" on a turn that uploads {attachment['name']}"
     row.update(
         {
             "id": case_id,
             "kind": "fault",
-            "fault": f"proxy {cut} of the service SSE",
+            "fault": fault,
             "question": PRODUCT_EN,
+            "cut_observed": observed,
             "layer": "UI 状态",
             "precedent": "须自行设计 — dossier §1.15; fix ticket #411",
             "explicit_channel": "customer",

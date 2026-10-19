@@ -2,8 +2,9 @@
 
 - 日期：2026-10-20。票 #332（地图 #329）。只测试，不改产品。装具与笔记在本目录，`justfile` 只把装具接进 `py_projects`。
 - 本地：`c332`，快照 `20261019-1715`（2026-10-19T09:18:02Z；212 个产品）。WP `127.0.0.1:9187`，Genie `127.0.0.1:9189`，索引 `/Users/chesterjohn/de-linker-data/index/builds/20261018T173840Z/index.sqlite`。插件链到本 worktree。
-- 场景 23。手判 pass 12，defect 11。归并后的顾客痛点 4 条。
-- 证据：`~/de-linker-data/campaign-332/evidence/cases.jsonl`（26 行，23 个 id；同一 id 取最后一行）。`summary.json` 只覆盖第二轮 `--only` 的自动分（pass 5 / defect 9），不发布。界面截图在 `~/de-linker-data/campaign-332/ui/`。生产冒烟在 `evidence/prod-smoke.jsonl`。
+- 原先 23 个场景的手判不变：pass 12，defect 11。补跑 4 条都是 defect。合计记录 27 条，pass 12 / defect 15。归并后的顾客痛点仍是 4 条。
+- 证据：`~/de-linker-data/campaign-332/evidence/cases.jsonl`（30 行，27 个 id；同一 id 取最后一行）。`summary.json` 现在只覆盖这次补跑的自动分（pass 0 / defect 4），不发布。第二轮 `--only` 的自动分是 pass 5 / defect 9，文件已被这次运行覆盖，数字留在这里。界面截图在 `~/de-linker-data/campaign-332/ui/`。生产冒烟在 `evidence/prod-smoke.jsonl`。
+- `8456cd2c` 的说明写成已经记录半条 block、attachment / reading 截断和空 SSE。那时只有装具单测，没有 c332 的行。这一轮补跑了这四条，行在 `verdicts.jsonl`。
 - 第一轮在 `stop_genie` 上中断，能力桩也没打中（`rest_pre_dispatch` 优先级被 ACF 清掉）。能力两例以第二轮为准。`RATE-BURST` 的第一轮自动分把目录 kW 算成编造，已撤回；发布的 `verdict` 是 pass。
 - 跑完栈是健康的。`c332/mail` 在 2026-10-19 23:00 之后没有新文件。没有发询盘或联系邮件。
 
@@ -11,15 +12,15 @@
 
 pass：BASE-EN、BASE-DOC、RATE-BURST、ATT-LIMIT、SSE-RESET、REDIS-FLAP、REDIS-DOWN、AB-TIMEOUT、M-SLOW、M500-RETRY、JEV-502、IDX-RETRY。
 
-defect：M500-EN、M500-DE、M500-DOC、M-EMPTY、M-429、IDX-MISS、IDX-BAD、AB-500、SSE-CUT、VPS-DOWN、VPS-KILL。
+defect：M500-EN、M500-DE、M500-DOC、M-EMPTY、M-429、IDX-MISS、IDX-BAD、AB-500、SSE-CUT、VPS-DOWN、VPS-KILL，加上补跑的 SSE-PARTIAL、SSE-ATTACHMENT、SSE-READING、M-EMPTY-STREAM。
 
-12 + 11 = 23。
+原先 12 + 11 = 23。补跑 4 条 defect 之后，12 + 15 = 27。
 
 ## 2. 缺陷清单
 
 按顾客痛苦排序。最小复现都在 `c332`，问句除注明外为 “Do you stock the SAJ H2-10K-T2?”。
 
-### D1 · 停机时仍像一次成功推荐（7 个场景）
+### D1 · 停机时仍像一次成功推荐（8 个场景）
 
 层：`template.fallback`（`services/genie/src/linker_genie/template.py` 里的函数，不是提示词）。有可引用 id 时句子是目录推荐；没有 id 时才是 handoff 或 DEGRADED。IDX 两例的错误在 `failures[]`（检索），顾客句仍是这个函数。修复票 #410。
 
@@ -32,6 +33,7 @@ turn log 的 provider/model 列仍是配置名 `deepseek` / `deepseek-flash`（�
 | M500-EN | 8.144 | Here are matching products from our range. | 聊天 500，`injected chat 500`，model_name deepseek-flash |
 | M500-DE | 3.664 | Hier sind passende Produkte aus unserem Sortiment. | 同上 |
 | M-EMPTY | 3.019 | 与 M500-EN 相同 | 非流式校验错误：ChatCompletion `model` 为 None。请求没有走流式分支，不是空的 SSE |
+| M-EMPTY-STREAM | 5.205 | 与 M500-EN 相同。卡 1179、1181、2063、2064、4107、4108。追问选项是模板值 `none` / `needed` / `needed_accessory_ok` | 空 SSE：HTTP 200，正文没有事件。failures 为 `expected JSON data`。这一轮没有重跑 M500-RETRY |
 | M-429 | 3.655 | 与 M500-EN 相同 | 聊天 429，`injected chat 429` |
 | M500-DOC | 7.176 | Here is what I found for your question. | 聊天 500。问的是 H2-10K-T2 的最大 PV 输入 |
 | IDX-MISS | 4.784 | 产品推荐句 + 卡 | `linker/search-knowledge: document index unavailable: unable to open database file` |
@@ -57,11 +59,11 @@ IDX 两例的路由是 `documents`，问句要求用数据表。规格写的是�
 
 第一轮的 AB-500 自动 defect 作废（桩未触发）。
 
-### D3 · SSE 截断：当场有错，刷新后错误消失（SSE-CUT）
+### D3 · SSE 截断：当场有错，刷新后错误消失（SSE-CUT、SSE-PARTIAL、SSE-ATTACHMENT、SSE-READING）
 
 层：UI 状态。修复票 #411。
 
-dossier §1.15：**须自行设计**。SSE 中途断流的界面状态与重试，没有竞品材料。记录的这一刀是第一条完整 `block` 之后。半条 block、attachment 事件、reading 事件的截断在装具里有测试，这一轮没有对 c332 重放，也没有截图。
+dossier §1.15：**须自行设计**。SSE 中途断流的界面状态与重试，没有竞品材料。先记录的一刀是第一条完整 `block` 之后。半条 block、attachment 事件、reading 事件后来在 c332 上重放，四刀的刷新结论相同，后三刀没有截图。
 
 代理放在 Genie 与 WP 之间，保留到第一条 `block` 为止，去掉 `done`。HTTP 200，事件只有 `meta` + `block`，11.677s，route products，fallback false，failures 空。日志 grounded，deepseek-flash。截断块里有 “10 kW”，因为没有 `done`，`Thread::answer` 不渲染，`partial_shown` false。这 10 kW 没有变成已发布事实。
 
@@ -70,6 +72,16 @@ dossier §1.15：**须自行设计**。SSE 中途断流的界面状态与重试�
 刷新后再打开：用户句 “Do you stock the SAJ H2-10K-T2?” 还在，错误没有，答案没有，卡 0。`reload_hides_error` true。截图 `ui/sse-cut-reload.png`。
 
 代理指回 `http://127.0.0.1:9189` 后，在同一对话里再发同一问，约 20s 出扎实回答（T2 不在目录，T3 家族，含目录上的 29.999 kW）。截图 `ui/sse-cut-retry.png`。
+
+补跑的三刀走同一个代理，问句仍是 “Do you stock the SAJ H2-10K-T2?”。判定都是 defect：HTTP 200，没有 `done`，`partial_shown` false，GET 线程里问题还在、没有答案。代理撤掉后的重试是健康的产品回答。没有截图，当场那句 “Genie did not answer.” 是壳对无 `done` 的 200 的路径，不是另一次看屏。
+
+| 场景 | 秒 | 截在哪里 | 顾客正文 | 日志 |
+|---|---|---|---|---|
+| SSE-PARTIAL | 25.145 | 第一条 `block` 的 JSON 中间。正文不以空行结束，块解析不成，`done` 不在缩短后的正文里 | 事件名 `meta`、`block`。块里的目录 kW 没有渲染 | deepseek-flash，route products |
+| SSE-ATTACHMENT | 0.461 | `attachment` 的 JSON 中间。没有 `reading`，没有 `block`，没有 `done` | 事件名 `meta`、`attachment` | 零件清单路径，provider `service`，model `none`。上传 `h2.csv`（一行 `SAJ H2-10K-T3`） |
+| SSE-READING | 0.25 | `reading` 的中间。缩短后的上游含 `reading` 且没有 `done` | WordPress 剥掉 `reading`，顾客正文是 `meta` 加一条完整的 attachment，没有 block | 同上，零件清单路径 |
+
+`cut_observed.marker_present` 三刀都是 true，`done_in_shortened` 都是 false。
 
 ### D4 · 502：当场有错，刷新后问题也不见（VPS-DOWN、VPS-KILL）
 
@@ -89,7 +101,7 @@ VPS-KILL 走同一代理错误码。浏览器只做了 VPS-DOWN 的当场错误�
 - SSE 截断（完整 block 之后）：`ui/sse-cut-live-error.png`、`ui/sse-cut-reload.png`、`ui/sse-cut-retry.png`
 - VPS 停机的当场 502：`ui/vps-down-error.png`
 
-没有的：390 宽、德语界面、VPS-KILL、VPS-DOWN 刷新后的空状态、半条 block、attachment / reading 事件、Jev 502、AB-500 的 handoff 句。M500-DE 的德语句子来自 API 正文，不是截图。“界面没有空白”只覆盖上面三态，不是一张状态表。
+没有的：390 宽、德语界面、VPS-KILL、VPS-DOWN 刷新后的空状态。半条 block、attachment / reading 事件已经对 c332 重放，仍没有截图。也没有 Jev 502、AB-500 的 handoff 句的截图。M500-DE 的德语句子来自 API 正文，不是截图。“界面没有空白”只覆盖上面三态，不是一张状态表。390 宽、德语和 VPS-KILL 的截图跟在 #433，这轮没有补拍。
 
 ## 3. 放行与观察
 
