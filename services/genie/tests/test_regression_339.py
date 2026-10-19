@@ -6,6 +6,7 @@ docs/acceptance/2026-10-19/379/339-cases.md is the index.
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -51,7 +52,7 @@ EXPECTED = (
 )
 
 
-def _rows() -> list[dict]:
+def _rows() -> list[dict[str, Any]]:
     return [json.loads(line) for line in SET.read_text().splitlines() if line.strip()]
 
 
@@ -74,7 +75,7 @@ def _subject(vocabulary: Vocabulary, ids: list[int] | None) -> Subject:
     return subject
 
 
-def _note(raw: dict) -> NamedModel:
+def _note(raw: dict[str, Any]) -> NamedModel:
     return NamedModel(
         code=raw["code"],
         product_ids=tuple(raw.get("product_ids", ())),
@@ -85,12 +86,12 @@ def _note(raw: dict) -> NamedModel:
     )
 
 
-def _calls(raw_calls: list[dict]) -> list[dict]:
-    built: list[dict] = []
+def _calls(raw_calls: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    built: list[dict[str, Any]] = []
     for raw in raw_calls:
         text = raw.get("text") or ""
         ids = raw.get("ids", [])
-        arguments: dict = {"lang": "en", "limit": 6}
+        arguments: dict[str, Any] = {"lang": "en", "limit": 6}
         if text:
             arguments["text"] = text
         built.append(
@@ -104,7 +105,7 @@ def _calls(raw_calls: list[dict]) -> list[dict]:
     return built
 
 
-def _facts(raw: dict) -> TurnFacts:
+def _facts(raw: dict[str, Any]) -> TurnFacts:
     ids = list(raw.get("qualified", []))
     facts = TurnFacts()
     facts.product_ids = set(ids)
@@ -137,7 +138,7 @@ def test_the_fixture_lists_the_ticket_cases() -> None:
 
 
 @pytest.mark.parametrize("row", _rows(), ids=[row["id"] for row in _rows()])
-def test_339_product_word_case(row: dict, vocabulary: Vocabulary) -> None:
+def test_339_product_word_case(row: dict[str, Any], vocabulary: Vocabulary) -> None:
     kind = row["kind"]
     if kind == "plan":
         _plan(row, vocabulary)
@@ -149,7 +150,7 @@ def test_339_product_word_case(row: dict, vocabulary: Vocabulary) -> None:
         raise AssertionError(kind)
 
 
-def _plan(row: dict, vocabulary: Vocabulary) -> None:
+def _plan(row: dict[str, Any], vocabulary: Vocabulary) -> None:
     subject = _subject(vocabulary, row.get("subject_ids"))
     route = plan(
         row["message"],
@@ -213,11 +214,11 @@ def _plan(row: dict, vocabulary: Vocabulary) -> None:
         _check_fallback(route, row["fallback"], row["lang"])
 
 
-def _ground(row: dict) -> None:
+def _ground(row: dict[str, Any]) -> None:
     notes = tuple(_note(raw) for raw in row["notes"])
     route = Route("products", show_products=True, no_handoff=True, named_models=notes)
     facts = _facts(row)
-    blocks: list = [TextBlock(text=row["text"], refs=row.get("refs", []))]
+    blocks: list[Any] = [TextBlock(text=row["text"], refs=row.get("refs", []))]
     if row.get("cards"):
         blocks.append(CardsBlock(product_ids=row["cards"]))
     output = TurnOutput(language=row["language"], blocks=blocks)
@@ -227,13 +228,13 @@ def _ground(row: dict) -> None:
         assert any(needle in failure for failure in result.failures)
 
 
-def _fallback(row: dict) -> None:
+def _fallback(row: dict[str, Any]) -> None:
     notes = tuple(_note(raw) for raw in row["notes"])
     route = Route("products", show_products=True, no_handoff=True, named_models=notes)
     _check_fallback(route, row, row["lang"])
 
 
-def _check_fallback(route: Route, raw: dict, lang: str) -> None:
+def _check_fallback(route: Route, raw: dict[str, Any], lang: str) -> None:
     facts = _facts(raw)
     output = fallback(facts, lang, route)
     if raw.get("expect_handoff"):
