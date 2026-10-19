@@ -1,0 +1,2372 @@
+{
+  "fetched_at": "2026-10-19T09:20:18.964Z",
+  "base": "http://127.0.0.1:9165",
+  "count": 106,
+  "sets": {
+    "homeHybridInverters": [
+      {
+        "id": 1179,
+        "brand": "SAJ",
+        "model": "H2-25K-T3",
+        "series": "saj-h2",
+        "phase": 3,
+        "ac_power_kw": 25,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1181,
+        "brand": "SAJ",
+        "model": "H2-30K-T3-DE",
+        "series": "saj-h2",
+        "phase": 3,
+        "ac_power_kw": 29.999,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1182,
+        "brand": "SAJ",
+        "model": "HS2-10K-T2-X",
+        "series": "saj-hs2",
+        "phase": 3,
+        "ac_power_kw": 10,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1183,
+        "brand": "SAJ",
+        "model": "HS2-6K-T2-X",
+        "series": "saj-hs2",
+        "phase": 3,
+        "ac_power_kw": 6,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1184,
+        "brand": "SAJ",
+        "model": "HS2-8K-T2-X",
+        "series": "saj-hs2",
+        "phase": 3,
+        "ac_power_kw": 8,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1185,
+        "brand": "SAJ",
+        "model": "HS3-12K-T2-W/G-PX",
+        "series": "saj-hs3",
+        "phase": 3,
+        "ac_power_kw": 12,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1186,
+        "brand": "SAJ",
+        "model": "HS3-6K-T2-W/G-PX",
+        "series": "saj-hs3",
+        "phase": 3,
+        "ac_power_kw": 6,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1187,
+        "brand": "SAJ",
+        "model": "HS3-8K-T2-W/G-PX",
+        "series": "saj-hs3",
+        "phase": 3,
+        "ac_power_kw": 8,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 2063,
+        "brand": "SAJ",
+        "model": "H2-15K-T3",
+        "series": "saj-h2",
+        "phase": 3,
+        "ac_power_kw": 15,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 2064,
+        "brand": "SAJ",
+        "model": "H2-20K-T3",
+        "series": "saj-h2",
+        "phase": 3,
+        "ac_power_kw": 20,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 2198,
+        "brand": "SAJ",
+        "model": "HS3-5K-T2-W/G-PX",
+        "series": "saj-hs3",
+        "phase": 3,
+        "ac_power_kw": 5,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 2199,
+        "brand": "SAJ",
+        "model": "HS3-10K-T2-W/G-PX",
+        "series": "saj-hs3",
+        "phase": 3,
+        "ac_power_kw": 10,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3555,
+        "brand": "EcoFlow",
+        "model": "EF HD-P3-10K0-S2",
+        "series": "ecoflow-ocean2-hd-p3-s2",
+        "phase": 3,
+        "ac_power_kw": 10,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3556,
+        "brand": "GoodWe",
+        "model": "GW10K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 10,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3574,
+        "brand": "EcoFlow",
+        "model": "EF HD-P3-6K0-S2",
+        "series": "ecoflow-ocean2-hd-p3-s2",
+        "phase": 3,
+        "ac_power_kw": 6,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3575,
+        "brand": "EcoFlow",
+        "model": "EF HD-P3-8K0-S2",
+        "series": "ecoflow-ocean2-hd-p3-s2",
+        "phase": 3,
+        "ac_power_kw": 8,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3576,
+        "brand": "EcoFlow",
+        "model": "EF HD-P3-12K0-S2",
+        "series": "ecoflow-ocean2-hd-p3-s2",
+        "phase": 3,
+        "ac_power_kw": 12,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3577,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-6K0-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 6,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3578,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-8K0-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 8,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3579,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-10K0-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 10,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3580,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-12K0-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 12,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3583,
+        "brand": "GoodWe",
+        "model": "GW8K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 8,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3584,
+        "brand": "GoodWe",
+        "model": "GW12K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 12,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3585,
+        "brand": "GoodWe",
+        "model": "GW15K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 15,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 4107,
+        "brand": "SAJ",
+        "model": "H2-10K-T3",
+        "series": "saj-h2",
+        "phase": 3,
+        "ac_power_kw": 10,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 4108,
+        "brand": "SAJ",
+        "model": "H2-12K-T3",
+        "series": "saj-h2",
+        "phase": 3,
+        "ac_power_kw": 12,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 4109,
+        "brand": "SAJ",
+        "model": "HS2-5K-T2-X",
+        "series": "saj-hs2",
+        "phase": 3,
+        "ac_power_kw": 5,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6480,
+        "brand": "EcoFlow",
+        "model": "EF HD-P3-5K0-S2",
+        "series": "ecoflow-ocean2-hd-p3-s2",
+        "phase": 3,
+        "ac_power_kw": 5,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6481,
+        "brand": "EcoFlow",
+        "model": "EF HD-P3-15K-G2",
+        "series": "ecoflow-ocean2-hd-p3-s2",
+        "phase": 3,
+        "ac_power_kw": 15,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6482,
+        "brand": "EcoFlow",
+        "model": "EF HD-P3-15K-G2F",
+        "series": "ecoflow-ocean2-hd-p3-s2",
+        "phase": 3,
+        "ac_power_kw": 15,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6483,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-3K-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 3,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6484,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-3K68-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 3.68,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6485,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-4K6-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 4.6,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6486,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-5K-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 5,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6487,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-5K75-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 5.75,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6488,
+        "brand": "EcoFlow",
+        "model": "EF HD-P1-6K-S2",
+        "series": "ecoflow-ocean2-plus-hd-p1-s2",
+        "phase": 1,
+        "ac_power_kw": 6,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6512,
+        "brand": "GoodWe",
+        "model": "GW5K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 5,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6513,
+        "brand": "GoodWe",
+        "model": "GW6K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 6,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6514,
+        "brand": "GoodWe",
+        "model": "GW9.999K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 9.999,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6515,
+        "brand": "GoodWe",
+        "model": "GW20K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 20,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6516,
+        "brand": "GoodWe",
+        "model": "GW25K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 25,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6517,
+        "brand": "GoodWe",
+        "model": "GW29.999K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 29.999,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6518,
+        "brand": "GoodWe",
+        "model": "GW30K-ETA-G20",
+        "series": "goodwe-esa-5-30kw-eta-g20",
+        "phase": 3,
+        "ac_power_kw": 30,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6523,
+        "brand": "GoodWe",
+        "model": "GW3K-EHA-G20",
+        "series": "goodwe-esa-3-10kw-eha-g20",
+        "phase": 1,
+        "ac_power_kw": 3,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6524,
+        "brand": "GoodWe",
+        "model": "GW3.6K-EHA-G20",
+        "series": "goodwe-esa-3-10kw-eha-g20",
+        "phase": 1,
+        "ac_power_kw": 3.6,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6525,
+        "brand": "GoodWe",
+        "model": "GW5K-EHA-G20",
+        "series": "goodwe-esa-3-10kw-eha-g20",
+        "phase": 1,
+        "ac_power_kw": 5,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6526,
+        "brand": "GoodWe",
+        "model": "GW6K-EHA-G20",
+        "series": "goodwe-esa-3-10kw-eha-g20",
+        "phase": 1,
+        "ac_power_kw": 6,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6527,
+        "brand": "GoodWe",
+        "model": "GW8K-EHA-G20",
+        "series": "goodwe-esa-3-10kw-eha-g20",
+        "phase": 1,
+        "ac_power_kw": 8,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6528,
+        "brand": "GoodWe",
+        "model": "GW10K-EHA-G20",
+        "series": "goodwe-esa-3-10kw-eha-g20",
+        "phase": 1,
+        "ac_power_kw": 10,
+        "usable_kwh": "unknown"
+      }
+    ],
+    "commercialInverters": [
+      {
+        "id": 1946,
+        "brand": "GoodWe",
+        "model": "GW80K-ET-G10",
+        "series": "goodwe-et-80-100k",
+        "phase": 3,
+        "ac_power_kw": 80,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1947,
+        "brand": "GoodWe",
+        "model": "GW99.99K-ET-G10",
+        "series": "goodwe-et-80-100k",
+        "phase": 3,
+        "ac_power_kw": 99.99,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1948,
+        "brand": "GoodWe",
+        "model": "GW100K-ET-G10",
+        "series": "goodwe-et-80-100k",
+        "phase": 3,
+        "ac_power_kw": 100,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3595,
+        "brand": "GoodWe",
+        "model": "GW125K-ETR-G10",
+        "series": "goodwe-etr",
+        "phase": 3,
+        "ac_power_kw": 125,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6506,
+        "brand": "GoodWe",
+        "model": "GW75K-ET-G10",
+        "series": "goodwe-et-80-100k",
+        "phase": 3,
+        "ac_power_kw": 75,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6507,
+        "brand": "GoodWe",
+        "model": "GW80K-ETR-G10",
+        "series": "goodwe-etr",
+        "phase": 3,
+        "ac_power_kw": 80,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6508,
+        "brand": "GoodWe",
+        "model": "GW99.99K-ETR-G10",
+        "series": "goodwe-etr",
+        "phase": 3,
+        "ac_power_kw": 99.99,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6509,
+        "brand": "GoodWe",
+        "model": "GW100K-ETR-G10",
+        "series": "goodwe-etr",
+        "phase": 3,
+        "ac_power_kw": 100,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6510,
+        "brand": "GoodWe",
+        "model": "GW110K-ETR-G10",
+        "series": "goodwe-etr",
+        "phase": 3,
+        "ac_power_kw": 110,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 6511,
+        "brand": "GoodWe",
+        "model": "GW124.99K-ETR-G10",
+        "series": "goodwe-etr",
+        "phase": 3,
+        "ac_power_kw": 124.99,
+        "usable_kwh": "unknown"
+      }
+    ],
+    "homeStorage": [
+      {
+        "id": 1832,
+        "brand": "SAJ",
+        "model": "B2-5.0-HV1",
+        "series": "saj-b2-bu3",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 4.5
+      },
+      {
+        "id": 2067,
+        "brand": "SAJ",
+        "model": "B2-10.0-HV1",
+        "series": "saj-b2-bu3",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 9
+      },
+      {
+        "id": 2068,
+        "brand": "SAJ",
+        "model": "B2-15.0-HV1",
+        "series": "saj-b2-bu3",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 13.5
+      },
+      {
+        "id": 2069,
+        "brand": "SAJ",
+        "model": "B2-20.0-HV1",
+        "series": "saj-b2-bu3",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 18
+      },
+      {
+        "id": 2070,
+        "brand": "SAJ",
+        "model": "B2-25.0-HV1",
+        "series": "saj-b2-bu3",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 22.5
+      },
+      {
+        "id": 2090,
+        "brand": "SAJ",
+        "model": "BU2-5.0-HV1",
+        "series": "saj-b2-hv-5-25kwh",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 4.5
+      },
+      {
+        "id": 2092,
+        "brand": "SAJ",
+        "model": "BC2-HV1",
+        "series": "saj-b2-hv-5-25kwh",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 2093,
+        "brand": "SAJ",
+        "model": "BU3-5.0-TV2-PRO",
+        "series": "saj-b2-bu3",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 4.8
+      },
+      {
+        "id": 3581,
+        "brand": "EcoFlow",
+        "model": "EF BD-5-S2",
+        "series": "ecoflow-ocean2-lfp-battery-s2",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 4.85
+      },
+      {
+        "id": 3582,
+        "brand": "EcoFlow",
+        "model": "EF BD-8-S2",
+        "series": "ecoflow-ocean2-lfp-battery-s2",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 7.76
+      },
+      {
+        "id": 3611,
+        "brand": "GoodWe",
+        "model": "GW6.0-BAT-D-G20",
+        "series": "goodwe-esa-bat-d-g20",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 5.8
+      },
+      {
+        "id": 3612,
+        "brand": "GoodWe",
+        "model": "GW9.0-BAT-D-G20",
+        "series": "goodwe-esa-bat-d-g20",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 8.7
+      },
+      {
+        "id": 6519,
+        "brand": "GoodWe",
+        "model": "GW5.1-BAT-D-G20",
+        "series": "goodwe-esa-bat-d-g20",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 5
+      },
+      {
+        "id": 6520,
+        "brand": "GoodWe",
+        "model": "GW8.3-BAT-D-G20",
+        "series": "goodwe-esa-bat-d-g20",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 8
+      },
+      {
+        "id": 6521,
+        "brand": "GoodWe",
+        "model": "GW5.1-BAT-D-G21",
+        "series": "goodwe-esa-bat-d-g20",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 5
+      },
+      {
+        "id": 6522,
+        "brand": "GoodWe",
+        "model": "GW8.3-BAT-D-G21",
+        "series": "goodwe-esa-bat-d-g20",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 8
+      }
+    ],
+    "batterySystems": [
+      {
+        "id": 1954,
+        "brand": "GoodWe",
+        "model": "GW61.4-BAT-AC-G10",
+        "series": "goodwe-bat-c",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 60
+      },
+      {
+        "id": 1955,
+        "brand": "GoodWe",
+        "model": "GW112.6-BAT-AC-G10",
+        "series": "goodwe-bat-c",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 110
+      },
+      {
+        "id": 1956,
+        "brand": "GoodWe",
+        "model": "GW208.9-BAT-LC-G10",
+        "series": "goodwe-bat-c",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1957,
+        "brand": "GoodWe",
+        "model": "GW208.9-BAT-LCD-G10",
+        "series": "goodwe-bat-c",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 1958,
+        "brand": "GoodWe",
+        "model": "GW261.2-BAT-LCD-G10",
+        "series": "goodwe-bat-c",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 4103,
+        "brand": "SAJ",
+        "model": "CB2-57.3-HV5",
+        "series": "saj-ci-line",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 51.5
+      },
+      {
+        "id": 4104,
+        "brand": "SAJ",
+        "model": "CB2-71.6-HV5",
+        "series": "saj-ci-line",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 64.4
+      },
+      {
+        "id": 4105,
+        "brand": "SAJ",
+        "model": "CB2-85.9-HV5",
+        "series": "saj-ci-line",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 77.3
+      },
+      {
+        "id": 4106,
+        "brand": "SAJ",
+        "model": "CB2-100.3-HV5",
+        "series": "saj-ci-line",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": 90.2
+      }
+    ],
+    "evChargers": [
+      {
+        "id": 3557,
+        "brand": "GoodWe",
+        "model": "GW11K-HCA-20",
+        "series": "goodwe-hca",
+        "phase": 3,
+        "ac_power_kw": 11,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3586,
+        "brand": "GoodWe",
+        "model": "GW7K-HCA-20",
+        "series": "goodwe-hca",
+        "phase": 1,
+        "ac_power_kw": 7,
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3587,
+        "brand": "GoodWe",
+        "model": "GW22K-HCA-20",
+        "series": "goodwe-hca",
+        "phase": 3,
+        "ac_power_kw": 22,
+        "usable_kwh": "unknown"
+      }
+    ],
+    "ems": [
+      {
+        "id": 1973,
+        "brand": "SAJ",
+        "model": "eManager-C1 Pro",
+        "series": "saj-emanager-c1-pro",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 2409,
+        "brand": "GoodWe",
+        "model": "SEC3000C",
+        "series": "goodwe-ems",
+        "phase": 3,
+        "ac_power_kw": "unknown",
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 2415,
+        "brand": "GoodWe",
+        "model": "EzManager3000",
+        "series": "goodwe-ems",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3573,
+        "brand": "SAJ",
+        "model": "eSolar AIO3",
+        "series": "saj-data-collectors",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": "unknown"
+      },
+      {
+        "id": 3618,
+        "brand": "SAJ",
+        "model": "eManager",
+        "series": "saj-emanager",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "usable_kwh": "unknown"
+      }
+    ]
+  },
+  "known": {
+    "sajH2_10k_t3": {
+      "id": 4107,
+      "sku": "DLK-SAJ-H210KT3",
+      "device_class": "inverters",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "usable_kwh": "unknown",
+      "nominal_kwh": "unknown",
+      "kwh_range": null,
+      "figures": {},
+      "documents": [
+        {
+          "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "title": "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+          "type": "datasheet",
+          "lang": "en"
+        },
+        {
+          "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+          "title": "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)",
+          "type": "manual",
+          "lang": "de"
+        }
+      ],
+      "model": "H2-10K-T3",
+      "brand": "SAJ",
+      "series": "saj-h2"
+    },
+    "goodweEsa": [
+      {
+        "id": 1946,
+        "sku": "DLK-GOODWE-GW80KETG10",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 80,
+        "pv_input_kw": 160,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "title": "GoodWe ET Series 75–100 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+            "title": "GoodWe ET 50–100 kW Solution Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW80K-ET-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-et-80-100k"
+      },
+      {
+        "id": 1947,
+        "sku": "DLK-GOODWE-GW9999KETG10",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 99.99,
+        "pv_input_kw": 200,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "title": "GoodWe ET Series 75–100 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+            "title": "GoodWe ET 50–100 kW Solution Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW99.99K-ET-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-et-80-100k"
+      },
+      {
+        "id": 1948,
+        "sku": "DLK-GOODWE-GW100KETG10",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 100,
+        "pv_input_kw": 200,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "title": "GoodWe ET Series 75–100 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+            "title": "GoodWe ET 50–100 kW Solution Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW100K-ET-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-et-80-100k"
+      },
+      {
+        "id": 1954,
+        "sku": "DLK-GOODWE-GW614BATACG10",
+        "device_class": "battery-systems",
+        "application": "commercial",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": 60,
+        "nominal_kwh": 61.4,
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+            "title": "GoodWe BAT-C Series 61.4–112.6 kWh Datasheet (EMEA, EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+            "title": "GW BAT-C-60-112kWh Quick-Installation-Guide-POLY V1.7",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW61.4-BAT-AC-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-bat-c"
+      },
+      {
+        "id": 1955,
+        "sku": "DLK-GOODWE-GW1126BATACG10",
+        "device_class": "battery-systems",
+        "application": "commercial",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": 110,
+        "nominal_kwh": 112.6,
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+            "title": "GoodWe BAT-C Series 61.4–112.6 kWh Datasheet (EMEA, EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+            "title": "GW BAT-C-60-112kWh Quick-Installation-Guide-POLY V1.7",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW112.6-BAT-AC-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-bat-c"
+      },
+      {
+        "id": 1956,
+        "sku": "DLK-GOODWE-GW2089BATLCG10",
+        "device_class": "battery-systems",
+        "application": "commercial",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": "unknown",
+        "nominal_kwh": 208.9,
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.1)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+            "title": "GoodWe BAT-C 208.9–261.2 kWh Commercial and Industrial Battery System User Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+            "title": "GoodWe ET 50–100 kW Solution Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW208.9-BAT-LC-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-bat-c"
+      },
+      {
+        "id": 1957,
+        "sku": "DLK-GOODWE-GW2089BATLCDG10",
+        "device_class": "battery-systems",
+        "application": "commercial",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": "unknown",
+        "nominal_kwh": 208.9,
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf",
+            "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.0)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+            "title": "GoodWe BAT-C 208.9–261.2 kWh Commercial and Industrial Battery System User Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW208.9-BAT-LCD-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-bat-c"
+      },
+      {
+        "id": 1958,
+        "sku": "DLK-GOODWE-GW2612BATLCDG10",
+        "device_class": "battery-systems",
+        "application": "commercial",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": "unknown",
+        "nominal_kwh": 261.2,
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GoodWe BAT-C Series 208.9–261.2 kWh Datasheet (EMEA, EN, V1.1)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+            "title": "GoodWe BAT-C 208.9–261.2 kWh Commercial and Industrial Battery System User Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW261.2-BAT-LCD-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-bat-c"
+      },
+      {
+        "id": 2403,
+        "sku": "DLK-GOODWE-GW125KSTSG10",
+        "device_class": "accessories",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf",
+            "title": "GoodWe STS Series GW125K-STS-G10 Datasheet (EMEA, EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_STS-125kW_Quick-Installation-Guide-Multilingual_V1.0.pdf",
+            "title": "GoodWe GW125K-STS-G10 Quick Installation Guide (Multilingual)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW125K-STS-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-sts-125k"
+      },
+      {
+        "id": 3556,
+        "sku": "DLK-GOODWE-GW10KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 10,
+        "pv_input_kw": 20,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW10K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 3557,
+        "sku": "DLK-GOODWE-GW11KHCA20",
+        "device_class": "ev-chargers",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 11,
+        "pv_input_kw": "unknown",
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_HCA-G2_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW HCA-G2 Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf",
+            "title": "GoodWe HCA G2 User Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW11K-HCA-20",
+        "brand": "GoodWe",
+        "series": "goodwe-hca"
+      },
+      {
+        "id": 3583,
+        "sku": "DLK-GOODWE-GW8KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 8,
+        "pv_input_kw": 16,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW8K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 3584,
+        "sku": "DLK-GOODWE-GW12KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 12,
+        "pv_input_kw": 24,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW12K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 3585,
+        "sku": "DLK-GOODWE-GW15KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 15,
+        "pv_input_kw": 30,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW15K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 3586,
+        "sku": "DLK-GOODWE-GW7KHCA20",
+        "device_class": "ev-chargers",
+        "application": "home",
+        "phase": 1,
+        "ac_power_kw": 7,
+        "pv_input_kw": "unknown",
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_HCA-G2_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW HCA-G2 Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf",
+            "title": "GoodWe HCA G2 User Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW7K-HCA-20",
+        "brand": "GoodWe",
+        "series": "goodwe-hca"
+      },
+      {
+        "id": 3587,
+        "sku": "DLK-GOODWE-GW22KHCA20",
+        "device_class": "ev-chargers",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 22,
+        "pv_input_kw": "unknown",
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_HCA-G2_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW HCA-G2 Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf",
+            "title": "GoodWe HCA G2 User Manual (EN)",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW22K-HCA-20",
+        "brand": "GoodWe",
+        "series": "goodwe-hca"
+      },
+      {
+        "id": 3595,
+        "sku": "DLK-GOODWE-ETR125",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 125,
+        "pv_input_kw": 250,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf",
+            "title": "GW ETR-50-125kW User-Manual-EN V1.0",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ETR-50-125kW_User-Manual-DE.pdf",
+            "title": "GoodWe ETR 50–125 kW User Manual (DE)",
+            "type": "manual",
+            "lang": "de"
+          }
+        ],
+        "model": "GW125K-ETR-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-etr"
+      },
+      {
+        "id": 3611,
+        "sku": "DLK-GOODWE-GW60BATDG20",
+        "device_class": "home-storage",
+        "application": "home",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": 5.8,
+        "nominal_kwh": 6,
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW6.0-BAT-D-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-bat-d-g20"
+      },
+      {
+        "id": 3612,
+        "sku": "DLK-GOODWE-GW90BATDG20",
+        "device_class": "home-storage",
+        "application": "home",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": 8.7,
+        "nominal_kwh": 9,
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW9.0-BAT-D-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-bat-d-g20"
+      },
+      {
+        "id": 6321,
+        "sku": "DLK-GOODWE-GW125261ESALCNG10",
+        "device_class": "all-in-one-systems",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 125,
+        "pv_input_kw": "unknown",
+        "usable_kwh": 261.25,
+        "nominal_kwh": 261.25,
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW ESA 261kWh Datasheet EMEA EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
+            "title": "GW ESA 261kWh User Manual EN V1.6",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW125/261-ESA-LCN-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-lcn"
+      },
+      {
+        "id": 6506,
+        "sku": "DLK-GOODWE-GW75KETG10",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 75,
+        "pv_input_kw": 150,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "title": "GoodWe ET Series 75–100 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf",
+            "title": "GW ET-100kW User-Manual-EN V1.2",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW75K-ET-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-et-80-100k"
+      },
+      {
+        "id": 6507,
+        "sku": "DLK-GOODWE-GW80KETRG10",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 80,
+        "pv_input_kw": 160,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf",
+            "title": "GW ETR-50-125kW User-Manual-EN V1.0",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW80K-ETR-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-etr"
+      },
+      {
+        "id": 6508,
+        "sku": "DLK-GOODWE-GW9999KETRG10",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 99.99,
+        "pv_input_kw": 200,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf",
+            "title": "GW ETR-50-125kW User-Manual-EN V1.0",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW99.99K-ETR-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-etr"
+      },
+      {
+        "id": 6509,
+        "sku": "DLK-GOODWE-GW100KETRG10",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 100,
+        "pv_input_kw": 200,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf",
+            "title": "GW ETR-50-125kW User-Manual-EN V1.0",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW100K-ETR-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-etr"
+      },
+      {
+        "id": 6510,
+        "sku": "DLK-GOODWE-GW110KETRG10",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 110,
+        "pv_input_kw": 220,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf",
+            "title": "GW ETR-50-125kW User-Manual-EN V1.0",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW110K-ETR-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-etr"
+      },
+      {
+        "id": 6511,
+        "sku": "DLK-GOODWE-GW12499KETRG10",
+        "device_class": "inverters",
+        "application": "commercial",
+        "phase": 3,
+        "ac_power_kw": 124.99,
+        "pv_input_kw": 250,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GoodWe ETR Series 80–125 kW Datasheet (EMEA, EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf",
+            "title": "GW ETR-50-125kW User-Manual-EN V1.0",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW124.99K-ETR-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-etr"
+      },
+      {
+        "id": 6512,
+        "sku": "DLK-GOODWE-GW5KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 5,
+        "pv_input_kw": 10,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW5K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 6513,
+        "sku": "DLK-GOODWE-GW6KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 6,
+        "pv_input_kw": 12,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW6K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 6514,
+        "sku": "DLK-GOODWE-GW9999KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 9.999,
+        "pv_input_kw": 20,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW9.999K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 6515,
+        "sku": "DLK-GOODWE-GW20KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 20,
+        "pv_input_kw": 40,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW20K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 6516,
+        "sku": "DLK-GOODWE-GW25KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 25,
+        "pv_input_kw": 50,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW25K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 6517,
+        "sku": "DLK-GOODWE-GW29999KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 29.999,
+        "pv_input_kw": 60,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW29.999K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 6518,
+        "sku": "DLK-GOODWE-GW30KETAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 30,
+        "pv_input_kw": 60,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW30K-ETA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-5-30kw-eta-g20"
+      },
+      {
+        "id": 6519,
+        "sku": "DLK-GOODWE-GW51BATDG20",
+        "device_class": "home-storage",
+        "application": "home",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": 5,
+        "nominal_kwh": 5.12,
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_LX-D-G2-Battery_EU.pdf",
+            "title": "GW Limited-Warranty LX-D-G2-Battery EU",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW5.1-BAT-D-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-bat-d-g20"
+      },
+      {
+        "id": 6520,
+        "sku": "DLK-GOODWE-GW83BATDG20",
+        "device_class": "home-storage",
+        "application": "home",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": 8,
+        "nominal_kwh": 8.32,
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_LX-D-G2-Battery_EU.pdf",
+            "title": "GW Limited-Warranty LX-D-G2-Battery EU",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW8.3-BAT-D-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-bat-d-g20"
+      },
+      {
+        "id": 6521,
+        "sku": "DLK-GOODWE-GW51BATDG21",
+        "device_class": "home-storage",
+        "application": "home",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": 5,
+        "nominal_kwh": 5.12,
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW5.1-BAT-D-G21",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-bat-d-g20"
+      },
+      {
+        "id": 6522,
+        "sku": "DLK-GOODWE-GW83BATDG21",
+        "device_class": "home-storage",
+        "application": "home",
+        "phase": "unknown",
+        "ac_power_kw": "unknown",
+        "pv_input_kw": "unknown",
+        "usable_kwh": 8,
+        "nominal_kwh": 8.32,
+        "kwh_range": {
+          "min": 5,
+          "max": 108
+        },
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+            "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+            "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+            "type": "manual",
+            "lang": "en"
+          }
+        ],
+        "model": "GW8.3-BAT-D-G21",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-bat-d-g20"
+      },
+      {
+        "id": 6523,
+        "sku": "DLK-GOODWE-GW3KEHAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 1,
+        "ac_power_kw": 3,
+        "pv_input_kw": 6,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW ESA-3-10kW Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+            "title": "GW ESA-3-10kW User-Manual-EN V1.8",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW3K-EHA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-3-10kw-eha-g20"
+      },
+      {
+        "id": 6524,
+        "sku": "DLK-GOODWE-GW36KEHAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 1,
+        "ac_power_kw": 3.6,
+        "pv_input_kw": 7.2,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW ESA-3-10kW Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+            "title": "GW ESA-3-10kW User-Manual-EN V1.8",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW3.6K-EHA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-3-10kw-eha-g20"
+      },
+      {
+        "id": 6525,
+        "sku": "DLK-GOODWE-GW5KEHAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 1,
+        "ac_power_kw": 5,
+        "pv_input_kw": 10,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW ESA-3-10kW Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+            "title": "GW ESA-3-10kW User-Manual-EN V1.8",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW5K-EHA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-3-10kw-eha-g20"
+      },
+      {
+        "id": 6526,
+        "sku": "DLK-GOODWE-GW6KEHAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 1,
+        "ac_power_kw": 6,
+        "pv_input_kw": 12,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW ESA-3-10kW Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+            "title": "GW ESA-3-10kW User-Manual-EN V1.8",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW6K-EHA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-3-10kw-eha-g20"
+      },
+      {
+        "id": 6527,
+        "sku": "DLK-GOODWE-GW8KEHAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 1,
+        "ac_power_kw": 8,
+        "pv_input_kw": 16,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW ESA-3-10kW Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+            "title": "GW ESA-3-10kW User-Manual-EN V1.8",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW8K-EHA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-3-10kw-eha-g20"
+      },
+      {
+        "id": 6528,
+        "sku": "DLK-GOODWE-GW10KEHAG20",
+        "device_class": "inverters",
+        "application": "home",
+        "phase": 1,
+        "ac_power_kw": 10,
+        "pv_input_kw": 20,
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW ESA-3-10kW Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+            "title": "GW ESA-3-10kW User-Manual-EN V1.8",
+            "type": "manual",
+            "lang": "en"
+          },
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+            "title": "GW Limited-Warranty Inverter-System Europe",
+            "type": "warranty",
+            "lang": "en"
+          }
+        ],
+        "model": "GW10K-EHA-G20",
+        "brand": "GoodWe",
+        "series": "goodwe-esa-3-10kw-eha-g20"
+      },
+      {
+        "id": 6529,
+        "sku": "DLK-GOODWE-GW30KSTSG10",
+        "device_class": "accessories",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 30,
+        "pv_input_kw": "unknown",
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW STS-30-60kW Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          }
+        ],
+        "model": "GW30K-STS-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-sts-30-60k"
+      },
+      {
+        "id": 6530,
+        "sku": "DLK-GOODWE-GW60KSTSG10",
+        "device_class": "accessories",
+        "application": "home",
+        "phase": 3,
+        "ac_power_kw": 60,
+        "pv_input_kw": "unknown",
+        "usable_kwh": "unknown",
+        "nominal_kwh": "unknown",
+        "kwh_range": null,
+        "figures": {},
+        "documents": [
+          {
+            "url": "http://127.0.0.1:9165/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+            "title": "GW STS-30-60kW Datasheet EMEA-EN V1.1",
+            "type": "datasheet",
+            "lang": "en"
+          }
+        ],
+        "model": "GW60K-STS-G10",
+        "brand": "GoodWe",
+        "series": "goodwe-sts-30-60k"
+      }
+    ]
+  }
+}
