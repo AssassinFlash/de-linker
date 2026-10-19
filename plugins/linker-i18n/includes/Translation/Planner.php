@@ -56,6 +56,11 @@ final class Planner {
 		if ( null === $unit ) {
 			return FieldPlan::keep( $english, $current[0] );
 		}
+		// The same English, recorded as one paragraph before sentences were split.
+		// Another field's edit must not make this field a structure mismatch.
+		if ( $unit['src'] === $this->segmenter->block_hashes( $value, $html ) ) {
+			return FieldPlan::keep( $english, $current[0] );
+		}
 		$german = $this->split( $current[0], $html );
 		if ( count( $unit['src'] ) !== count( $german->segments ) ) {
 			return FieldPlan::blocked( $english, $current[0] );

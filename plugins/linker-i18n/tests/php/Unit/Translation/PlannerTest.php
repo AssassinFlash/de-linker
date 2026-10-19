@@ -289,4 +289,51 @@ final class PlannerTest extends TestCase {
 		$this->assertSame( array(), $plan->missing() );
 		$this->assertSame( $german, $plan->render( array() ) );
 	}
+
+	/**
+	 * Product 4107's excerpt baseline is the paragraph fingerprint from before
+	 * sentence splitting. The text is unchanged, so the field stays German.
+	 */
+	public function test_a_paragraph_baseline_keeps_the_unchanged_product_excerpt(): void {
+		$english   = '<p>SAJ H2-10K-T3 is a three-phase hybrid inverter with 10,000 W rated AC power and 11,000 VA maximum apparent power. It has three MPPTs for up to 20,000 Wp of PV, two battery inputs for 180–800 V LiFePO4 batteries and a backup output.</p>';
+		$german    = '<p>Der SAJ H2-10K-T3 bleibt. Der zweite Satz bleibt.</p>';
+		$segmenter = new Segmenter( new HtmlTokenizer() );
+		$this->assertSame( array( '53e272e58a49121b2105e0d7dc457d28b40c875b' ), $segmenter->block_hashes( $english, true ) );
+		$this->assertCount( 2, $this->planner()->split( $english, true )->segments );
+		$plan = $this->planner()->plan(
+			$english,
+			true,
+			array( $german, true ),
+			array(
+				'src'      => array( '53e272e58a49121b2105e0d7dc457d28b40c875b' ),
+				'out'      => array( 'old-paragraph' ),
+				'conflict' => false,
+			),
+			false
+		);
+		$this->assertFalse( $plan->mismatch );
+		$this->assertSame( array(), $plan->missing() );
+		$this->assertSame( $german, $plan->render( array() ) );
+	}
+
+	/**
+	 * A real edit of a paragraph-level field still cannot be aligned and stays blocked.
+	 */
+	public function test_a_changed_paragraph_baseline_stays_blocked(): void {
+		$english = '<p>First sentence stays. Second sentence stays.</p>';
+		$german  = '<p>Erster Satz bleibt. Zweiter Satz bleibt.</p>';
+		$plan    = $this->planner()->plan(
+			str_replace( 'Second', 'Changed second', $english ),
+			true,
+			array( $german, true ),
+			array(
+				'src'      => ( new Segmenter( new HtmlTokenizer() ) )->block_hashes( $english, true ),
+				'out'      => array( 'old-paragraph' ),
+				'conflict' => false,
+			),
+			false
+		);
+		$this->assertTrue( $plan->mismatch );
+		$this->assertSame( $german, $plan->render( array() ) );
+	}
 }
