@@ -49,11 +49,19 @@ INPUT_DOCS: dict[str, str] = {
     "linker/search-products": (
         "{device_class?: 'inverters'|'home-storage'|'battery-systems'|"
         "'all-in-one-systems'|'ems-monitoring'|'ev-chargers'|'accessories', "
+        "device_classes?: [those slugs], "
         "application?: 'home'|'commercial', "
-        "phase?: 1|3, pv_kwp?: number>=0, kwh_min?: number, kwh_max?: number, "
+        "phase?: 1|3, pv_kwp?: number>=0, ac_power_min?: number>=0, "
+        "kwh_min?: number, kwh_max?: number, "
         "brand?: string, series?: string, future?: ['battery'], text?: string, "
-        "with_pairings?: boolean, lang: 'en'|'de', limit?: int 1..12} — "
-        "no other fields exist; phase is the NUMBER 1 or 3."
+        "with_pairings?: boolean, "
+        "extreme?: 'smallest'|'largest'|'cheapest', "
+        "lang: 'en'|'de', limit?: int 1..12} — "
+        "no other fields exist; phase is the NUMBER 1 or 3. "
+        "extreme aggregates the qualified set: smallest and largest take "
+        "ac_power_kw when ac_power_min is set and energy when the floor is "
+        "kWh; cheapest ranks by a price this account can see and is not "
+        "applied when prices are hidden."
     ),
     "linker/get-product": "{product_id: int>=1, lang: 'en'|'de'}",
     "linker/compare-products": "{product_ids: [2..4 ints], lang: 'en'|'de'}",

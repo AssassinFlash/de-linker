@@ -68,6 +68,16 @@ def test_search_products_lists_the_full_device_class_enum() -> None:
         assert f"'{device_class}'" in doc, f"{device_class} missing from INPUT_DOCS"
 
 
+def test_search_products_documents_the_extreme_fields() -> None:
+    doc = INPUT_DOCS["linker/search-products"]
+    source = _read("SearchProducts.php")
+    for field in ("ac_power_min", "extreme", "device_classes"):
+        assert re.search(rf"'{field}'\s*=>\s*array", source), (
+            f"{field} vanished from the ability's input_schema"
+        )
+        assert field in doc, f"{field} missing from INPUT_DOCS"
+
+
 def test_check_compatibility_describes_both_input_forms() -> None:
     doc = INPUT_DOCS["linker/check-compatibility"]
     source = _read("CheckCompatibility.php")

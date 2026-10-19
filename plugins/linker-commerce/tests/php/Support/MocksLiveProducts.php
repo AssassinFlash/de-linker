@@ -9,8 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Support;
 
-use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Products\SelectionFacts;
+use Linker\Commerce\Registration\Approval;
 use Mockery;
 use WC_Product;
 use WP_Mock;
@@ -45,11 +46,12 @@ trait MocksLiveProducts {
 	/**
 	 * Mocks the given fixture products (and nothing else).
 	 *
-	 * @param int[] $ids      Product IDs.
-	 * @param bool  $migrated Whether tools/migrate/7-facts.json is applied.
+	 * @param int[] $ids         Product IDs.
+	 * @param bool  $migrated    Whether tools/migrate/7-facts.json is applied.
+	 * @param bool  $sees_prices Whether the visitor is an approved account.
 	 * @throws \LogicException When WP_Mock answers with another responder.
 	 */
-	protected function mock_live_products( array $ids, bool $migrated = false ): void {
+	protected function mock_live_products( array $ids, bool $migrated = false, bool $sees_prices = false ): void {
 		$products = LiveProducts::products( $migrated );
 		// No language layer swaps a product: SelectionFacts asks has_filter()
 		// first, and a test class earlier in the run may already have made
@@ -141,7 +143,21 @@ trait MocksLiveProducts {
 				},
 			)
 		);
-		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => false ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $sees_prices ) );
+		if ( $sees_prices ) {
+			// Customer 7 is an approved account, so CommerceState shows prices.
+			WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 7 ) );
+			WP_Mock::userFunction(
+				'get_user_meta',
+				array(
+					'return' => static function ( int $user_id, string $key, bool $single = false ): string {
+						unset( $single );
+
+						return 7 === $user_id && Approval::STATUS_META === $key ? Approval::APPROVED : '';
+					},
+				)
+			);
+		}
 		WP_Mock::userFunction(
 			'wc_get_product',
 			array(

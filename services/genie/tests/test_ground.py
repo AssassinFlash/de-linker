@@ -312,3 +312,75 @@ def test_a_model_code_with_a_decimal_segment_is_not_a_bare_number() -> None:
         blocks=[TextBlock(text="The CB2-100.3-HV5 stands upright.", refs=["c1"])],
     )
     assert check(output, _facts()).ok
+
+
+def _extreme_facts() -> TurnFacts:
+    facts = _facts()
+    facts.product_ids.add(6518)
+    facts.qualified_ids.add(6518)
+    facts.add(
+        Fact(id="search.extreme_product_id", value="6518", source="search-products")
+    )
+    facts.add(
+        Fact(id="search.extreme_model", value="GW30K-ETA-G20", source="search-products")
+    )
+    return facts
+
+
+def _named(text: str, product_ids: list[int]) -> TurnOutput:
+    return TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text=text, refs=[str(product_id) for product_id in product_ids]),
+            CardsBlock(product_ids=product_ids),
+        ],
+    )
+
+
+def test_an_applied_extreme_names_that_model_on_one_card() -> None:
+    output = _named("The GW30K-ETA-G20 meets the limit you named.", [6518])
+    assert check(output, _extreme_facts()).ok
+
+
+def test_an_extreme_with_another_card_is_refused() -> None:
+    facts = _extreme_facts()
+    facts.product_ids.add(6506)
+    facts.qualified_ids.add(6506)
+    output = _named("The GW30K-ETA-G20 meets the limit you named.", [6506])
+    result = check(output, facts)
+    assert any("only that card" in failure for failure in result.failures)
+
+
+def test_an_extreme_card_without_the_model_code_is_refused() -> None:
+    output = _named("This product meets the limit you named.", [6518])
+    result = check(output, _extreme_facts())
+    assert any("GW30K-ETA-G20" in failure for failure in result.failures)
+
+
+def test_a_hidden_price_names_no_cheapest_model() -> None:
+    facts = _facts()
+    facts.add(
+        Fact(id="search.extreme_price_hidden", value="1", source="search-products")
+    )
+    named = TurnOutput(
+        language="en",
+        blocks=[TextBlock(text="The cheapest one is the GW75K-ET-G10.")],
+    )
+    german = TurnOutput(
+        language="de",
+        blocks=[TextBlock(text="Das günstigste Modell ist das GW75K-ET-G10.")],
+    )
+    plain = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text=(
+                    "I cannot name a cheapest product. "
+                    "Approved partner accounts see net prices."
+                )
+            )
+        ],
+    )
+    assert any("cheapest" in failure for failure in check(named, facts).failures)
+    assert any("cheapest" in failure for failure in check(german, facts).failures)
+    assert check(plain, facts).ok

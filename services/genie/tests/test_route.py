@@ -224,3 +224,128 @@ def test_product_words_in_an_unplaced_question_search_without_forcing_cards() ->
     assert [c.ability for c in route.calls] == ["linker/search-products"]
     assert not route.show_products
     assert "Jev leans to compare (0.60)" in route.hint
+
+
+INVERTERS = Match("category", "inverters", "inverters", frozenset(), "inverter")
+EN_30 = "What is your smallest inverter with at least 30 kW?"
+DE_30 = "Was ist Ihr kleinster Wechselrichter mit mindestens 30 kW?"
+SMALLEST_30 = {
+    "device_class": "inverters",
+    "ac_power_min": 30.0,
+    "extreme": "smallest",
+    "limit": 1,
+}
+CHEAPEST_10 = {
+    "device_classes": ["home-storage", "battery-systems"],
+    "kwh_min": 10.0,
+    "extreme": "cheapest",
+    "limit": 6,
+}
+
+
+def _search_args(
+    message: str,
+    lang: str,
+    reading: Reading | None,
+    matches: list[Match] | None = None,
+) -> dict[str, object]:
+    route = plan(
+        message,
+        [INVERTERS] if matches is None else matches,
+        reading,
+        NONE,
+        lang,
+    )
+    assert route.name == "products"
+    assert route.show_products and route.no_handoff
+    (call,) = route.calls
+    assert call.ability == "linker/search-products"
+    assert f"extreme: {call.arguments['extreme']}" in route.reasons
+    return call.arguments
+
+
+@pytest.mark.parametrize(
+    "reading",
+    [_reading("find_products"), _reading("find_products", 0.5), None],
+)
+def test_smallest_inverter_at_least_30_kw_aggregates(reading: Reading | None) -> None:
+    # J5-EN: relevance order named GW75K. The route filters ac_power_kw >= 30
+    # and asks for the minimum, including when Jev is sure, unsure, or down.
+    assert _search_args(EN_30, "en", reading) == {**SMALLEST_30, "lang": "en"}
+
+
+def test_the_german_smallest_inverter_uses_the_same_aggregate() -> None:
+    english = _search_args(EN_30, "en", _reading("find_products"))
+    german = _search_args(DE_30, "de", _reading("find_products"))
+    assert german == {**english, "lang": "de"}
+
+
+def test_a_matched_model_does_not_narrow_the_extreme() -> None:
+    matches = [_model("GW75K-ET-G10", 6506), INVERTERS]
+    args = _search_args(EN_30, "en", _reading("find_products"), matches)
+    assert "text" not in args
+    assert args["device_class"] == "inverters"
+    assert args["ac_power_min"] == 30.0
+
+
+def test_smallest_inverter_at_least_20_kw_uses_that_floor() -> None:
+    args = _search_args(
+        "What is your smallest inverter with at least 20 kW?",
+        "en",
+        None,
+        [],
+    )
+    assert args == {
+        "lang": "en",
+        "device_class": "inverters",
+        "ac_power_min": 20.0,
+        "extreme": "smallest",
+        "limit": 1,
+    }
+
+
+def test_largest_inverter_aggregates_the_class() -> None:
+    args = _search_args(
+        "What is your largest inverter?", "en", _reading("find_products")
+    )
+    assert args == {
+        "lang": "en",
+        "device_class": "inverters",
+        "extreme": "largest",
+        "limit": 1,
+    }
+
+
+def test_cheapest_battery_at_least_10_kwh_is_the_same_shape_in_both_languages() -> None:
+    english = "What is your cheapest battery with at least 10 kWh?"
+    german = "Was ist Ihre günstigste Batterie mit mindestens 10 kWh?"
+    assert _search_args(english, "en", _reading("find_products"), []) == {
+        **CHEAPEST_10,
+        "lang": "en",
+    }
+    assert _search_args(german, "de", None, []) == {**CHEAPEST_10, "lang": "de"}
+
+
+def test_a_kwp_sizing_question_is_not_an_extreme() -> None:
+    message = "Wie groß sollte der Speicher bei 10 kWp sein?"
+    route = plan(message, [], _reading("sizing"), NONE, "de")
+    assert route.name == "sizing"
+    assert route.calls[0].ability == "linker/size-hint"
+    assert "extreme" not in route.calls[0].arguments
+
+
+def test_a_how_to_about_an_inverter_is_not_an_extreme() -> None:
+    h2 = Subject((), {}, {}, {}, {"saj-h2": {3557, 3556, 4107, 4108, 3558}})
+    matches = [Match("series", "saj-h2", "saj-h2", frozenset(), "SAJ H2")]
+    message = "How do I set the export limit on an SAJ H2 inverter?"
+    route = plan(message, matches, _reading("documents_specs", 0.67), h2, "en")
+    assert route.name == "documents"
+    assert all("extreme" not in call.arguments for call in route.calls)
+
+
+def test_a_person_or_inquiry_question_is_not_an_extreme_search() -> None:
+    person = plan(EN_30, [INVERTERS], _reading("talk_to_person"), NONE, "en")
+    inquiry = plan(EN_30, [INVERTERS], _reading("inquiry_status"), NONE, "en")
+    assert person.name == "person" and person.calls == ()
+    assert inquiry.name == "inquiry"
+    assert inquiry.calls[0].ability == "linker/inquiry-status"

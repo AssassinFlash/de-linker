@@ -173,6 +173,7 @@ def check(
     failures.extend(_no_price_in_text(output))
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
+    failures.extend(_extreme(output, facts))
     if route is not None:
         failures.extend(_route(output, facts, route))
     return CheckResult(ok=not failures, failures=tuple(failures))
@@ -269,6 +270,49 @@ def _no_sent_claim(output: TurnOutput) -> list[str]:
         for text in _model_texts(output)
         if _SENT_CLAIM.search(PLACEHOLDER.sub("", text))
     ]
+
+
+# A cheapest claim next to a model code, when prices are hidden (#368).
+# Explaining that no cheapest product can be named has the word and no code.
+_CHEAPEST_WORD = re.compile(
+    r"\b(?:cheapest|günstigst\w*|guenstigst\w*|billigst\w*|preiswertest\w*)\b",
+    re.IGNORECASE,
+)
+
+
+def _extreme(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """An applied extreme names that one product. A hidden price names none.
+
+    The ability already filtered and sorted the catalogue. Grounding keeps the
+    answer on that result: one card, the model code, and no price ranking when
+    the account cannot see prices.
+    """
+    hidden = facts.facts.get("search.extreme_price_hidden")
+    winner = facts.facts.get("search.extreme_product_id")
+    if hidden is not None and winner is None:
+        failures: list[str] = []
+        for text in _model_texts(output):
+            plain = PLACEHOLDER.sub("", text)
+            if _CHEAPEST_WORD.search(plain) and _MODEL_CODE.search(plain):
+                failures.append(
+                    "prices are hidden for this account: do not name a cheapest product"
+                )
+        return failures
+    if winner is None:
+        return []
+    product_id = int(winner.value)
+    failures = []
+    cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
+    if len(cards) != 1 or cards[0].product_ids != [product_id]:
+        failures.append(
+            f"an extreme of the product range is product {product_id} and only that card"
+        )
+    model = facts.facts.get("search.extreme_model")
+    if model is not None and all(
+        model.value not in text for text in _model_texts(output)
+    ):
+        failures.append(f"an extreme of the product range is named {model.value}")
+    return failures
 
 
 def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
