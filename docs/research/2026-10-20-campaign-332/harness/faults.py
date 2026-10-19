@@ -17,7 +17,15 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
-from sse import cut_sse, parse_sse
+from sse import cut_marker, cut_sse, parse_sse
+
+# agent.DEFAULT_MODEL. This is the `model` field of the chat-completions
+# request, not the turn-log column app.py writes from model_name().
+CHAT_MODEL = "deepseek-flash"
+# A direct service call has no Proxy::TURN_BUDGET (60s, Proxy.php). The model
+# plus tools can outlast 60s, so the battery's client and this proxy's upstream
+# read share one ceiling. It is not a second product timeout.
+SERVICE_TIMEOUT_S = 180.0
 
 # A 1x1 JPEG. Magic is FF D8 FF, which Attachments::MAGIC requires.
 TINY_JPEG = (
@@ -85,6 +93,39 @@ def chat_payload(mode: str, slow_s: float) -> tuple[int, bytes, str]:
     return 400, json.dumps(refused).encode(), "application/json"
 
 
+def requested_model(body: bytes) -> str:
+    """The `model` string on a chat-completions body, or empty when it is absent."""
+    try:
+        parsed = json.loads(body) if body else None
+    except json.JSONDecodeError:
+        return ""
+    if not isinstance(parsed, dict):
+        return ""
+    raw = parsed.get("model")
+    return raw if isinstance(raw, str) else ""
+
+
+def silent_switch_reasons(
+    requested_models: list[str], openrouter_hits: int
+) -> list[str]:
+    """Request-side stand-in for the removed turn-log check.
+
+    Every chat request must ask for `deepseek-flash`, and the OpenRouter fault
+    stub must see no request. An empty model list means the chat stub was not
+    called.
+    """
+    reasons: list[str] = []
+    if not requested_models:
+        reasons.append("chat stub recorded no requested model")
+    for model in requested_models:
+        if model != CHAT_MODEL:
+            shown = model or "(none)"
+            reasons.append(f"chat request asked for {shown}, not {CHAT_MODEL}")
+    if openrouter_hits != 0:
+        reasons.append(f"OpenRouter stub hits are {openrouter_hits}, not 0")
+    return reasons
+
+
 class _State:
     def __init__(self, mode: str, slow_s: float, upstream: str, cut: str) -> None:
         self.mode = mode
@@ -92,6 +133,8 @@ class _State:
         self.upstream = upstream.rstrip("/")
         self.cut = cut
         self.last_cut: dict[str, Any] | None = None
+        self.requested_models: list[str] = []
+        self.openrouter_hits = 0
         self.lock = threading.Lock()
 
 
@@ -123,10 +166,17 @@ class FaultServer:
                 length = int(self.headers.get("Content-Length", "0") or "0")
                 body = self.rfile.read(length) if length else b""
                 if kind_name == "chat":
+                    # Before chat_payload: slow mode sleeps inside it, and the
+                    # model field has to be on the record when the client gives up.
+                    model = requested_model(body)
+                    with state.lock:
+                        state.requested_models.append(model)
                     status, payload, content = chat_payload(state.mode, state.slow_s)
                     self._send(status, payload, content)
                     return
                 if kind_name == "openrouter":
+                    with state.lock:
+                        state.openrouter_hits += 1
                     payload = json.dumps(
                         {"error": {"message": "injected openrouter 502"}}
                     ).encode()
@@ -158,7 +208,9 @@ class FaultServer:
                     method="POST",
                 )
                 try:
-                    with urllib.request.urlopen(request, timeout=180) as reply:
+                    with urllib.request.urlopen(
+                        request, timeout=SERVICE_TIMEOUT_S
+                    ) as reply:
                         raw = reply.read()
                         status = int(reply.status)
                 except urllib.error.HTTPError as failure:
@@ -185,12 +237,7 @@ class FaultServer:
                 """What the cut did, without the SSE text."""
                 upstream = raw.decode("utf-8", "replace")
                 short = shortened.decode("utf-8", "replace")
-                marker = {
-                    "after-block": "event: block",
-                    "partial-block": "event: block",
-                    "attachment": "event: attachment",
-                    "reading": "event: reading",
-                }.get(where, "")
+                marker = cut_marker(where)
                 report: dict[str, Any] = {
                     "where": where,
                     "upstream_status": status,
@@ -241,6 +288,16 @@ class FaultServer:
     def set_mode(self, mode: str) -> None:
         with self.state.lock:
             self.state.mode = mode
+
+    def requested_models(self) -> list[str]:
+        """`model` fields seen by this chat stub, in arrival order."""
+        with self.state.lock:
+            return list(self.state.requested_models)
+
+    def openrouter_hits(self) -> int:
+        """POSTs this OpenRouter stub has answered."""
+        with self.state.lock:
+            return self.state.openrouter_hits
 
     def cut_report(self) -> dict[str, Any]:
         """The last proxy cut: marker, done, event names. No SSE text."""

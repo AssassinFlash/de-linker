@@ -70,7 +70,19 @@ def answer_text(blocks: list[dict[str, Any]]) -> str:
 # inside an attachment event. The reading event is the pair the proxy stores
 # with that attachment (app.py `_sse`). `after-block` is the cut the recorded
 # SSE-CUT turn used: the first block event is complete, and `done` is gone.
-CUTS = ("after-block", "partial-block", "attachment", "reading")
+# One table: cut_sse shortens at this line, and the proxy's cut report reads it.
+_MARKERS = {
+    "after-block": "event: block",
+    "partial-block": "event: block",
+    "attachment": "event: attachment",
+    "reading": "event: reading",
+}
+CUTS = tuple(_MARKERS)
+
+
+def cut_marker(where: str) -> str:
+    """The event line a cut looks for. Empty for `reset` and any non-cut."""
+    return _MARKERS.get(where, "")
 
 
 def cut_sse(raw: bytes, where: str = "after-block") -> bytes:
@@ -83,13 +95,9 @@ def cut_sse(raw: bytes, where: str = "after-block") -> bytes:
     if where not in CUTS:
         raise ValueError(f"unknown cut {where}")
     text = raw.decode("utf-8", "replace")
+    marker = cut_marker(where)
     if where == "after-block":
-        return _cut_after(text, "event: block")
-    marker = {
-        "partial-block": "event: block",
-        "attachment": "event: attachment",
-        "reading": "event: reading",
-    }[where]
+        return _cut_after(text, marker)
     return _cut_inside(text, marker)
 
 

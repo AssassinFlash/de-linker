@@ -89,7 +89,9 @@ dossier §1.15：**须自行设计**。SSE 中途断流的界面状态与重试�
 
 两例都是 HTTP 502，`linker_genie_upstream`，`Genie did not answer.` 故障期间没有 turn 日志。API 重试在服务恢复后健康。VPS-DOWN 1.109s（连接被拒），VPS-KILL 11.123s。
 
-浏览器做在 VPS-DOWN（停进程，`/health` 失败）：用户气泡在，红色 “Genie did not answer. Please try again.”，输入框空。截图 `ui/vps-down-error.png`。刷新后重新打开停靠条：气泡 0，错误 null，输入框空。服务拉起后把同一问重新打进输入框，约 25s 答出 T3。502 不会像 409 那样把问题放回输入框；这次请求没有 200 正文，刷新后什么都不留。
+浏览器做在 VPS-DOWN（停进程，`/health` 失败）：用户气泡在，红色 “Genie did not answer. Please try again.”，输入框空。文件名是 `ui/vps-down-error.png`。刷新后重新打开停靠条：气泡 0，错误 null，输入框空。服务拉起后把同一问重新打进输入框，约 25s 答出 T3。502 不会像 409 那样把问题放回输入框；这次请求没有 200 正文，刷新后什么都不留。
+
+`ui/vps-down-error.png` 与 `ui/sse-cut-live-error.png` 字节相同（`cmp -s` 退出码 0，SHA-256 `44a412dd09ab236a60c613365902d5d6076ca19cec80e3d990d51a077c60ab85`，1938808 字节）。同一张渲染不能同时当两个场景的界面证据。VPS-DOWN 的主证据是 502 那一行：HTTP 502，`linker_genie_upstream`，1.109s，故障期间没有 turn 日志。这张 PNG 只记在 SSE-CUT 的当场错误上。
 
 VPS-KILL 走同一代理错误码。浏览器只做了 VPS-DOWN 的当场错误，没有单独截 VPS-KILL，也没有截 VPS-DOWN 刷新后的空停靠条。VPS-KILL 的界面是从同一 502 推出来的，不是另一次看屏。
 
@@ -99,9 +101,9 @@ VPS-KILL 走同一代理错误码。浏览器只做了 VPS-DOWN 的当场错误�
 
 - 模型 500（M500-EN）：`ui/model-500-cards.png`、`ui/model-500-cards-scrolled.png`
 - SSE 截断（完整 block 之后）：`ui/sse-cut-live-error.png`、`ui/sse-cut-reload.png`、`ui/sse-cut-retry.png`
-- VPS 停机的当场 502：`ui/vps-down-error.png`
+- VPS 停机的当场 502：HTTP 行（见 D4）。`ui/vps-down-error.png` 与 `sse-cut-live-error.png` 是同一文件，不能另作此态的截图。
 
-没有的：390 宽、德语界面、VPS-KILL、VPS-DOWN 刷新后的空状态。半条 block、attachment / reading 事件已经对 c332 重放，仍没有截图。也没有 Jev 502、AB-500 的 handoff 句的截图。M500-DE 的德语句子来自 API 正文，不是截图。“界面没有空白”只覆盖上面三态，不是一张状态表。390 宽、德语和 VPS-KILL 的截图跟在 #433，这轮没有补拍。
+没有的：390 宽、德语界面、VPS-KILL、VPS-DOWN 刷新后的空状态。半条 block、attachment / reading 事件已经对 c332 重放，仍没有截图。也没有 Jev 502、AB-500 的 handoff 句的截图。M500-DE 的德语句子来自 API 正文，不是截图。VPS-DOWN 的当场画面没有独立截图，主证据是 502 行。“界面没有空白”只覆盖模型 500 和 SSE-CUT 当场这两张不同的图，不是一张状态表。390 宽、德语和 VPS-KILL 的截图跟在 #433，这轮没有补拍。
 
 ## 3. 放行与观察
 
@@ -114,7 +116,7 @@ VPS-KILL 走同一代理错误码。浏览器只做了 VPS-DOWN 的当场错误�
 - RATE-BURST：6 次连续服务回合全部 HTTP 200、done、日志列 deepseek-flash、grounded。没有按回合的聊天速率限制。附件限额是 `genie_upload` 每小时 20，与此无关。第一轮自动分把健康回合的目录 kW 算成编造，已撤回。
 - Redis 抖动和短时停止期间回答仍是 200。`WP_REDIS_GRACEFUL`。结束后 `PONG`。
 - 扎实回答里的 29.999 kW 是产品 1181（SAJ H2-30K-T3-DE）的目录交流功率，`SelectionFactsLiveProductsTest` 期望 `1181 => … 29.999 …`。
-- 有日志的回合，turn log 的 `provider` / `model` 列是 `deepseek` / `deepseek-flash`。这两列是 `app.py` 用 `provider_name()` / `model_name()` 写进去的：前者是常量 `deepseek`，后者是 `GENIE_MODEL` 或默认 `deepseek-flash`（`agent.py`）。它们不是聊天补全响应里的模型 id。本批没有验证“没有静默换模型”。验证了的是：失败写在 `meta.failures` 或 `jev_error`，顾客句来自 `template.fallback` 或壳的错误句，以及这两列保持配置名。Jev 502 的 `jev_error` 在 SSE meta 里，这是规格允许的降级。
+- 有日志的回合，turn log 的 `provider` / `model` 列是 `deepseek` / `deepseek-flash`。这两列是 `app.py` 用 `provider_name()` / `model_name()` 写进去的：前者是常量 `deepseek`，后者是 `GENIE_MODEL` 或默认 `deepseek-flash`（`agent.py` 的 `DEFAULT_MODEL`）。它们不是聊天补全请求里的模型 id。`8456cd2c` 拿掉的日志列检查因此留着缺口。替换在请求侧：聊天桩记下请求 JSON 的 `model`（慢响应在入睡前记下）。`faults.silent_switch_reasons` 要求每一笔都是 `deepseek-flash`，并且本机 OpenRouter 桩的命中次数是 0。没有记下任何 `model` 也算失败。聊天故障例同时拉起这个 OpenRouter 桩，但不把它写成 `OPENROUTER_BASE_URL`：Jev 仍走真实 OpenRouter，那是规格允许的通道，不进这个计数。计数增加只说明有请求打到了这个桩。`grade` 在行里有 `requested_models` 和 `openrouter_hits` 时才用这条。已经入库的 27 条手判没有这两个字段，不因此改判。下一次 `chat()` 会把它们写进行里。失败仍写在 `meta.failures` 或 `jev_error`，顾客句来自 `template.fallback` 或壳的错误句。Jev 502 的 `jev_error` 在 SSE meta 里，这是规格允许的降级。
 
 ## 4. 生产冒烟
 

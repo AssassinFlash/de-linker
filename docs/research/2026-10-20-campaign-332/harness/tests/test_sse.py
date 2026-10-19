@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from sse import cut_sse, parse_sse
+from sse import cut_marker, cut_sse, parse_sse
 
 STREAM = (
     'event: meta\ndata: {"turn_id": 1, "fallback": false}\n\n'
@@ -78,6 +78,14 @@ def test_after_block_keeps_attachment_and_reading() -> None:
     assert parsed["event_names"] == ["meta", "attachment", "reading", "block"]
     assert parsed["done"] is False
     assert "H2-10K-T3" in parsed["answer_text"]
+
+
+def test_cut_marker_is_the_one_table() -> None:
+    assert cut_marker("after-block") == "event: block"
+    assert cut_marker("partial-block") == "event: block"
+    assert cut_marker("attachment") == "event: attachment"
+    assert cut_marker("reading") == "event: reading"
+    assert cut_marker("reset") == ""
 
 
 def test_unknown_cut_is_refused() -> None:

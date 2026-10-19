@@ -97,7 +97,8 @@ def test_jev_failure_must_be_in_meta() -> None:
     )
     assert hidden["verdict"] == "defect"
     # provider/model here are the columns app.py writes from constants.
-    # A different pair is not graded as a silent switch.
+    # A different pair is not graded as a silent switch. The request-side
+    # record is graded only when requested_models and openrouter_hits are set.
     other = grade(
         {
             "kind": "fault",
@@ -113,6 +114,53 @@ def test_jev_failure_must_be_in_meta() -> None:
     )
     assert other["verdict"] == "pass"
     assert other["reasons"] == []
+
+
+def _visible_failure() -> dict[str, object]:
+    return {
+        "kind": "fault",
+        "http": 502,
+        "error_message": "Genie did not answer.",
+        "answer_text": "",
+        "done": False,
+        "retry": {"ok": True},
+    }
+
+
+def test_a_deepseek_flash_request_with_no_openrouter_hit_passes() -> None:
+    row = grade(
+        {
+            **_visible_failure(),
+            "requested_models": ["deepseek-flash"],
+            "openrouter_hits": 0,
+        }
+    )
+    assert row["verdict"] == "pass"
+    assert row["reasons"] == []
+
+
+def test_a_request_side_switch_is_a_defect() -> None:
+    other = grade(
+        {
+            **_visible_failure(),
+            "requested_models": ["other-model"],
+            "openrouter_hits": 0,
+        }
+    )
+    assert other["verdict"] == "defect"
+    assert any("other-model" in reason for reason in other["reasons"])
+    missed = grade({**_visible_failure(), "requested_models": [], "openrouter_hits": 0})
+    assert any("no requested model" in reason for reason in missed["reasons"])
+    hit = grade(
+        {
+            **_visible_failure(),
+            "requested_models": ["deepseek-flash"],
+            "openrouter_hits": 1,
+        }
+    )
+    assert any("OpenRouter" in reason for reason in hit["reasons"])
+    half = grade({**_visible_failure(), "requested_models": ["deepseek-flash"]})
+    assert any("incomplete" in reason for reason in half["reasons"])
 
 
 def test_a_healthy_control_needs_a_finished_answer() -> None:

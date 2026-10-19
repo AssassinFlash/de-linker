@@ -9,15 +9,22 @@ Timeouts and waits, and where the numbers come from:
 
 - Proxy::TURN_BUDGET is 60s (plugins/linker-tools/includes/Genie/Proxy.php).
   A proxy call uses 90s so the observed result is the proxy's own 502, not
-  a client TimeoutError. A direct service call uses 180s because that path
-  has no proxy budget; the model plus tools can outlast 60s.
+  a client TimeoutError. A direct service call uses SERVICE_TIMEOUT_S
+  (faults.py). The cut proxy's upstream read uses the same constant. The
+  reason is on that constant.
 - AbilityClient times out at 20s and tries ABILITY_ATTEMPTS (3) times
   (services/genie/src/linker_genie/abilities.py). The ability fault sleeps
   25s, past one client timeout, so the proxy's 60s budget is what the
   customer hits (stack.MU_SOURCE).
 - The slow chat stub sleeps 65s, past TURN_BUDGET (faults.FaultServer).
-- VPS-KILL waits 3s and REDIS-FLAP waits 2s so the request is in flight.
-  Those are harness waits, not product timeouts.
+- KILL_AFTER_S is 3s and REDIS_FLAP_AFTER_S is 2s. Both sit in a measured
+  window: after VPS-DOWN's refused connection (1.109s, NOTES §2 D4), so the
+  request has left the client, and before the shortest recorded chat-fault
+  fallback (M500-EN, 8.144s) and Proxy::TURN_BUDGET (60s), so the turn is
+  still in flight. Jev's p50 of 2.6s (jev.py, measured 2026-10-17) is inside
+  that window; the flap starts just before it and the kill just after it.
+  The recorded VPS-KILL customer time is 11.123s (NOTES §2 D4): the 3s wait
+  plus the proxy's 502. Harness waits, not product timeouts.
 - VPS-DOWN's client timeout is 20s: a stopped port refuses at once.
 - The attachment refusal uses 30s: the limiter answers before any model call.
 - Redis stopped for a whole turn uses 70s, just above TURN_BUDGET, in case
@@ -55,7 +62,7 @@ from client import (
     request_json,
     turn_body,
 )
-from faults import TINY_JPEG, FaultServer
+from faults import SERVICE_TIMEOUT_S, TINY_JPEG, FaultServer
 from grade import grade, healthy
 from redact import redact
 from sse import parse_sse
@@ -73,11 +80,12 @@ PARTS_CSV = {
     "data": base64.b64encode(_PARTS_CSV_BYTES).decode("ascii"),
 }
 # See the module docstring for the source of each of these.
-SERVICE_TIMEOUT_S = 180.0
+# SERVICE_TIMEOUT_S lives in faults.py (one ceiling for the client and the proxy).
 PROXY_TIMEOUT_S = 90.0
 VPS_DOWN_TIMEOUT_S = 20.0
 ATTACHMENT_TIMEOUT_S = 30.0
 REDIS_DOWN_TIMEOUT_S = 70.0
+# After the 1.109s refused connection, before the 8.144s M500-EN fallback.
 KILL_AFTER_S = 3.0
 REDIS_FLAP_AFTER_S = 2.0
 # See the module docstring. Longer than the 25s ability sleep, under TURN_BUDGET.
@@ -370,7 +378,7 @@ def vps_kill() -> dict[str, Any]:
         {
             "id": "VPS-KILL",
             "kind": "fault",
-            "fault": "genie killed 3s after the proxy request started",
+            "fault": f"genie killed {KILL_AFTER_S:g}s after the proxy request started",
             "question": PRODUCT_EN,
             "layer": "UI 状态",
             "precedent": "须自行设计 — dossier §1.15 restart window; fix ticket #411",
@@ -418,7 +426,9 @@ def redis_flap() -> dict[str, Any]:
     row.update(
         {
             "id": "REDIS-FLAP",
-            "fault": "brew services restart redis about 2s into the turn",
+            "fault": (
+                f"brew services restart redis {REDIS_FLAP_AFTER_S:g}s into the turn"
+            ),
             "question": PRODUCT_EN,
             "layer": "基础设施",
             "precedent": "复刻 — WP_REDIS_GRACEFUL (spec 5 / #103); failure must still be explicit if the turn dies",
@@ -514,56 +524,79 @@ def ability_timeout() -> dict[str, Any]:
 
 def chat(token: str, only: set[str], keep: Any) -> None:
     stub = FaultServer("chat", mode="500", slow_s=65)
+    # Counts calls that land on the OpenRouter fault stub. Chat cases do not
+    # set OPENROUTER_BASE_URL: Jev keeps the real OpenRouter, which is the
+    # allowed channel and is not this counter. A hit here means something
+    # called this stub during the case.
+    router = FaultServer("openrouter")
     url = stub.start()
     try:
-        stack.restart_genie({"GENIE_BASE_URL": url})
-        # M-EMPTY is the non-stream validation error (no `model` on the JSON
-        # completion). M-EMPTY-STREAM is an SSE body with no events.
-        plan = [
-            ("M500-EN", "500", PRODUCT_EN, "en"),
-            ("M500-DE", "500", PRODUCT_DE, "de"),
-            ("M500-DOC", "500", DOC_EN, "en"),
-            ("M-EMPTY", "empty", PRODUCT_EN, "en"),
-            ("M-EMPTY-STREAM", "empty-stream", PRODUCT_EN, "en"),
-            ("M-429", "429", PRODUCT_EN, "en"),
-        ]
-        for case_id, mode, question, locale in plan:
-            if only and case_id not in only:
-                continue
-            stub.set_mode(mode)
-            before = stack.max_turn_id()
-            row = ask_service(case_id, question, locale, token, timeout=CHAT_TIMEOUT_S)
-            row.update(_log(question, before))
-            row.update(
-                {
-                    "id": case_id,
-                    "kind": "fault",
-                    "fault": f"chat completions mode {mode}",
-                    "question": question,
-                    "layer": "template.fallback",
-                    "precedent": "the customer sentence is template.fallback, not the prompt (#410). #103 DEGRADED only when nothing is citable",
-                    "explicit_channel": "customer",
+        router.start()
+        try:
+            stack.restart_genie({"GENIE_BASE_URL": url})
+            # M-EMPTY is the non-stream validation error (no `model` on the JSON
+            # completion). M-EMPTY-STREAM is an SSE body with no events.
+            plan = [
+                ("M500-EN", "500", PRODUCT_EN, "en"),
+                ("M500-DE", "500", PRODUCT_DE, "de"),
+                ("M500-DOC", "500", DOC_EN, "en"),
+                ("M-EMPTY", "empty", PRODUCT_EN, "en"),
+                ("M-EMPTY-STREAM", "empty-stream", PRODUCT_EN, "en"),
+                ("M-429", "429", PRODUCT_EN, "en"),
+            ]
+
+            def seen(mark: tuple[int, int]) -> dict[str, Any]:
+                model_at, hits_at = mark
+                return {
+                    "requested_models": stub.requested_models()[model_at:],
+                    "openrouter_hits": router.openrouter_hits() - hits_at,
                 }
-            )
-            keep(row)
-        if not only or "M-SLOW" in only:
-            stub.set_mode("slow")
-            before = stack.max_turn_id()
-            row = ask_proxy("M-SLOW", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S)
-            stack.stop_genie()
-            row.update(_log(PRODUCT_EN, before))
-            row.update(
-                {
-                    "id": "M-SLOW",
-                    "kind": "fault",
-                    "fault": "chat completions sleeps 65s, past Proxy::TURN_BUDGET 60s",
-                    "question": PRODUCT_EN,
-                    "layer": "UI 状态",
-                    "precedent": "须自行设计 — dossier §1.15; fix ticket #411",
-                    "explicit_channel": "customer",
-                }
-            )
-            keep(row)
+
+            for case_id, mode, question, locale in plan:
+                if only and case_id not in only:
+                    continue
+                stub.set_mode(mode)
+                mark = (len(stub.requested_models()), router.openrouter_hits())
+                before = stack.max_turn_id()
+                row = ask_service(
+                    case_id, question, locale, token, timeout=CHAT_TIMEOUT_S
+                )
+                row.update(_log(question, before))
+                row.update(seen(mark))
+                row.update(
+                    {
+                        "id": case_id,
+                        "kind": "fault",
+                        "fault": f"chat completions mode {mode}",
+                        "question": question,
+                        "layer": "template.fallback",
+                        "precedent": "the customer sentence is template.fallback, not the prompt (#410). #103 DEGRADED only when nothing is citable",
+                        "explicit_channel": "customer",
+                    }
+                )
+                keep(row)
+            if not only or "M-SLOW" in only:
+                stub.set_mode("slow")
+                mark = (len(stub.requested_models()), router.openrouter_hits())
+                before = stack.max_turn_id()
+                row = ask_proxy("M-SLOW", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S)
+                stack.stop_genie()
+                row.update(_log(PRODUCT_EN, before))
+                row.update(seen(mark))
+                row.update(
+                    {
+                        "id": "M-SLOW",
+                        "kind": "fault",
+                        "fault": "chat completions sleeps 65s, past Proxy::TURN_BUDGET 60s",
+                        "question": PRODUCT_EN,
+                        "layer": "UI 状态",
+                        "precedent": "须自行设计 — dossier §1.15; fix ticket #411",
+                        "explicit_channel": "customer",
+                    }
+                )
+                keep(row)
+        finally:
+            router.stop()
     finally:
         stub.stop()
         stack.restart_genie()

@@ -10,12 +10,17 @@ provider_name() and model_name() (agent.py: CHAT_PROVIDER is the constant
 "deepseek"; model_name() is GENIE_MODEL or "deepseek-flash"). Those columns
 are the configured names, not the model that produced the tokens, so a
 check against them cannot show a silent switch.
+
+A row that carries `requested_models` and `openrouter_hits` is graded on
+those instead: the chat stub's record of the request.
 """
 
 from __future__ import annotations
 
 import re
 from typing import Any
+
+from faults import silent_switch_reasons
 
 # Customer-visible failure language already shipped (template.DEGRADED,
 # App.tsx / Hero.tsx, Attachments throttled copy).
@@ -110,6 +115,18 @@ def healthy(row: dict[str, Any]) -> bool:
     )
 
 
+def _request_side(row: dict[str, Any]) -> list[str]:
+    """Grade the chat stub's record when the row has one. Older rows have neither key."""
+    if "requested_models" not in row and "openrouter_hits" not in row:
+        return []
+    raw_models = row.get("requested_models")
+    raw_hits = row.get("openrouter_hits")
+    if not isinstance(raw_models, list) or not isinstance(raw_hits, int):
+        return ["request-side model record is incomplete"]
+    models = [item if isinstance(item, str) else "" for item in raw_models]
+    return silent_switch_reasons(models, raw_hits)
+
+
 def grade(row: dict[str, Any]) -> dict[str, Any]:
     """Return the row plus verdict and the checks that failed."""
     reasons: list[str] = []
@@ -156,6 +173,7 @@ def grade(row: dict[str, Any]) -> dict[str, Any]:
         retry = row.get("retry")
         if isinstance(retry, dict) and retry.get("ok") is not True:
             reasons.append("retry after the fault was cleared did not succeed")
+    reasons.extend(_request_side(row))
     verdict = "defect" if reasons else "pass"
     graded = dict(row)
     graded["verdict"] = verdict

@@ -32,6 +32,6 @@
 | IDX-BAD | 索引文件损坏（`file is not a database`） | defect | 同上 | 见 IDX-RETRY | deepseek-flash |
 | IDX-RETRY | 真索引恢复 | pass | 手册覆盖 T3，T2 无最大 PV 输入数字 | — | deepseek-flash |
 
-浏览器看过的只有英语、桌面宽度：`~/de-linker-data/campaign-332/ui/` 里 `model-500-cards.png`、`model-500-cards-scrolled.png`、`sse-cut-live-error.png`、`sse-cut-reload.png`、`sse-cut-retry.png`、`vps-down-error.png`。没有 390 宽，没有德语界面，没有 VPS-KILL 的截图，没有 VPS-DOWN 刷新后的截图。这三处跟在 #433，这轮没有补拍。
+浏览器看过的只有英语、桌面宽度：`~/de-linker-data/campaign-332/ui/` 里 `model-500-cards.png`、`model-500-cards-scrolled.png`、`sse-cut-live-error.png`、`sse-cut-reload.png`、`sse-cut-retry.png`。`vps-down-error.png` 与 `sse-cut-live-error.png` 字节相同，不能当作 VPS-DOWN 的另一张截图；那一条的主证据是 502 行，见 `NOTES.md`。没有 390 宽，没有德语界面，没有 VPS-KILL 的截图，没有 VPS-DOWN 刷新后的截图。这三处跟在 #433，这轮没有补拍。
 
 原来的 23 条手判不变。SSE-PARTIAL、SSE-ATTACHMENT、SSE-READING、M-EMPTY-STREAM 是后来对 c332 的补跑，四条都是 defect。`M-EMPTY` 仍是非流式校验错误；`M-EMPTY-STREAM` 才是零事件的 SSE，failures 为 `expected JSON data`。半条 block 和 attachment / reading 的截断没有截图。

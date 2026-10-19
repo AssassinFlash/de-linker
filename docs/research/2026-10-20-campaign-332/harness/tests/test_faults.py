@@ -7,8 +7,35 @@ import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from faults import TINY_JPEG, FaultServer, chat_payload
-from sse import parse_sse
+from faults import (
+    TINY_JPEG,
+    FaultServer,
+    chat_payload,
+    requested_model,
+    silent_switch_reasons,
+)
+from sse import cut_marker, parse_sse
+
+
+def test_requested_model_reads_the_json_field() -> None:
+    assert requested_model(b'{"model": "deepseek-flash"}') == "deepseek-flash"
+    assert requested_model(b"{}") == ""
+    assert requested_model(b'{"model": 1}') == ""
+    assert requested_model(b"not-json") == ""
+
+
+def test_silent_switch_requires_deepseek_flash_and_zero_openrouter_hits() -> None:
+    assert silent_switch_reasons(["deepseek-flash", "deepseek-flash"], 0) == []
+    assert any(
+        "other-model" in reason for reason in silent_switch_reasons(["other-model"], 0)
+    )
+    assert any(
+        "no requested model" in reason for reason in silent_switch_reasons([], 0)
+    )
+    assert any(
+        "OpenRouter" in reason
+        for reason in silent_switch_reasons(["deepseek-flash"], 2)
+    )
 
 
 def test_chat_modes() -> None:
@@ -58,6 +85,46 @@ def test_chat_server_answers_500() -> None:
                 failure.close()
     finally:
         server.stop()
+
+
+def test_stubs_record_the_requested_model_and_openrouter_hits() -> None:
+    chat = FaultServer("chat", mode="500")
+    router = FaultServer("openrouter")
+    chat_url = chat.start()
+    router_url = router.start()
+    try:
+        request = urllib.request.Request(
+            chat_url + "/v1/chat/completions",
+            data=b'{"model": "deepseek-flash"}',
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            urllib.request.urlopen(request, timeout=5)
+        except urllib.error.HTTPError as failure:
+            failure.close()
+        assert chat.requested_models() == ["deepseek-flash"]
+        assert chat.openrouter_hits() == 0
+        assert (
+            silent_switch_reasons(chat.requested_models(), router.openrouter_hits())
+            == []
+        )
+        hit = urllib.request.Request(
+            router_url + "/api/v1/systemone",
+            data=b"{}",
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            urllib.request.urlopen(hit, timeout=5)
+        except urllib.error.HTTPError as failure:
+            assert failure.code == 502
+            failure.close()
+        assert router.openrouter_hits() == 1
+        assert silent_switch_reasons(chat.requested_models(), router.openrouter_hits())
+    finally:
+        chat.stop()
+        router.stop()
 
 
 def test_empty_stream_server_returns_no_events() -> None:
@@ -124,6 +191,11 @@ def test_proxy_cuts_inside_a_partial_block_and_an_attachment() -> None:
                     raw = reply.read().decode()
                 assert banned not in raw
                 assert parse_sse(raw)["done"] is False
+                report = proxy.cut_report()
+                assert report["where"] == cut
+                assert report["marker_present"] is True
+                assert cut_marker(cut) in raw
+                assert report["done_in_shortened"] is False
             finally:
                 proxy.stop()
     finally:
