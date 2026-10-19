@@ -1,9 +1,10 @@
 """The 100-question baseline set and its grading (#336).
 
-Set integrity: composition (10 categories × 5 slots × EN/DE), the map's hard
-rows, EN/DE structural parity, every expected product grounded in the catalogue
-fixture. Grading: the TRIAL.md口径 as pure functions, on hand-made turns whose
-shapes come from the service's SSE (tests/test_turn.py, the #234 page eval).
+Set integrity: 100 rows, 10 categories, EN/DE parity, the map's hard rows,
+every one of the 20 trial questions, every expected product grounded in the
+catalogue fixture. Grading: the TRIAL.md口径 as pure functions, on hand-made
+turns whose shapes come from the service's SSE (tests/test_turn.py, the #234
+page eval).
 """
 
 from __future__ import annotations
@@ -76,17 +77,28 @@ def text(words: str, refs: list[str] | None = None) -> dict[str, object]:
 
 
 def test_the_set_is_100_rows_of_10_categories() -> None:
+    """Ten categories, 50/50 by language. Documents holds 14 rows because
+    trials 6 and 19 replaced the weakest non-seed slots (b20 sizing, b25
+    price) and are document questions; those two categories are 8."""
+
     assert len(ROWS) == 100
     assert len({row["id"] for row in ROWS}) == 100
+    assert Counter(row["lang"] for row in ROWS) == {"en": 50, "de": 50}
     counts = Counter(row["category"] for row in ROWS)
     assert set(counts) == set(CATEGORIES)
-    assert set(counts.values()) == {10}
+    assert counts["documents"] == 14
+    assert counts["sizing"] == 8
+    assert counts["price"] == 8
+    for category, count in counts.items():
+        if category not in {"documents", "sizing", "price"}:
+            assert count == 10, category
 
 
 def test_every_category_is_half_english_half_german() -> None:
     for category in CATEGORIES:
         langs = Counter(row["lang"] for row in ROWS if row["category"] == category)
-        assert langs == {"en": 5, "de": 5}, category
+        assert langs["en"] == langs["de"], category
+        assert langs["en"] > 0, category
 
 
 def test_en_and_de_share_one_structure() -> None:
@@ -131,10 +143,27 @@ def test_the_maps_hard_rows_are_all_present() -> None:
 
 
 def test_the_trials_seed_their_semantics() -> None:
+    """The set is the 20-question trial expanded, so every trial number is
+    present in both languages. Trials 6 and 19 occupy the slots of the two
+    rows they replaced."""
+
     seeded = {row["trial"] for row in ROWS if row.get("trial") is not None}
-    # The trial rows the set carries: the map's four, the five the spec's own
-    # gate names (2, 3, 4, 5, 13), and the rest of the 20 as they fit.
-    assert {1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20} <= seeded
+    assert seeded == set(range(1, 21))
+    for trial in range(1, 21):
+        langs = {row["lang"] for row in ROWS if row.get("trial") == trial}
+        assert langs == {"en", "de"}, trial
+    replaced = {row["question"] for row in ROWS}
+    assert "What battery size for 6 kWp and 4500 kWh per year?" not in replaced
+    assert (
+        "Which is cheaper, the OCEAN 2 battery or the GoodWe GW9.0-BAT-D-G20?"
+        not in replaced
+    )
+    slot6 = next(row for row in ROWS if row["id"] == "b20-en")
+    slot19 = next(row for row in ROWS if row["id"] == "b25-en")
+    assert slot6["trial"] == 6 and slot6["category"] == "documents"
+    assert slot19["trial"] == 19 and slot19["category"] == "documents"
+    assert slot6["assertion"] == "deterministic"
+    assert slot19["assertion"] == "deterministic"
 
 
 def test_expected_products_exist_in_the_catalogue() -> None:
@@ -168,6 +197,69 @@ def test_regexes_of_every_row_compile() -> None:
             assert re.compile(pattern), (row["id"], pattern)
         if expect.get("price_gate"):
             assert re.compile(expect["price_gate"]), row["id"]
+
+
+def _document(words: str) -> list[dict[str, object]]:
+    return [
+        text(words),
+        {"type": "document", "ref": "chunk-1", "label": "hosted manual"},
+    ]
+
+
+def test_trial_6_states_nominal_and_refuses_a_usable_figure() -> None:
+    """The L260 sheets state nominal 260 kWh and DoD 98%, not a usable kWh."""
+
+    english = next(row for row in ROWS if row["id"] == "b20-en")
+    good = turn(
+        _document(
+            "The documents do not state a usable capacity. "
+            "The nominal capacity is 260 kWh and the depth of discharge is 98%."
+        )
+    )
+    assert check(english, good, FEED_TOKENS) == []
+    invented = turn(_document("The usable capacity is 254.8 kWh."))
+    assert check(english, invented, FEED_TOKENS)
+    stale = turn(
+        _document("Nominal capacity is 260 kWh with a depth of discharge of 5-95%.")
+    )
+    assert check(english, stale, FEED_TOKENS)
+
+    german = next(row for row in ROWS if row["id"] == "b20-de")
+    good_de = turn(
+        _document(
+            "Die Unterlagen nennen keine nutzbare Kapazität. "
+            "Die Nennkapazität beträgt 260 kWh, die Entladetiefe 98 %."
+        ),
+        language="de",
+    )
+    assert check(german, good_de, FEED_TOKENS) == []
+
+
+def test_trial_19_does_not_assert_enwg_14a_support() -> None:
+    """The H2 documents do not state EnWG 14a. The answer must not claim support."""
+
+    english = next(row for row in ROWS if row["id"] == "b25-en")
+    good = turn(
+        _document("The documents do not state EnWG 14a support for the SAJ H2.")
+    )
+    assert check(english, good, FEED_TOKENS) == []
+    claimed = turn(_document("Yes, the H2 supports EnWG 14a dimming."))
+    assert check(english, claimed, FEED_TOKENS)
+    assert "14" in english["expect"]["numbers"]
+
+    german = next(row for row in ROWS if row["id"] == "b25-de")
+    good_de = turn(
+        _document(
+            "Die Unterlagen nennen keine Unterstützung für das Dimmen nach §14a EnWG."
+        ),
+        language="de",
+    )
+    assert check(german, good_de, FEED_TOKENS) == []
+    claimed_de = turn(
+        _document("Ja, der H2 unterstützt das Dimmen nach §14a EnWG."),
+        language="de",
+    )
+    assert check(german, claimed_de, FEED_TOKENS)
 
 
 # -------------------------------------------------------------------- grading
