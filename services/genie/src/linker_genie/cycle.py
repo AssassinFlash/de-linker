@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.ground import check
 from linker_genie.hydrate import hydrate
@@ -17,7 +18,6 @@ from linker_genie.prices import Lookup, fill
 from linker_genie.route import Route
 from linker_genie.schema import TurnOutput, TurnRequest
 from linker_genie.template import fallback
-from linker_genie.timing import Timing, phase
 
 Generate = Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]
 
@@ -42,7 +42,7 @@ def run(
     route: Route | None = None,
     seed: TurnFacts | None = None,
     commerce: Lookup | None = None,
-    clock: Timing | None = None,
+    clock: timing.Timing | None = None,
 ) -> TurnResult:
     """Produce a grounded, hydrated turn. `generate` may call tools.
 
@@ -59,7 +59,10 @@ def run(
     last_failures: tuple[str, ...] = ()
     for attempt in (1, 2):
         try:
-            with phase(clock, "model"), phase(clock, f"model.attempt_{attempt}"):
+            with (
+                timing.phase(clock, timing.MODEL),
+                timing.phase(clock, timing.attempt_key(attempt)),
+            ):
                 output, facts = generate(request, retry_reason)
         except (ValueError, TypeError, RuntimeError) as error:
             last_failures = (str(error),)
@@ -67,10 +70,10 @@ def run(
             last_facts = seeded
             continue
         last_facts = merge([seeded, facts])
-        with phase(clock, "ground"):
+        with timing.phase(clock, timing.GROUND):
             result = check(output, last_facts, route)
         if result.ok:
-            with phase(clock, "hydrate"):
+            with timing.phase(clock, timing.HYDRATE):
                 hydrated = hydrate(output, last_facts)
                 priced, priced_facts, missed = fill(hydrated, last_facts, commerce)
             return TurnResult(
@@ -85,9 +88,9 @@ def run(
             )
         last_failures = result.failures
         retry_reason = result.reason
-    with phase(clock, "template"):
+    with timing.phase(clock, timing.TEMPLATE):
         rendered = fallback(last_facts, request.locale, route)
-    with phase(clock, "hydrate"):
+    with timing.phase(clock, timing.HYDRATE):
         priced, priced_facts, missed = fill(rendered, last_facts, commerce)
     return TurnResult(
         output=priced,

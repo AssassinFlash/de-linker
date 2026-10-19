@@ -26,7 +26,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from linker_genie import contact, ground, inquiry, jev, page, parts, summary
+from linker_genie import contact, ground, inquiry, jev, page, parts, summary, timing
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import (
     deepseek_access,
@@ -41,7 +41,6 @@ from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup
 from linker_genie.schema import MAX_REQUEST_BYTES, TurnOutput, TurnRequest, VoteRequest
 from linker_genie.storeapi import StoreVocabulary
-from linker_genie.timing import Timing, phase
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 
@@ -131,9 +130,13 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     started = time.monotonic()
     # The turn's passive phase timings (#336, timing.py): measurement only, no
     # decision reads them.
-    clock = Timing()
+    clock = timing.Timing()
+    # A start row before any wait: a model hang or a killed process leaves it
+    # behind, so the unfinished turns the p95 tail must not silently omit are
+    # countable (TurnLog.start; ops/turn_latency.py reports them).
+    start_token = turn_log().start(body.conversation_id, body.locale)
     prepare = getattr(request.app.state, "prepare", None)
-    with phase(clock, "understand"):
+    with timing.phase(clock, timing.UNDERSTAND):
         prepared: Prepared = (
             prepare(body)
             if prepare is not None
@@ -154,7 +157,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     try:
         result, service_block = _answer(body, prepared, request, commerce, clock)
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
-        with phase(clock, "log"):
+        with timing.phase(clock, timing.LOG):
             turn_log().record(
                 conversation_id=body.conversation_id,
                 locale=body.locale,
@@ -169,8 +172,11 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
                 page=body.page_context.model_dump(),
                 understanding=prepared.log,
                 approved=body.user.partner,
-                timing=clock.as_log(),
+                # No stream will run: the record stays partial (no total) and is
+                # reported as incomplete, never as a fast turn.
+                timing=clock.as_log(complete=False),
             )
+            turn_log().finish(start_token)
         raise
     if result.retried and result.attempts > 1:
         prepared.log["retried"] = list(result.retried)
@@ -211,7 +217,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     # A request for a person and a parts list are answered by the service alone:
     # no model ran (model-routing audits read provider/model).
     code_made = prepared.route.name in ("person", "parts")
-    with phase(clock, "log"):
+    with timing.phase(clock, timing.LOG):
         turn_id = turn_log().record(
             conversation_id=body.conversation_id,
             locale=body.locale,
@@ -229,8 +235,12 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
             understanding=prepared.log,
             approved=body.user.partner,
             contact=offer.reason if offer is not None else None,
-            timing=clock.as_log(),
+            # Phases only: `total` and the first-event mark belong to the served
+            # stream, written by _sse when it ends (a turn that never streams
+            # stays partial and counts as incomplete, not as a fast turn).
+            timing=clock.as_log(complete=False),
         )
+        turn_log().finish(start_token)
     return StreamingResponse(
         _sse(result, shipped, turn_id, prepared, clock),
         media_type="text/event-stream",
@@ -277,7 +287,7 @@ def _answer(
     prepared: Prepared,
     request: Request,
     commerce: Lookup,
-    clock: Timing | None = None,
+    clock: timing.Timing | None = None,
 ) -> tuple[TurnResult, dict[str, object] | None]:
     """The turn's answer: the model's; the service's own for a request for a person
     (contact.answer; #243); or the parts list's (parts.answer; #251). With a service
@@ -328,11 +338,11 @@ def _sse(
     shipped: dict[str, object],
     turn_id: int,
     prepared: Prepared,
-    clock: Timing,
+    clock: timing.Timing,
 ) -> Iterator[str]:
     # The generator's first step is the earliest the response path can mark the
     # first SSE event (#336); the meta event is built here, so it can carry it.
-    clock.first_event()
+    clock.mark_first_event()
     meta = {
         "turn_id": turn_id,
         "grounded": result.grounded,
@@ -345,9 +355,11 @@ def _sse(
         "route": prepared.route.name,
         "intent": (prepared.log.get("jev") or {}).get("intent"),
         "jev_error": prepared.log.get("jev_error"),
-        # The turn's passive phase timings (#336, timing.py): `total` here is the
-        # wall clock to this first event; the completed record lands in the turn
-        # log's row after the stream ends. Additive — the shell ignores it.
+        # The turn's passive phase timings (#336, timing.py): a deliberate
+        # additive surface — the #336B baseline harness reads each question's
+        # per-turn timing from here (no VPS log access needed), and the shell
+        # ignores fields it does not know. `total` here is the wall clock to
+        # this first event; the log's row gets its complete record at stream end.
         "timing": clock.as_log(),
     }
     try:

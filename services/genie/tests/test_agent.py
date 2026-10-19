@@ -9,6 +9,7 @@ from linker_genie.agent import (
     MAX_TOOL_CALLS,
     ToolBudget,
     _ability_runner,
+    _page_runner,
     _user_prompt,
     instructions,
     model_name,
@@ -172,6 +173,53 @@ def test_a_runner_without_a_clock_answers_as_before() -> None:
         "linker/get-product",
     )
     assert runner({"product_id": 4107}) == {"ok": "linker/get-product"}
+
+
+def test_a_refused_tool_call_is_absent_from_the_record_not_timed() -> None:
+    """#336 review: skipped is not fast — a call the budget refused never enters
+    its phase, so it cannot read as an instant tool call."""
+    from linker_genie.timing import Timing
+
+    class RecordingClient:
+        def record(
+            self,
+            name: str,
+            arguments: dict[str, Any] | None,
+            user_context: str | None = None,
+            locale: str = "en",
+        ) -> tuple[dict[str, Any], TurnFacts]:
+            return {"ok": name}, TurnFacts()
+
+    clock = Timing()
+    budget = ToolBudget()
+    runner = _ability_runner(
+        RecordingClient(),  # type: ignore[arg-type]
+        budget,
+        "linker/get-product",
+        clock=clock,
+    )
+    while budget.allow():
+        pass
+    assert "budget 4 exhausted" in runner({"product_id": 4107})["error"]
+    assert "model.tool.linker/get-product" not in clock.as_log()
+
+
+def test_a_page_read_without_a_reader_is_absent_from_the_record() -> None:
+    """The other refusal guard (#336 review): no page reader, no phase."""
+    from linker_genie.timing import Timing
+
+    clock = Timing()
+    runner = _page_runner(
+        None,
+        ToolBudget(),
+        TurnRequest(
+            conversation_id="c",
+            messages=[TurnMessage(role="user", content="what does this page say?")],
+        ),
+        clock=clock,
+    )
+    assert "cannot be read" in runner(None)["error"]
+    assert "model.tool.linker/read-page" not in clock.as_log()
 
 
 def test_the_prompt_tells_a_guest_inquiry_to_ask_for_a_login() -> None:

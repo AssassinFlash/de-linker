@@ -164,6 +164,38 @@ def test_meta_carries_the_turn_timing_record(log: TurnLog) -> None:
     assert record["total"] >= timing["total"]
 
 
+def test_the_inserted_row_has_no_total_until_the_stream_ends(
+    log: TurnLog, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#336 review: the INSERT carries the phases only; `total` exists after the
+    stream, so a turn whose stream never ran can never read as a fast turn."""
+    inserted: dict[str, Any] = {}
+    original = log.record
+
+    def spy(**kwargs: Any) -> int:
+        inserted.update(kwargs)
+        return original(**kwargs)
+
+    monkeypatch.setattr(log, "record", spy)
+    app.state.generate = _generate
+    _post("c1", "hello")
+    timing = inserted["timing"]
+    assert isinstance(timing, dict)
+    assert "total" not in timing
+    assert timing["understand"] >= 0 and timing["model"] >= 0
+    # And the stream that followed completed the same row.
+    [(stored,)] = log._db.execute("SELECT timing FROM turns").fetchall()
+    assert "total" in json.loads(stored)
+
+
+def test_every_turn_closes_its_start_note(log: TurnLog) -> None:
+    """#336: a start note is the only trace of a turn that never answered, so a
+    served turn must leave none behind."""
+    app.state.generate = _generate
+    _post("c1", "hello")
+    assert log._db.execute("SELECT COUNT(*) FROM turn_starts").fetchone() == (0,)
+
+
 def test_a_turn_that_falls_back_times_the_template_and_both_attempts(
     log: TurnLog,
 ) -> None:
@@ -263,10 +295,18 @@ def test_an_internal_failure_is_logged_and_raised(log: TurnLog) -> None:
             },
         )
 
-    row = log._db.execute("SELECT grounded, fallback, failures FROM turns").fetchone()
+    row = log._db.execute(
+        "SELECT grounded, fallback, failures, timing FROM turns"
+    ).fetchone()
     assert row is not None
     assert row[0] == 0 and row[1] == 1
     assert "internal" in row[2]
+    # No stream ran: the record keeps its phases and has no total, so ops counts
+    # it as incomplete rather than as a fast turn (#336).
+    assert "total" not in json.loads(row[3])
+    # The start note is closed: the failure has a row, so it is not an
+    # unfinished turn (#336).
+    assert log._db.execute("SELECT COUNT(*) FROM turn_starts").fetchone() == (0,)
 
 
 def test_a_jev_failure_is_visible_in_the_stream_and_the_log(log: TurnLog) -> None:

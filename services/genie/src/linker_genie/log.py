@@ -9,7 +9,10 @@ Jev's reading, the route, its failures) is logged with it too (#233), and
 whether the customer's account is an approved one (`approved`, #258): the
 judges' remit lets an approved account see prices and nobody else. The turn's
 passive phase timings are one JSON object per row (`timing`, #336, timing.py) —
-the numbers the latency work reads (ops/turn_latency.py).
+the numbers the latency work reads (ops/turn_latency.py). A turn that never
+answered has no row here (a row is written only after the answer exists);
+`turn_starts` notes every begun turn and is closed when the row lands, so those
+unfinished turns stay countable.
 """
 
 from __future__ import annotations
@@ -59,6 +62,20 @@ ADDED_COLUMNS = (
     ("timing", "TEXT"),
 )
 
+# One row per turn that has begun, removed when its turn row lands
+# (app.assistant_turn). A row left behind is a turn that never answered — a model
+# hang, a restart, a killed process — which the `turns` table cannot show: it
+# gets a row only after the answer exists, so the worst of the latency tail would
+# silently vanish. ops/turn_latency.py counts the stale ones (#336).
+STARTS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS turn_starts (
+    token INTEGER PRIMARY KEY,
+    conversation_id TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    locale TEXT NOT NULL
+);
+"""
+
 
 def _calls(raw: str | None) -> list[dict[str, Any]]:
     """The turn's logged calls; a malformed entry is left out, never raised."""
@@ -78,6 +95,7 @@ class TurnLog:
         # the connection's own lock).
         self._db = sqlite3.connect(path, check_same_thread=False)
         self._db.execute(SCHEMA)
+        self._db.execute(STARTS_SCHEMA)
         present = {row[1] for row in self._db.execute("PRAGMA table_info(turns)")}
         for name, kind in ADDED_COLUMNS:
             if name not in present:
@@ -142,6 +160,23 @@ class TurnLog:
             "UPDATE turns SET timing = ? WHERE id = ?",
             (json.dumps(timing), turn_id),
         )
+        self._db.commit()
+
+    def start(self, conversation_id: str, locale: str) -> int:
+        """Note that a turn has begun, before any wait; `finish` closes the note
+        when the turn's row lands. A note left behind is an unfinished turn
+        (turn_starts, #336)."""
+        cursor = self._db.execute(
+            "INSERT INTO turn_starts (conversation_id, locale) VALUES (?, ?)",
+            (conversation_id, locale),
+        )
+        self._db.commit()
+        return int(cursor.lastrowid or 0)
+
+    def finish(self, token: int) -> None:
+        """The turn's row landed: close its start note. A note the service died
+        before closing stays for ops/turn_latency.py to count (#336)."""
+        self._db.execute("DELETE FROM turn_starts WHERE token = ?", (token,))
         self._db.commit()
 
     def offers(self, conversation_id: str, limit: int) -> list[bool]:

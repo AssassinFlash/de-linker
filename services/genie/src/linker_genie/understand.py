@@ -17,13 +17,12 @@ an answer without the documents it needed must not ship (#257).
 from __future__ import annotations
 
 import logging
-import time
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from linker_genie import attachments, contact, knowledge, page, parts
+from linker_genie import attachments, contact, knowledge, page, parts, timing
 from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
@@ -38,7 +37,6 @@ from linker_genie.schema import (
     TurnRequest,
 )
 from linker_genie.storeapi import VocabularyError
-from linker_genie.timing import Timing, phase
 from linker_genie.vision import See
 
 logger = logging.getLogger("linker_genie")
@@ -80,7 +78,7 @@ class Prepared:
     parts_list: parts.PartsList | None = None
     # This layer's own phase timings (#336, timing.py); the app adopts them into
     # the turn's clock. None when the layer did not time itself.
-    timing: Timing | None = None
+    timing: timing.Timing | None = None
 
     @property
     def calls_made(self) -> int:
@@ -119,7 +117,7 @@ class Understander:
         log: dict[str, Any] = {}
         # The layer's own clock (#336, timing.py): measurement only; it travels
         # with the Prepared, and the app adopts it into the turn's record.
-        clock = Timing()
+        clock = timing.Timing()
         phrase = contact.asks_for_person(message)
         if phrase is not None:
             # A request for a person is answered in code, before Jev and the model
@@ -128,7 +126,7 @@ class Understander:
             route = person([f"person phrase: {phrase}"])
             log.update(route.as_log())
             return Prepared(route=route, log=log, timing=clock)
-        with phase(clock, "understand.vocabulary"):
+        with timing.phase(clock, timing.VOCABULARY):
             vocabulary = self._load_vocabulary(log)
         matches = vocabulary.match(message) if vocabulary else []
         log["matches"] = [
@@ -136,7 +134,7 @@ class Understander:
         ]
         subject = _subject(request, matches, vocabulary)
         # This turn's files are read first (#236): a nameplate decides the route.
-        with phase(clock, "understand.attachments"):
+        with timing.phase(clock, timing.ATTACHMENTS):
             fresh = [
                 with_known_brand(item, vocabulary)
                 for item in (
@@ -156,7 +154,7 @@ class Understander:
             # the answer and the card are parts.answer's, and the model does not
             # run. Jev is not asked, as for a nameplate: the list decides.
             assert vocabulary is not None  # parts.find requires it
-            with phase(clock, "understand.parts"):
+            with timing.phase(clock, timing.PARTS):
                 result = parts.build(source, list(request.messages), vocabulary)
             log["parts"] = {
                 "kind": source.kind,
@@ -240,7 +238,7 @@ class Understander:
         message: str,
         vocabulary: Vocabulary | None,
         log: dict[str, Any],
-        clock: Timing | None = None,
+        clock: timing.Timing | None = None,
     ) -> Reading | None:
         if self._jev is None:
             log["jev_error"] = self._jev_missing
@@ -252,7 +250,7 @@ class Understander:
         # The phase covers the read as the turn waited for it — retries and backoff
         # included; the successful call's own seconds stay in the reading's log
         # (jev.Reading.as_log), which is a different, narrower number.
-        with phase(clock, "understand.jev"):
+        with timing.phase(clock, timing.JEV):
             try:
                 reading = self._jev.read(
                     message,
@@ -400,22 +398,21 @@ def _run_calls(
     client: AbilityClient,
     search: knowledge.Search = knowledge.SEARCH,
     pages: page.Reader = no_pages,
-    clock: Timing | None = None,
+    clock: timing.Timing | None = None,
 ) -> None:
     """Run the route's calls side by side; results and facts keep the route's order.
 
     The calls do not depend on each other (route.py makes them from the message, the
     page and the subject alone), so the page read runs while the abilities and the
     document search do (review of PR #295: the page read added its time to every
-    page question when it ran first). Each call observes its own duration on
-    `clock` from its worker thread (#336, timing.py); the block's wall is the
+    page question when it ran first). Each call is timed under its own ability
+    key from its worker thread (#336, timing.py); the block's wall is the
     enclosing `understand.calls` phase, which is what the turn waited for.
     """
     question = _last_customer_message(request)
 
     def one(call: Call) -> tuple[dict[str, Any], TurnFacts]:
-        started = time.monotonic()
-        try:
+        with timing.phase(clock, timing.call_key(call.ability)):
             if call.ability == page.NAME:
                 # The page is read in this process from the site (page.py, #234).
                 return page.record(
@@ -427,17 +424,12 @@ def _run_calls(
             return client.record(
                 call.ability, call.arguments, request.user.context, request.locale
             )
-        finally:
-            if clock is not None:
-                clock.observe(
-                    f"understand.call.{call.ability}", time.monotonic() - started
-                )
 
     calls = prepared.route.calls
     if not calls:
         prepared.facts = merge([])
         return
-    with phase(clock, "understand.calls"):
+    with timing.phase(clock, timing.CALLS):
         with ThreadPoolExecutor(max_workers=len(calls)) as pool:
             futures = [pool.submit(one, call) for call in calls]
     parts: list[TurnFacts] = []
