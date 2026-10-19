@@ -150,6 +150,12 @@ jobs:
       - name: the must-use plugins' smoke suite
         run: just mu-smoke smoke
 
+      # #373: two PHP processes commit one conversation and the trace shows
+      # one of them blocked in GET_LOCK. The instance's linker-tools is this
+      # checkout (`just up` symlinks it).
+      - name: Genie conversation concurrency
+        run: just genie-concurrency smoke
+
       # #297: native WordPress/Woo routing and an authenticated loopback SMTP
       # sink. The test owns the server and uses fake values only; mail() is
       # captured to files. The existing bare instance is sufficient for mail.

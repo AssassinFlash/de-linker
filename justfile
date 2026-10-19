@@ -283,6 +283,18 @@ mu-smoke name:
     cd "{{ justfile_directory() }}/mu-plugins"
     LINKER_MU_WP="just wp {{ name }}" PHP={{ php }} {{ php }} vendor/bin/phpunit --testsuite integration
 
+# Two processes commit one Genie conversation on a real instance
+# (`just up <name>` first). The overlap case asserts the lock intervals,
+# not only the final transcript (#373). CI runs this in the mu-smoke job.
+[positional-arguments]
+genie-concurrency name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd "{{ justfile_directory() }}/plugins/linker-tools"
+    LINKER_WP_ROOT="$HOME/de-linker-local/{{ name }}/wordpress" \
+        {{ php }} vendor/bin/phpunit -c phpunit.integration.xml.dist \
+        --filter ConversationConcurrencyTest
+
 # Installs node_modules from package-lock.json, unless the last install is newer than the lock file.
 [private]
 js-install:

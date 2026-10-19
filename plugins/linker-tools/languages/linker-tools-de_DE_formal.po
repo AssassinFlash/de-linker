@@ -702,6 +702,14 @@ msgstr "Genie denkt nach …"
 msgid "Genie did not answer. Please try again."
 msgstr "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut."
 
+#: build/genie.js:16 build/hero.js
+msgid ""
+"The conversation changed while Genie was answering. Send your question "
+"again."
+msgstr ""
+"Während Genie geantwortet hat, ist in diesem Gespräch eine weitere "
+"Nachricht eingegangen. Stellen Sie Ihre Frage noch einmal."
+
 #: build/genie.js:19 build/hero.js
 msgid "Send"
 msgstr "Senden"
