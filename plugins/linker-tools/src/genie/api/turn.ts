@@ -217,6 +217,25 @@ export class TurnError extends Error {
 }
 
 /**
+ * A stream that never sent `done`. Classification is this class. A generic
+ * error whose message happens to say the same words is not one.
+ */
+export class UnfinishedStreamError extends Error {
+	constructor() {
+		super( 'stream without done' );
+		this.name = 'UnfinishedStreamError';
+	}
+}
+
+/**
+ * How long the shell waits for one turn. The proxy gives the service the
+ * same number (`Proxy::TURN_BUDGET`, 60, also the `wp_remote_post` timeout
+ * in spec 13). A connection that never answers has to reach the upstream
+ * failure; without this timer it waits forever.
+ */
+export const TURN_TIMEOUT_MS = 60_000;
+
+/**
  * The commit was refused because the stored thread moved while Genie was
  * answering (#373). The model did answer; the shell must not say it failed.
  *
@@ -304,13 +323,14 @@ export interface ConversationList {
 /**
  * Sends one message and parses the SSE answer.
  *
- * @param turnUrl  Proxy route URL.
- * @param nonce    wp_rest nonce.
- * @param locale   Page language.
- * @param messages Thread so far, oldest first.
- * @param page     Page context.
- * @param uploads  The files of this turn, apart from the messages (#236).
- * @param fetcher  Fetch for tests.
+ * @param turnUrl   Proxy route URL.
+ * @param nonce     wp_rest nonce.
+ * @param locale    Page language.
+ * @param messages  Thread so far, oldest first.
+ * @param page      Page context.
+ * @param uploads   The files of this turn, apart from the messages (#236).
+ * @param fetcher   Fetch for tests.
+ * @param timeoutMs Aborts a connection that has not answered. The default is `TURN_TIMEOUT_MS`.
  */
 export async function sendTurn(
 	turnUrl: string,
@@ -319,22 +339,57 @@ export async function sendTurn(
 	messages: TurnMessage[],
 	page: PageContext,
 	uploads: Upload[] = [],
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = ( ...args ) => fetch( ...args ),
+	timeoutMs: number = TURN_TIMEOUT_MS
 ): Promise< Turn > {
-	const response = await fetcher( turnUrl, {
-		method: 'POST',
-		credentials: 'same-origin',
-		headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
-		body: JSON.stringify( {
-			locale,
-			messages: messages.map( ( { role, content } ) => ( {
-				role,
-				content,
-			} ) ),
-			page,
-			...( uploads.length > 0 ? { attachments: uploads } : {} ),
-		} ),
+	const controller = new AbortController();
+	let timer: ReturnType< typeof setTimeout > | undefined;
+	let won = false;
+	const timedOut = new Promise< never >( ( _resolve, reject ) => {
+		timer = setTimeout( () => {
+			controller.abort();
+			reject( new DOMException( 'The turn timed out.', 'AbortError' ) );
+		}, timeoutMs );
 	} );
+	// A fetch that rejects after the timer won must not surface later.
+	const request = Promise.resolve(
+		fetcher( turnUrl, {
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-WP-Nonce': nonce,
+			},
+			body: JSON.stringify( {
+				locale,
+				messages: messages.map( ( { role, content } ) => ( {
+					role,
+					content,
+				} ) ),
+				page,
+				...( uploads.length > 0 ? { attachments: uploads } : {} ),
+			} ),
+			signal: controller.signal,
+		} )
+	).then(
+		( response ) => response,
+		( error: unknown ) => {
+			if ( won ) {
+				return new Promise< Response >( () => undefined );
+			}
+			throw error;
+		}
+	);
+	let response: Response;
+	try {
+		response = await Promise.race( [ request, timedOut ] );
+		won = true;
+	} finally {
+		won = true;
+		if ( timer !== undefined ) {
+			clearTimeout( timer );
+		}
+	}
 	if ( ! response.ok ) {
 		let code = '';
 		try {
@@ -730,7 +785,7 @@ export function parseStream( stream: string ): Turn {
 		}
 	}
 	if ( ! done ) {
-		throw new Error( 'stream without done' );
+		throw new UnfinishedStreamError();
 	}
 	return turn;
 }
@@ -742,5 +797,5 @@ export function parseStream( stream: string ): Turn {
  * @param error The rejection from parseStream.
  */
 export function isUnfinishedStream( error: unknown ): boolean {
-	return error instanceof Error && 'stream without done' === error.message;
+	return error instanceof UnfinishedStreamError;
 }

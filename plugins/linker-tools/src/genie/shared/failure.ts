@@ -8,14 +8,14 @@
  *
  * One machine for the dock and the home hero. The record lives in
  * sessionStorage, which a reload of this tab keeps and a later visit does
- * not. The words are the reviewed failure sentence; this module does not
- * add copy.
+ * not. The failure sentence is the reviewed one. A file the record cannot
+ * hold is named in a separate notice, because the retry will not send it.
  *
  * | phase    | kind      | field                         | thread                          | retry                                      |
  * | -------- | --------- | ----------------------------- | ------------------------------- | ------------------------------------------ |
  * | clear    | —         | untouched                     | untouched                       | —                                          |
  * | pending  | —         | cleared for the send          | the question is on its way      | a second retry does not send               |
- * | failed   | truncated | stays empty                   | question kept, no answer blocks | one resend of that thread, no second copy  |
+ * | failed   | truncated | stays empty; files stay as chips | question kept, no answer blocks | one resend of that thread, no second copy  |
  * | failed   | upstream  | question and files restored   | question removed                | one send of the question                   |
  *
  * Reload reads the record against the stored thread: a tail that is the
@@ -27,7 +27,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -46,11 +46,14 @@ export type FailureKind = 'truncated' | 'upstream';
 export interface FailureDraft {
 	/** The words in the field, before file names are joined in. */
 	text: string;
-	/** The message the proxy received. */
+	/** The message the proxy received. A retry of an upstream failure may drop attachment lines the record could not keep. */
 	question: string;
 	uploads: Upload[];
-	/** Thread length before this question. */
-	base: number;
+	/**
+	 * Names of files the record could not hold. Empty when every file is
+	 * in `uploads` or the turn had none.
+	 */
+	omitted: string[];
 }
 
 /** What sessionStorage holds. `kind` is null while the request is in flight. */
@@ -79,14 +82,26 @@ export interface FailureMessage {
 	content: string;
 }
 
-/** How the shell shows a failure. Chips are empty for a truncated stream: the bytes stay on the record for the retry, not on the next typed question. */
+/**
+ * How the shell shows a failure. Chips are the files still held, including
+ * after a truncated stream, so they can be removed. A new question sends
+ * whatever chips are still there.
+ */
 export interface PresentedFailure {
 	kind: FailureKind;
 	messages: FailureMessage[];
 	/** Restored into the field. Empty when the question is the thread's tail. */
 	field: string;
 	chips: Upload[];
+	/** Files the record could not hold. The shell says to attach them again. */
+	omitted: string[];
 }
+
+/** What one failed send asks the shell to show. Refusal and conflict keep their own recovery. */
+export type TurnSettlement =
+	| { action: 'refusal'; reason: string; field: string }
+	| { action: 'conflict'; field: string }
+	| { action: 'failed'; view: PresentedFailure };
 
 /** The store the record uses. `window.sessionStorage` is one. */
 export interface FailureStore {
@@ -184,6 +199,27 @@ export function shownFailureKind(
 }
 
 /**
+ * The field, the chips and the files that have to be picked again.
+ *
+ * A truncated stream keeps the question in the thread, so the field stays
+ * empty, and the files stay as chips. An upstream failure puts the typed
+ * words back with those chips.
+ *
+ * @param kind  Which failure.
+ * @param draft The pending question.
+ */
+export function composerFor(
+	kind: FailureKind,
+	draft: FailureDraft
+): Pick< PresentedFailure, 'field' | 'chips' | 'omitted' > {
+	return {
+		field: 'truncated' === kind ? '' : draft.text,
+		chips: draft.uploads,
+		omitted: draft.omitted,
+	};
+}
+
+/**
  * What the shell shows for a failed send. A stream without `done` is not
  * drawn: the question stays the tail and the blocks stay the previous
  * turn's. A 502 or a timeout puts the question and its files back.
@@ -199,15 +235,197 @@ export function presentFailure(
 	sent: FailureMessage[],
 	draft: FailureDraft
 ): PresentedFailure {
-	if ( 'truncated' === kind ) {
-		return { kind, messages: sent, field: '', chips: [] };
-	}
 	return {
 		kind,
-		messages: before,
-		field: draft.text,
-		chips: draft.uploads,
+		messages: 'truncated' === kind ? sent : before,
+		...composerFor( kind, draft ),
 	};
+}
+
+/**
+ * Refusal, a 409, or a failure this machine owns. Both surfaces apply this
+ * and do not re-decide it.
+ *
+ * @param error  The rejection from sendTurn.
+ * @param before The thread this attempt posted on top of.
+ * @param draft  The pending question.
+ */
+export function settleTurnFailure(
+	error: unknown,
+	before: readonly FailureMessage[],
+	draft: FailureDraft
+): TurnSettlement {
+	const reason = attachmentRefusalReason( error );
+	if ( reason ) {
+		return { action: 'refusal', reason, field: draft.text };
+	}
+	if ( isTurnConflict( error ) ) {
+		return { action: 'conflict', field: draft.text };
+	}
+	const kind =
+		shownFailureKind( error, before, draft.question ) ?? 'upstream';
+	return {
+		action: 'failed',
+		view: presentFailure(
+			kind,
+			[ ...before ],
+			retryMessages( before, draft.question ),
+			draft
+		),
+	};
+}
+
+/**
+ * The line `buildQuestion` adds for one file.
+ *
+ * @param name The file's name.
+ */
+function attachmentLine( name: string ): string {
+	// translators: %s is the name of a file the visitor attached.
+	return __( 'Attached: %s', 'linker-tools' ).replace( '%s', name );
+}
+
+/**
+ * The question without `Attached:` lines for files that will not be sent.
+ *
+ * @param question The message.
+ * @param names    File names to drop.
+ */
+export function withoutAttachmentClaims(
+	question: string,
+	names: readonly string[]
+): string {
+	if ( 0 === names.length ) {
+		return question;
+	}
+	const drop = new Set( names.map( attachmentLine ) );
+	return question
+		.split( '\n' )
+		.filter( ( line ) => ! drop.has( line ) )
+		.join( '\n' );
+}
+
+/**
+ * The question one retry posts. A truncated stream must send the words the
+ * server already stored. An upstream failure sends the typed words plus the
+ * files still held, and does not claim a file the record dropped.
+ *
+ * @param kind    Which failure.
+ * @param draft   The failed question.
+ * @param uploads The files the composer still holds.
+ */
+export function questionForRetry(
+	kind: FailureKind,
+	draft: FailureDraft,
+	uploads: readonly Upload[]
+): string {
+	if ( 'truncated' === kind ) {
+		return draft.question;
+	}
+	const sending = new Set( uploads.map( ( file ) => file.name ) );
+	let question = withoutAttachmentClaims( draft.question, [
+		...draft.omitted.filter( ( name ) => ! sending.has( name ) ),
+		...draft.uploads
+			.map( ( file ) => file.name )
+			.filter( ( name ) => ! sending.has( name ) ),
+	] );
+	for ( const upload of uploads ) {
+		const line = attachmentLine( upload.name );
+		if ( question.split( '\n' ).includes( line ) ) {
+			continue;
+		}
+		question = '' === question ? line : `${ question }\n${ line }`;
+	}
+	return question;
+}
+
+/**
+ * One retry, or null when this is not a failed turn or an upstream retry
+ * would send an empty message. The caller leaves `failed` only after this
+ * returns a payload, so a second click does not send.
+ *
+ * @param state   The machine.
+ * @param thread  The thread to send on top of.
+ * @param uploads The files the composer still holds.
+ */
+export function retryPayload< T extends FailureMessage >(
+	state: FailureState,
+	thread: readonly T[],
+	uploads: readonly Upload[]
+): { question: string; uploads: Upload[]; messages: T[] } | null {
+	if ( 'failed' !== state.phase || ! state.draft || ! state.kind ) {
+		return null;
+	}
+	const question = questionForRetry( state.kind, state.draft, uploads );
+	if ( 'truncated' !== state.kind && '' === question ) {
+		return null;
+	}
+	return {
+		question,
+		uploads: [ ...uploads ],
+		messages: retryMessages( thread, question ),
+	};
+}
+
+/**
+ * The composer changed while a failure is on screen: a removed chip leaves
+ * the record, and attaching one of the omitted names clears that notice.
+ *
+ * @param state   The machine.
+ * @param uploads The files the composer holds now.
+ */
+export function failureWithUploads(
+	state: FailureState,
+	uploads: readonly Upload[]
+): FailureState {
+	if ( 'failed' !== state.phase || ! state.draft ) {
+		return state;
+	}
+	const names = new Set( uploads.map( ( file ) => file.name ) );
+	const omitted = state.draft.omitted.filter(
+		( name ) => ! names.has( name )
+	);
+	if (
+		sameUploads( state.draft.uploads, uploads ) &&
+		omitted.length === state.draft.omitted.length
+	) {
+		return state;
+	}
+	// From the draft before this edit, so a removed chip is a removal and
+	// a file the visitor attaches again is an addition.
+	const question = state.kind
+		? questionForRetry( state.kind, state.draft, uploads )
+		: state.draft.question;
+	return {
+		...state,
+		draft: {
+			...state.draft,
+			uploads: uploads.map( ( file ) => ( { ...file } ) ),
+			omitted,
+			question,
+		},
+	};
+}
+
+/**
+ * Names the customer has to attach again. Empty when every file was kept.
+ *
+ * @param names File names the record could not hold.
+ */
+export function omittedFileNotice( names: readonly string[] ): string {
+	if ( 0 === names.length ) {
+		return '';
+	}
+	return sprintf(
+		// translators: %s is one file name, or several names separated by commas.
+		_n(
+			'Attach %s again. It could not be kept for another try.',
+			'Attach these again: %s. They could not be kept for another try.',
+			names.length,
+			'linker-tools'
+		),
+		names.join( ', ' )
+	);
 }
 
 /**
@@ -245,7 +463,7 @@ export function reconcile(
 		text: stored.text,
 		question: stored.question,
 		uploads: stored.uploads,
-		base: stored.base,
+		omitted: stored.omitted,
 	};
 	let lastAsk = -1;
 	for ( let index = 0; index < messages.length; index++ ) {
@@ -266,7 +484,14 @@ export function reconcile(
 	if ( last && 'user' === last.role && last.content === stored.question ) {
 		return { phase: 'failed', draft, kind: 'truncated' };
 	}
-	return { phase: 'failed', draft, kind: 'upstream' };
+	return {
+		phase: 'failed',
+		draft: {
+			...draft,
+			question: withoutAttachmentClaims( draft.question, draft.omitted ),
+		},
+		kind: 'upstream',
+	};
 }
 
 /**
@@ -294,42 +519,48 @@ export function readFailure( store: FailureStore ): StoredFailure | null {
 /**
  * Writes the record, or removes it when the machine is clear.
  *
- * A record with its files can be larger than the store allows. The question
- * and the marker are written again without the files; the live view still
- * holds the files for a retry that has not reloaded.
+ * A record with its files can be larger than the store allows. Files that
+ * fit are kept, in the order the customer attached them. Each file that
+ * does not fit is named on `omitted` and, for an upstream failure, taken
+ * out of the question the retry will send. The returned state is what was
+ * stored.
  *
  * @param store The store.
  * @param state The machine.
  */
-export function writeFailure( store: FailureStore, state: FailureState ): void {
+export function writeFailure(
+	store: FailureStore,
+	state: FailureState
+): FailureState {
 	if ( 'clear' === state.phase || ! state.draft ) {
 		try {
 			store.removeItem( FAILURE_KEY );
 		} catch {
 			// Nothing newer to keep.
 		}
-		return;
+		return CLEAR;
 	}
-	const record: StoredFailure = {
-		v: 1,
-		text: state.draft.text,
-		question: state.draft.question,
-		uploads: state.draft.uploads,
-		base: state.draft.base,
-		kind: state.kind,
-	};
-	try {
-		store.setItem( FAILURE_KEY, JSON.stringify( record ) );
-	} catch {
-		try {
-			store.setItem(
-				FAILURE_KEY,
-				JSON.stringify( { ...record, uploads: [] } )
-			);
-		} catch {
-			// The live view still holds the question.
+	// A pending write may already have dropped files and left their
+	// `Attached:` lines in the question. Marking that record upstream has
+	// to take the lines out, even when the smaller record now fits.
+	const normalized = withHeldClaims( state );
+	if ( ! normalized.draft ) {
+		return normalized;
+	}
+	if ( saveFailure( store, recordOf( normalized ) ) ) {
+		return normalized;
+	}
+	const draft = normalized.draft;
+	const kept: Upload[] = [];
+	for ( const upload of draft.uploads ) {
+		const candidate = draftWith( normalized, [ ...kept, upload ] );
+		if ( saveFailure( store, recordOf( candidate ) ) ) {
+			kept.push( upload );
 		}
 	}
+	const next = draftWith( normalized, kept );
+	saveFailure( store, recordOf( next ) );
+	return next;
 }
 
 /**
@@ -399,12 +630,18 @@ function parseFailure( value: unknown ): StoredFailure | null {
 	const uploads = Array.isArray( record.uploads )
 		? record.uploads.map( uploadOf ).filter( ( upload ) => null !== upload )
 		: [];
+	const omitted = Array.isArray( record.omitted )
+		? record.omitted.filter(
+				( name ): name is string =>
+					'string' === typeof name && '' !== name
+			)
+		: [];
 	return {
 		v: 1,
 		text: record.text,
 		question: record.question,
 		uploads: uploads as Upload[],
-		base: 'number' === typeof record.base ? record.base : 0,
+		omitted,
 		kind: record.kind ?? null,
 	};
 }
@@ -432,4 +669,106 @@ function uploadOf( value: unknown ): Upload | null {
 		return null;
 	}
 	return { name: upload.name, type: upload.type, data: upload.data };
+}
+
+/**
+ * The record for `state`, including only `uploads`.
+ *
+ * @param state The machine. Its draft is required.
+ */
+function recordOf( state: FailureState ): StoredFailure {
+	const draft = state.draft as FailureDraft;
+	return {
+		v: 1,
+		text: draft.text,
+		question: draft.question,
+		uploads: draft.uploads,
+		omitted: draft.omitted,
+		kind: state.kind,
+	};
+}
+
+/**
+ * An upstream failure does not claim a file the record could not hold.
+ * A truncated stream, and a request still in flight, keep the question
+ * the server may already have stored.
+ *
+ * @param state The machine.
+ */
+function withHeldClaims( state: FailureState ): FailureState {
+	if ( ! state.draft || 'upstream' !== state.kind ) {
+		return state;
+	}
+	const question = withoutAttachmentClaims(
+		state.draft.question,
+		state.draft.omitted
+	);
+	if ( question === state.draft.question ) {
+		return state;
+	}
+	return { ...state, draft: { ...state.draft, question } };
+}
+
+/**
+ * `state` with `uploads` kept and the question's attachment claims matched
+ * to that list. A truncated stream keeps the question the server stored.
+ *
+ * @param state   The machine.
+ * @param uploads The files that fit.
+ */
+function draftWith( state: FailureState, uploads: Upload[] ): FailureState {
+	const draft = state.draft as FailureDraft;
+	const kept = new Set( uploads.map( ( file ) => file.name ) );
+	const omitted = [
+		...new Set( [
+			...draft.omitted.filter( ( name ) => ! kept.has( name ) ),
+			...draft.uploads
+				.filter( ( file ) => ! uploads.includes( file ) )
+				.map( ( file ) => file.name ),
+		] ),
+	];
+	const question =
+		'upstream' === state.kind
+			? withoutAttachmentClaims( draft.question, omitted )
+			: draft.question;
+	return {
+		...state,
+		draft: { ...draft, uploads, omitted, question },
+	};
+}
+
+/**
+ * Writes one record. False when the store refuses it.
+ *
+ * @param store  The store.
+ * @param record The record.
+ */
+function saveFailure( store: FailureStore, record: StoredFailure ): boolean {
+	try {
+		store.setItem( FAILURE_KEY, JSON.stringify( record ) );
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * The same files, in the same order.
+ *
+ * @param left  One list.
+ * @param right The other.
+ */
+function sameUploads(
+	left: readonly Upload[],
+	right: readonly Upload[]
+): boolean {
+	return (
+		left.length === right.length &&
+		left.every(
+			( file, index ) =>
+				file.name === right[ index ].name &&
+				file.type === right[ index ].type &&
+				file.data === right[ index ].data
+		)
+	);
 }

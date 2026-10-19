@@ -22,7 +22,12 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
  * Internal dependencies
  */
 import type { GenieConfig } from '../genie/config';
-import { TurnError, type Turn, type TurnMessage } from '../genie/api/turn';
+import {
+	TurnError,
+	UnfinishedStreamError,
+	type Turn,
+	type TurnMessage,
+} from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession, type HeroSessionConfig } from './session';
@@ -292,7 +297,7 @@ test( 'retrying a failed hero turn sends it once', async () => {
 test( 'a cut stream on the hero keeps the question and not the partial answer', async () => {
 	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
 	const send = vi.fn( async () => {
-		throw new Error( 'stream without done' );
+		throw new UnfinishedStreamError();
 	} );
 	const setPrompt = vi.fn();
 	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ), {
@@ -309,6 +314,40 @@ test( 'a cut stream on the hero keeps the question and not the partial answer', 
 	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
 	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
 	expect( setPrompt ).toHaveBeenLastCalledWith( '' );
+} );
+
+test( 'a cut stream on the hero keeps the file, and removing it takes it off the retry', async () => {
+	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
+	const send = vi
+		.fn()
+		.mockRejectedValueOnce( new UnfinishedStreamError() )
+		.mockResolvedValueOnce( reply( 'Recovered' ) );
+	const setPrompt = vi.fn();
+	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ), {
+		setPrompt,
+	} );
+	const file = new File( [ '%PDF-1.4' ], 'datasheet.pdf', {
+		type: 'application/pdf',
+	} );
+
+	await act( async () => {
+		view.bridge().ask( 'backup for 10 kW', [ file ] );
+	} );
+
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( setPrompt ).toHaveBeenLastCalledWith( '' );
+	expect( screen.getByText( 'datasheet.pdf' ) ).toBeInTheDocument();
+	fireEvent.click(
+		screen.getByRole( 'button', {
+			name: 'Remove attachment datasheet.pdf',
+		} )
+	);
+	expect( screen.queryByText( 'datasheet.pdf' ) ).toBeNull();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
+	await waitFor( () => expect( send ).toHaveBeenCalledTimes( 2 ) );
+	expect( send.mock.calls[ 1 ][ 5 ] ).toEqual( [] );
 } );
 
 test( 'a conflicting turn puts the question back and re-reads the thread', async () => {

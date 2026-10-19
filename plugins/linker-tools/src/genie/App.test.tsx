@@ -45,6 +45,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendTurn: vi.fn(),
 		sendVote: vi.fn( async () => true ),
 		TurnError: actual.TurnError,
+		UnfinishedStreamError: actual.UnfinishedStreamError,
 	};
 } );
 vi.mock( './api/contact', () => ( {
@@ -94,6 +95,7 @@ import {
 	sendTurn,
 	sendVote,
 	TurnError,
+	UnfinishedStreamError,
 } from './api/turn';
 
 const GERMAN_STREAM =
@@ -303,9 +305,7 @@ test( 'a 502 keeps the question across a reload and retries once', async () => {
 
 test( 'a cut stream keeps the question, hides the partial answer, and retries the stored turn', async () => {
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
-	vi.mocked( sendTurn ).mockRejectedValue(
-		new Error( 'stream without done' )
-	);
+	vi.mocked( sendTurn ).mockRejectedValue( new UnfinishedStreamError() );
 	const first = render( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
@@ -347,6 +347,119 @@ test( 'a cut stream keeps the question, hides the partial answer, and retries th
 	expect(
 		await screen.findByText( 'A hybrid covers that.' )
 	).toBeInTheDocument();
+} );
+
+test( 'a cut stream keeps the file on the composer, and a new question sends it', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	const datasheet = new File( [ '%PDF-1.7' ], 'gw10k-et-datenblatt.pdf', {
+		type: 'application/pdf',
+	} );
+	const upload = {
+		name: 'gw10k-et-datenblatt.pdf',
+		type: 'application/pdf' as const,
+		data: btoa( '%PDF-1.7' ),
+	};
+	vi.mocked( sendTurn )
+		.mockRejectedValueOnce( new UnfinishedStreamError() )
+		.mockResolvedValueOnce( {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'The datasheet matches.', refs: [] },
+			],
+		} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Check this datasheet' },
+	} );
+	fireEvent.change( document.querySelector( 'input[type="file"]' )!, {
+		target: { files: [ datasheet ] },
+	} );
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	await waitFor( () => expect( send ).toBeEnabled() );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( '' );
+	expect( screen.getByText( 'gw10k-et-datenblatt.pdf' ) ).toBeInTheDocument();
+	expect(
+		screen.getByRole( 'button', {
+			name: 'Remove attachment gw10k-et-datenblatt.pdf',
+		} )
+	).toBeInTheDocument();
+
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'What about this file?' },
+	} );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 2 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ][ 3 ] ).toEqual( [
+		{
+			role: 'user',
+			content: 'Check this datasheet\nAttached: gw10k-et-datenblatt.pdf',
+		},
+		{
+			role: 'user',
+			content: 'What about this file?\nAttached: gw10k-et-datenblatt.pdf',
+		},
+	] );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ][ 5 ] ).toEqual( [ upload ] );
+	expect(
+		await screen.findByText( 'The datasheet matches.' )
+	).toBeInTheDocument();
+} );
+
+test( 'a cut stream drops a file the visitor removes, and retry does not send it', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockRejectedValueOnce( new UnfinishedStreamError() )
+		.mockResolvedValueOnce( {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'Sent without the file.', refs: [] },
+			],
+		} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Check this datasheet' },
+	} );
+	fireEvent.change( document.querySelector( 'input[type="file"]' )!, {
+		target: {
+			files: [
+				new File( [ '%PDF-1.7' ], 'gw10k-et-datenblatt.pdf', {
+					type: 'application/pdf',
+				} ),
+			],
+		},
+	} );
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	await waitFor( () => expect( send ).toBeEnabled() );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	fireEvent.click(
+		await screen.findByRole( 'button', {
+			name: 'Remove attachment gw10k-et-datenblatt.pdf',
+		} )
+	);
+	expect( screen.queryByText( 'gw10k-et-datenblatt.pdf' ) ).toBeNull();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 2 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ][ 5 ] ).toEqual( [] );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ][ 3 ] ).toEqual( [
+		{
+			role: 'user',
+			content: 'Check this datasheet\nAttached: gw10k-et-datenblatt.pdf',
+		},
+	] );
 } );
 
 test( 'a 502 keeps an attached file across a reload', async () => {

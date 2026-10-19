@@ -19,7 +19,9 @@ import {
 	isUnfinishedStream,
 	parseStream,
 	readThread,
+	sendTurn,
 	sendVote,
+	TURN_TIMEOUT_MS,
 } from './turn';
 
 afterEach( () => {
@@ -68,7 +70,40 @@ test( 'a stream without done is an error, not a partial answer', () => {
 		unfinished = error;
 	}
 	expect( isUnfinishedStream( unfinished ) ).toBe( true );
+	expect( isUnfinishedStream( new Error( 'stream without done' ) ) ).toBe(
+		false
+	);
 	expect( isUnfinishedStream( new Error( 'turn 502' ) ) ).toBe( false );
+} );
+
+test( 'a connection that never answers is the upstream timeout', async () => {
+	vi.useFakeTimers();
+	const fetcher = vi.fn( () => new Promise< Response >( () => undefined ) );
+	const hung = sendTurn(
+		'/wp-json/linker-ai/v1/genie/turn',
+		'n',
+		'en',
+		[ { role: 'user', content: 'backup for 10 kW' } ],
+		{ type: 'category' },
+		[],
+		fetcher,
+		TURN_TIMEOUT_MS
+	);
+	const timedOut = hung.then(
+		() => {
+			throw new Error( 'the hung turn resolved' );
+		},
+		( error: unknown ) => error
+	);
+	try {
+		await vi.advanceTimersByTimeAsync( TURN_TIMEOUT_MS );
+		await expect( timedOut ).resolves.toMatchObject( {
+			name: 'AbortError',
+		} );
+		expect( fetcher ).toHaveBeenCalledTimes( 1 );
+	} finally {
+		vi.useRealTimers();
+	}
 } );
 
 test( 'sendVote posts to the turn and reports the answer', async () => {
