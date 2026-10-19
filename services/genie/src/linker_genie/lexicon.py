@@ -120,6 +120,13 @@ class Vocabulary:
     # named without a model is searched per phase when it has both (route.py).
     phase: dict[int, int] = field(default_factory=dict)
     series_members: dict[str, set[int]] = field(default_factory=dict)
+    # Brand slug → its products, and product ID → its brand and series slugs: a
+    # parts-list row that names only a brand (or a brand and a family) is not one
+    # product (#251, parts.py); the candidates and a typed model's fit come from
+    # these maps.
+    brand_members: dict[str, set[int]] = field(default_factory=dict)
+    brand_of: dict[int, set[str]] = field(default_factory=dict)
+    series_of: dict[int, set[str]] = field(default_factory=dict)
     # Category keys are compared by their plural-less forms as well (_forms).
     category_forms: dict[str, list[Entry]] = field(default_factory=dict)
 
@@ -338,6 +345,10 @@ def _add_product(vocabulary: Vocabulary, product: Product) -> None:
             vocabulary.phase[product.id] = PHASES[slug]
     for slug in product.series:
         vocabulary.series_members.setdefault(slug, set()).add(product.id)
+        vocabulary.series_of.setdefault(product.id, set()).add(slug)
+    for _name, slug in product.brands:
+        vocabulary.brand_members.setdefault(slug, set()).add(product.id)
+        vocabulary.brand_of.setdefault(product.id, set()).add(slug)
     for model in product.models:
         vocabulary.add(normalize(model), Entry("model", model, model, ids))
     _add_codes(vocabulary, product, product.name)

@@ -17,8 +17,14 @@
 export const MAX_FILES = 3;
 export const MAX_IMAGE_BYTES = 6291456;
 export const MAX_PDF_BYTES = 16777216;
+/** A parts list (#251): one mebibyte of CSV, or a workbook at the image ceiling. */
+export const MAX_CSV_BYTES = 1048576;
+export const MAX_XLSX_BYTES = 6291456;
 export const MAX_TURN_BYTES = 20971520;
 export const NAME_LENGTH = 255;
+/** The Excel wire type the proxy and the service take (an .xlsx is a zip of XML). */
+export const XLSX =
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 /** deepseek-flash's own scaling target, about 1300 × 1300 pixels (research §3.3). */
 export const TARGET_PIXELS = 1300 * 1300;
 /** A notch above libjpeg's default 75: a nameplate's small print stays sharp. */
@@ -36,6 +42,11 @@ export const MAGIC: Readonly< Record< string, readonly number[] > > = {
 	'image/png': [ 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a ],
 	'image/webp': [ 0x52, 0x49, 0x46, 0x46 ],
 	'application/pdf': [ 0x25, 0x50, 0x44, 0x46, 0x2d ],
+	// A parts list (#251): CSV is text with no first bytes; Excel is a zip of XML.
+	'text/csv': [],
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
+		0x50, 0x4b, 0x03, 0x04,
+	],
 };
 export const WEBP_MARK = { offset: 8, bytes: [ 0x57, 0x45, 0x42, 0x50 ] };
 
@@ -58,14 +69,18 @@ export function startsAs( bytes: Uint8Array, type: string ): boolean {
 	);
 }
 
-/** What the file input offers: photos (HEIC included) and PDFs. */
+/** What the file input offers: photos (HEIC included), PDFs and parts lists. */
 export const ACCEPT =
-	'image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif,application/pdf';
+	'image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif,application/pdf,.csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
 /** One file as the turn carries it (the service's `Upload`). */
 export interface Upload {
 	name: string;
-	type: 'image/jpeg' | 'application/pdf';
+	type:
+		| 'image/jpeg'
+		| 'application/pdf'
+		| 'text/csv'
+		| 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 	data: string;
 }
 
@@ -76,11 +91,13 @@ export type Prepared =
 	| { ok: true; upload: Upload; bytes: number }
 	| { ok: false; reason: Refusal };
 
-type Kind = 'photo' | 'heic' | 'pdf' | 'other';
+type Kind = 'photo' | 'heic' | 'pdf' | 'csv' | 'xlsx' | 'other';
 
 /**
  * What a picked file is, by its type or, when the browser names none (HEIC
- * on some systems), by its extension.
+ * on some systems), by its extension. A spreadsheet exported by an older
+ * Windows setup may arrive as `application/vnd.ms-excel`, so the extension
+ * decides between CSV and Excel there.
  *
  * @param file The picked file.
  */
@@ -100,6 +117,12 @@ export function kindOf( file: Pick< File, 'name' | 'type' > ): Kind {
 	}
 	if ( [ 'image/jpeg', 'image/png', 'image/webp' ].includes( type ) ) {
 		return 'photo';
+	}
+	if ( type === 'text/csv' || extension === 'csv' ) {
+		return 'csv';
+	}
+	if ( extension === 'xlsx' || type === XLSX ) {
+		return 'xlsx';
 	}
 	return 'other';
 }
@@ -162,6 +185,29 @@ export async function prepare( file: File ): Promise< Prepared > {
 			upload: {
 				name: uploadName( file.name, false ),
 				type: 'application/pdf',
+				data: toBase64( bytes ),
+			},
+			bytes: bytes.length,
+		};
+	}
+	if ( kind === 'csv' || kind === 'xlsx' ) {
+		// A parts list (#251) goes as it is: the service parses the rows, and the
+		// file is never stored. CSV is text (no NUL byte); an .xlsx is a zip.
+		const max = kind === 'csv' ? MAX_CSV_BYTES : MAX_XLSX_BYTES;
+		if ( file.size > max ) {
+			return { ok: false, reason: 'size' };
+		}
+		const bytes = await bytesOf( file );
+		if (
+			kind === 'csv' ? bytes.includes( 0 ) : ! startsAs( bytes, XLSX )
+		) {
+			return { ok: false, reason: 'type' };
+		}
+		return {
+			ok: true,
+			upload: {
+				name: uploadName( file.name, false ),
+				type: kind === 'csv' ? 'text/csv' : XLSX,
 				data: toBase64( bytes ),
 			},
 			bytes: bytes.length,

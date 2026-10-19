@@ -647,8 +647,8 @@ msgid "Sent, but the draft does not show it yet. Please check."
 msgstr "Gesendet, aber der Entwurf zeigt es noch nicht. Bitte prüfen."
 
 #: build/genie.js:13 src/genie/App.tsx:523
-msgid "Not added. Try again."
-msgstr "Nicht hinzugefügt. Bitte erneut versuchen."
+msgid "Not everything was added. Try again."
+msgstr "Nicht alles wurde hinzugefügt. Bitte erneut versuchen."
 
 #: build/genie.js:13 src/configurator/solution/Solution.tsx:333
 #: src/genie/App.tsx:531 build/configurator.js
@@ -1804,16 +1804,26 @@ msgstr "Mein Gerät ist das Modell %s"
 
 #: build/genie.js
 msgid ""
-"This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC) "
-"and PDFs."
+"This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC), "
+"PDFs and parts lists (CSV or .xlsx)."
 msgstr ""
 "Dieser Dateityp kann nicht gesendet werden. Genie liest Fotos (JPEG, PNG, "
-"WebP oder HEIC) und PDFs."
+"WebP oder HEIC), PDFs und Teilelisten (CSV oder .xlsx)."
 
-#. translators: %d is the largest PDF in megabytes.
+#. translators: 1: the largest PDF in megabytes, 2: a photo, 3: an Excel file, 4: a CSV file.
 #: build/genie.js
-msgid "This file is too large. A PDF can be up to %d MB."
-msgstr "Diese Datei ist zu groß. Ein PDF darf bis zu %d MB groß sein."
+msgid ""
+"This file is too large. A PDF can be up to %1$d MB, a photo up to %2$d MB, an "
+"Excel list up to %3$d MB and a CSV list up to %4$d MB."
+msgstr ""
+"Diese Datei ist zu groß. Ein PDF darf bis zu %1$d MB haben, ein Foto bis zu "
+"%2$d MB, eine Excel-Liste bis zu %3$d MB und eine CSV-Liste bis zu %4$d MB."
+
+#: build/genie.js
+msgid "The files are too large in total. Use fewer or smaller files."
+msgstr ""
+"Die Dateien sind insgesamt zu groß. Verwenden Sie weniger oder kleinere "
+"Dateien."
 
 #: build/genie.js
 msgid ""
@@ -2045,3 +2055,84 @@ msgstr "Antwort auswählen"
 #: build/genie.js
 msgid "Your selection is sent to Genie."
 msgstr "Ihre Auswahl wird an Genie gesendet."
+
+#: build/genie.js
+msgid "Your parts list"
+msgstr "Ihre Teileliste"
+
+#. translators: %s is our model name, as the product titles write it.
+#: build/genie.js
+msgid "In our range: %s"
+msgstr "In unserem Sortiment: %s"
+
+#: build/genie.js
+msgid "Not in our range."
+msgstr "Nicht in unserem Sortiment."
+
+#: build/genie.js
+msgid "Skipped."
+msgstr "Übersprungen."
+
+#: build/genie.js
+msgid "Which model does this line mean?"
+msgstr "Welches Modell ist mit dieser Zeile gemeint?"
+
+#: build/genie.js
+msgid "This line needs your confirmation."
+msgstr "Diese Zeile braucht Ihre Bestätigung."
+
+#: build/genie.js
+msgid "Sent, but the solution draft does not show the change yet."
+msgstr "Gesendet, aber der Lösungsentwurf zeigt die Änderung noch nicht."
+
+#: build/genie.js
+msgid "Add the product to the solution draft"
+msgstr "Das Produkt dem Lösungsentwurf hinzufügen"
+
+#. translators: %d is the number of distinct products.
+#: build/genie.js
+msgid "Add %d products to the solution draft"
+msgstr "%d Produkte dem Lösungsentwurf hinzufügen"
+
+#. translators: %d is how many of this product the customer listed.
+#: build/genie.js
+msgid "%d ×"
+msgstr "%d ×"
+
+#. translators: 1: the line's number, 2: our model name.
+#: build/genie.js
+msgid "Row %1$d: %2$s"
+msgstr "Zeile %1$d: %2$s"
+
+#. translators: %d is the line's number.
+#: build/genie.js
+msgid "Row %d: skip"
+msgstr "Zeile %d: überspringen"
+
+#: build/genie.js
+msgid "Skip this line"
+msgstr "Diese Zeile überspringen"
+
+#: includes/Genie/Preview.php
+msgid "Turn a parts list into products"
+msgstr "Teileliste in Produkte umwandeln"
+
+#: build/genie.js
+msgid ""
+"Genie checks every line of a parts list against our products. You can use a "
+"CSV or Excel (.xlsx) file, or a photo of the list."
+msgstr ""
+"Genie gleicht jede Zeile einer Teileliste mit unseren Produkten ab. Sie "
+"können eine CSV- oder Excel-Datei (.xlsx) oder ein Foto der Liste verwenden."
+
+#: build/genie.js
+msgid "Choose a file"
+msgstr "Datei auswählen"
+
+#: build/genie.js
+msgid "Here is my parts list."
+msgstr "Hier ist meine Teileliste."
+
+#: build/genie.js
+msgid "Not added. Try again."
+msgstr "Nicht hinzugefügt. Bitte erneut versuchen."

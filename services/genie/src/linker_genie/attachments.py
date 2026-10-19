@@ -38,18 +38,20 @@ from typing import Any, Literal
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-from linker_genie import facts, pdfwork
+from linker_genie import facts, parts, pdfwork
 from linker_genie.facts import TurnFacts
 from linker_genie.figures import borrow_units, mark_amounts, tag
 from linker_genie.imaging import TARGET_PIXELS, encode
 from linker_genie.page import PAGE_CHARS, PASSAGE_CHARS, Passage, render, select
 from linker_genie.schema import (
     FIELD_CHARS,
+    MAX_CSV_BYTES,
     MAX_IMAGE_BYTES,
     MAX_PDF_BYTES,
     MAX_RATINGS,
     MAX_READING_CHARS,
     MAX_TURN_BYTES,
+    MAX_XLSX_BYTES,
     AttachmentReading,
     FailedReason,
     Rating,
@@ -138,15 +140,24 @@ RULE = (
     "delivery is the team's (handoff)."
 )
 
-_Type = Literal["jpeg", "png", "webp", "pdf"]
+_Type = Literal["jpeg", "png", "webp", "pdf", "csv", "xlsx"]
 # The accepted types by the bytes each starts with; a WebP file also says "WEBP" at
-# byte 8 (RIFF container). The proxy (Attachments::MAGIC) and the shell (prepare.ts)
-# check the same table; tests/test_attachments.py locks the three together.
+# byte 8 (RIFF container). CSV has no first bytes (an empty magic checks nothing);
+# its text is checked by `_csv` and by parts.rows_of. The proxy
+# (Attachments::MAGIC) and the shell (prepare.ts) check the same table;
+# tests/test_attachments.py locks the three together.
+XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+# The marker a cut list ends with: rows past MAX_ROWS or text past
+# MAX_READING_CHARS. It ends the text even when the cut is in the middle of a
+# row, so the marker always fits inside MAX_READING_CHARS.
+LIST_CUT = "\n[the rest of the list was not read]"
 MAGIC: dict[str, bytes] = {
     "image/jpeg": b"\xff\xd8\xff",
     "image/png": b"\x89PNG\r\n\x1a\n",
     "image/webp": b"RIFF",
     "application/pdf": b"%PDF-",
+    "text/csv": b"",
+    XLSX_TYPE: b"PK\x03\x04",
 }
 WEBP_MARK = (8, b"WEBP")
 _KIND: dict[str, _Type] = {
@@ -154,6 +165,8 @@ _KIND: dict[str, _Type] = {
     "image/png": "png",
     "image/webp": "webp",
     "application/pdf": "pdf",
+    "text/csv": "csv",
+    XLSX_TYPE: "xlsx",
 }
 
 
@@ -183,6 +196,9 @@ class _File:
     kind: _Type | None = None
     failed: FailedReason | None = None
     pages: int | None = None
+    # A CSV or Excel list's bytes, read in this process after the turn's files are
+    # checked (a list is small, and parsing it costs no model call).
+    list_raw: bytes | None = None
     # A PDF's text pages by page number, and its pages left unread.
     texts: dict[int, str] = field(default_factory=dict)
     unread: list[int] = field(default_factory=list)
@@ -215,6 +231,8 @@ def read(
             item.kind = _sniff(raw, item.upload.type)
             if item.kind == "pdf":
                 jobs.extend(_pdf(item, index, raw))
+            elif item.kind in ("csv", "xlsx"):
+                item.list_raw = raw
             else:
                 jobs.append(_Job(index, None, _jpeg(raw)))
         except Refused as error:
@@ -254,7 +272,12 @@ def _decode(upload: Upload) -> bytes:
         raw = base64.b64decode(upload.data, validate=True)
     except (binascii.Error, ValueError) as error:
         raise Refused("not_base64") from error
-    limit = MAX_PDF_BYTES if upload.type == "application/pdf" else MAX_IMAGE_BYTES
+    limits = {
+        "application/pdf": MAX_PDF_BYTES,
+        "text/csv": MAX_CSV_BYTES,
+        XLSX_TYPE: MAX_XLSX_BYTES,
+    }
+    limit = limits.get(upload.type, MAX_IMAGE_BYTES)
     if not raw:
         raise Refused("empty")
     if len(raw) > limit:
@@ -264,19 +287,26 @@ def _decode(upload: Upload) -> bytes:
 
 def _sniff(raw: bytes, declared: str) -> _Type:
     """The file's type by its first bytes; it must be the type it was sent as."""
-    offset, mark = WEBP_MARK
-    found = next(
-        (
-            kind
-            for kind, magic in MAGIC.items()
-            if raw.startswith(magic)
-            and (kind != "image/webp" or raw[offset : offset + len(mark)] == mark)
-        ),
-        None,
-    )
-    if found is None or found != declared:
+    magic = MAGIC.get(declared)
+    if magic is None or not raw.startswith(magic):
         raise Refused("type")
-    return _KIND[found]
+    offset, mark = WEBP_MARK
+    if declared == "image/webp" and raw[offset : offset + len(mark)] != mark:
+        raise Refused("type")
+    if declared == "text/csv" and not _csv(raw):
+        raise Refused("unreadable_list")
+    return _KIND[declared]
+
+
+def _csv(raw: bytes) -> bool:
+    """Text a spreadsheet wrote: no NUL bytes, at least one line with a letter.
+
+    The encoding is UTF-8 or Windows-1252 (parts.rows_of decodes both), so the
+    check is about binary content, not the character set.
+    """
+    if b"\x00" in raw:
+        return False
+    return any(character.isalpha() for character in raw.decode("latin-1", "replace"))
 
 
 def _jpeg(raw: bytes) -> bytes:
@@ -331,8 +361,13 @@ def _reading(item: _File, jobs: list[_Job]) -> AttachmentReading:
     name = item.upload.name
     if item.failed:
         return AttachmentReading(
-            id=item.id, name=name, kind="document", failed=item.failed
+            id=item.id,
+            name=name,
+            kind=_failed_kind(item.upload.type),
+            failed=item.failed,
         )
+    if item.kind in ("csv", "xlsx"):
+        return _list_reading(item, item.list_raw or b"")
     if item.kind == "pdf":
         return _pdf_reading(item, jobs)
     job = jobs[0]
@@ -402,6 +437,66 @@ def _spaced(value: str) -> str:
     value = re.sub(r"(?<=[A-Za-z])([dDaA])\.([cC])\.", r"\1\2", value)
     value = re.sub(r"\s*(\.{2,}|~|～)\s*(?=-?\d)", r" \1 ", value)
     return re.sub(r"(\d)([A-Za-z%°℃])", r"\1 \2", value)
+
+
+def _failed_kind(upload_type: str) -> ReadingKind:
+    """The kind a failed file keeps: what the shell offers to pick again.
+
+    A failed list offers another file, a failed photo another photo, a failed PDF
+    no picker (its card says it could not be read); a refused JPEG was reported
+    as a document before #251, which hid "Choose another photo" from the shell.
+    """
+    if upload_type in ("text/csv", XLSX_TYPE):
+        return "list"
+    if upload_type == "application/pdf":
+        return "document"
+    return "photo"
+
+
+def _list_reading(item: _File, raw: bytes) -> AttachmentReading:
+    """A CSV or Excel list as rows of text, one tab-separated row per line (#251).
+
+    The rows, not the file, are what the conversation keeps: a later turn rebuilds
+    the same list from this text (parts.py), so the customer can answer its unclear
+    rows without uploading it again. A file with no readable rows is a reading that
+    says so (`unreadable_list`), never an exception.
+    """
+    kind = (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        if item.kind == "xlsx"
+        else "text/csv"
+    )
+    try:
+        table = parts.rows_of(raw, kind, limit=parts.MAX_ROWS + 1)
+    except ValueError as error:
+        log.warning("genie attachment %s unreadable as a list: %s", item.id, error)
+        return AttachmentReading(
+            id=item.id, name=item.upload.name, kind="list", failed="unreadable_list"
+        )
+    truncated = len(table) > parts.MAX_ROWS
+    table = table[: parts.MAX_ROWS]
+    if not parts.parse_table(table):
+        return AttachmentReading(
+            id=item.id, name=item.upload.name, kind="list", failed="unreadable_list"
+        )
+    text = "\n".join("\t".join(_cell(value) for value in row) for row in table)
+    if truncated or len(text) > MAX_READING_CHARS:
+        # A cut inside one long line must still end with the marker, and the
+        # marker must fit the reading's own ceiling: no Pydantic 500, and no
+        # silent loss when 200 rows hold more than 60 000 characters.
+        text = text[: MAX_READING_CHARS - len(LIST_CUT)] + LIST_CUT
+        truncated = True
+    return AttachmentReading(
+        id=item.id,
+        name=item.upload.name,
+        kind="list",
+        text=text,
+        truncated=truncated,
+    )
+
+
+def _cell(value: str) -> str:
+    return value.replace("\t", " ").replace("\n", " ").strip()
 
 
 def _pdf_reading(item: _File, jobs: list[_Job]) -> AttachmentReading:

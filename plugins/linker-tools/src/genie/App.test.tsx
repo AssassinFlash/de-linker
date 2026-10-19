@@ -836,7 +836,7 @@ test( 'a file Genie cannot read is refused before it is sent', async () => {
 		target: { files: [ new File( [ 'x' ], 'parts.xlsx' ) ] },
 	} );
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
-		'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC) and PDFs.'
+		'This file type cannot be sent. Genie reads photos (JPEG, PNG, WebP or HEIC), PDFs and parts lists (CSV or .xlsx).'
 	);
 	expect( screen.getByRole( 'button', { name: 'Send' } ) ).toBeDisabled();
 } );
@@ -1010,6 +1010,118 @@ test( 'opened for a nameplate photo, the dock offers the picker', async () => {
 	const click = vi.spyOn( picker, 'click' );
 	fireEvent.click( choose );
 	expect( click ).toHaveBeenCalled();
+} );
+
+// The preview card's parts-list suggestion opens Genie with the file picker on
+// offer, and the picker accepts a list file (#251).
+test( 'opened for a parts list, the dock offers the file picker', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ config() } /> );
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: { attach: true, list: true },
+			} )
+		);
+	} );
+	const choose = await screen.findByRole( 'button', {
+		name: 'Choose a file',
+	} );
+	expect(
+		screen.getByText( /checks every line of a parts list/ )
+	).toBeInTheDocument();
+	const picker = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	expect( picker.accept ).toContain( 'text/csv' );
+	expect( picker.accept ).toContain( '.xlsx' );
+	const click = vi.spyOn( picker, 'click' );
+	fireEvent.click( choose );
+	expect( click ).toHaveBeenCalled();
+} );
+
+// A list file sent from the parts-list prompt says what it is: a photo of a
+// handwritten list carries no name a service could read (#251).
+test( 'a file sent from the list prompt says it is a parts list', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockResolvedValue( {
+		meta: {
+			grounded: true,
+			fallback: false,
+			attempts: 0,
+			failures: [],
+			language: 'en',
+		},
+		blocks: [ { type: 'text', text: 'ok', refs: [] } ],
+	} );
+	render( <App config={ config() } /> );
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: { attach: true, list: true },
+			} )
+		);
+	} );
+	const picker = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	const file = new File( [ 'SAJ H2-10K-T3,2' ], 'parts.csv', {
+		type: 'text/csv',
+	} );
+	await act( async () => {
+		fireEvent.change( picker, { target: { files: [ file ] } } );
+	} );
+	await screen.findByText( 'parts.csv' );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	const messages = vi.mocked( sendTurn ).mock.calls.at( -1 )?.[ 3 ];
+	expect( messages?.at( -1 )?.content ).toContain( 'Here is my parts list.' );
+	expect( messages?.at( -1 )?.content ).toContain( 'Attached: parts.csv' );
+} );
+
+// A list file that could not be read offers the file picker again, not a
+// photo picker (#251).
+test( 'an unreadable list offers another file', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockResolvedValue( {
+		meta: {
+			grounded: true,
+			fallback: false,
+			attempts: 0,
+			failures: [],
+			language: 'en',
+		},
+		blocks: [ { type: 'text', text: 'ok', refs: [] } ],
+		attachments: [
+			{
+				id: 'att1',
+				name: 'parts.csv',
+				kind: 'list',
+				failed: 'unreadable_list',
+			},
+		],
+	} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	await act( async () => {
+		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+			target: { value: 'Attached: parts.csv' },
+		} );
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect(
+		await screen.findByText( 'parts.csv could not be read.' )
+	).toBeInTheDocument();
+	expect(
+		screen.getByRole( 'button', { name: 'Choose a file' } )
+	).toBeInTheDocument();
+	expect(
+		screen.queryByRole( 'button', { name: 'Choose another photo' } )
+	).not.toBeInTheDocument();
 } );
 
 // The dictation button is the browser's own speech recognition: it writes

@@ -97,6 +97,49 @@ export interface DocumentBlock {
 export type ContactReason = 'asked' | 'service' | 'dissatisfied' | 'repeat';
 
 /**
+ * One candidate product of an unclear parts-list row (#251): the model as our
+ * titles write it, which a chip sends back, and the product's full title.
+ */
+export interface PartsCandidate {
+	product_id: number;
+	label: string;
+	name?: string;
+}
+
+/** One line of the customer's parts list and what code made of it. */
+export interface PartsRow {
+	/** The row's position in the list, from 1. */
+	line: number;
+	text: string;
+	quantity: number;
+	status: 'matched' | 'uncertain' | 'missing' | 'skipped';
+	product_id?: number | null;
+	label?: string | null;
+	/** The candidates of an uncertain row (at most parts.MAX_OPTIONS). */
+	options?: PartsCandidate[];
+}
+
+/** The one solution-draft write: every confirmed row, merged by product. */
+export interface PartsAdd {
+	items: { product_id: number; quantity: number }[];
+	products: number;
+	rows: number;
+}
+
+/**
+ * The parts list the service matched (#251): its rows, the first unclear row
+ * it asks about, and the one add-to-draft action. Written by the service, never
+ * by the model.
+ */
+export interface PartsBlock {
+	type: 'parts';
+	rows: PartsRow[];
+	ask_line?: number | null;
+	add?: PartsAdd | null;
+	truncated?: boolean;
+}
+
+/**
  * "Let Linker contact me": the service adds it after the answer; the shell
  * renders the contact card (components/ContactCard.tsx).
  */
@@ -113,7 +156,8 @@ export type Block =
 	| CardsBlock
 	| ActionBlock
 	| HandoffBlock
-	| DocumentBlock;
+	| DocumentBlock
+	| PartsBlock;
 
 export interface TurnMeta {
 	/** The logged turn; the vote buttons address it. */
@@ -133,7 +177,7 @@ export interface TurnMeta {
 export interface AttachmentCard {
 	id: string;
 	name: string;
-	kind: 'nameplate' | 'document' | 'photo';
+	kind: 'nameplate' | 'document' | 'photo' | 'list';
 	/** Why nothing could be read: a reason code of the service. */
 	failed?: string | null;
 	pages?: number | null;

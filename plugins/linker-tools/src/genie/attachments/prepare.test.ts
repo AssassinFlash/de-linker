@@ -15,12 +15,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
  */
 import {
 	JPEG_QUALITY,
+	MAX_CSV_BYTES,
 	MAX_FILES,
 	MAX_IMAGE_BYTES,
 	MAX_PDF_BYTES,
 	MAX_TURN_BYTES,
+	MAX_XLSX_BYTES,
 	NAME_LENGTH,
 	TARGET_PIXELS,
+	XLSX,
 	kindOf,
 	prepare,
 	scaledSize,
@@ -47,6 +50,8 @@ describe( 'the limits', () => {
 		expect( constant( 'MAX_FILES' ) ).toBe( MAX_FILES );
 		expect( constant( 'MAX_IMAGE_BYTES' ) ).toBe( MAX_IMAGE_BYTES );
 		expect( constant( 'MAX_PDF_BYTES' ) ).toBe( MAX_PDF_BYTES );
+		expect( constant( 'MAX_CSV_BYTES' ) ).toBe( MAX_CSV_BYTES );
+		expect( constant( 'MAX_XLSX_BYTES' ) ).toBe( MAX_XLSX_BYTES );
 		expect( constant( 'MAX_TURN_BYTES' ) ).toBe( MAX_TURN_BYTES );
 		expect( constant( 'NAME_LENGTH' ) ).toBe( NAME_LENGTH );
 	} );
@@ -60,7 +65,9 @@ describe( 'kindOf', () => {
 		[ 'IMG_0001.heic', 'image/heic', 'heic' ],
 		[ 'datasheet.pdf', 'application/pdf', 'pdf' ],
 		[ 'datasheet.pdf', '', 'pdf' ],
-		[ 'list.xlsx', 'application/vnd.ms-excel', 'other' ],
+		[ 'list.xlsx', 'application/vnd.ms-excel', 'xlsx' ],
+		[ 'list.csv', 'text/csv', 'csv' ],
+		[ 'list.CSV', '', 'csv' ],
 		[ 'icon.svg', 'image/svg+xml', 'other' ],
 		[ 'setup.exe', 'application/octet-stream', 'other' ],
 	] )( '%s (%s) is %s', ( name, type, kind ) => {
@@ -131,8 +138,66 @@ describe( 'prepare', () => {
 		} );
 	} );
 
-	it( 'refuses what is neither a photo nor a PDF', async () => {
-		const file = new File( [ 'x' ], 'list.xlsx', {
+	it( 'refuses what is neither a photo, a PDF nor a list', async () => {
+		const file = new File( [ 'x' ], 'notes.docx', {
+			type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+		} );
+		expect( await prepare( file ) ).toEqual( {
+			ok: false,
+			reason: 'type',
+		} );
+	} );
+
+	it( 'sends a CSV list as text', async () => {
+		const file = new File(
+			[ 'Produkt;Menge\nSAJ H2-10K-T3;2\n' ],
+			'list.csv',
+			{
+				type: 'text/csv',
+			}
+		);
+		const result = await prepare( file );
+		expect( result ).toEqual( {
+			ok: true,
+			upload: {
+				name: 'list.csv',
+				type: 'text/csv',
+				data: btoa( 'Produkt;Menge\nSAJ H2-10K-T3;2\n' ),
+			},
+			bytes: 30,
+		} );
+	} );
+
+	it( 'refuses a binary file named CSV', async () => {
+		const file = new File( [ new Uint8Array( [ 0, 1, 2 ] ) ], 'list.csv', {
+			type: 'text/csv',
+		} );
+		expect( await prepare( file ) ).toEqual( {
+			ok: false,
+			reason: 'type',
+		} );
+	} );
+
+	it( 'sends an Excel list as a zip', async () => {
+		const file = new File(
+			[ new Uint8Array( [ 0x50, 0x4b, 0x03, 0x04, 0x00 ] ) ],
+			'list.xlsx',
+			{ type: 'application/vnd.ms-excel' }
+		);
+		const result = await prepare( file );
+		expect( result ).toEqual( {
+			ok: true,
+			upload: {
+				name: 'list.xlsx',
+				type: XLSX,
+				data: btoa( 'PK\u0003\u0004\u0000' ),
+			},
+			bytes: 5,
+		} );
+	} );
+
+	it( 'refuses a file named xlsx that is not a zip', async () => {
+		const file = new File( [ 'not a zip' ], 'list.xlsx', {
 			type: 'application/vnd.ms-excel',
 		} );
 		expect( await prepare( file ) ).toEqual( {

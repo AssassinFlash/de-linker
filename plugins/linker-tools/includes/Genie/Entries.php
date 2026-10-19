@@ -292,6 +292,7 @@ class Entries {
 		var pendingAsk = '';
 		// Opened to send a nameplate photo (#236): the app offers the picker.
 		var pendingAttach = false;
+		var pendingList = false;
 		var failure = null;
 		function clearFailure() {
 			if (failure) {
@@ -337,11 +338,13 @@ class Entries {
 		}
 		var message = pendingAsk;
 		var attach = pendingAttach;
+		var list = pendingList;
 		pendingOpen = false;
 		pendingAsk = '';
 		pendingAttach = false;
+		pendingList = false;
 		window.dispatchEvent(new CustomEvent('linker-genie-open', {
-			detail: { message: message, attach: attach }
+			detail: { message: message, attach: attach, list: list }
 		}));
 	}
 	function open(message) {
@@ -370,6 +373,7 @@ class Entries {
 			open(detail.message);
 		} else if (detail && true === detail.attach) {
 			pendingAttach = true;
+			pendingList = true === detail.list;
 			open('');
 		}
 	});

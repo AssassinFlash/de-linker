@@ -58,17 +58,19 @@ export function AttachmentCard( {
 						card.name
 					) }
 				</p>
-				{ 'document' !== card.kind ? (
+				{ 'document' === card.kind ? null : (
 					<div className="linker-genie-attachment__actions">
 						<button
 							type="button"
 							className="linker-genie-app__prompt"
 							onClick={ onPhoto }
 						>
-							{ __( 'Choose another photo', 'linker-tools' ) }
+							{ 'list' === card.kind
+								? __( 'Choose a file', 'linker-tools' )
+								: __( 'Choose another photo', 'linker-tools' ) }
 						</button>
 					</div>
-				) : null }
+				) }
 			</div>
 		);
 	}
