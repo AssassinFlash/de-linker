@@ -35,6 +35,16 @@ from linker_genie.understand import Prepared
 
 # The per-turn call limit lives with the other shared names (tools.py).
 MAX_TOOL_CALLS = TOOL_LIMIT
+# pydantic-ai AgentRetries.tools: retries after the first call, then
+# UnexpectedModelBehavior ("Tool '…' exceeded max retries count of N",
+# tool_manager._check_max_retries). The library default is 1, which is what
+# G5-EN exhausted. N=2 is three attempts, the same count as
+# abilities.ABILITY_ATTEMPTS (#103, spec 13): a validation error is handed
+# back to the model, and a call that still fails is the degraded sentence.
+# Dossier 2026-10-19 §1.15 publishes no competitor count; the recovery path
+# there is retry, then a failure the customer can see. Output stays 1
+# because cycle.run already asks once more after a bad structure.
+TOOL_RETRIES = 2
 # The route's results go into the prompt as JSON; a search answers with up to six
 # cards with their facts (route.SEARCH_LIMIT), and a document search with up to 16
 # chunks: 9,500 to 23,400 characters as the model reads them on the 18 questions of
@@ -289,7 +299,7 @@ def make_generate(
             instructions=instructions(expected),
             tools=tools,
             model_settings=settings,
-            retries={"output": 1, "tools": 1},
+            retries={"output": 1, "tools": TOOL_RETRIES},
         )
         result = agent.run_sync(_user_prompt(request, retry_reason, prepared))
         output = result.output

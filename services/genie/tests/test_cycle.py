@@ -1,11 +1,29 @@
 """Retry once, then the deterministic template."""
 
-from linker_genie.abilities import AbilityError
+import asyncio
+from collections.abc import Iterator
+from contextlib import contextmanager
+from typing import Any
+
+from pydantic import TypeAdapter
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelResponse,
+    ToolCallPart,
+    ToolReturnPart,
+)
+from pydantic_ai.models.function import AgentInfo, FunctionModel
+
+from linker_genie.abilities import AbilityClient, AbilityError
+from linker_genie.agent import make_generate
 from linker_genie.cycle import run
 from linker_genie.facts import Fact, TurnFacts, collect
+from linker_genie.route import Route
 from linker_genie.schema import (
+    AskBlock,
     CardsBlock,
     HandoffBlock,
+    Locale,
     TextBlock,
     TurnMessage,
     TurnOutput,
@@ -14,6 +32,8 @@ from linker_genie.schema import (
 from linker_genie.template import (
     DEGRADED,
     LOGIN_REQUIRED,
+    NO_MATCH_DE,
+    NO_MATCH_EN,
     fallback,
     german_is_clean,
 )
@@ -340,3 +360,281 @@ def test_the_clock_times_both_attempts_and_the_fallback_render() -> None:
         "hydrate",
         "total",
     }
+
+
+def test_tool_retries_match_the_ability_attempt_count() -> None:
+    """pydantic-ai AgentRetries.tools is retries after the first call.
+
+    TOOL_RETRIES = 2 is three attempts, the same count as ABILITY_ATTEMPTS
+    (#103). Dossier 2026-10-19 §1.15 publishes no competitor count.
+    """
+    from linker_genie.abilities import ABILITY_ATTEMPTS
+    from linker_genie.agent import TOOL_RETRIES
+
+    assert TOOL_RETRIES == ABILITY_ATTEMPTS - 1 == 2
+
+
+# G5-EN asked for a model the series search did not qualify. The unrelated
+# card the route still held (product 3608) must not ship as a normal match.
+_UNRELATED = 3608
+_QUESTIONS: dict[Locale, str] = {
+    "en": "Do you carry the EcoFlow OCEAN 3 HD-P3-20K0-S2?",
+    "de": "Führen Sie dieses Produkt?",
+}
+_RECOVERED: dict[Locale, str] = {
+    "en": "The search did not return that product.",
+    "de": "Die Suche hat dieses Produkt nicht geliefert.",
+}
+
+
+def _ocean_request(language: Locale) -> TurnRequest:
+    return TurnRequest(
+        conversation_id="g5",
+        locale=language,
+        messages=[TurnMessage(role="user", content=_QUESTIONS[language])],
+    )
+
+
+def _series_seed() -> TurnFacts:
+    """A products search that qualified a different model in the series."""
+    facts = TurnFacts()
+    facts.product_ids = {_UNRELATED}
+    facts.qualified_ids = {_UNRELATED}
+    facts.tool_calls.append(
+        {
+            "name": "linker/search-products",
+            "arguments": {"series": "ecoflow-ocean-2-battery", "brand": "ecoflow"},
+            "ok": True,
+            "result": {"qualified": [{"product_id": _UNRELATED}]},
+        }
+    )
+    return facts
+
+
+def _products_route() -> Route:
+    return Route("products", show_products=True, no_handoff=True)
+
+
+def _invalid_search(_arguments: dict[str, Any] | None) -> dict[str, Any]:
+    """The tool body raises pydantic.ValidationError on every call."""
+    parsed: int = TypeAdapter(int).validate_python("nope")
+    return {"parsed": parsed}
+
+
+def _keep_calling_knowledge(
+    _messages: list[ModelMessage], _info: AgentInfo
+) -> ModelResponse:
+    return ModelResponse(
+        parts=[
+            ToolCallPart(
+                tool_name="linker_search_knowledge",
+                args={"arguments": {"query": "OCEAN 3", "lang": "en"}},
+            )
+        ]
+    )
+
+
+def _block_types(output: TurnOutput) -> list[str]:
+    return [block.type for block in output.blocks]
+
+
+@contextmanager
+def _event_loop() -> Iterator[None]:
+    """A set event loop for `Agent.run_sync`.
+
+    pydantic-ai calls `asyncio.get_event_loop()`. On Python 3.12 that warns
+    when no loop is set, and this suite treats warnings as errors. The loop
+    set here is the one `run_sync` drives.
+    """
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        yield
+    finally:
+        asyncio.set_event_loop(None)
+        loop.close()
+
+
+def test_a_tool_that_always_fails_validation_is_a_visible_degradation() -> None:
+    """#366: retry exhaustion is DEGRADED, never the series card.
+
+    The knowledge tool raises ValidationError until pydantic-ai stops the
+    run (`exceeded max retries count of N`). The route already qualified
+    product 3608. That card is not the asked model, and the answer does
+    not present it as one. EN and DE are the same one-block shape.
+    """
+    shapes: list[list[str]] = []
+    languages: tuple[Locale, ...] = ("en", "de")
+    for language in languages:
+        generate = make_generate(
+            AbilityClient("http://127.0.0.1:9"),
+            model=FunctionModel(_keep_calling_knowledge),
+            search=_invalid_search,
+        )
+        with _event_loop():
+            result = run(
+                _ocean_request(language),
+                generate,
+                route=_products_route(),
+                seed=_series_seed(),
+            )
+        assert result.fallback is True
+        assert result.grounded is False
+        assert result.attempts == 2
+        assert any(
+            "exceeded max retries count of 2" in item for item in result.failures
+        )
+        assert len(result.output.blocks) == 1
+        handoff = result.output.blocks[0]
+        assert isinstance(handoff, HandoffBlock)
+        assert handoff.summary == DEGRADED[language]
+        assert result.output.language == language
+        assert not any(isinstance(block, CardsBlock) for block in result.output.blocks)
+        assert "matching products" not in handoff.summary
+        if language == "de":
+            assert german_is_clean(handoff.summary)
+        shapes.append(_block_types(result.output))
+    assert shapes[0] == shapes[1] == ["handoff"]
+
+    # A guest inquiry still asks for a login. Exhaustion does not replace it.
+    guest = collect("linker/inquiry-status", {"error": "login_required"})
+    guest.product_ids = {_UNRELATED}
+    guest.qualified_ids = {_UNRELATED}
+    login = fallback(guest, "en", _products_route(), exhausted=True)
+    assert isinstance(login.blocks[0], TextBlock)
+    assert login.blocks[0].text == LOGIN_REQUIRED["en"]
+
+
+def test_a_products_route_with_nothing_qualified_shows_no_unrelated_cards() -> None:
+    """#366: product_ids that the search did not qualify are not cards.
+
+    A search that ran asks once. A search that did not is the outage
+    sentence. A model route still shows the product the get-product call
+    recorded. EN and DE keep the same block types.
+    """
+    asked: list[list[str]] = []
+    outages: list[list[str]] = []
+    languages: tuple[Locale, ...] = ("en", "de")
+    for language in languages:
+        facts = TurnFacts()
+        facts.product_ids = {_UNRELATED}
+        facts.tool_calls.append(
+            {
+                "name": "linker/search-products",
+                "arguments": {"text": "HD-P3-20K0-S2"},
+                "ok": True,
+                "result": {"qualified": []},
+            }
+        )
+        found = fallback(facts, language, _products_route())
+        assert not any(isinstance(block, CardsBlock) for block in found.blocks)
+        assert _block_types(found) == ["text", "ask"]
+        text = next(block for block in found.blocks if isinstance(block, TextBlock))
+        ask = next(block for block in found.blocks if isinstance(block, AskBlock))
+        assert text.text == (NO_MATCH_DE if language == "de" else NO_MATCH_EN)
+        assert ask.field == "brand" and ask.options == []
+        if language == "de":
+            assert german_is_clean(text.text)
+        asked.append(_block_types(found))
+
+        missed = TurnFacts()
+        missed.product_ids = {_UNRELATED}
+        outage = fallback(missed, language, _products_route())
+        assert len(outage.blocks) == 1
+        handoff = outage.blocks[0]
+        assert isinstance(handoff, HandoffBlock)
+        assert handoff.summary == DEGRADED[language]
+        assert not any(isinstance(block, CardsBlock) for block in outage.blocks)
+        outages.append(_block_types(outage))
+    assert asked[0] == asked[1]
+    assert outages[0] == outages[1]
+
+    # Scope: a model route's get-product id is still the card. This ticket
+    # only stops a products search from borrowing ids it did not qualify.
+    recorded = TurnFacts()
+    recorded.product_ids = {_UNRELATED}
+    model = fallback(recorded, "en", Route("model", show_products=True))
+    cards = [block for block in model.blocks if isinstance(block, CardsBlock)]
+    assert cards and cards[0].product_ids == [_UNRELATED]
+
+
+def _recover(language: Locale) -> FunctionModel:
+    def respond(messages: list[ModelMessage], _info: AgentInfo) -> ModelResponse:
+        last = messages[-1]
+        parts = getattr(last, "parts", [])
+        if any(isinstance(part, ToolReturnPart) for part in parts):
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        tool_name="final_result",
+                        args={
+                            "language": language,
+                            "blocks": [{"type": "text", "text": _RECOVERED[language]}],
+                        },
+                    )
+                ]
+            )
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    tool_name="linker_search_knowledge",
+                    args={"arguments": {"query": "OCEAN", "lang": language}},
+                )
+            ]
+        )
+
+    return FunctionModel(respond)
+
+
+def test_a_validation_error_that_recovers_is_a_normal_answer() -> None:
+    """One ValidationError, then a real tool result, is not a degradation.
+
+    pydantic-ai hands the error back and the next call succeeds. The cycle
+    ships that answer. EN and DE are one text block, with no card.
+    """
+    shapes: list[list[str]] = []
+    languages: tuple[Locale, ...] = ("en", "de")
+    for language in languages:
+        attempts = {"n": 0}
+
+        def search(
+            _arguments: dict[str, Any] | None, *, _attempts: dict[str, int] = attempts
+        ) -> dict[str, Any]:
+            _attempts["n"] += 1
+            if _attempts["n"] == 1:
+                parsed: int = TypeAdapter(int).validate_python("nope")
+                return {"parsed": parsed}
+            return {
+                "hits": [],
+                "ranking": "vector",
+                "encoder": None,
+                "index_version": "t",
+            }
+
+        generate = make_generate(
+            AbilityClient("http://127.0.0.1:9"),
+            model=_recover(language),
+            search=search,
+        )
+        with _event_loop():
+            result = run(
+                _ocean_request(language),
+                generate,
+                route=_products_route(),
+                seed=TurnFacts(),
+            )
+        assert attempts["n"] == 2
+        assert result.fallback is False
+        assert result.grounded is True
+        assert result.attempts == 1
+        assert result.failures == ()
+        assert len(result.output.blocks) == 1
+        block = result.output.blocks[0]
+        assert isinstance(block, TextBlock)
+        assert block.text == _RECOVERED[language]
+        assert result.output.language == language
+        assert not any(isinstance(item, CardsBlock) for item in result.output.blocks)
+        if language == "de":
+            assert german_is_clean(block.text)
+        shapes.append(_block_types(result.output))
+    assert shapes[0] == shapes[1] == ["text"]

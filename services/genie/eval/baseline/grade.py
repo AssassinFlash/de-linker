@@ -265,36 +265,116 @@ def clauses(text: str) -> list[str]:
     return [part.strip() for part in re.split(r"[.!?;\n]+", text) if part.strip()]
 
 
+# A copula, colon, or "of"/"von" that hands the next standalone number to the
+# banned phrase. "of the L260" does not: the digits are glued to a letter.
+_PRESENTED_FIGURE = re.compile(
+    r"(?i)\b(?:is|are|equals?|was|were|beträgt|betraegt|betragen|ist|sind)\b"
+    r"|[:=]"
+    r"|\b(?:of|von)\s+(?=\d)"
+)
+_STANDALONE_NUMBER = re.compile(r"(?<![A-Za-z])\d+(?:[.,]\d+)*")
+_DENIAL_WORD = re.compile(
+    r"(?i)\b(?:not|no|without|rather|none|kein(?:e[rmns]?)?|nicht|ohne)\b"
+)
+# The noun the number actually belongs to, when it sits immediately before the
+# binder. "nominal capacity is 260" is not a usable-capacity figure.
+_OTHER_SUBJECT = re.compile(
+    r"(?i)\b(?:nominal(?:\s+capacity|\s+energy)?"
+    r"|nenn(?:kapazität|kapazitaet|energie)"
+    r"|depth of discharge|entladetiefe|\bdod\b)\b"
+)
+# Trial 19: "do not state whether … supports" names the verb inside the
+# absence. "but/aber" before the verb is still an assertion.
+_CONTRAST = re.compile(
+    r"(?i)\b(?:but|however|although|though|aber|jedoch|doch|sondern)\b"
+)
+_WHETHER = re.compile(r"(?i)\bwhether\b|\bob\b")
+_ABSENCE = re.compile(
+    r"(?i)\b(?:do(?:es)? not|don't)\s+state\b"
+    r"|\b(?:nicht|kein(?:e[rmns]?)?|keinen)\b"
+)
+
+
+def _presents_banned_figure(tail: str) -> bool:
+    """True when `tail` (the words after a banned phrase) binds a standalone
+    number to that phrase.
+
+    Trial 6 allows nominal 260 kWh, DoD 98% and the model code L260 in a
+    sentence that only denies a usable figure. "The usable capacity is 260
+    kWh" still fails, including when "(nominal)" follows the number.
+    """
+
+    for number in _STANDALONE_NUMBER.finditer(tail):
+        binder: re.Match[str] | None = None
+        for candidate in _PRESENTED_FIGURE.finditer(tail[: number.end()]):
+            if candidate.start() < number.start():
+                binder = candidate
+        if binder is None:
+            continue
+        if _DENIAL_WORD.search(tail[binder.end() : number.start()]):
+            continue
+        opened = max(0, binder.start() - 48)
+        if _OTHER_SUBJECT.search(tail[opened : binder.start()]):
+            continue
+        return True
+    return False
+
+
 def numbered_claim_failures(text: str, patterns: list[str]) -> list[str]:
-    """A clause matching `patterns` may not also carry a number.
+    """A clause matching `patterns` may not present a number as that figure.
 
     Trial 6 names "usable capacity" only to say the documents do not state
-    one. Writing the nominal 260 kWh onto that phrase is the figure the rubric
-    bans, including when another clause says the documents are silent.
+    one. Writing 260 kWh onto that phrase is the figure the rubric bans.
+    The nominal value, the depth of discharge and a model code in the same
+    sentence are not that figure.
     """
 
     failures = []
     for clause in clauses(text):
-        if any(re.search(pattern, clause) for pattern in patterns) and _NUMBER.search(
-            clause
-        ):
+        presented = False
+        for pattern in patterns:
+            for match in re.finditer(pattern, clause):
+                if _presents_banned_figure(clause[match.end() :]):
+                    presented = True
+                    break
+            if presented:
+                break
+        if presented:
             failures.append(f"a banned figure is stated in '{clause[:120]}'")
     return failures
 
 
+def _mention_is_denied(clause: str, start: int) -> bool:
+    """True when the match only occurs inside "do not state whether …" or
+    "nicht, ob …". The absence sentence is not itself the claim."""
+
+    before = clause[:start]
+    absence = list(_ABSENCE.finditer(before))
+    if not absence:
+        return False
+    tail = before[absence[-1].end() :]
+    if _CONTRAST.search(tail):
+        return False
+    return _WHETHER.search(tail) is not None
+
+
 def clause_failures(text: str, patterns: list[str]) -> list[str]:
-    """Patterns no clause may match.
+    """Patterns no clause may assert.
 
     Trial 19: "supports EnWG 14a; the documents do not state it explicitly"
-    is a support claim. The absence sentence has to be true of the answer,
-    and it does not cancel another clause that asserts support.
+    is a support claim. "The documents do not state whether the H2 supports
+    …" is the absence the rubric asks for, and it does not cancel another
+    clause that asserts support.
     """
 
     failures = []
     for clause in clauses(text):
         for pattern in patterns:
-            if re.search(pattern, clause):
+            for match in re.finditer(pattern, clause):
+                if _mention_is_denied(clause, match.start()):
+                    continue
                 failures.append(f"clause asserts /{pattern}/: '{clause[:120]}'")
+                break
     return failures
 
 

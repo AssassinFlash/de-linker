@@ -63,7 +63,9 @@ _NAMES = {"en": "English", "de": "German"}
 # The retry reason starts with this. agent._user_prompt treats that prefix as
 # a language re-ask, not a grounding failure.
 LANGUAGE_RETRY_PREFIX = "answer in "
-# Tools whose `lang` argument chooses customer-visible text. size-hint,
+# Tools whose `lang` argument chooses customer-visible text. size-hint
+# accepts lang and ignores it (#393): the route log and the wire stay the
+# stated-fields dict (#365), so lang is not added here.
 # check-compatibility, inquiry-status and handoff-team reject a lang field.
 _LANG_TOOLS = frozenset(
     {
