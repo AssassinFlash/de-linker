@@ -12,15 +12,39 @@
  *   exactly that). Used for persistence and concurrency cases.
  *
  * Both parse the service's SSE into meta + blocks. Every case the runners
- * write is JSONL under ~/de-linker-data/campaign-331/.
+ * write is JSONL under ~/de-linker-data/campaign-331/. The service token is
+ * read here and sent on the direct client's request. It is never written
+ * into a case header (`evidence.mjs` redacts before the write).
  */
 
-import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { readFileSync } from 'node:fs';
 
-export const EVIDENCE_ROOT =
-	process.env.C331_EVIDENCE ??
-	`${process.env.HOME}/de-linker-data/campaign-331`;
+import { CookieJar } from './cookies.mjs';
+import { evidenceRoot, responseNote } from './evidence.mjs';
+import {
+	answerText,
+	cardsOf,
+	contactOf,
+	handoffOf,
+	parseStream,
+} from './sse.mjs';
+import { TURN_TIMEOUT_MS } from './timing.mjs';
+
+export {
+	answerText,
+	cardsOf,
+	contactOf,
+	handoffOf,
+	parseStream,
+};
+export {
+	artefact,
+	record,
+	responseNote,
+	selectedHeaders,
+	transcriptEntry,
+	verdict,
+} from './evidence.mjs';
 
 /**
  * The instance this harness ran against. The shared service token comes from
@@ -28,8 +52,8 @@ export const EVIDENCE_ROOT =
  * evidence root — never from the repository.
  */
 export function envTargets() {
-	const tokenFile =
-		process.env.C331_TOKEN_FILE ?? `${EVIDENCE_ROOT}/service-token.txt`;
+	const root = evidenceRoot();
+	const tokenFile = process.env.C331_TOKEN_FILE ?? `${root}/service-token.txt`;
 	let token = process.env.C331_TOKEN ?? '';
 	if (!token) {
 		try {
@@ -51,77 +75,39 @@ export function envTargets() {
 	return targets;
 }
 
-/** The SSE text -> { meta, blocks, events } (tests/e2e/lib/genie.ts shape). */
-export function parseStream(stream) {
-	let meta = null;
-	const blocks = [];
-	const events = [];
-	for (const event of stream.split('\n\n')) {
-		const name = /^event: (.+)$/m.exec(event)?.[1];
-		const data = /^data: (.+)$/m.exec(event)?.[1];
-		if (!name || !data) {
-			continue;
-		}
-		events.push({ event: name, data: JSON.parse(data) });
-		const payload = events.at(-1).data;
-		if (name === 'meta') {
-			meta = payload;
-		} else if (name === 'block') {
-			blocks.push(payload);
-		}
-	}
-	return { meta, blocks, events, done: events.some((e) => e.event === 'done') };
-}
-
-/** The text the customer reads (text blocks joined), per assistantMessage(). */
-export function answerText(blocks) {
-	return blocks
-		.filter((b) => b.type === 'text')
-		.map((b) => b.text)
-		.join('\n');
-}
-
-export function cardsOf(blocks) {
-	return blocks
-		.filter((b) => b.type === 'cards')
-		.flatMap((b) => b.product_ids);
-}
-
-export function contactOf(blocks) {
-	return blocks.find((b) => b.type === 'contact') ?? null;
-}
-
-export function handoffOf(blocks) {
-	return blocks.find((b) => b.type === 'handoff') ?? null;
-}
-
-/** One JSONL evidence line, written and returned. */
-export function record(scenario, file, entry) {
-	const path = `${EVIDENCE_ROOT}/${scenario}/${file}.jsonl`;
-	mkdirSync(dirname(path), { recursive: true });
-	appendFileSync(path, JSON.stringify(entry) + '\n');
-	return entry;
-}
-
-/** Raw artefacts (SSE text, thread dumps) beside the JSONL. */
-export function artefact(scenario, name, body) {
-	const path = `${EVIDENCE_ROOT}/${scenario}/${name}`;
-	mkdirSync(dirname(path), { recursive: true });
-	writeFileSync(path, typeof body === 'string' ? body : JSON.stringify(body, null, 2));
-	return path;
+/**
+ * What a case header may say about the targets. The token is present or
+ * absent, never its value.
+ */
+export function publicTargets(targets = envTargets()) {
+	return {
+		wp: targets.wp,
+		genie: targets.genie,
+		token: targets.token ? '[redacted]' : '',
+	};
 }
 
 /**
  * Direct-service client. `conversationId` stays stable across one case so the
  * service's own turn log (repeat-offer bookkeeping) sees one conversation.
+ *
+ * `timeoutMs` defaults to TURN_TIMEOUT_MS (timing.mjs): the e2e panel's
+ * 180 s abort, not the proxy's 60 s.
  */
 export class ServiceClient {
-	constructor({ genie, token } = envTargets()) {
+	constructor({ genie, token, fetchImpl } = envTargets()) {
 		this.genie = genie;
 		this.token = token;
+		this.fetchImpl = fetchImpl ?? fetch;
 	}
 
-	async turn({ conversationId, messages, locale = 'en', page = { type: 'other' }, timeoutMs = 180_000 }) {
+	async turn({
+		conversationId,
+		messages,
+		locale = 'en',
+		page = { type: 'other' },
+		timeoutMs = TURN_TIMEOUT_MS,
+	}) {
 		const body = {
 			conversation_id: conversationId,
 			messages,
@@ -132,10 +118,11 @@ export class ServiceClient {
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), timeoutMs);
 		const started = Date.now();
-		let stream;
+		let stream = '';
 		let status = 0;
+		let note = { finalUrl: null, status: 0, headers: null };
 		try {
-			const response = await fetch(`${this.genie}/turn`, {
+			const response = await this.fetchImpl(`${this.genie}/turn`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -146,6 +133,7 @@ export class ServiceClient {
 				signal: controller.signal,
 			});
 			status = response.status;
+			note = responseNote(response);
 			stream = await response.text();
 		} finally {
 			clearTimeout(timer);
@@ -155,6 +143,8 @@ export class ServiceClient {
 			status,
 			durationMs: Date.now() - started,
 			stream,
+			finalUrl: note.finalUrl,
+			headers: note.headers,
 			...parseStream(stream),
 		};
 	}
@@ -165,9 +155,10 @@ export class ServiceClient {
  * (credentials: same-origin) does, minus the browser.
  */
 export class ProxyClient {
-	constructor({ wp } = envTargets()) {
+	constructor({ wp, fetchImpl } = envTargets()) {
 		this.wp = wp;
-		this.cookies = new Map();
+		this.fetchImpl = fetchImpl ?? fetch;
+		this.jar = new CookieJar();
 	}
 
 	/** wp-json route helpers. */
@@ -175,35 +166,16 @@ export class ProxyClient {
 		return `${this.wp}/wp-json/linker-ai/v1/${path}`;
 	}
 
-	cookieHeader() {
-		return [...this.cookies].map(([k, v]) => `${k}=${v}`).join('; ');
-	}
-
-	keepCookies(response) {
-		for (const raw of response.headers.getSetCookie?.() ?? []) {
-			const [pair] = raw.split(';');
-			const eq = pair.indexOf('=');
-			const name = pair.slice(0, eq).trim();
-			const value = pair.slice(eq + 1).trim();
-			// A cleared cookie (empty value, past expiry) leaves the jar.
-			if (value === '' || /expires=Thu, 01 Jan 1970/.test(raw)) {
-				this.cookies.delete(name);
-			} else {
-				this.cookies.set(name, value);
-			}
-		}
-	}
-
 	async fetch(path, { method = 'GET', body } = {}) {
-		const response = await fetch(this.url(path), {
+		const response = await this.fetchImpl(this.url(path), {
 			method,
 			headers: {
 				...(body ? { 'Content-Type': 'application/json' } : {}),
-				...(this.cookies.size ? { Cookie: this.cookieHeader() } : {}),
+				...(this.jar.header() ? { Cookie: this.jar.header() } : {}),
 			},
 			body: body ? JSON.stringify(body) : undefined,
 		});
-		this.keepCookies(response);
+		this.jar.keep(response);
 		return response;
 	}
 
@@ -214,27 +186,31 @@ export class ProxyClient {
 			method: 'POST',
 			body: { locale, messages, page },
 		});
-		const status = response.status;
-		const json = status === 200 ? await response.json() : null;
+		const note = responseNote(response);
+		const json = response.status === 200 ? await response.json() : null;
 		const stream = json?.stream ?? '';
 		return {
-			status,
+			status: response.status,
 			conversationId: json?.conversation_id ?? null,
 			durationMs: Date.now() - started,
 			request: { messages, locale, page },
 			stream,
+			finalUrl: note.finalUrl,
+			headers: note.headers,
 			...parseStream(stream),
 		};
 	}
 
 	async conversation() {
 		const response = await this.fetch('genie/conversation');
-		return { status: response.status, body: await response.json() };
+		const note = responseNote(response);
+		return { ...note, body: await response.json() };
 	}
 
 	async list() {
 		const response = await this.fetch('genie/conversations');
-		return { status: response.status, body: await response.json() };
+		const note = responseNote(response);
+		return { ...note, body: await response.json() };
 	}
 
 	async select(id) {
@@ -242,56 +218,7 @@ export class ProxyClient {
 			method: 'POST',
 			body: id ? { id } : {},
 		});
-		return { status: response.status, body: await response.json() };
+		const note = responseNote(response);
+		return { ...note, body: await response.json() };
 	}
-}
-
-/**
- * A turn transcript entry: the question verbatim, the answer verbatim, the
- * meta the service put on the wire, and how long the turn took.
- */
-export function transcriptEntry(step, question, turn) {
-	return {
-		step,
-		sentAt: new Date().toISOString(),
-		question,
-		durationMs: turn.durationMs,
-		status: turn.status,
-		meta: turn.meta,
-		answer: answerText(turn.blocks),
-		blocks: turn.blocks,
-	};
-}
-
-/** Simple pass/fail note with the criterion it was judged by. */
-export function verdict(caseId, passed, criterion, notes) {
-	return {
-		case: caseId,
-		verdict: passed ? 'pass' : 'defect',
-		criterion,
-		notes,
-	};
-}
-
-/**
- * Is the text German? Decided on the closed-class words a German sentence
- * cannot avoid (Sie-form verbs, articles, pronouns) plus umlauts; the runner
- * reads the answers themselves for the judgement, this is the mechanical
- * first read.
- */
-export function looksGerman(text) {
-	const german = [
-		/\b(der|die|das|den|dem|ein|eine|einen|und|oder|ist|sind|hat|haben|mit|für|von|zu|im|am|auf)\b/i,
-		/\b(sie|ich|wir|nicht|bitte|danke|welche|kann|müssen|sollen|wird|werden|hat|passen|führen)\b/i,
-		/[äöüß]/,
-	];
-	return german.filter((pattern) => pattern.test(text)).length >= 2;
-}
-
-export function looksEnglish(text) {
-	const english = [
-		/\b(the|a|an|and|or|is|are|has|have|with|for|of|to|in|on)\b/i,
-		/\b(you|your|we|our|can|will|which|what|please|carry|offer)\b/i,
-	];
-	return english.filter((pattern) => pattern.test(text)).length >= 2;
 }

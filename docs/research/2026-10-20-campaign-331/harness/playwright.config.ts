@@ -7,10 +7,14 @@
  * (`LINKER_E2E_INSTANCE=c331`). One worker, headless: every case drives real
  * model turns and shares the service.
  */
+import { fileURLToPath } from 'node:url';
+
 import { defineConfig } from '@playwright/test';
 
+const here = fileURLToPath(new URL('.', import.meta.url));
+
 export default defineConfig({
-	testDir: __dirname,
+	testDir: here,
 	testMatch: /browser\.spec\.ts/,
 	timeout: 900_000,
 	fullyParallel: false,

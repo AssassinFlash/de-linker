@@ -5,6 +5,11 @@
  * the e2e suite drives (tests/e2e/specs/genie-sessions.spec.ts's selectors
  * and ask()/titles() patterns, reused).
  *
+ * A thrown expect still leaves a JSONL verdict: the row is written in
+ * `finally`, and the catch marks the case defect before rethrowing. The
+ * two-tab race does not expect its outcome, so the suite can finish and
+ * the defect stays in the evidence.
+ *
  * Run: LINKER_E2E_INSTANCE=c331 npx playwright test --config playwright.config.ts
  * (from this directory; evidence lands in ~/de-linker-data/campaign-331/).
  */
@@ -12,29 +17,41 @@
 /**
  * External dependencies
  */
-import { appendFileSync, mkdirSync, readFileSync } from 'node:fs';
-import { dirname } from 'node:path';
-import { expect, test, type BrowserContext, type Page } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { expect, test, type Browser, type BrowserContext, type Page } from '@playwright/test';
 
 /**
  * Internal dependencies.
  *
- * The suite's own helper (tests/e2e/lib/instance.ts) cannot be required from
- * outside its package root under Playwright's CJS loader, so the two pieces
- * this battery needs — the instance registry reader and WP-CLI through
- * `just` — are inlined here in the helper's own shape (parseRegistry,
- * instance(), wp()).
+ * The suite's own helper (tests/e2e/lib/instance.ts) cannot be imported from
+ * outside its package root under Playwright's loader, so the two pieces this
+ * battery needs — the instance registry reader and WP-CLI through `just` —
+ * are inlined here in the helper's own shape (parseRegistry, instance(), wp()).
+ * Evidence goes through evidence.mjs so a header cannot skip redaction.
  */
-import { execFileSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { record, selectedHeaders, verdict as verdictRow } from './evidence.mjs';
+import {
+	DOUBLE_SUBMIT_DWELL_MS,
+	PROXY_SETTLE_MS,
+	RACE_REREAD_MS,
+	TURN_TIMEOUT_MS,
+} from './timing.mjs';
 
-// The repo root: this file is docs/research/2026-10-20-campaign-331/harness/.
-const REPO_ROOT = `${__dirname}/../../../../..`;
+// harness/ -> campaign-331 -> research -> docs -> repo root.
+const REPO_ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
 
 interface InstanceRow {
 	name: string;
 	url: string;
 	dir: string;
+}
+
+interface WireHit {
+	finalUrl: string;
+	status: number;
+	headers: ReturnType<typeof selectedHeaders>;
 }
 
 function parseRegistry(text: string): Record<string, { port: number; genie_port: number }> {
@@ -86,26 +103,64 @@ function wp(args: string[]): string {
 }
 
 const target = instance();
-const EVIDENCE = `${process.env.HOME}/de-linker-data/campaign-331`;
 const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
-// Playwright compiles this spec to CJS (no "type": "module" in the e2e
-// package.json), so the path is __dirname, not import.meta.url.
-const grounding = JSON.parse(
-	readFileSync(`${__dirname}/grounding.json`, 'utf8')
-) as {
-	sets: Record<string, { id: number }[]>;
-};
-const homeStorageIds = grounding.sets.homeStorage.map((p) => p.id);
 
 const WORKSPACE = { en: '/genie/', de: '/de/genie/' };
 const CATEGORY = { en: '/product-category/inverters/', de: '/de/produkt-kategorie/wechselrichter/' };
 const ACCOUNT = { en: '/my-account/', de: '/de/mein-konto/' };
 
-/** One JSONL evidence line (mirrors harness/client.mjs record()). */
-function record(scenario: string, file: string, entry: object): void {
-	const path = `${EVIDENCE}/${scenario}/${file}.jsonl`;
-	mkdirSync(dirname(path), { recursive: true });
-	appendFileSync(path, JSON.stringify(entry) + '\n');
+/** Every /genie/ response: final URL and the same header selection as the probes. */
+function watchGenie(context: BrowserContext, hits: WireHit[]): void {
+	context.on('response', (response) => {
+		const url = response.url();
+		if (!url.includes('/genie/')) {
+			return;
+		}
+		hits.push({
+			finalUrl: url,
+			status: response.status(),
+			headers: selectedHeaders(response.headers()),
+		});
+	});
+}
+
+async function openContext(browser: Browser, hits: WireHit[]): Promise<BrowserContext> {
+	const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+	watchGenie(context, hits);
+	return context;
+}
+
+async function closeAll(contexts: BrowserContext[]): Promise<void> {
+	for (const context of contexts) {
+		await context.close().catch(() => undefined);
+	}
+}
+
+function writeVerdict(
+	scenario: string,
+	file: string,
+	passed: boolean,
+	notes: string,
+	hits: WireHit[],
+	criterion: string,
+	extra: Record<string, unknown> = {}
+): void {
+	const last = hits.at(-1);
+	record(
+		scenario,
+		file,
+		verdictRow(file, passed, criterion, notes, {
+			stamp,
+			finalUrl: last?.finalUrl ?? null,
+			headers: last?.headers ?? null,
+			genieResponses: hits,
+			...extra,
+		})
+	);
+}
+
+function thrown(error: unknown): string {
+	return error instanceof Error ? error.message : String(error);
 }
 
 /** Asks one question and returns once the answer has landed (votes count). */
@@ -115,7 +170,7 @@ async function ask(page: Page, question: string): Promise<string> {
 	await page.fill('#linker-genie-input', question);
 	await page.locator('.linker-genie-app__send').click();
 	await expect
-		.poll(async () => votes.count(), { timeout: 180_000 })
+		.poll(async () => votes.count(), { timeout: TURN_TIMEOUT_MS })
 		.toBeGreaterThan(before);
 	return (await page.locator('.linker-genie-app__panel').innerText()).trim();
 }
@@ -185,13 +240,18 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(600_000);
 		const file = `s6-en-reload-${stamp}`;
 		const scenario = 's6-reload';
-		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-		const page = await context.newPage();
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const questions = [
 			'Show me the SAJ H2-10K-T3.',
 			'What batteries pair with it?',
 		];
+		let passed = false;
+		let notes = '';
 		try {
+			const context = await openContext(browser, hits);
+			contexts.push(context);
+			const page = await context.newPage();
 			await page.goto(`${target.url}${WORKSPACE.en}`);
 			await expect(page.locator('#linker-genie-input')).toBeVisible({ timeout: 30_000 });
 			await ask(page, questions[0]);
@@ -223,14 +283,24 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				name: 'the dock on another page reads the same thread',
 				passed: true,
 			});
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: 'pass',
-				criterion: 'thread intact after reload and across surfaces (#235/#232)',
-			});
+			passed = true;
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await context.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'thread intact after reload and across surfaces (#235/#232)'
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 
@@ -238,11 +308,16 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(600_000);
 		const file = `s6-en-reload-mid-turn-${stamp}`;
 		const scenario = 's6-reload';
-		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-		const page = await context.newPage();
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const q1 = 'Which hybrid inverters do you carry for homes?';
 		const q2 = 'Which home storage batteries do you carry?';
+		let passed = false;
+		let notes = '';
 		try {
+			const context = await openContext(browser, hits);
+			contexts.push(context);
+			const page = await context.newPage();
 			await page.goto(`${target.url}${WORKSPACE.en}`);
 			await expect(page.locator('#linker-genie-input')).toBeVisible({ timeout: 30_000 });
 			await ask(page, q1);
@@ -261,8 +336,9 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				sawQ2Early,
 				earlyHead: early.slice(0, 200),
 			});
-			// The proxy finishes the turn server-side within its 60 s budget.
-			await page.waitForTimeout(70_000);
+			// The proxy finishes the turn server-side within its 60 s budget
+			// (timing.mjs PROXY_SETTLE_MS).
+			await page.waitForTimeout(PROXY_SETTLE_MS);
 			await page.reload();
 			const panel = page.locator('.linker-genie-app__panel');
 			await expect(panel).toContainText(q1, { timeout: 30_000 });
@@ -278,17 +354,25 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				q2Present,
 				answered,
 			});
-			const passed = q2Present && answered;
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: passed ? 'pass' : 'defect',
-				criterion:
-					'the in-flight turn is recorded server-side and survives the reload (data); the first post-reload view can be one turn behind (noted as UI timing, not data loss)',
-			});
+			passed = q2Present && answered;
 			expect(q2Present, `thread after settle: ${late.slice(0, 400)}`).toBe(true);
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await context.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'the in-flight turn is recorded server-side and survives the reload (data); the first post-reload view can be one turn behind (noted as UI timing, not data loss)'
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 
@@ -296,10 +380,15 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(600_000);
 		const file = `s6-en-dock-reopen-${stamp}`;
 		const scenario = 's6-reload';
-		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-		const page = await context.newPage();
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const q = 'Which EV chargers do you carry?';
+		let passed = false;
+		let notes = '';
 		try {
+			const context = await openContext(browser, hits);
+			contexts.push(context);
+			const page = await context.newPage();
 			await page.goto(`${target.url}${CATEGORY.en}`);
 			await page.locator('.linker-genie-open').first().click();
 			await expect(page.locator('.linker-genie-app__composer')).toBeVisible({
@@ -316,14 +405,24 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 			await expect(page.locator('.linker-genie-app__panel')).toContainText(q, {
 				timeout: 60_000,
 			});
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: 'pass',
-				criterion: 'dock close + reopen reads the same stored thread (#232/#235)',
-			});
+			passed = true;
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await context.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'dock close + reopen reads the same stored thread (#232/#235)'
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 
@@ -331,10 +430,15 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(600_000);
 		const file = `s6-de-reload-${stamp}`;
 		const scenario = 's6-reload';
-		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-		const page = await context.newPage();
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const q = 'Welche Hybridwechselrichter führen Sie für Wohngebäude?';
+		let passed = false;
+		let notes = '';
 		try {
+			const context = await openContext(browser, hits);
+			contexts.push(context);
+			const page = await context.newPage();
 			await page.goto(`${target.url}${WORKSPACE.de}`);
 			await expect(page.locator('#linker-genie-input')).toBeVisible({ timeout: 30_000 });
 			await ask(page, q);
@@ -342,14 +446,24 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 			await expect(page.locator('.linker-genie-app__panel')).toContainText(q, {
 				timeout: 30_000,
 			});
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: 'pass',
-				criterion: 'DE: Frage und Antwort sind nach dem Neuladen da',
-			});
+			passed = true;
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await context.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'DE: Frage und Antwort sind nach dem Neuladen da'
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 
@@ -357,9 +471,14 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(600_000);
 		const file = `s7-en-guest-key-${stamp}`;
 		const scenario = 's7-cross-device';
-		const first = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const q1 = 'Show me the SAJ H2-10K-T3.';
+		let passed = false;
+		let notes = '';
 		try {
+			const first = await openContext(browser, hits);
+			contexts.push(first);
 			const page = await first.newPage();
 			await page.goto(`${target.url}${WORKSPACE.en}`);
 			await expect(page.locator('#linker-genie-input')).toBeVisible({ timeout: 30_000 });
@@ -370,7 +489,8 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				name: 'cookies carried',
 				names: cookies.map((c) => c.name),
 			});
-			const second = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+			const second = await openContext(browser, hits);
+			contexts.push(second);
 			await second.addCookies(cookies);
 			const other = await second.newPage();
 			await other.goto(`${target.url}${WORKSPACE.en}`);
@@ -384,15 +504,24 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				passed: list.length >= 1,
 				list,
 			});
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: 'pass',
-				criterion: 'history follows the browser key, not the browser (spec 13 目标 7)',
-			});
-			await second.close();
+			passed = list.length >= 1;
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await first.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'history follows the browser key, not the browser (spec 13 目标 7)'
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 
@@ -402,15 +531,22 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		const scenario = 's7-cross-device';
 		const login = `c331-${stamp}-${Date.now()}`;
 		const password = `Pw-${Date.now()}`;
-		const guest = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-		const otherDevice = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-		const stranger = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const questions = [
 			'Show me the SAJ H2-10K-T3.',
 			'Which EV chargers do you carry?',
 		];
 		let user = '';
+		let passed = false;
+		let notes = '';
 		try {
+			const guest = await openContext(browser, hits);
+			contexts.push(guest);
+			const otherDevice = await openContext(browser, hits);
+			contexts.push(otherDevice);
+			const stranger = await openContext(browser, hits);
+			contexts.push(stranger);
 			const page = await guest.newPage();
 			await page.goto(`${target.url}${WORKSPACE.en}`);
 			await expect(page.locator('#linker-genie-input')).toBeVisible({ timeout: 30_000 });
@@ -451,23 +587,31 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				passed: !leak,
 				strangerList,
 			});
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: 'pass',
-				criterion: 'claim on sign-in; cross-device through the account; no leak to keyless guests',
-			});
 			expect(leak).toBe(false);
+			passed = !leak;
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await guest.close();
-			await otherDevice.close();
-			await stranger.close();
-			if (user) {
-				wp([
-					'eval',
-					`foreach ( get_posts( array( 'post_type' => 'linker_conversation', 'post_status' => 'any', 'author' => ${Number(user)}, 'posts_per_page' => -1, 'fields' => 'ids' ) ) as $id ) { wp_delete_post( $id, true ); }`,
-				]);
-				wp(['user', 'delete', user, '--yes']);
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'claim on sign-in; cross-device through the account; no leak to keyless guests'
+				);
+			} finally {
+				await closeAll(contexts);
+				if (user) {
+					wp([
+						'eval',
+						`foreach ( get_posts( array( 'post_type' => 'linker_conversation', 'post_status' => 'any', 'author' => ${Number(user)}, 'posts_per_page' => -1, 'fields' => 'ids' ) ) as $id ) { wp_delete_post( $id, true ); }`,
+					]);
+					wp(['user', 'delete', user, '--yes']);
+				}
 			}
 		}
 	});
@@ -476,11 +620,16 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(900_000);
 		const file = `s8-en-two-tabs-${stamp}`;
 		const scenario = 's8-concurrency';
-		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const q1 = 'Which hybrid inverters do you carry for homes?';
 		const qa = 'Which EV chargers do you carry?';
 		const qb = 'Which home storage batteries do you carry?';
+		let passed = false;
+		let notes = '';
 		try {
+			const context = await openContext(browser, hits);
+			contexts.push(context);
 			const page1 = await context.newPage();
 			await page1.goto(`${target.url}${WORKSPACE.en}`);
 			await expect(page1.locator('#linker-genie-input')).toBeVisible({ timeout: 30_000 });
@@ -505,10 +654,10 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				})(),
 			]);
 			await expect
-				.poll(async () => page1.locator('.linker-genie-app__votes').count(), { timeout: 180_000 })
+				.poll(async () => page1.locator('.linker-genie-app__votes').count(), { timeout: TURN_TIMEOUT_MS })
 				.toBeGreaterThanOrEqual(2);
 			await expect
-				.poll(async () => page2.locator('.linker-genie-app__votes').count(), { timeout: 180_000 })
+				.poll(async () => page2.locator('.linker-genie-app__votes').count(), { timeout: TURN_TIMEOUT_MS })
 				.toBeGreaterThanOrEqual(2);
 			const ownViews = {
 				tab1: await page1.locator('.linker-genie-app__panel').innerText(),
@@ -529,9 +678,11 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 			await page3.goto(`${target.url}${WORKSPACE.en}`);
 			const panel3 = page3.locator('.linker-genie-app__panel');
 			await expect(panel3).toContainText(q1, { timeout: 60_000 });
-			// One more turn's worth of time, in case the race is still
-			// resolving at the proxy.
-			await page3.waitForTimeout(5_000);
+			// One reread after the proxy can finish a write that landed during
+			// navigation (timing.mjs RACE_REREAD_MS). The race itself is not
+			// expected: a lost turn is a defect in the JSONL, and the suite
+			// continues.
+			await page3.waitForTimeout(RACE_REREAD_MS);
 			await page3.reload();
 			await expect(panel3).toContainText(q1, { timeout: 60_000 });
 			const stored = await panel3.innerText();
@@ -545,16 +696,25 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				lost: [!keptA && qa, !keptB && qb].filter(Boolean),
 				storedHead: stored.slice(0, 400),
 			});
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: keptA && keptB ? 'pass' : 'defect',
-				criterion:
-					'both turns of the race survive in the conversation; a lost turn is the last-write-wins overwrite of dossier §1.16',
-			});
+			passed = keptA && keptB;
 			await page3.close();
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await context.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'both turns of the race survive in the conversation; a lost turn is the last-write-wins overwrite of dossier §1.16'
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 
@@ -562,9 +722,14 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(600_000);
 		const file = `s8-en-double-submit-${stamp}`;
 		const scenario = 's8-concurrency';
-		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const q = 'Which EV chargers do you carry?';
+		let passed = false;
+		let notes = '';
 		try {
+			const context = await openContext(browser, hits);
+			contexts.push(context);
 			const page = await context.newPage();
 			await page.goto(`${target.url}${WORKSPACE.en}`);
 			await expect(page.locator('#linker-genie-input')).toBeVisible({ timeout: 30_000 });
@@ -580,10 +745,11 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 			await page.focus('#linker-genie-input');
 			await page.keyboard.press('Enter');
 			await expect
-				.poll(async () => page.locator('.linker-genie-app__votes').count(), { timeout: 180_000 })
+				.poll(async () => page.locator('.linker-genie-app__votes').count(), { timeout: TURN_TIMEOUT_MS })
 				.toBeGreaterThanOrEqual(2);
-			// Let a wrongly queued second turn answer too, if it exists.
-			await page.waitForTimeout(8_000);
+			// Let a wrongly queued second turn paint its user bubble, if the
+			// guard accepted it (timing.mjs DOUBLE_SUBMIT_DWELL_MS).
+			await page.waitForTimeout(DOUBLE_SUBMIT_DWELL_MS);
 			const messages = await userMessages(page);
 			const copies = messages.filter((m) => m.includes(q)).length;
 			record(scenario, file, {
@@ -592,15 +758,25 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				copies,
 				messages,
 			});
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: copies === 1 ? 'pass' : 'defect',
-				criterion: 'the per-view single-flight guard holds (Race.test.tsx)',
-			});
+			passed = copies === 1;
 			expect(copies).toBe(1);
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await context.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'the per-view single-flight guard holds (Race.test.tsx)'
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 
@@ -608,11 +784,16 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(900_000);
 		const file = `s9-en-switch-abc-${stamp}`;
 		const scenario = 's9-switching';
-		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const qA1 = 'Show me the SAJ H2-10K-T3.';
 		const qB1 = 'Which home storage batteries do you carry?';
 		const qC1 = 'Which EV chargers do you carry?';
+		let passed = false;
+		let notes = '';
 		try {
+			const context = await openContext(browser, hits);
+			contexts.push(context);
 			const page = await context.newPage();
 			await page.goto(`${target.url}${WORKSPACE.en}`);
 			await expect(page.locator('#linker-genie-input')).toBeVisible({ timeout: 30_000 });
@@ -674,17 +855,25 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				passed: carriesA && namesBatteries,
 				answerHead: answer.slice(0, 300),
 			});
-			const passed = allRight && carriesA && namesBatteries;
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: passed ? 'pass' : 'defect',
-				criterion:
-					"every switch shows the right thread; a follow-up after switching back carries that conversation's own context",
-			});
+			passed = allRight && carriesA && namesBatteries;
 			expect(passed).toBe(true);
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await context.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					"every switch shows the right thread; a follow-up after switching back carries that conversation's own context"
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 
@@ -692,11 +881,16 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(900_000);
 		const file = `s9-en-switch-mid-flight-${stamp}`;
 		const scenario = 's9-switching';
-		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const qA1 = 'Show me the SAJ H2-10K-T3.';
 		const qA2 = 'What batteries pair with it?';
 		const qB1 = 'Which EV chargers do you carry?';
+		let passed = false;
+		let notes = '';
 		try {
+			const context = await openContext(browser, hits);
+			contexts.push(context);
 			const page = await context.newPage();
 			// Everything that crosses the wire, so a lost or misrouted turn is
 			// attributed, not guessed.
@@ -766,7 +960,7 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				.poll(async () => {
 					aThread = await page.locator('.linker-genie-app__panel').innerText();
 					return aThread.includes(qA2);
-				}, { timeout: 180_000 })
+				}, { timeout: TURN_TIMEOUT_MS })
 				.toBe(true);
 			// A restored thread renders votes only for the last stored turn, so
 			// the answer is judged by its words, not the vote count.
@@ -779,17 +973,25 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				aThreadHead: aThread.slice(0, 300),
 				wire,
 			});
-			const passed = viewIsB && aThread.includes(qA2) && answeredInA;
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: passed ? 'pass' : 'defect',
-				criterion:
-					'the ask completes on the conversation it was asked in; the switch is applied after it; no lost or misrouted turn',
-			});
+			passed = viewIsB && aThread.includes(qA2) && answeredInA;
 			expect(passed).toBe(true);
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await context.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'the ask completes on the conversation it was asked in; the switch is applied after it; no lost or misrouted turn'
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 
@@ -797,10 +999,17 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 		test.setTimeout(600_000);
 		const file = `s9-de-switch-${stamp}`;
 		const scenario = 's9-switching';
-		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+		const hits: WireHit[] = [];
+		const contexts: BrowserContext[] = [];
 		const qA = 'Zeigen Sie mir den SAJ H2-10K-T3.';
 		const qB = 'Welche Wallboxen führen Sie?';
+		let shownA = '';
+		let shownB = '';
+		let passed = false;
+		let notes = '';
 		try {
+			const context = await openContext(browser, hits);
+			contexts.push(context);
 			const page = await context.newPage();
 			await page.goto(`${target.url}${WORKSPACE.de}`);
 			await expect(page.locator('#linker-genie-input')).toBeVisible({ timeout: 30_000 });
@@ -808,7 +1017,6 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 			await newConversation(page, 'Gespräche', qB);
 			await openRail(page, 'Gespräche');
 			await page.locator('.linker-genie-rail__item', { hasText: qA }).click();
-			let shownA = '';
 			await expect
 				.poll(async () => {
 					shownA = (await userMessages(page))[0] ?? '';
@@ -816,26 +1024,36 @@ test.describe('campaign #331 — conversation state in the browser', () => {
 				}, { timeout: 60_000 })
 				.toContain('SAJ H2-10K-T3');
 			await page.locator('.linker-genie-rail__item', { hasText: qB }).click();
-			let shownB = '';
 			await expect
 				.poll(async () => {
 					shownB = (await userMessages(page))[0] ?? '';
 					return shownB;
 				}, { timeout: 60_000 })
 				.toContain('Wallboxen');
-			const passed =
+			passed =
 				shownA.includes('SAJ H2-10K-T3') && shownB.includes('Wallboxen');
-			record(scenario, file, {
-				type: 'verdict',
-				case: file,
-				verdict: passed ? 'pass' : 'defect',
-				criterion: 'DE: jeder Wechsel zeigt den eigenen ersten Satz',
-				shownA: shownA.slice(0, 60),
-				shownB: shownB.slice(0, 60),
-			});
 			expect(passed).toBe(true);
+		} catch (error: unknown) {
+			passed = false;
+			notes = thrown(error);
+			throw error;
 		} finally {
-			await context.close();
+			try {
+				writeVerdict(
+					scenario,
+					file,
+					passed,
+					notes,
+					hits,
+					'DE: jeder Wechsel zeigt den eigenen ersten Satz',
+					{
+						shownA: shownA.slice(0, 60),
+						shownB: shownB.slice(0, 60),
+					}
+				);
+			} finally {
+				await closeAll(contexts);
+			}
 		}
 	});
 });

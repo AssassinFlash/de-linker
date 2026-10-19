@@ -15,16 +15,27 @@
 
 import { readFileSync } from 'node:fs';
 import {
+	mentionsAnyProduct,
+	mentionsProduct,
+	sizingStructureOk,
+	cardSet,
+	hasNextStep,
+	structuresMatch,
+	switchedStructureOk,
+	typeSet,
+} from './assertions.mjs';
+import {
 	ServiceClient,
 	answerText,
+	artefact,
 	cardsOf,
 	contactOf,
 	envTargets,
 	handoffOf,
+	publicTargets,
 	record,
 	transcriptEntry,
 	verdict,
-	artefact,
 } from './client.mjs';
 
 const targets = envTargets();
@@ -32,6 +43,12 @@ const service = new ServiceClient(targets);
 const grounding = JSON.parse(
 	readFileSync(new URL('./grounding.json', import.meta.url), 'utf8')
 );
+// The post id of SAJ H2-10K-T3 on this snapshot: the feed row
+// `grounding.known.sajH2_10k_t3`, not a copied post id.
+const h2 = grounding.known.sajH2_10k_t3;
+if (!h2?.id || !h2.model) {
+	throw new Error('grounding.known.sajH2_10k_t3 is missing id or model; rerun grounding.mjs');
+}
 const ids = (set) => grounding.sets[set].map((p) => p.id);
 const SETS = {
 	homeInverters: ids('homeHybridInverters'),
@@ -77,8 +94,9 @@ function caseHeader(scenario, file, description) {
 	record(scenario, file, {
 		type: 'case',
 		at: new Date().toISOString(),
+		stamp,
 		description,
-		targets,
+		targets: publicTargets(targets),
 	});
 }
 
@@ -134,7 +152,7 @@ async function s1InverterToEv(lang) {
 		: 'Now something completely different: which EV chargers do you carry?';
 	const t3 = await turn(scenario, file, conversationId, t2.thread, q3, lang);
 	const t3Ref = productReferences(t3.result);
-	const aProducts = [4107, ...t2Ref.cards];
+	const aProducts = [h2.id, ...t2Ref.cards];
 	const bCardsOk =
 		t3Ref.cards.length > 0 &&
 		t3Ref.cards.every((id) => SETS.evChargers.includes(id));
@@ -298,7 +316,7 @@ async function s2Anaphora(kind) {
 		: 'Show me the SAJ H2-10K-T3.';
 	const t1 = await turn(scenario, file, conversationId, thread, showQ, de ? 'de' : 'en');
 	const t1Ref = productReferences(t1.result);
-	const t1Ok = t1Ref.cards.includes(4107);
+	const t1Ok = t1Ref.cards.includes(h2.id);
 	record(scenario, file, {
 		type: 'check',
 		step: 1,
@@ -313,32 +331,46 @@ async function s2Anaphora(kind) {
 		t2 = await turn(scenario, file, conversationId, t1.thread, 'What is its warranty?');
 		const text = answerText(t2.result.blocks);
 		const refs = productReferences(t2.result);
+		const named = mentionsProduct(text, t2.result.blocks, h2);
 		check = {
-			name: '"its" resolves to the H2-10K-T3; warranty answered from documents',
+			name: '"its" resolves to the H2-10K-T3; the model or its card is in the answer, and the warranty is stated',
 			passed:
 				/warrant/i.test(text) &&
-				(refs.refs.includes(4107) || refs.cards.includes(4107) || /warranty/i.test(text)) &&
+				named &&
 				!/which (product|model|inverter)\?/i.test(text),
-			detail: { refs: refs.refs, cards: refs.cards, route: t2.result.meta?.route },
+			detail: {
+				refs: refs.refs,
+				cards: refs.cards,
+				named,
+				route: t2.result.meta?.route,
+			},
 		};
 	} else if (kind === 'en-mppt') {
 		t2 = await turn(scenario, file, conversationId, t1.thread, 'How many MPPTs does it have?');
 		const text = answerText(t2.result.blocks);
 		// "MPP trackers" is how the manual words it; both spellings count.
+		const named = mentionsProduct(text, t2.result.blocks, h2);
 		check = {
-			name: '"it" resolves to the H2-10K-T3; the MPPT count is stated (hydrated)',
+			name: '"it" resolves to the H2-10K-T3 (model or card); the MPPT count is stated (hydrated)',
 			passed:
-				/MPP\s*T|MPPT/i.test(text) && /\d/.test(text) && !/which (product|model|inverter)\?/i.test(text),
-			detail: { answer: text.slice(0, 400) },
+				/MPP\s*T|MPPT/i.test(text) &&
+				/\d/.test(text) &&
+				named &&
+				!/which (product|model|inverter)\?/i.test(text),
+			detail: { named, answer: text.slice(0, 400) },
 		};
 	} else if (kind === 'de-mppt') {
 		t2 = await turn(scenario, file, conversationId, t1.thread, 'Wie viele MPPTs hat er?', 'de');
 		const text = answerText(t2.result.blocks);
+		const named = mentionsProduct(text, t2.result.blocks, h2);
 		check = {
-			name: '"er" resolved auf H2-10K-T3; MPPT-Anzahl wird genannt (hydratisiert)',
+			name: '"er" resolved auf H2-10K-T3 (Modell oder Karte); MPPT-Anzahl wird genannt (hydratisiert)',
 			passed:
-				/MPP\s*T|MPPT/i.test(text) && /\d/.test(text) && !/welches (Produkt|Modell)/i.test(text),
-			detail: { answer: text.slice(0, 400) },
+				/MPP\s*T|MPPT/i.test(text) &&
+				/\d/.test(text) &&
+				named &&
+				!/welches (Produkt|Modell)/i.test(text),
+			detail: { named, answer: text.slice(0, 400) },
 		};
 	} else if (kind === 'en-first-one') {
 		const compareQ =
@@ -363,13 +395,15 @@ async function s2Anaphora(kind) {
 		const esa = grounding.known.goodweEsa.find(
 			(p) => p.model === 'GW10K-EHA-G20'
 		);
+		const named = mentionsProduct(text, t2.result.blocks, h2);
 		check = {
-			name: '"the first one" resolves to the H2-10K-T3 (three-phase yes), not the ESA',
+			name: '"the first one" resolves to the H2-10K-T3 (model or card, three-phase), not the ESA',
 			passed:
 				/three-phase/i.test(text) &&
+				named &&
 				!/first one is single|ESA.*three-phase/i.test(text) &&
 				compared,
-			detail: { answer: text.slice(0, 400), esaId: esa?.id ?? null },
+			detail: { named, answer: text.slice(0, 400), esaId: esa?.id ?? null },
 		};
 	} else if (kind === 'en-across-switch') {
 		const switchQ = 'Which batteries work with the GoodWe ESA GW10K-EHA-G20?';
@@ -393,13 +427,16 @@ async function s2Anaphora(kind) {
 		);
 		const text = answerText(t2.result.blocks);
 		const refs = productReferences(t2.result);
+		const namedBattery = mentionsAnyProduct(
+			text,
+			t2.result.blocks,
+			grounding.sets.homeStorage
+		);
+		const namesH2 = mentionsProduct(text, t2.result.blocks, h2);
 		check = {
-			name: '"its" after the switch resolves to the battery, not back to the H2 inverter',
-			passed:
-				/warrant/i.test(text) &&
-				!refs.cards.includes(4107) &&
-				!/H2-10K-T3/i.test(text),
-			detail: { refs: refs.refs, cards: refs.cards },
+			name: '"its" after the switch resolves to a battery (model or card), not back to the H2 inverter',
+			passed: /warrant/i.test(text) && namedBattery && !namesH2,
+			detail: { refs: refs.refs, cards: refs.cards, namedBattery, namesH2 },
 		};
 	} else {
 		throw new Error(`unknown anaphora case ${kind}`);
@@ -443,22 +480,28 @@ async function s3LanguageSwitch(direction) {
 		: 'Which batteries work with the SAJ H2-10K-T3?';
 	const t3 = await turn(scenario, file, conversationId, t2.thread, q3, pageLocale);
 	const text = answerText(t3.result.blocks);
+	// Language of the switched answer. The baseline is dossier §1.13
+	// (a German question is answered in German) and the #329 gate
+	// "EN/DE 同结构". German: an umlaut, or a closed-class word a German
+	// sentence uses. English: those function words, and no German marker.
+	// The JSONL keeps the answer text; this is the mechanical first read.
 	const germanAnswer = /[äöüß]|\b(der|die|das|und|passen|Batterien|Wechselrichter)\b/i.test(text);
 	const englishAnswer = /\b(the|and|batteries|work|with)\b/i.test(text) && !germanAnswer;
-	const answeredGerman = toDe ? germanAnswer : englishAnswer;
-	const structureOk =
-		t3.result.blocks.length > 0 &&
-		t3.result.done &&
-		(contactOf(t3.result.blocks) === null || true);
+	const answeredInQuestionLanguage = toDe ? germanAnswer : englishAnswer;
+	const structureOk = switchedStructureOk(t3.result.blocks, t3.result.done);
 	const cards = cardsOf(t3.result.blocks);
 	record(scenario, file, {
 		type: 'check',
 		step: 3,
-		name: 'the switched-language question is answered in its own language, same structure',
-		passed: answeredGerman && structureOk,
+		name: 'the switched-language question is answered in its own language, with text, cards and a next step',
+		passed: answeredInQuestionLanguage && structureOk,
 		detail: {
 			answerLanguage: germanAnswer ? 'de' : englishAnswer ? 'en' : 'mixed/other',
 			structureOk,
+			types: typeSet(t3.result.blocks),
+			requiredTypes: ['text', 'cards'],
+			nextStep: hasNextStep(t3.result.blocks),
+			contact: contactOf(t3.result.blocks)?.reason ?? null,
 			cards,
 			answerHead: text.slice(0, 300),
 		},
@@ -469,26 +512,36 @@ async function s3LanguageSwitch(direction) {
 		: 'Danke. Und was ist mit 15 kWh Speicher?';
 	const t4 = await turn(scenario, file, conversationId, t3.thread, q4, pageLocale);
 	const text4 = answerText(t4.result.blocks);
+	const followOk =
+		text4.length > 0 && sizingStructureOk(t4.result.blocks, t4.result.done);
 	record(scenario, file, {
 		type: 'check',
 		step: 4,
-		name: 'the thread still answers after the switch (no corruption, no loop)',
-		passed: text4.length > 0 && t4.result.done,
-		detail: { answerHead: text4.slice(0, 300) },
+		name: 'the sizing follow-up is text plus the configurator action (a next step), and the thread still answers',
+		passed: followOk,
+		detail: {
+			types: typeSet(t4.result.blocks),
+			requiredTypes: ['text', 'action'],
+			answerHead: text4.slice(0, 300),
+		},
 	});
+	const passed = answeredInQuestionLanguage && structureOk && followOk;
 	record(
 		scenario,
 		file,
 		verdict(
 			file,
-			answeredGerman && structureOk && text4.length > 0,
+			passed,
 			toDe
-				? 'Deutsche Frage → deutsche Antwort (Struktur erhalten: Blöcke, Karten, nächster Schritt); Faden bleibt funktionsfähig'
-				: 'English question → English answer (structure preserved: blocks, cards, next step); thread still works',
+				? 'Deutsche Frage → deutsche Antwort; Text- und Kartenblöcke, ein nächster Schritt, keine Kontaktkarte; die Größenfrage trägt die Konfigurator-Aktion'
+				: 'English question → English answer; text and card blocks, a next step, no contact card; the sizing question carries the configurator action',
 			`route=${t3.result.meta?.route} language=${t3.result.meta?.language}`
 		)
 	);
-	return { passed: answeredGerman && structureOk };
+	return {
+		passed,
+		shape: { types: typeSet(t3.result.blocks), cards: cardSet(t3.result.blocks) },
+	};
 }
 
 // ---------------------------------------------------------------------------
@@ -809,8 +862,46 @@ await run('s2-de-mppt', () => s2Anaphora('de-mppt'));
 await run('s2-en-first-one', () => s2Anaphora('en-first-one'));
 await run('s2-en-across-switch', () => s2Anaphora('en-across-switch'));
 
-await run('s3-en-to-de', () => s3LanguageSwitch('en-to-de'));
-await run('s3-de-to-en', () => s3LanguageSwitch('de-to-en'));
+const s3Twins = [];
+await run('s3-en-to-de', async () => {
+	const result = await s3LanguageSwitch('en-to-de');
+	s3Twins.push(result.shape);
+	return result;
+});
+await run('s3-de-to-en', async () => {
+	const result = await s3LanguageSwitch('de-to-en');
+	s3Twins.push(result.shape);
+	return result;
+});
+if (!FILTER || 's3-en-de-structure'.startsWith(FILTER) || FILTER.startsWith('s3')) {
+	if (s3Twins.length === 2) {
+		const compared = structuresMatch(s3Twins[0], s3Twins[1]);
+		const twinPassed = compared.typesEqual && compared.cardsEqual;
+		const twinFile = `s3-en-de-structure-${stamp}`;
+		caseHeader(
+			's3-language-switch',
+			twinFile,
+			'The EN→DE and DE→EN switched questions are twins (batteries for the SAJ H2-10K-T3). Their block types and card sets match (#329 EN/DE 同结构).'
+		);
+		record('s3-language-switch', twinFile, {
+			type: 'check',
+			name: 'twin questions share block types and card sets',
+			passed: twinPassed,
+			detail: compared,
+		});
+		record(
+			's3-language-switch',
+			twinFile,
+			verdict(
+				twinFile,
+				twinPassed,
+				'same block types and the same card set on the EN and DE twins',
+				`types ${JSON.stringify(compared.left.types)} / ${JSON.stringify(compared.right.types)}`
+			)
+		);
+		summary.push({ name: 's3-en-de-structure', passed: twinPassed });
+	}
+}
 
 await run('s4-en-exact-3x', () => s4Repeat('en-exact-3x'));
 await run('s4-de-exact-3x', () => s4Repeat('de-exact-3x'));

@@ -12,15 +12,16 @@
  * Usage: node scenarios-proxy.mjs
  */
 
+import { answerText, parseStream } from './sse.mjs';
 import {
 	ProxyClient,
-	answerText,
+	artefact,
 	cardsOf,
 	envTargets,
+	publicTargets,
 	record,
 	transcriptEntry,
 	verdict,
-	artefact,
 } from './client.mjs';
 
 const targets = envTargets();
@@ -42,7 +43,8 @@ async function concurrentTurns(lang) {
 		description: de
 			? 'Zwei gleichzeitige Runden auf einer Konversation über den Proxy: behält der gespeicherte Faden beide?'
 			: 'Two simultaneous turns on one conversation through the proxy: does the stored thread keep both?',
-		targets,
+		stamp,
+		targets: publicTargets(targets),
 	});
 
 	const client = new ProxyClient(targets);
@@ -106,33 +108,20 @@ async function concurrentTurns(lang) {
 
 	const after = await client.conversation();
 	artefact(scenario, `${file}-after.json`, after.body);
+	record(scenario, file, {
+		type: 'read',
+		finalUrl: after.finalUrl,
+		status: after.status,
+		headers: after.headers,
+	});
 	const kept = after.body.messages ?? [];
 	const keptQuestions = kept
 		.filter((m) => m.role === 'user')
 		.map((m) => m.content);
-	const streamText = answerText(
-		(after.body.stream ?? '')
-		.split('\n\n')
-		.filter((e) => /^event: block/.test(e) || true)
-		.map((e) => {
-			const data = /^data: (.+)$/m.exec(e)?.[1];
-			if (!data || !/^event: block/.test(e)) {
-				return null;
-			}
-			try {
-				return JSON.parse(data);
-			} catch {
-				return null;
-			}
-		})
-		.filter(Boolean)
-	);
+	const streamText = answerText(parseStream(after.body.stream ?? '').blocks);
 	const bothAnswered = a.status === 200 && b.status === 200;
 	const bothKept =
 		keptQuestions.includes(qa) && keptQuestions.includes(qb);
-	const serializedOrMerged = bothKept && /EV chargers|Wallbox|storage|Speicher/i.test(
-		streamText
-	);
 	record(scenario, file, {
 		type: 'check',
 		name: 'what the stored thread kept of the two racing turns',
