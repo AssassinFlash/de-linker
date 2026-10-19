@@ -1,0 +1,29 @@
+[project]
+name = "campaign-335-harness"
+version = "0.1.0"
+description = "i18n and page-drift battery for campaign #335. Scripts run as files, not an installed package."
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff.lint]
+# Ruff's defaults (E4, E7, E9, F) plus import sorting, bugbear and pyupgrade, as in the services.
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+mypy_path = "."
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+filterwarnings = ["error"]
