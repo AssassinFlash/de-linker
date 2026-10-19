@@ -166,6 +166,18 @@ jobs:
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter 'InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest'
 
+      # #414: the abilities route, including the customer token. The test
+      # builds its own account and inquiry on this bare instance. It is not
+      # a #339 conversation case: Genie copies inquiry id and status only
+      # (facts._from_inquiry), so a dialogue fixture would not show a leaked
+      # total. The Proforma PDF is #425.
+      - name: inquiry status price gate
+        working-directory: plugins/linker-commerce
+        run: |
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter InquiryStatusRestTest
+
       # The cleanup runs even when an earlier step failed and the instance was
       # never built, so it reports rather than failing the job twice.
       - name: stop the instance

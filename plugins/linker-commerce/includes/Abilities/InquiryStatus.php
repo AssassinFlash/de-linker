@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
+use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Gating\PriceDisplay;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Proforma\Issuer;
 use WC_Order;
@@ -62,7 +64,7 @@ final class InquiryStatus {
 					'description' => __( 'Proforma number when one has been issued.', 'linker-commerce' ),
 				),
 			),
-			'required'             => array( 'id', 'number', 'status', 'status_label', 'date', 'total' ),
+			'required'             => array( 'id', 'number', 'status', 'status_label', 'date' ),
 			'additionalProperties' => false,
 		);
 
@@ -121,9 +123,10 @@ final class InquiryStatus {
 			)
 		);
 		$labels = ( new Statuses() )->names( array() );
+		$prices = new PriceDisplay( new CommerceState() );
 		$list   = array();
 		foreach ( is_array( $orders ) ? $orders : array() as $order ) {
-			$list[] = $this->item( $order, $labels );
+			$list[] = $this->item( $order, $labels, $prices );
 		}
 
 		return array( 'inquiries' => $list );
@@ -134,19 +137,27 @@ final class InquiryStatus {
 	 *
 	 * @param WC_Order              $order  Inquiry.
 	 * @param array<string, string> $labels Status key → name.
+	 * @param PriceDisplay          $prices The account page's monetary-total rule.
 	 * @return array<string, mixed>
 	 */
-	private function item( WC_Order $order, array $labels ): array {
-		$status   = $order->get_status();
-		$key      = 'wc-' . $status;
-		$item     = array(
+	private function item( WC_Order $order, array $labels, PriceDisplay $prices ): array {
+		$status = $order->get_status();
+		$key    = 'wc-' . $status;
+		$item   = array(
 			'id'           => $order->get_id(),
 			'number'       => (string) $order->get_order_number(),
 			'status'       => $status,
 			'status_label' => $labels[ $key ] ?? $status,
 			'date'         => (string) $order->get_date_created()?->format( 'c' ),
-			'total'        => (string) $order->get_total(),
 		);
+		// Account-page parity (#414): shows_order_total(), not sees_prices()
+		// alone. A pending or restricted account, and an approved account's
+		// contact message or unpriced line, get no amount. The field is
+		// absent, so English and German stay one payload. The Proforma PDF
+		// is a separate surface (#425).
+		if ( $prices->shows_order_total( $order ) ) {
+			$item['total'] = (string) $order->get_total();
+		}
 		$proforma = (string) $order->get_meta( Issuer::NUMBER_META );
 		if ( '' !== $proforma ) {
 			$item['proforma_number'] = $proforma;
