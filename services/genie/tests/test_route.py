@@ -44,6 +44,8 @@ def test_sizing_opens_the_configurator_with_the_stated_figures() -> None:
 def test_sizing_figures_are_read_in_code(
     message: str, expected: dict[str, object]
 ) -> None:
+    # Round-2 regressions (negation, questions, postcode, cross-turn) are
+    # registered for #339 in test_prefill.py.
     assert sizing_input(message) == expected
 
 

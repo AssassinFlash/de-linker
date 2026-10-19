@@ -11,6 +11,7 @@ always runs the product search: a product word is never a greeting.
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
@@ -102,21 +103,6 @@ RouteName = Literal[
     "service",
     "model",
 ]
-
-# Words of a sizing question, read in code so the configurator opens prefilled.
-_KWP = re.compile(r"(\d+(?:[.,]\d+)?)\s*kwp\b", re.IGNORECASE)
-_ANNUAL = re.compile(
-    r"(\d{1,3}(?:[.,]\d{3})+|\d{3,6})\s*kwh\s*(?:/\s*(?:a|yr|year|jahr)\b|per\s+year|a\s+year|"
-    r"pro\s+jahr|im\s+jahr|jährlich|yearly|annual)",
-    re.IGNORECASE,
-)
-_THREE_PHASE = re.compile(
-    r"\b(?:3|three|drei)[\s-]*(?:phase|phasen|phasig)", re.IGNORECASE
-)
-_ONE_PHASE = re.compile(
-    r"\b(?:1|single|one|ein)[\s-]*(?:phase|phasen|phasig)", re.IGNORECASE
-)
-_BACKUP = re.compile(r"backup|back-up|notstrom|ersatzstrom", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -234,11 +220,15 @@ def plan(
     subject: Subject,
     lang: str,
     bare: bool = False,
+    earlier: Sequence[str] = (),
 ) -> Route:
     """The route of one turn (module docstring).
 
     `bare` is true when the message is nothing but product words: then a category
     word ("EMS", "Zubehör") searches its products as a brand or model word does.
+    `earlier` is the conversation's previous user messages: a sizing prefill may
+    carry figures the customer already stated, and this message wins on a field
+    both name (#365, dossier §1.12).
     """
     intent = reading.intent if reading and reading.confidence >= CONFIDENT else None
     named = [m for m in matches if m.kind in ("brand", "series", "model")]
@@ -268,18 +258,23 @@ def plan(
     if intent == "sizing":
         return Route(
             "sizing",
-            (Call("linker/size-hint", stated_size_hint(message)),),
+            (
+                Call(
+                    "linker/size-hint",
+                    stated_size_hint((*earlier, message)),
+                ),
+            ),
             action="open_configurator",
             no_cards=True,
             no_handoff=True,
             hint=(
                 "This is a sizing question. The Solution Configurator sizes the "
                 "system from the customer's PV and consumption: say so in one or "
-                "two sentences and add the open_configurator action (the "
-                "service fills its URL from the customer's own words; a field "
-                "they did not state is absent). No product cards. Do not call "
-                "size-hint with a phase, backup, yearly load or postcode they "
-                "did not state."
+                "two sentences and add the open_configurator action (the service "
+                "fills its URL from pv_kwp, annual_load_kwh, phase, backup and "
+                "plz the customer stated in the conversation, and leaves out "
+                "every field they did not state). No product cards. Call "
+                "size-hint with an empty object."
             ),
             reasons=tuple(reasons),
         )
@@ -543,36 +538,272 @@ def person(reasons: list[str]) -> Route:
     return Route("person", reasons=tuple(reasons))
 
 
-def stated_size_hint(message: str) -> dict[str, Any]:
+# A stated size outside this band is not a residential prefill (#365 round 2).
+# The configurator URL this reader fills is the residential form (spec 14:
+# a commercial site brings a load profile, not these fields). Zero is a parse
+# miss — a thousands group read on its own — not a size the customer stated.
+# The ceilings are the round-2 review's bounds: above 1 000 kWp or
+# 100 000 kWh/year the figure is dropped rather than written into the URL.
+_MAX_KWP = 1000
+_MAX_KWH = 100_000
+# A quantity, including a thousands group. A group is three digits
+# (German "4.500", English "12,000", spaced "12 000"; #365 round 2).
+# Space, dot and comma are grouping; the last separator is the decimal
+# when both appear. Grouped forms are tried first so "12 000" is one
+# token and never the trailing "000". One or two digits after a single
+# separator stay a decimal ("12,5", "12.5").
+_NUM = (
+    r"(?<!\d)(?P<num>"
+    r"\d{1,3}(?:[ \u00a0]\d{3})+(?:[.,]\d+)?"
+    r"|\d{1,3}(?:\.\d{3})+(?:,\d+)?"
+    r"|\d{1,3}(?:,\d{3})+(?:\.\d+)?"
+    r"|\d+(?:[.,]\d+)?"
+    r")(?!\d)"
+)
+_KWP = re.compile(
+    _NUM + r"\s*(?:kwp|kilo?watt[\s-]*peak|kw[\s-]*peak)\b",
+    re.IGNORECASE,
+)
+# The year word may sit before the number ("annual consumption 6000 kWh") or
+# after it ("6000 kWh Jahresverbrauch", "pro Jahr"). Longer phrases come first.
+_YEAR_BEFORE = (
+    r"(?:annual\s+consumption|annual\s+load|yearly\s+consumption|yearly\s+load|"
+    r"consumption\s+per\s+year|jahresverbrauch|verbrauch\s+pro\s+jahr|"
+    r"pro\s+jahr|im\s+jahr|jährlich|jaehrlich|yearly|annual)"
+)
+_YEAR_AFTER = (
+    r"(?:/\s*(?:year|yr|jahr|a)\b|per\s+year|a\s+year|pro\s+jahr|im\s+jahr|"
+    r"jährlich|jaehrlich|yearly|annual|jahresverbrauch)"
+)
+_GAP = r"(?:\s*[:\-]\s*|\s+)(?:(?:of|von|ca\.?|about|circa|rund|etwa|ungefähr|ungefaehr)\s+)?"
+_ANNUAL_BEFORE = re.compile(
+    _YEAR_BEFORE + _GAP + _NUM + r"\s*kwh\b",
+    re.IGNORECASE,
+)
+_ANNUAL_AFTER = re.compile(
+    _NUM + r"\s*kwh\b\s*,?\s*" + _YEAR_AFTER,
+    re.IGNORECASE,
+)
+# "phasig" is not a prefix of "phase", so both stems are listed. A trailing
+# inflection ("dreiphasigen", "Drehstromanschluss") stays the same word.
+_THREE_PHASE = re.compile(
+    r"\b(?:(?:3|three|drei)[\s-]*phas(?:e|ig)\w*|drehstrom\w*)\b",
+    re.IGNORECASE,
+)
+_ONE_PHASE = re.compile(
+    r"\b(?:(?:1|single|one|ein)[\s-]*phas(?:e|ig)\w*|wechselstrom\w*)\b",
+    re.IGNORECASE,
+)
+_BACKUP = re.compile(
+    r"\b(?:back-up|backup|notstrom|ersatzstrom)\w*\b",
+    re.IGNORECASE,
+)
+# A German postcode is five digits (SizeHint.php `/^[0-9]{5}$/`, spec 13).
+_PLZ_WORD = r"\b(?:plz|postleitzahl|postcode|zip(?:\s+code)?)\b"
+_PLZ = re.compile(
+    rf"{_PLZ_WORD}\s*[:\-]?\s*(?P<after>\d{{5}})(?!\d)"
+    rf"|(?<!\d)(?P<before>\d{{5}})(?!\d)\s*[:\-]?\s*{_PLZ_WORD}",
+    re.IGNORECASE,
+)
+# A negation applies to the keyword it stands next to, not to the whole
+# message (#365 round 2: "kein Notstrom", "no backup needed", "Notstrom ist
+# nicht nötig", "backup is not required"). Those sentences leave at most
+# two words between the keyword and the negation. Three words is that gap
+# plus one, so a short copula counts and a negation elsewhere does not.
+# The 48-character slice in `_negated` holds those three words in either
+# language.
+_NEG_WORD = (
+    r"(?:ohne|kein(?:e[mnrs]?)?|nicht|nie|niemals|without|no|not|"
+    r"don'?t|do not|doesn'?t|does not|never)"
+)
+_NEG_BEFORE = re.compile(
+    rf"\b{_NEG_WORD}\b(?:\s+\w+){{0,3}}\s*$",
+    re.IGNORECASE,
+)
+_NEG_AFTER = re.compile(
+    rf"^(?:\s+\w+){{0,3}}\s+\b{_NEG_WORD}\b",
+    re.IGNORECASE,
+)
+# Verb-first (DE) and auxiliary / wh-first (EN) clauses are questions. A finite
+# verb later in the clause is ordinary German word order ("Mein Haus ist
+# einphasig") and is not a question by itself.
+_LEADING_QUESTION = re.compile(
+    r"""^[\s"'“”«»(\[]*(?:"""
+    r"can|could|does|do|did|is|are|was|were|will|would|should|has|have|may|might|"
+    r"what|which|how|why|when|where|who|"
+    r"ist|sind|hat|haben|kann|können|koennen|wird|werden|"
+    r"unterstützt|unterstuetzt|gibt|braucht|soll|sollen|darf|dürfen|duerfen|"
+    r"wie|was|welche[rsnm]?|warum|wann|wo|wer|wieso|weshalb"
+    r""")\b""",
+    re.IGNORECASE,
+)
+
+
+def stated_size_hint(message: str | Sequence[str]) -> dict[str, Any]:
     """The size-hint object a configurator URL may be built from (#365).
 
-    `sizing_input` is the only source: kWp, yearly kWh, phase and backup as
-    this message writes them. Callers pass this dict on and drop whatever
+    `sizing_input` is the only source. A string is one message. A sequence is
+    the conversation's user messages in order: a later message overrides the
+    same field and leaves the others, so a follow-up question keeps a size the
+    customer already stated. Callers pass this dict on and drop whatever
     object they were given — the model's, when the route did not call the
     tool and the model calls it itself. A catalogue fact is not a source
     either: no rule copies a named product's phase into this prefill
     (docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md §1.12; the read
     stays deterministic, §1.1).
+
+    A negated backup word is the stated value ``none`` (the configurator's
+    own enum, SizeHint.php). Omitting it would drop a decision the customer
+    already made. A negated phase word sets nothing and does not flip to the
+    other phase. An interrogative clause does not set phase or backup.
     """
-    return sizing_input(message)
+    texts = (message,) if isinstance(message, str) else tuple(message)
+    found: dict[str, Any] = {}
+    for text in texts:
+        found.update(sizing_input(text))
+    return found
 
 
 def sizing_input(message: str) -> dict[str, Any]:
-    """The size-hint input the message states in figures (kWp, kWh a year, phase, backup)."""
+    """The five size-hint fields this message states (spec 13 §A).
+
+    pv_kwp, annual_load_kwh, phase, backup and plz. A question clause still
+    contributes a figure or a postcode — "what size for 8 kWp and 6000 kWh a
+    year?" is how a customer states those — and contributes neither phase nor
+    backup, because "can it do backup?" is not the customer's installation.
+    """
     found: dict[str, Any] = {}
-    kwp = _KWP.search(message)
-    if kwp:
-        found["pv_kwp"] = float(kwp.group(1).replace(",", "."))
-    annual = _ANNUAL.search(message)
-    if annual:
-        found["annual_load_kwh"] = float(re.sub(r"[.,]", "", annual.group(1)))
-    if _THREE_PHASE.search(message):
-        found["phase"] = 3
-    elif _ONE_PHASE.search(message):
-        found["phase"] = 1
-    if _BACKUP.search(message):
-        found["backup"] = "needed"
+    for clause, interrogative in _clauses(message):
+        if not interrogative:
+            _read_phase(clause, found)
+            _read_backup(clause, found)
+        _read_kwp(clause, found)
+        _read_annual(clause, found)
+        _read_plz(clause, found)
     return found
+
+
+def _clauses(message: str) -> list[tuple[str, bool]]:
+    """Clauses split on ! ? ; newlines and a sentence stop.
+
+    A dot followed by a digit stays inside the number ("4.500", "12.5",
+    "12.000"). A comma is not a boundary either, so "12,5" stays one token.
+    The terminator stays on the clause so a question mark still marks it.
+    """
+    pieces = re.split(r"([?!;\n]|\.(?!\d))", message)
+    clauses: list[tuple[str, bool]] = []
+    pending = ""
+    for index, piece in enumerate(pieces):
+        pending += piece
+        if index % 2 == 0 and index + 1 < len(pieces):
+            continue
+        text = pending.strip()
+        pending = ""
+        if text:
+            clauses.append(
+                (text, "?" in text or _LEADING_QUESTION.search(text) is not None)
+            )
+    return clauses
+
+
+def _parse_number(token: str) -> float | None:
+    """A stated number. Grouping separators are not decimals of exactly three digits."""
+    text = token.replace("\u00a0", "").replace(" ", "")
+    if not text:
+        return None
+    if "," in text and "." in text:
+        if text.rfind(",") > text.rfind("."):
+            text = text.replace(".", "").replace(",", ".")
+        else:
+            text = text.replace(",", "")
+    elif _grouped(text, ","):
+        text = text.replace(",", "")
+    elif "," in text:
+        text = text.replace(",", ".")
+    elif _grouped(text, "."):
+        text = text.replace(".", "")
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
+def _grouped(text: str, separator: str) -> bool:
+    """True when `separator` groups thousands, not a decimal.
+
+    A thousands group is three digits and the head group is one to three
+    ("4.500", "12,000"; #365 round 2, route test "4.500 kWh pro Jahr" = 4500).
+    One or two digits after the separator are a decimal ("12,5", "12.5").
+    """
+    parts = text.split(separator)
+    if len(parts) > 2:
+        return True
+    return len(parts) == 2 and len(parts[1]) == 3 and len(parts[0]) <= 3
+
+
+def _negated(text: str, start: int, end: int) -> bool:
+    """Whether a negation word stands next to the keyword at [start, end)."""
+    # 48 characters: the three-word window documented on `_NEG_WORD` (#365).
+    before = _flat(text[max(0, start - 48) : start])
+    after = _flat(text[end : end + 48])
+    return (
+        _NEG_BEFORE.search(before) is not None or _NEG_AFTER.search(after) is not None
+    )
+
+
+def _flat(text: str) -> str:
+    """Curly apostrophes as `'`, so "don't" and "don’t" are the same word."""
+    return text.replace("\u2019", "'").replace("\u2018", "'").replace("`", "'")
+
+
+def _read_kwp(text: str, found: dict[str, Any]) -> None:
+    for match in _KWP.finditer(text):
+        value = _parse_number(match.group("num"))
+        if value is not None and 0 < value <= _MAX_KWP:
+            found["pv_kwp"] = value
+
+
+def _read_annual(text: str, found: dict[str, Any]) -> None:
+    hits: list[tuple[int, str]] = []
+    for pattern in (_ANNUAL_BEFORE, _ANNUAL_AFTER):
+        hits.extend(
+            (match.start(), match.group("num")) for match in pattern.finditer(text)
+        )
+    for _start, token in sorted(hits):
+        value = _parse_number(token)
+        if value is not None and 0 < value <= _MAX_KWH:
+            found["annual_load_kwh"] = value
+
+
+def _read_phase(text: str, found: dict[str, Any]) -> None:
+    mentions: list[tuple[int, int, int]] = []
+    for match in _THREE_PHASE.finditer(text):
+        mentions.append((match.start(), 3, match.end()))
+    for match in _ONE_PHASE.finditer(text):
+        mentions.append((match.start(), 1, match.end()))
+    for start, phase, end in sorted(mentions):
+        if _negated(text, start, end):
+            if found.get("phase") == phase:
+                del found["phase"]
+            continue
+        found["phase"] = phase
+
+
+def _read_backup(text: str, found: dict[str, Any]) -> None:
+    for match in _BACKUP.finditer(text):
+        # `none` is a value the customer stated, not an empty field: the
+        # configurator form's backup enum is none / needed / needed_accessory_ok
+        # (SizeHint.php). A negated keyword must not become "needed".
+        found["backup"] = (
+            "none" if _negated(text, match.start(), match.end()) else "needed"
+        )
+
+
+def _read_plz(text: str, found: dict[str, Any]) -> None:
+    for match in _PLZ.finditer(text):
+        code = match.group("after") or match.group("before")
+        if code:
+            found["plz"] = code
 
 
 def _search_input(matches: list[Match], lang: str) -> dict[str, Any] | None:

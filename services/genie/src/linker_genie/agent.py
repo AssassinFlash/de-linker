@@ -17,13 +17,14 @@ from __future__ import annotations
 
 import json
 import os
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from linker_genie import attachments, knowledge, page, timing
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
+from linker_genie.conversation import customer_messages
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.route import stated_size_hint
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
@@ -64,11 +65,12 @@ INPUT_DOCS: dict[str, str] = {
         "pair, product_ids to check the two products of a mixed pair."
     ),
     "linker/size-hint": (
-        "{} — pass an empty object. The service sets pv_kwp, "
-        "annual_load_kwh, phase (1|3) and backup "
-        "('none'|'needed'|'needed_accessory_ok') only when the customer's "
-        "own message states them, and drops every other field, including "
-        "plz. Do not send those fields yourself; a guess is dropped."
+        "{} — pass an empty object. The service fills pv_kwp, "
+        "annual_load_kwh, phase (1|3), backup "
+        "('none'|'needed'|'needed_accessory_ok') and plz (five digits) "
+        "from values the customer stated in the conversation, and leaves "
+        "out every field they did not state. Do not send those fields "
+        "yourself; a guess is dropped."
     ),
     "linker/inquiry-status": "{}",
     "linker/handoff-team": "{summary: string}",
@@ -237,7 +239,7 @@ def make_generate(
         if prepared is not None and prepared.knowledge_error:
             raise knowledge.KnowledgeUnavailable(prepared.knowledge_error)
         budget = ToolBudget(used=prepared.calls_made if prepared else 0)
-        customer = _customer_message(request)
+        customer = customer_messages(request)
         tools = []
         for name in TOOL_NAMES:
             if name == knowledge.NAME:
@@ -291,18 +293,6 @@ def _tool_name(ability: str) -> str:
     return ability.replace("/", "_").replace("-", "_")
 
 
-def _customer_message(request: TurnRequest) -> str:
-    """The message the route reads: the last thing the customer wrote."""
-    return next(
-        (
-            message.content
-            for message in reversed(request.messages)
-            if message.role == "user"
-        ),
-        "",
-    )
-
-
 def _timed(
     clock: timing.Timing | None,
     key: str,
@@ -325,13 +315,15 @@ def _ability_runner(
     name: str,
     user_context: str | None = None,
     locale: str = "en",
-    message: str = "",
+    message: str | Sequence[str] = "",
     clock: timing.Timing | None = None,
 ) -> Callable[[dict[str, Any] | None], Any]:
     def call(arguments: dict[str, Any] | None) -> Any:
         # size-hint ignores `arguments` (#365): the model's object is not a
-        # source. Phase, backup, yearly load and postcode reach the tool only
-        # when this message states them. The code route sends the same dict.
+        # source. pv_kwp, annual_load_kwh, phase, backup and plz reach the
+        # tool only from what the customer stated in this conversation (each
+        # user message, a later one overriding the same field). The code
+        # route sends the same dict.
         sent = stated_size_hint(message) if name == "linker/size-hint" else arguments
         payload, gathered = client.record(name, sent, user_context, locale)
         budget.parts.append(gathered)

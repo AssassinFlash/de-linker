@@ -3,27 +3,54 @@
 The German campaign sentence fell through to the model (Jev sizing 0.77),
 and the model called size-hint with phase=1. The English sentence was routed
 in code and the URL was pv_kwp only. Both paths now build that URL from
-`stated_size_hint`, and the query below is what SizeHint.php writes from the
-object the service actually sends (plugins/linker-commerce includes/Abilities/SizeHint.php).
+`stated_size_hint`.
+
+The query string is not rebuilt here. `fixtures/size-hint-urls.json` is what
+`SizeHint::execute` writes (home_url `https://de-linker.com`, `add_query_arg`
+as `http_build_query` — the doubles in SizeHintTest). SizeHintTest asserts
+the class still produces that file. This module only looks a URL up.
+
+Registered for #339 (the campaign fixture ticket): the cases in this module
+are the #365 prefill regressions — the campaign sentence, a negated backup,
+a question that must not become phase or backup, the figures the first reader
+dropped (year-word either side, kW peak, Drehstrom, spaced thousands), a
+stated postcode, and a value stated on an earlier user message. #339 should
+fold these sentences into the campaign suite; until then they stay here.
 """
 
 from __future__ import annotations
 
-import re
+import json
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qs, urlencode, urlparse
+from urllib.parse import parse_qs, urlparse
 
 import httpx
 import pytest
 
 from linker_genie.abilities import AbilityClient
 from linker_genie.agent import INPUT_DOCS, ToolBudget, _ability_runner, instructions
+from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Vocabulary
-from linker_genie.route import Call, Route, Subject, plan, stated_size_hint
+from linker_genie.route import (
+    Call,
+    Route,
+    Subject,
+    plan,
+    sizing_input,
+    stated_size_hint,
+)
 from linker_genie.schema import TurnRequest
 from linker_genie.understand import Prepared, Understander, _run_calls
+
+# Produced by SizeHint.php. See the module docstring for the choice.
+_FIXTURE = json.loads(
+    (Path(__file__).parent / "fixtures" / "size-hint-urls.json").read_text(
+        encoding="utf-8"
+    )
+)
 
 # Campaign #330 I5, evidence final.jsonl. The customer names PV size and a
 # battery capacity, and no phase, yearly load, backup or postcode.
@@ -41,7 +68,6 @@ UNSAFE = {
 # EcoFlow OCEAN 2 single-phase hybrid in the live snapshot (storeapi.json).
 # The title gloss says single-phase / einphasig; the model code does not.
 MODEL = "HD-P1-3K-S2"
-_BACKUP = {"none", "needed", "needed_accessory_ok"}
 
 
 def _reading(intent: str, confidence: float) -> Reading:
@@ -58,45 +84,34 @@ def _request(message: str, locale: str) -> TurnRequest:
     )
 
 
-def _php_number(raw: str) -> str | None:
-    """PHP `(string)(float)` for a positive size-hint number: `12`, not `12.0`."""
-    try:
-        number = float(raw)
-    except ValueError:
-        return None
-    if number <= 0:
-        return None
-    text = format(number, "f").rstrip("0").rstrip(".")
-    return text or "0"
+def _fixture_key(arguments: dict[str, Any]) -> str:
+    """One key for a size-hint object, whether it came from JSON or the wire."""
+    norm: dict[str, Any] = {}
+    for key, value in arguments.items():
+        if key in ("pv_kwp", "annual_load_kwh"):
+            number = float(value)
+            norm[key] = int(number) if number.is_integer() else number
+        elif key == "phase":
+            norm[key] = int(float(value))
+        else:
+            norm[key] = value
+    return json.dumps(norm, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
 
-def _configurator_url(arguments: dict[str, str]) -> str:
-    """The query SizeHint::execute writes from the input it was given."""
-    query: dict[str, str] = {}
-    if "pv_kwp" in arguments:
-        pv = _php_number(arguments["pv_kwp"])
-        if pv is not None:
-            query["pv_kwp"] = pv
-    if "annual_load_kwh" in arguments:
-        annual = _php_number(arguments["annual_load_kwh"])
-        if annual is not None:
-            query["annual_kwh"] = annual
-    if "phase" in arguments:
-        try:
-            phase = int(float(arguments["phase"]))
-        except ValueError:
-            phase = 0
-        if phase in (1, 3):
-            query["phase"] = str(phase)
-    backup = arguments.get("backup")
-    if backup in _BACKUP:
-        query["backup"] = backup
-    plz = arguments.get("plz", "")
-    if re.fullmatch(r"[0-9]{5}", plz):
-        query["plz"] = plz
-    url = "https://de-linker.test/solution-configurator/"
-    if query:
-        url += "?" + urlencode(query)
+_FIXTURE_URLS = {
+    _fixture_key(case["input"]): case["configurator_url"] for case in _FIXTURE["cases"]
+}
+
+
+def _configurator_url(arguments: dict[str, Any]) -> str:
+    """The URL SizeHint.php produced for this input. Not a second mapping."""
+    key = _fixture_key(arguments)
+    url = _FIXTURE_URLS.get(key)
+    if not isinstance(url, str):
+        raise AssertionError(
+            f"no SizeHint.php fixture for {key}; regenerate "
+            "services/genie/tests/fixtures/size-hint-urls.json"
+        )
     return url
 
 
@@ -174,19 +189,23 @@ def _code_url(
 
 
 def _model_url(
-    message: str, locale: str, proposed: dict[str, Any]
+    message: str,
+    locale: str,
+    proposed: dict[str, Any],
+    earlier: Sequence[str] = (),
 ) -> tuple[dict[str, Any], str]:
+    spoken: str | tuple[str, ...] = (*earlier, message) if earlier else message
     box = _Client()
     try:
         runner = _ability_runner(
-            box.client, ToolBudget(), "linker/size-hint", None, locale, message
+            box.client, ToolBudget(), "linker/size-hint", None, locale, spoken
         )
         payload = runner(proposed)
     finally:
         box.close()
     sent = box.requests[0]
     assert sent.url.path.endswith("/linker/size-hint/run")
-    arguments = stated_size_hint(message)
+    arguments = stated_size_hint(spoken)
     url = payload["configurator_url"]
     assert _wire(sent).keys() == arguments.keys()
     return arguments, url
@@ -293,11 +312,218 @@ def test_a_single_phase_catalogue_product_does_not_prefill_phase(
         assert _query(url) == {"pv_kwp": ["12"]}
 
 
-def test_both_prompts_tell_the_model_to_leave_unstated_fields_out() -> None:
+def test_both_prompts_state_the_five_field_conversation_contract() -> None:
     english = instructions("en")
     german = instructions("de")
+    assert "empty object" in english
+    assert "conversation" in english
     assert "leaves out every field they did not state" in english
+    assert "leeren Objekt" in german
+    assert "Gespräch" in german
     assert "lässt jedes nicht genannte Feld weg" in german
+    for field in ("pv_kwp", "annual_load_kwh", "phase", "backup", "plz"):
+        assert field in english
+        assert field in german
     doc = INPUT_DOCS["linker/size-hint"]
     assert "empty object" in doc
-    assert "drops every other field" in doc
+    assert "conversation" in doc
+    for field in ("pv_kwp", "annual_load_kwh", "phase", "backup", "plz"):
+        assert field in doc
+    assert "drops every other field" not in doc
+    assert "including plz" not in doc
+
+
+# #339 registration: the sentences below are the round-2 regressions. A negated
+# backup is the stated value "none" (SizeHint.php's enum), never "needed".
+@pytest.mark.parametrize(
+    "message",
+    [
+        "ohne Notstrom",
+        "kein Notstrom nötig",
+        "no backup needed",
+        "kein Ersatzstrom",
+        "backup is not required",
+        "Notstrom ist nicht nötig",
+    ],
+)
+def test_a_negated_backup_is_none_and_never_needed(message: str) -> None:
+    assert sizing_input(message) == {"backup": "none"}
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "not single-phase",
+        "nicht einphasig",
+        "kein Drehstrom",
+        "not three-phase",
+    ],
+)
+def test_a_negated_phase_does_not_become_that_phase(message: str) -> None:
+    assert "phase" not in sizing_input(message)
+    assert "backup" not in sizing_input(message)
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "Ist einphasig möglich?",
+        "can it do backup?",
+        "unterstützt das Drehstrom?",
+        "can it do backup",
+        "Ist einphasig möglich",
+    ],
+)
+def test_a_question_does_not_prefill_phase_or_backup(message: str) -> None:
+    found = sizing_input(message)
+    assert "phase" not in found
+    assert "backup" not in found
+
+
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        ("annual consumption 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("consumption per year 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("yearly consumption 6000 kWh", {"annual_load_kwh": 6000.0}),
+        ("6000 kWh Jahresverbrauch", {"annual_load_kwh": 6000.0}),
+        ("12 kW peak", {"pv_kwp": 12.0}),
+        ("12 kWp", {"pv_kwp": 12.0}),
+        ("12 Kilowatt Peak", {"pv_kwp": 12.0}),
+        ("400 V Drehstrom", {"phase": 3}),
+        ("12 000 kWh pro Jahr", {"annual_load_kwh": 12000.0}),
+        ("12.000 kWh pro Jahr", {"annual_load_kwh": 12000.0}),
+        ("12,000 kWh per year", {"annual_load_kwh": 12000.0}),
+        ("Wechselstrom", {"phase": 1}),
+        ("einphasig", {"phase": 1}),
+        ("1-phasig", {"phase": 1}),
+        ("3-phasig", {"phase": 3}),
+        ("Drehstrom", {"phase": 3}),
+        ("three-phase", {"phase": 3}),
+        ("PLZ 80538", {"plz": "80538"}),
+        ("Postleitzahl 80538", {"plz": "80538"}),
+        ("postcode 80538", {"plz": "80538"}),
+        ("ZIP 80538", {"plz": "80538"}),
+        ("80538 PLZ", {"plz": "80538"}),
+    ],
+)
+def test_stated_figures_the_first_reader_dropped(
+    message: str, expected: dict[str, object]
+) -> None:
+    assert sizing_input(message) == expected
+
+
+def test_a_spaced_thousands_group_is_never_read_as_zero() -> None:
+    found = sizing_input("12 000 kWh pro Jahr")
+    assert found["annual_load_kwh"] == 12000.0
+    assert found["annual_load_kwh"] != 0
+
+
+@pytest.mark.parametrize(
+    "message",
+    ["0 kWh pro Jahr", "100001 kWh per year", "0 kWp", "1001 kWp", "000 kWh pro Jahr"],
+)
+def test_an_implausible_size_is_dropped(message: str) -> None:
+    found = sizing_input(message)
+    assert "annual_load_kwh" not in found
+    assert "pv_kwp" not in found
+
+
+def test_drehstrom_and_three_phase_are_the_same_phase() -> None:
+    assert (
+        sizing_input("Drehstrom")["phase"] == sizing_input("three-phase")["phase"] == 3
+    )
+
+
+def test_a_question_keeps_a_stated_figure_and_drops_the_asked_phase() -> None:
+    """A sizing question still carries the kWp the customer gave."""
+    assert sizing_input("What size battery for 8 kWp, three-phase?") == {"pv_kwp": 8.0}
+
+
+def test_an_earlier_statement_survives_the_next_sizing_question(
+    vocabulary: Vocabulary,
+) -> None:
+    earlier = "12 kWp, dreiphasig"
+    later = "und die Speichergröße?"
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "c-365",
+            "locale": "de",
+            "messages": [
+                {"role": "user", "content": earlier},
+                {"role": "assistant", "content": "Der Konfigurator legt das aus."},
+                {"role": "user", "content": later},
+            ],
+        }
+    )
+    box = _Client()
+    try:
+        prepared = Understander(lambda: vocabulary, _Jev(1.0)).prepare(
+            request, box.client
+        )
+    finally:
+        box.close()
+    assert prepared.route.name == "sizing"
+    assert prepared.route.calls[0].arguments == {"pv_kwp": 12.0, "phase": 3}
+    assert prepared.results[0]["arguments"] == {"pv_kwp": 12.0, "phase": 3}
+    url = prepared.facts.facts["size.configurator_url"].value
+    assert _query(str(url)) == {"pv_kwp": ["12"], "phase": ["3"]}
+
+    arguments, model_url = _model_url(later, "de", {"phase": 1}, earlier=(earlier,))
+    assert arguments == {"pv_kwp": 12.0, "phase": 3}
+    assert _query(model_url) == {"pv_kwp": ["12"], "phase": ["3"]}
+
+
+def test_a_later_user_message_overrides_only_the_field_it_states() -> None:
+    found = stated_size_hint(
+        ["einphasig, 5 kWp, mit Notstrom", "doch dreiphasig, PLZ 80538"]
+    )
+    assert found == {"pv_kwp": 5.0, "phase": 3, "backup": "needed", "plz": "80538"}
+    assert stated_size_hint(["mit Notstrom", "ohne Notstrom"])["backup"] == "none"
+
+
+def test_a_later_question_does_not_wipe_an_earlier_statement() -> None:
+    found = stated_size_hint(
+        [
+            "12 kWp, dreiphasig, mit Notstrom",
+            "Ist einphasig möglich?",
+            "can it do backup?",
+        ]
+    )
+    assert found == {"pv_kwp": 12.0, "phase": 3, "backup": "needed"}
+
+
+def test_a_stated_postcode_reaches_the_url() -> None:
+    message = "PLZ 80538, 12 kWp, dreiphasig"
+    assert sizing_input(message) == {"plz": "80538", "pv_kwp": 12.0, "phase": 3}
+    _arguments, url = _model_url(message, "de", {})
+    assert _query(url) == {"plz": ["80538"], "pv_kwp": ["12"], "phase": ["3"]}
+
+
+def test_the_customer_message_scan_lives_in_one_module() -> None:
+    root = Path(__file__).parents[1] / "src" / "linker_genie"
+    for name in ("agent.py", "understand.py", "app.py"):
+        text = (root / name).read_text(encoding="utf-8")
+        assert "def _customer_message" not in text
+        assert "def _last_customer_message" not in text
+        assert "def _question" not in text
+        assert "from linker_genie.conversation import" in text
+    request = TurnRequest.model_validate(
+        {
+            "conversation_id": "c-365",
+            "locale": "en",
+            "messages": [
+                {"role": "user", "content": "earlier"},
+                {"role": "assistant", "content": "reply"},
+                {"role": "user", "content": "later"},
+                {"role": "assistant", "content": "again"},
+            ],
+        }
+    )
+    assert customer_messages(request) == ["earlier", "later"]
+    assert last_customer_message(request) == "later"
+    empty = TurnRequest.model_validate(
+        {"conversation_id": "c-365", "locale": "en", "messages": []}
+    )
+    assert last_customer_message(empty) == ""
+    assert customer_messages(empty) == []

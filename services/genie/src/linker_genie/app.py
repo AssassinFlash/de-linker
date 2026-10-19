@@ -34,6 +34,7 @@ from linker_genie.agent import (
     model_name,
     provider_name,
 )
+from linker_genie.conversation import last_customer_message
 from linker_genie.cycle import TurnResult, run
 from linker_genie.facts import TurnFacts
 from linker_genie.gate import Gate
@@ -168,7 +169,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
                 model=model_name(),
                 tool_calls=[],
                 output={},
-                question=_question(body),
+                question=last_customer_message(body),
                 page=body.page_context.model_dump(),
                 understanding=prepared.log,
                 approved=body.user.partner,
@@ -195,7 +196,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         # The inquiry confirmation card (#250): the model may ask for it, and an
         # explicit "send an inquiry" adds the action when the model did not
         # (inquiry.decide). Only the card's Send button writes the inquiry.
-        if inquiry.decide(_question(body), shipped["blocks"]):
+        if inquiry.decide(last_customer_message(body), shipped["blocks"]):
             shipped["blocks"].append(
                 {"type": "action", "name": inquiry.ACTION, "args": {}}
             )
@@ -230,7 +231,7 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
             model="none" if code_made else model_name(),
             tool_calls=result.facts.tool_calls,
             output=shipped,
-            question=_question(body),
+            question=last_customer_message(body),
             page=body.page_context.model_dump(),
             understanding=prepared.log,
             approved=body.user.partner,
@@ -323,14 +324,6 @@ def _answer(
         ability_client(), prepared=prepared, pages=page_reader().read, clock=clock
     )
     return run(body, generate, prepared.route, prepared.facts, commerce, clock), None
-
-
-def _question(body: TurnRequest) -> str:
-    """The customer message this turn answers: the thread's last user message."""
-    for message in reversed(body.messages):
-        if message.role == "user":
-            return message.content
-    return ""
 
 
 def _sse(
