@@ -36,7 +36,7 @@ from __future__ import annotations
 
 from linker_genie.facts import TurnFacts
 from linker_genie.hydrate import hydrate
-from linker_genie.route import SEARCH_LIMIT, NamedModel, Route
+from linker_genie.route import SEARCH_LIMIT, NamedModel, Route, several
 from linker_genie.schema import (
     ASK_FIELDS,
     ActionBlock,
@@ -98,6 +98,17 @@ DOCUMENTS = {
 # Document links the document shape shows: search-knowledge ranks its hits, and three
 # keep the answer short (the trial's failures were answers that listed too much).
 FALLBACK_DOCUMENTS = 3
+
+# Absence phrases the fallback writes. ground.py imports them, so rewording a
+# sentence cannot leave the check matching the old words. EN keeps the #251
+# range wording ("One line is not in our product range."). DE is written in
+# Sie-form on its own; the adversarial pass is
+# docs/acceptance/2026-10-19/379/copy-review.md and is not closed here.
+# Dossier 2026-10-19 §1.1, §1.11 and §2 item 10: no competitor wording to copy.
+NOT_IN_RANGE_EN = "not in our product range"
+NOT_IN_RANGE_DE = "haben wir kein Produkt"
+NO_MATCH_EN = "No product matched that search."
+NO_MATCH_DE = "In unseren Produkten gibt es dazu keinen Treffer."
 
 # English function words that only appear in an English sentence. The e2e
 # suite uses the same test (tests/e2e/specs/genie.spec.ts ENGLISH_ONLY) to
@@ -209,12 +220,19 @@ def _clarify(
     if route is None:
         return None
     notes = route.named_models
+    # Gate 5 (spec 13): a failed search is not an empty catalog. These branches
+    # would otherwise say the code is outside the range, or that the search did
+    # not return it. The caller then uses the mailbox sentence or DEGRADED.
+    # get-product with no search-products call is a finished documents lookup,
+    # not an outage: the unsearched codes still have to be named as not searched.
+    if any(note.searched for note in notes) and _lookup_failed(facts):
+        return None
     qualified = facts.qualified_ids
     missed = [note for note in notes if not note.searched]
     conflict_lines: list[str] = []
     conflict_ids: list[int] = []
     for note in notes:
-        if not (note.searched and note.written_brand and note.catalog_brand):
+        if not (note.is_conflict and note.searched):
             continue
         own_ids = [pid for pid in note.product_ids if pid in qualified]
         if not own_ids:
@@ -238,8 +256,8 @@ def _clarify(
             return _product_answer(language, lines, sorted(qualified))
         lines.extend(_missed_sentences(missed, language))
         return _ask_answer(language, lines)
-    known = [note for note in notes if note.searched and not note.unknown]
-    if len(known) >= 2:
+    if several(notes, searched=True):
+        known = [note for note in notes if note.searched_known]
         pending: list[str] = []
         found_ids: list[int] = []
         for note in known:
@@ -252,7 +270,7 @@ def _clarify(
                 pending.append(_not_returned(note.code, language))
         if found_ids:
             lead = (
-                "Das sind die Produkte zu den Modellen in Ihrer Nachricht."
+                "Die Karten gehören zu den Modellen, die Sie genannt haben."
                 if language == "de"
                 else "These are the products for the models in your message."
             )
@@ -272,53 +290,51 @@ def _clarify(
         and not facts.product_ids
         and _search_succeeded(facts)
     ):
-        line = (
-            "Zu dieser Suche gibt es kein Produkt."
-            if language == "de"
-            else "No product matched that search."
-        )
+        line = NO_MATCH_DE if language == "de" else NO_MATCH_EN
         return _ask_answer(language, [line])
     return None
 
 
 def _conflict_sentence(note: NamedModel, language: Locale) -> str:
+    # One sentence names the written brand, the code and the catalog brand.
+    # Grounding accepts a conflict only in that shape.
     if language == "de":
         return (
-            f"{note.code} ist unter {note.catalog_brand} geführt. "
-            f"Ihre Nachricht nennt {note.written_brand}. "
-            f"Die Karte zeigt das {note.catalog_brand}-Produkt."
+            f"Sie haben {note.written_brand} genannt, {note.code} ist bei uns "
+            f"ein {note.catalog_brand}-Produkt und steht auf der Karte."
         )
     return (
-        f"{note.code} is listed under {note.catalog_brand}. "
-        f"Your message names {note.written_brand}. "
-        f"The card shows the {note.catalog_brand} product."
+        f"You wrote {note.written_brand}; {note.code} is a {note.catalog_brand} "
+        "product, and the card shows it."
     )
 
 
 def _range_sentence(codes: list[str], language: Locale) -> str:
     shown = ", ".join(codes)
     if language == "de":
-        verb = "sind" if len(codes) > 1 else "ist"
-        return f"{shown} {verb} nicht in unserem Sortiment."
+        return f"Für {shown} {NOT_IN_RANGE_DE}."
     verb = "are" if len(codes) > 1 else "is"
-    return f"{shown} {verb} not in our product range."
+    return f"{shown} {verb} {NOT_IN_RANGE_EN}."
 
 
 def _closest_sentence(language: Locale) -> str:
     if language == "de":
-        return "Die nächsten Produkte in unseren Produktdaten stehen auf den Karten."
+        return "Auf den Karten liegen die nächsten Produkte derselben Reihe."
     return "The closest products in our product data are on the cards."
 
 
 def _not_returned(code: str, language: Locale) -> str:
     if language == "de":
-        return f"Die Suche hat {code} nicht ergeben."
+        return f"Zu {code} lieferte die Suche kein Ergebnis."
     return f"The search did not return {code}."
 
 
 def _missed_sentences(notes: list[NamedModel], language: Locale) -> list[str]:
     if language == "de":
-        return [f"{note.code} wurde in dieser Runde nicht gesucht." for note in notes]
+        return [
+            f"Nach {note.code} habe ich in dieser Runde nicht gesucht."
+            for note in notes
+        ]
     return [f"{note.code} was not searched in this turn." for note in notes]
 
 
@@ -346,6 +362,23 @@ def _ask_answer(language: Locale, lines: list[str]) -> TurnOutput:
 def _search_succeeded(facts: TurnFacts) -> bool:
     return any(
         str(call.get("name", "")).endswith("search-products") and call.get("ok") is True
+        for call in facts.tool_calls
+    )
+
+
+def _lookup_failed(facts: TurnFacts) -> bool:
+    """A searched model has nothing successful to report.
+
+    No tool result, or a search-products call that did not succeed, is an
+    outage (gate 5, spec 13). get-product alone is the documents lookup and
+    is not an empty catalog.
+    """
+    if _search_succeeded(facts):
+        return False
+    if not facts.tool_calls:
+        return True
+    return any(
+        str(call.get("name", "")).endswith("search-products")
         for call in facts.tool_calls
     )
 

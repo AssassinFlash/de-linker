@@ -25,7 +25,7 @@ from typing import Any
 from linker_genie import attachments, knowledge, page, timing
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient
 from linker_genie.facts import TurnFacts, merge
-from linker_genie.route import stated_size_hint
+from linker_genie.route import NAMED_MODEL_RULE, stated_size_hint
 from linker_genie.schema import ASK_FIELDS, TurnOutput, TurnRequest
 from linker_genie.tools import MAX_TOOL_CALLS as TOOL_LIMIT
 from linker_genie.understand import Prepared
@@ -532,16 +532,7 @@ def _user_prompt(
         "do not call handoff-team; answer with exactly one text block, "
         "'Please log in to your account to view this inquiry.' in English or "
         "'Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.' "
-        "in German, and nothing else. Several models in one message are each "
-        "searched on their own. Report every searched model from its own result "
-        "and show each product returned. Say a model has no entry only when that "
-        "model's search returned nothing. A model the routing note marks as not "
-        "searched was not searched: say that, and never say it is absent from the "
-        "product data. When the note says the customer named a brand the product "
-        "data does not list for that model, name the brand from the product data "
-        "and show the product. A model code the product data does not contain is "
-        "outside the range; offer the closest products the search returned. None "
-        "of these is a question for the team. Ask at most one question and only "
-        f"with field in {'|'.join(ASK_FIELDS)}."
+        "in German, and nothing else. " + NAMED_MODEL_RULE + " Ask at most one "
+        f"question and only with field in {'|'.join(ASK_FIELDS)}."
     )
     return "\n".join(lines)

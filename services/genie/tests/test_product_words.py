@@ -3,7 +3,12 @@
 The fixtures are the live store snapshot (tests/fixtures/storeapi.json,
 2026-10-15). #363 and #367 are the SAJ/EcoFlow readings of GoodWe models.
 #364 is a sentence that names three SAJ HS3 models.
+
+The round-2 cases #339 can import are listed in
+docs/acceptance/2026-10-19/379/339-cases.md. This file does not edit that harness.
 """
+
+from dataclasses import replace
 
 import pytest
 
@@ -22,7 +27,13 @@ from linker_genie.schema import (
     TurnOutput,
     TurnRequest,
 )
-from linker_genie.template import fallback, german_is_clean
+from linker_genie.template import (
+    DEGRADED,
+    NO_MATCH_DE,
+    NO_MATCH_EN,
+    fallback,
+    german_is_clean,
+)
 from linker_genie.tools import MAX_TOOL_CALLS
 
 SAJ_GOODWE = "Is the SAJ GW10K-ETA-G20 in stock?"
@@ -277,7 +288,7 @@ def test_conflict_fallback_names_both_brands_in_both_languages(
         assert cards and 3556 in cards[0].product_ids
         if lang == "de":
             assert german_is_clean(text)
-            assert "geführt" in text
+            assert "genannt" in text and "Karte" in text
     assert shapes[0] == shapes[1]
 
 
@@ -286,7 +297,7 @@ def test_unknown_model_fallback_offers_the_closest_products(
 ) -> None:
     for message, lang, missing, closest in (
         (UNKNOWN, "en", "not in our product range", "closest products"),
-        (UNKNOWN_DE, "de", "nicht in unserem Sortiment", "nächsten Produkte"),
+        (UNKNOWN_DE, "de", "haben wir kein Produkt", "nächsten Produkte"),
     ):
         route = _route(vocabulary, message, lang)
         found = fallback(_facts(3556), lang, route)
@@ -296,19 +307,25 @@ def test_unknown_model_fallback_offers_the_closest_products(
         assert not any(isinstance(block, HandoffBlock) for block in found.blocks)
         if lang == "de":
             assert german_is_clean(text)
-        empty = fallback(TurnFacts(), lang, route)
+        # A search that ran and returned nothing may say the code is absent.
+        empty = fallback(_facts(searched=True), lang, route)
         assert missing in _sentence(empty)
         assert any(block.type == "ask" for block in empty.blocks)
         assert not any(isinstance(block, HandoffBlock) for block in empty.blocks)
+        # No tool result is an outage, not an empty catalog.
+        outage = fallback(TurnFacts(), lang, route)
+        assert isinstance(outage.blocks[0], HandoffBlock)
+        assert outage.blocks[0].summary == DEGRADED[lang]
+        assert missing not in outage.blocks[0].summary
 
 
 def test_an_empty_product_search_clarifies_and_an_outage_does_not() -> None:
     route = Route("products", no_handoff=True, show_products=True)
     found = fallback(_facts(searched=True), "en", route)
-    assert _sentence(found) == "No product matched that search."
+    assert _sentence(found) == NO_MATCH_EN
     assert [block.type for block in found.blocks] == ["text", "ask"]
     german = fallback(_facts(searched=True), "de", route)
-    assert _sentence(german) == "Zu dieser Suche gibt es kein Produkt."
+    assert _sentence(german) == NO_MATCH_DE
     assert german_is_clean(_sentence(german))
     assert [block.type for block in german.blocks] == ["text", "ask"]
     outage = fallback(TurnFacts(), "en", route)
@@ -395,7 +412,7 @@ def test_grounding_requires_the_catalog_brand_and_accepts_it_with_the_card(
     )
     refused = check(missing, facts, route)
     assert any("GoodWe" in failure for failure in refused.failures)
-    named = TurnOutput(
+    split = TurnOutput(
         language="en",
         blocks=[
             TextBlock(
@@ -408,7 +425,28 @@ def test_grounding_requires_the_catalog_brand_and_accepts_it_with_the_card(
             CardsBlock(product_ids=[3556]),
         ],
     )
-    assert check(named, facts, route).ok
+    assert not check(split, facts, route).ok
+    catalog_only = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text="GW10K-ETA-G20 is a GoodWe product.", refs=["3556"]),
+            CardsBlock(product_ids=[3556]),
+        ],
+    )
+    catalog_refused = check(catalog_only, facts, route)
+    assert not catalog_refused.ok
+    assert any("SAJ" in failure for failure in catalog_refused.failures)
+    pointed = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="You wrote SAJ; GW10K-ETA-G20 is a GoodWe product.",
+                refs=["3556"],
+            ),
+            CardsBlock(product_ids=[3556]),
+        ],
+    )
+    assert check(pointed, facts, route).ok
 
 
 def test_a_products_handoff_is_still_refused(vocabulary: Vocabulary) -> None:
@@ -514,3 +552,278 @@ def test_a_conflict_handoff_falls_back_to_the_catalog_brand(
     assert cards and 3556 in cards[0].product_ids
     if locale == "de":
         assert german_is_clean(text)
+    reported = TurnOutput(
+        language=locale,  # type: ignore[arg-type]
+        blocks=[
+            TextBlock(text=text, refs=["3556"]),
+            CardsBlock(product_ids=[3556]),
+        ],
+    )
+    assert check(reported, facts, route).ok
+
+
+def _failed_search() -> TurnFacts:
+    facts = TurnFacts()
+    facts.tool_calls.append(
+        {
+            "name": "linker/search-products",
+            "arguments": {},
+            "ok": False,
+            "result": {},
+        }
+    )
+    return facts
+
+
+def test_an_unknown_code_on_a_product_page_is_not_called_absent(
+    vocabulary: Vocabulary,
+) -> None:
+    """A documents route that cannot fit the code's search must not call it absent."""
+    crowded = (3556, 1187, 2198)
+    for message, lang, missed, absent in (
+        (UNKNOWN, "en", "was not searched", "not in our product range"),
+        (UNKNOWN_DE, "de", "nicht gesucht", "haben wir kein Produkt"),
+    ):
+        subject = replace(_catalog(vocabulary), ids=crowded)
+        route = plan(
+            message,
+            vocabulary.match(message),
+            _reading("documents_specs"),
+            subject,
+            lang,
+        )
+        assert len(route.calls) <= MAX_TOOL_CALLS
+        (note,) = route.named_models
+        assert note.code == "GW50K-ETA-G20"
+        assert note.searched is False
+        assert note.code not in _texts(route)
+        # A successful search is in the facts, so an outage cannot hide a
+        # note that was wrongly left searched.
+        output = fallback(_facts(3556), lang, route)
+        text = _sentence(output)
+        assert missed in text
+        assert absent not in text
+        assert "no entry" not in text.casefold()
+        assert not any(isinstance(block, HandoffBlock) for block in output.blocks)
+        if lang == "de":
+            assert german_is_clean(text)
+    room = replace(_catalog(vocabulary), ids=(3556,))
+    route = plan(
+        UNKNOWN,
+        vocabulary.match(UNKNOWN),
+        _reading("documents_specs"),
+        room,
+        "en",
+    )
+    assert len(route.calls) <= MAX_TOOL_CALLS
+    assert route.named_models[0].searched is True
+    assert "GW50K-ETA-G20" in _texts(route)
+
+
+def test_documents_intent_searches_every_named_model_inside_the_budget(
+    vocabulary: Vocabulary,
+) -> None:
+    subject = replace(_catalog(vocabulary), ids=(2198, 1187, 1185))
+    route = plan(
+        THREE,
+        vocabulary.match(THREE),
+        _reading("documents_specs"),
+        subject,
+        "en",
+    )
+    assert len(route.calls) <= MAX_TOOL_CALLS
+    assert [call.ability for call in route.calls][0] == "linker/search-knowledge"
+    assert sum(call.ability == "linker/get-product" for call in route.calls) == 3
+    assert all(note.searched for note in route.named_models)
+    assert [note.code for note in route.named_models] == list(HS3)
+    open_subject = _catalog(vocabulary)
+    searched = plan(
+        THREE,
+        vocabulary.match(THREE),
+        _reading("documents_specs"),
+        open_subject,
+        "en",
+    )
+    assert len(searched.calls) <= MAX_TOOL_CALLS
+    assert _texts(searched) == list(HS3)
+    assert any(call.ability == "linker/search-knowledge" for call in searched.calls)
+    assert all(note.searched for note in searched.named_models)
+
+
+def test_documents_plus_four_unknown_codes_stays_inside_four_calls(
+    vocabulary: Vocabulary,
+) -> None:
+    codes = [f"GW5{index}K-ETA-G20" for index in range(1, 5)]
+    message = "Datasheets for " + " ".join(codes)
+    route = plan(
+        message,
+        vocabulary.match(message),
+        _reading("documents_specs"),
+        _catalog(vocabulary),
+        "en",
+    )
+    assert len(route.calls) <= MAX_TOOL_CALLS
+    assert [note.code for note in route.named_models] == codes
+    assert any(not note.searched for note in route.named_models)
+    for note in route.named_models:
+        assert note.searched is (note.code in _texts(route))
+
+
+def test_an_order_code_is_not_a_model(vocabulary: Vocabulary) -> None:
+    route = plan(
+        "Order ABC-123-456 status?",
+        vocabulary.match("Order ABC-123-456 status?"),
+        _reading("other", 0.95),
+        _catalog(vocabulary),
+        "en",
+    )
+    assert route.named_models == ()
+    assert route.calls == ()
+    assert "not in our product range" not in route.hint
+
+
+def test_absence_claims_fail_outside_the_code_clause() -> None:
+    notes = tuple(
+        NamedModel(code=code, product_ids=(pid,), searched=True)
+        for code, pid in zip(HS3[:2], (2198, 1187), strict=True)
+    )
+    route = Route("products", show_products=True, no_handoff=True, named_models=notes)
+    facts = _facts(2198, 1187)
+    elsewhere = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text=(
+                    "HS3-5K-T2-W/G-PX and HS3-8K-T2-W/G-PX are both listed. "
+                    "These two model codes return no entry in our product data."
+                ),
+                refs=["2198", "1187"],
+            ),
+            CardsBlock(product_ids=[2198, 1187]),
+        ],
+    )
+    refused = check(elsewhere, facts, route)
+    assert not refused.ok
+    assert any("HS3-5K-T2-W/G-PX" in failure for failure in refused.failures)
+    assert any("HS3-8K-T2-W/G-PX" in failure for failure in refused.failures)
+    unsearched = NamedModel(code="GW50K-ETA-G20", unknown=True, searched=False)
+    pending = Route(
+        "products", show_products=True, no_handoff=True, named_models=(unsearched,)
+    )
+    pronoun = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="GW50K-ETA-G20 is on the label. It is not in our product range."
+            )
+        ],
+    )
+    pronoun_de = TurnOutput(
+        language="de",
+        blocks=[
+            TextBlock(
+                text=(
+                    "GW50K-ETA-G20 steht auf dem Typenschild. "
+                    "Es ist nicht in unserem Sortiment."
+                )
+            )
+        ],
+    )
+    for output in (pronoun, pronoun_de):
+        result = check(output, _facts(searched=True), pending)
+        assert any("not that it is absent" in failure for failure in result.failures)
+    conflict = NamedModel(
+        code="GW10K-ETA-G20",
+        product_ids=(3556,),
+        searched=True,
+        written_brand="SAJ",
+        catalog_brand="GoodWe",
+    )
+    branded = Route(
+        "products", show_products=True, no_handoff=True, named_models=(conflict,)
+    )
+    exempted = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="GW10K-ETA-G20 is not in our product range. GoodWe may help.",
+                refs=["3556"],
+            ),
+            CardsBlock(product_ids=[3556]),
+        ],
+    )
+    brand_result = check(exempted, _facts(3556), branded)
+    assert not brand_result.ok
+    assert any("GoodWe" in failure for failure in brand_result.failures)
+
+
+def test_an_ability_failure_is_not_an_empty_catalog() -> None:
+    unknown = Route(
+        "products",
+        show_products=True,
+        no_handoff=True,
+        named_models=(NamedModel(code="GW50K-ETA-G20", unknown=True, searched=True),),
+    )
+    several = Route(
+        "products",
+        show_products=True,
+        no_handoff=True,
+        named_models=tuple(
+            NamedModel(code=code, product_ids=(pid,), searched=True)
+            for code, pid in zip(HS3, (2198, 1187, 1185), strict=True)
+        ),
+    )
+    for route in (unknown, several):
+        for lang in ("en", "de"):
+            output = fallback(_failed_search(), lang, route)
+            assert isinstance(output.blocks[0], HandoffBlock)
+            assert output.blocks[0].summary == DEGRADED[lang]
+            summary = output.blocks[0].summary
+            assert "not in our product range" not in summary
+            assert "did not return" not in summary
+            assert "kein Produkt" not in summary
+            assert "nicht in unserem Sortiment" not in summary
+
+
+def test_the_page_hint_drops_a_model_from_the_searched_list() -> None:
+    from linker_genie.route import _model_hint
+
+    notes = tuple(
+        NamedModel(code=code)
+        for code in ("A-10K-T2", "B-10K-T2", "C-10K-T2", "D-10K-T2")
+    )
+    calls = tuple(
+        Call("linker/search-products", {"text": note.code, "lang": "en", "limit": 6})
+        for note in notes
+    )
+    route = Route(
+        "documents",
+        calls,
+        no_handoff=True,
+        named_models=notes,
+        hint="Answer from the documents." + _model_hint(notes),
+    )
+    page = PageContext(type="product", url="https://de-linker.com/p", product_id=1)
+    result = with_page(route, page, True, False, Subject((), {}, {}), "the page")
+    assert result.named_models[-1].searched is False
+    assert "Not searched this turn: D-10K-T2" in result.hint
+    assert "D-10K-T2" not in result.hint.split("Not searched this turn")[0]
+
+
+def test_en_and_de_prompts_carry_the_same_three_obligations() -> None:
+    from linker_genie.agent import _user_prompt, instructions
+    from linker_genie.route import NAMED_MODEL_RULE
+
+    assert NAMED_MODEL_RULE in instructions("en")
+    german = instructions("de")
+    assert "nicht gesucht" in german and "fehlend" in german
+    assert "geschriebene Marke" in german and "Marke aus den Produktdaten" in german
+    assert "demselben Satz" in german
+    assert "jedes für sich" in german
+    request = TurnRequest(
+        conversation_id="c-models",
+        messages=[TurnMessage(role="user", content=THREE)],
+    )
+    reminder = _user_prompt(request, None)
+    assert NAMED_MODEL_RULE in reminder
+    assert "was not searched: say that" not in reminder
