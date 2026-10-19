@@ -4,90 +4,20 @@
  * REST proxy, as a guest browser does. No contact card and no inquiry card is
  * ever submitted; every probe records its final URL and the response headers.
  *
+ * Each POST creates a `linker_conversation` on the live site. That is the
+ * question-only live conversation map #329 allows ("公开 Genie 对话不发信").
+ * This file does not add probes and does not delete those posts.
+ *
  * Usage: node smoke-production.mjs
  */
 
-import { appendFileSync, mkdirSync } from 'node:fs';
+import { CookieJar } from './cookies.mjs';
+import { record, responseNote } from './evidence.mjs';
+import { answerText, cardsOf, parseStream } from './sse.mjs';
 
 const BASE = 'https://de-linker.com';
-const EVIDENCE = `${process.env.HOME}/de-linker-data/campaign-331`;
 const scenario = 'production-smoke';
 const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
-mkdirSync(`${EVIDENCE}/${scenario}`, { recursive: true });
-
-function record(file, entry) {
-	appendFileSync(`${EVIDENCE}/${scenario}/${file}.jsonl`, JSON.stringify(entry) + '\n');
-}
-
-/** One guest cookie jar per conversation (a cookie jar, like a browser). */
-class Jar {
-	constructor() {
-		this.cookies = new Map();
-	}
-
-	keep(response) {
-		for (const raw of response.headers.getSetCookie?.() ?? []) {
-			const [pair] = raw.split(';');
-			const eq = pair.indexOf('=');
-			const name = pair.slice(0, eq).trim();
-			const value = pair.slice(eq + 1).trim();
-			if (value === '') {
-				this.cookies.delete(name);
-			} else {
-				this.cookies.set(name, value);
-			}
-		}
-	}
-
-	header() {
-		return [...this.cookies].map(([k, v]) => `${k}=${v}`).join('; ');
-	}
-}
-
-/** The answer text of the proxy's `{stream}` body. */
-function answerOf(stream) {
-	const texts = [];
-	for (const event of (stream ?? '').split('\n\n')) {
-		if (!/^event: block$/m.test(event)) {
-			continue;
-		}
-		const data = /^data: (.+)$/m.exec(event)?.[1];
-		if (!data) {
-			continue;
-		}
-		try {
-			const block = JSON.parse(data);
-			if (block.type === 'text') {
-				texts.push(block.text);
-			}
-		} catch {
-			/* ignore */
-		}
-	}
-	return texts.join('\n');
-}
-
-function cardsOf(stream) {
-	const ids = [];
-	for (const event of (stream ?? '').split('\n\n')) {
-		if (!/^event: block$/m.test(event)) {
-			continue;
-		}
-		const data = /^data: (.+)$/m.exec(event)?.[1];
-		if (!data) {
-			continue;
-		}
-		try {
-			const block = JSON.parse(data);
-			if (block.type === 'cards') {
-				ids.push(...block.product_ids);
-			}
-		} catch {
-			/* ignore */
-		}
-	}
-	return ids;
-}
 
 /**
  * One probe: POST /wp-json/linker-ai/v1/genie/turn (or GET the conversation),
@@ -107,21 +37,16 @@ async function probe(jar, file, label, path, { method = 'POST', body } = {}) {
 	});
 	jar.keep(response);
 	const text = await response.text();
-	const headers = Object.fromEntries(response.headers);
+	const note = responseNote(response);
 	const entry = {
 		type: 'probe',
 		label,
+		stamp,
 		method,
-		finalUrl: response.url,
+		finalUrl: note.finalUrl,
 		status: response.status,
 		durationMs: Date.now() - started,
-		headers: {
-			'content-type': headers['content-type'],
-			'cache-control': headers['cache-control'],
-			server: headers.server,
-			'x-powered-by': headers['x-powered-by'],
-			'cf-ray': headers['cf-ray'] ? 'present' : undefined,
-		},
+		headers: note.headers,
 	};
 	if (method === 'POST') {
 		entry.question = body.messages.at(-1).content;
@@ -135,42 +60,58 @@ async function probe(jar, file, label, path, { method = 'POST', body } = {}) {
 				conversationId = parsed.conversation_id ?? null;
 			}
 		} catch {
-			/* a non-JSON answer is recorded as-is */
+			// A non-JSON answer is recorded as its parsed blocks, which are empty.
 		}
+		const parsed = parseStream(stream);
 		entry.conversationId = conversationId;
-		entry.answer = answerOf(stream);
+		entry.answer = answerText(parsed.blocks);
 		entry.answerHead = entry.answer.slice(0, 300);
-		entry.cards = cardsOf(stream);
+		entry.cards = cardsOf(parsed.blocks);
 		entry.streamBytes = stream.length;
 	} else {
-		entry.bodyHead = JSON.stringify(text.slice(0, 0));
 		entry.storedMessages = (() => {
 			try {
-				return JSON.parse(text).messages?.map((m) => m.role);
+				return JSON.parse(text).messages?.map((message) => message.role);
 			} catch {
 				return null;
 			}
 		})();
 	}
-	record(file, entry);
+	record(scenario, file, entry);
 	return { entry, text };
 }
 
 async function conversation(jar, file, messages, locale, label) {
 	const { entry } = await probe(jar, file, label, 'genie/turn', {
 		method: 'POST',
-		body: { locale, messages, page: { type: 'other', url: locale === 'de' ? '/de/genie/' : '/genie/' } },
+		body: {
+			locale,
+			messages,
+			page: { type: 'other', url: locale === 'de' ? '/de/genie/' : '/genie/' },
+		},
 	});
 	return entry;
 }
 
 const file = `production-${stamp}`;
-record(file, { type: 'case', at: new Date().toISOString(), base: BASE, rule: 'question-only; no contact or inquiry card is ever submitted' });
+record(scenario, file, {
+	type: 'case',
+	at: new Date().toISOString(),
+	stamp,
+	base: BASE,
+	rule: 'question-only; no contact or inquiry card is ever submitted',
+});
 
 // P1 — topic switch (EN): inverter context, then a hard switch to EV chargers.
 {
-	const jar = new Jar();
-	const t1 = await conversation(jar, file, [{ role: 'user', content: 'Which hybrid inverters do you carry for homes?' }], 'en', 'P1-turn1-topicA');
+	const jar = new CookieJar();
+	const t1 = await conversation(
+		jar,
+		file,
+		[{ role: 'user', content: 'Which hybrid inverters do you carry for homes?' }],
+		'en',
+		'P1-turn1-topicA'
+	);
 	const t2 = await conversation(
 		jar,
 		file,
@@ -183,9 +124,10 @@ record(file, { type: 'case', at: new Date().toISOString(), base: BASE, rule: 'qu
 		'P1-turn2-topicB'
 	);
 	const evOnly = t2.cards.length > 0 && !/hybrid inverter/i.test(t2.answerHead);
-	record(file, {
+	record(scenario, file, {
 		type: 'verdict',
 		case: 'P1-prod-topic-switch',
+		stamp,
 		verdict: evOnly ? 'pass' : 'defect',
 		criterion: "the EV turn's cards/text are EV chargers, not the previous inverter topic",
 		detail: { cards: t2.cards },
@@ -194,8 +136,14 @@ record(file, { type: 'case', at: new Date().toISOString(), base: BASE, rule: 'qu
 
 // P2 — anaphora (EN): the card product, then "How many MPPTs does it have?"
 {
-	const jar = new Jar();
-	const t1 = await conversation(jar, file, [{ role: 'user', content: 'Show me the SAJ H2-10K-T3.' }], 'en', 'P2-turn1-card');
+	const jar = new CookieJar();
+	const t1 = await conversation(
+		jar,
+		file,
+		[{ role: 'user', content: 'Show me the SAJ H2-10K-T3.' }],
+		'en',
+		'P2-turn1-card'
+	);
 	const t2 = await conversation(
 		jar,
 		file,
@@ -208,9 +156,10 @@ record(file, { type: 'case', at: new Date().toISOString(), base: BASE, rule: 'qu
 		'P2-turn2-anaphora'
 	);
 	const resolved = /MPPT/i.test(t2.answerHead) && /\d/.test(t2.answerHead);
-	record(file, {
+	record(scenario, file, {
 		type: 'verdict',
 		case: 'P2-prod-anaphora',
+		stamp,
 		verdict: resolved ? 'pass' : 'defect',
 		criterion: '"it" resolves to the card product and the MPPT count is stated',
 		detail: { answerHead: t2.answerHead },
@@ -219,8 +168,14 @@ record(file, { type: 'case', at: new Date().toISOString(), base: BASE, rule: 'qu
 
 // P3 — mid-thread language switch (DE conversation, English question).
 {
-	const jar = new Jar();
-	const t1 = await conversation(jar, file, [{ role: 'user', content: 'Welche Hybridwechselrichter führen Sie für Wohngebäude?' }], 'de', 'P3-turn1-de');
+	const jar = new CookieJar();
+	const t1 = await conversation(
+		jar,
+		file,
+		[{ role: 'user', content: 'Welche Hybridwechselrichter führen Sie für Wohngebäude?' }],
+		'de',
+		'P3-turn1-de'
+	);
 	const t2 = await conversation(
 		jar,
 		file,
@@ -233,9 +188,10 @@ record(file, { type: 'case', at: new Date().toISOString(), base: BASE, rule: 'qu
 		'P3-turn2-en-question'
 	);
 	const english = /\b(the|batteries|work|with)\b/i.test(t2.answerHead) && !/[äöüß]/.test(t2.answerHead);
-	record(file, {
+	record(scenario, file, {
 		type: 'verdict',
 		case: 'P3-prod-language-switch',
+		stamp,
 		verdict: english ? 'pass' : 'defect',
 		criterion: 'the English question inside the German conversation is answered in English',
 		detail: { answerHead: t2.answerHead },
@@ -244,16 +200,26 @@ record(file, { type: 'case', at: new Date().toISOString(), base: BASE, rule: 'qu
 
 // P4 — persistence: the conversation reads back with its turns.
 {
-	const jar = new Jar();
-	await conversation(jar, file, [{ role: 'user', content: 'Which EV chargers do you carry?' }], 'en', 'P4-turn1');
+	const jar = new CookieJar();
+	await conversation(
+		jar,
+		file,
+		[{ role: 'user', content: 'Which EV chargers do you carry?' }],
+		'en',
+		'P4-turn1'
+	);
 	const read = await probe(jar, file, 'P4-read-thread', 'genie/conversation', { method: 'GET' });
-	record(file, {
+	record(scenario, file, {
 		type: 'verdict',
 		case: 'P4-prod-persistence',
-		verdict: read.entry.status === 200 && (read.entry.storedMessages?.length ?? 0) >= 1 ? 'pass' : 'defect',
+		stamp,
+		verdict:
+			read.entry.status === 200 && (read.entry.storedMessages?.length ?? 0) >= 1
+				? 'pass'
+				: 'defect',
 		criterion: 'GET the conversation back returns the stored thread',
 		detail: { stored: read.entry.storedMessages },
 	});
 }
 
-console.log(`wrote ${EVIDENCE}/${scenario}/${file}`);
+console.log(`wrote ${process.env.C331_EVIDENCE ?? `${process.env.HOME}/de-linker-data/campaign-331`}/${scenario}/${file}`);

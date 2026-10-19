@@ -1,6 +1,10 @@
 {
   "fetched_at": "2026-10-19T09:20:18.964Z",
   "base": "http://127.0.0.1:9165",
+  "snapshot": "20261019-1409",
+  "snapshot_taken": "2026-10-19T06:21:25+00:00",
+  "snapshot_loaded": "2026-10-19T09:11:18+00:00",
+  "git_rev": "62b7616ef058bea7a246bc92ef40deb186954e8e",
   "count": 106,
   "sets": {
     "homeHybridInverters": [

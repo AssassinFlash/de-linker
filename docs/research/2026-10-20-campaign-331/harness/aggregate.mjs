@@ -3,58 +3,92 @@
  * asks for: scenario × {cases, pass, defect}, with each case's verdict line
  * and the check names that failed.
  *
+ * A case id is the stable id (the stamp stripped). A rerun writes a new
+ * file with a new stamp; only the greatest stamp is counted, so a second
+ * run does not add a second row. Clearing the scenario directory before a
+ * rerun is the other half of that, and is written in NOTES.md.
+ *
  * Usage: node aggregate.mjs > overview.json
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import { stableCaseId, stampOf } from './evidence.mjs';
 
 const ROOT =
 	process.env.C331_EVIDENCE ??
 	`${process.env.HOME}/de-linker-data/campaign-331`;
 
-const scenarios = readdirSync(ROOT, { withFileTypes: true })
-	.filter((d) => d.isDirectory() && d.name !== 'probe' && !d.name.startsWith('_'))
-	.map((d) => d.name)
-	.sort();
-
-const overview = {};
-for (const scenario of scenarios) {
-	const dir = join(ROOT, scenario);
-	/** One case file may hold several cases (browser spec appends per check). */
-	const cases = new Map();
-	for (const file of readdirSync(dir).filter((f) => f.endsWith('.jsonl'))) {
-		for (const line of readFileSync(join(dir, file), 'utf8').split('\n')) {
-			if (!line.trim()) {
-				continue;
-			}
-			let entry;
-			try {
-				entry = JSON.parse(line);
-			} catch {
-				continue;
-			}
-			// A case is identified by its verdict line (type omitted by the
-			// direct runner, spelled out by the browser spec).
-			if (entry.type === 'verdict' || entry.verdict !== undefined) {
-				const id = entry.case ?? file.replace(/\.jsonl$/, '');
-				cases.set(id, {
-					case: id,
-					file,
-					verdict: entry.verdict,
-					criterion: entry.criterion,
-					notes: entry.notes ?? entry.detail ?? undefined,
-				});
-			}
+/**
+ * One row per stable case id: the verdict with the greatest stamp.
+ * `rows` is `{ file, entry }[]` in read order.
+ */
+export function foldCases(rows) {
+	const best = new Map();
+	for (const row of rows) {
+		const entry = row.entry;
+		if (!entry || (entry.type !== 'verdict' && entry.verdict === undefined)) {
+			continue;
 		}
+		const id = stableCaseId(entry.case ?? row.file.replace(/\.jsonl$/, ''));
+		const stamp = stampOf(entry, row.file);
+		const current = best.get(id);
+		if (current && stamp < current.stamp) {
+			continue;
+		}
+		if (current && stamp === current.stamp) {
+			continue;
+		}
+		best.set(id, {
+			case: id,
+			stamp,
+			file: row.file,
+			verdict: entry.verdict,
+			criterion: entry.criterion,
+			notes: entry.notes ?? entry.detail ?? undefined,
+		});
 	}
-	const list = [...cases.values()];
-	overview[scenario] = {
-		cases: list.length,
-		pass: list.filter((c) => c.verdict === 'pass').length,
-		defect: list.filter((c) => c.verdict === 'defect').length,
-		detail: list,
-	};
+	return [...best.values()];
 }
 
-console.log(JSON.stringify(overview, null, 2));
+export function aggregateDirectory(root) {
+	const scenarios = readdirSync(root, { withFileTypes: true })
+		.filter((entry) => entry.isDirectory() && entry.name !== 'probe' && !entry.name.startsWith('_'))
+		.map((entry) => entry.name)
+		.sort();
+	const overview = {};
+	for (const scenario of scenarios) {
+		const dir = join(root, scenario);
+		const rows = [];
+		for (const file of readdirSync(dir).filter((name) => name.endsWith('.jsonl'))) {
+			for (const line of readFileSync(join(dir, file), 'utf8').split('\n')) {
+				if (!line.trim()) {
+					continue;
+				}
+				try {
+					rows.push({ file, entry: JSON.parse(line) });
+				} catch {
+					// A torn line is skipped; the file stays on disk for the review.
+				}
+			}
+		}
+		const list = foldCases(rows);
+		overview[scenario] = {
+			cases: list.length,
+			pass: list.filter((item) => item.verdict === 'pass').length,
+			defect: list.filter((item) => item.verdict === 'defect').length,
+			detail: list,
+		};
+	}
+	return overview;
+}
+
+const invoked =
+	process.argv[1] !== undefined &&
+	resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (invoked) {
+	console.log(JSON.stringify(aggregateDirectory(ROOT), null, 2));
+}
