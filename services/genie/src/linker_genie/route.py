@@ -127,20 +127,15 @@ RouteName = Literal[
     "clarify",
 ]
 
-# Words of a sizing question, read in code so the configurator opens prefilled.
+# A kWp or a yearly kWh keeps the turn on sizing. The extreme search uses
+# these two shapes only as that gate. The configurator fields are read in
+# prefill.py.
 _KWP = re.compile(r"(\d+(?:[.,]\d+)?)\s*kwp\b", re.IGNORECASE)
 _ANNUAL = re.compile(
     r"(\d{1,3}(?:[.,]\d{3})+|\d{3,6})\s*kwh\s*(?:/\s*(?:a|yr|year|jahr)\b|per\s+year|a\s+year|"
     r"pro\s+jahr|im\s+jahr|jährlich|yearly|annual)",
     re.IGNORECASE,
 )
-_THREE_PHASE = re.compile(
-    r"\b(?:3|three|drei)[\s-]*(?:phase|phasen|phasig)", re.IGNORECASE
-)
-_ONE_PHASE = re.compile(
-    r"\b(?:1|single|one|ein)[\s-]*(?:phase|phasen|phasig)", re.IGNORECASE
-)
-_BACKUP = re.compile(r"backup|back-up|notstrom|ersatzstrom", re.IGNORECASE)
 # Extreme words, EN and DE. Comparatives (kleiner, größer, günstiger) are not
 # extremes. ß and ss both occur.
 _SMALLEST = re.compile(
