@@ -544,6 +544,11 @@ def test_forget_takes_a_failed_derived_calls_error_with_it(tmp_path: Any) -> Non
             "call_failures": [
                 "linker/search-products: H2-10K-T3 unavailable",
                 "linker/get-product: stock unreadable",
+                {
+                    "text": "linker/search-products: H2-10K-T3 still named",
+                    "kind": "ability",
+                },
+                {"text": "linker/get-product: kept as a note"},
             ]
         },
     )
@@ -556,4 +561,5 @@ def test_forget_takes_a_failed_derived_calls_error_with_it(tmp_path: Any) -> Non
     assert "H2-10K-T3" not in calls
     assert "H2-10K-T3" not in understanding
     assert "stock unreadable" in understanding
+    assert "kept as a note" in understanding
     log.close()

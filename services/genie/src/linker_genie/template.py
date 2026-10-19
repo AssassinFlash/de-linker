@@ -327,7 +327,7 @@ def fallback(
     if failure_class is not None:
         # A products search that died must not be printed as a sales
         # handoff (#410). A request for a person never reaches here.
-        return _failed_turn(facts, language, route)
+        return _degraded_keeping_findings(facts, language, route)
     # The applied winner is the whole fallback. The named-model clarification
     # would add the other cards (#363, #364), which an extreme answer refuses.
     extreme = _extreme_fallback(facts, language)
@@ -562,11 +562,16 @@ def _card_ids(facts: TurnFacts, route: Route | None) -> list[int]:
     return sorted(facts.product_ids)
 
 
-def _failed_turn(facts: TurnFacts, language: Locale, route: Route | None) -> TurnOutput:
-    """The degraded sentence. Qualified cards and found documents may follow.
+def _degraded_keeping_findings(
+    facts: TurnFacts, language: Locale, route: Route | None
+) -> TurnOutput:
+    """The degraded sentence, then whatever this turn already found.
 
-    The sentence is never the matching-products line or the document success
-    line (#410). Which cards and which documents is `_card_ids` / `_document_refs`.
+    `_degraded` is that sentence and nothing else (the tool never returned,
+    or nothing qualified). This one may add the qualified cards or the
+    document links. The sentence is never the matching-products line or
+    the document success line (#410). Which cards and which documents is
+    `_card_ids` / `_document_refs`.
     """
     if route is not None and route.name == "documents" and facts.documents:
         blocks: list[Block] = [HandoffBlock(summary=DEGRADED[language])]

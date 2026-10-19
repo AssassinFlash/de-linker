@@ -169,7 +169,13 @@ _QUOTED = re.compile(r"[\"“”„‚‘’'«»]([^\"“”„‚‘’'«»]{
 
 
 class PageUnavailable(RuntimeError):
-    """The page could not be read; the message names the cause."""
+    """The page could not be read; the message names the cause.
+
+    `failure_kind` is None: a page outage is not a failed turn (#410).
+    The answer goes on without the page, including when the page returned 500.
+    """
+
+    failure_kind = None
 
 
 @dataclass(frozen=True)

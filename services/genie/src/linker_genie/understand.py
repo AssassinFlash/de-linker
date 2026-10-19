@@ -27,6 +27,7 @@ from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
+from linker_genie.failure import note
 from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.language import turn_language, with_tool_lang
 from linker_genie.lexicon import Match, Vocabulary
@@ -464,24 +465,26 @@ def _run_calls(
         with ThreadPoolExecutor(max_workers=len(calls)) as pool:
             futures = [pool.submit(one, call) for call in calls]
     parts: list[TurnFacts] = []
-    failures: list[str] = []
+    failures: list[dict[str, str]] = []
     for call, future in zip(calls, futures, strict=True):
         try:
             arguments, payload, gathered = future.result()
         except (EmbeddingError, knowledge.KnowledgeUnavailable) as error:
-            failures.append(f"{call.ability}: {error}")
-            prepared.knowledge_error = f"{call.ability}: {error}"
+            recorded = note(error, prefix=call.ability)
+            failures.append(recorded.dump())
+            prepared.knowledge_error = recorded.text
             logger.error("genie document search failed: %s", error)
             continue
         except page.PageUnavailable as error:
             # The answer goes on without the page; the hint tells the model to say
             # it could not read it (route.PAGE_HINT), and the log keeps the cause.
-            failures.append(f"{call.ability}: {error}")
+            # A page outage has no fatal class (#410).
+            failures.append(note(error, prefix=call.ability).dump())
             prepared.log["page_error"] = str(error)
             logger.warning("genie page read failed: %s", error)
             continue
         except AbilityError as error:
-            failures.append(f"{call.ability}: {error}")
+            failures.append(note(error, prefix=call.ability).dump())
             logger.warning("genie route call failed: %s: %s", call.ability, error)
             continue
         parts.append(gathered)

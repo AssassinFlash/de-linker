@@ -10,12 +10,12 @@ sentence (#410). A page outage is not one of these.
 
 from __future__ import annotations
 
-import re
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
+from linker_genie.failure import RecordedFailure, from_log, note
 from linker_genie.ground import check
 from linker_genie.hydrate import complete_pairing_cards, hydrate
 from linker_genie.language import (
@@ -32,23 +32,11 @@ from linker_genie.template import (
     FailureClass,
     fallback,
 )
-from linker_genie.tools import READ_PAGE
 
 # pydantic-ai tool_manager._check_max_retries, on UnexpectedModelBehavior
 # after AgentRetries.tools is spent. Output retries use a different sentence
 # ("Exceeded maximum output retries"), so this phrase is the tool budget only.
 _TOOL_RETRIES_EXHAUSTED = "exceeded max retries count of"
-# ModelHTTPError.__str__ (`status_code: 500, model_name: deepseek-flash, body: …`).
-# An ability 5xx is `returned 500`, so the model_name marker keeps the two apart.
-_MODEL_HTTP = re.compile(r"status_code: (?:429|5\d\d)\b")
-# AbilityError after the client's own retries (abilities.py).
-_ABILITY_5XX = re.compile(r"returned 5\d\d\b")
-# GeminiEmbedder._embed (embedding.py). knowledge.py re-raises EmbeddingError
-# with these sentences; understand records `linker/search-knowledge: …`.
-_ENCODER_HTTP = re.compile(r"HTTP \d+ on attempt \d+ of \d+")
-_ENCODER_TRANSPORT = re.compile(
-    r"(?:URLError|TimeoutError|ConnectionError) after \d+ attempts"
-)
 
 Generate = Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]
 
@@ -72,79 +60,19 @@ def _tool_retries_exhausted(failures: tuple[str, ...]) -> bool:
     return any(_TOOL_RETRIES_EXHAUSTED in failure for failure in failures)
 
 
-def fatal_class(failures: tuple[str, ...]) -> FailureClass | None:
-    """The fatal class of this turn, or None for an ordinary grounding miss.
+def fatal_class(failures: Sequence[RecordedFailure]) -> FailureClass | None:
+    """The first fatal class of this turn, or None for an ordinary miss.
 
-    `model`: a chat 5xx, a 429, or an empty stream (ChatCompletion `model`
-    is None). `retrieval`: the document index is missing or not a database
-    (`document index unavailable`), or the encoder failed (`EmbeddingError`:
-    `HTTP 502 on attempt 2 of 2`, `URLError after 2 attempts`). `ability`:
-    an ability 5xx, a timeout, or the retries giving up (`returned 5xx`,
-    `could not be reached`, `did not answer after`). A page read's 500 is
-    not an ability failure: the answer goes on without the page. A grounding
-    sentence such as "a products turn is not a question for the team" is
-    none of these (#410, #332 D1/D2).
+    The template uses one sentence for every fatal class (`model`,
+    `retrieval`, `ability`), so nothing ranks them (#410). A page outage,
+    a 4xx and a grounding miss have no class. The class is the one the
+    catch site stored on the note (`failure.kind`); the sentence is not
+    read again.
     """
-    found: FailureClass | None = None
-    rank = {"ability": 1, "retrieval": 2, "model": 3}
     for failure in failures:
-        kind = _one_failure(failure)
-        if kind is not None and (found is None or rank[kind] > rank[found]):
-            found = kind
-            if found == "model":
-                return found
-    return found
-
-
-def _one_failure(failure: str) -> FailureClass | None:
-    if _is_model_failure(failure):
-        return "model"
-    if _is_retrieval_failure(failure):
-        return "retrieval"
-    if _is_ability_failure(failure):
-        return "ability"
+        if failure.kind is not None:
+            return failure.kind
     return None
-
-
-def _is_retrieval_failure(failure: str) -> bool:
-    """The index could not be read, or the query could not be encoded."""
-    if "document index unavailable" in failure:
-        return True
-    # understand._run_calls records `f"{ability}: {error}"`, so the class
-    # name is not in the string. The encoder's own sentences are
-    # (embedding.GeminiEmbedder._embed, knowledge.py re-raises them).
-    if "EmbeddingError" in failure or "KnowledgeUnavailable" in failure:
-        return True
-    return (
-        _ENCODER_HTTP.search(failure) is not None
-        or _ENCODER_TRANSPORT.search(failure) is not None
-    )
-
-
-def _is_model_failure(failure: str) -> bool:
-    if _MODEL_HTTP.search(failure) and "model_name:" in failure:
-        return True
-    lowered = failure.lower()
-    if "chatcompletion" in lowered and "input_value=none" in lowered:
-        return True
-    return "invalid response from" in lowered and "chat completions" in lowered
-
-
-def _is_page_failure(failure: str) -> bool:
-    """A page read failed. The turn continues without it (page.py, #234)."""
-    return f"{READ_PAGE}:" in failure
-
-
-def _is_ability_failure(failure: str) -> bool:
-    # `returned 500` is also how a page names its own outage. The page is
-    # not an ability, and a recoverable turn must not become DEGRADED.
-    if _is_page_failure(failure):
-        return False
-    return (
-        _ABILITY_5XX.search(failure) is not None
-        or "could not be reached" in failure
-        or "did not answer after" in failure
-    )
 
 
 def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutput:
@@ -176,52 +104,50 @@ def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutp
     )
 
 
-def _absorb(noted: list[str], call_failures: Sequence[str]) -> None:
-    """Copy failures recorded while `generate` ran into `noted`.
+def _remember(recorded: list[RecordedFailure], failure: RecordedFailure) -> None:
+    """Keep `failure`. A later note with a class replaces a sentence that had none."""
+    for index, item in enumerate(recorded):
+        if item.text != failure.text:
+            continue
+        if item.kind is None and failure.kind is not None:
+            recorded[index] = failure
+        return
+    recorded.append(failure)
 
-    `call_failures` is the live log list. A model tool appends to it during
-    `generate` (agent._note_call_failure), after `noted` was copied.
+
+def _copy_call_failures(
+    recorded: list[RecordedFailure], call_failures: Sequence[object]
+) -> None:
+    """Copy failures recorded while `generate` ran into `recorded`.
+
+    `call_failures` is the live log list. A model tool appends a note during
+    `generate` (agent._note_call_failure), after `recorded` was first copied.
     """
-    for failure in call_failures:
-        if failure not in noted:
-            noted.append(failure)
+    for entry in call_failures:
+        _remember(recorded, from_log(entry))
 
 
 def _class_for_fallback(
-    noted: list[str], last_failures: tuple[str, ...]
+    recorded: Sequence[RecordedFailure], last_failures: tuple[str, ...]
 ) -> FailureClass | None:
     """The class the template should say, or None for a normal fallback.
 
     A language miss is repaired in the required language (#374). That repair
     drops a model failure the retry already replaced. It does not drop an
-    ability or retrieval failure still in `noted`: a route 500 must not
-    ship the matching-products sentence because the last line is a language
-    re-ask.
+    ability or retrieval failure still recorded: a route 500 must not ship
+    the matching-products sentence because the last line is a language re-ask.
     """
-    relevant = noted
+    relevant = recorded
     if any(failure.startswith(LANGUAGE_RETRY_PREFIX) for failure in last_failures):
-        relevant = [failure for failure in noted if not _is_model_failure(failure)]
-    return fatal_class(tuple(relevant))
+        relevant = [failure for failure in recorded if failure.kind != "model"]
+    return fatal_class(relevant)
 
 
-def _tool_failures(noted: list[str]) -> tuple[str, ...]:
+def _tool_failures(recorded: Sequence[RecordedFailure]) -> tuple[RecordedFailure, ...]:
     """Ability and retrieval failures. A recovered chat 500 is not one."""
     return tuple(
-        failure
-        for failure in noted
-        if _one_failure(failure) in ("ability", "retrieval")
+        failure for failure in recorded if failure.kind in ("ability", "retrieval")
     )
-
-
-def _handoff_hides_tool_failure(output: TurnOutput, noted: list[str]) -> bool:
-    """A grounded handoff after a tool failure is the sales deflection.
-
-    The model route allows handoff, so a search-products 500 and a later
-    handoff-team would otherwise ship the mailbox with an empty meta (#410).
-    """
-    if not _tool_failures(noted):
-        return False
-    return any(isinstance(block, HandoffBlock) for block in output.blocks)
 
 
 def run(
@@ -232,7 +158,7 @@ def run(
     commerce: Lookup | None = None,
     clock: timing.Timing | None = None,
     *,
-    call_failures: Sequence[str] = (),
+    call_failures: Sequence[object] = (),
 ) -> TurnResult:
     """Produce a grounded, hydrated turn. `generate` may call tools.
 
@@ -251,12 +177,12 @@ def run(
     A grounding failure is retried on its own; the language check runs only
     after grounding has passed.
 
-    `call_failures` are the understanding layer's route-call failures
-    (`prepared.log["call_failures"]`), and the same list when a model tool
-    appends during `generate`. A products search that returned 500 is
-    recorded there. On a products route the model's later handoff fails
-    grounding; on a model route it would ground. Either way the fallback
-    has to see the ability failure (#410, AB-500).
+    `call_failures` are the understanding layer's route-call notes
+    (`prepared.log["call_failures"]`: `{text, kind}`), and the same list
+    when a model tool appends during `generate`. The kind is the class the
+    catch site already knew (#410). On a products route the model's later
+    handoff fails grounding; on a model route it would ground. Either way
+    the fallback has to see the ability failure (AB-500).
     """
     expected = turn_language(request)
     retry_reason: str | None = None
@@ -264,8 +190,9 @@ def run(
     last_facts = seeded
     last_failures: tuple[str, ...] = ()
     # Every failed attempt, plus the route's own call failures. The shipped
-    # `failures` stay the last attempt; this list only classifies the turn.
-    noted: list[str] = list(call_failures)
+    # `failures` stay the last attempt's sentences; this list only classifies.
+    recorded: list[RecordedFailure] = []
+    _copy_call_failures(recorded, call_failures)
     for attempt in (1, 2):
         try:
             with (
@@ -274,19 +201,23 @@ def run(
             ):
                 output, facts = generate(request, retry_reason)
         except (ValueError, TypeError, RuntimeError) as error:
-            last_failures = (str(error),)
-            noted.extend(last_failures)
-            _absorb(noted, call_failures)
-            retry_reason = last_failures[0]
+            # The live list first: a tool recorded its class, then a wrapper
+            # may have raised a plain RuntimeError of the same sentence.
+            _copy_call_failures(recorded, call_failures)
+            failure = note(error)
+            _remember(recorded, failure)
+            last_failures = (failure.text,)
+            retry_reason = failure.text
             last_facts = seeded
             continue
-        _absorb(noted, call_failures)
+        _copy_call_failures(recorded, call_failures)
         last_facts = merge([seeded, facts])
         with timing.phase(clock, timing.GROUND):
             result = check(output, last_facts, route)
         if not result.ok:
             last_failures = result.failures
-            noted.extend(last_failures)
+            for item in last_failures:
+                _remember(recorded, RecordedFailure(item))
             retry_reason = result.reason
             continue
         aligned = align_login(output, last_facts, expected)
@@ -300,15 +231,18 @@ def run(
         mismatch = language_failure(priced, expected)
         if mismatch is not None:
             last_failures = (mismatch,)
-            noted.extend(last_failures)
+            _remember(recorded, RecordedFailure(mismatch))
             retry_reason = mismatch
             continue
-        hidden = _tool_failures(noted)
-        if hidden and _handoff_hides_tool_failure(priced, noted):
-            # The handoff grounded, so nothing else would record the tool
-            # failure. Meta's `failures` are this tuple (#410).
-            last_failures = hidden
-            retry_reason = hidden[0]
+        tool_failures = _tool_failures(recorded)
+        # A grounded handoff after a tool failure is the sales deflection.
+        # The model route allows handoff, so a search-products 500 and a
+        # later handoff-team would otherwise ship the mailbox (#410).
+        if tool_failures and any(
+            isinstance(block, HandoffBlock) for block in priced.blocks
+        ):
+            last_failures = tuple(item.text for item in tool_failures)
+            retry_reason = last_failures[0]
             continue
         return TurnResult(
             output=priced,
@@ -321,8 +255,8 @@ def run(
             price_failures=tuple(missed),
         )
     with timing.phase(clock, timing.TEMPLATE):
-        _absorb(noted, call_failures)
-        kind = _class_for_fallback(noted, last_failures)
+        _copy_call_failures(recorded, call_failures)
+        kind = _class_for_fallback(recorded, last_failures)
         rendered = fallback(
             last_facts,
             expected,

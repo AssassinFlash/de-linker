@@ -26,6 +26,7 @@
       "pass": "Four rounds, DE and EN, thread carried forward. Every round ships this released card set. A German grounding retry does not shrink it."
     },
     {
+<<<<<<< HEAD
       "id": "s1-card-permalink-locale",
       "issue": 413,
       "campaign": "333",
@@ -33,6 +34,123 @@
       "accounts": ["approved", "pending", "restricted", "guest"],
       "products": [4107, 1957],
       "pass": "Each account's EN card links to /product/… and its DE card to /de/produkt/…. The German page is HTTP 200 with html lang de-DE. The Store API include of these English ids with lang=de returns those permalinks. Behaviour: linker-i18n StorefrontTest, linker-tools GenieCardLinksTest and CardLinks.test.tsx."
+=======
+      "id": "410-m500",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "m500",
+      "cards": true,
+      "documents": false,
+      "pass": "Chat 500 (ModelHTTPError). DEGRADED in the answer language. Qualified cards stay. The matching-products sentence does not."
+    },
+    {
+      "id": "410-m-empty",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "m-empty",
+      "cards": true,
+      "documents": false,
+      "pass": "Empty chat stream (UnexpectedModelBehavior, Invalid response from the chat completions endpoint). DEGRADED. Qualified cards stay."
+    },
+    {
+      "id": "410-m-429",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "m-429",
+      "cards": true,
+      "documents": false,
+      "pass": "Chat 429 (ModelHTTPError). DEGRADED. Qualified cards stay."
+    },
+    {
+      "id": "410-m500-doc",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "m500-doc",
+      "cards": false,
+      "documents": true,
+      "pass": "Chat 500 on a document turn. DEGRADED. The document link stays. The document success sentence does not."
+    },
+    {
+      "id": "410-idx-miss",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "idx-miss",
+      "cards": true,
+      "documents": false,
+      "pass": "KnowledgeSearch raises KnowledgeUnavailable for an index that cannot be opened. DEGRADED. Qualified cards stay."
+    },
+    {
+      "id": "410-idx-bad",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "idx-bad",
+      "cards": true,
+      "documents": false,
+      "pass": "KnowledgeSearch raises KnowledgeUnavailable for an index that is not a database. DEGRADED. Qualified cards stay."
+    },
+    {
+      "id": "410-ab-500",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "ab-500",
+      "cards": false,
+      "documents": false,
+      "pass": "AbilityClient 500, noted with kind ability, then a handoff on the products route. DEGRADED. Not the sales mailbox."
+    },
+    {
+      "id": "410-ab-timeout",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "ab-timeout",
+      "cards": false,
+      "documents": false,
+      "pass": "AbilityClient transport failure after its retries, noted with kind ability, then a handoff. DEGRADED. Not the sales mailbox."
+    },
+    {
+      "id": "410-encoder-http",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "encoder-http",
+      "cards": true,
+      "documents": false,
+      "pass": "GeminiEmbedder raises EmbeddingError for HTTP 502. DEGRADED. Qualified cards stay."
+    },
+    {
+      "id": "410-encoder-transport",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "encoder-transport",
+      "cards": true,
+      "documents": false,
+      "pass": "GeminiEmbedder raises EmbeddingError for URLError. DEGRADED. Qualified cards stay."
+    },
+    {
+      "id": "410-encoder-unexpected",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "encoder-unexpected",
+      "cards": true,
+      "documents": false,
+      "pass": "GeminiEmbedder raises EmbeddingError for a body without vectors (unexpected response). DEGRADED. Qualified cards stay."
+    },
+    {
+      "id": "410-encoder-count",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "encoder-count",
+      "cards": true,
+      "documents": false,
+      "pass": "GeminiEmbedder raises EmbeddingError when the body has the wrong number of embeddings. DEGRADED. Qualified cards stay."
+    },
+    {
+      "id": "410-degraded-no-cards",
+      "issue": 410,
+      "locales": ["en", "de"],
+      "scenario": "degraded-no-cards",
+      "cards": false,
+      "documents": false,
+      "pass": "No qualified cards. One handoff block, the reviewed DEGRADED sentence. Harness gate 6 counts handoff (eval/baseline/grade.py NEXT_STEP_BLOCKS), so the automated gate passes. Handoff.tsx renders that block as a paragraph, not a link or button. A clickable next step on this turn is #394."
+>>>>>>> 0d9ded96 (fix(#410): review round 2 — the failure class travels with the note)
     }
   ]
 }

@@ -425,7 +425,7 @@ def test_a_model_ability_failure_is_recorded_and_still_raises() -> None:
             user_context: str | None = None,
             locale: str = "en",
         ) -> tuple[dict[str, Any], TurnFacts]:
-            raise AbilityError(f"{name} returned 500 for {{}}")
+            raise AbilityError(f"{name} returned 500 for {{}}", fatal=True)
 
     runner = _ability_runner(
         Dying(),  # type: ignore[arg-type]
@@ -436,7 +436,10 @@ def test_a_model_ability_failure_is_recorded_and_still_raises() -> None:
     with pytest.raises(AbilityError, match="returned 500"):
         runner({"series": "saj-h2"})
     assert prepared.log["call_failures"] == [
-        "linker/search-products: linker/search-products returned 500 for {}"
+        {
+            "text": "linker/search-products: linker/search-products returned 500 for {}",
+            "kind": "ability",
+        }
     ]
 
 
@@ -454,7 +457,10 @@ def test_a_model_encoder_failure_is_recorded_and_still_raises() -> None:
     with pytest.raises(EmbeddingError, match="HTTP 502 on attempt 2 of 2"):
         runner({"query": "MPPT"})
     assert prepared.log["call_failures"] == [
-        "linker/search-knowledge: gemini-embedding-2: HTTP 502 on attempt 2 of 2"
+        {
+            "text": "linker/search-knowledge: gemini-embedding-2: HTTP 502 on attempt 2 of 2",
+            "kind": "retrieval",
+        }
     ]
 
     def url_error(_arguments: dict[str, Any] | None) -> dict[str, Any]:
@@ -465,8 +471,13 @@ def test_a_model_encoder_failure_is_recorded_and_still_raises() -> None:
     with pytest.raises(EmbeddingError, match="URLError after 2 attempts"):
         runner({"query": "MPPT"})
     assert again.log["call_failures"] == [
-        "linker/search-knowledge: gemini-embedding-2: "
-        "URLError after 2 attempts: timed out"
+        {
+            "text": (
+                "linker/search-knowledge: gemini-embedding-2: "
+                "URLError after 2 attempts: timed out"
+            ),
+            "kind": "retrieval",
+        }
     ]
 
 
@@ -523,4 +534,10 @@ def test_the_route_runs_the_document_search_in_process() -> None:
     assert failed.knowledge_error == (
         "linker/search-knowledge: gemini: URLError after 2 attempts"
     )
+    assert failed.log["call_failures"] == [
+        {
+            "text": "linker/search-knowledge: gemini: URLError after 2 attempts",
+            "kind": "retrieval",
+        }
+    ]
     assert failed.results == []

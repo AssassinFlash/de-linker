@@ -281,7 +281,43 @@ class EmbeddingError(RuntimeError):
     Raised, never swallowed: the model routing law of 2026-10-11 forbids a silent
     fallback when OpenRouter fails, so a search whose query cannot be encoded fails
     with this error instead of ranking by keywords.
+
+    `failure_kind` is the class the turn records (#410). The message is for
+    the log. A new sentence is still a retrieval failure.
     """
+
+    failure_kind = "retrieval"
+
+
+# Fragments of the sentences `GeminiEmbedder._embed` raises. The raises
+# below include them, and `sentence_is_encoder_failure` reads them, so a
+# probe that only kept the message still names an encoder failure. The
+# turn does not need this when it still has the exception.
+_UNEXPECTED = "unexpected response ("
+_COUNT_FOR = " embeddings for "
+_HTTP_ON_ATTEMPT = "HTTP "
+_ON_ATTEMPT = " on attempt "
+_AFTER_ATTEMPTS = " after "
+_ATTEMPTS = " attempts"
+
+
+def sentence_is_encoder_failure(text: str) -> bool:
+    """True when `text` is a sentence `_embed` raises.
+
+    Used only after the exception type has been lost (#410). An
+    `EmbeddingError` is retrieval with any message.
+    """
+    if _UNEXPECTED in text or _COUNT_FOR in text:
+        return True
+    if _HTTP_ON_ATTEMPT in text and _ON_ATTEMPT in text:
+        return True
+    return (
+        _AFTER_ATTEMPTS in text
+        and _ATTEMPTS in text
+        and any(
+            name in text for name in ("URLError", "TimeoutError", "ConnectionError")
+        )
+    )
 
 
 # gemini-embedding-2: 3072 dimensions by default (Gemini embeddings guide); the API
@@ -377,24 +413,23 @@ class GeminiEmbedder:
             except urllib.error.HTTPError as error:
                 if (error.code != 429 and error.code < 500) or attempt == attempts:
                     raise EmbeddingError(
-                        f"{self.model}: HTTP {error.code} on attempt {attempt} of "
-                        f"{attempts}"
+                        f"{self.model}: {_HTTP_ON_ATTEMPT}{error.code}{_ON_ATTEMPT}"
+                        f"{attempt} of {attempts}"
                     ) from error
             except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
                 if attempt == attempts:
                     raise EmbeddingError(
-                        f"{self.model}: {type(error).__name__} after {attempts} "
-                        f"attempts: {error}"
+                        f"{self.model}: {type(error).__name__}{_AFTER_ATTEMPTS}"
+                        f"{attempts}{_ATTEMPTS}: {error}"
                     ) from error
             except (ValueError, KeyError, TypeError) as error:
                 raise EmbeddingError(
-                    f"{self.model}: unexpected response ({type(error).__name__}: "
-                    f"{error})"
+                    f"{self.model}: {_UNEXPECTED}{type(error).__name__}: {error})"
                 ) from error
             else:
                 if len(vectors) != len(texts):
                     raise EmbeddingError(
-                        f"{self.model} returned {len(vectors)} embeddings for "
+                        f"{self.model} returned {len(vectors)}{_COUNT_FOR}"
                         f"{len(texts)} texts"
                     )
                 with self._lock:

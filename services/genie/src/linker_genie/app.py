@@ -373,14 +373,20 @@ def _answer(
     return result, None
 
 
-def _recorded_call_failures(prepared: Prepared) -> list[str]:
-    """The live `call_failures` list, created when the route recorded none."""
+def _recorded_call_failures(prepared: Prepared) -> list[object]:
+    """The live `call_failures` list, created when the route recorded none.
+
+    A note is `{text, kind?}` (`failure.note`). An older row is a string.
+    Model tools append to this same list during `generate` (#410).
+    """
     logged = prepared.log.get("call_failures")
-    recorded = (
-        [item for item in logged if isinstance(item, str)]
-        if isinstance(logged, list)
-        else []
-    )
+    recorded: list[object] = []
+    if isinstance(logged, list):
+        for item in logged:
+            if isinstance(item, str) or (
+                isinstance(item, dict) and isinstance(item.get("text"), str)
+            ):
+                recorded.append(item)
     prepared.log["call_failures"] = recorded
     return recorded
 

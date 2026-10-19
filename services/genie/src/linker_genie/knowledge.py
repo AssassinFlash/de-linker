@@ -39,7 +39,22 @@ log = logging.getLogger(__name__)
 
 
 class KnowledgeUnavailable(RuntimeError):
-    """The document index could not be opened or read."""
+    """The document index could not be opened or read.
+
+    `failure_kind` is the class the turn records (#410).
+    """
+
+    failure_kind = "retrieval"
+
+
+# The sentence `KnowledgeSearch` raises. `is_index_failure` reads the same
+# words, for a probe that kept the message and lost the exception.
+INDEX_UNAVAILABLE = "document index unavailable"
+
+
+def is_index_failure(text: str) -> bool:
+    """True when `text` is this module's index sentence."""
+    return INDEX_UNAVAILABLE in text
 
 
 class KnowledgeSearch:
@@ -64,9 +79,7 @@ class KnowledgeSearch:
                 raise
             except (sqlite3.Error, OSError) as error:
                 log.error("document index unavailable: %s", error)
-                raise KnowledgeUnavailable(
-                    f"document index unavailable: {error}"
-                ) from error
+                raise KnowledgeUnavailable(f"{INDEX_UNAVAILABLE}: {error}") from error
         encoder = index.encoder.model if index.encoder is not None else None
         log.info(
             "document search ranking=%s encoder=%s index=%s hits=%d",

@@ -85,6 +85,17 @@ def _calls(raw: str | None) -> list[dict[str, Any]]:
     return [call for call in calls if isinstance(call, dict)]
 
 
+def _failure_sentence(entry: object) -> str:
+    """The text of a `call_failures` row: a note's `text`, or the string itself."""
+    if isinstance(entry, str):
+        return entry
+    if isinstance(entry, dict):
+        text = entry.get("text")
+        if isinstance(text, str):
+            return text
+    return ""
+
+
 class TurnLog:
     def __init__(self, path: Path) -> None:
         self.path = path
@@ -259,12 +270,14 @@ class TurnLog:
             # entry naming a purged call goes too.
             failures = understanding.get("call_failures")
             if isinstance(failures, list):
+                # A note is `{text, kind?}`. An older row is a plain string.
+                # Either names the purged call when its text starts with it.
                 kept = [
                     entry
                     for entry in failures
-                    if not (
-                        isinstance(entry, str)
-                        and any(entry.startswith(f"{name}: ") for name in derived)
+                    if not any(
+                        _failure_sentence(entry).startswith(f"{name}: ")
+                        for name in derived
                     )
                 ]
                 if len(kept) != len(failures):

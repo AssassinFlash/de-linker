@@ -213,7 +213,7 @@ def test_a_page_that_cannot_be_read_is_logged_and_the_turn_goes_on(
     )
     assert prepared.log["page_error"] == "page /blog/x/ returned 500"
     assert prepared.log["call_failures"] == [
-        "linker/read-page: page /blog/x/ returned 500"
+        {"text": "linker/read-page: page /blog/x/ returned 500"}
     ]
     assert prepared.results == []
     assert "could not be read" in prepared.route.hint

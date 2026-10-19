@@ -1,15 +1,32 @@
 """A failed turn says it failed (#410, #332 D1/D2).
 
-The seven injected scenarios are M500-EN, M500-DE, M-EMPTY, M-429, M500-DOC,
-IDX-MISS and IDX-BAD. AB-500 is the products-search 500 that was printed as
-the sales mailbox. EN and DE both use the reviewed degraded sentence.
+The #339 rows (issue 410) run the exception the catch site raises. A logged
+string is not classified again, and a class name in the sentence is not a class.
 """
 
-from collections.abc import Callable
+from __future__ import annotations
 
-from linker_genie.cycle import fatal_class, run
+import functools
+import io
+import json
+import sqlite3
+import urllib.error
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Any
+
+import httpx
+from baseline.grade import NEXT_STEP_BLOCKS
+from pydantic_ai.exceptions import ModelHTTPError, UnexpectedModelBehavior
+
+from linker_genie.abilities import AbilityClient, AbilityError
+from linker_genie.cycle import TurnResult, fatal_class, run
+from linker_genie.embedding import EmbeddingError, GeminiEmbedder
 from linker_genie.facts import Document, Fact, TurnFacts, collect
-from linker_genie.knowledge import KnowledgeUnavailable
+from linker_genie.failure import from_log, kind_of, note
+from linker_genie.knowledge import KnowledgeSearch, KnowledgeUnavailable
+from linker_genie.page import PageUnavailable
 from linker_genie.route import Route
 from linker_genie.schema import (
     CardsBlock,
@@ -25,7 +42,6 @@ from linker_genie.template import (
     DEGRADED,
     DOCUMENTS,
     LOGIN_REQUIRED,
-    FailureClass,
     fallback,
     german_is_clean,
 )
@@ -46,45 +62,144 @@ _FORBIDDEN = (
     DOCUMENTS["de"],
     "sales@de-linker.com",
 )
-_M500 = (
-    "status_code: 500, model_name: deepseek-flash, body: "
-    "{'message': 'injected chat 500', 'type': 'server_error'}"
-)
-_M429 = (
-    "status_code: 429, model_name: deepseek-flash, body: "
-    "{'message': 'injected chat 429', 'type': 'rate_limit_error'}"
-)
-_EMPTY = (
-    "Invalid response from deepseek chat completions endpoint: "
-    "1 validation error for ChatCompletion\nmodel\n  Input should be a "
-    "valid string [type=string_type, input_value=None, input_type=NoneType]"
-)
-_IDX_MISS = (
-    "linker/search-knowledge: document index unavailable: unable to open database file"
-)
-_IDX_BAD = "linker/search-knowledge: document index unavailable: file is not a database"
-_AB500 = (
-    "linker/search-products: linker/search-products returned 500 "
-    "for {'input[series]': 'saj-h2'}"
-)
-_AB_TIMEOUT = "linker/search-products could not be reached: timed out"
-# knowledge.py re-raises EmbeddingError; understand records it under the tool.
-# These are the sentences embedding.GeminiEmbedder._embed raises (QUERY_ATTEMPTS
-# is 2): "HTTP 502 on attempt 2 of 2", "URLError after 2 attempts".
-_ENCODER_HTTP = (
-    "linker/search-knowledge: gemini-embedding-2: HTTP 502 on attempt 2 of 2"
-)
-_ENCODER_URL = (
+# The probe from review round 2. The embedder's own unexpected-response
+# error is a KeyError; this sentence is what that probe raised.
+_REVIEW_UNEXPECTED = (
     "linker/search-knowledge: gemini-embedding-2: "
-    "URLError after 2 attempts: <urlopen error [Errno 111] Connection refused>"
+    "unexpected response (ValueError: bad data)"
 )
-_ENCODER_HTTP_BARE = "gemini-embedding-2: HTTP 502 on attempt 2 of 2"
-_ENCODER_URL_BARE = "gemini-embedding-2: URLError after 2 attempts"
-_PAGE_500 = "linker/read-page: page /blog/x/ returned 500"
 _PDF = "https://de-linker.com/wp-content/uploads/2026/03/SAJ-H2-user-manual.pdf"
-_LANGUAGES: tuple[Locale, ...] = ("en", "de")
+_MANIFEST = Path(__file__).parent / "fixtures" / "339" / "manifest.json"
+_REQUIRED = (
+    "410-m500",
+    "410-m-empty",
+    "410-m-429",
+    "410-m500-doc",
+    "410-idx-miss",
+    "410-idx-bad",
+    "410-ab-500",
+    "410-ab-timeout",
+    "410-encoder-http",
+    "410-encoder-transport",
+    "410-encoder-unexpected",
+    "410-encoder-count",
+    "410-degraded-no-cards",
+)
 
 Generate = Callable[[TurnRequest, str | None], tuple[TurnOutput, TurnFacts]]
+
+
+class _FailingApi:
+    """Raises `error` from every embeddings request."""
+
+    def __init__(self, error: Exception) -> None:
+        self.error = error
+
+    @contextmanager
+    def __call__(self, request: object, timeout: float) -> Iterator[io.BytesIO]:
+        del request, timeout
+        raise self.error
+        yield io.BytesIO()  # pragma: no cover - the raise ends the call
+
+
+class _Body:
+    """Returns one embeddings body and does not retry."""
+
+    def __init__(self, raw: bytes) -> None:
+        self.raw = raw
+
+    @contextmanager
+    def __call__(self, request: object, timeout: float) -> Iterator[io.BytesIO]:
+        del request, timeout
+        yield io.BytesIO(self.raw)
+
+
+def _http_error(code: int) -> urllib.error.HTTPError:
+    return urllib.error.HTTPError("https://a.example", code, "x", {}, None)  # type: ignore[arg-type]
+
+
+@functools.cache
+def _encoder(kind: str) -> EmbeddingError:
+    """The exception `GeminiEmbedder.embed_query` raises for `kind`."""
+    if kind == "http":
+        urlopen: Callable[..., Any] = _FailingApi(_http_error(502))
+    elif kind == "transport":
+        urlopen = _FailingApi(urllib.error.URLError("connection refused"))
+    elif kind == "unexpected":
+        urlopen = _Body(json.dumps({"error": "no data"}).encode())
+    elif kind == "count":
+        urlopen = _Body(json.dumps({"data": []}).encode())
+    else:
+        raise AssertionError(kind)
+    try:
+        GeminiEmbedder(
+            "k", "https://a.example", urlopen=urlopen, sleep=lambda _: None
+        ).embed_query("q")
+    except EmbeddingError as error:
+        return error
+    raise AssertionError(kind)
+
+
+@functools.cache
+def _ability(kind: str) -> AbilityError:
+    """A 500 or a transport failure from `AbilityClient.run`."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        del request
+        if kind == "timeout":
+            raise httpx.ConnectError("timed out")
+        return httpx.Response(500, json={"message": "boom"})
+
+    client = AbilityClient(
+        "http://abilities.test",
+        transport=httpx.MockTransport(handler),
+        sleep=lambda _: None,
+    )
+    try:
+        client.run("linker/search-products", {"series": "saj-h2"})
+    except AbilityError as error:
+        return error
+    raise AssertionError(kind)
+
+
+@functools.cache
+def _index(message: str) -> KnowledgeUnavailable:
+    """The exception `KnowledgeSearch` raises for an unreadable index."""
+
+    class Broken:
+        def search(
+            self, query: str, lang: str, product_ids: object = None
+        ) -> list[object]:
+            del query, lang, product_ids
+            raise sqlite3.OperationalError(message)
+
+    try:
+        KnowledgeSearch(lambda: Broken())(  # type: ignore[arg-type,return-value]
+            {"query": "q", "lang": "en"}
+        )
+    except KnowledgeUnavailable as error:
+        return error
+    raise AssertionError(message)
+
+
+def _model(status: int) -> ModelHTTPError:
+    return ModelHTTPError(
+        status,
+        "deepseek-flash",
+        {"message": f"injected chat {status}", "type": "server_error"},
+    )
+
+
+def _empty_stream() -> UnexpectedModelBehavior:
+    # OpenAIChatModel._process_response, an empty stream.
+    return UnexpectedModelBehavior(
+        "Invalid response from deepseek chat completions endpoint: "
+        "1 validation error for ChatCompletion"
+    )
+
+
+def _ability_note(kind: str) -> dict[str, str]:
+    return note(_ability(kind), prefix="linker/search-products").dump()
 
 
 def _question(language: Locale, *, documents: bool = False) -> TurnRequest:
@@ -130,6 +245,12 @@ def _raise(error: BaseException) -> Generate:
     return generate
 
 
+def _locale(value: object) -> Locale:
+    if value != "en" and value != "de":
+        raise AssertionError(value)
+    return value
+
+
 def _sentence(output: TurnOutput) -> str:
     block = output.blocks[0]
     if isinstance(block, HandoffBlock):
@@ -160,134 +281,241 @@ def _assert_degraded(output: TurnOutput, language: Locale) -> None:
         assert german_is_clean(_sentence(output))
 
 
-def test_fatal_classes_match_the_injected_failures() -> None:
-    """The class passed into fallback. A grounding miss is not a class."""
-    cases: tuple[tuple[str, FailureClass | None], ...] = (
-        (_M500, "model"),
-        (_M429, "model"),
-        (_EMPTY, "model"),
-        (_IDX_MISS, "retrieval"),
-        (_IDX_BAD, "retrieval"),
-        (_ENCODER_HTTP, "retrieval"),
-        (_ENCODER_URL, "retrieval"),
-        (_ENCODER_HTTP_BARE, "retrieval"),
-        (_ENCODER_URL_BARE, "retrieval"),
-        ("gemini: HTTP 401 on attempt 1 of 2", "retrieval"),
-        ("gemini: URLError after 2 attempts", "retrieval"),
-        ("EmbeddingError: gemini-embedding-2: HTTP 502 on attempt 2 of 2", "retrieval"),
-        ("KnowledgeUnavailable: document index unavailable: locked", "retrieval"),
-        (_AB500, "ability"),
-        (_AB_TIMEOUT, "ability"),
-        ("linker/search-products did not answer after 3 attempts", "ability"),
-        (_PAGE_500, None),
-        ("linker/read-page: draft products returned 500", None),
-        ("a products turn is not a question for the team", None),
-        ("status_code: 400, model_name: deepseek-flash, body: bad request", None),
-        ("linker/search-products returned 404 for {}", None),
-    )
-    for failure, kind in cases:
-        assert fatal_class((failure,)) == kind, failure
-    # AB-500's meta.failures is the grounding sentence. The 500 is the
-    # route call. Together they are an ability failure, not a model failure.
-    assert (
-        fatal_class((_AB500, "a products turn is not a question for the team"))
-        == "ability"
-    )
+def _cards(output: TurnOutput) -> list[CardsBlock]:
+    return [block for block in output.blocks if isinstance(block, CardsBlock)]
 
 
-def test_a_model_or_index_failure_with_cards_says_it_failed() -> None:
-    """M500, M-EMPTY, M-429, IDX-MISS, IDX-BAD. Cards may stay."""
-    cases: tuple[tuple[str, FailureClass, BaseException], ...] = (
-        ("M500", "model", RuntimeError(_M500)),
-        ("M-EMPTY", "model", RuntimeError(_EMPTY)),
-        ("M-429", "model", RuntimeError(_M429)),
-        ("IDX-MISS", "retrieval", KnowledgeUnavailable(_IDX_MISS)),
-        ("IDX-BAD", "retrieval", KnowledgeUnavailable(_IDX_BAD)),
+def _scenario(name: str, language: Locale) -> TurnResult:
+    request = _question(language, documents=name == "m500-doc")
+    if name == "m500":
+        return run(request, _raise(_model(500)), route=_PRODUCTS, seed=_stock())
+    if name == "m-empty":
+        return run(request, _raise(_empty_stream()), route=_PRODUCTS, seed=_stock())
+    if name == "m-429":
+        return run(request, _raise(_model(429)), route=_PRODUCTS, seed=_stock())
+    if name == "m500-doc":
+        return run(request, _raise(_model(500)), route=_DOCUMENTS, seed=_manual())
+    if name == "idx-miss":
+        return run(
+            request,
+            _raise(_index("unable to open database file")),
+            route=_DOCUMENTS,
+            seed=_stock(),
+        )
+    if name == "idx-bad":
+        return run(
+            request,
+            _raise(_index("file is not a database")),
+            route=_DOCUMENTS,
+            seed=_stock(),
+        )
+    if name == "ab-500":
+        return run(
+            request,
+            _handoff(language),
+            route=_PRODUCTS,
+            call_failures=(_ability_note("500"),),
+        )
+    if name == "ab-timeout":
+        return run(
+            request,
+            _handoff(language),
+            route=_PRODUCTS,
+            call_failures=(_ability_note("timeout"),),
+        )
+    if name.startswith("encoder-"):
+        return run(
+            request,
+            _raise(_encoder(name.removeprefix("encoder-"))),
+            route=_PRODUCTS,
+            seed=_stock(),
+        )
+    if name == "degraded-no-cards":
+        return run(request, _raise(_ability("500")), route=_PRODUCTS)
+    raise AssertionError(name)
+
+
+def _cases_410() -> list[dict[str, Any]]:
+    payload = json.loads(_MANIFEST.read_text(encoding="utf-8"))
+    cases = [item for item in payload["cases"] if item.get("issue") == 410]
+    found = {item["id"] for item in cases}
+    missing = [item_id for item_id in _REQUIRED if item_id not in found]
+    if missing:
+        raise AssertionError(f"missing #410 rows: {missing}")
+    return cases
+
+
+def test_real_exceptions_carry_their_class() -> None:
+    """The class is the exception's, including the two encoder forms."""
+    unexpected = _encoder("unexpected")
+    counted = _encoder("count")
+    assert "unexpected response" in str(unexpected)
+    assert "embeddings for" in str(counted)
+    for kind in ("http", "transport", "unexpected", "count"):
+        assert kind_of(_encoder(kind)) == "retrieval"
+    assert kind_of(EmbeddingError("not a known sentence")) == "retrieval"
+    assert _ability("500").fatal is True
+    assert kind_of(_ability("500")) == "ability"
+    assert "returned 500" in str(_ability("500"))
+    assert _ability("timeout").fatal is True
+    assert kind_of(_ability("timeout")) == "ability"
+    assert kind_of(_index("unable to open database file")) == "retrieval"
+    assert kind_of(_index("file is not a database")) == "retrieval"
+    assert kind_of(_model(500)) == "model"
+    assert kind_of(_model(429)) == "model"
+    assert kind_of(_model(400)) is None
+    assert kind_of(_empty_stream()) == "model"
+    exhausted = UnexpectedModelBehavior("Tool 'x' exceeded max retries count of 2")
+    assert kind_of(exhausted) is None
+    assert kind_of(AbilityError("returned 404", fatal=False)) is None
+    assert kind_of(PageUnavailable("page /blog/x/ returned 500")) is None
+    assert kind_of(RuntimeError("EmbeddingError: not a known sentence")) is None
+    assert kind_of(RuntimeError("KnowledgeUnavailable: locked")) is None
+
+
+def test_the_first_fatal_kind_wins_and_every_class_uses_one_sentence() -> None:
+    """Nothing ranks the three classes. The template sentence does not either."""
+    retrieval = note(_encoder("unexpected"))
+    ability = note(_ability("500"))
+    model = note(_model(500))
+    assert fatal_class((retrieval, ability, model)) == "retrieval"
+    assert fatal_class((ability, retrieval)) == "ability"
+    assert fatal_class((model, ability)) == "model"
+    for failure_class in ("model", "retrieval", "ability"):
+        output = fallback(_stock(), "en", _PRODUCTS, failure_class=failure_class)
+        assert _sentence(output) == DEGRADED["en"]
+        assert _cards(output)
+
+
+def test_the_review_encoder_sentences_degrade_a_products_turn() -> None:
+    """Round 2: both real forms, the probe sentence, and the re-raised index error."""
+    counted = _encoder("count")
+    unexpected = _encoder("unexpected")
+    prefixed_count = f"linker/search-knowledge: {counted}"
+    cases: tuple[BaseException, ...] = (
+        unexpected,
+        counted,
+        RuntimeError(_REVIEW_UNEXPECTED),
+        RuntimeError(prefixed_count),
+        KnowledgeUnavailable(f"linker/search-knowledge: {unexpected}"),
+        KnowledgeUnavailable(prefixed_count),
+        EmbeddingError("not a known sentence"),
     )
-    for name, kind, error in cases:
-        assert fatal_class((str(error),)) == kind, name
-        route = _PRODUCTS if kind == "model" else _DOCUMENTS
-        for language in _LANGUAGES:
+    for error in cases:
+        assert kind_of(error) == "retrieval", error
+        for language in ("en", "de"):
             result = run(
                 _question(language),
                 _raise(error),
-                route=route,
-                seed=_stock(),
-            )
-            assert result.fallback is True
-            assert result.grounded is False
-            _assert_degraded(result.output, language)
-            cards = [
-                block for block in result.output.blocks if isinstance(block, CardsBlock)
-            ]
-            assert cards and set(cards[0].product_ids) == set(_STOCK), name
-            assert not any(block.type == "ask" for block in result.output.blocks)
-
-
-def test_a_model_500_on_a_document_turn_does_not_claim_it_answered() -> None:
-    """M500-DOC. The manuals may stay. The success sentence does not."""
-    for language in _LANGUAGES:
-        result = run(
-            _question(language, documents=True),
-            _raise(RuntimeError(_M500)),
-            route=_DOCUMENTS,
-            seed=_manual(),
-        )
-        assert result.fallback is True
-        _assert_degraded(result.output, language)
-        links = [
-            block for block in result.output.blocks if isinstance(block, DocumentBlock)
-        ]
-        assert links and links[0].url
-        assert not any(isinstance(block, CardsBlock) for block in result.output.blocks)
-
-
-def test_a_products_search_failure_is_not_the_sales_mailbox() -> None:
-    """AB-500, and an ability timeout of the same shape. EN and DE."""
-    cases = (("AB-500", _AB500), ("AB-TIMEOUT", _AB_TIMEOUT))
-    for name, failure in cases:
-        assert fatal_class((failure,)) == "ability", name
-        for language in _LANGUAGES:
-            result = run(
-                _question(language),
-                _handoff(language),
-                route=_PRODUCTS,
-                call_failures=(failure,),
-            )
-            assert result.fallback is True
-            assert result.grounded is False
-            assert any(
-                "not a question for the team" in item for item in result.failures
-            )
-            _assert_degraded(result.output, language)
-            assert not any(
-                isinstance(block, CardsBlock) for block in result.output.blocks
-            ), name
-
-
-def test_an_encoder_failure_with_cards_says_it_failed() -> None:
-    """The encoder's own sentences are a retrieval failure, not a match."""
-    for failure in (_ENCODER_HTTP, _ENCODER_URL, _ENCODER_HTTP_BARE, _ENCODER_URL_BARE):
-        assert fatal_class((failure,)) == "retrieval"
-        for language in _LANGUAGES:
-            result = run(
-                _question(language),
-                _raise(RuntimeError(failure)),
                 route=_PRODUCTS,
                 seed=_stock(),
             )
             assert result.fallback is True
             _assert_degraded(result.output, language)
-            cards = [
-                block for block in result.output.blocks if isinstance(block, CardsBlock)
-            ]
+            cards = _cards(result.output)
             assert cards and set(cards[0].product_ids) == set(_STOCK)
+
+
+def test_a_logged_string_is_not_reread_as_a_class() -> None:
+    """`from_log` keeps a string's words and does not give them a class."""
+    assert from_log(_REVIEW_UNEXPECTED).kind is None
+    assert (
+        from_log("EmbeddingError: gemini-embedding-2: HTTP 502 on attempt 2 of 2").kind
+        is None
+    )
+    assert (
+        from_log("KnowledgeUnavailable: document index unavailable: locked").kind
+        is None
+    )
+    assert kind_of(RuntimeError(_REVIEW_UNEXPECTED)) == "retrieval"
+    result = run(
+        _question("en"),
+        _raise(ValueError("not a TurnOutput")),
+        route=_PRODUCTS,
+        seed=_stock(),
+        call_failures=(_REVIEW_UNEXPECTED,),
+    )
+    assert result.fallback is True
+    assert _sentence(result.output) == _MATCHING["en"]
+
+
+def test_a_class_name_in_the_sentence_is_not_a_failed_turn() -> None:
+    result = run(
+        _question("en"),
+        _raise(RuntimeError("EmbeddingError: not a known sentence")),
+        route=_PRODUCTS,
+        seed=_stock(),
+    )
+    assert result.fallback is True
+    assert _sentence(result.output) == _MATCHING["en"]
+
+
+def test_a_recorded_note_keeps_its_class_when_the_wrapper_loses_the_type() -> None:
+    """The tool wrote the class, then a wrapper raised the same sentence."""
+    dumped = note(
+        EmbeddingError("not a known sentence"), prefix="linker/search-knowledge"
+    ).dump()
+    recorded = [dumped]
+
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        if len(recorded) == 1:
+            recorded.append(dumped)
+        raise RuntimeError(dumped["text"])
+
+    result = run(
+        _question("en"),
+        generate,
+        route=_PRODUCTS,
+        seed=_stock(),
+        call_failures=recorded,
+    )
+    assert result.fallback is True
+    _assert_degraded(result.output, "en")
+    assert kind_of(RuntimeError(dumped["text"])) is None
+
+
+def test_issue_410_rows_in_the_339_manifest() -> None:
+    """Every #410 row in the #339 manifest runs, in both languages."""
+    for case in _cases_410():
+        assert set(case["locales"]) == {"en", "de"}
+        for language in (_locale(item) for item in case["locales"]):
+            result = _scenario(case["scenario"], language)
+            assert result.fallback is True
+            _assert_degraded(result.output, language)
+            cards = _cards(result.output)
+            documents = [
+                block
+                for block in result.output.blocks
+                if isinstance(block, DocumentBlock)
+            ]
+            if case["cards"]:
+                assert cards and set(cards[0].product_ids) == set(_STOCK)
+            else:
+                assert not cards
+            if case["documents"]:
+                assert documents and documents[0].url
+            else:
+                assert not documents
+            if case["scenario"] == "degraded-no-cards":
+                # Gate 6 counts a handoff. The block is a paragraph
+                # (Handoff.tsx); a clickable control is #394.
+                types = {block.type for block in result.output.blocks}
+                assert types == {"handoff"}
+                assert types & set(NEXT_STEP_BLOCKS)
 
 
 def test_a_page_outage_stays_a_normal_fallback() -> None:
     """read-page 500 is not an ability failure. A grounding miss still matches."""
-    assert fatal_class((_PAGE_500,)) is None
-    assert fatal_class((_PAGE_500, _AB500)) == "ability"
+    page = note(
+        PageUnavailable("page /blog/x/ returned 500"), prefix="linker/read-page"
+    )
+    ability = note(_ability("500"), prefix="linker/search-products")
+    assert page.kind is None
+    assert "kind" not in page.dump()
+    assert fatal_class((page, ability)) == "ability"
+    assert fatal_class((ability, page)) == "ability"
     facts = _stock()
 
     def generate(
@@ -301,13 +529,13 @@ def test_a_page_outage_stays_a_normal_fallback() -> None:
             facts,
         )
 
-    for language in _LANGUAGES:
+    for language in ("en", "de"):
         result = run(
             _question(language),
             generate,
             route=_PRODUCTS,
             seed=facts,
-            call_failures=(_PAGE_500,),
+            call_failures=(page.dump(),),
         )
         assert result.fallback is True
         assert _sentence(result.output) == _MATCHING[language]
@@ -339,7 +567,7 @@ def test_a_language_repair_does_not_hide_a_route_ability_failure() -> None:
         generate,
         route=_PRODUCTS,
         seed=facts,
-        call_failures=(_AB500,),
+        call_failures=(_ability_note("500"),),
     )
     assert result.fallback is True
     assert result.failures[0].startswith("answer in ")
@@ -349,17 +577,16 @@ def test_a_language_repair_does_not_hide_a_route_ability_failure() -> None:
 def test_a_model_tool_failure_cannot_become_the_sales_sentence() -> None:
     """search-products 500, then handoff-team, on a model route.
 
-    The 500 is appended during generate, the way the runner writes
+    The note is appended during generate, the way the runner writes
     `prepared.log["call_failures"]`. The handoff would otherwise ground.
     """
-    recorded: list[str] = []
+    recorded: list[object] = []
 
     def generate(
         request: TurnRequest, retry: str | None
     ) -> tuple[TurnOutput, TurnFacts]:
-        # Appended during the attempt, after `run` has copied the list.
         if not recorded:
-            recorded.append(_AB500)
+            recorded.append(_ability_note("500"))
         return _handoff("en")(request, retry)
 
     result = run(
@@ -371,8 +598,8 @@ def test_a_model_tool_failure_cannot_become_the_sales_sentence() -> None:
     assert any("returned 500" in item for item in result.failures)
 
 
-def test_a_raised_search_failure_then_handoff_is_not_the_sales_sentence() -> None:
-    """pydantic-ai raises the tool error out of the first attempt."""
+def test_a_raised_ability_failure_then_handoff_is_not_the_sales_sentence() -> None:
+    """The runner re-raises `AbilityError`. The retry's handoff does not ship."""
     calls = {"n": 0}
 
     def generate(
@@ -380,9 +607,7 @@ def test_a_raised_search_failure_then_handoff_is_not_the_sales_sentence() -> Non
     ) -> tuple[TurnOutput, TurnFacts]:
         calls["n"] += 1
         if calls["n"] == 1:
-            raise RuntimeError(
-                "linker/search-products returned 500 for {'input[series]': 'saj-h2'}"
-            )
+            raise _ability("500")
         return _handoff("en")(request, retry)
 
     result = run(_question("en"), generate, route=Route("model"))
@@ -390,6 +615,24 @@ def test_a_raised_search_failure_then_handoff_is_not_the_sales_sentence() -> Non
     assert result.fallback is True
     _assert_degraded(result.output, "en")
     assert any("returned 500" in item for item in result.failures)
+
+
+def test_a_bare_ability_sentence_is_not_a_class() -> None:
+    """A wrapper that kept only the words, and no note, is not an ability failure."""
+    calls = {"n": 0}
+
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("linker/search-products returned 500 for {}")
+        return _handoff("en")(request, retry)
+
+    result = run(_question("en"), generate, route=Route("model"))
+    assert calls["n"] == 2
+    assert result.grounded is True
+    assert _sentence(result.output) == _SALES
 
 
 def test_a_recovered_model_error_may_still_hand_off() -> None:
@@ -401,7 +644,7 @@ def test_a_recovered_model_error_may_still_hand_off() -> None:
     ) -> tuple[TurnOutput, TurnFacts]:
         calls["n"] += 1
         if calls["n"] == 1:
-            raise RuntimeError(_M500)
+            raise _model(500)
         return _handoff("en")(request, retry)
 
     result = run(_question("en"), generate, route=Route("model"))
@@ -425,7 +668,8 @@ def test_answer_passes_call_failures_into_the_run() -> None:
     from linker_genie.app import _answer, app
     from linker_genie.understand import Prepared
 
-    prepared = Prepared(route=_PRODUCTS, log={"call_failures": [_AB500]})
+    recorded = _ability_note("500")
+    prepared = Prepared(route=_PRODUCTS, log={"call_failures": [recorded]})
     app.state.generate = _handoff("en")
     scope = {
         "type": "http",
@@ -454,7 +698,7 @@ def test_answer_passes_call_failures_into_the_run() -> None:
     assert result.fallback is True
     _assert_degraded(result.output, "en")
     assert any("not a question for the team" in item for item in result.failures)
-    assert prepared.log["call_failures"] == [_AB500]
+    assert prepared.log["call_failures"] == [recorded]
 
 
 def test_a_later_language_miss_is_not_declared_a_model_outage() -> None:
@@ -471,7 +715,7 @@ def test_a_later_language_miss_is_not_declared_a_model_outage() -> None:
     ) -> tuple[TurnOutput, TurnFacts]:
         calls["n"] += 1
         if calls["n"] == 1:
-            raise RuntimeError(_M500)
+            raise _model(500)
         return (
             TurnOutput(
                 language="en",
@@ -508,13 +752,11 @@ def test_a_grounding_miss_keeps_the_recommendation_sentence() -> None:
             facts,
         )
 
-    for language in _LANGUAGES:
+    for language in ("en", "de"):
         result = run(_question(language), generate, route=_PRODUCTS, seed=facts)
         assert result.fallback is True
         assert _sentence(result.output) == _MATCHING[language]
-        cards = [
-            block for block in result.output.blocks if isinstance(block, CardsBlock)
-        ]
+        cards = _cards(result.output)
         assert cards and set(cards[0].product_ids) == set(_STOCK)
 
 
@@ -534,7 +776,7 @@ def test_a_fatal_products_turn_does_not_borrow_unqualified_ids() -> None:
     output = fallback(facts, "en", _PRODUCTS, failure_class="model")
     assert isinstance(output.blocks[0], HandoffBlock)
     assert output.blocks[0].summary == DEGRADED["en"]
-    assert not any(isinstance(block, CardsBlock) for block in output.blocks)
+    assert not _cards(output)
 
 
 def test_exhaustion_still_ships_no_cards_when_a_class_is_also_set() -> None:

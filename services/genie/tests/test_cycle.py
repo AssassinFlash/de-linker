@@ -134,7 +134,9 @@ def test_an_ability_that_stays_dead_falls_back_to_the_degradation() -> None:
     def generate(
         _request: TurnRequest, retry: str | None
     ) -> tuple[TurnOutput, TurnFacts]:
-        raise AbilityError("linker/search-products could not be reached: boom")
+        raise AbilityError(
+            "linker/search-products could not be reached: boom", fatal=True
+        )
 
     result = run(_request(), generate)
 
