@@ -126,6 +126,30 @@ def login_required(locale: str) -> TurnOutput:
     )
 
 
+def _extreme_fallback(facts: TurnFacts, language: Locale) -> TurnOutput | None:
+    """The one product search-products aggregated, named by its model code."""
+    winner = facts.facts.get("search.extreme_product_id")
+    model = facts.facts.get("search.extreme_model")
+    if winner is None or model is None:
+        return None
+    try:
+        product_id = int(winner.value)
+    except ValueError:
+        return None
+    text = (
+        f"Das Modell {model.value} erfüllt die genannte Grenze."
+        if language == "de"
+        else f"The {model.value} meets the limit you named."
+    )
+    return TurnOutput(
+        language=language,
+        blocks=[
+            TextBlock(text=text, refs=[str(product_id)]),
+            CardsBlock(product_ids=[product_id]),
+        ],
+    )
+
+
 def german_is_clean(text: str) -> bool:
     """A German line carries none of the English function-word fragments."""
     padded = f" {text.lower()} "
@@ -140,6 +164,11 @@ def fallback(facts: TurnFacts, locale: str, route: Route | None = None) -> TurnO
     # ship the mailbox sentence the handoff tool returned.
     if "inquiry.login_required" in facts.facts:
         return login_required(language)
+    # The applied winner is the whole fallback. The named-model clarification
+    # would add the other cards (#363, #364), which an extreme answer refuses.
+    extreme = _extreme_fallback(facts, language)
+    if extreme is not None:
+        return extreme
     url = facts.facts.get("size.configurator_url")
     if route is not None and route.name == "sizing" and url is not None:
         return TurnOutput(

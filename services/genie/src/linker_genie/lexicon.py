@@ -11,9 +11,12 @@ Keys are compared after normalization: lower case, letters and digits only, so
 "H2-10K-T3", "h2 10k t3" and "H210KT3" are one key. A message is cut into words on
 whitespace and on hyphens, and every run of one to `MAX_WORDS` consecutive words is
 looked up; a longer hit wins over the shorter hits inside it. A hyphenated body
-inside a longer code is its own key when those pieces are too short to be codes
-and the body names one product ("BD-8" of "EF BD-8-S2"). A trailing suffix
-("S2", "G20") is not.
+inside a longer code is its own key when the join is an interior of width
+`SHORT_BODY_WIDTH`, mixes a letter and a digit, and names one product ("BD-8" of
+"EF BD-8-S2", and of a code that has no brand token, "BD-8-S2"). The trailing
+segment ("S2", "G20") is not a key. A body that more than one product holds, or a
+shared trailing suffix with no other product word, is a fixed question (route.py),
+not a search and not a guess.
 """
 
 from __future__ import annotations
@@ -30,14 +33,26 @@ Kind = Literal["brand", "series", "model", "category"]
 # "EF HD-P1-10K0-S2" cut on hyphens; snapshot 2026-10-15); six leaves one word of room.
 MAX_WORDS = 6
 # A model code taken from a title must be at least four letters and digits long: the
-# shortest real code is four ("L260", "GM330" is five; snapshot 2026-10-15), while
-# two- and three-character tokens of titles ("S2", "P3", "G20") are suffixes that a
-# customer types inside other words and would match by accident. A body the hyphen
-# itself splits into those short pieces ("BD-8") is recovered by _short_bodies.
+# shortest real code is four ("L260"; "GM330" is five; snapshot 2026-10-15). A
+# shorter token is not a full code. A trailing piece such as "S2" or "G20" is a
+# suffix by where it sits, not because three characters is below four: "G20" is
+# three characters and is still a suffix. A body the hyphen splits into short
+# pieces ("BD-8") is recovered by _short_bodies.
 MIN_CODE = 4
-# The one length below MIN_CODE that is still longer than a suffix token ("S2",
-# "P3", "AC"). "BD" + "8" lands here; a two-character join does not.
-SHORT_BODY = MIN_CODE - 1
+# Width of an interior model body ("BD" + "8" → "bd8"). This is not `MIN_CODE - 1`.
+# "G20" is three characters and is a suffix: position and uniqueness keep it out,
+# not length. #330 first round (campaign-330/evidence/final.jsonl, class
+# misspelling, 10 messages; notes in docs/research/2026-10-20-campaign-330/NOTES.md):
+# the only short-code miss is A3-EN "BD-8", whose normalized body is three
+# characters. The other nine are longer codes (O for 0, an extra letter, spaced
+# pieces) and passed without this key. Class E is 11/11 on case, hyphen and space,
+# so this is not an edit distance. Dossier
+# docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md §1.1: no competitor
+# publishes a misspelling rule, and the strategy is designed here. No
+# four-character interior body failed, so a join of four characters is not a key.
+# The 2026-10-15 snapshot (106 products) is the catalog the rule was checked
+# against. It is not why the width is 3.
+SHORT_BODY_WIDTH = 3
 # A series alias without its brand ("h2" of saj-h2) must carry a digit or be at least
 # three characters: "et" (goodwe-et) and "ci" (saj-ci-line) are ordinary letter pairs
 # in English and German text, "h2", "b2", "hs3" and "esa" are not (_series_aliases).
@@ -139,6 +154,12 @@ class Vocabulary:
     series_of: dict[int, set[str]] = field(default_factory=dict)
     # Category keys are compared by their plural-less forms as well (_forms).
     category_forms: dict[str, list[Entry]] = field(default_factory=dict)
+    # A shape-valid interior join that more than one product holds. route.py asks
+    # which model, instead of searching the family the other words name.
+    unresolved_bodies: frozenset[str] = frozenset()
+    # Trailing segments shared by two or more products ("s2", "g20"). A message
+    # that is only a pointer plus one of these asks which model (route.py).
+    shared_suffixes: frozenset[str] = frozenset()
 
     def add(self, key: str, entry: Entry) -> None:
         if not key:
@@ -278,10 +299,14 @@ def build(
         if category.slug not in DEVICE_CLASSES:
             continue
         _add_category(vocabulary, category.name, category.slug, category.slug)
+    german_titles: dict[int, str] = {}
     for german, german_categories in translated:
         english = by_sku.get(german.sku)
         if english is None:
             continue
+        # The same title codes `_add_codes` indexes, joined to the English id.
+        # A later short-body pass reads them too (EN and DE keep one structure).
+        german_titles[english.id] = german.name
         _add_codes(vocabulary, english, german.name)
         english_slugs = {slug for _name, slug in english.categories}
         for category in german_categories:
@@ -315,7 +340,7 @@ def build(
         vocabulary.entries[key] = [
             entry for entry in vocabulary.entries[key] if entry.kind != "series"
         ]
-    _add_short_bodies(vocabulary, products)
+    _add_short_bodies(vocabulary, products, german_titles)
     return vocabulary
 
 
@@ -405,81 +430,126 @@ def _codes(title: str) -> list[str]:
     return codes
 
 
-def _add_short_bodies(vocabulary: Vocabulary, products: list[Product]) -> None:
+def _add_short_bodies(
+    vocabulary: Vocabulary, products: list[Product], german_titles: dict[int, str]
+) -> None:
     """Index a hyphenated model body that names exactly one product.
 
-    See `_short_bodies` for the rule. The search text stays the product's own
-    model label ("EF BD-8-S2"), which the title and `pa_model` contain. A key
-    that already names something else (a series alias, a full code) is left as
-    it is.
+    See `_short_bodies` for the rule. The search text is the source string that
+    contains the body ("EF BD-8-S2", or "BD-8-S2" when that is the only source),
+    not `models[0]` when the body sits on a later model. A key that already
+    names something else (a series alias, a full code) is left as it is.
     """
-    for key, product_id in _short_bodies(products).items():
+    chosen, labels, unresolved = _short_bodies(products, german_titles)
+    vocabulary.unresolved_bodies = frozenset(unresolved)
+    vocabulary.shared_suffixes = _shared_suffixes(products, german_titles, set(chosen))
+    for key, product_id in chosen.items():
         if key in vocabulary.entries:
             continue
-        label = vocabulary.labels.get(product_id, "")
+        label = labels.get(key, "")
         if not label:
             continue
         vocabulary.add(key, Entry("model", label, label, frozenset({product_id})))
 
 
-def _short_bodies(products: list[Product]) -> dict[str, int]:
-    """Interior joins of a model code that name one product ("BD-8" → 3582).
+def _short_bodies(
+    products: list[Product], german_titles: dict[int, str]
+) -> tuple[dict[str, int], dict[str, str], set[str]]:
+    """Interior joins that name one product, the source text, and the rest.
 
-    The matcher cuts on hyphens, so "EF BD-8-S2" is the words EF, BD, 8, S2.
-    "BD" and "8" are each shorter than `MIN_CODE` and were never keys; their
-    join "BD8" is the body a customer writes. A join is a key only when all of
-    the following hold (snapshot 2026-10-15, 106 products; no competitor
-    precedent for short codes, docs/research/2026-10-19-genie-campaign-gaps/
-    DOSSIER.md §1.1):
+    The matcher cuts on hyphens, so "EF BD-8-S2" is the words EF, BD, 8, S2 and
+    "BD-8-S2" is BD, 8, S2. "BD" and "8" are each shorter than `MIN_CODE` and
+    were never keys; their join "bd8" is the body a customer writes. A join is
+    a key only when all of the following hold. The width is `SHORT_BODY_WIDTH`
+    (see that constant for the #330 measurement). Dossier §1.1 leaves the
+    misspelling strategy to be designed; this is that design, and it is not an
+    edit distance.
 
-    - two or more segments, strictly inside the code: after the leading
-      segment and before the trailing one. The trailing segment is the shared
-      suffix ("S2" is a substring of 24 products' name, SKU or model, "G20" of
-      21, "G10" of 19).
-    - each piece shorter than `MIN_CODE`, and the join `SHORT_BODY` characters
-      with both a letter and a digit. Two-character joins ("S2", "P3", "AC",
-      "DC") and a bare digit ("2") stay out.
-    - that join is a substring of exactly one product's name, SKU and model.
-      BD8 and BD5 each occur in one product. A fragment that also occurs
-      inside another model ("20K" inside GW20K-ETA-G20 as well as H2-20K-T3)
-      is not a key.
+    - The trailing segment is never in the join. It is the suffix ("S2", "G20"),
+      excluded by position. A code of at least four segments whose first segment
+      is letters only skips that leading brand as well ("EF" of "EF BD-8-S2"),
+      and only when two or more segments sit between it and the suffix. A
+      three-segment code has no separate brand token ("BD-8-S2", a SKU of that
+      shape): the join starts at the first piece.
+    - Each piece is shorter than `MIN_CODE`. The join is exactly
+      `SHORT_BODY_WIDTH` characters and has both a letter and a digit. A
+      two-character join and a four-character join are not keys. A letters-only
+      join is not a key.
+    - The products that structurally produce the join and the products whose
+      name, German title, SKU or model merely contain it are the same set, and
+      that set has one product. "20K" inside both GW20K-ETA-G20 and H2-20K-T3
+      is not a key. A second product that only contains the body as a substring
+      is not a key either: the body is unresolved, and the route asks.
 
-    On that snapshot the only such joins are BD8 (product 3582, EF BD-8-S2)
-    and BD5 (product 3581, EF BD-5-S2).
+    The label of a key is the first source that produced it: a model, an English
+    title code, a German title code (the same tokens `_add_codes` reads, mapped
+    to the English id), the SKU tail, then the raw SKU. On the 2026-10-15
+    snapshot the only such joins are bd8 (product 3582, "EF BD-8-S2") and bd5
+    (product 3581, "EF BD-5-S2"). That snapshot is the catalog the rule was
+    checked against, not the reason the width is 3.
     """
-    identity = {product.id: _code_identity(product) for product in products}
+    identity = {
+        product.id: _code_identity(product, german_titles.get(product.id, ""))
+        for product in products
+    }
     owners: dict[str, set[int]] = {}
+    labels: dict[str, str] = {}
     for product in products:
-        for source in _code_sources(product):
-            segments = _segments(source)
-            if len(segments) < 3:
-                continue
-            last = len(segments) - 1
-            for start in range(1, last):
-                for end in range(start + 2, last + 1):
-                    piece = segments[start:end]
-                    if any(len(normalize(part)) >= MIN_CODE for part in piece):
-                        continue
-                    key = normalize("".join(piece))
-                    if len(key) != SHORT_BODY or not _mixed(key):
-                        continue
-                    owners.setdefault(key, set()).add(product.id)
+        german = german_titles.get(product.id, "")
+        for source in _code_sources(product, german):
+            for key in _interior_joins(source):
+                owners.setdefault(key, set()).add(product.id)
+                labels.setdefault(key, source)
     chosen: dict[str, int] = {}
+    unresolved: set[str] = set()
     for key, ids in owners.items():
         holders = {pid for pid, text in identity.items() if key in text}
         if holders == ids and len(ids) == 1:
             chosen[key] = next(iter(ids))
-    return chosen
+        else:
+            unresolved.add(key)
+    return chosen, labels, unresolved
 
 
-def _code_sources(product: Product) -> list[str]:
-    """The hyphenated model strings, not the marketing words around them."""
+def _interior_joins(code: str) -> list[str]:
+    """Width-`SHORT_BODY_WIDTH` mixed joins that exclude the trailing segment."""
+    segments = _segments(code)
+    if len(segments) < 3:
+        return []
+    last = len(segments) - 1
+    start_at = 1 if segments[0].isalpha() and last - 1 >= 2 else 0
+    found: list[str] = []
+    for start in range(start_at, last):
+        # `end` stops at `last`, so the trailing segment is never included.
+        for end in range(start + 2, last + 1):
+            piece = segments[start:end]
+            if any(len(normalize(part)) >= MIN_CODE for part in piece):
+                continue
+            key = normalize("".join(piece))
+            if len(key) != SHORT_BODY_WIDTH or not _mixed(key):
+                continue
+            found.append(key)
+    return found
+
+
+def _code_sources(product: Product, german_name: str = "") -> list[str]:
+    """Model strings, title codes and the SKU. Not the marketing words.
+
+    German title codes are the tokens `_codes` already accepts (the head, before
+    a bracket). A code that exists only inside parentheses is not a title code
+    in either language. The raw SKU covers a code that is the whole SKU
+    ("BD-8-S2") and not a `DLK-<brand>-<tail>` tail.
+    """
     brand_slugs = [slug for _name, slug in product.brands]
     sources = list(product.models)
     sources.extend(_codes(product.name))
+    if german_name:
+        sources.extend(_codes(german_name))
     tail = _sku_tail(product.sku, brand_slugs)
     if tail:
         sources.append(tail)
+    if product.sku:
+        sources.append(product.sku)
     return sources
 
 
@@ -491,9 +561,38 @@ def _segments(code: str) -> list[str]:
     return segments
 
 
-def _code_identity(product: Product) -> str:
-    """Name, SKU and model, normalized, for the one-product check."""
-    return normalize(" ".join((product.name, product.sku, *product.models)))
+def _code_identity(product: Product, german_name: str = "") -> str:
+    """Name, German title, SKU and model, normalized, for the one-product check."""
+    return normalize(
+        " ".join((product.name, german_name, product.sku, *product.models))
+    )
+
+
+def _shared_suffixes(
+    products: list[Product], german_titles: dict[int, str], chosen: set[str]
+) -> frozenset[str]:
+    """Trailing segments that two or more products share, minus short-body keys.
+
+    Length is 2 through `SHORT_BODY_WIDTH`, and the token mixes a letter and a
+    digit, so "S2" and "G20" count and "AC", "2" and a four-character tail do
+    not. A suffix that is also a chosen body stays a body.
+    """
+    holders: dict[str, set[int]] = {}
+    for product in products:
+        german = german_titles.get(product.id, "")
+        seen: set[str] = set()
+        for source in _code_sources(product, german):
+            segments = _segments(source)
+            if len(segments) < 2:
+                continue
+            key = normalize(segments[-1])
+            if 2 <= len(key) <= SHORT_BODY_WIDTH and _mixed(key):
+                seen.add(key)
+        for key in seen:
+            holders.setdefault(key, set()).add(product.id)
+    return frozenset(
+        key for key, ids in holders.items() if len(ids) >= 2 and key not in chosen
+    )
 
 
 def _mixed(key: str) -> bool:

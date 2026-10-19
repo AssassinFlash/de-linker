@@ -385,6 +385,8 @@ def _subject(
         brand_names=dict(vocabulary.brand_names) if vocabulary else {},
         names=dict(vocabulary.names) if vocabulary else {},
         catalog_models=vocabulary.model_codes() if vocabulary else (),
+        unresolved_bodies=vocabulary.unresolved_bodies if vocabulary else frozenset(),
+        shared_suffixes=vocabulary.shared_suffixes if vocabulary else frozenset(),
     )
 
 

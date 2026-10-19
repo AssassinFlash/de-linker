@@ -14,6 +14,19 @@ namespace Linker\Commerce\Consent;
  */
 final class BasicMode {
 
+	/** WooCommerce log source when the barrier cannot see the handle it knows. */
+	public const LOG_SOURCE = 'linker-consent';
+
+	/** Site Kit 1.189.0 prints the Google tag on this handle. */
+	public const GOOGLE_HANDLE = 'google_gtagjs';
+
+	/**
+	 * One warning per request; deploy verify is what fails the batch.
+	 *
+	 * @var bool
+	 */
+	private bool $alerted = false;
+
 	/** Registers the gaps verified against CookieYes 3.5.7 / Site Kit 1.189.0. */
 	public function register(): void {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_withdrawal' ), 0 );
@@ -51,16 +64,30 @@ final class BasicMode {
 	}
 
 	/**
-	 * Parser-inert Google tag. CookieYes owns releasing this tag after opt-in;
-	 * its MutationObserver alone cannot prevent a parser-started request.
+	 * Parser-inert Google tag. CookieYes owns releasing this tag after analytics
+	 * consent; its MutationObserver alone cannot prevent a parser-started request.
+	 * Withdrawal re-blocks by reloading into this held markup (assets/consent.js).
+	 *
+	 * A renamed Site Kit handle is still held when the tag URL is Google's, and
+	 * that fallback is logged. Without CookieYes (no CLI_VERSION) the tag is left
+	 * unchanged, because nothing would release a held tag, and the same request
+	 * logs the gap. Deploy verify fails closed in both cases.
 	 *
 	 * @param string $tag Enqueued script markup.
 	 * @param string $handle Script handle.
 	 * @return string
 	 */
 	public function hold_google_tag( string $tag, string $handle ): string {
-		if ( 'google_gtagjs' !== $handle || ! defined( 'CLI_VERSION' ) ) {
+		$google = self::GOOGLE_HANDLE === $handle || str_contains( $tag, 'googletagmanager.com/gtag/js' );
+		if ( ! $google ) {
 			return $tag;
+		}
+		if ( ! defined( 'CLI_VERSION' ) ) {
+			$this->alert( 'CookieYes is inactive (CLI_VERSION absent) while a Google tag is printed and analytics consent is denied; the barrier did not hold it.' );
+			return $tag;
+		}
+		if ( self::GOOGLE_HANDLE !== $handle ) {
+			$this->alert( 'Site Kit handle "' . $handle . '" is not google_gtagjs while analytics consent is denied; holding the Google tag by URL.' );
 		}
 		$html = new \WP_HTML_Tag_Processor( $tag );
 		if ( $html->next_tag( array( 'tag_name' => 'script' ) ) ) {
@@ -68,6 +95,19 @@ final class BasicMode {
 			$html->set_attribute( 'data-cookieyes', 'cookieyes-analytics' );
 		}
 		return $html->get_updated_html();
+	}
+
+	/**
+	 * Logs the gap once per request.
+	 *
+	 * @param string $message Warning text for the WooCommerce log.
+	 */
+	private function alert( string $message ): void {
+		if ( $this->alerted ) {
+			return;
+		}
+		$this->alerted = true;
+		wc_get_logger()->warning( $message, array( 'source' => self::LOG_SOURCE ) );
 	}
 
 	/**

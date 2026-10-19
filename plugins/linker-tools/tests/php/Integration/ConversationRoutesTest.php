@@ -397,7 +397,12 @@ ANSWER;
 			)
 		)
 			. "\n\nevent: done\ndata: {}\n\n";
-		( new Thread() )->record( $id, $messages, $stream );
+		// The opening turn is a different answer. A snapshot that forks it
+		// is refused (#373), so this fixture is the first transcript.
+		delete_post_meta( $id, Thread::MESSAGES );
+		delete_post_meta( $id, Thread::STREAM );
+		delete_post_meta( $id, Thread::PRODUCTS );
+		$this->assertTrue( ( new Thread() )->record( $id, $messages, $stream ) );
 		// Exercise the same public route a reloaded workspace or dock reads.
 		$response = rest_do_request( new WP_REST_Request( 'GET', '/linker-ai/v1/genie/conversation' ) );
 		$this->assertSame( 200, $response->get_status() );
