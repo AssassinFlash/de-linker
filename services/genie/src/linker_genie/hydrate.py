@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import re
 
-from linker_genie.facts import Document, Fact, TurnFacts
+from linker_genie.facts import Document, Fact, TurnFacts, pairing_card_sets
 from linker_genie.figures import chunk_of, localize
 from linker_genie.route import Route
 from linker_genie.schema import (
@@ -44,66 +44,58 @@ PLACEHOLDER = re.compile(r"\{fact:([^}]+)\}")
 # (issue #257 trial run, a range lost its upper figure).
 _PLACEHOLDER_AND_WORD = re.compile(r"\{fact:([^}]+)\}((?:\s?[A-Za-zÄÖÜäöü%°²µΩ℃]+)?)")
 _UNIT_TAIL = re.compile(r"\d\s?([^\s\d]+)$")
-# Verdicts the pairing tool cleared for a card (facts._from_search).
-_RELEASED = frozenset({"released", "released_with_accessory"})
-
-
-def released_pairing_ids(facts: TurnFacts) -> list[int]:
-    """The searched product, then each battery the pairing search released.
-
-    Order is the tool's. A search without a `pairings` list does not contribute:
-    check-compatibility of two named products is not this set.
-    """
-    ids: list[int] = []
-    seen: set[int] = set()
-    for call in facts.tool_calls:
-        name = str(call.get("name") or "")
-        if not name.endswith("search-products"):
-            continue
-        result = call.get("result")
-        if not isinstance(result, dict):
-            continue
-        for item in result.get("qualified") or []:
-            if not isinstance(item, dict):
-                continue
-            pairings = item.get("pairings")
-            if not isinstance(pairings, list) or not pairings:
-                continue
-            product_id = item.get("product_id")
-            if (
-                isinstance(product_id, int)
-                and product_id >= 1
-                and product_id not in seen
-            ):
-                ids.append(product_id)
-                seen.add(product_id)
-            for pairing in pairings:
-                if not isinstance(pairing, dict):
-                    continue
-                if pairing.get("verdict") not in _RELEASED:
-                    continue
-                paired = pairing.get("product_id")
-                if isinstance(paired, int) and paired >= 1 and paired not in seen:
-                    ids.append(paired)
-                    seen.add(paired)
-    return ids
+# Routes whose tools the model may have chosen. `model` is the route when Jev
+# reads a pairing and code does not prefetch (route.plan), so the model calls
+# the tool itself. Any other route keeps the cards the model wrote.
+_PAIRING_ROUTES = frozenset({"pairing", "model"})
 
 
 def complete_pairing_cards(
-    output: TurnOutput, facts: TurnFacts, route: Route | None
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None,
+    card_limit: int | None = None,
 ) -> TurnOutput:
-    """A pairing answer shows the tool's released set, not a narrower subset.
+    """Fill one pairing answer's cards from the single released set (#376).
 
-    The prose stays the model's. Cards are filled the way a cited document is
-    linked: when the set already matches, the model's order is kept; when the
-    model omitted a released product, the block becomes the tool's list and
-    the first text block cites every id. Dossier 2026-10-19 §1.16 records no
-    public rule for what a repeated turn keeps; the set is this tool result,
-    so the same question cannot drop a product the search still returns.
+    Campaign 331 `s4-repeat` asked the same question four times (DE turns
+    62–65, EN 35–38). The route and the search stayed put. The cards did not:
+    a German grounding retry, and a first attempt that simply left the
+    inverter out, shipped the batteries alone. The c376 replay before this
+    fill dropped product 4107 on `attempts=1` as well (rounds 1 and 3). No
+    shopping assistant publishes a rule for what a repeated turn must keep;
+    the evidence for the rule is that campaign.
+
+    The set comes from `facts.pairing_card_sets`, which reads the same
+    verdicts as `facts._from_search`. One search-products row with pairings
+    is the qualified product, then each released battery, in the tool's
+    order. One released check-compatibility call is the two products it was
+    given, in argument order. A verdict that is not released does not make a
+    set. The prose stays the model's. When the cards already are the set,
+    their order is kept. When they are a narrower subset, the block becomes
+    the set and the first text block cites every id in it.
+
+    The fill runs on the first attempt and on a retry: the c376 rounds that
+    dropped the inverter had not retried. It runs for a code route named
+    `pairing` and for a `model` route. It does not run for any other route.
+    Two pairing sets in one turn stay as the model wrote them. Independent
+    searches are not merged into one block.
+
+    `inquiry.login_required` outranks every shape (`template.fallback`): the
+    login sentence is the whole answer, and this function does not add cards.
+    A fallback passes `card_limit` of `route.SEARCH_LIMIT`. Trial question 11
+    caps that template at six cards. The six are the front of this set, so
+    the searched product is not sorted out of the window. A grounded answer
+    is not capped; the campaign ships the whole set.
     """
-    if route is None or route.name != "pairing" or route.no_cards:
+    if "inquiry.login_required" in facts.facts:
         return output
-    released = released_pairing_ids(facts)
+    if route is None or route.no_cards or route.name not in _PAIRING_ROUTES:
+        return output
+    sets = pairing_card_sets(facts)
+    if len(sets) != 1:
+        return output
+    released = sets[0] if card_limit is None else sets[0][:card_limit]
     if not released:
         return output
     blocks: list[Block] = list(output.blocks)
