@@ -24,6 +24,11 @@ The client p95 (request sent → last SSE event) is the gate: above 30 s fails
 `--strict`. The target is 15 s. `meta.timing.first_event` is reported the same
 way. `--qualitative` runs the Top-10 gap rows instead of the 100.
 
+`ask` reuses one HTTP connection to the WordPress host. A browser already
+does. A fresh TLS handshake to de-linker.com measured about 2.5 s on
+2026-10-20; the next request on that same connection took about 0.54 s.
+The proxy still buffers the whole SSE body. This runner does not stream.
+
 Model routing is never touched: Jev stays on OpenRouter's /v1/systemone,
 deepseek-flash on api.deepseek.com (AGENTS.md §5).
 """
@@ -31,13 +36,14 @@ deepseek-flash on api.deepseek.com (AGENTS.md §5).
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import sys
 import time
-import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 # This driver runs as a file (python eval/baseline/run.py) and as a module
 # (-m baseline.run with eval/ on the path, the way the tests import it); the
@@ -66,6 +72,10 @@ P95_MIN_ROWS = 20
 TIMEOUT_SECONDS = 240
 # WooCommerce Store API's page size ceiling, as the vocabulary reader uses it.
 PAGE_SIZE = 100
+# One connection per WordPress origin. A dead keep-alive socket is dropped
+# and the post is tried once more; a timeout is not, because the turn may
+# already be running.
+_clients: dict[tuple[str, int, bool], http.client.HTTPConnection] = {}
 
 
 def load_rows(
@@ -148,29 +158,93 @@ def messages_of(row: dict[str, Any]) -> list[dict[str, str]]:
     return messages
 
 
+def close_clients() -> None:
+    """Close the pooled WordPress connections. The runner calls this on the way out."""
+    for connection in _clients.values():
+        connection.close()
+    _clients.clear()
+
+
+def _origin(wp: str) -> tuple[str, int, bool, str]:
+    parsed = urlparse(wp if "://" in wp else f"http://{wp}")
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        raise ValueError(f"not an http url: {wp}")
+    https = parsed.scheme == "https"
+    port = parsed.port or (443 if https else 80)
+    return parsed.hostname, port, https, parsed.path.rstrip("/")
+
+
+def _open_client(host: str, port: int, https: bool) -> http.client.HTTPConnection:
+    if https:
+        return http.client.HTTPSConnection(host, port, timeout=TIMEOUT_SECONDS)
+    return http.client.HTTPConnection(host, port, timeout=TIMEOUT_SECONDS)
+
+
+def _post(wp: str, path: str, body: bytes) -> tuple[int, bytes]:
+    """POST `path` on the pooled connection for `wp`. One retry if that socket is dead."""
+    host, port, https, prefix = _origin(wp)
+    key = (host, port, https)
+    target = prefix + path
+    headers = {
+        "Content-Type": "application/json",
+        "Content-Length": str(len(body)),
+        "Connection": "keep-alive",
+        "Accept": "application/json",
+    }
+    for attempt in (1, 2):
+        connection = _clients.get(key)
+        if connection is None:
+            connection = _open_client(host, port, https)
+            _clients[key] = connection
+        try:
+            connection.request("POST", target, body=body, headers=headers)
+            response = connection.getresponse()
+            payload = response.read()
+            return response.status, payload
+        except TimeoutError:
+            connection.close()
+            _clients.pop(key, None)
+            raise
+        except (OSError, http.client.HTTPException):
+            # The pooled socket was already closed, or the server sent no status.
+            connection.close()
+            _clients.pop(key, None)
+            if attempt == 2:
+                raise
+    raise RuntimeError("post retry fell through")  # pragma: no cover
+
+
 def ask(wp: str, row: dict[str, Any]) -> tuple[Turn, str | None]:
     """One turn through the site's own REST route; the error string is set when
-    the route itself failed (no turn happened)."""
+    the route itself failed (no turn happened).
+
+    The connection to this WordPress host is reused (`_post`). Question 1 pays
+    the TLS handshake; the rest do not. Measured on de-linker.com, 2026-10-20:
+    a fresh GET of `/wp-json/linker-ai/v1/genie/conversation` took 3.05 / 3.04 /
+    3.36 s, and the next request on that connection took 0.55 / 0.53 / 0.54 s.
+    """
 
     page = dict(row.get("page") or {"type": "other"})
     if page.get("url"):
         page["url"] = wp.rstrip("/") + page["url"]
-    body = {
-        "messages": messages_of(row),
-        "locale": row["lang"],
-        "page": page,
-    }
-    request = urllib.request.Request(
-        wp.rstrip("/") + ROUTE,
-        data=json.dumps(body).encode(),
-        headers={"Content-Type": "application/json"},
-    )
+    body = json.dumps(
+        {
+            "messages": messages_of(row),
+            "locale": row["lang"],
+            "page": page,
+        }
+    ).encode()
     try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
-            payload = json.loads(response.read().decode())
-    except urllib.error.HTTPError as error:
-        return Turn(), f"HTTP {error.code}: {error.read().decode()[:200]}"
-    except (urllib.error.URLError, TimeoutError) as error:
+        status, raw = _post(wp, ROUTE, body)
+    except TimeoutError as error:
+        return Turn(), f"request failed: {error}"
+    except (http.client.HTTPException, OSError, ValueError) as error:
+        return Turn(), f"request failed: {error}"
+    if status >= 400:
+        return Turn(), f"HTTP {status}: {raw.decode(errors='replace')[:200]}"
+    try:
+        payload = json.loads(raw.decode())
+    except json.JSONDecodeError as error:
         return Turn(), f"request failed: {error}"
     stream = payload.get("stream")
     if not isinstance(stream, str):
@@ -503,6 +577,7 @@ def main(argv: list[str] | None = None) -> int:
     print()
     print(report(records))
     print(f"rows: {path}")
+    close_clients()
     if not args.strict:
         return 0
     code, message = strict_status(records)

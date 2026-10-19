@@ -361,6 +361,77 @@ def test_whole_model_codes_carry_no_numbers(code: str) -> None:
     assert citations.verify(_said(_logged("t27"), f"Pair it with the {code}.")) == []
 
 
+def test_a_series_designator_from_the_catalogue_title_is_not_a_cited_number() -> None:
+    title = "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase power module)"
+    calls = [
+        {
+            "name": "linker/search-products",
+            "arguments": {},
+            "result": {
+                "qualified": [
+                    {
+                        "product_id": 4107,
+                        "title": title,
+                        "facts": {"phase": "single"},
+                    }
+                ]
+            },
+        }
+    ]
+    named = _turn(
+        tool_calls=calls,
+        output={
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "The EcoFlow OCEAN 2 is the single-phase hybrid.",
+                    "refs": ["4107"],
+                }
+            ]
+        },
+    )
+    assert citations.verify(named) == []
+    rated = _turn(
+        tool_calls=calls,
+        output={
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "The EcoFlow OCEAN 2 is rated 10 kW.",
+                    "refs": [],
+                }
+            ]
+        },
+    )
+    assert citations.verify(rated) == ["states 10, which no tool result contains"]
+    years = _turn(
+        tool_calls=calls,
+        output={
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "The EcoFlow OCEAN 2 ships in 2 years.",
+                    "refs": [],
+                }
+            ]
+        },
+    )
+    assert citations.verify(years) == ["states 2, which no tool result contains"]
+    # The same words with no title in the tool result are a bare 2.
+    untitled = _turn(
+        output={
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "The EcoFlow OCEAN 2 is the single-phase hybrid.",
+                    "refs": [],
+                }
+            ]
+        }
+    )
+    assert citations.verify(untitled) == ["states 2, which no tool result contains"]
+
+
 def test_a_number_beside_a_model_code_is_still_checked() -> None:
     turn = _logged("t27")
     # The tool returned 5.12 kWh for the BU2-5.0-HV1: that number is backed.

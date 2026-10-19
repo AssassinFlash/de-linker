@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 from collections import Counter
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +30,9 @@ from baseline.grade import (
 from baseline.run import (
     CLIENT_P95_GATE_SECONDS,
     CLIENT_P95_TARGET_SECONDS,
+    _clients,
+    ask,
+    close_clients,
     first_event_seconds,
     grade_verdict,
     messages_of,
@@ -1128,3 +1133,65 @@ def test_a_stream_that_never_finishes_fails_the_sse_row() -> None:
         done=False,
     )
     assert any("did not finish" in failure for failure in check(row, cut, FEED_TOKENS))
+
+
+class _KeepAliveHandler(BaseHTTPRequestHandler):
+    protocol_version = "HTTP/1.1"
+
+    def do_POST(self) -> None:  # noqa: N802
+        length = int(self.headers.get("Content-Length", "0"))
+        self.rfile.read(length)
+        body = json.dumps(
+            {
+                "conversation_id": "1",
+                "stream": 'event: meta\ndata: {"language": "en"}\n\n'
+                'event: done\ndata: {"ok": true}\n\n',
+            }
+        ).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, format: str, *args: object) -> None:
+        return
+
+
+class _CountingServer(ThreadingHTTPServer):
+    def __init__(
+        self, address: tuple[str, int], handler: type[BaseHTTPRequestHandler]
+    ) -> None:
+        self.accepts = 0
+        super().__init__(address, handler)
+
+    def get_request(self) -> tuple[Any, Any]:
+        connection, address = super().get_request()
+        self.accepts += 1
+        return connection, address
+
+
+def test_ask_reuses_one_connection_and_retries_a_dead_socket() -> None:
+    close_clients()
+    server = _CountingServer(("127.0.0.1", 0), _KeepAliveHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    row = {"lang": "en", "question": "Is the EcoFlow OCEAN 2 single-phase?"}
+    wp = f"http://127.0.0.1:{server.server_address[1]}"
+    try:
+        first, first_error = ask(wp, row)
+        second, second_error = ask(wp, row)
+        assert first_error is None and second_error is None
+        assert first.done and second.done
+        assert server.accepts == 1
+        pooled = next(iter(_clients.values()))
+        assert pooled.sock is not None
+        pooled.sock.close()
+        third, third_error = ask(wp, row)
+        assert third_error is None and third.done
+        assert server.accepts == 2
+    finally:
+        close_clients()
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
