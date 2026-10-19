@@ -8,7 +8,7 @@ Local instance `c335` (snapshot `20261019-1715`), Genie at the instance's own se
 
 | Group | Cases | What a defect is |
 | --- | --- | --- |
-| Twins | T-pair, T-mppt, T-cost, T-mail, T-address, T-ban, T-sie | Card set, block types (an `ask` block aside), cited numbers, banned words, du-form, or a handoff that is not the mailbox sentence. A document-count difference, and figures only one side adds, are notes |
+| Twins | T-pair, T-mppt, T-cost, T-mail, T-address, T-ban, T-sie | Card set, block types (an `ask` block aside), cited numbers, banned words, du-form, a handoff that is not the mailbox sentence, or `fallback` on either side. A document-count difference, and figures only one side adds, are notes |
 | Prompts | product, category, draft, account, blog, FAQ, EN and DE | Fewer than two suggestions, or a suggestion that is not the reviewed string for that page |
 | Drift | one product title, one blog paragraph, one German translation of that product | A rendered edit the answer still quotes from the previous copy |
 | Language | mixed question, mid-thread switch, bare model code | Recorded against the #374 rule (the question's language, or the page when the question is mixed or neutral). Report only |

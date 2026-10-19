@@ -42,11 +42,60 @@ def test_address_gap_asks_only_for_the_postal_address() -> None:
         == []
     )
     assert run_battery.address_gap(page, "I could not answer this time.") == [
-        "answer misses the postal address 39179"
+        "answer misses the postal address 39179 Barleben"
+    ]
+    assert run_battery.address_gap(page, "39179 Atlantis") == [
+        "answer misses the postal address 39179 Barleben"
     ]
     assert run_battery.address_gap("no address here", "39179") == [
         "page text has no postal address"
     ]
+
+
+def test_missing_imprint_page_is_not_a_pass(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def refuse(*_args: object, **_kwargs: object) -> dict[str, Any]:
+        raise AssertionError("a turn was posted with no page")
+
+    monkeypatch.setattr(run_battery, "record_turn", refuse)
+    journal = run_battery.Journal(tmp_path)
+    service = client.ServiceClient("http://127.0.0.1:9", "token")
+    rows = run_battery.run_twins(
+        journal,
+        service,
+        tmp_path / "turns.sqlite",
+        {"surfaces": {"imprint": {}}, "product_en": None},
+        "T-address",
+    )
+    assert len(rows) == 1
+    assert rows[0]["mechanical"] == "defect"
+    assert rows[0]["reasons"] == ["en page not loaded", "de page not loaded"]
+
+
+def test_address_without_main_is_not_a_pass() -> None:
+    case = next(item for item in run_battery.TWINS if item["id"] == "T-address")
+    page = "Linker Technology GmbH Steinfeldstraße 3 39179 Barleben"
+    en = {
+        "blocks": [{"type": "text", "text": "39179 Barleben"}],
+        "answer": "39179 Barleben",
+        "log": {},
+        "_main": "",
+    }
+    de = {
+        "blocks": [{"type": "text", "text": "39179 Barleben"}],
+        "answer": "Steinfeldstraße 3, 39179 Barleben",
+        "log": {},
+        "_main": page,
+    }
+    row = run_battery.grade_twin(case, en, de, None)
+    assert row["mechanical"] == "defect"
+    assert "en page not loaded" in row["reasons"]
+    loaded = dict(en)
+    loaded["_main"] = page
+    passed = run_battery.grade_twin(case, loaded, de, None)
+    assert passed["mechanical"] == "pass"
+    assert passed["reasons"] == []
 
 
 def test_mail_grade_checks_the_rendered_sentence_not_the_tool_link() -> None:
@@ -269,6 +318,39 @@ def test_successful_translate_grades_title_attributes_and_prices() -> None:
     )
     assert failed["mechanical"] == "defect"
     assert any(reason.startswith("prices ") for reason in failed["reasons"])
+    guest = {
+        "currency_code": "EUR",
+        "currency_minor_unit": 2,
+        "price": None,
+        "regular_price": "",
+        "sale_price": None,
+    }
+    en_guest = dict(en_product)
+    de_guest = dict(de_product)
+    en_guest["prices"] = dict(guest)
+    de_guest["prices"] = dict(guest)
+    empty = run_battery.grade_translation(
+        code=0,
+        de_title_before="before",
+        de_title_after="SAJ H2-10K-T3 C335DRIFT (10 kW)",
+        en_title="SAJ H2-10K-T3 C335DRIFT (10 kW)",
+        marker="C335DRIFT",
+        en_product=en_guest,
+        de_product=de_guest,
+    )
+    assert empty["mechanical"] == "defect"
+    assert "price evidence is empty" in empty["reasons"]
+    errored = run_battery.grade_translation(
+        code=0,
+        de_title_before="before",
+        de_title_after="SAJ H2-10K-T3 C335DRIFT (10 kW)",
+        en_title="SAJ H2-10K-T3 C335DRIFT (10 kW)",
+        marker="C335DRIFT",
+        en_product={"error": "store API did not return a list", "lang": "en"},
+        de_product={"error": "H2-10K-T3 not in the store API", "lang": "de"},
+    )
+    assert errored["mechanical"] == "defect"
+    assert errored["reasons"] == ["store products were not re-read after translate"]
 
 
 def test_read_page_text_ignores_the_shell_title() -> None:
@@ -327,6 +409,36 @@ def test_restore_reads_the_snapshot_not_a_later_string(
     assert seen["value"] != remembered
     assert seen["post_id"] == 4107
     assert seen["field"] == "post_title"
+
+
+def test_restore_continues_after_the_first_failed_field(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    title = run_battery.snapshot_field(tmp_path, "title.txt", "original title")
+    german = run_battery.snapshot_field(tmp_path, "de.txt", "deutscher titel")
+    blog = run_battery.snapshot_field(tmp_path, "blog.html", "<p>body</p>")
+    seen: list[int] = []
+
+    def fake_update(
+        _instance: str, post_id: int, field: str, value: str, _directory: Path
+    ) -> None:
+        seen.append(post_id)
+        if post_id == 4107:
+            raise RuntimeError(f"wp {field} failed")
+        assert value
+
+    monkeypatch.setattr(run_battery, "wp_update", fake_update)
+    failures = run_battery.restore_fields(
+        "c335",
+        tmp_path,
+        [
+            (4107, "post_title", title),
+            (6628, "post_title", german),
+            (551, "post_content", blog),
+        ],
+    )
+    assert seen == [4107, 6628, 551]
+    assert failures == ["4107 post_title: wp post_title failed"]
 
 
 def test_exit_code_asserts_mail_growth_and_a_missed_restore() -> None:

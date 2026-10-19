@@ -22,6 +22,9 @@ def test_production_hosts() -> None:
     assert not prod_smoke.is_production("http://127.0.0.1:9190")
     assert not prod_smoke.is_production("http://localhost:9190")
     assert not prod_smoke.is_production("https://staging.de-linker.com")
+    assert prod_smoke.is_production(
+        "https://de-linker.com:1/wp-json/linker-ai/v1/genie/turn"
+    )
 
 
 def test_production_without_confirm_exits_2_and_does_not_connect(
@@ -178,9 +181,11 @@ def test_probe_refuses_a_production_redirect_before_the_post_leaves() -> None:
             length = int(self.headers.get("Content-Length") or "0")
             self.rfile.read(length)
             self.send_response(307)
+            # Port 1 keeps the public host, so the guard still matches.
+            # A regressed guard follows this hop and does not POST to :443.
             self.send_header(
                 "Location",
-                "https://de-linker.com/wp-json/linker-ai/v1/genie/turn",
+                "https://de-linker.com:1/wp-json/linker-ai/v1/genie/turn",
             )
             self.end_headers()
 

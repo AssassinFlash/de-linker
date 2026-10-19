@@ -220,8 +220,9 @@ def _structure_split(
     """A block-type defect, or a document-count note.
 
     An ask block is optional on either side. A document-count difference is
-    a note: retrieval can add a document without changing the card set. Any
-    other block-type difference is a defect.
+    a note when the other block types stay in the same order: retrieval can
+    add a document without changing the card set. The same blocks in a
+    different order are a defect. That is not a document-count note.
     """
     en_types = [kind for kind in block_types(en_blocks) if kind != "ask"]
     de_types = [kind for kind in block_types(de_blocks) if kind != "ask"]
@@ -229,13 +230,14 @@ def _structure_split(
         return _Split(None, None)
     en_core = [kind for kind in en_types if kind != "document"]
     de_core = [kind for kind in de_types if kind != "document"]
-    if en_core == de_core:
+    en_docs = en_types.count("document")
+    de_docs = de_types.count("document")
+    if en_core == de_core and en_docs != de_docs:
         return _Split(
             None,
             (
-                f"document count en {en_types.count('document')} "
-                f"de {de_types.count('document')}; retrieval can add a document "
-                "without changing the card set"
+                f"document count en {en_docs} de {de_docs}; retrieval can add "
+                "a document without changing the card set"
             ),
         )
     return _Split(f"block types en {en_types} de {de_types}", None)

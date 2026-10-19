@@ -24,7 +24,7 @@ import sys
 import time
 import urllib.parse
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeGuard
 
 import client as http
 import grade
@@ -405,29 +405,48 @@ def grade_twin(
     case: dict[str, Any], en: dict[str, Any], de: dict[str, Any], product_id: int | None
 ) -> dict[str, Any]:
     expect_numbers = bool(case["expect_numbers"])
-    reasons = grade.twin_reasons(
-        en["blocks"],
-        de["blocks"],
-        expect_cards=bool(case["expect_cards"]),
-        expect_handoff=bool(case["expect_handoff"]),
-        expect_numbers=expect_numbers,
-    )
-    notes = grade.twin_notes(en["blocks"], de["blocks"], expect_numbers=expect_numbers)
-    if case["id"] == "T-cost" and product_id:
-        for side, turn in (("en", en), ("de", de)):
-            if product_id not in grade.card_ids(turn["blocks"]):
-                reasons.append(f"{side} cost cards omit product {product_id}")
-            for reason in grade.price_reasons(
-                grade.price_lines(turn["blocks"]), side, guest=True
-            ):
-                reasons.append(f"{side} {reason}")
-    if case["id"] == "T-address":
-        for side, turn in (("en", en), ("de", de)):
-            page_text = turn.get("_main") or ""
-            if isinstance(page_text, str) and page_text:
-                for reason in address_gap(page_text, turn["answer"]):
+    unloaded = [
+        side for side, turn in (("en", en), ("de", de)) if turn.get("_unloaded") is True
+    ]
+    reasons: list[str] = []
+    notes: list[str] = []
+    # An empty turn is not a measurement. Comparing two missing pages would
+    # agree on every block and pass.
+    if unloaded:
+        reasons.extend(f"{side} page not loaded" for side in unloaded)
+    else:
+        reasons.extend(
+            grade.twin_reasons(
+                en["blocks"],
+                de["blocks"],
+                expect_cards=bool(case["expect_cards"]),
+                expect_handoff=bool(case["expect_handoff"]),
+                expect_numbers=expect_numbers,
+            )
+        )
+        notes.extend(
+            grade.twin_notes(en["blocks"], de["blocks"], expect_numbers=expect_numbers)
+        )
+        if case["id"] == "T-cost" and product_id:
+            for side, turn in (("en", en), ("de", de)):
+                if product_id not in grade.card_ids(turn["blocks"]):
+                    reasons.append(f"{side} cost cards omit product {product_id}")
+                for reason in grade.price_reasons(
+                    grade.price_lines(turn["blocks"]), side, guest=True
+                ):
+                    reasons.append(f"{side} {reason}")
+        if case["id"] == "T-address":
+            for side, turn in (("en", en), ("de", de)):
+                raw_main = turn.get("_main")
+                page_text = raw_main if isinstance(raw_main, str) else ""
+                if not page_text.strip():
+                    reasons.append(f"{side} page not loaded")
+                    continue
+                for reason in address_gap(page_text, str(turn.get("answer") or "")):
                     reasons.append(f"{side} {reason}")
     for side, turn in (("en", en), ("de", de)):
+        if turn.get("_unloaded") is True:
+            continue
         meta = turn.get("meta")
         if isinstance(meta, dict) and meta.get("fallback") is True:
             reasons.append(f"{side} fallback is not a pass under gate 5")
@@ -487,30 +506,48 @@ def customer_sees_mailto(blocks: list[dict[str, Any]]) -> bool:
     return "mailto:" in grade.visible_text(blocks).lower()
 
 
-# A postal address is a five-digit PLZ before a place name. HRB 33824 on the
-# imprint is a register number (NOTES, 2026-10-19), not a second postal code.
-# The question asks for that address, not the page email and not every
-# five-digit token. The old `[:3]` listed the register number with the PLZ
-# and is not a product limit.
-_POSTAL = re.compile(r"(?<!HRB )(?<!\d)(\d{5})(?=\s+[A-ZÄÖÜ])")
+# A postal address is a five-digit PLZ and the place name printed after it.
+# HRB 33824 on the imprint is a register number (NOTES, 2026-10-19), not a
+# second postal code. The question asks for that address, not the page email
+# and not every five-digit token. Digits with a different place name are not
+# the address. The old `[:3]` listed the register number with the PLZ and is
+# not a product limit.
+_POSTAL = re.compile(r"(?<!HRB )(?<!\d)(\d{5})\s+([A-ZÄÖÜ][A-Za-zÄÖÜäöüß-]*)")
+
+
+def postal_addresses(page_text: str) -> list[tuple[str, str]]:
+    """`(PLZ, place name)` pairs, in order, without duplicates."""
+    found: list[tuple[str, str]] = []
+    for match in _POSTAL.finditer(page_text):
+        pair = (match.group(1), match.group(2))
+        if pair not in found:
+            found.append(pair)
+    return found
 
 
 def postal_codes(page_text: str) -> list[str]:
     """PLZ values that introduce a place name, in order, without duplicates."""
     found: list[str] = []
-    for match in _POSTAL.finditer(page_text):
-        code = match.group(1)
+    for code, _place in postal_addresses(page_text):
         if code not in found:
             found.append(code)
     return found
 
 
 def address_gap(page_text: str, answer: str) -> list[str]:
-    """The asked datum is the postal address. An email on the page is not it."""
-    codes = postal_codes(page_text)
-    if not codes:
+    """The asked datum is the PLZ and the place name after it.
+
+    An email on the page is not that datum. `39179 Atlantis` does not
+    satisfy `39179 Barleben`.
+    """
+    addresses = postal_addresses(page_text)
+    if not addresses:
         return ["page text has no postal address"]
-    missing = [code for code in codes if code not in answer]
+    missing = [
+        f"{code} {place}"
+        for code, place in addresses
+        if code not in answer or place not in answer
+    ]
     if missing:
         return ["answer misses the postal address " + ", ".join(missing)]
     return []
@@ -557,8 +594,17 @@ def language_record(
     return row
 
 
+# Amount fields. currency_code alone is not a price: a guest product keeps
+# the currency and leaves price, regular_price and sale_price null.
+_PRICE_AMOUNT_KEYS = ("price", "regular_price", "sale_price")
+
+
 def price_amounts(product: dict[str, Any]) -> dict[str, str]:
-    """Store API price fields. Empty values are absent, not a second price."""
+    """Store API price fields that have a value.
+
+    Empty and null fields are absent. Two products whose amounts were all
+    dropped are not equal prices; `price_gap` requires one amount.
+    """
     prices = product.get("prices")
     if not isinstance(prices, dict):
         return {}
@@ -566,15 +612,31 @@ def price_amounts(product: dict[str, Any]) -> dict[str, str]:
     for key in (
         "currency_code",
         "currency_minor_unit",
-        "price",
-        "regular_price",
-        "sale_price",
+        *_PRICE_AMOUNT_KEYS,
     ):
         value = prices.get(key)
         if value is None or value == "":
             continue
         kept[key] = str(value)
     return kept
+
+
+def price_gap(en_product: dict[str, Any], de_product: dict[str, Any]) -> list[str]:
+    """Price fields, only when each side has a non-empty amount."""
+    en_prices = price_amounts(en_product)
+    de_prices = price_amounts(de_product)
+    en_amounts = [en_prices[key] for key in _PRICE_AMOUNT_KEYS if key in en_prices]
+    de_amounts = [de_prices[key] for key in _PRICE_AMOUNT_KEYS if key in de_prices]
+    if not en_amounts or not de_amounts:
+        return ["price evidence is empty"]
+    if en_prices != de_prices:
+        return [f"prices {en_prices} != {de_prices}"]
+    return []
+
+
+def is_store_product(product: Any) -> TypeGuard[dict[str, Any]]:
+    """A product row. `store_product` returns `{error, lang}` when the read fails."""
+    return isinstance(product, dict) and "error" not in product
 
 
 def grade_translation(
@@ -590,7 +652,8 @@ def grade_translation(
     """Title, attribute numbers and prices after a successful translate.
 
     A non-zero exit, or a German title that did not change, did not measure
-    that half. #406 is the blocker until a translate succeeds.
+    that half. #406 is the blocker until a translate succeeds. A Store API
+    error dict is not a product. Prices compare only when an amount is present.
     """
     retained = code != 0 or de_title_after == de_title_before
     if retained:
@@ -607,12 +670,9 @@ def grade_translation(
     de_numbers = grade.standalone_numbers(de_title_after)
     if en_numbers != de_numbers:
         reasons.append(f"title numbers {en_numbers} != {de_numbers}")
-    if isinstance(en_product, dict) and isinstance(de_product, dict):
+    if is_store_product(en_product) and is_store_product(de_product):
         reasons.extend(attribute_gaps(en_product, de_product))
-        en_prices = price_amounts(en_product)
-        de_prices = price_amounts(de_product)
-        if en_prices != de_prices:
-            reasons.append(f"prices {en_prices} != {de_prices}")
+        reasons.extend(price_gap(en_product, de_product))
     else:
         reasons.append("store products were not re-read after translate")
     return {
@@ -656,6 +716,19 @@ def restore_snapshot(
 ) -> None:
     """Put a snapshotted field back. The file is the source, not a variable."""
     wp_update(instance, post_id, field, snapshot.read_text(encoding="utf-8"), directory)
+
+
+def restore_fields(
+    instance: str, directory: Path, fields: list[tuple[int, str, Path]]
+) -> list[str]:
+    """Write every snapshot back. One failure does not skip the later fields."""
+    failures: list[str] = []
+    for post_id, field, snapshot in fields:
+        try:
+            restore_snapshot(instance, post_id, field, snapshot, directory)
+        except RuntimeError as error:
+            failures.append(f"{post_id} {field}: {error}")
+    return failures
 
 
 def title_matches(read_back: str | None, snapshot: str | None) -> bool:
@@ -983,6 +1056,7 @@ def run_twins(
                     "answer": "",
                     "log": {},
                     "_main": "",
+                    "_unloaded": True,
                 }
                 continue
             turn = record_turn(
@@ -1454,18 +1528,13 @@ def run_drift(
                     "cards": grade.card_ids(cost["blocks"]),
                 }
     finally:
+        fields: list[tuple[int, str, Path]] = [(en_id, "post_title", title_snapshot)]
+        if de_snapshot is not None and de_id:
+            fields.append((de_id, "post_title", de_snapshot))
+        if blog_snapshot is not None and isinstance(blog_id, int):
+            fields.append((blog_id, "post_content", blog_snapshot))
+        failures = restore_fields(instance, journal.directory, fields)
         try:
-            restore_snapshot(
-                instance, en_id, "post_title", title_snapshot, journal.directory
-            )
-            if de_snapshot is not None and de_id:
-                restore_snapshot(
-                    instance, de_id, "post_title", de_snapshot, journal.directory
-                )
-            if blog_snapshot is not None and isinstance(blog_id, int):
-                restore_snapshot(
-                    instance, blog_id, "post_content", blog_snapshot, journal.directory
-                )
             expected_title = title_snapshot.read_text(encoding="utf-8")
             title_now = wp(instance, "post", "get", str(en_id), "--field=post_title")
             evidence["title_snapshot"] = expected_title
@@ -1480,12 +1549,15 @@ def run_drift(
                 )
                 extras.append((blog_now, blog_snapshot.read_text(encoding="utf-8")))
             matched = confirm_restore(title_now, expected_title, extras)
-            evidence["restored"] = matched
+            messages = list(failures)
             if not matched:
-                evidence["restore_error"] = "read-back does not match the snapshot"
+                messages.append("read-back does not match the snapshot")
+            evidence["restored"] = matched and not failures
+            if messages:
+                evidence["restore_error"] = "; ".join(messages)
         except RuntimeError as error:
-            evidence["restore_error"] = str(error)
             evidence["restored"] = False
+            evidence["restore_error"] = "; ".join([*failures, str(error)])
     return evidence
 
 
@@ -1550,6 +1622,8 @@ def main(argv: list[str] | None = None) -> int:
         drift = run_drift(journal, service, db, args.instance, origin, found)
         journal.dump("drift.json", drift)
     mail_after = mail_names(args.instance)
+    raw_translation = drift.get("translation")
+    translation = raw_translation if isinstance(raw_translation, dict) else {}
     summary = {
         "prompts": [
             {
@@ -1588,18 +1662,10 @@ def main(argv: list[str] | None = None) -> int:
         "mail_grew": mail_before != mail_after,
         "restored": drift.get("restored"),
         "translation": {
-            "mechanical": (drift.get("translation") or {}).get("mechanical")
-            if isinstance(drift.get("translation"), dict)
-            else None,
-            "measured": (drift.get("translation") or {}).get("measured")
-            if isinstance(drift.get("translation"), dict)
-            else None,
-            "reasons": (drift.get("translation") or {}).get("reasons")
-            if isinstance(drift.get("translation"), dict)
-            else None,
-            "limitation": (drift.get("translation") or {}).get("limitation")
-            if isinstance(drift.get("translation"), dict)
-            else None,
+            "mechanical": translation.get("mechanical"),
+            "measured": translation.get("measured"),
+            "reasons": translation.get("reasons"),
+            "limitation": translation.get("limitation"),
         },
     }
     journal.dump("summary.json", summary)

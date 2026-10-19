@@ -25,10 +25,12 @@ from typing import Any
 # the proxy's 60 s.
 TURN_TIMEOUT = 180.0
 # page.py TIMEOUT_SECONDS is 10 s for one LiveCanvas read (0.5–3.4 s measured
-# 2026-10-18) and MAX_REDIRECTS is 3. 30 s is three of those reads, so this
-# GET still finishes when a page follows that redirect budget. It is not a
-# product timeout.
-PAGE_TIMEOUT = 30.0
+# 2026-10-18). _html loops range(MAX_REDIRECTS + 1) with MAX_REDIRECTS = 3,
+# so one page is the first read plus up to three redirects: four 10 s reads,
+# 40 s, before it returns or raises. urllib applies this value to each
+# blocking read, so one of those reads still finishes inside 40 s. It is not
+# a product timeout.
+PAGE_TIMEOUT = 40.0
 TOKEN_HEADER = "X-Linker-Service-Token"
 
 _PROMPTS = re.compile(r"""data-prompts=(['"])(.*?)\1""", re.DOTALL)

@@ -123,6 +123,24 @@ def test_document_count_and_extra_figures_are_notes() -> None:
     assert any("shared figures match" for note in notes)
 
 
+def test_block_order_is_not_a_document_count_note() -> None:
+    en: list[dict[str, Any]] = [
+        {"type": "text", "text": "The card."},
+        {"type": "document"},
+        {"type": "cards", "product_ids": [1]},
+    ]
+    de: list[dict[str, Any]] = [
+        {"type": "text", "text": "Die Karte."},
+        {"type": "cards", "product_ids": [1]},
+        {"type": "document"},
+    ]
+    reasons = twin_reasons(
+        en, de, expect_cards=True, expect_handoff=False, expect_numbers=False
+    )
+    assert any(reason.startswith("block types en ") for reason in reasons)
+    assert twin_notes(en, de, expect_numbers=False) == []
+
+
 def test_omitted_kwh_steps_are_graded_as_a_note() -> None:
     en = [{"type": "text", "text": "The set is 5, 10, 15, 20 and 25 kWh."}]
     de = [{"type": "text", "text": "Das Set hat 5 kWh."}]

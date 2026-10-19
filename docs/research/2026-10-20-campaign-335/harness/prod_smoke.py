@@ -256,6 +256,34 @@ def _reply_parts(reply: Any) -> tuple[int, str, list[tuple[str, str]], str]:
     return status, final_url, header_pairs, body
 
 
+def blank_probe(
+    item: dict[str, Any], site: str, *, error: str | None = None
+) -> dict[str, Any]:
+    """The probe record before a response. One shape for the refusal and the run."""
+    url = site.rstrip("/") + ROUTE
+    return {
+        "probe": item["id"],
+        "locale": item["locale"],
+        "question": item["messages"][-1]["content"],
+        "requested_url": url,
+        "final_url": url,
+        "redirect_chain": [],
+        "http": None,
+        "selected_headers": {},
+        "header_names": [],
+        "conversation_id": None,
+        "turn_id": None,
+        "delete_http": None,
+        "writes_conversation": False,
+        "duration_s": None,
+        "meta": None,
+        "blocks": [],
+        "answer_text": "",
+        "answer_language": None,
+        "error": error,
+    }
+
+
 def probe(
     item: dict[str, Any],
     site: str,
@@ -269,27 +297,11 @@ def probe(
     the public site is not followed unless `allow_production` is set.
     """
     if is_production(site) and not allow_production:
-        return {
-            "probe": item["id"],
-            "locale": item["locale"],
-            "question": item["messages"][-1]["content"],
-            "requested_url": site.rstrip("/") + ROUTE,
-            "final_url": site.rstrip("/") + ROUTE,
-            "redirect_chain": [],
-            "http": None,
-            "selected_headers": {},
-            "header_names": [],
-            "conversation_id": None,
-            "turn_id": None,
-            "delete_http": None,
-            "writes_conversation": False,
-            "duration_s": None,
-            "meta": None,
-            "blocks": [],
-            "answer_text": "",
-            "answer_language": None,
-            "error": "refusing: public site without --confirm-production",
-        }
+        return blank_probe(
+            item,
+            site,
+            error="refusing: public site without --confirm-production",
+        )
     jar = http.cookiejar.CookieJar()
     recorder = RedirectRecord(allow_production=allow_production)
     opener = urllib.request.build_opener(
@@ -309,27 +321,7 @@ def probe(
     raw_body = ""
     error: str | None = None
     conversation_id: int | None = None
-    result: dict[str, Any] = {
-        "probe": item["id"],
-        "locale": item["locale"],
-        "question": item["messages"][-1]["content"],
-        "requested_url": url,
-        "final_url": url,
-        "redirect_chain": [],
-        "http": None,
-        "selected_headers": {},
-        "header_names": [],
-        "conversation_id": None,
-        "turn_id": None,
-        "delete_http": None,
-        "writes_conversation": False,
-        "duration_s": None,
-        "meta": None,
-        "blocks": [],
-        "answer_text": "",
-        "answer_language": None,
-        "error": None,
-    }
+    result = blank_probe(item, site)
     started = time.monotonic()
     try:
         try:
