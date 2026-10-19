@@ -1,0 +1,55 @@
+# #263 audit findings recheck (local instance c263, snapshot 20261019-0141)
+
+## H1 German product page 'Produkt anfragen'
+$ curl -s http://127.0.0.1:9147/de/produkt/goodwe-gw60k-sts-g10/ | grep -o 'href="[^"]*intent=product[^"]*"' | head -1
+href="http://127.0.0.1:9147/de/kontakt/?intent=product&#038;kind=product&#038;title=GoodWe%20GW60K-STS-G10&#038;source_id=6565&#038;product_id=6565&#038;source=http://127.0.0.1:9147/de/produkt/goodwe-gw60k-sts-g10/"
+$ curl -s http://127.0.0.1:9147/product/goodwe-gw60k-sts-g10/ | grep -o 'href="[^"]*intent=product[^"]*"' | head -1
+href="http://127.0.0.1:9147/contact/?intent=product&#038;kind=product&#038;title=GoodWe%20GW60K-STS-G10&#038;source_id=6530&#038;product_id=6530&#038;source=http://127.0.0.1:9147/product/goodwe-gw60k-sts-g10/"
+
+## H2 footer switch: German contact page
+$ curl -s http://127.0.0.1:9147/de/kontakt/ | footer anchors
+data-lnk-flang="en" href="http://127.0.0.1:9147/contact/" hreflang="en" lang="en">Englisch<
+data-lnk-flang="de" href="http://127.0.0.1:9147/de/kontakt/" hreflang="de" lang="de">Deutsch<
+## H2 footer switch: English contact page
+data-lnk-flang="en" href="http://127.0.0.1:9147/contact/" hreflang="en" lang="en">English<
+data-lnk-flang="de" href="http://127.0.0.1:9147/de/kontakt/" hreflang="de" lang="de">Deutsch<
+
+## H5 German category breadcrumb
+wb-metarow container"><span class="wbm-l"><a href="http://127.0.0.1:9147/de/">STARTSEITE</a> / <a href="http://127.0.0.1:9147/de/produkte/">PRODUKTE</a> / <b>GEWERBESPEICHER</b></span></div>
+## H5 English category breadcrumb (unchanged)
+wb-metarow container"><span class="wbm-l"><a href="http://127.0.0.1:9147/">HOME</a> / <a href="http://127.0.0.1:9147/products/">PRODUCTS</a> / <b>COMMERCIAL STORAGE</b></span></div>
+
+## H3 German legal links (impressum content column)
+href="/de/datenschutz/"
+href="/de/impressum/"
+href="/de/rueckgabe-erstattung/"
+href="/de/verkaufsbedingungen/"
+$ relative English legal links found:
+0
+
+## M2 German blog post category links (fernueberwachung-nach-installation)
+href="/de/produkt-kategorie/ems-ueberwachung/"
+href="/de/produkt-kategorie/gewerbespeicher/"
+href="/de/produkt-kategorie/gewerbespeicher/batteriesysteme/"
+href="/de/produkt-kategorie/gewerbespeicher/komplettsysteme/"
+href="/de/produkt-kategorie/heimspeicher/"
+$ English product-category links:
+0
+
+## M2 /de/danke/
+href="/de/blog/"
+
+## M2 German blog category CTA
+href="/de/produkte/"
+
+## M8 canonical redirect with a same-site URL in the query
+$ curl -s -D - "http://127.0.0.1:9147/de/kontakt/?intent=product&source=https%3A%2F%2F127.0.0.1%3A9147%2Fde%2Fprodukt%2Fgoodwe-gw60k-sts-g10%2F" | head
+HTTP/1.1 200 OK
+Host: 127.0.0.1:9147
+Date: Sun, 18 Oct 2026 18:41:03 GMT
+Connection: close
+$ search:
+HTTP/1.1 200 OK
+Host: 127.0.0.1:9147
+Date: Sun, 18 Oct 2026 18:41:03 GMT
+Connection: close

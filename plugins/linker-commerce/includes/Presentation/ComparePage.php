@@ -144,7 +144,7 @@ final class ComparePage {
 	public function page_url( array $ids = array(), bool $capped = false ): string {
 		$page = get_page_by_path( self::PAGE_SLUG );
 		$id   = $page instanceof \WP_Post ? self::translated_page_id( (int) $page->ID ) : 0;
-		$url  = 0 < $id ? (string) get_permalink( $id ) : home_url( '/' . self::PAGE_SLUG . '/' );
+		$url  = 0 < $id ? (string) get_permalink( $id ) : PageUrls::page( self::PAGE_SLUG );
 		$url  = trailingslashit( (string) preg_replace( '#\?.*$#', '', $url ) );
 		$ids  = array_values( array_filter( array_map( 'intval', $ids ) ) );
 		if ( array() === $ids ) {

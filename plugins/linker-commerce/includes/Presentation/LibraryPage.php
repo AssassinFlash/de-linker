@@ -547,22 +547,11 @@ final class LibraryPage {
 	}
 
 	/**
-	 * The Genie page in the page's language: the resolution the assistant's
-	 * own entries use — the language layer decides, German gets the page's
-	 * twin, everything else stays on /genie/.
+	 * The Genie page in the page's language, the language's home when the
+	 * page does not exist.
 	 */
 	private function genie_url(): string {
-		if ( ! $this->german() || ! function_exists( 'pll_get_post' ) ) {
-			return home_url( '/genie/' );
-		}
-		$page = get_page_by_path( 'genie' );
-		if ( ! $page instanceof \WP_Post ) {
-			return home_url( '/de/genie/' );
-		}
-		$twin = (int) pll_get_post( (int) $page->ID, 'de' );
-		$link = $twin > 0 ? get_permalink( $twin ) : false;
-
-		return is_string( $link ) && '' !== $link ? $link : home_url( '/de/genie/' );
+		return PageUrls::page( 'genie' );
 	}
 
 	/**

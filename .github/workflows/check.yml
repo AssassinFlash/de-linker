@@ -153,12 +153,12 @@ jobs:
       # #297: native WordPress/Woo routing and an authenticated loopback SMTP
       # sink. The test owns the server and uses fake values only; mail() is
       # captured to files. The existing bare instance is sufficient for mail.
-      - name: internal SMTP and notification routing integration
+      - name: internal SMTP, notification routing and mail-language integration
         working-directory: plugins/linker-commerce
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest'
+            --filter 'InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest'
 
       # The cleanup runs even when an earlier step failed and the instance was
       # never built, so it reports rather than failing the job twice.

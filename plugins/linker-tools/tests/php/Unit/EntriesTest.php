@@ -615,6 +615,18 @@ JS
 				'return' => static fn( string $path = '' ): string => 'https://de-linker.test' . $path,
 			)
 		);
+		// The Genie workspace page (PageQuery's get_page_by_path) resolves to
+		// its own permalink; every other page keeps the language home.
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'return' => static fn( int $id ): string => match ( $id ) {
+					41 => 'https://de-linker.test/genie/',
+					42 => 'https://de-linker.test/de/genie/',
+					default => 'https://de-linker.test/',
+				},
+			)
+		);
 		WP_Mock::userFunction(
 			'wp_create_nonce',
 			array(

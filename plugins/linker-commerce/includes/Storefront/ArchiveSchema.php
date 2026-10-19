@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Storefront;
 
+use Linker\Commerce\Presentation\PageUrls;
+
 /**
  * Emits the CollectionPage and BreadcrumbList blocks the product archive and
  * the product categories carry.
@@ -67,7 +69,7 @@ final class ArchiveSchema {
 			'isPartOf'    => array(
 				'@type' => 'WebSite',
 				'name'  => (string) get_bloginfo( 'name' ),
-				'url'   => home_url( '/' ),
+				'url'   => PageUrls::home(),
 			),
 		);
 	}
@@ -88,7 +90,7 @@ final class ArchiveSchema {
 				'@type'    => 'ListItem',
 				'position' => 1,
 				'name'     => _x( 'Home', 'breadcrumb', 'linker-commerce' ),
-				'item'     => home_url( '/' ),
+				'item'     => PageUrls::home(),
 			),
 			array(
 				'@type'    => 'ListItem',

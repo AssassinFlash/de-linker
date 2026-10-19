@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Registration;
 
+use Linker\Commerce\Presentation\PageUrls;
 use WC_Customer;
 use WP_User;
 use WP_User_Query;
@@ -193,7 +194,7 @@ final class Accounts {
 			'fields'       => $rows,
 			'signals'      => $this->signals->for_account( $user->ID, $company, $user->user_email ),
 			'links'        => $links,
-			'switchUrl'    => false !== $switch ? add_query_arg( 'redirect_to', home_url( '/' ), html_entity_decode( $switch, ENT_QUOTES, 'UTF-8' ) ) : '',
+			'switchUrl'    => false !== $switch ? add_query_arg( 'redirect_to', PageUrls::home(), html_entity_decode( $switch, ENT_QUOTES, 'UTF-8' ) ) : '',
 			'switchNote'   => class_exists( 'user_switching' ) ? __( 'You do not have permission to switch to this customer.', 'linker-commerce' ) : __( 'User Switching is not active.', 'linker-commerce' ),
 		);
 	}
