@@ -4,7 +4,8 @@ import pytest
 
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
-from linker_genie.route import CONFIDENT, Subject, plan, sizing_input
+from linker_genie.prefill import sizing_input
+from linker_genie.route import CONFIDENT, Subject, plan
 
 NONE = Subject((), {}, {})
 H2 = Subject((4107,), {4107: "inverters", 1832: "home-storage"}, {4107: "H2-10K-T3"})
@@ -44,6 +45,8 @@ def test_sizing_opens_the_configurator_with_the_stated_figures() -> None:
 def test_sizing_figures_are_read_in_code(
     message: str, expected: dict[str, object]
 ) -> None:
+    # Round-2 regressions (negation, questions, postcode, cross-turn) are
+    # registered for #339 in test_prefill.py.
     assert sizing_input(message) == expected
 
 

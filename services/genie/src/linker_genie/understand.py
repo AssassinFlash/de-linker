@@ -24,6 +24,7 @@ from typing import Any, Protocol
 
 from linker_genie import attachments, contact, knowledge, page, parts, timing
 from linker_genie.abilities import AbilityClient, AbilityError
+from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.jev import JevError, Reading, page_state
@@ -37,7 +38,6 @@ from linker_genie.route import (
     nameplate,
     person,
     plan,
-    stated_size_hint,
     with_page,
 )
 from linker_genie.schema import (
@@ -123,7 +123,8 @@ class Understander:
         self._see = see
 
     def prepare(self, request: TurnRequest, client: AbilityClient) -> Prepared:
-        message = _last_customer_message(request)
+        messages = customer_messages(request)
+        message = messages[-1] if messages else ""
         # Route calls, fact collection and attachment decimals follow the
         # answer language. The page locale stays on the request for the prompt.
         language = turn_language(request)
@@ -210,7 +211,15 @@ class Understander:
             if about_page and request.page_context.product_id:
                 subject = _with_page_product(subject, request, vocabulary)
             bare = vocabulary.bare(message) if vocabulary else False
-            route = plan(message, matches, reading, subject, language, bare)
+            route = plan(
+                message,
+                matches,
+                reading,
+                subject,
+                language,
+                bare,
+                earlier=tuple(messages[:-1]),
+            )
             # Jev's answer decides when the page's own content is read (#234).
             route = with_page(
                 route,
@@ -351,13 +360,6 @@ def _qualified(result: Any) -> list[int]:
     return found
 
 
-def _last_customer_message(request: TurnRequest) -> str:
-    for message in reversed(request.messages):
-        if message.role == "user":
-            return message.content
-    return ""
-
-
 def _subject(
     request: TurnRequest, matches: list[Match], vocabulary: Vocabulary | None
 ) -> Subject:
@@ -424,7 +426,7 @@ def _run_calls(
     key from its worker thread (#336, timing.py); the block's wall is the
     enclosing `understand.calls` phase, which is what the turn waited for.
     """
-    question = _last_customer_message(request)
+    question = last_customer_message(request)
 
     def one(call: Call) -> tuple[dict[str, Any], Any, TurnFacts]:
         with timing.phase(clock, timing.call_key(call.ability)):
@@ -440,12 +442,15 @@ def _run_calls(
                 arguments = with_tool_lang(knowledge.NAME, call.arguments, language)
                 payload, gathered = knowledge.record(search, arguments, language)
                 return arguments or {}, payload, gathered
-            if call.ability == "linker/size-hint":
-                # Same gate as the model's own call (agent._ability_runner, #365):
-                # the URL is built from the message, not from a richer object.
-                arguments = stated_size_hint(question)
-            else:
-                arguments = with_tool_lang(call.ability, call.arguments, language) or {}
+            # Size-hint arguments are the dict plan() put on the call
+            # (prefill.stated_size_hint). Sending that object keeps the route
+            # log and the wire the same dict (#365). The model's own call is
+            # stripped in agent._ability_runner, which reads the same messages.
+            arguments = (
+                call.arguments
+                if call.ability == "linker/size-hint"
+                else with_tool_lang(call.ability, call.arguments, language) or {}
+            )
             payload, gathered = client.record(
                 call.ability, arguments, request.user.context, language
             )
