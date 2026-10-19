@@ -16,6 +16,12 @@ Three shapes, each inside the protocol set by construction
   docs/research/2026-10-17-knocket/TRIAL.md).
 - A document turn with documents found: one sentence and the documents as links,
   before any cards.
+- A product clarification (#363, #367, #364): a brand the catalog does not list
+  for that model, a model code the catalog does not list, several models in one
+  sentence, or a product search that ran and matched nothing. The answer names
+  what the catalog says and offers the products or one question. It is not the
+  team mailbox. An ability outage (no successful search) stays the mailbox or
+  the degraded sentence below.
 - With nothing citable (every ability call failed - an outage or a storm -
   or the model produced no product structure twice): the mailbox sentence
   when handoff-team ran this turn, and the degraded declaration only when
@@ -30,7 +36,7 @@ from __future__ import annotations
 
 from linker_genie.facts import TurnFacts
 from linker_genie.hydrate import hydrate
-from linker_genie.route import SEARCH_LIMIT, Route
+from linker_genie.route import SEARCH_LIMIT, NamedModel, Route
 from linker_genie.schema import (
     ASK_FIELDS,
     ActionBlock,
@@ -154,6 +160,9 @@ def fallback(facts: TurnFacts, locale: str, route: Route | None = None) -> TurnO
             DocumentBlock(ref=ref) for ref in refs[:FALLBACK_DOCUMENTS]
         )
         return hydrate(TurnOutput(language=language, blocks=document_blocks), facts)
+    clarified = _clarify(facts, language, route)
+    if clarified is not None:
+        return clarified
     qualified = sorted(facts.qualified_ids)
     if not qualified and not facts.product_ids:
         # The handoff-team sentence when the tool ran this turn; the degraded
@@ -188,6 +197,157 @@ def fallback(facts: TurnFacts, locale: str, route: Route | None = None) -> TurnO
             AskBlock(field=ask_field, options=_ask_options(ask_field, language))
         )
     return TurnOutput(language=language, blocks=blocks)
+
+
+# Clarification sentences (#363, #367, #364). Functional UI text, owned here next
+# to the only writer. EN and DE use the same blocks. Dossier 2026-10-19 §1.1,
+# §1.11 and §2 item 10: this wording has no competitor precedent.
+def _clarify(
+    facts: TurnFacts, language: Locale, route: Route | None
+) -> TurnOutput | None:
+    """A product answer that names the catalog, or None to keep the older shapes."""
+    if route is None:
+        return None
+    notes = route.named_models
+    qualified = facts.qualified_ids
+    missed = [note for note in notes if not note.searched]
+    conflict_lines: list[str] = []
+    conflict_ids: list[int] = []
+    for note in notes:
+        if not (note.searched and note.written_brand and note.catalog_brand):
+            continue
+        own_ids = [pid for pid in note.product_ids if pid in qualified]
+        if not own_ids:
+            continue
+        conflict_lines.append(_conflict_sentence(note, language))
+        for pid in own_ids:
+            if pid not in conflict_ids:
+                conflict_ids.append(pid)
+    if conflict_lines and conflict_ids:
+        return _product_answer(
+            language,
+            conflict_lines + _missed_sentences(missed, language),
+            conflict_ids,
+        )
+    unknowns = [note for note in notes if note.unknown and note.searched]
+    if unknowns:
+        lines = [_range_sentence([note.code for note in unknowns], language)]
+        if qualified:
+            lines.append(_closest_sentence(language))
+            lines.extend(_missed_sentences(missed, language))
+            return _product_answer(language, lines, sorted(qualified))
+        lines.extend(_missed_sentences(missed, language))
+        return _ask_answer(language, lines)
+    known = [note for note in notes if note.searched and not note.unknown]
+    if len(known) >= 2:
+        pending: list[str] = []
+        found_ids: list[int] = []
+        for note in known:
+            own = [pid for pid in note.product_ids if pid in qualified]
+            if own:
+                for pid in own:
+                    if pid not in found_ids:
+                        found_ids.append(pid)
+            elif note.product_ids:
+                pending.append(_not_returned(note.code, language))
+        if found_ids:
+            lead = (
+                "Das sind die Produkte zu den Modellen in Ihrer Nachricht."
+                if language == "de"
+                else "These are the products for the models in your message."
+            )
+            return _product_answer(
+                language,
+                [lead, *pending, *_missed_sentences(missed, language)],
+                found_ids,
+            )
+        if pending or missed:
+            return _ask_answer(language, pending + _missed_sentences(missed, language))
+    if missed:
+        return _ask_answer(language, _missed_sentences(missed, language))
+    if (
+        route.name in ("products", "model")
+        and route.no_handoff
+        and not qualified
+        and not facts.product_ids
+        and _search_succeeded(facts)
+    ):
+        line = (
+            "Zu dieser Suche gibt es kein Produkt."
+            if language == "de"
+            else "No product matched that search."
+        )
+        return _ask_answer(language, [line])
+    return None
+
+
+def _conflict_sentence(note: NamedModel, language: Locale) -> str:
+    if language == "de":
+        return (
+            f"{note.code} ist unter {note.catalog_brand} geführt. "
+            f"Ihre Nachricht nennt {note.written_brand}. "
+            f"Die Karte zeigt das {note.catalog_brand}-Produkt."
+        )
+    return (
+        f"{note.code} is listed under {note.catalog_brand}. "
+        f"Your message names {note.written_brand}. "
+        f"The card shows the {note.catalog_brand} product."
+    )
+
+
+def _range_sentence(codes: list[str], language: Locale) -> str:
+    shown = ", ".join(codes)
+    if language == "de":
+        verb = "sind" if len(codes) > 1 else "ist"
+        return f"{shown} {verb} nicht in unserem Sortiment."
+    verb = "are" if len(codes) > 1 else "is"
+    return f"{shown} {verb} not in our product range."
+
+
+def _closest_sentence(language: Locale) -> str:
+    if language == "de":
+        return "Die nächsten Produkte in unseren Produktdaten stehen auf den Karten."
+    return "The closest products in our product data are on the cards."
+
+
+def _not_returned(code: str, language: Locale) -> str:
+    if language == "de":
+        return f"Die Suche hat {code} nicht ergeben."
+    return f"The search did not return {code}."
+
+
+def _missed_sentences(notes: list[NamedModel], language: Locale) -> list[str]:
+    if language == "de":
+        return [f"{note.code} wurde in dieser Runde nicht gesucht." for note in notes]
+    return [f"{note.code} was not searched in this turn." for note in notes]
+
+
+def _product_answer(language: Locale, lines: list[str], ids: list[int]) -> TurnOutput:
+    shown = ids[:SEARCH_LIMIT]
+    return TurnOutput(
+        language=language,
+        blocks=[
+            TextBlock(text=" ".join(lines), refs=[f"p{pid}" for pid in shown]),
+            CardsBlock(product_ids=shown),
+        ],
+    )
+
+
+def _ask_answer(language: Locale, lines: list[str]) -> TurnOutput:
+    return TurnOutput(
+        language=language,
+        blocks=[
+            TextBlock(text=" ".join(lines)),
+            AskBlock(field="brand", options=_ask_options("brand", language)),
+        ],
+    )
+
+
+def _search_succeeded(facts: TurnFacts) -> bool:
+    return any(
+        str(call.get("name", "")).endswith("search-products") and call.get("ok") is True
+        for call in facts.tool_calls
+    )
 
 
 def _ask_field(facts: TurnFacts) -> AskField | None:

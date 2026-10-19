@@ -505,7 +505,16 @@ def _user_prompt(
         "do not call handoff-team; answer with exactly one text block, "
         "'Please log in to your account to view this inquiry.' in English or "
         "'Bitte melden Sie sich in Ihrem Konto an, um diese Anfrage anzuzeigen.' "
-        "in German, and nothing else. Ask at most one question and only "
+        "in German, and nothing else. Several models in one message are each "
+        "searched on their own. Report every searched model from its own result "
+        "and show each product returned. Say a model has no entry only when that "
+        "model's search returned nothing. A model the routing note marks as not "
+        "searched was not searched: say that, and never say it is absent from the "
+        "product data. When the note says the customer named a brand the product "
+        "data does not list for that model, name the brand from the product data "
+        "and show the product. A model code the product data does not contain is "
+        "outside the range; offer the closest products the search returned. None "
+        "of these is a question for the team. Ask at most one question and only "
         f"with field in {'|'.join(ASK_FIELDS)}."
     )
     return "\n".join(lines)
