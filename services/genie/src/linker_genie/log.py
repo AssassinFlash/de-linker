@@ -22,6 +22,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from linker_genie.failure import failure_text
 from linker_genie.tools import READ_ATTACHMENT
 
 SCHEMA = """
@@ -83,17 +84,6 @@ def _calls(raw: str | None) -> list[dict[str, Any]]:
     if not isinstance(calls, list):
         return []
     return [call for call in calls if isinstance(call, dict)]
-
-
-def _failure_sentence(entry: object) -> str:
-    """The text of a `call_failures` row: a note's `text`, or the string itself."""
-    if isinstance(entry, str):
-        return entry
-    if isinstance(entry, dict):
-        text = entry.get("text")
-        if isinstance(text, str):
-            return text
-    return ""
 
 
 class TurnLog:
@@ -276,8 +266,7 @@ class TurnLog:
                     entry
                     for entry in failures
                     if not any(
-                        _failure_sentence(entry).startswith(f"{name}: ")
-                        for name in derived
+                        failure_text(entry).startswith(f"{name}: ") for name in derived
                     )
                 ]
                 if len(kept) != len(failures):

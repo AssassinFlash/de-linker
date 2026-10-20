@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
-from linker_genie.failure import RecordedFailure, from_log, note
+from linker_genie.failure import FailureClass, RecordedFailure, from_log, note
 from linker_genie.ground import check
 from linker_genie.hydrate import complete_pairing_cards, hydrate
 from linker_genie.language import (
@@ -29,7 +29,6 @@ from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
 from linker_genie.template import (
     LOGIN_PLACEHOLDER,
     LOGIN_REQUIRED,
-    FailureClass,
     fallback,
 )
 

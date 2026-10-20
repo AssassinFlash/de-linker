@@ -50,9 +50,8 @@ Three shapes, each inside the protocol set by construction
 
 from __future__ import annotations
 
-from typing import Literal
-
 from linker_genie.facts import TurnFacts
+from linker_genie.failure import FailureClass
 from linker_genie.hydrate import hydrate
 from linker_genie.route import (
     SEARCH_LIMIT,
@@ -75,10 +74,6 @@ from linker_genie.schema import (
     TextBlock,
     TurnOutput,
 )
-
-# Passed by cycle.fatal_class (#410). `exhausted` (#366) is separate: the
-# tool never returned, so that path shows no cards.
-FailureClass = Literal["model", "retrieval", "ability"]
 
 # The degraded sentence, EN and DE. Functional UI text (a state the turn can
 # land in), owned here next to the only writer; its wording went through the
@@ -330,7 +325,6 @@ def fallback(
         return _degraded_keeping_findings(facts, language, route)
     # The applied winner is the whole fallback. The named-model clarification
     # would add the other cards (#363, #364), which an extreme answer refuses.
-    extreme = _extreme_fallback(facts, language)
     # An applied extreme shows that one card. Codes named in the same question
     # are written beside it (#384). A hidden price names no cheapest product;
     # when the question also named codes, those codes are still named.

@@ -22,9 +22,10 @@ from typing import Literal
 
 from linker_genie.abilities import AbilityError
 from linker_genie.embedding import sentence_is_encoder_failure
-from linker_genie.template import FailureClass
 
-_FailureKind = Literal["model", "retrieval", "ability"]
+# Passed by cycle.fatal_class (#410) and read by template.fallback. `exhausted`
+# (#366) is separate: the tool never returned, so that path shows no cards.
+FailureClass = Literal["model", "retrieval", "ability"]
 
 
 @dataclass(frozen=True)
@@ -48,6 +49,22 @@ def note(error: BaseException, *, prefix: str = "") -> RecordedFailure:
     return RecordedFailure(text, kind_of(error))
 
 
+def _row_text(entry: object) -> str | None:
+    """The text of a stored row (`{text, kind?}` or a string), else None."""
+    if isinstance(entry, str):
+        return entry
+    if isinstance(entry, dict):
+        text = entry.get("text")
+        if isinstance(text, str):
+            return text
+    return None
+
+
+def is_row(entry: object) -> bool:
+    """True when `entry` is a stored `call_failures` row: a string or `{text}`."""
+    return _row_text(entry) is not None
+
+
 def from_log(entry: object) -> RecordedFailure:
     """A log entry: a note this module wrote, or a plain string from an older row.
 
@@ -55,27 +72,20 @@ def from_log(entry: object) -> RecordedFailure:
     """
     if isinstance(entry, RecordedFailure):
         return entry
+    text = _row_text(entry)
+    if text is None:
+        return RecordedFailure(str(entry))
     if isinstance(entry, dict):
-        text = entry.get("text")
-        kind = entry.get("kind")
-        if isinstance(text, str):
-            return RecordedFailure(text, _as_kind(kind))
-    if isinstance(entry, str):
-        return RecordedFailure(entry)
-    return RecordedFailure(str(entry))
+        return RecordedFailure(text, _as_kind(entry.get("kind")))
+    return RecordedFailure(text)
 
 
 def failure_text(entry: object) -> str:
     """The sentence of a log entry, string or note."""
-    if isinstance(entry, str):
-        return entry
     if isinstance(entry, RecordedFailure):
         return entry.text
-    if isinstance(entry, dict):
-        text = entry.get("text")
-        if isinstance(text, str):
-            return text
-    return ""
+    text = _row_text(entry)
+    return text if text is not None else ""
 
 
 def kind_of(error: BaseException) -> FailureClass | None:
@@ -110,7 +120,7 @@ def _as_kind(value: object) -> FailureClass | None:
     return None
 
 
-def _library_model_kind(error: BaseException) -> _FailureKind | None:
+def _library_model_kind(error: BaseException) -> FailureClass | None:
     from pydantic_ai.exceptions import ModelHTTPError, UnexpectedModelBehavior
 
     if isinstance(error, ModelHTTPError):

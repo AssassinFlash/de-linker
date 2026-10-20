@@ -37,6 +37,7 @@ from linker_genie.agent import (
 from linker_genie.conversation import last_customer_message
 from linker_genie.cycle import TurnResult, run
 from linker_genie.facts import TurnFacts
+from linker_genie.failure import is_row
 from linker_genie.gate import Gate
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
@@ -382,11 +383,7 @@ def _recorded_call_failures(prepared: Prepared) -> list[object]:
     logged = prepared.log.get("call_failures")
     recorded: list[object] = []
     if isinstance(logged, list):
-        for item in logged:
-            if isinstance(item, str) or (
-                isinstance(item, dict) and isinstance(item.get("text"), str)
-            ):
-                recorded.append(item)
+        recorded = [item for item in logged if is_row(item)]
     prepared.log["call_failures"] = recorded
     return recorded
 
