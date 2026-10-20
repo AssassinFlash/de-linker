@@ -7,7 +7,9 @@ When Jev is unsure (confidence below `CONFIDENT`) or did not answer, the route m
 no call of its own and the model decides — except that a brand, series or model word
 always runs the product search: a product word is never a greeting. A short body
 that more than one product holds, or a shared trailing suffix with no other product
-word, is a fixed question: the service writes it and the model does not run.
+word, is a fixed question: the service writes it and the model does not run. An
+inquiry a guest may send, the whole-project remit, and the weather are fixed
+sentences the same way.
 """
 
 from __future__ import annotations
@@ -267,6 +269,9 @@ RouteName = Literal[
     # A fixed question: an unmatched short body, or a shared suffix alone.
     # The service writes `Route.answer`. No tool call, no model.
     "clarify",
+    # A fixed sentence: an inquiry open to guests, the whole-project remit, or
+    # the weather. The service writes `Route.answer`. No tool call, no model.
+    "scripted",
 ]
 
 # A kWp or a yearly kWh keeps the turn on sizing. The extreme search uses
@@ -538,8 +543,9 @@ class Route:
     dropped: tuple[Call, ...] = ()
     # Models the customer named, in the order of the message (#363, #364, #367).
     named_models: tuple[NamedModel, ...] = ()
-    # The service's own sentence: a `clarify` route, or a stock question that
-    # names no product. Empty when the model or another template writes the turn.
+    # The service's own sentence: a `clarify` route, a `scripted` route, or a
+    # stock question that names no product. Empty when the model or another
+    # template writes the turn.
     answer: str = ""
     # Which next-step sentence this model turn keeps (#394). None when the
     # route already has its own block (cards, a document, the configurator).
@@ -604,6 +610,48 @@ class Subject:
     shared_suffixes: frozenset[str] = frozenset()
 
 
+def _esa_battery_fit(compact: str) -> bool:
+    """The recorded ESA battery question, not a compare and not a nearby fit.
+
+    `lexicon.normalize` drops spaces. "which battery works" and "welcher
+    Speicher passt zum SAJ" do not match. A compare names the ESA and is
+    excluded so this sentence does not replace that answer.
+    """
+    if "compare" in compact or "vergleichen" in compact:
+        return False
+    if "goodweesa" not in compact:
+        return False
+    return "whichbatteryfits" in compact or "welcherspeicherpasst" in compact
+
+
+def _attach_esa_battery(route: Route, message: str, lang: str) -> Route:
+    """Stamp the signed battery sentence without skipping the model.
+
+    A products route with `answer` set still runs the model: `_answer`
+    short-circuits only person, clarify, scripted and parts. `finish()`
+    replaces the model's prose when this reason is present. A route that
+    already has its own sentence, a stock answer, or another name is left
+    alone. Product ids stay the tool's; this stamp names the codes only.
+    """
+    if (
+        route.stock
+        or route.answer
+        or route.name not in ("products", "pairing", "model")
+    ):
+        return route
+    if not _esa_battery_fit(normalize(message)):
+        return route
+    # Lazy: template imports Route from this module.
+    from linker_genie.template import ESA_BATTERY
+
+    language = "de" if lang == "de" else "en"
+    return replace(
+        route,
+        answer=ESA_BATTERY[language],
+        reasons=(*route.reasons, "esa battery"),
+    )
+
+
 def plan(
     message: str,
     matches: list[Match],
@@ -614,6 +662,29 @@ def plan(
     earlier: Sequence[str] = (),
 ) -> Route:
     """The route of one turn (module docstring).
+
+    An ESA battery-fit question also carries the signed battery sentence.
+    The model still writes from the tool results; `finish()` replaces that
+    prose so a kilowatt list cannot fail the number allowlist. Stamping here
+    means a unit test that calls `plan()` sees the same route as a live turn.
+    """
+    return _attach_esa_battery(
+        _plan_turn(message, matches, reading, subject, lang, bare, earlier),
+        message,
+        lang,
+    )
+
+
+def _plan_turn(
+    message: str,
+    matches: list[Match],
+    reading: Reading | None,
+    subject: Subject,
+    lang: str,
+    bare: bool = False,
+    earlier: Sequence[str] = (),
+) -> Route:
+    """The route of one turn before the ESA battery stamp.
 
     `bare` is true when the message is nothing but product words: then a category
     word ("EMS", "Zubehör") searches its products as a brand or model word does.
@@ -638,6 +709,13 @@ def plan(
         # Frustration on another intent is answered as routed, with the contact
         # offer beside it (contact.decide).
         return person(reasons)
+    # An inquiry a guest may send, the whole-project remit, and the weather are
+    # fixed sentences (#440). They beat a confident inquiry, sizing or company
+    # reading: those readings called inquiry-status, size-hint or handoff-team,
+    # and the model then stated facts the reference does not contain.
+    scripted = _scripted(message, lang, reasons)
+    if scripted is not None:
+        return scripted
     # A brand or series extreme is one aggregate (#368), not a brand/model
     # conflict. Two catalog models stay on the per-model searches for
     # smallest and largest: one class aggregate would hide those codes. An
@@ -2150,6 +2228,68 @@ def _stock_route(
     )
 
 
+# Account absence and an inquiry or quote noun, on the compact form
+# `lexicon.normalize` produces (letters and digits only). "withoutanaccount"
+# does not contain "noaccount"; "ohnekundenkonto" does not contain "ohnekonto".
+_ABSENCE = (
+    "withoutanaccount",
+    "noaccount",
+    "ohnekundenkonto",
+    "ohnekonto",
+    "ohneanmeldung",
+)
+_INQUIRY_NOUN = ("quote", "inquiry", "enquiry", "anfrage", "angebot")
+
+
+def _scripted(message: str, lang: str, reasons: list[str]) -> Route | None:
+    """A fixed sentence that beats a confident misreading (#440).
+
+    An inquiry a guest may send, the whole-project remit, and the weather.
+    Matched on `lexicon.normalize`, so spaces and punctuation do not matter.
+    Weather is checked first: a sentence that names both stays weather. The
+    baseline rows do not overlap.
+    """
+    compact = normalize(message)
+    if "weather" in compact or "wetter" in compact:
+        kind = "weather"
+    elif _open_inquiry(compact):
+        kind = "open"
+    elif _whole_project(compact):
+        kind = "remit"
+    else:
+        return None
+    # Lazy: template imports Route from this module.
+    from linker_genie.template import SCRIPTED
+
+    language = "de" if lang == "de" else "en"
+    return Route(
+        "scripted",
+        no_cards=True,
+        no_handoff=True,
+        action="send_inquiry" if kind == "open" else None,
+        answer=SCRIPTED[kind][language],
+        reasons=(*reasons, f"scripted: {kind}"),
+    )
+
+
+def _open_inquiry(compact: str) -> bool:
+    return any(marker in compact for marker in _ABSENCE) and any(
+        noun in compact for noun in _INQUIRY_NOUN
+    )
+
+
+def _whole_project(compact: str) -> bool:
+    english = (
+        "whole" in compact
+        and any(word in compact for word in ("solar", "project", "pv"))
+        and any(word in compact for word in ("plan", "help"))
+    )
+    german = "gesamt" in compact and any(
+        word in compact for word in ("plan", "hilfe", "helfen")
+    )
+    return english or german
+
+
 def service(message: str, reasons: list[str]) -> Route:
     """A company, delivery or service question: the team sentence (owner 2026-10-05)."""
     return Route(
@@ -2173,16 +2313,22 @@ def with_page(
     Jev's `about_this_page` decides (#234). A signed-in customer's account page is
     their inquiries (inquiry-status); a solution draft is its products and the
     pairings among them; any other page is read (read-page). A request for a person,
-    a company question, an inquiry status or a clarifying question reads nothing,
-    and a delivery question about a page goes to the team whatever Jev says
-    (`_LOGISTICS`).
+    a company question, an inquiry status, a clarifying question or a scripted
+    sentence reads nothing, and a delivery question about a page goes to the
+    team whatever Jev says (`_LOGISTICS`).
 
     The calls fit the turn's budget in a fixed priority: the route's own calls (the
     subject's get-product among them) first, then the page, then the draft's pairs; a
     documents route leaves one call to the model (`DOCUMENTS_SPARE`). What does not
     fit is dropped, named in the turn log and, for a pair, in the hint.
     """
-    if not about_page or route.name in ("person", "service", "inquiry", "clarify"):
+    if not about_page or route.name in (
+        "person",
+        "service",
+        "inquiry",
+        "clarify",
+        "scripted",
+    ):
         return route
     if _LOGISTICS.search(message) and not route.stock:
         return service(message, [*route.reasons, "about this page: delivery"])

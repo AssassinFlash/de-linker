@@ -608,6 +608,9 @@ def _user_prompt(
         "logged_in=false) is not out of scope: do not call handoff-team; "
         "answer with exactly one text block whose text is exactly "
         "{fact:inquiry.login}, and nothing else. "
+        "When a released pairing condition names a partner model code, write "
+        "that code in the text as the condition writes it. Cards do not "
+        "replace the code. "
         + NAMED_MODEL_RULE
         # TALK, PROMISE, REPLY_PROMISE and PARTNER in template.py own the
         # customer sentences this reminder repeats. The system prompts and

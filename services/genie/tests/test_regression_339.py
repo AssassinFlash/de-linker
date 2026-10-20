@@ -6,7 +6,7 @@ docs/acceptance/2026-10-19/379/339-cases.md is the index.
 
 import json
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import pytest
 from fastapi import Request
@@ -20,6 +20,8 @@ from linker_genie.lexicon import Vocabulary
 from linker_genie.prices import Lookup
 from linker_genie.route import NamedModel, Route, Subject, plan, with_page
 from linker_genie.schema import (
+    ActionBlock,
+    AskBlock,
     CardsBlock,
     HandoffBlock,
     PageContext,
@@ -28,7 +30,7 @@ from linker_genie.schema import (
     TurnOutput,
     TurnRequest,
 )
-from linker_genie.template import DEGRADED, fallback
+from linker_genie.template import DEGRADED, fallback, finish
 from linker_genie.understand import Prepared
 
 SET = (
@@ -88,6 +90,19 @@ EXPECTED = (
     "339-396-chunk",
     "339-396-product",
     "339-396-placeholder",
+    "339-440-b30-en",
+    "339-440-b30-de",
+    "339-440-b43-en",
+    "339-440-b43-de",
+    "339-440-b44-en",
+    "339-440-b44-de",
+    "339-440-b07-en",
+    "339-440-b07-de",
+    "339-440-b08-en",
+    "339-440-b08-de",
+    "339-440-b06-de",
+    "339-440-account-en",
+    "339-440-account-de",
 )
 
 
@@ -211,6 +226,8 @@ def test_339_product_word_case(row: dict[str, Any], vocabulary: Vocabulary) -> N
         _language(row)
     elif kind == "citation":
         _citation(row)
+    elif kind == "signed":
+        _signed(row, vocabulary)
     else:
         raise AssertionError(kind)
 
@@ -462,3 +479,51 @@ def _check_fallback(route: Route, raw: dict[str, Any], lang: str) -> None:
     if "cards" in raw:
         cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
         assert cards and cards[0].product_ids == raw["cards"]
+
+
+def _signed(row: dict[str, Any], vocabulary: Vocabulary) -> None:
+    """#440: the signed sentence beats a confident misreading, and only that row.
+
+    A nearby question must not take the battery sentence. An account word
+    without an inquiry noun must not take the open-inquiry sentence.
+    """
+    route = plan(
+        row["message"],
+        vocabulary.match(row["message"]),
+        _reading(row["intent"], row["confidence"]),
+        _subject(vocabulary, None),
+        row["lang"],
+    )
+    if row["stamp"] == "none":
+        assert route.name != "scripted"
+        assert "esa battery" not in route.reasons
+        return
+    language: Literal["en", "de"] = "de" if row["lang"] == "de" else "en"
+    assert route.answer == row["answer"]
+    assert route.no_handoff is True
+    if row["stamp"] == "scripted":
+        assert route.name == "scripted"
+        assert route.calls == ()
+        assert route.no_cards is True
+    else:
+        assert row["stamp"] == "esa"
+        assert "esa battery" in route.reasons
+        assert route.name in ("products", "pairing", "model")
+    finished = finish(
+        TurnOutput(language=language, blocks=[TextBlock(text=row["prose"])]),
+        TurnFacts(),
+        route,
+    )
+    text = _sentence(finished)
+    assert text == row["answer"]
+    assert row["prose"] not in text
+    for banned in row.get("excludes", []):
+        assert banned not in text
+    if row.get("action"):
+        assert any(
+            isinstance(block, ActionBlock) and block.name == row["action"]
+            for block in finished.blocks
+        )
+    if row.get("ask"):
+        assert any(isinstance(block, AskBlock) for block in finished.blocks)
+    assert not any(isinstance(block, HandoffBlock) for block in finished.blocks)

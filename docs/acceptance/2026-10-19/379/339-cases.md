@@ -18,3 +18,4 @@
 12. #415 库存问句（`kind: stock`）。SAJ H2-10K-T3，有货/缺货 × 英/德 × 访客/已批准，以及一次查不到状态。期望：路由是 products 且 `stock`，不调 handoff-team；正文是商品页的状态句，卡片是 4107，价格行留在卡上；正文没有数量。失败时是降级句，没有卡片，也不说匹配商品。
 13. 语言（#396，地址兼 #404）。`Im looking for a battery` 与 `the ins and outs` 判英语，不因 `im`/`ins` 变成混合。`Der Fehlerstromschutzschalter Typ A ist erforderlich.` 判德语。`Schutzart IP65, Typ A.` 不判英语。`The office is at Hauptstraße 3.` 仍是英语：街道名和专名不计票。
 14. 引用（#396）。本轮没有的文档引用（`p3612.document.2`）和 chunk 引用算越界。产品 id 和占位符不算：它们走卡片和缺席规则，不把整轮换成降级句。
+15. #440 规定句（`kind: signed`）。询盘开放、整站职责、天气，英德各一句：高置信误读仍走 `scripted`，正文是规定句，模型散文被换掉，没有邮箱。开放句的下一步是 `send_inquiry`；职责和天气是 application 询问。德语开放句不含 `Preis`、` nur `、`Konto`。ESA 电池问句盖上型号句，`3 kW` 不留下，正文含 `BAT-D-G2`。对照：比较 ESA、SAJ 的「哪个储能」、以及只有账户词没有询盘名词的句子，不走这两句。

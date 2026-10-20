@@ -12,12 +12,13 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from baseline.grade import Turn, answer_text, check
+from baseline.grade import Turn, answer_text, check, untraceable_numbers
 
 from linker_genie.agent import _user_prompt, instructions
+from linker_genie.app import _answer
 from linker_genie.contact import decide
 from linker_genie.cycle import TurnResult, run
-from linker_genie.facts import TurnFacts, collect
+from linker_genie.facts import Fact, TurnFacts, collect
 from linker_genie.ground import shipped
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
@@ -35,14 +36,18 @@ from linker_genie.schema import (
 )
 from linker_genie.template import (
     DEGRADED,
+    ESA_BATTERY,
     LOGIN_REQUIRED,
     PARTNER,
+    PARTNER_CODES,
     PROMISE,
     REPLY_PROMISE,
+    SCRIPTED,
     TALK,
     finish,
     german_is_clean,
 )
+from linker_genie.understand import Prepared
 
 SET = Path(__file__).parents[1] / "eval" / "baseline" / "baseline100.jsonl"
 ROWS = {
@@ -833,30 +838,30 @@ def test_the_grade_rejects_repeated_signed_copy() -> None:
 
 
 def test_a_plain_answer_gains_one_ask_and_a_clarification_keeps_its_question() -> None:
-    weather = plan(
-        "What's the weather going to be like tomorrow?",
+    plain_route = plan(
+        "Please describe the menu layout.",
         [],
         _reading("other"),
         NONE,
         "en",
     )
-    assert weather.name == "model"
-    assert weather.shape is None
+    assert plain_route.name == "model"
+    assert plain_route.shape is None
     plain = finish(
         TurnOutput(
             language="en",
-            blocks=[TextBlock(text="I have no weather data.")],
+            blocks=[TextBlock(text="The menu has three levels.")],
         ),
         TurnFacts(),
-        weather,
+        plain_route,
     )
     assert [block.type for block in plain.blocks] == ["text", "ask"]
-    assert plain.blocks[0] == TextBlock(text="I have no weather data.")
+    assert plain.blocks[0] == TextBlock(text="The menu has three levels.")
     ask = plain.blocks[1]
     assert isinstance(ask, AskBlock)
     assert ask.field == "application"
     assert ask.options == ["home", "commercial"]
-    assert finish(plain, TurnFacts(), weather) == plain
+    assert finish(plain, TurnFacts(), plain_route) == plain
 
     # A plain answer that already asks keeps its question and still gains the
     # clickable ask: the chips carry no question sentence, so the customer
@@ -867,7 +872,7 @@ def test_a_plain_answer_gains_one_ask_and_a_clarification_keeps_its_question() -
             blocks=[TextBlock(text="Is this for a home or a business?")],
         ),
         TurnFacts(),
-        weather,
+        plain_route,
     )
     assert [block.type for block in asking.blocks] == ["text", "ask"]
     assert asking.blocks[0] == TextBlock(text="Is this for a home or a business?")
@@ -946,3 +951,618 @@ def test_a_closing_is_not_a_greeting_and_keeps_the_model_prose() -> None:
         assert (
             answer_text([block.model_dump() for block in done.blocks]).count("?") <= 1
         )
+
+
+ESA_CONDITION = (
+    "The GoodWe ESA 3–10 kW datasheet (EMEA, p. 2–3) lists the "
+    "GW5.1/8.3/6.0/9.0-BAT-D-G20 battery modules for the GW3K–10K-EHA-G20 "
+    "power modules. The EMEA datasheet names the G20 modules for the "
+    "single-phase ESA; the G21 variants are not in that table. 12 pcs."
+)
+BATTERY = 6519
+INVERTER = 4107
+SCRIPTED_ROWS = ("b30-en", "b30-de", "b43-en", "b43-de", "b44-en", "b44-de")
+
+
+def _scripted_grade(row: dict[str, Any], output: TurnOutput) -> list[str]:
+    turn = Turn(
+        meta={
+            "grounded": True,
+            "fallback": False,
+            "language": output.language,
+            "failures": [],
+        },
+        blocks=[block.model_dump() for block in output.blocks],
+        done=True,
+    )
+    return check(row, turn)
+
+
+def _pairing_facts(
+    condition: str = ESA_CONDITION,
+    verdict: str = "released",
+    partner_id: int = BATTERY,
+    *,
+    bare_check: str = "",
+) -> TurnFacts:
+    facts = TurnFacts()
+    facts.add(Fact(f"compat.verdict.{partner_id}", verdict, "search-products"))
+    facts.add(Fact(f"compat.condition.{partner_id}.0", condition, "search-products"))
+    if bare_check:
+        facts.add(Fact("compat.condition.0", bare_check, "check-compatibility"))
+    return facts
+
+
+def test_only_the_recorded_rows_take_the_scripted_sentence() -> None:
+    taken = sorted(
+        row_id
+        for row_id, row in ROWS.items()
+        if plan(
+            str(row["question"]), [], _reading("other"), NONE, str(row["lang"])
+        ).name
+        == "scripted"
+    )
+    assert taken == sorted(SCRIPTED_ROWS)
+
+
+@pytest.mark.parametrize("row_id", SCRIPTED_ROWS)
+def test_a_confident_misreading_still_ships_the_scripted_sentence(row_id: str) -> None:
+    row = ROWS[row_id]
+    intent = {
+        "b30": "inquiry_status",
+        "b43": "sizing",
+        "b44": "company_logistics_service",
+    }[row_id[:3]]
+    route = plan(
+        str(row["question"]),
+        [],
+        _reading(intent),
+        NONE,
+        str(row["lang"]),
+    )
+    assert route.name == "scripted"
+    assert route.calls == ()
+    assert route.no_handoff is True
+    assert route.no_cards is True
+    kind = {"b30": "open", "b43": "remit", "b44": "weather"}[row_id[:3]]
+    assert route.answer == SCRIPTED[kind][row["lang"]]
+    assert "?" not in route.answer
+    assert "sales@de-linker.com" not in route.answer
+    assert "one working day" not in route.answer.casefold()
+    assert "innerhalb eines Werktags" not in route.answer
+    if row_id == "b30-de":
+        # "Preise" is a price word the remit rejects. "nur" would deny the
+        # reference's price half. "Konto" is the account clause a live cascade
+        # read as out of remit; the form pointer and the guest fields stay.
+        assert "Preis" not in route.answer
+        assert " nur " not in route.answer
+        assert "Konto" not in route.answer
+    if row["lang"] == "de":
+        assert german_is_clean(route.answer)
+    kept = with_page(
+        route,
+        PageContext(
+            type="product", url="https://de-linker.com/product/esa", product_id=1
+        ),
+        True,
+        False,
+        NONE,
+        str(row["question"]),
+    )
+    assert kept.name == "scripted"
+    assert kept.calls == ()
+    assert kept.answer == route.answer
+    shipped_turn = finish(
+        TurnOutput(
+            language=row["lang"], blocks=[TextBlock(text="The model added a fact.")]
+        ),
+        TurnFacts(),
+        route,
+    )
+    text = answer_text([block.model_dump() for block in shipped_turn.blocks])
+    assert route.answer in text
+    assert "The model added a fact." not in text
+    assert "sales@" not in text
+    if kind == "open":
+        assert [block.type for block in shipped_turn.blocks] == ["text", "action"]
+        action = shipped_turn.blocks[1]
+        assert isinstance(action, ActionBlock)
+        assert action.name == "send_inquiry"
+    else:
+        assert [block.type for block in shipped_turn.blocks] == ["text", "ask"]
+    assert _scripted_grade(row, shipped_turn) == []
+    assert finish(shipped_turn, TurnFacts(), route) == shipped_turn
+
+
+def test_nearby_questions_keep_their_own_routes() -> None:
+    inquiry = plan(
+        "Where is my inquiry right now?",
+        [],
+        _reading("inquiry_status"),
+        NONE,
+        "en",
+    )
+    assert inquiry.name == "inquiry"
+    aftermath = plan(
+        "What happens after I send an inquiry?",
+        [],
+        _reading("inquiry_status"),
+        NONE,
+        "en",
+    )
+    assert aftermath.name == "inquiry"
+    send = plan("Send my inquiry now.", [], _reading("other"), NONE, "en")
+    assert send.name == "model"
+    prices = plan(
+        "Can I see prices without an account?",
+        [],
+        _reading("other"),
+        NONE,
+        "en",
+    )
+    assert prices.name == "model"
+    sizing = plan(
+        ROWS["b18-en"]["question"],
+        [],
+        _reading("sizing"),
+        NONE,
+        "en",
+    )
+    assert sizing.name == "sizing"
+    assert any(call.ability == "linker/size-hint" for call in sizing.calls)
+    home = plan(
+        "How big a battery do I need for my home?",
+        [],
+        _reading("sizing"),
+        NONE,
+        "en",
+    )
+    assert home.name == "sizing"
+    deliver = plan(
+        "Do you deliver to Austria?",
+        [],
+        _reading("company_logistics_service"),
+        NONE,
+        "en",
+    )
+    assert deliver.name == "service"
+    install = plan(
+        "Do you also install the systems yourselves?",
+        [],
+        _reading("company_logistics_service"),
+        NONE,
+        "en",
+    )
+    assert install.name == "service"
+
+
+def test_the_scripted_sentence_does_not_touch_the_model_request() -> None:
+    route = plan(
+        ROWS["b44-en"]["question"],
+        [],
+        _reading("company_logistics_service"),
+        NONE,
+        "en",
+    )
+    body = TurnRequest(
+        conversation_id="c-440",
+        locale="en",
+        messages=[TurnMessage(role="user", content=str(ROWS["b44-en"]["question"]))],
+    )
+    result, block = _answer(body, Prepared(route=route), object(), object())  # type: ignore[arg-type]
+    assert block is None
+    assert result.attempts == 0
+    assert result.grounded is True
+    assert result.fallback is False
+    assert result.output.blocks[0] == TextBlock(text=SCRIPTED["weather"]["en"])
+    assert [item.type for item in result.output.blocks] == ["text", "ask"]
+
+
+def test_a_released_partner_code_is_named_when_its_card_is_shown() -> None:
+    facts = _pairing_facts()
+    bare = finish(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="These batteries pair with the ESA."),
+                CardsBlock(product_ids=[BATTERY, 3611]),
+            ],
+        ),
+        facts,
+        Route("products"),
+    )
+    text = bare.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert "GW5.1/8.3/6.0/9.0-BAT-D-G20" in text.text
+    assert "GW3K–10K-EHA-G20" in text.text
+    assert "G21" not in text.text.split("Compatible models:")[-1]
+    assert text.text.endswith(
+        PARTNER_CODES["en"].format(
+            codes="GW5.1/8.3/6.0/9.0-BAT-D-G20, GW3K–10K-EHA-G20"
+        )
+    )
+    assert "2–3" not in text.text.split("Compatible models:")[-1]
+    assert "12" not in text.text.split("Compatible models:")[-1]
+    assert untraceable_numbers(text.text, ["10"]) == []
+    assert finish(bare, facts, Route("products")) == bare
+
+    already = finish(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(
+                    text="The condition names GW5.1/8.3/6.0/9.0-BAT-D-G20 and GW3K–10K-EHA-G20."
+                ),
+                CardsBlock(product_ids=[BATTERY]),
+            ],
+        ),
+        facts,
+        Route("pairing"),
+    )
+    assert "Compatible models:" not in already.blocks[0].text  # type: ignore[union-attr]
+
+    one_missing = finish(
+        TurnOutput(
+            language="de",
+            blocks=[
+                TextBlock(text="Die Bedingung nennt GW5.1/8.3/6.0/9.0-BAT-D-G20."),
+                CardsBlock(product_ids=[BATTERY]),
+            ],
+        ),
+        facts,
+        Route("products"),
+    )
+    german = one_missing.blocks[0]
+    assert isinstance(german, TextBlock)
+    assert german.text.endswith(PARTNER_CODES["de"].format(codes="GW3K–10K-EHA-G20"))
+    assert german_is_clean(german.text)
+    assert " and " not in f" {german.text.lower()} "
+
+
+def test_partner_codes_stay_off_when_the_card_or_the_verdict_does_not_qualify() -> None:
+    facts = _pairing_facts()
+    inverters = finish(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="These inverters pair with the battery."),
+                CardsBlock(product_ids=[INVERTER]),
+            ],
+        ),
+        facts,
+        Route("products"),
+    )
+    assert "Compatible models:" not in inverters.blocks[0].text  # type: ignore[union-attr]
+
+    withheld = finish(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="This pair is not released."),
+                CardsBlock(product_ids=[BATTERY]),
+            ],
+        ),
+        _pairing_facts(verdict="not_released"),
+        Route("pairing"),
+    )
+    assert "Compatible models:" not in withheld.blocks[0].text  # type: ignore[union-attr]
+    assert "BAT-D-G2" not in withheld.blocks[0].text  # type: ignore[union-attr]
+
+    check_only = finish(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="The check names a condition."),
+                CardsBlock(product_ids=[BATTERY]),
+            ],
+        ),
+        _pairing_facts(
+            condition="No hyphenated code here.",
+            bare_check="Use GW5.1/8.3/6.0/9.0-BAT-D-G20 only.",
+        ),
+        Route("pairing"),
+    )
+    assert "Compatible models:" not in check_only.blocks[0].text  # type: ignore[union-attr]
+    assert "BAT-D-G2" not in check_only.blocks[0].text  # type: ignore[union-attr]
+
+    service = plan(
+        "Do you deliver to Austria?",
+        [],
+        _reading("company_logistics_service"),
+        NONE,
+        "en",
+    )
+    handed = finish(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="We ship."),
+                CardsBlock(product_ids=[BATTERY]),
+            ],
+        ),
+        facts,
+        service,
+    )
+    assert [block.type for block in handed.blocks] == ["handoff"]
+    assert "Compatible models:" not in handed.blocks[0].summary  # type: ignore[union-attr]
+
+
+def test_a_bad_answer_still_fails_the_unchanged_row() -> None:
+    """The rubric and the row expects are unchanged. A known-bad answer fails."""
+    omitted = Turn(
+        meta={"grounded": True, "language": "en", "fallback": False, "failures": []},
+        blocks=[
+            {"type": "text", "text": "The GW10K-EHA-G20 pairs with a battery."},
+            {"type": "cards", "product_ids": [BATTERY]},
+            {"type": "ask", "field": "application", "options": ["home", "commercial"]},
+        ],
+        done=True,
+    )
+    missing = check(ROWS["b07-en"], omitted)
+    assert any("BAT-D-G2" in failure for failure in missing)
+
+    sunny = Turn(
+        meta={"grounded": True, "language": "en", "fallback": False, "failures": []},
+        blocks=[
+            {"type": "text", "text": "Tomorrow will be sunny."},
+            {"type": "ask", "field": "application", "options": ["home", "commercial"]},
+        ],
+        done=True,
+    )
+    weather = check(ROWS["b44-en"], sunny)
+    assert any("must not match" in failure for failure in weather)
+
+
+ESA_CONDITION_DE = (
+    "Das GoodWe-Datenblatt ESA 3–10 kW (EMEA, S. 2–3) nennt die Batteriemodule "
+    "GW5.1/8.3/6.0/9.0-BAT-D-G20 für die Leistungsmodule GW3K–10K-EHA-G20. Das "
+    "EMEA-Datenblatt nennt für die einphasige ESA die G20-Module; die "
+    "G21-Varianten stehen nicht in dieser Tabelle."
+)
+ESA_ROWS = ("b07-en", "b07-de")
+ESA_NEARBY = ("b08-en", "b08-de", "b06-en", "b06-de", "b10-en")
+
+
+def _graded(row: dict[str, Any], output: TurnOutput) -> list[str]:
+    turn = Turn(
+        meta={
+            "grounded": True,
+            "fallback": False,
+            "language": output.language,
+            "failures": [],
+        },
+        blocks=[block.model_dump() for block in output.blocks],
+        done=True,
+    )
+    return check(row, turn)
+
+
+@pytest.mark.parametrize("row_id", ESA_ROWS)
+def test_the_esa_battery_question_stamps_the_sentence_and_keeps_its_route(
+    row_id: str,
+) -> None:
+    row = ROWS[row_id]
+    route = plan(
+        str(row["question"]),
+        [],
+        _reading("pairing_compatibility"),
+        NONE,
+        str(row["lang"]),
+    )
+    assert route.name in ("products", "pairing", "model")
+    assert route.name != "scripted"
+    assert "esa battery" in route.reasons
+    assert route.answer == ESA_BATTERY[str(row["lang"])]
+    kept = with_page(
+        route,
+        PageContext(type="other"),
+        True,
+        False,
+        NONE,
+        str(row["question"]),
+    )
+    assert kept.answer == route.answer
+    assert "esa battery" in kept.reasons
+
+
+@pytest.mark.parametrize("row_id", ESA_NEARBY)
+def test_a_nearby_question_does_not_take_the_esa_sentence(row_id: str) -> None:
+    row = ROWS[row_id]
+    route = plan(
+        str(row["question"]),
+        [],
+        _reading("compare" if row_id.startswith("b08") else "pairing_compatibility"),
+        NONE,
+        str(row["lang"]),
+    )
+    assert "esa battery" not in route.reasons
+    assert ESA_BATTERY["en"] not in route.answer
+    assert ESA_BATTERY["de"] not in route.answer
+
+
+def test_the_esa_sentence_replaces_a_power_list_and_keeps_cards() -> None:
+    prose = (
+        "GW3K-EHA-G20 mit 3 kW, GW3.6K-EHA-G20 mit 3.6 kW, "
+        "GW5K-EHA-G20 mit 5 kW, GW6K-EHA-G20 mit 6 kW und "
+        "GW8K-EHA-G20 mit 8 kW."
+    )
+    route = plan(
+        str(ROWS["b07-de"]["question"]),
+        [],
+        _reading("pairing_compatibility"),
+        NONE,
+        "de",
+    )
+    done = finish(
+        TurnOutput(
+            language="de",
+            blocks=[
+                TextBlock(text=prose),
+                CardsBlock(product_ids=[6519, 6520, 3611, 3612]),
+                AskBlock(field="phase", options=["1", "3"]),
+            ],
+        ),
+        _pairing_facts(condition=ESA_CONDITION_DE),
+        route,
+    )
+    text = done.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert text.text == ESA_BATTERY["de"]
+    assert "G20-Module" not in text.text
+    assert "G21-Varianten" not in text.text
+    assert "3 kW" not in text.text
+    cards = next(block for block in done.blocks if isinstance(block, CardsBlock))
+    assert cards.product_ids == [6519, 6520, 3611, 3612]
+    assert untraceable_numbers(text.text, ["10"]) == []
+    assert "BAT-D-G2" in text.text
+    assert _graded(ROWS["b07-de"], done) == []
+
+    english = finish(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="GW3K-EHA-G20 with 3 kW and GW8K-EHA-G20 with 8 kW."),
+                CardsBlock(product_ids=[6519, 6520, 3611, 3612]),
+            ],
+        ),
+        _pairing_facts(),
+        plan(
+            str(ROWS["b07-en"]["question"]),
+            [],
+            _reading("pairing_compatibility"),
+            NONE,
+            "en",
+        ),
+    )
+    assert english.blocks[0] == TextBlock(text=ESA_BATTERY["en"])
+    assert _graded(ROWS["b07-en"], english) == []
+
+
+def test_a_products_route_without_the_esa_reason_keeps_the_power_list() -> None:
+    done = finish(
+        TurnOutput(
+            language="de",
+            blocks=[
+                TextBlock(text="GW3K-EHA-G20 mit 3 kW."),
+                CardsBlock(product_ids=[BATTERY]),
+            ],
+        ),
+        _pairing_facts(),
+        Route("products"),
+    )
+    text = done.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert "3 kW" in text.text
+
+
+def test_missing_esa_cards_follow_one_released_set_and_two_sets_add_none() -> None:
+    route = plan(
+        str(ROWS["b07-en"]["question"]),
+        [],
+        _reading("pairing_compatibility"),
+        NONE,
+        "en",
+    )
+    one = TurnFacts()
+    one.tool_calls.append(
+        {
+            "name": "linker/search-products",
+            "arguments": {"text": "GoodWe ESA"},
+            "ok": True,
+            "result": {
+                "qualified": [
+                    {
+                        "product_id": 3611,
+                        "pairings": [{"product_id": 6519, "verdict": "released"}],
+                    }
+                ]
+            },
+        }
+    )
+    filled = finish(
+        TurnOutput(language="en", blocks=[TextBlock(text="GW3K-EHA-G20 with 3 kW.")]),
+        one,
+        route,
+    )
+    cards = [block for block in filled.blocks if isinstance(block, CardsBlock)]
+    assert len(cards) == 1
+    assert cards[0].product_ids == [3611, 6519]
+    assert filled.blocks[0] == TextBlock(text=ESA_BATTERY["en"])
+
+    two = TurnFacts()
+    two.tool_calls.append(
+        {
+            "name": "linker/search-products",
+            "arguments": {"text": "GoodWe ESA"},
+            "ok": True,
+            "result": {
+                "qualified": [
+                    {
+                        "product_id": 3611,
+                        "pairings": [{"product_id": 6519, "verdict": "released"}],
+                    },
+                    {
+                        "product_id": 3556,
+                        "pairings": [{"product_id": 6520, "verdict": "released"}],
+                    },
+                ]
+            },
+        }
+    )
+    open_sets = finish(
+        TurnOutput(language="en", blocks=[TextBlock(text="GW3K-EHA-G20 with 3 kW.")]),
+        two,
+        route,
+    )
+    assert not any(isinstance(block, CardsBlock) for block in open_sets.blocks)
+    assert open_sets.blocks[0] == TextBlock(text=ESA_BATTERY["en"])
+
+
+def test_a_german_condition_does_not_append_prose_compounds() -> None:
+    done = finish(
+        TurnOutput(
+            language="de",
+            blocks=[
+                TextBlock(text="Die Bedingung nennt die Module."),
+                CardsBlock(product_ids=[BATTERY]),
+            ],
+        ),
+        _pairing_facts(condition=ESA_CONDITION_DE),
+        Route("products"),
+    )
+    text = done.blocks[0]
+    assert isinstance(text, TextBlock)
+    frame = text.text.split("Passende Modelle:")[-1]
+    assert "G20-Module" not in frame
+    assert "G21-Varianten" not in frame
+    assert "GW5.1/8.3/6.0/9.0-BAT-D-G20" in frame
+    assert "GW3K–10K-EHA-G20" in frame
+    assert german_is_clean(text.text)
+
+
+def test_a_two_segment_code_is_kept_and_a_prose_compound_is_not() -> None:
+    done = finish(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="The condition names a battery."),
+                CardsBlock(product_ids=[BATTERY]),
+            ],
+        ),
+        _pairing_facts(
+            condition=(
+                "Released codes: GW6.0-BAT-D-G20, H2-3K~6K-S2 and B2-5.0. "
+                "Not codes: G20-Module, Force-H3, BU5-Module."
+            )
+        ),
+        Route("products"),
+    )
+    text = done.blocks[0]
+    assert isinstance(text, TextBlock)
+    frame = text.text.split("Compatible models:")[-1]
+    assert "GW6.0-BAT-D-G20" in frame
+    assert "H2-3K~6K-S2" in frame
+    assert "B2-5.0" in frame
+    assert "G20-Module" not in frame
+    assert "Force-H3" not in frame
+    assert "BU5-Module" not in frame

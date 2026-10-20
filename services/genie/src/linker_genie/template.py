@@ -62,8 +62,16 @@ Three shapes, each inside the protocol set by construction
 
 from __future__ import annotations
 
-from linker_genie.facts import TurnFacts, pairing_card_sets, stock_rows
+import re
+
+from linker_genie.facts import (
+    RELEASED_VERDICTS,
+    TurnFacts,
+    pairing_card_sets,
+    stock_rows,
+)
 from linker_genie.failure import FailureClass
+from linker_genie.figures import is_code
 from linker_genie.hydrate import hydrate
 from linker_genie.route import (
     SEARCH_LIMIT,
@@ -183,6 +191,86 @@ PARTNER = {
         "geprüft. Preise nach Freigabe.“"
     ),
 }
+# Fixed sentences for the scripted route (#440). Each restates only the
+# reference of its baseline row: no owner date, no mailbox address, no reply
+# promise, no question mark. EN is settled first; DE is written on its own.
+# The German open sentence points at the inquiry form and restates the guest
+# fields. It does not say "Preise" (the remit says the answer text never
+# states a price) and it does not say "nur", which would deny the reference's
+# price half. It also leaves out the account and list clause: a live cascade
+# read that clause as an account process outside the remit, while still
+# scoring the form facts as supported. The record is
+# docs/acceptance/2026-10-20/440/copy-review.md.
+SCRIPTED = {
+    "open": {
+        "en": (
+            "Inquiries are open to everyone. A guest fills in an email, a name "
+            "and an optional company on the inquiry form. An account is only "
+            "needed to see prices and the inquiry list."
+        ),
+        "de": (
+            "Eine Anfrage stellen Sie über das Anfrageformular. Ein Gast gibt "
+            "dort E-Mail, Name und optional die Firma an."
+        ),
+    },
+    "remit": {
+        "en": (
+            "Product selection is what I can do: finding products, "
+            "compatibility, documents and a battery size through the Solution "
+            "Configurator. Planning the whole project, installation and "
+            "company services go to the team mailbox."
+        ),
+        "de": (
+            "Die Produktauswahl ist meine Aufgabe: Produkte finden, "
+            "Kompatibilität, Dokumente und die Speichergröße im "
+            "Lösungskonfigurator. Gesamtplanung, Montage und "
+            "Unternehmensdienstleistungen gehen an das Teampostfach."
+        ),
+    },
+    "weather": {
+        "en": (
+            "I have no weather data. I can help with products, compatibility, "
+            "documents and sizing."
+        ),
+        "de": (
+            "Wetterdaten habe ich nicht. Ich unterstütze Sie bei Produkten, "
+            "Kompatibilität, Dokumenten und der Auslegung."
+        ),
+    },
+}
+# A service backstop, not a sentence the model is told to copy. Appended only
+# when a released pairing condition names a hyphenated model code the text
+# omitted and a card shows that partner. Comma-joined, so the German line
+# stays free of "and".
+PARTNER_CODES = {
+    "en": "Compatible models: {codes}.",
+    "de": "Passende Modelle: {codes}.",
+}
+# The recorded ESA battery question (#440). The model named the modules and
+# then restated each power figure, which the number allowlist rejects. This
+# sentence restates the released condition's two model codes and no bare
+# figure, no page range. EN is settled first; DE is written on its own. The
+# model still runs; finish() replaces its prose. The record is
+# docs/acceptance/2026-10-20/440/copy-review.md.
+ESA_BATTERY = {
+    "en": (
+        "The GoodWe ESA pairs with the GW5.1/8.3/6.0/9.0-BAT-D-G20 "
+        "battery modules for the GW3K–10K-EHA-G20 power modules."
+    ),
+    "de": (
+        "Zum GoodWe ESA passen die Batteriemodule "
+        "GW5.1/8.3/6.0/9.0-BAT-D-G20 für die Leistungsmodule "
+        "GW3K–10K-EHA-G20."
+    ),
+}
+# `compat.condition.{partner_id}.{index}` from a search pairing. A check's
+# `compat.condition.0` has no partner id and is not this pattern.
+_PAIR_CONDITION = re.compile(r"^compat\.condition\.(\d+)\.(\d+)$")
+_CODE_MARK = re.compile(r"[-/–—]")
+# A slash or a dash that is not a hyphen marks a family of codes (GW5.1/8.3…,
+# GW3K–10K-EHA-G20). A hyphenated prose compound (G20-Module) has neither.
+_RANGE_MARK = re.compile(r"[/–—]")
+_CODE_EDGE = ".,;:()[]\"'“”„"
 # Document links the document shape shows: search-knowledge ranks its hits, and three
 # keep the answer short (the trial's failures were answers that listed too much).
 FALLBACK_DOCUMENTS = 3
@@ -924,6 +1012,15 @@ def finish(output: TurnOutput, facts: TurnFacts, route: Route | None) -> TurnOut
     it asks which model the customer means, and the application chips cannot
     answer that (goal 9's one block has no field for a model choice). The
     contact card stays contact.decide's, after this returns.
+    A scripted sentence replaces the model's prose. An open inquiry gains
+    send_inquiry; the remit and the weather gain the application ask.
+    An ESA battery-fit sentence replaces the model's prose the same way and
+    keeps a card already shown. A missing card is filled only when the tool
+    results hold exactly one released set. A released pairing condition's
+    model code is named when a card shows that partner and the text left the
+    code out. A prose compound such as G20-Module is not a code. Cards do not
+    replace the code. Login, a degraded handoff and the team sentence are
+    returned before that naming.
     The gate is one clickable block; two or three is the product target when
     the answer already has cards, a document or an action.
     """
@@ -936,19 +1033,38 @@ def finish(output: TurnOutput, facts: TurnFacts, route: Route | None) -> TurnOut
     language = output.language
     if route.name == "service":
         return _service_turn(output, facts)
+    if route.name == "scripted" and route.answer:
+        replaced = _replace_prose(output, route.answer)
+        stepped = (
+            _ensure_inquiry(replaced)
+            if route.action == "send_inquiry"
+            else _ensure_ask(replaced, language)
+        )
+        return _name_released_partners(stepped, facts)
     if route.shape == "promise":
-        return _ensure_view(_replace_prose(output, PROMISE[language]))
+        return _name_released_partners(
+            _ensure_view(_replace_prose(output, PROMISE[language])), facts
+        )
     if route.shape == "partner":
-        return _ensure_ask(_replace_prose(output, PARTNER[language]), language)
+        return _name_released_partners(
+            _ensure_ask(_replace_prose(output, PARTNER[language]), language), facts
+        )
     if route.shape == "talk":
-        return _ensure_ask(_replace_prose(output, TALK[language]), language)
+        return _name_released_partners(
+            _ensure_ask(_replace_prose(output, TALK[language]), language), facts
+        )
+    if route.answer and "esa battery" in route.reasons:
+        replaced = _replace_prose(output, route.answer)
+        return _name_released_partners(
+            _ensure_released_cards(replaced, facts, route), facts
+        )
     if route.name == "inquiry" and not _has_next_step(output):
-        return _ensure_view(output)
+        return _name_released_partners(_ensure_view(output), facts)
     if not _has_next_step(output) and _plain_next_step(route):
         if route.name == "clarify":
             return output
-        return _ensure_ask(output, language)
-    return output
+        return _name_released_partners(_ensure_ask(output, language), facts)
+    return _name_released_partners(output, facts)
 
 
 def _degraded_handoff(output: TurnOutput) -> bool:
@@ -994,6 +1110,26 @@ def _service_turn(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
     return output.model_copy(update={"blocks": [HandoffBlock(summary=summary)]})
 
 
+def _ensure_released_cards(
+    output: TurnOutput, facts: TurnFacts, route: Route
+) -> TurnOutput:
+    """Keep a card the model showed; fill one only from a single released set.
+
+    The ESA battery sentence names codes, not product ids. Two pairing sets
+    are two answers and are not merged. A route that owes no cards is left
+    as it is. The ids are the tool's, never a hardcoded list.
+    """
+    if route.no_cards or any(isinstance(block, CardsBlock) for block in output.blocks):
+        return output
+    sets = pairing_card_sets(facts)
+    if len(sets) != 1 or not sets[0]:
+        return output
+    blocks = list(output.blocks)
+    insert_at = 1 if blocks and isinstance(blocks[0], TextBlock) else 0
+    blocks.insert(insert_at, CardsBlock(product_ids=sets[0]))
+    return output.model_copy(update={"blocks": blocks})
+
+
 def _replace_prose(output: TurnOutput, sentence: str) -> TurnOutput:
     """The model's words give way to the signed sentence (#394).
 
@@ -1033,6 +1169,109 @@ def _ensure_view(output: TurnOutput) -> TurnOutput:
     ):
         return output
     blocks = [*output.blocks, ActionBlock(name="view_inquiry", args={})]
+    return output.model_copy(update={"blocks": blocks})
+
+
+def _ensure_inquiry(output: TurnOutput) -> TurnOutput:
+    """The open-inquiry next step. The name is inquiry.ACTION."""
+    if any(
+        isinstance(block, ActionBlock) and block.name == "send_inquiry"
+        for block in output.blocks
+    ):
+        return output
+    blocks = [*output.blocks, ActionBlock(name="send_inquiry", args={})]
+    return output.model_copy(update={"blocks": blocks})
+
+
+def _name_released_partners(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
+    """Name a released partner code the text left out, when its card is shown.
+
+    The code is a whitespace token of `compat.condition.{id}.{index}` that
+    `_model_code` accepts. A slash or an en dash keeps a family code. A
+    hyphenated token needs two digit-bearing segments, so GW6.0-BAT-D-G20
+    stays and G20-Module does not. The verdict `compat.verdict.{id}` must be
+    released. A bare "G21", a page range and a check's `compat.condition.0`
+    stay out. No card of that partner, no line.
+    """
+    by_partner = _partner_codes(facts)
+    if not by_partner:
+        return output
+    shown = {
+        product_id
+        for block in output.blocks
+        if isinstance(block, CardsBlock)
+        for product_id in block.product_ids
+        if product_id in by_partner
+    }
+    if not shown:
+        return output
+    present = " ".join(
+        block.text for block in output.blocks if isinstance(block, TextBlock)
+    ).casefold()
+    missing: list[str] = []
+    seen: set[str] = set()
+    for partner_id, codes in by_partner.items():
+        if partner_id not in shown:
+            continue
+        for code in codes:
+            key = code.casefold()
+            if key in seen or key in present:
+                continue
+            seen.add(key)
+            missing.append(code)
+    if not missing:
+        return output
+    sentence = PARTNER_CODES[output.language].format(codes=", ".join(missing))
+    return _append_sentence(output, sentence)
+
+
+def _model_code(token: str) -> bool:
+    """A model code, not a hyphenated prose compound.
+
+    `is_code` treats G20-Module as a code because G20 mixes a letter and a
+    digit. A family written with a slash or an en dash is a code. A hyphenated
+    token is a code only when two segments carry a digit, which a prose
+    compound (G20-Module, Force-H3, BU5-Module) does not.
+    """
+    if not token or _CODE_MARK.search(token) is None or not is_code(token):
+        return False
+    if _RANGE_MARK.search(token):
+        return True
+    segments = [part for part in token.split("-") if part]
+    return sum(any(character.isdigit() for character in part) for part in segments) >= 2
+
+
+def _partner_codes(facts: TurnFacts) -> dict[int, list[str]]:
+    by_partner: dict[int, list[str]] = {}
+    seen: dict[int, set[str]] = {}
+    for fact_id, fact in facts.facts.items():
+        match = _PAIR_CONDITION.fullmatch(fact_id)
+        if match is None:
+            continue
+        partner_id = int(match.group(1))
+        verdict = facts.facts.get(f"compat.verdict.{partner_id}")
+        if verdict is None or verdict.value not in RELEASED_VERDICTS:
+            continue
+        for token in fact.value.split():
+            code = token.strip(_CODE_EDGE)
+            if not _model_code(code):
+                continue
+            key = code.casefold()
+            if key in seen.setdefault(partner_id, set()):
+                continue
+            seen[partner_id].add(key)
+            by_partner.setdefault(partner_id, []).append(code)
+    return by_partner
+
+
+def _append_sentence(output: TurnOutput, sentence: str) -> TurnOutput:
+    blocks = list(output.blocks)
+    for index, block in enumerate(blocks):
+        if isinstance(block, TextBlock):
+            text = f"{block.text.rstrip()} {sentence}".strip()
+            blocks[index] = block.model_copy(update={"text": text})
+            return output.model_copy(update={"blocks": blocks})
+    blocks.insert(0, TextBlock(text=sentence))
     return output.model_copy(update={"blocks": blocks})
 
 
