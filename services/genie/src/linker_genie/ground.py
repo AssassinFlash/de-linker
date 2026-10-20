@@ -78,7 +78,14 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from linker_genie.facts import Fact, TurnFacts, stock_rows
+from linker_genie.facts import (
+    RELEASED_VERDICTS,
+    Fact,
+    TurnFacts,
+    pairing_card_sets,
+    pairing_entries,
+    stock_rows,
+)
 from linker_genie.figures import AMOUNT, is_code
 from linker_genie.hydrate import leftover_placeholders
 from linker_genie.route import (
@@ -293,6 +300,8 @@ def check(
     document_failures, document_citations = _documents(output, facts)
     failures.extend(document_failures)
     citations.extend(document_citations)
+    failures.extend(_pairing_answer_shape(output, facts))
+    failures.extend(_not_released_answer_shape(output, facts))
     failures.extend(_domain_words(output))
     failures.extend(_no_price_in_text(output))
     failures.extend(_no_amount_from_attachments(output, facts))
@@ -379,6 +388,99 @@ def _documents(
                     f"placeholder {fact_id!r} would print a URL; use a document block"
                 )
     return failures, citations
+
+
+def _pairing_answer_shape(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """The released search-pairing answer keeps its prompt shape (#396).
+
+    The prompt asks for one text block, one cards block, a document link and
+    no ask once those cards stand. Both languages therefore ship the same
+    block structure (b10). The subject is the searched product whose own
+    `pairings` released a partner; b10 shows the inverter, not the battery,
+    so requiring a shown partner would miss it. Any document the turn
+    returned satisfies the link; the model may link the battery document
+    instead of the pairing ref. A check-compatibility answer keeps its own
+    rules.
+    """
+    documents_for: dict[int, list[str]] = {}
+    has_release: set[int] = set()
+    for call in facts.tool_calls:
+        if not isinstance(call, dict) or not str(call.get("name") or "").endswith(
+            "search-products"
+        ):
+            continue
+        result = call.get("result")
+        if not isinstance(result, dict):
+            continue
+        for item in result.get("qualified") or []:
+            if not isinstance(item, dict):
+                continue
+            subject = item.get("product_id")
+            if not isinstance(subject, int):
+                continue
+            expected: list[str] = []
+            for pairing in pairing_entries(item) or []:
+                if pairing.get("verdict") not in RELEASED_VERDICTS:
+                    continue
+                has_release.add(subject)
+                paired = pairing.get("product_id")
+                if not isinstance(paired, int):
+                    continue
+                for index, document in enumerate(pairing.get("documents") or []):
+                    if (
+                        isinstance(document, dict)
+                        and isinstance(document.get("url"), str)
+                        and document["url"]
+                    ):
+                        expected.append(f"compat.document.{paired}.{index}")
+            if expected:
+                documents_for[subject] = expected
+    shown = {
+        product_id
+        for block in output.blocks
+        if isinstance(block, CardsBlock)
+        for product_id in block.product_ids
+    }
+    subjects = shown & has_release
+    if not subjects:
+        return []
+    expected_docs = {
+        ref for subject in subjects for ref in documents_for.get(subject, [])
+    }
+    failures: list[str] = []
+    if any(isinstance(block, AskBlock) for block in output.blocks):
+        failures.append("a released pairing answer asks no question")
+    linked = {block.ref for block in output.blocks if isinstance(block, DocumentBlock)}
+    if expected_docs and not linked:
+        failures.append("a released pairing answer links no document")
+    return failures
+
+
+def _not_released_answer_shape(output: TurnOutput, facts: TurnFacts) -> list[str]:
+    """A not_released answer links the check's document (#396).
+
+    The prompt makes the answer the condition placeholders plus the check's
+    compat.document refs. A turn with a released set is the card path and is
+    not this shape. The next step is the document; a model that drops it
+    would otherwise pass grounding and fail b09's next-step row.
+    """
+    verdict = facts.facts.get("compat.verdict")
+    if verdict is None or verdict.value != "not_released":
+        return []
+    if pairing_card_sets(facts):
+        return []
+    expected = {
+        ref
+        for ref in facts.documents
+        if ref.rpartition(".")[0] == "compat.document"
+        and ref.rpartition(".")[2].isdigit()
+    }
+    if not expected:
+        return []
+    linked = {block.ref for block in output.blocks if isinstance(block, DocumentBlock)}
+    if not linked & expected:
+        return ["a not_released answer links the check's document"]
+    return []
 
 
 def _no_price_in_text(output: TurnOutput) -> list[str]:
@@ -767,6 +869,28 @@ def _conflict_exempt(
     )
 
 
+def _placeholder_failure(facts: TurnFacts, fact_id: str) -> str:
+    """The retry reason, with the condition refs this turn returned (#396).
+
+    b09's model counted the conditions from one and repeated it on the retry.
+    Naming the refs it may use is the same help the document line gives.
+    """
+    message = f"placeholder {fact_id!r} is not in this turn's tools"
+    if not fact_id.startswith("compat.condition."):
+        return message
+    available = [
+        key
+        for key in facts.facts
+        if key.rpartition(".")[0] == "compat.condition"
+        and key.rpartition(".")[2].isdigit()
+    ]
+    if not available:
+        return message
+    return message + (
+        f" (this turn returned {', '.join(available)}; the first condition is index 0)"
+    )
+
+
 def _refs_and_placeholders(
     output: TurnOutput, facts: TurnFacts
 ) -> tuple[list[str], list[Citation]]:
@@ -777,9 +901,7 @@ def _refs_and_placeholders(
         if isinstance(block, TextBlock):
             for fact_id in leftover_placeholders(block.text):
                 if _fact_known(facts, fact_id) is None:
-                    failures.append(
-                        f"placeholder {fact_id!r} is not in this turn's tools"
-                    )
+                    failures.append(_placeholder_failure(facts, fact_id))
                     citations.append(Citation("placeholder", fact_id))
             for ref in block.refs:
                 if ref not in known:
@@ -790,9 +912,7 @@ def _refs_and_placeholders(
             # fact of the handoff-team tool), so its placeholder is checked.
             for fact_id in leftover_placeholders(block.summary):
                 if _fact_known(facts, fact_id) is None:
-                    failures.append(
-                        f"placeholder {fact_id!r} is not in this turn's tools"
-                    )
+                    failures.append(_placeholder_failure(facts, fact_id))
                     citations.append(Citation("placeholder", fact_id))
     return failures, citations
 

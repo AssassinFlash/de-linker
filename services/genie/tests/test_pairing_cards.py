@@ -16,6 +16,7 @@ from linker_genie.cycle import run
 from linker_genie.facts import TurnFacts, collect, merge
 from linker_genie.route import SEARCH_LIMIT, Route
 from linker_genie.schema import (
+    AskBlock,
     CardsBlock,
     DocumentBlock,
     Locale,
@@ -833,6 +834,86 @@ def test_a_not_released_pair_that_cites_outside_the_turn_still_gets_the_conditio
         block for block in result.output.blocks if isinstance(block, DocumentBlock)
     ]
     assert [block.ref for block in documents] == ["compat.document.0"]
+
+
+def test_a_not_released_answer_without_the_check_document_fails_grounding() -> None:
+    """The prompt's next step is the document; a text-only answer is a retry."""
+    from linker_genie.ground import check
+
+    result = check(
+        TurnOutput(
+            language="en",
+            blocks=[TextBlock(text="{fact:compat.condition.0}")],
+        ),
+        _not_released_facts("en"),
+    )
+    assert not result.ok
+    assert "links the check's document" in result.reason
+
+
+def test_a_missing_condition_index_names_the_refs_the_check_returned() -> None:
+    """The retry reason names the condition refs, so the second attempt can copy.
+
+    b09's model wrote compat.condition.2 where the check returned 0 and 1.
+    """
+    from linker_genie.ground import check
+
+    result = check(
+        TurnOutput(
+            language="en",
+            blocks=[TextBlock(text="{fact:compat.condition.2}")],
+        ),
+        _not_released_facts("en"),
+    )
+    assert not result.ok
+    assert "compat.condition.0" in result.reason
+    assert "first condition is index 0" in result.reason
+
+
+def test_a_released_search_pairing_answer_asks_no_question() -> None:
+    """The prompt says no ask once those cards stand (#396, b10)."""
+    from linker_genie.ground import check
+
+    output = _answer("en", "These are released.", list(RELEASED))
+    output.blocks.append(
+        AskBlock(field="phase", options=["single-phase", "three-phase"])
+    )
+    result = check(output, _facts(locale="en"))
+    assert not result.ok
+    assert "asks no question" in result.reason
+
+
+def test_a_released_search_pairing_answer_links_a_pairing_document() -> None:
+    """Every pairing document the search returned is linked (#396, b10)."""
+    from linker_genie.ground import check
+
+    payload = _payload()
+    payload["qualified"][0]["pairings"][0]["documents"] = [
+        {"url": "https://de-linker.com/manual.pdf"}
+    ]
+    facts = collect("linker/search-products", payload, "en")
+    search = CASE["search"]
+    facts.tool_calls.append(
+        {
+            "name": search["ability"],
+            "arguments": {
+                "device_class": search["device_class"],
+                "with_pairings": True,
+                "text": "H2-10K-T3",
+                "lang": "en",
+                "limit": search["limit"],
+            },
+            "ok": True,
+            "result": payload,
+        }
+    )
+    missing = check(_answer("en", "These are released.", list(RELEASED)), facts)
+    assert not missing.ok
+    assert "links no document" in missing.reason
+
+    linked = _answer("en", "These are released.", list(RELEASED))
+    linked.blocks.append(DocumentBlock(ref=f"compat.document.{BATTERIES[0]}.0"))
+    assert check(linked, facts).ok
 
 
 def test_two_pair_checks_are_not_merged() -> None:

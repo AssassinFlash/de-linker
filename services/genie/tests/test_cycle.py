@@ -21,6 +21,7 @@ from linker_genie.facts import Fact, TurnFacts, collect
 from linker_genie.route import Route
 from linker_genie.schema import (
     AskBlock,
+    Block,
     CardsBlock,
     DocumentBlock,
     HandoffBlock,
@@ -432,7 +433,7 @@ def test_an_outside_document_does_not_drop_the_ask_or_the_valid_document() -> No
     ) -> tuple[TurnOutput, TurnFacts]:
         nonlocal calls
         calls += 1
-        blocks = [
+        blocks: list[Block] = [
             TextBlock(
                 text="These inverters are released.",
                 refs=["6528", "3612"],
@@ -472,7 +473,7 @@ def test_an_outside_document_on_a_german_turn_is_retried_in_german() -> None:
     def generate(
         _request: TurnRequest, retry: str | None
     ) -> tuple[TurnOutput, TurnFacts]:
-        blocks = [
+        blocks: list[Block] = [
             TextBlock(text="Siehe das Handbuch.", refs=["4107"]),
             CardsBlock(product_ids=[4107]),
         ]
