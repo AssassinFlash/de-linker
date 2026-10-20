@@ -41,15 +41,19 @@ from linker_genie.failure import is_row
 from linker_genie.gate import Gate
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
-from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup
+from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup, fill
+from linker_genie.route import simple_stock
 from linker_genie.schema import (
     MAX_REQUEST_BYTES,
+    Block,
+    HandoffBlock,
     TextBlock,
     TurnOutput,
     TurnRequest,
     VoteRequest,
 )
 from linker_genie.storeapi import StoreVocabulary
+from linker_genie.template import fallback, stock_answer, team_sentence
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 
@@ -223,11 +227,13 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
                 offer = None
             else:
                 prepared.log["contact"] = offer.reason
-    # A request for a person, a parts list, and a short-code clarification are
-    # answered by the service alone: no model ran (model-routing audits read
-    # provider/model). The four model channels are unchanged; this route is a
-    # sentence, not a channel.
-    code_made = prepared.route.name in ("person", "parts", "clarify")
+    # A request for a person, a parts list, a short-code clarification, and a
+    # simple stock status are answered by the service alone: no model ran
+    # (model-routing audits read provider/model). The four model channels are
+    # unchanged; this route is a sentence, not a channel.
+    code_made = prepared.route.name in ("person", "parts", "clarify") or (
+        simple_stock(prepared.route) and result.attempts == 0
+    )
     with timing.phase(clock, timing.LOG):
         turn_id = turn_log().record(
             conversation_id=body.conversation_id,
@@ -348,6 +354,60 @@ def _answer(
                 attempts=0,
             ),
             block.model_dump(),
+        )
+    # A stock status is the page's sentence (#415). The model handed the same
+    # question to the team, and grounding then refused it. One shared flag is
+    # that sentence. Differing flags name both. No named product asks which
+    # one. Delivery in the same message is the team sentence beside the stock.
+    if simple_stock(prepared.route):
+        sentence = team_sentence(prepared.facts) if prepared.route.delivery else None
+        missing_delivery = prepared.route.delivery and sentence is None
+        failures = ("delivery not handed to the team",) if missing_delivery else ()
+        product_calls = [
+            call
+            for call in prepared.route.calls
+            if not call.ability.endswith("handoff-team")
+        ]
+        if prepared.route.answer and not product_calls:
+            blocks: list[Block] = [TextBlock(text=prepared.route.answer)]
+            if sentence is not None:
+                blocks.append(HandoffBlock(summary=sentence))
+            return (
+                TurnResult(
+                    output=TurnOutput(language=language, blocks=blocks),
+                    facts=prepared.facts,
+                    grounded=not missing_delivery,
+                    failures=failures,
+                    fallback=False,
+                    attempts=0,
+                ),
+                None,
+            )
+        answered = stock_answer(prepared.facts, language, handoff=sentence)
+        if answered is not None:
+            filled, facts, price_failures = fill(answered, prepared.facts, commerce)
+            return (
+                TurnResult(
+                    output=filled,
+                    facts=facts,
+                    grounded=not missing_delivery,
+                    failures=failures,
+                    fallback=False,
+                    attempts=0,
+                    price_failures=tuple(price_failures),
+                ),
+                None,
+            )
+        return (
+            TurnResult(
+                output=fallback(prepared.facts, language, prepared.route),
+                facts=prepared.facts,
+                grounded=False,
+                failures=("stock status unavailable",),
+                fallback=True,
+                attempts=0,
+            ),
+            None,
         )
     generate = getattr(request.app.state, "generate", None) or make_generate(
         ability_client(), prepared=prepared, pages=page_reader().read, clock=clock

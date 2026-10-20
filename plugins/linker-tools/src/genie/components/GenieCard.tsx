@@ -100,16 +100,17 @@ export function GenieCard( {
 			price={ priceLine( price ) }
 			url={ product.permalink }
 			image={ product.images[ 0 ] }
-			badges={
+			badges={ [
 				product.is_in_stock
-					? [
-							{
-								tone: 'ok' as const,
-								text: __( 'In stock', 'linker-tools' ),
-							},
-						]
-					: []
-			}
+					? {
+							tone: 'ok' as const,
+							text: __( 'In stock', 'linker-tools' ),
+						}
+					: {
+							tone: 'warn' as const,
+							text: __( 'Currently unavailable', 'linker-tools' ),
+						},
+			] }
 			status={ status }
 			actions={ [
 				<button

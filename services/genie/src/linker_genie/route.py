@@ -23,6 +23,7 @@ from linker_genie.lexicon import MAX_WORDS, MIN_CODE, Match, _words, normalize
 from linker_genie.nameplate import Identified
 from linker_genie.prefill import stated_size_hint
 from linker_genie.schema import PageContext
+from linker_genie.stock import asks, explicit, phrase
 from linker_genie.tools import MAX_TOOL_CALLS, READ_PAGE
 
 # Jev's intent confidence from which code acts on it: the starting threshold measured
@@ -59,9 +60,12 @@ _BATTERIES = ("home-storage", "battery-systems")
 DOCUMENTS_SPARE = 1
 # A delivery, shipping or freight question is the team's (owner 2026-10-05), also when
 # it is asked about a page and Jev reads it otherwise: these words, EN and DE.
+# `lieferbar` is one of them (#415). with_page() therefore sends every page
+# question that contains it, and is not itself a stock route, to the team.
+# That is wider than a stock question. Recorded in docs/specs/69-stock.md.
 _LOGISTICS = re.compile(
     r"\b(?:deliver(?:y|ies)|shipping|shipment|freight|lieferung(?:en)?|lieferzeit(?:en)?|"
-    r"lieferkosten|versand(?:kosten)?|fracht(?:kosten)?)\b",
+    r"lieferbar|lieferkosten|versand(?:kosten)?|fracht(?:kosten)?)\b",
     re.IGNORECASE,
 )
 
@@ -91,6 +95,56 @@ ACCOUNT_HINT = (
 SERVICE_HINT = (
     "This is a company, delivery or service question: answer with the "
     "handoff block from the handoff-team result."
+)
+# A stock-status question is the product's status, not the team mailbox
+# (#415, spec 69). The sentences are the product page's (stock.phrase).
+# Quantities stay out.
+STOCK_HINT = (
+    "This is a stock-status question, not a company, delivery or logistics "
+    "question, and not a question for the team. Read commerce.in_stock. "
+    f'When it is true, say exactly "{phrase("en", True)}". When it is false, '
+    f'say exactly "{phrase("en", False)}". A German answer says '
+    f'"{phrase("de", True)}" or "{phrase("de", False)}". Never state a '
+    "quantity. Show the product as a card. The price stays on the card. "
+    "When the products differ, do not state one status for all of them."
+)
+# A stock question that also asks about delivery. Delivery stays out of scope
+# (owner 2026-10-05): the stock half is answered, and this part is the team
+# sentence from handoff-team.
+DELIVERY_WITH_STOCK = (
+    " The message also asks about delivery. Delivery is out of scope: add the "
+    "handoff block from the handoff-team result for that part, and still "
+    "answer the stock status. Do not drop either part."
+)
+# The message asks something besides the stock status (#415 review round 3).
+# The deterministic status answer would drop that half, so the model writes
+# the turn: the stock status is one part of it, from commerce.in_stock, beside
+# the normal answer. Delivery keeps its own shape (DELIVERY_WITH_STOCK).
+STOCK_BESIDE_ANSWER = (
+    " The message asks something else beside the stock status. Answer the whole "
+    "message: the other question from the product data and the documents, and "
+    "the stock status as one part of the answer, saying exactly "
+    f'"{phrase("en", True)}" or "{phrase("en", False)}" '
+    f'(German: "{phrase("de", True)}" or "{phrase("de", False)}"). State no '
+    "quantity, and do not hand this question to the team. Show the product as "
+    "a card; the price stays on the card."
+)
+# No product was named. search-products has no stock filter, so the turn asks
+# which product to check instead of stating one status for the catalogue.
+WHICH_PRODUCT = {
+    "en": "Which product should I check the stock for?",
+    "de": "Für welches Produkt soll ich den Lagerstatus prüfen?",
+}
+# Confident readings that already own the turn. A stock word inside a
+# document, pairing, comparison, sizing or inquiry question stays there.
+_STOCK_YIELDS = frozenset(
+    {
+        "documents_specs",
+        "pairing_compatibility",
+        "compare",
+        "sizing",
+        "inquiry_status",
+    }
 )
 # Smallest, largest and cheapest questions aggregate the qualified catalogue
 # in search-products (#368). Dossier §1.1 has only a directional note on
@@ -411,6 +465,16 @@ class Route:
     no_cards: bool = False
     # The answer may not be the team handoff (a product or document question).
     no_handoff: bool = False
+    # The customer asked whether a product is in stock (#415). The answer is
+    # the page's status sentence, never a quantity and never the team mailbox.
+    stock: bool = False
+    # The message also asks something else (#415 review round 3). The status
+    # is one part of the model's answer; the service's deterministic status
+    # answer is only the whole-question case (simple_stock).
+    stock_beside: bool = False
+    # The same message also asks about delivery. Stock is answered; delivery
+    # is the team sentence (owner 2026-10-05). Not a second route.
+    delivery: bool = False
     # A sentence for the model about what the code did and what is expected.
     hint: str = ""
     reasons: tuple[str, ...] = field(default=())
@@ -418,7 +482,8 @@ class Route:
     dropped: tuple[Call, ...] = ()
     # Models the customer named, in the order of the message (#363, #364, #367).
     named_models: tuple[NamedModel, ...] = ()
-    # The service's own sentence for a `clarify` route. Empty on every other route.
+    # The service's own sentence: a `clarify` route, or a stock question that
+    # names no product. Empty when the model or another template writes the turn.
     answer: str = ""
 
     def as_log(self) -> dict[str, Any]:
@@ -429,8 +494,13 @@ class Route:
             "action": self.action,
             "no_cards": self.no_cards,
             "no_handoff": self.no_handoff,
+            "stock": self.stock,
             "reasons": list(self.reasons),
         }
+        if self.delivery:
+            log["delivery"] = True
+        if self.stock_beside:
+            log["stock_beside"] = True
         if self.dropped:
             log["dropped_calls"] = [_call_log(c) for c in self.dropped]
         if self.named_models:
@@ -505,16 +575,6 @@ def plan(
         # Frustration on another intent is answered as routed, with the contact
         # offer beside it (contact.decide).
         return person(reasons)
-    if intent == "company_logistics_service":
-        return service(message, reasons)
-    if intent == "inquiry_status":
-        return Route(
-            "inquiry",
-            (Call("linker/inquiry-status", {}),),
-            no_handoff=True,
-            hint="The inquiry-status result is fetched; answer from it.",
-            reasons=tuple(reasons),
-        )
     # A brand or series extreme is one aggregate (#368), not a brand/model
     # conflict. Two catalog models stay on the per-model searches for
     # smallest and largest: one class aggregate would hide those codes. An
@@ -533,6 +593,39 @@ def plan(
     unknown_codes = _unknown_codes(message, subject)
     brand_conflict = _conflicts_with_written_brand(written, matches, subject)
     aggregate = None if brand_conflict else extreme_input(message, matches, lang)
+    # The extreme is the turn in the same cases the blocks below return it:
+    # a composite (an unknown code, or a cheapest question over several
+    # written models), or a single aggregate over at most one written model.
+    extreme = aggregate is not None and (
+        unknown_codes or not several_written or aggregate.get("extreme") == "cheapest"
+    )
+    # Stock status beats the logistics handoff (#415). Jev files "in stock" as
+    # company_logistics_service; the product page already knows the status.
+    # A catalogue extreme, and a confident document, pairing, comparison,
+    # sizing or inquiry reading, keep the route they already have.
+    if (
+        _takes_stock(message, matches, subject)
+        and intent not in _STOCK_YIELDS
+        and not extreme
+    ):
+        return _stock_route(
+            message,
+            matches,
+            subject,
+            lang,
+            reasons,
+            whole=_asks_only_stock(message, matches),
+        )
+    if intent == "company_logistics_service":
+        return service(message, reasons)
+    if intent == "inquiry_status":
+        return Route(
+            "inquiry",
+            (Call("linker/inquiry-status", {}),),
+            no_handoff=True,
+            hint="The inquiry-status result is fetched; answer from it.",
+            reasons=tuple(reasons),
+        )
     if aggregate is not None and (
         unknown_codes or (several_written and aggregate.get("extreme") == "cheapest")
     ):
@@ -1692,6 +1785,288 @@ def _pairing(subject: Subject, lang: str) -> Call | None:
     return None
 
 
+def simple_stock(route: Route) -> bool:
+    """Whether the service can state this stock turn without the model.
+
+    Only the whole question being about stock is the deterministic case
+    (#415 review round 3): when the message also asks something else, the
+    model answers the whole message and the status is one part of it
+    (`stock_beside`). A brand conflict, an unknown code, or several models
+    keep the clarification the product-word path already writes.
+    """
+    if not route.stock or route.stock_beside:
+        return False
+    notes = route.named_models
+    if any(note.is_conflict or note.unknown for note in notes):
+        return False
+    return not several(notes)
+
+
+def _takes_stock(message: str, matches: list[Match], subject: Subject) -> bool:
+    """Whether this message is a stock question the product path should answer.
+
+    "available", "unavailable", "verfügbar" and "ausverkauft" are stock
+    asks when a product is named. "Is 3-phase available?" names no product
+    and stays where Jev put it. An explicit status word ("in stock",
+    "auf Lager", "stock status", "Lagerstatus") is stock either way,
+    including "What do you have in stock?" with no product.
+    """
+    if not asks(message):
+        return False
+    if explicit(message):
+        return True
+    return _about_a_product(message, matches, subject)
+
+
+def _about_a_product(message: str, matches: list[Match], subject: Subject) -> bool:
+    """Whether the message names a product the catalogue can be asked about.
+
+    A product word in the message, or an unknown model code, names one. The
+    page's product id alone does not: "Is 3-phase available?" on a product
+    page asks about a specification, and stays where Jev put it (the test
+    test_available_without_a_product_stays_off_the_stock_route). A pointer at
+    the page's product ("Is it available?") does name it.
+    """
+    if any(match.kind in ("brand", "series", "model", "category") for match in matches):
+        return True
+    if _unknown_codes(message, subject):
+        return True
+    return bool(subject.ids) and _PAGE_POINTER.search(message) is not None
+
+
+# A question on a product page that points at the page's product ("Is it
+# available?") is about that product. A specification ("Is 3-phase
+# available?") is not (#415 review round 3).
+_PAGE_POINTER = re.compile(
+    r"\b(?:it|this|that|these|those|they|them|"
+    r"der|die|das|den|dem|es|sie)\b",
+    re.IGNORECASE,
+)
+# Clause separators of a message: a question mark, exclamation mark, semicolon
+# or comma, a sentence-ending full stop (not the full stop inside a model code
+# like GW99.99K-ET-G10), and the conjunctions that join two asks
+# ("efficiency ... and is it in stock").
+_ASK_CLAUSE = re.compile(r"[?？!;,，]|\.(?=\s|$)|\band\b|\bund\b", re.IGNORECASE)
+# Words that carry no ask of their own, EN and DE. A clause that holds only
+# these beside the product words is a mention of the product, not a second
+# question.
+_STOCK_FILLER = frozenset(
+    {
+        "a",
+        "an",
+        "the",
+        "what",
+        "which",
+        "is",
+        "are",
+        "was",
+        "were",
+        "do",
+        "does",
+        "did",
+        "have",
+        "has",
+        "had",
+        "can",
+        "could",
+        "would",
+        "will",
+        "you",
+        "your",
+        "i",
+        "we",
+        "me",
+        "my",
+        "our",
+        "it",
+        "its",
+        "this",
+        "that",
+        "these",
+        "those",
+        "of",
+        "for",
+        "to",
+        "please",
+        "tell",
+        "say",
+        "if",
+        "whether",
+        "currently",
+        "right",
+        "now",
+        "still",
+        "actually",
+        "and",
+        "or",
+        "also",
+        "about",
+        "on",
+        "at",
+        "in",
+        "der",
+        "die",
+        "das",
+        "den",
+        "dem",
+        "des",
+        "ein",
+        "eine",
+        "einen",
+        "einem",
+        "einer",
+        "ist",
+        "sind",
+        "war",
+        "waren",
+        "wie",
+        "welche",
+        "welcher",
+        "welches",
+        "sie",
+        "er",
+        "es",
+        "ich",
+        "wir",
+        "mir",
+        "mich",
+        "uns",
+        "bitte",
+        "gerade",
+        "aktuell",
+        "zurzeit",
+        "noch",
+        "ob",
+        "und",
+        "oder",
+        "haben",
+        "hat",
+        "habt",
+        "kann",
+        "können",
+        "koennen",
+        "koennte",
+        "würde",
+        "wuerde",
+        "gibt",
+        "zu",
+        "im",
+        "am",
+        "für",
+        "fuer",
+        "von",
+        "vom",
+        "mit",
+        "bei",
+        "auch",
+    }
+)
+
+
+def _asks_only_stock(message: str, matches: list[Match]) -> bool:
+    """Whether every clause of the message asks about stock status or delivery.
+
+    "What is the efficiency of the SAJ H2-10K-T3 and is it in stock?" has an
+    efficiency clause, so the deterministic status answer would drop that half
+    (#415 review round 3). A delivery clause does not count against the whole
+    question: delivery is already the team sentence beside the stock
+    (DELIVERY_WITH_STOCK).
+    """
+    clauses = [clause.strip() for clause in _ASK_CLAUSE.split(message)]
+    clauses = [clause for clause in clauses if clause]
+    if not clauses:
+        return False
+    for clause in clauses:
+        if asks(clause) or _LOGISTICS.search(clause):
+            continue
+        if _only_product_words(clause, matches):
+            continue
+        return False
+    return True
+
+
+def _only_product_words(clause: str, matches: list[Match]) -> bool:
+    """Whether this clause is a product mention and nothing else.
+
+    The matched product words are removed, then the clause is only filler
+    ("the SAJ H2-10K-T3", "What about the H2-10K-T3?"). Any other word is a
+    second ask.
+    """
+    rest = clause
+    for match in matches:
+        for written in (match.words, match.value):
+            if written:
+                rest = re.sub(re.escape(written), " ", rest, flags=re.IGNORECASE)
+    tokens = [token.casefold() for token in re.split(r"[^\w]+", rest) if token]
+    return all(token in _STOCK_FILLER for token in tokens)
+
+
+def _stock_route(
+    message: str,
+    matches: list[Match],
+    subject: Subject,
+    lang: str,
+    reasons: list[str],
+    *,
+    whole: bool,
+) -> Route:
+    """The product search for a stock-status question, then the status hint.
+
+    `whole` is true when every clause asks stock or delivery: the service can
+    state the status itself (simple_stock). Otherwise the message also asks
+    something else, the model answers the whole message, and the status is
+    one part of it (STOCK_BESIDE_ANSWER, #415 review round 3).
+
+    A page product with no model word in the message is read with get-product.
+    The calls are the same searches a product question would make, so a
+    conflict or an unknown code still reaches the clarification. No named
+    product asks which one to check: search-products cannot filter by stock.
+    A delivery word in the same message keeps a handoff-team call. Delivery
+    is the team sentence; the stock half is still answered.
+    """
+    calls, notes = _search_plan(matches, lang, subject, message)
+    if not calls and subject.ids:
+        calls = tuple(
+            Call("linker/get-product", {"product_id": product_id, "lang": lang})
+            for product_id in subject.ids[:MAX_TOOL_CALLS]
+        )
+    delivery = _LOGISTICS.search(message) is not None
+    if delivery:
+        # Keep the team call inside the turn's budget. A later product search
+        # is the one that yields, and its note is marked not searched.
+        calls = calls[: MAX_TOOL_CALLS - 1]
+        notes = _notes_after_calls(notes, calls)
+        calls = (
+            *calls,
+            Call("linker/handoff-team", {"summary": message}),
+        )
+    product_calls = tuple(
+        call for call in calls if not call.ability.endswith("handoff-team")
+    )
+    which = ""
+    if whole and not product_calls and not notes:
+        which = WHICH_PRODUCT["de" if lang.startswith("de") else "en"]
+        reasons.append("no product named")
+    hint = (STOCK_HINT if whole else STOCK_BESIDE_ANSWER) + _model_hint(notes)
+    if delivery:
+        hint += DELIVERY_WITH_STOCK
+    label = "stock status" if whole else "stock status beside another answer"
+    return Route(
+        "products",
+        calls,
+        show_products=not which,
+        no_cards=bool(which),
+        no_handoff=not delivery,
+        stock=True,
+        stock_beside=not whole,
+        delivery=delivery,
+        hint=hint,
+        reasons=(*reasons, label, *_note_reasons(notes)),
+        named_models=notes,
+        answer=which,
+    )
+
+
 def service(message: str, reasons: list[str]) -> Route:
     """A company, delivery or service question: the team sentence (owner 2026-10-05)."""
     return Route(
@@ -1726,7 +2101,7 @@ def with_page(
     """
     if not about_page or route.name in ("person", "service", "inquiry", "clarify"):
         return route
-    if _LOGISTICS.search(message):
+    if _LOGISTICS.search(message) and not route.stock:
         return service(message, [*route.reasons, "about this page: delivery"])
     added: list[Call] = []
     beyond: list[Call] = []
@@ -1773,6 +2148,9 @@ def with_page(
         action=route.action,
         no_cards=route.no_cards,
         no_handoff=route.no_handoff,
+        stock=route.stock,
+        stock_beside=route.stock_beside,
+        delivery=route.delivery,
         hint=(base + hint).strip(),
         reasons=(*route.reasons, f"about this page: {page.type}"),
         dropped=dropped,

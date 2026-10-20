@@ -152,6 +152,42 @@ final class ProductCommerceTest extends TestCase {
 	}
 
 	/**
+	 * A missing product is not out of stock. hidden() sets in_stock false and
+	 * omits price_line. Genie's marker of a real product is the row's title,
+	 * URL or SKU (facts._real_product), not this object's price line: the
+	 * empty record GetProduct returns beside hidden() carries none of the
+	 * three (GetProductTest). A published product always carries the line.
+	 */
+	public function test_hidden_omits_the_price_line_so_it_is_not_out_of_stock(): void {
+		$hidden = ProductCommerce::hidden();
+
+		$this->assertSame(
+			array(
+				'price_visible' => false,
+				'in_stock'      => false,
+				'rfq_only'      => false,
+			),
+			$hidden
+		);
+		$this->assertArrayNotHasKey( 'price_line', $hidden );
+	}
+
+	/**
+	 * A published product's commerce includes the page's price line. The line
+	 * is the card's price, not the stock marker: Genie may state the flag
+	 * because the record beside it carries a title and a URL
+	 * (facts._real_product).
+	 */
+	public function test_a_published_product_carries_the_price_line(): void {
+		$this->visitor( null );
+
+		$commerce = ProductCommerce::of( 4107, $this->product() );
+
+		$this->assertArrayHasKey( 'price_line', $commerce );
+		$this->assertNotSame( '', $commerce['price_line'] ?? null );
+	}
+
+	/**
 	 * The schema names every field the object can carry, and nothing else.
 	 */
 	public function test_the_schema_lists_the_price_line_and_its_reasons(): void {
