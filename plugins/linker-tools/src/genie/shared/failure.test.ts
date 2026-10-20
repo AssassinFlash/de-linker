@@ -247,7 +247,7 @@ test( 'a record the store cannot hold whole drops the file and its claim', () =>
 		`Attach ${ PDF.name } again. It could not be kept for another try.`
 	);
 	expect( omittedFileNotice( [ PDF.name, 'rows.csv' ] ) ).toBe(
-		'Attach these again: nameplate.pdf, rows.csv. They could not be kept for another try.'
+		'Attach these files again. They could not be kept for another try.'
 	);
 	expect( questionForRetry( 'upstream', written.draft ?? DRAFT, [] ) ).toBe(
 		DRAFT.text
@@ -378,10 +378,7 @@ test( 'refusal and conflict stay out of the failure sentence', () => {
 	).toBe( 'conflict' );
 	expect(
 		settleTurnFailure( new UnfinishedStreamError(), [], DRAFT )
-	).toMatchObject( {
-		action: 'failed',
-		view: { chips: [ PDF ], field: '' },
-	} );
+	).toEqual( { action: 'failed', kind: 'truncated' } );
 } );
 
 test( 'a record this module did not write is ignored', () => {

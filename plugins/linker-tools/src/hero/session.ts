@@ -152,24 +152,10 @@ export class HeroSession {
 		// Every send, not only the first: the dock may have written a turn
 		// while this view was folded (or both surfaces are open).
 		await this.refresh();
-		const next: TurnMessage[] = [
-			...this.messagesValue,
-			{ role: 'user', content: text },
-		];
-		const answer = await this.send(
-			this.config.turnUrl,
-			this.config.nonce,
-			this.config.locale,
-			next,
-			this.config.page,
+		return this.deliver(
+			[ ...this.messagesValue, { role: 'user', content: text } ],
 			uploads
 		);
-		this.messagesValue = next.concat( assistantMessage( answer ) );
-		this.turnValue = answer;
-		return {
-			...this.snapshot(),
-			answer,
-		};
 	}
 
 	/**
@@ -189,15 +175,36 @@ export class HeroSession {
 		inquiries?: SentInquiryCard[];
 	} > {
 		await this.refresh();
-		const next = retryMessages( this.messagesValue, text );
-		const answer = await this.send(
-			this.config.turnUrl,
-			this.config.nonce,
-			this.config.locale,
-			next,
-			this.config.page,
+		return this.deliver(
+			retryMessages( this.messagesValue, text ),
 			uploads
 		);
+	}
+
+	/**
+	 * Posts `next` and keeps the answer. `ask` always appends; `retry`
+	 * appends only when the stored thread does not already end with it.
+	 *
+	 * @param next    The thread to send.
+	 * @param uploads The turn's files.
+	 */
+	private async deliver(
+		next: TurnMessage[],
+		uploads: Upload[]
+	): Promise< {
+		messages: TurnMessage[];
+		answer: Turn;
+		contacts?: SentContact[];
+		inquiries?: SentInquiryCard[];
+	} > {
+		const answer = await this.send( {
+			turnUrl: this.config.turnUrl,
+			nonce: this.config.nonce,
+			locale: this.config.locale,
+			messages: next,
+			page: this.config.page,
+			uploads,
+		} );
 		this.messagesValue = next.concat( assistantMessage( answer ) );
 		this.turnValue = answer;
 		return {

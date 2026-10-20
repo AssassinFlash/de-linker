@@ -320,28 +320,45 @@ export interface ConversationList {
 	ok: boolean;
 }
 
+/** One turn. The test seams sit on the object, not further positional arguments. */
+export interface TurnRequest {
+	/** Proxy route URL. */
+	turnUrl: string;
+	/** wp_rest nonce. */
+	nonce: string;
+	/** Page language. */
+	locale: Locale;
+	/** Thread so far, oldest first. */
+	messages: TurnMessage[];
+	/** Page context. */
+	page: PageContext;
+	/** The files of this turn, apart from the messages (#236). */
+	uploads?: Upload[];
+	/** Fetch for tests. */
+	fetcher?: Fetch;
+	/**
+	 * Aborts a connection that has not answered. The default is
+	 * `TURN_TIMEOUT_MS`.
+	 */
+	timeoutMs?: number;
+}
+
 /**
  * Sends one message and parses the SSE answer.
  *
- * @param turnUrl   Proxy route URL.
- * @param nonce     wp_rest nonce.
- * @param locale    Page language.
- * @param messages  Thread so far, oldest first.
- * @param page      Page context.
- * @param uploads   The files of this turn, apart from the messages (#236).
- * @param fetcher   Fetch for tests.
- * @param timeoutMs Aborts a connection that has not answered. The default is `TURN_TIMEOUT_MS`.
+ * @param request The turn, and the test seams.
  */
-export async function sendTurn(
-	turnUrl: string,
-	nonce: string,
-	locale: Locale,
-	messages: TurnMessage[],
-	page: PageContext,
-	uploads: Upload[] = [],
-	fetcher: Fetch = ( ...args ) => fetch( ...args ),
-	timeoutMs: number = TURN_TIMEOUT_MS
-): Promise< Turn > {
+export async function sendTurn( request: TurnRequest ): Promise< Turn > {
+	const {
+		turnUrl,
+		nonce,
+		locale,
+		messages,
+		page,
+		uploads = [],
+		fetcher = ( ...args ) => fetch( ...args ),
+		timeoutMs = TURN_TIMEOUT_MS,
+	} = request;
 	const controller = new AbortController();
 	let timer: ReturnType< typeof setTimeout > | undefined;
 	let won = false;
@@ -351,38 +368,42 @@ export async function sendTurn(
 			reject( new DOMException( 'The turn timed out.', 'AbortError' ) );
 		}, timeoutMs );
 	} );
-	// A fetch that rejects after the timer won must not surface later.
-	const request = Promise.resolve(
-		fetcher( turnUrl, {
-			method: 'POST',
-			credentials: 'same-origin',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce,
-			},
-			body: JSON.stringify( {
-				locale,
-				messages: messages.map( ( { role, content } ) => ( {
-					role,
-					content,
-				} ) ),
-				page,
-				...( uploads.length > 0 ? { attachments: uploads } : {} ),
-			} ),
-			signal: controller.signal,
-		} )
-	).then(
-		( response ) => response,
-		( error: unknown ) => {
-			if ( won ) {
-				return new Promise< Response >( () => undefined );
+	// `fetcher` is called inside the promise. A throw before the request
+	// leaves is a rejection, so the timer below is cleared with every other
+	// failure. Promise.resolve(fetcher()) would let that throw escape first.
+	const attempt = Promise.resolve()
+		.then( () =>
+			fetcher( turnUrl, {
+				method: 'POST',
+				credentials: 'same-origin',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': nonce,
+				},
+				body: JSON.stringify( {
+					locale,
+					messages: messages.map( ( { role, content } ) => ( {
+						role,
+						content,
+					} ) ),
+					page,
+					...( uploads.length > 0 ? { attachments: uploads } : {} ),
+				} ),
+				signal: controller.signal,
+			} )
+		)
+		.then(
+			( response ) => response,
+			( error: unknown ) => {
+				if ( won ) {
+					return new Promise< Response >( () => undefined );
+				}
+				throw error;
 			}
-			throw error;
-		}
-	);
+		);
 	let response: Response;
 	try {
-		response = await Promise.race( [ request, timedOut ] );
+		response = await Promise.race( [ attempt, timedOut ] );
 		won = true;
 	} finally {
 		won = true;

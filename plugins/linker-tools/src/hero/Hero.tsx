@@ -30,6 +30,7 @@ import {
 	type Turn,
 	type TurnMessage,
 } from '../genie/api/turn';
+import type { Upload } from '../genie/attachments/prepare';
 import { useAttachments } from '../genie/attachments/useAttachments';
 import { AttachmentCard } from '../genie/components/AttachmentCard';
 import {
@@ -49,22 +50,18 @@ import { useCardActions } from '../genie/shared/cardActions';
 import { buildQuestion, typeModelPrompt } from '../genie/shared/conversation';
 import {
 	composerFor,
-	failureReducer,
 	failureText,
-	failureWithUploads,
 	omittedFileNotice,
 	pageFailureStore,
 	presentFailure,
 	readFailure,
 	reconcile,
 	retryMessages,
-	retryPayload,
 	settleTurnFailure,
 	writeFailure,
 	type FailureDraft,
-	type FailureEvent,
-	type FailureState,
 } from '../genie/shared/failure';
+import { useFailure } from '../genie/shared/useFailure';
 import { HeroSession } from './session';
 
 /** The controller's way into the conversation while it is unfolded. */
@@ -128,36 +125,21 @@ export function HeroConversation( {
 	const [ inquiries, setInquiries ] = useState< SentInquiryCard[] >( [] );
 	const turnAt = useRef( -1 );
 	const sending = useRef( false );
-	const failureState = useRef< FailureState >( {
-		phase: 'clear',
-		draft: null,
-		kind: null,
-	} );
-	const [ omitted, setOmitted ] = useState< string[] >( [] );
-	const placingChips = useRef( false );
-	const commitFailure = useCallback( ( event: FailureEvent ) => {
-		const reduced = failureReducer( failureState.current, event );
-		const stored = writeFailure( pageFailureStore(), reduced );
-		failureState.current = stored;
-		setOmitted(
-			'failed' === stored.phase ? ( stored.draft?.omitted ?? [] ) : []
-		);
-		return stored;
-	}, [] );
 	const closeRef = useRef< HTMLButtonElement >( null );
 	const files = useAttachments();
 	// The bridge is registered once; the refs keep it calling the latest
 	// render's send and file state.
 	const filesRef = useRef( files );
 	filesRef.current = files;
-	const placeChips = useCallback( ( chips: FailureDraft[ 'uploads' ] ) => {
-		placingChips.current = true;
-		if ( chips.length > 0 ) {
-			filesRef.current.restore( chips );
-		} else {
-			filesRef.current.clear();
-		}
-	}, [] );
+	const {
+		failureState,
+		omitted,
+		setOmitted,
+		commitFailure,
+		placeChips,
+		openRetry,
+		payloadOrRestore,
+	} = useFailure( files );
 	const sendRef = useRef< ( text: string ) => void >( () => undefined );
 	const [ store ] = useState( () => storeClient( config.restUrl ) );
 	const {
@@ -219,7 +201,7 @@ export function HeroConversation( {
 		return () => {
 			cancelled = true;
 		};
-	}, [ session, setPrompt, placeChips ] );
+	}, [ session, setPrompt, placeChips, failureState, setOmitted ] );
 
 	// The conversation has the focus when it unfolds; the page's trigger gets
 	// it back when it closes (the controller restores it).
@@ -287,10 +269,10 @@ export function HeroConversation( {
 				setPhase( 'ask' );
 				return;
 			}
-			const failed = commitFailure( { type: settled.view.kind } );
+			const failed = commitFailure( { type: settled.kind } );
 			const draftNow = failed.draft ?? draft;
 			const view = presentFailure(
-				settled.view.kind,
+				settled.kind,
 				before,
 				retryMessages( before, draftNow.question ),
 				draftNow
@@ -355,44 +337,28 @@ export function HeroConversation( {
 	// One resend. The machine leaves `failed` before the request, so a
 	// second click does not send.
 	const retry = useCallback( async () => {
-		const current = failureState.current;
-		const preview = retryPayload(
-			current,
-			session.messages,
-			filesRef.current.uploads
-		);
-		if (
-			'failed' !== current.phase ||
-			! current.draft ||
-			! current.kind ||
-			! preview ||
-			sending.current
-		) {
+		if ( sending.current ) {
 			return;
 		}
-		const draft = current.draft;
-		const kind = current.kind;
-		commitFailure( { type: 'retry' } );
+		const opened = openRetry( session.messages );
+		if ( ! opened ) {
+			return;
+		}
+		const { draft, kind } = opened;
 		sending.current = true;
 		setRefused( '' );
 		setConflict( '' );
 		setLive( '' );
 		setPhase( 'waiting' );
 		setPrompt( '' );
-		let payload = preview;
+		let payload: { question: string; uploads: Upload[] } | null = null;
 		try {
-			const again = retryPayload(
-				{ phase: 'failed', draft, kind },
-				session.messages,
-				filesRef.current.uploads
-			);
-			if ( ! again ) {
-				commitFailure( { type: kind } );
+			payload = payloadOrRestore( draft, kind, session.messages );
+			if ( ! payload ) {
 				setPhase( 'error' );
 				setPrompt( 'upstream' === kind ? draft.text : '' );
 				return;
 			}
-			payload = again;
 			const result = await session.retry(
 				payload.question,
 				payload.uploads
@@ -409,26 +375,20 @@ export function HeroConversation( {
 		} catch ( error ) {
 			await handleTurnError( error, session.messages, {
 				...draft,
-				question: payload.question,
-				uploads: payload.uploads,
+				question: payload?.question ?? draft.question,
+				uploads: payload?.uploads ?? draft.uploads,
 			} );
 		} finally {
 			sending.current = false;
 		}
-	}, [ session, setPrompt, commitFailure, handleTurnError ] );
-
-	useEffect( () => {
-		if ( placingChips.current ) {
-			placingChips.current = false;
-			return;
-		}
-		const next = failureWithUploads( failureState.current, files.uploads );
-		if ( next === failureState.current ) {
-			return;
-		}
-		failureState.current = writeFailure( pageFailureStore(), next );
-		setOmitted( failureState.current.draft?.omitted ?? [] );
-	}, [ files.uploads ] );
+	}, [
+		session,
+		setPrompt,
+		commitFailure,
+		handleTurnError,
+		openRetry,
+		payloadOrRestore,
+	] );
 
 	// Files were picked for the hero: once they are prepared, send them as
 	// the turn's question (a photo or a document is itself the question).

@@ -123,18 +123,8 @@ const SESSION_CONFIG: HeroSessionConfig = {
 function session( stored: TurnMessage[] = [], turn: Turn | null = null ) {
 	const read = vi.fn( async () => ( { messages: [ ...stored ], turn } ) );
 	const send = vi.fn(
-		async (
-			_turnUrl: string,
-			_nonce: string,
-			_locale: string,
-			messages: TurnMessage[],
-			_page?: unknown,
-			_uploads?: Upload[]
-		) => {
-			void _page;
-			void _uploads;
-			return reply( `Answer ${ messages.length }` );
-		}
+		async ( request: { messages: TurnMessage[]; uploads?: Upload[] } ) =>
+			reply( `Answer ${ request.messages.length }` )
 	);
 	return {
 		session: new HeroSession( SESSION_CONFIG, read, send ),
@@ -283,7 +273,7 @@ test( 'retrying a failed hero turn sends it once', async () => {
 	fireEvent.click( retry );
 
 	await waitFor( () => expect( send ).toHaveBeenCalledTimes( 2 ) );
-	expect( send.mock.calls[ 1 ][ 3 ] ).toEqual( [
+	expect( send.mock.calls[ 1 ][ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'saj' },
 	] );
 	expect(
@@ -347,7 +337,7 @@ test( 'a cut stream on the hero keeps the file, and removing it takes it off the
 	expect( screen.queryByText( 'datasheet.pdf' ) ).toBeNull();
 	fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
 	await waitFor( () => expect( send ).toHaveBeenCalledTimes( 2 ) );
-	expect( send.mock.calls[ 1 ][ 5 ] ).toEqual( [] );
+	expect( send.mock.calls[ 1 ][ 0 ].uploads ).toEqual( [] );
 } );
 
 test( 'a conflicting turn puts the question back and re-reads the thread', async () => {
@@ -421,7 +411,7 @@ test( 'the nameplate card confirms into an ordinary question', async () => {
 	fireEvent.click( confirm );
 
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	expect( answers.send.mock.calls[ 0 ][ 3 ][ 2 ] ).toEqual( {
+	expect( answers.send.mock.calls[ 0 ][ 0 ].messages[ 2 ] ).toEqual( {
 		role: 'user',
 		content: "Yes, it's the SAJ H2-10K-T3. Show me its documents.",
 	} );
@@ -473,7 +463,7 @@ test( 'a picked PDF is prepared, sent apart from the messages, and read', async 
 	} );
 
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	const [ , , , messages, , uploads ] = answers.send.mock.calls[ 0 ];
+	const { messages, uploads } = answers.send.mock.calls[ 0 ][ 0 ];
 	expect( messages[ messages.length - 1 ] ).toEqual( {
 		role: 'user',
 		content: 'Attached: datasheet.pdf',

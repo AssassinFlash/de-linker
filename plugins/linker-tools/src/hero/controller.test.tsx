@@ -97,18 +97,8 @@ function session( stored: TurnMessage[] = [] ) {
 		turn: null,
 	} ) );
 	const send = vi.fn(
-		async (
-			_turnUrl: string,
-			_nonce: string,
-			_locale: string,
-			messages: TurnMessage[],
-			_page?: unknown,
-			_uploads?: Upload[]
-		) => {
-			void _page;
-			void _uploads;
-			return reply( `Answer ${ messages.length }` );
-		}
+		async ( request: { messages: TurnMessage[]; uploads?: Upload[] } ) =>
+			reply( `Answer ${ request.messages.length }` )
 	);
 	return {
 		session: new HeroSession( SESSION_CONFIG, read, send ),
@@ -202,7 +192,7 @@ test( 'typing and Enter unfolds the conversation in place', async () => {
 		document.querySelector( '.linker-genie-hero__surface' )
 	).not.toBeNull();
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	expect( answers.send.mock.calls[ 0 ][ 3 ][ 0 ] ).toEqual( {
+	expect( answers.send.mock.calls[ 0 ][ 0 ].messages[ 0 ] ).toEqual( {
 		role: 'user',
 		content: 'saj',
 	} );
@@ -274,7 +264,7 @@ test( 'a capsule opens in place with its own question and never navigates', asyn
 
 	expect( prevented ).toBe( true );
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	expect( answers.send.mock.calls[ 0 ][ 3 ][ 0 ] ).toEqual( {
+	expect( answers.send.mock.calls[ 0 ][ 0 ].messages[ 0 ] ).toEqual( {
 		role: 'user',
 		content: '10 kW storage systems',
 	} );
@@ -464,7 +454,7 @@ test( 'the attach button opens the file picker and a PDF is sent with the turn',
 	} );
 
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	const [ , , , messages, , uploads ] = answers.send.mock.calls[ 0 ];
+	const { messages, uploads } = answers.send.mock.calls[ 0 ][ 0 ];
 	expect( messages[ messages.length - 1 ] ).toEqual( {
 		role: 'user',
 		content: 'Attached: datasheet.pdf',

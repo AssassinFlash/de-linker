@@ -19,23 +19,19 @@ import { idsOf, pricesOf } from './shared/blocks';
 import { useCardActions } from './shared/cardActions';
 import { buildQuestion, typeModelPrompt } from './shared/conversation';
 import {
-	failureReducer,
 	composerFor,
 	failureText,
-	failureWithUploads,
 	omittedFileNotice,
 	pageFailureStore,
 	presentFailure,
 	readFailure,
 	reconcile,
 	retryMessages,
-	retryPayload,
 	settleTurnFailure,
 	writeFailure,
 	type FailureDraft,
-	type FailureEvent,
-	type FailureState,
 } from './shared/failure';
+import { useFailure } from './shared/useFailure';
 import { startDictation, type DictationSession } from './shared/dictation';
 import {
 	assistantMessage,
@@ -223,34 +219,16 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ dictating, setDictating ] = useState( false );
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
-	// The failed turn, also in sessionStorage, so a reload still shows it.
-	const failureState = useRef< FailureState >( {
-		phase: 'clear',
-		draft: null,
-		kind: null,
-	} );
-	// Files the record could not hold. Named next to the failure sentence.
-	const [ omitted, setOmitted ] = useState< string[] >( [] );
-	// True while this component is putting chips back, so that paint is not
-	// read as the customer removing them.
-	const placingChips = useRef( false );
-	const commitFailure = useCallback( ( event: FailureEvent ) => {
-		const reduced = failureReducer( failureState.current, event );
-		const stored = writeFailure( pageFailureStore(), reduced );
-		failureState.current = stored;
-		setOmitted(
-			'failed' === stored.phase ? ( stored.draft?.omitted ?? [] ) : []
-		);
-		return stored;
-	}, [] );
-	const placeChips = useCallback( ( chips: FailureDraft[ 'uploads' ] ) => {
-		placingChips.current = true;
-		if ( chips.length > 0 ) {
-			filesRef.current.restore( chips );
-		} else {
-			filesRef.current.clear();
-		}
-	}, [] );
+	const {
+		failureState,
+		omitted,
+		setOmitted,
+		commitFailure,
+		placeChips,
+		openRetry,
+		previewRetry,
+		payloadOrRestore,
+	} = useFailure( files );
 	// The conversation on screen, for the lane jobs: a delete that clears
 	// it must empty the panel, and the state value is a render behind.
 	const shownId = useRef( 0 );
@@ -360,7 +338,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				setInput( '' );
 			}
 		},
-		[ placeChips ]
+		[ placeChips, failureState, setOmitted ]
 	);
 
 	const showStored = useCallback( async () => {
@@ -422,10 +400,10 @@ export function App( { config }: { config: GenieConfig } ) {
 				void refreshHistory();
 				return;
 			}
-			const stored = commitFailure( { type: settled.view.kind } );
+			const stored = commitFailure( { type: settled.kind } );
 			const draftNow = stored.draft ?? draft;
 			const view = presentFailure(
-				settled.view.kind,
+				settled.kind,
 				before,
 				retryMessages( before, draftNow.question ),
 				draftNow
@@ -503,14 +481,14 @@ export function App( { config }: { config: GenieConfig } ) {
 					];
 					currentThread.current = next;
 					setThread( next );
-					const answer = await sendTurn(
-						config.turnUrl,
-						config.restNonce,
-						config.locale,
-						next,
-						config.page,
-						uploads
-					);
+					const answer = await sendTurn( {
+						turnUrl: config.turnUrl,
+						nonce: config.restNonce,
+						locale: config.locale,
+						messages: next,
+						page: config.page,
+						uploads,
+					} );
 					filesRef.current.clear();
 					commitFailure( { type: 'answered' } );
 					const assistant = assistantMessage( answer );
@@ -549,22 +527,11 @@ export function App( { config }: { config: GenieConfig } ) {
 	// One resend of the failed question. The machine leaves `failed` before
 	// this returns, so a second click does not send.
 	const retry = useCallback( () => {
-		const current = failureState.current;
-		if (
-			'failed' !== current.phase ||
-			! current.draft ||
-			! current.kind ||
-			! retryPayload(
-				current,
-				currentThread.current,
-				filesRef.current.uploads
-			)
-		) {
+		const opened = openRetry( currentThread.current );
+		if ( ! opened ) {
 			return;
 		}
-		const draft = current.draft;
-		const kind = current.kind;
-		commitFailure( { type: 'retry' } );
+		const { draft, kind } = opened;
 		setOpen( true );
 		setDockHistory( false );
 		setPhase( 'waiting' );
@@ -575,11 +542,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		return enqueue( async () => {
 			sending.current = true;
 			let before = currentThread.current;
-			let payload = retryPayload(
-				{ phase: 'failed', draft, kind },
-				before,
-				filesRef.current.uploads
-			);
+			let payload = previewRetry( draft, kind, before );
 			try {
 				const stored = await readThread(
 					config.threadUrl,
@@ -595,13 +558,8 @@ export function App( { config }: { config: GenieConfig } ) {
 					setContacts( stored.contacts ?? [] );
 					setInquiries( stored.inquiries ?? [] );
 				}
-				payload = retryPayload(
-					{ phase: 'failed', draft, kind },
-					before,
-					filesRef.current.uploads
-				);
+				payload = payloadOrRestore( draft, kind, before );
 				if ( ! payload ) {
-					commitFailure( { type: kind } );
 					setPhase( 'error' );
 					setInput( 'upstream' === kind ? draft.text : '' );
 					return;
@@ -609,14 +567,14 @@ export function App( { config }: { config: GenieConfig } ) {
 				const next = payload.messages;
 				currentThread.current = next;
 				setThread( next );
-				const answer = await sendTurn(
-					config.turnUrl,
-					config.restNonce,
-					config.locale,
-					next,
-					config.page,
-					payload.uploads
-				);
+				const answer = await sendTurn( {
+					turnUrl: config.turnUrl,
+					nonce: config.restNonce,
+					locale: config.locale,
+					messages: next,
+					page: config.page,
+					uploads: payload.uploads,
+				} );
 				filesRef.current.clear();
 				commitFailure( { type: 'answered' } );
 				const assistant = assistantMessage( answer );
@@ -643,21 +601,15 @@ export function App( { config }: { config: GenieConfig } ) {
 				sending.current = false;
 			}
 		} );
-	}, [ config, refreshHistory, commitFailure, onTurnError ] );
-
-	// A chip removed, or a file attached again, while the failure is up.
-	useEffect( () => {
-		if ( placingChips.current ) {
-			placingChips.current = false;
-			return;
-		}
-		const next = failureWithUploads( failureState.current, files.uploads );
-		if ( next === failureState.current ) {
-			return;
-		}
-		failureState.current = writeFailure( pageFailureStore(), next );
-		setOmitted( failureState.current.draft?.omitted ?? [] );
-	}, [ files.uploads ] );
+	}, [
+		config,
+		refreshHistory,
+		commitFailure,
+		onTurnError,
+		openRetry,
+		previewRetry,
+		payloadOrRestore,
+	] );
 
 	// "Type the model": the way out of a nameplate the customer does not
 	// confirm, or one that could not be read.

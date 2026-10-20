@@ -182,20 +182,20 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 		);
 	} );
 
-	expect( sendTurn ).toHaveBeenCalledWith(
-		'/wp-json/linker-ai/v1/genie/turn',
-		'n',
-		'en',
-		[
+	expect( sendTurn ).toHaveBeenCalledWith( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [
 			{
 				role: 'user',
 				content: 'I need a three-phase hybrid inverter for a home.',
 			},
 		],
-		{ type: 'category' },
+		page: { type: 'category' },
 		// No file was picked: the turn carries none.
-		[]
-	);
+		uploads: [],
+	} );
 	expect( await screen.findByText( 'Three-phase' ) ).toBeInTheDocument();
 	expect(
 		screen.getByRole( 'group', { name: 'Reply with an option' } )
@@ -288,7 +288,7 @@ test( 'a 502 keeps the question across a reload and retries once', async () => {
 	fireEvent.click( retry );
 	fireEvent.click( retry );
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 1 ) );
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'EV chargers' },
 	] );
 	await act( async () => {
@@ -341,7 +341,7 @@ test( 'a cut stream keeps the question, hides the partial answer, and retries th
 	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( '' );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 1 ) );
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'backup for 10 kW' },
 	] );
 	expect(
@@ -399,7 +399,7 @@ test( 'a cut stream keeps the file on the composer, and a new question sends it'
 		fireEvent.click( send );
 	} );
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 2 ) );
-	expect( vi.mocked( sendTurn ).mock.calls[ 1 ][ 3 ] ).toEqual( [
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ]![ 0 ].messages ).toEqual( [
 		{
 			role: 'user',
 			content: 'Check this datasheet\nAttached: gw10k-et-datenblatt.pdf',
@@ -409,7 +409,9 @@ test( 'a cut stream keeps the file on the composer, and a new question sends it'
 			content: 'What about this file?\nAttached: gw10k-et-datenblatt.pdf',
 		},
 	] );
-	expect( vi.mocked( sendTurn ).mock.calls[ 1 ][ 5 ] ).toEqual( [ upload ] );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ]![ 0 ].uploads ).toEqual( [
+		upload,
+	] );
 	expect(
 		await screen.findByText( 'The datasheet matches.' )
 	).toBeInTheDocument();
@@ -453,8 +455,8 @@ test( 'a cut stream drops a file the visitor removes, and retry does not send it
 	expect( screen.queryByText( 'gw10k-et-datenblatt.pdf' ) ).toBeNull();
 	fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 2 ) );
-	expect( vi.mocked( sendTurn ).mock.calls[ 1 ][ 5 ] ).toEqual( [] );
-	expect( vi.mocked( sendTurn ).mock.calls[ 1 ][ 3 ] ).toEqual( [
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ]![ 0 ].uploads ).toEqual( [] );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ]![ 0 ].messages ).toEqual( [
 		{
 			role: 'user',
 			content: 'Check this datasheet\nAttached: gw10k-et-datenblatt.pdf',
@@ -552,14 +554,14 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 			selector: '.linker-genie-app__message',
 		} )
 	).toBeNull();
-	expect( sendTurn ).toHaveBeenCalledWith(
-		'/wp-json/linker-ai/v1/genie/turn',
-		'n',
-		'en',
-		[ ...server, { role: 'user', content: 'EV chargers' } ],
-		{ type: 'category' },
-		[]
-	);
+	expect( sendTurn ).toHaveBeenCalledWith( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [ ...server, { role: 'user', content: 'EV chargers' } ],
+		page: { type: 'category' },
+		uploads: [],
+	} );
 	await waitFor( () => expect( listConversations ).toHaveBeenCalled() );
 } );
 
@@ -591,7 +593,7 @@ test( 'the next send uses the thread re-read from the server', async () => {
 			} )
 		);
 	} );
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'Peer question' },
 		{ role: 'assistant', content: 'Peer answer' },
 		{
@@ -920,7 +922,7 @@ test( 'one entry ask survives a late thread restore without being sent twice', a
 	} );
 	expect( screen.getByText( 'What pairs with this model?' ) ).toBeVisible();
 	expect( screen.getByText( 'Old question' ) ).toBeVisible();
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'Old question' },
 		{ role: 'user', content: 'What pairs with this model?' },
 	] );
@@ -1254,11 +1256,11 @@ test( 'an attached file rides with the turn and its name in the question', async
 	await act( async () => {
 		fireEvent.click( send );
 	} );
-	const call = vi.mocked( sendTurn ).mock.calls[ 0 ];
-	expect( call[ 3 ] ).toEqual( [
+	const call = vi.mocked( sendTurn ).mock.calls[ 0 ]!;
+	expect( call[ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'Attached: gw10k-et-datenblatt.pdf' },
 	] );
-	expect( call[ 5 ] ).toEqual( [
+	expect( call[ 0 ].uploads ).toEqual( [
 		{
 			name: 'gw10k-et-datenblatt.pdf',
 			type: 'application/pdf',
@@ -1391,7 +1393,7 @@ test( 'a nameplate card confirms the device by a message naming it', async () =>
 		);
 	} );
 	const last = vi.mocked( sendTurn ).mock.calls.at( -1 );
-	expect( last?.[ 3 ].at( -1 ) ).toEqual( {
+	expect( last?.[ 0 ].messages.at( -1 ) ).toEqual( {
 		role: 'user',
 		content: "Yes, it's the SAJ H2-10K-T3. What works with it?",
 	} );
@@ -1523,7 +1525,7 @@ test( 'a file sent from the list prompt says it is a parts list', async () => {
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
 	} );
-	const messages = vi.mocked( sendTurn ).mock.calls.at( -1 )?.[ 3 ];
+	const messages = vi.mocked( sendTurn ).mock.calls.at( -1 )?.[ 0 ].messages;
 	expect( messages?.at( -1 )?.content ).toContain( 'Here is my parts list.' );
 	expect( messages?.at( -1 )?.content ).toContain( 'Attached: parts.csv' );
 } );
@@ -2091,11 +2093,11 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 	expect(
 		await screen.findByText( 'The SAJ B2 fits it.' )
 	).toBeInTheDocument();
-	expect( sendTurn ).toHaveBeenLastCalledWith(
-		'/wp-json/linker-ai/v1/genie/turn',
-		'n',
-		'en',
-		[
+	expect( sendTurn ).toHaveBeenLastCalledWith( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [
 			{ role: 'user', content: 'Can I talk to a person?' },
 			{
 				role: 'assistant',
@@ -2105,10 +2107,10 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 			},
 			{ role: 'user', content: 'Which battery fits the SAJ H2?' },
 		],
-		{ type: 'category' },
+		page: { type: 'category' },
 		// No file was picked (#236): the turn carries none.
-		[]
-	);
+		uploads: [],
+	} );
 } );
 
 const CONTACT_TURN = {

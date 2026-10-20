@@ -97,11 +97,15 @@ export interface PresentedFailure {
 	omitted: string[];
 }
 
-/** What one failed send asks the shell to show. Refusal and conflict keep their own recovery. */
+/**
+ * What one failed send asks the shell to show. Refusal and conflict keep
+ * their own recovery. A failure names its kind; the shell draws the view
+ * after the record is stored.
+ */
 export type TurnSettlement =
 	| { action: 'refusal'; reason: string; field: string }
 	| { action: 'conflict'; field: string }
-	| { action: 'failed'; view: PresentedFailure };
+	| { action: 'failed'; kind: FailureKind };
 
 /** The store the record uses. `window.sessionStorage` is one. */
 export interface FailureStore {
@@ -244,7 +248,8 @@ export function presentFailure(
 
 /**
  * Refusal, a 409, or a failure this machine owns. Both surfaces apply this
- * and do not re-decide it.
+ * and do not re-decide it. The view is not built here: `writeFailure` may
+ * drop a file before the shell draws the failure.
  *
  * @param error  The rejection from sendTurn.
  * @param before The thread this attempt posted on top of.
@@ -262,16 +267,9 @@ export function settleTurnFailure(
 	if ( isTurnConflict( error ) ) {
 		return { action: 'conflict', field: draft.text };
 	}
-	const kind =
-		shownFailureKind( error, before, draft.question ) ?? 'upstream';
 	return {
 		action: 'failed',
-		view: presentFailure(
-			kind,
-			[ ...before ],
-			retryMessages( before, draft.question ),
-			draft
-		),
+		kind: shownFailureKind( error, before, draft.question ) ?? 'upstream',
 	};
 }
 
@@ -416,16 +414,14 @@ export function omittedFileNotice( names: readonly string[] ): string {
 	if ( 0 === names.length ) {
 		return '';
 	}
-	return sprintf(
-		// translators: %s is one file name, or several names separated by commas.
-		_n(
-			'Attach %s again. It could not be kept for another try.',
-			'Attach these again: %s. They could not be kept for another try.',
-			names.length,
-			'linker-tools'
-		),
-		names.join( ', ' )
+	// translators: %s is the file name. The plural does not repeat names.
+	const sentence = _n(
+		'Attach %s again. It could not be kept for another try.',
+		'Attach these files again. They could not be kept for another try.',
+		names.length,
+		'linker-tools'
 	);
+	return 1 === names.length ? sprintf( sentence, names[ 0 ] ) : sentence;
 }
 
 /**

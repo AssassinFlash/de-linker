@@ -79,16 +79,15 @@ test( 'a stream without done is an error, not a partial answer', () => {
 test( 'a connection that never answers is the upstream timeout', async () => {
 	vi.useFakeTimers();
 	const fetcher = vi.fn( () => new Promise< Response >( () => undefined ) );
-	const hung = sendTurn(
-		'/wp-json/linker-ai/v1/genie/turn',
-		'n',
-		'en',
-		[ { role: 'user', content: 'backup for 10 kW' } ],
-		{ type: 'category' },
-		[],
+	const hung = sendTurn( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [ { role: 'user', content: 'backup for 10 kW' } ],
+		page: { type: 'category' },
 		fetcher,
-		TURN_TIMEOUT_MS
-	);
+		timeoutMs: TURN_TIMEOUT_MS,
+	} );
 	const timedOut = hung.then(
 		() => {
 			throw new Error( 'the hung turn resolved' );
@@ -101,6 +100,33 @@ test( 'a connection that never answers is the upstream timeout', async () => {
 			name: 'AbortError',
 		} );
 		expect( fetcher ).toHaveBeenCalledTimes( 1 );
+	} finally {
+		vi.useRealTimers();
+	}
+} );
+
+test( 'a fetcher that throws before the request does not leave the timer armed', async () => {
+	vi.useFakeTimers();
+	const fetcher = () => {
+		throw new Error( 'sync' );
+	};
+	const failed = sendTurn( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [ { role: 'user', content: 'backup for 10 kW' } ],
+		page: { type: 'category' },
+		fetcher,
+		timeoutMs: TURN_TIMEOUT_MS,
+	} ).then(
+		() => {
+			throw new Error( 'the turn resolved' );
+		},
+		( error: unknown ) => error
+	);
+	try {
+		await expect( failed ).resolves.toMatchObject( { message: 'sync' } );
+		expect( vi.getTimerCount() ).toBe( 0 );
 	} finally {
 		vi.useRealTimers();
 	}
