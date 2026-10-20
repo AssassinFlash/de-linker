@@ -154,6 +154,104 @@ def is_code(word: str) -> bool:
     return False
 
 
+# Only the grid-code the documents print as a hyphenated name: `VDE-AR-N 4105`
+# and the model's `VDE-AR-N [n4=4105]`. The bracket span covers the fact index
+# as well as 4105. A hyphenated measurement (`Start-up 400`, `single-phase 10`,
+# `grid-code 4105`) is not this code. The number must be its own word: `4105kWh`
+# stays a figure.
+_REGULATION_CODE_TAIL = re.compile(
+    r"(?i)\bVDE-AR-N[ \t]+"
+    r"(?:(\[n\d+=[0-9]+(?:[.,][0-9]+)?\])"
+    r"|([0-9]+(?:[.,][0-9]+)?))(?!\w)"
+)
+# Clause labels a grid rule uses. `Art` is German for type, `Satz` and `Nr.`
+# introduce a measurement, and `Methode` / `Schritt` are steps. None of those
+# is a clause. A lone `§` is a label, not a mark: `§ 400` is still a figure.
+_CLAUSE_LABEL = re.compile(r"(?i)^(?:abs\.?|absatz|abschnitt|clause|§)$")
+# The window that makes a clause number a regulation reference, not a step.
+_REGULATION_MARK = re.compile(r"(?i)(?:\benwg\b|\beeg\b|\bvde\b|\b14a\b)")
+# A dotted clause (`5.7.4.1`) is one number. A smashed tail (`1-500`) is not:
+# the hyphen stops the match, so the extra digits stay a figure.
+_CLAUSE_DIGITS = re.compile(r"[0-9]+(?:[.,][0-9]+)*")
+_DIGIT_RUN = re.compile(r"\d+(?:[.,]\d+)*")
+# Words of context around a clause label. Far enough for `EnWG 14a Abs. 1`,
+# not so far that an earlier EnWG licenses a later step number.
+_REGULATION_WINDOW = 8
+
+
+def _unit_word(word: str) -> bool:
+    """True when `word` is a unit or a number glued to one (`230 V`, `10kW`)."""
+    core = word.strip(".,;:()[]")
+    return bool(core) and (
+        _NUMBER_UNIT.fullmatch(core) is not None
+        or _LONE_UNIT.fullmatch(core) is not None
+    )
+
+
+def regulation_number_spans(text: str) -> list[tuple[int, int]]:
+    """Digit spans that name a regulation, not a measurement (#443).
+
+    `VDE-AR-N 4105` keeps 4105. `EnWG 14a Abs. 1` and `Abschnitt 5.7.4.1` keep
+    the clause number when EnWG, EEG, VDE or `14a` is in the same short window.
+    `4105 kWh`, `Start-up 400`, `Art 10 kW`, `Abs. 230 V`, `§ 400`, `Methode 1`
+    and a detached `4105` are not regulation numbers. `14a` itself is a
+    model-code word (`is_code`) and is not a span here.
+    """
+    spans: list[tuple[int, int]] = []
+    for match in _REGULATION_CODE_TAIL.finditer(text):
+        if match.group(1):
+            spans.append(match.span(1))
+        elif match.group(2):
+            spans.append(match.span(2))
+    words = list(re.finditer(r"\S+", text))
+    for index, word in enumerate(words):
+        label = word.group().strip(".,;:()[]")
+        if not _CLAUSE_LABEL.fullmatch(label):
+            continue
+        if index + 1 >= len(words):
+            continue
+        number = words[index + 1]
+        if is_code(number.group()) or _unit_word(number.group()):
+            continue
+        following = words[index + 2].group() if index + 2 < len(words) else ""
+        if following and _unit_word(following):
+            continue
+        digits = _CLAUSE_DIGITS.search(number.group())
+        if digits is None:
+            continue
+        start = words[max(0, index - _REGULATION_WINDOW)].start()
+        end = words[min(len(words) - 1, index + 1 + _REGULATION_WINDOW)].end()
+        if not _REGULATION_MARK.search(text[start:end]):
+            continue
+        spans.append((number.start() + digits.start(), number.start() + digits.end()))
+    return spans
+
+
+def digits_are_regulation(
+    text: str,
+    start: int,
+    end: int,
+    spans: list[tuple[int, int]] | None = None,
+) -> bool:
+    """True when every digit run in the slice sits wholly inside a regulation span.
+
+    Overlap is not enough. `VDE-AR-N 4105/600` and `EnWG 14a Abs. 1-500` name a
+    regulation and a measurement in one word; the measurement stays a figure.
+    """
+    if spans is None:
+        spans = regulation_number_spans(text)
+    runs = list(_DIGIT_RUN.finditer(text[start:end]))
+    if not runs:
+        return False
+    return all(
+        any(
+            span_start <= start + run.start() and start + run.end() <= span_end
+            for span_start, span_end in spans
+        )
+        for run in runs
+    )
+
+
 def chunk_of(fact_id: str) -> str | None:
     """The chunk ID inside a figure's fact ID, or None for any other fact."""
     match = re.fullmatch(r"(.+)\.n\d+", fact_id)

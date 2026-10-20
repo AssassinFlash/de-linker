@@ -19,6 +19,7 @@ from linker_genie.facts import Fact, TurnFacts
 from linker_genie.ground import (
     blob_has_figure,
     cites_outside_turn,
+    drop_bare_numbers,
     rebind_figures_past_decimal,
     strip_detached_code_tails,
     strip_unlicensed_numbers,
@@ -691,6 +692,79 @@ def test_a_detached_grid_code_number_is_not_left_bare() -> None:
     kept_text = _text(strip_detached_code_tails(kept, blob))
     assert "VDE-AR-N 4105" in kept_text
     assert "10 kW" in kept_text
+
+
+def test_a_regulation_reference_is_not_stripped_or_untraceable() -> None:
+    """The rule's own number stays. A step and a detached reading do not (#443)."""
+    output = TurnOutput(
+        language="de",
+        blocks=[
+            TextBlock(
+                text=(
+                    "Die Grenze steht in EnWG 14a Abs. 1 und VDE-AR-N 4105. "
+                    "Methode 1 und Schritt 2 nennen 10 kW. "
+                    "Der Code 4105 kWh bleibt eine Zahl. Abs. 1."
+                )
+            )
+        ],
+    )
+    text = _text(drop_bare_numbers(output))
+    assert "EnWG 14a Abs. 1" in text
+    assert "VDE-AR-N 4105" in text
+    assert text.count("Abs. 1") == 1
+    assert "Methode 1" not in text
+    assert "Schritt 2" not in text
+    assert "10 kW" not in text
+    assert "4105 kWh" not in text
+    assert untraceable_numbers("The datasheet lists VDE-AR-N 4105.", []) == []
+    assert untraceable_numbers("The grid code is 4105 kWh.", []) == ["4105"]
+    assert untraceable_numbers("Abs. 1", []) == ["1"]
+    assert untraceable_numbers("EnWG 14a Abs. 1", []) == []
+    assert untraceable_numbers("3-phase and 1-phase", ["3"], None) == ["1"]
+    assert untraceable_numbers("VDE-AR-N 4105/600", []) == ["600"]
+    assert untraceable_numbers("EnWG 14a Abs. 1-500", []) == ["500"]
+    assert untraceable_numbers("Start-up 400 V", []) == ["400"]
+    assert untraceable_numbers("Time-of-use 60 Hz", []) == ["60"]
+    assert untraceable_numbers("single-phase 10 kW", []) == ["10"]
+    assert untraceable_numbers("grid-code 4105 kWh", []) == ["4105"]
+    assert untraceable_numbers("application-rule 4105", []) == ["4105"]
+    assert untraceable_numbers("§ 400", []) == ["400"]
+    assert untraceable_numbers("Nach der VDE-Norm ist die Art 10 kW.", []) == ["10"]
+    assert untraceable_numbers("EnWG 14a. Die Spannung ist Abs. 230 V.", []) == ["230"]
+    assert untraceable_numbers("VDE-AR-N [n4=4105]", []) == []
+    assert untraceable_numbers("Abschnitt 5.7.4.1 der VDE-AR-N 4105", []) == []
+    assert untraceable_numbers("clause 5.7 of VDE-AR-N 4105", []) == []
+
+    measurements = TurnOutput(
+        language="de",
+        blocks=[
+            TextBlock(
+                text=(
+                    "Start-up 400 V und Time-of-use 60 Hz und single-phase 10 kW. "
+                    "Nach der VDE-Norm ist die Art 10 kW. Satz 10 kW. Nr. 10 kW nach VDE. "
+                    "EnWG 14a. Die Spannung ist Abs. 230 V. "
+                    "VDE-AR-N 4105/600. EnWG 14a Abs. 1-500. "
+                    "Abschnitt 5.7.4.1 der VDE-AR-N 4105. EnWG § 1."
+                )
+            )
+        ],
+    )
+    measured = _text(drop_bare_numbers(measurements))
+    assert "400" not in measured
+    assert "60" not in measured
+    assert "10 kW" not in measured
+    assert "230" not in measured
+    assert "4105/600" not in measured
+    assert "1-500" not in measured
+    assert "Abschnitt 5.7.4.1" in measured
+    assert "VDE-AR-N 4105" in measured
+    assert "EnWG § 1" in measured
+    lone = _text(
+        drop_bare_numbers(
+            TurnOutput(language="de", blocks=[TextBlock(text="Die Grenze ist § 400.")])
+        )
+    )
+    assert "400" not in lone
 
 
 def test_a_figure_fact_does_not_license_a_detached_grid_code() -> None:

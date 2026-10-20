@@ -125,6 +125,145 @@ def test_a_number_only_miss_is_stripped_and_stays_grounded() -> None:
     assert [block.type for block in result.output.blocks] == ["text", "cards"]
 
 
+def test_a_regulation_number_survives_the_number_strip() -> None:
+    """`EnWG 14a Abs. 1` and `VDE-AR-N 4105` are the rule, not a measurement.
+
+    `10 kW` is still stripped. The turn stays grounded (#443).
+    """
+    facts = _facts()
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        assert retry is None
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[
+                    TextBlock(
+                        text=(
+                            "The code is EnWG 14a Abs. 1 and VDE-AR-N 4105. "
+                            "This inverter is 10 kW."
+                        ),
+                        refs=["4107"],
+                    ),
+                    CardsBlock(product_ids=[4107]),
+                ],
+            ),
+            facts,
+        )
+
+    result = run(_request(), generate)
+    assert result.fallback is False
+    assert result.grounded is True
+    assert result.attempts == 1
+    text = result.output.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert "EnWG 14a Abs. 1" in text.text
+    assert "VDE-AR-N 4105" in text.text
+    assert "10 kW" not in text.text
+
+
+def test_a_number_strip_that_leaves_the_wrong_language_retries_in_that_language() -> (
+    None
+):
+    """A language miss after the strip is a language re-ask, not a number miss."""
+    facts = _facts()
+    attempts: list[str | None] = []
+    request = TurnRequest(
+        conversation_id="c1",
+        messages=[TurnMessage(role="user", content="Welche Batterien passen?")],
+        locale="de",
+    )
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        attempts.append(retry)
+        if retry is None:
+            return (
+                TurnOutput(
+                    language="en",
+                    blocks=[
+                        TextBlock(text="This inverter is 10 kW.", refs=["4107"]),
+                        CardsBlock(product_ids=[4107]),
+                    ],
+                ),
+                facts,
+            )
+        return (
+            TurnOutput(
+                language="de",
+                blocks=[
+                    TextBlock(
+                        text="Dieser Wechselrichter ist geeignet.", refs=["4107"]
+                    ),
+                    CardsBlock(product_ids=[4107]),
+                ],
+            ),
+            facts,
+        )
+
+    result = run(request, generate)
+    assert attempts[0] is None
+    assert attempts[1] is not None
+    assert attempts[1].startswith("answer in German")
+    assert "numbers" not in attempts[1]
+    assert result.fallback is False
+    assert result.grounded is True
+    assert result.attempts == 2
+    shipped = result.output.blocks[0]
+    assert isinstance(shipped, TextBlock)
+    assert shipped.text == "Dieser Wechselrichter ist geeignet."
+
+
+def test_a_copied_menu_label_does_not_send_the_german_answer_to_the_template() -> None:
+    """The chunk's own menu phrase does not make a German answer English (#443)."""
+    facts = TurnFacts()
+    facts.add(
+        Fact(
+            id="770ccafa080c-p26-ea46e782.text",
+            value="Please select the type",
+            source="search-knowledge",
+        )
+    )
+    attempts: list[str | None] = []
+    request = TurnRequest(
+        conversation_id="c1",
+        messages=[
+            TurnMessage(role="user", content="Wie stellt man das Exportlimit ein?")
+        ],
+        locale="de",
+    )
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        attempts.append(retry)
+        return (
+            TurnOutput(
+                language="de",
+                blocks=[
+                    TextBlock(
+                        text=(
+                            "Öffnen Sie Please select the type und speichern Sie "
+                            "die Einstellung."
+                        )
+                    )
+                ],
+            ),
+            facts,
+        )
+
+    result = run(request, generate)
+    assert attempts == [None]
+    assert result.fallback is False
+    assert result.grounded is True
+    shipped = result.output.blocks[0]
+    assert isinstance(shipped, TextBlock)
+    assert "Please select the type" in shipped.text
+
+
 def test_invalid_structure_counts_as_a_failed_attempt() -> None:
     def generate(
         _request: TurnRequest, retry: str | None

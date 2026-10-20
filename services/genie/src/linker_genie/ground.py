@@ -88,7 +88,12 @@ from linker_genie.facts import (
     pairing_entries,
     stock_rows,
 )
-from linker_genie.figures import AMOUNT, is_code
+from linker_genie.figures import (
+    AMOUNT,
+    digits_are_regulation,
+    is_code,
+    regulation_number_spans,
+)
 from linker_genie.hydrate import leftover_placeholders
 from linker_genie.route import (
     NamedModel,
@@ -526,11 +531,15 @@ def _strip_text(text: str, allowed: set[float] | None) -> str:
     The separator before a dropped word goes with it. The separator after it
     stays, unless the next word is only the number's unit, which goes too.
     Newlines are separators, so a dropped line does not join the lines around it.
+    A regulation's own number (`VDE-AR-N 4105`, `EnWG 14a Abs. 1`) stays. A
+    detached `4105` and `10 kW` do not.
     """
+    protected = regulation_number_spans(text)
     parts = re.split(r"(\s+)", text)
     kept: list[str] = []
     pending = ""
     index = 0
+    offset = 0
     while index < len(parts):
         part = parts[index]
         if not part:
@@ -538,10 +547,15 @@ def _strip_text(text: str, allowed: set[float] | None) -> str:
             continue
         if part.isspace():
             pending += part
+            offset += len(part)
             index += 1
             continue
-        if _unlicensed(part, allowed):
+        part_end = offset + len(part)
+        if _unlicensed(part, allowed) and not digits_are_regulation(
+            text, offset, part_end, protected
+        ):
             pending = ""
+            offset = part_end
             index += 1
             if (
                 index < len(parts)
@@ -549,14 +563,17 @@ def _strip_text(text: str, allowed: set[float] | None) -> str:
                 and index + 1 < len(parts)
                 and _following_unit(parts[index + 1])
             ):
+                offset += len(parts[index]) + len(parts[index + 1])
                 index += 2
                 if index < len(parts) and parts[index].isspace():
                     pending = parts[index]
+                    offset += len(parts[index])
                     index += 1
             continue
         kept.append(pending)
         kept.append(part)
         pending = ""
+        offset = part_end
         index += 1
     result = "".join(kept)
     if result[:1] in {" ", "\t"} and text[:1] not in {" ", "\t"}:
@@ -923,10 +940,24 @@ def blob_has_figure(blob: str, value: float) -> bool:
 
 
 def _droppable_tokens(text: str) -> list[str]:
+    """Figure tokens `drop_bare_numbers` removes. A regulation number is not one."""
+    protected = regulation_number_spans(text)
     tokens: list[str] = []
-    for word in text.split():
-        if _figure_word(word):
-            tokens.extend(_GRADE_NUMBER.findall(word))
+    for match in re.finditer(r"\S+", text):
+        word = match.group()
+        if not _figure_word(word):
+            continue
+        if digits_are_regulation(text, match.start(), match.end(), protected):
+            continue
+        for token in _GRADE_NUMBER.finditer(word):
+            abs_start = match.start() + token.start()
+            abs_end = match.start() + token.end()
+            if any(
+                span_start <= abs_start and abs_end <= span_end
+                for span_start, span_end in protected
+            ):
+                continue
+            tokens.append(token.group())
     return tokens
 
 
@@ -1617,8 +1648,9 @@ def _no_bare_numbers(
     A title does not license a series digit. `catalogue_name_phrases` still
     blanks that name for the quality citation check; this check does not call
     it. The scan is the same figure word `drop_bare_numbers` removes, so a
-    number-only correction passes the re-check. An ASCII letter glued to a
-    digit ("3-phase") is not one of those words: the product-route strip keeps
+    number-only correction passes the re-check. A regulation's own number is
+    not one of those words (#443). An ASCII letter glued to a digit ("3-phase")
+    is not one of those words: the product-route strip keeps
     it, and flagging it here would send that turn to the template.
     """
     failures: list[str] = []

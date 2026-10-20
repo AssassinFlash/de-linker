@@ -154,9 +154,19 @@ def _seal_and_finish(
         customer_message(request),
         request.page_context.type,
     )
-    if language_failure(sealed, expected) is not None:
+    cited = _cited_prose(priced_facts)
+    if language_failure(sealed, expected, cited) is not None:
         sealed = priced
     return finish(sealed, priced_facts, route, customer_message(request))
+
+
+def _cited_prose(facts: TurnFacts) -> str:
+    """Search-knowledge chunk text, so a copied menu label does not vote (#443)."""
+    return " ".join(
+        fact.value
+        for fact in facts.facts.values()
+        if fact.source == "search-knowledge" and fact.id.endswith(".text")
+    )
 
 
 def _ship_number_correction(
@@ -169,12 +179,14 @@ def _ship_number_correction(
     clock: timing.Timing | None,
     attempt: int,
     retried: tuple[str, ...],
-) -> TurnResult | None:
+) -> TurnResult | str | None:
     """Strip a number-only miss and ship it when the re-check still holds.
 
     A model retry rewrites the answer and can drop the cards the row requires.
     The correction runs on this attempt. A citation or tool failure is not
-    this path. A language miss after the strip is not shipped.
+    this path. A language miss after the strip is the retry reason, so the
+    model is asked to rewrite in the required language rather than to drop
+    a number it has already lost (#443).
     """
     corrected = drop_bare_numbers(output)
     with timing.phase(clock, timing.GROUND):
@@ -184,8 +196,9 @@ def _ship_number_correction(
     priced, priced_facts, missed = _hydrate_priced(
         corrected, facts, route, expected, commerce, clock
     )
-    if language_failure(priced, expected) is not None:
-        return None
+    mismatch = language_failure(priced, expected, _cited_prose(priced_facts))
+    if mismatch is not None:
+        return mismatch
     sealed = _seal_and_finish(request, priced, priced_facts, route, expected)
     return TurnResult(
         output=sealed,
@@ -357,14 +370,20 @@ def run(
                     attempt,
                     last_failures,
                 )
-                if shipped is not None:
+                if isinstance(shipped, TurnResult):
                     return shipped
+                if shipped is not None:
+                    last_failures = (shipped,)
+                    last_citations = ()
+                    _remember(recorded, RecordedFailure(shipped))
+                    retry_reason = shipped
+                    continue
             retry_reason = result.reason
             continue
         priced, priced_facts, missed = _hydrate_priced(
             output, last_facts, route, expected, commerce, clock
         )
-        mismatch = language_failure(priced, expected)
+        mismatch = language_failure(priced, expected, _cited_prose(priced_facts))
         if mismatch is not None:
             last_failures = (mismatch,)
             last_citations = ()
