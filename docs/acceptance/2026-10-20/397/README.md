@@ -214,3 +214,30 @@ Rows corrected this round, each with a page or feed source in the ground: b03 12
 | `full/baseline-20261020T115531.jsonl` | All 100 rows, with `--judge`, on this head. 82 pass, 16 fail, 2 needs-review. Client p50 5.7 s, p95 28.0 s, max 36.6 s. Gate p95 ≤ 30 s held. No hard row failed: b01, b02, b15 and b16 passed in both languages. |
 
 The 16 failures are answer, transport and judge misses, not figure or expectation holes: b07-en (does not name BAT-D-G2), b09-en/de (not_released), b14-de (fell back; ungrounded), b19-en/de (no ask block), b22-de (signed net-price sentence repeated), b25-de (absence wording), b28-en (one working day), b30-en/de, b42-en, b43-en/de, b44-en/de (judge). b45-en/de stayed needs-review.
+
+## Round 8 — rebase onto #408
+
+Rebased onto `d6855478`. The only overlapping files were `grade.py`, `test_baseline.py` and `baseline100.jsonl`. `ground.py` and `language.py` match `origin/main`: `Citation`, `_CHUNK_REF.fullmatch`, and the uncapped `_QUOTED`.
+
+Row resolution, against `97457426`:
+
+| Rows | Resolution |
+|---|---|
+| b09, b10, b15 | #408. Absence wording includes "not on file" / "nicht hinterlegt". b10 is `released` and a no-pairing sentence fails. b15 numbers include the cabinet dimensions 650 and 1221. |
+| b03, b04, b08, b11, b13, b14, b20, b21, b25, b46, b50-de | This branch. True figures stay, with the page or feed source in the ground. |
+| b47 | This branch. #408 did not change b47 against `97457426`. Numbers stay 14.5/63/4 plus 10/220/230/240/60.5. |
+| b12 | Both. Numbers `3`, `2`, `10`, `30`, `40`, `180`, `900`. 40 A is this branch; 180–900 V is #408. The ground says both are allowed when cited. |
+
+`grade.py` keeps both sides: the `is_code` skip, unspaced separators, line-scoped phase powers and per-occurrence `context_numbers`, and #408's released / no-pairing check.
+
+Checks on `346301be`, from `services/genie`, before this artifact: `uv run --locked pytest` 1736 passed, 1 skipped (156 deselected); `ruff check .`, `ruff format --check .`, and `mypy .` clean. The repo-wide `just check` / `just test` was not run.
+
+Same local shop: WordPress `http://127.0.0.1:9177`. Genie on `http://127.0.0.1:9179` was restarted from this checkout before the run; the previous listener was a pre-#408 process. The engine on 9178 was left running. Production was not run.
+
+| Path | What |
+|---|---|
+| `full/baseline-20261020T131733.jsonl` | All 100 rows, with `--judge`, on this head. 82 pass, 16 fail, 2 needs-review. Client p50 5.2 s, p95 22.1 s, max 41.6 s. Gate p95 ≤ 30 s held. No hard row failed: b01, b02, b15 and b16 passed in both languages. |
+
+Collision rows on this file: b09, b10, b12 and b15 pass in both languages. b47 passes in both languages.
+
+The 16 failures are answer and judge misses, not a collision hole: b03-de (number `2` twice), b07-en/de (does not name BAT-D-G2), b08-de (numbers `3` and `1`), b14-de (missing the export-limit wording), b19-en/de (no ask block), b22-en (signed net-price sentence repeated), b25-de (absence wording), b30-en/de, b43-en/de, b44-en/de (judge), b46-en (does not name GW10K-EHA-G20). b45-en/de stayed needs-review. b09, which failed on the round-7 file, passes here.
