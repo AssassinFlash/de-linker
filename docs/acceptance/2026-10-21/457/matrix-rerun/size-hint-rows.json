@@ -1,0 +1,322 @@
+[
+  {
+    "link": "size-hint",
+    "state": "guest",
+    "lang": "en",
+    "viewport": "1440",
+    "verdict": "pass",
+    "evidence": "shots/l1-guest-en-1440-configurator.png",
+    "notes": "fields, language and units match the stated size",
+    "observed": {
+      "href": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+      "query": {
+        "pv_kwp": "10",
+        "annual_kwh": "4500",
+        "phase": "3",
+        "backup": "needed",
+        "plz": "80538"
+      },
+      "form": {
+        "htmlLang": "en-US",
+        "appLang": "en",
+        "plz": "80538",
+        "annual": "4500",
+        "kwp": "10",
+        "phase": "3",
+        "backup": "needed",
+        "steps": [
+          "01Inputs",
+          "02Solution",
+          "03Design report"
+        ],
+        "sections": [
+          "linker-inputs-section",
+          "linker-solution-section"
+        ],
+        "title": "Solution Configurator",
+        "mounted": true
+      },
+      "genieShot": "shots/l1-guest-en-1440-genie.png"
+    }
+  },
+  {
+    "link": "size-hint",
+    "state": "guest",
+    "lang": "en",
+    "viewport": "390",
+    "verdict": "pass",
+    "evidence": "shots/l1-guest-en-390-configurator.png",
+    "notes": "fields, language and units match the stated size",
+    "observed": {
+      "href": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+      "query": {
+        "pv_kwp": "10",
+        "annual_kwh": "4500",
+        "phase": "3",
+        "backup": "needed",
+        "plz": "80538"
+      },
+      "form": {
+        "htmlLang": "en-US",
+        "appLang": "en",
+        "plz": "80538",
+        "annual": "4500",
+        "kwp": "10",
+        "phase": "3",
+        "backup": "needed",
+        "steps": [
+          "01Inputs",
+          "02Solution",
+          "03Design report"
+        ],
+        "sections": [
+          "linker-inputs-section",
+          "linker-solution-section"
+        ],
+        "title": "Solution Configurator",
+        "mounted": true
+      },
+      "genieShot": "shots/l1-guest-en-390-genie.png"
+    }
+  },
+  {
+    "link": "size-hint",
+    "state": "guest",
+    "lang": "de",
+    "viewport": "1440",
+    "verdict": "fail",
+    "evidence": "shots/l1-guest-de-1440-configurator.png",
+    "notes": "html lang en-US != de; landed /solution-configurator/ != /de/loesungskonfigurator/",
+    "observed": {
+      "href": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+      "query": {
+        "pv_kwp": "10",
+        "annual_kwh": "4500",
+        "phase": "3",
+        "backup": "needed",
+        "plz": "80538"
+      },
+      "form": {
+        "htmlLang": "en-US",
+        "appLang": "en",
+        "plz": "80538",
+        "annual": "4500",
+        "kwp": "10",
+        "phase": "3",
+        "backup": "needed",
+        "steps": [
+          "01Inputs",
+          "02Solution",
+          "03Design report"
+        ],
+        "sections": [
+          "linker-inputs-section",
+          "linker-solution-section"
+        ],
+        "title": "Solution Configurator",
+        "mounted": true
+      },
+      "genieShot": "shots/l1-guest-de-1440-genie.png"
+    }
+  },
+  {
+    "link": "size-hint",
+    "state": "guest",
+    "lang": "de",
+    "viewport": "390",
+    "verdict": "fail",
+    "evidence": "shots/l1-guest-de-390-configurator.png",
+    "notes": "html lang en-US != de; landed /solution-configurator/ != /de/loesungskonfigurator/",
+    "observed": {
+      "href": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+      "query": {
+        "pv_kwp": "10",
+        "annual_kwh": "4500",
+        "phase": "3",
+        "backup": "needed",
+        "plz": "80538"
+      },
+      "form": {
+        "htmlLang": "en-US",
+        "appLang": "en",
+        "plz": "80538",
+        "annual": "4500",
+        "kwp": "10",
+        "phase": "3",
+        "backup": "needed",
+        "steps": [
+          "01Inputs",
+          "02Solution",
+          "03Design report"
+        ],
+        "sections": [
+          "linker-inputs-section",
+          "linker-solution-section"
+        ],
+        "title": "Solution Configurator",
+        "mounted": true
+      },
+      "genieShot": "shots/l1-guest-de-390-genie.png"
+    }
+  },
+  {
+    "link": "size-hint",
+    "state": "approved",
+    "lang": "en",
+    "viewport": "1440",
+    "verdict": "pass",
+    "evidence": "shots/l1-approved-en-1440-configurator.png",
+    "notes": "fields, language and units match the stated size",
+    "observed": {
+      "href": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+      "query": {
+        "pv_kwp": "10",
+        "annual_kwh": "4500",
+        "phase": "3",
+        "backup": "needed",
+        "plz": "80538"
+      },
+      "form": {
+        "htmlLang": "en-US",
+        "appLang": "en",
+        "plz": "80538",
+        "annual": "4500",
+        "kwp": "10",
+        "phase": "3",
+        "backup": "needed",
+        "steps": [
+          "01Inputs",
+          "02Solution",
+          "03Design report"
+        ],
+        "sections": [
+          "linker-inputs-section",
+          "linker-solution-section"
+        ],
+        "title": "Solution Configurator",
+        "mounted": true
+      },
+      "genieShot": "shots/l1-approved-en-1440-genie.png"
+    }
+  },
+  {
+    "link": "size-hint",
+    "state": "approved",
+    "lang": "en",
+    "viewport": "390",
+    "verdict": "pass",
+    "evidence": "shots/l1-approved-en-390-configurator.png",
+    "notes": "fields, language and units match the stated size",
+    "observed": {
+      "href": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+      "query": {
+        "pv_kwp": "10",
+        "annual_kwh": "4500",
+        "phase": "3",
+        "backup": "needed",
+        "plz": "80538"
+      },
+      "form": {
+        "htmlLang": "en-US",
+        "appLang": "en",
+        "plz": "80538",
+        "annual": "4500",
+        "kwp": "10",
+        "phase": "3",
+        "backup": "needed",
+        "steps": [
+          "01Inputs",
+          "02Solution",
+          "03Design report"
+        ],
+        "sections": [
+          "linker-inputs-section",
+          "linker-solution-section"
+        ],
+        "title": "Solution Configurator",
+        "mounted": true
+      },
+      "genieShot": "shots/l1-approved-en-390-genie.png"
+    }
+  },
+  {
+    "link": "size-hint",
+    "state": "approved",
+    "lang": "de",
+    "viewport": "1440",
+    "verdict": "fail",
+    "evidence": "shots/l1-approved-de-1440-configurator.png",
+    "notes": "html lang en-US != de; landed /solution-configurator/ != /de/loesungskonfigurator/",
+    "observed": {
+      "href": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+      "query": {
+        "pv_kwp": "10",
+        "annual_kwh": "4500",
+        "phase": "3",
+        "backup": "needed",
+        "plz": "80538"
+      },
+      "form": {
+        "htmlLang": "en-US",
+        "appLang": "en",
+        "plz": "80538",
+        "annual": "4500",
+        "kwp": "10",
+        "phase": "3",
+        "backup": "needed",
+        "steps": [
+          "01Inputs",
+          "02Solution",
+          "03Design report"
+        ],
+        "sections": [
+          "linker-inputs-section",
+          "linker-solution-section"
+        ],
+        "title": "Solution Configurator",
+        "mounted": true
+      },
+      "genieShot": "shots/l1-approved-de-1440-genie.png"
+    }
+  },
+  {
+    "link": "size-hint",
+    "state": "approved",
+    "lang": "de",
+    "viewport": "390",
+    "verdict": "fail",
+    "evidence": "shots/l1-approved-de-390-configurator.png",
+    "notes": "html lang en-US != de; landed /solution-configurator/ != /de/loesungskonfigurator/",
+    "observed": {
+      "href": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+      "query": {
+        "pv_kwp": "10",
+        "annual_kwh": "4500",
+        "phase": "3",
+        "backup": "needed",
+        "plz": "80538"
+      },
+      "form": {
+        "htmlLang": "en-US",
+        "appLang": "en",
+        "plz": "80538",
+        "annual": "4500",
+        "kwp": "10",
+        "phase": "3",
+        "backup": "needed",
+        "steps": [
+          "01Inputs",
+          "02Solution",
+          "03Design report"
+        ],
+        "sections": [
+          "linker-inputs-section",
+          "linker-solution-section"
+        ],
+        "title": "Solution Configurator",
+        "mounted": true
+      },
+      "genieShot": "shots/l1-approved-de-390-genie.png"
+    }
+  }
+]

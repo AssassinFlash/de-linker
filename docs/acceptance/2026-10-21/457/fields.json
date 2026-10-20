@@ -1,0 +1,110 @@
+[
+  {
+    "name": "en-plain",
+    "requested": "http://127.0.0.1:9234/solution-configurator/",
+    "url": "http://127.0.0.1:9234/solution-configurator/",
+    "htmlLang": "en-US",
+    "appLang": "en",
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "heatPump": false,
+    "mount": {
+      "pvKwp": null,
+      "annualKwh": null,
+      "phase": null,
+      "backup": null,
+      "plz": null
+    },
+    "script": "http://127.0.0.1:9234/wp-content/plugins/linker-tools/build/configurator.js?ver=5ea89b36c5f6f438824b",
+    "title": "Solution Configurator",
+    "shots": [
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/en-plain-1440.png",
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/en-plain-fields.png",
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/en-plain-390.png"
+    ]
+  },
+  {
+    "name": "en-size-hint",
+    "requested": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "url": "http://127.0.0.1:9234/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "htmlLang": "en-US",
+    "appLang": "en",
+    "plz": "80538",
+    "annual": "4500",
+    "kwp": "10",
+    "phase": "3",
+    "backup": "needed",
+    "heatPump": false,
+    "mount": {
+      "pvKwp": "10",
+      "annualKwh": "4500",
+      "phase": null,
+      "backup": "needed",
+      "plz": "80538"
+    },
+    "script": "http://127.0.0.1:9234/wp-content/plugins/linker-tools/build/configurator.js?ver=5ea89b36c5f6f438824b",
+    "title": "Solution Configurator",
+    "shots": [
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/en-size-hint-1440.png",
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/en-size-hint-fields.png",
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/en-size-hint-390.png"
+    ]
+  },
+  {
+    "name": "de-plain",
+    "requested": "http://127.0.0.1:9234/de/loesungskonfigurator/",
+    "url": "http://127.0.0.1:9234/de/loesungskonfigurator/",
+    "htmlLang": "de-DE",
+    "appLang": "de",
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "heatPump": false,
+    "mount": {
+      "pvKwp": null,
+      "annualKwh": null,
+      "phase": null,
+      "backup": null,
+      "plz": null
+    },
+    "script": "http://127.0.0.1:9234/wp-content/plugins/linker-tools/build/configurator.js?ver=5ea89b36c5f6f438824b",
+    "title": "Lösungskonfigurator",
+    "shots": [
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/de-plain-1440.png",
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/de-plain-fields.png",
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/de-plain-390.png"
+    ]
+  },
+  {
+    "name": "de-size-hint",
+    "requested": "http://127.0.0.1:9234/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "url": "http://127.0.0.1:9234/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "htmlLang": "de-DE",
+    "appLang": "de",
+    "plz": "80538",
+    "annual": "4500",
+    "kwp": "10",
+    "phase": "3",
+    "backup": "needed",
+    "heatPump": false,
+    "mount": {
+      "pvKwp": "10",
+      "annualKwh": "4500",
+      "phase": null,
+      "backup": "needed",
+      "plz": "80538"
+    },
+    "script": "http://127.0.0.1:9234/wp-content/plugins/linker-tools/build/configurator.js?ver=5ea89b36c5f6f438824b",
+    "title": "Lösungskonfigurator",
+    "shots": [
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/de-size-hint-1440.png",
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/de-size-hint-fields.png",
+      "/Users/chesterjohn/Documents/de-linker/.claude/worktrees/w457/docs/acceptance/2026-10-21/457/de-size-hint-390.png"
+    ]
+  }
+]

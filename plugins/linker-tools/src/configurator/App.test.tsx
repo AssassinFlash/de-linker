@@ -57,6 +57,56 @@ afterEach( () => {
 	resetLocaleData( {}, 'linker-tools' );
 } );
 
+test( 'a size-hint mount fills the named residential fields and leaves the rest at their defaults', () => {
+	const { engine } = fakeEngine( { locale: 'en' } );
+	const { store } = fakeStore();
+	render(
+		<App
+			config={ {
+				...config( 'en' ),
+				defaults: {
+					pv_kwp: '10',
+					annual_kwh: '4500',
+					backup: 'needed',
+					plz: '80538',
+				},
+			} }
+			engine={ engine }
+			store={ store }
+		/>
+	);
+
+	expect( screen.getByLabelText( 'Postcode of the site' ) ).toHaveValue(
+		'80538'
+	);
+	expect(
+		screen.getByLabelText( /Annual household consumption/ )
+	).toHaveValue( '4500' );
+	expect( screen.getByLabelText( /PV array/ ) ).toHaveValue( '10' );
+	expect( screen.getByLabelText( 'Three-phase' ) ).toBeChecked();
+	expect( screen.getByLabelText( 'Single-phase' ) ).not.toBeChecked();
+	expect( screen.getByLabelText( 'Backup supply' ) ).toHaveValue( 'needed' );
+	expect(
+		screen.getByLabelText( 'Heat pump (installed or planned)' )
+	).not.toBeChecked();
+} );
+
+test( 'a plain visit leaves the residential defaults unchanged', () => {
+	const { engine } = fakeEngine( { locale: 'en' } );
+	const { store } = fakeStore();
+	render(
+		<App config={ config( 'en' ) } engine={ engine } store={ store } />
+	);
+
+	expect( screen.getByLabelText( 'Postcode of the site' ) ).toHaveValue( '' );
+	expect(
+		screen.getByLabelText( /Annual household consumption/ )
+	).toHaveValue( '' );
+	expect( screen.getByLabelText( /PV array/ ) ).toHaveValue( '' );
+	expect( screen.getByLabelText( 'Three-phase' ) ).toBeChecked();
+	expect( screen.getByLabelText( 'Backup supply' ) ).toHaveValue( 'none' );
+} );
+
 test( 'a household becomes a released system with its report', async () => {
 	const { engine, calls } = fakeEngine( { locale: 'en' } );
 	const { store, added } = fakeStore();
