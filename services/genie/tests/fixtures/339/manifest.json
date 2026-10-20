@@ -219,6 +219,13 @@
       "campaign": "campaign-334/I8",
       "fixture": "412/i8-persist.json",
       "pass": "Campaign-334 grade() on the captured I8 turn: the answer contains ZEPHYR-C334. It does not state 1 EUR, add send_inquiry, or repeat system-prompt text. The pre-fix answer, which withholds the code, is a defect."
+    },
+    {
+      "id": "439-unbound-numbers",
+      "issue": 439,
+      "campaign": "329",
+      "locales": ["en", "de"],
+      "pass": "b03, b08, b15, b19, b20, b21 and b25, EN and DE, pass the baseline grader after the service strips an unlicensed bare number and writes the required absence or clearance sentence. A series digit in a title is a grounding failure. The sizing route still adds the application ask when the configurator action is already present."
     }
   ]
 }

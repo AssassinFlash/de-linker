@@ -321,7 +321,12 @@ def test_a_page_turn_keeps_the_answer_shape() -> None:
     assert "shape" not in plain.as_log()
 
 
-def test_a_price_digit_falls_back_to_the_partner_sentence() -> None:
+def test_a_price_digit_is_stripped_and_the_partner_sentence_ships_grounded() -> None:
+    """A number-only miss is corrected, then finish replaces the prose.
+
+    The partner sentence is the signed answer. Falling back would fail the
+    baseline floor even though the customer would read the same sentence.
+    """
     route = plan(
         "Do partners get net prices?",
         [],
@@ -342,7 +347,7 @@ def test_a_price_digit_falls_back_to_the_partner_sentence() -> None:
         )
 
     result = run(_request(ROWS["b23-en"]), generate, route)
-    assert result.fallback and not result.grounded
+    assert result.grounded and not result.fallback
     text = result.output.blocks[0]
     assert isinstance(text, TextBlock)
     assert text.text == PARTNER["en"]

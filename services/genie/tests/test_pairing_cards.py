@@ -213,9 +213,13 @@ def test_a_first_attempt_that_omits_the_inverter_card_still_shows_it() -> None:
 
 
 def test_a_pairing_fallback_stays_inside_six_cards_and_keeps_the_inverter() -> None:
-    """Both drafts fail the number check. The template's six-card cap stays
-    (trial question 11). The six are the front of the released set, so the
-    inverter is not sorted out of the window.
+    """Both drafts fail grounding for more than a bare number. The template's
+    six-card cap stays (trial question 11). The six are the front of the
+    released set, so the inverter is not sorted out of the window.
+
+    A number-only miss is corrected and would ship the model's own cards.
+    The banned word keeps this turn on the template path. The word is only in
+    the draft; the fallback replaces the prose.
 
     Before the fill the template's sorted sample does not start with 4107.
     A fill that ignores the cap ships all eight and fails the length check.
@@ -229,7 +233,7 @@ def test_a_pairing_fallback_stays_inside_six_cards_and_keeps_the_inverter() -> N
         return (
             _answer(
                 "de",
-                "Die Spannung liegt bei 180 V.",
+                "Die Spannung liegt bei 180 V. Ein Artikel steht daneben.",
                 BATTERIES,
             ),
             facts,

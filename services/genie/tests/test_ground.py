@@ -1,7 +1,7 @@
 """Five anchoring checks: injected failures are all refused."""
 
 from linker_genie.facts import Fact, TurnFacts
-from linker_genie.ground import bare_numbers, catalogue_name_phrases, check
+from linker_genie.ground import Citation, bare_numbers, catalogue_name_phrases, check
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
 from linker_genie.route import NamedModel, Route, Subject, plan
@@ -239,21 +239,28 @@ def _ocean(text: str) -> TurnOutput:
     )
 
 
-def test_a_series_designator_in_a_returned_title_is_not_a_number() -> None:
+def test_a_series_designator_in_a_returned_title_is_a_number() -> None:
+    """The grader does not treat "OCEAN 2" as a catalogue code (#439)."""
     facts = _ocean_facts()
-    assert check(_ocean("The EcoFlow OCEAN 2 is the single-phase hybrid."), facts).ok
-    assert check(_ocean("The EcoFlow ocean 2 is the single-phase hybrid."), facts).ok
+    result = check(_ocean("The EcoFlow OCEAN 2 is the single-phase hybrid."), facts)
+    assert not result.ok
+    assert result.unbound_only
+    assert result.failures == ("model text contains numbers ['2']",)
+    assert result.citations == (Citation(kind="number", ref="2"),)
+    folded = check(_ocean("The EcoFlow ocean 2 is the single-phase hybrid."), facts)
+    assert folded.failures == ("model text contains numbers ['2']",)
 
 
 def test_a_power_beside_a_series_name_is_still_a_number() -> None:
     result = check(_ocean("The EcoFlow OCEAN 2 is rated 10 kW."), _ocean_facts())
-    assert result.failures == ("model text contains numbers ['10']",)
+    assert result.failures == ("model text contains numbers ['2', '10']",)
+    assert result.unbound_only
 
 
 def test_two_years_is_still_a_number_when_the_title_names_ocean_2() -> None:
     result = check(_ocean("The EcoFlow OCEAN 2 ships in 2 years."), _ocean_facts())
     assert not result.ok
-    assert "['2']" in result.reason
+    assert "['2', '2']" in result.reason
 
 
 def test_a_decimal_beside_the_series_name_is_still_a_number() -> None:
