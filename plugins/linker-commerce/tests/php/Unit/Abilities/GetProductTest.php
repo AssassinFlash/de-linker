@@ -45,6 +45,9 @@ final class GetProductTest extends TestCase {
 
 		$this->assertSame( 4107, $result['product_id'] );
 		$this->assertNotSame( '', $result['title'] );
+		// Title and URL are the marker Genie reads as a real product
+		// (facts._real_product); the commerce object's price line is not it.
+		$this->assertNotSame( '', $result['url'] );
 		$this->assertSame( 'home', $result['facts']['application'] );
 		$this->assertSame( 3, $result['facts']['phase'] );
 		$this->assertFalse( $result['commerce']['price_visible'] );
@@ -57,13 +60,17 @@ final class GetProductTest extends TestCase {
 	}
 
 	/**
-	 * An unpublished or missing ID still fits the schema.
+	 * An unpublished or missing ID still fits the schema. Its title, URL and
+	 * SKU are empty: the three fields Genie reads as the marker of a real
+	 * product (facts._real_product).
 	 */
 	public function test_missing_product_fits_the_schema(): void {
 		$this->mock_live_products( array() );
 		$result = ( new GetProduct() )->execute( array( 'product_id' => 1 ) );
 
 		$this->assertSame( '', $result['title'] );
+		$this->assertSame( '', $result['url'] );
+		$this->assertSame( '', $result['sku'] );
 		$this->assertSame( array(), (array) $result['facts'] );
 	}
 }

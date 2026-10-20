@@ -46,11 +46,17 @@ Three shapes, each inside the protocol set by construction
 - A products route whose search qualified nothing: no cards from
   `facts.product_ids`. A search that ran asks once; a search that did not
   run is the outage sentence above.
+- A stock-status turn (`route.stock`, #415), after the clarification above
+  (an empty successful search stays this turn's, never "No product matched."):
+  the page's status sentence and the cards. Mixed statuses name both
+  statuses, not one status for every card. No usable status is the degraded
+  sentence, not a recommendation. A stock question that also asks about
+  delivery adds the team sentence for that part.
 """
 
 from __future__ import annotations
 
-from linker_genie.facts import TurnFacts
+from linker_genie.facts import TurnFacts, stock_rows
 from linker_genie.failure import FailureClass
 from linker_genie.hydrate import hydrate
 from linker_genie.route import (
@@ -74,6 +80,7 @@ from linker_genie.schema import (
     TextBlock,
     TurnOutput,
 )
+from linker_genie.stock import phrase
 
 # The degraded sentence, EN and DE. Functional UI text (a state the turn can
 # land in), owned here next to the only writer; its wording went through the
@@ -135,6 +142,12 @@ NOT_IN_RANGE_EN = "not in our product range"
 NOT_IN_RANGE_DE = "haben wir kein Produkt"
 NO_MATCH_EN = "No product matched."
 NO_MATCH_DE = "Dazu haben wir kein passendes Produkt."
+# Both statuses, when the products do not share one (#415). The page's own
+# lines, so a blanket "In stock" is not written over an out-of-stock card.
+MIXED_STATUS = {
+    "en": ("Some of these products are in stock and some are currently unavailable."),
+    "de": ("Einige dieser Produkte sind auf Lager, andere derzeit nicht verfügbar."),
+}
 
 # English function words that only appear in an English sentence. The e2e
 # suite uses the same test (tests/e2e/specs/genie.spec.ts ENGLISH_ONLY) to
@@ -283,6 +296,36 @@ def _named_codes_sentence(codes: list[str], language: Locale) -> str:
     return f"You named {shown}."
 
 
+def stock_answer(
+    facts: TurnFacts, language: Locale, *, handoff: str | None = None
+) -> TurnOutput | None:
+    """The status sentence and its cards.
+
+    None when this turn has no usable stock flag. One shared flag is the
+    page's own line (stock.phrase), with no quantity. Differing flags name
+    both page lines, so a blanket "In stock" is not written over a card that
+    is out of stock. `handoff` is the team sentence for a delivery question
+    in the same message. A missing flag is not false.
+    """
+    rows = stock_rows(facts)
+    if not rows:
+        return None
+    ids = [product_id for product_id, _flag in rows][:SEARCH_LIMIT]
+    flags = {flag for _product_id, flag in rows}
+    refs = [f"p{product_id}.stock" for product_id in ids]
+    cards = CardsBlock(product_ids=ids)
+    status = (
+        MIXED_STATUS[language] if len(flags) != 1 else phrase(language, flags.pop())
+    )
+    blocks: list[Block] = [
+        TextBlock(text=status, refs=refs),
+        cards,
+    ]
+    if handoff:
+        blocks.append(HandoffBlock(summary=handoff))
+    return TurnOutput(language=language, blocks=blocks)
+
+
 def german_is_clean(text: str) -> bool:
     """A German line carries none of the English function-word fragments."""
     padded = f" {text.lower()} "
@@ -348,6 +391,17 @@ def fallback(
     clarified = _clarify(facts, language, route)
     if clarified is not None:
         return clarified
+    # Stock status only after a clarification: a conflict, an unknown code,
+    # or several models still name the catalog. No usable flag is the
+    # degraded sentence (#410's shape, #366), not a generic recommendation.
+    # A stock question that names no product is route.answer, written in
+    # app._answer before the model runs. This fallback never sees it.
+    if route is not None and route.stock:
+        handoff = team_sentence(facts) if route.delivery else None
+        answered = stock_answer(facts, language, handoff=handoff)
+        if answered is None:
+            return _degraded(language)
+        return answered
     # Which ids may be shown lives in `_card_ids` (#366). This branch only
     # chooses the sentence when a products search qualified nothing.
     if route is not None and route.name == "products" and not facts.qualified_ids:
@@ -455,9 +509,13 @@ def _clarify(
             return _ask_answer(language, tail(pending))
     if missed or outage:
         return _ask_answer(language, tail([]))
+    # A stock turn's empty search is not "No product matched.": the stock
+    # branch below turns a missing status into the degraded sentence (#415
+    # review round 3, blocker 3).
     if (
         route.name in ("products", "model")
         and route.no_handoff
+        and not route.stock
         and not qualified
         and not facts.product_ids
         and _search_succeeded(facts)
@@ -595,6 +653,14 @@ def _outage(facts: TurnFacts, language: Locale) -> TurnOutput:
         language=language,
         blocks=[HandoffBlock(summary=summary)],
     )
+
+
+def team_sentence(facts: TurnFacts) -> str | None:
+    """The handoff-team sentence for this turn, when that call returned one."""
+    sentence = facts.facts.get("handoff.sentence")
+    if sentence is None or not sentence.value:
+        return None
+    return sentence.value
 
 
 def _mailbox(facts: TurnFacts, language: Locale) -> str:

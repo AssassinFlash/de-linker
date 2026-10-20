@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from linker_genie.figures import swap_decimals
+from linker_genie.stock import phrase
 from linker_genie.tools import READ_ATTACHMENT, READ_PAGE
 
 
@@ -50,6 +51,10 @@ class TurnFacts:
     # customer (price_visible, price, price_line, price_reason; #242), from which
     # the service fills the product cards' price lines (prices.fill).
     commerce: dict[int, dict[str, Any]] = field(default_factory=dict)
+    # Product ID → in_stock, only when the tool row is a real product
+    # (_real_product). ProductCommerce::hidden is absent. A price line is
+    # not this marker (#415).
+    stock_flags: dict[int, bool] = field(default_factory=dict)
 
     def add(self, fact: Fact) -> None:
         self.facts[fact.id] = fact
@@ -223,6 +228,7 @@ def merge(parts: list[TurnFacts]) -> TurnFacts:
         combined.tool_calls.extend(part.tool_calls)
         combined.documents.update(part.documents)
         combined.commerce.update(part.commerce)
+        combined.stock_flags.update(part.stock_flags)
         for field_name in part.unknown_fields:
             if field_name not in combined.unknown_fields:
                 combined.unknown_fields.append(field_name)
@@ -241,7 +247,14 @@ def _from_search(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> N
         raw_facts = item.get("facts")
         facts = raw_facts if isinstance(raw_facts, dict) else {}
         _add_selection_facts(gathered, product_id, facts)
-        _add_commerce(gathered, product_id, item.get("commerce"), "search-products")
+        _add_commerce(
+            gathered,
+            product_id,
+            item.get("commerce"),
+            "search-products",
+            locale,
+            item,
+        )
         # The pairings the tool itself annotated on this inverter: the battery
         # ids become citable, a released verdict qualifies the battery for
         # cards (the tool cleared it — same rank as search qualification),
@@ -334,7 +347,14 @@ def _from_product(
         raw_figures = payload.get("figures")
         if isinstance(raw_figures, dict):
             _add_figures(gathered, product_id, raw_figures, locale)
-        _add_commerce(gathered, product_id, payload.get("commerce"), "get-product")
+        _add_commerce(
+            gathered,
+            product_id,
+            payload.get("commerce"),
+            "get-product",
+            locale,
+            payload,
+        )
         # The product's hosted documents (datasheet, manual): linkable as
         # document blocks `pID.document.N`, never as a URL in the text (#233).
         for index, document in enumerate(payload.get("documents") or []):
@@ -347,12 +367,71 @@ def _from_product(
                 )
 
 
-def _add_commerce(gathered: TurnFacts, product_id: int, raw: Any, source: str) -> None:
+# One product this turn can state stock for: its id, then the flag.
+StockRow = tuple[int, bool]
+
+
+def stock_rows(facts: TurnFacts) -> list[StockRow] | None:
+    """Product ids and stock flags this turn can state, or None.
+
+    Qualified ids win. Otherwise the products that carry a real flag.
+    A missing flag is not false. `ProductCommerce::hidden` is not an
+    out-of-stock product: the row has no title, URL or SKU.
+    """
+    chosen = sorted(facts.qualified_ids)
+    if not chosen:
+        chosen = sorted(facts.stock_flags)
+    if not chosen:
+        return None
+    rows: list[StockRow] = []
+    for product_id in chosen:
+        flag = facts.stock_flags.get(product_id)
+        if not isinstance(flag, bool):
+            return None
+        rows.append((product_id, flag))
+    return rows
+
+
+def _real_product(record: dict[str, Any]) -> bool:
+    """Whether this tool row is a product that exists.
+
+    A published product has a title, a URL or a SKU (search-products' card,
+    get-product's record). get-product's empty record, the one that carries
+    `ProductCommerce::hidden`, has none of them. `price_line` is the page's
+    price sentence, not this marker.
+    """
+    for key in ("title", "url", "sku"):
+        value = record.get(key)
+        if isinstance(value, str) and value.strip():
+            return True
+    return False
+
+
+def _stock_flag(commerce: Any, real: bool) -> bool | None:
+    """The stock flag of a real product, or None."""
+    if not real or not isinstance(commerce, dict):
+        return None
+    flag = commerce.get("in_stock")
+    if isinstance(flag, bool):
+        return flag
+    return None
+
+
+def _add_commerce(
+    gathered: TurnFacts,
+    product_id: int,
+    raw: Any,
+    source: str,
+    locale: str,
+    record: dict[str, Any],
+) -> None:
     """The product's commerce object for this customer (#242).
 
     The price stays a fact (`pID.price`) only so the quality check can tell a
     price the site let this turn see (`quality/citations.py`): the model never
-    writes it (ground.py), the product card shows it (prices.fill).
+    writes it (ground.py), the product card shows it (prices.fill). The stock
+    flag becomes `pID.stock` as the page's status sentence (#415), and only
+    for a real product (`_real_product`).
     """
     if not isinstance(raw, dict):
         return
@@ -361,6 +440,17 @@ def _add_commerce(gathered: TurnFacts, product_id: int, raw: Any, source: str) -
         gathered.add(
             Fact(id=f"p{product_id}.price", value=str(raw["price"]), source=source)
         )
+    flag = _stock_flag(raw, _real_product(record))
+    if flag is None:
+        return
+    gathered.stock_flags[product_id] = flag
+    gathered.add(
+        Fact(
+            id=f"p{product_id}.stock",
+            value=phrase(locale, flag),
+            source=source,
+        )
+    )
 
 
 def _from_compare(gathered: TurnFacts, payload: dict[str, Any]) -> None:

@@ -534,6 +534,10 @@ msgstr "Modell"
 msgid "In stock"
 msgstr "Auf Lager"
 
+#: build/genie.js src/genie/components/GenieCard.tsx
+msgid "Currently unavailable"
+msgstr "Derzeit nicht verfügbar"
+
 #: build/genie.js:1 build/hero.js
 msgid "Yes"
 msgstr "Ja"

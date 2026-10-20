@@ -78,6 +78,7 @@ qty 经 `wc_update_product_stock()` 落库 → 商品 `save()` → WooCommerce �
 | 目录侧栏计数与筛选 | 计数不含缺货品 | `CatalogFilters::archive_product_ids()` 读同一选项，排除同一词项 |
 | 商品页徽标 | "In stock" / "Currently unavailable"（DE：Auf Lager / Derzeit nicht verfügbar） | `ProductView` 读 `is_in_stock()`（既有行为） |
 | Genie 工具面 | `in_stock` 反映真实状态 | `ProductCommerce::of()` 读 `is_in_stock()`（不再硬编码 true） |
+| Genie 库存问句 | 一个商品说出商品页的状态句（In stock / Currently unavailable；德：Auf Lager / Derzeit nicht verfügbar），不报数量。几个商品状态不一致，或问句没有点名商品，用另写的句子（文案评审 `docs/acceptance/2026-10-20/415/copy-review.md`）。卡片徽标用商品页同一对词，不再空白。查不到状态时用降级句，不说推荐商品；搜索成功但没命中商品也答降级句。整句都在问库存（或配送）时服务直接作答；同一句还问了别的（效率、数据表），模型答完整问句，状态是其中一部分 | `route.stock`（#415）。单商品状态句是商品页已有的。WHICH_PRODUCT 与 MIXED_STATUS 是本票另写的。`route.stock_beside` 是复合问句 |
 | Solution draft / 询盘 | 缺货商品加不进草案（`add_to_cart` 拒绝），恢复即重新可加 | Woo 原生库存门 + 既有词汇翻译 |
 
 ## 自定义代码的穷尽证明（三件套原生优先）
@@ -104,3 +105,6 @@ qty 经 `wc_update_product_stock()` 落库 → 商品 `save()` → WooCommerce �
 变更记录
 - 2026-10-11 初版（票据 #69）。
 - 2026-10-11 修复轮（评审必改）：审计行保留清扫（90 天、每日 cron 批量删，`Stock\Retention`）与缺货阈值（`woocommerce_notify_no_stock_amount`）说明。
+- 2026-10-20（#415）：Genie 库存问句说出当前状态，不报数量。见上表 Genie 行。
+- 2026-10-20（#415 评审第 2 轮）：上表原先写「句子是商品页已有的，不另写」。这只对单商品的状态句成立。没点名商品的问句（WHICH_PRODUCT）和状态不一致的句子（MIXED_STATUS）是另写的，定稿 `docs/acceptance/2026-10-20/415/copy-review.md`。`lieferbar` 写进 `route._LOGISTICS` 之后，`with_page()` 对每一个含这个词、且本身不是库存路由的本页问题都改走团队：`with_page` 见到物流词且 `route.stock` 为假就换成 `service()`。这超出 #415 的库存问句。以前本页问题里的 delivery、shipping、lieferung、versand、fracht 会这样，`lieferbar` 以前不会。配送仍不报库存，把 `lieferbar` 算进物流说得通，但这是库存问句以外的行为变化，记在这里。同轮库存词补上 stock status、Lagerstatus、unavailable、ausverkauft。配送词（含 lieferbar）仍不是库存问句。Jev 把这些库存词记成 `company_logistics_service` 时仍走库存，不进 `service()`。
+- 2026-10-20（#415 评审第 3 轮）：只有整句都在问库存（或配送）时服务才直接写状态句（`route.stock_beside` 为假）。同一句还问了别的，模型答完整问句，库存状态是其中一个事实/提示。商品页上的规格问句（“Is 3-phase available?”）不因页面商品而变成库存问句。库存搜索成功但没命中商品时答降级句，不答 “No product matched.”。

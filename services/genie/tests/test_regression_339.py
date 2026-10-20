@@ -6,23 +6,29 @@ docs/acceptance/2026-10-19/379/339-cases.md is the index.
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
+from fastapi import Request
 
-from linker_genie.facts import Fact, TurnFacts
+from linker_genie.app import _answer
+from linker_genie.facts import Fact, TurnFacts, collect
 from linker_genie.ground import check
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Vocabulary
+from linker_genie.prices import Lookup
 from linker_genie.route import NamedModel, Route, Subject, plan, with_page
 from linker_genie.schema import (
     CardsBlock,
     HandoffBlock,
     PageContext,
     TextBlock,
+    TurnMessage,
     TurnOutput,
+    TurnRequest,
 )
 from linker_genie.template import DEGRADED, fallback
+from linker_genie.understand import Prepared
 
 SET = (
     Path(__file__).resolve().parents[1]
@@ -62,6 +68,15 @@ EXPECTED = (
     "339-384-hidden-de",
     "339-384-hidden-omits-en",
     "339-384-hidden-omits-de",
+    "339-11-en-out-visitor",
+    "339-11-en-out-approved",
+    "339-11-en-in-visitor",
+    "339-11-en-in-approved",
+    "339-11-de-out-visitor",
+    "339-11-de-out-approved",
+    "339-11-de-in-visitor",
+    "339-11-de-in-approved",
+    "339-11-failure",
 )
 
 
@@ -179,8 +194,23 @@ def test_339_product_word_case(row: dict[str, Any], vocabulary: Vocabulary) -> N
         _ground(row)
     elif kind == "fallback":
         _fallback(row)
+    elif kind == "stock":
+        _stock(row, vocabulary)
     else:
         raise AssertionError(kind)
+
+
+class _Model:
+    """A generator that fails the test if the stock turn calls it."""
+
+    def __call__(self, *_args: object, **_kwargs: object) -> None:
+        raise AssertionError("the model ran on a stock-status question")
+
+
+class _Request:
+    class app:  # noqa: N801 - the shape _answer reads is request.app.state
+        class state:
+            generate = _Model()
 
 
 def _plan(row: dict[str, Any], vocabulary: Vocabulary) -> None:
@@ -192,6 +222,9 @@ def _plan(row: dict[str, Any], vocabulary: Vocabulary) -> None:
         subject,
         row["lang"],
     )
+    # These rows are the older product-word cases. A stock word inside a
+    # document question stays on that route (#415 yields to documents_specs).
+    assert route.stock is False
     if "max_calls" in row:
         assert len(route.calls) <= row["max_calls"]
     if row.get("named_empty"):
@@ -279,6 +312,104 @@ def _fallback(row: dict[str, Any]) -> None:
     notes = tuple(_note(raw) for raw in row["notes"])
     route = Route("products", show_products=True, no_handoff=True, named_models=notes)
     _check_fallback(route, row, row["lang"])
+
+
+def _http() -> Request[Any]:
+    """Enough of a request for a turn the service answers itself."""
+    return cast(Request[Any], _Request())
+
+
+def _turn(row: dict[str, Any]) -> TurnRequest:
+    return TurnRequest(
+        conversation_id="415",
+        messages=[TurnMessage(role="user", content=row["message"])],
+        locale=row["lang"],
+    )
+
+
+def _stock(row: dict[str, Any], vocabulary: Vocabulary) -> None:
+    """#415: the status sentence, the card, and no quantity."""
+    route = plan(
+        row["message"],
+        vocabulary.match(row["message"]),
+        _reading(row["intent"], row["confidence"]),
+        _subject(vocabulary, None),
+        row["lang"],
+    )
+    assert route.name == "products"
+    assert route.stock is True
+    assert route.no_handoff is True
+    assert any(call.ability == "linker/search-products" for call in route.calls)
+    assert all(call.ability != "linker/handoff-team" for call in route.calls)
+    if row.get("failed"):
+        result, block = _answer(
+            _turn(row), Prepared(route=route), _http(), cast(Lookup, None)
+        )
+        assert block is None
+        assert result.grounded is False
+        assert result.fallback is True
+        assert result.attempts == 0
+        assert result.failures == ("stock status unavailable",)
+        assert isinstance(result.output.blocks[0], HandoffBlock)
+        assert result.output.blocks[0].summary == DEGRADED[row["lang"]]
+        assert not any(isinstance(item, CardsBlock) for item in result.output.blocks)
+        summary = result.output.blocks[0].summary
+        assert "matching products" not in summary.casefold()
+        assert "passende Produkte" not in summary
+        return
+    product_id = row["product_id"]
+    facts = collect(
+        "linker/search-products",
+        {
+            "qualified": [
+                {
+                    "product_id": product_id,
+                    "title": "SAJ H2-10K-T3",
+                    "url": "https://de-linker.com/product/saj-h2-10k-t3/",
+                    "sku": "DLK-SAJ-H210KT3",
+                    "facts": {},
+                    "commerce": {
+                        "price_visible": row["price_reason"] is None,
+                        "in_stock": row["in_stock"],
+                        "price_line": row["price_line"],
+                        "price_reason": row["price_reason"],
+                    },
+                }
+            ]
+        },
+        row["lang"],
+    )
+    assert facts.facts[f"p{product_id}.stock"].value == row["status"]
+    result, block = _answer(
+        _turn(row),
+        Prepared(route=route, facts=facts),
+        _http(),
+        cast(Lookup, None),
+    )
+    assert block is None
+    assert result.grounded is True
+    assert result.fallback is False
+    assert result.attempts == 0
+    assert result.failures == ()
+    text = _sentence(result.output)
+    assert text == row["status"]
+    assert not any(character.isdigit() for character in text)
+    for banned in (
+        "quantity",
+        "quantities",
+        "units",
+        "pieces",
+        "stück",
+        "lagerbestand",
+    ):
+        assert banned not in text.casefold()
+    cards = [item for item in result.output.blocks if isinstance(item, CardsBlock)]
+    assert len(cards) == 1
+    assert cards[0].product_ids == [product_id]
+    assert cards[0].prices is not None and len(cards[0].prices) == 1
+    assert cards[0].prices[0].text == row["price_line"]
+    assert cards[0].prices[0].reason == row["price_reason"]
+    assert row["price_line"] not in text
 
 
 def _check_fallback(route: Route, raw: dict[str, Any], lang: str) -> None:

@@ -78,10 +78,16 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from linker_genie.facts import Fact, TurnFacts
+from linker_genie.facts import Fact, TurnFacts, stock_rows
 from linker_genie.figures import AMOUNT, is_code
 from linker_genie.hydrate import leftover_placeholders
-from linker_genie.route import NamedModel, Route, absence_allowed, lookup_models
+from linker_genie.route import (
+    NamedModel,
+    Route,
+    absence_allowed,
+    lookup_models,
+    simple_stock,
+)
 from linker_genie.schema import (
     ActionBlock,
     AskBlock,
@@ -92,6 +98,7 @@ from linker_genie.schema import (
     TextBlock,
     TurnOutput,
 )
+from linker_genie.stock import phrase as stock_phrase
 from linker_genie.template import NOT_IN_RANGE_DE, NOT_IN_RANGE_EN
 
 BARE_NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
@@ -259,7 +266,6 @@ def check(
     failures.extend(_refs_and_placeholders(output, facts))
     failures.extend(_cards_and_qualified(output, facts))
     failures.extend(_actions(output, facts))
-    failures.extend(_handoff_only_when_out_of_scope(output))
     failures.extend(_no_bare_numbers(output, facts))
     failures.extend(_login_required_is_a_login_request(output, facts))
     failures.extend(_documents(output, facts))
@@ -268,9 +274,11 @@ def check(
     failures.extend(_no_amount_from_attachments(output, facts))
     failures.extend(_no_sent_claim(output))
     failures.extend(_extreme(output, facts))
+    failures.extend(_handoff_only_when_out_of_scope(output, route))
     if route is not None:
         failures.extend(_route(output, facts, route))
         failures.extend(_named_models(output, facts, route))
+        failures.extend(_stock(output, facts, route))
     return CheckResult(ok=not failures, failures=tuple(failures))
 
 
@@ -428,6 +436,8 @@ def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
             failures.append(f"a {route.name} turn carries the {route.action} action")
     if route.no_handoff and any(isinstance(b, HandoffBlock) for b in output.blocks):
         failures.append(f"a {route.name} turn is not a question for the team")
+    if route.delivery and not any(isinstance(b, HandoffBlock) for b in output.blocks):
+        failures.append("a delivery question goes to the team")
     if route.name == "service" and any(
         isinstance(b, HandoffBlock) for b in output.blocks
     ):
@@ -435,6 +445,69 @@ def _route(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
             # The mailbox sentence once, as the handoff block (trial question 18
             # printed it twice: a text block and the handoff block).
             failures.append("a handoff turn is the handoff block alone")
+    return failures
+
+
+# A count, not a model code. "H2-10K-T3" has no "quantity" and no "N in stock".
+_STOCK_QUANTITY = re.compile(
+    r"\b(?:quantity|quantities|units?|pieces?|stück(?:e|zahl)?|lagerbestand)\b"
+    r"|\b\d+\s+in stock\b",
+    re.IGNORECASE,
+)
+# The page's status sentence is the whole clause (stock.phrase). "nicht
+# verfügbar" is also an absence phrase; this sentence is the status, not a
+# claim the model is missing.
+_STATUS_CLAUSE = re.compile(
+    "^(?:"
+    + "|".join(
+        re.escape(stock_phrase(lang, flag))
+        for lang in ("en", "de")
+        for flag in (True, False)
+    )
+    + r")\.?$",
+    re.IGNORECASE,
+)
+
+
+def _stated_status(text: str, language: str) -> set[str]:
+    """Page status lines that stand in `text`."""
+    folded = text.casefold()
+    return {
+        stock_phrase(language, flag)
+        for flag in (True, False)
+        if stock_phrase(language, flag).casefold() in folded
+    }
+
+
+def _stock(output: TurnOutput, facts: TurnFacts, route: Route) -> list[str]:
+    """A simple stock turn states the page's status and no quantity (#415).
+
+    A conflict, an unknown code, or several models keep the clarification.
+    One shared flag must be stated. Differing flags must each be stated, or
+    the status omitted: a blanket "In stock" is not grounded. The service
+    writes the simple case; this is the net under it.
+    """
+    if not simple_stock(route):
+        return []
+    rows = stock_rows(facts)
+    if rows is None:
+        return []
+    text = "\n".join(
+        block.text for block in output.blocks if isinstance(block, TextBlock)
+    )
+    failures: list[str] = []
+    if _STOCK_QUANTITY.search("\n".join(_model_texts(output))):
+        failures.append("a stock question states no quantity")
+    flags = {flag for _product_id, flag in rows}
+    stated = _stated_status(text, output.language)
+    if len(flags) != 1:
+        needed = {stock_phrase(output.language, flag) for flag in flags}
+        if stated and stated != needed:
+            failures.append("products differ: state each product's status, or none")
+        return failures
+    expected = stock_phrase(output.language, flags.pop())
+    if expected not in text:
+        failures.append(f"a stock question states {expected}")
     return failures
 
 
@@ -502,6 +575,8 @@ def _named_models(output: TurnOutput, facts: TurnFacts, route: Route) -> list[st
     full = "\n".join(_model_texts(output))
     folded = full.casefold()
     clauses = [clause.strip() for clause in _CLAUSE.findall(full) if clause.strip()]
+    if route.stock:
+        clauses = [clause for clause in clauses if _STATUS_CLAUSE.match(clause) is None]
     cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
     shown = {pid for block in cards for pid in block.product_ids}
     codes = [item.note.code for item in looked]
@@ -737,12 +812,18 @@ def _login_required_is_a_login_request(
     ]
 
 
-def _handoff_only_when_out_of_scope(output: TurnOutput) -> list[str]:
+def _handoff_only_when_out_of_scope(
+    output: TurnOutput, route: Route | None = None
+) -> list[str]:
     handoffs = [block for block in output.blocks if isinstance(block, HandoffBlock)]
     others = [block for block in output.blocks if not isinstance(block, HandoffBlock)]
     if handoffs and any(
         isinstance(block, CardsBlock | CompareBlock | ActionBlock) for block in others
     ):
+        # Stock plus delivery: the card is the stock answer, the handoff
+        # block is only the delivery half (owner 2026-10-05).
+        if route is not None and route.stock and route.delivery:
+            return []
         return ["a handoff turn may not also recommend products or actions"]
     return []
 
