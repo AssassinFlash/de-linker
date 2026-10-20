@@ -168,6 +168,7 @@ MAP_NEEDLES = (
     "test_a_matched_model_does_not_narrow_the_extreme",
     "SearchProductsTest.php::test_smallest_inverter_at_least_30_kw_is_gw30k_eta_g20",
     "#330、#332、#333、#334、#335 的评分器单测由 `just test` 收集",
+    "缺货回答（#415）已由 #429（8c147c6b）关闭",
     "plugins/linker-tools/tests/php/Unit/ThreadTest.php",
     "plugins/linker-tools/tests/php/Integration/ConversationConcurrencyTest.php",
     'defaultTestSuite="unit"',
@@ -492,6 +493,8 @@ def test_the_case_map_names_every_runner_and_its_count(
         "不在 `py_projects`",
         "不放进默认 pytest",
         "只跑金额正则",
+        "缺货回答（#415）仍是开着的缺陷",
+        "不在本套件里写成通过",
         "（#414）、缺货回答（#415）、德语永久链接（#413）仍是开着的缺陷",
         "PR #416 未合并",
         "提示词里「引用口令」那几句不在本分支",
@@ -521,7 +524,9 @@ def test_the_case_map_names_every_runner_and_its_count(
     assert "e2e24389" in closed_414
     assert "InquiryStatusRestTest" in closed_414
     assert "#415" in closed_414
-    assert "仍是开着的缺陷" in closed_414
+    assert "仍是开着的缺陷" not in closed_414
+    assert "缺货回答（#415）已由 #429（8c147c6b）关闭" in closed_414
+    assert "`339-11-*` 九行" in closed_414
     assert "仅 harness" not in closed_414
     assert "py_projects" in closed_414
     assert "just test" in closed_414
