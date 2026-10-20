@@ -1,0 +1,1167 @@
+[
+  {
+    "engine": "local",
+    "case": "step-roof",
+    "requested": "http://127.0.0.1:9231/solution-configurator/?step=roof",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-local-step-roof-1440.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ],
+    "assets": [
+      {
+        "url": "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010",
+        "status": 200,
+        "bytes": 208659,
+        "sha256": "277692b3f931595049f493c636feca4006a6b7978448384532892ae14c839143",
+        "hasUrlSearchParams": false,
+        "hasOpenRoof": true,
+        "hasDataStep": false,
+        "stepRoofHits": []
+      }
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "step-roof",
+    "requested": "http://127.0.0.1:9231/solution-configurator/?step=roof",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-local-step-roof-390.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "step-roof-de",
+    "requested": "http://127.0.0.1:9231/de/loesungskonfigurator/?step=roof",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-local-step-roof-de-1440.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "step-roof-de",
+    "requested": "http://127.0.0.1:9231/de/loesungskonfigurator/?step=roof",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-local-step-roof-de-390.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "prefill",
+    "requested": "http://127.0.0.1:9231/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-local-prefill-1440.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "prefill",
+    "requested": "http://127.0.0.1:9231/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-local-prefill-390.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "prefill-de",
+    "requested": "http://127.0.0.1:9231/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-local-prefill-de-1440.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "prefill-de",
+    "requested": "http://127.0.0.1:9231/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-local-prefill-de-390.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "retired-en",
+    "requested": "http://127.0.0.1:9231/design-canvas/",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-local-retired-en-1440.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "retired-en",
+    "requested": "http://127.0.0.1:9231/design-canvas/",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-local-retired-en-390.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "retired-de",
+    "requested": "http://127.0.0.1:9231/de/design-canvas/",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-local-retired-de-1440.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "retired-de",
+    "requested": "http://127.0.0.1:9231/de/design-canvas/",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-local-retired-de-390.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "retired-alias",
+    "requested": "http://127.0.0.1:9231/de/entwurfsflache/",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-local-retired-alias-1440.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "retired-alias",
+    "requested": "http://127.0.0.1:9231/de/entwurfsflache/",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-local-retired-alias-390.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "roof-button",
+    "requested": "http://127.0.0.1:9231/solution-configurator/",
+    "viewport": 1440,
+    "shot": "shots/both-local-roof-button-1440.png",
+    "note": "Established UI path only. Not repeated on production.",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": true,
+    "roofVisible": true,
+    "roofText": "Roof\nClose roof step\n© Bayerische Vermessungsverwaltung – www.geodaten.bayern.de, CC BY 4.0\n\nClick the roof of the building in the aerial image.",
+    "loadingMap": false,
+    "plz": "80538",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ],
+    "shotRetakenAt": "2026-10-20T18:20:57.686Z",
+    "shotNote": "Retaken after the consent accept. The credit line is this roofText. The earlier shot had the cookie banner over that line; do not cite the screenshot alone for the credit."
+  },
+  {
+    "engine": "prod",
+    "case": "step-roof",
+    "requested": "https://de-linker.com/solution-configurator/?step=roof",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-prod-step-roof-1440.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ],
+    "assets": [
+      {
+        "url": "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010",
+        "status": 200,
+        "bytes": 208659,
+        "sha256": "277692b3f931595049f493c636feca4006a6b7978448384532892ae14c839143",
+        "hasUrlSearchParams": false,
+        "hasOpenRoof": true,
+        "hasDataStep": false,
+        "stepRoofHits": []
+      }
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "step-roof",
+    "requested": "https://de-linker.com/solution-configurator/?step=roof",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-prod-step-roof-390.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "step-roof-de",
+    "requested": "https://de-linker.com/de/loesungskonfigurator/?step=roof",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-prod-step-roof-de-1440.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "step-roof-de",
+    "requested": "https://de-linker.com/de/loesungskonfigurator/?step=roof",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-prod-step-roof-de-390.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "prefill",
+    "requested": "https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-prod-prefill-1440.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "prefill",
+    "requested": "https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-prod-prefill-390.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "prefill-de",
+    "requested": "https://de-linker.com/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-prod-prefill-de-1440.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "prefill-de",
+    "requested": "https://de-linker.com/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-prod-prefill-de-390.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "retired-en",
+    "requested": "https://de-linker.com/design-canvas/",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-prod-retired-en-1440.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "retired-en",
+    "requested": "https://de-linker.com/design-canvas/",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-prod-retired-en-390.png",
+    "htmlLang": "en-US",
+    "title": "Configure a Storage System | Linker",
+    "finalPath": "/solution-configurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Inputs",
+      "02Solution",
+      "03Design report"
+    ],
+    "roofButton": "No PV figure yet? Estimate from the roof",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "retired-de",
+    "requested": "https://de-linker.com/de/design-canvas/",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-prod-retired-de-1440.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "retired-de",
+    "requested": "https://de-linker.com/de/design-canvas/",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-prod-retired-de-390.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "retired-alias",
+    "requested": "https://de-linker.com/de/entwurfsflache/",
+    "status": 200,
+    "viewport": 1440,
+    "shot": "shots/both-prod-retired-alias-1440.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "prod",
+    "case": "retired-alias",
+    "requested": "https://de-linker.com/de/entwurfsflache/",
+    "status": 200,
+    "viewport": 390,
+    "shot": "shots/both-prod-retired-alias-390.png",
+    "htmlLang": "de-DE",
+    "title": "Lösungskonfigurator | Linker",
+    "finalPath": "/de/loesungskonfigurator/?step=roof",
+    "dataStep": null,
+    "mountAttrs": [
+      "data-engine-url",
+      "data-linker-app",
+      "data-rest-nonce",
+      "data-rest-url",
+      "style"
+    ],
+    "roofPresent": false,
+    "roofVisible": false,
+    "roofText": "",
+    "loadingMap": false,
+    "plz": "",
+    "annual": "",
+    "kwp": "",
+    "phase": "3",
+    "backup": "none",
+    "steps": [
+      "01Eingaben",
+      "02Lösung",
+      "03Auslegungsbericht"
+    ],
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+    "scripts": [
+      "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
+    ]
+  },
+  {
+    "engine": "local",
+    "case": "data-step-injected",
+    "requested": "http://127.0.0.1:9231/solution-configurator/?step=roof",
+    "viewport": 1440,
+    "note": "Browser-only HTML rewrite for measurement. Product code unchanged. Not repeated on production. Injected data-step=roof onto the mount before the script ran.",
+    "dataStep": "roof",
+    "roofPresent": false,
+    "loadingMap": false,
+    "plz": "",
+    "htmlLang": "en-US"
+  },
+  {
+    "case": "redirect-301",
+    "engine": "local",
+    "requested": "/design-canvas/",
+    "status": 301,
+    "location": "http://127.0.0.1:9231/solution-configurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "local",
+    "requested": "/de/design-canvas/",
+    "status": 301,
+    "location": "http://127.0.0.1:9231/de/loesungskonfigurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "local",
+    "requested": "/de/entwurfsflache/",
+    "status": 301,
+    "location": "http://127.0.0.1:9231/de/loesungskonfigurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "prod",
+    "requested": "/design-canvas/",
+    "status": 301,
+    "location": "https://de-linker.com/solution-configurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "prod",
+    "requested": "/de/design-canvas/",
+    "status": 301,
+    "location": "https://de-linker.com/de/loesungskonfigurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "prod",
+    "requested": "/de/entwurfsflache/",
+    "status": 301,
+    "location": "https://de-linker.com/de/loesungskonfigurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  }
+]

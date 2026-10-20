@@ -1,0 +1,98 @@
+[
+  {
+    "label": "local-en",
+    "status": 200,
+    "bytes": 10943,
+    "file": "store-api/local-en.json",
+    "items": [
+      {
+        "id": 3611,
+        "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+        "sku": "DLK-GOODWE-GW60BATDG20",
+        "permalink": "http://127.0.0.1:9231/product/goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh/",
+        "prices": null,
+        "is_in_stock": true
+      },
+      {
+        "id": 3556,
+        "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+        "sku": "DLK-GOODWE-GW10KETAG20",
+        "permalink": "http://127.0.0.1:9231/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+        "prices": null,
+        "is_in_stock": true
+      }
+    ]
+  },
+  {
+    "label": "local-de",
+    "status": 200,
+    "bytes": 11113,
+    "file": "store-api/local-de.json",
+    "items": [
+      {
+        "id": 3611,
+        "name": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)",
+        "sku": "DLK-GOODWE-GW60BATDG20",
+        "permalink": "http://127.0.0.1:9231/de/produkt/goodwe-gw6-0-bat-d-g20-esa-batteriemodul-6-0-kwh/",
+        "prices": null,
+        "is_in_stock": true
+      },
+      {
+        "id": 3556,
+        "name": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)",
+        "sku": "DLK-GOODWE-GW10KETAG20",
+        "permalink": "http://127.0.0.1:9231/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/",
+        "prices": null,
+        "is_in_stock": true
+      }
+    ]
+  },
+  {
+    "label": "prod-en",
+    "status": 200,
+    "bytes": 10943,
+    "file": "store-api/prod-en.json",
+    "items": [
+      {
+        "id": 3611,
+        "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+        "sku": "DLK-GOODWE-GW60BATDG20",
+        "permalink": "https://de-linker.com/product/goodwe-gw6-0-bat-d-g20-esa-battery-module-6-0-kwh/",
+        "prices": null,
+        "is_in_stock": true
+      },
+      {
+        "id": 3556,
+        "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+        "sku": "DLK-GOODWE-GW10KETAG20",
+        "permalink": "https://de-linker.com/product/goodwe-esa-gw10k-eta-g20-10-kw-three-phase-all-in-one/",
+        "prices": null,
+        "is_in_stock": true
+      }
+    ]
+  },
+  {
+    "label": "prod-de",
+    "status": 200,
+    "bytes": 11113,
+    "file": "store-api/prod-de.json",
+    "items": [
+      {
+        "id": 3611,
+        "name": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)",
+        "sku": "DLK-GOODWE-GW60BATDG20",
+        "permalink": "https://de-linker.com/de/produkt/goodwe-gw6-0-bat-d-g20-esa-batteriemodul-6-0-kwh/",
+        "prices": null,
+        "is_in_stock": true
+      },
+      {
+        "id": 3556,
+        "name": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)",
+        "sku": "DLK-GOODWE-GW10KETAG20",
+        "permalink": "https://de-linker.com/de/produkt/goodwe-esa-gw10k-eta-g20-10-kw-dreiphasiges-komplettsystem/",
+        "prices": null,
+        "is_in_stock": true
+      }
+    ]
+  }
+]
