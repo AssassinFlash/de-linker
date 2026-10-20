@@ -8,18 +8,18 @@ CI 入口（`just test` 的 `py-test` 会收集这个文件）：
 cd services/genie && uv run --locked pytest tests/test_campaign_339.py
 ```
 
-计数（夹具长度或本模块 pytest 条目，跳过的不计）：产品词 18，语言 17，填充词 81，重复卡片 1，预填 81，短码 4，降级 2，极值 1，价格门 6。
+计数（夹具长度或本模块 pytest 条目，跳过的不计）：产品词 19，语言 17，填充词 81，重复卡片 1，预填 81，短码 4，降级 2，极值 1，价格门 6。
 
-语言条数是 `services/genie/eval/language/cases.json` 的 `cases`。填充词条数是 `services/genie/eval/contact/repeats.json` 的 `pairs`。产品词、预填、短码、降级、极值和价格门是本模块收集到的 pytest 条目。重复卡片是 `test_s4_repeat_h2_10k_t3_four_rounds_de_and_en` 的条目。注入不在这条计数里。
+语言条数是 `services/genie/eval/language/cases.json` 的 `cases`。填充词条数是 `services/genie/eval/contact/repeats.json` 的 `pairs`。产品词是 `test_339_product_word_case` 的条目，等于夹具行数。`test_the_goodwe_model_without_a_stored_brand_is_still_named` 另计，不进这个数字。预填、短码、降级、极值和价格门是本模块收集到的对应 pytest 条目。极值只计回退模板；`test_route.py` 与 `SearchProductsTest` 的聚合不进这个数字，它们由 `just test` 收集。重复卡片是 `test_s4_repeat_h2_10k_t3_four_rounds_de_and_en` 的条目。注入不在这条计数里。
 
 ## CI 里跑的
 
 | 票 | 缺陷 | 夹具 | 断言 | 命令 |
 |---|---|---|---|---|
-| #363 #364 #367 | 产品词冲突、一句多型号、缺席断言、故障句 | `services/genie/eval/regression/339-product-words.jsonl` | `tests/test_regression_339.py::test_339_product_word_case` | 上面的套件重导出该测试。`339-6` / `339-7-*` 是缺席断言失败；`339-9-*` 是故障降级句，不说不在范围内 |
+| #363 #364 #367 | 产品词冲突、一句多型号、缺席断言、故障句。#367 的 F4-DE 是 `EcoFlow GW5K-ETA-G20 - lieferbar?` | `services/genie/eval/regression/339-product-words.jsonl`（含 `339-f4-de`） | `tests/test_regression_339.py::test_339_product_word_case` 与 `tests/test_product_words.py::test_the_goodwe_model_without_a_stored_brand_is_still_named` | 套件重导出这两个测试。`339-6` / `339-7-*` 是缺席断言失败；`339-9-*` 是故障降级句，不说不在范围内 |
 | #365 | 预填只带客户明说的参数 | 句子在 `tests/test_prefill.py`（战役句 `DE` / `EN`、否定、后句否认、前导零邮编） | 该文件里 #339 登记的 18 个测试 | 套件重导出这 18 个测试 |
 | #366 | 检索重试耗尽是可见降级，不出不相干卡 | 无单独 json；行为在 `tests/test_cycle.py` | `tests/test_cycle.py::test_a_tool_that_always_fails_validation_is_a_visible_degradation` 与 `test_a_products_route_with_nothing_qualified_shows_no_unrelated_cards` | 套件重导出这两个测试 |
-| #368 | 极值问题聚合成一个型号 | 无单独 json | `tests/test_ground_understanding.py::test_the_extreme_fallback_names_one_product_in_both_languages` | 套件重导出该测试 |
+| #368 | 极值问题聚合成一个型号。75 kW 问句的聚合不是回退模板 | 无单独 json | 回退模板：`tests/test_ground_understanding.py::test_the_extreme_fallback_names_one_product_in_both_languages`。聚合：`tests/test_route.py::test_smallest_inverter_at_least_30_kw_aggregates` 与 `test_a_matched_model_does_not_narrow_the_extreme`（问句里的 GW75K 不收窄）；`plugins/linker-commerce/tests/php/Unit/Abilities/SearchProductsTest.php::test_smallest_inverter_at_least_30_kw_is_gw30k_eta_g20` | 套件只重导出回退模板。路由测试在 Genie pytest，SearchProductsTest 在 commerce 的 PHPUnit unit，两者都由 `just test` 收集，不重导出 |
 | #369 | 三字符型号 `BD-8` 入词表 | `services/genie/eval/understanding/bare_words.json` 里 `note` 为 `#369` 的两条 | `tests/test_lexicon.py::test_the_bd8_question_searches_that_battery` | 套件重导出该测试 |
 | #374 | 问什么语言就答什么语言 | `services/genie/eval/language/cases.json`（17 条） | `tests/test_language.py::test_339_language_cases_hold`。整段回答（水合后的正文、价格行、兼容条件、交接句、登录句）仍由 `test_the_hydrated_answer_follows_the_question_on_either_page` 覆盖，套件不复制它 | 套件重导出 `test_339_language_cases_hold` |
 | #375 | 填充词不打断重复提议 | `services/genie/eval/contact/repeats.json`（81 对） | `tests/test_contact.py::test_339_filler_corpus_holds_for_every_cut_from_0_to_0_75` | 套件重导出该测试 |
@@ -44,10 +44,10 @@ cd services/genie && uv run --locked pytest tests/test_campaign_339.py
 |---|---|---|---|
 | #330 | `docs/research/2026-10-20-campaign-330/harness/fixtures/339/manifest.json` | 每一行是 c330 上的真实回合。清单形状的测试已经在 `just test` 里（harness 是 `py_projects` 的一项）。那不是逐题通过条件，逐题断言在 #431 | `cd docs/research/2026-10-20-campaign-330/harness && uv run --locked pytest tests/test_manifest.py`。全电池要实例和模型：`uv run --locked python run_battery.py` |
 | #331 | `docs/research/2026-10-20-campaign-331/harness` | 话题、指代、reload、并发要实例。语言、填充词、重复卡片的通过条件已在上表 | `cd docs/research/2026-10-20-campaign-331/harness && node scenarios-direct.mjs`。浏览器：`npx playwright test browser.spec.ts`。先 `just up c331 && just pull load c331 latest && just serve c331` |
-| #332 | PR #409 的 `docs/research/2026-10-20-campaign-332/` | 仅 harness。未合并，本分支没有这棵目录。合入后仍是对本地 Genie 注入 5xx、断流、宕机，不是页面流程，不适合 Playwright | 合入后：`cd docs/research/2026-10-20-campaign-332/harness && uv run --locked pytest && uv run --locked python run_faults.py` |
-| #333 | `docs/research/2026-10-20-campaign-333/harness/run_battery.py` | 仅 harness。四个账号、页面、库存推送、询盘卡要实例 c333。单元测试够得到的价格门在上表，那是 #242，不是本票的通过条件。待审/受限询盘金额（#414）、缺货回答（#415）、德语永久链接（#413）仍是开着的缺陷，不在本套件里写成通过 | `python3 docs/research/2026-10-20-campaign-333/harness/run_battery.py --self-test` 只跑金额正则。全电池要实例 |
-| #334 | `docs/research/2026-10-20-campaign-334/harness/run_battery.py` | 附件和注入的真实回合要模型和实例。评分器单测在 harness 里，该目录不在 `py_projects`，所以不进 `just test`。#412 待定，不在上表记成通过 | `cd docs/research/2026-10-20-campaign-334/harness && uv run --locked pytest && uv run --locked python run_battery.py` |
+| #332 | `docs/research/2026-10-20-campaign-332/harness` | PR #409 已合并（28a42b3a）。该目录在 `py_projects` 里，`just test` 会跑 harness 的 pytest。`run_faults.py` 对本地 Genie 注入 5xx、断流、宕机，不是页面流程，不在默认 pytest 里，也不适合 Playwright | `cd docs/research/2026-10-20-campaign-332/harness && uv run --locked pytest`。故障注入：`uv run --locked python run_faults.py` |
+| #333 | `docs/research/2026-10-20-campaign-333/harness/run_battery.py` | 仅 harness。四个账号、页面、库存推送、询盘卡要实例 c333。该目录不在 `py_projects`。单元测试够得到的价格门在上表，那是 #242，不是本票的通过条件。#414 已由 #418（e2e24389）关闭，集成测试 `InquiryStatusRestTest` 在 CI 的 mu-smoke job（`.github/workflows/check.yml`，`phpunit -c phpunit.integration.xml.dist --filter InquiryStatusRestTest`）。#413 已由 #419（c88c52f1）关闭：`StorefrontTest::test_german_store_products_link_to_the_german_page` 在 `just test` 的 PHPUnit，`CardLinks.test.tsx` 在 `just test` 的 JS；`GenieCardLinksTest` 要实例，不在默认 PHPUnit。缺货回答（#415）仍是开着的缺陷，不在本套件里写成通过 | `python3 docs/research/2026-10-20-campaign-333/harness/run_battery.py --self-test` 只跑金额正则。全电池要实例 |
+| #334 | `docs/research/2026-10-20-campaign-334/harness/run_battery.py` | 附件和注入的真实回合要模型和实例。评分器单测在 harness 里，该目录在 `py_projects` 里，`just test` 会跑这些 pytest。#412 待定，不在上表记成通过 | `cd docs/research/2026-10-20-campaign-334/harness && uv run --locked pytest && uv run --locked python run_battery.py` |
 | #335 | `docs/research/2026-10-20-campaign-335/harness` | 仅 harness。页面漂移和孪生页要实例。该目录在 `py_projects` 里，`just test` 会跑评分器单测；那是 harness 自己的测试，不是本套件的通过条件。语言规则的离线部分是 #374 | `cd docs/research/2026-10-20-campaign-335/harness && uv run --locked pytest`。全电池：`uv run --locked python run_battery.py ~/de-linker-data/campaign-335` |
 | #242 页面 | `tests/e2e/specs/genie-prices.spec.ts` | 四个账号在商品页上问 Genie 价格，要实例和模型。CI 跑的是单元测试里的同一条价格门 | `just e2e <instance> genie-prices` |
 
-不调用模型的是上表「CI 里跑的」全部。#332、#333、#335 仅 harness。标成 harness 的命令会打到本地 Genie 或生产问句冒烟，不放进默认 pytest。
+不调用模型的是上表「CI 里跑的」全部，再加上 `py_projects` 里的 harness pytest。#330、#332、#334、#335 的评分器单测由 `just test` 收集。#333 不在 `py_projects`。`run_faults.py`、各战役的全电池、生产问句冒烟和 Playwright 要本地实例或模型，不在默认 pytest 里。

@@ -32,6 +32,7 @@ import test_lexicon
 import test_pairing_cards
 import test_prefill
 import test_prices
+import test_product_words
 import test_regression_339 as regression
 
 from linker_genie import attachments, ground
@@ -146,9 +147,23 @@ MAP_NEEDLES = (
     "cd services/genie && uv run --locked pytest tests/test_campaign_339.py",
     "docs/research/2026-10-20-campaign-330/harness/fixtures/339/manifest.json",
     "docs/research/2026-10-20-campaign-331/harness",
+    "docs/research/2026-10-20-campaign-332/harness",
     "docs/research/2026-10-20-campaign-333/harness/run_battery.py",
     "docs/research/2026-10-20-campaign-334/harness/run_battery.py",
     "docs/research/2026-10-20-campaign-335/harness",
+    "28a42b3a",
+    "e2e24389",
+    "c88c52f1",
+    "py_projects",
+    "InquiryStatusRestTest",
+    "#418",
+    "#419",
+    "EcoFlow GW5K-ETA-G20 - lieferbar?",
+    "tests/test_product_words.py::test_the_goodwe_model_without_a_stored_brand_is_still_named",
+    "tests/test_route.py::test_smallest_inverter_at_least_30_kw_aggregates",
+    "test_a_matched_model_does_not_narrow_the_extreme",
+    "SearchProductsTest.php::test_smallest_inverter_at_least_30_kw_is_gw30k_eta_g20",
+    "#330、#332、#334、#335 的评分器单测由 `just test` 收集",
     "plugins/linker-tools/tests/php/Unit/ThreadTest.php",
     "plugins/linker-tools/tests/php/Integration/ConversationConcurrencyTest.php",
     'defaultTestSuite="unit"',
@@ -197,6 +212,7 @@ def _publish(fn: Callable[..., Any]) -> None:
 for _owned in (
     regression.test_339_product_word_case,
     regression.test_the_fixture_lists_the_ticket_cases,
+    test_product_words.test_the_goodwe_model_without_a_stored_brand_is_still_named,
     test_language.test_339_language_cases_hold,
     test_contact.test_339_filler_corpus_holds_for_every_cut_from_0_to_0_75,
     test_pairing_cards.test_s4_repeat_h2_10k_t3_four_rounds_de_and_en,
@@ -510,7 +526,36 @@ def test_the_case_map_names_every_runner_and_its_count(
         f"这 {len(rows)} 行没有逐题自动断言，缺口在 #431。"
     )
     assert gap in text, gap
-    for ticket in ("#332", "#333", "#335"):
-        line = next(row for row in text.splitlines() if row.startswith(f"| {ticket} |"))
-        assert "仅 harness" in line, line
+    stale = (
+        "未合并，本分支没有这棵目录",
+        "不在 `py_projects`，所以不进 `just test`",
+        "不放进默认 pytest",
+        "（#414）、缺货回答（#415）、德语永久链接（#413）仍是开着的缺陷",
+    )
+    for phrase in stale:
+        assert phrase not in text, phrase
+
+    def row(ticket: str) -> str:
+        return next(
+            line for line in text.splitlines() if line.startswith(f"| {ticket} |")
+        )
+
+    merged_332 = row("#332")
+    assert "28a42b3a" in merged_332
+    assert "py_projects" in merged_332
+    assert "just test" in merged_332
+    assert "未合并" not in merged_332
+    harness_334 = row("#334")
+    assert "py_projects" in harness_334
+    assert "just test" in harness_334
+    assert "不在 `py_projects`" not in harness_334
+    graders = row("#335")
+    assert "just test" in graders
+    assert "评分器单测" in graders
+    closed_414 = row("#333")
+    assert "e2e24389" in closed_414
+    assert "InquiryStatusRestTest" in closed_414
+    assert "#415" in closed_414
+    assert "仍是开着的缺陷" in closed_414
+    assert "仅 harness" in row("#333")
     assert "不调用模型" in text

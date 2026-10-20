@@ -61,6 +61,7 @@ def _service_token(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(TOKEN_VARIABLE, SHELL_TOKEN)
 
 
+@pytest.hookimpl(trylast=True)
 def pytest_collection_modifyitems(
     config: pytest.Config, items: list[pytest.Item]
 ) -> None:
@@ -68,7 +69,9 @@ def pytest_collection_modifyitems(
 
     ``test_campaign_339`` reexports the home test, marks included, and pytest
     expands it. When that module is in the same collection, drop the home
-    item. A run of the home file alone still collects it.
+    item whose campaign copy is still selected. This runs after ``-k``, so a
+    keyword that matches ``test_prices.py`` and not the campaign node id
+    keeps the home price item. A run of the home file alone still collects it.
     """
     if not any(
         getattr(getattr(item, "module", None), "__name__", "") == "test_campaign_339"

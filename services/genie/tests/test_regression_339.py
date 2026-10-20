@@ -77,6 +77,7 @@ EXPECTED = (
     "339-11-de-in-visitor",
     "339-11-de-in-approved",
     "339-11-failure",
+    "339-f4-de",
 )
 
 
@@ -254,6 +255,12 @@ def _plan(row: dict[str, Any], vocabulary: Vocabulary) -> None:
         assert code not in texts
     for code in row.get("text_present", []):
         assert code in texts
+    if row.get("brand_absent"):
+        assert all(
+            "brand" not in call.arguments
+            for call in route.calls
+            if call.ability == "linker/search-products"
+        )
     if "note_codes" in row:
         assert [note.code for note in route.named_models] == row["note_codes"]
     for expected in row.get("notes", []):
@@ -263,6 +270,12 @@ def _plan(row: dict[str, Any], vocabulary: Vocabulary) -> None:
         assert match.searched is expected["searched"]
         if "unknown" in expected:
             assert match.unknown is expected["unknown"]
+        if "written_brand" in expected:
+            assert match.written_brand == expected["written_brand"]
+        if "catalog_brand" in expected:
+            assert match.catalog_brand == expected["catalog_brand"]
+        if "product_ids" in expected:
+            assert list(match.product_ids) == list(expected["product_ids"])
     if row.get("some_unsearched"):
         assert any(not note.searched for note in route.named_models)
     if row.get("searched_matches_calls"):

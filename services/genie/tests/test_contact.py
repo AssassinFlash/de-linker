@@ -128,10 +128,11 @@ def test_339_filler_corpus_holds_for_every_cut_from_0_to_0_75() -> None:
 
     The spec's claim is any Jaccard cut from 0 through 0.75. Above 0.75 the
     shortened "Garantie GoodWe ET?" stops counting, because its overlap is 3/4.
-    The corpus size is ``len(CASES["pairs"])`` from ``eval/contact/repeats.json``.
-    The #339 case map records that length.
+    The corpus size is the 81 pairs in ``eval/contact/repeats.json``. The #339
+    case map records that length. It still holds when the campaign module
+    reexports this test.
     """
-    assert CASES["pairs"]
+    assert len(CASES["pairs"]) == 81
     assert _sweep_mismatches() == []
 
 
