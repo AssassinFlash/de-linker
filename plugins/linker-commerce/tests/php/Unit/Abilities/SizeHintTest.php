@@ -111,6 +111,44 @@ final class SizeHintTest extends TestCase {
 	}
 
 	/**
+	 * A German hint keeps the English path (#393).
+	 *
+	 * The execute() method drops lang. The URL for the matrix fields with lang=de
+	 * is the same string as the English hint, and that string is
+	 * /solution-configurator/, not /de/loesungskonfigurator/. A change that
+	 * emits the German path, or that keeps lang in the query, contradicts
+	 * the ruling. It needs a new ruling before it ships. Record:
+	 * docs/acceptance/2026-10-21/458/.
+	 */
+	public function test_a_german_hint_drops_lang_and_keeps_the_english_path(): void {
+		$stated  = array(
+			'pv_kwp'          => 10,
+			'annual_load_kwh' => 4500,
+			'phase'           => 3,
+			'backup'          => 'needed',
+			'plz'             => '80538',
+		);
+		$english = ( new SizeHint() )->execute( $stated );
+		$german  = ( new SizeHint() )->execute(
+			array(
+				'lang'            => 'de',
+				'pv_kwp'          => 10,
+				'annual_load_kwh' => 4500,
+				'phase'           => 3,
+				'backup'          => 'needed',
+				'plz'             => '80538',
+			)
+		);
+		$path    = 'https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538';
+
+		$this->assertSame( $english, $german );
+		$this->assertSame( $path, $german['configurator_url'] );
+		$this->assertStringNotContainsString( 'lang', $german['configurator_url'] );
+		$this->assertStringNotContainsString( '/de/', $german['configurator_url'] );
+		$this->assertSame( $path, $english['configurator_url'] );
+	}
+
+	/**
 	 * The query mapping genie looks up (#365 round 2).
 	 *
 	 * The file services/genie/tests/fixtures/size-hint-urls.json is produced
