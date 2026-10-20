@@ -127,6 +127,56 @@ DOCUMENTS = {
     "en": "Here is what I found for your question.",
     "de": "Zu Ihrer Frage habe ich Folgendes gefunden.",
 }
+# Next-step sentences (#394). Functional UI text, owned here next to the writer.
+# Wording: docs/acceptance/2026-10-20/394/copy-review.md, signed 2026-10-20.
+# The same four sentences are also written into prompts/en/system.md,
+# prompts/de/system.md, route.py `_SHAPE_HINT`, and the per-turn reminder in
+# agent.py. Those four tell the model what to say; they are not a second
+# customer string. A wording change starts here and has to be carried across,
+# or the model and this check drift apart.
+# Already said is the content, not only this exact sentence, where a sentence
+# is appended: the service handoff's promise ("within one working day" /
+# "innerhalb eines Werktags"; "einem Werktag" and the contact card's "one
+# business day" do not count). A shaped turn (TALK, PARTNER, PROMISE below)
+# replaces the model's prose with the signed sentence instead of appending it,
+# so a paraphrase cannot stand beside the same content.
+TALK = {
+    "en": (
+        "I am Linker's AI assistant. I can help with products, compatibility, "
+        "documents and sizing. Which product category do you want to look at?"
+    ),
+    "de": (
+        "Ich bin Genie, der KI-Assistent von Linker. Ich unterstütze Sie bei "
+        "Produkten, Kompatibilität, Dokumenten und der Auslegung. Welche "
+        "Produktkategorie möchten Sie ansehen?"
+    ),
+}
+PROMISE = {
+    "en": (
+        "After you send an inquiry, the Linker team replies within one working day."
+    ),
+    "de": (
+        "Nach dem Absenden Ihrer Anfrage antwortet das Linker-Team "
+        "innerhalb eines Werktags."
+    ),
+}
+REPLY_PROMISE = {
+    "en": "The Linker team replies within one working day.",
+    "de": "Das Linker-Team antwortet innerhalb eines Werktags.",
+}
+PARTNER = {
+    "en": (
+        "Approved partner accounts see net prices. A guest sees "
+        '"Net price after partner sign-in" on the product card. An account '
+        'under review sees "Account under review. Prices after approval."'
+    ),
+    "de": (
+        "Freigegebene Partnerkonten sehen die Nettopreise. Auf der "
+        "Produktkarte steht für einen Gast „Nettopreis nach "
+        "Partner-Anmeldung“ und für ein Konto in Prüfung „Ihr Konto wird "
+        "geprüft. Preise nach Freigabe.“"
+    ),
+}
 # Document links the document shape shows: search-knowledge ranks its hits, and three
 # keep the answer short (the trial's failures were answers that listed too much).
 FALLBACK_DOCUMENTS = 3
@@ -339,6 +389,7 @@ def fallback(
     *,
     exhausted: bool = False,
     failure_class: FailureClass | None = None,
+    raised: bool = False,
 ) -> TurnOutput:
     """A protocol-set answer for a turn grounding refused twice, in `locale`.
 
@@ -350,6 +401,11 @@ def fallback(
     the model returned 5xx/429/an empty stream, the document index or the
     encoder failed, or an ability returned 5xx or timed out. The customer
     sentence is the degraded sentence even when cards or documents exist.
+
+    `raised` is the last attempt threw (`cycle.run`). `kind_of` may still be
+    None. That is not a grounding miss: on a shaped route the answer is the
+    degraded sentence, findings kept, not the signed shape. A grounding miss
+    leaves `raised` false and still owes the shape.
     """
     language = language_of(locale)
     # The login fact outranks every other shape. A guest Proforma question
@@ -366,6 +422,18 @@ def fallback(
         # A products search that died must not be printed as a sales
         # handoff (#410). A request for a person never reaches here.
         return _degraded_keeping_findings(facts, language, route)
+    # A grounding miss on a shaped turn still owes that shape (#394). An
+    # exception does not, even when it has no fatal class: the signed sentence
+    # would hide that the turn failed. Findings already collected stay, under
+    # the degraded sentence, the same way a classified failure keeps them.
+    # The login sentence above stays the one block a guest inquiry may carry.
+    # A fatal failure was answered above.
+    if raised and route is not None and route.shape:
+        return _degraded_keeping_findings(facts, language, route)
+    if route is not None:
+        shaped = _shape_fallback(route, language)
+        if shaped is not None:
+            return shaped
     # The applied winner is the whole fallback. The named-model clarification
     # would add the other cards (#363, #364), which an extreme answer refuses.
     # An applied extreme shows that one card. Codes named in the same question
@@ -737,3 +805,171 @@ def _ask_options(field: str, language: str) -> list[str]:
     }
     table = de if language == "de" else en
     return list(table.get(field, []))
+
+
+def _shape_fallback(route: Route, language: Locale) -> TurnOutput | None:
+    """The canonical next-step answer for a shaped model turn, or None."""
+    if route.shape == "talk":
+        return _shaped(language, TALK[language], ask=True)
+    if route.shape == "promise":
+        return _shaped(language, PROMISE[language], view=True)
+    if route.shape == "partner":
+        return _shaped(language, PARTNER[language], ask=True)
+    return None
+
+
+def _shaped(
+    language: Locale, text: str, *, ask: bool = False, view: bool = False
+) -> TurnOutput:
+    blocks: list[Block] = [TextBlock(text=text)]
+    if view:
+        blocks.append(ActionBlock(name="view_inquiry", args={}))
+    if ask:
+        blocks.append(
+            AskBlock(field="application", options=_ask_options("application", language))
+        )
+    return TurnOutput(language=language, blocks=blocks)
+
+
+def finish(output: TurnOutput, facts: TurnFacts, route: Route | None) -> TurnOutput:
+    """Add the next step the route owes when the model left it out (#394).
+
+    A guest login stays the one login sentence. A degraded handoff is the
+    failure sentence and is returned unchanged: the signed sentence does not
+    replace it, and the reply promise is not appended to it. Cards and
+    document links already on that handoff stay. A turn with no route is
+    unchanged, so an outage handoff does not grow a reply promise. A company
+    turn is the mailbox sentence plus the one-working-day reply. A shaped turn
+    ships its signed sentence once: the model's prose is replaced, not kept
+    beside it. An inquiry turn gains view_inquiry. A plain model answer gains
+    one application ask, whether or not its prose already asks: the ask is
+    chips and carries no question sentence, so the customer still reads one
+    question. A clarification keeps its question and ships no clickable block:
+    it asks which model the customer means, and the application chips cannot
+    answer that (goal 9's one block has no field for a model choice). The
+    contact card stays contact.decide's, after this returns.
+    The gate is one clickable block; two or three is the product target when
+    the answer already has cards, a document or an action.
+    """
+    if route is None or "inquiry.login_required" in facts.facts:
+        return output
+    # The failure sentence outranks a signed next step and the reply promise.
+    # Replacing it, or appending the promise, hid that the turn failed.
+    if _degraded_handoff(output):
+        return output
+    language = output.language
+    if route.name == "service":
+        return _service_turn(output, facts)
+    if route.shape == "promise":
+        return _ensure_view(_replace_prose(output, PROMISE[language]))
+    if route.shape == "partner":
+        return _ensure_ask(_replace_prose(output, PARTNER[language]), language)
+    if route.shape == "talk":
+        return _ensure_ask(_replace_prose(output, TALK[language]), language)
+    if route.name == "inquiry" and not _has_next_step(output):
+        return _ensure_view(output)
+    if not _has_next_step(output) and _plain_next_step(route):
+        if route.name == "clarify":
+            return output
+        return _ensure_ask(output, language)
+    return output
+
+
+def _degraded_handoff(output: TurnOutput) -> bool:
+    """True when a handoff already carries the reviewed degraded sentence.
+
+    Cards and document links may sit beside it. The sentence is the failure;
+    a signed next step or a reply promise must not replace or extend it.
+    """
+    degraded = set(DEGRADED.values())
+    return any(
+        isinstance(block, HandoffBlock) and block.summary.strip() in degraded
+        for block in output.blocks
+    )
+
+
+def _plain_next_step(route: Route) -> bool:
+    """A clarification, or a model turn with no shape of its own."""
+    return route.name == "clarify" or (route.name == "model" and not route.shape)
+
+
+def _service_turn(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
+    """One handoff block: the mailbox sentence, then the one-working-day reply."""
+    language = output.language
+    fact_id = "handoff.sentence_de" if language == "de" else "handoff.sentence_en"
+    fact = facts.facts.get(fact_id)
+    existing = next(
+        (
+            block.summary.strip()
+            for block in output.blocks
+            if isinstance(block, HandoffBlock) and block.summary.strip()
+        ),
+        "",
+    )
+    if fact is not None:
+        summary = fact.value.strip()
+    elif existing and existing not in DEGRADED.values():
+        summary = existing
+    else:
+        summary = DEGRADED[language]
+    promise = REPLY_PROMISE[language]
+    if not _has_promise(summary, language):
+        summary = f"{summary.rstrip()} {promise}"
+    return output.model_copy(update={"blocks": [HandoffBlock(summary=summary)]})
+
+
+def _replace_prose(output: TurnOutput, sentence: str) -> TurnOutput:
+    """The model's words give way to the signed sentence (#394).
+
+    A shaped turn has one approved answer. Keeping the prose beside the signed
+    sentence made the customer read the same content twice; replacing it means
+    the signed sentence ships once, whatever the model paraphrased. The blocks
+    the shape owns (ask, action) stay and are completed below.
+    """
+    blocks: list[Block] = [
+        block
+        for block in output.blocks
+        if not isinstance(block, (TextBlock, HandoffBlock))
+    ]
+    blocks.insert(0, TextBlock(text=sentence))
+    return output.model_copy(update={"blocks": blocks})
+
+
+def _ensure_ask(output: TurnOutput, language: Locale) -> TurnOutput:
+    """Add the clickable ask when the answer has none.
+
+    The block is chips and a group label, not a question sentence, so a prose
+    question already in the answer stays the one question the customer reads.
+    """
+    if any(block.type == "ask" for block in output.blocks):
+        return output
+    blocks = [
+        *output.blocks,
+        AskBlock(field="application", options=_ask_options("application", language)),
+    ]
+    return output.model_copy(update={"blocks": blocks})
+
+
+def _ensure_view(output: TurnOutput) -> TurnOutput:
+    if any(
+        isinstance(block, ActionBlock) and block.name == "view_inquiry"
+        for block in output.blocks
+    ):
+        return output
+    blocks = [*output.blocks, ActionBlock(name="view_inquiry", args={})]
+    return output.model_copy(update={"blocks": blocks})
+
+
+def _has_next_step(output: TurnOutput) -> bool:
+    return any(
+        block.type in {"ask", "cards", "compare", "action", "document", "handoff"}
+        for block in output.blocks
+    )
+
+
+def _has_promise(text: str, language: Locale) -> bool:
+    """The canonical reply promise. "einem Werktag" and "one business day" do not count."""
+    folded = text.casefold()
+    if language == "de":
+        return "innerhalb eines werktags" in folded
+    return "within one working day" in folded

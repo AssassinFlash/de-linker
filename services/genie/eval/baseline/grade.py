@@ -492,6 +492,51 @@ def _floors(row: dict[str, Any], turn: Turn) -> list[str]:
     return failures
 
 
+# Content of the #394 signed sentences (template.py owns the wording). A row
+# fails when the customer would read that content twice. The canonical partner
+# paragraph says "net price" / "Nettopreis" twice (the net-price sentence and
+# the guest line); a third mention is the paragraph repeated after a paraphrase.
+_ONCE = (
+    ("ai assistant", "AI assistant"),
+    ("ki-assistent", "KI-Assistent"),
+    ("which product category", "product-category question"),
+    ("welche produktkategorie", "Produktkategorie question"),
+    ("approved partner accounts see net prices", "partner net-price sentence"),
+    ("net price after partner sign-in", "guest price line"),
+    ("prices after approval", "review price line"),
+    ("freigegebene partnerkonten sehen die nettopreise", "Partner-Nettopreise"),
+    ("nettopreis nach partner-anmeldung", "guest price line"),
+    ("preise nach freigabe", "review price line"),
+    ("within one working day", "one-working-day reply"),
+    ("innerhalb eines werktags", "Werktag reply"),
+)
+
+
+# The signed next-step answers put one question to the customer: TALK ends
+# with "Which product category do you want to look at?" and the ask chips
+# answer it (copy-review 2026-10-20, EN/DE greeting). Goal 9's second block is
+# the clickable ask, never a second question sentence.
+MAX_QUESTIONS = 1
+
+
+def repeated_signed_copy(text: str) -> list[str]:
+    """Why this answer repeats a signed next-step sentence or asks twice."""
+
+    folded = text.casefold()
+    failures = [
+        f"signed copy repeated: {label}"
+        for needle, label in _ONCE
+        if folded.count(needle) > 1
+    ]
+    if folded.count("net price") > 2:
+        failures.append("signed copy repeated: net price")
+    if folded.count("nettopreis") > 2:
+        failures.append("signed copy repeated: Nettopreis")
+    if text.count("?") > MAX_QUESTIONS:
+        failures.append("more than one question")
+    return failures
+
+
 def check(
     row: dict[str, Any],
     turn: Turn,
@@ -580,6 +625,8 @@ def check(
         text, [str(value) for value in expect.get("numbers") or []], catalog
     ):
         failures.append(f"number {token} is in no expected fact")
+
+    failures.extend(repeated_signed_copy(text))
 
     phase_powers = expect.get("phase_powers")
     if phase_powers:

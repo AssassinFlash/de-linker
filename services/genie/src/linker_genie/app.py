@@ -53,7 +53,7 @@ from linker_genie.schema import (
     VoteRequest,
 )
 from linker_genie.storeapi import StoreVocabulary
-from linker_genie.template import fallback, stock_answer, team_sentence
+from linker_genie.template import fallback, finish, stock_answer, team_sentence
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 
@@ -327,13 +327,20 @@ def _answer(
         )
     if prepared.route.name == "clarify" and prepared.route.answer:
         # The question is fixed in route.py. No tool call ran, and the model
-        # does not invent one. Price lookup and inquiry send are untouched.
+        # does not invent one. A clarification asks which model the customer
+        # means; finish does not add the application ask, because those chips
+        # cannot answer it (#394). Price lookup and inquiry send are untouched.
+        clarified = finish(
+            TurnOutput(
+                language=language,
+                blocks=[TextBlock(text=prepared.route.answer)],
+            ),
+            TurnFacts(),
+            prepared.route,
+        )
         return (
             TurnResult(
-                output=TurnOutput(
-                    language=language,
-                    blocks=[TextBlock(text=prepared.route.answer)],
-                ),
+                output=clarified,
                 facts=TurnFacts(),
                 grounded=True,
                 failures=(),
