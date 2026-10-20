@@ -89,6 +89,27 @@ final class PageCacheChainTest extends TestCase {
 	private string $token = '';
 
 	/**
+	 * Invalidate request bodies captured while the service address is a loopback.
+	 *
+	 * @var list<string>
+	 */
+	private array $invalidations = array();
+
+	/**
+	 * Terms this test created.
+	 *
+	 * @var list<int>
+	 */
+	private array $terms = array();
+
+	/**
+	 * Whether the HTTP capture filter is attached.
+	 *
+	 * @var bool
+	 */
+	private bool $capturing = false;
+
+	/**
 	 * Skips unless the integration configuration ran the bootstrap.
 	 */
 	public static function setUpBeforeClass(): void {
@@ -101,11 +122,21 @@ final class PageCacheChainTest extends TestCase {
 	 * Restores the instance: service address, probe posts, render, process.
 	 */
 	protected function tearDown(): void {
-		$this->restore_service();
+		if ( $this->capturing ) {
+			remove_filter( 'pre_http_request', array( $this, 'capture_invalidation' ), 10 );
+			$this->capturing = false;
+		}
+		// A delete can assign terms. An empty address keeps that off the service.
+		if ( $this->replaced ) {
+			update_option( Proxy::OPTION, '' );
+			$this->flush_page_cache();
+		}
 		$this->drop_translation_jobs();
 		foreach ( $this->posts as $id ) {
 			wp_delete_post( $id, true );
 		}
+		$this->delete_terms();
+		$this->restore_service();
 		if ( '' !== $this->render && is_file( $this->render ) ) {
 			unlink( $this->render );
 		}
@@ -190,6 +221,75 @@ final class PageCacheChainTest extends TestCase {
 			$this->assertStringContainsString( "NEW {$mark} " . $this->label( $case ), $body, $case );
 			$this->assertStringNotContainsString( "OLD {$mark} " . $this->label( $case ), $body, $case );
 		}
+	}
+
+	/**
+	 * A category-only save does not call wp_update_post. The archive being
+	 * replaced and the archive just assigned are both named.
+	 *
+	 * WooCommerce writes categories in update_terms() after the post fields,
+	 * and skips wp_update_post when only the category changed. CI's smoke
+	 * instance has no WooCommerce; wp_set_object_terms is the call that save
+	 * makes, and it is what that instance runs.
+	 */
+	public function test_a_category_only_save_drops_the_old_and_new_archives(): void {
+		$this->require_service_token();
+		$this->begin_capture();
+		$subject  = $this->subject();
+		$type     = $subject[0];
+		$taxonomy = $subject[1];
+		$mark     = 'c405cat' . strtolower( wp_generate_password( 6, false, false ) );
+		$old      = $this->make_term( $taxonomy, $mark . '-old' );
+		$new      = $this->make_term( $taxonomy, $mark . '-new' );
+		$id       = $this->publish( $type, 'en', "CAT {$mark} subject" );
+		$this->assign( $id, $old, $taxonomy );
+		$this->flush_page_cache();
+		$this->invalidations = array();
+
+		$before = did_action( 'pre_post_update' );
+		if ( 'product' === $type && function_exists( 'wc_get_product' ) ) {
+			$product = wc_get_product( $id );
+			$this->assertInstanceOf( \WC_Product::class, $product );
+			$product->set_category_ids( array( $new ) );
+			$product->save();
+		} else {
+			$this->assign( $id, $new, $taxonomy );
+		}
+		$this->assertSame( $before, did_action( 'pre_post_update' ), 'a category-only save does not run wp_update_post' );
+		$this->drop_translation_jobs();
+		$this->deliver_saved_pages();
+
+		$paths = $this->captured_paths();
+		$this->assertContains( $this->archive_path( $old, $taxonomy ), $paths, (string) wp_json_encode( $paths ) );
+		$this->assertContains( $this->archive_path( $new, $taxonomy ), $paths, (string) wp_json_encode( $paths ) );
+	}
+
+	/**
+	 * The block editor updates the post, then assigns terms. Both archives are
+	 * in the one invalidate call that shutdown sends.
+	 */
+	public function test_a_block_editor_save_drops_both_category_archives(): void {
+		$this->require_service_token();
+		$this->begin_capture();
+		$subject  = $this->subject();
+		$type     = $subject[0];
+		$taxonomy = $subject[1];
+		$mark     = 'c405edit' . strtolower( wp_generate_password( 6, false, false ) );
+		$old      = $this->make_term( $taxonomy, $mark . '-old' );
+		$new      = $this->make_term( $taxonomy, $mark . '-new' );
+		$id       = $this->publish( $type, 'en', "EDIT {$mark} subject" );
+		$this->assign( $id, $old, $taxonomy );
+		$this->flush_page_cache();
+		$this->invalidations = array();
+
+		$this->edit( $id, "EDIT {$mark} renamed" );
+		$this->assign( $id, $new, $taxonomy );
+		$this->drop_translation_jobs();
+		$this->deliver_saved_pages();
+
+		$paths = $this->captured_paths();
+		$this->assertContains( $this->archive_path( $old, $taxonomy ), $paths, (string) wp_json_encode( $paths ) );
+		$this->assertContains( $this->archive_path( $new, $taxonomy ), $paths, (string) wp_json_encode( $paths ) );
 	}
 
 	/**
@@ -453,5 +553,171 @@ final class PageCacheChainTest extends TestCase {
 			proc_close( $this->process );
 			$this->process = null;
 		}
+	}
+
+	/**
+	 * Skips unless this process can authenticate a service call.
+	 */
+	private function require_service_token(): void {
+		if ( ! defined( Proxy::TOKEN_CONSTANT ) || '' === (string) constant( Proxy::TOKEN_CONSTANT ) ) {
+			self::markTestSkipped( 'LINKER_GENIE_SERVICE_TOKEN is not set on this instance.' );
+		}
+	}
+
+	/**
+	 * A viewable type and the category taxonomy this instance actually has.
+	 *
+	 * CI's smoke instance has no WooCommerce, so a post and `category` stand in
+	 * for the same `wp_set_object_terms` call. A snapshot instance uses the product.
+	 *
+	 * @return array{0: string, 1: string}
+	 */
+	private function subject(): array {
+		if ( is_post_type_viewable( 'product' ) && taxonomy_exists( 'product_cat' ) ) {
+			return array( 'product', 'product_cat' );
+		}
+		return array( 'post', 'category' );
+	}
+
+	/**
+	 * Creates a term and remembers it for tearDown.
+	 *
+	 * @param string $taxonomy Taxonomy.
+	 * @param string $slug     Unique slug.
+	 */
+	private function make_term( string $taxonomy, string $slug ): int {
+		$created = wp_insert_term( $slug, $taxonomy, array( 'slug' => $slug ) );
+		$this->assertIsArray( $created, is_wp_error( $created ) ? $created->get_error_message() : '' );
+		$id            = (int) $created['term_id'];
+		$this->terms[] = $id;
+		return $id;
+	}
+
+	/**
+	 * Replaces the object's terms in one taxonomy. This is the call a category
+	 * save makes, with or without a surrounding wp_update_post.
+	 *
+	 * @param int    $object_id Object ID.
+	 * @param int    $term_id   Term ID.
+	 * @param string $taxonomy  Taxonomy.
+	 */
+	private function assign( int $object_id, int $term_id, string $taxonomy ): void {
+		$assigned = wp_set_object_terms( $object_id, array( $term_id ), $taxonomy, false );
+		$this->assertFalse( is_wp_error( $assigned ), is_wp_error( $assigned ) ? $assigned->get_error_message() : '' );
+	}
+
+	/**
+	 * Points invalidation at a loopback and records the POST. The option is
+	 * emptied first so a flush of earlier paths does not leave this machine.
+	 */
+	private function begin_capture(): void {
+		if ( ! $this->replaced ) {
+			$this->previous_service = (string) get_option( Proxy::OPTION, '' );
+			$this->replaced         = true;
+		}
+		update_option( Proxy::OPTION, '' );
+		$this->flush_page_cache();
+		update_option( Proxy::OPTION, 'http://127.0.0.1:9' );
+		$this->invalidations = array();
+		add_filter( 'pre_http_request', array( $this, 'capture_invalidation' ), 10, 3 );
+		$this->capturing = true;
+	}
+
+	/**
+	 * Short-circuits the invalidate POST. Other requests are left to the
+	 * isolation filter, which allows 127.0.0.1.
+	 *
+	 * @param mixed                $response Earlier filter answer, false to send.
+	 * @param array<string, mixed> $args     Request arguments.
+	 * @param string               $url      Request URL.
+	 * @return mixed
+	 */
+	public function capture_invalidation( mixed $response, array $args, string $url ): mixed {
+		if ( ! str_contains( $url, PageCache::ROUTE ) ) {
+			return $response;
+		}
+		$body                  = $args['body'] ?? '';
+		$this->invalidations[] = is_string( $body ) ? $body : (string) wp_json_encode( $body );
+		return array(
+			'headers'  => array(),
+			'body'     => '{}',
+			'response' => array(
+				'code'    => 200,
+				'message' => 'OK',
+			),
+			'cookies'  => array(),
+			'filename' => null,
+		);
+	}
+
+	/**
+	 * Paths from the captured invalidate bodies.
+	 *
+	 * @return list<string>
+	 */
+	private function captured_paths(): array {
+		$this->assertNotEmpty( $this->invalidations, 'no invalidate POST was captured' );
+		$paths = array();
+		foreach ( $this->invalidations as $body ) {
+			$decoded = json_decode( $body, true );
+			$this->assertIsArray( $decoded, $body );
+			$listed = $decoded['paths'] ?? null;
+			$this->assertIsArray( $listed, $body );
+			foreach ( $listed as $path ) {
+				$this->assertIsString( $path );
+				$paths[] = $path;
+			}
+		}
+		return $paths;
+	}
+
+	/**
+	 * The path PageCache sends for a term archive, query included.
+	 *
+	 * @param int    $term_id  Term ID.
+	 * @param string $taxonomy Taxonomy.
+	 */
+	private function archive_path( int $term_id, string $taxonomy ): string {
+		$link = get_term_link( $term_id, $taxonomy );
+		$this->assertIsString( $link, is_wp_error( $link ) ? $link->get_error_message() : '' );
+		$parts = wp_parse_url( $link );
+		$this->assertIsArray( $parts, $link );
+		$path  = (string) ( $parts['path'] ?? '' );
+		$query = isset( $parts['query'] ) && is_string( $parts['query'] ) && '' !== $parts['query'] ? '?' . $parts['query'] : '';
+		$this->assertNotSame( '', $path, $link );
+		return $path . $query;
+	}
+
+	/**
+	 * Sends any armed PageCache callback. A missing hook is not a failure here:
+	 * setup may have noted nothing, and the assertion flush checks the hook.
+	 */
+	private function flush_page_cache(): void {
+		global $wp_filter;
+		$hook = $wp_filter['shutdown'] ?? null;
+		if ( ! $hook instanceof \WP_Hook ) {
+			return;
+		}
+		foreach ( $hook->callbacks as $group ) {
+			foreach ( $group as $callback ) {
+				$function = $callback['function'];
+				if ( is_array( $function ) && $function[0] instanceof PageCache && 'send' === $function[1] ) {
+					$function[0]->send();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Deletes terms created by the category-move tests.
+	 */
+	private function delete_terms(): void {
+		foreach ( $this->terms as $id ) {
+			$term = get_term( $id );
+			if ( $term instanceof \WP_Term ) {
+				wp_delete_term( $id, $term->taxonomy );
+			}
+		}
+		$this->terms = array();
 	}
 }

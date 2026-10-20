@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Genie;
 
 use WP_Post;
+use WP_Term;
 
 /**
  * Genie reads a page as an anonymous visitor and keeps the text in its own
@@ -23,8 +24,11 @@ use WP_Post;
  * (`POST /pages/invalidate`, the same shared token as every other call).
  * A post names the blog index, its categories and its tags. A product names
  * the shop and its product categories. A page names neither the blog index
- * nor the shop. The service also drops every cached solution draft on that
- * call (`page.py`): the body is paths, not which draft holds the product.
+ * nor the shop. A category move is recorded on `set_object_terms`: WooCommerce
+ * assigns terms after `wp_update_post`, and a category-only save never calls
+ * `wp_update_post`. The old archive and the new one are both named. The service
+ * also drops every cached solution draft on that call (`page.py`): the body is
+ * paths, not which draft holds the product.
  * The ten minutes remain the backstop when the service cannot be reached,
  * and for a filtered, searched, or paginated listing this save does not name.
  * A single page that was not saved, and that is not one of those listings,
@@ -118,14 +122,18 @@ final class PageCache {
 
 	/**
 	 * Adds the hooks. `wp_after_insert_post` covers a staff save and the
-	 * translator's `wp_update_post`. `edited_term` covers a category or tag
-	 * whose archive is the page.
+	 * translator's `wp_update_post`. `edited_term` covers a renamed category or
+	 * tag. `set_object_terms` covers the assignment itself: WooCommerce writes
+	 * it in `update_terms()` after `wp_update_post`, and skips `wp_update_post`
+	 * when only the category changed. The block editor's `handle_terms()` also
+	 * runs after `wp_update_post`.
 	 */
 	public function register(): void {
 		add_action( 'pre_post_update', array( $this, 'before_post_saved' ) );
 		add_action( 'wp_after_insert_post', array( $this, 'post_saved' ), 10, 4 );
 		add_action( 'edit_terms', array( $this, 'before_term_saved' ), 10, 2 );
 		add_action( 'edited_term', array( $this, 'term_saved' ), 10, 3 );
+		add_action( 'set_object_terms', array( $this, 'object_terms_set' ), 10, 6 );
 	}
 
 	/**
@@ -181,6 +189,40 @@ final class PageCache {
 	}
 
 	/**
+	 * Terms were assigned. The new archives and the ones just replaced are dropped.
+	 *
+	 * WordPress 7.1 `wp_set_object_terms()` (`wp-includes/taxonomy.php`) fires
+	 * this after the relationships are written and the relationship cache is
+	 * deleted:
+	 * `do_action( 'set_object_terms', $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids )`.
+	 * `$terms` is the caller's list, IDs or slugs, and is not a term-id list.
+	 * `$tt_ids` are the requested term_taxonomy_ids (`term_exists()` values;
+	 * WooCommerce passes them as strings). `$old_tt_ids` is the previous
+	 * term_taxonomy_ids from `wp_get_object_terms( ..., array( 'fields' => 'tt_ids' ) )`
+	 * when the assignment replaces; an append passes an empty array. Those
+	 * field values are integers. Neither array is a list of term IDs.
+	 *
+	 * @param int          $object_id  Object ID.
+	 * @param array<mixed> $terms      Caller term IDs or slugs. Unused.
+	 * @param array<mixed> $tt_ids     Requested term_taxonomy_ids.
+	 * @param string       $taxonomy   Taxonomy slug.
+	 * @param bool         $append     Whether the terms were appended.
+	 * @param array<mixed> $old_tt_ids Previous term_taxonomy_ids, empty when appending.
+	 */
+	public function object_terms_set( int $object_id, array $terms, array $tt_ids, string $taxonomy, bool $append, array $old_tt_ids ): void {
+		unset( $terms, $append );
+		$post = get_post( $object_id );
+		if ( ! $post instanceof WP_Post || ! $this->is_public_post( $post ) ) {
+			return;
+		}
+		// The relationship cache is already gone, so this sees the new assignment.
+		// The requested ids are still resolved below: a stale cache must not hide them.
+		$this->note_post( $object_id );
+		$this->note_term_taxonomy_ids( $tt_ids, $taxonomy );
+		$this->note_term_taxonomy_ids( $old_tt_ids, $taxonomy );
+	}
+
+	/**
 	 * POSTs the gathered paths. Runs on shutdown, or immediately when the save
 	 * itself happens during shutdown. A failure is logged and never fatal to
 	 * the save: the cache still expires on its own.
@@ -222,8 +264,8 @@ final class PageCache {
 
 	/**
 	 * Notes the post's path, each language twin's path, and the listings that
-	 * show them. Called before the save and after it, so a renamed slug and a
-	 * category move each drop both addresses.
+	 * show them. Called before the save, after it, and when terms are assigned,
+	 * so a renamed slug and a category move each drop both addresses.
 	 *
 	 * @param int $post_id Post ID.
 	 */
@@ -403,6 +445,46 @@ final class PageCache {
 			$found[] = (int) $id;
 		}
 		return $found;
+	}
+
+	/**
+	 * Resolves term_taxonomy_ids to archives. `get_term_by( 'term_taxonomy_id' )`
+	 * does not treat the id as a term_id (`wp-includes/taxonomy.php`).
+	 *
+	 * @param array<mixed> $tt_ids   Term_taxonomy_ids, integers or numeric strings.
+	 * @param string       $taxonomy Taxonomy the assignment used.
+	 */
+	private function note_term_taxonomy_ids( array $tt_ids, string $taxonomy ): void {
+		if ( ! is_taxonomy_viewable( $taxonomy ) ) {
+			return;
+		}
+		foreach ( $tt_ids as $tt_id ) {
+			$id = $this->term_taxonomy_id( $tt_id );
+			if ( $id <= 0 ) {
+				continue;
+			}
+			$term = get_term_by( 'term_taxonomy_id', $id, $taxonomy );
+			if ( ! $term instanceof WP_Term ) {
+				continue;
+			}
+			$found = (string) $term->taxonomy;
+			$this->note_term( (int) $term->term_id, '' !== $found ? $found : $taxonomy );
+		}
+	}
+
+	/**
+	 * A term_taxonomy_id from the `set_object_terms` action. Zero when it is not one.
+	 *
+	 * @param mixed $value Action argument. WooCommerce passes strings for the new ids and integers for the old ones.
+	 */
+	private function term_taxonomy_id( mixed $value ): int {
+		if ( is_int( $value ) ) {
+			return $value;
+		}
+		if ( is_string( $value ) && ctype_digit( $value ) ) {
+			return (int) $value;
+		}
+		return 0;
 	}
 
 	/**

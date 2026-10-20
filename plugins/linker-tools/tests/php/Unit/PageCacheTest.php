@@ -107,6 +107,13 @@ final class PageCacheTest extends TestCase {
 	private array $term_translations = array();
 
 	/**
+	 * Term IDs by term_taxonomy_id. The two are not the same number.
+	 *
+	 * @var array<int, int>
+	 */
+	private array $term_taxonomy = array();
+
+	/**
 	 * Post type archive links. Unset types have none.
 	 *
 	 * @var array<string, string>
@@ -130,6 +137,7 @@ final class PageCacheTest extends TestCase {
 		$this->shop_page         = 0;
 		$this->object_terms      = array();
 		$this->term_translations = array();
+		$this->term_taxonomy     = array();
 		$this->archives          = array();
 	}
 
@@ -368,6 +376,159 @@ final class PageCacheTest extends TestCase {
 			$this->assertStringNotContainsString( '?', $path );
 		}
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A category-only save never calls wp_update_post. The new archive is already
+	 * assigned; the replaced archive arrives only as a previous term_taxonomy_id.
+	 *
+	 * `$terms` is the caller's slug list. `$tt_ids` are strings, as WooCommerce's
+	 * `term_exists()` values are. `$old_tt_ids` are integers, as `fields => tt_ids` is.
+	 */
+	public function test_a_category_only_save_drops_the_old_and_new_archives(): void {
+		$this->category_move_fixture();
+		$this->object_terms[4107]['product_cat'] = array( 46 );
+		$this->wordPress();
+		$this->mock_term_taxonomy_lookup();
+		$cache = $this->cache();
+		WP_Mock::expectActionAdded( 'shutdown', array( $cache, 'send' ) );
+
+		$cache->object_terms_set( 4107, array( 'batteries' ), array( '702' ), 'product_cat', false, array( 700 ) );
+		$cache->send();
+
+		$this->assertSame(
+			array(
+				'/product/inverter/',
+				'/shop/',
+				'/de/shop/',
+				'/product-category/batteries/',
+				'/de/produkt/inverter/',
+				'/product-category/inverters/',
+				'/de/produktkategorie/wechselrichter/',
+			),
+			$this->calls[0][1]['paths']
+		);
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The block editor updates the post, then assigns terms. The after-save hook
+	 * still sees the old category; the new archive is named only by the assignment.
+	 */
+	public function test_a_block_editor_save_drops_both_category_archives(): void {
+		$this->category_move_fixture();
+		$this->object_terms[4107]['product_cat'] = array( 44 );
+		$this->wordPress();
+		$this->mock_term_taxonomy_lookup();
+		$cache = $this->cache();
+		WP_Mock::expectActionAdded( 'shutdown', array( $cache, 'send' ) );
+
+		$cache->before_post_saved( 4107 );
+		$cache->post_saved( 4107, $this->post( 4107 ), true, $this->post( 4107 ) );
+		$this->object_terms[4107]['product_cat'] = array( 46 );
+		$cache->object_terms_set( 4107, array( 46 ), array( '702' ), 'product_cat', false, array( 700 ) );
+		$cache->send();
+
+		$this->assertSame(
+			array(
+				'/product/inverter/',
+				'/shop/',
+				'/de/shop/',
+				'/product-category/inverters/',
+				'/de/produktkategorie/wechselrichter/',
+				'/de/produkt/inverter/',
+				'/product-category/batteries/',
+			),
+			$this->calls[0][1]['paths']
+		);
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * A stale relationship cache still lists the old category. The requested
+	 * term_taxonomy_id is what names the new archive.
+	 */
+	public function test_requested_term_taxonomy_ids_name_the_new_archive_when_the_cache_is_stale(): void {
+		$this->category_move_fixture();
+		$this->object_terms[4107]['product_cat'] = array( 44 );
+		$this->wordPress();
+		$this->mock_term_taxonomy_lookup();
+		$cache = $this->cache();
+		WP_Mock::expectActionAdded( 'shutdown', array( $cache, 'send' ) );
+
+		$cache->object_terms_set( 4107, array( 'batteries' ), array( '702' ), 'product_cat', false, array( 700 ) );
+		$cache->send();
+
+		$this->assertContains( '/product-category/batteries/', $this->calls[0][1]['paths'] );
+		$this->assertContains( '/product-category/inverters/', $this->calls[0][1]['paths'] );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Permalinks, shop and twins for a product moving from inverters to batteries.
+	 *
+	 * Term 44 is term_taxonomy_id 700. Term 46 is term_taxonomy_id 702. A handler
+	 * that treats the action's ids as term ids looks up the wrong archives.
+	 */
+	private function category_move_fixture(): void {
+		$this->links             = array(
+			4107 => 'http://site.test/product/inverter/',
+			8200 => 'http://site.test/de/produkt/inverter/',
+			90   => 'http://site.test/shop/',
+			91   => 'http://site.test/de/shop/',
+			44   => 'http://site.test/product-category/inverters/',
+			45   => 'http://site.test/de/produktkategorie/wechselrichter/',
+			46   => 'http://site.test/product-category/batteries/',
+		);
+		$this->post_translations = array(
+			4107 => array(
+				'en' => 4107,
+				'de' => 8200,
+			),
+			90   => array(
+				'en' => 90,
+				'de' => 91,
+			),
+		);
+		$this->types             = array(
+			4107 => 'product',
+			8200 => 'product',
+		);
+		$this->shop_page         = 90;
+		$this->term_translations = array(
+			44 => array(
+				'en' => 44,
+				'de' => 45,
+			),
+		);
+		$this->term_taxonomy     = array(
+			700 => 44,
+			702 => 46,
+		);
+	}
+
+	/**
+	 * `get_term_by( 'term_taxonomy_id' )` for the category-move fixture.
+	 */
+	private function mock_term_taxonomy_lookup(): void {
+		WP_Mock::userFunction( 'get_term_by' )->andReturnUsing(
+			function ( string $field, mixed $value, string $taxonomy = '' ): \WP_Term|false {
+				unset( $taxonomy );
+				if ( 'term_taxonomy_id' !== $field ) {
+					return false;
+				}
+				$term_id = $this->term_taxonomy[ (int) $value ] ?? 0;
+				if ( $term_id <= 0 ) {
+					return false;
+				}
+				return new \WP_Term(
+					(object) array(
+						'term_id'  => $term_id,
+						'taxonomy' => 'product_cat',
+					)
+				);
+			}
+		);
 	}
 
 	/**

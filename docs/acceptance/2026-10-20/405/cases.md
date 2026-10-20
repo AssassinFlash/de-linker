@@ -19,6 +19,6 @@ just page-cache-chain <name>
 | `405-blog-en` | 英文博文 | 下一次读到新标题和新句子 |
 | `405-blog-de` | 德语博文孪生 | 同上，路径含 `/de/` |
 
-同一次保存还会点博客首页、博文分类和标签、商城、商品分类（单元测试 `PageCacheTest`）。超过 `schema.CACHE_SIZE` 的路径分成两次 POST，也在那个测试里。`draft:` 命名空间在 `services/genie/tests/test_page.py`。筛选、搜索、分页的列表不在失效里，规格 13 写明它们仍等 10 分钟。
+同一次保存还会点博客首页、博文分类和标签、商城、商品分类（单元测试 `PageCacheTest`）。只改分类、以及先 `wp_update_post` 再 `wp_set_object_terms`，新旧分类归档都丢掉（`PageCacheTest` 与 `PageCacheChainTest`）。超过 `schema.CACHE_SIZE` 的路径分成两次 POST，也在那个测试里。`draft:` 命名空间在 `services/genie/tests/test_page.py`。筛选、搜索、分页的列表不在失效里，规格 13 写明它们仍等 10 分钟。
 
 不放进 `services/genie/eval/regression/339-product-words.jsonl`。那份文件是产品词。

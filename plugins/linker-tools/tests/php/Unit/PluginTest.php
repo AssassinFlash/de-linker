@@ -133,6 +133,7 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_after_insert_post', array( $page_cache, 'post_saved' ), 10, 4 );
 		WP_Mock::expectActionAdded( 'edit_terms', array( $page_cache, 'before_term_saved' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'edited_term', array( $page_cache, 'term_saved' ), 10, 3 );
+		WP_Mock::expectActionAdded( 'set_object_terms', array( $page_cache, 'object_terms_set' ), 10, 6 );
 
 		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero, $page_cache ) )->register();
 
