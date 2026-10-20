@@ -114,6 +114,24 @@ final class StoreApiPricesTest extends TestCase {
 	}
 
 	/**
+	 * German permalinks are rewritten on this same hook, at a lower priority.
+	 *
+	 * The linker-i18n Storefront::PRODUCT_LINKS_PRIORITY and this class's
+	 * PRIORITY are the numbers the two plugins register. Moving either so
+	 * the price filter runs first used to drop German links (`isset` on a
+	 * nulled `prices`). The product check no longer depends on that order;
+	 * this assertion is what fails when the priorities change.
+	 */
+	public function test_product_links_run_before_prices_are_nulled(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/Woo/Storefront.php';
+
+		$this->assertLessThan(
+			StoreApiPrices::PRIORITY,
+			\Linker\I18n\Woo\Storefront::PRODUCT_LINKS_PRIORITY
+		);
+	}
+
+	/**
 	 * Customers keep the prices; other routes are untouched.
 	 */
 	public function test_customers_and_other_routes_are_untouched(): void {

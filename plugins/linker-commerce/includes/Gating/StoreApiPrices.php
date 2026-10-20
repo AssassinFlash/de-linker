@@ -20,6 +20,18 @@ use WP_REST_Response;
 final class StoreApiPrices {
 
 	/**
+	 * `rest_request_after_callbacks` priority.
+	 *
+	 * The linker-i18n Storefront rewrites product permalinks on the same hook at
+	 * Storefront::PRODUCT_LINKS_PRIORITY and stays ahead of this. This filter
+	 * sets `prices` to null; Storefront still recognises that product
+	 * (`array_key_exists( 'prices' )`, not `isset`). The two plugins walk one
+	 * Store API product shape — numeric `id`, string `permalink`, `prices`
+	 * present — and do not share a helper: each plugin loads without the other.
+	 */
+	public const PRIORITY = 10;
+
+	/**
 	 * Sets up the filter.
 	 *
 	 * @param CommerceState $state The price rule.
@@ -56,6 +68,12 @@ final class StoreApiPrices {
 
 	/**
 	 * One product of a response, with "prices" null when the visitor may not see them.
+	 *
+	 * The same response is a product to linker-i18n Storefront when it has a
+	 * numeric `id`, a string `permalink` and a `prices` key. Nulling the key's
+	 * value here must leave the key in place: Storefront's check is
+	 * `array_key_exists`, because `isset` would drop the German permalink
+	 * whenever this filter runs first.
 	 *
 	 * @param array<string, mixed> $item Product response.
 	 * @return array<string, mixed>

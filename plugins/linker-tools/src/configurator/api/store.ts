@@ -7,7 +7,11 @@
  * sent again: the live planner records a written line and leaves it out of the
  * next add, and the Store API adds onto an existing line rather than setting
  * it. Product display data is asked for in the page's language (`?lang=`,
- * linker-i18n's RestLang; the default is English).
+ * linker-i18n's RestLang; the default is English). The `permalink` in that
+ * response is already that language's product page (linker-i18n Storefront,
+ * #413): a German card links to `/de/produkt/…` and an English card to
+ * `/product/…`. Callers use the field as the link. They do not build a
+ * second URL.
  */
 
 /**

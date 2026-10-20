@@ -24,6 +24,15 @@
       "inverter": 4107,
       "released": [4107, 1832, 2067, 2068, 2069, 2070, 2090, 2092],
       "pass": "Four rounds, DE and EN, thread carried forward. Every round ships this released card set. A German grounding retry does not shrink it."
+    },
+    {
+      "id": "s1-card-permalink-locale",
+      "issue": 413,
+      "campaign": "333",
+      "locales": ["de", "en"],
+      "accounts": ["approved", "pending", "restricted", "guest"],
+      "products": [4107, 1957],
+      "pass": "Each account's EN card links to /product/… and its DE card to /de/produkt/…. The German page is HTTP 200 with html lang de-DE. The Store API include of these English ids with lang=de returns those permalinks. Behaviour: linker-i18n StorefrontTest, linker-tools GenieCardLinksTest and CardLinks.test.tsx."
     }
   ]
 }
