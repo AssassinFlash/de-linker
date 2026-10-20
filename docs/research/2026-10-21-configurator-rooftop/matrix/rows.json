@@ -37,7 +37,9 @@
         "mounted": true
       },
       "genieShot": "shots/l1-guest-en-1440-genie.png"
-    }
+    },
+    "class": "集成接口断点",
+    "production": "Ability GET returns the English URL with the stated fields. Opening it leaves plz, annual and kWp empty on both engines. See both-engines.json prefill."
   },
   {
     "link": "size-hint",
@@ -77,7 +79,9 @@
         "mounted": true
       },
       "genieShot": "shots/l1-guest-en-390-genie.png"
-    }
+    },
+    "class": "集成接口断点",
+    "production": "Ability GET returns the English URL with the stated fields. Opening it leaves plz, annual and kWp empty on both engines. See both-engines.json prefill."
   },
   {
     "link": "size-hint",
@@ -117,7 +121,9 @@
         "mounted": true
       },
       "genieShot": "shots/l1-guest-de-1440-genie.png"
-    }
+    },
+    "class": "集成接口断点",
+    "production": "Ability GET returns the English URL with the stated fields. Opening it leaves plz, annual and kWp empty on both engines. See both-engines.json prefill."
   },
   {
     "link": "size-hint",
@@ -157,7 +163,9 @@
         "mounted": true
       },
       "genieShot": "shots/l1-guest-de-390-genie.png"
-    }
+    },
+    "class": "集成接口断点",
+    "production": "Ability GET returns the English URL with the stated fields. Opening it leaves plz, annual and kWp empty on both engines. See both-engines.json prefill."
   },
   {
     "link": "size-hint",
@@ -197,7 +205,9 @@
         "mounted": true
       },
       "genieShot": "shots/l1-approved-en-1440-genie.png"
-    }
+    },
+    "class": "集成接口断点",
+    "production": "Ability GET returns the English URL with the stated fields. Opening it leaves plz, annual and kWp empty on both engines. See both-engines.json prefill."
   },
   {
     "link": "size-hint",
@@ -237,7 +247,9 @@
         "mounted": true
       },
       "genieShot": "shots/l1-approved-en-390-genie.png"
-    }
+    },
+    "class": "集成接口断点",
+    "production": "Ability GET returns the English URL with the stated fields. Opening it leaves plz, annual and kWp empty on both engines. See both-engines.json prefill."
   },
   {
     "link": "size-hint",
@@ -277,7 +289,9 @@
         "mounted": true
       },
       "genieShot": "shots/l1-approved-de-1440-genie.png"
-    }
+    },
+    "class": "集成接口断点",
+    "production": "Ability GET returns the English URL with the stated fields. Opening it leaves plz, annual and kWp empty on both engines. See both-engines.json prefill."
   },
   {
     "link": "size-hint",
@@ -317,7 +331,9 @@
         "mounted": true
       },
       "genieShot": "shots/l1-approved-de-390-genie.png"
-    }
+    },
+    "class": "集成接口断点",
+    "production": "Ability GET returns the English URL with the stated fields. Opening it leaves plz, annual and kWp empty on both engines. See both-engines.json prefill."
   },
   {
     "link": "open_configurator",
@@ -349,7 +365,9 @@
         "title": "Solution Configurator",
         "mounted": true
       }
-    }
+    },
+    "class": "pass",
+    "production": "Page GET shows the three-step rail. No approved production session."
   },
   {
     "link": "open_configurator",
@@ -381,7 +399,9 @@
         "title": "Solution Configurator",
         "mounted": true
       }
-    }
+    },
+    "class": "pass",
+    "production": "Page GET shows the three-step rail. No approved production session."
   },
   {
     "link": "open_configurator",
@@ -413,7 +433,9 @@
         "title": "Solution Configurator",
         "mounted": true
       }
-    }
+    },
+    "class": "验收记录缺口",
+    "production": "Ability GET with input[lang]=de returns the English path on both engines. The German page at its own URL is German."
   },
   {
     "link": "open_configurator",
@@ -445,7 +467,9 @@
         "title": "Solution Configurator",
         "mounted": true
       }
-    }
+    },
+    "class": "验收记录缺口",
+    "production": "Ability GET with input[lang]=de returns the English path on both engines. The German page at its own URL is German."
   },
   {
     "link": "open_configurator",
@@ -477,7 +501,9 @@
         "title": "Solution Configurator",
         "mounted": true
       }
-    }
+    },
+    "class": "pass",
+    "production": "Page GET shows the three-step rail. No approved production session."
   },
   {
     "link": "open_configurator",
@@ -509,7 +535,9 @@
         "title": "Solution Configurator",
         "mounted": true
       }
-    }
+    },
+    "class": "pass",
+    "production": "Page GET shows the three-step rail. No approved production session."
   },
   {
     "link": "open_configurator",
@@ -541,7 +569,9 @@
         "title": "Solution Configurator",
         "mounted": true
       }
-    }
+    },
+    "class": "验收记录缺口",
+    "production": "Ability GET with input[lang]=de returns the English path on both engines. The German page at its own URL is German."
   },
   {
     "link": "open_configurator",
@@ -573,7 +603,9 @@
         "title": "Solution Configurator",
         "mounted": true
       }
-    }
+    },
+    "class": "验收记录缺口",
+    "production": "Ability GET with input[lang]=de returns the English path on both engines. The German page at its own URL is German."
   },
   {
     "link": "draft",
@@ -617,8 +649,28 @@
       "moneyOnCart": false,
       "cardPrices": [],
       "cartAmounts": [],
-      "panel": "Genie - Linker's AI assistant\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nWhat is in your solution draft\nGoodWe ESA GW10K-ETA-G20 \u2014 power module\nGoodWe GW6.0-BAT-D-G20 \u2014 ESA battery module\n\nThe draft lists these two products; the page does not print a quantity for either of them. Prices are not shown in the text \u2014 each product card carries its price line for your account, and approved partner accounts see net prices.\n\nPairing in the draft\n\nThe GW10K-ETA-G20 and the GW6.0-BAT-D-G20 are a released pairing. The condition recorded for it reads: The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79).\n\nThe datasheet and the user manual behind that check are linked below.\n\nShow full response\n\nGW ESA 5 30kW Datasheet EN\n\u2197\n\nGW ESA 5 30kW User Manual EN V1.5\n\u2197\n\nGenie could not load this product.\n\nGenie could not load this product.\n\nJump to latest\nAsk Genie\nSend\nGenie is an AI assistant.\nHelp & privacy",
+      "panel": "Genie - Linker's AI assistant\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nWhat is in your solution draft\nGoodWe ESA GW10K-ETA-G20 — power module\nGoodWe GW6.0-BAT-D-G20 — ESA battery module\n\nThe draft lists these two products; the page does not print a quantity for either of them. Prices are not shown in the text — each product card carries its price line for your account, and approved partner accounts see net prices.\n\nPairing in the draft\n\nThe GW10K-ETA-G20 and the GW6.0-BAT-D-G20 are a released pairing. The condition recorded for it reads: The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79).\n\nThe datasheet and the user manual behind that check are linked below.\n\nShow full response\n\nGW ESA 5 30kW Datasheet EN\n↗\n\nGW ESA 5 30kW User Manual EN V1.5\n↗\n\nGenie could not load this product.\n\nGenie could not load this product.\n\nJump to latest\nAsk Genie\nSend\nGenie is an AI assistant.\nHelp & privacy",
       "solutionShot": "shots/l3-guest-en-solution.png"
+    },
+    "class": "集成接口断点",
+    "production": {
+      "probed": true,
+      "at": "2026-10-20T18:16:07.219Z",
+      "page": "/cart/",
+      "conversation_id": 7897,
+      "cart": "add-item 201 for 3556 and 3611; reload read-back quantity 1 each; remove-item 200; remaining 0",
+      "quantity_stated": false,
+      "money": false,
+      "gate": "Net price after partner sign-in",
+      "answer": "Names both products. \"shows no separate quantity count per line, so I cannot confirm quantities from here.\"",
+      "evidence": [
+        "production-draft.json",
+        "shots/prod-draft-guest-en-1440.png",
+        "shots/prod-draft-guest-en-390.png",
+        "shots/prod-draft-guest-en-genie-1440.png",
+        "shots/prod-draft-guest-en-genie-390.png"
+      ],
+      "note": "1440 and 390 are the same turn, resized. No mail."
     }
   },
   {
@@ -663,8 +715,28 @@
       "moneyOnCart": false,
       "cardPrices": [],
       "cartAmounts": [],
-      "panel": "Genie - Linker's AI assistant\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nWhat is in your solution draft\nGoodWe ESA GW10K-ETA-G20 \u2014 power module\nGoodWe GW6.0-BAT-D-G20 \u2014 ESA battery module\n\nThe draft lists these two products; the page does not print a quantity for either of them. Prices are not shown in the text \u2014 each product card carries its price line for your account, and approved partner accounts see net prices.\n\nPairing in the draft\n\nThe GW10K-ETA-G20 and the GW6.0-BAT-D-G20 are a released pairing. The condition recorded for it reads: The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79).\n\nThe datasheet and the user manual behind that check are linked below.\n\nShow full response\n\nGW ESA 5 30kW Datasheet EN\n\u2197\n\nGW ESA 5 30kW User Manual EN V1.5\n\u2197\n\nGenie could not load this product.\n\nGenie could not load this product.\n\nJump to latest\nAsk Genie\nSend\nGenie is an AI assistant.\nHelp & privacy",
+      "panel": "Genie - Linker's AI assistant\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nWhat is in your solution draft\nGoodWe ESA GW10K-ETA-G20 — power module\nGoodWe GW6.0-BAT-D-G20 — ESA battery module\n\nThe draft lists these two products; the page does not print a quantity for either of them. Prices are not shown in the text — each product card carries its price line for your account, and approved partner accounts see net prices.\n\nPairing in the draft\n\nThe GW10K-ETA-G20 and the GW6.0-BAT-D-G20 are a released pairing. The condition recorded for it reads: The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79).\n\nThe datasheet and the user manual behind that check are linked below.\n\nShow full response\n\nGW ESA 5 30kW Datasheet EN\n↗\n\nGW ESA 5 30kW User Manual EN V1.5\n↗\n\nGenie could not load this product.\n\nGenie could not load this product.\n\nJump to latest\nAsk Genie\nSend\nGenie is an AI assistant.\nHelp & privacy",
       "solutionShot": "shots/l3-guest-en-solution.png"
+    },
+    "class": "集成接口断点",
+    "production": {
+      "probed": true,
+      "at": "2026-10-20T18:16:07.219Z",
+      "page": "/cart/",
+      "conversation_id": 7897,
+      "cart": "add-item 201 for 3556 and 3611; reload read-back quantity 1 each; remove-item 200; remaining 0",
+      "quantity_stated": false,
+      "money": false,
+      "gate": "Net price after partner sign-in",
+      "answer": "Names both products. \"shows no separate quantity count per line, so I cannot confirm quantities from here.\"",
+      "evidence": [
+        "production-draft.json",
+        "shots/prod-draft-guest-en-1440.png",
+        "shots/prod-draft-guest-en-390.png",
+        "shots/prod-draft-guest-en-genie-1440.png",
+        "shots/prod-draft-guest-en-genie-390.png"
+      ],
+      "note": "1440 and 390 are the same turn, resized. No mail."
     }
   },
   {
@@ -709,8 +781,28 @@
       "moneyOnCart": false,
       "cardPrices": [],
       "cartAmounts": [],
-      "panel": "Genie \u2013 der KI-Assistent von Linker\n\nWelche Produkte stehen in meinem L\u00f6sungsentwurf, und wie viele von jedem? Was kostet jedes?\nG\nGenie\nIhre Produkte im L\u00f6sungsentwurf\nGoodWe ESA GW10K-ETA-G20 \u2013 das Leistungsmodul\nGoodWe GW6.0-BAT-D-G20 \u2013 das Batteriemodul\n\nSt\u00fcckzahlen f\u00fchrt der Entwurf nicht; die Mengen legen Sie in der Best\u00e4tigungskarte fest.\n\nFreigabe des Paars\n\nLeistungsmodul und Batteriemodul sind als Paar freigegeben. Es gilt diese Bedingung:\n\nDas GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt eine Skalierbarkeit von 12 St\u00fcck an (S. 3). Das Benutzerhandbuch begrenzt eine S\u00e4ule auf sechs Batterien und nennt ein Batterie-Erweiterungsset f\u00fcr mehr Kapazit\u00e4t oder eine niedrigere S\u00e4ule (S. 79).\nPreise\n\nFreigegebene Partnerkonten sehen Nettopreise; die Preise stehen auf den Produktkarten.\n\nVollst\u00e4ndige Antwort anzeigen\n\nGW ESA 5 30kW Datasheet EN\n\u2197\n\nGW ESA 5 30kW User Manual EN V1.5\n\u2197\n\nGenie konnte dieses Produkt nicht laden.\n\nGenie konnte dieses Produkt nicht laden.\n\nZur neuesten Nachricht\nGenie fragen\nSenden\nGenie ist ein KI-Assistent.\nHilfe & Datenschutz",
+      "panel": "Genie – der KI-Assistent von Linker\n\nWelche Produkte stehen in meinem Lösungsentwurf, und wie viele von jedem? Was kostet jedes?\nG\nGenie\nIhre Produkte im Lösungsentwurf\nGoodWe ESA GW10K-ETA-G20 – das Leistungsmodul\nGoodWe GW6.0-BAT-D-G20 – das Batteriemodul\n\nStückzahlen führt der Entwurf nicht; die Mengen legen Sie in der Bestätigungskarte fest.\n\nFreigabe des Paars\n\nLeistungsmodul und Batteriemodul sind als Paar freigegeben. Es gilt diese Bedingung:\n\nDas GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt eine Skalierbarkeit von 12 Stück an (S. 3). Das Benutzerhandbuch begrenzt eine Säule auf sechs Batterien und nennt ein Batterie-Erweiterungsset für mehr Kapazität oder eine niedrigere Säule (S. 79).\nPreise\n\nFreigegebene Partnerkonten sehen Nettopreise; die Preise stehen auf den Produktkarten.\n\nVollständige Antwort anzeigen\n\nGW ESA 5 30kW Datasheet EN\n↗\n\nGW ESA 5 30kW User Manual EN V1.5\n↗\n\nGenie konnte dieses Produkt nicht laden.\n\nGenie konnte dieses Produkt nicht laden.\n\nZur neuesten Nachricht\nGenie fragen\nSenden\nGenie ist ein KI-Assistent.\nHilfe & Datenschutz",
       "solutionShot": "shots/l3-guest-de-solution.png"
+    },
+    "class": "集成接口断点",
+    "production": {
+      "probed": true,
+      "at": "2026-10-20T18:16:44.328Z",
+      "page": "/de/loesungsentwurf/",
+      "conversation_id": 7898,
+      "cart": "add-item 201 for 3556 and 3611; reload read-back quantity 1 each; remove-item 200; remaining 0",
+      "quantity_stated": false,
+      "money": false,
+      "gate": "Nettopreis nach Partner-Anmeldung",
+      "answer": "Names both products. \"Wie viel je Produkt im Entwurf liegt, zeigt die Bestätigungskarte beim Senden der Anfrage.\"",
+      "evidence": [
+        "production-draft.json",
+        "shots/prod-draft-guest-de-1440.png",
+        "shots/prod-draft-guest-de-390.png",
+        "shots/prod-draft-guest-de-genie-1440.png",
+        "shots/prod-draft-guest-de-genie-390.png"
+      ],
+      "note": "1440 and 390 are the same turn, resized. The 12-piece sentence is a pairing-document citation, not the draft quantity. No mail."
     }
   },
   {
@@ -755,8 +847,28 @@
       "moneyOnCart": false,
       "cardPrices": [],
       "cartAmounts": [],
-      "panel": "Genie \u2013 der KI-Assistent von Linker\n\nWelche Produkte stehen in meinem L\u00f6sungsentwurf, und wie viele von jedem? Was kostet jedes?\nG\nGenie\nIhre Produkte im L\u00f6sungsentwurf\nGoodWe ESA GW10K-ETA-G20 \u2013 das Leistungsmodul\nGoodWe GW6.0-BAT-D-G20 \u2013 das Batteriemodul\n\nSt\u00fcckzahlen f\u00fchrt der Entwurf nicht; die Mengen legen Sie in der Best\u00e4tigungskarte fest.\n\nFreigabe des Paars\n\nLeistungsmodul und Batteriemodul sind als Paar freigegeben. Es gilt diese Bedingung:\n\nDas GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt eine Skalierbarkeit von 12 St\u00fcck an (S. 3). Das Benutzerhandbuch begrenzt eine S\u00e4ule auf sechs Batterien und nennt ein Batterie-Erweiterungsset f\u00fcr mehr Kapazit\u00e4t oder eine niedrigere S\u00e4ule (S. 79).\nPreise\n\nFreigegebene Partnerkonten sehen Nettopreise; die Preise stehen auf den Produktkarten.\n\nVollst\u00e4ndige Antwort anzeigen\n\nGW ESA 5 30kW Datasheet EN\n\u2197\n\nGW ESA 5 30kW User Manual EN V1.5\n\u2197\n\nGenie konnte dieses Produkt nicht laden.\n\nGenie konnte dieses Produkt nicht laden.\n\nZur neuesten Nachricht\nGenie fragen\nSenden\nGenie ist ein KI-Assistent.\nHilfe & Datenschutz",
+      "panel": "Genie – der KI-Assistent von Linker\n\nWelche Produkte stehen in meinem Lösungsentwurf, und wie viele von jedem? Was kostet jedes?\nG\nGenie\nIhre Produkte im Lösungsentwurf\nGoodWe ESA GW10K-ETA-G20 – das Leistungsmodul\nGoodWe GW6.0-BAT-D-G20 – das Batteriemodul\n\nStückzahlen führt der Entwurf nicht; die Mengen legen Sie in der Bestätigungskarte fest.\n\nFreigabe des Paars\n\nLeistungsmodul und Batteriemodul sind als Paar freigegeben. Es gilt diese Bedingung:\n\nDas GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt eine Skalierbarkeit von 12 Stück an (S. 3). Das Benutzerhandbuch begrenzt eine Säule auf sechs Batterien und nennt ein Batterie-Erweiterungsset für mehr Kapazität oder eine niedrigere Säule (S. 79).\nPreise\n\nFreigegebene Partnerkonten sehen Nettopreise; die Preise stehen auf den Produktkarten.\n\nVollständige Antwort anzeigen\n\nGW ESA 5 30kW Datasheet EN\n↗\n\nGW ESA 5 30kW User Manual EN V1.5\n↗\n\nGenie konnte dieses Produkt nicht laden.\n\nGenie konnte dieses Produkt nicht laden.\n\nZur neuesten Nachricht\nGenie fragen\nSenden\nGenie ist ein KI-Assistent.\nHilfe & Datenschutz",
       "solutionShot": "shots/l3-guest-de-solution.png"
+    },
+    "class": "集成接口断点",
+    "production": {
+      "probed": true,
+      "at": "2026-10-20T18:16:44.328Z",
+      "page": "/de/loesungsentwurf/",
+      "conversation_id": 7898,
+      "cart": "add-item 201 for 3556 and 3611; reload read-back quantity 1 each; remove-item 200; remaining 0",
+      "quantity_stated": false,
+      "money": false,
+      "gate": "Nettopreis nach Partner-Anmeldung",
+      "answer": "Names both products. \"Wie viel je Produkt im Entwurf liegt, zeigt die Bestätigungskarte beim Senden der Anfrage.\"",
+      "evidence": [
+        "production-draft.json",
+        "shots/prod-draft-guest-de-1440.png",
+        "shots/prod-draft-guest-de-390.png",
+        "shots/prod-draft-guest-de-genie-1440.png",
+        "shots/prod-draft-guest-de-genie-390.png"
+      ],
+      "note": "1440 and 390 are the same turn, resized. The 12-piece sentence is a pairing-document citation, not the draft quantity. No mail."
     }
   },
   {
@@ -801,8 +913,14 @@
       "moneyOnCart": false,
       "cardPrices": [],
       "cartAmounts": [],
-      "panel": "Genie - Linker's AI assistant\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nProducts in your solution draft\n\nThe page lists the GoodWe ESA GW10K-ETA-G20 power module and the GoodWe GW6.0-BAT-D-G20 battery module, each as its own line; a quantity per product is not stated on the page.\n\nPairing\n\nThe pairing of these two products is released. The GoodWe ESA datasheet lists the GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints a scalability figure for them, while the user manual limits a battery column to a given count and names a battery expansion kit for higher capacity or a lower column. Both conditions are spelled out in the documents below.\n\nPrices\n\nThe cards show both products with their prices; approved partner accounts see net prices.\n\nPr\nShow full response\n\nGW ESA 5 30kW Datasheet EN\n\u2197\n\nGW ESA 5 30kW User Manual EN V1.5\n\u2197\n\nGenie could not load this product.\n\nGenie could not load this product.\n\nAsk Genie\nSend\nGenie is an AI assistant.\nHelp & privacy",
+      "panel": "Genie - Linker's AI assistant\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nProducts in your solution draft\n\nThe page lists the GoodWe ESA GW10K-ETA-G20 power module and the GoodWe GW6.0-BAT-D-G20 battery module, each as its own line; a quantity per product is not stated on the page.\n\nPairing\n\nThe pairing of these two products is released. The GoodWe ESA datasheet lists the GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints a scalability figure for them, while the user manual limits a battery column to a given count and names a battery expansion kit for higher capacity or a lower column. Both conditions are spelled out in the documents below.\n\nPrices\n\nThe cards show both products with their prices; approved partner accounts see net prices.\n\nPr\nShow full response\n\nGW ESA 5 30kW Datasheet EN\n↗\n\nGW ESA 5 30kW User Manual EN V1.5\n↗\n\nGenie could not load this product.\n\nGenie could not load this product.\n\nAsk Genie\nSend\nGenie is an AI assistant.\nHelp & privacy",
       "solutionShot": "shots/l3-pending-en-solution.png"
+    },
+    "class": "本地实测·线上待测",
+    "production": {
+      "probed": false,
+      "class": "本地实测·线上待测",
+      "reason": "A production pending or approved session was not opened. That would need a customer-account read or a registration, and registration sends mail. Neither was done."
     }
   },
   {
@@ -847,8 +965,14 @@
       "moneyOnCart": false,
       "cardPrices": [],
       "cartAmounts": [],
-      "panel": "Genie - Linker's AI assistant\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nProducts in your solution draft\n\nThe page lists the GoodWe ESA GW10K-ETA-G20 power module and the GoodWe GW6.0-BAT-D-G20 battery module, each as its own line; a quantity per product is not stated on the page.\n\nPairing\n\nThe pairing of these two products is released. The GoodWe ESA datasheet lists the GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints a scalability figure for them, while the user manual limits a battery column to a given count and names a battery expansion kit for higher capacity or a lower column. Both conditions are spelled out in the documents below.\n\nPrices\n\nThe cards show both products with their prices; approved partner accounts see net prices.\n\nPr\nShow full response\n\nGW ESA 5 30kW Datasheet EN\n\u2197\n\nGW ESA 5 30kW User Manual EN V1.5\n\u2197\n\nGenie could not load this product.\n\nGenie could not load this product.\n\nAsk Genie\nSend\nGenie is an AI assistant.\nHelp & privacy",
+      "panel": "Genie - Linker's AI assistant\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nProducts in your solution draft\n\nThe page lists the GoodWe ESA GW10K-ETA-G20 power module and the GoodWe GW6.0-BAT-D-G20 battery module, each as its own line; a quantity per product is not stated on the page.\n\nPairing\n\nThe pairing of these two products is released. The GoodWe ESA datasheet lists the GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints a scalability figure for them, while the user manual limits a battery column to a given count and names a battery expansion kit for higher capacity or a lower column. Both conditions are spelled out in the documents below.\n\nPrices\n\nThe cards show both products with their prices; approved partner accounts see net prices.\n\nPr\nShow full response\n\nGW ESA 5 30kW Datasheet EN\n↗\n\nGW ESA 5 30kW User Manual EN V1.5\n↗\n\nGenie could not load this product.\n\nGenie could not load this product.\n\nAsk Genie\nSend\nGenie is an AI assistant.\nHelp & privacy",
       "solutionShot": "shots/l3-pending-en-solution.png"
+    },
+    "class": "本地实测·线上待测",
+    "production": {
+      "probed": false,
+      "class": "本地实测·线上待测",
+      "reason": "A production pending or approved session was not opened. That would need a customer-account read or a registration, and registration sends mail. Neither was done."
     }
   },
   {
@@ -858,7 +982,7 @@
     "viewport": "1440",
     "verdict": "fail",
     "evidence": "shots/l3-pending-de-1440.png",
-    "notes": "Add-all passed: draft qty 1 of both products. Price gate held (Ihr Konto wird gepr\u00fcft. Preise nach Freigabe. No amount). Visible German card shows one product and the gate sentence, not a quantity.",
+    "notes": "Add-all passed: draft qty 1 of both products. Price gate held (Ihr Konto wird geprüft. Preise nach Freigabe. No amount). Visible German card shows one product and the gate sentence, not a quantity.",
     "observed": {
       "lines": [
         {
@@ -895,12 +1019,18 @@
       "moneyInAnswer": false,
       "moneyOnCart": false,
       "cardPrices": [
-        "Ihr Konto wird gepr\u00fcft. Preise nach Freigabe.",
-        "Ihr Konto wird gepr\u00fcft. Preise nach Freigabe."
+        "Ihr Konto wird geprüft. Preise nach Freigabe.",
+        "Ihr Konto wird geprüft. Preise nach Freigabe."
       ],
       "cartAmounts": [],
-      "panel": "Genie \u2013 der KI-Assistent von Linker\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nProducts in your solution draft\n\nThe page lists the GoodWe ESA GW10K-ETA-G20 power module and the GoodWe GW6.0-BAT-D-G20 battery module, each as its own line; a quantity per product is not stated on the page.\n\nPairing\n\nThe pairing of these two products is released. The GoodWe ESA datasheet lists the GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints a scalability figure for them, while the user manual limits a battery column to a given count and names a battery expansion kit for higher capacity or a lower column. Both conditions are spelled out in the documents below.\n\nPrices\n\nThe cards show both products with their prices; approved partner accounts see net prices.\n\nWelche Produkte stehen in meinem L\u00f6sungsentwurf, und wie viele von jedem? Was kostet jedes?\nG\nGenie\nProdukte in Ihrem L\u00f6sungsentwurf\n\nIhr L\u00f6sungsentwurf enth\u00e4lt das Leistungsmodul GoodWe ESA GW10K-ETA-G20 und das Batteriemodul GoodWe GW6.0-BAT-D-G20, jeweils als eigene Zeile. Eine St\u00fcckzahl je Produkt ist auf der Seite nicht angegeben.\n\nPreise\n\nBeide Produkte stehen unten als Karte mi",
+      "panel": "Genie – der KI-Assistent von Linker\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nProducts in your solution draft\n\nThe page lists the GoodWe ESA GW10K-ETA-G20 power module and the GoodWe GW6.0-BAT-D-G20 battery module, each as its own line; a quantity per product is not stated on the page.\n\nPairing\n\nThe pairing of these two products is released. The GoodWe ESA datasheet lists the GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints a scalability figure for them, while the user manual limits a battery column to a given count and names a battery expansion kit for higher capacity or a lower column. Both conditions are spelled out in the documents below.\n\nPrices\n\nThe cards show both products with their prices; approved partner accounts see net prices.\n\nWelche Produkte stehen in meinem Lösungsentwurf, und wie viele von jedem? Was kostet jedes?\nG\nGenie\nProdukte in Ihrem Lösungsentwurf\n\nIhr Lösungsentwurf enthält das Leistungsmodul GoodWe ESA GW10K-ETA-G20 und das Batteriemodul GoodWe GW6.0-BAT-D-G20, jeweils als eigene Zeile. Eine Stückzahl je Produkt ist auf der Seite nicht angegeben.\n\nPreise\n\nBeide Produkte stehen unten als Karte mi",
       "solutionShot": "shots/l3-pending-de-solution.png"
+    },
+    "class": "本地实测·线上待测",
+    "production": {
+      "probed": false,
+      "class": "本地实测·线上待测",
+      "reason": "A production pending or approved session was not opened. That would need a customer-account read or a registration, and registration sends mail. Neither was done."
     }
   },
   {
@@ -910,7 +1040,7 @@
     "viewport": "390",
     "verdict": "fail",
     "evidence": "shots/l3-pending-de-390.png",
-    "notes": "Add-all passed: draft qty 1 of both products. Price gate held (Ihr Konto wird gepr\u00fcft. Preise nach Freigabe. No amount). Visible German card shows one product and the gate sentence, not a quantity.",
+    "notes": "Add-all passed: draft qty 1 of both products. Price gate held (Ihr Konto wird geprüft. Preise nach Freigabe. No amount). Visible German card shows one product and the gate sentence, not a quantity.",
     "observed": {
       "lines": [
         {
@@ -947,12 +1077,18 @@
       "moneyInAnswer": false,
       "moneyOnCart": false,
       "cardPrices": [
-        "Ihr Konto wird gepr\u00fcft. Preise nach Freigabe.",
-        "Ihr Konto wird gepr\u00fcft. Preise nach Freigabe."
+        "Ihr Konto wird geprüft. Preise nach Freigabe.",
+        "Ihr Konto wird geprüft. Preise nach Freigabe."
       ],
       "cartAmounts": [],
-      "panel": "Genie \u2013 der KI-Assistent von Linker\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nProducts in your solution draft\n\nThe page lists the GoodWe ESA GW10K-ETA-G20 power module and the GoodWe GW6.0-BAT-D-G20 battery module, each as its own line; a quantity per product is not stated on the page.\n\nPairing\n\nThe pairing of these two products is released. The GoodWe ESA datasheet lists the GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints a scalability figure for them, while the user manual limits a battery column to a given count and names a battery expansion kit for higher capacity or a lower column. Both conditions are spelled out in the documents below.\n\nPrices\n\nThe cards show both products with their prices; approved partner accounts see net prices.\n\nWelche Produkte stehen in meinem L\u00f6sungsentwurf, und wie viele von jedem? Was kostet jedes?\nG\nGenie\nProdukte in Ihrem L\u00f6sungsentwurf\n\nIhr L\u00f6sungsentwurf enth\u00e4lt das Leistungsmodul GoodWe ESA GW10K-ETA-G20 und das Batteriemodul GoodWe GW6.0-BAT-D-G20, jeweils als eigene Zeile. Eine St\u00fcckzahl je Produkt ist auf der Seite nicht angegeben.\n\nPreise\n\nBeide Produkte stehen unten als Karte mi",
+      "panel": "Genie – der KI-Assistent von Linker\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nProducts in your solution draft\n\nThe page lists the GoodWe ESA GW10K-ETA-G20 power module and the GoodWe GW6.0-BAT-D-G20 battery module, each as its own line; a quantity per product is not stated on the page.\n\nPairing\n\nThe pairing of these two products is released. The GoodWe ESA datasheet lists the GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints a scalability figure for them, while the user manual limits a battery column to a given count and names a battery expansion kit for higher capacity or a lower column. Both conditions are spelled out in the documents below.\n\nPrices\n\nThe cards show both products with their prices; approved partner accounts see net prices.\n\nWelche Produkte stehen in meinem Lösungsentwurf, und wie viele von jedem? Was kostet jedes?\nG\nGenie\nProdukte in Ihrem Lösungsentwurf\n\nIhr Lösungsentwurf enthält das Leistungsmodul GoodWe ESA GW10K-ETA-G20 und das Batteriemodul GoodWe GW6.0-BAT-D-G20, jeweils als eigene Zeile. Eine Stückzahl je Produkt ist auf der Seite nicht angegeben.\n\nPreise\n\nBeide Produkte stehen unten als Karte mi",
       "solutionShot": "shots/l3-pending-de-solution.png"
+    },
+    "class": "本地实测·线上待测",
+    "production": {
+      "probed": false,
+      "class": "本地实测·线上待测",
+      "reason": "A production pending or approved session was not opened. That would need a customer-account read or a registration, and registration sends mail. Neither was done."
     }
   },
   {
@@ -962,7 +1098,7 @@
     "viewport": "1440",
     "verdict": "fail",
     "evidence": "shots/l3-approved-en-1440.png",
-    "notes": "Add-all passed: draft qty 1 of both products. Approved cart shows net prices (\u20ac1,090.00 and \u20ac1,430.00). Genie named one product, said Genie could not load this product twice, and did not state the quantity or the price.",
+    "notes": "Add-all passed: draft qty 1 of both products. Approved cart shows net prices (€1,090.00 and €1,430.00). Genie named one product, said Genie could not load this product twice, and did not state the quantity or the price.",
     "observed": {
       "lines": [
         {
@@ -997,16 +1133,22 @@
       "moneyOnCart": true,
       "cardPrices": [],
       "cartAmounts": [
-        "\u20ac1,090.00",
-        "\u20ac1,090.00",
-        "\u20ac1,430.00",
-        "\u20ac1,430.00",
-        "\u20ac2,520.00",
-        "\u20ac478.80",
-        "\u20ac2,998.80"
+        "€1,090.00",
+        "€1,090.00",
+        "€1,430.00",
+        "€1,430.00",
+        "€2,520.00",
+        "€478.80",
+        "€2,998.80"
       ],
-      "panel": "Genie - Linker's AI assistant\n\nResidential site with 10 kWp PV and 4500 kWh per year, three-phase, postcode 80538, backup needed.\nG\nGenie\n\nSizing a system around the PV size and consumption you gave is the job of the Solution Configurator. It takes the figures you already stated \u2014 the PV size, the yearly consumption, the three-phase connection, your postcode and that backup is needed \u2014 and builds a matching solution draft with the bill of materials.\n\nWohngeb\u00e4ude mit 10 kWp PV und 4500 kWh im Jahr, dreiphasig, PLZ 80538, Notstrom ben\u00f6tigt.\nG\nGenie\n\nWie gro\u00df Speicher und Anlage f\u00fcr Ihr Wohngeb\u00e4ude sein sollten, ermittelt der L\u00f6sungskonfigurator. Er \u00fcbernimmt die von Ihnen genannte PV-Gr\u00f6\u00dfe, den Jahresverbrauch, den dreiphasigen Anschluss, Ihre Postleitzahl und den Bedarf an Notstrom und erstellt daraus einen passenden L\u00f6sungsentwurf samt St\u00fcckliste.\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nIn your solution draft\n\nYour draft lists the GoodWe ESA GW10K-ETA-G20 three-phase power module together with the GoodWe GW6.0-BAT-D-G20 ESA battery module. Each product stands as its own line in the draft; the quantities are shown on the conf",
+      "panel": "Genie - Linker's AI assistant\n\nResidential site with 10 kWp PV and 4500 kWh per year, three-phase, postcode 80538, backup needed.\nG\nGenie\n\nSizing a system around the PV size and consumption you gave is the job of the Solution Configurator. It takes the figures you already stated — the PV size, the yearly consumption, the three-phase connection, your postcode and that backup is needed — and builds a matching solution draft with the bill of materials.\n\nWohngebäude mit 10 kWp PV und 4500 kWh im Jahr, dreiphasig, PLZ 80538, Notstrom benötigt.\nG\nGenie\n\nWie groß Speicher und Anlage für Ihr Wohngebäude sein sollten, ermittelt der Lösungskonfigurator. Er übernimmt die von Ihnen genannte PV-Größe, den Jahresverbrauch, den dreiphasigen Anschluss, Ihre Postleitzahl und den Bedarf an Notstrom und erstellt daraus einen passenden Lösungsentwurf samt Stückliste.\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nIn your solution draft\n\nYour draft lists the GoodWe ESA GW10K-ETA-G20 three-phase power module together with the GoodWe GW6.0-BAT-D-G20 ESA battery module. Each product stands as its own line in the draft; the quantities are shown on the conf",
       "solutionShot": "shots/l3-approved-en-solution.png"
+    },
+    "class": "本地实测·线上待测",
+    "production": {
+      "probed": false,
+      "class": "本地实测·线上待测",
+      "reason": "A production pending or approved session was not opened. That would need a customer-account read or a registration, and registration sends mail. Neither was done."
     }
   },
   {
@@ -1016,7 +1158,7 @@
     "viewport": "390",
     "verdict": "fail",
     "evidence": "shots/l3-approved-en-390.png",
-    "notes": "Add-all passed: draft qty 1 of both products. Approved cart shows net prices (\u20ac1,090.00 and \u20ac1,430.00). Genie named one product, said Genie could not load this product twice, and did not state the quantity or the price.",
+    "notes": "Add-all passed: draft qty 1 of both products. Approved cart shows net prices (€1,090.00 and €1,430.00). Genie named one product, said Genie could not load this product twice, and did not state the quantity or the price.",
     "observed": {
       "lines": [
         {
@@ -1051,16 +1193,22 @@
       "moneyOnCart": true,
       "cardPrices": [],
       "cartAmounts": [
-        "\u20ac1,090.00",
-        "\u20ac1,090.00",
-        "\u20ac1,430.00",
-        "\u20ac1,430.00",
-        "\u20ac2,520.00",
-        "\u20ac478.80",
-        "\u20ac2,998.80"
+        "€1,090.00",
+        "€1,090.00",
+        "€1,430.00",
+        "€1,430.00",
+        "€2,520.00",
+        "€478.80",
+        "€2,998.80"
       ],
-      "panel": "Genie - Linker's AI assistant\n\nResidential site with 10 kWp PV and 4500 kWh per year, three-phase, postcode 80538, backup needed.\nG\nGenie\n\nSizing a system around the PV size and consumption you gave is the job of the Solution Configurator. It takes the figures you already stated \u2014 the PV size, the yearly consumption, the three-phase connection, your postcode and that backup is needed \u2014 and builds a matching solution draft with the bill of materials.\n\nWohngeb\u00e4ude mit 10 kWp PV und 4500 kWh im Jahr, dreiphasig, PLZ 80538, Notstrom ben\u00f6tigt.\nG\nGenie\n\nWie gro\u00df Speicher und Anlage f\u00fcr Ihr Wohngeb\u00e4ude sein sollten, ermittelt der L\u00f6sungskonfigurator. Er \u00fcbernimmt die von Ihnen genannte PV-Gr\u00f6\u00dfe, den Jahresverbrauch, den dreiphasigen Anschluss, Ihre Postleitzahl und den Bedarf an Notstrom und erstellt daraus einen passenden L\u00f6sungsentwurf samt St\u00fcckliste.\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nIn your solution draft\n\nYour draft lists the GoodWe ESA GW10K-ETA-G20 three-phase power module together with the GoodWe GW6.0-BAT-D-G20 ESA battery module. Each product stands as its own line in the draft; the quantities are shown on the conf",
+      "panel": "Genie - Linker's AI assistant\n\nResidential site with 10 kWp PV and 4500 kWh per year, three-phase, postcode 80538, backup needed.\nG\nGenie\n\nSizing a system around the PV size and consumption you gave is the job of the Solution Configurator. It takes the figures you already stated — the PV size, the yearly consumption, the three-phase connection, your postcode and that backup is needed — and builds a matching solution draft with the bill of materials.\n\nWohngebäude mit 10 kWp PV und 4500 kWh im Jahr, dreiphasig, PLZ 80538, Notstrom benötigt.\nG\nGenie\n\nWie groß Speicher und Anlage für Ihr Wohngebäude sein sollten, ermittelt der Lösungskonfigurator. Er übernimmt die von Ihnen genannte PV-Größe, den Jahresverbrauch, den dreiphasigen Anschluss, Ihre Postleitzahl und den Bedarf an Notstrom und erstellt daraus einen passenden Lösungsentwurf samt Stückliste.\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nIn your solution draft\n\nYour draft lists the GoodWe ESA GW10K-ETA-G20 three-phase power module together with the GoodWe GW6.0-BAT-D-G20 ESA battery module. Each product stands as its own line in the draft; the quantities are shown on the conf",
       "solutionShot": "shots/l3-approved-en-solution.png"
+    },
+    "class": "本地实测·线上待测",
+    "production": {
+      "probed": false,
+      "class": "本地实测·线上待测",
+      "reason": "A production pending or approved session was not opened. That would need a customer-account read or a registration, and registration sends mail. Neither was done."
     }
   },
   {
@@ -1070,7 +1218,7 @@
     "viewport": "1440",
     "verdict": "fail",
     "evidence": "shots/l3-approved-de-1440.png",
-    "notes": "Add-all passed: draft qty 1 of both products. Approved cart shows net prices (1.090,00 \u20ac and 1.430,00 \u20ac). German answer names the inverter. Card DOM included those net prices. Quantity was not stated.",
+    "notes": "Add-all passed: draft qty 1 of both products. Approved cart shows net prices (1.090,00 € and 1.430,00 €). German answer names the inverter. Card DOM included those net prices. Quantity was not stated.",
     "observed": {
       "lines": [
         {
@@ -1107,20 +1255,26 @@
       "moneyInAnswer": true,
       "moneyOnCart": true,
       "cardPrices": [
-        "1.090,00\u00a0\u20ac",
-        "1.430,00\u00a0\u20ac"
+        "1.090,00 €",
+        "1.430,00 €"
       ],
       "cartAmounts": [
-        "1.090,00 \u20ac",
-        "1.090,00 \u20ac",
-        "1.430,00 \u20ac",
-        "1.430,00 \u20ac",
-        "2.520,00 \u20ac",
-        "478,80 \u20ac",
-        "2.998,80 \u20ac"
+        "1.090,00 €",
+        "1.090,00 €",
+        "1.430,00 €",
+        "1.430,00 €",
+        "2.520,00 €",
+        "478,80 €",
+        "2.998,80 €"
       ],
-      "panel": "Genie \u2013 der KI-Assistent von Linker\n\nResidential site with 10 kWp PV and 4500 kWh per year, three-phase, postcode 80538, backup needed.\nG\nGenie\n\nSizing a system around the PV size and consumption you gave is the job of the Solution Configurator. It takes the figures you already stated \u2014 the PV size, the yearly consumption, the three-phase connection, your postcode and that backup is needed \u2014 and builds a matching solution draft with the bill of materials.\n\nWohngeb\u00e4ude mit 10 kWp PV und 4500 kWh im Jahr, dreiphasig, PLZ 80538, Notstrom ben\u00f6tigt.\nG\nGenie\n\nWie gro\u00df Speicher und Anlage f\u00fcr Ihr Wohngeb\u00e4ude sein sollten, ermittelt der L\u00f6sungskonfigurator. Er \u00fcbernimmt die von Ihnen genannte PV-Gr\u00f6\u00dfe, den Jahresverbrauch, den dreiphasigen Anschluss, Ihre Postleitzahl und den Bedarf an Notstrom und erstellt daraus einen passenden L\u00f6sungsentwurf samt St\u00fcckliste.\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nIn your solution draft\n\nYour draft lists the GoodWe ESA GW10K-ETA-G20 three-phase power module together with the GoodWe GW6.0-BAT-D-G20 ESA battery module. Each product stands as its own line in the draft; the quantities are shown on th",
+      "panel": "Genie – der KI-Assistent von Linker\n\nResidential site with 10 kWp PV and 4500 kWh per year, three-phase, postcode 80538, backup needed.\nG\nGenie\n\nSizing a system around the PV size and consumption you gave is the job of the Solution Configurator. It takes the figures you already stated — the PV size, the yearly consumption, the three-phase connection, your postcode and that backup is needed — and builds a matching solution draft with the bill of materials.\n\nWohngebäude mit 10 kWp PV und 4500 kWh im Jahr, dreiphasig, PLZ 80538, Notstrom benötigt.\nG\nGenie\n\nWie groß Speicher und Anlage für Ihr Wohngebäude sein sollten, ermittelt der Lösungskonfigurator. Er übernimmt die von Ihnen genannte PV-Größe, den Jahresverbrauch, den dreiphasigen Anschluss, Ihre Postleitzahl und den Bedarf an Notstrom und erstellt daraus einen passenden Lösungsentwurf samt Stückliste.\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nIn your solution draft\n\nYour draft lists the GoodWe ESA GW10K-ETA-G20 three-phase power module together with the GoodWe GW6.0-BAT-D-G20 ESA battery module. Each product stands as its own line in the draft; the quantities are shown on th",
       "solutionShot": "shots/l3-approved-de-solution.png"
+    },
+    "class": "本地实测·线上待测",
+    "production": {
+      "probed": false,
+      "class": "本地实测·线上待测",
+      "reason": "A production pending or approved session was not opened. That would need a customer-account read or a registration, and registration sends mail. Neither was done."
     }
   },
   {
@@ -1130,7 +1284,7 @@
     "viewport": "390",
     "verdict": "fail",
     "evidence": "shots/l3-approved-de-390.png",
-    "notes": "Add-all passed: draft qty 1 of both products. Approved cart shows net prices (1.090,00 \u20ac and 1.430,00 \u20ac). German answer names the inverter. Card DOM included those net prices. Quantity was not stated.",
+    "notes": "Add-all passed: draft qty 1 of both products. Approved cart shows net prices (1.090,00 € and 1.430,00 €). German answer names the inverter. Card DOM included those net prices. Quantity was not stated.",
     "observed": {
       "lines": [
         {
@@ -1167,20 +1321,26 @@
       "moneyInAnswer": true,
       "moneyOnCart": true,
       "cardPrices": [
-        "1.090,00\u00a0\u20ac",
-        "1.430,00\u00a0\u20ac"
+        "1.090,00 €",
+        "1.430,00 €"
       ],
       "cartAmounts": [
-        "1.090,00 \u20ac",
-        "1.090,00 \u20ac",
-        "1.430,00 \u20ac",
-        "1.430,00 \u20ac",
-        "2.520,00 \u20ac",
-        "478,80 \u20ac",
-        "2.998,80 \u20ac"
+        "1.090,00 €",
+        "1.090,00 €",
+        "1.430,00 €",
+        "1.430,00 €",
+        "2.520,00 €",
+        "478,80 €",
+        "2.998,80 €"
       ],
-      "panel": "Genie \u2013 der KI-Assistent von Linker\n\nResidential site with 10 kWp PV and 4500 kWh per year, three-phase, postcode 80538, backup needed.\nG\nGenie\n\nSizing a system around the PV size and consumption you gave is the job of the Solution Configurator. It takes the figures you already stated \u2014 the PV size, the yearly consumption, the three-phase connection, your postcode and that backup is needed \u2014 and builds a matching solution draft with the bill of materials.\n\nWohngeb\u00e4ude mit 10 kWp PV und 4500 kWh im Jahr, dreiphasig, PLZ 80538, Notstrom ben\u00f6tigt.\nG\nGenie\n\nWie gro\u00df Speicher und Anlage f\u00fcr Ihr Wohngeb\u00e4ude sein sollten, ermittelt der L\u00f6sungskonfigurator. Er \u00fcbernimmt die von Ihnen genannte PV-Gr\u00f6\u00dfe, den Jahresverbrauch, den dreiphasigen Anschluss, Ihre Postleitzahl und den Bedarf an Notstrom und erstellt daraus einen passenden L\u00f6sungsentwurf samt St\u00fcckliste.\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nIn your solution draft\n\nYour draft lists the GoodWe ESA GW10K-ETA-G20 three-phase power module together with the GoodWe GW6.0-BAT-D-G20 ESA battery module. Each product stands as its own line in the draft; the quantities are shown on th",
+      "panel": "Genie – der KI-Assistent von Linker\n\nResidential site with 10 kWp PV and 4500 kWh per year, three-phase, postcode 80538, backup needed.\nG\nGenie\n\nSizing a system around the PV size and consumption you gave is the job of the Solution Configurator. It takes the figures you already stated — the PV size, the yearly consumption, the three-phase connection, your postcode and that backup is needed — and builds a matching solution draft with the bill of materials.\n\nWohngebäude mit 10 kWp PV und 4500 kWh im Jahr, dreiphasig, PLZ 80538, Notstrom benötigt.\nG\nGenie\n\nWie groß Speicher und Anlage für Ihr Wohngebäude sein sollten, ermittelt der Lösungskonfigurator. Er übernimmt die von Ihnen genannte PV-Größe, den Jahresverbrauch, den dreiphasigen Anschluss, Ihre Postleitzahl und den Bedarf an Notstrom und erstellt daraus einen passenden Lösungsentwurf samt Stückliste.\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nIn your solution draft\n\nYour draft lists the GoodWe ESA GW10K-ETA-G20 three-phase power module together with the GoodWe GW6.0-BAT-D-G20 ESA battery module. Each product stands as its own line in the draft; the quantities are shown on th",
       "solutionShot": "shots/l3-approved-de-solution.png"
+    },
+    "class": "本地实测·线上待测",
+    "production": {
+      "probed": false,
+      "class": "本地实测·线上待测",
+      "reason": "A production pending or approved session was not opened. That would need a customer-account read or a registration, and registration sends mail. Neither was done."
     }
   }
 ]

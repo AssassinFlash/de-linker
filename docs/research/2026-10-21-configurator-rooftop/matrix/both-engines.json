@@ -93,7 +93,7 @@
     "viewport": 1440,
     "shot": "shots/both-local-step-roof-de-1440.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -114,10 +114,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -130,7 +130,7 @@
     "viewport": 390,
     "shot": "shots/both-local-step-roof-de-390.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -151,10 +151,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -241,7 +241,7 @@
     "viewport": 1440,
     "shot": "shots/both-local-prefill-de-1440.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
     "dataStep": null,
     "mountAttrs": [
@@ -262,10 +262,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -278,7 +278,7 @@
     "viewport": 390,
     "shot": "shots/both-local-prefill-de-390.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
     "dataStep": null,
     "mountAttrs": [
@@ -299,10 +299,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -389,7 +389,7 @@
     "viewport": 1440,
     "shot": "shots/both-local-retired-de-1440.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -410,10 +410,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -426,7 +426,7 @@
     "viewport": 390,
     "shot": "shots/both-local-retired-de-390.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -447,10 +447,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -463,7 +463,7 @@
     "viewport": 1440,
     "shot": "shots/both-local-retired-alias-1440.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -484,10 +484,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -500,7 +500,7 @@
     "viewport": 390,
     "shot": "shots/both-local-retired-alias-390.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -521,10 +521,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -549,7 +549,7 @@
     ],
     "roofPresent": true,
     "roofVisible": true,
-    "roofText": "RoofClose roof step\u00a9 Bayerische Vermessungsverwaltung \u2013 www.geodaten.bayern.de, CC BY 4.0Click the roof of the building in the aerial image.Selected: 0 modules, 0 kWpDraw a plane y",
+    "roofText": "Roof\nClose roof step\n© Bayerische Vermessungsverwaltung – www.geodaten.bayern.de, CC BY 4.0\n\nClick the roof of the building in the aerial image.",
     "loadingMap": false,
     "plz": "80538",
     "annual": "",
@@ -564,7 +564,9 @@
     "roofButton": "No PV figure yet? Estimate from the roof",
     "scripts": [
       "http://127.0.0.1:9231/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
-    ]
+    ],
+    "shotRetakenAt": "2026-10-20T18:20:57.686Z",
+    "shotNote": "Retaken after the consent accept. The credit line is this roofText. The earlier shot had the cookie banner over that line; do not cite the screenshot alone for the credit."
   },
   {
     "engine": "prod",
@@ -660,7 +662,7 @@
     "viewport": 1440,
     "shot": "shots/both-prod-step-roof-de-1440.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -681,10 +683,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -697,7 +699,7 @@
     "viewport": 390,
     "shot": "shots/both-prod-step-roof-de-390.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -718,10 +720,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -808,7 +810,7 @@
     "viewport": 1440,
     "shot": "shots/both-prod-prefill-de-1440.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
     "dataStep": null,
     "mountAttrs": [
@@ -829,10 +831,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -845,7 +847,7 @@
     "viewport": 390,
     "shot": "shots/both-prod-prefill-de-390.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
     "dataStep": null,
     "mountAttrs": [
@@ -866,10 +868,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -956,7 +958,7 @@
     "viewport": 1440,
     "shot": "shots/both-prod-retired-de-1440.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -977,10 +979,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -993,7 +995,7 @@
     "viewport": 390,
     "shot": "shots/both-prod-retired-de-390.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -1014,10 +1016,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -1030,7 +1032,7 @@
     "viewport": 1440,
     "shot": "shots/both-prod-retired-alias-1440.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -1051,10 +1053,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -1067,7 +1069,7 @@
     "viewport": 390,
     "shot": "shots/both-prod-retired-alias-390.png",
     "htmlLang": "de-DE",
-    "title": "L\u00f6sungskonfigurator | Linker",
+    "title": "Lösungskonfigurator | Linker",
     "finalPath": "/de/loesungskonfigurator/?step=roof",
     "dataStep": null,
     "mountAttrs": [
@@ -1088,10 +1090,10 @@
     "backup": "none",
     "steps": [
       "01Eingaben",
-      "02L\u00f6sung",
+      "02Lösung",
       "03Auslegungsbericht"
     ],
-    "roofButton": "Noch keine PV-Leistung? Aus dem Dach absch\u00e4tzen",
+    "roofButton": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
     "scripts": [
       "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010"
     ]
@@ -1107,5 +1109,59 @@
     "loadingMap": false,
     "plz": "",
     "htmlLang": "en-US"
+  },
+  {
+    "case": "redirect-301",
+    "engine": "local",
+    "requested": "/design-canvas/",
+    "status": 301,
+    "location": "http://127.0.0.1:9231/solution-configurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "local",
+    "requested": "/de/design-canvas/",
+    "status": 301,
+    "location": "http://127.0.0.1:9231/de/loesungskonfigurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "local",
+    "requested": "/de/entwurfsflache/",
+    "status": 301,
+    "location": "http://127.0.0.1:9231/de/loesungskonfigurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "prod",
+    "requested": "/design-canvas/",
+    "status": 301,
+    "location": "https://de-linker.com/solution-configurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "prod",
+    "requested": "/de/design-canvas/",
+    "status": 301,
+    "location": "https://de-linker.com/de/loesungskonfigurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
+  },
+  {
+    "case": "redirect-301",
+    "engine": "prod",
+    "requested": "/de/entwurfsflache/",
+    "status": 301,
+    "location": "https://de-linker.com/de/loesungskonfigurator/?step=roof",
+    "followed": false,
+    "note": "Status and Location recorded without following the redirect. The final path after follow is on the retired-* rows."
   }
 ]

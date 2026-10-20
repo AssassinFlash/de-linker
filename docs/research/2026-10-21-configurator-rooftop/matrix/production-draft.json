@@ -1,0 +1,198 @@
+[
+  {
+    "engine": "prod",
+    "state": "guest",
+    "lang": "en",
+    "at": "2026-10-20T18:16:07.219Z",
+    "before": {
+      "status": 200,
+      "items": [],
+      "wanted": [
+        {
+          "id": 3556,
+          "quantity": 0
+        },
+        {
+          "id": 3611,
+          "quantity": 0
+        }
+      ]
+    },
+    "add": {
+      "writes": [
+        {
+          "id": 3556,
+          "status": 201
+        },
+        {
+          "id": 3611,
+          "status": 201
+        }
+      ],
+      "items": [
+        {
+          "id": 3556,
+          "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+          "quantity": 1,
+          "sku": "DLK-GOODWE-GW10KETAG20"
+        },
+        {
+          "id": 3611,
+          "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+          "quantity": 1,
+          "sku": "DLK-GOODWE-GW60BATDG20"
+        }
+      ]
+    },
+    "afterReload": {
+      "status": 200,
+      "items": [
+        {
+          "id": 3556,
+          "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+          "quantity": 1,
+          "sku": "DLK-GOODWE-GW10KETAG20"
+        },
+        {
+          "id": 3611,
+          "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+          "quantity": 1,
+          "sku": "DLK-GOODWE-GW60BATDG20"
+        }
+      ],
+      "wanted": [
+        {
+          "id": 3556,
+          "quantity": 1
+        },
+        {
+          "id": 3611,
+          "quantity": 1
+        }
+      ]
+    },
+    "cartShots": [
+      "shots/prod-draft-guest-en-1440.png",
+      "shots/prod-draft-guest-en-390.png"
+    ],
+    "turnStatus": 200,
+    "conversationId": 7897,
+    "answer": "### Your solution draft\n\nYour solution draft holds these products:\n\n- **GoodWe ESA GW10K-ETA-G20** — the three-phase power module\n- **GoodWe GW6.0-BAT-D-G20** — the ESA battery module\n\nThe draft lists the products as line items and shows no separate quantity count per line, so I cannot confirm quantities from here.\n\n### Pairing\n\nThe battery module and the power module are a released combination. Its conditions are stated in the pairing documents:\n\nThe GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79).\n\n### Prices\n\nEach product's price is on its card below. Approved partner accounts see net prices.\nNet price after partner sign-in\nNet price after partner sign-in",
+    "judge": {
+      "money": false,
+      "statesOne": false,
+      "denies": false,
+      "chars": 861
+    },
+    "genieShots": [
+      "shots/prod-draft-guest-en-genie-1440.png",
+      "shots/prod-draft-guest-en-genie-390.png"
+    ],
+    "panel": "Hide\n\nGenie - Linker's AI assistant\n\nWhat products are in my solution draft, and how many of each? What is the price of each?\nG\nGenie\nYour solution draft\n\nYour solution draft holds these products:\n\nGoodWe ESA GW10K-ETA-G20 — the three-phase power module\nGoodWe GW6.0-BAT-D-G20 — the ESA battery module\n\nThe draft lists the products as line items and shows no separate quantity count per line, so I cannot confirm quantities from here.\n\nPairing\n\nThe battery module and the power module are a released combination. Its conditions are stated in the pairing documents:\n\nThe GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79).\n\nPrices\n\nEach product's price is on its card below. Approved partner accounts see net prices.\n\nGW ESA 5 30kW Datasheet EN\n↗\n\nGW ESA 5 30kW User Manual EN V1.5\n↗\n\nPRODUCT\n\nGoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)\n\nModel GW10K-ETA-G20\n\nNet price after partner sign-in\n\nIn stock\nAdd to solution draft\nSave solution\n\nPRODUCT\n\nGoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)\n\nNet price after partner sign-in\n\nIn stock\nAdd to solution draft\nSave solution\n\nEmail me this conversation\nJump to latest\nAsk Genie\nSend\nGenie is an AI assistant.\nHelp & privacy",
+    "emptied": {
+      "removed": [
+        200,
+        200
+      ],
+      "remaining": 0
+    }
+  },
+  {
+    "engine": "prod",
+    "state": "guest",
+    "lang": "de",
+    "at": "2026-10-20T18:16:44.328Z",
+    "before": {
+      "status": 200,
+      "items": [],
+      "wanted": [
+        {
+          "id": 3556,
+          "quantity": 0
+        },
+        {
+          "id": 3611,
+          "quantity": 0
+        }
+      ]
+    },
+    "add": {
+      "writes": [
+        {
+          "id": 3556,
+          "status": 201
+        },
+        {
+          "id": 3611,
+          "status": 201
+        }
+      ],
+      "items": [
+        {
+          "id": 3556,
+          "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+          "quantity": 1,
+          "sku": "DLK-GOODWE-GW10KETAG20"
+        },
+        {
+          "id": 3611,
+          "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+          "quantity": 1,
+          "sku": "DLK-GOODWE-GW60BATDG20"
+        }
+      ]
+    },
+    "afterReload": {
+      "status": 200,
+      "items": [
+        {
+          "id": 3556,
+          "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+          "quantity": 1,
+          "sku": "DLK-GOODWE-GW10KETAG20"
+        },
+        {
+          "id": 3611,
+          "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+          "quantity": 1,
+          "sku": "DLK-GOODWE-GW60BATDG20"
+        }
+      ],
+      "wanted": [
+        {
+          "id": 3556,
+          "quantity": 1
+        },
+        {
+          "id": 3611,
+          "quantity": 1
+        }
+      ]
+    },
+    "cartShots": [
+      "shots/prod-draft-guest-de-1440.png",
+      "shots/prod-draft-guest-de-390.png"
+    ],
+    "turnStatus": 200,
+    "conversationId": 7898,
+    "answer": "In Ihrem Lösungsentwurf stehen **GoodWe ESA GW10K-ETA-G20** als Leistungsmodul und **GoodWe GW6.0-BAT-D-G20** als Batteriemodul. Wie viel je Produkt im Entwurf liegt, zeigt die Bestätigungskarte beim Senden der Anfrage.\n\n### Preise\nEinen Betrag nennen wir nicht im Text; die Produktkarten tragen die Preiszeile. Freigegebene Partnerkonten sehen dort die Nettopreise.\n\n### Pairing\nWechselrichter und Batterie sind als Paar freigegeben. Die Bedingungen aus der Pairing-Prüfung: Das GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt eine Skalierbarkeit von 12 Stück an (S. 3). Das Benutzerhandbuch begrenzt eine Säule auf sechs Batterien und nennt ein Batterie-Erweiterungsset für mehr Kapazität oder eine niedrigere Säule (S. 79).\n\nDie zugehörigen Unterlagen finden Sie unten.\nNettopreis nach Partner-Anmeldung\nNettopreis nach Partner-Anmeldung",
+    "judge": {
+      "money": false,
+      "statesOne": false,
+      "denies": false,
+      "chars": 876
+    },
+    "genieShots": [
+      "shots/prod-draft-guest-de-genie-1440.png",
+      "shots/prod-draft-guest-de-genie-390.png"
+    ],
+    "panel": "Ausblenden\n\nGenie – der KI-Assistent von Linker\n\nWelche Produkte stehen in meinem Lösungsentwurf, und wie viele von jedem? Was kostet jedes?\nG\nGenie\n\nIn Ihrem Lösungsentwurf stehen GoodWe ESA GW10K-ETA-G20 als Leistungsmodul und GoodWe GW6.0-BAT-D-G20 als Batteriemodul. Wie viel je Produkt im Entwurf liegt, zeigt die Bestätigungskarte beim Senden der Anfrage.\n\nPreise\n\nEinen Betrag nennen wir nicht im Text; die Produktkarten tragen die Preiszeile. Freigegebene Partnerkonten sehen dort die Nettopreise.\n\nPairing\n\nWechselrichter und Batterie sind als Paar freigegeben. Die Bedingungen aus der Pairing-Prüfung: Das GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt eine Skalierbarkeit von 12 Stück an (S. 3).\n\nDas Benutzerhandbuch begrenzt eine Säule auf sechs Batterien und nennt ein Batterie-Erweiterungsset für mehr Kapazität oder eine niedrigere Säule (S. 79).\n\nDie zugehörigen Unterlagen finden Sie unten.\n\nGW ESA 5 30kW Datasheet EN\n↗\n\nGW ESA 5 30kW User Manual EN V1.5\n↗\n\nPRODUKT\n\nGoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)\n\nNettopreis nach Partner-Anmeldung\n\nAuf Lager\nZum Lösungsentwurf hinzufügen\nLösung speichern\n\nPRODUKT\n\nGoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)\n\nNettopreis nach Partner-Anmeldung\n\nAuf Lager\nZum Lösungsentwurf hinzufügen\nLösung speichern\n\nGespräch per E-Mail erhalten\nZur neuesten Nachricht\nGenie fragen\nSenden\nGenie ist ein KI-Assistent.\nHilfe & Datenschutz",
+    "emptied": {
+      "removed": [
+        200,
+        200
+      ],
+      "remaining": 0
+    }
+  }
+]

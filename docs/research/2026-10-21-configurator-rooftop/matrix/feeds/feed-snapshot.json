@@ -1,0 +1,39 @@
+{
+  "note": "Raw bodies saved beside this file. generated_at is the field inside that body, not a later recollection.",
+  "feeds": [
+    {
+      "label": "local",
+      "url": "http://127.0.0.1:9231/wp-json/linker/v1/engineering-feed",
+      "fetched_at": "2026-10-20T18:13:52.786999+00:00",
+      "http_date": "Tue, 20 Oct 2026 18:13:53 GMT",
+      "sha256": "69a770b4a9ddb0cb983d71dde082053b1f0304a933b4c5c73a8efd504d7b0543",
+      "bytes": 80453,
+      "generated_at": "2026-10-20T18:13:52+00:00",
+      "schema_version": 1,
+      "compatibility": "81f8688f5d0383bf275607b0aaaf4367963881f1b9c4c47f0450ac7b55f980e6",
+      "products": 106,
+      "with_figures": 0,
+      "document_hosts": {
+        "127.0.0.1": 210
+      },
+      "file": "feeds/local-engineering-feed.json"
+    },
+    {
+      "label": "prod",
+      "url": "https://de-linker.com/wp-json/linker/v1/engineering-feed",
+      "fetched_at": "2026-10-20T18:13:53.069035+00:00",
+      "http_date": "Tue, 20 Oct 2026 18:13:58 GMT",
+      "sha256": "d16633956675c6b3a639340da57e596b0abfc333aba2815a3cb02f995e8ec2ea",
+      "bytes": 185872,
+      "generated_at": "2026-10-20T18:13:58+00:00",
+      "schema_version": 1,
+      "compatibility": "81f8688f5d0383bf275607b0aaaf4367963881f1b9c4c47f0450ac7b55f980e6",
+      "products": 106,
+      "with_figures": 83,
+      "document_hosts": {
+        "de-linker.com": 210
+      },
+      "file": "feeds/prod-engineering-feed.json"
+    }
+  ]
+}

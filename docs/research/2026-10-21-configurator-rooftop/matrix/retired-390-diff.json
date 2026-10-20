@@ -1,0 +1,58 @@
+{
+  "measured_at": "2026-10-20T18:17:00Z",
+  "tool": "Pillow ImageChops.difference on RGB",
+  "pairs": [
+    {
+      "local": "shots/both-local-retired-de-390.png",
+      "prod": "shots/both-prod-retired-de-390.png",
+      "size": [
+        390,
+        844
+      ],
+      "nonzero_pixels": 23,
+      "pixels_with_channel_delta_gt_1": 0,
+      "bbox": [
+        172,
+        17,
+        213,
+        63
+      ],
+      "channel_extrema": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "local": "shots/both-local-retired-en-390.png",
+      "prod": "shots/both-prod-retired-en-390.png",
+      "size": [
+        390,
+        844
+      ],
+      "nonzero_pixels": 23,
+      "pixels_with_channel_delta_gt_1": 0,
+      "bbox": [
+        172,
+        17,
+        213,
+        63
+      ],
+      "channel_extrema": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "local": "shots/both-local-retired-de-1440.png",
+      "prod": "shots/both-prod-retired-de-1440.png",
+      "size": [
+        1440,
+        900
+      ],
+      "nonzero_pixels": 0
+    }
+  ],
+  "reading": "The 390 residual is a header crop of at most one channel unit on 23 pixels. It is not a layout split and not a behavior difference. The shots were not retaken."
+}

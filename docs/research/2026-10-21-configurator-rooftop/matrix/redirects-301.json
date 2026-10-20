@@ -1,0 +1,38 @@
+[
+  {
+    "engine": "local",
+    "from": "/design-canvas/",
+    "status": 301,
+    "location": "http://127.0.0.1:9231/solution-configurator/?step=roof"
+  },
+  {
+    "engine": "local",
+    "from": "/de/design-canvas/",
+    "status": 301,
+    "location": "http://127.0.0.1:9231/de/loesungskonfigurator/?step=roof"
+  },
+  {
+    "engine": "local",
+    "from": "/de/entwurfsflache/",
+    "status": 301,
+    "location": "http://127.0.0.1:9231/de/loesungskonfigurator/?step=roof"
+  },
+  {
+    "engine": "prod",
+    "from": "/design-canvas/",
+    "status": 301,
+    "location": "https://de-linker.com/solution-configurator/?step=roof"
+  },
+  {
+    "engine": "prod",
+    "from": "/de/design-canvas/",
+    "status": 301,
+    "location": "https://de-linker.com/de/loesungskonfigurator/?step=roof"
+  },
+  {
+    "engine": "prod",
+    "from": "/de/entwurfsflache/",
+    "status": 301,
+    "location": "https://de-linker.com/de/loesungskonfigurator/?step=roof"
+  }
+]
