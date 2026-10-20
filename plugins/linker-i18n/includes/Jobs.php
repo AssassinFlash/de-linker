@@ -143,7 +143,11 @@ final class Jobs {
 		}
 		// Accepted for old callers, but neither legacy flags nor retry may erase German.
 		$force = false;
-		$this->state->set_status( $kind, $id, State::PENDING, 'queued' );
+		// A save may queue another attempt. It must not hide a failure that
+		// the admin list and the daily summary are still showing.
+		if ( ! in_array( $this->state->status( $kind, $id ), array( State::FAILED, State::STRUCTURE_MISMATCH ), true ) ) {
+			$this->state->set_status( $kind, $id, State::PENDING, 'queued' );
+		}
 		$args = array( $kind, $id, $force, 1 );
 		// AS's unique flag also rejects an in-progress action. Deduplicate only
 		// pending work, so a save during any part of the runner gets a successor.

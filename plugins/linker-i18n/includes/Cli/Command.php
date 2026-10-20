@@ -121,6 +121,7 @@ final class Command {
 		}
 		$targets = array_values( array_unique( $targets, SORT_REGULAR ) );
 		$failed  = 0;
+		$reasons = array();
 		$force   = false;
 		foreach ( $targets as list( $target_kind, $id ) ) {
 			if ( ! isset( $assoc_args['now'] ) ) {
@@ -129,17 +130,21 @@ final class Command {
 				continue;
 			}
 			try {
-				$status  = State::POST === $target_kind ? $this->translator->post( $id, $force ) : $this->translator->term( $id, $force );
-				$failed += State::STRUCTURE_MISMATCH === $status ? 1 : 0;
+				$status = State::POST === $target_kind ? $this->translator->post( $id, $force ) : $this->translator->term( $id, $force );
+				if ( State::STRUCTURE_MISMATCH === $status ) {
+					++$failed;
+					$reasons[] = sprintf( '%s %d: %s', $target_kind, $id, $status );
+				}
 			} catch ( TranslationFailed $failure ) {
 				$this->state->set_status( $target_kind, $id, State::FAILED, $failure->getMessage() );
-				$status = State::FAILED . ': ' . $failure->getMessage();
+				$status    = State::FAILED . ': ' . $failure->getMessage();
+				$reasons[] = sprintf( '%s %d: %s', $target_kind, $id, $status );
 				++$failed;
 			}
 			WP_CLI::log( sprintf( '%s %d: %s', $target_kind, $id, '' === $status ? 'not an English translated object' : $status ) );
 		}
 		if ( $failed > 0 ) {
-			WP_CLI::error( sprintf( '%d of %d objects failed; previous German retained.', $failed, count( $targets ) ) );
+			WP_CLI::error( sprintf( '%d of %d objects failed; previous German retained. %s', $failed, count( $targets ), implode( '; ', $reasons ) ) );
 		}
 		WP_CLI::success( sprintf( '%d objects considered.', count( $targets ) ) );
 	}

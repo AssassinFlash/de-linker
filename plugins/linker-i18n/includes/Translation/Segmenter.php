@@ -98,6 +98,20 @@ final class Segmenter {
 	}
 
 	/**
+	 * Fingerprints from before sentence splitting: one per plain field or paragraph.
+	 *
+	 * A stored baseline that still matches these hashes describes the same text.
+	 * Sentence hashes of that text differ, and must not be read as an edit.
+	 *
+	 * @param string $value Field value.
+	 * @param bool   $html  Whether the field is HTML.
+	 * @return list<string>
+	 */
+	public function block_hashes( string $value, bool $html ): array {
+		return ( $html ? $this->paragraphs( $value ) : $this->plain( $value ) )->hashes();
+	}
+
+	/**
 	 * One plain-text sentence, retaining its surrounding whitespace.
 	 *
 	 * @param string $text Sentence bytes.
@@ -126,6 +140,25 @@ final class Segmenter {
 	 * @param string $html HTML.
 	 */
 	public function html( string $html ): Document {
+		return $this->markup( $html, true );
+	}
+
+	/**
+	 * One segment per paragraph, the fingerprints stored before sentences were split.
+	 *
+	 * @param string $html HTML.
+	 */
+	private function paragraphs( string $html ): Document {
+		return $this->markup( $html, false );
+	}
+
+	/**
+	 * An HTML value as a document.
+	 *
+	 * @param string $html      HTML.
+	 * @param bool   $sentences Whether to split paragraphs into sentences.
+	 */
+	private function markup( string $html, bool $sentences ): Document {
 		$tokens   = $this->tokenizer->tokens( $html );
 		$parts    = array();
 		$segments = array();
@@ -138,7 +171,7 @@ final class Segmenter {
 				continue;
 			}
 			if ( HtmlToken::TAG !== $token->type ) {
-				$this->flush( $run, $parts, $segments );
+				$this->flush( $run, $parts, $segments, $sentences );
 				$parts[] = $token->raw;
 				continue;
 			}
@@ -149,13 +182,13 @@ final class Segmenter {
 					$run[] = new HtmlToken( HtmlToken::OTHER, $element );
 				} elseif ( self::untranslatable( $token ) ) {
 					// translate="no" on a block element: nothing of it is touched.
-					$this->flush( $run, $parts, $segments );
+					$this->flush( $run, $parts, $segments, $sentences );
 					$parts[] = $element;
 				} else {
 					// An opaque block: the content stays the source's bytes, the
 					// element's own start tag is dispatched like any other so its
 					// text attributes (video's aria-label) are segments too.
-					$this->flush( $run, $parts, $segments );
+					$this->flush( $run, $parts, $segments, $sentences );
 					$parts[] = $this->tag( $token, $segments );
 					$rest    = substr( $element, strlen( $token->raw ) );
 					if ( '' !== $rest ) {
@@ -168,10 +201,10 @@ final class Segmenter {
 				$run[] = $token;
 				continue;
 			}
-			$this->flush( $run, $parts, $segments );
+			$this->flush( $run, $parts, $segments, $sentences );
 			$parts[] = $this->tag( $token, $segments );
 		}
-		$this->flush( $run, $parts, $segments );
+		$this->flush( $run, $parts, $segments, $sentences );
 		return new Document( $parts, $segments );
 	}
 
@@ -204,9 +237,10 @@ final class Segmenter {
 	 * Ends the current inline run: its text becomes a segment, the white
 	 * space around it and inline tags that wrap all of it stay markup.
 	 *
-	 * @param array<int, HtmlToken>          $run      Tokens of the run; emptied.
-	 * @param array<int, string|int|TagPart> $parts    Parts of the document.
-	 * @param array<int, Segment>            $segments Segments of the document.
+	 * @param array<int, HtmlToken>          $run       Tokens of the run; emptied.
+	 * @param array<int, string|int|TagPart> $parts     Parts of the document.
+	 * @param array<int, Segment>            $segments  Segments of the document.
+	 * @param bool                           $sentences Whether to split the run into sentences.
 	 *
 	 * @phpstan-param list<HtmlToken> $run
 	 * @phpstan-param list<string|int|TagPart> $parts
@@ -214,7 +248,7 @@ final class Segmenter {
 	 * @phpstan-param list<Segment> $segments
 	 * @phpstan-param-out list<Segment> $segments
 	 */
-	private function flush( array &$run, array &$parts, array &$segments ): void {
+	private function flush( array &$run, array &$parts, array &$segments, bool $sentences = true ): void {
 		if ( array() === $run ) {
 			return;
 		}
@@ -255,6 +289,11 @@ final class Segmenter {
 			$tokens = array_slice( $tokens, 1, -1 );
 		}
 		array_push( $parts, ...$before );
+		if ( ! $sentences ) {
+			$parts[] = $this->segment( $tokens, $segments );
+			array_push( $parts, ...$after );
+			return;
+		}
 		foreach ( $this->sentences( array_values( $tokens ) ) as $sentence ) {
 			list( $lead, $trail ) = self::trim_space( $sentence );
 			if ( '' !== $lead ) {
