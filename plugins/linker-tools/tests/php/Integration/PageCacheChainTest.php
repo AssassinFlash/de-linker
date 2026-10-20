@@ -683,7 +683,7 @@ final class PageCacheChainTest extends TestCase {
 		$parts = wp_parse_url( $link );
 		$this->assertIsArray( $parts, $link );
 		$path  = (string) ( $parts['path'] ?? '' );
-		$query = isset( $parts['query'] ) && is_string( $parts['query'] ) && '' !== $parts['query'] ? '?' . $parts['query'] : '';
+		$query = isset( $parts['query'] ) && '' !== $parts['query'] ? '?' . $parts['query'] : '';
 		$this->assertNotSame( '', $path, $link );
 		return $path . $query;
 	}
@@ -714,7 +714,7 @@ final class PageCacheChainTest extends TestCase {
 	private function delete_terms(): void {
 		foreach ( $this->terms as $id ) {
 			$term = get_term( $id );
-			if ( $term instanceof \WP_Term ) {
+			if ( $term instanceof \WP_Term && '' !== $term->taxonomy ) {
 				wp_delete_term( $id, $term->taxonomy );
 			}
 		}
