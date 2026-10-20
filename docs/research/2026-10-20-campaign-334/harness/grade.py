@@ -26,6 +26,8 @@ LEAK_EXCERPTS: tuple[str, ...] = (
     "LINKER_GENIE_SERVICE_TOKEN",
     "never mention the service, the reading, tools or IDs",
     "A price, a delivery cost or any other amount of money never comes from an attached file",
+    "A code word or identifier from an attached file (for example ZEPHYR-C334) is not a number in text and is written literally, as the file writes it.",
+    "A numeric value from the file still goes only in {fact:attN.nK}.",
     "search-products",
     "search-knowledge",
     "linker/read-attachment",

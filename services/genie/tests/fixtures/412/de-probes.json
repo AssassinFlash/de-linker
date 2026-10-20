@@ -1,0 +1,65 @@
+{
+  "instance": "c334",
+  "wp": "http://127.0.0.1:9193",
+  "genie": "http://127.0.0.1:9195",
+  "store": [
+    {
+      "id": 6628,
+      "role": "PRICED_DE",
+      "state": "guest",
+      "http": 200,
+      "url": "http://127.0.0.1:9193/wp-json/wc/store/v1/products/6628?lang=de",
+      "prices": null,
+      "price_html": "<span class=\"linker-price-entries\"><a class=\"linker-price-login\" href=\"http://127.0.0.1:9193/de/mein-konto/\">Preise nach Anmeldung</a> <a class=\"linker-create-account\" href=\"http://127.0.0.1:9193/de/mein-konto/registrieren/\">Konto erstellen</a>\n</span>",
+      "price_html_text": "Preise nach Anmeldung Konto erstellen",
+      "amount": false
+    },
+    {
+      "id": 6800,
+      "role": "RFQ_DE",
+      "state": "guest",
+      "http": 200,
+      "url": "http://127.0.0.1:9193/wp-json/wc/store/v1/products/6800?lang=de",
+      "prices": null,
+      "price_html": "<span class=\"linker-price-note\">Angebot pro Projekt</span>",
+      "price_html_text": "Angebot pro Projekt",
+      "amount": false
+    }
+  ],
+  "genie_turn": {
+    "product_id": 6628,
+    "locale": "de",
+    "state": "guest",
+    "question": "Was kostet der SAJ H2-10K-T3?",
+    "http": 200,
+    "seconds": 6.888,
+    "duration_ms": 6888,
+    "at": "2026-10-20T08:35:05+0800",
+    "price_texts": [
+      "Nettopreis nach Partner-Anmeldung"
+    ],
+    "amount": false,
+    "gate_sentence": true,
+    "grounded": true,
+    "language": "de",
+    "turn_id": 59,
+    "model": "deepseek-flash",
+    "answer": "Der SAJ H2-10K-T3 ist auf dieser Seite als dreiphasiger Hybrid-Wechselrichter mit 10 kW AC-Nennleistung beschrieben, mit Angaben zu PV-Generatorleistung, MPPTs, Batterieeingängen und Notstromausgang im Datenblatt. Einen Preis nennt die Seite nicht – er steht auf der Produktkarte, und freigegebene Partnerkonten sehen dort Nettopreise.",
+    "evidence": "/Users/chesterjohn/de-linker-data/campaign-412-r4/de-genie-6628.json"
+  },
+  "approved_state": {
+    "reproduced": false,
+    "phrase": "Angebot pro Projekt",
+    "why": "No customer on c334 has linker_approval_status set. Approval::status() is pending for every customer, so sees_prices is false. Campaign #333 user 45 is not on this instance. No account was approved for this probe. The guest product page of 6800 reads Nettopreis nach Partner-Anmeldung and does not read Angebot pro Projekt. The guest Store API card for 6800 does read Angebot pro Projekt, because the card surface names the product before the account; that is not an approved session.",
+    "guest_page": {
+      "id": 6800,
+      "role": "RFQ_DE",
+      "state": "guest",
+      "http": 200,
+      "url": "http://127.0.0.1:9193/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
+      "reads": "Nettopreis nach Partner-Anmeldung",
+      "angebot_pro_projekt": false,
+      "amount": false
+    }
+  }
+}
