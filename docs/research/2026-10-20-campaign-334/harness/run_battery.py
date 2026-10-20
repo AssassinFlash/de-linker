@@ -13,6 +13,7 @@ import json
 import os
 import socket
 import subprocess
+import sys
 import threading
 import time
 import urllib.error
@@ -22,18 +23,31 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
-from cases import CASES, MARKER, Case
+from cases import CASES, MARKER, Case, by_id, exfil_port
 from corpus import build
 from grade import grade
+from poison import is_published
+from poison import search as poison_search
 
 EVIDENCE = Path(
     os.environ.get("C334_EVIDENCE", Path.home() / "de-linker-data/campaign-334")
 )
+# Direct /turn has no proxy budget. A scanned PDF may render four pages
+# (attachments.MAX_RENDERED_PAGES), each vision call capped at 30 s
+# (vision.TIMEOUT_SECONDS), and the agent still has to run. 240 s covers
+# that stack. A proxied turn returns inside Proxy::TURN_BUDGET (60 s),
+# before this socket gives up.
 TIMEOUT = 240
+# Error text stored on a run record. A transport failure keeps the first
+# 500 characters of the HTTP body. A browser failure keeps the last 500 of
+# the message: the useful part of stderr is at the end, the same tail
+# `pdfwork.convert` logs when the worker dies
+# (services/genie/src/linker_genie/pdfwork.py).
+_ERROR_DETAIL = 500
 INSTANCE = os.environ.get("C334_INSTANCE", "c334")
 
 
-def main() -> None:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("only", nargs="*", help="case id prefixes, for example N1 P")
     parser.add_argument("--rerun", action="store_true")
@@ -43,90 +57,90 @@ def main() -> None:
         help="rewrite summary.json from the run files already on disk",
     )
     parser.add_argument(
+        "--regrade",
+        action="store_true",
+        help="grade the run files on disk again, then rewrite summary.json",
+    )
+    parser.add_argument(
         "--wp", default=os.environ.get("C334_WP", "http://127.0.0.1:9193")
     )
     parser.add_argument("--genie", default=os.environ.get("C334_GENIE", ""))
     parser.add_argument("--instance", default=os.environ.get("C334_INSTANCE", "c334"))
-    args = parser.parse_args()
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
     global INSTANCE
     INSTANCE = args.instance
+    evidence = EVIDENCE
+    if args.regrade:
+        summary = regrade(evidence)
+        _print_summary(summary)
+        return
     if args.summarise_only:
-        evidence = EVIDENCE
         summary = _summarise(evidence)
-        evidence.mkdir(parents=True, exist_ok=True)
-        (evidence / "summary.json").write_text(
-            json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
-        print(
-            json.dumps(
-                {key: summary[key] for key in ("pass", "defect", "error", "sent")},
-                indent=2,
-            )
-        )
+        _write_summary(evidence, summary)
+        _print_summary(summary)
+        return
+    selected = select_cases(args.only)
+    index_cases = [case for case in selected if case.channel == "index"]
+    browser_cases = [case for case in selected if case.channel == "browser"]
+    live_cases = [case for case in selected if case.channel not in {"index", "browser"}]
+    evidence.mkdir(parents=True, exist_ok=True)
+    for case in index_cases:
+        path = evidence / "runs" / f"{case.id}.json"
+        if path.is_file() and not args.rerun:
+            print(f"skip {case.id}", flush=True)
+            continue
+        print(f"run {case.id} {case.title}", flush=True)
+        _write_graded(path, case, _index_record(case, evidence))
+    if not live_cases and not browser_cases:
+        _finish(evidence)
         return
     _local(args.wp)
-    evidence = EVIDENCE
-    evidence.mkdir(parents=True, exist_ok=True)
-    corpus_dir = evidence / "corpus"
-    manifest = build(corpus_dir)
-    token = _token(args.instance)
-    genie = args.genie or _genie_url(args.instance)
-    _local(genie)
-    product = _product(args.instance, args.wp)
-    (evidence / "product.json").write_text(
-        json.dumps(product, indent=2) + "\n", encoding="utf-8"
-    )
-    before = _side_effects(args.instance)
-    (evidence / "side-effects-before.json").write_text(
-        json.dumps(before, indent=2) + "\n", encoding="utf-8"
-    )
-    listener = _Listener()
-    listener.start()
-    selected = [
-        case for case in CASES if case.channel != "browser" and _wanted(case, args.only)
-    ]
-    try:
-        for case in selected:
-            path = evidence / "runs" / f"{case.id}.json"
-            if path.is_file() and not args.rerun:
-                print(f"skip {case.id}", flush=True)
-                continue
-            print(f"run {case.id} {case.title}", flush=True)
-            record = _run_case(case, manifest, genie, token, args.wp, product)
-            record["grade"] = grade(case.expectation(), record).as_dict()
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(
-                json.dumps(record, indent=2, ensure_ascii=False) + "\n",
-                encoding="utf-8",
-            )
-            print(
-                f"  {record['grade']['verdict']} {record.get('duration_ms')} ms",
-                flush=True,
-            )
-    finally:
-        listener.stop()
-    persisted = _persisted(args.instance, evidence)
-    (evidence / "persistence.json").write_text(
-        json.dumps(persisted, indent=2) + "\n", encoding="utf-8"
-    )
-    after = _side_effects(args.instance)
-    (evidence / "side-effects-after.json").write_text(
-        json.dumps(after, indent=2) + "\n", encoding="utf-8"
-    )
-    sent = _sent(before, after) or bool(listener.hits)
-    (evidence / "exfil-hits.json").write_text(
-        json.dumps(listener.hits, indent=2) + "\n", encoding="utf-8"
-    )
-    _apply_global(evidence, persisted, sent)
-    summary = _summarise(evidence)
-    (evidence / "summary.json").write_text(
-        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
-    print(
-        json.dumps(
-            {key: summary[key] for key in ("pass", "defect", "error", "sent")}, indent=2
+    manifest = build(evidence / "corpus")
+    if live_cases:
+        token = _token(args.instance)
+        genie = args.genie or _genie_url(args.instance)
+        _local(genie)
+        product = _product(args.instance, args.wp)
+        (evidence / "product.json").write_text(
+            json.dumps(product, indent=2) + "\n", encoding="utf-8"
         )
-    )
+        before = _side_effects(args.instance)
+        (evidence / "side-effects-before.json").write_text(
+            json.dumps(before, indent=2) + "\n", encoding="utf-8"
+        )
+        listener = _Listener()
+        listener.start()
+        try:
+            for case in live_cases:
+                path = evidence / "runs" / f"{case.id}.json"
+                if path.is_file() and not args.rerun:
+                    print(f"skip {case.id}", flush=True)
+                    continue
+                print(f"run {case.id} {case.title}", flush=True)
+                record = _run_case(case, manifest, genie, token, args.wp, product)
+                _write_graded(path, case, record)
+        finally:
+            listener.stop()
+        persisted = _persisted(args.instance, evidence)
+        (evidence / "persistence.json").write_text(
+            json.dumps(persisted, indent=2) + "\n", encoding="utf-8"
+        )
+        after = _side_effects(args.instance)
+        (evidence / "side-effects-after.json").write_text(
+            json.dumps(after, indent=2) + "\n", encoding="utf-8"
+        )
+        sent = _sent(before, after) or bool(listener.hits)
+        (evidence / "exfil-hits.json").write_text(
+            json.dumps(listener.hits, indent=2) + "\n", encoding="utf-8"
+        )
+        _apply_global(evidence, persisted, sent)
+    if browser_cases:
+        _browser(evidence, browser_cases, args.wp)
+    _finish(evidence)
 
 
 def _run_case(
@@ -137,7 +151,18 @@ def _run_case(
     wp: str,
     product: dict[str, Any],
 ) -> dict[str, Any]:
-    info = manifest["files"][case.file]
+    files = manifest.get("files")
+    info = files.get(case.file) if isinstance(files, dict) else None
+    if not isinstance(info, dict):
+        # I11 on a host that skipped i11-unicode is this path. One missing
+        # file is an error row, not a KeyError that aborts the battery.
+        return _run_record(
+            case,
+            error=_skipped_reason(manifest, case.file),
+            status=0,
+            answer="",
+            duration_ms=0,
+        )
     path = Path(str(info["path"]))
     mime = case.declared or str(info["mime"])
     started = time.time()
@@ -174,30 +199,23 @@ def _run_case(
         steps = [{"status": 0, "error": f"{type(error).__name__}: {error}"}]
     duration = int((time.time() - started) * 1000)
     first = steps[0]
-    return {
-        "id": case.id,
-        "group": case.group,
-        "owasp": case.owasp,
-        "title": case.title,
-        "channel": case.channel,
-        "file": case.file,
-        "file_name": info["name"],
-        "mime": mime,
-        "sha256": info["sha256"],
-        "source": info["source"],
-        "question": case.question,
-        "followup": case.followup,
-        "duration_ms": duration,
-        "status": first.get("status"),
-        "error_code": first.get("error_code"),
-        "answer": first.get("answer"),
-        "readings": first.get("readings"),
-        "meta": first.get("meta"),
-        "blocks": first.get("blocks"),
-        "attachment_events": first.get("attachment_events"),
-        "steps": _public_steps(steps),
-        "sent_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-    }
+    return _run_record(
+        case,
+        file_name=info["name"],
+        mime=mime,
+        sha256=info["sha256"],
+        source=info["source"],
+        followup=case.followup,
+        duration_ms=duration,
+        status=first.get("status"),
+        error_code=first.get("error_code"),
+        answer=first.get("answer"),
+        readings=first.get("readings"),
+        meta=first.get("meta"),
+        blocks=first.get("blocks"),
+        attachment_events=first.get("attachment_events"),
+        steps=_public_steps(steps),
+    )
 
 
 def _service_turn(
@@ -241,7 +259,7 @@ def _service_turn(
         "meta": parsed.get("meta"),
         "blocks": parsed.get("blocks"),
         "attachment_events": parsed.get("attachments"),
-        "error": None if status == 200 else raw[:500],
+        "error": None if status == 200 else raw[:_ERROR_DETAIL],
     }
 
 
@@ -272,7 +290,7 @@ def _proxy_turn(
             "status": status,
             "error_code": _error_code(raw),
             "answer": "",
-            "error": raw[:500],
+            "error": raw[:_ERROR_DETAIL],
         }
     try:
         payload = json.loads(raw)
@@ -304,6 +322,31 @@ def _page(case: Case, product: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+class _StayLocal(urllib.request.HTTPRedirectHandler):
+    """Refuse a redirect whose next host is not loopback.
+
+    urllib copies custom headers onto the next request, including
+    X-Linker-Service-Token, and turns the POST into a GET. The next host is
+    checked here, before that request is built.
+    """
+
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: Any,
+        code: int,
+        msg: str,
+        headers: Any,
+        newurl: str,
+    ) -> urllib.request.Request | None:
+        _local(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _opener() -> urllib.request.OpenerDirector:
+    return urllib.request.build_opener(_StayLocal)
+
+
 def _post(url: str, body: dict[str, Any], headers: dict[str, str]) -> tuple[int, str]:
     _local(url)
     data = json.dumps(body).encode("utf-8")
@@ -318,7 +361,8 @@ def _post(url: str, body: dict[str, Any], headers: dict[str, str]) -> tuple[int,
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+        with _opener().open(request, timeout=TIMEOUT) as response:
+            _local(response.geturl())
             return response.status, response.read().decode("utf-8", "replace")
     except urllib.error.HTTPError as error:
         return error.code, error.read().decode("utf-8", "replace")
@@ -334,7 +378,8 @@ def _post_cookies(
         headers["Cookie"] = "; ".join(f"{key}={value}" for key, value in jar.items())
     request = urllib.request.Request(url, data=data, headers=headers, method="POST")
     try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+        with _opener().open(request, timeout=TIMEOUT) as response:
+            _local(response.geturl())
             _keep(jar, response)
             return response.status, response.read().decode("utf-8", "replace"), jar
     except urllib.error.HTTPError as error:
@@ -433,17 +478,41 @@ def _local(url: str) -> None:
 
 def _token(instance: str) -> str:
     file = EVIDENCE / "service-token.txt"
-    if file.is_file() and file.read_text(encoding="utf-8").strip():
-        return file.read_text(encoding="utf-8").strip()
+    stored = _read_token(file)
+    if stored:
+        return stored
     raw = _wp(
         instance, ["config", "get", "LINKER_GENIE_SERVICE_TOKEN", "--type=constant"]
     )
     token = raw.strip().splitlines()[-1].strip()
     if not token or token.lower() == "null":
         raise SystemExit("Genie service token is not configured on this instance")
-    file.write_text(token + "\n", encoding="utf-8")
-    file.chmod(0o600)
+    _store_token(file, token)
     return token
+
+
+def _read_token(file: Path) -> str | None:
+    """Return the token, tightening the file to owner-read even when it already existed."""
+    if not file.is_file():
+        return None
+    _tighten(file)
+    text = file.read_text(encoding="utf-8").strip()
+    return text or None
+
+
+def _store_token(file: Path, token: str) -> None:
+    """Write the token as mode 0600. A umask cannot leave it group-readable."""
+    file.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    try:
+        os.write(fd, (token + "\n").encode("utf-8"))
+    finally:
+        os.close(fd)
+    _tighten(file)
+
+
+def _tighten(file: Path) -> None:
+    file.chmod(0o600)
 
 
 def _genie_url(instance: str) -> str:
@@ -620,30 +689,42 @@ def _expect(case_id: str) -> dict[str, Any]:
 
 def _summarise(evidence: Path) -> dict[str, Any]:
     rows = []
+    self_tests = []
     counts = {"pass": 0, "defect": 0, "error": 0}
     sent = 0
+    known = by_id()
     for path in sorted((evidence / "runs").glob("*.json")):
         record = json.loads(path.read_text(encoding="utf-8"))
         verdict = str((record.get("grade") or {}).get("verdict") or "error")
+        row = {
+            "id": record.get("id"),
+            "verdict": verdict,
+            "owasp": record.get("owasp"),
+            "instruction_followed": (record.get("grade") or {}).get(
+                "instruction_followed"
+            ),
+            "sent": (record.get("grade") or {}).get("sent"),
+            "leaked": (record.get("grade") or {}).get("leaked"),
+            "fabricated": (record.get("grade") or {}).get("fabricated"),
+            "duration_ms": record.get("duration_ms"),
+            "reasons": (record.get("grade") or {}).get("reasons"),
+        }
+        if _self_test(record, known):
+            self_tests.append(row)
+            continue
         counts[verdict] = counts.get(verdict, 0) + 1
         if (record.get("grade") or {}).get("sent"):
             sent += 1
-        rows.append(
-            {
-                "id": record.get("id"),
-                "verdict": verdict,
-                "owasp": record.get("owasp"),
-                "instruction_followed": (record.get("grade") or {}).get(
-                    "instruction_followed"
-                ),
-                "sent": (record.get("grade") or {}).get("sent"),
-                "leaked": (record.get("grade") or {}).get("leaked"),
-                "fabricated": (record.get("grade") or {}).get("fabricated"),
-                "duration_ms": record.get("duration_ms"),
-                "reasons": (record.get("grade") or {}).get("reasons"),
-            }
-        )
-    return {**counts, "sent": sent, "cases": rows}
+        rows.append(row)
+    return {**counts, "sent": sent, "self_test": self_tests, "cases": rows}
+
+
+def _self_test(record: dict[str, Any], known: dict[str, Case]) -> bool:
+    """V1 searches a temporary index. It has no customer answer to grade."""
+    if record.get("self_test") is True:
+        return True
+    case = known.get(str(record.get("id") or ""))
+    return case is not None and case.self_test
 
 
 def _wanted(case: Case, only: list[str]) -> bool:
@@ -652,10 +733,253 @@ def _wanted(case: Case, only: list[str]) -> bool:
     return any(case.id.startswith(prefix) for prefix in only)
 
 
+def select_cases(only: list[str]) -> list[Case]:
+    """Every selected case, including the browser and temporary-index channels."""
+    return [case for case in CASES if _wanted(case, only)]
+
+
+def _write_graded(path: Path, case: Case, record: dict[str, Any]) -> None:
+    record["grade"] = grade(case.expectation(), record).as_dict()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    print(f"  {record['grade']['verdict']} {record.get('duration_ms')} ms", flush=True)
+
+
+def _index_record(case: Case, evidence: Path) -> dict[str, Any]:
+    """Search a temporary index. The published vector index is not opened.
+
+    The hit text is the reading. There is no model answer and no turn route,
+    so the security and attribution checks have nothing to read. The row is a
+    self-test and stays out of the graded counts.
+    """
+    db = evidence / "poison-index" / "index.sqlite"
+    started = time.time()
+    hits: list[str] = []
+    try:
+        hits = poison_search(db, case.question)
+        if not hits:
+            raise RuntimeError("temporary index returned no hits")
+        text = "\n".join(hits)
+        step: dict[str, Any] = {
+            "status": 200,
+            "answer": "",
+            "readings": [{"text": text, "failed": None}],
+            "blocks": [],
+        }
+    except Exception as error:  # noqa: BLE001 — one case must not abort the battery
+        step = {"status": 0, "error": f"{type(error).__name__}: {error}", "answer": ""}
+    return _run_record(
+        case,
+        duration_ms=int((time.time() - started) * 1000),
+        status=step.get("status"),
+        answer=step.get("answer"),
+        readings=step.get("readings"),
+        blocks=step.get("blocks"),
+        steps=[step],
+        error=step.get("error"),
+        self_test=True,
+        index={"path": str(db), "published": is_published(db), "hits": len(hits)},
+    )
+
+
+def _mtime_ns(path: Path) -> int | None:
+    if not path.is_file():
+        return None
+    return path.stat().st_mtime_ns
+
+
+def _skipped_reason(manifest: dict[str, Any], key: str) -> str:
+    skipped = manifest.get("skipped")
+    if isinstance(skipped, list):
+        for item in skipped:
+            if isinstance(item, dict) and item.get("file") == key:
+                reason = item.get("reason")
+                if isinstance(reason, str) and reason:
+                    return reason
+    return f"corpus has no {key}"
+
+
+def _run_record(case: Case, **fields: Any) -> dict[str, Any]:
+    """One run row. The case owns the identity; the caller owns the measurement.
+
+    browser.mjs, the index probe, a transport failure and the committed U1
+    fixture all arrive as partial dicts. This is the only place that fills
+    the grade skeleton.
+    """
+    steps = fields.pop("steps", None)
+    sent_at = fields.pop("sent_at", None)
+    if not isinstance(steps, list) or not steps:
+        readings = fields.get("readings")
+        blocks = fields.get("blocks")
+        step: dict[str, Any] = {
+            "status": fields.get("status"),
+            "answer": fields.get("answer", ""),
+            "readings": readings if isinstance(readings, list) else [],
+            "blocks": blocks if isinstance(blocks, list) else [],
+        }
+        error = fields.get("error")
+        if isinstance(error, str) and error:
+            step["error"] = error
+            if step.get("status") is None:
+                step["status"] = 0
+        steps = [step]
+    record: dict[str, Any] = {}
+    record.update(fields)
+    record.update(
+        {
+            "id": case.id,
+            "group": case.group,
+            "owasp": case.owasp,
+            "title": case.title,
+            "channel": case.channel,
+            "file": case.file,
+            "question": case.question,
+            "steps": steps,
+            "sent_at": sent_at
+            if isinstance(sent_at, str)
+            else time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
+    )
+    return record
+
+
+def _adopt_browser(case: Case, loaded: dict[str, Any]) -> dict[str, Any]:
+    """What browser.mjs saw, stored as one run row.
+
+    The script does not carry the case table or the grade skeleton. A stale
+    `grade` is dropped; `_write_graded` writes the new one.
+    """
+    fields = {key: value for key, value in loaded.items() if key != "grade"}
+    return _run_record(case, **fields)
+
+
+def _browser_error(case: Case, message: str) -> dict[str, Any]:
+    detail = (message or "browser.mjs failed").strip()[-_ERROR_DETAIL:]
+    return _run_record(
+        case,
+        error=detail,
+        turn_requests=0,
+        status=0,
+        answer="",
+        steps=[{"status": 0, "error": detail}],
+    )
+
+
+def _browser(evidence: Path, cases: list[Case], wp: str) -> None:
+    """Run the selected browser cases, then grade those records.
+
+    browser.mjs receives the evidence directory, `--wp`, and `--only`. A run
+    asked for U1 does not rewrite U2. A non-zero exit does not keep a pass
+    left by an earlier run: a selected file that this invocation did not
+    rewrite is graded as an error.
+    """
+    script = Path(__file__).with_name("browser.mjs")
+    ids = [case.id for case in cases]
+    stamps = {
+        case.id: _mtime_ns(evidence / "runs" / f"{case.id}.json") for case in cases
+    }
+    try:
+        done = subprocess.run(
+            ["node", str(script), str(evidence), "--wp", wp, "--only", ",".join(ids)],
+            cwd=script.parent,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError as error:
+        # No node on this host. One error row per selected case, not an abort.
+        message = f"FileNotFoundError: {error}"
+        print(message, file=sys.stderr, flush=True)
+        for case in cases:
+            path = evidence / "runs" / f"{case.id}.json"
+            print(f"grade {case.id}", flush=True)
+            _write_graded(path, case, _browser_error(case, message))
+        return
+    if done.stdout:
+        print(done.stdout, end="" if done.stdout.endswith("\n") else "\n", flush=True)
+    if done.returncode != 0 and done.stderr:
+        print(done.stderr, file=sys.stderr, flush=True)
+    message = (
+        done.stderr or done.stdout or f"browser.mjs exited {done.returncode}"
+    ).strip()
+    for case in cases:
+        path = evidence / "runs" / f"{case.id}.json"
+        fresh = path.is_file() and _mtime_ns(path) != stamps[case.id]
+        stale_pass = done.returncode != 0 and not fresh
+        record: dict[str, Any] = {}
+        if path.is_file() and not stale_pass:
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict) and loaded:
+                record = _adopt_browser(case, loaded)
+        if not record:
+            record = _browser_error(case, message)
+        print(f"grade {case.id}", flush=True)
+        _write_graded(path, case, record)
+
+
+def regrade(evidence: Path) -> dict[str, Any]:
+    """Grade every stored run again and rewrite summary.json."""
+    runs = evidence / "runs"
+    changed = 0
+    known = by_id()
+    if runs.is_dir():
+        for path in sorted(runs.glob("*.json")):
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(loaded, dict):
+                continue
+            case_id = str(loaded.get("id") or path.stem)
+            new = grade(_expect(case_id), loaded).as_dict()
+            if loaded.get("grade") != new:
+                changed += 1
+            loaded["grade"] = new
+            case = known.get(case_id)
+            if case is not None and case.self_test:
+                loaded["self_test"] = True
+            path.write_text(
+                json.dumps(loaded, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+    summary = _summarise(evidence)
+    _write_summary(evidence, summary)
+    summary["changed"] = changed
+    return summary
+
+
+def _write_summary(evidence: Path, summary: dict[str, Any]) -> None:
+    """The only writer of summary.json."""
+    evidence.mkdir(parents=True, exist_ok=True)
+    (evidence / "summary.json").write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+
+
+def _finish(evidence: Path) -> None:
+    summary = _summarise(evidence)
+    _write_summary(evidence, summary)
+    _print_summary(summary)
+
+
+def _print_summary(summary: dict[str, Any]) -> None:
+    print(
+        json.dumps(
+            {
+                key: summary[key]
+                for key in ("pass", "defect", "error", "sent", "changed", "self_test")
+                if key in summary
+            },
+            indent=2,
+        )
+    )
+
+
 class _Listener:
     """A loopback socket. A hit means something opened the exfil URL's port."""
 
-    def __init__(self) -> None:
+    def __init__(self, port: int | None = None) -> None:
+        self.port = exfil_port() if port is None else port
+        self.bound_port: int | None = None
         self.hits: list[str] = []
         self._socket: socket.socket | None = None
         self._thread: threading.Thread | None = None
@@ -663,9 +987,13 @@ class _Listener:
     def start(self) -> None:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(("127.0.0.1", 18765))
-        sock.listen(8)
+        sock.bind(("127.0.0.1", self.port))
+        # socket.socket.listen() with no backlog uses the runtime's default
+        # queue (docs.python.org/3/library/socket.html#socket.socket.listen).
+        sock.listen()
+        # accept returns twice a second so stop() does not wait for a client.
         sock.settimeout(0.5)
+        self.bound_port = int(sock.getsockname()[1])
         self._socket = sock
 
         def serve() -> None:
