@@ -574,6 +574,144 @@ def test_a_language_repair_does_not_hide_a_route_ability_failure() -> None:
     _assert_degraded(result.output, "de")
 
 
+def _mailbox_answer(text: str, refs: list[str]) -> Generate:
+    """A text block that would hydrate to the sales mailbox, or already is it."""
+
+    def generate(
+        _request: TurnRequest, _retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        facts = TurnFacts()
+        facts.add(Fact(id="handoff.sentence_en", value=_SALES, source="handoff-team"))
+        facts.add(Fact(id="handoff.sentence", value=_SALES, source="handoff-team"))
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[TextBlock(text=text, refs=list(refs))],
+            ),
+            facts,
+        )
+
+    return generate
+
+
+def test_a_tool_failure_in_a_text_block_is_not_the_sales_mailbox() -> None:
+    """The mailbox is the hydrated sentence, not the block class.
+
+    `{fact:handoff.sentence}` inside a TextBlock hydrates to the sales
+    sentence (hydrate.py). The literal sentence does too. Both routes
+    that can ground that block — model, and products — declare the failure.
+    """
+    recorded = _ability_note("500")
+    routes = (
+        Route("model"),
+        Route("products", show_products=True, no_handoff=True),
+    )
+    forms: tuple[tuple[str, list[str]], ...] = (
+        ("{fact:handoff.sentence}", ["handoff.sentence"]),
+        (_SALES, ["handoff.sentence"]),
+        (_SALES, []),
+    )
+    for route in routes:
+        for text, refs in forms:
+            result = run(
+                _question("en"),
+                _mailbox_answer(text, refs),
+                route=route,
+                call_failures=(recorded,),
+            )
+            assert result.fallback is True
+            assert result.grounded is False
+            assert result.failures
+            assert recorded["text"] in result.failures
+            _assert_degraded(result.output, "en")
+            assert not _cards(result.output)
+
+
+def _grounded_product(
+    request: TurnRequest, retry: str | None
+) -> tuple[TurnOutput, TurnFacts]:
+    """A products answer grounded on one qualified card, with no handoff."""
+    del request, retry
+    facts = TurnFacts()
+    facts.qualified_ids = {1179}
+    facts.product_ids = {1179}
+    facts.add(Fact(id="p1179.title", value="hybrid inverter", source="get-product"))
+    return (
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(
+                    text="The {fact:p1179.title} is in stock.",
+                    refs=["1179", "p1179.title"],
+                ),
+                CardsBlock(product_ids=[1179]),
+            ],
+        ),
+        facts,
+    )
+
+
+def test_a_grounded_product_answer_declares_a_recorded_fatal_failure() -> None:
+    """Ability 5xx, timeout, and a retrieval failure are not a normal match.
+
+    The model grounded on the product fact and the card. The customer
+    sentence is still the reviewed degraded line, and the card stays.
+    """
+    retrieval = note(_encoder("unexpected"), prefix="linker/search-knowledge").dump()
+    cases = (
+        _ability_note("500"),
+        _ability_note("timeout"),
+        retrieval,
+    )
+    for recorded in cases:
+        result = run(
+            _question("en"),
+            _grounded_product,
+            route=_PRODUCTS,
+            call_failures=(recorded,),
+        )
+        assert result.fallback is True
+        assert result.grounded is False
+        assert recorded["text"] in result.failures
+        _assert_degraded(result.output, "en")
+        cards = _cards(result.output)
+        assert cards and cards[0].product_ids == [1179]
+
+
+def test_a_grounded_document_answer_keeps_the_link_under_a_fatal_failure() -> None:
+    """The document link stays. The success sentence does not."""
+
+    def generate(
+        _request: TurnRequest, _retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        facts = TurnFacts()
+        facts.chunk_ids = {"k1"}
+        facts.documents["k1"] = Document(url=_PDF, title="SAJ H2 user manual", page=8)
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[
+                    TextBlock(text="The manual has the steps.", refs=["k1"]),
+                    DocumentBlock(ref="k1"),
+                ],
+            ),
+            facts,
+        )
+
+    result = run(
+        _question("en"),
+        generate,
+        route=_DOCUMENTS,
+        call_failures=(_ability_note("500"),),
+    )
+    assert result.fallback is True
+    _assert_degraded(result.output, "en")
+    documents = [
+        block for block in result.output.blocks if isinstance(block, DocumentBlock)
+    ]
+    assert documents and documents[0].url == _PDF + "#page=8"
+
+
 def test_a_model_tool_failure_cannot_become_the_sales_sentence() -> None:
     """search-products 500, then handoff-team, on a model route.
 
@@ -801,6 +939,41 @@ def test_login_outranks_a_model_failure() -> None:
     output = fallback(guest, "en", _PRODUCTS, failure_class="model")
     assert isinstance(output.blocks[0], TextBlock)
     assert output.blocks[0].text == LOGIN_REQUIRED["en"]
+
+
+def test_login_still_outranks_a_recorded_ability_failure() -> None:
+    """A grounded login sentence is not replaced by the degraded line."""
+    guest = collect("linker/inquiry-status", {"error": "login_required"})
+
+    def generate(
+        _request: TurnRequest, _retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[TextBlock(text=LOGIN_REQUIRED["en"])],
+            ),
+            guest,
+        )
+
+    result = run(
+        TurnRequest(
+            conversation_id="c-guest",
+            locale="en",
+            messages=[
+                TurnMessage(role="user", content="Where does my Proforma stand?")
+            ],
+        ),
+        generate,
+        route=_PRODUCTS,
+        seed=guest,
+        call_failures=(_ability_note("500"),),
+    )
+    assert result.fallback is True
+    assert len(result.output.blocks) == 1
+    block = result.output.blocks[0]
+    assert isinstance(block, TextBlock)
+    assert block.text == LOGIN_REQUIRED["en"]
 
 
 def _handoff(language: Locale) -> Generate:

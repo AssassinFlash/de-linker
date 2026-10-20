@@ -25,7 +25,7 @@ from linker_genie.language import (
 )
 from linker_genie.prices import Lookup, fill
 from linker_genie.route import SEARCH_LIMIT, Route
-from linker_genie.schema import HandoffBlock, TextBlock, TurnOutput, TurnRequest
+from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
 from linker_genie.template import (
     LOGIN_PLACEHOLDER,
     LOGIN_REQUIRED,
@@ -180,9 +180,12 @@ def run(
     `call_failures` are the understanding layer's route-call notes
     (`prepared.log["call_failures"]`: `{text, kind}`), and the same list
     when a model tool appends during `generate`. The kind is the class the
-    catch site already knew (#410). On a products route the model's later
-    handoff fails grounding; on a model route it would ground. Either way
-    the fallback has to see the ability failure (AB-500).
+    catch site already knew (#410). An ability or retrieval failure that
+    is still recorded after a grounded answer is the degraded sentence.
+    Hydration fills `{fact:handoff.sentence}` inside a text block, and a
+    product sentence would otherwise ship with the failure only in the
+    log. A model failure the retry replaced is not one of these. A
+    request for a person is answered in `app._answer` before this runs.
     """
     expected = turn_language(request)
     retry_reason: str | None = None
@@ -235,12 +238,17 @@ def run(
             retry_reason = mismatch
             continue
         tool_failures = _tool_failures(recorded)
-        # A grounded handoff after a tool failure is the sales deflection.
-        # The model route allows handoff, so a search-products 500 and a
-        # later handoff-team would otherwise ship the mailbox (#410).
-        if tool_failures and any(
-            isinstance(block, HandoffBlock) for block in priced.blocks
-        ):
+        # The recorded failure is the gate, not the block class (#410).
+        # Hydration fills `{fact:handoff.sentence}` inside a TextBlock, and
+        # the model can write that sentence literally, so a HandoffBlock
+        # check still shipped the sales mailbox. A grounded product or
+        # document sentence hides the same ability 5xx, timeout, or
+        # retrieval failure. The template says the turn failed; qualified
+        # cards and document links stay. A model failure this retry
+        # replaced is not in `tool_failures`. Login still outranks this
+        # inside the template, and a request for a person is answered
+        # before `run`.
+        if tool_failures:
             last_failures = tuple(item.text for item in tool_failures)
             retry_reason = last_failures[0]
             continue
