@@ -222,7 +222,8 @@ final class PageContext {
 	 * The page context a browser sent, as the service accepts it: the known
 	 * keys with their types, nothing else. A solution draft's products are
 	 * never the browser's: the proxy reads them from the visitor's own draft
-	 * (`draft_ids()`).
+	 * (`draft_ids()`). A browser-sent quantity is dropped the same way: the proxy
+	 * fills `draft_lines` from the visitor's cart.
 	 *
 	 * @param mixed $raw The `page` parameter of a turn.
 	 * @return array{type: string, url?: string, title?: string, product_id?: int, post_id?: int, category_id?: int}
@@ -257,22 +258,57 @@ final class PageContext {
 	 *
 	 * REST requests start without WooCommerce's session; `wc_load_cart()`
 	 * loads it from the visitor's cookie (the saved-solutions precedent in
-	 * linker-commerce).
+	 * linker-commerce). Each English product once (`draft_lines()`).
 	 *
 	 * @return list<int>
 	 */
 	public function draft_ids(): array {
+		$ids = array();
+		foreach ( $this->draft_lines() as $line ) {
+			$ids[] = $line['product_id'];
+		}
+		return $ids;
+	}
+
+	/**
+	 * The lines of the visitor's solution draft: English product and the
+	 * cart quantity.
+	 *
+	 * The same quantity the inquiry and contact handoff already read
+	 * (`$line['quantity']`, ContactRequest::draft / InquiryRequest::draft).
+	 * A line with no quantity is 0, never guessed as 1. A negative quantity
+	 * is omitted, not guessed. Two lines that are
+	 * the same English product are one line, and their quantities are added.
+	 *
+	 * @return list<array{product_id: int, quantity: int}>
+	 */
+	public function draft_lines(): array {
 		if ( ! function_exists( 'wc_load_cart' ) || ! function_exists( 'WC' ) ) {
 			return array();
 		}
 		wc_load_cart();
-		$ids = array();
+		$lines = array();
 		foreach ( WC()->cart->get_cart() as $line ) {
 			$id = (int) ( $line['product_id'] ?? 0 );
-			if ( $id > 0 ) {
-				$ids[] = $this->english( $id );
+			if ( $id < 1 ) {
+				continue;
 			}
+			$english  = $this->english( $id );
+			$quantity = (int) ( $line['quantity'] ?? 0 );
+			// A missing quantity is 0. A negative one is not a quantity: omit the
+			// line rather than guess 1.
+			if ( $quantity < 0 ) {
+				continue;
+			}
+			if ( isset( $lines[ $english ] ) ) {
+				$lines[ $english ]['quantity'] += $quantity;
+				continue;
+			}
+			$lines[ $english ] = array(
+				'product_id' => $english,
+				'quantity'   => $quantity,
+			);
 		}
-		return array_values( array_unique( $ids ) );
+		return array_values( $lines );
 	}
 }

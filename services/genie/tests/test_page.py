@@ -22,7 +22,7 @@ from fastapi.testclient import TestClient
 from linker_genie import app as genie_app
 from linker_genie import page, schema
 from linker_genie.page import PAGE_CHARS, PageReader, PageUnavailable
-from linker_genie.schema import CACHE_SIZE, PageContext, PageInvalidate
+from linker_genie.schema import CACHE_SIZE, DraftLine, PageContext, PageInvalidate
 
 PAGES = Path(__file__).resolve().parent / "fixtures" / "pages"
 
@@ -401,6 +401,104 @@ def test_the_draft_is_its_products_by_name() -> None:
         {"product_id": 2003, "title": "Pylontech OPTIM US L260-OMNI"},
     ]
     assert page.collect(result).product_ids == {4109, 2003}
+
+
+def test_the_draft_states_the_cart_quantity_and_does_not_guess_one() -> None:
+    """#459: the cart quantity rides the existing draft reader. Absent lines do
+    not become 1. A negative quantity is omitted. Titles are not tagged, so a
+    model code stays a name. The model sees `[nK=Q]`; the log keeps the integer.
+    """
+    seen: list[str] = []
+    catalog = {
+        4109: "SAJ HS2-5K-T2-X",
+        2003: "GoodWe GW10K-ETA-G20",
+    }
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.params["include"])
+        wanted = [int(part) for part in request.url.params["include"].split(",")]
+        return httpx.Response(
+            200,
+            json=[
+                {"id": pid, "name": catalog[pid]} for pid in wanted if pid in catalog
+            ],
+        )
+
+    reader = PageReader("http://site.test", transport=httpx.MockTransport(handle))
+    result = reader.read(
+        PageContext(
+            type="draft",
+            draft_ids=[4109, 2003],
+            draft_lines=[
+                DraftLine(product_id=4109, quantity=2),
+                DraftLine(product_id=2003, quantity=1),
+                DraftLine(product_id=4109, quantity=3),
+                DraftLine(product_id=999, quantity=-4),
+            ],
+            title="Solution draft",
+        ),
+        "How many of each?",
+        logged_in=False,
+    )
+    assert result["products"] == [
+        {"product_id": 4109, "title": "SAJ HS2-5K-T2-X", "quantity": 5},
+        {"product_id": 2003, "title": "GoodWe GW10K-ETA-G20", "quantity": 1},
+    ]
+    assert result["text"] == (
+        "SAJ HS2-5K-T2-X line quantity [n1=5]\n"
+        "GoodWe GW10K-ETA-G20 line quantity [n2=1]"
+    )
+    assert result["figures"] == {"page.n1": "5", "page.n2": "1"}
+    facts = page.collect(result)
+    assert facts.facts["page.n1"].value == "5"
+    assert facts.facts["p4109.quantity"].value == "5"
+    assert facts.facts["p2003.quantity"].value == "1"
+    view = page.model_view(result)
+    assert "figures" not in view
+    assert view["products"][0]["quantity"] == "[n1=5]"
+    assert view["products"][1]["quantity"] == "[n2=1]"
+    assert result["products"][0]["quantity"] == 5
+
+    # Same ids, a new quantity: the name cache is reused, the number is not.
+    changed = reader.read(
+        PageContext(
+            type="draft",
+            draft_ids=[4109, 2003],
+            draft_lines=[
+                DraftLine(product_id=4109, quantity=2),
+                DraftLine(product_id=2003, quantity=0),
+            ],
+            title="Solution draft",
+        ),
+        "How many now?",
+        logged_in=False,
+    )
+    assert seen == ["4109,2003"]
+    assert changed["products"][0]["quantity"] == 2
+    assert changed["products"][1]["quantity"] == 0
+    assert changed["figures"] == {"page.n1": "2", "page.n2": "0"}
+
+    unnamed = reader.read(
+        PageContext(type="draft", draft_ids=[4109], title="Solution draft"),
+        "How many?",
+        logged_in=False,
+    )
+    assert "quantity" not in unnamed["products"][0]
+    assert "text" not in unnamed
+    assert "figures" not in unnamed
+
+    negative = reader.read(
+        PageContext(
+            type="draft",
+            draft_ids=[4109],
+            draft_lines=[DraftLine(product_id=4109, quantity=-1)],
+            title="Solution draft",
+        ),
+        "How many?",
+        logged_in=False,
+    )
+    assert "quantity" not in negative["products"][0]
+    assert "text" not in negative
 
 
 def test_a_signed_in_account_is_not_read_anonymously() -> None:

@@ -228,6 +228,20 @@ class TurnOutput(Strict):
         return self
 
 
+class DraftLine(Strict):
+    """One line of the visitor's solution draft (#459).
+
+    The shell reads it from the visitor's own cart: the English product id, as
+    `draft_ids` are, and the line quantity the inquiry and contact handoff already
+    read (`$line['quantity']`). The browser's copy is dropped (PageContext.php
+    `sanitize`); the proxy fills this. Absent on a turn means the reader has no
+    quantity for that line and does not guess 1.
+    """
+
+    product_id: int
+    quantity: int
+
+
 class PageContext(Strict):
     """The page the customer is on when they send the turn (#234).
 
@@ -242,6 +256,9 @@ class PageContext(Strict):
     product_id: int | None = None
     # The products of the solution draft, English posts like product_id.
     draft_ids: list[int] | None = None
+    # Those products' cart quantities, same English ids. The shell fills this from
+    # the visitor's cart; a turn without it names the products and states no quantity.
+    draft_lines: list[DraftLine] | None = None
     # A page address of at most 2,048 characters: the sitemaps protocol's limit for a
     # page URL (sitemaps.org, "less than 2,048 characters"); the shell cuts to it
     # (PageContext.php URL_LENGTH).

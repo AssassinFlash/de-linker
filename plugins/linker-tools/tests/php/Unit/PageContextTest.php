@@ -245,6 +245,12 @@ final class PageContextTest extends TestCase {
 					'url'         => 'https://de-linker.test/de/produkt/saj-h2-10k-t3/',
 					'title'       => 'SAJ H2-10K-T3',
 					'draft_ids'   => array( 1, 2 ),
+					'draft_lines' => array(
+						array(
+							'product_id' => 1,
+							'quantity'   => 99,
+						),
+					),
 					'secret'      => 'x',
 				)
 			)
@@ -328,6 +334,73 @@ final class PageContextTest extends TestCase {
 		);
 
 		$this->assertSame( array( 4107, 2003 ), ( new PageContext() )->draft_ids() );
+		$this->assertConditionsMet();
+	}
+
+	/**
+	 * The cart quantity the inquiry and contact handoff already read.
+	 * Duplicate English products are one line, quantities added. A missing
+	 * quantity is 0, never 1. A negative quantity is omitted, not guessed.
+	 */
+	public function test_draft_lines_carry_the_cart_quantity(): void {
+		$this->query( 'cart' );
+		WP_Mock::userFunction( 'wc_load_cart', array( 'times' => 1 ) );
+		$cart = new class() {
+			/**
+			 * Lines of the draft, including a German twin of 4107.
+			 *
+			 * @return array<string, array{product_id: int, quantity?: int}>
+			 */
+			public function get_cart(): array {
+				return array(
+					'german' => array(
+						'product_id' => 6741,
+						'quantity'   => 2,
+					),
+					'same'   => array(
+						'product_id' => 4107,
+						'quantity'   => 3,
+					),
+					'other'  => array(
+						'product_id' => 2003,
+						'quantity'   => '1',
+					),
+					'blank'  => array( 'product_id' => 2004 ),
+					'bad'    => array(
+						'product_id' => 2005,
+						'quantity'   => -4,
+					),
+					'zero'   => array(
+						'product_id' => 0,
+						'quantity'   => 9,
+					),
+				);
+			}
+		};
+		WP_Mock::userFunction(
+			'WC',
+			array(
+				'return' => (object) array( 'cart' => $cart ),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'product_id' => 4107,
+					'quantity'   => 5,
+				),
+				array(
+					'product_id' => 2003,
+					'quantity'   => 1,
+				),
+				array(
+					'product_id' => 2004,
+					'quantity'   => 0,
+				),
+			),
+			( new PageContext() )->draft_lines()
+		);
 		$this->assertConditionsMet();
 	}
 }

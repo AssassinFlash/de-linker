@@ -321,12 +321,22 @@ final class ProxyTest extends TestCase {
 		WP_Mock::userFunction( 'wc_load_cart', array( 'times' => 1 ) );
 		$cart = new class() {
 			/**
-			 * Lines of the draft: a German product and an English one.
+			 * Lines of the draft: a German product and an English one, with the
+			 * cart quantity the handoff already reads.
 			 *
-			 * @return list<array{product_id: int}>
+			 * @return list<array{product_id: int, quantity: int}>
 			 */
 			public function get_cart(): array {
-				return array( array( 'product_id' => 6741 ), array( 'product_id' => 2003 ) );
+				return array(
+					array(
+						'product_id' => 6741,
+						'quantity'   => 2,
+					),
+					array(
+						'product_id' => 2003,
+						'quantity'   => 1,
+					),
+				);
 			}
 		};
 		WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'cart' => $cart ) ) );
@@ -355,11 +365,17 @@ final class ProxyTest extends TestCase {
 		$request->set_param(
 			'page',
 			array(
-				'type'      => 'draft',
-				'url'       => 'https://de-linker.test/de/warenkorb/',
-				'title'     => 'Lösungsentwurf',
-				'draft_ids' => array( 1, 2, 3 ),
-				'extra'     => 'dropped',
+				'type'        => 'draft',
+				'url'         => 'https://de-linker.test/de/warenkorb/',
+				'title'       => 'Lösungsentwurf',
+				'draft_ids'   => array( 1, 2, 3 ),
+				'draft_lines' => array(
+					array(
+						'product_id' => 1,
+						'quantity'   => 99,
+					),
+				),
+				'extra'       => 'dropped',
 			)
 		);
 
@@ -367,10 +383,20 @@ final class ProxyTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'type'      => 'draft',
-				'url'       => 'https://de-linker.test/de/warenkorb/',
-				'title'     => 'Lösungsentwurf',
-				'draft_ids' => array( 4107, 2003 ),
+				'type'        => 'draft',
+				'url'         => 'https://de-linker.test/de/warenkorb/',
+				'title'       => 'Lösungsentwurf',
+				'draft_ids'   => array( 4107, 2003 ),
+				'draft_lines' => array(
+					array(
+						'product_id' => 4107,
+						'quantity'   => 2,
+					),
+					array(
+						'product_id' => 2003,
+						'quantity'   => 1,
+					),
+				),
 			),
 			$caught['page_context']
 		);
