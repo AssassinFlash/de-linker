@@ -93,9 +93,65 @@ ACCOUNT_HINT = (
     "id in the text."
 )
 SERVICE_HINT = (
-    "This is a company, delivery or service question: answer with the "
-    "handoff block from the handoff-team result."
+    "This is a company, delivery or service question: answer with only the "
+    "handoff block, and set its summary to exactly {fact:handoff.sentence}. "
+    "Do not write the one-working-day sentence yourself. The service adds "
+    "that reply and the contact card."
 )
+# Greetings and identity questions, after lexicon.normalize (letters and digits
+# only). A longer message that merely starts with one of these is not in the set.
+_TALK = frozenset(
+    {
+        "hi",
+        "hello",
+        "hey",
+        "hallo",
+        "moin",
+        "servus",
+        "gutentag",
+        "gutenmorgen",
+        "gutenabend",
+        "goodmorning",
+        "goodafternoon",
+        "goodevening",
+        "whoareyou",
+        "whatareyou",
+        "wersindsie",
+        "werbistdu",
+        "wassindsie",
+        "wasbistdu",
+    }
+)
+AnswerShape = Literal["talk", "promise", "partner"]
+# Customer wording of these hints is owned by template.py (TALK, PROMISE,
+# REPLY_PROMISE, PARTNER). prompts/{en,de}/system.md and the agent reminder
+# repeat it. Change the sentence there first, or the four copies drift.
+_SHAPE_HINT = {
+    "talk": (
+        "This is a greeting or an identity question. Say that you are Linker's "
+        "AI assistant and that you help with products, compatibility, documents "
+        "and sizing. Ask one question with field application and options home "
+        "and commercial (German: Wohngebäude and Gewerbe). State no product "
+        "fact, no number and no handoff."
+    ),
+    "promise": (
+        "The customer asks what happens after they send an inquiry. Say that "
+        "the Linker team replies within one working day. In German write that "
+        "das Linker-Team antwortet innerhalb eines Werktags. Add the "
+        "view_inquiry action with empty args. No handoff and no mailbox."
+    ),
+    "partner": (
+        "The customer asks whether partners see net prices, and names no "
+        "product. Say that approved partner accounts see net prices. A guest "
+        'sees "Net price after partner sign-in" on the product card. An '
+        'account under review sees "Account under review. Prices after '
+        'approval." In German: freigegebene Partnerkonten sehen die '
+        "Nettopreise; auf der Produktkarte steht für einen Gast "
+        "„Nettopreis nach Partner-Anmeldung“ und für ein Konto in Prüfung "
+        "„Ihr Konto wird geprüft. Preise nach Freigabe.“ Name no price and "
+        "no digit. Ask one question with field application. No handoff."
+    ),
+}
 # A stock-status question is the product's status, not the team mailbox
 # (#415, spec 69). The sentences are the product page's (stock.phrase).
 # Quantities stay out.
@@ -485,6 +541,9 @@ class Route:
     # The service's own sentence: a `clarify` route, or a stock question that
     # names no product. Empty when the model or another template writes the turn.
     answer: str = ""
+    # Which next-step sentence this model turn keeps (#394). None when the
+    # route already has its own block (cards, a document, the configurator).
+    shape: AnswerShape | None = None
 
     def as_log(self) -> dict[str, Any]:
         log: dict[str, Any] = {
@@ -515,6 +574,8 @@ class Route:
                 }
                 for note in self.named_models
             ]
+        if self.shape:
+            log["shape"] = self.shape
         return log
 
 
@@ -571,6 +632,8 @@ def plan(
         shown = named or matches
         reasons.append("product words: " + ", ".join(m.words for m in shown))
 
+    # These three keep the routes they had before #394. The next step is the
+    # prompt and the template, not a model route that skips them.
     if intent == "talk_to_person":
         # Frustration on another intent is answered as routed, with the contact
         # offer beside it (contact.decide).
@@ -623,8 +686,28 @@ def plan(
             "inquiry",
             (Call("linker/inquiry-status", {}),),
             no_handoff=True,
-            hint="The inquiry-status result is fetched; answer from it.",
+            hint=(
+                "The inquiry-status result is fetched; answer from it. A "
+                "signed-in answer adds the view_inquiry action with empty "
+                "args. A guest (login_required) is exactly one text block, "
+                "{fact:inquiry.login}, and nothing else."
+            ),
             reasons=tuple(reasons),
+        )
+    # A partner-price question, an inquiry aftermath, or a greeting that no
+    # intent route claimed stays on the model. A named product, and a bare
+    # product word, stay a product search. Stock, company and inquiry already
+    # returned, so a shape does not replace them (#394, #415).
+    shape = _answer_shape(message, named=bool(named), bare=bare)
+    if shape:
+        reasons.append(f"answer shape: {shape}")
+        return Route(
+            "model",
+            no_cards=True,
+            no_handoff=True,
+            hint=_SHAPE_HINT[shape],
+            reasons=tuple(reasons),
+            shape=shape,
         )
     if aggregate is not None and (
         unknown_codes or (several_written and aggregate.get("extreme") == "cheapest")
@@ -2156,7 +2239,40 @@ def with_page(
         dropped=dropped,
         named_models=named,
         answer=route.answer,
+        shape=route.shape,
     )
+
+
+def _answer_shape(message: str, *, named: bool, bare: bool) -> AnswerShape | None:
+    """The next-step shape of a model turn, or None when another route owns it.
+
+    `plan` calls this after talk_to_person, company and inquiry, so a shape
+    never replaces those routes (#394). `lexicon.normalize` drops spaces and
+    punctuation, so the phrases are matched on that compact form. Aftermath
+    questions match even when a product is named. Partner prices and greetings
+    do not: a product word, including a bare category word, stays a product
+    search. Only `_TALK` is a greeting or identity question: Jev also reads a
+    thanks or a closing as small talk, and the signed greeting must not replace
+    that closing (copy-review 2026-10-20 scopes TALK to greeting/identity; b45
+    is a human-review row). A closing keeps the model's prose and gets the
+    plain ask.
+    """
+    compact = normalize(message)
+    aftermath = (
+        "anfrage" in compact and ("nachdemich" in compact or "waspassiert" in compact)
+    ) or (
+        "inquiry" in compact
+        and ("whathappensafter" in compact or "afterisend" in compact)
+    )
+    if aftermath:
+        return "promise"
+    if named or bare:
+        return None
+    if "partner" in compact and ("netprice" in compact or "nettopreis" in compact):
+        return "partner"
+    if compact in _TALK:
+        return "talk"
+    return None
 
 
 def _hint_with_models(

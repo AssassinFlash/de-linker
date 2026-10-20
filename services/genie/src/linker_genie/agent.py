@@ -591,7 +591,29 @@ def _user_prompt(
         "answer with exactly one text block whose text is exactly "
         "{fact:inquiry.login}, and nothing else. "
         + NAMED_MODEL_RULE
-        + " Ask at most one "
+        # TALK, PROMISE, REPLY_PROMISE and PARTNER in template.py own the
+        # customer sentences this reminder repeats. The system prompts and
+        # route._SHAPE_HINT repeat them too; change the sentence there first.
+        + " Every answer needs one clickable next step. Cards, a compare "
+        "block, a document, an action, an ask, or the handoff block already "
+        "count. A short clarification or plain text with none of those blocks "
+        "asks which product category, field application, options home and "
+        "commercial (German: Wohngebäude and Gewerbe). "
+        "A greeting or an identity question says you are Linker's AI "
+        "assistant, names products, compatibility, documents and sizing, and "
+        "asks which product category, field application, options home and "
+        "commercial (German: Wohngebäude and Gewerbe). "
+        "What happens after an inquiry is sent: the team replies within one "
+        "working day (German: das Linker-Team antwortet innerhalb eines "
+        "Werktags), with view_inquiry and empty args, and without a handoff. "
+        "Partner net prices with no product named: approved partner accounts "
+        'see net prices. A guest sees "Net price after partner sign-in" on '
+        'the product card. An account under review sees "Account under '
+        'review. Prices after approval." No price number, and one '
+        "application ask. "
+        "A company question is the handoff block only; the service adds the "
+        "contact card and the one-working-day reply. "
+        "Ask at most one "
         f"question and only with field in {'|'.join(ASK_FIELDS)}."
     )
     return "\n".join(lines)

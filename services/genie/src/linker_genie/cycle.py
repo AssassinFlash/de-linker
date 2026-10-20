@@ -30,6 +30,7 @@ from linker_genie.template import (
     LOGIN_PLACEHOLDER,
     LOGIN_REQUIRED,
     fallback,
+    finish,
 )
 
 # pydantic-ai tool_manager._check_max_retries, on UnexpectedModelBehavior
@@ -185,6 +186,11 @@ def run(
     product sentence would otherwise ship with the failure only in the
     log. A model failure the retry replaced is not one of these. A
     request for a person is answered in `app._answer` before this runs.
+    template.finish then adds the next step the route owes when the model
+    left it out (#394); the fallback path does the same after its own fill,
+    except a degraded handoff, which finish leaves unchanged. An unclassified
+    exception is passed as `raised` so a shaped route does not ship the signed
+    sentence in its place. Neither path adds a timing phase.
     """
     expected = turn_language(request)
     retry_reason: str | None = None
@@ -195,6 +201,9 @@ def run(
     # `failures` stay the last attempt's sentences; this list only classifies.
     recorded: list[RecordedFailure] = []
     _copy_call_failures(recorded, call_failures)
+    # The last attempt threw. A grounding miss clears this. An unclassified
+    # exception is not a grounding miss, so the signed shape must not hide it.
+    raised = False
     for attempt in (1, 2):
         try:
             with (
@@ -203,6 +212,7 @@ def run(
             ):
                 output, facts = generate(request, retry_reason)
         except (ValueError, TypeError, RuntimeError) as error:
+            raised = True
             # The live list first: a tool recorded its class, then a wrapper
             # may have raised a plain RuntimeError of the same sentence.
             _copy_call_failures(recorded, call_failures)
@@ -212,6 +222,7 @@ def run(
             retry_reason = failure.text
             last_facts = seeded
             continue
+        raised = False
         _copy_call_failures(recorded, call_failures)
         last_facts = merge([seeded, facts])
         with timing.phase(clock, timing.GROUND):
@@ -251,6 +262,7 @@ def run(
             last_failures = tuple(item.text for item in tool_failures)
             retry_reason = last_failures[0]
             continue
+        priced = finish(priced, priced_facts, route)
         return TurnResult(
             output=priced,
             facts=priced_facts,
@@ -270,6 +282,7 @@ def run(
             route,
             exhausted=_tool_retries_exhausted(last_failures),
             failure_class=kind,
+            raised=raised,
         )
     with timing.phase(clock, timing.HYDRATE):
         # Login stays the login sentence. Any other pairing fallback keeps the
@@ -278,6 +291,7 @@ def run(
             rendered, last_facts, route, card_limit=SEARCH_LIMIT
         )
         priced, priced_facts, missed = fill(rendered, last_facts, commerce)
+        priced = finish(priced, priced_facts, route)
     return TurnResult(
         output=priced,
         facts=priced_facts,

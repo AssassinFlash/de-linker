@@ -42,7 +42,12 @@ from linker_genie.template import (
     DEGRADED,
     DOCUMENTS,
     LOGIN_REQUIRED,
+    PARTNER,
+    PROMISE,
+    REPLY_PROMISE,
+    TALK,
     fallback,
+    finish,
     german_is_clean,
 )
 
@@ -1001,3 +1006,90 @@ def _handoff(language: Locale) -> Generate:
         )
 
     return generate
+
+
+_SHAPED = {
+    "talk": Route("model", shape="talk", no_handoff=True, no_cards=True),
+    "promise": Route("model", shape="promise", no_handoff=True, no_cards=True),
+    "partner": Route("model", shape="partner", no_handoff=True, no_cards=True),
+    "service": Route("service"),
+}
+_SIGNED = {"talk": TALK, "promise": PROMISE, "partner": PARTNER}
+
+
+def test_a_fatal_failure_outranks_a_signed_next_step() -> None:
+    """talk, promise, partner and service must not rewrite the degraded sentence.
+
+    finish used to replace the degraded handoff with the signed sentence, or
+    append the reply promise on a service turn. The failure sentence stays,
+    and a second finish does not grow a next step onto it.
+    """
+    for language in ("en", "de"):
+        for name, route in _SHAPED.items():
+            result = run(_question(language), _raise(_ability("500")), route)
+            assert result.fallback is True
+            assert result.grounded is False
+            _assert_degraded(result.output, language)
+            assert [block.type for block in result.output.blocks] == ["handoff"]
+            visible = _visible(result.output)
+            assert REPLY_PROMISE[language] not in visible
+            signed = _SIGNED.get(name)
+            if signed is not None:
+                assert signed[language] not in visible
+            assert finish(result.output, TurnFacts(), route) == result.output
+
+
+def test_a_fatal_shaped_turn_keeps_findings_under_the_degraded_sentence() -> None:
+    """Qualified cards stay. The signed sentence does not replace the handoff."""
+    route = _SHAPED["talk"]
+    result = run(_question("en"), _raise(_ability("500")), route, seed=_stock())
+    _assert_degraded(result.output, "en")
+    cards = _cards(result.output)
+    assert cards and set(cards[0].product_ids) == set(_STOCK)
+    assert TALK["en"] not in _visible(result.output)
+    service = run(
+        _question("en"), _raise(_model(500)), _SHAPED["service"], seed=_stock()
+    )
+    _assert_degraded(service.output, "en")
+    assert REPLY_PROMISE["en"] not in _visible(service.output)
+    kept = _cards(service.output)
+    assert kept and set(kept[0].product_ids) == set(_STOCK)
+
+
+def test_an_unclassed_exception_on_a_shaped_route_stays_degraded() -> None:
+    """kind_of(RuntimeError) is None. The signed sentence must not hide that."""
+    assert kind_of(RuntimeError("boom")) is None
+    for language in ("en", "de"):
+        for name, route in _SHAPED.items():
+            result = run(_question(language), _raise(RuntimeError("boom")), route)
+            assert result.fallback is True
+            assert result.failures == ("boom",)
+            _assert_degraded(result.output, language)
+            assert REPLY_PROMISE[language] not in _visible(result.output)
+            signed = _SIGNED.get(name)
+            if signed is not None:
+                assert signed[language] not in _visible(result.output)
+
+
+def test_a_grounding_miss_on_a_shaped_route_still_ships_the_signed_sentence() -> None:
+    """The shape is owed when the model answered and grounding refused it."""
+
+    def generate(
+        _request: TurnRequest, _retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[HandoffBlock(summary="Please write to sales@de-linker.com.")],
+            ),
+            TurnFacts(),
+        )
+
+    talk = run(_question("en"), generate, _SHAPED["talk"])
+    assert talk.fallback is True
+    assert talk.grounded is False
+    assert _sentence(talk.output) == TALK["en"]
+    promise = run(_question("en"), generate, _SHAPED["promise"])
+    assert _sentence(promise.output) == PROMISE["en"]
+    partner = run(_question("en"), generate, _SHAPED["partner"])
+    assert _sentence(partner.output) == PARTNER["en"]
