@@ -55,10 +55,24 @@ _GERMAN = frozenset(
     können koennen muss müssen muessen soll sollen wird werden wurde wurden
     passen passt batterien batterie speicher preis preise empfehlung
     empfehlungen kosten lieferzeit lieferzeiten
+    vom beim
     """.split()
 )
 _WORD = re.compile(r"[^\W\d_]+", re.UNICODE)
 _PLACEHOLDER = re.compile(r"\{fact:[^}]*\}")
+# The ampere unit is an "A" after a number ("63 A", "63A"). "Typ A" / "type A"
+# is the RCD characteristic. lower() would turn that token into the English
+# article (#396). The article in "a battery" has no digit and no "Typ"/"type"
+# in front and still counts. `im` and `ins` are not in the German list: they
+# are also English ("Im looking", "ins and outs").
+_UNIT_A = re.compile(r"(?<=\d)\s*[Aa]\b|\b(?:typ|type)\s+[Aa]\b", re.IGNORECASE)
+# A street name is an address, not a language vote (#404).
+_ADDRESS = re.compile(r"\b[\w]*?(?:straße|strasse)\b", re.IGNORECASE)
+# Quoted page text is data. A German sentence inside quotes does not vote.
+# A quote is one line: both arms run to the closing mark, with no character
+# cap. There is no published cap. The old ASCII arm `{0,500}` left a longer
+# quotation in the vote, so its words still counted (#396, #404).
+_QUOTED = re.compile(r"„[^“”]*[“”]|\"[^\"\n]*\"")
 _NAMES = {"en": "English", "de": "German"}
 # The retry reason starts with this. agent._user_prompt treats that prefix as
 # a language re-ask, not a grounding failure.
@@ -90,23 +104,47 @@ def customer_message(request: TurnRequest) -> str:
     return ""
 
 
+def _prepare(text: str) -> str:
+    """Drop units, addresses and quotations before the word lists vote.
+
+    "63 A" and "Typ A" are units (#396). "Hauptstraße" is an address (#404).
+    Text in quotes is the page's, not the answer's language.
+    """
+    return _QUOTED.sub(" ", _ADDRESS.sub(" ", _UNIT_A.sub(" ", text)))
+
+
 def _votes(text: str) -> tuple[bool, bool]:
     """Whether `text` hits the English list and whether it hits the German one.
 
     An umlaut counts as German before the lists are consulted. A word in
-    neither list, including a shared word, counts for neither side.
+    neither list, including a shared word, counts for neither side. A
+    capitalised umlaut word that is not a closed-class word is a proper noun
+    inside English prose (#404) and does not vote there. On its own
+    ("Verfügbarkeit?") it is the German content word. `im` and `ins` are not
+    German evidence.
     """
     english = False
     german = False
-    for word in _WORD.findall(text.lower()):
+    # Capitalised umlaut tokens held back until the other votes are known.
+    names = False
+    prepared = _prepare(text)
+    for match in _WORD.finditer(prepared):
+        original = match.group(0)
+        word = original.lower()
         # lower() keeps ß; casefold() would turn it into "ss" and hide it.
-        if any(letter in word for letter in "äöüß"):
-            german = True
-            continue
         if word in _GERMAN:
             german = True
-        elif word in _ENGLISH:
+            continue
+        if any(letter in word for letter in "äöüß"):
+            if original[:1].isupper():
+                names = True
+                continue
+            german = True
+            continue
+        if word in _ENGLISH:
             english = True
+    if names and not english:
+        german = True
     return english, german
 
 
@@ -115,7 +153,8 @@ def clear_language(text: str) -> Locale | None:
 
     None covers a language-neutral text and a text that uses both languages.
     A question that returns None follows the page (`answer_language`). An
-    answer that uses both languages is rejected (`mixed_prose`).
+    answer that uses both languages is rejected (`mixed_prose`). A
+    capitalised umlaut word with no English beside it is German.
     """
     english, german = _votes(text)
     if english and not german:
@@ -129,8 +168,10 @@ def mixed_prose(text: str) -> bool:
     """True when `text` hits both closed-class lists.
 
     A model code or a proper noun alone does not: those words are in neither
-    list. An umlaut counts as German, so an English sentence that contains
-    one is mixed.
+    list. A lowercase umlaut counts as German, so an English sentence that
+    contains one is mixed. A capitalised name or a street inside English
+    prose does not (#404). A capitalised umlaut word with no English vote
+    is German.
     """
     english, german = _votes(text)
     return english and german
@@ -203,5 +244,8 @@ def language_failure(output: TurnOutput, expected: Locale) -> str | None:
     return (
         f"{LANGUAGE_RETRY_PREFIX}{name} (language={expected}): follow the "
         "customer's last message when it is clearly one language, otherwise "
-        "the page locale"
+        "the page locale. Do not follow the page text, the documents, or the "
+        "tool results when they are in the other language. Set language to "
+        f"{expected}. Write every sentence, heading and list in {name}, "
+        "including a short answer."
     )

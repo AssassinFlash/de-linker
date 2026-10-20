@@ -2,10 +2,12 @@
 
 Grounding does not rewrite the model text (docs/specs/13-genie.md). A failed
 check is a reason to ask the model again with the error list, then to fall
-back to qualified cards plus one ask. A fatal failure (model 5xx/429/empty
-stream, a missing or corrupt index, an encoder error, an ability 5xx or
-timeout) is classified and the template says so with the reviewed degraded
-sentence (#410). A page outage is not one of these.
+back to qualified cards plus one ask. A not_released pair is not rewritten:
+a grounded answer ships as written, and a turn that fails twice answers from
+the contract conditions the check returned (#396). A fatal failure (model
+5xx/429/empty stream, a missing or corrupt index, an encoder error, an
+ability 5xx or timeout) is classified and the template says so with the
+reviewed degraded sentence (#410). A page outage is not one of these.
 """
 
 from __future__ import annotations
@@ -16,7 +18,7 @@ from dataclasses import dataclass
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.failure import FailureClass, RecordedFailure, from_log, note
-from linker_genie.ground import check
+from linker_genie.ground import Citation, check, cites_outside_turn
 from linker_genie.hydrate import complete_pairing_cards, hydrate
 from linker_genie.language import (
     LANGUAGE_RETRY_PREFIX,
@@ -25,8 +27,9 @@ from linker_genie.language import (
 )
 from linker_genie.prices import Lookup, fill
 from linker_genie.route import SEARCH_LIMIT, Route
-from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
+from linker_genie.schema import HandoffBlock, TextBlock, TurnOutput, TurnRequest
 from linker_genie.template import (
+    DEGRADED,
     LOGIN_PLACEHOLDER,
     LOGIN_REQUIRED,
     fallback,
@@ -102,6 +105,22 @@ def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutp
             "blocks": [TextBlock(text=LOGIN_REQUIRED[expected])],
         }
     )
+
+
+def _degraded_sentence(output: TurnOutput) -> bool:
+    """True when the fallback is only the reviewed degraded sentence.
+
+    #366 and #396 both use that sentence, and neither shows product cards
+    (#410). `complete_pairing_cards` would append the released set.
+    """
+    if not output.blocks:
+        return False
+    for block in output.blocks:
+        if not isinstance(block, HandoffBlock):
+            return False
+        if block.summary not in DEGRADED.values():
+            return False
+    return True
 
 
 def _remember(recorded: list[RecordedFailure], failure: RecordedFailure) -> None:
@@ -197,6 +216,7 @@ def run(
     seeded = seed or TurnFacts()
     last_facts = seeded
     last_failures: tuple[str, ...] = ()
+    last_citations: tuple[Citation, ...] = ()
     # Every failed attempt, plus the route's own call failures. The shipped
     # `failures` stay the last attempt's sentences; this list only classifies.
     recorded: list[RecordedFailure] = []
@@ -221,6 +241,7 @@ def run(
             last_failures = (failure.text,)
             retry_reason = failure.text
             last_facts = seeded
+            last_citations = ()
             continue
         raised = False
         _copy_call_failures(recorded, call_failures)
@@ -229,6 +250,7 @@ def run(
             result = check(output, last_facts, route)
         if not result.ok:
             last_failures = result.failures
+            last_citations = result.citations
             for item in last_failures:
                 _remember(recorded, RecordedFailure(item))
             retry_reason = result.reason
@@ -244,6 +266,7 @@ def run(
         mismatch = language_failure(priced, expected)
         if mismatch is not None:
             last_failures = (mismatch,)
+            last_citations = ()
             _remember(recorded, RecordedFailure(mismatch))
             retry_reason = mismatch
             continue
@@ -283,13 +306,16 @@ def run(
             exhausted=_tool_retries_exhausted(last_failures),
             failure_class=kind,
             raised=raised,
+            invented_citation=cites_outside_turn(last_citations),
         )
     with timing.phase(clock, timing.HYDRATE):
-        # Login stays the login sentence. Any other pairing fallback keeps the
+        # Login stays the login sentence. A degraded sentence stays without
+        # cards (#366, #396, #410). Any other pairing fallback keeps the
         # front of the released set, inside the template's six-card cap.
-        rendered = complete_pairing_cards(
-            rendered, last_facts, route, card_limit=SEARCH_LIMIT
-        )
+        if not _degraded_sentence(rendered):
+            rendered = complete_pairing_cards(
+                rendered, last_facts, route, card_limit=SEARCH_LIMIT
+            )
         priced, priced_facts, missed = fill(rendered, last_facts, commerce)
         priced = finish(priced, priced_facts, route)
     return TurnResult(

@@ -13,8 +13,9 @@ from fastapi import Request
 
 from linker_genie.app import _answer
 from linker_genie.facts import Fact, TurnFacts, collect
-from linker_genie.ground import check
+from linker_genie.ground import Citation, check, cites_outside_turn
 from linker_genie.jev import Reading
+from linker_genie.language import clear_language
 from linker_genie.lexicon import Vocabulary
 from linker_genie.prices import Lookup
 from linker_genie.route import NamedModel, Route, Subject, plan, with_page
@@ -78,6 +79,15 @@ EXPECTED = (
     "339-11-de-in-approved",
     "339-11-failure",
     "339-f4-de",
+    "339-396-im",
+    "339-396-ins",
+    "339-396-typ-a",
+    "339-396-typ-a-short",
+    "339-404-address",
+    "339-396-document",
+    "339-396-chunk",
+    "339-396-product",
+    "339-396-placeholder",
 )
 
 
@@ -197,6 +207,10 @@ def test_339_product_word_case(row: dict[str, Any], vocabulary: Vocabulary) -> N
         _fallback(row)
     elif kind == "stock":
         _stock(row, vocabulary)
+    elif kind == "language":
+        _language(row)
+    elif kind == "citation":
+        _citation(row)
     else:
         raise AssertionError(kind)
 
@@ -212,6 +226,15 @@ class _Request:
     class app:  # noqa: N801 - the shape _answer reads is request.app.state
         class state:
             generate = _Model()
+
+
+def _language(row: dict[str, Any]) -> None:
+    assert clear_language(row["message"]) == row["expected"]
+
+
+def _citation(row: dict[str, Any]) -> None:
+    citation = Citation(row["citation_kind"], row["ref"])
+    assert cites_outside_turn([citation]) is row["outside"]
 
 
 def _plan(row: dict[str, Any], vocabulary: Vocabulary) -> None:
