@@ -1,7 +1,7 @@
 """Five anchoring checks: injected failures are all refused."""
 
 from linker_genie.facts import Fact, TurnFacts
-from linker_genie.ground import check
+from linker_genie.ground import bare_numbers, catalogue_name_phrases, check
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
 from linker_genie.route import NamedModel, Route, Subject, plan
@@ -203,6 +203,98 @@ def test_bare_number_in_model_text_is_refused() -> None:
     result = check(output, _facts())
     assert not result.ok
     assert any("numbers" in item for item in result.failures)
+
+
+_OCEAN_TITLE = "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase power module)"
+
+
+def _ocean_facts() -> TurnFacts:
+    facts = _facts()
+    facts.tool_calls.append(
+        {
+            "name": "linker/search-products",
+            "arguments": {},
+            "ok": True,
+            "result": {
+                "qualified": [
+                    {
+                        "product_id": 4107,
+                        "title": _OCEAN_TITLE,
+                        "facts": {"ac_power_kw": 10},
+                    }
+                ]
+            },
+        }
+    )
+    return facts
+
+
+def _ocean(text: str) -> TurnOutput:
+    return TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(text=text, refs=["4107"]),
+            CardsBlock(product_ids=[4107]),
+        ],
+    )
+
+
+def test_a_series_designator_in_a_returned_title_is_not_a_number() -> None:
+    facts = _ocean_facts()
+    assert check(_ocean("The EcoFlow OCEAN 2 is the single-phase hybrid."), facts).ok
+    assert check(_ocean("The EcoFlow ocean 2 is the single-phase hybrid."), facts).ok
+
+
+def test_a_power_beside_a_series_name_is_still_a_number() -> None:
+    result = check(_ocean("The EcoFlow OCEAN 2 is rated 10 kW."), _ocean_facts())
+    assert result.failures == ("model text contains numbers ['10']",)
+
+
+def test_two_years_is_still_a_number_when_the_title_names_ocean_2() -> None:
+    result = check(_ocean("The EcoFlow OCEAN 2 ships in 2 years."), _ocean_facts())
+    assert not result.ok
+    assert "['2']" in result.reason
+
+
+def test_a_decimal_beside_the_series_name_is_still_a_number() -> None:
+    result = check(_ocean("The warranty on the OCEAN 2 is 2.0 years."), _ocean_facts())
+    assert not result.ok
+    assert "2.0" in result.reason
+
+
+def test_ocean_2_without_the_title_in_the_tools_is_a_number() -> None:
+    result = check(_ocean("The EcoFlow OCEAN 2 is the single-phase hybrid."), _facts())
+    assert not result.ok
+    assert "['2']" in result.reason
+
+
+def test_ocean_20_is_not_swallowed_by_the_ocean_2_title() -> None:
+    result = check(_ocean("The OCEAN 20 is a different machine."), _ocean_facts())
+    assert not result.ok
+    assert "20" in result.reason
+
+
+def test_catalogue_name_phrases_read_the_head_before_the_parenthesis() -> None:
+    calls = [
+        {
+            "result": {
+                "qualified": [{"product_id": 4107, "title": _OCEAN_TITLE}],
+                "hits": [
+                    {
+                        "chunk_id": "c1",
+                        "title": "GoodWe ESA Serie 5–30 kW Benutzerhandbuch",
+                    }
+                ],
+                "documents": [
+                    {"url": "https://example.test/a.pdf", "title": "OCEAN 2 datasheet"}
+                ],
+                "faq": [{"title": "Step 2", "question": "Step 2"}],
+            }
+        }
+    ]
+    assert catalogue_name_phrases(calls) == ("OCEAN 2", "Serie 5")
+    assert bare_numbers("rated 10 kW", catalogue_name_phrases(calls)) == ["10"]
+    assert bare_numbers("the OCEAN 2", catalogue_name_phrases(calls)) == []
 
 
 def test_model_names_are_not_counted_as_numbers() -> None:

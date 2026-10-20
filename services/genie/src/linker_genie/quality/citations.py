@@ -9,7 +9,9 @@ so a hydration or template defect that slipped past shows up per turn.
 What counts as a number is ground.py's own rule (`ground.bare_numbers`): a
 model code written whole (BU2-5.0-HV1, CB2-100.3-HV5, GW125/261-ESA-LCN-G10)
 is a name, not the numbers inside it (#258: turn 27 on production was flagged
-for the "5.0" of BU2-5.0-HV1), while a number written beside a code is checked.
+for the "5.0" of BU2-5.0-HV1), and so is a series designator taken from a
+title this turn's tools returned ("OCEAN 2", #395). A number written beside
+a code, or a measurement the title only states inside parentheses, is checked.
 
 A price is never in the text (#242, the remit's price rule): a number equal to a
 price the turn's tools returned is flagged in any account's answer. The product
@@ -23,7 +25,7 @@ import re
 from typing import Any
 
 from linker_genie.facts import TurnFacts, collect, merge
-from linker_genie.ground import bare_numbers
+from linker_genie.ground import bare_numbers, catalogue_name_phrases
 from linker_genie.quality.turns import LoggedTurn
 
 
@@ -48,6 +50,7 @@ def verify(turn: LoggedTurn) -> list[str]:
     )
     known = facts.ids()
     sources = " ".join(fact.value for fact in facts.facts.values())
+    phrases = catalogue_name_phrases(turn.tool_calls)
     prices = _visible_prices(facts)
     failures: list[str] = []
     for block in turn.output.get("blocks") or []:
@@ -67,7 +70,7 @@ def verify(turn: LoggedTurn) -> list[str]:
             failures.extend(_card_prices(block, facts, turn.approved))
         if kind in ("text", "handoff"):
             text = str(block.get("text" if kind == "text" else "summary", ""))
-            for number in bare_numbers(text):
+            for number in bare_numbers(text, phrases):
                 if not _occurs(number, sources):
                     failures.append(f"states {number}, which no tool result contains")
                 else:

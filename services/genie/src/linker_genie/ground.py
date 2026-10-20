@@ -4,7 +4,7 @@ These run after Pydantic accepts the shape and before hydration is shown.
 They do not rewrite the model's text. A failure is a reason to retry once,
 then fall back to the deterministic template.
 
-The five checks, matching the ticket and old-repo-006 §2:
+The five checks, matching docs/specs/13-genie.md:
 
 1. Every `{fact:ID}` and every `refs` id is in this turn's tool results, and
    a fact placeholder can be rendered (has a value).
@@ -17,7 +17,10 @@ The five checks, matching the ticket and old-repo-006 §2:
    (no product cards or actions beside it). The model chooses handoff via
    the schema; this check catches a mixed turn.
 5. Bare numbers must not appear in model text (they belong in `{fact:ID}`).
-   Digit runs inside a placeholder do not count.
+   Digit runs inside a placeholder do not count. Neither does a series
+   designator copied from a title this turn's tools returned ("OCEAN 2" in
+   "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW …)", #395). The measurement in the
+   parenthesis, and any other digit, still counts.
 
 Ask's wording "数字出现在被引块" is the knowledge-index citation rule
 (docs/specs/10-knowledge-index.md): a number the answer states from a
@@ -71,6 +74,7 @@ be cited in the text refs; that half of the guarantee is unconditional.
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -136,17 +140,97 @@ _MODEL_CODE = re.compile(
     r"(?<![\w.])(?=[A-Z0-9.,/-]*[A-Z])[A-Z0-9]+(?:[.,][0-9]+)?"
     r"(?:[-/][A-Z0-9]+(?:[.,][0-9]+)?)+(?![\w])"
 )
+# A series designator written with a space, in the title head before the
+# parenthesis: "OCEAN 2" of "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW …)" (#395).
+# One letter-word, then 1 or 2 digits. The feed's series slugs
+# (services/engine/tests/fixtures/feed.json, 106 products) put 1 digit there
+# (ocean-2, esa-3, esa-5, hv-5) or 2 (et-80, sts-30). sts-125k glues 125 to
+# the unit, so a third digit is not one of those marks and "100" stays a
+# number. The lookahead rejects a decimal ("2.0"). The parenthesis is where
+# this catalogue writes the power ("10 kW", "3 kW").
+_SERIES_DESIGNATOR = re.compile(r"\b[A-Za-z][A-Za-z]*[ \u00a0]+\d{1,2}\b(?![.,]\d)")
+_NAME_HEAD = re.compile(r"[(\uFF08]")
 
 
-def bare_numbers(text: str) -> list[str]:
+def catalogue_name_phrases(tool_calls: list[dict[str, Any]]) -> tuple[str, ...]:
+    """Series designators in the titles this turn's tools actually returned.
+
+    The name head is the title before the first parenthesis. "OCEAN 2" from
+    "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW single-phase power module)" is a name,
+    the same way "CB2-100.3-HV5" is. "10 kW" inside the parenthesis is not.
+    Longest phrase first, so "AB 12" is removed before "AB 1".
+    """
+    found: set[str] = set()
+    for call in tool_calls:
+        if not isinstance(call, dict):
+            continue
+        for title in _catalogue_titles(call.get("result")):
+            head = _NAME_HEAD.split(title, maxsplit=1)[0]
+            for match in _SERIES_DESIGNATOR.finditer(head):
+                found.add(re.sub(r"[ \u00a0]+", " ", match.group(0)))
+    return tuple(sorted(found, key=lambda phrase: (-len(phrase), phrase.casefold())))
+
+
+def _catalogue_titles(node: Any, *, in_documents: bool = False) -> list[str]:
+    """Product, document and knowledge-hit titles. Not FAQ text, not a page body."""
+    found: list[str] = []
+    if isinstance(node, dict):
+        title = node.get("title")
+        if (
+            isinstance(title, str)
+            and title.strip()
+            and (
+                in_documents
+                or "product_id" in node
+                or "chunk_id" in node
+                or "doc_url" in node
+            )
+        ):
+            found.append(title)
+        for key, value in node.items():
+            found.extend(_catalogue_titles(value, in_documents=key == "documents"))
+    elif isinstance(node, list):
+        for item in node:
+            found.extend(_catalogue_titles(item, in_documents=in_documents))
+    return found
+
+
+def _blank_name_phrases(text: str, phrases: Sequence[str]) -> str:
+    """Remove each catalogue phrase, case-insensitively, on a word boundary.
+
+    `phrases` is the tuple `catalogue_name_phrases` already returned: one
+    space, longest first. This does not strip or sort again. "OCEAN 2" does
+    not swallow "OCEAN 20" or "OCEAN 2.0": the digits must end the token. A
+    bare "2" elsewhere in the sentence is left for the scan.
+    """
+    for phrase in phrases:
+        parts = phrase.split(" ")
+        if len(parts) < 2:
+            continue
+        pattern = (
+            r"(?<!\w)"
+            + r"[ \u00a0]+".join(re.escape(part) for part in parts)
+            + r"(?!\w|[.,]\d)"
+        )
+        text = re.sub(pattern, " ", text, flags=re.IGNORECASE)
+    return text
+
+
+def bare_numbers(text: str, phrases: Sequence[str] = ()) -> list[str]:
     """Digit tokens that stand outside alphanumeric model codes.
 
     A model code keeps its numeric segments: "CB2-100.3-HV5" is a name, written
     plainly (`_MODEL_CODE`, #233; and a whole word that `figures.is_code` reads as
-    a name, #257, which also covers codes written in lower case). The quality
-    worker's citation check reads the shipped answer with this same rule
-    (`quality/citations.py`, #258), so the two never disagree on what a number is.
+    a name, #257, which also covers codes written in lower case). A series
+    designator from a title this turn's tools returned is a name too
+    (`catalogue_name_phrases`, #395) and is blanked before the code strip.
+    `phrases` is that tuple, already normalized and longest-first. "10 kW",
+    "2.0" and a "2" that is not that phrase stay numbers. Callers that check a
+    fact's own value pass no phrases. The quality worker's citation check
+    reads the shipped answer with this same rule (`quality/citations.py`, #258),
+    so the two never disagree on what a number is.
     """
+    text = _blank_name_phrases(text, phrases)
     text = _MODEL_CODE.sub(" ", text)
     return [
         token
@@ -673,6 +757,10 @@ def _fact_known(facts: TurnFacts, fact_id: str) -> Fact | None:
 
 def _no_bare_numbers(output: TurnOutput, facts: TurnFacts) -> list[str]:
     failures: list[str] = []
+    # Phrases from this turn's titles only, as catalogue_name_phrases returns
+    # them. A fact's own digits are checked against the cited chunk with no
+    # phrases, so a title cannot vouch for them.
+    phrases = catalogue_name_phrases(facts.tool_calls)
     cited_chunk_text = " ".join(
         fact.value
         for fact in facts.facts.values()
@@ -687,7 +775,7 @@ def _no_bare_numbers(output: TurnOutput, facts: TurnFacts) -> list[str]:
             continue
         for text in texts:
             stripped = PLACEHOLDER.sub("", text)
-            numbers = bare_numbers(stripped)
+            numbers = bare_numbers(stripped, phrases)
             if numbers:
                 failures.append(f"model text contains numbers {numbers!r}")
                 continue
