@@ -298,8 +298,14 @@ _PRESENTED_FIGURE = re.compile(
 # The same binder when the banned phrase sits inside the gap
 # ("liegt die nutzbare Energie bei 260").
 _LIEGT_BEI = re.compile(rf"(?i)\bliegt(?P<mid>{_LIEGT_GAP})\s+bei\b")
-# A full token. "L260" must not yield 60, and "H2-20K" must not yield 20.
-_STANDALONE_NUMBER = re.compile(r"(?<![A-Za-z0-9])\d+(?:[.,]\d+)*(?![A-Za-z0-9])")
+# A full token, or those digits with a unit glued on (260kWh, 40kW, 98%).
+# The match is the digits: "260kWh" is the number 260. "L260" must not yield
+# 60, and "H2-20K" must not yield 20. The unit has to be the whole suffix, so
+# "kW" does not match inside "kWp" and "K" does not match inside "20K".
+_STANDALONE_NUMBER = re.compile(
+    r"(?<![A-Za-z0-9])\d+(?:[.,]\d+)*"
+    r"(?=(?:(?i:kwh|kw|%))(?![A-Za-z0-9])|(?![A-Za-z0-9]))"
+)
 _DENIAL_WORD = re.compile(
     r"(?i)\b(?:not|no|without|rather|none|kein(?:e[rmns]?)?|nicht|ohne)\b"
 )
@@ -322,10 +328,11 @@ _OTHER_HEAD = re.compile(
     r"|nenn(?:kapazität|kapazitaet|energie)"
     r"|depth\s+of\s+discharge|entladetiefe|\bdod\b)\b"
 )
-# "not 95 but 260" re-asserts the number after the contrast. "and"/"und" are
-# not in this set: they start a new claim, which the other-subject cut handles.
+# "not 95 but 260", "not 95 and is 260", and "not 95, is 260" re-assert the
+# number after the contrast. and/und and a comma are the same claim boundary
+# `_NEW_CLAIM` uses, so a denial does not cover what follows them.
 _FIGURE_CONTRAST = re.compile(
-    r"(?i)\b(?:but|however|although|though|aber|jedoch|doch|sondern)\b"
+    r"(?i)\b(?:but|however|although|though|and|und|aber|jedoch|doch|sondern)\b|,"
 )
 # A comma or "and"/"und" can start a new claim ("…, the nominal capacity is").
 _NEW_CLAIM = re.compile(r"(?i)\b(?:and|und)\b|,")
@@ -360,7 +367,8 @@ def _expanded_values(values: list[str]) -> set[float]:
 def _number_is_denied(text: str, start: int) -> bool:
     """True when a denial still covers the number at `start`.
 
-    "not 95 kWh but 260 kWh": the contrast cancels the denial for what follows
+    "not 95 kWh but 260 kWh", "not 95 kWh and is 260 kWh", and
+    "not 95 kWh, is 260 kWh": the contrast cancels the denial for what follows
     it. "is not 260 kWh" and "does not have 40 kW" stay denials.
     """
 
@@ -454,8 +462,9 @@ def _presents_banned_figure(tail: str) -> bool:
     "nominal capacity of 260 kWh" and "Nennkapazität 260 kWh" pass when that
     noun is the figure's own label. "The usable capacity is the nominal
     capacity of 260 kWh" fails: the copula's subject is the usable phrase.
-    "comes to" and "liegt bei" are the same copula. "is not 95 but 260"
-    re-asserts 260.
+    "comes to" and "liegt bei" are the same copula. "is not 95 but 260",
+    "is not 95 and is 260", and "is not 95, is 260" re-assert 260.
+    "260kWh" is the same number as "260 kWh".
     """
 
     predicate = _phrase_predicate(tail)
@@ -471,7 +480,8 @@ def numbered_claim_failures(text: str, patterns: list[str]) -> list[str]:
     one. Writing 260 kWh onto that phrase is the figure the rubric bans,
     including apposition ("260 kWh usable capacity"), a dash, a bare number
     ("usable capacity 260 kWh"), the inverted copula ("260 kWh is the usable
-    capacity"), "liegt … bei" with the phrase inside the gap, and "not X but Y".
+    capacity"), "liegt … bei" with the phrase inside the gap, a unit glued
+    to the digits ("is 260kWh"), and "not X but/and/, Y".
     The nominal value and the depth of discharge are not that figure when
     the noun labelling them is their own. A model token (L260) is not a number.
     """

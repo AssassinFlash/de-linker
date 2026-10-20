@@ -492,6 +492,64 @@ def test_trial_6_rejects_comes_to_liegt_bei_apposition_and_not_but() -> None:
         assert _banned(failures), words
 
 
+def test_trial_6_rejects_a_glued_unit_and_a_reassertion_after_and() -> None:
+    """260kWh is the same figure as 260 kWh. and/und and a comma end the
+    denial, the same way but does. and/und before the nominal noun does not."""
+
+    english = next(row for row in ROWS if row["id"] == "b20-en")
+    glued = turn(
+        _document(
+            "The documents do not state a usable capacity. "
+            "The usable capacity is 260kWh. "
+            "The nominal capacity is 260 kWh and the depth of discharge is 98%."
+        )
+    )
+    failures = check(english, glued, FEED_TOKENS)
+    assert _banned(failures), failures
+    assert any("260kWh" in failure for failure in failures)
+    assert not any("nominal capacity is" in failure for failure in failures)
+    reasserted = "The usable capacity is not 95 kWh and is 260 kWh."
+    comma = "The usable capacity is not 95 kWh, is 260 kWh."
+    for words in (reasserted, comma):
+        assert _banned(check(english, turn(_document(words)), FEED_TOKENS)), words
+    kept = turn(
+        _document(
+            "The documents do not state a usable capacity. "
+            "The usable capacity is not 95 kWh and the nominal capacity is 260 kWh "
+            "and the depth of discharge is 98%."
+        )
+    )
+    assert check(english, kept, FEED_TOKENS) == []
+
+    german = next(row for row in ROWS if row["id"] == "b20-de")
+    glued_de = turn(
+        _document(
+            "Die Unterlagen nennen keine nutzbare Kapazität. "
+            "Die nutzbare Kapazität liegt bei 260kWh. "
+            "Die Nennkapazität beträgt 260 kWh und die Entladetiefe 98%."
+        ),
+        language="de",
+    )
+    failures = check(german, glued_de, FEED_TOKENS)
+    assert _banned(failures), failures
+    assert any("260kWh" in failure for failure in failures)
+    assert not any("Nennkapazität" in failure for failure in failures)
+    und = "Die nutzbare Kapazität ist nicht 95 kWh und beträgt 260 kWh."
+    comma_de = "Die nutzbare Kapazität ist nicht 95 kWh, sie beträgt 260 kWh."
+    for words in (und, comma_de):
+        failed = check(german, turn(_document(words), language="de"), FEED_TOKENS)
+        assert _banned(failed), words
+    kept_de = turn(
+        _document(
+            "Die Unterlagen nennen keine nutzbare Kapazität. "
+            "Die nutzbare Kapazität beträgt nicht 95 kWh und die Nennkapazität "
+            "beträgt 260 kWh und die Entladetiefe 98%."
+        ),
+        language="de",
+    )
+    assert check(german, kept_de, FEED_TOKENS) == []
+
+
 def test_trial_6_rejects_inverted_copula_dash_bare_number_and_liegt_across() -> None:
     """The copula can run backwards, a dash or a bare number can present 260,
     and liegt … bei can wrap the German phrase across three words."""
