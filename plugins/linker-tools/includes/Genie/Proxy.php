@@ -453,10 +453,17 @@ class Proxy {
 		$locale = $this->locale( $request->get_param( 'locale' ) );
 		// The page the browser names, checked key by key; the service reads
 		// the page's content itself from it (#234). A solution draft's
-		// products come from the visitor's own draft, never the browser.
+		// products and their quantities come from the visitor's own draft,
+		// never the browser (the cart line quantity the handoff already reads).
 		$page = $this->pages->sanitize( $request->get_param( 'page' ) );
 		if ( 'draft' === $page['type'] ) {
-			$page['draft_ids'] = $this->pages->draft_ids();
+			$lines               = $this->pages->draft_lines();
+			$page['draft_ids']   = array();
+			$page['draft_lines'] = array();
+			foreach ( $lines as $line ) {
+				$page['draft_ids'][]   = $line['product_id'];
+				$page['draft_lines'][] = $line;
+			}
 		}
 		/**
 		 * Whether the visitor sees prices: linker-commerce answers with its

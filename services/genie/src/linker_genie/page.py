@@ -24,8 +24,11 @@ The address is never fetched as the browser sent it: only its path is taken, joi
 the site this service serves (`GENIE_WP_URL`), and a redirect is followed only on that
 site. Pages that show the customer's own data are not read this way, since an anonymous
 read would not see them: the solution draft is the draft's products, which the shell
-puts in the page context (`draft_ids`); a signed-in customer's account is their
-inquiries, which the route reads with inquiry-status (route.py).
+puts in the page context (`draft_ids`), with the cart quantity the inquiry and
+contact handoff already read (`draft_lines`). A turn without those lines names
+the products and states no quantity: the reader does not guess 1. A signed-in
+customer's account is their inquiries, which the route reads with
+inquiry-status (route.py).
 
 The model reads the page's passages most related to the question, with every figure
 tagged as `[nK=VALUE]` the way a document chunk's are (`figures.tag`): it cites a figure
@@ -54,7 +57,7 @@ import httpx
 from linker_genie import facts
 from linker_genie.facts import TurnFacts
 from linker_genie.figures import tag
-from linker_genie.schema import CACHE_SIZE, PageContext
+from linker_genie.schema import CACHE_SIZE, DraftLine, PageContext
 from linker_genie.tools import READ_PAGE
 
 NAME = READ_PAGE
@@ -498,7 +501,14 @@ class PageReader:
         """
         result: dict[str, Any] = {"type": page.type, "title": page.title or ""}
         if page.type == "draft":
-            result["products"] = self._draft(page.draft_ids or [])
+            products = self._draft(page.draft_ids or [], page.draft_lines)
+            result["products"] = products
+            # Quantity is a page figure, not a digit in the title. figures.tag
+            # would mark a model code (GW10K-ETA-G20) as a number.
+            text, figures = draft_quantity_text(products)
+            if text:
+                result["text"] = text
+                result["figures"] = figures
             return result
         if page.type == "account" and logged_in:
             # Anonymous, the account page is the sign-in form; the customer's own
@@ -606,16 +616,32 @@ class PageReader:
                 raise PageUnavailable(f"page {path}: {type(error).__name__}") from error
         raise PageUnavailable(f"page {path} redirects more than {MAX_REDIRECTS} times")
 
-    def _draft(self, ids: list[int]) -> list[dict[str, Any]]:
-        """The draft's products by name, from WooCommerce's Store API."""
+    def _draft(
+        self, ids: list[int], lines: list[DraftLine] | None = None
+    ) -> list[dict[str, Any]]:
+        """The draft's products by name, from WooCommerce's Store API.
+
+        Quantity is attached after the name cache. The cache key is the product
+        ids (`draft:` + sorted ids): a quantity change must not serve a stale
+        number, and it must not need a new key. Names come from the Store API;
+        the quantity is the cart line the shell already read. Absent lines leave
+        the product named and state no quantity.
+        """
         wanted = [pid for pid in dict.fromkeys(ids) if pid > 0][:DRAFT_ITEMS]
         if not wanted:
             return []
         key = "draft:" + ",".join(str(pid) for pid in sorted(wanted))
         names = self._cached(key, lambda: self._names(wanted))
-        return [
-            {"product_id": pid, "title": names[pid]} for pid in wanted if pid in names
-        ]
+        quantities = _line_quantities(lines)
+        products: list[dict[str, Any]] = []
+        for pid in wanted:
+            if pid not in names:
+                continue
+            item: dict[str, Any] = {"product_id": pid, "title": names[pid]}
+            if pid in quantities:
+                item["quantity"] = quantities[pid]
+            products.append(item)
+        return products
 
     def _names(self, ids: list[int]) -> dict[int, str]:
         try:
@@ -665,6 +691,69 @@ def collect(payload: dict[str, Any]) -> TurnFacts:
     return facts.collect(NAME, payload)
 
 
+def _line_quantities(lines: list[DraftLine] | None) -> dict[int, int]:
+    """Cart quantity by English product id.
+
+    The shell already summed duplicate English ids. A later line for the same
+    id is added, so a quantity is not dropped if both arrive. A negative
+    quantity is omitted: the reader does not guess 1, and it does not state a
+    quantity the cart did not have. No lines means no quantity at all.
+    """
+    if not lines:
+        return {}
+    found: dict[int, int] = {}
+    for line in lines:
+        if line.product_id > 0 and line.quantity >= 0:
+            found[line.product_id] = found.get(line.product_id, 0) + line.quantity
+    return found
+
+
+def draft_quantity_text(products: list[dict[str, Any]]) -> tuple[str, dict[str, str]]:
+    """Page text and figures for the draft's line quantities.
+
+    Titles are written whole. A model code (GW10K-ETA-G20) contains digits and
+    is a name, not a figure (`figures.tag` is not run on this text). Only the
+    cart quantity is tagged `[nK=Q]`, counted from 1 in product order, so the
+    model cites `{fact:page.nK}` (`page.RULE`). The value is the integer the
+    cart held, with no unit and no guessed 1. `model_view` uses the same count.
+    """
+    written: list[str] = []
+    figures: dict[str, str] = {}
+    number = 0
+    for item in products:
+        quantity = item.get("quantity")
+        if not isinstance(quantity, int) or quantity < 0:
+            continue
+        number += 1
+        written.append(
+            f"{item.get('title') or ''} line quantity [n{number}={quantity}]"
+        )
+        figures[f"{REF}.n{number}"] = str(quantity)
+    return "\n".join(written), figures
+
+
+def _with_quantity_tags(products: list[Any]) -> list[Any]:
+    """A cart quantity as the model reads it: `[nK=Q]`, not a copied digit."""
+    rewritten: list[Any] = []
+    number = 0
+    for item in products:
+        quantity = item.get("quantity") if isinstance(item, dict) else None
+        if isinstance(quantity, int) and quantity >= 0:
+            number += 1
+            item = {**item, "quantity": f"[n{number}={quantity}]"}
+        rewritten.append(item)
+    return rewritten
+
+
 def model_view(payload: dict[str, Any]) -> dict[str, Any]:
-    """The result as the model reads it: tagged text, no figure table."""
-    return {key: value for key, value in payload.items() if key != "figures"}
+    """The result as the model reads it: tagged text, no figure table.
+
+    A draft line's quantity is an integer in the logged result (the cart's
+    number). The model sees `[nK=Q]`, the same tag as in the page text, so it
+    cites `{fact:page.nK}` instead of copying a digit.
+    """
+    view = {key: value for key, value in payload.items() if key != "figures"}
+    products = view.get("products")
+    if isinstance(products, list):
+        view["products"] = _with_quantity_tags(products)
+    return view

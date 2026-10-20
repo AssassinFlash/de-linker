@@ -1,0 +1,38 @@
+{
+  "ticket": 459,
+  "instance": "w459",
+  "base": "http://127.0.0.1:9237",
+  "genie": "http://127.0.0.1:9239",
+  "production": "untouched",
+  "method": "Measured two-product draft seeded through the Store API: 3556 GW10K-ETA-G20 and 3611 GW6.0-BAT-D-G20. Not a configurator add-all, and not instance m445. Same question and quantity/price checks as the draft matrix. One walk per state and language; 1440 then 390 of that answer.",
+  "ask": {
+    "en": "What products are in my solution draft, and how many of each? What is the price of each?",
+    "de": "Welche Produkte stehen in meinem Lösungsentwurf, und wie viele von jedem? Was kostet jedes?"
+  },
+  "before": "Guest, both engines, quantity 1 of each line: Genie named the products and could not state the line quantity. Pending and approved were not measured on production.",
+  "cells": [
+    {"tag": "qty1", "state": "guest", "lang": "en", "viewport": 1440, "quantity": "1 and 1", "prices": "Log in for prices", "verdict": "pass", "shot": "qty1-guest-en-1440.png"},
+    {"tag": "qty1", "state": "guest", "lang": "en", "viewport": 390, "quantity": "1 and 1", "prices": "no amount in the answer", "verdict": "pass", "shot": "qty1-guest-en-390.png"},
+    {"tag": "qty1", "state": "guest", "lang": "de", "viewport": 1440, "quantity": "Menge 1 and Menge 1", "prices": "Preise nach Anmeldung", "verdict": "pass", "shot": "qty1-guest-de-1440.png"},
+    {"tag": "qty1", "state": "guest", "lang": "de", "viewport": 390, "quantity": "Menge 1 and Menge 1", "prices": "no amount in the answer", "verdict": "pass", "shot": "qty1-guest-de-390.png"},
+    {"tag": "qty1", "state": "pending", "lang": "en", "viewport": 1440, "quantity": "1 and 1", "prices": "Account under review. Prices after approval.", "verdict": "pass", "shot": "qty1-pending-en-1440.png"},
+    {"tag": "qty1", "state": "pending", "lang": "en", "viewport": 390, "quantity": "1 and 1", "prices": "no amount in the answer", "verdict": "pass", "shot": "qty1-pending-en-390.png"},
+    {"tag": "qty1", "state": "pending", "lang": "de", "viewport": 1440, "quantity": "Menge 1 and Menge 1", "prices": "Ihr Konto wird geprüft. Preise nach Freigabe.", "verdict": "pass", "shot": "qty1-pending-de-1440.png"},
+    {"tag": "qty1", "state": "pending", "lang": "de", "viewport": 390, "quantity": "Menge 1 and Menge 1", "prices": "no amount in the answer", "verdict": "pass", "shot": "qty1-pending-de-390.png"},
+    {"tag": "qty1", "state": "approved", "lang": "en", "viewport": 1440, "quantity": "1 and 1", "prices": "€1,090.00 and €1,430.00", "verdict": "pass", "shot": "qty1-approved-en-1440.png"},
+    {"tag": "qty1", "state": "approved", "lang": "en", "viewport": 390, "quantity": "1 and 1", "prices": "cards state the net price; amount is on the 1440 cart", "verdict": "pass", "shot": "qty1-approved-en-390.png"},
+    {"tag": "qty1", "state": "approved", "lang": "de", "viewport": 1440, "quantity": "Menge 1 and Menge 1", "prices": "1.090,00 € and 1.430,00 €", "verdict": "pass", "shot": "qty1-approved-de-1440.png"},
+    {"tag": "qty1", "state": "approved", "lang": "de", "viewport": 390, "quantity": "Menge 1 and Menge 1", "prices": "amount is on the 1440 cart", "verdict": "pass", "shot": "qty1-approved-de-390.png"}
+  ],
+  "qty2": {
+    "state": "guest",
+    "lang": "en",
+    "lines": [{"id": 3556, "quantity": 2}, {"id": 3611, "quantity": 1}],
+    "stated": "quantity 2 and quantity 1",
+    "prices": "Log in for prices",
+    "verdict": "pass",
+    "shots": ["qty2-guest-en-1440.png", "qty2-guest-en-390.png"],
+    "reset": "guest session closed; logged-in test carts emptied to 0"
+  },
+  "turns": "w459 genie turns.sqlite ids 1-7, model deepseek-flash, grounded, page draft_lines matched the seeded quantities including 2"
+}

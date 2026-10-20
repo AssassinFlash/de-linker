@@ -523,6 +523,18 @@ def _from_page(gathered: TurnFacts, payload: dict[str, Any]) -> None:
     for item in payload.get("products") or []:
         if isinstance(item, dict) and isinstance(item.get("product_id"), int):
             gathered.product_ids.add(item["product_id"])
+            # The cart quantity, so `{fact:PRODUCTID.quantity}` hydrates. The
+            # page figure (`page.nK`) is the citation the model is already told
+            # to use; this is the same number, not a guess of 1.
+            quantity = item.get("quantity")
+            if isinstance(quantity, int) and quantity >= 0:
+                gathered.add(
+                    Fact(
+                        id=f"p{item['product_id']}.quantity",
+                        value=str(quantity),
+                        source="read-page",
+                    )
+                )
 
 
 def _from_attachment(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> None:
