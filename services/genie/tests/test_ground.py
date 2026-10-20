@@ -2,8 +2,6 @@
 
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.ground import bare_numbers, catalogue_name_phrases, check
-from linker_genie.route import NamedModel, Route
-from linker_genie.ground import check
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
 from linker_genie.route import NamedModel, Route, Subject, plan
