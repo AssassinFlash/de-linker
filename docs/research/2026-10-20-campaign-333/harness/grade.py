@@ -27,6 +27,7 @@ Sources, so the next reader does not treat the numbers as arbitrary:
 
 from __future__ import annotations
 
+import json
 import re
 from typing import Any
 
@@ -44,7 +45,9 @@ MISSING_USER = 999999
 CHANGED_PRICE = "1701"
 
 # Spec 13, template.DEGRADED. A turn whose meta says fallback must say this.
-# The products fallback ("Here are matching products…") is not this sentence.
+# template._degraded ships it as a HandoffBlock summary, with fallback=True
+# (cycle.run). It is not a text block. The products fallback ("Here are
+# matching products…") is not this sentence.
 DEGRADED = {
     "en": (
         "I could not answer this time. Please try again in a moment, "
@@ -57,6 +60,13 @@ DEGRADED = {
 }
 PRODUCTS_FALLBACK = "Here are matching products from our range."
 INQUIRY_CHANGED = "linker_genie_inquiry_changed"
+# Approval::reject's error code. A rejected login is this, not a dead cookie alone.
+REJECTED_AUTH = "linker_approval_rejected"
+
+# WooCommerce badge text, EN and DE. The ability's in_stock and the page
+# badge are the same fact (WC_Product::is_in_stock). Both at once disagree.
+_BADGE_IN = ("In stock", "Auf Lager")
+_BADGE_OUT = ("Currently unavailable", "Derzeit nicht verfügbar")
 
 # Store API rows grade the permalink string the API returned. They do not
 # open a German Genie card. #413 stays the product ticket for the card link.
@@ -89,10 +99,12 @@ RFQ_LINE = {"en": "Quoted per project", "de": "Angebot pro Projekt"}
 CARD_LOGIN = {"en": "Log in for prices", "de": "Preise nach Anmeldung"}
 
 EURO = re.compile(r"€|(?:\bEUR\b)", re.I)
-AMOUNT = re.compile(
-    r"1[.,]680(?:[.,]00)?|\b1680(?:[.,]00)?\b|"
-    r"33[.,]250(?:[.,]00)?|\b33250(?:[.,]00)?\b"
-)
+# The two catalogue figures, kept apart so a compare row can allow 1680 and
+# still reject the stored RFQ price 33250. AMOUNT is both.
+_PRICED_FIGURE = r"1[.,]680(?:[.,]00)?|\b1680(?:[.,]00)?\b"
+_RFQ_FIGURE = r"33[.,]250(?:[.,]00)?|\b33250(?:[.,]00)?\b"
+RFQ_FIGURE = re.compile(_RFQ_FIGURE)
+AMOUNT = re.compile(_PRICED_FIGURE + "|" + _RFQ_FIGURE)
 PRICED_AMOUNT = re.compile(r"1[.,]680")
 CHANGED_AMOUNT = re.compile(r"1[.,]701|\b1701\b")
 QTY = re.compile(
@@ -148,6 +160,11 @@ def changed_amount(text: str) -> bool:
     return bool(CHANGED_AMOUNT.search(text))
 
 
+def rfq_amount(text: str) -> bool:
+    """The stored RFQ figure 33250, in either grouping. Not 1680."""
+    return bool(RFQ_FIGURE.search(text))
+
+
 def stock_poles(text: str) -> tuple[bool, bool]:
     """``(says_in, says_out)``. Negated phrases do not count as in stock."""
     lowered = text.lower()
@@ -185,7 +202,8 @@ def grade_commerce(
         if kind == "rfq" and page_text is not None and AMOUNT.search(page_text):
             return "defect", "RFQ page still shows the stored amount"
         return "pass", line
-    if not visible or commerce.get("price") != PRICE or not euro(line):
+    # Woo may store 1680 or 1680.00. price_is accepts both.
+    if not visible or not price_is(commerce.get("price"), PRICE) or not euro(line):
         return "defect", f"approved price missing: {commerce}"
     if page_text is not None:
         # The ability line glues the currency symbol. The page shows the same
@@ -216,17 +234,38 @@ def degradation_declared(text: str) -> bool:
     return any(sentence in text for sentence in DEGRADED.values())
 
 
+def answer_text(blocks: list[Any]) -> str:
+    """Text blocks and handoff summaries, in stream order.
+
+    ``template._degraded`` is one HandoffBlock. The sentence is ``summary``.
+    Card price lines stay out of this string; the runners read those apart.
+    """
+    parts: list[str] = []
+    for block in blocks:
+        if not isinstance(block, dict):
+            continue
+        kind = block.get("type")
+        if kind == "text" and isinstance(block.get("text"), str):
+            parts.append(block["text"])
+        elif kind == "handoff" and isinstance(block.get("summary"), str):
+            parts.append(block["summary"])
+    return "\n".join(parts)
+
+
 def grade_stock_after_out(
     text: str, meta: dict[str, Any] | None
 ) -> tuple[str, str, bool]:
     """D3. A fallback must declare the degradation (spec 13, 无静默降级).
 
     Returns verdict, note, and whether the answer still claimed the product
-    was in stock.
+    was in stock. A declared degradation that does not claim the product is
+    in stock is the honest outage (the DEGRADED template names no stock
+    status). A quantity is still a defect.
     """
     says_in, _says_out = stock_poles(text)
     fallback = bool(isinstance(meta, dict) and meta.get("fallback"))
-    if fallback and not degradation_declared(text):
+    declared = degradation_declared(text)
+    if fallback and not declared:
         failures = meta.get("failures") if isinstance(meta, dict) else None
         return (
             "defect",
@@ -234,6 +273,10 @@ def grade_stock_after_out(
             says_in,
         )
     verdict, note = grade_stock_words(text, expect="out")
+    if verdict == "pass" or QTY.search(text):
+        return verdict, note, says_in
+    if declared and not says_in:
+        return "pass", "degradation declared", says_in
     return verdict, note, says_in
 
 
@@ -385,9 +428,16 @@ def summarize_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "notes": notes_line(len(finals), counts),
     }
     if durations:
-        summary["p50_s"] = durations[len(durations) // 2]
+        # Upper median: the higher of the two middle values. An odd count
+        # has one middle. Not the mean of the pair. The key stays p50_s.
+        summary["p50_s"] = upper_median(durations)
         summary["max_s"] = durations[-1]
     return summary
+
+
+def upper_median(values: list[float]) -> float:
+    """The higher of the two middle values. An odd length has one middle."""
+    return values[len(values) // 2]
 
 
 def ability_matrix() -> list[tuple[str, int, str, str]]:
@@ -418,6 +468,163 @@ def store_includes() -> list[tuple[str, str, str]]:
 def price_is(value: object, expected: str) -> bool:
     text = str(value).strip()
     return text == expected or text == f"{expected}.00"
+
+
+def stock_badge_agrees(in_stock: object, page_text: str) -> tuple[bool, bool, bool]:
+    """``(agrees, badge_in, badge_out)`` for one onbackorder or out-of-stock row."""
+    badge_in = any(label in page_text for label in _BADGE_IN)
+    badge_out = any(label in page_text for label in _BADGE_OUT)
+    agrees = (in_stock is True and badge_in and not badge_out) or (
+        in_stock is False and badge_out and not badge_in
+    )
+    return agrees, badge_in, badge_out
+
+
+def commerce_closed(state: str, commerce: dict[str, Any]) -> bool:
+    line = str(commerce.get("price_line") or "")
+    return (
+        not commerce.get("price_visible")
+        and line == GATE[(state, "en")]
+        and not euro(line)
+    )
+
+
+def commerce_open(commerce: dict[str, Any]) -> bool:
+    line = str(commerce.get("price_line") or "")
+    return (
+        bool(commerce.get("price_visible"))
+        and price_is(commerce.get("price"), PRICE)
+        and euro(line)
+    )
+
+
+def _commerce_map(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def grade_transition(report: dict[str, Any]) -> list[tuple[str, str, str, str]]:
+    """The seven transition probes.
+
+    Each item is ``(case_id, account, verdict, note)``. The PHP report is
+    the only input. Users 43, 44 and 45 are not part of this grade.
+    """
+    roles = report.get("roles")
+    subject = roles == ["customer"]
+    pending = _commerce_map(report.get("pending_commerce"))
+    pending_ok = bool(report.get("pending_cookie_valid")) and commerce_closed(
+        "pending", pending
+    )
+    approved = _commerce_map(report.get("approved_commerce"))
+    approved_ok = bool(report.get("approved_cookie_valid")) and commerce_open(approved)
+    rejected_login = (
+        report.get("rejected_cookie_valid") is False
+        and report.get("rejected_auth_code") == REJECTED_AUTH
+    )
+    forced = _commerce_map(report.get("rejected_commerce"))
+    forced_ok = commerce_closed("rejected", forced)
+    reopened = _commerce_map(report.get("reapproved_commerce"))
+    relogin_ok = bool(report.get("reapproved_auth_ok")) and commerce_open(reopened)
+    return [
+        (
+            "transition-subject",
+            "rejected",
+            "pass" if subject else "defect",
+            f"roles {roles}",
+        ),
+        (
+            "transition-pending-closed",
+            "pending",
+            "pass" if pending_ok else "defect",
+            json.dumps(pending, ensure_ascii=False),
+        ),
+        (
+            "transition-approved-without-relogin",
+            "approved",
+            "pass" if approved_ok else "defect",
+            json.dumps(approved, ensure_ascii=False),
+        ),
+        (
+            "transition-rejected-login",
+            "rejected",
+            "pass" if rejected_login else "defect",
+            (
+                f"cookie_valid={report.get('rejected_cookie_valid')} "
+                f"code={report.get('rejected_auth_code')}"
+            ),
+        ),
+        (
+            "transition-rejected-no-prices",
+            "rejected",
+            "pass" if forced_ok else "defect",
+            json.dumps(forced, ensure_ascii=False),
+        ),
+        (
+            "transition-relogin-after-approval",
+            "approved",
+            "pass" if relogin_ok else "defect",
+            json.dumps(reopened, ensure_ascii=False),
+        ),
+        (
+            "transition-user-deleted",
+            "rejected",
+            "pass" if report.get("user_gone") is True else "defect",
+            f"user_gone={report.get('user_gone')}",
+        ),
+    ]
+
+
+def grade_own_inquiry(
+    state: str,
+    made: dict[str, Any],
+    inquiries: list[Any],
+) -> tuple[str, str, str]:
+    """One account's inquiry list. Note includes ``D2_NOTE``.
+
+    Returns verdict, note, and the price field (empty when the amount is
+    allowed, or absent).
+    """
+    ids = [item.get("id") for item in inquiries if isinstance(item, dict)]
+    totals = [item.get("total") for item in inquiries if isinstance(item, dict)]
+    own = made.get(state) in ids
+    foreign = any(value in ids for key, value in made.items() if key != state)
+    amount = any(euro(str(total)) or PRICE in str(total) for total in totals)
+    if not own or foreign:
+        verdict, note = "defect", f"list {ids} expected only {made.get(state)}"
+    elif state != "approved" and amount:
+        verdict, note = "defect", f"closed account received totals {totals}"
+    else:
+        verdict, note = "pass", f"own inquiry only; totals {totals}"
+    price = "" if not amount or state == "approved" else str(totals)
+    return verdict, f"{note} {D2_NOTE}", price
+
+
+def grade_guest_replay(status: int, body: str) -> tuple[str, str, bool]:
+    """A signed-out replay of an approved conversation must not show a price."""
+    leaked = euro(body)
+    return ("defect" if leaked else "pass", f"status {status}; euro={leaked}", leaked)
+
+
+def grade_other_replay(status: int, body: str) -> tuple[str, str, bool]:
+    """Another account replaying the cookie must not see the priced amount."""
+    leaked = euro(body) and priced_amount(body)
+    return ("defect" if leaked else "pass", f"status {status}; euro={leaked}", leaked)
+
+
+def grade_owner_history(status: int, body: str) -> tuple[str, str, bool]:
+    """The owner still loads the thread. Returns verdict, note, showed a euro."""
+    verdict = "pass" if status == 200 else "defect"
+    note = (
+        "historical thread kept for the owner"
+        if priced_amount(body)
+        else "owner thread had no stored price line"
+    )
+    return verdict, note, euro(body)
+
+
+def grade_push(body: Any, expect: str) -> tuple[str, str]:
+    """The stock-push body contains the expected token. Returns verdict and JSON."""
+    text = json.dumps(body, ensure_ascii=False)
+    return ("pass" if expect in text else "defect"), text
 
 
 def catalog_ok(report: dict[str, Any]) -> bool:

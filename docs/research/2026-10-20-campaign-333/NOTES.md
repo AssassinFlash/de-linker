@@ -122,7 +122,7 @@ uv run --locked mypy .
 uv run --locked pytest
 ```
 
-`mypy` 不检查 `run_battery.py` 和 `followup.py`。这两份是无类型的编排，负责子进程和 HTTP。判定在 `grade.py`。
+`mypy .` 检查这个目录里的 Python，包括 `run_battery.py` 和 `followup.py`。判定在 `grade.py`。
 
 ## 线上冒烟留下的会话
 

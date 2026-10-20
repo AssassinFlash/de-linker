@@ -22,12 +22,6 @@ select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
 [tool.mypy]
 strict = true
 mypy_path = "."
-# The runners shell out and talk HTTP. They stay untyped orchestration.
-# grade.py is the typed contract, and the tests lock it.
-exclude = [
-    "run_battery\\.py",
-    "followup\\.py",
-]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

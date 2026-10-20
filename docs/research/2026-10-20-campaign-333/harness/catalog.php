@@ -303,6 +303,9 @@ function c333_page_text( string $url ): string {
 	$response = wp_remote_get(
 		$url,
 		array(
+			// A public HTML GET, not a model turn. 30 s is half the shell's
+			// 60 s budget (Proxy::TURN_BUDGET). Three redirects cover a
+			// language or trailing-slash hop and stop a loop.
 			'timeout'     => 30,
 			'redirection' => 3,
 		)

@@ -40,6 +40,9 @@ register_shutdown_function(
 	}
 );
 
+// The turn inside this process may take the harness TURN_TIMEOUT (180 s).
+// 200 s is that ceiling plus the snapshot and the restore. PHP's default
+// 30 s would abort the model.
 set_time_limit( 200 );
 
 try {

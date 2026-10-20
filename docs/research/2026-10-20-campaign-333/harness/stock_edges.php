@@ -51,6 +51,9 @@ register_shutdown_function(
 	}
 );
 
+// The turn inside this process may take the harness TURN_TIMEOUT (180 s).
+// 200 s is that ceiling plus the snapshot and the restore. PHP's default
+// 30 s would abort the model.
 set_time_limit( 200 );
 
 try {
@@ -60,6 +63,8 @@ try {
 			array(
 				'status'       => 'publish',
 				'stock_status' => 'onbackorder',
+				// A sample of published onbackorder rows, not the whole catalogue.
+				// Five is enough for the badge to disagree with in_stock.
 				'limit'        => 5,
 				'return'       => 'ids',
 			)
@@ -99,6 +104,7 @@ try {
 		'outofstock'
 	);
 
+	// UserContext::TTL. The probe lives as long as a product token, not longer.
 	$token    = c333_token( $approved, 120 );
 	$ability  = c333_ability(
 		'linker/get-product',

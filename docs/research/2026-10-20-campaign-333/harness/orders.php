@@ -52,6 +52,7 @@ try {
 	$seen = array();
 	foreach ( $made as $state => $order_id ) {
 		unset( $order_id );
+		// UserContext::TTL. The probe lives as long as a product token, not longer.
 		$token    = c333_token( c333_user_id( (string) $state ), 120 );
 		$response = c333_ability( 'linker/inquiry-status', array(), $token );
 		$data     = $response['data'];

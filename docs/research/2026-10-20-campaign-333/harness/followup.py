@@ -11,18 +11,28 @@ remove an HPOS order. Conversations are posts, so wp_delete_post stays.
 
 from __future__ import annotations
 
-import importlib.util
 import json
-from pathlib import Path
+import urllib.parse
 from typing import Any
 
-HERE = Path(__file__).resolve().parent
-spec = importlib.util.spec_from_file_location("battery", HERE / "run_battery.py")
-battery = importlib.util.module_from_spec(spec)
-assert spec.loader is not None
-spec.loader.exec_module(battery)
-
-b = battery
+import run_battery as b
+from grade import (
+    AMOUNT,
+    CHANGED_PRICE,
+    D1_NOTE,
+    GATE,
+    PRICED,
+    RFQ,
+    RFQ_DE,
+    TURN_TIMEOUT,
+    answer_text,
+    catalog_ok,
+    euro,
+    grade_approved_price_turn,
+    grade_changed_price_turn,
+    priced_amount,
+    stock_badge_agrees,
+)
 
 
 def delete_approved_conversations(author: int) -> str:
@@ -46,7 +56,6 @@ def turn(
     secrets: dict[str, Any],
     page: dict[str, Any],
     question: str,
-    grade: Any,
 ) -> None:
     delete_approved_conversations(b.account_id(secrets["accounts"], "approved"))
     payload = {
@@ -61,13 +70,15 @@ def turn(
         method="POST",
         headers=headers,
         body=json.dumps(payload).encode(),
-        timeout=b.TURN_TIMEOUT,
+        timeout=TURN_TIMEOUT,
     )
     body = b.json_body(result) or {}
     meta, blocks = b.parse_stream(body.get("stream") or "")
-    text = b.answer_text(blocks)
+    text = answer_text(blocks)
     prices = b.price_texts(blocks)
-    verdict, note, stale = grade(result, text, prices)
+    verdict, note, stale = grade_approved_price_turn(
+        int(result["status"]), text, prices
+    )
     b.case(
         case_id,
         state="approved",
@@ -83,20 +94,14 @@ def turn(
     )
 
 
-def grade_current(
-    result: dict[str, Any], text: str, prices: list[str]
-) -> tuple[str, str, bool]:
-    return b.grade_approved_price_turn(result["status"], text, prices)
-
-
 def main() -> None:
     secrets = b.mint(b.load_accounts())
     b.remint(secrets)
 
-    token = b.urllib.parse.quote(secrets["tokens"]["approved"], safe="")
+    token = urllib.parse.quote(str(secrets["tokens"]["approved"]), safe="")
     url = (
         f"{b.WP}/wp-json/wp-abilities/v1/abilities/linker/get-product/run"
-        f"?input[product_id]={b.PRICED}&input[lang]=en&X-Linker-User-Context={token}"
+        f"?input[product_id]={PRICED}&input[lang]=en&X-Linker-User-Context={token}"
     )
     result = b.request(url, headers={"Accept": "application/json"})
     result["json"] = b.json_body(result)
@@ -106,7 +111,7 @@ def main() -> None:
         if result["json"] is not None
         else ""
     )
-    leaked = b.euro(blob)
+    leaked = euro(blob)
     b.case(
         "retest-token-query-only",
         state="visitor",
@@ -118,14 +123,14 @@ def main() -> None:
     )
 
     for lang, page in (
-        ("en", f"{b.WP}/compare-products/?ids={b.PRICED},{b.RFQ}"),
-        ("de", f"{b.WP}/de/produkte-vergleichen/?ids={b.PRICED},{b.RFQ}"),
+        ("en", f"{b.WP}/compare-products/?ids={PRICED},{RFQ}"),
+        ("de", f"{b.WP}/de/produkte-vergleichen/?ids={PRICED},{RFQ}"),
     ):
         result = b.request(page, headers={"Accept": "text/html"})
         raw = result["body"].decode(errors="replace")
         row = b.compare_price_row(raw)
-        sentence = b.GATE[("visitor", lang)] in row
-        amount = bool(b.AMOUNT.search(row))
+        sentence = GATE[("visitor", lang)] in row
+        amount = bool(AMOUNT.search(row))
         b.case(
             f"retest-page-visitor-compare-{lang}",
             state="visitor",
@@ -137,8 +142,8 @@ def main() -> None:
         )
 
     for lang, page, product in (
-        ("en", f"{b.WP}/product/saj-h2-10k-t3/", b.PRICED),
-        ("de", f"{b.WP}/de/produkt/saj-h2-10k-t3/", b.PRICED),
+        ("en", f"{b.WP}/product/saj-h2-10k-t3/", PRICED),
+        ("de", f"{b.WP}/de/produkt/saj-h2-10k-t3/", PRICED),
     ):
         result = b.request(
             page,
@@ -147,8 +152,8 @@ def main() -> None:
         text = b.visible_text(result["body"].decode(errors="replace")).replace(
             "\xa0", " "
         )
-        amount = b.priced_amount(text)
-        gate = b.GATE[("visitor", lang)] in text
+        amount = priced_amount(text)
+        gate = GATE[("visitor", lang)] in text
         looked = b.ability(
             "linker/get-product",
             {"product_id": product, "lang": lang},
@@ -169,7 +174,7 @@ def main() -> None:
         )
 
     store = b.request(
-        f"{b.WP}/wp-json/wc/store/v1/products?include={b.PRICED},{b.RFQ}&per_page=2&lang=de",
+        f"{b.WP}/wp-json/wc/store/v1/products?include={PRICED},{RFQ}&per_page=2&lang=de",
         headers={"Accept": "application/json"},
     )
     products = b.json_body(store) or []
@@ -191,7 +196,7 @@ def main() -> None:
         req={"url": store["url"]},
         result=store,
         verdict="pass" if de_link else "defect",
-        note=json.dumps(links, ensure_ascii=False) + " | " + b.D1_NOTE,
+        note=json.dumps(links, ensure_ascii=False) + " | " + D1_NOTE,
         price=json.dumps(links, ensure_ascii=False),
     )
 
@@ -201,11 +206,10 @@ def main() -> None:
         secrets,
         {
             "type": "other",
-            "url": f"{b.WP}/compare-products/?ids={b.PRICED},{b.RFQ}",
+            "url": f"{b.WP}/compare-products/?ids={PRICED},{RFQ}",
             "title": "Compare",
         },
         question,
-        grade_current,
     )
     turn(
         "retest-turn-approved-en-config",
@@ -216,7 +220,6 @@ def main() -> None:
             "title": "Solution Configurator",
         },
         question,
-        grade_current,
     )
 
     try:
@@ -230,15 +233,15 @@ def main() -> None:
         )
     else:
         meta, blocks = b.parse_stream(str(report.get("stream") or ""))
-        text = b.answer_text(blocks)
+        text = answer_text(blocks)
         prices = b.price_texts(blocks)
-        verdict, note, stale = b.grade_changed_price_turn(
+        verdict, note, stale = grade_changed_price_turn(
             int(report.get("status") or 0), text, prices
         )
         b.case(
             "retest-turn-approved-after-price-change",
             state="approved",
-            req={"message": question, "price": b.CHANGED_PRICE},
+            req={"message": question, "price": CHANGED_PRICE},
             result={
                 "status": report.get("status"),
                 "duration_s": None,
@@ -260,7 +263,7 @@ def main() -> None:
         b.wp_eval(
             f"""
 add_filter("pre_wp_mail", static function () {{ return true; }});
-foreach (array({b.RFQ}, {b.RFQ_DE}) as $id) {{
+foreach (array({RFQ}, {RFQ_DE}) as $id) {{
   $product = wc_get_product($id);
   if ($product instanceof WC_Product) {{
     $product->set_stock_status("onbackorder");
@@ -271,28 +274,24 @@ echo "back";
 """
         )
         pages = {
-            b.RFQ: f"{b.WP}/product/goodwe-gw208-9-bat-lcd-g10/",
-            b.RFQ_DE: f"{b.WP}/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
+            RFQ: f"{b.WP}/product/goodwe-gw208-9-bat-lcd-g10/",
+            RFQ_DE: f"{b.WP}/de/produkt/goodwe-gw208-9-bat-lcd-g10/",
         }
         for product_id, page in pages.items():
             looked = b.ability(
                 "linker/get-product",
                 {
                     "product_id": product_id,
-                    "lang": "de" if product_id == b.RFQ_DE else "en",
+                    "lang": "de" if product_id == RFQ_DE else "en",
                 },
                 {"Accept": "application/json"},
             )
             commerce = b.commerce_of(looked)
             fetched = b.request(page, headers={"Accept": "text/html"})
             text = b.visible_text(fetched["body"].decode(errors="replace"))
-            badge_in = ("In stock" in text) or ("Auf Lager" in text)
-            badge_out = ("Currently unavailable" in text) or (
-                "Derzeit nicht verfügbar" in text
+            agrees, badge_in, badge_out = stock_badge_agrees(
+                commerce.get("in_stock"), text
             )
-            agrees = (
-                commerce.get("in_stock") is True and badge_in and not badge_out
-            ) or (commerce.get("in_stock") is False and badge_out and not badge_in)
             b.case(
                 f"retest-stock-backorder-{product_id}",
                 state="visitor",
@@ -335,7 +334,7 @@ echo "back";
     finally:
         catalog = b.force_restore()
         print(json.dumps(catalog))
-        if not b.catalog_ok(catalog):
+        if not catalog_ok(catalog):
             raise SystemExit("catalogue was not restored")
 
 
