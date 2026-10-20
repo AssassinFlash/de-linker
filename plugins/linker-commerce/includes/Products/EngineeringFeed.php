@@ -26,6 +26,20 @@ final class EngineeringFeed {
 	private const SCHEMA_VERSION = 1;
 
 	/**
+	 * Hosts a production citation may name. Not widened: an instance address
+	 * is hosted only when it is this site, after pull load's search-replace.
+	 *
+	 * @var list<string>
+	 */
+	private const PRODUCTION_HOSTS = array( 'de-linker.com', 'www.de-linker.com' );
+
+	/**
+	 * The origin the engine's feed schema accepts
+	 * (services/engine/schemas/feed.schema.json hostedUrl).
+	 */
+	private const CANONICAL_ORIGIN = 'https://de-linker.com';
+
+	/**
 	 * The taxonomies the feed names an item by: one term each, by name.
 	 */
 	private const NAME_TAXONOMIES = array(
@@ -124,7 +138,7 @@ final class EngineeringFeed {
 			$cited[ (string) $key ] = array(
 				'value'    => $entry['value'] ?? null,
 				'unit'     => $entry['unit'] ?? null,
-				'citation' => $entry['citation'],
+				'citation' => self::feed_citation( $entry['citation'] ),
 			);
 		}
 
@@ -132,22 +146,178 @@ final class EngineeringFeed {
 	}
 
 	/**
-	 * Whether a citation names a document we host: a URL on our own site.
+	 * Whether a citation names a document we host.
+	 *
+	 * On production that is a URL on de-linker.com or www.de-linker.com.
+	 * Pull load rewrites every live address to the instance
+	 * (tools/pull/src/linker_pull/load.py replacements()) and then requires
+	 * none of those addresses left, so a local citation cannot keep the
+	 * production host. The same path on this site is the same document.
 	 *
 	 * @param mixed $citation The citation of a figure entry.
 	 */
 	private static function is_hosted_citation( mixed $citation ): bool {
-		if ( ! is_array( $citation ) || ! is_string( $citation['url'] ?? null ) ) {
-			return false;
-		}
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- the host the native function answers is all the check needs, and it works without WordPress loaded.
-		$host = parse_url( (string) $citation['url'], PHP_URL_HOST );
+		$url = self::citation_url( $citation );
 
-		return is_string( $host ) && in_array( strtolower( $host ), array( 'de-linker.com', 'www.de-linker.com' ), true );
+		return null !== $url && ( self::is_production_url( $url ) || self::is_this_site( $url ) );
 	}
 
 	/**
-	 * The product's documents, as the migration wrote them.
+	 * The citation URL, or null when the entry does not name one.
+	 *
+	 * @param mixed $citation The citation of a figure entry.
+	 */
+	private static function citation_url( mixed $citation ): ?string {
+		if ( ! is_array( $citation ) || ! is_string( $citation['url'] ?? null ) || '' === $citation['url'] ) {
+			return null;
+		}
+
+		return $citation['url'];
+	}
+
+	/**
+	 * The citation as the feed names it. An instance address is the same path
+	 * on the canonical origin: the engine schema refuses any other host, and
+	 * the stored value is not changed.
+	 *
+	 * @param mixed $citation The stored citation.
+	 * @return array<string, mixed>
+	 */
+	private static function feed_citation( mixed $citation ): array {
+		if ( ! is_array( $citation ) ) {
+			return array();
+		}
+		if ( is_string( $citation['url'] ?? null ) ) {
+			$citation['url'] = self::feed_url( $citation['url'] );
+		}
+
+		return $citation;
+	}
+
+	/**
+	 * A document or citation URL as the feed names it. Production URLs are
+	 * already the form the engine accepts and are returned unchanged.
+	 *
+	 * @param string $url The stored URL.
+	 */
+	private static function feed_url( string $url ): string {
+		if ( ! self::is_this_site( $url ) || self::is_production_url( $url ) ) {
+			return $url;
+		}
+		$path = self::url_part( $url, PHP_URL_PATH );
+		if ( ! str_starts_with( $path, '/' ) ) {
+			return $url;
+		}
+		$named = self::CANONICAL_ORIGIN . $path;
+		$query = self::url_part( $url, PHP_URL_QUERY );
+		if ( '' !== $query ) {
+			$named .= '?' . $query;
+		}
+		$fragment = self::url_part( $url, PHP_URL_FRAGMENT );
+		if ( '' !== $fragment ) {
+			$named .= '#' . $fragment;
+		}
+
+		return $named;
+	}
+
+	/**
+	 * Whether the URL is on a production host. The list is closed: a local
+	 * address does not pass here, including when this site is production.
+	 *
+	 * @param string $url The URL.
+	 */
+	private static function is_production_url( string $url ): bool {
+		return in_array( self::host_of( $url ), self::PRODUCTION_HOSTS, true );
+	}
+
+	/**
+	 * Whether the URL is this site's own origin. Pull load writes that origin
+	 * into every former live address; home_url() is the same value.
+	 *
+	 * @param string $url The URL.
+	 */
+	private static function is_this_site( string $url ): bool {
+		$home = self::site_origin();
+
+		return '' !== $home && self::origin_of( $url ) === self::origin_of( $home );
+	}
+
+	/**
+	 * This site's origin, empty when WordPress is not loaded (the unit tests).
+	 */
+	private static function site_origin(): string {
+		if ( ! function_exists( 'home_url' ) ) {
+			return '';
+		}
+		return home_url();
+	}
+
+	/**
+	 * Scheme, host and port, lowercased. An empty string is not an origin.
+	 *
+	 * @param string $url The URL.
+	 */
+	private static function origin_of( string $url ): string {
+		$parts = self::url_parts( $url );
+		if ( ! isset( $parts['host'], $parts['scheme'] ) || ! is_string( $parts['host'] ) || ! is_string( $parts['scheme'] ) ) {
+			return '';
+		}
+		$origin = strtolower( $parts['scheme'] ) . '://' . strtolower( $parts['host'] );
+		if ( isset( $parts['port'] ) ) {
+			$origin .= ':' . (int) $parts['port'];
+		}
+
+		return $origin;
+	}
+
+	/**
+	 * The URL's host, lowercased, or an empty string.
+	 *
+	 * @param string $url The URL.
+	 */
+	private static function host_of( string $url ): string {
+		$parts = self::url_parts( $url );
+		$host  = $parts['host'] ?? null;
+
+		return is_string( $host ) ? strtolower( $host ) : '';
+	}
+
+	/**
+	 * One parse_url component as a string, empty when absent.
+	 *
+	 * @param string $url       The URL.
+	 * @param int    $component A PHP_URL_* component.
+	 */
+	private static function url_part( string $url, int $component ): string {
+		$parts = self::url_parts( $url );
+		$key   = array(
+			PHP_URL_PATH     => 'path',
+			PHP_URL_QUERY    => 'query',
+			PHP_URL_FRAGMENT => 'fragment',
+		)[ $component ] ?? '';
+		$value = '' === $key ? null : ( $parts[ $key ] ?? null );
+
+		return is_string( $value ) ? $value : '';
+	}
+
+	/**
+	 * The URL split into components. The native function is what the check
+	 * needs, and it works without WordPress loaded.
+	 *
+	 * @param string $url The URL.
+	 * @return array<string, mixed>
+	 */
+	private static function url_parts( string $url ): array {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- see the method docblock.
+		$parts = parse_url( $url );
+
+		return is_array( $parts ) ? $parts : array();
+	}
+
+	/**
+	 * The product's documents, as the migration wrote them. An instance
+	 * address is named on the canonical origin, the same way a figure is.
 	 *
 	 * @param int $product_id Product ID.
 	 * @return list<array<string, mixed>>
@@ -157,8 +327,18 @@ final class EngineeringFeed {
 		if ( is_string( $documents ) ) {
 			$documents = json_decode( $documents, true );
 		}
+		if ( ! is_array( $documents ) ) {
+			return array();
+		}
+		$listed = array();
+		foreach ( array_values( $documents ) as $document ) {
+			if ( is_array( $document ) && is_string( $document['url'] ?? null ) ) {
+				$document['url'] = self::feed_url( $document['url'] );
+			}
+			$listed[] = $document;
+		}
 
-		return is_array( $documents ) ? array_values( $documents ) : array();
+		return $listed;
 	}
 
 	/**

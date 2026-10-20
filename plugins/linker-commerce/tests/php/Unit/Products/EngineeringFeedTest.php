@@ -69,6 +69,10 @@ final class EngineeringFeedTest extends TestCase {
 		// a mocked function for the rest of the run), which puts the language
 		// layer's twin-swap branch of SelectionFacts on the path; the swap has
 		// no listener here.
+		// Production's home, unless a test says this is an instance. Pull load
+		// rewrites citations onto the instance origin; the default keeps the
+		// production rule on the path the other tests walk.
+		WP_Mock::userFunction( 'home_url' )->andReturn( 'https://de-linker.com' )->byDefault();
 		WP_Mock::userFunction(
 			'has_filter',
 			array(
@@ -151,6 +155,112 @@ final class EngineeringFeedTest extends TestCase {
 		);
 		// The figures serialize as an object, also when the set is empty ({} never []).
 		$this->assertSame( '{"mppt_voltage_range_v":{"value":"180~900","unit":"V","citation":{"url":"https:\/\/de-linker.com\/wp-content\/uploads\/2026\/09\/H2-10-30K-T2T3-datasheet-EN-BEU.pdf","page":2}}}', (string) wp_json_encode( $item['figures'] ) );
+	}
+
+	/**
+	 * Pull load rewrites every live address to this instance. A citation of
+	 * that rewritten address is still a document we host: the figure stays,
+	 * and the feed names it on de-linker.com — the only host the engine's
+	 * schema accepts. Another site, and another port of this machine, stay out.
+	 */
+	public function test_a_citation_rewritten_to_this_instance_stays_and_is_named_on_the_canonical_host(): void {
+		WP_Mock::userFunction(
+			'home_url',
+			array(
+				'return' => 'http://127.0.0.1:9240',
+				'times'  => '0+',
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_json_encode',
+			array(
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- standing in for wp_json_encode, which WordPress is not here to provide.
+				'return' => static fn( $data ): string => (string) json_encode( $data ),
+			)
+		);
+		$this->mock_query();
+		$local     = 'http://127.0.0.1:9240/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf';
+		$canonical = 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf';
+		$this->mock_meta(
+			4107,
+			array(
+				'mppt_voltage_range_v' => array(
+					'value'    => '180~900',
+					'unit'     => 'V',
+					'citation' => array(
+						'url'  => $local,
+						'page' => 2,
+					),
+				),
+				'comms'                => array(
+					'value'    => 'Wi-Fi',
+					'citation' => array(
+						'url'  => 'https://www.example.com/some.pdf',
+						'page' => 3,
+					),
+				),
+				'other_port'           => array(
+					'value'    => '1',
+					'citation' => array(
+						'url'  => 'http://127.0.0.1:1/wp-content/uploads/evil.pdf',
+						'page' => 1,
+					),
+				),
+			),
+			$local
+		);
+
+		$item = EngineeringFeed::item( 4107 );
+
+		$this->assertNotNull( $item );
+		$this->assertSame(
+			array( 'mppt_voltage_range_v' ),
+			array_keys( get_object_vars( $item['figures'] ) ),
+			'the instance citation stays; another site and another port stay out'
+		);
+		$figures = get_object_vars( $item['figures'] );
+		$this->assertSame( $canonical, $figures['mppt_voltage_range_v']['citation']['url'] );
+		$this->assertSame( 2, $figures['mppt_voltage_range_v']['citation']['page'] );
+		$this->assertSame( '180~900', $figures['mppt_voltage_range_v']['value'] );
+		$this->assertSame( $canonical, $item['documents'][0]['url'] );
+	}
+
+	/**
+	 * On production the hosted-citation rule stays the closed host list.
+	 * An instance address is not a document we host there.
+	 */
+	public function test_an_instance_address_is_not_hosted_when_this_site_is_production(): void {
+		WP_Mock::userFunction(
+			'home_url',
+			array(
+				'return' => 'https://de-linker.com',
+				'times'  => '0+',
+			)
+		);
+		$this->mock_query();
+		$this->mock_meta(
+			4107,
+			array(
+				'mppt_voltage_range_v' => array(
+					'value'    => '180~900',
+					'unit'     => 'V',
+					'citation' => array(
+						'url'  => 'http://127.0.0.1:9240/wp-content/uploads/2026/09/H2.pdf',
+						'page' => 2,
+					),
+				),
+			)
+		);
+
+		$item = EngineeringFeed::item( 4107 );
+
+		$this->assertNotNull( $item );
+		$this->assertSame( array(), get_object_vars( $item['figures'] ) );
+		$this->assertSame(
+			'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf',
+			$item['documents'][0]['url'],
+			'a production document URL is not rewritten'
+		);
 	}
 
 	/**
@@ -377,10 +487,11 @@ final class EngineeringFeedTest extends TestCase {
 	/**
 	 * Mocks the two metas the feed reads: figures and documents.
 	 *
-	 * @param int                                 $id      Product ID.
-	 * @param array<string, array<string, mixed>> $figures Figure entries.
+	 * @param int                                 $id           Product ID.
+	 * @param array<string, array<string, mixed>> $figures      Figure entries.
+	 * @param string                              $document_url Document URL the migration wrote.
 	 */
-	private function mock_meta( int $id, array $figures ): void {
+	private function mock_meta( int $id, array $figures, string $document_url = 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf' ): void {
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
@@ -397,7 +508,7 @@ final class EngineeringFeedTest extends TestCase {
 				'return' => json_encode(
 					array(
 						array(
-							'url'   => 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf',
+							'url'   => $document_url,
 							'title' => 'SAJ H2-10-30K-T2-T3 Datasheet (EN, BEU)',
 							'type'  => 'datasheet',
 							'lang'  => 'en',

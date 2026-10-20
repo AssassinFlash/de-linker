@@ -1,0 +1,61 @@
+{
+  "note": "Re-take after the #460 feed fix. Bodies are not stored again: the local body matches the production body except generated_at. The 2026-10-20 matrix files remain the before evidence.",
+  "snapshot": "20261019-1715",
+  "instance": "fix460",
+  "taken_at": "2026-10-20T22:35:53.769061+00:00",
+  "equal_except_generated_at": true,
+  "engine_schema": "both bodies load through Products.from_feed (feed.schema.json)",
+  "feeds": [
+    {
+      "label": "local-before",
+      "url": "http://127.0.0.1:9240/wp-json/linker/v1/engineering-feed",
+      "when": "after pull load, before the feed fix",
+      "sha256": "a1468daf248e6eac74ce686da3f910179d58e438a620d40d663a8360ac0df876",
+      "bytes": 80453,
+      "generated_at": "2026-10-20T22:28:27+00:00",
+      "compatibility": "81f8688f5d0383bf275607b0aaaf4367963881f1b9c4c47f0450ac7b55f980e6",
+      "products": 106,
+      "with_figures": 0,
+      "figure_entries": 0,
+      "document_hosts": {
+        "127.0.0.1": 210
+      }
+    },
+    {
+      "label": "local-after",
+      "url": "http://127.0.0.1:9240/wp-json/linker/v1/engineering-feed",
+      "when": "same instance, same snapshot, feed builder fixed",
+      "sha256": "09cb0d88c9e9cf21cd7e62826e3ca1eb0d8f3fa589dfb41d47dbb071b3527a8c",
+      "bytes": 185872,
+      "generated_at": "2026-10-20T22:34:31+00:00",
+      "compatibility": "81f8688f5d0383bf275607b0aaaf4367963881f1b9c4c47f0450ac7b55f980e6",
+      "products": 106,
+      "with_figures": 83,
+      "figure_entries": 610,
+      "document_hosts": {
+        "de-linker.com": 210
+      },
+      "citation_hosts": {
+        "de-linker.com": 610
+      }
+    },
+    {
+      "label": "production",
+      "url": "https://de-linker.com/wp-json/linker/v1/engineering-feed",
+      "method": "GET",
+      "sha256": "e855aad7cf893d3a77c6cc056695c7c0ef13f1086ff4485af3a6e1bc5e5156ae",
+      "bytes": 185872,
+      "generated_at": "2026-10-20T22:27:21+00:00",
+      "compatibility": "81f8688f5d0383bf275607b0aaaf4367963881f1b9c4c47f0450ac7b55f980e6",
+      "products": 106,
+      "with_figures": 83,
+      "figure_entries": 610,
+      "document_hosts": {
+        "de-linker.com": 210
+      },
+      "citation_hosts": {
+        "de-linker.com": 610
+      }
+    }
+  ]
+}
