@@ -15,7 +15,7 @@ import {
 	screen,
 	waitFor,
 } from '@testing-library/react';
-import { expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 /**
  * Internal dependencies
@@ -31,6 +31,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		assistantMessage: actual.assistantMessage,
 		emailOutcome: actual.emailOutcome,
 		isTurnConflict: actual.isTurnConflict,
+		isUnfinishedStream: actual.isUnfinishedStream,
 		turnConflictText: actual.turnConflictText,
 		readThread: vi.fn( async () => ( { messages: [], turn: null } ) ),
 		listConversations: vi.fn( async () => ( {
@@ -44,6 +45,7 @@ vi.mock( './api/turn', async ( importOriginal ) => {
 		sendTurn: vi.fn(),
 		sendVote: vi.fn( async () => true ),
 		TurnError: actual.TurnError,
+		UnfinishedStreamError: actual.UnfinishedStreamError,
 	};
 } );
 vi.mock( './api/contact', () => ( {
@@ -93,7 +95,9 @@ import {
 	sendTurn,
 	sendVote,
 	TurnError,
+	UnfinishedStreamError,
 } from './api/turn';
+import { FAILURE_KEY } from './shared/failure';
 
 const GERMAN_STREAM =
 	'event: meta\n' +
@@ -135,6 +139,16 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 	};
 }
 
+beforeEach( () => {
+	sessionStorage.clear();
+	resetTurnLane();
+} );
+
+afterEach( () => {
+	sessionStorage.clear();
+	resetTurnLane();
+} );
+
 test( 'the disclosure is spoken once and a prompt sends the first turn', async () => {
 	vi.mocked( sendTurn ).mockResolvedValue( {
 		meta: {
@@ -169,20 +183,20 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 		);
 	} );
 
-	expect( sendTurn ).toHaveBeenCalledWith(
-		'/wp-json/linker-ai/v1/genie/turn',
-		'n',
-		'en',
-		[
+	expect( sendTurn ).toHaveBeenCalledWith( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [
 			{
 				role: 'user',
 				content: 'I need a three-phase hybrid inverter for a home.',
 			},
 		],
-		{ type: 'category' },
+		page: { type: 'category' },
 		// No file was picked: the turn carries none.
-		[]
-	);
+		uploads: [],
+	} );
 	expect( await screen.findByText( 'Three-phase' ) ).toBeInTheDocument();
 	expect(
 		screen.getByRole( 'group', { name: 'Reply with an option' } )
@@ -223,6 +237,278 @@ test( 'a failed proxy call shows the retry sentence, not a fake answer', async (
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Ask Genie' } ) );
 	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( 'Ask Genie' );
+	expect(
+		screen.queryByText( 'Ask Genie', {
+			selector: '.linker-genie-app__message',
+		} )
+	).toBeNull();
+} );
+
+test( 'a 502 keeps the question across a reload and retries once', async () => {
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new TurnError( 502, 'linker_genie_upstream' )
+	);
+	const first = render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	const field = screen.getByLabelText( 'Ask Genie' );
+	fireEvent.change( field, { target: { value: 'EV chargers' } } );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( field ).toHaveValue( 'EV chargers' );
+	expect(
+		screen.queryByText( 'EV chargers', {
+			selector: '.linker-genie-app__message',
+		} )
+	).toBeNull();
+
+	first.unmount();
+	resetTurnLane();
+	vi.mocked( sendTurn ).mockReset();
+	let release!: ( value: Awaited< ReturnType< typeof sendTurn > > ) => void;
+	vi.mocked( sendTurn ).mockImplementation(
+		() =>
+			new Promise( ( resolve ) => {
+				release = resolve;
+			} )
+	);
+	render( <App config={ config() } /> );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( 'EV chargers' );
+	const retry = screen.getByRole( 'button', { name: 'Try again' } );
+	fireEvent.click( retry );
+	fireEvent.click( retry );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 1 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual( [
+		{ role: 'user', content: 'EV chargers' },
+	] );
+	await act( async () => {
+		release( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Recovered.', refs: [] } ],
+		} );
+	} );
+	expect( await screen.findByText( 'Recovered.' ) ).toBeInTheDocument();
+	expect(
+		screen.queryByText( 'Genie did not answer. Please try again.' )
+	).toBeNull();
+} );
+
+test( 'a cut stream keeps the question, hides the partial answer, and retries the stored turn', async () => {
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockRejectedValue( new UnfinishedStreamError() );
+	const first = render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'backup for 10 kW' },
+	} );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
+	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( '' );
+
+	first.unmount();
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [ { role: 'user', content: 'backup for 10 kW' } ],
+		turn: null,
+	} );
+	vi.mocked( sendTurn ).mockReset();
+	vi.mocked( sendTurn ).mockResolvedValue( {
+		meta: null,
+		blocks: [ { type: 'text', text: 'A hybrid covers that.', refs: [] } ],
+	} );
+	render( <App config={ config() } /> );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
+	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( '' );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 1 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual( [
+		{ role: 'user', content: 'backup for 10 kW' },
+	] );
+	expect(
+		await screen.findByText( 'A hybrid covers that.' )
+	).toBeInTheDocument();
+} );
+
+test( 'a cut stream keeps the file on the composer, and a new question sends it', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	const datasheet = new File( [ '%PDF-1.7' ], 'gw10k-et-datenblatt.pdf', {
+		type: 'application/pdf',
+	} );
+	const upload = {
+		name: 'gw10k-et-datenblatt.pdf',
+		type: 'application/pdf' as const,
+		data: btoa( '%PDF-1.7' ),
+	};
+	vi.mocked( sendTurn )
+		.mockRejectedValueOnce( new UnfinishedStreamError() )
+		.mockResolvedValueOnce( {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'The datasheet matches.', refs: [] },
+			],
+		} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Check this datasheet' },
+	} );
+	fireEvent.change( document.querySelector( 'input[type="file"]' )!, {
+		target: { files: [ datasheet ] },
+	} );
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	await waitFor( () => expect( send ).toBeEnabled() );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue( '' );
+	expect( screen.getByText( 'gw10k-et-datenblatt.pdf' ) ).toBeInTheDocument();
+	expect(
+		screen.getByRole( 'button', {
+			name: 'Remove attachment gw10k-et-datenblatt.pdf',
+		} )
+	).toBeInTheDocument();
+
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'What about this file?' },
+	} );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 2 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ]![ 0 ].messages ).toEqual( [
+		{
+			role: 'user',
+			content: 'Check this datasheet\nAttached: gw10k-et-datenblatt.pdf',
+		},
+		{
+			role: 'user',
+			content: 'What about this file?\nAttached: gw10k-et-datenblatt.pdf',
+		},
+	] );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ]![ 0 ].uploads ).toEqual( [
+		upload,
+	] );
+	expect(
+		await screen.findByText( 'The datasheet matches.' )
+	).toBeInTheDocument();
+} );
+
+test( 'a cut stream drops a file the visitor removes, and retry does not send it', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn )
+		.mockRejectedValueOnce( new UnfinishedStreamError() )
+		.mockResolvedValueOnce( {
+			meta: null,
+			blocks: [
+				{ type: 'text', text: 'Sent without the file.', refs: [] },
+			],
+		} );
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Check this datasheet' },
+	} );
+	fireEvent.change( document.querySelector( 'input[type="file"]' )!, {
+		target: {
+			files: [
+				new File( [ '%PDF-1.7' ], 'gw10k-et-datenblatt.pdf', {
+					type: 'application/pdf',
+				} ),
+			],
+		},
+	} );
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	await waitFor( () => expect( send ).toBeEnabled() );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	fireEvent.click(
+		await screen.findByRole( 'button', {
+			name: 'Remove attachment gw10k-et-datenblatt.pdf',
+		} )
+	);
+	expect( screen.queryByText( 'gw10k-et-datenblatt.pdf' ) ).toBeNull();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 2 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ]![ 0 ].uploads ).toEqual( [] );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ]![ 0 ].messages ).toEqual( [
+		{
+			role: 'user',
+			content: 'Check this datasheet\nAttached: gw10k-et-datenblatt.pdf',
+		},
+	] );
+} );
+
+test( 'a 502 keeps an attached file across a reload', async () => {
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new TurnError( 502, 'linker_genie_upstream' )
+	);
+	const first = render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Check this datasheet' },
+	} );
+	const fileInput = document.querySelector(
+		'input[type="file"]'
+	) as HTMLInputElement;
+	fireEvent.change( fileInput, {
+		target: {
+			files: [
+				new File( [ '%PDF-1.7' ], 'gw10k-et-datenblatt.pdf', {
+					type: 'application/pdf',
+				} ),
+			],
+		},
+	} );
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	await waitFor( () => expect( send ).toBeEnabled() );
+	await act( async () => {
+		fireEvent.click( send );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'gw10k-et-datenblatt.pdf' ) ).toBeInTheDocument();
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+		'Check this datasheet'
+	);
+
+	first.unmount();
+	resetTurnLane();
+	render( <App config={ config() } /> );
+	expect(
+		await screen.findByText( 'gw10k-et-datenblatt.pdf' )
+	).toBeInTheDocument();
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+		'Check this datasheet'
+	);
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -269,14 +555,14 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 			selector: '.linker-genie-app__message',
 		} )
 	).toBeNull();
-	expect( sendTurn ).toHaveBeenCalledWith(
-		'/wp-json/linker-ai/v1/genie/turn',
-		'n',
-		'en',
-		[ ...server, { role: 'user', content: 'EV chargers' } ],
-		{ type: 'category' },
-		[]
-	);
+	expect( sendTurn ).toHaveBeenCalledWith( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [ ...server, { role: 'user', content: 'EV chargers' } ],
+		page: { type: 'category' },
+		uploads: [],
+	} );
 	await waitFor( () => expect( listConversations ).toHaveBeenCalled() );
 } );
 
@@ -308,7 +594,7 @@ test( 'the next send uses the thread re-read from the server', async () => {
 			} )
 		);
 	} );
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'Peer question' },
 		{ role: 'assistant', content: 'Peer answer' },
 		{
@@ -637,7 +923,7 @@ test( 'one entry ask survives a late thread restore without being sent twice', a
 	} );
 	expect( screen.getByText( 'What pairs with this model?' ) ).toBeVisible();
 	expect( screen.getByText( 'Old question' ) ).toBeVisible();
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 3 ] ).toEqual( [
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'Old question' },
 		{ role: 'user', content: 'What pairs with this model?' },
 	] );
@@ -971,11 +1257,11 @@ test( 'an attached file rides with the turn and its name in the question', async
 	await act( async () => {
 		fireEvent.click( send );
 	} );
-	const call = vi.mocked( sendTurn ).mock.calls[ 0 ];
-	expect( call[ 3 ] ).toEqual( [
+	const call = vi.mocked( sendTurn ).mock.calls[ 0 ]!;
+	expect( call[ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'Attached: gw10k-et-datenblatt.pdf' },
 	] );
-	expect( call[ 5 ] ).toEqual( [
+	expect( call[ 0 ].uploads ).toEqual( [
 		{
 			name: 'gw10k-et-datenblatt.pdf',
 			type: 'application/pdf',
@@ -1108,7 +1394,7 @@ test( 'a nameplate card confirms the device by a message naming it', async () =>
 		);
 	} );
 	const last = vi.mocked( sendTurn ).mock.calls.at( -1 );
-	expect( last?.[ 3 ].at( -1 ) ).toEqual( {
+	expect( last?.[ 0 ].messages.at( -1 ) ).toEqual( {
 		role: 'user',
 		content: "Yes, it's the SAJ H2-10K-T3. What works with it?",
 	} );
@@ -1240,7 +1526,7 @@ test( 'a file sent from the list prompt says it is a parts list', async () => {
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
 	} );
-	const messages = vi.mocked( sendTurn ).mock.calls.at( -1 )?.[ 3 ];
+	const messages = vi.mocked( sendTurn ).mock.calls.at( -1 )?.[ 0 ].messages;
 	expect( messages?.at( -1 )?.content ).toContain( 'Here is my parts list.' );
 	expect( messages?.at( -1 )?.content ).toContain( 'Attached: parts.csv' );
 } );
@@ -1562,6 +1848,93 @@ test( 'deleting the conversation on screen empties the panel', async () => {
 	).toBeVisible();
 } );
 
+test( 'a new conversation clears the stored failure and its alert', async () => {
+	resetTurnLane();
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: 'upstream',
+			text: 'EV chargers',
+			question: 'EV chargers',
+			uploads: [],
+			omitted: [],
+		} )
+	);
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( selectConversation ).mockResolvedValue( {
+		currentId: 10,
+		ok: true,
+		conversations: [],
+	} );
+	render( <App config={ config() } /> );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'New conversation' } )
+		);
+	} );
+
+	await waitFor( () =>
+		expect(
+			screen.queryByText( 'Genie did not answer. Please try again.' )
+		).toBeNull()
+	);
+	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBeNull();
+} );
+
+test( 'deleting the conversation on screen clears the stored failure too', async () => {
+	resetTurnLane();
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: 'upstream',
+			text: 'EV chargers',
+			question: 'EV chargers',
+			uploads: [],
+			omitted: [],
+		} )
+	);
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: [
+			{ id: 9, title: 'Third question', updated: '2026-10-18 10:02:00' },
+		],
+	} );
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( deleteConversation ).mockResolvedValue( {
+		currentId: 0,
+		ok: true,
+		conversations: [],
+	} );
+	render( <App config={ config() } /> );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+
+	fireEvent.click( screen.getByRole( 'button', { name: 'Conversations' } ) );
+	fireEvent.click(
+		await screen.findByRole( 'button', {
+			name: 'Delete conversation: Third question',
+		} )
+	);
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Delete' } ) );
+	} );
+
+	await waitFor( () =>
+		expect(
+			screen.queryByText( 'Genie did not answer. Please try again.' )
+		).toBeNull()
+	);
+	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBeNull();
+} );
+
 test( 'a guest gets a confirmation link at the address they type', async () => {
 	resetTurnLane();
 	vi.mocked( listConversations ).mockResolvedValue( {
@@ -1808,11 +2181,11 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 	expect(
 		await screen.findByText( 'The SAJ B2 fits it.' )
 	).toBeInTheDocument();
-	expect( sendTurn ).toHaveBeenLastCalledWith(
-		'/wp-json/linker-ai/v1/genie/turn',
-		'n',
-		'en',
-		[
+	expect( sendTurn ).toHaveBeenLastCalledWith( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [
 			{ role: 'user', content: 'Can I talk to a person?' },
 			{
 				role: 'assistant',
@@ -1822,10 +2195,10 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 			},
 			{ role: 'user', content: 'Which battery fits the SAJ H2?' },
 		],
-		{ type: 'category' },
+		page: { type: 'category' },
 		// No file was picked (#236): the turn carries none.
-		[]
-	);
+		uploads: [],
+	} );
 } );
 
 const CONTACT_TURN = {

@@ -44,6 +44,8 @@ export interface Attachments {
 	add: ( files: ArrayLike< File > ) => void;
 	remove: ( key: number ) => void;
 	clear: () => void;
+	/** Puts a failed turn's files back over the composer. */
+	restore: ( uploads: Upload[] ) => void;
 }
 
 let nextKey = 1;
@@ -117,6 +119,21 @@ export function useAttachments(): Attachments {
 		[ update ]
 	);
 	const clear = useCallback( () => update( () => [] ), [ update ] );
+	const restore = useCallback(
+		( uploads: Upload[] ) =>
+			update( () =>
+				withTurnLimit(
+					uploads.map( ( upload ) => ( {
+						key: nextKey++,
+						name: upload.name,
+						state: 'ready' as const,
+						upload,
+						bytes: decodedBytes( upload.data ),
+					} ) )
+				)
+			),
+		[ update ]
+	);
 
 	return {
 		picked,
@@ -127,7 +144,24 @@ export function useAttachments(): Attachments {
 		add,
 		remove,
 		clear,
+		restore,
 	};
+}
+
+/**
+ * The decoded size of a base64 payload, so a restored file meets the same
+ * turn limit as the file that was picked.
+ *
+ * @param data Base64, without a data-URL prefix.
+ */
+function decodedBytes( data: string ): number {
+	let padding = 0;
+	if ( data.endsWith( '==' ) ) {
+		padding = 2;
+	} else if ( data.endsWith( '=' ) ) {
+		padding = 1;
+	}
+	return Math.max( 0, Math.floor( ( data.length * 3 ) / 4 ) - padding );
 }
 
 /**

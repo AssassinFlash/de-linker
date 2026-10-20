@@ -180,7 +180,7 @@ test( 'an ask that starts after select resolves still waits for the target threa
 	} );
 
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 3 ] ).toEqual(
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual(
 		targetThread()
 	);
 } );
@@ -218,7 +218,7 @@ test( 'control: an ask after the switch settles carries the new thread', async (
 	} );
 
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 3 ] ).toEqual(
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual(
 		targetThread()
 	);
 } );
@@ -276,7 +276,7 @@ test( 'two history clicks in a row continue the last one, not the first', async 
 	} );
 
 	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
-	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 3 ] ).toEqual( [
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ]![ 0 ].messages ).toEqual( [
 		{ role: 'user', content: 'seven' },
 		{ role: 'user', content: 'question for seven' },
 	] );

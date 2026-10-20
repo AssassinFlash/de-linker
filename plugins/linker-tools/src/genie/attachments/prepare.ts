@@ -73,14 +73,18 @@ export function startsAs( bytes: Uint8Array, type: string ): boolean {
 export const ACCEPT =
 	'image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif,application/pdf,.csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
+/** The types a turn may carry (the service's `Upload`). */
+export const UPLOAD_TYPES = [
+	'image/jpeg',
+	'application/pdf',
+	'text/csv',
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+] as const;
+
 /** One file as the turn carries it (the service's `Upload`). */
 export interface Upload {
 	name: string;
-	type:
-		| 'image/jpeg'
-		| 'application/pdf'
-		| 'text/csv'
-		| 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+	type: ( typeof UPLOAD_TYPES )[ number ];
 	data: string;
 }
 

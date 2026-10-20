@@ -61,18 +61,9 @@ function server( stored: TurnMessage[] = [] ) {
 		turn: state.turn,
 	} ) );
 	const send = vi.fn(
-		async (
-			_turnUrl: string,
-			_nonce: string,
-			_locale: string,
-			messages: TurnMessage[],
-			_page?: unknown,
-			_uploads?: Upload[]
-		) => {
-			void _page;
-			void _uploads;
+		async ( request: { messages: TurnMessage[]; uploads?: Upload[] } ) => {
 			const reply = answer( `Answer ${ state.messages.length + 1 }` );
-			state.messages = [ ...messages, assistantMessage( reply ) ];
+			state.messages = [ ...request.messages, assistantMessage( reply ) ];
 			state.turn = reply;
 			return reply;
 		}
@@ -99,7 +90,7 @@ test( 'the hero sends the whole thread, so the dock history is kept', async () =
 	await session.ask( 'And which batteries pair with them?' );
 
 	expect( send ).toHaveBeenCalledTimes( 1 );
-	const sent = send.mock.calls[ 0 ][ 3 ];
+	const sent = send.mock.calls[ 0 ][ 0 ].messages;
 	expect( sent.map( ( message ) => message.content ) ).toEqual( [
 		...DOCK_THREAD.map( ( message ) => message.content ),
 		'And which batteries pair with them?',
@@ -113,7 +104,7 @@ test( 'an ask loads the stored thread first, even without an explicit load', asy
 	await session.ask( 'Show me the first one.' );
 
 	expect( read ).toHaveBeenCalledTimes( 1 );
-	expect( send.mock.calls[ 0 ][ 3 ] ).toHaveLength( 3 );
+	expect( send.mock.calls[ 0 ][ 0 ].messages ).toHaveLength( 3 );
 } );
 
 test( 'the conversation the hero answered is what the dock reads next', async () => {
@@ -142,9 +133,9 @@ test( 'the files of the turn ride apart from the messages', async () => {
 
 	await session.ask( 'Attached: nameplate.jpg', [ upload ] );
 
-	expect( send.mock.calls[ 0 ][ 5 ] ).toEqual( [ upload ] );
+	expect( send.mock.calls[ 0 ][ 0 ].uploads ).toEqual( [ upload ] );
 	expect(
-		send.mock.calls[ 0 ][ 3 ].map( ( message ) => message.content )
+		send.mock.calls[ 0 ][ 0 ].messages.map( ( message ) => message.content )
 	).toEqual( [ 'Attached: nameplate.jpg' ] );
 } );
 
@@ -183,7 +174,7 @@ test( 'every send re-reads the thread, so a dock turn is not overwritten', async
 
 	await session.ask( 'Hero follow-up' );
 
-	const sent = send.mock.calls[ 0 ][ 3 ].map(
+	const sent = send.mock.calls[ 0 ][ 0 ].messages.map(
 		( message ) => message.content
 	);
 	expect( sent ).toEqual( [

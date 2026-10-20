@@ -22,7 +22,6 @@ import { storeClient } from '../configurator/api/store';
 import type { SentInquiry } from '../genie/api/inquiry';
 import {
 	assistantMessage,
-	isTurnConflict,
 	turnConflictText,
 	type Block,
 	type ContactBlock,
@@ -31,6 +30,7 @@ import {
 	type Turn,
 	type TurnMessage,
 } from '../genie/api/turn';
+import type { Upload } from '../genie/attachments/prepare';
 import { useAttachments } from '../genie/attachments/useAttachments';
 import { AttachmentCard } from '../genie/components/AttachmentCard';
 import {
@@ -47,11 +47,22 @@ import { Transcript } from '../genie/components/Transcript';
 import type { GenieConfig } from '../genie/config';
 import { idsOf, pricesOf } from '../genie/shared/blocks';
 import { useCardActions } from '../genie/shared/cardActions';
+import { buildQuestion, typeModelPrompt } from '../genie/shared/conversation';
 import {
-	attachmentRefusalReason,
-	buildQuestion,
-	typeModelPrompt,
-} from '../genie/shared/conversation';
+	composerFor,
+	failureText,
+	omittedFileNotice,
+	pageFailureStore,
+	presentFailure,
+	readFailure,
+	reconcile,
+	refusalReason,
+	retryMessages,
+	settleTurnFailure,
+	writeFailure,
+	type FailureDraft,
+} from '../genie/shared/failure';
+import { useFailure } from '../genie/shared/useFailure';
 import { HeroSession } from './session';
 
 /** The controller's way into the conversation while it is unfolded. */
@@ -121,6 +132,15 @@ export function HeroConversation( {
 	// render's send and file state.
 	const filesRef = useRef( files );
 	filesRef.current = files;
+	const {
+		failureState,
+		omitted,
+		setOmitted,
+		commitFailure,
+		placeChips,
+		openRetry,
+		payloadOrRestore,
+	} = useFailure( files );
 	const sendRef = useRef< ( text: string ) => void >( () => undefined );
 	const [ store ] = useState( () => storeClient( config.restUrl ) );
 	const {
@@ -143,21 +163,46 @@ export function HeroConversation( {
 		void session
 			.load()
 			.then( ( stored ) => {
-				if ( ! cancelled ) {
-					setThread( stored.messages );
-					setTurn( stored.turn );
-					setContacts( stored.contacts ?? [] );
-					setInquiries( stored.inquiries ?? [] );
-					turnAt.current = stored.turn
-						? stored.messages.length - 1
-						: -1;
+				if ( cancelled || 'clear' !== failureState.current.phase ) {
+					// A send on this mount already owns the thread. Applying
+					// the read that started earlier would wipe it.
+					return;
+				}
+				setThread( stored.messages );
+				setTurn( stored.turn );
+				setContacts( stored.contacts ?? [] );
+				setInquiries( stored.inquiries ?? [] );
+				turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
+				const restored = writeFailure(
+					pageFailureStore(),
+					reconcile(
+						readFailure( pageFailureStore() ),
+						stored.messages
+					)
+				);
+				failureState.current = restored;
+				if (
+					'failed' === restored.phase &&
+					restored.draft &&
+					restored.kind
+				) {
+					const composer = composerFor(
+						restored.kind,
+						restored.draft
+					);
+					setPrompt( composer.field );
+					placeChips( composer.chips );
+					setOmitted( composer.omitted );
+					setPhase( 'error' );
+				} else {
+					setOmitted( [] );
 				}
 			} )
 			.catch( () => undefined );
 		return () => {
 			cancelled = true;
 		};
-	}, [ session ] );
+	}, [ session, setPrompt, placeChips, failureState, setOmitted ] );
 
 	// The conversation has the focus when it unfolds; the page's trigger gets
 	// it back when it closes (the controller restores it).
@@ -187,6 +232,51 @@ export function HeroConversation( {
 		);
 	}, [] );
 
+	const handleTurnError = useCallback(
+		async (
+			error: unknown,
+			before: TurnMessage[],
+			draft: FailureDraft
+		) => {
+			const settled = settleTurnFailure( error, before, draft );
+			if ( 'refusal' === settled.action ) {
+				commitFailure( { type: 'abandon' } );
+				placeChips( [] );
+				setThread( before );
+				setPrompt( settled.field );
+				setRefused( refusalText( refusalReason( settled.reason ) ) );
+				setPhase( 'ask' );
+				return;
+			}
+			if ( 'conflict' === settled.action ) {
+				commitFailure( { type: 'abandon' } );
+				const stored = await session.reload();
+				setThread( stored.messages );
+				setTurn( stored.turn );
+				setContacts( stored.contacts ?? [] );
+				setInquiries( stored.inquiries ?? [] );
+				turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
+				setPrompt( settled.field );
+				setConflict( turnConflictText() );
+				setPhase( 'ask' );
+				return;
+			}
+			const failed = commitFailure( { type: settled.kind } );
+			const draftNow = failed.draft ?? draft;
+			const view = presentFailure(
+				settled.kind,
+				before,
+				retryMessages( before, draftNow.question ),
+				draftNow
+			);
+			setThread( view.messages as TurnMessage[] );
+			setPrompt( view.field );
+			placeChips( view.chips );
+			setPhase( 'error' );
+		},
+		[ commitFailure, session, setPrompt, placeChips ]
+	);
+
 	const send = useCallback(
 		async ( text: string ) => {
 			const picked = filesRef.current.uploads;
@@ -194,23 +284,29 @@ export function HeroConversation( {
 			if ( ! question || sending.current || filesRef.current.busy ) {
 				return;
 			}
+			const draft: FailureDraft = {
+				text,
+				question,
+				uploads: picked,
+				omitted: [],
+			};
+			commitFailure( { type: 'send', draft } );
 			sending.current = true;
 			setRefused( '' );
 			setConflict( '' );
 			setLive( '' );
 			setPhase( 'waiting' );
 			setPrompt( '' );
-			let shown: TurnMessage[] = [];
+			setThread( [
+				...session.messages,
+				{ role: 'user', content: question },
+			] );
 			try {
-				shown = [
-					...session.messages,
-					{ role: 'user', content: question },
-				];
-				setThread( shown );
 				// session.ask re-reads the shared thread before it sends, so
 				// a dock turn is neither lost nor overwritten (session.ts).
 				const result = await session.ask( question, picked );
 				filesRef.current.clear();
+				commitFailure( { type: 'answered' } );
 				setThread( result.messages );
 				setTurn( result.answer );
 				setContacts( result.contacts ?? [] );
@@ -219,47 +315,72 @@ export function HeroConversation( {
 				setLive( assistantMessage( result.answer ).content );
 				setPhase( 'ask' );
 			} catch ( error ) {
-				// A file the proxy refused is said as such and the question
-				// goes back into the field; anything else is no answer, and
-				// the question stays so the error has something to stand under.
-				const reason = attachmentRefusalReason( error );
-				if ( reason ) {
-					setThread( session.messages );
-					setPrompt( text );
-					setRefused(
-						refusalText(
-							reason === 'throttled' ||
-								reason === 'count' ||
-								reason === 'size' ||
-								reason === 'type'
-								? reason
-								: 'unreadable'
-						)
-					);
-					setPhase( 'ask' );
-				} else if ( isTurnConflict( error ) ) {
-					const stored = await session.reload();
-					setThread( stored.messages );
-					setTurn( stored.turn );
-					setContacts( stored.contacts ?? [] );
-					setInquiries( stored.inquiries ?? [] );
-					turnAt.current = stored.turn
-						? stored.messages.length - 1
-						: -1;
-					setPrompt( text );
-					setConflict( turnConflictText() );
-					setPhase( 'ask' );
-				} else {
-					setThread( shown );
-					setPhase( 'error' );
-				}
+				// ask() commits the thread only after the proxy answered, so
+				// session.messages is the thread this question was not added to.
+				await handleTurnError( error, session.messages, draft );
 			} finally {
 				sending.current = false;
 			}
 		},
-		[ session, setPrompt ]
+		[ session, setPrompt, commitFailure, handleTurnError ]
 	);
 	sendRef.current = send;
+
+	// One resend. The machine leaves `failed` before the request, so a
+	// second click does not send.
+	const retry = useCallback( async () => {
+		if ( sending.current ) {
+			return;
+		}
+		const opened = openRetry( session.messages );
+		if ( ! opened ) {
+			return;
+		}
+		const { draft, kind } = opened;
+		sending.current = true;
+		setRefused( '' );
+		setConflict( '' );
+		setLive( '' );
+		setPhase( 'waiting' );
+		setPrompt( '' );
+		let payload: { question: string; uploads: Upload[] } | null = null;
+		try {
+			payload = payloadOrRestore( draft, kind, session.messages );
+			if ( ! payload ) {
+				setPhase( 'error' );
+				setPrompt( 'upstream' === kind ? draft.text : '' );
+				return;
+			}
+			const result = await session.retry(
+				payload.question,
+				payload.uploads
+			);
+			filesRef.current.clear();
+			commitFailure( { type: 'answered' } );
+			setThread( result.messages );
+			setTurn( result.answer );
+			setContacts( result.contacts ?? [] );
+			setInquiries( result.inquiries ?? [] );
+			turnAt.current = result.messages.length - 1;
+			setLive( assistantMessage( result.answer ).content );
+			setPhase( 'ask' );
+		} catch ( error ) {
+			await handleTurnError( error, session.messages, {
+				...draft,
+				question: payload?.question ?? draft.question,
+				uploads: payload?.uploads ?? draft.uploads,
+			} );
+		} finally {
+			sending.current = false;
+		}
+	}, [
+		session,
+		setPrompt,
+		commitFailure,
+		handleTurnError,
+		openRetry,
+		payloadOrRestore,
+	] );
 
 	// Files were picked for the hero: once they are prepared, send them as
 	// the turn's question (a photo or a document is itself the question).
@@ -462,14 +583,6 @@ export function HeroConversation( {
 							{ conflict }
 						</p>
 					) : null }
-					{ 'error' === phase ? (
-						<p role="alert" className="linker-genie-app__error">
-							{ __(
-								'Genie did not answer. Please try again.',
-								'linker-tools'
-							) }
-						</p>
-					) : null }
 					{ 'waiting' !== phase
 						? turn?.attachments?.map( ( card ) => (
 								<AttachmentCard
@@ -551,6 +664,23 @@ export function HeroConversation( {
 				<p role="alert" className="linker-genie-app__refused">
 					{ refused }
 				</p>
+			) : null }
+			{ 'error' === phase ? (
+				<>
+					<p role="alert" className="linker-genie-app__error">
+						{ failureText() }
+						{ omitted.length > 0
+							? ` ${ omittedFileNotice( omitted ) }`
+							: '' }
+					</p>
+					<button
+						type="button"
+						className="linker-genie-app__prompt"
+						onClick={ () => void retry() }
+					>
+						{ __( 'Try again', 'linker-tools' ) }
+					</button>
+				</>
 			) : null }
 		</div>
 	);

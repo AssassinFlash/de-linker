@@ -706,6 +706,13 @@ msgstr "Genie denkt nach …"
 msgid "Genie did not answer. Please try again."
 msgstr "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut."
 
+#. translators: %s is the file name. The plural does not repeat names.
+#: build/genie.js build/hero.js
+msgid "Attach %s again. It could not be kept for another try."
+msgid_plural "Attach these files again. They could not be kept for another try."
+msgstr[0] "Bitte hängen Sie %s erneut an. Die Datei konnte für einen weiteren Versuch nicht gespeichert werden."
+msgstr[1] "Bitte hängen Sie diese Dateien erneut an. Sie konnten für einen weiteren Versuch nicht gespeichert werden."
+
 #: build/genie.js:16 build/hero.js
 msgid ""
 "The conversation changed while Genie was answering. Send your question "

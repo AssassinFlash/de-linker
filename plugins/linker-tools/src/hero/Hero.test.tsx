@@ -16,13 +16,18 @@ import {
 	screen,
 	waitFor,
 } from '@testing-library/react';
-import { expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 /**
  * Internal dependencies
  */
 import type { GenieConfig } from '../genie/config';
-import { TurnError, type Turn, type TurnMessage } from '../genie/api/turn';
+import {
+	TurnError,
+	UnfinishedStreamError,
+	type Turn,
+	type TurnMessage,
+} from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession, type HeroSessionConfig } from './session';
@@ -118,18 +123,8 @@ const SESSION_CONFIG: HeroSessionConfig = {
 function session( stored: TurnMessage[] = [], turn: Turn | null = null ) {
 	const read = vi.fn( async () => ( { messages: [ ...stored ], turn } ) );
 	const send = vi.fn(
-		async (
-			_turnUrl: string,
-			_nonce: string,
-			_locale: string,
-			messages: TurnMessage[],
-			_page?: unknown,
-			_uploads?: Upload[]
-		) => {
-			void _page;
-			void _uploads;
-			return reply( `Answer ${ messages.length }` );
-		}
+		async ( request: { messages: TurnMessage[]; uploads?: Upload[] } ) =>
+			reply( `Answer ${ request.messages.length }` )
 	);
 	return {
 		session: new HeroSession( SESSION_CONFIG, read, send ),
@@ -137,6 +132,14 @@ function session( stored: TurnMessage[] = [], turn: Turn | null = null ) {
 		send,
 	};
 }
+
+beforeEach( () => {
+	sessionStorage.clear();
+} );
+
+afterEach( () => {
+	sessionStorage.clear();
+} );
 
 function renderHero(
 	heroSession: HeroSession,
@@ -227,13 +230,15 @@ test( 'a question asked through the hero gets a real answer and counts as a conv
 	expect( screen.getByRole( 'status' ) ).toHaveTextContent( 'Answer 1' );
 } );
 
-test( 'a failed first turn keeps the question and shows the retry sentence', async () => {
+test( 'a failed first turn puts the question back and shows the retry sentence', async () => {
 	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
 	const send = vi.fn( async () => {
 		throw new Error( 'turn 502' );
 	} );
+	const setPrompt = vi.fn();
 	const { bridge } = renderHero(
-		new HeroSession( SESSION_CONFIG, read, send )
+		new HeroSession( SESSION_CONFIG, read, send ),
+		{ setPrompt }
 	);
 
 	await act( async () => {
@@ -243,7 +248,96 @@ test( 'a failed first turn keeps the question and shows the retry sentence', asy
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
-	expect( screen.getByText( 'saj' ) ).toBeInTheDocument();
+	expect( setPrompt ).toHaveBeenLastCalledWith( 'saj' );
+	expect( screen.queryByText( 'saj' ) ).toBeNull();
+	expect(
+		screen.getByRole( 'button', { name: 'Try again' } )
+	).toBeInTheDocument();
+} );
+
+test( 'retrying a failed hero turn sends it once', async () => {
+	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
+	const send = vi
+		.fn()
+		.mockRejectedValueOnce( new Error( 'turn 502' ) )
+		.mockResolvedValueOnce( reply( 'Recovered' ) );
+	const { bridge } = renderHero(
+		new HeroSession( SESSION_CONFIG, read, send )
+	);
+
+	await act( async () => {
+		bridge().ask( 'saj' );
+	} );
+	const retry = await screen.findByRole( 'button', { name: 'Try again' } );
+	fireEvent.click( retry );
+	fireEvent.click( retry );
+
+	await waitFor( () => expect( send ).toHaveBeenCalledTimes( 2 ) );
+	expect( send.mock.calls[ 1 ][ 0 ].messages ).toEqual( [
+		{ role: 'user', content: 'saj' },
+	] );
+	expect(
+		( await screen.findAllByText( 'Recovered' ) ).length
+	).toBeGreaterThan( 0 );
+	expect(
+		screen.queryByText( 'Genie did not answer. Please try again.' )
+	).toBeNull();
+} );
+
+test( 'a cut stream on the hero keeps the question and not the partial answer', async () => {
+	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
+	const send = vi.fn( async () => {
+		throw new UnfinishedStreamError();
+	} );
+	const setPrompt = vi.fn();
+	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ), {
+		setPrompt,
+	} );
+
+	await act( async () => {
+		view.bridge().ask( 'backup for 10 kW' );
+	} );
+
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
+	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
+	expect( setPrompt ).toHaveBeenLastCalledWith( '' );
+} );
+
+test( 'a cut stream on the hero keeps the file, and removing it takes it off the retry', async () => {
+	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
+	const send = vi
+		.fn()
+		.mockRejectedValueOnce( new UnfinishedStreamError() )
+		.mockResolvedValueOnce( reply( 'Recovered' ) );
+	const setPrompt = vi.fn();
+	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ), {
+		setPrompt,
+	} );
+	const file = new File( [ '%PDF-1.4' ], 'datasheet.pdf', {
+		type: 'application/pdf',
+	} );
+
+	await act( async () => {
+		view.bridge().ask( 'backup for 10 kW', [ file ] );
+	} );
+
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( setPrompt ).toHaveBeenLastCalledWith( '' );
+	expect( screen.getByText( 'datasheet.pdf' ) ).toBeInTheDocument();
+	fireEvent.click(
+		screen.getByRole( 'button', {
+			name: 'Remove attachment datasheet.pdf',
+		} )
+	);
+	expect( screen.queryByText( 'datasheet.pdf' ) ).toBeNull();
+	fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
+	await waitFor( () => expect( send ).toHaveBeenCalledTimes( 2 ) );
+	expect( send.mock.calls[ 1 ][ 0 ].uploads ).toEqual( [] );
 } );
 
 test( 'a conflicting turn puts the question back and re-reads the thread', async () => {
@@ -317,7 +411,7 @@ test( 'the nameplate card confirms into an ordinary question', async () => {
 	fireEvent.click( confirm );
 
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	expect( answers.send.mock.calls[ 0 ][ 3 ][ 2 ] ).toEqual( {
+	expect( answers.send.mock.calls[ 0 ][ 0 ].messages[ 2 ] ).toEqual( {
 		role: 'user',
 		content: "Yes, it's the SAJ H2-10K-T3. Show me its documents.",
 	} );
@@ -369,7 +463,7 @@ test( 'a picked PDF is prepared, sent apart from the messages, and read', async 
 	} );
 
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	const [ , , , messages, , uploads ] = answers.send.mock.calls[ 0 ];
+	const { messages, uploads } = answers.send.mock.calls[ 0 ][ 0 ];
 	expect( messages[ messages.length - 1 ] ).toEqual( {
 		role: 'user',
 		content: 'Attached: datasheet.pdf',

@@ -19,7 +19,8 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import type { Turn, TurnMessage } from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
 import type { GenieConfig } from '../genie/config';
-import { startHero } from './controller';
+import { FAILURE_KEY } from '../genie/shared/failure';
+import { OPEN_CLASS, startHero } from './controller';
 import { HeroSession, type HeroSessionConfig } from './session';
 
 const CONFIG: GenieConfig = {
@@ -96,18 +97,8 @@ function session( stored: TurnMessage[] = [] ) {
 		turn: null,
 	} ) );
 	const send = vi.fn(
-		async (
-			_turnUrl: string,
-			_nonce: string,
-			_locale: string,
-			messages: TurnMessage[],
-			_page?: unknown,
-			_uploads?: Upload[]
-		) => {
-			void _page;
-			void _uploads;
-			return reply( `Answer ${ messages.length }` );
-		}
+		async ( request: { messages: TurnMessage[]; uploads?: Upload[] } ) =>
+			reply( `Answer ${ request.messages.length }` )
 	);
 	return {
 		session: new HeroSession( SESSION_CONFIG, read, send ),
@@ -123,12 +114,65 @@ function start( heroSession: HeroSession ) {
 }
 
 beforeEach( () => {
+	sessionStorage.clear();
 	document.body.innerHTML = HERO;
 	window.history.replaceState( null, '', '/' );
 } );
 
 afterEach( () => {
+	sessionStorage.clear();
 	document.body.innerHTML = '';
+} );
+
+test( 'a stored failure unfolds the hero and restores the question', async () => {
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: 'upstream',
+			text: 'EV chargers',
+			question: 'EV chargers',
+			uploads: [],
+			base: 0,
+		} )
+	);
+	const { hero } = start( session().session );
+
+	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( true );
+	const prompt = hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+	await waitFor( () => expect( prompt.value ).toBe( 'EV chargers' ) );
+	expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+} );
+
+test( 'a stored truncated stream unfolds the question in the thread with an empty field', async () => {
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: 'truncated',
+			text: 'backup for 10 kW',
+			question: 'backup for 10 kW',
+			uploads: [],
+			omitted: [],
+		} )
+	);
+	const { hero } = start(
+		session( [ { role: 'user', content: 'backup for 10 kW' } ] ).session
+	);
+
+	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( true );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
+	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
+	const prompt = hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+	expect( prompt.value ).toBe( '' );
+	expect(
+		screen.getByRole( 'button', { name: 'Try again' } )
+	).toBeInTheDocument();
 } );
 
 test( 'the resting hero is left visually as it was; the hidden surface is ready', () => {
@@ -177,7 +221,7 @@ test( 'typing and Enter unfolds the conversation in place', async () => {
 		document.querySelector( '.linker-genie-hero__surface' )
 	).not.toBeNull();
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	expect( answers.send.mock.calls[ 0 ][ 3 ][ 0 ] ).toEqual( {
+	expect( answers.send.mock.calls[ 0 ][ 0 ].messages[ 0 ] ).toEqual( {
 		role: 'user',
 		content: 'saj',
 	} );
@@ -249,7 +293,7 @@ test( 'a capsule opens in place with its own question and never navigates', asyn
 
 	expect( prevented ).toBe( true );
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	expect( answers.send.mock.calls[ 0 ][ 3 ][ 0 ] ).toEqual( {
+	expect( answers.send.mock.calls[ 0 ][ 0 ].messages[ 0 ] ).toEqual( {
 		role: 'user',
 		content: '10 kW storage systems',
 	} );
@@ -439,7 +483,7 @@ test( 'the attach button opens the file picker and a PDF is sent with the turn',
 	} );
 
 	await waitFor( () => expect( answers.send ).toHaveBeenCalledTimes( 1 ) );
-	const [ , , , messages, , uploads ] = answers.send.mock.calls[ 0 ];
+	const { messages, uploads } = answers.send.mock.calls[ 0 ][ 0 ];
 	expect( messages[ messages.length - 1 ] ).toEqual( {
 		role: 'user',
 		content: 'Attached: datasheet.pdf',

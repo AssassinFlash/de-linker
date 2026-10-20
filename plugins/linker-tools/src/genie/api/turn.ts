@@ -217,6 +217,25 @@ export class TurnError extends Error {
 }
 
 /**
+ * A stream that never sent `done`. Classification is this class. A generic
+ * error whose message happens to say the same words is not one.
+ */
+export class UnfinishedStreamError extends Error {
+	constructor() {
+		super( 'stream without done' );
+		this.name = 'UnfinishedStreamError';
+	}
+}
+
+/**
+ * How long the shell waits for one turn. The proxy gives the service the
+ * same number (`Proxy::TURN_BUDGET`, 60, also the `wp_remote_post` timeout
+ * in spec 13). A connection that never answers has to reach the upstream
+ * failure; without this timer it waits forever.
+ */
+export const TURN_TIMEOUT_MS = 60_000;
+
+/**
  * The commit was refused because the stored thread moved while Genie was
  * answering (#373). The model did answer; the shell must not say it failed.
  *
@@ -301,52 +320,127 @@ export interface ConversationList {
 	ok: boolean;
 }
 
+/** One turn. The test seams sit on the object, not further positional arguments. */
+export interface TurnRequest {
+	/** Proxy route URL. */
+	turnUrl: string;
+	/** wp_rest nonce. */
+	nonce: string;
+	/** Page language. */
+	locale: Locale;
+	/** Thread so far, oldest first. */
+	messages: TurnMessage[];
+	/** Page context. */
+	page: PageContext;
+	/** The files of this turn, apart from the messages (#236). */
+	uploads?: Upload[];
+	/** Fetch for tests. */
+	fetcher?: Fetch;
+	/**
+	 * Aborts a connection that has not answered. The default is
+	 * `TURN_TIMEOUT_MS`.
+	 */
+	timeoutMs?: number;
+}
+
 /**
  * Sends one message and parses the SSE answer.
  *
- * @param turnUrl  Proxy route URL.
- * @param nonce    wp_rest nonce.
- * @param locale   Page language.
- * @param messages Thread so far, oldest first.
- * @param page     Page context.
- * @param uploads  The files of this turn, apart from the messages (#236).
- * @param fetcher  Fetch for tests.
+ * @param request The turn, and the test seams.
  */
-export async function sendTurn(
-	turnUrl: string,
-	nonce: string,
-	locale: Locale,
-	messages: TurnMessage[],
-	page: PageContext,
-	uploads: Upload[] = [],
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
-): Promise< Turn > {
-	const response = await fetcher( turnUrl, {
-		method: 'POST',
-		credentials: 'same-origin',
-		headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
-		body: JSON.stringify( {
-			locale,
-			messages: messages.map( ( { role, content } ) => ( {
-				role,
-				content,
-			} ) ),
-			page,
-			...( uploads.length > 0 ? { attachments: uploads } : {} ),
-		} ),
+export async function sendTurn( request: TurnRequest ): Promise< Turn > {
+	const {
+		turnUrl,
+		nonce,
+		locale,
+		messages,
+		page,
+		uploads = [],
+		fetcher = ( ...args ) => fetch( ...args ),
+		timeoutMs = TURN_TIMEOUT_MS,
+	} = request;
+	const controller = new AbortController();
+	let timer: ReturnType< typeof setTimeout > | undefined;
+	let won = false;
+	const timeoutError = new DOMException(
+		'The turn timed out.',
+		'AbortError'
+	);
+	const timedOut = new Promise< never >( ( _resolve, reject ) => {
+		timer = setTimeout( () => {
+			controller.abort();
+			reject( timeoutError );
+		}, timeoutMs );
 	} );
-	if ( ! response.ok ) {
-		let code = '';
-		try {
-			const refusal = ( await response.json() ) as { code?: unknown };
-			code = typeof refusal.code === 'string' ? refusal.code : '';
-		} catch {
-			code = '';
+	// `fetcher` is called inside the promise. A throw before the request
+	// leaves is a rejection, so the timer below is cleared with every other
+	// failure. Promise.resolve(fetcher()) would let that throw escape first.
+	const attempt = Promise.resolve()
+		.then( () =>
+			fetcher( turnUrl, {
+				method: 'POST',
+				credentials: 'same-origin',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': nonce,
+				},
+				body: JSON.stringify( {
+					locale,
+					messages: messages.map( ( { role, content } ) => ( {
+						role,
+						content,
+					} ) ),
+					page,
+					...( uploads.length > 0 ? { attachments: uploads } : {} ),
+				} ),
+				signal: controller.signal,
+			} )
+		)
+		.then(
+			( response ) => response,
+			( error: unknown ) => {
+				if ( won ) {
+					return new Promise< Response >( () => undefined );
+				}
+				throw error;
+			}
+		);
+	// The timer stays armed until the body is parsed: headers alone are not an
+	// answer. A proxy that sends its headers and then stalls would otherwise
+	// wait past TURN_TIMEOUT_MS.
+	const deadline = < T >( work: Promise< T > ): Promise< T > =>
+		Promise.race( [ work, timedOut ] );
+	let response: Response;
+	try {
+		response = await deadline( attempt );
+		won = true;
+		if ( ! response.ok ) {
+			let code = '';
+			try {
+				const refusal = ( await deadline( response.json() ) ) as {
+					code?: unknown;
+				};
+				code = typeof refusal.code === 'string' ? refusal.code : '';
+			} catch {
+				// The deadline is the turn's failure, not an empty refusal.
+				// An aborted body read is the same timeout.
+				if ( controller.signal.aborted ) {
+					throw timeoutError;
+				}
+				code = '';
+			}
+			throw new TurnError( response.status, code );
 		}
-		throw new TurnError( response.status, code );
+		const body = ( await deadline( response.json() ) ) as {
+			stream: string;
+		};
+		return parseStream( body.stream ?? '' );
+	} finally {
+		won = true;
+		if ( timer !== undefined ) {
+			clearTimeout( timer );
+		}
 	}
-	const body = ( await response.json() ) as { stream: string };
-	return parseStream( body.stream ?? '' );
 }
 
 /**
@@ -730,7 +824,17 @@ export function parseStream( stream: string ): Turn {
 		}
 	}
 	if ( ! done ) {
-		throw new Error( 'stream without done' );
+		throw new UnfinishedStreamError();
 	}
 	return turn;
+}
+
+/**
+ * A stream the service never finished. The shell shows the failure
+ * sentence and does not render the blocks that arrived before `done`.
+ *
+ * @param error The rejection from parseStream.
+ */
+export function isUnfinishedStream( error: unknown ): boolean {
+	return error instanceof UnfinishedStreamError;
 }
