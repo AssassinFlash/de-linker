@@ -75,7 +75,16 @@ ABILITY_BACKOFF = 0.25
 
 
 class AbilityError(RuntimeError):
-    """The WordPress abilities endpoint refused or could not be reached."""
+    """The WordPress abilities endpoint refused or could not be reached.
+
+    `fatal` is set here, where the status is known (#410): a 5xx, a
+    transport failure after the retries, or the retries giving up. A 4xx
+    and an unknown name are the caller's mistake, not a failed turn.
+    """
+
+    def __init__(self, message: str, *, fatal: bool = False) -> None:
+        super().__init__(message)
+        self.fatal = fatal
 
 
 class AbilityClient:
@@ -142,7 +151,8 @@ class AbilityClient:
             return {"error": "login_required"}
         if response.status_code >= 400:
             raise AbilityError(
-                f"{name} returned {response.status_code} for {dict(params)}"
+                f"{name} returned {response.status_code} for {dict(params)}",
+                fatal=response.status_code >= 500,
             )
         body = response.json()
         if isinstance(body, dict) and "result" in body:
@@ -163,7 +173,8 @@ class AbilityClient:
             except httpx.TransportError as error:
                 if attempt == ABILITY_ATTEMPTS:
                     raise AbilityError(
-                        f"{name} could not be reached: {error}"
+                        f"{name} could not be reached: {error}",
+                        fatal=True,
                     ) from error
             else:
                 # 4xx answers are final: the 401 is the login_required fact
@@ -172,7 +183,10 @@ class AbilityClient:
                 if response.status_code < 500 or attempt == ABILITY_ATTEMPTS:
                     return response
             self._sleep(ABILITY_BACKOFF * 2 ** (attempt - 1))
-        raise AbilityError(f"{name} did not answer after {ABILITY_ATTEMPTS} attempts")
+        raise AbilityError(
+            f"{name} did not answer after {ABILITY_ATTEMPTS} attempts",
+            fatal=True,
+        )
 
     def record(
         self,

@@ -9,6 +9,7 @@ from linker_genie.agent import (
     MAX_TOOL_CALLS,
     ToolBudget,
     _ability_runner,
+    _knowledge_runner,
     _page_runner,
     _user_prompt,
     instructions,
@@ -408,6 +409,78 @@ def test_a_routed_document_search_reads_like_the_models_own_call() -> None:
     assert "doc_url" not in prompt and '"figures"' not in prompt
 
 
+def test_a_model_ability_failure_is_recorded_and_still_raises() -> None:
+    """The 500 reaches `call_failures` before pydantic-ai sees the raise."""
+    from linker_genie.abilities import AbilityError
+    from linker_genie.route import Route
+    from linker_genie.understand import Prepared
+
+    prepared = Prepared(route=Route("model"))
+
+    class Dying:
+        def record(
+            self,
+            name: str,
+            arguments: dict[str, Any] | None,
+            user_context: str | None = None,
+            locale: str = "en",
+        ) -> tuple[dict[str, Any], TurnFacts]:
+            raise AbilityError(f"{name} returned 500 for {{}}", fatal=True)
+
+    runner = _ability_runner(
+        Dying(),  # type: ignore[arg-type]
+        ToolBudget(),
+        "linker/search-products",
+        prepared=prepared,
+    )
+    with pytest.raises(AbilityError, match="returned 500"):
+        runner({"series": "saj-h2"})
+    assert prepared.log["call_failures"] == [
+        {
+            "text": "linker/search-products: linker/search-products returned 500 for {}",
+            "kind": "ability",
+        }
+    ]
+
+
+def test_a_model_encoder_failure_is_recorded_and_still_raises() -> None:
+    from linker_genie.embedding import EmbeddingError
+    from linker_genie.route import Route
+    from linker_genie.understand import Prepared
+
+    prepared = Prepared(route=Route("model"))
+
+    def search(_arguments: dict[str, Any] | None) -> dict[str, Any]:
+        raise EmbeddingError("gemini-embedding-2: HTTP 502 on attempt 2 of 2")
+
+    runner = _knowledge_runner(search, ToolBudget(), prepared=prepared)
+    with pytest.raises(EmbeddingError, match="HTTP 502 on attempt 2 of 2"):
+        runner({"query": "MPPT"})
+    assert prepared.log["call_failures"] == [
+        {
+            "text": "linker/search-knowledge: gemini-embedding-2: HTTP 502 on attempt 2 of 2",
+            "kind": "retrieval",
+        }
+    ]
+
+    def url_error(_arguments: dict[str, Any] | None) -> dict[str, Any]:
+        raise EmbeddingError("gemini-embedding-2: URLError after 2 attempts: timed out")
+
+    again = Prepared(route=Route("model"))
+    runner = _knowledge_runner(url_error, ToolBudget(), prepared=again)
+    with pytest.raises(EmbeddingError, match="URLError after 2 attempts"):
+        runner({"query": "MPPT"})
+    assert again.log["call_failures"] == [
+        {
+            "text": (
+                "linker/search-knowledge: gemini-embedding-2: "
+                "URLError after 2 attempts: timed out"
+            ),
+            "kind": "retrieval",
+        }
+    ]
+
+
 def test_a_failed_routed_document_search_ends_the_generation() -> None:
     from linker_genie.agent import make_generate
     from linker_genie.knowledge import KnowledgeUnavailable
@@ -461,4 +534,10 @@ def test_the_route_runs_the_document_search_in_process() -> None:
     assert failed.knowledge_error == (
         "linker/search-knowledge: gemini: URLError after 2 attempts"
     )
+    assert failed.log["call_failures"] == [
+        {
+            "text": "linker/search-knowledge: gemini: URLError after 2 attempts",
+            "kind": "retrieval",
+        }
+    ]
     assert failed.results == []

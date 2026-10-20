@@ -22,6 +22,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from linker_genie.failure import failure_text
 from linker_genie.tools import READ_ATTACHMENT
 
 SCHEMA = """
@@ -259,12 +260,13 @@ class TurnLog:
             # entry naming a purged call goes too.
             failures = understanding.get("call_failures")
             if isinstance(failures, list):
+                # A note is `{text, kind?}`. An older row is a plain string.
+                # Either names the purged call when its text starts with it.
                 kept = [
                     entry
                     for entry in failures
-                    if not (
-                        isinstance(entry, str)
-                        and any(entry.startswith(f"{name}: ") for name in derived)
+                    if not any(
+                        failure_text(entry).startswith(f"{name}: ") for name in derived
                     )
                 ]
                 if len(kept) != len(failures):

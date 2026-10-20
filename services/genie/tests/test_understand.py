@@ -160,7 +160,9 @@ def test_a_failed_route_call_is_recorded_and_the_turn_goes_on(
     understander = Understander(lambda: vocabulary, FakeJev(_reading("find_products")))
     prepared = understander.prepare(_request("goodwe"), _abilities([], status=500))
     assert prepared.results == []
-    assert prepared.log["call_failures"][0].startswith("linker/search-products")
+    failure = prepared.log["call_failures"][0]
+    assert failure["text"].startswith("linker/search-products")
+    assert failure["kind"] == "ability"
 
 
 def test_jev_sees_the_page_product_by_name(vocabulary: Vocabulary) -> None:

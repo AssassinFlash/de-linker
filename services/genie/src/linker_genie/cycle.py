@@ -2,23 +2,35 @@
 
 Grounding does not rewrite the model text (docs/specs/13-genie.md). A failed
 check is a reason to ask the model again with the error list, then to fall
-back to qualified cards plus one ask.
+back to qualified cards plus one ask. A fatal failure (model 5xx/429/empty
+stream, a missing or corrupt index, an encoder error, an ability 5xx or
+timeout) is classified and the template says so with the reviewed degraded
+sentence (#410). A page outage is not one of these.
 """
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
+from linker_genie.failure import FailureClass, RecordedFailure, from_log, note
 from linker_genie.ground import check
 from linker_genie.hydrate import complete_pairing_cards, hydrate
-from linker_genie.language import language_failure, turn_language
+from linker_genie.language import (
+    LANGUAGE_RETRY_PREFIX,
+    language_failure,
+    turn_language,
+)
 from linker_genie.prices import Lookup, fill
 from linker_genie.route import SEARCH_LIMIT, Route
 from linker_genie.schema import TextBlock, TurnOutput, TurnRequest
-from linker_genie.template import LOGIN_PLACEHOLDER, LOGIN_REQUIRED, fallback
+from linker_genie.template import (
+    LOGIN_PLACEHOLDER,
+    LOGIN_REQUIRED,
+    fallback,
+)
 
 # pydantic-ai tool_manager._check_max_retries, on UnexpectedModelBehavior
 # after AgentRetries.tools is spent. Output retries use a different sentence
@@ -45,6 +57,21 @@ class TurnResult:
 def _tool_retries_exhausted(failures: tuple[str, ...]) -> bool:
     """True when a tool spent pydantic-ai's tool retries and the run stopped."""
     return any(_TOOL_RETRIES_EXHAUSTED in failure for failure in failures)
+
+
+def fatal_class(failures: Sequence[RecordedFailure]) -> FailureClass | None:
+    """The first fatal class of this turn, or None for an ordinary miss.
+
+    The template uses one sentence for every fatal class (`model`,
+    `retrieval`, `ability`), so nothing ranks them (#410). A page outage,
+    a 4xx and a grounding miss have no class. The class is the one the
+    catch site stored on the note (`failure.kind`); the sentence is not
+    read again.
+    """
+    for failure in failures:
+        if failure.kind is not None:
+            return failure.kind
+    return None
 
 
 def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutput:
@@ -76,6 +103,52 @@ def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutp
     )
 
 
+def _remember(recorded: list[RecordedFailure], failure: RecordedFailure) -> None:
+    """Keep `failure`. A later note with a class replaces a sentence that had none."""
+    for index, item in enumerate(recorded):
+        if item.text != failure.text:
+            continue
+        if item.kind is None and failure.kind is not None:
+            recorded[index] = failure
+        return
+    recorded.append(failure)
+
+
+def _copy_call_failures(
+    recorded: list[RecordedFailure], call_failures: Sequence[object]
+) -> None:
+    """Copy failures recorded while `generate` ran into `recorded`.
+
+    `call_failures` is the live log list. A model tool appends a note during
+    `generate` (agent._note_call_failure), after `recorded` was first copied.
+    """
+    for entry in call_failures:
+        _remember(recorded, from_log(entry))
+
+
+def _class_for_fallback(
+    recorded: Sequence[RecordedFailure], last_failures: tuple[str, ...]
+) -> FailureClass | None:
+    """The class the template should say, or None for a normal fallback.
+
+    A language miss is repaired in the required language (#374). That repair
+    drops a model failure the retry already replaced. It does not drop an
+    ability or retrieval failure still recorded: a route 500 must not ship
+    the matching-products sentence because the last line is a language re-ask.
+    """
+    relevant = recorded
+    if any(failure.startswith(LANGUAGE_RETRY_PREFIX) for failure in last_failures):
+        relevant = [failure for failure in recorded if failure.kind != "model"]
+    return fatal_class(relevant)
+
+
+def _tool_failures(recorded: Sequence[RecordedFailure]) -> tuple[RecordedFailure, ...]:
+    """Ability and retrieval failures. A recovered chat 500 is not one."""
+    return tuple(
+        failure for failure in recorded if failure.kind in ("ability", "retrieval")
+    )
+
+
 def run(
     request: TurnRequest,
     generate: Generate,
@@ -83,6 +156,8 @@ def run(
     seed: TurnFacts | None = None,
     commerce: Lookup | None = None,
     clock: timing.Timing | None = None,
+    *,
+    call_failures: Sequence[object] = (),
 ) -> TurnResult:
     """Produce a grounded, hydrated turn. `generate` may call tools.
 
@@ -100,12 +175,26 @@ def run(
     then answers in the required language. The violating text is not shipped.
     A grounding failure is retried on its own; the language check runs only
     after grounding has passed.
+
+    `call_failures` are the understanding layer's route-call notes
+    (`prepared.log["call_failures"]`: `{text, kind}`), and the same list
+    when a model tool appends during `generate`. The kind is the class the
+    catch site already knew (#410). An ability or retrieval failure that
+    is still recorded after a grounded answer is the degraded sentence.
+    Hydration fills `{fact:handoff.sentence}` inside a text block, and a
+    product sentence would otherwise ship with the failure only in the
+    log. A model failure the retry replaced is not one of these. A
+    request for a person is answered in `app._answer` before this runs.
     """
     expected = turn_language(request)
     retry_reason: str | None = None
     seeded = seed or TurnFacts()
     last_facts = seeded
     last_failures: tuple[str, ...] = ()
+    # Every failed attempt, plus the route's own call failures. The shipped
+    # `failures` stay the last attempt's sentences; this list only classifies.
+    recorded: list[RecordedFailure] = []
+    _copy_call_failures(recorded, call_failures)
     for attempt in (1, 2):
         try:
             with (
@@ -114,15 +203,23 @@ def run(
             ):
                 output, facts = generate(request, retry_reason)
         except (ValueError, TypeError, RuntimeError) as error:
-            last_failures = (str(error),)
-            retry_reason = last_failures[0]
+            # The live list first: a tool recorded its class, then a wrapper
+            # may have raised a plain RuntimeError of the same sentence.
+            _copy_call_failures(recorded, call_failures)
+            failure = note(error)
+            _remember(recorded, failure)
+            last_failures = (failure.text,)
+            retry_reason = failure.text
             last_facts = seeded
             continue
+        _copy_call_failures(recorded, call_failures)
         last_facts = merge([seeded, facts])
         with timing.phase(clock, timing.GROUND):
             result = check(output, last_facts, route)
         if not result.ok:
             last_failures = result.failures
+            for item in last_failures:
+                _remember(recorded, RecordedFailure(item))
             retry_reason = result.reason
             continue
         aligned = align_login(output, last_facts, expected)
@@ -136,7 +233,23 @@ def run(
         mismatch = language_failure(priced, expected)
         if mismatch is not None:
             last_failures = (mismatch,)
+            _remember(recorded, RecordedFailure(mismatch))
             retry_reason = mismatch
+            continue
+        tool_failures = _tool_failures(recorded)
+        # The recorded failure is the gate, not the block class (#410).
+        # Hydration fills `{fact:handoff.sentence}` inside a TextBlock, and
+        # the model can write that sentence literally, so a HandoffBlock
+        # check still shipped the sales mailbox. A grounded product or
+        # document sentence hides the same ability 5xx, timeout, or
+        # retrieval failure. The template says the turn failed; qualified
+        # cards and document links stay. A model failure this retry
+        # replaced is not in `tool_failures`. Login still outranks this
+        # inside the template, and a request for a person is answered
+        # before `run`.
+        if tool_failures:
+            last_failures = tuple(item.text for item in tool_failures)
+            retry_reason = last_failures[0]
             continue
         return TurnResult(
             output=priced,
@@ -149,11 +262,14 @@ def run(
             price_failures=tuple(missed),
         )
     with timing.phase(clock, timing.TEMPLATE):
+        _copy_call_failures(recorded, call_failures)
+        kind = _class_for_fallback(recorded, last_failures)
         rendered = fallback(
             last_facts,
             expected,
             route,
             exhausted=_tool_retries_exhausted(last_failures),
+            failure_class=kind,
         )
     with timing.phase(clock, timing.HYDRATE):
         # Login stays the login sentence. Any other pairing fallback keeps the

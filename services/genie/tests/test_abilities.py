@@ -145,8 +145,9 @@ def test_a_refusal_that_is_not_a_login_requirement_is_an_error() -> None:
     recorder = Recorder(status=500, body={"message": "boom"})
     client = client_for(recorder)
 
-    with pytest.raises(AbilityError):
+    with pytest.raises(AbilityError) as caught:
         client.run("linker/search-products", {})
+    assert caught.value.fatal is True
 
 
 def test_a_dropped_connection_is_retried_until_the_ability_answers() -> None:
@@ -179,8 +180,9 @@ def test_a_connection_that_never_returns_raises_ability_error() -> None:
     clock = Clock()
     client = client_for(flaky, clock)
 
-    with pytest.raises(AbilityError, match="could not be reached"):
+    with pytest.raises(AbilityError, match="could not be reached") as caught:
         client.run("linker/search-products", {"lang": "en"})
+    assert caught.value.fatal is True
     assert len(flaky.requests) == ABILITY_ATTEMPTS
     assert clock.waits == [0.25, 0.5]
 
@@ -190,8 +192,9 @@ def test_a_persistent_500_is_retried_then_reported() -> None:
     clock = Clock()
     client = client_for(recorder, clock)
 
-    with pytest.raises(AbilityError, match="returned 500"):
+    with pytest.raises(AbilityError, match="returned 500") as caught:
         client.run("linker/search-products", {})
+    assert caught.value.fatal is True
     assert len(recorder.requests) == ABILITY_ATTEMPTS
     assert clock.waits == [0.25, 0.5]
 
@@ -201,8 +204,9 @@ def test_a_4xx_answer_is_final_and_never_retried() -> None:
     clock = Clock()
     client = client_for(recorder, clock)
 
-    with pytest.raises(AbilityError, match="returned 404"):
+    with pytest.raises(AbilityError, match="returned 404") as caught:
         client.run("linker/search-products", {})
+    assert caught.value.fatal is False
     assert len(recorder.requests) == 1
     assert clock.waits == []
 

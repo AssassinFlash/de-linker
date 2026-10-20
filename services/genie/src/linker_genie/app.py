@@ -37,6 +37,7 @@ from linker_genie.agent import (
 from linker_genie.conversation import last_customer_message
 from linker_genie.cycle import TurnResult, run
 from linker_genie.facts import TurnFacts
+from linker_genie.failure import is_row
 from linker_genie.gate import Gate
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
@@ -351,7 +352,40 @@ def _answer(
     generate = getattr(request.app.state, "generate", None) or make_generate(
         ability_client(), prepared=prepared, pages=page_reader().read, clock=clock
     )
-    return run(body, generate, prepared.route, prepared.facts, commerce, clock), None
+    # The same list the model tools append to during `generate` (inside
+    # `run`). A tuple taken here would miss a search-products 500 the model
+    # hit, and the later handoff would ship (#410).
+    recorded = _recorded_call_failures(prepared)
+    try:
+        result = run(
+            body,
+            generate,
+            prepared.route,
+            prepared.facts,
+            commerce,
+            clock,
+            call_failures=recorded,
+        )
+    finally:
+        # A turn with no tool failure does not grow an empty key, including
+        # when `run` raises before it returns.
+        if not recorded:
+            prepared.log.pop("call_failures", None)
+    return result, None
+
+
+def _recorded_call_failures(prepared: Prepared) -> list[object]:
+    """The live `call_failures` list, created when the route recorded none.
+
+    A note is `{text, kind?}` (`failure.note`). An older row is a string.
+    Model tools append to this same list during `generate` (#410).
+    """
+    logged = prepared.log.get("call_failures")
+    recorded: list[object] = []
+    if isinstance(logged, list):
+        recorded = [item for item in logged if is_row(item)]
+    prepared.log["call_failures"] = recorded
+    return recorded
 
 
 def _sse(

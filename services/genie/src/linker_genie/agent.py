@@ -23,9 +23,11 @@ from pathlib import Path
 from typing import Any
 
 from linker_genie import attachments, knowledge, page, timing
-from linker_genie.abilities import ABILITY_NAMES, AbilityClient
+from linker_genie.abilities import ABILITY_NAMES, AbilityClient, AbilityError
 from linker_genie.conversation import customer_messages, last_customer_message
+from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
+from linker_genie.failure import note
 from linker_genie.language import LANGUAGE_RETRY_PREFIX, turn_language, with_tool_lang
 from linker_genie.prefill import stated_size_hint
 from linker_genie.route import NAMED_MODEL_RULE
@@ -266,7 +268,9 @@ def make_generate(
         tools = []
         for name in TOOL_NAMES:
             if name == knowledge.NAME:
-                runner = _knowledge_runner(document_search, budget, expected, clock)
+                runner = _knowledge_runner(
+                    document_search, budget, expected, clock, prepared
+                )
             elif name == page.NAME:
                 runner = _page_runner(pages, budget, request, clock)
             else:
@@ -278,6 +282,7 @@ def make_generate(
                     expected,
                     customer,
                     clock,
+                    prepared,
                 )
             doc = INPUT_DOCS.get(name)
             runner.__doc__ = f"Call the WordPress ability {name}." + (
@@ -330,6 +335,24 @@ def _timed(
     return run
 
 
+def _note_call_failure(
+    prepared: Prepared | None, error: BaseException, *, prefix: str
+) -> None:
+    """Record a model-tool failure next to the route's `call_failures`.
+
+    The runners raise into pydantic-ai. The note keeps the class the catch
+    site already knew (#410). Without this line the turn log never sees the
+    500, and a later handoff-team can ship the sales sentence.
+    """
+    if prepared is None:
+        return
+    failures = prepared.log.get("call_failures")
+    if not isinstance(failures, list):
+        failures = []
+        prepared.log["call_failures"] = failures
+    failures.append(note(error, prefix=prefix).dump())
+
+
 def _ability_runner(
     client: AbilityClient,
     budget: ToolBudget,
@@ -338,6 +361,7 @@ def _ability_runner(
     locale: str = "en",
     message: str | Sequence[str] = "",
     clock: timing.Timing | None = None,
+    prepared: Prepared | None = None,
 ) -> Callable[[dict[str, Any] | None], Any]:
     def call(arguments: dict[str, Any] | None) -> Any:
         # size-hint ignores `arguments` (#365): the model's object is not a
@@ -350,7 +374,11 @@ def _ability_runner(
             if name == "linker/size-hint"
             else with_tool_lang(name, arguments, locale)
         )
-        payload, gathered = client.record(name, sent, user_context, locale)
+        try:
+            payload, gathered = client.record(name, sent, user_context, locale)
+        except AbilityError as error:
+            _note_call_failure(prepared, error, prefix=name)
+            raise
         budget.parts.append(gathered)
         return payload
 
@@ -373,11 +401,16 @@ def _knowledge_runner(
     budget: ToolBudget,
     locale: str = "en",
     clock: timing.Timing | None = None,
+    prepared: Prepared | None = None,
 ) -> Callable[[dict[str, Any] | None], Any]:
     def call(arguments: dict[str, Any] | None) -> Any:
-        payload, gathered = knowledge.record(
-            search, with_tool_lang(knowledge.NAME, arguments, locale), locale
-        )
+        try:
+            payload, gathered = knowledge.record(
+                search, with_tool_lang(knowledge.NAME, arguments, locale), locale
+            )
+        except (EmbeddingError, knowledge.KnowledgeUnavailable) as error:
+            _note_call_failure(prepared, error, prefix=knowledge.NAME)
+            raise
         budget.parts.append(gathered)
         return knowledge.model_view(payload)
 
