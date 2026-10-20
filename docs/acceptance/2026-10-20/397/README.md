@@ -128,4 +128,4 @@ b44 and b45 on this file (not written back into `b44-b45.json`):
 
 b45 is still `needs-review`. `human_score` is null. Spec 13 says a person on this line reviews a human-review row and records the reason. The runner leaves the verdict at `needs-review`. `b44-b45.json` records the round-3 answers, which are different sentences, so that file is not a score for this sample. The remaining step is that review, against the two answers in this jsonl.
 
-The other failures are answer and judge misses (BAT-D-G2, 54 kWh, 50 A, 40/180/900 V, next step, one working day, grounded 0 or 1). They are not a usable-capacity figure tied to the wrong noun.
+The other failures are answer and judge misses (BAT-D-G2, 54 kWh, 50 A, 40 A, 180–900 V, next step, one working day, grounded 0 or 1). They are not a usable-capacity figure tied to the wrong noun.
