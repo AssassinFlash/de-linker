@@ -10,7 +10,7 @@ cd services/genie && uv run --locked pytest tests/test_campaign_339.py
 
 计数（夹具长度或本模块 pytest 条目，跳过的不计）：产品词 63，语言 17，填充词 81，重复卡片 1，预填 81，短码 4，降级 2，极值 1，价格门 6，注入 7。
 
-语言条数是 `services/genie/eval/language/cases.json` 的 `cases`。填充词条数是 `services/genie/eval/contact/repeats.json` 的 `pairs`。产品词是 `test_339_product_word_case` 的条目，等于夹具行数，含 #415 的 `339-11-*` 九行、#396 的语言/引用九行，以及 #440 的 `339-440-*` 十三行（规定句八行、ESA 两行、不该盖章的五行）。`test_the_goodwe_model_without_a_stored_brand_is_still_named` 另计，不进这个数字。预填、短码、降级、极值、价格门和注入是本模块收集到的对应 pytest 条目。极值只计回退模板；`test_route.py` 与 `SearchProductsTest` 的聚合不进这个数字，它们由 `just test` 收集。重复卡片是 `test_s4_repeat_h2_10k_t3_four_rounds_de_and_en` 的条目。注入是 `tests/test_injection.py` 的 7 个测试，即 #416 的通过条件；套件重导出它们，计数以本模块收集到的条目为准。
+语言条数是 `services/genie/eval/language/cases.json` 的 `cases`。填充词条数是 `services/genie/eval/contact/repeats.json` 的 `pairs`。产品词是 `test_339_product_word_case` 的条目，等于夹具行数，含 #415 的 `339-11-*` 九行、#396 的语言/引用九行，以及 #440 的 `339-440-*` 十三行（规定句六行、ESA 两行、不该盖章的五行）。`test_the_goodwe_model_without_a_stored_brand_is_still_named` 另计，不进这个数字。预填、短码、降级、极值、价格门和注入是本模块收集到的对应 pytest 条目。极值只计回退模板；`test_route.py` 与 `SearchProductsTest` 的聚合不进这个数字，它们由 `just test` 收集。重复卡片是 `test_s4_repeat_h2_10k_t3_four_rounds_de_and_en` 的条目。注入是 `tests/test_injection.py` 的 7 个测试，即 #416 的通过条件；套件重导出它们，计数以本模块收集到的条目为准。
 
 ## CI 里跑的
 

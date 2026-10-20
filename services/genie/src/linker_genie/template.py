@@ -228,6 +228,8 @@ SCRIPTED = {
         ),
     },
     "weather": {
+        # The capability clause uses the same words as TALK. A wording change
+        # of that clause starts in TALK and has to be carried here.
         "en": (
             "I have no weather data. I can help with products, compatibility, "
             "documents and sizing."
