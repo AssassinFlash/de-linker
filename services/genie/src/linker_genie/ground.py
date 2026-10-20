@@ -364,14 +364,6 @@ def cites_outside_turn(citations: tuple[Citation, ...] | list[Citation]) -> bool
     return any(item.kind in _OUTSIDE_KINDS for item in citations)
 
 
-def cites_unbound(citations: tuple[Citation, ...] | list[Citation]) -> bool:
-    """True when grounding refused a bare number (#439).
-
-    The cycle reads `CheckResult.unbound_only` and does not parse the failure
-    prose. This helper is the same fact for a caller that already holds the
-    citations. A number citation does not select the degraded sentence.
-    """
-    return any(item.kind == "number" for item in citations)
 
 
 # The same token the baseline grader binds (`eval/baseline/grade.py` `_NUMBER`).
@@ -894,14 +886,6 @@ def document_blob(facts: TurnFacts) -> str:
     )
 
 
-def document_allowance(facts: TurnFacts, question: str = "") -> set[float]:
-    """Question readings plus figure-word readings from the document facts."""
-    values: set[float] = set()
-    for word in question.split():
-        values.update(_allowance_word(word))
-    for word in document_blob(facts).split():
-        values.update(_allowance_word(word))
-    return _expand(values)
 
 
 def _capacity_unit(word: str) -> bool:

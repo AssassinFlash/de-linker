@@ -316,11 +316,7 @@ def run(
     # The last attempt threw. A grounding miss clears this. An unclassified
     # exception is not a grounding miss, so the signed shape must not hide it.
     raised = False
-    last_output: TurnOutput | None = None
-    last_unbound_only = False
     for attempt in (1, 2):
-        last_output = None
-        last_unbound_only = False
         try:
             with (
                 timing.phase(clock, timing.MODEL),
@@ -338,8 +334,6 @@ def run(
             retry_reason = failure.text
             last_facts = seeded
             last_citations = ()
-            last_output = None
-            last_unbound_only = False
             continue
         raised = False
         _copy_call_failures(recorded, call_failures)
@@ -349,8 +343,6 @@ def run(
         if not result.ok:
             last_failures = result.failures
             last_citations = result.citations
-            last_output = output
-            last_unbound_only = result.unbound_only
             for item in last_failures:
                 _remember(recorded, RecordedFailure(item))
             if result.unbound_only and not _tool_failures(recorded):
@@ -376,8 +368,6 @@ def run(
         if mismatch is not None:
             last_failures = (mismatch,)
             last_citations = ()
-            last_output = None
-            last_unbound_only = False
             _remember(recorded, RecordedFailure(mismatch))
             retry_reason = mismatch
             continue
@@ -395,8 +385,6 @@ def run(
         if tool_failures:
             last_failures = tuple(item.text for item in tool_failures)
             retry_reason = last_failures[0]
-            last_output = None
-            last_unbound_only = False
             continue
         priced = _seal_and_finish(request, priced, priced_facts, route, expected)
         return TurnResult(
@@ -409,27 +397,6 @@ def run(
             retried=last_failures,
             price_failures=tuple(missed),
         )
-    if (
-        last_unbound_only
-        and last_output is not None
-        and not raised
-        and not _tool_failures(recorded)
-    ):
-        # The question does not license the digit. Hydration has not run, so a
-        # series name in the question cannot put the digit back (#439).
-        shipped = _ship_number_correction(
-            request,
-            last_output,
-            last_facts,
-            route,
-            expected,
-            commerce,
-            clock,
-            2,
-            last_failures,
-        )
-        if shipped is not None:
-            return shipped
     with timing.phase(clock, timing.TEMPLATE):
         _copy_call_failures(recorded, call_failures)
         kind = _class_for_fallback(recorded, last_failures)
