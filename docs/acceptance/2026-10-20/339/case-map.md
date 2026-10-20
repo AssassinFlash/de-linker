@@ -8,15 +8,16 @@ CI 入口（`just test` 的 `py-test` 会收集这个文件）：
 cd services/genie && uv run --locked pytest tests/test_campaign_339.py
 ```
 
-计数（夹具长度或本模块 pytest 条目，跳过的不计）：产品词 50，语言 17，填充词 81，重复卡片 1，预填 81，短码 4，降级 2，极值 1，价格门 6，注入 7。
+计数（夹具长度或本模块 pytest 条目，跳过的不计）：产品词 63，语言 17，填充词 81，重复卡片 1，预填 81，短码 4，降级 2，极值 1，价格门 6，注入 7。
 
-语言条数是 `services/genie/eval/language/cases.json` 的 `cases`。填充词条数是 `services/genie/eval/contact/repeats.json` 的 `pairs`。产品词是 `test_339_product_word_case` 的条目，等于夹具行数，含 #415 的 `339-11-*` 九行和 #396 的语言/引用九行。`test_the_goodwe_model_without_a_stored_brand_is_still_named` 另计，不进这个数字。预填、短码、降级、极值、价格门和注入是本模块收集到的对应 pytest 条目。极值只计回退模板；`test_route.py` 与 `SearchProductsTest` 的聚合不进这个数字，它们由 `just test` 收集。重复卡片是 `test_s4_repeat_h2_10k_t3_four_rounds_de_and_en` 的条目。注入是 `tests/test_injection.py` 的 7 个测试，即 #416 的通过条件；套件重导出它们，计数以本模块收集到的条目为准。
+语言条数是 `services/genie/eval/language/cases.json` 的 `cases`。填充词条数是 `services/genie/eval/contact/repeats.json` 的 `pairs`。产品词是 `test_339_product_word_case` 的条目，等于夹具行数，含 #415 的 `339-11-*` 九行、#396 的语言/引用九行，以及 #440 的 `339-440-*` 十三行（规定句六行、ESA 两行、不该盖章的五行）。`test_the_goodwe_model_without_a_stored_brand_is_still_named` 另计，不进这个数字。预填、短码、降级、极值、价格门和注入是本模块收集到的对应 pytest 条目。极值只计回退模板；`test_route.py` 与 `SearchProductsTest` 的聚合不进这个数字，它们由 `just test` 收集。重复卡片是 `test_s4_repeat_h2_10k_t3_four_rounds_de_and_en` 的条目。注入是 `tests/test_injection.py` 的 7 个测试，即 #416 的通过条件；套件重导出它们，计数以本模块收集到的条目为准。
 
 ## CI 里跑的
 
 | 票 | 缺陷 | 夹具 | 断言 | 命令 |
 |---|---|---|---|---|
 | #363 #364 #367 | 产品词冲突、一句多型号、缺席断言、故障句。#367 的 F4-DE 是 `EcoFlow GW5K-ETA-G20 - lieferbar?` | `services/genie/eval/regression/339-product-words.jsonl`（含 `339-f4-de` 与 #415 的 `339-11-*`） | `tests/test_regression_339.py::test_339_product_word_case` 与 `tests/test_product_words.py::test_the_goodwe_model_without_a_stored_brand_is_still_named` | 套件重导出这两个测试。`339-6` / `339-7-*` 是缺席断言失败；`339-9-*` 是故障降级句，不说不在范围内 |
+| #440 | 规定句换掉模型散文；ESA 电池问句点名 `BAT-D-G2`。邻近问句和只有账户词的句子不盖章 | 同一夹具的 `339-440-*` 十三行（`kind: signed`） | 同一个 `test_339_product_word_case` | 套件经产品词测试重导出。开放句下一步是 `send_inquiry`；职责和天气是询问块 |
 | #365 | 预填只带客户明说的参数 | 句子在 `tests/test_prefill.py`（战役句 `DE` / `EN`、否定、后句否认、前导零邮编） | 该文件里 #339 登记的 18 个测试 | 套件重导出这 18 个测试 |
 | #366 | 检索重试耗尽是可见降级，不出不相干卡 | 无单独 json；行为在 `tests/test_cycle.py` | `tests/test_cycle.py::test_a_tool_that_always_fails_validation_is_a_visible_degradation` 与 `test_a_products_route_with_nothing_qualified_shows_no_unrelated_cards` | 套件重导出这两个测试 |
 | #368 | 极值问题聚合成一个型号。75 kW 问句的聚合不是回退模板 | 无单独 json | 回退模板：`tests/test_ground_understanding.py::test_the_extreme_fallback_names_one_product_in_both_languages`。聚合：`tests/test_route.py::test_smallest_inverter_at_least_30_kw_aggregates` 与 `test_a_matched_model_does_not_narrow_the_extreme`（问句里的 GW75K 不收窄）；`plugins/linker-commerce/tests/php/Unit/Abilities/SearchProductsTest.php::test_smallest_inverter_at_least_30_kw_is_gw30k_eta_g20` | 套件只重导出回退模板。路由测试在 Genie pytest，SearchProductsTest 在 commerce 的 PHPUnit unit，两者都由 `just test` 收集，不重导出 |

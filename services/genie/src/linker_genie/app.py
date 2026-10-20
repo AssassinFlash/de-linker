@@ -230,11 +230,11 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
                 offer = None
             else:
                 prepared.log["contact"] = offer.reason
-    # A request for a person, a parts list, a short-code clarification, and a
-    # simple stock status are answered by the service alone: no model ran
-    # (model-routing audits read provider/model). The four model channels are
-    # unchanged; this route is a sentence, not a channel.
-    code_made = prepared.route.name in ("person", "parts", "clarify") or (
+    # A request for a person, a parts list, a short-code clarification, a scripted
+    # sentence, and a simple stock status are answered by the service alone: no
+    # model ran (model-routing audits read provider/model). The four model
+    # channels are unchanged; this route is a sentence, not a channel.
+    code_made = prepared.route.name in ("person", "parts", "clarify", "scripted") or (
         simple_stock(prepared.route) and result.attempts == 0
     )
     with timing.phase(clock, timing.LOG):
@@ -330,9 +330,9 @@ def _answer(
     clock: timing.Timing | None = None,
 ) -> tuple[TurnResult, dict[str, object] | None]:
     """The turn's answer: the model's; the service's own for a request for a person
-    (contact.answer; #243); a short-code clarification (route.answer); or the parts
-    list's (parts.answer; #251). With a service block, no model runs and none can
-    claim it sent anything."""
+    (contact.answer; #243); a short-code clarification (route.answer); a scripted
+    sentence (route.answer); or the parts list's (parts.answer; #251). With a
+    service block, no model runs and none can claim it sent anything."""
     # A person request and a parts list are written by the service. Their
     # sentences follow the question, the same rule as a model answer.
     language = turn_language(body)
@@ -364,6 +364,28 @@ def _answer(
         return (
             TurnResult(
                 output=clarified,
+                facts=TurnFacts(),
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ),
+            None,
+        )
+    if prepared.route.name == "scripted" and prepared.route.answer:
+        # The sentence is fixed in template.SCRIPTED. No tool call ran, and the
+        # model does not add a working-day promise, a mailbox or a size-hint.
+        scripted = finish(
+            TurnOutput(
+                language=language,
+                blocks=[TextBlock(text=prepared.route.answer)],
+            ),
+            TurnFacts(),
+            prepared.route,
+        )
+        return (
+            TurnResult(
+                output=scripted,
                 facts=TurnFacts(),
                 grounded=True,
                 failures=(),

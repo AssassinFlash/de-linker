@@ -309,14 +309,13 @@ def test_an_empty_model_call_still_carries_the_stated_pv_size() -> None:
     assert _query(url) == {"pv_kwp": ["12"]}
 
 
-# b19/b43 (baseline #336): no figure, phase, backup or postcode. The ability
-# client raises unless the empty object is HTTP 200. The code route's object
-# stays that same dict: lang is not added (#365, #393).
+# b19 (baseline): no figure, phase, backup or postcode. b43 is a scripted
+# remit sentence, not an empty size-hint. The ability client raises unless
+# the empty object is HTTP 200. The code route's object stays that same
+# dict: lang is not added (#365, #393).
 _EMPTY_SIZING = (
     "How big a battery do I need for my home?",
     "Wie groß muss ein Speicher für mein Einfamilienhaus sein?",
-    "Can you help me plan my whole solar project?",
-    "Können Sie mir bei der Planung meiner gesamten PV-Anlage helfen?",
 )
 
 
