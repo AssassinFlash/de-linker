@@ -84,6 +84,40 @@ final class DigestEmail extends TeamEmail {
 	}
 
 	/**
+	 * Adds the digest presentation to this email only. WooCommerce inlines it
+	 * when the message is sent (docs/specs/74-daily-digest.md).
+	 *
+	 * @param string $css   The email stylesheet so far.
+	 * @param mixed  $email The email being rendered.
+	 */
+	public static function append_styles( string $css, $email ): string {
+		if ( ! is_object( $email ) || ! isset( $email->id ) || self::ID !== $email->id ) {
+			return $css;
+		}
+		return $css . self::presentation_css();
+	}
+
+	/**
+	 * Presentation for the digest body. Class selectors, so the template stays
+	 * free of style attributes.
+	 */
+	public static function presentation_css(): string {
+		return '
+			.linker-digest-date { margin: 0 0 16px; color: #787c82; font-size: 13px; }
+			.linker-digest-counts { width: 100%; border-collapse: separate; border-spacing: 8px 0; margin: 0 0 8px; }
+			.linker-digest-count { width: 33%; background: #f6f2ff; padding: 12px; vertical-align: top; }
+			.linker-digest-num { font-size: 28px; line-height: 1; font-weight: 700; color: #8526ff; }
+			.linker-digest-name { margin-top: 6px; font-size: 12px; line-height: 1.35; color: #1e1e1e; }
+			.linker-digest-rows { width: 100%; border-collapse: collapse; }
+			.linker-digest-main { padding: 12px 0; border-bottom: 1px solid #ececee; font-size: 14px; color: #1e1e1e; }
+			.linker-digest-detail { color: #4b4b4b; font-size: 13px; }
+			.linker-digest-link { display: inline-block; margin-top: 8px; padding: 6px 10px; background: #8526ff; color: #ffffff; font-size: 13px; font-weight: 700; text-decoration: none; }
+			.linker-digest-empty { margin: 6px 0; color: #787c82; font-size: 13px; line-height: 1.4; }
+			.linker-digest-empty strong { color: #4b4b4b; font-weight: 600; }
+		';
+	}
+
+	/**
 	 * The blocks for the template.
 	 *
 	 * @return array<string, mixed>

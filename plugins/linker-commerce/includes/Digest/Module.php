@@ -36,6 +36,17 @@ final class Module {
 		add_action( Scheduler::HOOK, array( $this, 'run' ) );
 		add_action( 'init', array( new Scheduler(), 'ensure' ) );
 		add_filter( 'woocommerce_email_classes', array( $this, 'add_email' ) );
+		add_filter( 'woocommerce_email_styles', array( $this, 'email_styles' ), 10, 2 );
+	}
+
+	/**
+	 * Inlines the digest presentation when this email is the one being sent.
+	 *
+	 * @param string $css   The email stylesheet so far.
+	 * @param mixed  $email The email being rendered.
+	 */
+	public function email_styles( $css, $email = null ): string {
+		return DigestEmail::append_styles( (string) $css, $email );
 	}
 
 	/**

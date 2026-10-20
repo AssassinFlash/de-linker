@@ -36,6 +36,7 @@ final class ModuleTest extends TestCase {
 		// @phpstan-ignore argument.type (an AnyInstance callback, see expect_action_on_any)
 		WP_Mock::expectActionAdded( 'init', array( new AnyInstance( Scheduler::class ), 'ensure' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $module, 'add_email' ) );
+		WP_Mock::expectFilterAdded( 'woocommerce_email_styles', array( $module, 'email_styles' ), 10, 2 );
 
 		$module->register();
 
