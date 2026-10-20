@@ -95,7 +95,7 @@ final class DigestEmailTest extends TestCase {
 		$ours = (object) array( 'id' => 'linker_digest' );
 		$css  = DigestEmail::append_styles( 'base', $ours );
 
-		$this->assertStringContainsString( 'linker-digest-counts', $css );
+		$this->assertStringContainsString( 'linker-digest-card', $css );
 		$this->assertStringStartsWith( 'base', $css );
 	}
 }

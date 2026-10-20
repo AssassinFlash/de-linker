@@ -103,17 +103,27 @@ final class DigestEmail extends TeamEmail {
 	 */
 	public static function presentation_css(): string {
 		return '
-			.linker-digest-date { margin: 0 0 16px; color: #787c82; font-size: 13px; }
-			.linker-digest-counts { width: 100%; border-collapse: separate; border-spacing: 8px 0; margin: 0 0 8px; }
-			.linker-digest-count { width: 33%; background: #f6f2ff; padding: 12px; vertical-align: top; }
-			.linker-digest-num { font-size: 28px; line-height: 1; font-weight: 700; color: #8526ff; }
-			.linker-digest-name { margin-top: 6px; font-size: 12px; line-height: 1.35; color: #1e1e1e; }
-			.linker-digest-rows { width: 100%; border-collapse: collapse; }
-			.linker-digest-main { padding: 12px 0; border-bottom: 1px solid #ececee; font-size: 14px; color: #1e1e1e; }
-			.linker-digest-detail { color: #4b4b4b; font-size: 13px; }
-			.linker-digest-link { display: inline-block; margin-top: 8px; padding: 6px 10px; background: #8526ff; color: #ffffff; font-size: 13px; font-weight: 700; text-decoration: none; }
-			.linker-digest-empty { margin: 6px 0; color: #787c82; font-size: 13px; line-height: 1.4; }
-			.linker-digest-empty strong { color: #4b4b4b; font-weight: 600; }
+			body, #outer_wrapper, #wrapper, #inner_wrapper, #template_container, #template_body, #body_content { background-color: #f4f4f5; }
+			#template_header_image { padding: 28px 32px 0; }
+			.email-logo-text, .email-logo-text a { color: #71717a; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+			#template_header, #header_wrapper { background-color: #f4f4f5; }
+			#header_wrapper { padding: 8px 32px 0; }
+			#header_wrapper h1 { color: #18181b; font-size: 28px; font-weight: 650; letter-spacing: -0.4px; }
+			#body_content_inner_cell { background-color: #f4f4f5; padding: 8px 32px 8px; }
+			#credit { border-top: 0; color: #a1a1aa; padding: 8px 32px 28px; }
+			.linker-digest-date { margin: 0 0 16px; color: #71717a; font-size: 13px; }
+			.linker-digest-card { width: 100%; background-color: #ffffff; border: 1px solid #e6e6ea; border-radius: 12px; margin: 0 0 12px; }
+			.linker-digest-num { width: 56px; padding: 16px 0 4px 16px; font-size: 26px; line-height: 1; font-weight: 700; color: #18181b; vertical-align: top; }
+			.linker-digest-title { padding: 18px 16px 4px 0; font-size: 15px; line-height: 1.35; font-weight: 650; color: #18181b; vertical-align: top; }
+			.linker-digest-body { padding: 0 16px 8px; }
+			.linker-digest-rows { width: 100%; }
+			.linker-digest-main { padding: 12px 0; border-top: 1px solid #f0f0f2; font-size: 14px; line-height: 1.45; color: #18181b; }
+			.linker-digest-detail { color: #71717a; font-size: 12px; }
+			.linker-digest-link { color: #6d28d9; font-size: 13px; font-weight: 600; text-decoration: none; }
+			.linker-digest-quiet { width: 100%; background-color: #ffffff; border: 1px solid #e6e6ea; border-radius: 12px; margin: 4px 0 0; }
+			.linker-digest-empty { padding: 12px 16px; border-top: 1px solid #f0f0f2; color: #71717a; font-size: 13px; line-height: 1.4; }
+			.linker-digest-quiet tr:first-child .linker-digest-empty { border-top: 0; }
+			.linker-digest-empty strong { color: #3f3f46; font-weight: 600; }
 		';
 	}
 
