@@ -15,7 +15,7 @@ from dataclasses import replace
 import pytest
 
 from linker_genie.cycle import run
-from linker_genie.facts import TurnFacts
+from linker_genie.facts import Fact, TurnFacts
 from linker_genie.ground import check
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match, Vocabulary
@@ -179,6 +179,89 @@ def test_a_brand_conflict_is_not_swallowed_by_an_extreme(
     assert "brand and model disagree" in route.reasons
 
 
+def test_cheapest_keeps_a_written_conflict_off_the_aggregate(
+    vocabulary: Vocabulary,
+) -> None:
+    # Two written models, one of another brand. The aggregate is filtered to
+    # SAJ, so it can never be the GoodWe card the conflict hint would demand.
+    message = "Which is the cheapest SAJ inverter, H2-10K-T3 or GW10K-ETA-G20?"
+    route = _route(vocabulary, message, "en")
+    assert _texts(route) == ["H2-10K-T3", "GW10K-ETA-G20"]
+    assert all("extreme" not in call.arguments for call in route.calls)
+    h2, goodwe = route.named_models
+    assert h2.code == "H2-10K-T3" and h2.searched and not h2.is_conflict
+    assert 4107 in h2.product_ids
+    assert route.calls[0].arguments["brand"] == "saj"
+    assert goodwe.code == "GW10K-ETA-G20" and goodwe.searched and goodwe.is_conflict
+    assert goodwe.written_brand == "SAJ" and goodwe.catalog_brand == "GoodWe"
+    assert 3556 in goodwe.product_ids
+    assert "brand" not in route.calls[1].arguments
+    assert "show only that card" not in route.hint
+    assert "show only the winner card" not in route.hint
+    assert "show that product as a card" in route.hint
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text=(
+                    "You wrote SAJ; GW10K-ETA-G20 is a GoodWe product. "
+                    "H2-10K-T3 is shown with it."
+                ),
+                refs=["4107", "3556"],
+            ),
+            CardsBlock(product_ids=[4107, 3556]),
+        ],
+    )
+    assert check(output, _facts(4107, 3556), route).ok
+
+
+def test_cheapest_over_agreeing_written_models_still_sends_the_aggregate(
+    vocabulary: Vocabulary,
+) -> None:
+    # The same shape with no brand conflict still aggregates. The hint may
+    # name both codes and still asks for the winner card only.
+    message = "Which is the cheapest SAJ inverter, H2-10K-T3 or HS3-5K-T2-W/G-PX?"
+    route = _route(vocabulary, message, "en")
+    aggregate, *rest = route.calls
+    assert aggregate.arguments["extreme"] == "cheapest"
+    assert aggregate.arguments["brand"] == "saj"
+    assert aggregate.arguments["device_class"] == "inverters"
+    assert "text" not in aggregate.arguments
+    assert [call.arguments.get("text") for call in rest] == [
+        "H2-10K-T3",
+        "HS3-5K-T2-W/G-PX",
+    ]
+    assert all(call.arguments.get("brand") == "saj" for call in rest)
+    assert all("extreme" not in call.arguments for call in rest)
+    assert [note.code for note in route.named_models] == [
+        "H2-10K-T3",
+        "HS3-5K-T2-W/G-PX",
+    ]
+    assert all(not note.is_conflict for note in route.named_models)
+    assert "show only the winner card" in route.hint
+    assert "show that product as a card" not in route.hint
+    facts = TurnFacts()
+    facts.product_ids = {4107}
+    facts.qualified_ids = {4107}
+    facts.add(
+        Fact(id="search.extreme_product_id", value="4107", source="search-products")
+    )
+    facts.add(
+        Fact(id="search.extreme_model", value="H2-10K-T3", source="search-products")
+    )
+    output = TurnOutput(
+        language="en",
+        blocks=[
+            TextBlock(
+                text="The H2-10K-T3 meets the limit you named.",
+                refs=["4107"],
+            ),
+            CardsBlock(product_ids=[4107]),
+        ],
+    )
+    assert check(output, facts, route).ok
+
+
 def test_an_extreme_over_a_brand_stays_one_aggregate(vocabulary: Vocabulary) -> None:
     route = _route(vocabulary, "What is your smallest GoodWe inverter?", "en")
     (call,) = route.calls
@@ -198,6 +281,242 @@ def test_an_extreme_over_a_series_stays_one_aggregate(vocabulary: Vocabulary) ->
     assert "text" not in call.arguments
     assert route.named_models == ()
     assert "brand and model disagree" not in route.reasons
+
+
+SMALLEST_CLASS = "What is your smallest inverter with at least 30 kW?"
+SMALLEST_CLASS_DE = "Was ist Ihr kleinster Wechselrichter mit mindestens 30 kW?"
+SMALLEST_UNKNOWN = (
+    "What is your smallest inverter with at least 30 kW, the GW50K-ETA-G20?"
+)
+SMALLEST_UNKNOWN_DE = (
+    "Was ist Ihr kleinster Wechselrichter mit mindestens 30 kW, der GW50K-ETA-G20?"
+)
+
+
+@pytest.mark.parametrize(
+    ("composite", "alone", "lang"),
+    [
+        (SMALLEST_UNKNOWN, SMALLEST_CLASS, "en"),
+        (SMALLEST_UNKNOWN_DE, SMALLEST_CLASS_DE, "de"),
+    ],
+)
+def test_a_class_extreme_also_searches_an_unknown_code(
+    vocabulary: Vocabulary, composite: str, alone: str, lang: str
+) -> None:
+    # #339 registration (#384). The class aggregate used to be the only call,
+    # so the unknown code was never searched and the answer never named it.
+    route = _route(vocabulary, composite, lang)
+    alone_route = _route(vocabulary, alone, lang)
+    assert route.name == "products"
+    assert route.show_products and route.no_handoff
+    aggregate, *rest = route.calls
+    (class_call,) = alone_route.calls
+    assert aggregate.arguments == class_call.arguments
+    assert aggregate.arguments["extreme"] == "smallest"
+    assert aggregate.arguments["ac_power_min"] == 30.0
+    assert "text" not in aggregate.arguments
+    assert [call.arguments.get("text") for call in rest] == ["GW50K-ETA-G20", "ETA-G20"]
+    assert all(call.arguments["lang"] == lang for call in route.calls)
+    assert all("extreme" not in call.arguments for call in rest)
+    assert all("price" not in call.arguments for call in route.calls)
+    (note,) = route.named_models
+    assert note.code == "GW50K-ETA-G20"
+    assert note.unknown and note.searched
+    assert "extreme: smallest" in route.reasons
+    assert "model code not in the product data" in route.reasons
+    assert "GW50K-ETA-G20" in route.hint
+
+
+def test_the_unknown_code_extreme_answer_names_the_winner_and_the_code(
+    vocabulary: Vocabulary,
+) -> None:
+    # Same block shape in both languages: the winner sentence, the code, one card.
+    expected = {
+        "en": (
+            SMALLEST_UNKNOWN,
+            "The GW30K-ETA-G20 meets the limit you named.",
+            "GW50K-ETA-G20 is not in our product range.",
+        ),
+        "de": (
+            SMALLEST_UNKNOWN_DE,
+            "Das Modell GW30K-ETA-G20 erfüllt die genannte Grenze.",
+            "Für GW50K-ETA-G20 haben wir kein Produkt.",
+        ),
+    }
+    shapes: list[list[str]] = []
+    for lang, (message, winner_sentence, range_sentence) in expected.items():
+        route = _route(vocabulary, message, lang)
+        facts = TurnFacts()
+        facts.product_ids = {6518}
+        facts.qualified_ids = {6518}
+        facts.add(
+            Fact(
+                id="search.extreme_product_id",
+                value="6518",
+                source="search-products",
+            )
+        )
+        facts.add(
+            Fact(
+                id="search.extreme_model",
+                value="GW30K-ETA-G20",
+                source="search-products",
+            )
+        )
+        facts.tool_calls.append(
+            {
+                "name": "linker/search-products",
+                "arguments": {"text": "GW50K-ETA-G20", "lang": lang, "limit": 6},
+                "ok": True,
+                "result": {"qualified": []},
+            }
+        )
+        output = fallback(facts, lang, route)
+        text = _sentence(output)
+        assert winner_sentence in text
+        assert range_sentence in text
+        assert "€" not in text and "$" not in text and "{fact:" not in text
+        cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
+        assert len(cards) == 1 and cards[0].product_ids == [6518]
+        assert check(output, facts, route).ok
+        if lang == "de":
+            assert german_is_clean(text)
+        shapes.append([type(block).__name__ for block in output.blocks])
+        omitted = TurnOutput(
+            language=lang,  # type: ignore[arg-type]
+            blocks=[
+                TextBlock(text=winner_sentence, refs=["6518"]),
+                CardsBlock(product_ids=[6518]),
+            ],
+        )
+        refused = check(omitted, facts, route)
+        assert any("GW50K-ETA-G20" in failure for failure in refused.failures)
+    assert shapes[0] == shapes[1]
+
+
+def test_one_known_and_one_unknown_code_are_both_searched_beside_an_extreme(
+    vocabulary: Vocabulary,
+) -> None:
+    # The prompt says every written code in an extreme question is searched.
+    # One catalog code plus one unknown code used to search only the unknown.
+    messages = (
+        (
+            "en",
+            "What is your smallest inverter with at least 30 kW, "
+            "the HS3-5K-T2-W/G-PX or the GW50K-ETA-G20?",
+        ),
+        (
+            "de",
+            "Was ist Ihr kleinster Wechselrichter mit mindestens 30 kW, "
+            "der HS3-5K-T2-W/G-PX oder der GW50K-ETA-G20?",
+        ),
+    )
+    for lang, message in messages:
+        route = _route(vocabulary, message, lang)
+        aggregate, *rest = route.calls
+        assert aggregate.arguments["extreme"] == "smallest"
+        assert aggregate.arguments["ac_power_min"] == 30.0
+        assert "text" not in aggregate.arguments
+        assert [call.arguments.get("text") for call in rest] == [
+            "HS3-5K-T2-W/G-PX",
+            "GW50K-ETA-G20",
+            "ETA-G20",
+        ]
+        assert all("extreme" not in call.arguments for call in rest)
+        known, unknown = route.named_models
+        assert known.code == "HS3-5K-T2-W/G-PX"
+        assert known.searched and not known.unknown
+        assert 2198 in known.product_ids
+        assert unknown.code == "GW50K-ETA-G20"
+        assert unknown.searched and unknown.unknown
+        assert "extreme: smallest" in route.reasons
+        assert "model code not in the product data" in route.reasons
+
+
+def test_several_known_models_and_an_unknown_code_keep_the_class_extreme(
+    vocabulary: Vocabulary,
+) -> None:
+    # #339 registration (#384). Several catalog models beside an unknown
+    # code on a smallest or largest question used to search only the catalog
+    # models. The aggregate stays, and every written code is searched.
+    messages = (
+        (
+            "en",
+            "What is your smallest inverter with at least 30 kW, "
+            "the HS3-5K-T2-W/G-PX, the HS3-8K-T2-W/G-PX or the GW50K-ETA-G20?",
+            "The GW30K-ETA-G20 meets the limit you named.",
+            "GW50K-ETA-G20 is not in our product range.",
+            "You named HS3-5K-T2-W/G-PX, HS3-8K-T2-W/G-PX.",
+        ),
+        (
+            "de",
+            "Was ist Ihr kleinster Wechselrichter mit mindestens 30 kW, "
+            "der HS3-5K-T2-W/G-PX, der HS3-8K-T2-W/G-PX oder der GW50K-ETA-G20?",
+            "Das Modell GW30K-ETA-G20 erfüllt die genannte Grenze.",
+            "Für GW50K-ETA-G20 haben wir kein Produkt.",
+            "Sie haben HS3-5K-T2-W/G-PX, HS3-8K-T2-W/G-PX genannt.",
+        ),
+    )
+    for lang, message, winner, missing, named in messages:
+        route = _route(vocabulary, message, lang)
+        aggregate, *rest = route.calls
+        assert aggregate.arguments["extreme"] == "smallest"
+        assert aggregate.arguments["ac_power_min"] == 30.0
+        assert aggregate.arguments["device_class"] == "inverters"
+        assert "text" not in aggregate.arguments
+        assert [call.arguments.get("text") for call in rest] == [
+            "HS3-5K-T2-W/G-PX",
+            "HS3-8K-T2-W/G-PX",
+            "GW50K-ETA-G20",
+        ]
+        assert all("extreme" not in call.arguments for call in rest)
+        known_a, known_b, unknown = route.named_models
+        assert known_a.code == HS3[0] and known_a.searched and not known_a.unknown
+        assert known_b.code == HS3[1] and known_b.searched and not known_b.unknown
+        assert unknown.code == "GW50K-ETA-G20"
+        assert unknown.searched and unknown.unknown
+        facts = TurnFacts()
+        facts.product_ids = {2198, 1187, 6518}
+        facts.qualified_ids = {2198, 1187, 6518}
+        facts.add(
+            Fact(
+                id="search.extreme_product_id",
+                value="6518",
+                source="search-products",
+            )
+        )
+        facts.add(
+            Fact(
+                id="search.extreme_model",
+                value="GW30K-ETA-G20",
+                source="search-products",
+            )
+        )
+        for code, product_id in ((HS3[0], 2198), (HS3[1], 1187)):
+            facts.tool_calls.append(
+                {
+                    "name": "linker/search-products",
+                    "arguments": {"text": code, "lang": lang, "limit": 6},
+                    "ok": True,
+                    "result": {"qualified": [{"product_id": product_id}]},
+                }
+            )
+        facts.tool_calls.append(
+            {
+                "name": "linker/search-products",
+                "arguments": {"text": "GW50K-ETA-G20", "lang": lang, "limit": 6},
+                "ok": True,
+                "result": {"qualified": []},
+            }
+        )
+        output = fallback(facts, lang, route)
+        text = _sentence(output)
+        assert winner in text and missing in text and named in text
+        cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
+        assert len(cards) == 1 and cards[0].product_ids == [6518]
+        assert check(output, facts, route).ok
+        if lang == "de":
+            assert german_is_clean(text)
 
 
 def test_several_models_and_an_extreme_search_each_model(
@@ -1102,6 +1421,19 @@ def test_a_later_get_product_clears_a_budget_block() -> None:
     assert not any("not searched" in failure for failure in result.failures)
     rendered = fallback(facts, "en", route)
     assert "was not searched" not in _sentence(rendered)
+
+
+def test_extreme_prompts_search_every_written_code_and_keep_the_winner_card() -> None:
+    from linker_genie.agent import instructions
+
+    english = instructions("en")
+    german = instructions("de")
+    assert "each of those written codes is searched on its own" in english
+    assert "is not a separate search" in english
+    assert "does not add a card" in english
+    assert "für sich gesucht" in german
+    assert "keine eigene Suche" in german
+    assert "keine weitere Karte" in german
 
 
 def test_en_and_de_prompts_carry_the_same_three_obligations() -> None:

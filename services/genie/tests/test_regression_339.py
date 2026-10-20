@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from linker_genie.facts import TurnFacts
+from linker_genie.facts import Fact, TurnFacts
 from linker_genie.ground import check
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Vocabulary
@@ -49,6 +49,19 @@ EXPECTED = (
     "339-9-omitted",
     "339-9-mixed",
     "339-10-page",
+    "339-384-unknown-en",
+    "339-384-unknown-de",
+    "339-384-mix-en",
+    "339-384-mix-de",
+    "339-384-several-unknown-en",
+    "339-384-cheapest-en",
+    "339-384-cheapest-de",
+    "339-384-applied-en",
+    "339-384-applied-de",
+    "339-384-hidden-en",
+    "339-384-hidden-de",
+    "339-384-hidden-omits-en",
+    "339-384-hidden-omits-de",
 )
 
 
@@ -122,6 +135,26 @@ def _facts(raw: dict[str, Any]) -> TurnFacts:
         )
         return facts
     facts.tool_calls.extend(_calls(raw.get("calls", [])))
+    if raw.get("price_hidden"):
+        facts.add(
+            Fact(id="search.extreme_price_hidden", value="1", source="search-products")
+        )
+    if "extreme_product_id" in raw:
+        facts.add(
+            Fact(
+                id="search.extreme_product_id",
+                value=str(raw["extreme_product_id"]),
+                source="search-products",
+            )
+        )
+    if "extreme_model" in raw:
+        facts.add(
+            Fact(
+                id="search.extreme_model",
+                value=str(raw["extreme_model"]),
+                source="search-products",
+            )
+        )
     return facts
 
 
@@ -167,6 +200,18 @@ def _plan(row: dict[str, Any], vocabulary: Vocabulary) -> None:
         assert route.calls == ()
     for banned in row.get("hint_excludes", []):
         assert banned not in route.hint
+    for needle in row.get("hint_includes", []):
+        assert needle in route.hint
+    if "calls" in row:
+        assert len(route.calls) == len(row["calls"])
+        for call, expected in zip(route.calls, row["calls"], strict=True):
+            assert call.ability == expected.get("ability", "linker/search-products")
+            if expected.get("no_text"):
+                assert "text" not in call.arguments
+            for key, value in expected.items():
+                if key in ("ability", "no_text"):
+                    continue
+                assert call.arguments.get(key) == value
     texts = [
         str(call.arguments.get("text"))
         for call in route.calls
@@ -183,6 +228,8 @@ def _plan(row: dict[str, Any], vocabulary: Vocabulary) -> None:
             note for note in route.named_models if note.code == expected["code"]
         )
         assert match.searched is expected["searched"]
+        if "unknown" in expected:
+            assert match.unknown is expected["unknown"]
     if row.get("some_unsearched"):
         assert any(not note.searched for note in route.named_models)
     if row.get("searched_matches_calls"):
