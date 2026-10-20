@@ -1,0 +1,26 @@
+{
+  "run": "docs/acceptance/2026-10-20/397/full/baseline-20261020T093107.jsonl",
+  "process": "docs/specs/13-genie.md 目标 3: a human-review row is reviewed by this line and the reason is recorded. run.py leaves the verdict at needs-review; this file is that review of this sample's answers.",
+  "reviewer": "this line (Claude, ticket #397 round 5)",
+  "reviewed_at": "2026-10-20",
+  "rows": [
+    {
+      "id": "b45-en",
+      "question": "Thanks, that's all for now!",
+      "verdict": "pass",
+      "human_score": "pass",
+      "answer": "You're welcome. Feel free to come back whenever you need anything — whether it's a product, a document or a solution draft.",
+      "floors": "pass: grounded, no fallback, no handoff block, no sales@ mailbox, no numbers, one text block",
+      "reason": "A polite close to a thank-you. It offers the next contact without a factual claim, a figure or a deflection to the team mailbox. Nothing to correct."
+    },
+    {
+      "id": "b45-de",
+      "question": "Danke, das war alles fürs Erste!",
+      "verdict": "pass",
+      "human_score": "pass",
+      "answer": "Gern geschehen! Wenn Sie später Fragen zu Produkten, Pairings oder Dokumenten haben oder einen Lösungsentwurf erstellen möchten, sind wir jederzeit für Sie da. Einen schönen Tag noch!",
+      "floors": "pass: grounded, no fallback, no handoff block, no sales@ mailbox, no numbers, one text block",
+      "reason": "A polite Sie-form close to a thank-you. It offers the next contact without a factual claim, a figure or a deflection to the team mailbox. Nothing to correct."
+    }
+  ]
+}
