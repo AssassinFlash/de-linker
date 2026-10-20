@@ -102,7 +102,16 @@ def _load(name: str, path: Path) -> ModuleType:
     module = importlib.util.module_from_spec(spec)
     # dataclasses looks the class up in sys.modules while the body runs.
     sys.modules[name] = module
-    spec.loader.exec_module(module)
+    # grade.py imports poison from the harness directory (#422).
+    parent = str(path.parent)
+    inserted = parent not in sys.path
+    if inserted:
+        sys.path.insert(0, parent)
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        if inserted:
+            sys.path.remove(parent)
     return module
 
 
