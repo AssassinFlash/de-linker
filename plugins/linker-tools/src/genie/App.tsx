@@ -26,6 +26,7 @@ import {
 	presentFailure,
 	readFailure,
 	reconcile,
+	refusalReason,
 	retryMessages,
 	settleTurnFailure,
 	writeFailure,
@@ -367,16 +368,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				currentThread.current = before;
 				setThread( before );
 				setInput( settled.field );
-				setRefused(
-					refusalText(
-						settled.reason === 'throttled' ||
-							settled.reason === 'count' ||
-							settled.reason === 'size' ||
-							settled.reason === 'type'
-							? settled.reason
-							: 'unreadable'
-					)
-				);
+				setRefused( refusalText( refusalReason( settled.reason ) ) );
 				setPhase( 'ask' );
 				return;
 			}

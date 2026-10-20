@@ -362,10 +362,14 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 	const controller = new AbortController();
 	let timer: ReturnType< typeof setTimeout > | undefined;
 	let won = false;
+	const timeoutError = new DOMException(
+		'The turn timed out.',
+		'AbortError'
+	);
 	const timedOut = new Promise< never >( ( _resolve, reject ) => {
 		timer = setTimeout( () => {
 			controller.abort();
-			reject( new DOMException( 'The turn timed out.', 'AbortError' ) );
+			reject( timeoutError );
 		}, timeoutMs );
 	} );
 	// `fetcher` is called inside the promise. A throw before the request
@@ -401,28 +405,42 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 				throw error;
 			}
 		);
+	// The timer stays armed until the body is parsed: headers alone are not an
+	// answer. A proxy that sends its headers and then stalls would otherwise
+	// wait past TURN_TIMEOUT_MS.
+	const deadline = < T >( work: Promise< T > ): Promise< T > =>
+		Promise.race( [ work, timedOut ] );
 	let response: Response;
 	try {
-		response = await Promise.race( [ attempt, timedOut ] );
+		response = await deadline( attempt );
 		won = true;
+		if ( ! response.ok ) {
+			let code = '';
+			try {
+				const refusal = ( await deadline( response.json() ) ) as {
+					code?: unknown;
+				};
+				code = typeof refusal.code === 'string' ? refusal.code : '';
+			} catch {
+				// The deadline is the turn's failure, not an empty refusal.
+				// An aborted body read is the same timeout.
+				if ( controller.signal.aborted ) {
+					throw timeoutError;
+				}
+				code = '';
+			}
+			throw new TurnError( response.status, code );
+		}
+		const body = ( await deadline( response.json() ) ) as {
+			stream: string;
+		};
+		return parseStream( body.stream ?? '' );
 	} finally {
 		won = true;
 		if ( timer !== undefined ) {
 			clearTimeout( timer );
 		}
 	}
-	if ( ! response.ok ) {
-		let code = '';
-		try {
-			const refusal = ( await response.json() ) as { code?: unknown };
-			code = typeof refusal.code === 'string' ? refusal.code : '';
-		} catch {
-			code = '';
-		}
-		throw new TurnError( response.status, code );
-	}
-	const body = ( await response.json() ) as { stream: string };
-	return parseStream( body.stream ?? '' );
 }
 
 /**

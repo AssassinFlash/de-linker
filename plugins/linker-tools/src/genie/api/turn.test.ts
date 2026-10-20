@@ -105,6 +105,73 @@ test( 'a connection that never answers is the upstream timeout', async () => {
 	}
 } );
 
+test( 'headers without a body are the upstream timeout too', async () => {
+	vi.useFakeTimers();
+	// The proxy answered its headers, then stopped: json() never settles.
+	const fetcher = vi.fn( async () => ( {
+		ok: true,
+		json: () => new Promise< never >( () => undefined ),
+	} ) ) as unknown as typeof fetch;
+	const hung = sendTurn( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [ { role: 'user', content: 'backup for 10 kW' } ],
+		page: { type: 'category' },
+		fetcher,
+		timeoutMs: TURN_TIMEOUT_MS,
+	} );
+	const timedOut = hung.then(
+		() => {
+			throw new Error( 'the stalled body resolved' );
+		},
+		( error: unknown ) => error
+	);
+	try {
+		await vi.advanceTimersByTimeAsync( TURN_TIMEOUT_MS );
+		await expect( timedOut ).resolves.toMatchObject( {
+			name: 'AbortError',
+		} );
+		expect( fetcher ).toHaveBeenCalledTimes( 1 );
+		expect( vi.getTimerCount() ).toBe( 0 );
+	} finally {
+		vi.useRealTimers();
+	}
+} );
+
+test( 'a refusal whose body stalls is the timeout, not an empty refusal code', async () => {
+	vi.useFakeTimers();
+	const fetcher = vi.fn( async () => ( {
+		ok: false,
+		status: 502,
+		json: () => new Promise< never >( () => undefined ),
+	} ) ) as unknown as typeof fetch;
+	const hung = sendTurn( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [ { role: 'user', content: 'backup for 10 kW' } ],
+		page: { type: 'category' },
+		fetcher,
+		timeoutMs: TURN_TIMEOUT_MS,
+	} );
+	const timedOut = hung.then(
+		() => {
+			throw new Error( 'the stalled refusal resolved' );
+		},
+		( error: unknown ) => error
+	);
+	try {
+		await vi.advanceTimersByTimeAsync( TURN_TIMEOUT_MS );
+		await expect( timedOut ).resolves.toMatchObject( {
+			name: 'AbortError',
+		} );
+		expect( vi.getTimerCount() ).toBe( 0 );
+	} finally {
+		vi.useRealTimers();
+	}
+} );
+
 test( 'a fetcher that throws before the request does not leave the timer armed', async () => {
 	vi.useFakeTimers();
 	const fetcher = () => {

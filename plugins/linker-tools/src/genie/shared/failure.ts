@@ -33,7 +33,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { isTurnConflict, isUnfinishedStream } from '../api/turn';
-import type { Upload } from '../attachments/prepare';
+import { UPLOAD_TYPES, type Upload } from '../attachments/prepare';
 import { attachmentRefusalReason } from './conversation';
 
 /** sessionStorage key. One tab, both surfaces. */
@@ -178,9 +178,29 @@ export function failureKind( error: unknown ): FailureKind | null {
 }
 
 /**
- * The kind the shell shows. A 502 on a question the server already kept
- * stays truncated: the question is the thread's tail, and putting it back
- * in the field would ask it a second time.
+ * The kind a failure shows against the thread. A 502 on a question the
+ * server already kept stays truncated: the question is the thread's tail,
+ * and putting it back in the field would ask it a second time.
+ *
+ * @param kind     Which failure.
+ * @param before   The thread this attempt posted on top of.
+ * @param question The failed question.
+ */
+function tailKind(
+	kind: FailureKind,
+	before: readonly FailureMessage[],
+	question: string
+): FailureKind {
+	const tail = before[ before.length - 1 ];
+	if ( tail && 'user' === tail.role && tail.content === question ) {
+		return 'truncated';
+	}
+	return kind;
+}
+
+/**
+ * The kind the shell shows, or null when this machine does not own the
+ * failure.
  *
  * @param error    The rejection from sendTurn.
  * @param before   The thread this attempt posted on top of.
@@ -192,14 +212,31 @@ export function shownFailureKind(
 	question: string
 ): FailureKind | null {
 	const kind = failureKind( error );
-	if ( ! kind ) {
-		return null;
+	return kind ? tailKind( kind, before, question ) : null;
+}
+
+/**
+ * The reason word the refusal sentence knows. The proxy names four; any
+ * other word is a file the shell could not read.
+ */
+export type RefusalWord =
+	'count' | 'size' | 'type' | 'throttled' | 'unreadable';
+
+/**
+ * The refusal's reason for the sentence.
+ *
+ * @param reason The proxy's reason code.
+ */
+export function refusalReason( reason: string ): RefusalWord {
+	switch ( reason ) {
+		case 'count':
+		case 'size':
+		case 'type':
+		case 'throttled':
+			return reason;
+		default:
+			return 'unreadable';
 	}
-	const tail = before[ before.length - 1 ];
-	if ( tail && 'user' === tail.role && tail.content === question ) {
-		return 'truncated';
-	}
-	return kind;
 }
 
 /**
@@ -260,16 +297,19 @@ export function settleTurnFailure(
 	before: readonly FailureMessage[],
 	draft: FailureDraft
 ): TurnSettlement {
-	const reason = attachmentRefusalReason( error );
-	if ( reason ) {
-		return { action: 'refusal', reason, field: draft.text };
-	}
-	if ( isTurnConflict( error ) ) {
+	const kind = failureKind( error );
+	if ( ! kind ) {
+		// The two recoveries that are not a failure. A refusal names its
+		// reason; everything else here is the 409.
+		const reason = attachmentRefusalReason( error );
+		if ( reason ) {
+			return { action: 'refusal', reason, field: draft.text };
+		}
 		return { action: 'conflict', field: draft.text };
 	}
 	return {
 		action: 'failed',
-		kind: shownFailureKind( error, before, draft.question ) ?? 'upstream',
+		kind: tailKind( kind, before, draft.question ),
 	};
 }
 
@@ -655,16 +695,14 @@ function uploadOf( value: unknown ): Upload | null {
 	if ( 'string' !== typeof upload.name || 'string' !== typeof upload.data ) {
 		return null;
 	}
-	if (
-		'image/jpeg' !== upload.type &&
-		'application/pdf' !== upload.type &&
-		'text/csv' !== upload.type &&
-		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' !==
-			upload.type
-	) {
+	if ( ! ( UPLOAD_TYPES as readonly unknown[] ).includes( upload.type ) ) {
 		return null;
 	}
-	return { name: upload.name, type: upload.type, data: upload.data };
+	return {
+		name: upload.name,
+		type: upload.type as Upload[ 'type' ],
+		data: upload.data,
+	};
 }
 
 /**

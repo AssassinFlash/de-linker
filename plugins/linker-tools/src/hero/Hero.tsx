@@ -56,6 +56,7 @@ import {
 	presentFailure,
 	readFailure,
 	reconcile,
+	refusalReason,
 	retryMessages,
 	settleTurnFailure,
 	writeFailure,
@@ -243,16 +244,7 @@ export function HeroConversation( {
 				placeChips( [] );
 				setThread( before );
 				setPrompt( settled.field );
-				setRefused(
-					refusalText(
-						settled.reason === 'throttled' ||
-							settled.reason === 'count' ||
-							settled.reason === 'size' ||
-							settled.reason === 'type'
-							? settled.reason
-							: 'unreadable'
-					)
-				);
+				setRefused( refusalText( refusalReason( settled.reason ) ) );
 				setPhase( 'ask' );
 				return;
 			}

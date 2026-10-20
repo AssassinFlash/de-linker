@@ -146,6 +146,35 @@ test( 'a stored failure unfolds the hero and restores the question', async () =>
 	);
 } );
 
+test( 'a stored truncated stream unfolds the question in the thread with an empty field', async () => {
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: 'truncated',
+			text: 'backup for 10 kW',
+			question: 'backup for 10 kW',
+			uploads: [],
+			omitted: [],
+		} )
+	);
+	const { hero } = start(
+		session( [ { role: 'user', content: 'backup for 10 kW' } ] ).session
+	);
+
+	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( true );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
+	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
+	const prompt = hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+	expect( prompt.value ).toBe( '' );
+	expect(
+		screen.getByRole( 'button', { name: 'Try again' } )
+	).toBeInTheDocument();
+} );
+
 test( 'the resting hero is left visually as it was; the hidden surface is ready', () => {
 	const { hero } = start( session().session );
 

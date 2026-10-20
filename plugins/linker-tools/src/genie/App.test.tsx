@@ -97,6 +97,7 @@ import {
 	TurnError,
 	UnfinishedStreamError,
 } from './api/turn';
+import { FAILURE_KEY } from './shared/failure';
 
 const GERMAN_STREAM =
 	'event: meta\n' +
@@ -1845,6 +1846,93 @@ test( 'deleting the conversation on screen empties the panel', async () => {
 	expect(
 		screen.getByText( 'Get help with your solar project' )
 	).toBeVisible();
+} );
+
+test( 'a new conversation clears the stored failure and its alert', async () => {
+	resetTurnLane();
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: 'upstream',
+			text: 'EV chargers',
+			question: 'EV chargers',
+			uploads: [],
+			omitted: [],
+		} )
+	);
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( selectConversation ).mockResolvedValue( {
+		currentId: 10,
+		ok: true,
+		conversations: [],
+	} );
+	render( <App config={ config() } /> );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'New conversation' } )
+		);
+	} );
+
+	await waitFor( () =>
+		expect(
+			screen.queryByText( 'Genie did not answer. Please try again.' )
+		).toBeNull()
+	);
+	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBeNull();
+} );
+
+test( 'deleting the conversation on screen clears the stored failure too', async () => {
+	resetTurnLane();
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: 'upstream',
+			text: 'EV chargers',
+			question: 'EV chargers',
+			uploads: [],
+			omitted: [],
+		} )
+	);
+	vi.mocked( listConversations ).mockResolvedValue( {
+		currentId: 9,
+		ok: true,
+		conversations: [
+			{ id: 9, title: 'Third question', updated: '2026-10-18 10:02:00' },
+		],
+	} );
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( deleteConversation ).mockResolvedValue( {
+		currentId: 0,
+		ok: true,
+		conversations: [],
+	} );
+	render( <App config={ config() } /> );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+
+	fireEvent.click( screen.getByRole( 'button', { name: 'Conversations' } ) );
+	fireEvent.click(
+		await screen.findByRole( 'button', {
+			name: 'Delete conversation: Third question',
+		} )
+	);
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Delete' } ) );
+	} );
+
+	await waitFor( () =>
+		expect(
+			screen.queryByText( 'Genie did not answer. Please try again.' )
+		).toBeNull()
+	);
+	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBeNull();
 } );
 
 test( 'a guest gets a confirmation link at the address they type', async () => {
