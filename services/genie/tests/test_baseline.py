@@ -937,11 +937,14 @@ def test_next_step_blocks_cover_every_move_the_shell_offers() -> None:
 
 
 def test_percentiles_print_the_gate_number() -> None:
-    # 100 rows: p50 is the 50th value, p95 the 95th (nearest rank).
+    # 100 rows: ceil(0.5*100) is the 50th value, ceil(0.95*100) the 95th.
     values = [float(n) for n in range(1, 101)]
     assert percentile(values, 0.5) == 50.0
     assert percentile(values, 0.95) == 95.0
     assert percentile([], 0.5) is None
+    # n=25, p50: ceil(12.5) is the 13th value. round(12.5) is 12 (banker's)
+    # and is not this rule — the same split as production attempt_2 p50.
+    assert percentile([float(n) for n in range(1, 26)], 0.5) == 13.0
 
 
 def test_phase_medians_summarize_the_service_timing() -> None:

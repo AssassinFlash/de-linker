@@ -50,7 +50,7 @@ def verify(turn: LoggedTurn) -> list[str]:
     )
     known = facts.ids()
     sources = " ".join(fact.value for fact in facts.facts.values())
-    names = catalogue_name_phrases(turn.tool_calls)
+    phrases = catalogue_name_phrases(turn.tool_calls)
     prices = _visible_prices(facts)
     failures: list[str] = []
     for block in turn.output.get("blocks") or []:
@@ -70,7 +70,7 @@ def verify(turn: LoggedTurn) -> list[str]:
             failures.extend(_card_prices(block, facts, turn.approved))
         if kind in ("text", "handoff"):
             text = str(block.get("text" if kind == "text" else "summary", ""))
-            for number in bare_numbers(text, names):
+            for number in bare_numbers(text, phrases):
                 if not _occurs(number, sources):
                     failures.append(f"states {number}, which no tool result contains")
                 else:

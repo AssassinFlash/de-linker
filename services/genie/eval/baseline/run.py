@@ -38,6 +38,7 @@ from __future__ import annotations
 import argparse
 import http.client
 import json
+import math
 import sys
 import time
 import urllib.request
@@ -72,9 +73,10 @@ P95_MIN_ROWS = 20
 TIMEOUT_SECONDS = 240
 # WooCommerce Store API's page size ceiling, as the vocabulary reader uses it.
 PAGE_SIZE = 100
-# One connection per WordPress origin. A dead keep-alive socket is dropped
-# and the post is tried once more; a timeout is not, because the turn may
-# already be running.
+# One connection per WordPress origin. A keep-alive the server has already
+# closed fails on the first write; the replacement socket is new, so the post
+# is tried once more and a second failure is the host. A timeout is not tried
+# again: the turn may already be running.
 _clients: dict[tuple[str, int, bool], http.client.HTTPConnection] = {}
 
 
@@ -181,7 +183,12 @@ def _open_client(host: str, port: int, https: bool) -> http.client.HTTPConnectio
 
 
 def _post(wp: str, path: str, body: bytes) -> tuple[int, bytes]:
-    """POST `path` on the pooled connection for `wp`. One retry if that socket is dead."""
+    """POST `path` on the pooled connection for `wp`.
+
+    Two tries: the pooled socket, then one new connection. A dead keep-alive
+    fails once, on the first write. The second failure is the host. A timeout
+    is not a second try, because the turn may already be running.
+    """
     host, port, https, prefix = _origin(wp)
     key = (host, port, https)
     target = prefix + path
@@ -191,6 +198,8 @@ def _post(wp: str, path: str, body: bytes) -> tuple[int, bytes]:
         "Connection": "keep-alive",
         "Accept": "application/json",
     }
+    # 1 = the pooled socket, 2 = one fresh connection. Not a third: the stale
+    # socket fails once, and another POST could land a turn the server already has.
     for attempt in (1, 2):
         connection = _clients.get(key)
         if connection is None:
@@ -296,12 +305,16 @@ def judge_row(
 
 
 def percentile(values: list[float], fraction: float) -> float | None:
-    """The fraction-quantile (0.95 = p95), nearest-rank as numpy's default."""
+    """The nearest-rank percentile: ceil(fraction*n)-th of the sorted values.
+
+    The same rule as `ops/turn_latency.py`. One measured row, no interpolation.
+    numpy's default percentile interpolates between two rows; this does not.
+    """
 
     if not values:
         return None
     ordered = sorted(values)
-    rank = max(1, round(fraction * len(ordered)))
+    rank = max(1, math.ceil(fraction * len(ordered)))
     return ordered[rank - 1]
 
 
