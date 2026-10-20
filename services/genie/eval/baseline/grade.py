@@ -26,6 +26,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
+from linker_genie.figures import is_code
+
 # AGENTS.md §3: these words are not this shop's vocabulary, in either language.
 FORBIDDEN_WORDS = (
     "catalogue",
@@ -237,6 +239,10 @@ def untraceable_numbers(
     codes = _catalog_tokens(catalog or {})
     untraceable = []
     for word in _CODE_WORD.findall(text):
+        # The same model-code rule as ground.bare_numbers (figures.is_code).
+        # "BD-JC-S2" is a designation, not the measurement 2.
+        if is_code(word):
+            continue
         stripped = re.sub(r"[^a-z0-9]", "", word.lower())
         if stripped in codes:
             continue
@@ -557,7 +563,25 @@ def check(
         if int(product_id) not in shown:
             failures.append(f"product {product_id} is not in a cards or compare block")
     any_of = expect.get("products_any")
-    if any_of and not {int(pid) for pid in any_of} & shown:
+    absence = expect.get("absence_any") or []
+    claims_absence = bool(absence) and any(
+        re.search(pattern, text) for pattern in absence
+    )
+    partners = {int(pid) for pid in any_of} if any_of else set()
+    # `released` means the row's ground says this battery is released (b10,
+    # compatibility.json line 1546). A no-pairing sentence about a released
+    # battery fails on its own, partner card or not (#396). A row that is not
+    # released may still accept an absence sentence; an unrelated card on
+    # that sentence still fails.
+    if any_of and claims_absence and expect.get("released"):
+        failures.append(
+            "released battery: a no-pairing sentence does not replace the partner cards"
+        )
+    if any_of and claims_absence and not expect.get("released"):
+        unrelated = sorted(shown - partners)
+        if unrelated:
+            failures.append(f"no documented pairing, but unrelated cards {unrelated}")
+    elif any_of and not partners & shown:
         failures.append(f"none of products {any_of} is in a cards or compare block")
 
     groups = expect.get("compare")

@@ -22,6 +22,7 @@ from linker_genie.route import Route
 from linker_genie.schema import (
     AskBlock,
     CardsBlock,
+    DocumentBlock,
     HandoffBlock,
     Locale,
     TextBlock,
@@ -362,6 +363,309 @@ def test_the_clock_times_both_attempts_and_the_fallback_render() -> None:
         "hydrate",
         "total",
     }
+
+
+def test_an_outside_document_is_retried_not_rewritten() -> None:
+    """b09-en cited p3612.document.2. The check reports it; the model answers again.
+
+    The service does not strip or rewrite the first draft (spec 13: no text
+    rewrite). The retry carries the reason, and the second answer ships.
+    """
+    facts = _facts()
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        if retry is None:
+            return (
+                TurnOutput(
+                    language="en",
+                    blocks=[
+                        TextBlock(text="See the manual.", refs=["4107"]),
+                        DocumentBlock(ref="p3612.document.2"),
+                        CardsBlock(product_ids=[4107]),
+                    ],
+                ),
+                facts,
+            )
+        assert "p3612.document.2" in retry
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[
+                    TextBlock(text="See the manual.", refs=["4107"]),
+                    CardsBlock(product_ids=[4107]),
+                ],
+            ),
+            facts,
+        )
+
+    result = run(_request(), generate)
+
+    assert result.grounded is True
+    assert result.fallback is False
+    assert result.attempts == 2
+    assert [block.type for block in result.output.blocks] == ["text", "cards"]
+    text = result.output.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert text.text == "See the manual."
+    cards = result.output.blocks[1]
+    assert isinstance(cards, CardsBlock)
+    assert cards.product_ids == [4107]
+
+
+def test_an_outside_document_does_not_drop_the_ask_or_the_valid_document() -> None:
+    """Turn 417's retry shipped one document and no ask. The retry is the
+    model's own answer; the service keeps the valid blocks it returns."""
+    from linker_genie.facts import Document
+
+    facts = _released_pair()
+    facts.documents["p3612.document.1"] = Document(
+        url="https://de-linker.com/manual.pdf",
+        title="ESA manual",
+        page=1,
+    )
+    calls = 0
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        nonlocal calls
+        calls += 1
+        blocks = [
+            TextBlock(
+                text="These inverters are released.",
+                refs=["6528", "3612"],
+            ),
+            CardsBlock(product_ids=[6528, 3612]),
+            DocumentBlock(ref="p3612.document.1"),
+            AskBlock(field="phase", options=["single-phase", "three-phase"]),
+        ]
+        if calls == 1:
+            blocks.insert(3, DocumentBlock(ref="p3612.document.2"))
+        else:
+            assert retry is not None and "p3612.document.2" in retry
+        return TurnOutput(language="en", blocks=blocks), facts
+
+    result = run(_request(), generate, Route("pairing"))
+    assert result.grounded is True
+    assert result.fallback is False
+    assert result.attempts == 2
+    assert [block.type for block in result.output.blocks] == [
+        "text",
+        "cards",
+        "document",
+        "ask",
+    ]
+    text = result.output.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert text.text == "These inverters are released."
+    documents = [
+        block for block in result.output.blocks if isinstance(block, DocumentBlock)
+    ]
+    assert [block.ref for block in documents] == ["p3612.document.1"]
+
+
+def test_an_outside_document_on_a_german_turn_is_retried_in_german() -> None:
+    facts = _facts()
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        blocks = [
+            TextBlock(text="Siehe das Handbuch.", refs=["4107"]),
+            CardsBlock(product_ids=[4107]),
+        ]
+        if retry is None:
+            blocks.insert(1, DocumentBlock(ref="p3612.document.2"))
+        else:
+            assert "p3612.document.2" in retry
+        return TurnOutput(language="de", blocks=blocks), facts
+
+    request = TurnRequest(
+        conversation_id="c396",
+        messages=[TurnMessage(role="user", content="Welche Batterien passen?")],
+        locale="de",
+    )
+    result = run(request, generate)
+
+    assert result.grounded is True and result.fallback is False
+    assert result.attempts == 2
+    assert [block.type for block in result.output.blocks] == ["text", "cards"]
+    text = result.output.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert text.text == "Siehe das Handbuch."
+    assert german_is_clean(text.text)
+
+
+def test_an_invented_citation_does_not_outrank_the_login_sentence() -> None:
+    guest = _guest_inquiry()
+    guest.product_ids = {3612}
+    output = fallback(guest, "de", invented_citation=True)
+    assert isinstance(output.blocks[0], TextBlock)
+    assert output.blocks[0].text == LOGIN_REQUIRED["de"]
+    assert not any(block.type == "cards" for block in output.blocks)
+
+
+def _released_pair() -> TurnFacts:
+    """One released check-compatibility set: inverter 6528, battery 3612."""
+    payload: dict[str, Any] = {"verdict": "released", "conditions": [], "documents": []}
+    facts = collect("linker/check-compatibility", payload, "en")
+    facts.tool_calls.append(
+        {
+            "name": "linker/check-compatibility",
+            "arguments": {"inverter_id": 6528, "battery_id": 3612},
+            "ok": True,
+            "result": payload,
+        }
+    )
+    facts.product_ids.update({6528, 3612})
+    facts.qualified_ids.update({6528, 3612})
+    return facts
+
+
+def test_a_degraded_pairing_answer_does_not_gain_cards() -> None:
+    """#366/#410: the degraded sentence stays without product cards.
+
+    route model/pairing and one released set used to append CardsBlock
+    [6528, 3612] after `_degraded`.
+    """
+    facts = _released_pair()
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        del retry
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[
+                    TextBlock(text="See the manual, item 2."),
+                    DocumentBlock(ref="p3612.document.2"),
+                ],
+            ),
+            facts,
+        )
+
+    for name in ("pairing", "model"):
+        result = run(_request(), generate, Route(name))
+        assert result.fallback is True
+        assert [block.type for block in result.output.blocks] == ["handoff"]
+        handoff = result.output.blocks[0]
+        assert isinstance(handoff, HandoffBlock)
+        assert handoff.summary == DEGRADED["en"]
+        assert not any(block.type == "cards" for block in result.output.blocks)
+
+
+def test_a_product_id_outside_the_turn_keeps_the_partner_cards() -> None:
+    """Product ids keep the card rules. They do not ship the degraded sentence."""
+    facts = _released_pair()
+
+    def generate(
+        _request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        del retry
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[
+                    TextBlock(text="These inverters are released.", refs=["9999"]),
+                    CardsBlock(product_ids=[9999]),
+                ],
+            ),
+            facts,
+        )
+
+    result = run(_request(), generate, Route("pairing"))
+    assert result.fallback is True
+    assert not any(
+        isinstance(block, HandoffBlock) and block.summary == DEGRADED["en"]
+        for block in result.output.blocks
+    )
+    cards = [block for block in result.output.blocks if isinstance(block, CardsBlock)]
+    assert cards
+    assert 6528 in cards[0].product_ids
+    assert 3612 in cards[0].product_ids
+
+
+def test_cites_outside_turn_reads_the_kind_from_the_check() -> None:
+    """The kind is data on the check, not a parse of the failure prose."""
+    from linker_genie.ground import Citation, check, cites_outside_turn
+
+    empty = TurnFacts()
+
+    document = check(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="See the manual."),
+                DocumentBlock(ref="p3612.document.2"),
+            ],
+        ),
+        empty,
+    )
+    assert document.citations == (Citation("document", "p3612.document.2"),)
+    assert cites_outside_turn(document.citations)
+
+    chunk = check(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(
+                    text="The manual says so.",
+                    refs=["770ccafa080c-p37-63a0f610"],
+                )
+            ],
+        ),
+        empty,
+    )
+    assert chunk.citations == (Citation("chunk", "770ccafa080c-p37-63a0f610"),)
+    assert cites_outside_turn(chunk.citations)
+
+    known = TurnFacts()
+    known.product_ids = {6528}
+    product = check(
+        TurnOutput(
+            language="en",
+            blocks=[
+                TextBlock(text="These inverters are released.", refs=["9999"]),
+                CardsBlock(product_ids=[9999]),
+            ],
+        ),
+        known,
+    )
+    assert Citation("product", "9999") in product.citations
+    assert not cites_outside_turn(product.citations)
+
+    numeric = check(
+        TurnOutput(
+            language="en",
+            blocks=[TextBlock(text="See this product.", refs=["6528"])],
+        ),
+        empty,
+    )
+    assert numeric.citations == (Citation("product", "6528"),)
+    assert not cites_outside_turn(numeric.citations)
+
+    prefixed = check(
+        TurnOutput(
+            language="en",
+            blocks=[TextBlock(text="See this product.", refs=["p6528"])],
+        ),
+        empty,
+    )
+    assert prefixed.citations == (Citation("product", "p6528"),)
+    assert not cites_outside_turn(prefixed.citations)
+
+    placeholder = check(
+        TurnOutput(
+            language="en",
+            blocks=[TextBlock(text="Power is {fact:p6528.ac_power_kw}.")],
+        ),
+        empty,
+    )
+    assert placeholder.citations == (Citation("placeholder", "p6528.ac_power_kw"),)
+    assert not cites_outside_turn(placeholder.citations)
 
 
 def test_tool_retries_match_the_ability_attempt_count() -> None:

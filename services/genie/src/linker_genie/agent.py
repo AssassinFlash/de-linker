@@ -545,7 +545,13 @@ def _user_prompt(
         # older line. A turn that failed both starts with the language prefix,
         # and the grounding reasons follow in the same sentence.
         if retry_reason.startswith(LANGUAGE_RETRY_PREFIX):
-            lines.append("The previous answer used the wrong language. " + retry_reason)
+            lines.append(
+                "The previous answer used the wrong language. "
+                + retry_reason
+                + " Rewrite the whole answer in that language. The page, the "
+                "document chunks and the tool results may be in the other "
+                "language; they do not choose the answer."
+            )
         else:
             lines.append("The previous answer failed grounding: " + retry_reason)
         lines.append("Produce a new structured turn that passes the checks.")
@@ -580,6 +586,16 @@ def _user_prompt(
         "get-product listed this turn — such a ref exists only after get-product "
         "returned it) is never a placeholder and never a URL in "
         'the text: add a block {"type":"document","ref":"<that ID>"}. '
+        "Cite only a ref that appears in this turn's tool results. "
+        "A document, a chunk and a product the tools did not return are not cited. "
+        "When check-compatibility returned not_released, the text is only "
+        "{fact:compat.condition.N} for each condition, in order, and document "
+        "blocks for that check's compat.document.N. No cards and no other "
+        "sentence. When search-products for inverters, with the battery model "
+        "as text, returned no qualified product, the next call is "
+        "search-products with with_pairings true and text set to the one "
+        "family word in the datasheet title. Do not call search-knowledge "
+        "instead. "
         "Never write article, catalogue, cart or basket (Artikel, Katalog, "
         "Warenkorb): say product, product category, solution draft. "
         "Every ID of a cards block must appear in the text block's refs. "

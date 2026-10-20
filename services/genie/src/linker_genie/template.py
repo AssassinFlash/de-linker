@@ -37,6 +37,12 @@ Three shapes, each inside the protocol set by construction
   sentence do not. An ability failure is not the sales mailbox. A request
   for a person is answered before this template (app._answer). Login still
   outranks this.
+- A not_released pair check with no released set (`compat.verdict` is
+  `not_released`): the check's own condition facts and documents, no cards.
+  The service adds no sentence of its own; the conditions are tool data
+  (#396).
+- A document or chunk ref this turn did not return (`invented_citation`):
+  the degraded sentence and no cards (#396). A product id is not this case.
 - A tool whose pydantic-ai retry budget is spent (`exhausted`): the degraded
   sentence only, and no cards. The route may already hold product ids; they
   are not shown as a normal match. This is stricter than a fatal failure
@@ -56,7 +62,7 @@ Three shapes, each inside the protocol set by construction
 
 from __future__ import annotations
 
-from linker_genie.facts import TurnFacts, stock_rows
+from linker_genie.facts import TurnFacts, pairing_card_sets, stock_rows
 from linker_genie.failure import FailureClass
 from linker_genie.hydrate import hydrate
 from linker_genie.route import (
@@ -226,6 +232,58 @@ def login_required(locale: str) -> TurnOutput:
     )
 
 
+def _pair_document_refs(facts: TurnFacts) -> list[str]:
+    """Document facts of the pair check, in the tool's order.
+
+    `compat.document.0` is that check. `compat.document.3612.0` is a battery
+    on a search-products pairing row and is a different answer.
+    """
+    found: list[tuple[int, str]] = []
+    for fact_id in facts.documents:
+        head, _, tail = fact_id.rpartition(".")
+        if head == "compat.document" and tail.isdigit():
+            found.append((int(tail), fact_id))
+    return [fact_id for _, fact_id in sorted(found)]
+
+
+def _pair_condition_refs(facts: TurnFacts) -> list[str]:
+    """Condition facts of the pair check, in the tool's order.
+
+    `compat.condition.0` is that check. `compat.condition.3612.0` is a battery
+    on a search-products pairing row and is a different answer.
+    """
+    found: list[tuple[int, str]] = []
+    for fact_id in facts.facts:
+        head, _, tail = fact_id.rpartition(".")
+        if head == "compat.condition" and tail.isdigit():
+            found.append((int(tail), fact_id))
+    return [fact_id for _, fact_id in sorted(found)]
+
+
+def _not_released_fallback(facts: TurnFacts, language: Locale) -> TurnOutput | None:
+    """The check's own conditions, when the pair is not released.
+
+    This runs only after grounding failed twice. The sentences are the
+    contract facts (`compat.condition.N`) the tool returned this turn, the
+    same placeholders the prompt asks the model to write; the service adds no
+    sentence of its own. A released set in the same turn stays on the card
+    path. No condition fact means no sentence is invented. The pair itself is
+    not shown as cards. Documents the check returned stay the next step.
+    """
+    verdict = facts.facts.get("compat.verdict")
+    if verdict is None or verdict.value != "not_released":
+        return None
+    if pairing_card_sets(facts):
+        return None
+    conditions = _pair_condition_refs(facts)
+    if not conditions:
+        return None
+    text = " ".join(f"{{fact:{fact_id}}}" for fact_id in conditions)
+    blocks: list[Block] = [TextBlock(text=text)]
+    blocks.extend(DocumentBlock(ref=ref) for ref in _pair_document_refs(facts))
+    return hydrate(TurnOutput(language=language, blocks=blocks), facts, language)
+
+
 def _extreme_fallback(
     facts: TurnFacts, language: Locale, route: Route | None = None
 ) -> TurnOutput | None:
@@ -390,6 +448,7 @@ def fallback(
     exhausted: bool = False,
     failure_class: FailureClass | None = None,
     raised: bool = False,
+    invented_citation: bool = False,
 ) -> TurnOutput:
     """A protocol-set answer for a turn grounding refused twice, in `locale`.
 
@@ -406,6 +465,12 @@ def fallback(
     None. That is not a grounding miss: on a shaped route the answer is the
     degraded sentence, findings kept, not the signed shape. A grounding miss
     leaves `raised` false and still owes the shape.
+
+    `invented_citation` is a document or chunk ref this turn's tools did not
+    return (#396). A product id keeps the card fallback. The degraded
+    sentence and no cards follow, except a not_released pair: its answer is
+    the check's own conditions and documents, built here from the tool
+    facts, so no invented ref can reach it.
     """
     language = language_of(locale)
     # The login fact outranks every other shape. A guest Proforma question
@@ -434,6 +499,17 @@ def fallback(
         shaped = _shape_fallback(route, language)
         if shaped is not None:
             return shaped
+    # A not_released pair has no released cards to dump. The check's conditions
+    # are the answer, also when the model cited a ref outside this turn: the
+    # answer is assembled from tool facts, not from the model's failed draft.
+    refused = _not_released_fallback(facts, language)
+    if refused is not None:
+        return refused
+    # The model cited a document or chunk that this turn did not return.
+    # Product ids the route already collected are not a match, and the
+    # matching-products sentence would hide the failure.
+    if invented_citation:
+        return _degraded(language)
     # The applied winner is the whole fallback. The named-model clarification
     # would add the other cards (#363, #364), which an extreme answer refuses.
     # An applied extreme shows that one card. Codes named in the same question

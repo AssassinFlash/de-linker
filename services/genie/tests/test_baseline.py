@@ -260,6 +260,7 @@ def test_regexes_of_every_row_compile() -> None:
         patterns = [
             *expect.get("all", []),
             *expect.get("none", []),
+            *expect.get("absence_any", []),
             *expect.get("no_clause", []),
             *expect.get("no_figure_on", []),
         ]
@@ -522,6 +523,26 @@ def test_a_clearance_answer_with_all_four_values_passes() -> None:
     assert check(row, good, FEED_TOKENS) == []
 
 
+def test_b15_cabinet_dimensions_from_the_quick_guide_are_traceable() -> None:
+    """Page 1 of the quick guide prints 1065 x 650 x 1221 mm beside the clearances.
+
+    The cited chunk is a70cb4c39824-p1 ([n1=1065 mm], [n2=650 mm], [n3=1221 mm]).
+    """
+    row = next(item for item in ROWS if item["id"] == "b15-de")
+    sized = turn(
+        [
+            text(
+                "Maße des Schranks: 1065 mm Höhe, 650 mm Breite und 1221 mm Tiefe. "
+                "Mindestabstand 1500 mm."
+            ),
+            {"type": "document", "ref": "a70cb4c39824-p1-5a1f6421"},
+        ],
+        language="de",
+    )
+    failures = check(row, sized, FEED_TOKENS)
+    assert not any(item.startswith("number ") for item in failures), failures
+
+
 def test_a_missing_clearance_value_fails() -> None:
     row = next(item for item in ROWS if item["id"] == "b15-en")
     thin = turn(
@@ -554,6 +575,15 @@ def test_numbers_are_traceable_through_units_and_catalogue_codes() -> None:
     assert untraceable_numbers("The CB2 cabinet", [], catalog) == []
     # A designation from the manual for equipment we do not sell (CH2).
     assert untraceable_numbers("with the CH2 inverter", [], catalog) == []
+    # A hyphenated accessory code (b09-de, EF BD-JC-S2) is a name. The digit
+    # in the last segment is not a measurement. ground.bare_numbers agrees.
+    assert (
+        untraceable_numbers(
+            "Für eine Kaskade ist der Anschlusskasten EF BD-JC-S2 erforderlich.",
+            [],
+        )
+        == []
+    )
     # A measurement is not a designation: its digits are checked.
     assert untraceable_numbers("1500mm", [], catalog) == ["1500"]
 
@@ -997,6 +1027,245 @@ def test_b09_content_assertions_fail_a_vague_offer_even_if_a_judge_would_pass() 
     assert held == ("needs-judge", [])
     passed = grade_verdict(row["assertion"], [], judge=True, judged=("pass", []))
     assert passed == ("pass", [])
+
+
+# Equivalent absence wording from the contract and from the 2026-10-19 baseline.
+# compatibility.json line 511: HD-P3 with GW*-BAT-D-G2[01] is not_released.
+_B09_ABSENCE = (
+    "This pairing is not released.",
+    "The pairing is not documented as released.",
+    "There is no documented pairing.",
+    "Our data holds no released pairing for this combination.",
+    "The cited documents do not list this pair.",
+    "Die Prüfung ergibt keine Freigabe.",
+    "Die Kombination ist nicht freigegeben.",
+    "Die Kombination ist nicht dokumentiert.",
+    "Es gibt kein dokumentiertes Pairing.",
+    "Ihre Kombination führen unsere Unterlagen nicht auf.",
+    "Ein dokumentiertes Pairing für das genannte Gerät gibt es nicht.",
+    "Damit kann ich die Kombination nicht freigeben.",
+    "Ohne dokumentierte Freigabe empfehle ich sie nicht.",
+    "Dieses Modell führt unsere Produktdatenbank nicht.",
+    # Turn 232, 2026-10-19T17:38:55Z. "do not list this pairing" did not match.
+    "Our documents do not list a pairing between the EcoFlow inverter you named "
+    "and the GoodWe battery module shown here.",
+    # Turn 233, 2026-10-19T17:39:20Z. The comma splits "kein dokumentiertes Pairing".
+    "Für die genannte Kombination kann ich kein dokumentiertes, freigegebenes "
+    "Pairing bestätigen. Die Kombination ist nicht als freigegeben hinterlegt.",
+)
+
+
+def test_b09_accepts_equivalent_absence_phrasings() -> None:
+    for row_id in ("b09-en", "b09-de"):
+        row = next(item for item in ROWS if item["id"] == row_id)
+        for phrase in _B09_ABSENCE:
+            failures = check(
+                row,
+                turn(
+                    [
+                        text(phrase),
+                        {"type": "document", "ref": "compat.document.3612.0"},
+                    ],
+                    language=row["lang"],
+                ),
+                FEED_TOKENS,
+            )
+            assert not any(item.startswith("missing /") for item in failures), (
+                row_id,
+                phrase,
+                failures,
+            )
+
+
+def test_b09_still_rejects_a_release_claim() -> None:
+    english = next(item for item in ROWS if item["id"] == "b09-en")
+    german = next(item for item in ROWS if item["id"] == "b09-de")
+    english_failures = check(
+        english,
+        turn(
+            [
+                text("This pair is released and can be combined."),
+                {"type": "document", "ref": "compat.document.3612.0"},
+            ]
+        ),
+        FEED_TOKENS,
+    )
+    german_failures = check(
+        german,
+        turn(
+            [
+                text("Das Paar ist freigegeben und kann kombiniert werden."),
+                {"type": "document", "ref": "compat.document.3612.0"},
+            ],
+            language="de",
+        ),
+        FEED_TOKENS,
+    )
+    assert any("must not match" in item for item in english_failures)
+    assert any("must not match" in item for item in german_failures)
+    # A positive release of this battery, after an absence sentence, is still
+    # a release claim. The narrow "this pair is released" guard used to pass it.
+    false_english = check(
+        english,
+        turn(
+            [
+                text(
+                    "There is no documented pairing. However, the "
+                    "GW9.0-BAT-D-G20 battery is released with the EcoFlow "
+                    "OCEAN 2 HD-P3-15K."
+                ),
+                {"type": "document", "ref": "compat.document.3612.0"},
+            ]
+        ),
+        FEED_TOKENS,
+    )
+    false_german = check(
+        german,
+        turn(
+            [
+                text(
+                    "Es gibt kein dokumentiertes Pairing. Die Batterie "
+                    "GW9.0-BAT-D-G20 ist jedoch mit dem EcoFlow OCEAN 2 "
+                    "HD-P3-15K freigegeben."
+                ),
+                {"type": "document", "ref": "compat.document.3612.0"},
+            ],
+            language="de",
+        ),
+        FEED_TOKENS,
+    )
+    assert any("must not match" in item for item in false_english)
+    assert any("must not match" in item for item in false_german)
+    # The EcoFlow batteries are released. Saying so beside the absence is the
+    # contract, and it is not a release of the asked GoodWe pair.
+    named = check(
+        english,
+        turn(
+            [
+                text(
+                    "There is no documented pairing. Those pairings are released "
+                    "with the conditions in the document."
+                ),
+                {"type": "cards", "product_ids": [6481]},
+            ]
+        ),
+        FEED_TOKENS,
+    )
+    assert not any(
+        "must not match" in item or item.startswith("missing /") for item in named
+    )
+    # A general rule ("a battery without a released verdict") is not a release
+    # of this pair. The verb-first guard used to match it.
+    general = check(
+        english,
+        turn(
+            [
+                text(
+                    "A pairing between the GoodWe battery module you named and "
+                    "the EcoFlow inverter is not documented in our product data. "
+                    "Pairings are released per inverter and battery, and a battery "
+                    "without a released verdict is not recommended."
+                ),
+                {"type": "document", "ref": "compat.document.3612.0"},
+            ]
+        ),
+        FEED_TOKENS,
+    )
+    assert not any(
+        "must not match" in item or item.startswith("missing /") for item in general
+    ), general
+
+
+def test_b10_absence_with_the_battery_card_fails() -> None:
+    """Local b10-de said there was no pairing and showed card 3612, the battery.
+
+    The battery is released. Absence fails for that reason even when a card
+    is shown. 3612 is not a partner, so the partner-card rule also fails.
+    The message is not "no documented pairing" — that sentence is for a
+    battery the ground does not release.
+    """
+    row = next(item for item in ROWS if item["id"] == "b10-de")
+    failures = check(
+        row,
+        turn(
+            [
+                text("Für die Batterie ist kein dokumentiertes Pairing hinterlegt."),
+                {"type": "cards", "product_ids": [3612]},
+            ],
+            language="de",
+        ),
+        FEED_TOKENS,
+    )
+    assert any("released battery" in item for item in failures)
+    assert any("none of products" in item for item in failures)
+    assert not any("unrelated cards" in item for item in failures)
+    assert not any("no documented pairing, but" in item for item in failures)
+
+
+def test_b10_a_no_pairing_sentence_about_the_released_battery_fails() -> None:
+    """compatibility.json line 1546 releases this battery. Absence is not a pass."""
+    german = next(item for item in ROWS if item["id"] == "b10-de")
+    english = next(item for item in ROWS if item["id"] == "b10-en")
+    german_failures = check(
+        german,
+        turn(
+            [
+                text(
+                    "Für die Batterie GW9.0-BAT-D-G20 gibt es kein "
+                    "dokumentiertes Pairing."
+                )
+            ],
+            language="de",
+        ),
+        FEED_TOKENS,
+    )
+    english_failures = check(
+        english,
+        turn([text("There is no documented pairing for this battery.")]),
+        FEED_TOKENS,
+    )
+    assert any("released battery" in item for item in german_failures)
+    assert any("none of products" in item for item in german_failures)
+    assert any("released battery" in item for item in english_failures)
+    assert any("none of products" in item for item in english_failures)
+
+
+def test_b10_a_no_pairing_sentence_fails_even_with_a_partner_card() -> None:
+    """The released rule is unconditional: the card does not excuse absence.
+
+    grade.py:532 fails a no-pairing sentence on a released row before the
+    partner-card check runs, so a partner card cannot turn it into a pass.
+    """
+    row = next(item for item in ROWS if item["id"] == "b10-en")
+    failures = check(
+        row,
+        turn(
+            [
+                text("There is no documented pairing for this battery."),
+                {"type": "cards", "product_ids": [6528]},
+                {"type": "document", "ref": "compat.document.3612.0"},
+            ]
+        ),
+        FEED_TOKENS,
+    )
+    assert any("released battery" in item for item in failures)
+    assert not any("none of products" in item for item in failures)
+
+
+def test_b10_a_partner_card_passes() -> None:
+    row = next(item for item in ROWS if item["id"] == "b10-en")
+    failures = check(
+        row,
+        turn(
+            [
+                text("These inverters have a released pairing."),
+                {"type": "cards", "product_ids": [6528]},
+                {"type": "document", "ref": "compat.document.3612.0"},
+            ]
+        ),
+        FEED_TOKENS,
+    )
+    assert not any("products" in item or "unrelated" in item for item in failures)
 
 
 def test_the_report_keeps_judge_and_review_rows_in_the_same_table() -> None:

@@ -644,8 +644,44 @@ def test_a_released_pair_check_restores_the_omitted_product() -> None:
         assert str(INVERTER) in _text(result.output).refs
 
 
-def test_a_pair_check_that_is_not_released_is_not_filled() -> None:
-    facts = _pair_facts("not_released", [INVERTER, BATTERIES[0]])
+_CONDITION_EN = (
+    "The cited documents do not list this pair. This states "
+    "no incompatibility and makes no claim about documents not checked."
+)
+_CONDITION_DE = (
+    "Die zitierten Dokumente führen dieses Paar nicht auf. "
+    "Das stellt keine Inkompatibilität fest."
+)
+
+
+def _not_released_facts(locale: Locale) -> TurnFacts:
+    """One not_released check, conditions in `locale`, plus its document."""
+    checked = collect(
+        "linker/check-compatibility",
+        {
+            "verdict": "not_released",
+            "conditions": [{"en": _CONDITION_EN, "de": _CONDITION_DE}],
+            "documents": [
+                {
+                    "url": (
+                        "https://de-linker.com/wp-content/uploads/2026/08/"
+                        "ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf"
+                    )
+                }
+            ],
+        },
+        locale,
+    )
+    return merge([_pair_facts("not_released", [INVERTER, BATTERIES[0]]), checked])
+
+
+def test_a_grounded_absence_answer_is_not_rewritten() -> None:
+    """A not_released answer that passes grounding ships as written (#396).
+
+    The service does not replace it with a verdict sentence. A condition the
+    model cited stays, and so does the check's document. The pair is not
+    filled in as cards the model did not ask for.
+    """
 
     def generate(
         request: TurnRequest, retry: str | None
@@ -653,12 +689,150 @@ def test_a_pair_check_that_is_not_released_is_not_filled() -> None:
         del request
         assert retry is None
         return (
-            _answer("de", "Dieses Paar ist nicht freigegeben.", [BATTERIES[0]]),
-            facts,
+            TurnOutput(
+                language="en",
+                blocks=[
+                    TextBlock(
+                        text=(
+                            "Our documents do not state that this inverter "
+                            "works with this battery. {fact:compat.condition.0}"
+                        )
+                    ),
+                    DocumentBlock(ref="compat.document.0"),
+                ],
+            ),
+            _not_released_facts("en"),
         )
 
-    result = run(_request("de"), generate, Route("pairing", no_handoff=True))
-    assert _card_ids(result.output) == [BATTERIES[0]]
+    result = run(_request("en"), generate, Route("products", no_handoff=True))
+    assert result.grounded and not result.fallback and result.attempts == 1
+    text = _text(result.output).text
+    assert text.startswith(
+        "Our documents do not state that this inverter works with this battery."
+    )
+    assert _CONDITION_EN in text
+    assert "This pairing is not released." not in text
+    assert not any(isinstance(block, CardsBlock) for block in result.output.blocks)
+    documents = [
+        block for block in result.output.blocks if isinstance(block, DocumentBlock)
+    ]
+    assert [block.ref for block in documents] == ["compat.document.0"]
+
+    def generate_de(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        del request
+        assert retry is None
+        return (
+            TurnOutput(
+                language="de",
+                blocks=[
+                    TextBlock(
+                        text=(
+                            "Unsere Dokumente nennen nicht, dass dieser "
+                            "Wechselrichter mit dieser Batterie funktioniert. "
+                            "{fact:compat.condition.0}"
+                        )
+                    ),
+                    DocumentBlock(ref="compat.document.0"),
+                ],
+            ),
+            _not_released_facts("de"),
+        )
+
+    german = run(_request("de"), generate_de, Route("products", no_handoff=True))
+    assert german.grounded and not german.fallback and german.attempts == 1
+    german_text = _text(german.output).text
+    assert german_text.startswith(
+        "Unsere Dokumente nennen nicht, dass dieser Wechselrichter "
+        "mit dieser Batterie funktioniert."
+    )
+    assert _CONDITION_DE in german_text
+    assert "Die Kombination ist nicht freigegeben." not in german_text
+    assert not any(isinstance(block, CardsBlock) for block in german.output.blocks)
+
+
+def test_a_not_released_pair_that_fails_grounding_uses_the_contract_conditions() -> (
+    None
+):
+    """A bare number is not replaced by a new verdict sentence (#396).
+
+    Grounding fails twice. The fallback is the check's own condition and its
+    document, not product cards and not an unreviewed sentence.
+    """
+
+    def generate_en(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        del request, retry
+        return (
+            _answer(
+                "en",
+                "The EcoFlow OCEAN 2 has no released pairing.",
+                [BATTERIES[0]],
+            ),
+            _not_released_facts("en"),
+        )
+
+    english = run(_request("en"), generate_en, Route("products", no_handoff=True))
+    assert english.fallback and not english.grounded and english.attempts == 2
+    assert _text(english.output).text == _CONDITION_EN
+    assert "This pairing is not released." not in _text(english.output).text
+    assert not any(isinstance(block, CardsBlock) for block in english.output.blocks)
+    documents = [
+        block for block in english.output.blocks if isinstance(block, DocumentBlock)
+    ]
+    assert [block.ref for block in documents] == ["compat.document.0"]
+
+    def generate_de(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        del request, retry
+        return (
+            _answer("de", "Die Kombination trägt die Ziffer 2.", [BATTERIES[0]]),
+            _not_released_facts("de"),
+        )
+
+    german = run(_request("de"), generate_de, Route("products", no_handoff=True))
+    assert german.fallback and not german.grounded
+    assert _text(german.output).text == _CONDITION_DE
+    assert "Die Kombination ist nicht freigegeben." not in _text(german.output).text
+    assert not any(isinstance(block, CardsBlock) for block in german.output.blocks)
+
+
+def test_a_not_released_pair_that_cites_outside_the_turn_still_gets_the_conditions() -> (
+    None
+):
+    """b09's model guessed compat.condition.1 and compat.document.1 twice.
+
+    Those refs are outside this turn, so they cannot ship. The answer is the
+    check's own condition and document, not the degraded sentence: it is
+    assembled from the turn's tool facts, and the contract facts are there.
+    """
+
+    def generate(
+        request: TurnRequest, retry: str | None
+    ) -> tuple[TurnOutput, TurnFacts]:
+        del request, retry
+        return (
+            TurnOutput(
+                language="en",
+                blocks=[
+                    TextBlock(text="{fact:compat.condition.1}"),
+                    DocumentBlock(ref="compat.document.1"),
+                ],
+            ),
+            _not_released_facts("en"),
+        )
+
+    result = run(_request("en"), generate, Route("products", no_handoff=True))
+    assert result.fallback and not result.grounded and result.attempts == 2
+    assert [block.type for block in result.output.blocks] == ["text", "document"]
+    assert _text(result.output).text == _CONDITION_EN
+    documents = [
+        block for block in result.output.blocks if isinstance(block, DocumentBlock)
+    ]
+    assert [block.ref for block in documents] == ["compat.document.0"]
 
 
 def test_two_pair_checks_are_not_merged() -> None:

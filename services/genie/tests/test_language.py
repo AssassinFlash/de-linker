@@ -525,3 +525,124 @@ def test_339_language_cases_hold() -> None:
             assert (failure is not None) is case["fails"]
     assert HANDOFF_PLACEHOLDER == "{fact:handoff.sentence}"
     assert LOGIN_PLACEHOLDER == "{fact:inquiry.login}"
+
+
+# Prod b12-de, b15-de and b47-de shipped the template after `answer in German`.
+# cycle.run does not store the rejected draft, so that text is not the cause
+# of those rows and these strings do not prove one. They lock the detector:
+# a German answer stays German, "63 A" is the unit, and a clear English
+# answer still fails a German check. The live turn's meta and answer are
+# the evidence for the rows.
+B12_DE = (
+    "Der H2-10K-T3 hat laut Datenblatt **3 MPPT-Eingänge**. "
+    "Pro MPP-Tracker sind dabei jeweils zwei Strings möglich."
+)
+B15_DE = (
+    "### Mindestabstände\n\n"
+    "Um den gesamten Batterieschrank herum muss für eine gute Luftzirkulation "
+    "am Aufstellort ringsum freier Raum bleiben. Die Kurzanleitung nennt dafür "
+    "Mindestabstände von 1500 mm, 400 mm, 500 mm, 1000 mm und 500 mm; welche "
+    "Seite welchen Abstand braucht, zeigt die Abbildung im Dokument."
+)
+B47_PAGE = "Aus dem Netz 14,5 kVA (interner Bypass 63 A in dieser Spalte)."
+B47_SHORT = "Interner Bypass: 14,5 kVA vom Netz."
+B47_AMPERE = "Der interne Bypass beträgt 63 A."
+B47_EN = (
+    "On this page the internal bypass is the rating for the path that feeds "
+    "your backed-up loads straight from the grid"
+)
+
+
+def test_the_real_german_answers_stay_german() -> None:
+    """German prose stays German, including a bare ampere unit.
+
+    A bare "63 A" is the unit, not the English article. A clear English
+    answer still fails a German check. These strings are detector fixtures.
+    They are not the rejected drafts of b12-de, b15-de or b47-de: those
+    drafts were not stored.
+    """
+    for prose in (B12_DE, B15_DE, B47_PAGE, B47_SHORT, B47_AMPERE):
+        assert clear_language(prose) == "de", prose
+        assert language_failure(_output("de", prose), "de") is None
+
+    assert clear_language("The H2-10K-T3 has 3 MPPTs.") == "en"
+    assert clear_language(B47_EN) == "en"
+    assert language_failure(_output("en", B47_EN), "de") is not None
+    assert language_failure(_output("de", "The internal bypass is 14.5 kVA."), "de")
+    assert clear_language("Show a datasheet.") == "en"
+
+
+def test_im_and_ins_do_not_make_english_mixed() -> None:
+    """`im` and `ins` are English words as well as German contractions."""
+    looking = "Im looking for a battery"
+    outs = "the ins and outs"
+    assert clear_language(looking) == "en"
+    assert clear_language(outs) == "en"
+    assert answer_language(looking, "de") == "en"
+    assert answer_language(outs, "de") == "en"
+
+
+def test_typ_a_is_a_unit_not_the_english_article() -> None:
+    """'Typ A' / 'type A' is the RCD characteristic (#396)."""
+    german = "Der Fehlerstromschutzschalter Typ A ist erforderlich."
+    short = "Schutzart IP65, Typ A."
+    assert clear_language(german) == "de"
+    assert language_failure(_output("de", german), "de") is None
+    assert clear_language(short) is None
+    assert clear_language("A type A breaker is required.") == "en"
+
+
+def test_a_german_address_does_not_flip_an_english_answer() -> None:
+    """A street name is data (#404), not a vote for German."""
+    prose = "The page prints Linker Technology GmbH, Hauptstraße 3, 39179 Barleben."
+    assert clear_language(prose) == "en"
+    assert language_failure(_output("en", prose), "en") is None
+    quoted = 'The postal address is "Steinfeldstraße 3, 39179 Barleben".'
+    assert clear_language(quoted) == "en"
+    # A capitalised umlaut name inside English prose does not vote (#404).
+    # Alone, the same shape is the German content word.
+    assert clear_language("The page names Geschäftsführer Müller.") == "en"
+    assert clear_language("Verfügbarkeit?") == "de"
+    assert clear_language("Die Firma sitzt in der Hauptstraße.") == "de"
+
+
+def test_a_long_german_quotation_does_not_flip_an_english_answer() -> None:
+    """A quote has no character cap. Longer than 500 still does not vote (#396)."""
+    quoted = ("die und der " * 50).strip()
+    prose = f'The manual says "{quoted}". The battery is here.'
+    assert len(quoted) > 500
+    assert clear_language(prose) == "en"
+
+
+def test_the_language_retry_refuses_the_page_and_the_documents() -> None:
+    reason = language_failure(_output("en", ENGLISH_ANSWER), "de")
+    assert reason is not None
+    assert reason.startswith("answer in German")
+    assert "follow the customer's last message" in reason
+    assert "Do not follow the page text, the documents, or the tool results" in reason
+    prompt = _user_prompt(_request(GERMAN_QUESTION, "en"), reason)
+    assert "they do not choose the answer" in prompt
+    assert "Rewrite the whole answer in that language." in prompt
+
+    english, german = instructions("en"), instructions("de")
+    assert "They do not choose the answer." in english
+    assert "Sie bestimmen die Antwortsprache nicht." in german
+    assert "Never invent a ref" in english
+    assert "Erfinden Sie keine Referenz" in german
+    # b10: search-products with the battery model as the inverter text returned
+    # no products (live turns 179 and 180), so the released partners never
+    # entered the turn. The family-word search is what puts them there.
+    assert "family word" in english
+    assert "Familienwort" in german
+    assert "do not call search-knowledge in its place" in english
+    assert "search-knowledge nicht an ihrer Stelle" in german
+    assert "{fact:compat.condition.N}" in english
+    assert "{fact:compat.condition.N}" in german
+    assert "show the products this turn's tools returned as cards" not in english
+    assert (
+        "zeigen Sie die Produkte, die die Werkzeuge dieser Runde geliefert haben, als Karten"
+        not in german
+    )
+    assert "Cite only a ref that appears in this turn's tool results." in _user_prompt(
+        _request(ENGLISH_QUESTION, "en"), None
+    )

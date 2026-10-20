@@ -76,7 +76,7 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 from linker_genie.facts import Fact, TurnFacts, stock_rows
 from linker_genie.figures import AMOUNT, is_code
@@ -248,10 +248,27 @@ def bare_numbers(text: str, phrases: Sequence[str] = ()) -> list[str]:
     ]
 
 
+CitationKind = Literal["document", "chunk", "product", "placeholder", "ref"]
+
+
+@dataclass(frozen=True)
+class Citation:
+    """A ref the check refused, classified where the failure is raised.
+
+    `document` and `chunk` select the degraded sentence (#396). `product`,
+    `placeholder` and `ref` do not. `CheckResult.failures` stays prose for
+    the retry and the turn log. `cites_outside_turn` reads this record.
+    """
+
+    kind: CitationKind
+    ref: str
+
+
 @dataclass(frozen=True)
 class CheckResult:
     ok: bool
     failures: tuple[str, ...]
+    citations: tuple[Citation, ...] = ()
 
     @property
     def reason(self) -> str:
@@ -263,12 +280,19 @@ def check(
 ) -> CheckResult:
     """Run the anchoring checks. Empty failures means the turn is grounded."""
     failures: list[str] = []
-    failures.extend(_refs_and_placeholders(output, facts))
-    failures.extend(_cards_and_qualified(output, facts))
+    citations: list[Citation] = []
+    ref_failures, ref_citations = _refs_and_placeholders(output, facts)
+    failures.extend(ref_failures)
+    citations.extend(ref_citations)
+    card_failures, card_citations = _cards_and_qualified(output, facts)
+    failures.extend(card_failures)
+    citations.extend(card_citations)
     failures.extend(_actions(output, facts))
     failures.extend(_no_bare_numbers(output, facts))
     failures.extend(_login_required_is_a_login_request(output, facts))
-    failures.extend(_documents(output, facts))
+    document_failures, document_citations = _documents(output, facts)
+    failures.extend(document_failures)
+    citations.extend(document_citations)
     failures.extend(_domain_words(output))
     failures.extend(_no_price_in_text(output))
     failures.extend(_no_amount_from_attachments(output, facts))
@@ -279,7 +303,46 @@ def check(
         failures.extend(_route(output, facts, route))
         failures.extend(_named_models(output, facts, route))
         failures.extend(_stock(output, facts, route))
-    return CheckResult(ok=not failures, failures=tuple(failures))
+    return CheckResult(
+        ok=not failures,
+        failures=tuple(failures),
+        citations=tuple(citations),
+    )
+
+
+# A chunk id is built by `index/chunking.py` `_emit`: the document's hex
+# prefix, `-p{page}-`, a content digest, and an optional `-{n}` collision
+# suffix. The pattern spells that shape out, so a product id and a short id
+# such as `c1` do not match. Example: `770ccafa080c-p37-63a0f610`.
+_CHUNK_REF = re.compile(r"[0-9a-f]{12}-p\d+-[0-9a-f]{8}(?:-\d+)?")
+_OUTSIDE_KINDS = frozenset({"document", "chunk"})
+
+
+def _ref_kind(ref: str) -> CitationKind:
+    """The kind of a text ref, from the id itself.
+
+    A document id contains `.document.`. A product id is digits or `p` plus
+    digits. Anything else that matches `_CHUNK_REF` is a search-knowledge
+    chunk. The failure prose is not parsed.
+    """
+    if ".document." in ref:
+        return "document"
+    if ref.isdigit() or re.fullmatch(r"p\d+", ref):
+        return "product"
+    if _CHUNK_REF.fullmatch(ref) is not None:
+        return "chunk"
+    return "ref"
+
+
+def cites_outside_turn(citations: tuple[Citation, ...] | list[Citation]) -> bool:
+    """True when grounding refused a document or chunk this turn did not return.
+
+    That is the #396 defect (`p3612.document.2`, a chunk id). A product id
+    and a placeholder do not: they keep the card and absence rules, and the
+    turn is not replaced by the degraded sentence. The kind is `Citation`,
+    set where the failure is raised.
+    """
+    return any(item.kind in _OUTSIDE_KINDS for item in citations)
 
 
 def _model_texts(output: TurnOutput) -> list[str]:
@@ -294,12 +357,16 @@ def _model_texts(output: TurnOutput) -> list[str]:
     return texts
 
 
-def _documents(output: TurnOutput, facts: TurnFacts) -> list[str]:
+def _documents(
+    output: TurnOutput, facts: TurnFacts
+) -> tuple[list[str], list[Citation]]:
     failures: list[str] = []
+    citations: list[Citation] = []
     for block in output.blocks:
         if isinstance(block, DocumentBlock):
             if block.ref not in facts.documents:
                 failures.append(f"document {block.ref!r} is not in this turn's tools")
+                citations.append(Citation("document", block.ref))
             if block.label is not None or block.url is not None:
                 failures.append("a document block carries only its ref")
     for text in _model_texts(output):
@@ -311,7 +378,7 @@ def _documents(output: TurnOutput, facts: TurnFacts) -> list[str]:
                 failures.append(
                     f"placeholder {fact_id!r} would print a URL; use a document block"
                 )
-    return failures
+    return failures, citations
 
 
 def _no_price_in_text(output: TurnOutput) -> list[str]:
@@ -700,9 +767,12 @@ def _conflict_exempt(
     )
 
 
-def _refs_and_placeholders(output: TurnOutput, facts: TurnFacts) -> list[str]:
+def _refs_and_placeholders(
+    output: TurnOutput, facts: TurnFacts
+) -> tuple[list[str], list[Citation]]:
     known = facts.ids()
     failures: list[str] = []
+    citations: list[Citation] = []
     for block in output.blocks:
         if isinstance(block, TextBlock):
             for fact_id in leftover_placeholders(block.text):
@@ -710,9 +780,11 @@ def _refs_and_placeholders(output: TurnOutput, facts: TurnFacts) -> list[str]:
                     failures.append(
                         f"placeholder {fact_id!r} is not in this turn's tools"
                     )
+                    citations.append(Citation("placeholder", fact_id))
             for ref in block.refs:
                 if ref not in known:
                     failures.append(f"ref {ref!r} is not in this turn's tools")
+                    citations.append(Citation(_ref_kind(ref), ref))
         elif isinstance(block, HandoffBlock):
             # The handoff summary hydrates too (the team mailbox sentence is a
             # fact of the handoff-team tool), so its placeholder is checked.
@@ -721,11 +793,15 @@ def _refs_and_placeholders(output: TurnOutput, facts: TurnFacts) -> list[str]:
                     failures.append(
                         f"placeholder {fact_id!r} is not in this turn's tools"
                     )
-    return failures
+                    citations.append(Citation("placeholder", fact_id))
+    return failures, citations
 
 
-def _cards_and_qualified(output: TurnOutput, facts: TurnFacts) -> list[str]:
+def _cards_and_qualified(
+    output: TurnOutput, facts: TurnFacts
+) -> tuple[list[str], list[Citation]]:
     failures: list[str] = []
+    citations: list[Citation] = []
     text_product_refs: set[int] = set()
     for block in output.blocks:
         if isinstance(block, TextBlock):
@@ -741,6 +817,7 @@ def _cards_and_qualified(output: TurnOutput, facts: TurnFacts) -> list[str]:
                     failures.append(
                         f"product {product_id} is not in this turn's tool results"
                     )
+                    citations.append(Citation("product", str(product_id)))
                 if facts.qualified_ids and product_id not in facts.qualified_ids:
                     failures.append(
                         f"product {product_id} is not in search-products qualified"
@@ -749,7 +826,7 @@ def _cards_and_qualified(output: TurnOutput, facts: TurnFacts) -> list[str]:
                 extra = set(block.product_ids) - text_product_refs
                 for product_id in extra:
                     failures.append(f"card {product_id} is not cited in the text refs")
-    return failures
+    return failures, citations
 
 
 def _actions(output: TurnOutput, facts: TurnFacts) -> list[str]:
