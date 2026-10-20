@@ -1350,7 +1350,6 @@ def test_the_esa_battery_question_stamps_the_sentence_and_keeps_its_route(
         str(row["lang"]),
     )
     assert route.name in ("products", "pairing", "model")
-    assert route.name != "scripted"
     assert "esa battery" in route.reasons
     assert route.answer == ESA_BATTERY[str(row["lang"])]
     kept = with_page(
