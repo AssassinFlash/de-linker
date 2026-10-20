@@ -10,8 +10,10 @@ POST /turn/{id}/vote and POST /assistant/turn/{id}/vote store a customer's
 thumbs-up or thumbs-down for a logged turn. POST /summary writes the checked summary
 of a conversation an inquiry carries (summary.py, #244). POST
 /assistant/conversation/{id}/forget takes a deleted conversation's file readings out
-of the turn log. Every POST carries the shell's shared token and a capped body
-(gate.py). GET /health reports that the process is up.
+of the turn log. POST /pages/invalidate drops the cached text of pages that were
+just saved, so the next read is the page as it is now (page.py, #405). Every POST
+carries the shell's shared token and a capped body (gate.py). GET /health reports
+that the process is up.
 """
 
 from __future__ import annotations
@@ -47,6 +49,7 @@ from linker_genie.schema import (
     MAX_REQUEST_BYTES,
     Block,
     HandoffBlock,
+    PageInvalidate,
     TextBlock,
     TurnOutput,
     TurnRequest,
@@ -297,6 +300,26 @@ def forget(conversation_id: str) -> dict[str, int]:
     """The customer deleted the conversation, or Retention did: the reading text of
     its files leaves the turn log too (log.TurnLog.forget, #236)."""
     return {"purged": turn_log().forget(conversation_id)}
+
+
+@app.post("/pages/invalidate")
+def invalidate_pages(body: PageInvalidate) -> dict[str, int]:
+    """Drop cached page text and every cached solution draft (page.py, #405).
+
+    The shell calls this when a page, product, post or term is saved, including
+    when the German auto-translation writes the twin. The paths are the object,
+    its language twin, a previous slug, and the listings that show it (the blog
+    index, the post's categories and tags, the shop, the product's categories).
+    A path that was not cached does not add to the count. Pages that are none of
+    those stay cached. Filtered, searched, and paginated listings are not named;
+    they expire with the ten-minute TTL. Every cached solution draft is dropped:
+    the body names paths, not which draft contains a product.
+    """
+    forgotten = page_reader().invalidate(body.paths)
+    logger.info(
+        "page cache: forgot %d entries for %d paths", forgotten, len(body.paths)
+    )
+    return {"forgotten": forgotten}
 
 
 def _answer(

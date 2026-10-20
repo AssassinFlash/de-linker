@@ -455,3 +455,25 @@ class VoteRequest(Strict):
     """A customer's feedback on one logged turn: +1 or -1."""
 
     vote: Literal[1, -1]
+
+
+# Entries one process keeps (`page.PageReader`), and the most paths one
+# invalidation names. The site has 25 pages per language, a few blog posts,
+# 16 product categories and 106 products (snapshot 2026-10-18); 256 holds the
+# pages customers ask from. A save names a page, its language twin, the
+# previous slug, and the listings that show it. One call need not name more
+# paths than the process holds; the shell sends another call past this.
+# `PageCache::MAX_PATHS` is this same number (PHP cannot import it;
+# tests/test_page.py reads that line).
+CACHE_SIZE = 256
+
+
+class PageInvalidate(Strict):
+    """Pages whose cached text the shell asks the service to drop (#405).
+
+    One save names a page, its language twin, the previous slug, and the
+    listings that show it. `CACHE_SIZE` is the most paths one call carries;
+    the shell sends another call past that.
+    """
+
+    paths: list[str] = Field(min_length=1, max_length=CACHE_SIZE)

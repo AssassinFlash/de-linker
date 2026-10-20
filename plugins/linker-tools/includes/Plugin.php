@@ -18,6 +18,7 @@ use Linker\Tools\Genie\Entries;
 use Linker\Tools\Genie\Hero;
 use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\InquirySummary;
+use Linker\Tools\Genie\PageCache;
 use Linker\Tools\Genie\Preview;
 use Linker\Tools\Genie\Proxy;
 use Linker\Tools\Genie\QualityPage;
@@ -55,6 +56,7 @@ final class Plugin {
 	 * @param InquirySummary   $inquiry       The conversation summary an inquiry carries (#244).
 	 * @param InquiryRequest   $inquiry_card  The inquiry confirmation card's route (#250).
 	 * @param Hero             $hero          The home hero's Genie entry (#232).
+	 * @param PageCache        $page_cache    Drops Genie's cached copy of a page when it is saved (#405).
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -76,7 +78,8 @@ final class Plugin {
 		private readonly ContactRequest $contact,
 		private readonly InquirySummary $inquiry,
 		private readonly InquiryRequest $inquiry_card,
-		private readonly Hero $hero
+		private readonly Hero $hero,
+		private readonly PageCache $page_cache
 	) {}
 
 	/**
@@ -108,5 +111,7 @@ final class Plugin {
 		$this->mail->register();
 		$this->inquiry->register();
 		$this->hero->register();
+		// A saved page drops Genie's cached copy of it and of its language twin (#405).
+		$this->page_cache->register();
 	}
 }

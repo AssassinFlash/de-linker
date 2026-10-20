@@ -1,0 +1,33 @@
+{
+  "ticket": 405,
+  "regression": 339,
+  "about": "After a save, the next read-page is the page as it is now. Genie is not restarted. The chain is a local instance: wp_update_post, wp_after_insert_post, get_permalink, wp_remote_post, the gate, PageReader.invalidate, the next read.",
+  "command": "just page-cache-chain <instance>",
+  "test": "plugins/linker-tools/tests/php/Integration/PageCacheChainTest.php",
+  "cases": [
+    {
+      "id": "405-product-en",
+      "locale": "en",
+      "kind": "product",
+      "pass": "The English product is edited. The next read of its path contains the new title and sentence."
+    },
+    {
+      "id": "405-product-de",
+      "locale": "de",
+      "kind": "product",
+      "pass": "The German product twin is edited. The next read of its path contains the new title and sentence."
+    },
+    {
+      "id": "405-blog-en",
+      "locale": "en",
+      "kind": "post",
+      "pass": "The English blog post is edited. The next read of its path contains the new title and sentence."
+    },
+    {
+      "id": "405-blog-de",
+      "locale": "de",
+      "kind": "post",
+      "pass": "The German blog post twin is edited. The next read of its path contains the new title and sentence."
+    }
+  ]
+}
