@@ -1,0 +1,794 @@
+"""Run the #332 system-failure battery against the local c332 instance.
+
+Usage:
+    uv run --locked python run_faults.py [evidence_dir] [--only M500-EN,VPS-DOWN]
+
+Evidence stays under ~/de-linker-data. This script does not call de-linker.com.
+
+Timeouts and waits, and where the numbers come from:
+
+- Proxy::TURN_BUDGET is 60s (plugins/linker-tools/includes/Genie/Proxy.php).
+  A proxy call uses 90s so the observed result is the proxy's own 502, not
+  a client TimeoutError. A direct service call uses SERVICE_TIMEOUT_S
+  (faults.py). The cut proxy's upstream read uses the same constant. The
+  reason is on that constant.
+- AbilityClient times out at 20s and tries ABILITY_ATTEMPTS (3) times
+  (services/genie/src/linker_genie/abilities.py). The ability fault sleeps
+  25s, past one client timeout, so the proxy's 60s budget is what the
+  customer hits (stack.MU_SOURCE).
+- The slow chat stub sleeps 65s, past TURN_BUDGET (faults.FaultServer).
+- KILL_AFTER_S is 3s and REDIS_FLAP_AFTER_S is 2s. Both sit in a measured
+  window: after VPS-DOWN's refused connection (1.109s, NOTES §2 D4), so the
+  request has left the client, and before the shortest recorded chat-fault
+  fallback (M500-EN, 8.144s) and Proxy::TURN_BUDGET (60s), so the turn is
+  still in flight. Jev's p50 of 2.6s (jev.py, measured 2026-10-17) is inside
+  that window; the flap starts just before it and the kill just after it.
+  The recorded VPS-KILL customer time is 11.123s (NOTES §2 D4): the 3s wait
+  plus the proxy's 502. Harness waits, not product timeouts.
+- VPS-DOWN's client timeout is 20s: a stopped port refuses at once.
+- The attachment refusal uses 30s: the limiter answers before any model call.
+- Redis stopped for a whole turn uses 70s, just above TURN_BUDGET, in case
+  the turn still completes.
+- LATE_LOG_WAIT_S is 45s. AB-TIMEOUT's customer request ends at
+  Proxy::TURN_BUDGET (60s) while the service can still be inside an
+  ability attempt: AbilityClient times out at 20s, the mu-plugin sleeps
+  25s, and ABILITY_ATTEMPTS is 3. 45s is the harness wait for the
+  turn-log row that lands after that 502. It is longer than one injected
+  sleep (25s) and shorter than TURN_BUDGET (60s). It is not a product
+  timeout.
+- JOIN_TIMEOUT_S is 100s. The in-flight client uses PROXY_TIMEOUT_S (90).
+  The join is longer than that timeout so the worker is collected after
+  the client gives up, not left running. It is a harness wait, not a
+  product timeout.
+"""
+
+from __future__ import annotations
+
+import argparse
+import base64
+import json
+import sys
+import threading
+import time
+import urllib.request
+from pathlib import Path
+from typing import Any
+
+import stack
+from client import (
+    cookie_opener,
+    describe,
+    proxy_body,
+    request_json,
+    turn_body,
+)
+from faults import SERVICE_TIMEOUT_S, TINY_JPEG, FaultServer
+from grade import grade, healthy
+from redact import redact
+from sse import parse_sse
+
+PRODUCT_EN = "Do you stock the SAJ H2-10K-T2?"
+PRODUCT_DE = "Haben Sie den SAJ H2-10K-T2 auf Lager?"
+DOC_EN = "What is the maximum PV input power of the SAJ H2-10K-T2? Use the datasheet."
+# A one-row CSV. The service treats text/csv as a parts list and emits
+# `attachment` then `reading` before any block (app.py `_sse`), with no
+# vision call. The attachment and reading cuts need those two events.
+_PARTS_CSV_BYTES = b"model,qty\nSAJ H2-10K-T3,1\n"
+PARTS_CSV = {
+    "name": "h2.csv",
+    "type": "text/csv",
+    "data": base64.b64encode(_PARTS_CSV_BYTES).decode("ascii"),
+}
+# See the module docstring for the source of each of these.
+# SERVICE_TIMEOUT_S lives in faults.py (one ceiling for the client and the proxy).
+PROXY_TIMEOUT_S = 90.0
+VPS_DOWN_TIMEOUT_S = 20.0
+ATTACHMENT_TIMEOUT_S = 30.0
+REDIS_DOWN_TIMEOUT_S = 70.0
+# After the 1.109s refused connection, before the 8.144s M500-EN fallback.
+KILL_AFTER_S = 3.0
+REDIS_FLAP_AFTER_S = 2.0
+# See the module docstring. Longer than the 25s ability sleep, under TURN_BUDGET.
+LATE_LOG_WAIT_S = 45.0
+# A chat-fault service turn. Above TURN_BUDGET, under the 180s direct-service ceiling.
+CHAT_TIMEOUT_S = 120.0
+# See the module docstring. Longer than PROXY_TIMEOUT_S (90).
+JOIN_TIMEOUT_S = 100.0
+PROXY_TURN = stack.WP + "/wp-json/linker-ai/v1/genie/turn"
+PROXY_THREAD = stack.WP + "/wp-json/linker-ai/v1/genie/conversation"
+SERVICE_TURN = stack.GENIE + "/assistant/turn"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "evidence",
+        nargs="?",
+        default=str(Path.home() / "de-linker-data/campaign-332/evidence"),
+    )
+    parser.add_argument("--only", default="")
+    args = parser.parse_args(argv)
+    only = {item for item in args.only.split(",") if item}
+    evidence = Path(args.evidence)
+    evidence.mkdir(parents=True, exist_ok=True)
+    out = evidence / "cases.jsonl"
+    if not only:
+        out.write_text("")
+    token = stack.service_token()
+    rows: list[dict[str, Any]] = []
+
+    def keep(row: dict[str, Any]) -> None:
+        graded = grade(redact(row))
+        rows.append(graded)
+        with out.open("a") as handle:
+            handle.write(json.dumps(graded, ensure_ascii=False) + "\n")
+        print(f"{graded['id']}: {graded['verdict']}", flush=True)
+
+    def wanted(case_id: str) -> bool:
+        return not only or case_id in only
+
+    try:
+        if wanted("BASE-EN"):
+            keep(control("BASE-EN", PRODUCT_EN, "en"))
+        if wanted("BASE-DOC"):
+            keep(control("BASE-DOC", DOC_EN, "en", allow_measurements=True))
+        if wanted("RATE-BURST"):
+            keep(burst(token))
+        if wanted("ATT-LIMIT"):
+            keep(attachment_limit())
+        if wanted("SSE-CUT"):
+            keep(sse_case("SSE-CUT", "cut"))
+        if wanted("SSE-PARTIAL"):
+            keep(sse_case("SSE-PARTIAL", "partial-block"))
+        if wanted("SSE-ATTACHMENT") or wanted("SSE-READING"):
+            # A seeded hourly ceiling would 429 the file before Genie emits
+            # the attachment and reading events the cuts look for.
+            stack.clear_upload_limit()
+        if wanted("SSE-ATTACHMENT"):
+            keep(sse_case("SSE-ATTACHMENT", "attachment", PARTS_CSV))
+        if wanted("SSE-READING"):
+            keep(sse_case("SSE-READING", "reading", PARTS_CSV))
+        if wanted("SSE-RESET"):
+            keep(sse_case("SSE-RESET", "reset"))
+        if wanted("VPS-DOWN"):
+            keep(vps_down())
+        if wanted("VPS-KILL"):
+            keep(vps_kill())
+        if wanted("REDIS-FLAP"):
+            keep(redis_flap())
+        if wanted("REDIS-DOWN"):
+            keep(redis_down())
+        if wanted("AB-500"):
+            keep(ability("AB-500", "500", token))
+        if wanted("AB-TIMEOUT"):
+            keep(ability_timeout())
+        if any(
+            wanted(item)
+            for item in (
+                "M500-EN",
+                "M500-DE",
+                "M500-DOC",
+                "M-EMPTY",
+                "M-EMPTY-STREAM",
+                "M-429",
+                "M-SLOW",
+            )
+        ):
+            chat(token, only, keep)
+        if wanted("JEV-502"):
+            keep(jev(token))
+        if wanted("IDX-MISS") or wanted("IDX-BAD"):
+            index_cases(token, only, keep)
+    finally:
+        print("restoring c332", flush=True)
+        stack.restore()
+    defects = [row["id"] for row in rows if row["verdict"] == "defect"]
+    summary = {
+        "pass": sum(1 for row in rows if row["verdict"] == "pass"),
+        "defect": len(defects),
+        "defects": defects,
+    }
+    (evidence / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    print(json.dumps(summary))
+    return 0
+
+
+def retry_record(row: dict[str, Any]) -> dict[str, Any]:
+    """The recovery turn, in the one shape every fault case stores."""
+    return {
+        "ok": healthy(row),
+        "http": row.get("http"),
+        "answer_text": row.get("answer_text"),
+    }
+
+
+def control(
+    case_id: str,
+    question: str,
+    locale: str,
+    allow_measurements: bool = False,
+) -> dict[str, Any]:
+    before = stack.max_turn_id()
+    row = ask_proxy(case_id, question, locale)
+    row.update(
+        {
+            "id": case_id,
+            "kind": "control",
+            "fault": "none",
+            "question": question,
+            "allow_measurements": allow_measurements,
+            "layer": "control",
+            "precedent": "unfaulted path",
+        }
+    )
+    row.update(_log(question, before))
+    return row
+
+
+def burst(token: str) -> dict[str, Any]:
+    children = []
+    for index in range(1, 7):
+        question = f"{PRODUCT_EN} Burst {index}."
+        before = stack.max_turn_id()
+        child = ask_service(
+            f"RATE-{index}", question, "en", token, timeout=SERVICE_TIMEOUT_S
+        )
+        child["id"] = f"RATE-{index}"
+        child.update(_log(question, before))
+        children.append(child)
+    return {
+        "id": "RATE-BURST",
+        "kind": "burst",
+        "fault": "six sequential turns, no injected limiter",
+        "question": PRODUCT_EN,
+        "children": children,
+        "layer": "infrastructure",
+        "precedent": "须自行设计 — dossier §1.15 has no rate-limit UX; the product rate limit is the hourly file allowance",
+        "explicit_channel": "customer",
+    }
+
+
+def attachment_limit() -> dict[str, Any]:
+    stack.seed_upload_limit(20)
+    try:
+        jpeg = TINY_JPEG.decode() if isinstance(TINY_JPEG, bytes) else TINY_JPEG
+        refused = ask_proxy(
+            "ATT-LIMIT",
+            "Please read this nameplate.",
+            "en",
+            attachment={"name": "plate.jpg", "type": "image/jpeg", "data": jpeg},
+            timeout=ATTACHMENT_TIMEOUT_S,
+        )
+        typed = ask_proxy("ATT-AFTER", PRODUCT_EN, "en")
+    finally:
+        stack.clear_upload_limit()
+    refused.update(
+        {
+            "id": "ATT-LIMIT",
+            "kind": "fault",
+            "fault": "upload counter seeded to the hourly ceiling (20), then one JPEG",
+            "question": "Please read this nameplate.",
+            "layer": "infrastructure",
+            "precedent": "复刻 — hourly file allowance is this repo's own limit (Attachments::LIMIT 20); uxpatterns recovery is a visible refusal",
+            "explicit_channel": "customer",
+            "retry": retry_record(typed),
+        }
+    )
+    return refused
+
+
+def sse_case(
+    case_id: str,
+    cut: str,
+    attachment: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    proxy = FaultServer("cut", upstream=stack.GENIE, cut=cut)
+    url = proxy.start()
+    before = stack.max_turn_id()
+    try:
+        stack.set_genie_url(url)
+        jar, opener = cookie_opener()
+        result = request_json(
+            PROXY_TURN,
+            proxy_body(PRODUCT_EN, "en", attachment),
+            {},
+            SERVICE_TIMEOUT_S,
+            opener,
+        )
+        row = describe(result)
+        stored = _read_thread(opener)
+    finally:
+        observed = proxy.cut_report()
+        stack.set_genie_url(stack.GENIE)
+        proxy.stop()
+    logged = _log(PRODUCT_EN, before)
+    retry = ask_proxy(case_id + "-RETRY", PRODUCT_EN, "en")
+    row.update(logged)
+    # Thread::answer renders assistant text only when the stored stream
+    # contains done. A cut stream's block is not a shown answer.
+    shown = bool(stored.get("assistant_text")) and stored.get("done") is True
+    fault = f"proxy {cut} of the service SSE"
+    if attachment is not None:
+        fault += f" on a turn that uploads {attachment['name']}"
+    row.update(
+        {
+            "id": case_id,
+            "kind": "fault",
+            "fault": fault,
+            "question": PRODUCT_EN,
+            "cut_observed": observed,
+            "layer": "UI 状态",
+            "precedent": "须自行设计 — dossier §1.15; fix ticket #411",
+            "explicit_channel": "customer",
+            "partial_shown": shown,
+            "reload_hides_error": bool(stored.get("user_messages"))
+            and stored.get("done") is not True
+            and not shown,
+            "stored": stored,
+            "cookie_count": len(list(jar)),
+            "retry": retry_record(retry),
+        }
+    )
+    return row
+
+
+def vps_down() -> dict[str, Any]:
+    stack.stop_genie()
+    try:
+        row = ask_proxy("VPS-DOWN", PRODUCT_EN, "en", timeout=VPS_DOWN_TIMEOUT_S)
+    finally:
+        stack.start_genie()
+    retry = ask_proxy("VPS-DOWN-RETRY", PRODUCT_EN, "en")
+    row.update(
+        {
+            "id": "VPS-DOWN",
+            "kind": "fault",
+            "fault": "local genie process stopped before the turn",
+            "question": PRODUCT_EN,
+            "layer": "UI 状态",
+            "precedent": "须自行设计 — dossier §1.15 VPS down; fix ticket #411",
+            "explicit_channel": "customer",
+            "retry": retry_record(retry),
+        }
+    )
+    return row
+
+
+def vps_kill() -> dict[str, Any]:
+    holder: dict[str, Any] = {}
+    before = stack.max_turn_id()
+
+    def call() -> None:
+        holder["row"] = ask_proxy("VPS-KILL", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S)
+
+    thread = threading.Thread(target=call)
+    thread.start()
+    time.sleep(KILL_AFTER_S)
+    stack.stop_genie()
+    thread.join(timeout=JOIN_TIMEOUT_S)
+    stack.start_genie()
+    row = holder.get("row") or {
+        "http": None,
+        "transport_error": "client thread missing",
+        "answer_text": "",
+    }
+    logged = _log(PRODUCT_EN, before)
+    retry = ask_proxy("VPS-KILL-RETRY", PRODUCT_EN, "en")
+    row.update(
+        {
+            "id": "VPS-KILL",
+            "kind": "fault",
+            "fault": f"genie killed {KILL_AFTER_S:g}s after the proxy request started",
+            "question": PRODUCT_EN,
+            "layer": "UI 状态",
+            "precedent": "须自行设计 — dossier §1.15 restart window; fix ticket #411",
+            "explicit_channel": "customer",
+            "retry": retry_record(retry),
+        }
+    )
+    row.update(logged)
+    return row
+
+
+def redis_flap() -> dict[str, Any]:
+    holder: dict[str, Any] = {}
+    before = stack.max_turn_id()
+
+    def call() -> None:
+        holder["row"] = ask_proxy(
+            "REDIS-FLAP", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S
+        )
+
+    thread = threading.Thread(target=call)
+    thread.start()
+    time.sleep(REDIS_FLAP_AFTER_S)
+    try:
+        stack.redis_restart()
+    finally:
+        thread.join(timeout=JOIN_TIMEOUT_S)
+        stack.ensure_redis()
+    row = holder.get("row") or {
+        "http": None,
+        "answer_text": "",
+        "transport_error": "missing",
+    }
+    logged = _log(PRODUCT_EN, before)
+    # A flap that still answers is a pass: graceful cache, real facts allowed.
+    if healthy(row):
+        row["kind"] = "control"
+        row["allow_measurements"] = True
+        retry: dict[str, Any] | None = None
+    else:
+        row["kind"] = "fault"
+        again = ask_proxy("REDIS-FLAP-RETRY", PRODUCT_EN, "en")
+        retry = retry_record(again)
+    row.update(logged)
+    row.update(
+        {
+            "id": "REDIS-FLAP",
+            "fault": (
+                f"brew services restart redis {REDIS_FLAP_AFTER_S:g}s into the turn"
+            ),
+            "question": PRODUCT_EN,
+            "layer": "基础设施",
+            "precedent": "复刻 — WP_REDIS_GRACEFUL (spec 5 / #103); failure must still be explicit if the turn dies",
+            "explicit_channel": "customer",
+            "retry": retry,
+        }
+    )
+    return row
+
+
+def redis_down() -> dict[str, Any]:
+    before = stack.max_turn_id()
+    stack.redis_stop()
+    try:
+        row = ask_proxy("REDIS-DOWN", PRODUCT_EN, "en", timeout=REDIS_DOWN_TIMEOUT_S)
+    finally:
+        stack.ensure_redis()
+    logged = _log(PRODUCT_EN, before)
+    if healthy(row):
+        row["kind"] = "control"
+        row["allow_measurements"] = True
+        retry: dict[str, Any] | None = None
+    else:
+        row["kind"] = "fault"
+        again = ask_proxy("REDIS-DOWN-RETRY", PRODUCT_EN, "en")
+        retry = retry_record(again)
+    row.update(logged)
+    row.update(
+        {
+            "id": "REDIS-DOWN",
+            "fault": "redis stopped for the whole turn, then started again",
+            "question": PRODUCT_EN,
+            "layer": "基础设施",
+            "precedent": "复刻 — WP_REDIS_GRACEFUL",
+            "explicit_channel": "customer",
+            "retry": retry,
+        }
+    )
+    return row
+
+
+def ability(case_id: str, mode: str, token: str) -> dict[str, Any]:
+    before = stack.max_turn_id()
+    stack.set_ability_mode(mode)
+    try:
+        row = ask_service(case_id, PRODUCT_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
+    finally:
+        stack.clear_ability_mode()
+    logged = _log(PRODUCT_EN, before)
+    retry = ask_service(
+        case_id + "-RETRY", PRODUCT_EN, "en", token, timeout=SERVICE_TIMEOUT_S
+    )
+    row.update(logged)
+    row.update(
+        {
+            "id": case_id,
+            "kind": "fault",
+            "fault": f"search-products answers {mode}",
+            "question": PRODUCT_EN,
+            "layer": "template.fallback",
+            "precedent": "the 500 is the ability call; the customer sentence is template.fallback _outage, not the prompt (#410)",
+            "explicit_channel": "customer",
+            "retry": retry_record(retry),
+        }
+    )
+    return row
+
+
+def ability_timeout() -> dict[str, Any]:
+    before = stack.max_turn_id()
+    stack.set_ability_mode("timeout")
+    try:
+        row = ask_proxy("AB-TIMEOUT", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S)
+        late = _wait_log(PRODUCT_EN, LATE_LOG_WAIT_S, before)
+    finally:
+        stack.clear_ability_mode()
+    retry = ask_proxy("AB-TIMEOUT-RETRY", PRODUCT_EN, "en")
+    row.update(late)
+    row["retry"] = retry_record(retry)
+    row.update(
+        {
+            "id": "AB-TIMEOUT",
+            "kind": "fault",
+            "fault": "search-products sleeps 25s; client times out at 20s, three attempts",
+            "question": PRODUCT_EN,
+            "layer": "工具",
+            "precedent": "须自行设计 — Proxy::TURN_BUDGET is 60s; AbilityClient is 20s times ABILITY_ATTEMPTS 3, so the proxy budget ends the turn",
+            "explicit_channel": "customer",
+        }
+    )
+    return row
+
+
+def chat(token: str, only: set[str], keep: Any) -> None:
+    stub = FaultServer("chat", mode="500", slow_s=65)
+    # Counts calls that land on the OpenRouter fault stub. Chat cases do not
+    # set OPENROUTER_BASE_URL: Jev keeps the real OpenRouter, which is the
+    # allowed channel and is not this counter. A hit here means something
+    # called this stub during the case.
+    router = FaultServer("openrouter")
+    url = stub.start()
+    try:
+        router.start()
+        try:
+            stack.restart_genie({"GENIE_BASE_URL": url})
+            # M-EMPTY is the non-stream validation error (no `model` on the JSON
+            # completion). M-EMPTY-STREAM is an SSE body with no events.
+            plan = [
+                ("M500-EN", "500", PRODUCT_EN, "en"),
+                ("M500-DE", "500", PRODUCT_DE, "de"),
+                ("M500-DOC", "500", DOC_EN, "en"),
+                ("M-EMPTY", "empty", PRODUCT_EN, "en"),
+                ("M-EMPTY-STREAM", "empty-stream", PRODUCT_EN, "en"),
+                ("M-429", "429", PRODUCT_EN, "en"),
+            ]
+
+            def seen(mark: tuple[int, int]) -> dict[str, Any]:
+                model_at, hits_at = mark
+                return {
+                    "requested_models": stub.requested_models()[model_at:],
+                    "openrouter_hits": router.openrouter_hits() - hits_at,
+                }
+
+            for case_id, mode, question, locale in plan:
+                if only and case_id not in only:
+                    continue
+                stub.set_mode(mode)
+                mark = (len(stub.requested_models()), router.openrouter_hits())
+                before = stack.max_turn_id()
+                row = ask_service(
+                    case_id, question, locale, token, timeout=CHAT_TIMEOUT_S
+                )
+                row.update(_log(question, before))
+                row.update(seen(mark))
+                row.update(
+                    {
+                        "id": case_id,
+                        "kind": "fault",
+                        "fault": f"chat completions mode {mode}",
+                        "question": question,
+                        "layer": "template.fallback",
+                        "precedent": "the customer sentence is template.fallback, not the prompt (#410). #103 DEGRADED only when nothing is citable",
+                        "explicit_channel": "customer",
+                    }
+                )
+                keep(row)
+            if not only or "M-SLOW" in only:
+                stub.set_mode("slow")
+                mark = (len(stub.requested_models()), router.openrouter_hits())
+                before = stack.max_turn_id()
+                row = ask_proxy("M-SLOW", PRODUCT_EN, "en", timeout=PROXY_TIMEOUT_S)
+                stack.stop_genie()
+                row.update(_log(PRODUCT_EN, before))
+                row.update(seen(mark))
+                row.update(
+                    {
+                        "id": "M-SLOW",
+                        "kind": "fault",
+                        "fault": "chat completions sleeps 65s, past Proxy::TURN_BUDGET 60s",
+                        "question": PRODUCT_EN,
+                        "layer": "UI 状态",
+                        "precedent": "须自行设计 — dossier §1.15; fix ticket #411",
+                        "explicit_channel": "customer",
+                    }
+                )
+                keep(row)
+        finally:
+            router.stop()
+    finally:
+        stub.stop()
+        stack.restart_genie()
+    if not only or "M500-EN" in only:
+        before = stack.max_turn_id()
+        retry = ask_service(
+            "M500-RETRY", PRODUCT_EN, "en", token, timeout=SERVICE_TIMEOUT_S
+        )
+        # Attach the retry onto a small control row so a failed recovery is visible.
+        keep(
+            {
+                "id": "M500-RETRY",
+                "kind": "control",
+                "fault": "chat stub removed, same product question",
+                "question": PRODUCT_EN,
+                "layer": "control",
+                "precedent": "retry after the fault is cleared",
+                **retry,
+                **_log(PRODUCT_EN, before),
+            }
+        )
+
+
+def jev(token: str) -> dict[str, Any]:
+    stub = FaultServer("openrouter")
+    url = stub.start()
+    try:
+        before = stack.max_turn_id()
+        stack.restart_genie(
+            {
+                "OPENROUTER_BASE_URL": url + "/api/v1",
+                "OPENROUTER_API_KEY": "local-fault-not-a-real-key",
+            }
+        )
+        row = ask_service("JEV-502", PRODUCT_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
+    finally:
+        stub.stop()
+        stack.restart_genie()
+    row.update(_log(PRODUCT_EN, before))
+    row.update(
+        {
+            "id": "JEV-502",
+            "kind": "fault",
+            "fault": "OpenRouter /systemone answers 502; key is a local dummy",
+            "question": PRODUCT_EN,
+            "layer": "Jev 路由",
+            "precedent": "复刻 — spec 13: Jev failure is the one allowed degradation, and jev_error is in SSE meta. The turn log's provider/model are the names app.py writes, not the answering model",
+            "explicit_channel": "meta",
+            "allow_measurements": True,
+        }
+    )
+    return row
+
+
+def index_cases(token: str, only: set[str], keep: Any) -> None:
+    missing = Path("/tmp/c332-no-such-index.sqlite")
+    missing.unlink(missing_ok=True)
+    bad = Path("/tmp/c332-bad-index.sqlite")
+    bad.write_bytes(b"this is not a sqlite index" + b"\x00" * 64)
+    ran = False
+    if not only or "IDX-MISS" in only:
+        ran = True
+        before = stack.max_turn_id()
+        stack.restart_genie({"GENIE_INDEX": str(missing)})
+        row = ask_service("IDX-MISS", DOC_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
+        row.update(_log(DOC_EN, before))
+        row.update(
+            {
+                "id": "IDX-MISS",
+                "kind": "fault",
+                "fault": "GENIE_INDEX points at a path that is not a file",
+                "question": DOC_EN,
+                "layer": "template.fallback",
+                "precedent": "the index error is in failures[]; the customer sentence is template.fallback (#410). Spec 13: no keyword fallback",
+                "explicit_channel": "customer",
+            }
+        )
+        keep(row)
+    if not only or "IDX-BAD" in only:
+        ran = True
+        before = stack.max_turn_id()
+        stack.restart_genie({"GENIE_INDEX": str(bad)})
+        row = ask_service("IDX-BAD", DOC_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
+        row.update(_log(DOC_EN, before))
+        row.update(
+            {
+                "id": "IDX-BAD",
+                "kind": "fault",
+                "fault": "GENIE_INDEX is a file of garbage bytes",
+                "question": DOC_EN,
+                "layer": "template.fallback",
+                "precedent": "the index error is in failures[]; the customer sentence is template.fallback (#410)",
+                "explicit_channel": "customer",
+            }
+        )
+        keep(row)
+    if ran:
+        stack.restart_genie()
+        before = stack.max_turn_id()
+        retry = ask_service("IDX-RETRY", DOC_EN, "en", token, timeout=SERVICE_TIMEOUT_S)
+        keep(
+            {
+                "id": "IDX-RETRY",
+                "kind": "control",
+                "fault": "real index restored",
+                "question": DOC_EN,
+                "allow_measurements": True,
+                "layer": "control",
+                "precedent": "retry after the fault is cleared",
+                **retry,
+                **_log(DOC_EN, before),
+            }
+        )
+
+
+def ask_service(
+    case_id: str, question: str, locale: str, token: str, timeout: float
+) -> dict[str, Any]:
+    print(f"ask-service {case_id}", flush=True)
+    result = request_json(
+        SERVICE_TURN,
+        turn_body(case_id, question, locale),
+        {"X-Linker-Service-Token": token},
+        timeout,
+    )
+    return describe(result)
+
+
+def ask_proxy(
+    case_id: str,
+    question: str,
+    locale: str,
+    attachment: dict[str, str] | None = None,
+    timeout: float = PROXY_TIMEOUT_S,
+) -> dict[str, Any]:
+    print(f"ask-proxy {case_id}", flush=True)
+    result = request_json(
+        PROXY_TURN, proxy_body(question, locale, attachment), {}, timeout
+    )
+    return describe(result)
+
+
+def _read_thread(opener: urllib.request.OpenerDirector) -> dict[str, Any]:
+    request = urllib.request.Request(PROXY_THREAD, method="GET")
+    try:
+        with opener.open(request, timeout=VPS_DOWN_TIMEOUT_S) as reply:
+            raw = reply.read().decode("utf-8", "replace")
+    except (urllib.error.URLError, TimeoutError):
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return {"raw": raw[:300]}
+    if not isinstance(parsed, dict):
+        return {}
+    raw_messages = parsed.get("messages")
+    messages: list[Any] = raw_messages if isinstance(raw_messages, list) else []
+    raw_stream = parsed.get("stream")
+    stream = raw_stream if isinstance(raw_stream, str) else ""
+    parsed_stream = parse_sse(stream)
+    user_messages = [
+        item.get("content")
+        for item in messages
+        if isinstance(item, dict) and item.get("role") == "user"
+    ]
+    return {
+        "user_messages": user_messages,
+        "done": parsed_stream["done"],
+        "assistant_text": parsed_stream["answer_text"],
+        "event_names": parsed_stream["event_names"],
+    }
+
+
+def _log(question: str, after_id: int = 0) -> dict[str, object]:
+    found = stack.latest_turn(question, after_id)
+    understanding = found.get("understanding")
+    if isinstance(understanding, str) and len(understanding) > 2000:
+        found = dict(found)
+        found["understanding"] = understanding[:2000]
+    return found
+
+
+def _wait_log(question: str, seconds: float, after_id: int = 0) -> dict[str, object]:
+    deadline = time.monotonic() + seconds
+    found: dict[str, object] = {}
+    while time.monotonic() < deadline:
+        found = _log(question, after_id)
+        if found:
+            return found
+        time.sleep(1)
+    return found
+
+
+if __name__ == "__main__":
+    sys.exit(main())

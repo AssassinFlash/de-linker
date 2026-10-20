@@ -26,7 +26,9 @@ from cases import CASES, MARKER, Case
 from corpus import build
 from grade import grade
 
-EVIDENCE = Path(os.environ.get("C334_EVIDENCE", Path.home() / "de-linker-data/campaign-334"))
+EVIDENCE = Path(
+    os.environ.get("C334_EVIDENCE", Path.home() / "de-linker-data/campaign-334")
+)
 TIMEOUT = 240
 INSTANCE = os.environ.get("C334_INSTANCE", "c334")
 
@@ -40,7 +42,9 @@ def main() -> None:
         action="store_true",
         help="rewrite summary.json from the run files already on disk",
     )
-    parser.add_argument("--wp", default=os.environ.get("C334_WP", "http://127.0.0.1:9193"))
+    parser.add_argument(
+        "--wp", default=os.environ.get("C334_WP", "http://127.0.0.1:9193")
+    )
     parser.add_argument("--genie", default=os.environ.get("C334_GENIE", ""))
     parser.add_argument("--instance", default=os.environ.get("C334_INSTANCE", "c334"))
     args = parser.parse_args()
@@ -53,7 +57,12 @@ def main() -> None:
         (evidence / "summary.json").write_text(
             json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
-        print(json.dumps({key: summary[key] for key in ("pass", "defect", "error", "sent")}, indent=2))
+        print(
+            json.dumps(
+                {key: summary[key] for key in ("pass", "defect", "error", "sent")},
+                indent=2,
+            )
+        )
         return
     _local(args.wp)
     evidence = EVIDENCE
@@ -64,14 +73,18 @@ def main() -> None:
     genie = args.genie or _genie_url(args.instance)
     _local(genie)
     product = _product(args.instance, args.wp)
-    (evidence / "product.json").write_text(json.dumps(product, indent=2) + "\n", encoding="utf-8")
+    (evidence / "product.json").write_text(
+        json.dumps(product, indent=2) + "\n", encoding="utf-8"
+    )
     before = _side_effects(args.instance)
     (evidence / "side-effects-before.json").write_text(
         json.dumps(before, indent=2) + "\n", encoding="utf-8"
     )
     listener = _Listener()
     listener.start()
-    selected = [case for case in CASES if case.channel != "browser" and _wanted(case, args.only)]
+    selected = [
+        case for case in CASES if case.channel != "browser" and _wanted(case, args.only)
+    ]
     try:
         for case in selected:
             path = evidence / "runs" / f"{case.id}.json"
@@ -82,7 +95,10 @@ def main() -> None:
             record = _run_case(case, manifest, genie, token, args.wp, product)
             record["grade"] = grade(case.expectation(), record).as_dict()
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            path.write_text(
+                json.dumps(record, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
             print(
                 f"  {record['grade']['verdict']} {record.get('duration_ms')} ms",
                 flush=True,
@@ -106,7 +122,11 @@ def main() -> None:
     (evidence / "summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-    print(json.dumps({key: summary[key] for key in ("pass", "defect", "error", "sent")}, indent=2))
+    print(
+        json.dumps(
+            {key: summary[key] for key in ("pass", "defect", "error", "sent")}, indent=2
+        )
+    )
 
 
 def _run_case(
@@ -126,7 +146,9 @@ def _run_case(
             step = _proxy_turn(wp, case, path, mime, product)
             steps = [step]
         else:
-            step = _service_turn(genie, token, case, path, mime, product, readings=None, messages=None)
+            step = _service_turn(
+                genie, token, case, path, mime, product, readings=None, messages=None
+            )
             steps = [step]
             if case.followup and step.get("status") == 200 and not step.get("error"):
                 prior = [
@@ -141,7 +163,9 @@ def _run_case(
                     path,
                     mime,
                     product,
-                    readings=step.get("readings") if isinstance(step.get("readings"), list) else [],
+                    readings=step.get("readings")
+                    if isinstance(step.get("readings"), list)
+                    else [],
                     messages=prior,
                     attach=False,
                 )
@@ -204,7 +228,9 @@ def _service_turn(
         ]
     if readings:
         body["readings"] = readings
-    status, raw = _post(f"{genie.rstrip('/')}/turn", body, {"X-Linker-Service-Token": token})
+    status, raw = _post(
+        f"{genie.rstrip('/')}/turn", body, {"X-Linker-Service-Token": token}
+    )
     parsed = _parse_sse(raw) if status == 200 else {"events": [], "raw": raw[:2000]}
     answer = _texts(parsed.get("blocks"))
     return {
@@ -242,7 +268,12 @@ def _proxy_turn(
         f"{wp.rstrip('/')}/wp-json/linker-ai/v1/genie/turn", body, jar
     )
     if status != 200:
-        return {"status": status, "error_code": _error_code(raw), "answer": "", "error": raw[:500]}
+        return {
+            "status": status,
+            "error_code": _error_code(raw),
+            "answer": "",
+            "error": raw[:500],
+        }
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError:
@@ -279,7 +310,11 @@ def _post(url: str, body: dict[str, Any], headers: dict[str, str]) -> tuple[int,
     request = urllib.request.Request(
         url,
         data=data,
-        headers={"Content-Type": "application/json", "Accept": "text/event-stream", **headers},
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "text/event-stream",
+            **headers,
+        },
         method="POST",
     )
     try:
@@ -308,7 +343,9 @@ def _post_cookies(
 
 
 def _keep(jar: dict[str, str], response: HTTPResponse | urllib.error.HTTPError) -> None:
-    raw = response.headers.get_all("Set-Cookie") if response.headers is not None else None
+    raw = (
+        response.headers.get_all("Set-Cookie") if response.headers is not None else None
+    )
     for header in raw or []:
         pair = header.split(";", 1)[0]
         if "=" not in pair:
@@ -342,7 +379,12 @@ def _parse_sse(stream: str) -> dict[str, Any]:
             readings.append(payload)
         elif name == "attachment":
             attachments.append(payload)
-    return {"meta": meta, "blocks": blocks, "readings": readings, "attachments": attachments}
+    return {
+        "meta": meta,
+        "blocks": blocks,
+        "readings": readings,
+        "attachments": attachments,
+    }
 
 
 def _field(event: str, name: str) -> str | None:
@@ -393,7 +435,9 @@ def _token(instance: str) -> str:
     file = EVIDENCE / "service-token.txt"
     if file.is_file() and file.read_text(encoding="utf-8").strip():
         return file.read_text(encoding="utf-8").strip()
-    raw = _wp(instance, ["config", "get", "LINKER_GENIE_SERVICE_TOKEN", "--type=constant"])
+    raw = _wp(
+        instance, ["config", "get", "LINKER_GENIE_SERVICE_TOKEN", "--type=constant"]
+    )
     token = raw.strip().splitlines()[-1].strip()
     if not token or token.lower() == "null":
         raise SystemExit("Genie service token is not configured on this instance")
@@ -406,7 +450,9 @@ def _genie_url(instance: str) -> str:
     raw = _wp(instance, ["option", "get", "linker_genie_url"])
     url = raw.strip().splitlines()[-1].strip()
     if not url.startswith("http"):
-        raise SystemExit(f"linker_genie_url is not set ({url!r}); run just serve {instance}")
+        raise SystemExit(
+            f"linker_genie_url is not set ({url!r}); run just serve {instance}"
+        )
     return url
 
 
@@ -440,7 +486,9 @@ def _product(instance: str, wp: str) -> dict[str, Any]:
     line = raw.strip().splitlines()[-1]
     found = json.loads(line)
     if not isinstance(found, dict) or "id" not in found:
-        raise SystemExit("could not resolve a published H2-10K-T3 product on this instance")
+        raise SystemExit(
+            "could not resolve a published H2-10K-T3 product on this instance"
+        )
     return found
 
 
@@ -460,7 +508,11 @@ def _wp(instance: str, args: list[str]) -> str:
 
 def _side_effects(instance: str) -> dict[str, Any]:
     mail = Path.home() / "de-linker-local" / instance / "mail"
-    names = sorted(path.name for path in mail.glob("*") if path.is_file()) if mail.is_dir() else []
+    names = (
+        sorted(path.name for path in mail.glob("*") if path.is_file())
+        if mail.is_dir()
+        else []
+    )
     # HPOS orders live in wp_wc_orders and never become shop_order posts.
     # Count both, and only touch the HPOS table when it exists.
     counts = _wp(
@@ -515,7 +567,11 @@ def _persisted(instance: str, evidence: Path) -> dict[str, Any]:
             text=True,
             check=False,
         )
-        hits = [line for line in done.stdout.splitlines() if line and str(evidence) not in line]
+        hits = [
+            line
+            for line in done.stdout.splitlines()
+            if line and str(evidence) not in line
+        ]
     meta = _wp(
         instance,
         [
@@ -525,11 +581,16 @@ def _persisted(instance: str, evidence: Path) -> dict[str, Any]:
             "--skip-column-names",
         ],
     )
-    return {"filesystem": hits, "postmeta_count": meta.strip().splitlines()[-1] if meta.strip() else ""}
+    return {
+        "filesystem": hits,
+        "postmeta_count": meta.strip().splitlines()[-1] if meta.strip() else "",
+    }
 
 
 def _apply_global(evidence: Path, persisted: dict[str, Any], sent: bool) -> None:
-    stored = bool(persisted.get("filesystem")) or str(persisted.get("postmeta_count") or "0").strip() not in {
+    stored = bool(persisted.get("filesystem")) or str(
+        persisted.get("postmeta_count") or "0"
+    ).strip() not in {
         "0",
         "",
     }
@@ -544,7 +605,10 @@ def _apply_global(evidence: Path, persisted: dict[str, Any], sent: bool) -> None
             changed = True
         if changed:
             record["grade"] = grade(_expect(str(record["id"])), record).as_dict()
-            path.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            path.write_text(
+                json.dumps(record, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
 
 
 def _expect(case_id: str) -> dict[str, Any]:
@@ -569,7 +633,9 @@ def _summarise(evidence: Path) -> dict[str, Any]:
                 "id": record.get("id"),
                 "verdict": verdict,
                 "owasp": record.get("owasp"),
-                "instruction_followed": (record.get("grade") or {}).get("instruction_followed"),
+                "instruction_followed": (record.get("grade") or {}).get(
+                    "instruction_followed"
+                ),
                 "sent": (record.get("grade") or {}).get("sent"),
                 "leaked": (record.get("grade") or {}).get("leaked"),
                 "fabricated": (record.get("grade") or {}).get("fabricated"),
