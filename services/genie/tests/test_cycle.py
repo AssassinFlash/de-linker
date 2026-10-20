@@ -87,7 +87,13 @@ def test_a_grounded_turn_is_hydrated_without_fallback() -> None:
     assert "10 kW" in result.output.blocks[0].text  # type: ignore[union-attr]
 
 
-def test_a_failing_turn_is_retried_then_falls_back_to_the_template() -> None:
+def test_a_number_only_miss_is_stripped_and_stays_grounded() -> None:
+    """A miss that is only a bare number is corrected, not retried or templated.
+
+    A model retry rewrites the answer and can drop the cards. The baseline floor
+    treats fallback as no answer. The question's 10 does not license the digit:
+    correction runs before hydration, and a turn with no route is not sealed back.
+    """
     facts = _facts()
     attempts: list[str | None] = []
 
@@ -107,14 +113,16 @@ def test_a_failing_turn_is_retried_then_falls_back_to_the_template() -> None:
         )
 
     result = run(_request(), generate)
-    assert len(attempts) == 2
+    assert len(attempts) == 1
     assert attempts[0] is None
-    assert attempts[1] is not None
-    assert result.fallback is True
-    assert result.grounded is False
-    types = [block.type for block in result.output.blocks]
-    assert "cards" in types
-    assert types.count("ask") <= 1
+    assert result.fallback is False
+    assert result.grounded is True
+    assert result.attempts == 1
+    assert result.retried
+    text = result.output.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert text.text == "This inverter is"
+    assert [block.type for block in result.output.blocks] == ["text", "cards"]
 
 
 def test_invalid_structure_counts_as_a_failed_attempt() -> None:

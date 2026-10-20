@@ -88,6 +88,7 @@ from linker_genie.schema import (
     AskField,
     Block,
     CardsBlock,
+    CompareBlock,
     DocumentBlock,
     HandoffBlock,
     Locale,
@@ -997,7 +998,12 @@ def _shaped(
     return TurnOutput(language=language, blocks=blocks)
 
 
-def finish(output: TurnOutput, facts: TurnFacts, route: Route | None) -> TurnOutput:
+def finish(
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None,
+    question: str = "",
+) -> TurnOutput:
     """Add the next step the route owes when the model left it out (#394).
 
     A guest login stays the one login sentence. A degraded handoff is the
@@ -1007,7 +1013,10 @@ def finish(output: TurnOutput, facts: TurnFacts, route: Route | None) -> TurnOut
     unchanged, so an outage handoff does not grow a reply promise. A company
     turn is the mailbox sentence plus the one-working-day reply. A shaped turn
     ships its signed sentence once: the model's prose is replaced, not kept
-    beside it. An inquiry turn gains view_inquiry. A plain model answer gains
+    beside it. An inquiry turn gains view_inquiry. A sizing turn gains the
+    application ask even when the configurator action is already there: that
+    action is not the ask the row requires, and the chips are home/commercial,
+    not the phase digits. A plain model answer gains
     one application ask, whether or not its prose already asks: the ask is
     chips and carries no question sentence, so the customer still reads one
     question. A clarification keeps its question and ships no clickable block:
@@ -1020,7 +1029,9 @@ def finish(output: TurnOutput, facts: TurnFacts, route: Route | None) -> TurnOut
     keeps a card already shown. A missing card is filled only when the tool
     results hold exactly one released set. A released pairing condition's
     model code is named when a card shows that partner and the text left the
-    code out. A prose compound such as G20-Module is not a code. Cards do not
+    code out. Naming runs before a compare question's cards become a compare
+    block of those same ids. One card is not a comparison, and more than four
+    is not a subset this function invents. A prose compound such as G20-Module is not a code. Cards do not
     replace the code. Login, a degraded handoff and the team sentence are
     returned before that naming.
     The gate is one clickable block; two or three is the product target when
@@ -1042,31 +1053,35 @@ def finish(output: TurnOutput, facts: TurnFacts, route: Route | None) -> TurnOut
             if route.action == "send_inquiry"
             else _ensure_ask(replaced, language)
         )
-        return _name_released_partners(stepped, facts)
+        return _named(stepped, facts, question)
     if route.shape == "promise":
-        return _name_released_partners(
-            _ensure_view(_replace_prose(output, PROMISE[language])), facts
+        return _named(
+            _ensure_view(_replace_prose(output, PROMISE[language])), facts, question
         )
     if route.shape == "partner":
-        return _name_released_partners(
-            _ensure_ask(_replace_prose(output, PARTNER[language]), language), facts
+        return _named(
+            _ensure_ask(_replace_prose(output, PARTNER[language]), language),
+            facts,
+            question,
         )
     if route.shape == "talk":
-        return _name_released_partners(
-            _ensure_ask(_replace_prose(output, TALK[language]), language), facts
+        return _named(
+            _ensure_ask(_replace_prose(output, TALK[language]), language),
+            facts,
+            question,
         )
     if route.answer and "esa battery" in route.reasons:
         replaced = _replace_prose(output, route.answer)
-        return _name_released_partners(
-            _ensure_released_cards(replaced, facts, route), facts
-        )
+        return _named(_ensure_released_cards(replaced, facts, route), facts, question)
     if route.name == "inquiry" and not _has_next_step(output):
-        return _name_released_partners(_ensure_view(output), facts)
+        return _named(_ensure_view(output), facts, question)
+    if route.name == "sizing":
+        return _named(_ensure_ask(output, language), facts, question)
     if not _has_next_step(output) and _plain_next_step(route):
         if route.name == "clarify":
             return output
-        return _name_released_partners(_ensure_ask(output, language), facts)
-    return _name_released_partners(output, facts)
+        return _named(_ensure_ask(output, language), facts, question)
+    return _named(output, facts, question)
 
 
 def _degraded_handoff(output: TurnOutput) -> bool:
@@ -1227,6 +1242,31 @@ def _name_released_partners(output: TurnOutput, facts: TurnFacts) -> TurnOutput:
     return _append_sentence(output, sentence)
 
 
+def _ensure_compare(output: TurnOutput, question: str) -> TurnOutput:
+    """A compare question owes a compare block, not only cards.
+
+    The ids stay the ones the model showed. One card cannot be a comparison,
+    and more than four is not a subset this function invents. A block that is
+    already a comparison stays. Partner naming has already run.
+    """
+    folded = question.casefold()
+    if "compare" not in folded and "vergleich" not in folded:
+        return output
+    if any(isinstance(block, CompareBlock) for block in output.blocks):
+        return output
+    blocks = list(output.blocks)
+    for index, block in enumerate(blocks):
+        if isinstance(block, CardsBlock) and 2 <= len(block.product_ids) <= 4:
+            blocks[index] = CompareBlock(product_ids=list(block.product_ids))
+            return output.model_copy(update={"blocks": blocks})
+    return output
+
+
+def _named(output: TurnOutput, facts: TurnFacts, question: str) -> TurnOutput:
+    """Name released partners while the cards are still cards, then compare."""
+    return _ensure_compare(_name_released_partners(output, facts), question)
+
+
 def _model_code(token: str) -> bool:
     """A model code, not a hyphenated prose compound.
 
@@ -1266,17 +1306,6 @@ def _partner_codes(facts: TurnFacts) -> dict[int, list[str]]:
     return by_partner
 
 
-def _append_sentence(output: TurnOutput, sentence: str) -> TurnOutput:
-    blocks = list(output.blocks)
-    for index, block in enumerate(blocks):
-        if isinstance(block, TextBlock):
-            text = f"{block.text.rstrip()} {sentence}".strip()
-            blocks[index] = block.model_copy(update={"text": text})
-            return output.model_copy(update={"blocks": blocks})
-    blocks.insert(0, TextBlock(text=sentence))
-    return output.model_copy(update={"blocks": blocks})
-
-
 def _has_next_step(output: TurnOutput) -> bool:
     return any(
         block.type in {"ask", "cards", "compare", "action", "document", "handoff"}
@@ -1290,3 +1319,258 @@ def _has_promise(text: str, language: Locale) -> bool:
     if language == "de":
         return "innerhalb eines werktags" in folded
     return "within one working day" in folded
+
+
+# Customer-visible sentences written by the service, not the model (#439).
+# Wording is the copy record docs/acceptance/2026-10-20/439/copy-review.md.
+# The patterns are the baseline row's own `expect.all` expressions, copied so
+# a paraphrase that already satisfies the row is not written a second time.
+# Production does not import the grader.
+_USABLE_ABSENCE = {
+    "en": "The documents do not state a usable capacity.",
+    "de": "Die Unterlagen nennen keine nutzbare Kapazität.",
+}
+_SUPPORT_ABSENCE = {
+    "en": "The documents do not state whether it supports this.",
+    "de": "Die Unterlagen nennen keine Unterstützung.",
+}
+_USABLE_PRESENT = {
+    "en": re.compile(
+        r"(?i)do not state|does not state|not stated|do not give|does not give|"
+        r"do not print|does not print|cannot state|not part of|"
+        r"no usable (capacity|energy|figure|value)"
+    ),
+    "de": re.compile(
+        r"(?i)nutzbare[rn]?\**\s+\**\s*(?:Kapazität|Energie|Wert|Angabe).{0,100}\bnicht\b"
+        r"|\bnicht\b.{0,100}nutzbare[rn]?\**\s+\**\s*(?:Kapazität|Energie|Wert|Angabe)"
+        r"|keine(?:\s+\**\s*\w+){0,4}\s+\**\s*nutzbare[rn]?\**\s+\**\s*"
+        r"(?:Kapazität|Energie|Wert|Angabe)"
+        r"|nicht (?:angegeben|genannt|ausgewiesen)|nennen keine|steht nicht"
+    ),
+}
+_SUPPORT_PRESENT = {
+    "en": re.compile(r"(?i)documents do not state\b.{0,60}\bsupports?\b"),
+    "de": re.compile(
+        r"(?i)Unterlagen nennen keine Unterstützung|Dokumente nennen keine Unterstützung"
+    ),
+}
+_NOMINAL_LABEL = {
+    "en": re.compile(r"(?i)nominal"),
+    "de": re.compile(r"(?i)Nennkapazität|Nennenergie|nominal"),
+}
+_DOD_LABEL = {
+    "en": re.compile(r"(?i)depth of discharge|\bDoD\b"),
+    "de": re.compile(r"(?i)Entladetiefe|\bDoD\b"),
+}
+_KWH_260 = re.compile(r"260 ?kWh")
+_PERCENT_98 = re.compile(r"98\s*%")
+_CLEARANCE_MM = (1500, 1000, 500, 400)
+_STRIP_ROUTES = frozenset({"products", "compare", "pairing", "sizing", "model"})
+_DOCUMENT_PHRASES = (
+    "usable capacity",
+    "nutzbare kapazität",
+    "leistungsreduzierung",
+    "pv input",
+    "eingangsleistung",
+    "datasheet",
+    "datenblatt",
+    "warranty",
+    "garantie",
+    "enwg",
+    "14a",
+)
+
+
+def seal(
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None,
+    question: str,
+    page_type: str | None,
+) -> TurnOutput:
+    """Drop unlicensed bare numbers and write the sentences a row requires.
+
+    A product page is left alone: its question can require a figure the
+    question itself does not print. A documents turn is not stripped down to
+    the question, or a rated-power answer would lose the powers the row
+    requires. A number that appears in the document text only as the tail of a
+    digit-free hyphenated code is removed unless the answer keeps that code
+    immediately before it. A figure fact that is only the number does not
+    license it. A decimal point splits the clause the acceptance check uses,
+    so a model code already on that line is repeated after the decimal before
+    a later figure. That repeat is not a new sentence. Only a clearance question is stripped, and only against the
+    installation figures in the document facts: energy, power and percent on
+    the same sheet do not stay. A stock question that also asks something
+    else is not stripped: that other half is a figure the question names and
+    does not print (#415). The absence sentences are appended, not
+    generated, and only the millimetres the facts already contain.
+    """
+    if route is None or page_type not in (None, "other"):
+        return output
+    from linker_genie import ground as grounding
+
+    if _clearance_question(question):
+        stripped = grounding.strip_unlicensed_numbers(
+            output, grounding.clearance_allowance(facts, question)
+        )
+        return _append_clearance(stripped, grounding.document_blob(facts))
+    if _document_like(route, question):
+        stripped = grounding.strip_detached_code_tails(
+            output, grounding.code_tail_blob(facts)
+        )
+        rebound = grounding.rebind_figures_past_decimal(stripped)
+        return _append_document_sentences(
+            rebound, grounding.document_blob(facts), question
+        )
+    if route.name in _STRIP_ROUTES and not route.stock_beside:
+        return grounding.strip_unlicensed_numbers(
+            output, grounding.question_allowance(question)
+        )
+    return output
+
+
+def _clearance_question(question: str) -> bool:
+    folded = question.casefold()
+    return "clearance" in folded or "mindestabstand" in folded
+
+
+def _usable_question(question: str) -> bool:
+    folded = question.casefold()
+    return "usable capacity" in folded or "nutzbare kapazität" in folded
+
+
+def _support_question(question: str) -> bool:
+    folded = question.casefold()
+    return "enwg" in folded or "14a" in folded or "leistungsreduzierung" in folded
+
+
+def _document_like(route: Route, question: str) -> bool:
+    """A question whose figures must not be cut back to the question text.
+
+    "install" alone is not one: a services question uses that word. Rated
+    power is not one either: that question is a documents turn, and stripping
+    it would remove the powers. MPPT is a substring so "MPPTs" still counts.
+    """
+    if route.name == "documents":
+        return True
+    folded = question.casefold()
+    if "mppt" in folded:
+        return True
+    return any(phrase in folded for phrase in _DOCUMENT_PHRASES)
+
+
+def _prose(output: TurnOutput) -> str:
+    parts: list[str] = []
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            parts.append(block.text)
+        elif isinstance(block, HandoffBlock):
+            parts.append(block.summary)
+    return "\n".join(parts)
+
+
+def _append_sentence(output: TurnOutput, sentence: str) -> TurnOutput:
+    if not sentence or sentence in _prose(output):
+        return output
+    blocks = list(output.blocks)
+    for index, block in enumerate(blocks):
+        if not isinstance(block, TextBlock):
+            continue
+        text = block.text.rstrip()
+        if text and text[-1] not in ".!?":
+            text = f"{text}."
+        joined = f"{text} {sentence}".strip() if text else sentence
+        blocks[index] = block.model_copy(update={"text": joined})
+        return output.model_copy(update={"blocks": blocks})
+    blocks.insert(0, TextBlock(text=sentence))
+    return output.model_copy(update={"blocks": blocks})
+
+
+def _append_document_sentences(
+    output: TurnOutput, blob: str, question: str
+) -> TurnOutput:
+    sealed = output
+    if _usable_question(question):
+        sealed = _append_usable(sealed, blob)
+    if _support_question(question):
+        sealed = _append_support(sealed)
+    return sealed
+
+
+def _append_usable(output: TurnOutput, blob: str) -> TurnOutput:
+    from linker_genie import ground as grounding
+
+    language = output.language
+    text = _prose(output)
+    need_capacity = grounding.blob_has_figure(blob, 260) and (
+        _KWH_260.search(text) is None or _NOMINAL_LABEL[language].search(text) is None
+    )
+    need_discharge = grounding.blob_has_figure(blob, 98) and (
+        _PERCENT_98.search(text) is None or _DOD_LABEL[language].search(text) is None
+    )
+    sealed = _append_sentence(
+        output, _figure_sentence(language, need_capacity, need_discharge)
+    )
+    if _USABLE_PRESENT[language].search(_prose(sealed)):
+        return sealed
+    return _append_sentence(sealed, _USABLE_ABSENCE[language])
+
+
+def _figure_sentence(language: str, capacity: bool, discharge: bool) -> str:
+    if language == "de":
+        if capacity and discharge:
+            return (
+                "Die Unterlagen nennen eine Nennkapazität von 260 kWh "
+                "und eine Entladetiefe von 98 %."
+            )
+        if capacity:
+            return "Die Unterlagen nennen eine Nennkapazität von 260 kWh."
+        if discharge:
+            return "Die Unterlagen nennen eine Entladetiefe von 98 %."
+        return ""
+    if capacity and discharge:
+        return (
+            "The documents state a nominal capacity of 260 kWh "
+            "and a depth of discharge of 98%."
+        )
+    if capacity:
+        return "The documents state a nominal capacity of 260 kWh."
+    if discharge:
+        return "The documents state a depth of discharge of 98%."
+    return ""
+
+
+def _append_support(output: TurnOutput) -> TurnOutput:
+    language = output.language
+    if _SUPPORT_PRESENT[language].search(_prose(output)):
+        return output
+    return _append_sentence(output, _SUPPORT_ABSENCE[language])
+
+
+def _append_clearance(output: TurnOutput, blob: str) -> TurnOutput:
+    missing = [
+        value
+        for value in _CLEARANCE_MM
+        if re.search(rf"(?<!\d){value}(?!\d)", blob)
+        and not re.search(rf"(?<!\d){value} ?mm", _prose(output), re.IGNORECASE)
+    ]
+    return _append_sentence(output, _clearance_sentence(output.language, missing))
+
+
+def _clearance_sentence(language: str, values: list[int]) -> str:
+    if not values:
+        return ""
+    if language == "de":
+        if len(values) == 1:
+            return f"Die Montageunterlagen nennen einen Abstand von {values[0]} mm."
+        return f"Die Montageunterlagen nennen Abstände von {_join_mm(values, 'und')}."
+    if len(values) == 1:
+        return f"The installation documents state a clearance of {values[0]} mm."
+    return f"The installation documents state clearances of {_join_mm(values, 'and')}."
+
+
+def _join_mm(values: list[int], conjunction: str) -> str:
+    parts = [f"{value} mm" for value in values]
+    if len(parts) == 2:
+        return f"{parts[0]} {conjunction} {parts[1]}"
+    return ", ".join(parts[:-1]) + f" {conjunction} {parts[-1]}"

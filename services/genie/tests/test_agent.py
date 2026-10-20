@@ -15,6 +15,7 @@ from linker_genie.agent import (
     instructions,
     model_name,
     provider_name,
+    without_class_text,
 )
 from linker_genie.facts import Fact, TurnFacts
 from linker_genie.schema import TurnMessage, TurnRequest
@@ -85,6 +86,65 @@ def test_the_runner_answers_the_fifth_call_with_an_error_object() -> None:
     assert "tool budget 4 exhausted" in fifth.get("error", "")
     assert len(calls) == 1
     assert budget.facts().facts.keys() == {"p4107.linker/get-product"}
+
+
+def test_a_class_word_is_not_a_title_needle_when_power_already_filters() -> None:
+    """b03: `text: hybrid` drops ESA and H2-15K, whose titles do not contain it."""
+    seen: list[dict[str, Any] | None] = []
+
+    class RecordingClient:
+        def record(
+            self,
+            name: str,
+            arguments: dict[str, Any] | None,
+            user_context: str | None = None,
+            locale: str = "en",
+        ) -> tuple[dict[str, Any], TurnFacts]:
+            seen.append(arguments)
+            return {"ok": name}, TurnFacts()
+
+    runner = _ability_runner(
+        RecordingClient(),  # type: ignore[arg-type]
+        ToolBudget(),
+        "linker/search-products",
+        None,
+        "en",
+    )
+    runner(
+        {
+            "device_class": "inverters",
+            "phase": 3,
+            "ac_power_min": 10,
+            "text": "hybrid",
+            "limit": 12,
+        }
+    )
+    runner(
+        {
+            "device_class": "inverters",
+            "phase": 3,
+            "ac_power_min": 12,
+            "text": "Hybrid",
+            "lang": "de",
+        }
+    )
+    runner({"device_class": "inverters", "text": "hybrid"})
+    runner({"phase": 3, "text": "H2-15K-T3"})
+
+    assert seen[0] == {
+        "device_class": "inverters",
+        "phase": 3,
+        "ac_power_min": 10,
+        "limit": 12,
+        "lang": "en",
+    }
+    assert "text" not in (seen[1] or {})
+    assert seen[1] is not None and seen[1]["lang"] == "en"
+    assert seen[2] == {"device_class": "inverters", "text": "hybrid", "lang": "en"}
+    assert seen[3] == {"phase": 3, "text": "H2-15K-T3", "lang": "en"}
+    assert without_class_text(
+        "linker/search-products", {"series": "esa", "text": "three-phase hybrid"}
+    ) == {"series": "esa"}
 
 
 def test_the_runner_hands_the_turn_language_to_the_ability_client() -> None:

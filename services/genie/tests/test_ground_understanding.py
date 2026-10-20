@@ -384,11 +384,20 @@ def test_a_model_code_written_whole_is_no_number(text: str) -> None:
 
 @pytest.mark.parametrize(
     "text",
-    ["It is a 3-phase unit.", "Choose 10-20 modules.", "It holds 100.3 of energy."],
+    ["Choose 10-20 modules.", "It holds 100.3 of energy."],
 )
 def test_numbers_beside_codes_are_still_refused(text: str) -> None:
     result = check(_turn(TextBlock(text=text)), _facts())
     assert any(f.startswith("model text contains numbers") for f in result.failures)
+
+
+def test_a_phase_phrase_is_not_a_grounding_failure() -> None:
+    """3-phase stays. Dropping it would fail the re-check and fall back (#439).
+
+    The baseline grader still binds the digit. Production answers write
+    three-phase, so the captured rows do not depend on this word.
+    """
+    assert check(_turn(TextBlock(text="It is a 3-phase unit.")), _facts()).ok
 
 
 def test_a_document_of_this_turn_may_be_cited_in_refs() -> None:

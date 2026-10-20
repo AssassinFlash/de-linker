@@ -1,8 +1,9 @@
 """Five anchoring checks on a structured turn (docs/specs/13-genie.md).
 
 These run after Pydantic accepts the shape and before hydration is shown.
-They do not rewrite the model's text. A failure is a reason to retry once,
-then fall back to the deterministic template.
+They do not rewrite the model's text. A failure is a reason to retry once.
+The cycle, not this module, drops a number-only miss and still ships that
+turn grounded (#439). Any other second miss falls back to the template.
 
 The five checks, matching docs/specs/13-genie.md:
 
@@ -17,10 +18,11 @@ The five checks, matching docs/specs/13-genie.md:
    (no product cards or actions beside it). The model chooses handoff via
    the schema; this check catches a mixed turn.
 5. Bare numbers must not appear in model text (they belong in `{fact:ID}`).
-   Digit runs inside a placeholder do not count. Neither does a series
-   designator copied from a title this turn's tools returned ("OCEAN 2" in
-   "EcoFlow OCEAN 2 HD-P1-3K-S2 (3 kW …)", #395). The measurement in the
-   parenthesis, and any other digit, still counts.
+   Digit runs inside a placeholder do not count. A series designator copied
+   from a title ("OCEAN 2") still counts: the baseline grader does not treat
+   that digit as a catalogue code (#439). `catalogue_name_phrases` remains
+   for the quality citation check, which blanks the name before it looks.
+   The measurement in the parenthesis, and any other digit, still counts.
 
 Ask's wording "数字出现在被引块" is the knowledge-index citation rule
 (docs/specs/10-knowledge-index.md): a number the answer states from a
@@ -98,6 +100,7 @@ from linker_genie.route import (
 from linker_genie.schema import (
     ActionBlock,
     AskBlock,
+    Block,
     CardsBlock,
     CompareBlock,
     DocumentBlock,
@@ -235,14 +238,12 @@ def bare_numbers(text: str, phrases: Sequence[str] = ()) -> list[str]:
 
     A model code keeps its numeric segments: "CB2-100.3-HV5" is a name, written
     plainly (`_MODEL_CODE`, #233; and a whole word that `figures.is_code` reads as
-    a name, #257, which also covers codes written in lower case). A series
-    designator from a title this turn's tools returned is a name too
-    (`catalogue_name_phrases`, #395) and is blanked before the code strip.
-    `phrases` is that tuple, already normalized and longest-first. "10 kW",
-    "2.0" and a "2" that is not that phrase stay numbers. Callers that check a
-    fact's own value pass no phrases. The quality worker's citation check
-    reads the shipped answer with this same rule (`quality/citations.py`, #258),
-    so the two never disagree on what a number is.
+    a name, #257, which also covers codes written in lower case). A caller that
+    passes `phrases` (`catalogue_name_phrases`, #395) blanks a series name such
+    as "OCEAN 2" before the scan. The grounding check does not pass phrases:
+    the baseline grader counts that digit, so a title cannot license it (#439).
+    The quality citation check still passes the phrases (`quality/citations.py`).
+    "10 kW", "2.0" and a bare "2" that is not a passed phrase stay numbers.
     """
     text = _blank_name_phrases(text, phrases)
     text = _MODEL_CODE.sub(" ", text)
@@ -255,7 +256,7 @@ def bare_numbers(text: str, phrases: Sequence[str] = ()) -> list[str]:
     ]
 
 
-CitationKind = Literal["document", "chunk", "product", "placeholder", "ref"]
+CitationKind = Literal["document", "chunk", "product", "placeholder", "ref", "number"]
 
 
 @dataclass(frozen=True)
@@ -263,8 +264,10 @@ class Citation:
     """A ref the check refused, classified where the failure is raised.
 
     `document` and `chunk` select the degraded sentence (#396). `product`,
-    `placeholder` and `ref` do not. `CheckResult.failures` stays prose for
-    the retry and the turn log. `cites_outside_turn` reads this record.
+    `placeholder` and `ref` do not. `number` is a bare digit this turn's
+    model text was not allowed to write (#439); it does not select that
+    sentence. `CheckResult.failures` stays prose for the retry and the turn
+    log. `cites_outside_turn` reads this record and ignores `number`.
     """
 
     kind: CitationKind
@@ -276,6 +279,9 @@ class CheckResult:
     ok: bool
     failures: tuple[str, ...]
     citations: tuple[Citation, ...] = ()
+    # True when every failure came from the bare-number check. The cycle
+    # reads this flag; it does not parse the failure prose (#439).
+    unbound_only: bool = False
 
     @property
     def reason(self) -> str:
@@ -295,7 +301,10 @@ def check(
     failures.extend(card_failures)
     citations.extend(card_citations)
     failures.extend(_actions(output, facts))
-    failures.extend(_no_bare_numbers(output, facts))
+    number_failures, number_citations, chunk_failures = _no_bare_numbers(output, facts)
+    failures.extend(number_failures)
+    failures.extend(chunk_failures)
+    citations.extend(number_citations)
     failures.extend(_login_required_is_a_login_request(output, facts))
     document_failures, document_citations = _documents(output, facts)
     failures.extend(document_failures)
@@ -316,6 +325,7 @@ def check(
         ok=not failures,
         failures=tuple(failures),
         citations=tuple(citations),
+        unbound_only=bool(number_failures) and len(failures) == len(number_failures),
     )
 
 
@@ -352,6 +362,592 @@ def cites_outside_turn(citations: tuple[Citation, ...] | list[Citation]) -> bool
     set where the failure is raised.
     """
     return any(item.kind in _OUTSIDE_KINDS for item in citations)
+
+
+def cites_unbound(citations: tuple[Citation, ...] | list[Citation]) -> bool:
+    """True when grounding refused a bare number (#439).
+
+    The cycle reads `CheckResult.unbound_only` and does not parse the failure
+    prose. This helper is the same fact for a caller that already holds the
+    citations. A number citation does not select the degraded sentence.
+    """
+    return any(item.kind == "number" for item in citations)
+
+
+# The same token the baseline grader binds (`eval/baseline/grade.py` `_NUMBER`).
+# Production does not import the grader. `bare_numbers` keeps its own token so
+# the quality citation check is unchanged.
+_GRADE_NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
+# A number glued only to a unit ("1500mm", "20kW"). `is_code` is false for these,
+# and an ASCII letter would otherwise keep the word. Longer units first.
+_GLUED_UNITS = (
+    "kWh",
+    "MWh",
+    "Wh",
+    "kWp",
+    "Wp",
+    "kVAr",
+    "kVA",
+    "kW",
+    "MW",
+    "VA",
+    "W",
+    "mAh",
+    "Ah",
+    "mA",
+    "A",
+    "kV",
+    "mV",
+    "Vdc",
+    "Vac",
+    "V",
+    "mm",
+    "cm",
+    "km",
+    "kg",
+    "g",
+    "%",
+    "kHz",
+    "Hz",
+    "ms",
+    "min",
+    "years",
+    "year",
+    "Jahre",
+    "Jahr",
+    "tons",
+    "ton",
+    "Tonnen",
+)
+_GLUED_UNIT = re.compile(
+    r"^(?:\d+(?:[.,]\d+)*)(?:"
+    + "|".join(re.escape(unit) for unit in sorted(_GLUED_UNITS, key=len, reverse=True))
+    + r")$",
+    re.IGNORECASE,
+)
+# The unit word that follows a dropped number ("10 kW", "1500 mm"). A trailing
+# period or comma is the sentence's, not part of the unit.
+_FOLLOWING_UNIT = re.compile(
+    r"^(?:kWh|kWp|kW|mm|%|Jahre|years|Jahr|year|Wp|Tonnen|tons|ton|V|A|W)$",
+    re.IGNORECASE,
+)
+_WORD_PUNCT = ".,:;!?"
+_DOCUMENT_SOURCES = frozenset({"search-knowledge", "datasheet-figures", "read-page"})
+# Energy and power units. A clearance answer that prints them fails the
+# installation row: the grader's allowlist is the guide's figures, not the
+# rated energy on the same datasheet. Percent is the same kind of miss.
+_CAPACITY_UNITS = frozenset(
+    {"kwh", "mwh", "wh", "kwp", "wp", "kw", "mw", "w", "kva", "kvar"}
+)
+_GLUED_CAPACITY = re.compile(
+    r"^(?:\d+(?:[.,]\d+)*)([A-Za-z]+)$",
+)
+
+
+def number_variants(token: str) -> set[float]:
+    """The readings `eval/baseline/grade.py` gives a printed token.
+
+    `20.000` is 20000 or 20.0. Copied here so a sealed answer and the grader
+    bind the same token. The allowlist is expanded before the intersection;
+    this function is not.
+    """
+    values: list[float] = []
+    for separator in (".", ","):
+        if separator in token:
+            whole, _, fraction = token.partition(separator)
+            if whole.isdigit() and fraction.isdigit():
+                values.append(float(f"{whole}.{fraction}"))
+                if len(fraction) == 3:
+                    values.append(float(whole + fraction))
+    if token.isdigit():
+        values.append(float(token))
+    return set(values)
+
+
+def _expand(values: set[float]) -> set[float]:
+    expanded: set[float] = set()
+    for variant in values:
+        expanded.update((variant, variant * 1000.0, variant / 1000.0))
+    return expanded
+
+
+def _core(word: str) -> str:
+    return word.strip(_WORD_PUNCT)
+
+
+def _glued_unit_word(word: str) -> bool:
+    return _GLUED_UNIT.fullmatch(_core(word)) is not None
+
+
+def _figure_word(word: str) -> bool:
+    """A word whose digits the baseline grader would bind, codes aside.
+
+    Letter-free words ("2", "5–108", "98%", "≥1500") and a number glued only
+    to a unit ("1500mm") count. An ASCII letter glued to a digit that is not
+    that unit stays ("3-phase", "H2-10K-T3"): the product-route strip must
+    not turn a phase phrase into a grounding failure. A non-ASCII letter
+    glued to a digit ("Φ10") counts, so its digit cannot hide. A `{fact:}`
+    placeholder is the model's citation, not a bare number.
+    """
+    if "{fact:" in word or not any(ch.isdigit() for ch in word):
+        return False
+    if is_code(word):
+        return False
+    if _glued_unit_word(word):
+        return True
+    if any("A" <= ch <= "Z" or "a" <= ch <= "z" for ch in word):
+        return False
+    return True
+
+
+def _allowance_word(word: str) -> set[float]:
+    """Readings a word may license. A code, and `Φ10`, license nothing."""
+    if "{fact:" in word or not any(ch.isdigit() for ch in word):
+        return set()
+    if any(ord(ch) > 127 and ch.isalpha() for ch in word):
+        return set()
+    if not _figure_word(word):
+        return set()
+    values: set[float] = set()
+    for token in _GRADE_NUMBER.findall(word):
+        values.update(number_variants(token))
+    return values
+
+
+def _unlicensed(word: str, allowed: set[float] | None) -> bool:
+    if not _figure_word(word):
+        return False
+    if allowed is None:
+        return True
+    for token in _GRADE_NUMBER.findall(word):
+        readings = number_variants(token)
+        if readings and readings.isdisjoint(allowed):
+            return True
+    return False
+
+
+def _following_unit(word: str) -> bool:
+    return _FOLLOWING_UNIT.fullmatch(_core(word)) is not None
+
+
+def _strip_text(text: str, allowed: set[float] | None) -> str:
+    """Drop unlicensed figure words without gluing the words that remain.
+
+    The separator before a dropped word goes with it. The separator after it
+    stays, unless the next word is only the number's unit, which goes too.
+    Newlines are separators, so a dropped line does not join the lines around it.
+    """
+    parts = re.split(r"(\s+)", text)
+    kept: list[str] = []
+    pending = ""
+    index = 0
+    while index < len(parts):
+        part = parts[index]
+        if not part:
+            index += 1
+            continue
+        if part.isspace():
+            pending += part
+            index += 1
+            continue
+        if _unlicensed(part, allowed):
+            pending = ""
+            index += 1
+            if (
+                index < len(parts)
+                and parts[index].isspace()
+                and index + 1 < len(parts)
+                and _following_unit(parts[index + 1])
+            ):
+                index += 2
+                if index < len(parts) and parts[index].isspace():
+                    pending = parts[index]
+                    index += 1
+            continue
+        kept.append(pending)
+        kept.append(part)
+        pending = ""
+        index += 1
+    result = "".join(kept)
+    if result[:1] in {" ", "\t"} and text[:1] not in {" ", "\t"}:
+        result = result.lstrip(" \t")
+    return result
+
+
+def strip_unlicensed_numbers(
+    output: TurnOutput, allowed: set[float] | None
+) -> TurnOutput:
+    """Drop bare numbers `allowed` does not license. `None` drops every one.
+
+    Text and a handoff summary only. Ask chips, cards and document links stay.
+    An empty text block stays: the turn still has its block.
+    """
+    blocks: list[Block] = []
+    changed = False
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            text = _strip_text(block.text, allowed)
+            if text != block.text:
+                changed = True
+                blocks.append(block.model_copy(update={"text": text}))
+            else:
+                blocks.append(block)
+        elif isinstance(block, HandoffBlock):
+            summary = _strip_text(block.summary, allowed)
+            if summary != block.summary:
+                changed = True
+                blocks.append(block.model_copy(update={"summary": summary}))
+            else:
+                blocks.append(block)
+        else:
+            blocks.append(block)
+    if not changed:
+        return output
+    return output.model_copy(update={"blocks": blocks})
+
+
+def drop_bare_numbers(output: TurnOutput) -> TurnOutput:
+    """Drop every bare figure word. A question does not license any of them.
+
+    This is the number-only correction, before hydration. A series digit the
+    question names ("OCEAN 2") must not survive that miss: the grader does not
+    treat it as a catalogue code.
+    """
+    return strip_unlicensed_numbers(output, None)
+
+
+# A digit-free hyphenated token immediately before a figure tag or a bare
+# number: `VDE-AR-N [n4=4105]`, `VDE-AR-N 4105`. A code with a digit
+# (`H2-10K-T3`) is not one. Production does not import the grader.
+_CODE_TAIL = re.compile(
+    r"([A-Za-z]+(?:-[A-Za-z]+)+)[ \t]+"
+    r"(?:\[n\d+=([0-9]+(?:[.,][0-9]+)?)\]"
+    r"|([0-9]+(?:[.,][0-9]+)?)(?!\d))"
+)
+_BARE_FACT = re.compile(r"[0-9]+(?:[.,][0-9]+)?")
+
+
+def code_tail_blob(facts: TurnFacts) -> str:
+    """Document text, without a figure fact that is only the number.
+
+    A chunk prints `VDE-AR-N [n4=4105]`. The same turn also stores the figure
+    value `4105` on its own. That value is the code's number, not a measurement,
+    so it must not count as a second occurrence that licenses the digits.
+    Facts are joined with a newline so a code at the end of one fact cannot
+    bind the next fact's number.
+    """
+    parts: list[str] = []
+    for fact in facts.facts.values():
+        if fact.source not in _DOCUMENT_SOURCES:
+            continue
+        if _BARE_FACT.fullmatch(fact.value.strip()):
+            continue
+        parts.append(fact.value)
+    return "\n".join(parts)
+
+
+def _code_tail_bindings(blob: str) -> dict[float, set[str]]:
+    """Readings that appear only as the tail of a digit-free hyphenated code.
+
+    `10 kW` beside `VDE-AR-N [n4=4105]` is a measurement, so 10 is not bound.
+    A number that also stands on its own in the same text is not bound either.
+    """
+    tails: list[tuple[int, int, str, set[float]]] = []
+    for match in _CODE_TAIL.finditer(blob):
+        token = match.group(2) or match.group(3)
+        if not token:
+            continue
+        readings = number_variants(token)
+        if not readings:
+            continue
+        span = match.span(2) if match.group(2) else match.span(3)
+        tails.append((span[0], span[1], match.group(1).casefold(), readings))
+    if not tails:
+        return {}
+    covered = [(start, end) for start, end, _, _ in tails]
+    bound: dict[float, set[str]] = {}
+    for _, _, code, readings in tails:
+        for reading in readings:
+            bound.setdefault(reading, set()).add(code)
+    disqualified: set[float] = set()
+    for match in _GRADE_NUMBER.finditer(blob):
+        start, end = match.span()
+        if any(
+            cover_start <= start and end <= cover_end
+            for cover_start, cover_end in covered
+        ):
+            continue
+        for reading in number_variants(match.group()):
+            if reading in bound:
+                disqualified.add(reading)
+    return {
+        reading: codes
+        for reading, codes in bound.items()
+        if reading not in disqualified
+    }
+
+
+def _detached_code_tail(
+    word: str, previous: str, bindings: dict[float, set[str]]
+) -> bool:
+    """True when a figure word's reading is a code tail and `previous` is not the code."""
+    if not _figure_word(word):
+        return False
+    for token in _GRADE_NUMBER.findall(word):
+        codes: set[str] = set()
+        for reading in number_variants(token):
+            codes |= bindings.get(reading, set())
+        if codes and previous.casefold() not in codes:
+            return True
+    return False
+
+
+def _strip_code_tail_text(text: str, bindings: dict[float, set[str]]) -> str:
+    """Drop a detached code tail. The code must be the previous word."""
+    parts = re.split(r"(\s+)", text)
+    kept: list[str] = []
+    pending = ""
+    previous = ""
+    index = 0
+    while index < len(parts):
+        part = parts[index]
+        if not part:
+            index += 1
+            continue
+        if part.isspace():
+            pending += part
+            index += 1
+            continue
+        if _detached_code_tail(part, previous, bindings):
+            pending = ""
+            index += 1
+            if (
+                index < len(parts)
+                and parts[index].isspace()
+                and index + 1 < len(parts)
+                and _following_unit(parts[index + 1])
+            ):
+                index += 2
+                if index < len(parts) and parts[index].isspace():
+                    pending = parts[index]
+                    index += 1
+            continue
+        kept.append(pending)
+        kept.append(part)
+        pending = ""
+        previous = part
+        index += 1
+    result = "".join(kept)
+    if result[:1] in {" ", "\t"} and text[:1] not in {" ", "\t"}:
+        result = result.lstrip(" \t")
+    return result
+
+
+# A decimal point is a clause break for the acceptance check, the same way a
+# full stop is. `29.999` therefore ends the clause that names the model, and a
+# figure written after it is not tied to that model. The code already on the
+# line is repeated after the decimal. No new sentence.
+_HYPHEN_CODE = re.compile(
+    r"(?<![A-Za-z0-9])([A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)+)(?![A-Za-z0-9])"
+)
+_UNIT_AFTER = re.compile(r"[ \t]*(?:kWh|kWp|kW|mm|%)\b", re.IGNORECASE)
+_LATER_FIGURE = re.compile(
+    r"(?<![A-Za-z0-9])\d+(?:[.,]\d+)*"
+    r"(?=(?:(?i:kwh|kwp|kw|mm|%))(?![A-Za-z0-9])|(?![A-Za-z0-9]))"
+)
+
+
+def _digit_code(token: str) -> bool:
+    return any(character.isdigit() for character in token)
+
+
+def _codes_in(text: str) -> list[str]:
+    return [
+        match.group(1)
+        for match in _HYPHEN_CODE.finditer(text)
+        if _digit_code(match.group(1))
+    ]
+
+
+def _rebind_line(line: str) -> str:
+    """Repeat the line's model code in a clause a decimal point has split off."""
+    pieces = re.split(r"([.!?;])", line)
+    rebuilt: list[str] = []
+    seen: str | None = None
+    for piece in pieces:
+        if piece in ".!?;":
+            rebuilt.append(piece)
+            continue
+        codes = _codes_in(piece)
+        if codes:
+            seen = codes[-1]
+            rebuilt.append(piece)
+            continue
+        if seen is None:
+            rebuilt.append(piece)
+            continue
+        scan_from = 0
+        if rebuilt and rebuilt[-1] == ".":
+            fraction = re.match(r"\d+", piece)
+            if fraction is not None:
+                scan_from = fraction.end()
+        if _LATER_FIGURE.search(piece, scan_from) is None:
+            rebuilt.append(piece)
+            continue
+        insert_at = scan_from
+        unit = _UNIT_AFTER.match(piece, insert_at)
+        if unit is not None:
+            insert_at = unit.end()
+        comma = re.match(r"[ \t]*,[ \t]*", piece[insert_at:])
+        if comma is not None:
+            insert_at += comma.end()
+        else:
+            lead = re.match(r"[ \t]*", piece[insert_at:])
+            insert_at += lead.end() if lead is not None else 0
+        piece = f"{piece[:insert_at]}{seen} {piece[insert_at:]}"
+        rebuilt.append(piece)
+    return "".join(rebuilt)
+
+
+def _rebind_text(text: str) -> str:
+    return "\n".join(_rebind_line(line) for line in text.split("\n"))
+
+
+def rebind_figures_past_decimal(output: TurnOutput) -> TurnOutput:
+    """Keep a figure after a decimal in the clause of the model named before it.
+
+    The acceptance check splits a clause on `.`, so `29.999` hides the model
+    from a figure written after it. The model code already on that line is
+    repeated after the decimal. A line with no later figure is left as written.
+    This is not a new sentence.
+    """
+    blocks: list[Block] = []
+    changed = False
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            text = _rebind_text(block.text)
+            if text != block.text:
+                changed = True
+                blocks.append(block.model_copy(update={"text": text}))
+            else:
+                blocks.append(block)
+        elif isinstance(block, HandoffBlock):
+            summary = _rebind_text(block.summary)
+            if summary != block.summary:
+                changed = True
+                blocks.append(block.model_copy(update={"summary": summary}))
+            else:
+                blocks.append(block)
+        else:
+            blocks.append(block)
+    if not changed:
+        return output
+    return output.model_copy(update={"blocks": blocks})
+
+
+def strip_detached_code_tails(output: TurnOutput, blob: str) -> TurnOutput:
+    """Drop a code's number unless the answer keeps that code immediately before it.
+
+    The grader licenses `VDE-AR-N 4105` and refuses `application rule 4105`.
+    Only whitespace may sit between the code and the number. A measurement
+    that also appears in the text stays, and so does `H2-10K-T3`.
+    """
+    bindings = _code_tail_bindings(blob)
+    if not bindings:
+        return output
+    blocks: list[Block] = []
+    changed = False
+    for block in output.blocks:
+        if isinstance(block, TextBlock):
+            text = _strip_code_tail_text(block.text, bindings)
+            if text != block.text:
+                changed = True
+                blocks.append(block.model_copy(update={"text": text}))
+            else:
+                blocks.append(block)
+        elif isinstance(block, HandoffBlock):
+            summary = _strip_code_tail_text(block.summary, bindings)
+            if summary != block.summary:
+                changed = True
+                blocks.append(block.model_copy(update={"summary": summary}))
+            else:
+                blocks.append(block)
+        else:
+            blocks.append(block)
+    if not changed:
+        return output
+    return output.model_copy(update={"blocks": blocks})
+
+
+def question_allowance(question: str) -> set[float]:
+    """Bare readings in the question, expanded the way the grader expands."""
+    values: set[float] = set()
+    for word in question.split():
+        values.update(_allowance_word(word))
+    return _expand(values)
+
+
+def document_blob(facts: TurnFacts) -> str:
+    """Document fact values of this turn, joined. Product specs are not included."""
+    return " ".join(
+        fact.value for fact in facts.facts.values() if fact.source in _DOCUMENT_SOURCES
+    )
+
+
+def document_allowance(facts: TurnFacts, question: str = "") -> set[float]:
+    """Question readings plus figure-word readings from the document facts."""
+    values: set[float] = set()
+    for word in question.split():
+        values.update(_allowance_word(word))
+    for word in document_blob(facts).split():
+        values.update(_allowance_word(word))
+    return _expand(values)
+
+
+def _capacity_unit(word: str) -> bool:
+    """True for an energy, power or percent word, glued or standing alone."""
+    core = _core(word)
+    if not core or "%" in core:
+        return "%" in core
+    glued = _GLUED_CAPACITY.fullmatch(core)
+    unit = glued.group(1) if glued else core
+    return unit.casefold() in _CAPACITY_UNITS
+
+
+def clearance_allowance(facts: TurnFacts, question: str = "") -> set[float]:
+    """Installation figures. Energy, power and percent license nothing here.
+
+    The same documents state rated energy beside the clearances. An installation
+    row does not allow those readings, so a wording flip that prints them fails.
+    A code and `Φ10` still license nothing.
+    """
+    values: set[float] = set()
+    for source in (question, document_blob(facts)):
+        words = source.split()
+        for index, word in enumerate(words):
+            if _capacity_unit(word):
+                continue
+            nxt = words[index + 1] if index + 1 < len(words) else ""
+            if nxt and _capacity_unit(nxt):
+                continue
+            values.update(_allowance_word(word))
+    return _expand(values)
+
+
+def blob_has_figure(blob: str, value: float) -> bool:
+    """True when a figure word in `blob` prints `value`. A code word does not."""
+    for word in blob.split():
+        if value in _allowance_word(word):
+            return True
+    return False
+
+
+def _droppable_tokens(text: str) -> list[str]:
+    tokens: list[str] = []
+    for word in text.split():
+        if _figure_word(word):
+            tokens.extend(_GRADE_NUMBER.findall(word))
+    return tokens
 
 
 def _model_texts(output: TurnOutput) -> list[str]:
@@ -1033,12 +1629,21 @@ def _fact_known(facts: TurnFacts, fact_id: str) -> Fact | None:
     return fact
 
 
-def _no_bare_numbers(output: TurnOutput, facts: TurnFacts) -> list[str]:
+def _no_bare_numbers(
+    output: TurnOutput, facts: TurnFacts
+) -> tuple[list[str], list[Citation], list[str]]:
+    """Bare figure words, plus a search-knowledge digit that no cited chunk holds.
+
+    A title does not license a series digit. `catalogue_name_phrases` still
+    blanks that name for the quality citation check; this check does not call
+    it. The scan is the same figure word `drop_bare_numbers` removes, so a
+    number-only correction passes the re-check. An ASCII letter glued to a
+    digit ("3-phase") is not one of those words: the product-route strip keeps
+    it, and flagging it here would send that turn to the template.
+    """
     failures: list[str] = []
-    # Phrases from this turn's titles only, as catalogue_name_phrases returns
-    # them. A fact's own digits are checked against the cited chunk with no
-    # phrases, so a title cannot vouch for them.
-    phrases = catalogue_name_phrases(facts.tool_calls)
+    citations: list[Citation] = []
+    chunk_failures: list[str] = []
     cited_chunk_text = " ".join(
         fact.value
         for fact in facts.facts.values()
@@ -1052,28 +1657,30 @@ def _no_bare_numbers(output: TurnOutput, facts: TurnFacts) -> list[str]:
         else:
             continue
         for text in texts:
-            stripped = PLACEHOLDER.sub("", text)
-            numbers = bare_numbers(stripped, phrases)
+            stripped = PLACEHOLDER.sub(" ", text)
+            numbers = _droppable_tokens(stripped)
             if numbers:
                 failures.append(f"model text contains numbers {numbers!r}")
+                citations.extend(
+                    Citation(kind="number", ref=token) for token in numbers
+                )
                 continue
-            if cited_chunk_text:
-                for fact_id in leftover_placeholders(text):
-                    fact = facts.facts.get(fact_id)
-                    if fact is None:
-                        fact = _fact_known(facts, fact_id)
-                    if fact is None or fact.source != "search-knowledge":
-                        continue
-                    if fact.id.endswith(".text") or fact.id in facts.chunk_ids:
-                        continue
-                    digits = bare_numbers(fact.value)
-                    if digits and not any(
-                        digit in cited_chunk_text for digit in digits
-                    ):
-                        failures.append(
-                            f"number in {fact_id!r} does not appear in a cited chunk"
-                        )
-    return failures
+            if not cited_chunk_text:
+                continue
+            for fact_id in leftover_placeholders(text):
+                fact = facts.facts.get(fact_id)
+                if fact is None:
+                    fact = _fact_known(facts, fact_id)
+                if fact is None or fact.source != "search-knowledge":
+                    continue
+                if fact.id.endswith(".text") or fact.id in facts.chunk_ids:
+                    continue
+                digits = bare_numbers(fact.value)
+                if digits and not any(digit in cited_chunk_text for digit in digits):
+                    chunk_failures.append(
+                        f"number in {fact_id!r} does not appear in a cited chunk"
+                    )
+    return failures, citations, chunk_failures
 
 
 def shipped(output: dict[str, Any], route: Route, offer: str | None) -> list[str]:

@@ -353,6 +353,79 @@ def _note_call_failure(
     failures.append(note(error, prefix=prefix).dump())
 
 
+# `search-products` `text` matches title, SKU and model only
+# (SearchProducts::text_ok). "hybrid" is not in the ESA or H2-15K titles, so
+# the needle drops those products even when phase and AC power already match
+# (baseline b03). A model or series code is not one of these words.
+_CLASS_TEXT_WORDS = frozenset(
+    {
+        "hybrid",
+        "hybrids",
+        "inverter",
+        "inverters",
+        "wechselrichter",
+        "hybrid-wechselrichter",
+        "hybridwechselrichter",
+        "three-phase",
+        "single-phase",
+        "3-phase",
+        "1-phase",
+        "dreiphasig",
+        "dreiphasige",
+        "dreiphasiger",
+        "dreiphasigen",
+        "einphasig",
+        "einphasige",
+        "einphasiger",
+        "einphasigen",
+    }
+)
+_SEARCH_NARROWING = frozenset(
+    {"phase", "ac_power_min", "kwh_min", "kwh_max", "brand", "series", "pv_kwp"}
+)
+
+
+def _class_text_tokens(text: str) -> list[str]:
+    """Words of `text`, keeping a hyphenated token whole."""
+    tokens: list[str] = []
+    current: list[str] = []
+    for char in text.casefold():
+        if char.isalnum() or char == "-":
+            current.append(char)
+            continue
+        if current:
+            token = "".join(current).strip("-")
+            if token:
+                tokens.append(token)
+            current = []
+    if current:
+        token = "".join(current).strip("-")
+        if token:
+            tokens.append(token)
+    return tokens
+
+
+def without_class_text(
+    name: str, arguments: dict[str, Any] | None
+) -> dict[str, Any] | None:
+    """Drop a class-word `text` when a structured filter already narrows the search.
+
+    The copy is new. A code, a series word, or a search that has only `text`
+    is unchanged: that needle is the filter.
+    """
+    if name != "linker/search-products" or not arguments or "text" not in arguments:
+        return arguments
+    text = arguments.get("text")
+    if not isinstance(text, str) or not text.strip():
+        return arguments
+    if not any(arguments.get(key) not in (None, "") for key in _SEARCH_NARROWING):
+        return arguments
+    tokens = _class_text_tokens(text)
+    if not tokens or any(token not in _CLASS_TEXT_WORDS for token in tokens):
+        return arguments
+    return {key: value for key, value in arguments.items() if key != "text"}
+
+
 def _ability_runner(
     client: AbilityClient,
     budget: ToolBudget,
@@ -372,7 +445,7 @@ def _ability_runner(
         sent = (
             stated_size_hint(message)
             if name == "linker/size-hint"
-            else with_tool_lang(name, arguments, locale)
+            else without_class_text(name, with_tool_lang(name, arguments, locale))
         )
         try:
             payload, gathered = client.record(name, sent, user_context, locale)

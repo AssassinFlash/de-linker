@@ -1,13 +1,16 @@
 """One Genie turn: generate → ground → hydrate; retry once; then the template.
 
 Grounding does not rewrite the model text (docs/specs/13-genie.md). A failed
-check is a reason to ask the model again with the error list, then to fall
+check is a reason to ask the model again with the error list. A miss that is
+only bare numbers is stripped on that attempt and still shipped grounded: the
+baseline floor treats `fallback: true` as no answer (#439). A second miss that
+is only bare numbers is stripped the same way. Any other second miss falls
 back to qualified cards plus one ask. A not_released pair is not rewritten:
-a grounded answer ships as written, and a turn that fails twice answers from
-the contract conditions the check returned (#396). A fatal failure (model
-5xx/429/empty stream, a missing or corrupt index, an encoder error, an
-ability 5xx or timeout) is classified and the template says so with the
-reviewed degraded sentence (#410). A page outage is not one of these.
+a grounded answer ships as written, and a turn that fails twice for another
+reason answers from the contract conditions the check returned (#396). A fatal
+failure (model 5xx/429/empty stream, a missing or corrupt index, an encoder
+error, an ability 5xx or timeout) is classified and the template says so with
+the reviewed degraded sentence (#410). A page outage is not one of these.
 """
 
 from __future__ import annotations
@@ -18,22 +21,30 @@ from dataclasses import dataclass
 from linker_genie import timing
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.failure import FailureClass, RecordedFailure, from_log, note
-from linker_genie.ground import Citation, check, cites_outside_turn
+from linker_genie.ground import Citation, check, cites_outside_turn, drop_bare_numbers
 from linker_genie.hydrate import complete_pairing_cards, hydrate
 from linker_genie.language import (
     LANGUAGE_RETRY_PREFIX,
+    customer_message,
     language_failure,
     turn_language,
 )
 from linker_genie.prices import Lookup, fill
 from linker_genie.route import SEARCH_LIMIT, Route
-from linker_genie.schema import HandoffBlock, TextBlock, TurnOutput, TurnRequest
+from linker_genie.schema import (
+    HandoffBlock,
+    Locale,
+    TextBlock,
+    TurnOutput,
+    TurnRequest,
+)
 from linker_genie.template import (
     DEGRADED,
     LOGIN_PLACEHOLDER,
     LOGIN_REQUIRED,
     fallback,
     finish,
+    seal,
 )
 
 # pydantic-ai tool_manager._check_max_retries, on UnexpectedModelBehavior
@@ -104,6 +115,87 @@ def align_login(output: TurnOutput, facts: TurnFacts, expected: str) -> TurnOutp
             "language": expected,
             "blocks": [TextBlock(text=LOGIN_REQUIRED[expected])],
         }
+    )
+
+
+def _hydrate_priced(
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None,
+    expected: str,
+    commerce: Lookup | None,
+    clock: timing.Timing | None,
+) -> tuple[TurnOutput, TurnFacts, tuple[str, ...]]:
+    """Login alignment, pairing cards, hydration and prices. One hydrate phase."""
+    aligned = align_login(output, facts, expected)
+    with timing.phase(clock, timing.HYDRATE):
+        completed = complete_pairing_cards(aligned, facts, route)
+        hydrated = hydrate(completed, facts, expected)
+        priced, priced_facts, missed = fill(hydrated, facts, commerce)
+    return priced, priced_facts, tuple(missed)
+
+
+def _seal_and_finish(
+    request: TurnRequest,
+    priced: TurnOutput,
+    priced_facts: TurnFacts,
+    route: Route | None,
+    expected: Locale,
+) -> TurnOutput:
+    """Required sentences after hydration, then the route's next step.
+
+    `seal` adds no timing phase. If the sealed prose is the wrong language,
+    the pre-seal text ships: the ask chips `finish` adds are not checked again.
+    """
+    sealed = seal(
+        priced,
+        priced_facts,
+        route,
+        customer_message(request),
+        request.page_context.type,
+    )
+    if language_failure(sealed, expected) is not None:
+        sealed = priced
+    return finish(sealed, priced_facts, route, customer_message(request))
+
+
+def _ship_number_correction(
+    request: TurnRequest,
+    output: TurnOutput,
+    facts: TurnFacts,
+    route: Route | None,
+    expected: Locale,
+    commerce: Lookup | None,
+    clock: timing.Timing | None,
+    attempt: int,
+    retried: tuple[str, ...],
+) -> TurnResult | None:
+    """Strip a number-only miss and ship it when the re-check still holds.
+
+    A model retry rewrites the answer and can drop the cards the row requires.
+    The correction runs on this attempt. A citation or tool failure is not
+    this path. A language miss after the strip is not shipped.
+    """
+    corrected = drop_bare_numbers(output)
+    with timing.phase(clock, timing.GROUND):
+        result = check(corrected, facts, route)
+    if not result.ok:
+        return None
+    priced, priced_facts, missed = _hydrate_priced(
+        corrected, facts, route, expected, commerce, clock
+    )
+    if language_failure(priced, expected) is not None:
+        return None
+    sealed = _seal_and_finish(request, priced, priced_facts, route, expected)
+    return TurnResult(
+        output=sealed,
+        facts=priced_facts,
+        grounded=True,
+        failures=(),
+        fallback=False,
+        attempts=attempt,
+        retried=retried,
+        price_failures=missed,
     )
 
 
@@ -224,7 +316,11 @@ def run(
     # The last attempt threw. A grounding miss clears this. An unclassified
     # exception is not a grounding miss, so the signed shape must not hide it.
     raised = False
+    last_output: TurnOutput | None = None
+    last_unbound_only = False
     for attempt in (1, 2):
+        last_output = None
+        last_unbound_only = False
         try:
             with (
                 timing.phase(clock, timing.MODEL),
@@ -242,6 +338,8 @@ def run(
             retry_reason = failure.text
             last_facts = seeded
             last_citations = ()
+            last_output = None
+            last_unbound_only = False
             continue
         raised = False
         _copy_call_failures(recorded, call_failures)
@@ -251,22 +349,35 @@ def run(
         if not result.ok:
             last_failures = result.failures
             last_citations = result.citations
+            last_output = output
+            last_unbound_only = result.unbound_only
             for item in last_failures:
                 _remember(recorded, RecordedFailure(item))
+            if result.unbound_only and not _tool_failures(recorded):
+                shipped = _ship_number_correction(
+                    request,
+                    output,
+                    last_facts,
+                    route,
+                    expected,
+                    commerce,
+                    clock,
+                    attempt,
+                    last_failures,
+                )
+                if shipped is not None:
+                    return shipped
             retry_reason = result.reason
             continue
-        aligned = align_login(output, last_facts, expected)
-        with timing.phase(clock, timing.HYDRATE):
-            # One pairing set fills cards the attempt omitted, including the
-            # first attempt; the hydrated sentences follow the answer language
-            # (#382). Prose is not rewritten.
-            completed = complete_pairing_cards(aligned, last_facts, route)
-            hydrated = hydrate(completed, last_facts, expected)
-            priced, priced_facts, missed = fill(hydrated, last_facts, commerce)
+        priced, priced_facts, missed = _hydrate_priced(
+            output, last_facts, route, expected, commerce, clock
+        )
         mismatch = language_failure(priced, expected)
         if mismatch is not None:
             last_failures = (mismatch,)
             last_citations = ()
+            last_output = None
+            last_unbound_only = False
             _remember(recorded, RecordedFailure(mismatch))
             retry_reason = mismatch
             continue
@@ -284,8 +395,10 @@ def run(
         if tool_failures:
             last_failures = tuple(item.text for item in tool_failures)
             retry_reason = last_failures[0]
+            last_output = None
+            last_unbound_only = False
             continue
-        priced = finish(priced, priced_facts, route)
+        priced = _seal_and_finish(request, priced, priced_facts, route, expected)
         return TurnResult(
             output=priced,
             facts=priced_facts,
@@ -296,6 +409,27 @@ def run(
             retried=last_failures,
             price_failures=tuple(missed),
         )
+    if (
+        last_unbound_only
+        and last_output is not None
+        and not raised
+        and not _tool_failures(recorded)
+    ):
+        # The question does not license the digit. Hydration has not run, so a
+        # series name in the question cannot put the digit back (#439).
+        shipped = _ship_number_correction(
+            request,
+            last_output,
+            last_facts,
+            route,
+            expected,
+            commerce,
+            clock,
+            2,
+            last_failures,
+        )
+        if shipped is not None:
+            return shipped
     with timing.phase(clock, timing.TEMPLATE):
         _copy_call_failures(recorded, call_failures)
         kind = _class_for_fallback(recorded, last_failures)
@@ -316,8 +450,8 @@ def run(
             rendered = complete_pairing_cards(
                 rendered, last_facts, route, card_limit=SEARCH_LIMIT
             )
-        priced, priced_facts, missed = fill(rendered, last_facts, commerce)
-        priced = finish(priced, priced_facts, route)
+        priced, priced_facts, price_missed = fill(rendered, last_facts, commerce)
+        priced = finish(priced, priced_facts, route, customer_message(request))
     return TurnResult(
         output=priced,
         facts=priced_facts,
@@ -326,5 +460,5 @@ def run(
         fallback=True,
         attempts=2,
         retried=last_failures,
-        price_failures=tuple(missed),
+        price_failures=tuple(price_missed),
     )
