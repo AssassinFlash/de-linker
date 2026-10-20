@@ -349,7 +349,7 @@ final class PageContextTest extends TestCase {
 			/**
 			 * Lines of the draft, including a German twin of 4107.
 			 *
-			 * @return array<string, array{product_id: int, quantity?: int}>
+			 * @return array<string, array{product_id: int, quantity?: int|string}>
 			 */
 			public function get_cart(): array {
 				return array(
