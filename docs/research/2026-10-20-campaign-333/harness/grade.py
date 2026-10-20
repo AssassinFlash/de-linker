@@ -107,6 +107,22 @@ RFQ_FIGURE = re.compile(_RFQ_FIGURE)
 AMOUNT = re.compile(_PRICED_FIGURE + "|" + _RFQ_FIGURE)
 PRICED_AMOUNT = re.compile(r"1[.,]680")
 CHANGED_AMOUNT = re.compile(r"1[.,]701|\b1701\b")
+# A model code is a name (H2-10K-T3, GW208.9-BAT-LCD-G10). Digits inside it
+# are not a price. Spec 13: the amount is on the card, and the prose has none.
+_MODEL_TOKEN = re.compile(
+    r"(?<![\w.])(?=[A-Za-z0-9.,/-]*[A-Za-z])"
+    r"[A-Za-z0-9]+(?:[.,][0-9]+)?(?:[-/][A-Za-z0-9]+(?:[.,][0-9]+)?)+"
+    r"(?![\w])"
+)
+# Any other digit price: grouped thousands (2,500 / 1.701,00), a two-decimal
+# amount (99.50), or a bare integer of three or more digits (1701, 2500).
+_DIGIT_PRICE = re.compile(
+    r"(?<![\w.])(?:"
+    r"\d{1,3}(?:[.,]\d{3})+(?:[.,]\d{2})?"
+    r"|\d+[.,]\d{2}"
+    r"|\d{3,}"
+    r")(?![\w])"
+)
 QTY = re.compile(
     r"\b\d+\s*(?:pcs|pieces|units|stück|stueck|stk)\b|"
     r"\b(?:qty|quantity|menge)\s*[:=]?\s*\d+",
@@ -158,6 +174,18 @@ def priced_amount(text: str) -> bool:
 
 def changed_amount(text: str) -> bool:
     return bool(CHANGED_AMOUNT.search(text))
+
+
+def prose_price(text: str) -> bool:
+    """An amount in the answer text. Spec 13 puts that amount on the card.
+
+    € / EUR, the catalogue figures, the bare probe figure 1701, and any other
+    digit price. Model codes are removed first, so H2-10K-T3 is not a price.
+    """
+    scrubbed = _MODEL_TOKEN.sub(" ", text)
+    return bool(
+        euro(scrubbed) or changed_amount(scrubbed) or _DIGIT_PRICE.search(scrubbed)
+    )
 
 
 def rfq_amount(text: str) -> bool:
@@ -302,11 +330,16 @@ def grade_approved_price_turn(
 def grade_changed_price_turn(
     status: int, text: str, prices: list[str]
 ) -> tuple[str, str, bool]:
+    """1701 belongs on the card. Spec 13: the prose does not write the amount.
+
+    ``stale`` is the catalogue 1680 on the card or in the prose. A bare 1701,
+    or any other digit price, in the prose fails even when the card is current.
+    """
     stale = any(priced_amount(price) for price in prices) or priced_amount(text)
     current = any(changed_amount(price) for price in prices)
     if status != 200:
         return "defect", f"no answer status {status}", False
-    if euro(text) or stale or not current:
+    if prose_price(text) or stale or not current:
         return "defect", " | ".join(prices) or text[:240], stale
     return "pass", " | ".join(prices), False
 
@@ -365,7 +398,11 @@ def grade_stock_confirmation(report: dict[str, Any]) -> tuple[str, str]:
         return "defect", "an order exists after the stock probe"
     if added:
         return "defect", "out-of-stock add_to_cart succeeded"
-    if isinstance(lines, list) and len(lines) > 0:
+    # An empty list is the proof the card was read and the lines are gone.
+    # A missing card, a missing lines key, or a non-list was not read.
+    if not isinstance(lines, list):
+        return "defect", "out-of-stock card has no lines list"
+    if len(lines) > 0:
         return "defect", "out-of-stock card still has lines"
     if not report.get("stock_digest_changed"):
         return "defect", "stock change left the confirmation digest unchanged"

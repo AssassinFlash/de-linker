@@ -233,6 +233,13 @@ def test_confirmation_requires_the_409_code_and_empty_stock_lines() -> None:
     assert grade_stock_confirmation(added)[0] == "defect"
     lined = {**stock, "stock_card": {"data": {"lines": [{"sku": "x"}]}}}
     assert "lines" in grade_stock_confirmation(lined)[1]
+    unread = {key: value for key, value in stock.items() if key != "stock_card"}
+    missing_lines = {**stock, "stock_card": {"data": {}}}
+    not_a_list = {**stock, "stock_card": {"data": {"lines": "gone"}}}
+    for malformed in (unread, missing_lines, not_a_list):
+        verdict, note = grade_stock_confirmation(malformed)
+        assert verdict == "defect"
+        assert "lines" in note
 
 
 def test_amount_patterns_split_1680_from_1701_and_33250() -> None:
@@ -288,6 +295,22 @@ def test_price_turns() -> None:
     verdict, _note, stale = grade_changed_price_turn(200, "still 1,680", ["€1,701.00"])
     assert verdict == "defect"
     assert stale is True
+    verdict, _note, stale = grade_changed_price_turn(
+        200, "The net price is 1701.", ["€1,701.00"]
+    )
+    assert (verdict, stale) == ("defect", False)
+    verdict, _note, stale = grade_changed_price_turn(
+        200, "The net price is 2500.", ["€1,701.00"]
+    )
+    assert (verdict, stale) == ("defect", False)
+    assert (
+        grade_changed_price_turn(
+            200,
+            "The SAJ H2-10K-T3 price is on the card.",
+            ["€1,701.00"],
+        )[0]
+        == "pass"
+    )
 
 
 def test_catalog_and_fixture_agree_with_the_constants() -> None:

@@ -7,7 +7,13 @@ route, and never sends mail. Evidence goes to ~/de-linker-data/campaign-333/.
 Catalogue mutations run inside one PHP process (catalog.php and the
 eval-file scripts). The shutdown hook restores the snapshot when this
 process is SIGKILL'd. The finally block below still forces the known-good
-catalogue and reads it back.
+catalogue and reads it back. inquiry_flow.php does not read the catalogue
+back itself; that finally block is its only read-back.
+
+request() sends no cookie jar. A turn with no conversation cookie opens a
+post (Conversations::current_id). run_turns deletes those posts and reads
+them back. The approved post stays until logout has replayed its cookie,
+then logout deletes that post and reads it back.
 
     python3 run_battery.py              # local instance c333
     python3 run_battery.py --self-test  # graders only
@@ -185,6 +191,100 @@ def set_cookies(headers: Any) -> list[str]:
         return [value for value in (headers.get_all("Set-Cookie") or []) if value]
     raw = headers.get("Set-Cookie") if hasattr(headers, "get") else None
     return [raw] if raw else []
+
+
+def conversation_id_from_cookie(value: str) -> int | None:
+    """The integer before the dot in ``linker_conversation`` (``id.signature``)."""
+    head = urllib.parse.unquote(value).split(".", 1)[0]
+    if head.isdigit() and int(head) > 0:
+        return int(head)
+    return None
+
+
+def conversation_id_from_turn(
+    body: dict[str, Any], result: dict[str, Any]
+) -> int | None:
+    """The post this turn opened. The body wins; Set-Cookie is the fallback.
+
+    Proxy::turn puts ``conversation_id`` on a stored answer. A cookie-less
+    request still receives ``linker_conversation`` when current_id opens a post,
+    including when the upstream call fails before that JSON is built.
+    """
+    raw = body.get("conversation_id")
+    if isinstance(raw, int) and raw > 0:
+        return raw
+    if isinstance(raw, str) and raw.isdigit() and int(raw) > 0:
+        return int(raw)
+    for cookie in result.get("set_cookie") or []:
+        if not isinstance(cookie, str):
+            continue
+        match = re.search(r"linker_conversation=([^;]+)", cookie)
+        if match:
+            found = conversation_id_from_cookie(match.group(1))
+            if found is not None:
+                return found
+    return None
+
+
+def delete_conversation_posts(ids: list[int]) -> dict[str, Any]:
+    """Force-delete these conversation posts and read each id back.
+
+    Conversations are posts, so ``wp_delete_post`` removes them. The read-back
+    is ``get_post`` on the same ids. A remaining id is still a ``WP_Post``.
+    """
+    unique: list[int] = []
+    seen: set[int] = set()
+    for raw in ids:
+        cid = int(raw)
+        if cid > 0 and cid not in seen:
+            seen.add(cid)
+            unique.append(cid)
+    if not unique:
+        return {"deleted": [], "remaining": []}
+    id_list = ", ".join(str(cid) for cid in unique)
+    parsed = json.loads(
+        wp_eval(
+            f"""
+$ids = array({id_list});
+$deleted = array();
+foreach ($ids as $id) {{
+  $post = get_post((int) $id);
+  if ($post instanceof WP_Post && $post->post_type === "linker_conversation") {{
+    wp_delete_post((int) $id, true);
+    $deleted[] = (int) $id;
+  }}
+}}
+$remaining = array();
+foreach ($ids as $id) {{
+  $post = get_post((int) $id);
+  if ($post instanceof WP_Post) {{
+    $remaining[] = (int) $id;
+  }}
+}}
+echo wp_json_encode(array("deleted" => $deleted, "remaining" => $remaining));
+"""
+        )
+    )
+    if not isinstance(parsed, dict):
+        raise RuntimeError("conversation readback was not an object")
+    return parsed
+
+
+def cleanup_conversations(case_id: str, ids: list[int]) -> dict[str, Any]:
+    """Delete ``ids`` and record a defect when the read-back still finds one."""
+    report = delete_conversation_posts(ids)
+    print(f"{case_id} {json.dumps(report)}", flush=True)
+    remaining = report.get("remaining") or []
+    if remaining:
+        case(
+            case_id,
+            state="visitor",
+            req={"ids": ids},
+            result={"status": 0, "duration_s": None, "url": "wp_delete_post"},
+            verdict="defect",
+            note=f"conversation readback still has {remaining}",
+        )
+    return report
 
 
 def absorb_cookies(jar: dict[str, str], result: dict[str, Any]) -> None:
@@ -808,6 +908,10 @@ def price_texts(blocks: list[Any]) -> list[str]:
 
 def run_turns(secrets: dict[str, Any]) -> dict[str, str]:
     cookies: dict[str, str] = {}
+    # One post per cookie-less turn for a guest. A signed-in account reuses
+    # its latest post, so several of its turns share an id. Logout replays
+    # the approved cookie, so that one id is deleted in run_logout.
+    opened: list[int] = []
     turns = [
         (
             "turn-visitor-en-home",
@@ -1004,6 +1108,10 @@ def run_turns(secrets: dict[str, Any]) -> dict[str, str]:
         if match and state == "approved":
             cookies["approved"] = urllib.parse.unquote(match.group(1))
         body = json_body(result) or {}
+        if isinstance(body, dict):
+            opened_id = conversation_id_from_turn(body, result)
+            if opened_id is not None:
+                opened.append(opened_id)
         stream = body.get("stream") or ""
         meta, blocks = parse_stream(stream) if stream else (None, [])
         text = answer_text(blocks)
@@ -1063,6 +1171,10 @@ def run_turns(secrets: dict[str, Any]) -> dict[str, str]:
             meta=meta,
             blocks=blocks,
         )
+    keep = conversation_id_from_cookie(cookies.get("approved", ""))
+    doomed = [cid for cid in dict.fromkeys(opened) if cid != keep]
+    if doomed:
+        cleanup_conversations("turns-conversation-cleanup", doomed)
     (EVIDENCE / "conversation-cookie.txt").write_text(cookies.get("approved", ""))
     return cookies
 
@@ -1306,6 +1418,9 @@ def run_logout(secrets: dict[str, Any], cookies: dict[str, str]) -> None:
         note=owner_note,
         price="historical" if owner_euro else "",
     )
+    kept = conversation_id_from_cookie(cookie)
+    if kept is not None:
+        cleanup_conversations("logout-conversation-cleanup", [kept])
 
 
 def run_own_order_isolation(secrets: dict[str, Any]) -> None:

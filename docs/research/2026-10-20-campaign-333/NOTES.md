@@ -23,12 +23,12 @@
 | `harness/grade.py` | 纯判定：门句、金额、库存词、降级声明、确认卡、最终计数。单测锁这里。 |
 | `harness/run_battery.py` | 本地电池：能力、令牌、页面、Store API、询盘列表、状态过渡、Genie 轮次、库存推送、登出。`--production` 只对公开 Genie 发问句。`--self-test` 跑金额/数量正则，并核对已记录日志的计入行。 |
 | `harness/catalog.php` | 快照、恢复、HPOS 删单、读回、`C333Mint`。没有文件级 `const`，没有副作用。 |
-| `harness/inquiry_flow.php` | 本地确认卡。读卡片、改价、再读、只 POST 旧摘要。匹配的摘要从不 POST。`wp eval-file` 会在方法内部 include 这个文件，文件级 `const` 会在编译期失败，所以价格和用户 id 是普通变量。关机钩子恢复价格，并删掉这次打开的会话帖。 |
+| `harness/inquiry_flow.php` | 本地确认卡。读卡片、改价、再读、只 POST 旧摘要。匹配的摘要从不 POST。`wp eval-file` 会在方法内部 include 这个文件，文件级 `const` 会在编译期失败，所以价格和用户 id 是普通变量。关机钩子恢复价格，并删掉这次打开的会话帖。脚本自己不读回目录。 |
 | `harness/stock_edges.php` | 库存推送、缺货后的能力/页面/Store/轮次、onbackorder 徽标。一个 PHP 进程里做完，关机钩子恢复目录和推送密钥。 |
 | `harness/price_turn.php` | 把标价改成 1701，已批准首页问一次，再恢复。1701 不是目录价。 |
 | `harness/orders.php` | 三个账号各一张无行项目的询盘单，令牌读 `inquiry-status`，然后 `WC_Order::delete(true)` 并读回。 |
 | `harness/transition.php` | 本地顾客 `c333-transition`，从待审到拒绝再回到批准。不碰用户 43/44/45。 |
-| `harness/followup.py` | 第一次机器判定里需要重测的几条：查询串令牌、对比表价格行、已批准商品页、空会话上的对比/配置器/改价轮次、onbackorder 徽标。改价轮次走 `price_turn.php`。结尾的删单走 HPOS。 |
+| `harness/followup.py` | 第一次机器判定里需要重测的几条：查询串令牌、对比表价格行、已批准商品页、空会话上的对比/配置器/改价轮次、onbackorder 徽标。改价轮次走 `price_turn.php`。重测前删掉已批准账号已有的会话，重测结束后删掉本轮新开的帖并读回。结尾的删单走 HPOS。 |
 | `harness/tests/` | `pytest`。夹具 `recorded-verdicts.json` 只有 id、判定，以及 `inquiry-flow` 的那句失败备注。 |
 
 证据：`~/de-linker-data/campaign-333/evidence/cases.jsonl`（每条：账号态、请求、meta、blocks、价格/库存、是否用了旧值、耗时、verdict）。线上在 `evidence/production.jsonl`。确认卡原文在 `evidence/inquiry-flow.raw.txt`。
@@ -97,9 +97,15 @@ D2。`orders.php` 建的单没有行项目，`set_total` 写成目录价。`Inqu
 
 ## 清理
 
-订单在 HPOS 的 `wc_orders`，不在 posts。`wp_delete_post` 删不掉。`catalog.php` 的 `c333_delete_orders` 走 `WC_Order::delete(true)`，再按 id 用 `wc_get_order` 读回。还在的 id 记成 `inquiry-orders-cleanup` 缺陷。会话帖 `linker_conversation` 仍用 `wp_delete_post`。
+订单在 HPOS 的 `wc_orders`，不在 posts。`wp_delete_post` 删不掉。`catalog.php` 的 `c333_delete_orders` 走 `WC_Order::delete(true)`，再按 id 用 `wc_get_order` 读回。还在的 id 记成 `inquiry-orders-cleanup` 缺陷。会话帖 `linker_conversation` 用 `wp_delete_post`，再按同一批 id `get_post` 读回。
 
-会改目录或账号的脚本各在一个进程里做完。进探针之前注册 `register_shutdown_function`。Python 被 SIGKILL 之后，这个 PHP 进程自己退出，钩子把进脚本时的快照写回去。`main` 的 `finally` 再按 `accounts.json` 强制写回已知目录：标价 1680 且 instock，RFQ onbackorder，推送密钥清除。读回对不上，这次运行失败。
+`run_turns` 的 `request()` 不带 cookie jar。17 次轮次都是无 cookie 请求。`Conversations::current_id` 在没有可用 cookie 时开新帖：访客每次一帖；已登录账号会捡自己最新的一帖，所以同一账号的多轮共用一个 id。`af98b83c` 的提交说明写了 "leaves no residue"。当时 `run_battery.py` 里没有删这些帖，NOTES 也没有写这件事。`followup.py` 当时只在重测之前删已批准账号的会话。
+
+现在 `run_turns` 结束时，按本轮响应里的 `conversation_id` 删除（响应没有这个字段时，用 `Set-Cookie` 里 `linker_conversation` 的 `id.signature`）。删完用 `get_post` 读回。还在的 id 记成 `turns-conversation-cleanup` 缺陷。已批准那一帖要留给登出阶段拿 cookie 回放，这一轮先留着。`run_logout` 写完三条回放之后删掉它，再读回。还在就记 `logout-conversation-cleanup`。
+
+`followup.py` 重测前仍会删掉已批准账号已有的会话，避免 `#373` 把重复的开场问句判成冲突。读回还在就记 `followup-conversation-predelete`。重测自己开的帖在该条记完之后删除并读回。还在就记 `followup-conversation-<重测 id>`。
+
+会改目录或账号的脚本各在一个进程里做完。进探针之前注册 `register_shutdown_function`。Python 被 SIGKILL 之后，这个 PHP 进程自己退出，钩子把进脚本时的快照写回去。`price_turn.php` 和 `stock_edges.php` 在脚本末尾调用 `c333_catalog_read`，Python 用 `catalog_ok` 看这份读回。`inquiry_flow.php` 只在关机钩子里 `c333_restore`，返回的 JSON 没有 `catalog`。它没有逐脚本的目录读回。目录对不对，只靠 `run_battery.py` 的 `main` 在 `finally` 里 `force_restore`，再 `catalog_ok`。对不上，这次运行失败。`finally` 写回的已知目录是：标价 1680 且 instock，RFQ onbackorder，推送密钥清除。
 
 ## 这轮补上的探针
 
@@ -107,9 +113,11 @@ D2。`orders.php` 建的单没有行项目，`set_total` 写成目录价。`Inqu
 
 DE 孪生。6628 和 6800 以前几乎不按 id 查。能力矩阵和 Store API 各加 `-twin` 行：`lang=de`，id 就是孪生帖。`lang=de` 配英语 id 的旧探针还在。
 
-状态过渡。`transition.php` 在本地建 `c333-transition`，角色 customer。不碰用户 43/44/45。邮件用 `pre_wp_mail` 短路。pending 的 cookie 有效，价格关着。`Approval::set` 到 approved 之后不重新登录，同一张 cookie 仍有效，下一次请求看得到价格。再设为 rejected，要带理由。cookie 失效。`wp_authenticate` 的错误码是 `linker_approval_rejected`。强制 `wp_set_current_user` 仍看不见价格。`CommerceState::visitor_reason` 没有 rejected 分支，已登录的拒绝账号读的是受限那句。再设回 approved 之后，`wp_authenticate` 成功，价格打开。然后删用户，按登录名读回，确认没有了。密码不打印。关机钩子按登录名再删一次。
+状态过渡。`transition.php` 在本地建 `c333-transition`，角色 customer。脚本不引用用户 43/44/45。邮件用 `pre_wp_mail` 短路。脚本要测的序列：pending cookie 是否有效、价格是否关着；`Approval::set` 到 approved 之后不重新登录，同一张 cookie 是否仍有效、下一次请求是否看得到价格；再设为 rejected（要带理由）之后 cookie 是否失效，`wp_authenticate` 的错误码是否为 `linker_approval_rejected`；强制 `wp_set_current_user` 之后是否仍看不见价格（`CommerceState::visitor_reason` 没有 rejected 分支，已登录的拒绝账号读的是受限那句）；再设回 approved 之后 `wp_authenticate` 是否成功、价格是否打开；然后删用户，按登录名读回。密码不打印。关机钩子按登录名再删一次。
 
-缺货回答。`grade_stock_after_out` 先看 `meta.fallback`。走了回落、正文里却没有规格 13 的降级句（`template.DEGRADED`），判缺陷。备注写明没有降级声明。已记录的 D3 回答是 "Here are matching products from our range."，`fallback=true`，按这条会判缺陷。确认卡除了状态 409，还要错误码 `linker_genie_inquiry_changed`。缺货时 `added_after_stock` 必须为假，卡片 `lines` 必须是空数组。
+这些结果还没有在 c333 上观察到。`php -l harness/transition.php` 通过（2026-10-20，`No syntax errors detected`）。同一天 `just wp c333 eval-file` 跑这个文件，退出码 1，stderr 是 `Class "Linker\Commerce\Registration\Approval" not found`（eval 进来的代码第 102 行，`transition.php` 的 `new Approval()`）。当时 `wp plugin list` 里没有 `linker-commerce`、`linker-tools`、`linker-i18n`。脚本在 `wp_insert_user` 之后抛出。关机钩子已删掉这次插入的用户：`wp user get c333-transition` 报 `Invalid user ID, email or login`。用户 43、44、45 的 id 仍在。cookie 是否有效、价格行是什么，这次运行没有读到。
+
+缺货回答。`grade_stock_after_out` 先看 `meta.fallback`。走了回落、正文里却没有规格 13 的降级句（`template.DEGRADED`），判缺陷。备注写明没有降级声明。已记录的 D3 回答是 "Here are matching products from our range."，`fallback=true`，按这条会判缺陷。确认卡除了状态 409，还要错误码 `linker_genie_inquiry_changed`。缺货时 `added_after_stock` 必须为假，卡片 `lines` 必须是空数组。没有 `stock_card`、没有 `data.lines`、或 `lines` 不是数组，判缺陷。改价轮次的正文里出现裸的 `1701`，或其他数字价格，也判缺陷。金额在卡上。
 
 ## 测试
 

@@ -7,6 +7,9 @@ digest, never calls the contact route, and never sends mail.
 The 1701 turn and the order sweep go through the PHP helpers. Orders are
 deleted with WC_Order::delete(true) and read back. wp_delete_post does not
 remove an HPOS order. Conversations are posts, so wp_delete_post stays.
+Approved conversations are deleted before a retest so a repeated opening
+question is not a #373 conflict. The post that retest opens is deleted
+afterwards and read back.
 """
 
 from __future__ import annotations
@@ -35,8 +38,13 @@ from grade import (
 )
 
 
-def delete_approved_conversations(author: int) -> str:
-    return b.wp_eval(
+def delete_approved_conversations(author: int) -> dict[str, Any]:
+    """Delete this author's conversations and read those ids back.
+
+    This runs before a retest. It does not delete the post the retest is
+    about to open. ``get_post`` is the read-back, same as the order sweep.
+    """
+    raw = b.wp_eval(
         f"""
 $ids = get_posts(array(
   "post_type" => "linker_conversation",
@@ -46,9 +54,23 @@ $ids = get_posts(array(
   "fields" => "ids",
 ));
 foreach ($ids as $id) {{ wp_delete_post((int) $id, true); }}
-echo wp_json_encode(array("deleted" => count($ids)));
+$remaining = array();
+foreach ($ids as $id) {{
+  $post = get_post((int) $id);
+  if ($post instanceof WP_Post) {{
+    $remaining[] = (int) $id;
+  }}
+}}
+echo wp_json_encode(array(
+  "deleted" => count($ids),
+  "remaining" => $remaining,
+));
 """
     )
+    parsed = json.loads(raw)
+    if not isinstance(parsed, dict):
+        raise RuntimeError("conversation pre-delete was not an object")
+    return parsed
 
 
 def turn(
@@ -57,7 +79,17 @@ def turn(
     page: dict[str, Any],
     question: str,
 ) -> None:
-    delete_approved_conversations(b.account_id(secrets["accounts"], "approved"))
+    pre = delete_approved_conversations(b.account_id(secrets["accounts"], "approved"))
+    pre_left = pre.get("remaining") or []
+    if pre_left:
+        b.case(
+            "followup-conversation-predelete",
+            state="approved",
+            req={"author": b.account_id(secrets["accounts"], "approved")},
+            result={"status": 0, "duration_s": None, "url": "wp_delete_post"},
+            verdict="defect",
+            note=f"approved conversations still present {pre_left}",
+        )
     payload = {
         "locale": "en",
         "messages": [{"role": "user", "content": question}],
@@ -92,6 +124,10 @@ def turn(
         or {"status": result["status"], "url": result["url"], "code": body.get("code")},
         blocks=blocks,
     )
+    if isinstance(body, dict):
+        opened = b.conversation_id_from_turn(body, result)
+        if opened is not None:
+            b.cleanup_conversations(f"followup-conversation-{case_id}", [opened])
 
 
 def main() -> None:
