@@ -268,6 +268,8 @@ def test_regexes_of_every_row_compile() -> None:
             patterns.append(binding["label"])
         for binding in expect.get("figure_subjects", []):
             patterns.append(binding["subject"])
+        for binding in expect.get("context_numbers", []):
+            patterns.append(binding["context"])
         for pattern in patterns:
             assert re.compile(pattern), (row["id"], pattern)
         if expect.get("price_gate"):
@@ -550,22 +552,46 @@ def test_trial_6_rejects_a_glued_unit_and_a_reassertion_after_and() -> None:
     assert check(german, kept_de, FEED_TOKENS) == []
 
 
-def test_trial_6_rejects_inverted_copula_dash_bare_number_and_liegt_across() -> None:
-    """The copula can run backwards, a dash or a bare number can present 260,
-    and liegt … bei can wrap the German phrase across three words."""
+def test_trial_6_rejects_inverted_copula_dash_bare_number_and_liegt_filler() -> None:
+    """The copula can run backwards, a dash, colon or a bare number can present
+    260, and liegt … bei can wrap the German phrase across any filler width."""
 
     english = next(row for row in ROWS if row["id"] == "b20-en")
     inverted = "The nominal capacity of 260 kWh is the usable capacity."
     dash = "The usable capacity — 260 kWh."
     bare = "The usable capacity 260 kWh."
-    for words in (inverted, dash, bare):
+    inverted_dash = "260 kWh — the usable capacity."
+    inverted_colon = "260 kWh: the usable capacity."
+    for words in (inverted, dash, bare, inverted_dash, inverted_colon):
         failures = check(english, turn(_document(words)), FEED_TOKENS)
         assert _banned(failures), words
 
     german = next(row for row in ROWS if row["id"] == "b20-de")
     liegt = "Beim Modell L260-OMNI liegt die nutzbare Energie bei 260 kWh."
-    failures = check(german, turn(_document(liegt), language="de"), FEED_TOKENS)
-    assert _banned(failures), liegt
+    filler = "Die nutzbare Kapazität liegt damit bei 260 kWh."
+    four_words = "Die nutzbare Kapazität liegt nach Angaben im Datenblatt bei 260 kWh."
+    inverted_dash_de = "260 kWh – die nutzbare Kapazität."
+    inverted_colon_de = "260 kWh: die nutzbare Kapazität."
+    for words in (liegt, filler, four_words, inverted_dash_de, inverted_colon_de):
+        failures = check(german, turn(_document(words), language="de"), FEED_TOKENS)
+        assert _banned(failures), words
+
+
+def test_trial_6_although_is_concessive_not_a_contrast() -> None:
+    """'not stated although the nominal capacity is 260' states 260 as the
+    nominal figure. although/though do not cancel the denial the way but does."""
+
+    english = next(row for row in ROWS if row["id"] == "b20-en")
+    concessive = turn(
+        _document(
+            "The documents do not state a usable capacity. "
+            "The usable capacity is not stated although the nominal capacity is "
+            "260 kWh and the depth of discharge is 98%."
+        )
+    )
+    assert check(english, concessive, FEED_TOKENS) == []
+    though = "The usable capacity is not stated though the nominal capacity is 260 kWh."
+    assert not _banned(check(english, turn(_document(though)), FEED_TOKENS))
 
 
 def test_trial_6_does_not_read_digits_inside_a_model_token() -> None:
@@ -648,6 +674,13 @@ def test_trial_19_bounds_whether_and_accepts_that() -> None:
         )
     )
     assert check(english, and_inside, FEED_TOKENS) == []
+    appositive = turn(
+        _document(
+            "The documents do not state whether the SAJ H2, a three-phase hybrid, "
+            "supports EnWG 14a dimming."
+        )
+    )
+    assert check(english, appositive, FEED_TOKENS) == []
     comma_after = turn(
         _document(
             "The documents do not state whether, the SAJ H2 supports EnWG 14a dimming."
@@ -684,7 +717,8 @@ def _cards(words: str, product_id: int, language: str = "en") -> Turn:
 
 
 def test_b03_binds_each_pv_figure_to_its_model() -> None:
-    """40 kW is GW20K's PV input. On GW15K it fails. 30 kW is 3585's own."""
+    """40 kW is GW20K's PV input. On GW15K it fails. 30 kW is 3585's and
+    2063's own, so on GW20K it fails the same way."""
 
     english = next(row for row in ROWS if row["id"] == "b03-en")
     assert english["expect"]["numbers"] == ["15", "5", "108", "30"]
@@ -693,6 +727,11 @@ def test_b03_binds_each_pv_figure_to_its_model() -> None:
     assert any("not a figure of GW15K-ETA-G20" in failure for failure in failures)
     own = _cards("GW15K-ETA-G20 has 30 kW PV input.", 3585)
     assert check(english, own, FEED_TOKENS) == []
+    borrowed_30 = _cards("GW20K-ETA-G20 has 30 kW PV input.", 3585)
+    assert any(
+        "not a figure of GW20K-ETA-G20" in failure
+        for failure in check(english, borrowed_30, FEED_TOKENS)
+    )
     neighbour = _cards("GW20K-ETA-G20 has 40 kW PV input.", 3585)
     assert check(english, neighbour, FEED_TOKENS) == []
     ecoflow = _cards("EF HD-P3-15K-G2 has 24 kW PV input.", 3585)
@@ -710,6 +749,11 @@ def test_b03_binds_each_pv_figure_to_its_model() -> None:
     )
     own_de = _cards("Der GW15K-ETA-G20 hat 30 kW PV-Eingang.", 3585, "de")
     assert check(german, own_de, FEED_TOKENS) == []
+    borrowed_30_de = _cards("Der GW20K-ETA-G20 hat 30 kW PV-Eingang.", 3585, "de")
+    assert any(
+        "not a figure of GW20K-ETA-G20" in failure
+        for failure in check(german, borrowed_30_de, FEED_TOKENS)
+    )
 
 
 def test_b03_pairs_respectively_and_accepts_a_denial() -> None:
@@ -782,29 +826,55 @@ def test_b25_binds_each_pv_figure_to_its_h2_model() -> None:
     assert check(german, right_de, FEED_TOKENS) == []
 
 
-def test_b25_allows_the_datasheet_grid_code_4105() -> None:
-    """VDE-AR-N 4105 is the Standard row on the H2 datasheets, not a figure."""
+def test_b25_restricts_4105_to_the_vde_ar_n_context() -> None:
+    """VDE-AR-N 4105 is the Standard row on the H2 datasheets, not a figure:
+    the digits as a measurement (4105 kWh, 4105000 Wh, 4105 A/W/V) fail."""
 
     english = next(row for row in ROWS if row["id"] == "b25-en")
-    assert "4105" in english["expect"]["numbers"]
+    assert "4105" not in english["expect"]["numbers"]
+    assert english["expect"]["context_numbers"] == [
+        {"number": "4105", "context": "(?i)VDE-AR-N"}
+    ]
+    absence = "The documents do not state whether the SAJ H2 supports EnWG 14a. "
     named = turn(
         _document(
-            "The documents do not state whether the SAJ H2 supports EnWG 14a. "
-            "The datasheet lists VDE-AR-N 4105 among the grid standards."
+            absence + "The datasheet lists VDE-AR-N 4105 among the grid standards."
         )
     )
     assert check(english, named, FEED_TOKENS) == []
+    for sentence in (
+        "The grid code is 4105 kWh.",
+        "The grid code is 4105000 Wh.",
+        "The current is 4105 A.",
+        "The power is 4105 W.",
+        "The voltage is 4105 V.",
+    ):
+        failures = check(english, turn(_document(absence + sentence)), FEED_TOKENS)
+        assert any("context" in failure for failure in failures), sentence
+        assert not any("in no expected fact" in failure for failure in failures), (
+            sentence
+        )
 
     german = next(row for row in ROWS if row["id"] == "b25-de")
-    assert "4105" in german["expect"]["numbers"]
+    assert "4105" not in german["expect"]["numbers"]
+    assert german["expect"]["context_numbers"] == english["expect"]["context_numbers"]
+    absence_de = "Die Unterlagen nennen keine Unterstützung für EnWG 14a. "
     named_de = turn(
-        _document(
-            "Die Unterlagen nennen keine Unterstützung für EnWG 14a. "
-            "Das Datenblatt führt VDE-AR-N 4105 auf."
-        ),
+        _document(absence_de + "Das Datenblatt führt VDE-AR-N 4105 auf."),
         language="de",
     )
     assert check(german, named_de, FEED_TOKENS) == []
+    for sentence in (
+        "Die Netzregel ist 4105 kWh.",
+        "Die Netzregel ist 4105000 Wh.",
+        "Der Strom ist 4105 A.",
+        "Die Leistung ist 4105 W.",
+        "Die Spannung ist 4105 V.",
+    ):
+        failures = check(
+            german, turn(_document(absence_de + sentence), language="de"), FEED_TOKENS
+        )
+        assert any("context" in failure for failure in failures), sentence
 
 
 def test_b47_allows_the_manual_10_ms_switching_time() -> None:
@@ -823,26 +893,6 @@ def test_b47_allows_the_manual_10_ms_switching_time() -> None:
         language="de",
     )
     assert check(german, good_de, FEED_TOKENS) == []
-
-
-def test_source_notes_cite_the_figure_that_owns_the_number() -> None:
-    """Page and column corrections the flat list used to state wrongly."""
-
-    grounds = {row["id"]: row["ground"] for row in ROWS}
-    assert "not page 2" in grounds["b03-en"]
-    assert "page 1" in grounds["b03-de"]
-    assert "ee6b3a41b825" not in grounds["b04-en"]
-    assert "unknown" in grounds["b04-en"]
-    assert "page 4" in grounds["b04-en"]
-    assert "no top-level rated_energy_kwh" in grounds["b22-en"]
-    assert "figures.rated_energy_kwh" in grounds["b22-en"]
-    assert "figures.rated_energy_kwh" in grounds["b22-de"]
-    assert "20 characters" in grounds["b25-en"]
-    assert "17" in grounds["b25-en"]
-    assert "VDE-AR-N 4105" in grounds["b25-en"]
-    assert "be488dc6630c" in grounds["b25-en"]
-    assert "page 289" in grounds["b47-en"]
-    assert "page 295" in grounds["b47-en"]
 
 
 # -------------------------------------------------------------------- grading

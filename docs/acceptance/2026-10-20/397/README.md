@@ -96,7 +96,7 @@ Checks on this commit, from `services/genie`: `uv run --locked pytest` 1556 pass
 
 Same local stack: WordPress `http://127.0.0.1:9177`, Genie `http://127.0.0.1:9179`. Production was not run. `b44-b45.json` is still the judged record from the round-3 file. This run's labels sit in the new jsonl and are not copied over that file.
 
-`260kWh` is the number 260. A denial stops at `and`, `und`, or a comma, the same boundary `_NEW_CLAIM` uses. `H2-20K` still does not yield 20, and `kW` does not match inside `kWp`.
+`260kWh` is the number 260. A denial ended at `and`, `und`, or a comma; this round's regex also treated `although`/`though` as contrasts, which round 6 corrected (they are concessive and do not cancel a denial). `H2-20K` still does not yield 20, and `kW` does not match inside `kWp`.
 
 | Path | What |
 |---|---|
@@ -129,3 +129,56 @@ b44 and b45 on this file (not written back into `b44-b45.json`):
 b45 is still `needs-review`. `human_score` is null. Spec 13 says a person on this line reviews a human-review row and records the reason. The runner leaves the verdict at `needs-review`. `b44-b45.json` records the round-3 answers, which are different sentences, so that file is not a score for this sample. The remaining step is that review, against the two answers in this jsonl.
 
 The other failures are answer and judge misses (BAT-D-G2, 54 kWh, 50 A, 40 A, 180–900 V, next step, one working day, grounded 0 or 1). They are not a usable-capacity figure tied to the wrong noun.
+
+## Round 6 — the punctuation inverter, the unbounded filler and the 4105 context
+
+Checks on this commit, from `services/genie`: `uv run --locked pytest` 1589 passed (the branch is rebased on `origin/main`, whose new tests are included); `ruff check .`, `ruff format --check .`, and `mypy .` clean. The repo-wide `just check` / `just test` was not run.
+
+Same local stack: WordPress `http://127.0.0.1:9177`, Genie `http://127.0.0.1:9179`. Production was not run.
+
+The review's probes, before → after on this head:
+
+| Probe | Before | After |
+|---|---|---|
+| `260 kWh — the usable capacity` (EN and DE) | no failure | banned figure |
+| `260 kWh: the usable capacity` (EN and DE) | no failure | banned figure |
+| `… liegt nach Angaben im Datenblatt bei 260 kWh` | no failure | banned figure |
+| `GW20K-ETA-G20 has 30 kW PV input` | no failure | not a figure of GW20K-ETA-G20 |
+| `… not stated although the nominal capacity is 260 kWh` | banned figure (false positive) | clean |
+| `… whether the SAJ H2, a three-phase hybrid, supports EnWG 14a` | clause assertion (false positive) | clean |
+| `4105 kWh` / `4105000 Wh` / `4105 A/W/V` | allowed | not in the VDE-AR-N context |
+| `VDE-AR-N 4105` | allowed | allowed |
+
+`test_source_notes_cite_the_figure_that_owns_the_number` is removed; it asserted ground prose. The row expectations carry the corrections instead (the grounds keep the page notes).
+
+Rows: b05 gets the L260 sheet's true figures (98/400/181 from p.2, plus 8500/50/40 and the rest of the p.1-2 table), b11 the H2 50 A short-circuit current, b12 40 A and 180-900 V, b25 the AS 4777.2 figure. 4105 leaves `numbers` and becomes `context_numbers` (VDE-AR-N clause only). b03 binds 30 kW to 3585/2063.
+
+| Path | What |
+|---|---|
+| `full/baseline-20261020T093107.jsonl` | All 100 rows, with `--judge`, on this head. 76 pass, 22 fail, 2 needs-review. Client p50 5.1 s, p95 26.0 s, max 41.1 s. Gate p95 ≤ 30 s held. Hard gate failing: b02-en (phase powers). |
+| `targeted-r5/baseline-20261020T092728.jsonl` | The 14 affected rows (b03, b05, b11, b12, b20, b25, b45, EN and DE). 9 pass, 3 fail, 2 needs-review. |
+| `targeted-r5/baseline-20261020T093037.jsonl` | b05 after the rest of the L260 sheet's true figures were added. 2 pass. |
+| `b45-human-review-r5.json` | The b45 review this round: both answers pass the human-review step, reasons in the file. |
+
+The affected rows on the full file:
+
+| Row | Verdict | Seconds | Failure |
+|---|---|---|---|
+| b03-en | pass | 7.2 | |
+| b03-de | pass | 25.0 | |
+| b05-en | pass | 12.5 | |
+| b05-de | pass | 10.9 | |
+| b11-en | pass | 9.3 | |
+| b11-de | pass | 10.2 | |
+| b12-en | pass | 9.5 | |
+| b12-de | pass | 10.3 | |
+| b20-en | pass | 8.3 | |
+| b20-de | pass | 22.2 | |
+| b25-en | pass | 18.8 | |
+| b25-de | fail | 35.2 | missing the absence sentence `Unterlagen/Dokumente nennen keine Unterstützung` (answer wording) |
+| b45-en | pass (human review) | 4.1 | |
+| b45-de | pass (human review) | 2.3 | |
+
+b25's ground now says the Standard row is on pages 1 and 2 of both H2 datasheets by `pdftotext` (the Docling table's provenance page is 2), and that 4105 is context-bound.
+
+The remaining failures are answer and judge misses: b02-en (phase powers: 3/3.68/4.6 kW labelled three-phase, no single-phase figure), b04-de (number 10), b07 (BAT-D-G2), b08-de (no compare block), b09 (not_released/fallback), b19 (ask block), b23 (next step), b25-de (absence wording), b28 (one working day/next step), b30/b43/b44 (judge), b41/b42 (next step). None is a figure-binder hole.

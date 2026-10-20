@@ -9,7 +9,9 @@ kept by docs/specs/13-genie.md "对照题集") turned into code:
   values (an empty list means no number may appear; unit conversions count, as
   the judge rubric words it), or to a catalogue model/SKU token the answer
   names. A figure listed on `figure_subjects` is not a flat allowance: in its
-  clause it may stand only next to the product that owns it;
+  clause it may stand only next to the product that owns it. A figure listed
+  on `context_numbers` passes only in a clause that names its source (the grid
+  code VDE-AR-N 4105, not 4105 kWh);
 - every answer carries a next step (goal 9);
 - the map's hard rows (#329: trials 1, 8, 10, 14) never fall back and never
   deflect to the team mailbox;
@@ -222,7 +224,10 @@ def _catalog_tokens(catalog: Mapping[str, str]) -> set[str]:
 
 
 def untraceable_numbers(
-    text: str, allowed: list[str], catalog: Mapping[str, str] | None = None
+    text: str,
+    allowed: list[str],
+    catalog: Mapping[str, str] | None = None,
+    governed: set[float] | None = None,
 ) -> list[str]:
     """Numbers in the answer that no expected fact and no catalogue code backs.
 
@@ -230,7 +235,10 @@ def untraceable_numbers(
     "2026"): a token passes when any of its readings equals an allowed value or
     its 1000-fold (15000 Wp = 15 kWp = 15.000 Wp, as the judge rubric words
     it). A number inside a catalogue model/SKU (H2-10K-T3) is traceable by
-    being that product's name.
+    being that product's name. `governed` is the set of readings a
+    `context_numbers` binding already judged: that check decided each
+    occurrence, so the flat test leaves them alone instead of failing a
+    licensed one twice.
     """
 
     permitted: set[float] = set()
@@ -261,6 +269,8 @@ def untraceable_numbers(
         for token in _NUMBER.findall(word):
             readings = number_variants(token)
             if readings and not readings & permitted:
+                if governed and readings & governed:
+                    continue
                 untraceable.append(token)
     return untraceable
 
@@ -276,14 +286,16 @@ def clauses(text: str) -> list[str]:
 # the next standalone number to the banned phrase. "of the L260" does not:
 # "of" binds only when a digit follows. "comes to" is the judge template's
 # copula (eval/judges/src/linker_judges/templates.py). "liegt" and "bei" are
-# two prefill filler tokens (prefill.py); up to three words may sit between
-# them ("liegt die nutzbare Energie bei"). A word is \S+, so a hyphen
-# compound (L260-OMNI) is one word, not two. The clause split already ends
-# the phrase at .!?; so the gap cannot cross a sentence. A dash (—, –, or a
-# spaced hyphen) presents the same way a colon does. A number that opens the
-# tail ("usable capacity 260 kWh") is a bare presenter; that alternative is
-# only the start of the tail, so "is not 260" stays a denial.
-_LIEGT_GAP = r"(?:\s+\S+){0,3}"
+# the prefill filler pair (prefill.py `_FILLER` is repeatable, so the gap has
+# no fixed width) and the judge template's `liegt {article} {spec} bei`
+# (templates.py:129) is two words. The gap is lazy: the first "bei" is the
+# binder. A word is \S+, so a hyphen compound (L260-OMNI) is one word, not
+# two. The clause split already ends the phrase at .!?; so the gap cannot
+# cross a sentence. A dash (—, –, or a spaced hyphen) presents the same way a
+# colon does. A number that opens the tail ("usable capacity 260 kWh") is a
+# bare presenter; that alternative is only the start of the tail, so "is not
+# 260" stays a denial.
+_LIEGT_GAP = r"(?:\s+\S+)*?"
 _PRESENTED_FIGURE = re.compile(
     r"(?i)(?:"
     r"\b(?:is|are|equals?|was|were|comes\s+to|"
@@ -311,10 +323,15 @@ _DENIAL_WORD = re.compile(
 )
 # The banned phrase is the complement: "260 kWh is the usable capacity".
 # Only a determiner may sit between the copula and the phrase, so "is not
-# the" stays a denial.
+# the" stays a denial. A colon or dash presents the figure the same way
+# ("260 kWh: the usable capacity", "260 kWh — the usable capacity").
 _INVERTED_COPULA = re.compile(
-    r"(?i)\b(?:is|are|equals?|was|were|comes\s+to|"
+    r"(?i)(?:"
+    r"\b(?:is|are|equals?|was|were|comes\s+to|"
     r"beträgt|betraegt|betragen|ist|sind)\b"
+    r"|[:=—–]"
+    r"|\s-\s"
+    r")"
     r"(?:\s+(?:the|a|an|der|die|das|den|dem|des|"
     r"ein|eine|einer|einem|einen|eines))?\s*$"
 )
@@ -329,10 +346,13 @@ _OTHER_HEAD = re.compile(
     r"|depth\s+of\s+discharge|entladetiefe|\bdod\b)\b"
 )
 # "not 95 but 260", "not 95 and is 260", and "not 95, is 260" re-assert the
-# number after the contrast. and/und and a comma are the same claim boundary
-# `_NEW_CLAIM` uses, so a denial does not cover what follows them.
+# number after the contrast. and/und and a comma are the claim boundary
+# `_NEW_CLAIM` uses; but/however/aber/jedoch/doch/sondern are adversarial too.
+# although/though are concessive and do not cancel a denial: "the usable
+# capacity is not stated although the nominal capacity is 260 kWh" states
+# 260 as the nominal figure, not as the usable one.
 _FIGURE_CONTRAST = re.compile(
-    r"(?i)\b(?:but|however|although|though|and|und|aber|jedoch|doch|sondern)\b|,"
+    r"(?i)\b(?:but|however|and|und|aber|jedoch|doch|sondern)\b|,"
 )
 # A comma or "and"/"und" can start a new claim ("…, the nominal capacity is").
 _NEW_CLAIM = re.compile(r"(?i)\b(?:and|und)\b|,")
@@ -480,8 +500,9 @@ def numbered_claim_failures(text: str, patterns: list[str]) -> list[str]:
     one. Writing 260 kWh onto that phrase is the figure the rubric bans,
     including apposition ("260 kWh usable capacity"), a dash, a bare number
     ("usable capacity 260 kWh"), the inverted copula ("260 kWh is the usable
-    capacity"), "liegt … bei" with the phrase inside the gap, a unit glued
-    to the digits ("is 260kWh"), and "not X but/and/, Y".
+    capacity") and the inverted dash or colon ("260 kWh — the usable
+    capacity"), "liegt … bei" with the phrase inside the gap (any filler
+    width), a unit glued to the digits ("is 260kWh"), and "not X but/and/, Y".
     The nominal value and the depth of discharge are not that figure when
     the noun labelling them is their own. A model token (L260) is not a number.
     """
@@ -512,9 +533,12 @@ def _mention_is_denied(clause: str, start: int) -> bool:
     """True when the match sits inside "do not state whether/that …" or
     "nicht, ob/dass …", and not past that binder's clause.
 
-    A comma after the binder, or and/und/but before the verb, starts a new
-    claim. "do not state whether it supports, and it supports" fails on the
-    second verb. "do not state that it supports" is the absence.
+    A comma directly after the binder, or and/und/but anywhere in the tail,
+    starts a new claim. "do not state whether, the SAJ H2 supports" fails on
+    the comma. An appositive comma does not: "whether the SAJ H2, a
+    three-phase hybrid, supports EnWG 14a" is one denial. "do not state
+    whether it supports, and it supports" fails on the second verb. "do not
+    state that it supports" is the absence.
     """
 
     before = clause[:start]
@@ -527,7 +551,7 @@ def _mention_is_denied(clause: str, start: int) -> bool:
     binder = _DENIAL_BINDER.search(tail)
     if binder is None:
         return False
-    return "," not in tail[binder.end() :]
+    return re.match(r"\s*,", tail[binder.end() :]) is None
 
 
 def subject_figure_failures(
@@ -612,6 +636,38 @@ def subject_figure_failures(
                 blocked.add(token)
                 failures.append(f"number {token} is not a figure of {nearest[3]}")
     return failures, (licensed | waived) - blocked
+
+
+def context_number_failures(
+    text: str, bindings: list[dict[str, Any]]
+) -> tuple[list[str], set[float]]:
+    """A number bound to a context passes only where that context names it.
+
+    `bindings` is the row's `context_numbers`: a number and the words that
+    source it. VDE-AR-N 4105 is the grid code; the digits alone as a
+    measurement ("4105 kWh", "4105000 Wh", "4105 A/W/V") are not a figure the
+    row expects. The clause is the window, the same boundary
+    `subject_figure_failures` uses. The returned readings are the values this
+    check governs, so the flat number check does not fail a licensed
+    occurrence a second time.
+    """
+
+    failures: list[str] = []
+    governed: set[float] = set()
+    for binding in bindings:
+        values = _expanded_values([str(binding["number"])])
+        governed |= values
+        context = re.compile(str(binding["context"]))
+        for clause in clauses(text):
+            if context.search(clause):
+                continue
+            for number in _STANDALONE_NUMBER.finditer(clause):
+                if _expanded_values([number.group()]) & values:
+                    failures.append(
+                        f"number {number.group()} is not in the "
+                        f"/{binding['context']}/ context"
+                    )
+    return failures, governed
 
 
 def clause_failures(text: str, patterns: list[str]) -> list[str]:
@@ -904,8 +960,18 @@ def check(
     if subjects:
         bound, licensed = subject_figure_failures(text, subjects)
         failures.extend(bound)
-    allowed = [str(value) for value in expect.get("numbers") or []]
-    for token in untraceable_numbers(text, [*allowed, *licensed], catalog):
+    contexts = expect.get("context_numbers") or []
+    governed: set[float] = set()
+    if contexts:
+        bound, governed = context_number_failures(text, contexts)
+        failures.extend(bound)
+    restricted = {str(binding["number"]) for binding in contexts}
+    allowed = [
+        str(value)
+        for value in expect.get("numbers") or []
+        if str(value) not in restricted
+    ]
+    for token in untraceable_numbers(text, [*allowed, *licensed], catalog, governed):
         failures.append(f"number {token} is in no expected fact")
 
     failures.extend(repeated_signed_copy(text))
