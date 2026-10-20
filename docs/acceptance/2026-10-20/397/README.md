@@ -155,7 +155,7 @@ Rows: b05 gets the L260 sheet's true figures (98/400/181 from p.2, plus 8500/50/
 
 | Path | What |
 |---|---|
-| `full/baseline-20261020T093107.jsonl` | All 100 rows, with `--judge`, on this head. 76 pass, 22 fail, 2 needs-review. Client p50 5.1 s, p95 26.0 s, max 41.1 s. Gate p95 ≤ 30 s held. Hard gate failing: b02-en (phase powers). |
+| `full/baseline-20261020T093107.jsonl` | All 100 rows, with `--judge`, on this head. 76 pass, 22 fail, 2 needs-review. Client p50 4.9 s (median 5.0 s), p95 26.0 s, max 41.1 s. Gate p95 ≤ 30 s held. Hard gate failing: b02-en (phase powers). |
 | `targeted-r5/baseline-20261020T092728.jsonl` | The 14 affected rows (b03, b05, b11, b12, b20, b25, b45, EN and DE). 9 pass, 3 fail, 2 needs-review. |
 | `targeted-r5/baseline-20261020T093037.jsonl` | b05 after the rest of the L260 sheet's true figures were added. 2 pass. |
 | `b45-human-review-r5.json` | The b45 review this round: both answers pass the human-review step, reasons in the file. |
@@ -181,4 +181,36 @@ The affected rows on the full file:
 
 b25's ground now says the Standard row is on pages 1 and 2 of both H2 datasheets by `pdftotext` (the Docling table's provenance page is 2), and that 4105 is context-bound.
 
-The remaining failures are answer and judge misses: b02-en (phase powers: 3/3.68/4.6 kW labelled three-phase, no single-phase figure), b04-de (number 10), b07 (BAT-D-G2), b08-de (no compare block), b09 (not_released/fallback), b19 (ask block), b23 (next step), b25-de (absence wording), b28 (one working day/next step), b30/b43/b44 (judge), b41/b42 (next step). None is a figure-binder hole.
+The remaining failures are answer and judge misses: b02-en (a grader miss, corrected in round 7: the answer labels 3/3.68/4.6 kW single-phase and 5/6/8 kW three-phase, but the phase check measured character distance across the bullet newline and read the next bullet's "Three-phase" as nearer), b04-de (number 10), b07 (BAT-D-G2), b08-de (no compare block), b09 (not_released/fallback), b19 (ask block), b23 (next step), b25-de (absence wording), b28 (one working day/next step), b30/b43/b44 (judge), b41/b42 (next step). None is a figure-binder hole.
+
+## Round 7 — the separator, the line, the catalogue code and the code's own number
+
+Checks on this commit, from `services/genie`: `uv run --locked pytest` 1701 passed, 1 skipped (147 deselected); `ruff check .`, `ruff format --check .`, and `mypy .` clean. The repo-wide `just check` / `just test` was not run.
+
+Same local stack: WordPress `http://127.0.0.1:9177`, Genie `http://127.0.0.1:9179`. Production was not run. The branch is rebased on `origin/main` 97457426.
+
+The review's probes, before → after on this head:
+
+| Probe | Before | After |
+|---|---|---|
+| `260 kWh—the usable capacity` (EN and DE) | no failure | banned figure |
+| `260 kWh - the usable capacity` (EN and DE) | no failure | banned figure |
+| `260 kWh:the usable capacity` (EN and DE) | no failure | banned figure |
+| `260 kWh —the usable capacity` (EN and DE) | no failure | banned figure |
+| `260 kWh-the usable capacity` (unspaced hyphen) | no failure | banned figure |
+| b02-en bullet answer (3/3.68/4.6 single-phase, 5/6/8 three-phase) | 4 phase failures | pass |
+| b02-en prose answer (`single-phase … 3 kW, 3.68 kW and 4.6 kW, while the three-phase …`) | 2 phase failures | pass |
+| `SAJ H2-25K-T3 (25 kW)` in the catalogue + "25 months" | 25 allowed | 25 in no expected fact |
+| `BAT-D-G20-Serie`, `GW3K–10K-EHA-G20` | passed by a product-name accident | still codes |
+| `VDE-AR-N 4105 … 4105 kWh` in one clause | no failure | the second 4105 fails |
+| `VDE-AR-N 4105` | allowed | allowed |
+
+b13-en/de now carry the warranty document's true figures: 2 (accessory modules, p.1), 12 (period start, p.1; extension window, p.4/p.5), 15 (15 May 2023, p.4/p.5), 16 (ET PLUS+ 16 A), 20 (20 kW cap), 25 (25 kW and above; RSD receiver 25 years), 30 (30 months; 30 December in the DE document), 40/50 (ET 40-50kW), 80/100 (ET 80-100k), 125 (PCS 125k / RSD receiver 100/125k), 1100/1500 (HT 1100V/1500V), with EN pages 1/2/4/5 and DE pages 1/2/5 in the ground. A fabricated 42 still fails.
+
+Rows corrected this round, each with a page or feed source in the ground: b03 12; b04 60/110/61.4/112.6; b08 20; b11 3/600; b13 the figures above; b14 10/12/15/20/25/29.999; b21 10; b25 29.999; b46 20/26; b47 220/230/240/60.5. b20-en accepts "do not print"/"cannot state"; b20-de tolerates emphasis; b50-de accepts "hinzufügen" beside "bestehend/nachrüsten". The b20 grounds say the `liegt` filler is unbounded. The b25 grounds say 4105 passes only as the code's own number.
+
+| Path | What |
+|---|---|
+| `full/baseline-20261020T115531.jsonl` | All 100 rows, with `--judge`, on this head. 82 pass, 16 fail, 2 needs-review. Client p50 5.7 s, p95 28.0 s, max 36.6 s. Gate p95 ≤ 30 s held. No hard row failed: b01, b02, b15 and b16 passed in both languages. |
+
+The 16 failures are answer, transport and judge misses, not figure or expectation holes: b07-en (does not name BAT-D-G2), b09-en/de (not_released), b14-de (fell back; ungrounded), b19-en/de (no ask block), b22-de (signed net-price sentence repeated), b25-de (absence wording), b28-en (one working day), b30-en/de, b42-en, b43-en/de, b44-en/de (judge). b45-en/de stayed needs-review.
