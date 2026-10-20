@@ -131,7 +131,7 @@ MAP_NEEDLES = (
     "#431",
     "PR #409",
     "PR #416 已合并（a74116d8）",
-    "仅 harness",
+    "`tests/test_grade.py`，20 条",
     "待验收",
     "只为线上验收开着",
     "tests/test_regression_339.py::test_339_product_word_case",
@@ -167,7 +167,7 @@ MAP_NEEDLES = (
     "tests/test_route.py::test_smallest_inverter_at_least_30_kw_aggregates",
     "test_a_matched_model_does_not_narrow_the_extreme",
     "SearchProductsTest.php::test_smallest_inverter_at_least_30_kw_is_gw30k_eta_g20",
-    "#330、#332、#334、#335 的评分器单测由 `just test` 收集",
+    "#330、#332、#333、#334、#335 的评分器单测由 `just test` 收集",
     "plugins/linker-tools/tests/php/Unit/ThreadTest.php",
     "plugins/linker-tools/tests/php/Integration/ConversationConcurrencyTest.php",
     'defaultTestSuite="unit"',
@@ -489,8 +489,9 @@ def test_the_case_map_names_every_runner_and_its_count(
     assert gap in text, gap
     stale = (
         "未合并，本分支没有这棵目录",
-        "不在 `py_projects`，所以不进 `just test`",
+        "不在 `py_projects`",
         "不放进默认 pytest",
+        "只跑金额正则",
         "（#414）、缺货回答（#415）、德语永久链接（#413）仍是开着的缺陷",
         "PR #416 未合并",
         "提示词里「引用口令」那几句不在本分支",
@@ -521,7 +522,11 @@ def test_the_case_map_names_every_runner_and_its_count(
     assert "InquiryStatusRestTest" in closed_414
     assert "#415" in closed_414
     assert "仍是开着的缺陷" in closed_414
-    assert "仅 harness" in row("#333")
+    assert "仅 harness" not in closed_414
+    assert "py_projects" in closed_414
+    assert "just test" in closed_414
+    assert "`tests/test_grade.py`，20 条" in closed_414
+    assert "金额与数量正则" in closed_414
     accepted_412 = row("#412")
     assert "a74116d8" in accepted_412
     assert "已合并" in accepted_412
