@@ -61,7 +61,7 @@ foreach ( $open as $item ) {
 			echo '<br><span class="linker-digest-detail">' . esc_html( $entry['detail'] ) . '</span>';
 		}
 		if ( '' !== $entry['url'] && '' !== $entry['link_text'] ) {
-			echo '<table class="linker-digest-act" role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="right"><a class="linker-digest-link" href="' . esc_url( $entry['url'] ) . '">' . esc_html( $entry['link_text'] ) . '</a></td></tr></table>';
+			echo '<br><a class="linker-digest-link" href="' . esc_url( $entry['url'] ) . '">' . esc_html( $entry['link_text'] ) . '</a>';
 		}
 		echo '</td></tr>' . "\n";
 	}

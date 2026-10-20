@@ -103,27 +103,27 @@ final class DigestEmail extends TeamEmail {
 	 */
 	public static function presentation_css(): string {
 		return '
-			body, #outer_wrapper, #wrapper, #inner_wrapper, #template_container, #template_body, #body_content, #template_header, #header_wrapper, #body_content_inner_cell { background-color: #f5f5f7; }
-			body, #wrapper, #header_wrapper h1, .email-logo-text, .linker-digest-title, .linker-digest-main { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; }
-			#template_header_image { padding: 36px 28px 0; }
-			.email-logo-text, .email-logo-text a { color: #6e6e73; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; text-transform: none; }
-			#header_wrapper { padding: 4px 28px 0; }
-			#header_wrapper h1 { color: #1d1d1f; font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
-			#body_content_inner_cell { padding: 4px 28px 12px; }
-			#credit { border-top: 0; color: #86868b; padding: 8px 28px 36px; }
-			.linker-digest-date { margin: 6px 0 22px; color: #86868b; font-size: 17px; line-height: 1.3; }
-			.linker-digest-card { width: 100%; background-color: #ffffff; border: 0; border-radius: 18px; margin: 0 0 16px; }
-			.linker-digest-num { width: 52px; padding: 22px 0 6px 20px; font-size: 22px; line-height: 1.1; font-weight: 600; color: #1d1d1f; vertical-align: middle; }
-			.linker-digest-title { padding: 22px 20px 6px 0; font-size: 17px; line-height: 1.25; font-weight: 600; color: #1d1d1f; vertical-align: middle; }
-			.linker-digest-body { padding: 0 8px 8px 20px; }
+			body, #outer_wrapper, #wrapper, #inner_wrapper, #template_container, #template_body, #body_content { background-color: #f4f4f5; }
+			#template_header_image { padding: 28px 32px 0; }
+			.email-logo-text, .email-logo-text a { color: #71717a; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+			#template_header, #header_wrapper { background-color: #f4f4f5; }
+			#header_wrapper { padding: 8px 32px 0; }
+			#header_wrapper h1 { color: #18181b; font-size: 28px; font-weight: 650; letter-spacing: -0.4px; }
+			#body_content_inner_cell { background-color: #f4f4f5; padding: 8px 32px 8px; }
+			#credit { border-top: 0; color: #a1a1aa; padding: 8px 32px 28px; }
+			.linker-digest-date { margin: 0 0 16px; color: #71717a; font-size: 13px; }
+			.linker-digest-card { width: 100%; background-color: #ffffff; border: 1px solid #e6e6ea; border-radius: 12px; margin: 0 0 12px; }
+			.linker-digest-num { width: 56px; padding: 16px 0 4px 16px; font-size: 26px; line-height: 1; font-weight: 700; color: #18181b; vertical-align: top; }
+			.linker-digest-title { padding: 18px 16px 4px 0; font-size: 15px; line-height: 1.35; font-weight: 650; color: #18181b; vertical-align: top; }
+			.linker-digest-body { padding: 0 16px 8px; }
 			.linker-digest-rows { width: 100%; }
-			.linker-digest-main { padding: 16px 0; border-top: 1px solid #d2d2d7; font-size: 15px; line-height: 1.35; font-weight: 400; color: #1d1d1f; }
-			.linker-digest-detail { color: #86868b; font-size: 13px; line-height: 1.35; }
-			.linker-digest-act { width: 100%; margin-top: 8px; }
-			.linker-digest-link { color: #0066cc; font-size: 15px; font-weight: 400; text-decoration: none; }
-			.linker-digest-quiet { width: 100%; background-color: transparent; border: 0; margin: 18px 0 0; }
-			.linker-digest-empty { padding: 8px 4px; border-top: 0; color: #86868b; font-size: 13px; line-height: 1.35; }
-			.linker-digest-empty strong { color: #6e6e73; font-weight: 600; }
+			.linker-digest-main { padding: 12px 0; border-top: 1px solid #f0f0f2; font-size: 14px; line-height: 1.45; color: #18181b; }
+			.linker-digest-detail { color: #71717a; font-size: 12px; }
+			.linker-digest-link { color: #6d28d9; font-size: 13px; font-weight: 600; text-decoration: none; }
+			.linker-digest-quiet { width: 100%; background-color: #ffffff; border: 1px solid #e6e6ea; border-radius: 12px; margin: 4px 0 0; }
+			.linker-digest-empty { padding: 12px 16px; border-top: 1px solid #f0f0f2; color: #71717a; font-size: 13px; line-height: 1.4; }
+			.linker-digest-quiet tr:first-child .linker-digest-empty { border-top: 0; }
+			.linker-digest-empty strong { color: #3f3f46; font-weight: 600; }
 		';
 	}
 
