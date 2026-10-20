@@ -2,9 +2,12 @@
 
 Two question-only turns, one English and one German, through the public
 proxy (`POST /wp-json/linker-ai/v1/genie/turn`). A production host is refused
-unless `--confirm-production` is passed. Each probe records the final URL
-after redirects, the selected response headers (including a LiteSpeed cache
-header when the site sends one), then DELETEs that conversation.
+unless `--confirm-production` is passed. The check is the requested host and
+again the host after each redirect: a 307 or 308 keeps the POST body, so a
+local URL that redirects to de-linker.com would write production. Each probe
+records the final URL after redirects, the selected response headers
+(including a LiteSpeed cache header when the site sends one), then DELETEs
+that conversation.
 
 No page is edited. Inquiry and contact routes are not called.
 """
@@ -42,8 +45,14 @@ SELECTED_HEADERS = (
     "X-LiteSpeed-Cache-Control",
     "X-LiteSpeed-Tag",
 )
-# The public proxy stops at 60 s. 180 keeps the client waiting for that
-# timeout instead of cutting the socket first.
+# Client socket timeout. A turn goes through Proxy::post(), which passes
+# `'timeout' => (float) self::TURN_BUDGET` (TURN_BUDGET = 60,
+# plugins/linker-tools/includes/Genie/Proxy.php). The literal
+# `'timeout' => 60.0` is post_status() at line 702, used by forget and vote,
+# not by the turn. The turn bound matches prices.SHELL_TIMEOUT. 180 is the
+# original trial client's bound (services/genie/eval/baseline/run.py: the
+# trial script used 180), so the client is still waiting when a slow proxy
+# returns its own 60 s timeout. It does not extend that proxy timeout.
 PROD_TIMEOUT = 180.0
 
 PROBES: list[dict[str, Any]] = [
@@ -68,11 +77,18 @@ PROBES: list[dict[str, Any]] = [
 
 
 class RedirectRecord(urllib.request.HTTPRedirectHandler):
-    """Remembers each hop. A 307 or 308 on POST keeps the method and body."""
+    """Remembers each hop. A 307 or 308 on POST keeps the method and body.
 
-    def __init__(self) -> None:
+    A hop whose host is the public site is not followed unless this probe
+    was allowed to write production. Returning None leaves the 307/308
+    response unfollowed, so the POST body is not sent there.
+    """
+
+    def __init__(self, *, allow_production: bool = False) -> None:
         super().__init__()
+        self.allow_production = allow_production
         self.hops: list[dict[str, object]] = []
+        self.blocked_production: str | None = None
 
     def redirect_request(
         self,
@@ -84,6 +100,9 @@ class RedirectRecord(urllib.request.HTTPRedirectHandler):
         newurl: str,
     ) -> urllib.request.Request | None:
         self.hops.append({"status": code, "from": req.full_url, "location": newurl})
+        if is_production(newurl) and not self.allow_production:
+            self.blocked_production = newurl
+            return None
         if code in (307, 308) and req.get_method() not in ("GET", "HEAD"):
             kept = {
                 key: value
@@ -107,6 +126,30 @@ def is_production(site: str) -> bool:
     return host in PRODUCTION_HOSTS
 
 
+def production_refusal(
+    *, allow_production: bool, blocked_production: str | None, final_url: str
+) -> str | None:
+    """Why this probe must not write, or None when the write is allowed.
+
+    A blocked hop is a redirect that was not followed. The final URL is the
+    host after hops that were followed. Either one on the public site,
+    without --confirm-production, is the same refusal.
+    """
+    if allow_production:
+        return None
+    if blocked_production:
+        return (
+            "refusing: a redirect would POST to the public site "
+            f"({blocked_production}) without --confirm-production"
+        )
+    if is_production(final_url):
+        return (
+            "refusing: the final host is the public site "
+            f"({final_url}) without --confirm-production"
+        )
+    return None
+
+
 def selected_headers(headers: list[tuple[str, str]]) -> dict[str, str]:
     by_lower = {name.lower(): value for name, value in headers}
     picked: dict[str, str] = {}
@@ -119,6 +162,13 @@ def selected_headers(headers: list[tuple[str, str]]) -> dict[str, str]:
 def delete_conversation(
     opener: urllib.request.OpenerDirector, site: str, conversation_id: int
 ) -> int | None:
+    """DELETE the conversation this probe's cookie opened.
+
+    before_delete_post calls Proxy::forget, which uses post_status() and the
+    literal `'timeout' => 60.0` (Proxy.php line 702). The client waits
+    PROD_TIMEOUT, the same 180 s as the turn, so that forget is not cut by an
+    unsourced 30 s. 180 does not extend the proxy's 60 s.
+    """
     url = f"{site.rstrip('/')}{DELETE_ROUTE}/{conversation_id}"
     request = urllib.request.Request(url, method="DELETE")
     try:
@@ -206,28 +256,12 @@ def _reply_parts(reply: Any) -> tuple[int, str, list[tuple[str, str]], str]:
     return status, final_url, header_pairs, body
 
 
-def probe(item: dict[str, Any], site: str, timeout: float) -> dict[str, Any]:
-    """One question-only POST. A known conversation is deleted afterwards."""
-    jar = http.cookiejar.CookieJar()
-    recorder = RedirectRecord()
-    opener = urllib.request.build_opener(
-        urllib.request.HTTPCookieProcessor(jar), recorder
-    )
+def blank_probe(
+    item: dict[str, Any], site: str, *, error: str | None = None
+) -> dict[str, Any]:
+    """The probe record before a response. One shape for the refusal and the run."""
     url = site.rstrip("/") + ROUTE
-    body = json.dumps({"locale": item["locale"], "messages": item["messages"]}).encode()
-    request = urllib.request.Request(
-        url,
-        data=body,
-        headers={"Content-Type": "application/json", "Accept": "text/event-stream"},
-        method="POST",
-    )
-    status: int | None = None
-    final_url = url
-    header_pairs: list[tuple[str, str]] = []
-    raw_body = ""
-    error: str | None = None
-    conversation_id: int | None = None
-    result: dict[str, Any] = {
+    return {
         "probe": item["id"],
         "locale": item["locale"],
         "question": item["messages"][-1]["content"],
@@ -246,8 +280,48 @@ def probe(item: dict[str, Any], site: str, timeout: float) -> dict[str, Any]:
         "blocks": [],
         "answer_text": "",
         "answer_language": None,
-        "error": None,
+        "error": error,
     }
+
+
+def probe(
+    item: dict[str, Any],
+    site: str,
+    timeout: float,
+    *,
+    allow_production: bool = False,
+) -> dict[str, Any]:
+    """One question-only POST. A known conversation is deleted afterwards.
+
+    The requested host and the final host are both checked. A redirect to
+    the public site is not followed unless `allow_production` is set.
+    """
+    if is_production(site) and not allow_production:
+        return blank_probe(
+            item,
+            site,
+            error="refusing: public site without --confirm-production",
+        )
+    jar = http.cookiejar.CookieJar()
+    recorder = RedirectRecord(allow_production=allow_production)
+    opener = urllib.request.build_opener(
+        urllib.request.HTTPCookieProcessor(jar), recorder
+    )
+    url = site.rstrip("/") + ROUTE
+    body = json.dumps({"locale": item["locale"], "messages": item["messages"]}).encode()
+    request = urllib.request.Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/json", "Accept": "text/event-stream"},
+        method="POST",
+    )
+    status: int | None = None
+    final_url = url
+    header_pairs: list[tuple[str, str]] = []
+    raw_body = ""
+    error: str | None = None
+    conversation_id: int | None = None
+    result = blank_probe(item, site)
     started = time.monotonic()
     try:
         try:
@@ -267,6 +341,13 @@ def probe(item: dict[str, Any], site: str, timeout: float) -> dict[str, Any]:
             error = "HTTP 200 body is not a conversation envelope"
         elif status is not None and status != 200 and error is None:
             error = f"HTTP {status}"
+        refused = production_refusal(
+            allow_production=allow_production,
+            blocked_production=recorder.blocked_production,
+            final_url=final_url,
+        )
+        if refused is not None:
+            error = refused
         inner = ""
         if envelope is not None:
             stream_value = envelope.get("stream", "")
@@ -299,6 +380,13 @@ def probe(item: dict[str, Any], site: str, timeout: float) -> dict[str, Any]:
             }
         )
     except Exception as failure:  # noqa: BLE001 - one probe must not abort the run
+        refused = production_refusal(
+            allow_production=allow_production,
+            blocked_production=recorder.blocked_production,
+            final_url=final_url,
+        )
+        if refused is not None:
+            error = refused
         result["error"] = error or f"{type(failure).__name__}: {failure}"
         if conversation_id is None:
             conversation_id = cookie_conversation_id(jar)
@@ -319,6 +407,8 @@ def run(
     probes: list[dict[str, Any]] | None = None,
     timeout: float = PROD_TIMEOUT,
     sink: Path | None = None,
+    *,
+    allow_production: bool = False,
 ) -> list[dict[str, Any]]:
     chosen = probes if probes is not None else PROBES
     results: list[dict[str, Any]] = []
@@ -328,7 +418,7 @@ def run(
             sink.parent.mkdir(parents=True, exist_ok=True)
             handle = sink.open("w", encoding="utf-8")
         for item in chosen:
-            result = probe(item, site, timeout)
+            result = probe(item, site, timeout, allow_production=allow_production)
             results.append(result)
             if handle is not None:
                 handle.write(json.dumps(result, ensure_ascii=False) + "\n")
@@ -369,7 +459,11 @@ def main(argv: list[str] | None = None) -> int:
     out_dir = Path(arguments.out).expanduser()
     out_dir.mkdir(parents=True, exist_ok=True)
     smoke_path = out_dir / "smoke.jsonl"
-    results = run(arguments.site, sink=smoke_path)
+    results = run(
+        arguments.site,
+        sink=smoke_path,
+        allow_production=arguments.confirm_production,
+    )
     for result in results:
         meta = result.get("meta")
         route = meta.get("route") if isinstance(meta, dict) else None

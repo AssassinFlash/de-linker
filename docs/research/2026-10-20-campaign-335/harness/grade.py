@@ -12,7 +12,7 @@ and reported, not repaired.
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import Any, NamedTuple
 
 # ground.BANNED_WORDS, plus Einkaufswagen (banned-de.json). Whole words.
 # Artikel stays banned in a Genie answer: the legal-citation allowance is for
@@ -207,6 +207,84 @@ def handoff_summary(blocks: list[dict[str, Any]]) -> str | None:
     return None
 
 
+class _Split(NamedTuple):
+    """One graded difference: a defect, a note, or neither."""
+
+    defect: str | None
+    note: str | None
+
+
+def _structure_split(
+    en_blocks: list[dict[str, Any]], de_blocks: list[dict[str, Any]]
+) -> _Split:
+    """A block-type defect, or a document-count note.
+
+    An ask block is optional on either side. A document-count difference is
+    a note when the other block types stay in the same order: retrieval can
+    add a document without changing the card set. The same blocks in a
+    different order are a defect. That is not a document-count note.
+    """
+    en_types = [kind for kind in block_types(en_blocks) if kind != "ask"]
+    de_types = [kind for kind in block_types(de_blocks) if kind != "ask"]
+    if en_types == de_types:
+        return _Split(None, None)
+    en_core = [kind for kind in en_types if kind != "document"]
+    de_core = [kind for kind in de_types if kind != "document"]
+    en_docs = en_types.count("document")
+    de_docs = de_types.count("document")
+    if en_core == de_core and en_docs != de_docs:
+        return _Split(
+            None,
+            (
+                f"document count en {en_docs} de {de_docs}; retrieval can add "
+                "a document without changing the card set"
+            ),
+        )
+    return _Split(f"block types en {en_types} de {de_types}", None)
+
+
+def _figure_split(en_text: str, de_text: str) -> _Split:
+    """A number defect, or a note when one side only adds figures.
+
+    The shared figures were graded. Extras on one side (the German voltage
+    window, or kWh steps the other prose omits) stay a note in the data.
+    Disjoint figures are a defect. Order and repeated tokens are not.
+    """
+    en_nums = standalone_numbers(en_text)
+    de_nums = standalone_numbers(de_text)
+    en_set = set(en_nums)
+    de_set = set(de_nums)
+    if en_set == de_set:
+        return _Split(None, None)
+    shared = en_set & de_set
+    en_only = en_set - de_set
+    de_only = de_set - en_set
+    rendered = "numbers en " + ",".join(en_nums) + " de " + ",".join(de_nums)
+    if shared and (not en_only or not de_only):
+        return _Split(
+            None, rendered + "; shared figures match and one side adds figures"
+        )
+    return _Split(rendered, None)
+
+
+def twin_notes(
+    en_blocks: list[dict[str, Any]],
+    de_blocks: list[dict[str, Any]],
+    *,
+    expect_numbers: bool,
+) -> list[str]:
+    """Justified notes. These are graded, and they are not defects."""
+    notes: list[str] = []
+    if expect_numbers:
+        figures = _figure_split(visible_text(en_blocks), visible_text(de_blocks))
+        if figures.note:
+            notes.append(figures.note)
+    structure = _structure_split(en_blocks, de_blocks)
+    if structure.note:
+        notes.append(structure.note)
+    return notes
+
+
 def twin_reasons(
     en_blocks: list[dict[str, Any]],
     de_blocks: list[dict[str, Any]],
@@ -217,8 +295,8 @@ def twin_reasons(
 ) -> list[str]:
     """Hard mismatches between one English turn and its German twin.
 
-    Document count and an optional ask block are recorded by the caller as
-    notes: retrieval can add a document without changing the card set.
+    A document-count difference and a one-sided extra figure are notes
+    (`twin_notes`), not defects. An ask block is ignored.
     """
     reasons: list[str] = []
     en_text = visible_text(en_blocks)
@@ -256,17 +334,13 @@ def twin_reasons(
         reasons.append("handoff on one side only")
     if en_handoff is not None and de_handoff is not None:
         reasons.extend(handoff_reasons(en_handoff, de_handoff))
-    if expect_numbers and standalone_numbers(en_text) != standalone_numbers(de_text):
-        reasons.append(
-            "numbers en "
-            + ",".join(standalone_numbers(en_text))
-            + " de "
-            + ",".join(standalone_numbers(de_text))
-        )
-    en_types = [kind for kind in block_types(en_blocks) if kind != "ask"]
-    de_types = [kind for kind in block_types(de_blocks) if kind != "ask"]
-    if en_types != de_types:
-        reasons.append(f"block types en {en_types} de {de_types}")
+    if expect_numbers:
+        figures = _figure_split(en_text, de_text)
+        if figures.defect:
+            reasons.append(figures.defect)
+    structure = _structure_split(en_blocks, de_blocks)
+    if structure.defect:
+        reasons.append(structure.defect)
     return reasons
 
 
@@ -359,9 +433,12 @@ def drift_attribution(
     """Where a page edit landed: the render, the read-page cache, or the answer.
 
     `http_has_marker` is a fresh GET of the page the customer would reload.
-    `tool_has_marker` is the `linker/read-page` text in that turn's log.
-    A title the shell sends in `page_title` can reach the answer without a
-    read; a body token cannot, so a marker with no read is the prompt title.
+    `tool_has_marker` is the `linker/read-page` body (`result.text`) only.
+    The shell's `title` is not the body: counting it made
+    `title-fresh-body-stale` unreachable and labelled a stale body
+    `model-ignored-fresh-page`. A title the shell sends can reach the answer
+    without a read; a body token cannot, so a marker with no read is the
+    prompt title.
     """
     if not http_has_marker:
         return "edit-not-rendered"

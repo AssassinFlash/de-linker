@@ -24,7 +24,7 @@ import sys
 import time
 import urllib.parse
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeGuard
 
 import client as http
 import grade
@@ -34,6 +34,48 @@ BLOG_PARAGRAPH = "<p>C335DRIFT beacon sentence for the page drift test.</p>\n"
 ROOT = Path(__file__).resolve().parents[4]
 READ_PAGE = "linker/read-page"
 HANDOFF = "linker/handoff-team"
+# Direct WP-CLI bound, the same 180 s as client.TURN_TIMEOUT (#330: the trial
+# script in services/genie/eval/baseline/run.py used 180). A `just wp` recipe
+# still running at 180 s has wedged.
+WP_TIMEOUT = 180.0
+# Translate and `just serve`. The baseline client later moved to 240
+# (services/genie/eval/baseline/run.py TIMEOUT_SECONDS: four minutes bounds a
+# wedged turn). Both outlive one WP-CLI eval, so they use that longer bound.
+WP_SLOW_TIMEOUT = 240.0
+# Evidence prefixes, not protocol limits. No service constant names them.
+# 800: the product intro that carries the subtitle fits in the first 800
+# characters of read-page text (c335, 2026-10-19: the H2-10K-T3 subtitle is
+# inside that head). A marker later in the body is checked on the full text.
+READ_PAGE_HEAD = 800
+# 2000: WP-CLI and translate stderr kept in the journal. The #335 failure
+# ("1 of 1 objects failed; previous German retained.") is far shorter; 2000
+# leaves the recipe echo and the PHP error.
+COMMAND_TAIL = 2000
+# 1500: `just serve` prints the recipe and the process ids. The tail shows the
+# exit, not the whole boot log.
+SERVE_TAIL = 1500
+# 400: a wp eval that did not print JSON. The error quotes the start of stdout
+# so the missing "{" is visible; the rest is the recipe banner.
+JSON_ERROR_HEAD = 400
+# One Store API search page for a single model. The ceiling is 100
+# (services/genie/src/linker_genie/storeapi.py PAGE_SIZE). The snapshot has
+# 106 products (page.py); this call searches for H2-10K-T3, and 20 stays
+# under that ceiling so the match is on the page this request asks for.
+STORE_PER_PAGE = 20
+# Handoff.tsx renders block.summary as text. It does not render an href.
+# The tool result's mailto is not the customer-visible link.
+MAILTO_LIMITATION = (
+    "Handoff.tsx renders block.summary only. The customer sees the mailbox "
+    "sentence, not a mailto link. The tool result's mailto is not that link."
+)
+# Issue #406 is open and not merged. A failed translate keeps the previous
+# German; title, attribute numbers and prices of a successful re-translation
+# are then unmeasured.
+TRANSLATION_LIMITATION = (
+    "Issue #406 is open and not merged, so this run did not cover a "
+    "successful re-translation. The German title, the attribute numbers and "
+    "the prices after a successful translate were not measured."
+)
 
 TWINS: list[dict[str, Any]] = [
     {
@@ -43,7 +85,7 @@ TWINS: list[dict[str, Any]] = [
         "de": "Welche Batterien passen zu diesem Wechselrichter?",
         "expect_cards": True,
         "expect_handoff": False,
-        "expect_numbers": False,
+        "expect_numbers": True,
     },
     {
         "id": "T-mppt",
@@ -102,8 +144,9 @@ TWINS: list[dict[str, Any]] = [
 ]
 
 
-def ports(instance: str) -> dict[str, int]:
-    text = (Path.home() / "de-linker-local" / "instances.toml").read_text()
+def ports(instance: str, table: Path | None = None) -> dict[str, int]:
+    path = table or (Path.home() / "de-linker-local" / "instances.toml")
+    text = path.read_text(encoding="utf-8")
     found: dict[str, int] = {}
     seen = False
     for line in text.splitlines():
@@ -121,7 +164,7 @@ def ports(instance: str) -> dict[str, int]:
     return found
 
 
-def wp(instance: str, *args: str, timeout: float = 180) -> str:
+def wp(instance: str, *args: str, timeout: float = WP_TIMEOUT) -> str:
     """WP-CLI on the instance. Just echoes the recipe on stderr."""
     result = subprocess.run(
         ["just", "wp", instance, *args],
@@ -132,9 +175,28 @@ def wp(instance: str, *args: str, timeout: float = 180) -> str:
         check=False,
     )
     if result.returncode != 0:
-        detail = (result.stderr or result.stdout)[-2000:]
+        detail = (result.stderr or result.stdout)[-COMMAND_TAIL:]
         raise RuntimeError(f"wp {' '.join(args)} failed: {detail}")
     return result.stdout.strip()
+
+
+def update_php(path: Path, post_id: int, field: str) -> str:
+    """wp eval that writes one field and fails when the write does not land.
+
+    wp_update_post returns 0, and keeps going, unless the second argument
+    asks for a WP_Error. Echoing 'ok' after that made a missed write look
+    restored.
+    """
+    file_arg = json.dumps(str(path))
+    field_arg = json.dumps(field)
+    return (
+        f"$value = file_get_contents({file_arg}); "
+        'if ($value === false) { WP_CLI::error("snapshot unreadable"); } '
+        f"$result = wp_update_post(array('ID' => {post_id}, {field_arg} => $value), true); "
+        "if (is_wp_error($result)) { WP_CLI::error($result->get_error_message()); } "
+        f'if ((int) $result !== {post_id}) {{ WP_CLI::error("wp_update_post failed"); }} '
+        "echo 'ok';"
+    )
 
 
 def wp_update(
@@ -143,12 +205,7 @@ def wp_update(
     """Write a post field from a file. A title or a post body can break argv."""
     path = directory / f"update-{post_id}-{field}.txt"
     path.write_text(value, encoding="utf-8")
-    php = (
-        f"$value = file_get_contents({json.dumps(str(path))}); "
-        f"wp_update_post(array('ID' => {post_id}, {json.dumps(field)} => $value)); "
-        "echo 'ok';"
-    )
-    wp(instance, "eval", php)
+    wp(instance, "eval", update_php(path, post_id, field))
 
 
 def wp_json(instance: str, php: str) -> Any:
@@ -156,7 +213,7 @@ def wp_json(instance: str, php: str) -> Any:
     start = raw.find("{")
     start = raw.find("[") if start < 0 else start
     if start < 0:
-        raise RuntimeError(f"wp eval did not print JSON: {raw[:400]}")
+        raise RuntimeError(f"wp eval did not print JSON: {raw[:JSON_ERROR_HEAD]}")
     return json.loads(raw[start:])
 
 
@@ -229,7 +286,9 @@ def load_page(origin: str, url: str) -> dict[str, Any]:
         "de_url": localize(parsed["de_url"], origin) if parsed["de_url"] else None,
         "main": main,
         "emails": grade.emails_in(main),
-        "plz": re.findall(r"\b\d{5}\b", main),
+        # The same postal-code rule as address_gap. A bare five-digit token
+        # such as HRB 33824 is a register number, not a second PLZ.
+        "plz": postal_codes(main),
     }
 
 
@@ -293,7 +352,7 @@ def slim_turn(db: Path, conversation_id: str) -> dict[str, Any]:
         "tools": [call.get("name") for call in calls if isinstance(call, dict)],
         "read_page": called,
         "read_page_title": page_title,
-        "read_page_head": page_text[:800],
+        "read_page_head": page_text[:READ_PAGE_HEAD],
         "read_page_chars": len(page_text),
         "mailto": mailto,
     }
@@ -345,35 +404,73 @@ def record_turn(
 def grade_twin(
     case: dict[str, Any], en: dict[str, Any], de: dict[str, Any], product_id: int | None
 ) -> dict[str, Any]:
-    reasons = grade.twin_reasons(
-        en["blocks"],
-        de["blocks"],
-        expect_cards=bool(case["expect_cards"]),
-        expect_handoff=bool(case["expect_handoff"]),
-        expect_numbers=bool(case["expect_numbers"]),
-    )
-    if case["id"] == "T-cost" and product_id:
-        for side, turn in (("en", en), ("de", de)):
-            if product_id not in grade.card_ids(turn["blocks"]):
-                reasons.append(f"{side} cost cards omit product {product_id}")
-            for reason in grade.price_reasons(
-                grade.price_lines(turn["blocks"]), side, guest=True
-            ):
-                reasons.append(f"{side} {reason}")
-    if case["id"] == "T-address":
-        for side, turn in (("en", en), ("de", de)):
-            page_text = turn.get("_main") or ""
-            if isinstance(page_text, str) and page_text:
-                for reason in address_gap(page_text, turn["answer"]):
+    expect_numbers = bool(case["expect_numbers"])
+    unloaded = [
+        side for side, turn in (("en", en), ("de", de)) if turn.get("_unloaded") is True
+    ]
+    reasons: list[str] = []
+    notes: list[str] = []
+    # An empty turn is not a measurement. Comparing two missing pages would
+    # agree on every block and pass.
+    if unloaded:
+        reasons.extend(f"{side} page not loaded" for side in unloaded)
+    else:
+        reasons.extend(
+            grade.twin_reasons(
+                en["blocks"],
+                de["blocks"],
+                expect_cards=bool(case["expect_cards"]),
+                expect_handoff=bool(case["expect_handoff"]),
+                expect_numbers=expect_numbers,
+            )
+        )
+        notes.extend(
+            grade.twin_notes(en["blocks"], de["blocks"], expect_numbers=expect_numbers)
+        )
+        if case["id"] == "T-cost" and product_id:
+            for side, turn in (("en", en), ("de", de)):
+                if product_id not in grade.card_ids(turn["blocks"]):
+                    reasons.append(f"{side} cost cards omit product {product_id}")
+                for reason in grade.price_reasons(
+                    grade.price_lines(turn["blocks"]), side, guest=True
+                ):
                     reasons.append(f"{side} {reason}")
+        if case["id"] == "T-address":
+            for side, turn in (("en", en), ("de", de)):
+                raw_main = turn.get("_main")
+                page_text = raw_main if isinstance(raw_main, str) else ""
+                if not page_text.strip():
+                    reasons.append(f"{side} page not loaded")
+                    continue
+                for reason in address_gap(page_text, str(turn.get("answer") or "")):
+                    reasons.append(f"{side} {reason}")
+    for side, turn in (("en", en), ("de", de)):
+        if turn.get("_unloaded") is True:
+            continue
+        meta = turn.get("meta")
+        if isinstance(meta, dict) and meta.get("fallback") is True:
+            reasons.append(f"{side} fallback is not a pass under gate 5")
     if case["id"] == "T-mail":
-        for side, turn in (("en", en), ("de", de)):
-            mailto = (turn.get("log") or {}).get("mailto") or ""
-            if not str(mailto).startswith("mailto:"):
-                reasons.append(f"{side} handoff tool has no mailto ({mailto!r})")
+        record_mail: dict[str, Any] = {
+            "mailto_limitation": MAILTO_LIMITATION,
+            "tool_mailto": {
+                "en": str((en.get("log") or {}).get("mailto") or ""),
+                "de": str((de.get("log") or {}).get("mailto") or ""),
+            },
+            "customer_mailto_link": customer_sees_mailto(en["blocks"])
+            or customer_sees_mailto(de["blocks"]),
+        }
+    else:
+        record_mail = {}
     banned_shipped = grade.banned_words(en["answer"]) + grade.banned_words(de["answer"])
     if case["id"] == "T-ban" and not banned_shipped:
         pass
+    if reasons:
+        mechanical = "defect"
+    elif notes:
+        mechanical = "note"
+    else:
+        mechanical = "pass"
     record = {
         "type": "twin",
         "case": case["id"],
@@ -392,22 +489,285 @@ def grade_twin(
             "de": grade.standalone_numbers(de["answer"]),
         },
         "reasons": reasons,
-        "mechanical": "defect" if reasons else "pass",
+        "notes": notes,
+        "mechanical": mechanical,
+        **record_mail,
     }
     return record
 
 
+def customer_sees_mailto(blocks: list[dict[str, Any]]) -> bool:
+    """True when the rendered text contains a mailto URL.
+
+    Handoff.tsx prints block.summary as a paragraph. It does not render an
+    href, so the tool result's mailto is not a link the customer can see.
+    A mailto written into that sentence is.
+    """
+    return "mailto:" in grade.visible_text(blocks).lower()
+
+
+# A postal address is a five-digit PLZ and the place name printed after it.
+# HRB 33824 on the imprint is a register number (NOTES, 2026-10-19), not a
+# second postal code. The question asks for that address, not the page email
+# and not every five-digit token. Digits with a different place name are not
+# the address. The old `[:3]` listed the register number with the PLZ and is
+# not a product limit.
+_POSTAL = re.compile(r"(?<!HRB )(?<!\d)(\d{5})\s+([A-ZÄÖÜ][A-Za-zÄÖÜäöüß-]*)")
+
+
+def postal_addresses(page_text: str) -> list[tuple[str, str]]:
+    """`(PLZ, place name)` pairs, in order, without duplicates."""
+    found: list[tuple[str, str]] = []
+    for match in _POSTAL.finditer(page_text):
+        pair = (match.group(1), match.group(2))
+        if pair not in found:
+            found.append(pair)
+    return found
+
+
+def postal_codes(page_text: str) -> list[str]:
+    """PLZ values that introduce a place name, in order, without duplicates."""
+    found: list[str] = []
+    for code, _place in postal_addresses(page_text):
+        if code not in found:
+            found.append(code)
+    return found
+
+
 def address_gap(page_text: str, answer: str) -> list[str]:
-    reasons: list[str] = []
-    plz = re.findall(r"\b\d{5}\b", page_text)
-    if plz and not any(code in answer for code in plz):
-        reasons.append("answer misses the page postal code " + ",".join(plz[:3]))
-    emails = grade.emails_in(page_text)
-    if emails and not any(email in answer for email in emails):
-        reasons.append("answer misses the page email")
-    if not plz:
-        reasons.append("page text has no postal code")
+    """The asked datum is the PLZ and the place name after it.
+
+    An email on the page is not that datum. `39179 Atlantis` does not
+    satisfy `39179 Barleben`.
+    """
+    addresses = postal_addresses(page_text)
+    if not addresses:
+        return ["page text has no postal address"]
+    missing = [
+        f"{code} {place}"
+        for code, place in addresses
+        if code not in answer or place not in answer
+    ]
+    if missing:
+        return ["answer misses the postal address " + ", ".join(missing)]
+    return []
+
+
+def grade_language(
+    question: str, answer: str, page_locale: str, meta: dict[str, Any] | None
+) -> list[str]:
+    """Language gate, then gate 5: a fallback is not a pass.
+
+    `template.py` sets `meta.fallback` when the customer sees the template
+    instead of the model's answer. The supplemental L-switch-en turn was
+    "Zu Ihrer Frage habe ich Folgendes gefunden." with fallback true.
+    """
+    reasons = grade.answer_language_reasons(question, answer, page_locale)
+    if isinstance(meta, dict) and meta.get("fallback") is True:
+        reasons.append("fallback is not a pass under gate 5")
     return reasons
+
+
+def language_record(
+    case: str,
+    question: str,
+    answer: str,
+    locale: str,
+    meta: dict[str, Any] | None,
+    **extra: Any,
+) -> dict[str, Any]:
+    reasons = grade_language(question, answer, locale, meta)
+    fallback = isinstance(meta, dict) and meta.get("fallback") is True
+    row: dict[str, Any] = {
+        "type": "language",
+        "case": case,
+        "locale": locale,
+        "question": question,
+        "answer": answer,
+        "language": grade.language_of(answer),
+        "fallback": fallback,
+        "reasons": reasons,
+        "mechanical": "defect" if reasons else "pass",
+        "report_only": True,
+    }
+    row.update(extra)
+    return row
+
+
+# Amount fields. currency_code alone is not a price: a guest product keeps
+# the currency and leaves price, regular_price and sale_price null.
+_PRICE_AMOUNT_KEYS = ("price", "regular_price", "sale_price")
+
+
+def price_amounts(product: dict[str, Any]) -> dict[str, str]:
+    """Store API price fields that have a value.
+
+    Empty and null fields are absent. Two products whose amounts were all
+    dropped are not equal prices; `price_gap` requires one amount.
+    """
+    prices = product.get("prices")
+    if not isinstance(prices, dict):
+        return {}
+    kept: dict[str, str] = {}
+    for key in (
+        "currency_code",
+        "currency_minor_unit",
+        *_PRICE_AMOUNT_KEYS,
+    ):
+        value = prices.get(key)
+        if value is None or value == "":
+            continue
+        kept[key] = str(value)
+    return kept
+
+
+def price_gap(en_product: dict[str, Any], de_product: dict[str, Any]) -> list[str]:
+    """Price fields, only when each side has a non-empty amount."""
+    en_prices = price_amounts(en_product)
+    de_prices = price_amounts(de_product)
+    en_amounts = [en_prices[key] for key in _PRICE_AMOUNT_KEYS if key in en_prices]
+    de_amounts = [de_prices[key] for key in _PRICE_AMOUNT_KEYS if key in de_prices]
+    if not en_amounts or not de_amounts:
+        return ["price evidence is empty"]
+    if en_prices != de_prices:
+        return [f"prices {en_prices} != {de_prices}"]
+    return []
+
+
+def is_store_product(product: Any) -> TypeGuard[dict[str, Any]]:
+    """A product row. `store_product` returns `{error, lang}` when the read fails."""
+    return isinstance(product, dict) and "error" not in product
+
+
+def grade_translation(
+    *,
+    code: int,
+    de_title_before: str,
+    de_title_after: str,
+    en_title: str,
+    marker: str,
+    en_product: dict[str, Any] | None = None,
+    de_product: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Title, attribute numbers and prices after a successful translate.
+
+    A non-zero exit, or a German title that did not change, did not measure
+    that half. #406 is the blocker until a translate succeeds. A Store API
+    error dict is not a product. Prices compare only when an amount is present.
+    """
+    retained = code != 0 or de_title_after == de_title_before
+    if retained:
+        return {
+            "measured": False,
+            "mechanical": "defect",
+            "reasons": ["translate failed; previous German retained"],
+            "limitation": TRANSLATION_LIMITATION,
+        }
+    reasons: list[str] = []
+    if marker not in de_title_after:
+        reasons.append("de title lost the edited marker")
+    en_numbers = grade.standalone_numbers(en_title)
+    de_numbers = grade.standalone_numbers(de_title_after)
+    if en_numbers != de_numbers:
+        reasons.append(f"title numbers {en_numbers} != {de_numbers}")
+    if is_store_product(en_product) and is_store_product(de_product):
+        reasons.extend(attribute_gaps(en_product, de_product))
+        reasons.extend(price_gap(en_product, de_product))
+    else:
+        reasons.append("store products were not re-read after translate")
+    return {
+        "measured": True,
+        "mechanical": "defect" if reasons else "pass",
+        "reasons": reasons,
+        "limitation": None,
+    }
+
+
+def read_page_text(tool_calls: str) -> str:
+    """`linker/read-page` result text. The shell title is not the body."""
+    try:
+        calls = json.loads(tool_calls or "[]")
+    except json.JSONDecodeError:
+        return ""
+    if not isinstance(calls, list):
+        return ""
+    parts: list[str] = []
+    for call in calls:
+        if not isinstance(call, dict) or call.get("name") != READ_PAGE:
+            continue
+        result = call.get("result")
+        if not isinstance(result, dict):
+            continue
+        text = result.get("text")
+        if isinstance(text, str):
+            parts.append(text)
+    return "\n".join(parts)
+
+
+def snapshot_field(directory: Path, name: str, value: str) -> Path:
+    """Write a field before editing it. Restore reads this file."""
+    path = directory / name
+    path.write_text(value, encoding="utf-8")
+    return path
+
+
+def restore_snapshot(
+    instance: str, post_id: int, field: str, snapshot: Path, directory: Path
+) -> None:
+    """Put a snapshotted field back. The file is the source, not a variable."""
+    wp_update(instance, post_id, field, snapshot.read_text(encoding="utf-8"), directory)
+
+
+def restore_fields(
+    instance: str, directory: Path, fields: list[tuple[int, str, Path]]
+) -> list[str]:
+    """Write every snapshot back. One failure does not skip the later fields."""
+    failures: list[str] = []
+    for post_id, field, snapshot in fields:
+        try:
+            restore_snapshot(instance, post_id, field, snapshot, directory)
+        except RuntimeError as error:
+            failures.append(f"{post_id} {field}: {error}")
+    return failures
+
+
+def title_matches(read_back: str | None, snapshot: str | None) -> bool:
+    """The title read after restore is the snapshot written before the edit."""
+    return read_back is not None and snapshot is not None and read_back == snapshot
+
+
+def confirm_restore(
+    title_now: str, title_expected: str, extras: list[tuple[str, str]]
+) -> bool:
+    """True when the title and every other restored field equal the snapshot."""
+    if not title_matches(title_now, title_expected):
+        return False
+    return all(read_back == expected for read_back, expected in extras)
+
+
+def exit_code(
+    *,
+    mail_before: list[str],
+    mail_after: list[str],
+    drift_ran: bool,
+    restored: bool | None,
+    title_restored_to: str | None = None,
+    title_snapshot: str | None = None,
+) -> int:
+    """1 when mail grew, drift did not restore, or the title differs.
+
+    `restored=True` is not enough. A requested drift phase that never edited
+    has no snapshot, and a write that echoed ok can still leave the old title.
+    """
+    if mail_before != mail_after:
+        return 1
+    if not drift_ran:
+        return 0
+    if restored is not True:
+        return 1
+    if not title_matches(title_restored_to, title_snapshot):
+        return 1
+    return 0
 
 
 def fixed_prompts(surface: str, locale: str, name: str) -> list[str] | None:
@@ -451,7 +811,10 @@ def grade_prompts(
 
 
 def store_product(origin: str, lang: str) -> dict[str, Any] | None:
-    url = f"{origin}/wp-json/wc/store/v1/products?search=H2-10K-T3&per_page=20&lang={lang}"
+    url = (
+        f"{origin}/wp-json/wc/store/v1/products?search=H2-10K-T3"
+        f"&per_page={STORE_PER_PAGE}&lang={lang}"
+    )
     try:
         body = http.json_get(url)
     except Exception as error:  # noqa: BLE001 - discovery records the failure
@@ -693,6 +1056,7 @@ def run_twins(
                     "answer": "",
                     "log": {},
                     "_main": "",
+                    "_unloaded": True,
                 }
                 continue
             turn = record_turn(
@@ -737,18 +1101,14 @@ def run_language(
             messages=[{"role": "user", "content": mixed}],
             page=page["context"],
         )
-        reasons = grade.answer_language_reasons(mixed, turn["answer"], locale)
-        row = {
-            "type": "language",
-            "case": f"L-mixed-{locale}",
-            "question": mixed,
-            "locale": locale,
-            "answer": turn["answer"],
-            "language": grade.language_of(turn["answer"]),
-            "reasons": reasons,
-            "mechanical": "defect" if reasons else "pass",
-            "report_only": True,
-        }
+        meta = turn.get("meta")
+        row = language_record(
+            f"L-mixed-{locale}",
+            mixed,
+            turn["answer"],
+            locale,
+            meta if isinstance(meta, dict) else None,
+        )
         journal.write("language.jsonl", row)
         rows.append(row)
     switches = [
@@ -796,18 +1156,15 @@ def run_language(
             ],
             page=context,
         )
-        reasons = grade.answer_language_reasons(second, second_turn["answer"], locale)
-        row = {
-            "type": "language",
-            "case": case,
-            "locale": locale,
-            "second_question": second,
-            "answer": second_turn["answer"],
-            "language": grade.language_of(second_turn["answer"]),
-            "reasons": reasons,
-            "mechanical": "defect" if reasons else "pass",
-            "report_only": True,
-        }
+        meta = second_turn.get("meta")
+        row = language_record(
+            case,
+            second,
+            second_turn["answer"],
+            locale,
+            meta if isinstance(meta, dict) else None,
+            second_question=second,
+        )
         journal.write("language.jsonl", row)
         rows.append(row)
         print(f"language {case} {row['mechanical']} {row['language']}", flush=True)
@@ -825,18 +1182,14 @@ def run_language(
             messages=[{"role": "user", "content": question}],
             page=page["context"],
         )
-        reasons = grade.answer_language_reasons(question, turn["answer"], locale)
-        row = {
-            "type": "language",
-            "case": f"L-bare-{locale}",
-            "locale": locale,
-            "question": question,
-            "answer": turn["answer"],
-            "language": grade.language_of(turn["answer"]),
-            "reasons": reasons,
-            "mechanical": "defect" if reasons else "pass",
-            "report_only": True,
-        }
+        meta = turn.get("meta")
+        row = language_record(
+            f"L-bare-{locale}",
+            question,
+            turn["answer"],
+            locale,
+            meta if isinstance(meta, dict) else None,
+        )
         journal.write("language.jsonl", row)
         rows.append(row)
     return rows
@@ -864,11 +1217,11 @@ def drift_ask(
         page=page["context"],
     )
     log = turn.get("log") or {}
-    tool_text = str(log.get("read_page_head") or "")
-    # The head is 800 characters. A marker past that still counts via a second look.
-    tool_has = marker in tool_text or marker in str(log.get("read_page_title") or "")
-    if log.get("read_page") and not tool_has:
-        tool_has = marker_in_log(db, str(turn["request"]["conversation_id"]), marker)
+    # The body only. The shell title (read_page_title) is not the page text:
+    # counting it labelled a stale body model-ignored-fresh-page.
+    tool_has = False
+    if log.get("read_page"):
+        tool_has = marker_in_body(db, str(turn["request"]["conversation_id"]), marker)
     http_has = marker in (page.get("main") or "") or marker in (page.get("h1") or "")
     answer_has = marker in turn["answer"]
     attribution = grade.drift_attribution(
@@ -900,7 +1253,8 @@ def drift_ask(
     return row
 
 
-def marker_in_log(db: Path, conversation_id: str, marker: str) -> bool:
+def marker_in_body(db: Path, conversation_id: str, marker: str) -> bool:
+    """True when the read-page body contains the marker. The title does not count."""
     if not db.is_file():
         return False
     connection = sqlite3.connect(db)
@@ -913,7 +1267,7 @@ def marker_in_log(db: Path, conversation_id: str, marker: str) -> bool:
         connection.close()
     if row is None:
         return False
-    return marker in (row[0] or "")
+    return marker in read_page_text(row[0] or "")
 
 
 def run_drift(
@@ -934,20 +1288,29 @@ def run_drift(
     blog_id = ((found["surfaces"].get("blog") or {}).get("ids") or {}).get("id")
     evidence: dict[str, Any] = {"marker": MARKER, "restored": False}
     if not isinstance(product, dict) or not isinstance(en_id, int):
+        # No edit and no restore. A requested drift phase that stops here
+        # fails: restored stays false, there is no snapshot, and the process
+        # exits 1.
         evidence["error"] = "no english product to edit"
         return evidence
     original_title = wp(instance, "post", "get", str(en_id), "--field=post_title")
     new_title = grade.title_with_marker(original_title, MARKER)
+    # Snapshot before the edit. Restore reads the file, not this variable.
+    title_snapshot = snapshot_field(
+        journal.directory, f"title-original-{en_id}.txt", original_title
+    )
     original_blog = ""
+    blog_snapshot: Path | None = None
     if isinstance(blog_id, int) and blog_id > 0:
         original_blog = wp(
             instance, "post", "get", str(blog_id), "--field=post_content"
         )
-        (journal.directory / "blog-original.html").write_text(
-            original_blog, encoding="utf-8"
+        blog_snapshot = snapshot_field(
+            journal.directory, "blog-original.html", original_blog
         )
     de_id = 0
     de_title_before = ""
+    de_snapshot: Path | None = None
     try:
         de_raw = wp(instance, "eval", f"echo (int) pll_get_post({en_id}, 'de');")
         found_id = re.search(r"\d+", de_raw)
@@ -955,6 +1318,9 @@ def run_drift(
         if de_id:
             de_title_before = wp(
                 instance, "post", "get", str(de_id), "--field=post_title"
+            )
+            de_snapshot = snapshot_field(
+                journal.directory, f"title-original-{de_id}.txt", de_title_before
             )
         evidence["edit"] = {
             "product_id": en_id,
@@ -1026,7 +1392,12 @@ def run_drift(
         translate_code = 0
         try:
             translate_out = wp(
-                instance, "linker-i18n", "translate", str(en_id), "--now", timeout=240
+                instance,
+                "linker-i18n",
+                "translate",
+                str(en_id),
+                "--now",
+                timeout=WP_SLOW_TIMEOUT,
             )
         except RuntimeError as error:
             translate_out = str(error)
@@ -1036,9 +1407,16 @@ def run_drift(
             de_title_after = wp(
                 instance, "post", "get", str(de_id), "--field=post_title"
             )
+        en_after: dict[str, Any] | None = None
+        de_after: dict[str, Any] | None = None
+        if translate_code == 0 and de_title_after != de_title_before:
+            fresh_en = store_product(origin, "en")
+            fresh_de = store_product(origin, "de")
+            en_after = fresh_en if isinstance(fresh_en, dict) else None
+            de_after = fresh_de if isinstance(fresh_de, dict) else None
         evidence["translation"] = {
             "code": translate_code,
-            "output": translate_out[-2000:],
+            "output": translate_out[-COMMAND_TAIL:],
             "de_title_before": de_title_before,
             "de_title_after": de_title_after,
             "model_code_kept": "H2-10K-T3" in de_title_after,
@@ -1046,6 +1424,15 @@ def run_drift(
             "title_numbers_before": grade.standalone_numbers(de_title_before),
             "title_numbers_after": grade.standalone_numbers(de_title_after),
             "en_title_numbers": grade.standalone_numbers(new_title),
+            **grade_translation(
+                code=translate_code,
+                de_title_before=de_title_before,
+                de_title_after=de_title_after,
+                en_title=new_title,
+                marker=MARKER,
+                en_product=en_after,
+                de_product=de_after,
+            ),
         }
         # The German URL was warmed by the twins, before this translation.
         # No restart yet: a stale read here is the page cache, not the renderer.
@@ -1072,12 +1459,12 @@ def run_drift(
             cwd=ROOT,
             capture_output=True,
             text=True,
-            timeout=240,
+            timeout=WP_SLOW_TIMEOUT,
             check=False,
         )
         evidence["serve_restart"] = {
             "code": restarted.returncode,
-            "tail": (restarted.stdout + restarted.stderr)[-1500:],
+            "tail": (restarted.stdout + restarted.stderr)[-SERVE_TAIL:],
         }
         if restarted.returncode == 0:
             fresh_product = load_page(origin, str(product.get("url")))
@@ -1141,22 +1528,36 @@ def run_drift(
                     "cards": grade.card_ids(cost["blocks"]),
                 }
     finally:
+        fields: list[tuple[int, str, Path]] = [(en_id, "post_title", title_snapshot)]
+        if de_snapshot is not None and de_id:
+            fields.append((de_id, "post_title", de_snapshot))
+        if blog_snapshot is not None and isinstance(blog_id, int):
+            fields.append((blog_id, "post_content", blog_snapshot))
+        failures = restore_fields(instance, journal.directory, fields)
         try:
-            wp_update(instance, en_id, "post_title", original_title, journal.directory)
-            if de_id and de_title_before:
-                wp_update(
-                    instance, de_id, "post_title", de_title_before, journal.directory
+            expected_title = title_snapshot.read_text(encoding="utf-8")
+            title_now = wp(instance, "post", "get", str(en_id), "--field=post_title")
+            evidence["title_snapshot"] = expected_title
+            evidence["title_restored_to"] = title_now
+            extras: list[tuple[str, str]] = []
+            if de_snapshot is not None and de_id:
+                de_now = wp(instance, "post", "get", str(de_id), "--field=post_title")
+                extras.append((de_now, de_snapshot.read_text(encoding="utf-8")))
+            if blog_snapshot is not None and isinstance(blog_id, int):
+                blog_now = wp(
+                    instance, "post", "get", str(blog_id), "--field=post_content"
                 )
-            if original_blog and isinstance(blog_id, int):
-                wp_update(
-                    instance, blog_id, "post_content", original_blog, journal.directory
-                )
-            evidence["restored"] = True
-            evidence["title_restored_to"] = wp(
-                instance, "post", "get", str(en_id), "--field=post_title"
-            )
+                extras.append((blog_now, blog_snapshot.read_text(encoding="utf-8")))
+            matched = confirm_restore(title_now, expected_title, extras)
+            messages = list(failures)
+            if not matched:
+                messages.append("read-back does not match the snapshot")
+            evidence["restored"] = matched and not failures
+            if messages:
+                evidence["restore_error"] = "; ".join(messages)
         except RuntimeError as error:
-            evidence["restore_error"] = str(error)
+            evidence["restored"] = False
+            evidence["restore_error"] = "; ".join([*failures, str(error)])
     return evidence
 
 
@@ -1221,6 +1622,8 @@ def main(argv: list[str] | None = None) -> int:
         drift = run_drift(journal, service, db, args.instance, origin, found)
         journal.dump("drift.json", drift)
     mail_after = mail_names(args.instance)
+    raw_translation = drift.get("translation")
+    translation = raw_translation if isinstance(raw_translation, dict) else {}
     summary = {
         "prompts": [
             {
@@ -1235,6 +1638,7 @@ def main(argv: list[str] | None = None) -> int:
                 "case": row["case"],
                 "mechanical": row["mechanical"],
                 "reasons": row["reasons"],
+                "notes": row.get("notes") or [],
             }
             for row in twins
         ],
@@ -1243,6 +1647,7 @@ def main(argv: list[str] | None = None) -> int:
                 "case": row["case"],
                 "mechanical": row["mechanical"],
                 "language": row.get("language"),
+                "fallback": row.get("fallback"),
             }
             for row in language
         ],
@@ -1256,10 +1661,34 @@ def main(argv: list[str] | None = None) -> int:
         "mail_after": mail_after,
         "mail_grew": mail_before != mail_after,
         "restored": drift.get("restored"),
+        "translation": {
+            "mechanical": translation.get("mechanical"),
+            "measured": translation.get("measured"),
+            "reasons": translation.get("reasons"),
+            "limitation": translation.get("limitation"),
+        },
     }
     journal.dump("summary.json", summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
-    return 0
+    title_now = drift.get("title_restored_to")
+    title_expected = drift.get("title_snapshot")
+    code = exit_code(
+        mail_before=mail_before,
+        mail_after=mail_after,
+        drift_ran="drift" in phases,
+        restored=drift.get("restored")
+        if isinstance(drift.get("restored"), bool)
+        else None,
+        title_restored_to=title_now if isinstance(title_now, str) else None,
+        title_snapshot=title_expected if isinstance(title_expected, str) else None,
+    )
+    if code:
+        print(
+            "mail spool changed, the drift phase did not restore the snapshot, "
+            "or the restored title does not match it",
+            file=sys.stderr,
+        )
+    return code
 
 
 if __name__ == "__main__":

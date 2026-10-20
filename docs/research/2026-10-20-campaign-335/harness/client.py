@@ -15,10 +15,22 @@ import urllib.error
 import urllib.request
 from typing import Any
 
-# The shell's proxy stops at 60 s. 180 is the direct-service bound #330 used,
-# so a slow turn is recorded rather than cut.
+# The shell's turn stops at 60 s. Proxy::post() passes
+# `'timeout' => (float) self::TURN_BUDGET` (plugins/linker-tools/includes/
+# Genie/Proxy.php, TURN_BUDGET = 60), the same bound as prices.SHELL_TIMEOUT.
+# The literal `'timeout' => 60.0` is post_status() at line 702, used by
+# forget and vote, not by the turn. 180 is the direct-service bound #330
+# used (services/genie/eval/baseline/run.py records that the trial script
+# used 180), so a slow turn is recorded rather than cut. It does not extend
+# the proxy's 60 s.
 TURN_TIMEOUT = 180.0
-PAGE_TIMEOUT = 30.0
+# page.py TIMEOUT_SECONDS is 10 s for one LiveCanvas read (0.5–3.4 s measured
+# 2026-10-18). _html loops range(MAX_REDIRECTS + 1) with MAX_REDIRECTS = 3,
+# so one page is the first read plus up to three redirects: four 10 s reads,
+# 40 s, before it returns or raises. urllib applies this value to each
+# blocking read, so one of those reads still finishes inside 40 s. It is not
+# a product timeout.
+PAGE_TIMEOUT = 40.0
 TOKEN_HEADER = "X-Linker-Service-Token"
 
 _PROMPTS = re.compile(r"""data-prompts=(['"])(.*?)\1""", re.DOTALL)

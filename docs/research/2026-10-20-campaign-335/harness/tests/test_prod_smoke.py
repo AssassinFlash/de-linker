@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import threading
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
@@ -21,6 +22,9 @@ def test_production_hosts() -> None:
     assert not prod_smoke.is_production("http://127.0.0.1:9190")
     assert not prod_smoke.is_production("http://localhost:9190")
     assert not prod_smoke.is_production("https://staging.de-linker.com")
+    assert prod_smoke.is_production(
+        "https://de-linker.com:1/wp-json/linker-ai/v1/genie/turn"
+    )
 
 
 def test_production_without_confirm_exits_2_and_does_not_connect(
@@ -124,3 +128,79 @@ def test_probe_records_final_url_headers_and_deletes() -> None:
     assert result["error"] is None
     assert "H2-10K-T3" in result["answer_text"]
     assert result["answer_language"] == "en"
+
+
+def test_redirect_to_production_is_not_followed_without_confirm() -> None:
+    recorder = prod_smoke.RedirectRecord(allow_production=False)
+    request = urllib.request.Request(
+        "http://127.0.0.1:9190/wp-json/linker-ai/v1/genie/turn",
+        data=b"{}",
+        method="POST",
+    )
+    followed = recorder.redirect_request(
+        request,
+        None,
+        307,
+        "Temporary Redirect",
+        {},
+        "https://de-linker.com/wp-json/linker-ai/v1/genie/turn",
+    )
+    assert followed is None
+    assert recorder.blocked_production == (
+        "https://de-linker.com/wp-json/linker-ai/v1/genie/turn"
+    )
+
+
+def test_confirmed_production_redirect_keeps_the_post() -> None:
+    recorder = prod_smoke.RedirectRecord(allow_production=True)
+    request = urllib.request.Request(
+        "http://127.0.0.1:9190/wp-json/linker-ai/v1/genie/turn",
+        data=b'{"locale":"en"}',
+        method="POST",
+    )
+    followed = recorder.redirect_request(
+        request,
+        None,
+        308,
+        "Permanent Redirect",
+        {},
+        "https://www.de-linker.com/wp-json/linker-ai/v1/genie/turn",
+    )
+    assert followed is not None
+    assert followed.get_method() == "POST"
+    assert followed.data == b'{"locale":"en"}'
+    assert recorder.blocked_production is None
+
+
+def test_probe_refuses_a_production_redirect_before_the_post_leaves() -> None:
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, _format: str, *_args: Any) -> None:
+            return
+
+        def do_POST(self) -> None:  # noqa: N802 - http.server's method name
+            length = int(self.headers.get("Content-Length") or "0")
+            self.rfile.read(length)
+            self.send_response(307)
+            # Port 1 keeps the public host, so the guard still matches.
+            # A regressed guard follows this hop and does not POST to :443.
+            self.send_header(
+                "Location",
+                "https://de-linker.com:1/wp-json/linker-ai/v1/genie/turn",
+            )
+            self.end_headers()
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.start()
+    port = server.server_address[1]
+    assert isinstance(port, int)
+    try:
+        result = prod_smoke.probe(prod_smoke.PROBES[0], f"http://127.0.0.1:{port}", 2)
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+    assert result["writes_conversation"] is False
+    assert result["conversation_id"] is None
+    assert "without --confirm-production" in str(result["error"])
+    assert "de-linker.com" in str(result["error"])

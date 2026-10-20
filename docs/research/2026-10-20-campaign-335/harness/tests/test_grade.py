@@ -18,6 +18,7 @@ from grade import (
     prompt_reasons,
     standalone_numbers,
     title_with_marker,
+    twin_notes,
     twin_reasons,
 )
 
@@ -97,6 +98,72 @@ def test_twin_card_set_and_handoff_sentence() -> None:
     )
     paraphrased = [{"type": "handoff", "summary": f"Schreiben Sie an {email}."}]
     assert handoff_reasons(en_h[0]["summary"], paraphrased[0]["summary"])
+
+
+def test_document_count_and_extra_figures_are_notes() -> None:
+    en: list[dict[str, Any]] = [
+        {"type": "text", "text": "It has 3 trackers and 2 strings."},
+        {"type": "document"},
+        {"type": "document"},
+        {"type": "document"},
+    ]
+    de: list[dict[str, Any]] = [
+        {"type": "text", "text": "Er hat 3 Tracker und 2 Strings, von 180 bis 900."},
+        {"type": "document"},
+    ]
+    assert (
+        twin_reasons(
+            en, de, expect_cards=False, expect_handoff=False, expect_numbers=True
+        )
+        == []
+    )
+    notes = twin_notes(en, de, expect_numbers=True)
+    assert any(note.startswith("document count en 3 de 1") for note in notes)
+    assert any("180" in note and "900" in note for note in notes)
+    assert any("shared figures match" for note in notes)
+
+
+def test_block_order_is_not_a_document_count_note() -> None:
+    en: list[dict[str, Any]] = [
+        {"type": "text", "text": "The card."},
+        {"type": "document"},
+        {"type": "cards", "product_ids": [1]},
+    ]
+    de: list[dict[str, Any]] = [
+        {"type": "text", "text": "Die Karte."},
+        {"type": "cards", "product_ids": [1]},
+        {"type": "document"},
+    ]
+    reasons = twin_reasons(
+        en, de, expect_cards=True, expect_handoff=False, expect_numbers=False
+    )
+    assert any(reason.startswith("block types en ") for reason in reasons)
+    assert twin_notes(en, de, expect_numbers=False) == []
+
+
+def test_omitted_kwh_steps_are_graded_as_a_note() -> None:
+    en = [{"type": "text", "text": "The set is 5, 10, 15, 20 and 25 kWh."}]
+    de = [{"type": "text", "text": "Das Set hat 5 kWh."}]
+    assert (
+        twin_reasons(
+            en, de, expect_cards=False, expect_handoff=False, expect_numbers=True
+        )
+        == []
+    )
+    notes = twin_notes(en, de, expect_numbers=True)
+    assert len(notes) == 1
+    assert "5,10,15,20,25" in notes[0]
+    assert notes[0].endswith("shared figures match and one side adds figures")
+
+
+def test_disjoint_figures_stay_a_defect() -> None:
+    en = [{"type": "text", "text": "It has 3 trackers."}]
+    de = [{"type": "text", "text": "Er hat 4 Tracker."}]
+    reasons = twin_reasons(
+        en, de, expect_cards=False, expect_handoff=False, expect_numbers=True
+    )
+    assert any(reason.startswith("numbers en 3 de 4") for reason in reasons)
+    assert twin_notes(en, de, expect_numbers=True) == []
 
 
 def test_guest_price_line_rejects_a_sum_and_the_other_language() -> None:
