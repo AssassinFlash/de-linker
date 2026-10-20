@@ -4,7 +4,7 @@ These run after Pydantic accepts the shape and before hydration is shown.
 They do not rewrite the model's text. A failure is a reason to retry once,
 then fall back to the deterministic template.
 
-The five checks, matching the ticket and old-repo-006 §2:
+The five checks, matching docs/specs/13-genie.md:
 
 1. Every `{fact:ID}` and every `refs` id is in this turn's tool results, and
    a fact placeholder can be rendered (has a value).
