@@ -178,6 +178,7 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 								config={ config }
 								engine={ clients.engine }
 								store={ clients.store }
+								defaults={ config.defaults }
 							/>
 						) : null }
 						{ segment === 'commercial' ? (
