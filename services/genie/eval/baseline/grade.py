@@ -29,7 +29,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from linker_genie.figures import is_code
+from linker_genie.figures import digits_are_regulation, is_code, regulation_number_spans
 
 # AGENTS.md §3: these words are not this shop's vocabulary, in either language.
 FORBIDDEN_WORDS = (
@@ -287,7 +287,14 @@ def untraceable_numbers(
             permitted.update({variant, variant * 1000.0, variant / 1000.0})
     codes = _catalog_tokens(catalog or {})
     untraceable = []
-    for word in _CODE_WORD.findall(text):
+    protected = regulation_number_spans(text)
+    for match in _CODE_WORD.finditer(text):
+        word = match.group()
+        # Every digit in the word is the regulation's own number (`VDE-AR-N 4105`,
+        # `EnWG 14a Abs. 1`). A smashed tail (`4105/600`, `1-500`) is not: the
+        # extra digits stay untraceable (#443).
+        if digits_are_regulation(text, match.start(), match.end(), protected):
+            continue
         # The same model-code rule as ground.bare_numbers (figures.is_code).
         # "BD-JC-S2" is a designation, not the measurement 2.
         if is_code(word):
@@ -310,12 +317,19 @@ def untraceable_numbers(
         # unit - unlike a measurement ("1500mm", digits first).
         if re.match(r"[a-z]{1,4}\d", stripped):
             continue
-        for token in _NUMBER.findall(word):
-            readings = number_variants(token)
+        for token in _NUMBER.finditer(word):
+            abs_start = match.start() + token.start()
+            abs_end = match.start() + token.end()
+            if any(
+                span_start <= abs_start and abs_end <= span_end
+                for span_start, span_end in protected
+            ):
+                continue
+            readings = number_variants(token.group())
             if readings and not readings & permitted:
                 if governed and readings & governed:
                     continue
-                untraceable.append(token)
+                untraceable.append(token.group())
     return untraceable
 
 

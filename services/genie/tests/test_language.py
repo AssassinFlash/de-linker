@@ -16,6 +16,7 @@ from linker_genie.facts import Fact, TurnFacts, collect
 from linker_genie.language import (
     _ENGLISH,
     _GERMAN,
+    _HYPHEN_SKIP,
     _WORD,
     answer_language,
     clear_language,
@@ -590,6 +591,14 @@ def test_typ_a_is_a_unit_not_the_english_article() -> None:
     assert language_failure(_output("de", german), "de") is None
     assert clear_language(short) is None
     assert clear_language("A type A breaker is required.") == "en"
+    # A bold model code ending in -A is not the English article (#443).
+    # Emphasis is not blanked, so the hyphen form has to be.
+    named = (
+        "**ATS1-T63-A** als Zubehör für die Netzanbindung. Die Karten zeigen den Stand."
+    )
+    assert clear_language(named) == "de"
+    assert language_failure(_output("de", named), "de") is None
+    assert clear_language("A battery is required.") == "en"
 
 
 def test_a_german_address_does_not_flip_an_english_answer() -> None:
@@ -646,3 +655,114 @@ def test_the_language_retry_refuses_the_page_and_the_documents() -> None:
     assert "Cite only a ref that appears in this turn's tool results." in _user_prompt(
         _request(ENGLISH_QUESTION, "en"), None
     )
+
+
+def test_a_hyphenated_menu_name_does_not_vote_english() -> None:
+    """`Time-of-use` is one menu name. `of the battery` still votes (#443)."""
+    plain = (
+        "Öffnen Sie Time-of-use export limitation settings und speichern Sie mit SAVE."
+    )
+    bold = (
+        "Der H2 hat **Time-of-use export limitation settings**. "
+        "Speichern Sie die Einstellung mit SAVE."
+    )
+    assert clear_language(plain) == "de"
+    assert clear_language(bold) == "de"
+    assert language_failure(_output("de", plain), "de") is None
+    assert language_failure(_output("de", bold), "de") is None
+    mixed = "Die Batterie of the battery ist nicht gemeint."
+    assert clear_language(mixed) is None
+    assert language_failure(_output("de", mixed), "de") is not None
+    assert language_failure(
+        _output("de", "Diese Batterien work with the H2-10K-T3."), "de"
+    )
+    bold_english = "**Please select the type and save the setting.**"
+    assert language_failure(_output("de", bold_english), "de") is not None
+    assert (
+        language_failure(
+            _output("de", "__Please select the type and save the setting.__"), "de"
+        )
+        is not None
+    )
+    assert (
+        language_failure(_output("de", f"{bold_english} Speichern Sie."), "de")
+        is not None
+    )
+    # A capitalised German closed-class word still votes (#443).
+    assert clear_language("Für the battery works.") is None
+    assert language_failure(_output("en", "Für the battery works."), "en") is not None
+
+
+def test_a_hyphen_does_not_hide_a_content_word_or_a_german_closed_class_word() -> None:
+    """`of` in a menu name does not vote. `price`, `battery`, and `Für` do (#443)."""
+    assert _HYPHEN_SKIP <= _ENGLISH
+    assert _HYPHEN_SKIP.isdisjoint(
+        {
+            "price",
+            "prices",
+            "battery",
+            "batteries",
+            "datasheet",
+            "availability",
+            "work",
+            "works",
+        }
+    )
+    price = "Öffnen Sie price-list und speichern Sie die Einstellung."
+    battery = "Öffnen Sie the-battery und speichern Sie die Einstellung."
+    fuer = "Export-Für the battery works."
+    assert clear_language(price) is None
+    assert clear_language(battery) is None
+    assert clear_language(fuer) is None
+    assert language_failure(_output("de", price), "de") is not None
+    assert language_failure(_output("de", battery), "de") is not None
+    assert language_failure(_output("en", fuer), "en") is not None
+    # The same join on an en dash or an em dash.
+    assert (
+        language_failure(
+            _output("de", "Öffnen Sie price–list und speichern Sie die Einstellung."),
+            "de",
+        )
+        is not None
+    )
+    assert (
+        language_failure(_output("en", "Export—Für the battery works."), "en")
+        is not None
+    )
+    # The named menu is still one label. An unhyphenated content word still votes.
+    menu = (
+        "Öffnen Sie Time-of-use export limitation settings und speichern Sie mit SAVE."
+    )
+    assert language_failure(_output("de", menu), "de") is None
+    assert (
+        language_failure(
+            _output("de", "Öffnen Sie price list und speichern Sie die Einstellung."),
+            "de",
+        )
+        is not None
+    )
+
+
+def test_a_copied_menu_label_does_not_vote_when_the_chunk_has_it() -> None:
+    """A short phrase from the cited chunk is the document's, not the answer's."""
+    prose = "Öffnen Sie Please select the type und speichern Sie die Einstellung."
+    cited = "Export Limitation Settings. Please select the type. Total Power."
+    assert language_failure(_output("de", prose), "de", cited) is None
+    assert language_failure(_output("de", prose), "de") is not None
+    assert language_failure(_output("de", prose), "de", "Exportlimit") is not None
+    english = "Please select the type and save the setting."
+    assert language_failure(_output("en", english), "de", cited) is not None
+    assert language_failure(_output("de", english), "de", cited) is not None
+    # One closed-class word plus one content word is not a menu label.
+    bigram = "Speichern Sie the Einstellung."
+    assert language_failure(_output("de", bigram), "de", "the Einstellung") is not None
+    # One window, not the union. A copied paragraph still votes.
+    paragraph = (
+        "Öffnen Sie Please select the type and save the setting now before you "
+        "continue with the battery und speichern Sie die Einstellung."
+    )
+    copied = (
+        "Please select the type and save the setting now before you continue "
+        "with the battery."
+    )
+    assert language_failure(_output("de", paragraph), "de", copied) is not None

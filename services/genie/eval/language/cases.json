@@ -106,6 +106,13 @@
       "language": "en",
       "expected": "en",
       "fails": false
+    },
+    {
+      "id": "menu-name-is-not-english",
+      "answer": "Öffnen Sie Time-of-use export limitation settings und speichern Sie mit SAVE.",
+      "language": "de",
+      "expected": "de",
+      "fails": false
     }
   ]
 }
