@@ -364,8 +364,6 @@ def cites_outside_turn(citations: tuple[Citation, ...] | list[Citation]) -> bool
     return any(item.kind in _OUTSIDE_KINDS for item in citations)
 
 
-
-
 # The same token the baseline grader binds (`eval/baseline/grade.py` `_NUMBER`).
 # Production does not import the grader. `bare_numbers` keeps its own token so
 # the quality citation check is unchanged.
@@ -884,8 +882,6 @@ def document_blob(facts: TurnFacts) -> str:
     return " ".join(
         fact.value for fact in facts.facts.values() if fact.source in _DOCUMENT_SOURCES
     )
-
-
 
 
 def _capacity_unit(word: str) -> bool:
