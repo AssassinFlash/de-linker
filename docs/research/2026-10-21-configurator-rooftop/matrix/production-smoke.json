@@ -1,0 +1,102 @@
+[
+  {
+    "id": "size-hint-url",
+    "url": "https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538",
+    "form": {
+      "htmlLang": "en-US",
+      "appLang": "en",
+      "plz": "",
+      "annual": "",
+      "kwp": "",
+      "phase": "3",
+      "backup": "none",
+      "steps": [
+        "01Inputs",
+        "02Solution",
+        "03Design report"
+      ],
+      "sections": [
+        "linker-inputs-section",
+        "linker-solution-section"
+      ],
+      "title": "Solution Configurator",
+      "mounted": true
+    },
+    "shots": [
+      "shots/prod-size-hint-url-1440.png",
+      "shots/prod-size-hint-url-390.png"
+    ]
+  },
+  {
+    "id": "cfg-de",
+    "url": "https://de-linker.com/de/loesungskonfigurator/?pv_kwp=10&annual_kwh=4500&phase=3&plz=80538",
+    "form": {
+      "htmlLang": "de-DE",
+      "appLang": "de",
+      "plz": "",
+      "annual": "",
+      "kwp": "",
+      "phase": "3",
+      "backup": "none",
+      "steps": [
+        "01Eingaben",
+        "02L\u00f6sung",
+        "03Auslegungsbericht"
+      ],
+      "sections": [
+        "linker-inputs-section",
+        "linker-solution-section"
+      ],
+      "title": "L\u00f6sungskonfigurator",
+      "mounted": true
+    },
+    "shots": [
+      "shots/prod-cfg-de-1440.png",
+      "shots/prod-cfg-de-390.png"
+    ]
+  },
+  {
+    "id": "cart-en",
+    "url": "https://de-linker.com/cart/",
+    "form": null,
+    "shots": [
+      "shots/prod-cart-en-1440.png",
+      "shots/prod-cart-en-390.png"
+    ]
+  },
+  {
+    "id": "cart-de",
+    "url": "https://de-linker.com/de/loesungsentwurf/",
+    "form": null,
+    "shots": [
+      "shots/prod-cart-de-1440.png",
+      "shots/prod-cart-de-390.png"
+    ]
+  },
+  {
+    "id": "size-hint-ability",
+    "method": "GET",
+    "input": {
+      "pv_kwp": 10,
+      "annual_load_kwh": 4500,
+      "phase": 3,
+      "backup": "needed",
+      "plz": "80538",
+      "lang": "de"
+    },
+    "local": {
+      "status": 200,
+      "body": {
+        "summary": "Open the Solution Configurator with 10 kWp PV, 4500 kWh/year, three-phase, backup=needed, PLZ 80538.",
+        "configurator_url": "http://127.0.0.1:9231/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538"
+      }
+    },
+    "production": {
+      "status": 200,
+      "body": {
+        "summary": "Open the Solution Configurator with 10 kWp PV, 4500 kWh/year, three-phase, backup=needed, PLZ 80538.",
+        "configurator_url": "https://de-linker.com/solution-configurator/?pv_kwp=10&annual_kwh=4500&phase=3&backup=needed&plz=80538"
+      }
+    }
+  }
+]
