@@ -1146,6 +1146,45 @@ def test_trial_7_warranty_figures_are_row_values_not_catalogue_codes() -> None:
     ) == ["42"]
 
 
+def test_b14_export_limit_zero_is_the_manual_range() -> None:
+    """0 is the Total Power lower bound [0 - 5000] on the H2 manual, index
+    page 55 (chunk 770ccafa080c-p55-9908ba56, tagged n19). The production
+    answer stated that range. Both language rows license the digit, because
+    the German answer cites the same chunk. A figure the manual does not
+    show still fails."""
+
+    sentence = (
+        "Enter the value in the field that appears; in the user manual the "
+        "Total Power field is shown as a range from 0 to 5000."
+    )
+    for row_id in ("b14-en", "b14-de"):
+        row = next(item for item in ROWS if item["id"] == row_id)
+        assert "0" in row["expect"]["numbers"]
+        assert (
+            untraceable_numbers(sentence, row["expect"]["numbers"], FEED_TOKENS) == []
+        )
+        assert untraceable_numbers(
+            "Set the export limit to 7.", row["expect"]["numbers"], FEED_TOKENS
+        ) == ["7"]
+    english = next(item for item in ROWS if item["id"] == "b14-en")
+    shown = turn(
+        [
+            text(
+                "Open Export/Generation Limitation Settings and set the "
+                "export limit. " + sentence,
+                ["770ccafa080c-p55-9908ba56"],
+            ),
+            {
+                "type": "document",
+                "ref": "770ccafa080c-p55-9908ba56",
+                "label": "SAJ H2 10-30K user manual · p. 55",
+                "url": "https://de-linker.com/manual.pdf#page=55",
+            },
+        ]
+    )
+    assert check(english, shown, FEED_TOKENS) == []
+
+
 def test_b02_without_a_card_fails() -> None:
     """A text ref is not a product the customer can see, and an action is not
     a card. Hard row b02 requires the product in a cards or compare block."""
