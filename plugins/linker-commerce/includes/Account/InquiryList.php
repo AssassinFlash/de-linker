@@ -59,10 +59,14 @@ final class InquiryList {
 			),
 		);
 		if ( self::has_proforma( $order ) ) {
-			$ours['proforma'] = array(
-				'url'  => DocumentDownload::proforma_url( $order ),
-				'name' => __( 'Proforma invoice (PDF)', 'linker-commerce' ),
-			);
+			$url = DocumentDownload::proforma_url( $order );
+			// An empty href is still a download control (#425).
+			if ( '' !== $url ) {
+				$ours['proforma'] = array(
+					'url'  => $url,
+					'name' => __( 'Proforma invoice (PDF)', 'linker-commerce' ),
+				);
+			}
 		}
 		/** This filter is documented in woocommerce/includes/wc-template-functions.php */
 		$again = apply_filters( 'woocommerce_valid_order_statuses_for_order_again', array( 'completed' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own filter, applied as woocommerce_order_again_button() applies it.

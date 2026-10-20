@@ -28,6 +28,14 @@ use WP_Post;
 final class DocumentsTest extends TestCase {
 
 	/**
+	 * The URL shape is what these tests read. Staff may see it.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => true ) );
+	}
+
+	/**
 	 * Proforma invoices and design reports of the customer, newest first.
 	 */
 	public function test_for_customer(): void {
