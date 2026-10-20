@@ -8,7 +8,7 @@ CI 入口（`just test` 的 `py-test` 会收集这个文件）：
 cd services/genie && uv run --locked pytest tests/test_campaign_339.py
 ```
 
-计数（夹具长度或本模块 pytest 条目，跳过的不计）：产品词 19，语言 17，填充词 81，重复卡片 1，预填 81，短码 4，降级 2，极值 1，价格门 6。
+计数（夹具长度或本模块 pytest 条目，跳过的不计）：产品词 32，语言 17，填充词 81，重复卡片 1，预填 81，短码 4，降级 2，极值 1，价格门 6。
 
 语言条数是 `services/genie/eval/language/cases.json` 的 `cases`。填充词条数是 `services/genie/eval/contact/repeats.json` 的 `pairs`。产品词是 `test_339_product_word_case` 的条目，等于夹具行数。`test_the_goodwe_model_without_a_stored_brand_is_still_named` 另计，不进这个数字。预填、短码、降级、极值和价格门是本模块收集到的对应 pytest 条目。极值只计回退模板；`test_route.py` 与 `SearchProductsTest` 的聚合不进这个数字，它们由 `just test` 收集。重复卡片是 `test_s4_repeat_h2_10k_t3_four_rounds_de_and_en` 的条目。注入不在这条计数里。
 
@@ -26,7 +26,7 @@ cd services/genie && uv run --locked pytest tests/test_campaign_339.py
 | #376 | 同一配对集合的卡片不漂移 | `services/genie/tests/fixtures/339/manifest.json` 的 `s4-repeat-h2-10k-t3` | `tests/test_pairing_cards.py::test_s4_repeat_h2_10k_t3_four_rounds_de_and_en` | 套件重导出该测试 |
 | #242 | 价格门：卡片行等于该账号在商品页上看到的那一行 | `services/genie/tests/fixtures/prices.json` | `tests/test_prices.py::test_a_search_card_shows_what_the_product_page_shows`，`test_a_card_price_for_an_account_not_approved_is_flagged`，`test_a_card_price_no_tool_returned_is_flagged` | 套件重导出这三个测试 |
 
-#373（并发轮次不丢）不在 Genie pytest 里，套件不重写它。`plugins/linker-tools/phpunit.xml.dist` 的 `defaultTestSuite="unit"`，所以 `just test` 的 PHPUnit 只收集 `plugins/linker-tools/tests/php/Unit/ThreadTest.php`。`plugins/linker-tools/tests/php/Integration/ConversationConcurrencyTest.php` 由 CI 的 `mu-smoke` job 运行：`just genie-concurrency smoke`（`phpunit -c phpunit.integration.xml.dist --filter ConversationConcurrencyTest`，要一台实例）。
+#373（并发轮次不丢）不在 Genie pytest 里，套件不重写它。`plugins/linker-tools/phpunit.xml.dist` 的 `defaultTestSuite="unit"`，所以 `just test` 的 PHPUnit collects the unit suite, ThreadTest.php among it（`plugins/linker-tools/tests/php/Unit` 下的 `*Test.php`，含 `plugins/linker-tools/tests/php/Unit/ThreadTest.php`）。只有 `plugins/linker-tools/tests/php/Integration/ConversationConcurrencyTest.php` 在这套之外，由 CI 的 `mu-smoke` job 运行：`just genie-concurrency smoke`（`phpunit -c phpunit.integration.xml.dist --filter ConversationConcurrencyTest`，要一台实例）。
 
 #330 清单有 20 行（`regrade.KEPT_DEFECTS`、`regrade.OVERTURNS`，加上 `round3-runs.jsonl` 里 grade 为 defect 或 parity 的行）。这 20 行没有逐题自动断言，缺口在 #431。D1–D7 对上表里的类级别单元测试，那个测试不断言该行自己的问句。D8–D12、第三轮 A8-DE 和四条 parity 没有合并过的修复。套件只核对这些行仍被登记。
 

@@ -20,6 +20,7 @@ import inspect
 import json
 import sys
 from collections.abc import Callable
+from functools import wraps
 from pathlib import Path
 from typing import Any
 
@@ -168,6 +169,7 @@ MAP_NEEDLES = (
     "plugins/linker-tools/tests/php/Integration/ConversationConcurrencyTest.php",
     'defaultTestSuite="unit"',
     "just genie-concurrency",
+    "collects the unit suite, ThreadTest.php among it",
 )
 
 # Home tests this module reexports. conftest drops the home copy when both
@@ -185,19 +187,18 @@ def _marks(fn: Callable[..., Any]) -> list[Any]:
 def _reexport(fn: Callable[..., Any]) -> Callable[..., Any]:
     """Publish `fn` for pytest without a second parametrization runner.
 
-    The copy keeps the pytestmark list and the signature. Pytest therefore
+    ``wraps`` keeps the name, docstring and signature (pytest follows
+    ``__wrapped__``). The copy also keeps the pytestmark list, so pytest
     sees the same parameters, skip and xfail marks, indirect fixtures and
     injected fixtures the home test declares.
     """
 
+    @wraps(fn)
     def campaign(*args: Any, **kwargs: Any) -> Any:
         return fn(*args, **kwargs)
 
-    campaign.__name__ = fn.__name__
-    campaign.__doc__ = fn.__doc__
-    campaign.__qualname__ = fn.__name__
+    # wraps copies the home module. This function is collected from this file.
     campaign.__module__ = __name__
-    campaign.__signature__ = inspect.signature(fn)  # type: ignore[attr-defined]
     copied = _marks(fn)
     if copied:
         campaign.pytestmark = copied  # type: ignore[attr-defined]
@@ -319,7 +320,7 @@ def _campaign_330_ids() -> set[str]:
     return ids
 
 
-def _runs(item: pytest.Item) -> bool:
+def _not_skipped(item: pytest.Item) -> bool:
     return item.get_closest_marker("skip") is None
 
 
@@ -327,9 +328,9 @@ def _collected(items: list[pytest.Item], name: str) -> int:
     return sum(
         1
         for item in items
-        if getattr(getattr(item, "module", None), "__name__", "") == "test_campaign_339"
+        if getattr(getattr(item, "module", None), "__name__", "") == __name__
         and getattr(item, "originalname", "") == name
-        and _runs(item)
+        and _not_skipped(item)
     )
 
 
@@ -354,6 +355,25 @@ def test_reexport_keeps_the_pytest_marks() -> None:
     exported = globals()[source.__name__]
     assert _marks(exported) == _marks(source)
     assert inspect.signature(exported) == inspect.signature(source)
+
+
+def test_the_deselect_hook_names_this_module(
+    request: pytest.FixtureRequest,
+) -> None:
+    """A renamed module that leaves the hook behind would run each home copy twice."""
+    import conftest
+
+    assert __name__ in inspect.getsource(conftest.pytest_collection_modifyitems)
+    seen: dict[str, list[str]] = {name: [] for name in REEXPORTED_NAMES}
+    for item in request.session.items:
+        name = str(getattr(item, "originalname", ""))
+        if name not in seen:
+            continue
+        module = getattr(getattr(item, "module", None), "__name__", "")
+        seen[name].append(module)
+    for name, modules in seen.items():
+        assert modules, name
+        assert set(modules) == {__name__}, (name, modules)
 
 
 def test_prefill_sentences_stay_registered() -> None:
@@ -483,6 +503,11 @@ def test_the_case_map_names_every_runner_and_its_count(
         "和 `plugins/linker-tools/tests/php/Integration/ConversationConcurrencyTest.php`"
     )
     assert false_claim not in text
+    only_thread = (
+        "`just test` 的 PHPUnit 只收集 "
+        "`plugins/linker-tools/tests/php/Unit/ThreadTest.php`"
+    )
+    assert only_thread not in text
     assert "test_a_card_without_a_price_passes_the_check" not in text
     head, pending = text.split("## 待定", 1)
     assert "#412" not in head
