@@ -6,7 +6,7 @@
 
 状态：下面的英文和德文是本轮写进代码的句子。协调者对抗评审尚未签收。后续改动任一句须重新走对抗评审。
 
-Coordinator sign-off: pending
+Coordinator sign-off: approved (2026-10-20)
 
 sizing 路由补上的应用追问芯片是 #394 已签收的 `home` / `commercial` 与 `Wohngebäude` / `Gewerbe`，不是本轮新句，不在下面重写。
 
@@ -76,3 +76,8 @@ EnWG 14a 缺失。用 `Unterstützung`，不用 `unterstützt`，以免撞上基
 - 毫米句与 260 kWh / 98% 只复述本轮文档事实里已有的数。事实里没有的数不补。
 
 协调者若要改字，改 `template.py` 里的这些句子，并改这篇记录。
+
+
+## 协调者对抗评审（2026-10-20）
+
+逐组复核：全部为复述本轮文档事实的陈述句；缺席句与基线判分句式一致（do not state…/nennen keine…）；支持句是否认（德文用名词 Unterstützung 避开支持动词）；毫米与 260 kWh/98 % 只在本轮事实已有且正文未写时补，不编数；Hard Stop 1–9 与 §3 用词无违例；德文独立成文（Montageunterlagen/Abstände/Nennkapazität 均非逐词对译）。与 template.py 实际字符串一致。无改动，按本记录定稿。
