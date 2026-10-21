@@ -103,5 +103,10 @@
     "Standards": "standards-review.md",
     "manual_original_PNGs": 98,
     "scope": "Batch A only; ordinary failure repair, Installer desktop and full-site matrices remain open"
+  },
+  "supplemental_scroll": {
+    "directory": "supplemental-welcome-scroll/archived-20261021T214235158267Z",
+    "status": "unversioned supplemental observation, not final-run acceptance",
+    "metadata_sha256": "67d908e546913ddb4984b66958239c396ee7aa44242dc11eb6b1b42d8e8c9ce7"
   }
 }
