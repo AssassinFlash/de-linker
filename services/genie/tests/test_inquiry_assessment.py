@@ -3,6 +3,9 @@
 import asyncio
 import copy
 import json
+import sqlite3
+import time
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -10,6 +13,88 @@ import pytest
 
 from linker_genie import inquiry_assessment as assessment
 from linker_genie.jev import MODEL
+
+
+@pytest.mark.parametrize("failure", ["quota", "unavailable"])
+def test_actual_assessment_budget_refusal_is_unknown_without_dispatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    from linker_judges.budget import CAPACITIES
+
+    ledger = tmp_path / "private" / "provider.sqlite"
+    monkeypatch.setenv("LINKER_PROVIDER_BUDGET_MODE", "enforce")
+    monkeypatch.setenv("LINKER_PROVIDER_BUDGET_PATH", str(ledger))
+    if failure == "quota":
+        monkeypatch.setitem(CAPACITIES, "jev", 0)
+    else:
+        ledger.parent.mkdir(mode=0o700)
+        ledger.write_bytes(b"synthetic damaged ledger")
+        ledger.chmod(0o600)
+    sent: list[httpx.Request] = []
+
+    def upstream(request: httpx.Request) -> httpx.Response:
+        sent.append(request)
+        return httpx.Response(200, json=answer())
+
+    result = asyncio.run(
+        assessment.assess(
+            assessment.AssessmentInput(state={}, remaining_seconds=0.1),
+            key="synthetic-key",
+            transport=httpx.MockTransport(upstream),
+        )
+    )
+    assert (result["label"], result["reason"]) == (
+        "uncertain",
+        "provider_budget_" + failure,
+    )
+    assert sent == []
+
+
+def test_actual_assessment_retries_each_debit_and_retains_absolute_deadline(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from linker_judges.budget import CAPACITIES
+
+    ledger = tmp_path / "provider.sqlite"
+    monkeypatch.setenv("LINKER_PROVIDER_BUDGET_MODE", "enforce")
+    monkeypatch.setenv("LINKER_PROVIDER_BUDGET_PATH", str(ledger))
+    monkeypatch.setitem(CAPACITIES, "jev", 1)
+    calls: list[httpx.Request] = []
+
+    def upstream(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(503)
+
+    result = asyncio.run(
+        assessment.assess(
+            assessment.AssessmentInput(state={}, remaining_seconds=0.1),
+            key="synthetic-key",
+            transport=httpx.MockTransport(upstream),
+        )
+    )
+    assert result["reason"] == "provider_budget_quota"
+    assert result["label"] == "uncertain"
+    assert len(calls) == 1
+    with sqlite3.connect(ledger) as db:
+        assert db.execute("SELECT COUNT(*) FROM dispatch").fetchone()[0] == 1
+
+    async def locked() -> dict[str, Any]:
+        monkeypatch.setitem(CAPACITIES, "jev", 200)
+        with sqlite3.connect(ledger) as db:
+            db.execute("BEGIN IMMEDIATE")
+            began = time.monotonic()
+            result = await assessment.assess(
+                assessment.AssessmentInput(state={}, remaining_seconds=0.02),
+                key="synthetic-key",
+                transport=httpx.MockTransport(upstream),
+            )
+            assert time.monotonic() - began < 0.5
+            db.rollback()
+        return result
+
+    result = asyncio.run(locked())
+    assert (result["label"], result["reason"]) == ("uncertain", "deadline")
+    assert len(calls) == 1  # Cancelled lock waiting never dispatches later.
 
 
 def answer(label: str = "normal", basis: str = "business_request") -> dict[str, Any]:

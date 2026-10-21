@@ -14,10 +14,12 @@ import time
 from typing import Any
 
 import httpx
+from linker_judges.budget import BudgetError
 from pydantic import BaseModel, ConfigDict, Field
 
 from linker_genie.embedding import credentials
 from linker_genie.jev import MODEL, OPENROUTER_FILE
+from linker_genie.provider_budget import AsyncTransport
 
 log = logging.getLogger(__name__)
 ENDPOINT = "https://openrouter.ai/api/v1/systemone"
@@ -102,7 +104,9 @@ async def assess(
     if key:
         try:
             async with asyncio.timeout(body.remaining_seconds):
-                async with httpx.AsyncClient(transport=transport) as client:
+                async with httpx.AsyncClient(
+                    transport=AsyncTransport("jev", transport)
+                ) as client:
                     # One retry follows the existing Jev failure discipline. It
                     # gets only time left in the owner-approved total deadline.
                     for attempt in range(2):
@@ -147,6 +151,8 @@ async def assess(
                             await asyncio.sleep(0)
         except TimeoutError:
             result = undetermined("deadline")
+        except BudgetError as error:
+            result = undetermined("provider_budget_" + error.reason)
     if result["reason"] not in {"classified", "insufficient_context"}:
         log.warning("inquiry assessment: %s", result["reason"])
     result["seconds"] = round(time.monotonic() - started, 6)
