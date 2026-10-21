@@ -381,6 +381,19 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertSame( 'registration', $owned['data'][0]['purpose'] );
 		$this->assertStringNotContainsString( 'SyntheticPasswordNeverPartOfPayload', (string) get_option( Ledger::OPTION ) );
 		$this->assertFalse( email_exists( $email ), 'Validation alone creates no account or registration mail.' );
+		$id = wc_create_new_customer( $email, '', 'SyntheticPasswordNeverPartOfPayload' );
+		$this->assertIsInt( $id );
+		$this->assertGreaterThan( 0, $id );
+		$this->later(
+			static function () use ( $id ): void {
+				require_once ABSPATH . 'wp-admin/includes/user.php';
+				wp_delete_user( $id );
+			}
+		);
+		$owned = ( new Ledger() )->privacy( array( Allowance::owner_for( Identity::recipient( $email ) ) ), false );
+		$this->assertIsArray( $owned );
+		$this->assertSame( 'completed', $owned['data'][0]['status'] );
+		$this->assertSame( $id, $owned['data'][0]['outcome'] );
 	}
 
 	/**
@@ -476,6 +489,18 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$guard   = new \Linker\Commerce\Protection\Draft();
 		$product = $this->product( '125' );
 		$this->assertTrue( $guard->decision( array( 'product_id' => $product->get_id() ) ), 'A read-only query parameter is not a write.' );
+		$shipping = WC()->customer->get_shipping_country();
+		$this->assertInstanceOf(
+			WP_Error::class,
+			$guard->decision(
+				array(
+					'calc_shipping'         => '1',
+					'calc_shipping_country' => 'FR',
+					'woocommerce-shipping-calculator-nonce' => wp_create_nonce( 'woocommerce-shipping-calculator' ),
+				)
+			)
+		);
+		$this->assertSame( $shipping, WC()->customer->get_shipping_country() );
 		$this->assertInstanceOf( WP_Error::class, $guard->decision( array( 'add-to-cart' => $product->get_id() ) ) );
 		$this->assertInstanceOf(
 			WP_Error::class,

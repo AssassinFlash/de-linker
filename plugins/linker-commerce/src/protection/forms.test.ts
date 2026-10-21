@@ -7,9 +7,8 @@ afterEach( () => {
 	document.body.replaceChildren();
 } );
 
-function fixture( mode = 'enforce' ) {
-	document.body.innerHTML =
-		'<form><input name="message" value="Customer message"><input name="linker_request_id" value="stable-id" data-linker-protected-action="inquiry"><input name="linker_proof"><div data-linker-protection-widget hidden></div><p data-linker-protection-status hidden></p><button type="submit" name="send" value="1">Send inquiry</button></form>';
+function fixture( mode = 'enforce', action = 'inquiry' ) {
+	document.body.innerHTML = `<form><input name="message" value="Customer message"><input name="linker_request_id" value="stable-id" data-linker-protected-action="${ action }"><input name="linker_proof"><div data-linker-protection-widget hidden></div><p data-linker-protection-status hidden></p><button type="submit" name="send" value="1">Send inquiry</button></form>`;
 	const form = document.querySelector( 'form' )!;
 	const button = form.querySelector( 'button' )!;
 	const proof = vi.fn< () => Promise< string > >();
@@ -146,4 +145,84 @@ test( 'native delegated AJAX sees only the verified resubmit and replaced forms 
 	await vi.waitFor( () =>
 		expect( replacement.submit ).toHaveBeenCalledTimes( 1 )
 	);
+} );
+
+test( 'quantity Enter reaches native AJAX through the same verified submit', async () => {
+	const f = fixture( 'enforce', 'draft_write' );
+	f.form.className = 'woocommerce-cart-form';
+	f.button.name = 'update_cart';
+	const qty = document.createElement( 'input' );
+	qty.className = 'qty';
+	qty.name = 'cart[fixture][qty]';
+	qty.value = '2';
+	f.form.append( qty );
+	f.proof.mockResolvedValue( 'quantity-proof' );
+	const nativeKey = vi.fn();
+	const nativeSubmit = vi.fn();
+	document.body.addEventListener( 'keypress', nativeKey );
+	document.body.addEventListener( 'submit', nativeSubmit );
+	f.submit.mockImplementation( ( button ) => {
+		f.form.dispatchEvent(
+			new SubmitEvent( 'submit', {
+				bubbles: true,
+				cancelable: true,
+				submitter: button,
+			} )
+		);
+	} );
+	qty.dispatchEvent(
+		new KeyboardEvent( 'keypress', {
+			bubbles: true,
+			cancelable: true,
+			key: 'Enter',
+		} )
+	);
+	expect( nativeKey ).not.toHaveBeenCalled();
+	await vi.waitFor( () => expect( nativeSubmit ).toHaveBeenCalledTimes( 1 ) );
+	expect( f.proof ).toHaveBeenCalledTimes( 1 );
+	expect( f.submit ).toHaveBeenCalledWith( f.button );
+	document.body.removeEventListener( 'keypress', nativeKey );
+	document.body.removeEventListener( 'submit', nativeSubmit );
+} );
+
+test( 'coupon uses native POST with its command and scoped proof instead of stripped AJAX data', async () => {
+	const f = fixture( 'enforce', 'draft_write' );
+	f.button.name = 'apply_coupon';
+	f.proof.mockResolvedValue( 'coupon-proof' );
+	const post = vi
+		.spyOn( f.form, 'submit' )
+		.mockImplementation( () => undefined );
+	f.form.dispatchEvent(
+		new SubmitEvent( 'submit', {
+			bubbles: true,
+			cancelable: true,
+			submitter: f.button,
+		} )
+	);
+	await vi.waitFor( () => expect( post ).toHaveBeenCalledTimes( 1 ) );
+	expect(
+		f.form.querySelector< HTMLInputElement >( '[name="linker_proof"]' )
+			?.value
+	).toBe( 'coupon-proof' );
+	expect(
+		f.form.querySelector< HTMLInputElement >( 'input[name="apply_coupon"]' )
+			?.value
+	).toBe( '1' );
+	expect( f.submit ).not.toHaveBeenCalled();
+} );
+
+test( 'product quantity Enter keeps its native product form behavior', () => {
+	const f = fixture( 'enforce', 'draft_write' );
+	const qty = document.createElement( 'input' );
+	qty.className = 'qty';
+	f.form.append( qty );
+	const event = new KeyboardEvent( 'keypress', {
+		bubbles: true,
+		cancelable: true,
+		key: 'Enter',
+	} );
+	qty.dispatchEvent( event );
+	expect( event.defaultPrevented ).toBe( false );
+	expect( f.submit ).not.toHaveBeenCalled();
+	expect( f.proof ).not.toHaveBeenCalled();
 } );

@@ -49,7 +49,11 @@ final class Draft {
 			return;
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification -- decision() verifies mutation nonces before the gate; Woo repeats them.
-		$post   = array_merge( wp_unslash( $_GET ), wp_unslash( $_POST ) );
+		$post = array_merge( wp_unslash( $_GET ), wp_unslash( $_POST ) );
+		// The retired calculator is a POST-only native command, not a read query.
+		if ( ! isset( $_POST['calc_shipping'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Presence only; no native write is allowed by this branch.
+			unset( $post['calc_shipping'] );
+		}
 		$result = $this->failure ?? $this->decision( $post );
 		if ( ! is_wp_error( $result ) ) {
 			// Woo's native remove/restore dispatcher reads these from GET. A
@@ -100,6 +104,9 @@ final class Draft {
 	 * @return true|WP_Error Allowed or explicit refusal.
 	 */
 	public function decision( array $post ): true|WP_Error {
+		if ( 'enforce' === Configuration::active_mode() && isset( $post['calc_shipping'] ) && ! wc_shipping_enabled() ) {
+			return new WP_Error( 'linker_shipping_disabled', __( 'Please use the inquiry form to send your inquiry.', 'linker-commerce' ) );
+		}
 		if ( null !== $this->permit ) {
 			return true; }
 		$commands = array_intersect( array_keys( $post ), array( 'add-to-cart', 'remove_item', 'undo_item', 'remove_coupon', 'apply_coupon', 'update_cart', 'linker_solution_to_draft', 'order_again' ) );

@@ -61,10 +61,39 @@ export function connectForms( root: ParentNode = document ): void {
 		};
 		form.addEventListener( 'focusin', warm, { once: true } );
 		form.addEventListener( 'pointerdown', warm, { once: true } );
+		// Woo's quantity Enter handler calls AJAX directly, bypassing submit.
+		form.addEventListener(
+			'keypress',
+			( event: KeyboardEvent ) => {
+				if (
+					action !== 'draft_write' ||
+					window.linkerPublicProtectionConfig?.mode !== 'enforce' ||
+					event.key !== 'Enter' ||
+					! ( event.target instanceof HTMLInputElement ) ||
+					! event.target.matches( 'input.qty' ) ||
+					! form.classList.contains( 'woocommerce-cart-form' )
+				) {
+					return;
+				}
+				const update = form.querySelector<
+					HTMLButtonElement | HTMLInputElement
+				>(
+					'button[name="update_cart"],input[type="submit"][name="update_cart"]'
+				);
+				if ( ! update ) {
+					return;
+				}
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				form.requestSubmit( update );
+			},
+			{ capture: true }
+		);
 		form.addEventListener(
 			'submit',
 			async ( event: SubmitEvent ) => {
 				if (
+					event.defaultPrevented ||
 					verified ||
 					window.linkerPublicProtectionConfig?.mode !== 'enforce'
 				) {
@@ -95,12 +124,29 @@ export function connectForms( root: ParentNode = document ): void {
 					}
 					widget.hidden = true;
 					proof.value = token;
+					if (
+						action === 'draft_write' &&
+						button instanceof HTMLButtonElement &&
+						button.name === 'apply_coupon'
+					) {
+						// Woo's coupon AJAX deliberately omits form fields. The
+						// native POST retains its cart nonce and our scoped proof.
+						const command = document.createElement( 'input' );
+						command.type = 'hidden';
+						command.name = button.name;
+						command.value = button.value || '1';
+						form.append( command );
+						form.submit();
+						return;
+					}
 					verified = true;
+					form.dataset.linkerProtectionVerified = 'true';
 					form.requestSubmit( button );
 				} catch {
 					failed();
 				} finally {
 					verified = false;
+					delete form.dataset.linkerProtectionVerified;
 					submitting = false;
 				}
 			},
