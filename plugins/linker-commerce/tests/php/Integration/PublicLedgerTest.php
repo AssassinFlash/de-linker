@@ -69,7 +69,11 @@ final class PublicLedgerTest extends IntegrationTestCase {
 		$this->assertIsArray( $done );
 		$this->assertSame( 42, $done['outcome'] );
 		$this->assertSame( $done, $ledger->complete( $id, $fp, 42 ) );
-		$this->assertSame( $done, $ledger->reserve( $id, $fp, $limit, 60 ) );
+		$replayed = $ledger->reserve( $id, $fp, $limit, 60 );
+		$this->assertIsArray( $replayed );
+		$this->assertSame( 0, $replayed['allowances'][0]['remaining'] );
+		unset( $replayed['allowances'] );
+		$this->assertSame( $done, $replayed, 'Only current quota diagnostics are added; the durable outcome is unchanged.' );
 		$this->assertInstanceOf( WP_Error::class, $ledger->reserve( $id, hash( 'sha256', 'changed' ), $limit, 60 ) );
 		$this->assertInstanceOf( WP_Error::class, $ledger->reserve( wp_generate_uuid4(), $fp, $limit, 60 ) );
 	}
@@ -99,6 +103,28 @@ final class PublicLedgerTest extends IntegrationTestCase {
 		$this->assertIsArray( $ledger->complete( $sent, $fp, 7 ), 'Late reconciliation never dispatches the request again.' );
 		$now = ( intdiv( $now, DAY_IN_SECONDS ) + 1 ) * DAY_IN_SECONDS + 1;
 		$this->assertIsArray( $ledger->reserve( wp_generate_uuid4(), $fp, $limits, 5 ) );
+	}
+
+	/** In-flight retry timing reflects the actual lease and counts refusal reasons. */
+	public function test_inflight_diagnostics_use_the_actual_recovery_time(): void {
+		$now    = 1600000000;
+		$ledger = new Ledger(
+			static function () use ( &$now ): int {
+				return $now;
+			}
+		);
+		$limit  = array( new Allowance( 'flight', 'site', 1, 0 ) );
+		$first  = $ledger->reserve( wp_generate_uuid4(), $this->fingerprint(), $limit, 20 );
+		$this->assertIsArray( $first );
+		$this->assertSame( 0, $first['allowances'][0]['remaining'] );
+		$now   += 7;
+		$denied = $ledger->reserve( wp_generate_uuid4(), $this->fingerprint(), $limit, 20 );
+		$this->assertInstanceOf( WP_Error::class, $denied );
+		$this->assertSame( 13, $denied->get_error_data()['retry_after'] );
+		$summary = $ledger->summary();
+		$this->assertIsArray( $summary );
+		$this->assertSame( 1600000020, $summary['windows']['flight']['reset_at'] );
+		$this->assertContains( 'quota', array_column( $summary['events'], 'reason' ) );
 	}
 
 	/** Login imports actual anonymous spend once, not a new free allowance. */
@@ -183,6 +209,52 @@ final class PublicLedgerTest extends IntegrationTestCase {
 		} finally {
 			$wpdb = $original;
 			$other->get_var( $other->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) );
+			$other->close();
+		}
+		// phpcs:enable
+	}
+
+	/** A real killed connection cannot overwrite a peer's admission after reconnect. */
+	public function test_reconnection_after_snapshot_cannot_overwrite_the_winning_peer(): void {
+		global $wpdb;
+		$original = $wpdb;
+		$other    = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$other->set_prefix( $original->prefix );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Real server disconnect and a second connection are the failure fixture.
+		$connection  = (int) $original->get_var( 'SELECT CONNECTION_ID()' );
+		$limits      = array( new Allowance( 'day', 'site', 1, DAY_IN_SECONDS ) );
+		$peer_id     = wp_generate_uuid4();
+		$fingerprint = $this->fingerprint();
+		$injected    = false;
+		$peer        = null;
+		$intercept   = static function ( string $query ) use ( $original, $other, $connection, $limits, $peer_id, $fingerprint, &$injected, &$peer ): string {
+			if ( ! $injected && str_starts_with( $query, "UPDATE {$original->options} SET option_value" ) && str_contains( $query, Ledger::OPTION ) ) {
+				$injected = true;
+				$other->query( 'KILL CONNECTION ' . $connection );
+				$GLOBALS['wpdb'] = $other;
+				try {
+					$peer = ( new Ledger() )->reserve( $peer_id, $fingerprint, $limits, 60 );
+				} finally {
+					$GLOBALS['wpdb'] = $original;
+				}
+			}
+			return $query;
+		};
+		add_filter( 'query', $intercept );
+		try {
+			$result = ( new Ledger() )->reserve( wp_generate_uuid4(), $fingerprint, $limits, 60 );
+			$this->assertTrue( $injected );
+			$this->assertIsArray( $peer );
+			$this->assertInstanceOf( WP_Error::class, $result );
+			$this->assertSame( 'linker_admission_storage', $result->get_error_code() );
+			$this->assertNotSame( $connection, (int) $original->get_var( 'SELECT CONNECTION_ID()' ), 'wpdb reconnected to a real new connection.' );
+			$this->assertIsArray( ( new Ledger() )->lookup( $peer_id, $fingerprint ) );
+			$denied = ( new Ledger() )->reserve( wp_generate_uuid4(), $fingerprint, $limits, 60 );
+			$this->assertInstanceOf( WP_Error::class, $denied );
+			$this->assertSame( 'linker_admission_quota', $denied->get_error_code() );
+		} finally {
+			remove_filter( 'query', $intercept );
+			$wpdb = $original;
 			$other->close();
 		}
 		// phpcs:enable

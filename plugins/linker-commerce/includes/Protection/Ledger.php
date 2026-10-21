@@ -14,6 +14,7 @@ use WP_Error;
 /** One non-autoloaded native option commits the journal under a connection lock. */
 final class Ledger {
 	public const OPTION = 'linker_public_admission_ledger';
+	public const POLICY = 'public-admission-519-v1';
 	// Initial operational bounds, docs/specs/519-public-admission.md.
 	private const RECEIPT_SECONDS   = DAY_IN_SECONDS;
 	private const MAX_RECEIPTS      = 10000;
@@ -21,6 +22,7 @@ final class Ledger {
 	private const MAX_JOURNAL_BYTES = 8388608;
 	private const LOCK_WAIT         = 1;
 	private const MAX_LEASE         = 300;
+	private const MAX_EVENTS        = 256;
 
 	/**
 	 * The clock can be fixed in real database fixtures.
@@ -41,18 +43,24 @@ final class Ledger {
 	 * @param list<array{source: Allowance, target: Allowance}> $carry Anonymous spend to import on login.
 	 * @param string                                            $purpose Server-owned operation kind.
 	 * @param string                                            $binding Optional private current-subject reference.
+	 * @param string[]                                          $owners Additional private account associations, without another quota.
 	 * @return array<string,mixed>|WP_Error Durable receipt or explicit refusal.
 	 */
-	public function reserve( string $id, string $fingerprint, array $allowances, int $lease, array $carry = array(), string $purpose = 'operation', string $binding = '' ): array|WP_Error {
+	public function reserve( string $id, string $fingerprint, array $allowances, int $lease, array $carry = array(), string $purpose = 'operation', string $binding = '', array $owners = array() ): array|WP_Error {
 		$id = strtolower( $id );
 		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) || array() === $allowances || count( $allowances ) > self::MAX_DIMENSIONS || count( $carry ) > self::MAX_DIMENSIONS || $lease < 1 || $lease > self::MAX_LEASE || 1 !== preg_match( '/\A[a-z0-9_]{1,40}\z/', $purpose ) || ( '' !== $binding && 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $binding ) ) ) {
 			return self::error( 'input' );
 		}
+		if ( count( $owners ) > self::MAX_DIMENSIONS || count( array_filter( $owners, static fn ( string $owner ): bool => 1 === preg_match( '/\A[a-f0-9]{64}\z/', $owner ) ) ) !== count( $owners ) ) {
+			return self::error( 'input' );
+		}
 		return $this->edit(
-			static function ( array &$state, int $now ) use ( $id, $fingerprint, $allowances, $lease, $carry, $purpose, $binding ): array|WP_Error {
+			static function ( array &$state, int $now ) use ( $id, $fingerprint, $allowances, $lease, $carry, $purpose, $binding, $owners ): array|WP_Error {
 				if ( isset( $state['receipts'][ $id ] ) ) {
 					$existing = $state['receipts'][ $id ];
-					return hash_equals( (string) $existing['fingerprint'], $fingerprint ) && ( $existing['purpose'] ?? '' ) === $purpose && ( $existing['binding'] ?? '' ) === $binding ? $existing : self::error( 'payload_changed' );
+					$same     = hash_equals( (string) $existing['fingerprint'], $fingerprint ) && $existing['purpose'] === $purpose && $existing['binding'] === $binding;
+					self::event( $state, $now, $purpose, $same ? 'replay' : 'payload_changed' );
+					return $same ? self::remaining( $existing, $state, $allowances, $now ) : self::error( 'payload_changed' );
 				}
 				if ( count( $state['receipts'] ) >= self::MAX_RECEIPTS ) {
 					return self::error( 'capacity' );
@@ -108,15 +116,18 @@ final class Ledger {
 						'owner' => $allowance->owner(),
 					);
 					if ( (int) $bucket['used'] + $allowance->units > $allowance->capacity ) {
+						self::event( $state, $now, $purpose, 'quota', $allowance->name );
 						return self::error(
 							'quota',
 							array(
 								'dimension'   => $allowance->name,
-								'retry_after' => max( 1, (int) $bucket['end'] - $now ),
+								'retry_after' => self::retry( $state, $allowance, $now ),
 							)
 						);
 					}
 					$bucket['used']              += $allowance->units;
+					$bucket['name']               = $allowance->name;
+					$bucket['capacity']           = $allowance->capacity;
 					$candidate['buckets'][ $key ] = $bucket;
 					$debits[ $key ]               = array(
 						'units'  => $allowance->units,
@@ -133,11 +144,12 @@ final class Ledger {
 					'retry_until' => $now + self::RECEIPT_SECONDS,
 					'debits'      => $debits,
 					'outcome'     => 0,
-					'owners'      => array_values( array_unique( array_map( static fn ( Allowance $allowance ): string => $allowance->owner(), $allowances ) ) ),
+					'owners'      => array_values( array_unique( array_merge( $owners, array_map( static fn ( Allowance $allowance ): string => $allowance->owner(), $allowances ) ) ) ),
 				);
 				$candidate['receipts'][ $id ] = $receipt;
 				$state                        = $candidate;
-				return $receipt;
+				self::event( $state, $now, $purpose, 'admitted' );
+				return self::remaining( $receipt, $state, $allowances, $now );
 			}
 		);
 	}
@@ -148,13 +160,17 @@ final class Ledger {
 	 * @phpstan-impure
 	 * @param string $id Stable operation UUID.
 	 * @param string $fingerprint Same subject/action/input reference.
+	 * @param bool   $retry Count an actual native-operation retry, not a staff read.
 	 * @return array<string,mixed>|WP_Error Existing receipt or explicit unknown.
 	 */
-	public function lookup( string $id, string $fingerprint ): array|WP_Error {
+	public function lookup( string $id, string $fingerprint, bool $retry = false ): array|WP_Error {
 		$id = strtolower( $id );
 		return $this->edit(
-			static function ( array &$state ) use ( $id, $fingerprint ): array|WP_Error {
+			static function ( array &$state, int $now ) use ( $id, $fingerprint, $retry ): array|WP_Error {
 				$receipt = $state['receipts'][ $id ] ?? null;
+				if ( $retry && is_array( $receipt ) && hash_equals( (string) $receipt['fingerprint'], $fingerprint ) ) {
+					self::event( $state, $now, $receipt['purpose'], 'replay' );
+				}
 				return is_array( $receipt ) && hash_equals( (string) $receipt['fingerprint'], $fingerprint ) ? $receipt : self::error( 'unknown_receipt' );
 			}
 		);
@@ -221,13 +237,120 @@ final class Ledger {
 					}
 					$counts[ $purpose ][ $status ] = ( $counts[ $purpose ][ $status ] ?? 0 ) + 1;
 				}
+				$windows = array();
+				foreach ( $state['buckets'] as $key => $bucket ) {
+					if ( ! isset( $bucket['name'], $bucket['capacity'] ) ) {
+						continue;
+					}
+					$name  = $bucket['name'];
+					$left  = max( 0, $bucket['capacity'] - $bucket['used'] );
+					$reset = $bucket['end'];
+					if ( 0 === $reset ) {
+						foreach ( $state['receipts'] as $receipt ) {
+							if ( isset( $receipt['debits'][ $key ] ) && in_array( $receipt['status'], array( 'reserved', 'dispatched' ), true ) ) {
+								$reset = max( $reset, $receipt['lease_until'] );
+							}
+						}
+					}
+					$window = $windows[ $name ] ?? array(
+						'buckets'           => 0,
+						'minimum_remaining' => $left,
+						'reset_at'          => $reset,
+					);
+					++$window['buckets'];
+					$window['minimum_remaining'] = min( $window['minimum_remaining'], $left );
+					$window['reset_at']          = max( $window['reset_at'], $reset );
+					$windows[ $name ]            = $window;
+				}
 				return array(
 					'counts'   => $counts,
 					'receipts' => count( $state['receipts'] ),
 					'buckets'  => count( $state['buckets'] ),
+					'windows'  => $windows,
+					'events'   => array_values( $state['events'] ?? array() ),
+					'policy'   => self::POLICY,
 				);
 			}
 		);
+	}
+
+	/**
+	 * Current safe diagnostics never contain the bucket key or subject.
+	 *
+	 * @param array<string,mixed> $receipt Durable result.
+	 * @param array<string,mixed> $state Current journal.
+	 * @param Allowance[]         $limits Current server policy.
+	 * @param int                 $now Server time.
+	 * @return array<string,mixed>
+	 */
+	private static function remaining( array $receipt, array $state, array $limits, int $now ): array {
+		$receipt['allowances'] = array();
+		foreach ( $limits as $limit ) {
+			$bucket                  = $state['buckets'][ $limit->key( $now ) ] ?? array( 'used' => 0 );
+			$receipt['allowances'][] = array(
+				'dimension' => $limit->name,
+				'remaining' => max( 0, $limit->capacity - $bucket['used'] ),
+				'reset_at'  => $limit->ends( $now ),
+			);
+		}
+		return $receipt;
+	}
+
+	/**
+	 * Fixed-window reset or actual earliest sufficient lease recovery.
+	 *
+	 * @param array<string,mixed> $state Journal.
+	 * @param Allowance           $limit Exhausted dimension.
+	 * @param int                 $now Server time.
+	 */
+	private static function retry( array $state, Allowance $limit, int $now ): int {
+		if ( $limit->window > 0 ) {
+			return max( 1, $limit->ends( $now ) - $now );
+		}
+		$key      = $limit->key( $now );
+		$free     = $limit->capacity - ( $state['buckets'][ $key ]['used'] ?? 0 );
+		$releases = array();
+		foreach ( $state['receipts'] as $receipt ) {
+			if ( in_array( $receipt['status'], array( 'reserved', 'dispatched' ), true ) && isset( $receipt['debits'][ $key ] ) ) {
+				$releases[ $receipt['lease_until'] ] = ( $releases[ $receipt['lease_until'] ] ?? 0 ) + $receipt['debits'][ $key ]['units'];
+			}
+		}
+		ksort( $releases );
+		foreach ( $releases as $at => $units ) {
+			$free += $units;
+			if ( $free >= $limit->units ) {
+				return max( 1, $at - $now );
+			}
+		}
+		return self::MAX_LEASE;
+	}
+
+	/**
+	 * Bounded UTC-day aggregate reasons, without identity or request references.
+	 *
+	 * @param array<string,mixed> $state Journal.
+	 * @param int                 $now Server time.
+	 * @param string              $purpose Server-owned operation.
+	 * @param string              $reason Stable reason code.
+	 * @param string              $dimension Optional server-owned dimension.
+	 */
+	private static function event( array &$state, int $now, string $purpose, string $reason, string $dimension = '' ): void {
+		$end               = ( intdiv( $now, DAY_IN_SECONDS ) + 1 ) * DAY_IN_SECONDS;
+		$key               = hash( 'sha256', self::POLICY . '|' . $purpose . '|' . $reason . '|' . $dimension . '|' . $end );
+		$state['events'] ??= array();
+		if ( ! isset( $state['events'][ $key ] ) && count( $state['events'] ) >= self::MAX_EVENTS ) {
+			return; // Diagnostics cannot make an otherwise admissible request fail.
+		}
+		$event = $state['events'][ $key ] ?? array(
+			'purpose'   => $purpose,
+			'reason'    => $reason,
+			'dimension' => $dimension,
+			'count'     => 0,
+			'reset_at'  => $end,
+			'policy'    => self::POLICY,
+		);
+		++$event['count'];
+		$state['events'][ $key ] = $event;
 	}
 
 	/**
@@ -391,6 +514,11 @@ final class Ledger {
 	 * @param int                 $now Server clock.
 	 */
 	private static function recover( array &$state, int $now ): void {
+		foreach ( $state['events'] ?? array() as $key => $event ) {
+			if ( $event['reset_at'] <= $now ) {
+				unset( $state['events'][ $key ] );
+			}
+		}
 		foreach ( $state['receipts'] as $id => $receipt ) {
 			if ( in_array( $receipt['status'], array( 'reserved', 'dispatched' ), true ) && $receipt['lease_until'] <= $now ) {
 				self::release( $state, $receipt, 'reserved' === $receipt['status'] );
@@ -430,10 +558,16 @@ final class Ledger {
 			self::recover( $state, $now );
 			$result  = $work( $state, $now );
 			$encoded = wp_json_encode( $state );
-			if ( ! is_string( $encoded ) || strlen( $encoded ) > self::MAX_JOURNAL_BYTES || false === $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value = %s, autoload = 'off' WHERE option_name = %s", $encoded, self::OPTION ) ) ) {
+			if ( ! is_string( $encoded ) || strlen( $encoded ) > self::MAX_JOURNAL_BYTES ) {
 				return self::error( 'storage' );
 			}
-			$readback = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", self::OPTION ) );
+			// wpdb may reconnect and retry after losing its connection-owned lock.
+			// The write itself checks ownership and the exact original snapshot.
+			$updated = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value = %s, autoload = 'off' WHERE option_name = %s AND BINARY option_value = BINARY %s AND IS_USED_LOCK(%s) = CONNECTION_ID()", $encoded, self::OPTION, $raw, $name ) );
+			if ( false === $updated || ( $raw !== $encoded && 1 !== $updated ) ) {
+				return self::error( 'storage' );
+			}
+			$readback = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s AND IS_USED_LOCK(%s) = CONNECTION_ID()", self::OPTION, $name ) );
 			if ( $readback !== $encoded ) {
 				return self::error( 'storage' );
 			}
@@ -463,6 +597,17 @@ final class Ledger {
 		foreach ( $state['buckets'] as $bucket ) {
 			if ( ! is_array( $bucket ) || ! is_int( $bucket['used'] ?? null ) || $bucket['used'] < 0 || ! is_int( $bucket['end'] ?? null ) || $bucket['end'] < 0 || ! is_string( $bucket['owner'] ?? null ) ) {
 				throw new \RuntimeException( 'ledger_invalid_bucket' );
+			}
+			if ( ( isset( $bucket['name'] ) || isset( $bucket['capacity'] ) ) && ( ! is_string( $bucket['name'] ?? null ) || ! is_int( $bucket['capacity'] ?? null ) || $bucket['capacity'] < 1 ) ) {
+				throw new \RuntimeException( 'ledger_invalid_policy' );
+			}
+		}
+		if ( isset( $state['events'] ) && ( ! is_array( $state['events'] ) || count( $state['events'] ) > self::MAX_EVENTS ) ) {
+			throw new \RuntimeException( 'ledger_invalid_events' );
+		}
+		foreach ( $state['events'] ?? array() as $event ) {
+			if ( ! is_array( $event ) || ! is_string( $event['purpose'] ?? null ) || ! is_string( $event['reason'] ?? null ) || ! is_string( $event['dimension'] ?? null ) || ! is_string( $event['policy'] ?? null ) || ! is_int( $event['count'] ?? null ) || $event['count'] < 1 || ! is_int( $event['reset_at'] ?? null ) || $event['reset_at'] < 0 ) {
+				throw new \RuntimeException( 'ledger_invalid_event' );
 			}
 		}
 		foreach ( $state['receipts'] as $receipt ) {

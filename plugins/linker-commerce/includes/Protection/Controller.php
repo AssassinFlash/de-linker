@@ -123,7 +123,7 @@ final class Controller {
 		}
 		$fingerprint = hash_hmac( 'sha256', $identity->binding() . '|' . $action . '|' . $token, wp_salt( 'nonce' ) );
 		$ledger      = $this->ledger ?? new Ledger();
-		$receipt     = $ledger->reserve( $stamp['id'], $fingerprint, $this->allowances( $identity ), self::LEASE, array(), 'verification_' . $action, $identity->binding() );
+		$receipt     = $ledger->reserve( $stamp['id'], $fingerprint, $this->allowances( $identity ), self::LEASE, array(), 'verification_' . $action, $identity->binding(), $identity->owners() );
 		if ( is_wp_error( $receipt ) ) {
 			$code = $receipt->get_error_code();
 			if ( 'linker_admission_payload_changed' === $code ) {

@@ -80,4 +80,12 @@ final class Identity {
 	public function binding(): string {
 		return hash_hmac( 'sha256', $this->browser . '|' . $this->account, wp_salt( 'nonce' ) );
 	}
+
+	/** Account privacy association does not impose another verification quota.
+	 *
+	 * @return string[] Private native privacy owner associations.
+	 */
+	public function owners(): array {
+		return '' === $this->account ? array() : array( Allowance::owner_for( $this->account ) );
+	}
 }

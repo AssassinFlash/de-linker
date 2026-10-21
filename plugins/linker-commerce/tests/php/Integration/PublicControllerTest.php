@@ -16,6 +16,7 @@ use Linker\Commerce\Protection\Controller;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\Ledger;
 use Linker\Commerce\Protection\Proof;
+use Linker\Commerce\Protection\Privacy;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
@@ -231,5 +232,64 @@ final class PublicControllerTest extends IntegrationTestCase {
 		$result = $gate->dispatch( $second );
 		$this->assertInstanceOf( WP_Error::class, $result );
 		$this->assertSame( 'linker_admission_proof_reused', $result->get_error_code() );
+	}
+
+	/** Native privacy resolves signed-in verification, including failed-only visits. */
+	public function test_native_privacy_covers_account_verifications_without_a_business_submission(): void {
+		$customer = $this->customer();
+		$this->as_user( $customer->get_id() );
+		foreach ( array( 'synthetic-valid', 'synthetic-invalid' ) as $token ) {
+			$prepare = $this->request( 'prepare', array( 'action' => 'inquiry' ) )->get_data();
+			$this->request(
+				'verify',
+				array(
+					'action'  => 'inquiry',
+					'prepare' => $prepare['prepare'],
+					'token'   => $token,
+				)
+			);
+		}
+		$privacy = new Privacy();
+		$export  = $privacy->export( $customer->get_email() );
+		$this->assertCount( 2, $export['data'] );
+		$this->assertTrue( $privacy->erase( $customer->get_email() )['items_removed'] );
+		$this->assertSame( array(), $privacy->export( $customer->get_email() )['data'] );
+		$identity = Identity::current();
+		$this->assertInstanceOf( Identity::class, $identity );
+		$this->assertStringNotContainsString( $identity->binding(), get_option( Ledger::OPTION ) );
+		$this->assertStringNotContainsString( Allowance::owner_for( $identity->account ), get_option( Ledger::OPTION ) );
+	}
+
+	/** Observe records would-deny and retry data without refusing the real flow. */
+	public function test_observe_accounts_for_dispatch_quota_replay_and_storage_failure_without_blocking(): void {
+		$gate   = new Admission( new Configuration( 'observe', '', '', '' ) );
+		$limits = array( new Allowance( 'observed_day', 'synthetic', 1, DAY_IN_SECONDS ) );
+		$id     = wp_generate_uuid4();
+		$first  = $gate->reserve( 'inquiry', '', $id, array( 'message' => 'Fixture' ), $limits, 60 );
+		$this->assertIsArray( $first );
+		$this->assertFalse( $first['enforced'] );
+		$this->assertSame( 0, $first['advisory']['allowances'][0]['remaining'] );
+		$this->assertIsArray( $gate->dispatch( $first ) );
+		$this->assertIsArray( $gate->complete( $first, 42 ) );
+		$retry = $gate->reserve( 'inquiry', '', $id, array( 'message' => 'Fixture' ), $limits, 60 );
+		$this->assertIsArray( $retry );
+		$this->assertSame( 'completed', $retry['advisory']['reason'] );
+		$denied = $gate->reserve( 'inquiry', '', wp_generate_uuid4(), array( 'message' => 'Another' ), $limits, 60 );
+		$this->assertIsArray( $denied );
+		$this->assertFalse( $denied['enforced'] );
+		$this->assertSame( 'linker_admission_quota', $denied['advisory']['reason'] );
+		$this->assertIsArray( $gate->dispatch( $denied ) );
+		$this->assertIsArray( $gate->complete( $denied, 43 ) );
+		$summary = ( new Ledger() )->summary();
+		$this->assertIsArray( $summary );
+		$this->assertContains( 'replay', array_column( $summary['events'], 'reason' ) );
+		$this->assertContains( 'quota', array_column( $summary['events'], 'reason' ) );
+		$this->assertSame( Ledger::POLICY, $summary['policy'] );
+		update_option( Ledger::OPTION, 'synthetic corruption', false );
+		$unavailable = $gate->reserve( 'inquiry', '', wp_generate_uuid4(), array(), $limits, 60 );
+		$this->assertIsArray( $unavailable );
+		$this->assertFalse( $unavailable['enforced'] );
+		$this->assertSame( 'linker_admission_storage', $unavailable['advisory']['reason'] );
+		$this->assertSame( 0, $this->calls, 'Observations never invoke a model, mail or Siteverify.' );
 	}
 }

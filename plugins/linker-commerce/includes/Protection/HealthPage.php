@@ -79,7 +79,15 @@ final class HealthPage {
 					echo '<tr><td><code>' . esc_html( $purpose ) . '</code></td><td>' . esc_html( $status ) . '</td><td>' . esc_html( number_format_i18n( $count ) ) . '</td></tr>';
 				}
 			}
-			echo '</tbody></table>';
+			echo '</tbody></table><h2>' . esc_html__( 'Current allowance windows', 'linker-commerce' ) . '</h2><p>' . esc_html__( 'Remaining units are the minimum in one active bucket of each dimension, not a site-wide allowance. Recovery can happen sooner when work finishes.', 'linker-commerce' ) . '</p><ul>';
+			foreach ( $summary['windows'] ?? array() as $dimension => $window ) {
+				echo '<li><code>' . esc_html( $dimension ) . '</code><br>' . esc_html__( 'Active buckets', 'linker-commerce' ) . ': ' . esc_html( number_format_i18n( $window['buckets'] ) ) . ' · ' . esc_html__( 'Minimum remaining', 'linker-commerce' ) . ': ' . esc_html( number_format_i18n( $window['minimum_remaining'] ) ) . '<br>' . esc_html__( 'Latest reset or recovery (UTC)', 'linker-commerce' ) . ': ' . esc_html( gmdate( 'Y-m-d H:i:s', $window['reset_at'] ) ) . '</li>';
+			}
+			echo '</ul><h2>' . esc_html__( 'Daily admission reasons', 'linker-commerce' ) . '</h2><p>' . esc_html__( 'These bounded aggregate counts distinguish admitted requests, retries and quota refusals. Observe-mode results are advisory. Counters reset at UTC midnight.', 'linker-commerce' ) . '</p><p>' . esc_html__( 'Policy source version', 'linker-commerce' ) . ': <code>' . esc_html( Ledger::POLICY ) . '</code></p><ul>';
+			foreach ( $summary['events'] ?? array() as $event ) {
+				echo '<li><code>' . esc_html( $event['purpose'] ) . ' / ' . esc_html( $event['reason'] ) . ' / ' . esc_html( $event['dimension'] ) . '</code>: ' . esc_html( number_format_i18n( $event['count'] ) ) . ' · <code>' . esc_html( $event['policy'] ) . '</code></li>';
+			}
+			echo '</ul>';
 		}
 		echo '</div>';
 	}

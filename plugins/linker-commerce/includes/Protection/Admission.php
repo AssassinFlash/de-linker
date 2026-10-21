@@ -35,7 +35,10 @@ final class Admission {
 	 * @return array<string,mixed>|WP_Error Native permit or explicit refusal.
 	 */
 	public function reserve( string $action, string $proof, string $id, array $payload, array $limits, int $lease, bool $single = false, array $carry = array() ): array|WP_Error {
-		if ( in_array( $this->configuration->mode, array( 'off', 'observe' ), true ) ) {
+		if ( 'observe' === $this->configuration->mode ) {
+			return Observation::reserve( $this->ledger ?? new Ledger(), $action, $id, $payload, $limits, $lease, $carry );
+		}
+		if ( 'off' === $this->configuration->mode ) {
 			return array(
 				'enforced' => false,
 				'mode'     => $this->configuration->mode,
@@ -53,7 +56,7 @@ final class Admission {
 			return self::failure( 'input', 400 );
 		}
 		$ledger = $this->ledger ?? new Ledger();
-		$old    = $ledger->lookup( $id, $fingerprint );
+		$old    = $ledger->lookup( $id, $fingerprint, true );
 		if ( ! is_wp_error( $old ) ) {
 			if ( $old['purpose'] !== $action || $old['binding'] !== $identity->binding() ) {
 				return self::failure( 'input', 409 );
@@ -72,7 +75,7 @@ final class Admission {
 		if ( null === $checked ) {
 			return self::failure( 'proof', 400 );
 		}
-		$receipt = $ledger->reserve( $id, $fingerprint, $limits, $lease, $carry, $action, $identity->binding() );
+		$receipt = $ledger->reserve( $id, $fingerprint, $limits, $lease, $carry, $action, $identity->binding(), $identity->owners() );
 		if ( is_wp_error( $receipt ) ) {
 			return self::ledger_failure( $receipt );
 		}
@@ -98,6 +101,9 @@ final class Admission {
 	 * @return array<string,mixed>|WP_Error Dispatched receipt or explicit failure.
 	 */
 	public function dispatch( array $permit ): array|WP_Error {
+		if ( 'observe' === ( $permit['mode'] ?? '' ) ) {
+			return Observation::advance( $this->ledger ?? new Ledger(), $permit, 'dispatch' );
+		}
 		if ( empty( $permit['enforced'] ) ) {
 			return $permit;
 		}
@@ -119,6 +125,9 @@ final class Admission {
 	 * @return array<string,mixed>|WP_Error Current receipt.
 	 */
 	public function cancel( array $permit ): array|WP_Error {
+		if ( 'observe' === ( $permit['mode'] ?? '' ) ) {
+			return Observation::advance( $this->ledger ?? new Ledger(), $permit, 'cancel' );
+		}
 		if ( ! empty( $permit['reused'] ) ) {
 			return self::failure( 'already_completed', 409 );
 		}
@@ -133,6 +142,9 @@ final class Admission {
 	 * @return array<string,mixed>|WP_Error Completed receipt.
 	 */
 	public function complete( array $permit, int $outcome = 0 ): array|WP_Error {
+		if ( 'observe' === ( $permit['mode'] ?? '' ) ) {
+			return Observation::advance( $this->ledger ?? new Ledger(), $permit, 'complete', $outcome );
+		}
 		if ( ! empty( $permit['reused'] ) ) {
 			return $permit['receipt'];
 		}

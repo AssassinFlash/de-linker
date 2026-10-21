@@ -116,3 +116,34 @@ consumer modules, and has a verification-only button. Counts are journal receipt
 within the original 24-hour retry window, not a full traffic/cost history. It
 contains no credential editor. Hourly native WordPress maintenance and every
 admission use the same recovery operation; cron delivery must be checked in #522.
+
+## Review corrections
+
+Observe records shadow reservations, dispatches, completions, would-deny quotas
+and retries in the same journal, with an `observe_` purpose. Every refusal or
+storage/cookie failure remains an advisory result; it never blocks the original
+native operation or silently authorizes a verified operation. These observations
+are distinct from hard provider cost enforcement in #521. Off performs neither
+shadow nor enforcement work.
+
+Reservations return trusted consumers only safe dimension names, current remaining
+units and fixed-window reset times. Quota refusals return the actual fixed-window
+reset or earliest sufficient in-flight lease recovery, rather than a guessed
+one-second wait. Staff summaries show the minimum remaining among active buckets
+per dimension and the latest known reset/recovery; no subject hashes are exposed.
+
+Aggregate admitted/quota/replay/payload-change categories are bounded to 256 daily
+rows, expire at UTC midnight and carry the policy source version
+`public-admission-519-v1` (#507/#508). This is an initial diagnostic storage bound;
+when full, unseen diagnostic categories are omitted without changing admission.
+These counters remain partial diagnostics, not a complete traffic history.
+
+A signed-in subject is also associated by the existing private account-owner hash
+when a verification receipt is reserved. This adds no account quota. Native
+privacy callbacks therefore cover successful, failed and verification-only visits.
+
+The atomic UPDATE checks both the exact original JSON and
+`IS_USED_LOCK(name) = CONNECTION_ID()` in its own WHERE clause. Lock ownership is
+also required during readback. A wpdb reconnect cannot overwrite a peer's admitted
+operation with the old snapshot; real KILL CONNECTION plus a winning second
+connection is included in the fixture suite.

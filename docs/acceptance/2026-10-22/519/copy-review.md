@@ -26,3 +26,12 @@ messages. Staff strings use Sie and do not ask the visitor to re-enter or restor
 a password. The form consumer must keep the customer's fields on every refusal;
 that behavior is tested in the shared client and connected in #520/#521.
 Independent full-diff Spec/Standards review is recorded separately.
+
+## Diagnostic additions after review
+
+The initial three-column receipt counts did not explain quota refusals or reset
+timing. The final surface adds current per-dimension windows and daily reason
+counts, labelled with their source version. The EN and independently written DE
+text explains that remaining is the minimum for an active bucket, observations
+are advisory, and counters reset at UTC midnight. Native lists keep these details
+readable at 390px; no new customer styles or layout channel is introduced.
