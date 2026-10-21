@@ -155,10 +155,24 @@ verification parent must be validated before base64/magic work. Dispatch repeats
 that validation atomically. Invalid heavy input cancels only an unused reservation.
 
 Sizing/PDF input is deduplicated for its current verified subject binding, UTC day
-and immutable engine/feed release `LINKER_ENGINE_RESOURCE_VERSION`. The local
-launcher derives that release from engine source, actual feed and compatibility
-bytes. Production #522 must publish the actual release value alongside those
-artifacts; missing version refuses enforced recomputation. Object key ordering
+and the **actual running engine snapshot**, fetched through private authenticated
+`GET /resource/version` before either public or native saved-solution cache lookup.
+The private route requires the existing service token and an enabled engine gate;
+it is absent from the public EngineProxy whitelist. Health remains readiness only.
+EngineVersion validates a64hex response, uses only an in-flight WP_REST_Request
+WeakMap cache, and has no transient/option/deployment-constant fallback. Enforce
+refuses unavailable/malformed readback even when an old response exists; observe
+retains native work without depending on this new handshake.
+
+The engine captures immutable source bytes once at module import. Under a loading
+lock it reads feed/compat bytes once and constructs validated Products/Compatibility
+from those exact bytes, then hashes source + loaded feed + loaded compatibility in
+the same order as the local release algorithm. It never hashes newer disk data
+while still serving old in-memory products. A nightly sync-file write does not
+relabel an existing worker; the existing restart loads and advertises the new
+snapshot without an SSH push to WordPress or a new credential. The local
+LINKER_ENGINE_RESOURCE_VERSION constant is an informational deployment stamp,
+never authority for cache reuse. Object key ordering
 uses #519's canonical input HMAC. The semantic key is the actual JSON body plus
 engine route. The full upstream input is nested separately from adapter metadata;
 JSON fields that look like form transport remain part of the actual input.
@@ -178,8 +192,14 @@ The account-only saved-solution read ability can recompute. Its trusted
 `linker_tools_engine_request` filter authenticates the native account, uses the
 same account sizing dimensions and deduplicates its input/version. It uses the
 existing service token and supplies an opaque subject to the engine. Observe
-retains native recomputation when the new immutable release is absent; enforce
-requires the release before dispatch.
+retains native recomputation when live version readback is unavailable; enforce
+requires live readback before dispatch or restoring a cached response. Both PHP
+callers send X-Linker-Engine-Version on actual guarded POST work. The private gate
+compares it to the loaded snapshot before parsing/work and returns409 if a restart
+happened between readback and dispatch. Successful work carries the matching
+response header; missing/mismatched200 headers become explicit failures in PHP,
+never a successful response stored under a different version's key. Existing
+private callers without WordPress's result cache need no new mandatory header.
 
 ## Actual work and ordinary reading
 

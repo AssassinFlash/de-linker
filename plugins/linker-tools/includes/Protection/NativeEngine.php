@@ -19,11 +19,11 @@ use WP_REST_Response;
 /** Native ability authentication is already checked before this trusted seam. */
 final class NativeEngine {
 	/**
-	 * Trusted immutable release, with private configuration as the default.
+	 * Read the actual running snapshot through the shared private service seam.
 	 *
-	 * @param string|null $release Release override for the native service adapter.
+	 * @param EngineVersion $version Trusted live-version reader.
 	 */
-	public function __construct( private readonly ?string $release = null ) {}
+	public function __construct( private readonly EngineVersion $version = new EngineVersion() ) {}
 
 	/** Register a server-only filter; the public proxy cannot choose this seam. */
 	public function register(): void {
@@ -53,7 +53,10 @@ final class NativeEngine {
 		// account is authoritative, and shares the public account dimensions.
 		$identity = new Identity( hash( 'sha256', 'ability|' . $account ), $account );
 		$input    = json_decode( $body, true );
-		$version  = $this->release ?? ( defined( 'LINKER_ENGINE_RESOURCE_VERSION' ) ? (string) constant( 'LINKER_ENGINE_RESOURCE_VERSION' ) : '' );
+		$version  = 'enforce' === $mode ? $this->version->current() : '';
+		if ( is_wp_error( $version ) ) {
+			return $version;
+		}
 		if ( ! is_array( $input ) || ( 'enforce' === $mode && ( strlen( $body ) > 6 * 1024 * 1024 || '' === $version ) ) || rtrim( (string) get_option( 'linker_engine_url', '' ), '/' ) . '/design/residential' !== $url ) {
 			return self::failure();
 		}
@@ -105,12 +108,17 @@ final class NativeEngine {
 					'Content-Type'              => 'application/json',
 					'X-Linker-Service-Token'    => defined( 'LINKER_GENIE_SERVICE_TOKEN' ) ? (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ) : '',
 					'X-Linker-Resource-Subject' => $account,
+					'X-Linker-Engine-Version'   => $version,
 				),
 				'body'    => $body,
 			)
 		);
 		$status   = is_wp_error( $response ) ? 503 : (int) wp_remote_retrieve_response_code( $response );
 		$payload  = is_wp_error( $response ) ? '{"error":"engine_unavailable"}' : (string) wp_remote_retrieve_body( $response );
+		if ( $enforce && $status < 400 && wp_remote_retrieve_header( $response, 'x-linker-engine-version' ) !== $version ) {
+			$status  = 503;
+			$payload = '{"error":"engine_version_changed"}';
+		}
 		if ( $enforce ) {
 			if ( $canonical_reply > 0 && $status < 400 ) {
 				$replies->finish( $canonical_reply, new WP_REST_Response( $payload, $status ) );

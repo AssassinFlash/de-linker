@@ -88,18 +88,18 @@ all-site live/local pixel-zero comparison.
   same subject and third site request stay429 until the actual work finishes.
   PHP adds the trusted stable subject to real private turn HTTP requests, and
   changing conversations preserves it.
-- Engine full suite:151 passed; mypy28 source files, ruff and new-file format
+- Engine full suite:153 passed; mypy50 project files, ruff and new-file format
   checks passed. Private actual-work slots are shared between processes,
   retain live work through caller disconnect, recover dead worker PIDs and
   reject unauthenticated/oversize input before parsing/work.
 - Tools JS:407 passed in50 files; types, eslint, Prettier and committed build
   check passed. Existing webpack size/runtime recommendations remain warnings.
   Native `just i18n-tools` make-json/msgfmt and `just i18n-coverage` passed.
-- Tools PHP unit:286 tests,2338 assertions. Real g521 resource integration:
-  18 tests,270 assertions. The additional complete Tools real-WP integration run
-  finished82 total tests/609 assertions/23 prerequisite skips with no failures.
+- Tools PHP unit:286 tests,2341 assertions. Real g521 resource integration:
+  21 resource tests. The additional complete Tools real-WP integration run
+  finished85 total tests/677 assertions/23 prerequisite skips with no failures.
   CI mu-smoke explicitly runs the resource and shared-owner classes against its
-  bare native instance with synthetic release/loopback settings and intercepted
+  bare native instance with synthetic live-version/loopback settings and intercepted
   HTTP; no paid API or real mail is used. PHPStan and WPCS passed. The real journal/native
   fixtures cover bad/revoked proof before heavy decode, single dispatch,
   completed replay, crash ambiguity, trusted-context cleanup, free reads,
@@ -109,7 +109,7 @@ all-site live/local pixel-zero comparison.
   provider refusal and account-owned recomputation/service-token propagation.
   Review regressions additionally cover mixed-case native REST routes, observe
   CF/hash/cookie/body/file/storage failures retaining native validation, absent
-  observe-only release configuration, account-author OR recipient privacy and
+  observe live-version readback, account-author OR recipient privacy and
   late completion after erasure, unknown business502/503 retaining one UUID,
   real native engine query deduplication and rejected body/query path overrides.
 - Shared Commerce additions: real WP3 tests/24 assertions, enforce/observe
@@ -138,9 +138,30 @@ The root accepted this verified conservative boundary to preserve the absolute
 `AsyncTransport("jev", existing_transport)`, map BudgetError to undetermined,
 run its real absolute-deadline/normal-notification fixtures, load the real #520
 business and receipt filters, and publish/read back the same persistent provider
-path, mode, existing token and immutable engine/feed version. It must also set
+path, mode, existing token and actual private loaded-version readback. It must also set
 `LINKER_GENIE_WORK_MODE=enforce` and a shared persistent absolute
 `LINKER_GENIE_WORK_PATH` for all Genie workers; the local launcher and its native
 environment fixture already supply the per-instance private path. A missing guard
 must refuse paid/resource dispatch. Those are the planned joint acceptance steps,
 not a claim that this isolated branch already protects production.
+
+
+## #522 nightly feed integration correction
+
+The existing03:40UTC feed-sync timer can update feed/compatibility and restart the
+engine on the same UTC day. A static WP release constant could then restore an
+old successful result. The final narrow integration increment uses the private
+running-version route and shared EngineVersion reader described in the spec.
+A snapshot version is made from the same bytes that construct loaded objects,
+with source captured for the process, and the engine verifies/echoes the expected
+version on actual work. No new credential or WordPress SSH callback is needed.
+
+Actual Python fixtures cover token/gate refusal, damaged/missing data, source
+capture, disk mutation while loaded A remains A, a new app loading B, stale-A409
+before JSON parsing and real successful roof work echoing B. Real WP fixtures
+cover public/native same-input reuse, same-day rotation creating a fresh result,
+unavailable readback refusing even a known cached response, request-scope-only
+caching, observe native passthrough, and a mismatched worker200 becoming503 rather
+than canonical success. No customer copy, visual layout or model route changed.
+The previously frozen dce072d9 CI run39689608503 passed both jobs; this additional
+increment is independently committed for the combined #522 review and CI.

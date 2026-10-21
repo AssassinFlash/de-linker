@@ -35,8 +35,9 @@ final class Resources {
 	 * @param Replies          $replies Private receipts.
 	 * @param NativeEngine     $engine Trusted ability requests.
 	 * @param Attachments|null $attachments Heavy validation seam.
+	 * @param EngineVersion    $version Running data snapshot readback.
 	 */
-	public function __construct( private readonly Replies $replies = new Replies(), private readonly NativeEngine $engine = new NativeEngine(), private readonly ?Attachments $attachments = null ) {}
+	public function __construct( private readonly Replies $replies = new Replies(), private readonly NativeEngine $engine = new NativeEngine(), private readonly ?Attachments $attachments = null, private readonly EngineVersion $version = new EngineVersion() ) {}
 
 	/** Wire native boundaries; do not replace endpoint callbacks or permissions. */
 	public function register(): void {
@@ -54,6 +55,11 @@ final class Resources {
 	/** Only the successfully dispatched enforce callback can skip legacy limits. */
 	public static function verified(): bool {
 		return null !== self::$context && ! empty( self::$context['enforced'] );
+	}
+
+	/** Expected snapshot for the trusted currently running native engine callback. */
+	public static function engine_version(): string {
+		return self::verified() ? (string) ( self::$context['engine_version'] ?? '' ) : '';
 	}
 
 	/**
@@ -138,12 +144,13 @@ final class Resources {
 			return self::error( 'configuration', 503 );
 		}
 		$operation = (string) $request->get_header( 'X-Linker-Operation' );
+		$version   = '';
 		if ( in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) ) {
-			$version = defined( 'LINKER_ENGINE_RESOURCE_VERSION' ) ? (string) constant( 'LINKER_ENGINE_RESOURCE_VERSION' ) : '';
-			if ( 'enforce' === $configuration->mode && '' === $version ) {
-				return self::error( 'configuration', 503 );
+			$version = 'enforce' === $configuration->mode ? $this->version->current( $request ) : '';
+			if ( is_wp_error( $version ) ) {
+				return $version;
 			}
-			// The immutable engine/feed release is deployed with the service.
+			// The live loaded snapshot, rather than a deployment stamp, scopes reuse.
 			// Identical input/version/subject/day cannot spend another unit.
 			$semantic = Fingerprint::make( $identity, $action, $payload );
 			if ( is_wp_error( $semantic ) ) {
@@ -205,8 +212,9 @@ final class Resources {
 		self::$context = array_merge(
 			$permit,
 			array(
-				'action'  => $action,
-				'binding' => $identity->binding(),
+				'action'         => $action,
+				'binding'        => $identity->binding(),
+				'engine_version' => $version,
 			)
 		);
 		try {
