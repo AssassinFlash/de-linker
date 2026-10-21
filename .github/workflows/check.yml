@@ -167,6 +167,18 @@ jobs:
             --filter 'InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest'
 
       # #414: the abilities route, including the customer token. The test
+
+      # #519: real REST proof consumption, multi-dimensional admission,
+      # account privacy, advisory mode and actual disconnect/peer recovery.
+      # Uses synthetic inputs and intercepted HTTP; no external mail/provider.
+      - name: public verification and atomic admission
+        working-directory: plugins/linker-commerce
+        run: |
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter 'PublicControllerTest|PublicLedgerTest|PublicVerificationTest|PublicProofTest|PublicAdmissionOwnersTest|BusinessPolicyTest|BusinessAdmissionTest'
+
+      # #414: the abilities route, including the customer token. The test
       # builds its own account and inquiry on this bare instance. It is not
       # a #339 conversation case: Genie copies inquiry id and status only
       # (facts._from_inquiry), so a dialogue fixture would not show a leaked

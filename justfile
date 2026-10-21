@@ -431,6 +431,7 @@ i18n-commerce name:
     python3 "{{ justfile_directory() }}/tools/checks/i18n_sources.py" "$plugin" "$extraction/fragments.pot"
     msgcat --use-first --sort-by-file "$extraction/code.pot" "$extraction/fragments.pot" -o "$catalogs.pot"
     msgmerge --update --backup=none --no-fuzzy-matching "$catalogs-de_DE_formal.po" "$catalogs.pot"
+    {{ php }} "$(command -v wp)" i18n make-json "$catalogs-de_DE_formal.po" --no-purge
     msgfmt --check "$catalogs-de_DE_formal.po" -o "$catalogs-de_DE_formal.mo"
 
 # #302: the PO remains the authority for both scripts; no instance is needed.

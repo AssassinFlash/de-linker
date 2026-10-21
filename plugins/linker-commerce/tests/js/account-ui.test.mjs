@@ -56,6 +56,24 @@ test('a second submit while the first is in flight does not post again',()=>{
  assert.equal(form.dataset.accountState,'submitting');
 });
 
+test('protected inquiry/account marks busy only on the verified native resubmit',()=>{
+ const win=account();
+ const form=win.document.getElementById('signin');
+ form.querySelector('[name="username"]').value='fixture@example.test';
+ const marker=win.document.createElement('input');
+ marker.type='hidden';
+ marker.dataset.linkerProtectedAction='registration';
+ form.append(marker);
+ win.linkerPublicProtectionConfig={mode:'enforce'};
+ const pending=submit(form);
+ assert.equal(pending.defaultPrevented,false,'the protection layer may wait before actual submission');
+ assert.equal(form.dataset.accountState,undefined,'verification is not an account submission');
+ form.dataset.linkerProtectionVerified='true';
+ const verified=submit(form);
+ assert.equal(verified.defaultPrevented,false,'verified native submit must not be mistaken for a duplicate');
+ assert.equal(form.dataset.accountState,'submitting');
+});
+
 test('a form the browser reports invalid keeps its button untouched',()=>{
  const win=account();
  const button=win.document.querySelector('button[type="submit"]');

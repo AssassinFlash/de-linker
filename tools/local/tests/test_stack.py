@@ -458,9 +458,10 @@ def test_pages_may_load_from_this_machine_only_and_are_not_indexed(
     # images (services/engine/data/imagery.json).
     assert home.headers["Content-Security-Policy"] == (
         f"default-src {LOCAL_SOURCES}; "
-        f"script-src {LOCAL_SOURCES} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com; "
+        f"script-src {LOCAL_SOURCES} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://challenges.cloudflare.com; "
         f"img-src {LOCAL_SOURCES} {IMAGERY_WMS} https://secure.gravatar.com; "
-        f"connect-src {LOCAL_SOURCES} {IMAGERY_WMS}; "
+        f"connect-src {LOCAL_SOURCES} {IMAGERY_WMS} https://challenges.cloudflare.com; "
+        "frame-src 'self' http://127.0.0.1:* https://challenges.cloudflare.com; "
         "form-action 'self'"
     )
     assert home.headers["X-Robots-Tag"] == "noindex, nofollow"

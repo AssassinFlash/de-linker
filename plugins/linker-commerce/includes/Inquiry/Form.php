@@ -115,14 +115,16 @@ final class Form {
 	 */
 	public function hidden(): string {
 		return '<input type="hidden" name="action" value="linker_inquiry" /><input type="hidden" name="lang" value="' . esc_attr( str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en' ) . '" />'
-		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields();
+		. wp_nonce_field( Handler::ACTION, Handler::NONCE, true, false ) . ( new PublicGuard() )->fields()
+		. '<input type="hidden" name="linker_draft_hash" value="' . esc_attr( WC()->cart->get_cart_hash() ) . '" />'
+		. \Linker\Commerce\Protection\FormFields::render( 'inquiry', (string) ( $this->flash['fields']['linker_request_id'] ?? '' ) );
 	}
 
 	/**
 	 * Woo's own draft update handler consumes these fields.
 	 */
 	public function draft_nonce(): string {
-		return wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce', true, false );
+		return wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce', true, false ) . \Linker\Commerce\Protection\FormFields::render( 'draft_write' );
 	}
 
 	/**

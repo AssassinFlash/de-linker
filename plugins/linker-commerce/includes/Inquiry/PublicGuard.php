@@ -51,8 +51,9 @@ final class PublicGuard {
 	 * be counted (#225) without a second copy of these checks.
 	 *
 	 * @param array<string, mixed> $post Unslashed request.
+	 * @param bool                 $minimum Apply the legacy minimum fill duration.
 	 */
-	public function refusal( array $post ): string {
+	public function refusal( array $post, bool $minimum = true ): string {
 		$trap = $post['website'] ?? '';
 		if ( ! is_string( $trap ) || '' !== $trap ) {
 			return self::REFUSAL_HONEYPOT;
@@ -62,16 +63,17 @@ final class PublicGuard {
 		if ( ! is_string( $stamp ) || ! ctype_digit( $stamp ) || ! is_string( $nonce ) || false === wp_verify_nonce( $nonce, 'linker_inquiry_started_' . $stamp ) ) {
 			return self::REFUSAL_CLOCK;
 		}
-		return time() - (int) $stamp < self::MIN_SECONDS ? self::REFUSAL_TOO_FAST : '';
+		return $minimum && time() - (int) $stamp < self::MIN_SECONDS ? self::REFUSAL_TOO_FAST : '';
 	}
 
 	/**
 	 * Reject filled traps, missing/forged clocks, and submissions too soon.
 	 *
 	 * @param array<string, mixed> $post Unslashed request.
+	 * @param bool                 $minimum Apply the legacy minimum fill duration.
 	 */
-	public function allows( array $post ): bool {
-		return '' === $this->refusal( $post );
+	public function allows( array $post, bool $minimum = true ): bool {
+		return '' === $this->refusal( $post, $minimum );
 	}
 	/**
 	 * Atomically reserves one submission before either door writes an inquiry.

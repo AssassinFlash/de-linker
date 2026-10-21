@@ -98,6 +98,12 @@
 			if ( typeof form.checkValidity === 'function' && ! form.checkValidity() ) {
 				return;
 			}
+			// Verification waits on the original submit. Mark busy only when
+			// its verified resubmit reaches this native UI handler. The server
+			// still validates the proof; this marker grants no permission.
+			if ( window.linkerPublicProtectionConfig?.mode === 'enforce' && form.querySelector( '[data-linker-protected-action]' ) && form.dataset.linkerProtectionVerified !== 'true' ) {
+				return;
+			}
 			if ( 'submitting' === form.dataset.accountState ) {
 				event.preventDefault();
 				return;

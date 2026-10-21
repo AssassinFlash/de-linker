@@ -284,6 +284,11 @@ EMPTIED_ORDER_META = frozenset(
         "_wc_order_attribution_user_agent",
         "_wc_order_attribution_session_entry",
         "_wc_order_attribution_referrer",
+        # Native public-admission retry links identify an individual order's
+        # request and subject; they must not survive a live-to-local pull (#520).
+        "_linker_public_request",
+        "_linker_public_input",
+        "_linker_public_subject",
         "tv_b2b_company_snapshot",
         "tv_b2b_document_ledger_v2",  # the buyer block of every proforma
         "tv_b2b_order_vat_snapshot",  # VIES name and address
@@ -583,7 +588,8 @@ class Anonymizer:
             # A local copy must establish its own worker/configuration readiness.
             return False
         return not (
-            TRANSIENT_OPTION.search(name)
+            name == "linker_public_admission_ledger"
+            or TRANSIENT_OPTION.search(name)
             or SECRET_OPTION.search(name)
             or LOG_OPTION.search(name)
         )

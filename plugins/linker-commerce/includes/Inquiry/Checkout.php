@@ -18,6 +18,16 @@ use WC_Order;
  */
 final class Checkout {
 	/**
+	 * Retired checkout must stop before Woo mutates customer/session totals.
+	 * Woo catches this exception and renders its native failure response.
+	 *
+	 * @throws \RuntimeException This site accepts inquiries through its inquiry form.
+	 */
+	public function block_native_checkout(): void {
+		throw new \RuntimeException( esc_html__( 'Please use the inquiry form to send your inquiry.', 'linker-commerce' ) );
+	}
+
+	/**
 	 * Consume a successful native product add before the inquiry is rendered.
 	 * Leaving add-to-cart in the address repeats that command on reload and on
 	 * Woo's native undo fragment refresh. Woo owns the add, notice and redirect;
@@ -40,7 +50,7 @@ final class Checkout {
 	 */
 	public function block_store_checkout( $result, \WP_REST_Server $server, \WP_REST_Request $request ) {
 		unset( $server );
-		return preg_match( '#^/wc/store/v[0-9]+/checkout(?:/|$)#', $request->get_route() )
+		return preg_match( '#^/wc/store/v[0-9]+/checkout(?:/|$)#i', $request->get_route() )
 			? new \WP_Error( 'linker_inquiry_form_required', __( 'Please use the inquiry form to send your inquiry.', 'linker-commerce' ), array( 'status' => 403 ) )
 			: $result;
 	}

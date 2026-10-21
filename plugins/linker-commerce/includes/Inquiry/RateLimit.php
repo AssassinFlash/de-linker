@@ -87,4 +87,28 @@ final class RateLimit {
 		// phpcs:enable
 		return 1 === $taken;
 	}
+	/**
+	 * Read a risk counter without spending another unit or using an object cache.
+	 * The public admission journal still owns actual verified permissions.
+	 *
+	 * @param string $who Pseudonymous native caller scope.
+	 * @return int|null Spent units, or null for storage/corruption failure.
+	 */
+	public function spent( string $who ): ?int {
+		global $wpdb;
+		$bucket = str_pad( (string) intdiv( ( $this->clock )(), max( 1, $this->window ) ), 10, '0', STR_PAD_LEFT );
+		$row    = self::PREFIX . $this->name . '.' . substr( md5( $who ), 0, 12 ) . '.' . $bucket;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Counter writes deliberately bypass the object cache; the hint must read the same native row.
+		$value = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $row ) );
+		if ( '' !== $wpdb->last_error || ( null !== $value && ( ! is_string( $value ) || ! ctype_digit( $value ) ) ) ) {
+			return null; }
+		return null === $value ? 0 : (int) $value;
+	}
+	/** Remove only this limiter's expired native hint counters on maintenance. */
+	public function prune(): void {
+		global $wpdb;
+		$bucket = str_pad( (string) intdiv( ( $this->clock )(), max( 1, $this->window ) ), 10, '0', STR_PAD_LEFT );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Exact native counter prefix; same expiry rule as take().
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s AND RIGHT(option_name, 10) < %s", $wpdb->esc_like( self::PREFIX . $this->name . '.' ) . '%', $bucket ) );
+	}
 }

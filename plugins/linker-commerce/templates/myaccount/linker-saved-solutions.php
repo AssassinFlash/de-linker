@@ -51,6 +51,7 @@ endif;
 				<td>
 					<form method="post" class="linker-solution-to-draft">
 						<?php wp_nonce_field( SavedSolutions::ADD_ACTION . '_' . $linker_solution->ID ); ?>
+						<?php echo \Linker\Commerce\Protection\FormFields::render( 'draft_write' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Shared escaped fields. ?>
 						<button type="submit" class="woocommerce-button button" name="<?php echo esc_attr( SavedSolutions::ADD_ACTION ); ?>" value="<?php echo esc_attr( (string) $linker_solution->ID ); ?>"><?php esc_html_e( 'Add to solution draft', 'linker-commerce' ); ?></button>
 					</form>
 					<?php if ( '' !== $saved->report_path( $linker_solution->ID ) ) : ?>
