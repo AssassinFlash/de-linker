@@ -91,7 +91,9 @@ all-site live/local pixel-zero comparison.
   check passed. Existing webpack size/runtime recommendations remain warnings.
   Native `just i18n-tools` make-json/msgfmt and `just i18n-coverage` passed.
 - Tools PHP unit:286 tests,2338 assertions. Real g521 resource integration:
-  11 tests,204 assertions. PHPStan and WPCS passed. The real journal/native
+  11 tests,204 assertions. The additional complete Tools real-WP integration run
+  finished75 total tests/543 assertions/23 prerequisite skips with no failures.
+  PHPStan and WPCS passed. The real journal/native
   fixtures cover bad/revoked proof before heavy decode, single dispatch,
   completed replay, crash ambiguity, trusted-context cleanup, free reads,
   no model cost for storage writes, same-input design success deduplication,
