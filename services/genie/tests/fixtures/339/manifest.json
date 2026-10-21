@@ -226,6 +226,28 @@
       "campaign": "329",
       "locales": ["en", "de"],
       "pass": "b03, b08, b15, b19, b20, b21 and b25, EN and DE, pass the baseline grader after the service strips an unlicensed bare number and writes the required absence or clearance sentence. A series digit in a title is a grounding failure. The sizing route still adds the application ask when the configurator action is already present."
+    },
+    {
+      "id": "497-roof-step",
+      "issue": 497,
+      "locales": ["en", "de"],
+      "questions": {
+        "en": "What does the Roof detail step do?",
+        "de": "Was passiert, wenn ich das Dach weglasse?"
+      },
+      "variants": {
+        "en": "What happens if I skip the roof?",
+        "de": "Was macht der Schritt Dachdetails?"
+      },
+      "route": "roof",
+      "action": "open_configurator",
+      "fixture": "services/genie/eval/regression/339-product-words.jsonl",
+      "rows": ["339-497-roof-en", "339-497-roof-de"],
+      "sentence": {
+        "en": "Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+        "de": "Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners)."
+      },
+      "pass": "Both questions take the roof route and answer the signed ROOF sentence, the engine's limit.default_orientation verbatim. The turn carries open_configurator with size-hint's URL, no cards and no handoff. No model runs, so no figure is invented."
     }
   ]
 }

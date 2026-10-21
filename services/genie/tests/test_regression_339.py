@@ -18,7 +18,7 @@ from linker_genie.jev import Reading
 from linker_genie.language import clear_language
 from linker_genie.lexicon import Vocabulary
 from linker_genie.prices import Lookup
-from linker_genie.route import NamedModel, Route, Subject, plan, with_page
+from linker_genie.route import Call, NamedModel, Route, Subject, plan, with_page
 from linker_genie.schema import (
     ActionBlock,
     AskBlock,
@@ -30,7 +30,7 @@ from linker_genie.schema import (
     TurnOutput,
     TurnRequest,
 )
-from linker_genie.template import DEGRADED, fallback, finish
+from linker_genie.template import DEGRADED, fallback, finish, roof_answer
 from linker_genie.understand import Prepared
 
 SET = (
@@ -103,6 +103,8 @@ EXPECTED = (
     "339-440-b06-de",
     "339-440-account-en",
     "339-440-account-de",
+    "339-497-roof-en",
+    "339-497-roof-de",
 )
 
 
@@ -499,6 +501,36 @@ def _signed(row: dict[str, Any], vocabulary: Vocabulary) -> None:
         assert "esa battery" not in route.reasons
         return
     language: Literal["en", "de"] = "de" if row["lang"] == "de" else "en"
+    if row["stamp"] == "roof":
+        # #497: the signed sentence and the configurator action. size-hint ran
+        # with the route, so its URL is the action's; no cards, no handoff and
+        # no model written figure.
+        assert route.name == "roof"
+        assert route.calls == (Call("linker/size-hint", {}),)
+        assert route.action == "open_configurator"
+        assert route.answer == row["answer"]
+        assert route.no_cards is True
+        assert route.no_handoff is True
+        facts = TurnFacts()
+        facts.add(
+            Fact(
+                id="size.configurator_url",
+                value=row["configurator_url"],
+                source="size-hint",
+            )
+        )
+        output = roof_answer(route.answer, facts, language)
+        text = _sentence(output)
+        assert text == row["answer"]
+        for banned in row.get("excludes", []):
+            assert banned not in text
+        assert not any(
+            isinstance(block, (HandoffBlock, CardsBlock)) for block in output.blocks
+        )
+        actions = [block for block in output.blocks if isinstance(block, ActionBlock)]
+        assert [block.name for block in actions] == [row["action"]]
+        assert actions[0].args == {"url": row["configurator_url"]}
+        return
     assert route.answer == row["answer"]
     assert route.no_handoff is True
     if row["stamp"] == "scripted":

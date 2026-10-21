@@ -42,10 +42,12 @@ from linker_genie.template import (
     PARTNER_CODES,
     PROMISE,
     REPLY_PROMISE,
+    ROOF,
     SCRIPTED,
     TALK,
     finish,
     german_is_clean,
+    roof_answer,
 )
 from linker_genie.understand import Prepared
 
@@ -1161,6 +1163,93 @@ def test_the_scripted_sentence_does_not_touch_the_model_request() -> None:
     assert result.fallback is False
     assert result.output.blocks[0] == TextBlock(text=SCRIPTED["weather"]["en"])
     assert [item.type for item in result.output.blocks] == ["text", "ask"]
+
+
+def test_the_roof_step_turn_ships_the_signed_sentence_and_size_hints_url() -> None:
+    """#497: no model; the action URL is size-hint's and the sentence is fixed."""
+    message = "What happens if I skip the roof?"
+    route = plan(message, [], _reading("sizing"), NONE, "en")
+    body = TurnRequest(
+        conversation_id="c-497",
+        locale="en",
+        messages=[TurnMessage(role="user", content=message)],
+    )
+    facts = TurnFacts()
+    facts.add(
+        Fact(
+            id="size.configurator_url",
+            value="https://de-linker.test/solution-configurator/",
+            source="size-hint",
+        )
+    )
+    result, block = _answer(
+        body,
+        Prepared(route=route, facts=facts),
+        object(),  # type: ignore[arg-type]
+        object(),  # type: ignore[arg-type]
+    )
+    assert block is None
+    assert result.attempts == 0
+    assert result.grounded is True
+    assert result.fallback is False
+    assert [item.type for item in result.output.blocks] == ["text", "action"]
+    text = result.output.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert text.text == ROOF["en"]
+    assert (
+        "Without a roof plane, the yield assumes 35° tilt facing south "
+        "(HTW Berlin calculator default)." in text.text
+    )
+    action = result.output.blocks[1]
+    assert isinstance(action, ActionBlock)
+    assert action.name == "open_configurator"
+    assert action.args == {"url": "https://de-linker.test/solution-configurator/"}
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [
+        {"text": "linker/size-hint: returned 503", "kind": "ability"},
+        {"text": "linker/size-hint: returned 404"},
+    ],
+)
+def test_a_failed_size_hint_is_a_degraded_roof_turn_in_the_question_language(
+    failure: dict[str, str],
+) -> None:
+    """#497 review: a failed route call is visible, and no action without its URL.
+
+    The page locale is German and the question English: the degraded sentence
+    follows the question, not the page. An unclassed 4xx is still the degraded
+    sentence, never the outage handoff.
+    """
+    message = "What happens if I skip the roof?"
+    route = plan(message, [], _reading("sizing"), NONE, "en")
+    body = TurnRequest(
+        conversation_id="c-497-failed",
+        locale="de",
+        messages=[TurnMessage(role="user", content=message)],
+    )
+    prepared = Prepared(route=route, log={"call_failures": [failure]})
+    result, block = _answer(
+        body,
+        prepared,
+        object(),  # type: ignore[arg-type]
+        object(),  # type: ignore[arg-type]
+    )
+    assert block is None
+    assert result.grounded is False
+    assert result.fallback is True
+    assert result.failures == (failure["text"],)
+    (handoff,) = result.output.blocks
+    assert isinstance(handoff, HandoffBlock)
+    assert handoff.summary == DEGRADED["en"]
+    assert not any(isinstance(item, ActionBlock) for item in result.output.blocks)
+
+
+def test_a_roof_answer_without_the_size_hint_fact_has_no_action() -> None:
+    """#497: the action is drawn only when size-hint returned its URL."""
+    output = roof_answer(ROOF["en"], TurnFacts(), "en")
+    assert [item.type for item in output.blocks] == ["text"]
 
 
 def test_a_released_partner_code_is_named_when_its_card_is_shown() -> None:

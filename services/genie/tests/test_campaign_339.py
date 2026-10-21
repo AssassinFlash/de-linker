@@ -38,6 +38,8 @@ import test_product_words
 import test_regression_339 as regression
 
 from linker_genie import attachments
+from linker_genie.route import Subject, plan
+from linker_genie.template import ROOF
 
 REPO = Path(__file__).resolve().parents[3]
 CASE_MAP = REPO / "docs" / "acceptance" / "2026-10-20" / "339" / "case-map.md"
@@ -403,6 +405,36 @@ def test_the_attachment_injection_condition_is_the_merged_416_suite() -> None:
     for fn in INJECTION:
         assert REEXPORTED_NAMES.count(fn.__name__) == 1
         assert inspect.unwrap(globals()[fn.__name__]) is fn
+
+
+def test_the_roof_step_case_is_the_497_signed_rows() -> None:
+    """#497. The manifest case names the two rows, the sentence and the action.
+
+    The two acceptance questions and their natural variants all take the roof
+    route in both languages. The signed runner is the row's pass condition.
+    """
+    manifest = _load(GENIE_MANIFEST)
+    case = next(item for item in manifest["cases"] if item["id"] == "497-roof-step")
+    assert case["issue"] == 497
+    assert case["route"] == "roof"
+    assert case["action"] == "open_configurator"
+    rows = {row["id"]: row for row in regression._rows()}
+    assert case["rows"] == ["339-497-roof-en", "339-497-roof-de"]
+    for row_id in case["rows"]:
+        assert row_id in rows
+    assert rows["339-497-roof-en"]["message"] == case["questions"]["en"]
+    assert rows["339-497-roof-de"]["message"] == case["questions"]["de"]
+    for lang in ("en", "de"):
+        # The 35-degree sentence is the engine's, word for word; the answers
+        # carry it, and the route writes them.
+        assert case["sentence"][lang] in ROOF[lang]
+        assert case["sentence"][lang] in rows[f"339-497-roof-{lang}"]["answer"]
+        for message in (case["questions"][lang], case["variants"][lang]):
+            route = plan(message, [], None, Subject((), {}, {}), lang)
+            assert route.name == "roof", message
+            assert route.action == "open_configurator", message
+            assert route.no_cards and route.no_handoff, message
+            assert route.answer == ROOF[lang], message
 
 
 def test_the_330_manifest_classifies_every_registered_defect() -> None:
