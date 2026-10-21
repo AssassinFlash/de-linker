@@ -199,7 +199,8 @@ export function ResidentialPanel( {
 					input,
 					lines: draftLines(),
 					reportPdf,
-				}
+				},
+				config.locale
 			);
 			setSavedUrl( saved.url );
 			setSaveState( 'saved' );

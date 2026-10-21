@@ -5,12 +5,21 @@
  * Lösungsentwürfe", docs/specs/11-commerce.md); it accepts a logged-in user
  * or the claim cookie of a guest. The body is the engine input, which
  * reproduces the design, plus the lines the customer saw.
+ *
+ * The answer's `url` is the account page of the request's language (#473):
+ * linker-commerce builds it with `wc_get_account_endpoint_url()`, and
+ * linker-i18n answers that in German only while the request is German
+ * (RestLang's `?lang=`, Storefront's German page id, GermanRoutes'
+ * endpoint). The save names the page's language the way store.ts's product
+ * reads do, so a German page opens
+ * `/de/mein-konto/gespeicherte-loesungen/` and an English one
+ * `/my-account/saved-solutions/`.
  */
 
 /**
  * Internal dependencies
  */
-import type { ResidentialInput } from '../types';
+import type { Locale, ResidentialInput } from '../types';
 import type { DraftLine } from './store';
 
 type Fetch = typeof fetch;
@@ -51,14 +60,25 @@ function pdfBase64( blob: Blob ): Promise< string > {
 	} );
 }
 
+/**
+ * Saves the solution and answers where the account shows it.
+ *
+ * @param restUrl The WordPress REST root.
+ * @param nonce   A wp_rest nonce.
+ * @param body    The design input and the lines the customer saw.
+ * @param locale  The page's language; the answer's URL follows it.
+ * @param fetcher Fetch, for tests.
+ */
 export async function saveSolution(
 	restUrl: string,
 	nonce: string,
 	body: SolutionBody,
+	locale: Locale,
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< SavedSolution > {
 	const reportPdf = body.reportPdf ? await pdfBase64( body.reportPdf ) : '';
-	const response = await fetcher( `${ restUrl }linker/v1/solutions`, {
+	const endpoint = `${ restUrl }linker/v1/solutions?lang=${ locale }`;
+	const response = await fetcher( endpoint, {
 		method: 'POST',
 		credentials: 'same-origin',
 		headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
