@@ -2,7 +2,7 @@
 
 import pytest
 
-from linker_genie.figures import chunk_of, figure_id, localize, tag
+from linker_genie.figures import borrow_units, chunk_of, figure_id, localize, tag
 
 
 def test_each_cell_of_a_table_row_is_its_own_figure() -> None:
@@ -89,3 +89,77 @@ def test_word_units_and_dates_follow_the_turn_language(
     value: str, locale: str, expected: str
 ) -> None:
     assert localize(value, locale) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "values"),
+    [
+        ("Operating temperature range -40℃~+60℃", ["-40℃", "+60℃"]),
+        ("Storage temperature range -45℃~+90℃", ["-45℃", "+90℃"]),
+        ("Betriebstemperatur −40 °C bis +60 °C", ["−40 °C", "+60 °C"]),
+        ("Betriebstemperatur −40°C bis +60°C", ["−40°C", "+60°C"]),
+        ("Temperature -40°C to +60°C", ["-40°C", "+60°C"]),
+        ("range -40–+60℃", ["-40", "+60℃"]),
+        ("range -40--20℃", ["-40", "-20℃"]),
+        ("range 180-900 V", ["180", "900 V"]),
+        ("| Temperature (°C) | -40 | −45 | +60 |", ["-40 °C", "−45 °C", "+60 °C"]),
+        ("SAJ H2-10K-T3, CB2-100.3-HV5, GW10K-ET: -40℃~+60℃", ["-40℃", "+60℃"]),
+    ],
+)
+def test_unary_signs_stay_in_facts_without_turning_range_separators_into_signs(
+    text: str, values: list[str]
+) -> None:
+    assert list(tag("c", text).figures.values()) == values
+
+
+def test_esolar_temperature_signs_hydrate_in_both_languages() -> None:
+    # Hosted PDF, page 1: /uploads/2026/08/saj_esolar-aio3_datasheet_en.pdf.
+    # The actual table writes Operating temperature range -40℃~+60℃.
+    from linker_genie.facts import Fact, TurnFacts
+    from linker_genie.hydrate import fill
+
+    tagged = tag("aio3", "Operating temperature range -40℃~+60℃")
+    facts = TurnFacts(
+        facts={
+            key: Fact(key, value, "search-knowledge")
+            for key, value in tagged.figures.items()
+        },
+        chunk_ids={"aio3"},
+    )
+    for locale in ("en", "de"):
+        assert fill("{fact:aio3.n1} / {fact:aio3.n2}", facts, locale) == "-40℃ / +60℃"
+
+
+@pytest.mark.parametrize("lower", ["-40", "−40"])
+def test_signed_attachment_figures_still_borrow_the_named_unit(lower: str) -> None:
+    tagged = borrow_units(tag("c", f"Temperature (°C): {lower} to +60"))
+    assert list(tagged.figures.values()) == [f"{lower} °C", "+60 °C"]
+
+
+@pytest.mark.parametrize(
+    ("text", "values"),
+    [
+        ("Temperature ≥-40℃", ["-40℃"]),
+        ("Temperature ≤−20 °C", ["−20 °C"]),
+        ("Temperature <-40°C", ["-40°C"]),
+        ("Temperature >+60℃", ["+60℃"]),
+        ("Temperature ≈−20°C", ["−20°C"]),
+        ('Temperature "-40℃"', ["-40℃"]),
+        ("Temperature '-40°C'", ["-40°C"]),
+        ("Temperature “-40°C”", ["-40°C"]),
+        ("Temperature ‘−20°C’", ["−20°C"]),
+        ("Temperature «-40°C»", ["-40°C"]),
+        ("Temperature -40°C,-20°C", ["-40°C", "-20°C"]),
+        ("Temperature -40...-20℃", ["-40", "-20℃"]),
+        ("Temperature -40…−20°C", ["-40", "−20°C"]),
+        ("Temperature −40−−20 °C", ["−40", "−20 °C"]),
+        ("Temperature −40−−20°C", ["−40", "−20°C"]),
+        ("Voltage 180-900 V", ["180", "900 V"]),
+        ("Voltage 180−900 V", ["180", "900 V"]),
+        ("Temperature 40℃-60℃", ["40℃", "60℃"]),
+    ],
+)
+def test_reviewed_sign_boundaries_preserve_unary_signs(
+    text: str, values: list[str]
+) -> None:
+    assert list(tag("c", text).figures.values()) == values

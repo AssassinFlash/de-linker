@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from unicodedata import category
 
 # Units a datasheet, manual or warranty writes after a number, longest spelling
 # first so "kWh" is not read as "kW" + "h". German and English, as the hosted
@@ -57,7 +58,7 @@ _DATE_PHRASE = re.compile(
     rf"|\b(?:{_MONTHS})\s\d{{1,2}}(?:st|nd|rd|th)?,?\s\d{{4}}\b"
 )
 _TRIM = ".,:;!?"
-_MARKS = "≥≤<>~±+≈*'\"„“”"
+_MARKS = "≥≤<>~±+−≈*'\"„“”"
 
 
 @dataclass(frozen=True)
@@ -95,6 +96,23 @@ def tag(chunk_id: str, text: str) -> Tagged:
         found = list(_IN_WORD.finditer(word.group(0)))
         for position, match in enumerate(found):
             start, end = word.start() + match.start(), word.start() + match.end()
+            # A sign is unary at the word's start or after a non-alphanumeric
+            # boundary, including comparisons, quotes and range punctuation.
+            # A sign directly after the previous complete figure is a binary
+            # separator instead: both 180-900 and 40℃-60℃ have positive ends.
+            sign = match.start() - 1
+            if (
+                sign >= 0
+                and word.group(0)[sign] in "-−+"
+                and (
+                    sign == 0
+                    or (
+                        not word.group(0)[sign - 1].isalnum()
+                        and (position == 0 or found[position - 1].end() != sign)
+                    )
+                )
+            ):
+                start -= 1
             last = position == len(found) - 1
             following = words[index + 1] if index + 1 < len(words) else None
             if (
@@ -127,7 +145,7 @@ def _row_unit(text: str, start: int, value: str) -> str:
     """ " UNIT" when the figure stands in a table row and a cell to its left names a
     unit in brackets ("Nominal Capacity (kWh)", "Rated Input Power(W)" after a group
     cell), and the figure carries none of its own. The nearest such cell counts."""
-    if not re.fullmatch(_NUMBER, value):
+    if not re.fullmatch(rf"[-−+]?{_NUMBER}", value):
         return ""
     line_start = text.rfind("\n", 0, start) + 1
     if not text[line_start:start].lstrip().startswith("|"):
@@ -143,8 +161,17 @@ def _row_unit(text: str, start: int, value: str) -> str:
 def is_code(word: str) -> bool:
     """Whether a word names a model: a segment mixes letters and digits and is not
     a number with its unit."""
-    for segment in re.split(r"[-/–_]", word.strip(_TRIM)):
-        segment = segment.strip(_MARKS + _TRIM)
+    for segment in re.split(r"[-−/–_]", word.strip(_TRIM)):
+        # Quoted measurements still name a number and unit. Unicode punctuation
+        # covers typographic quotes too, without a finite quote allowlist.
+        while segment and (
+            segment[0] in _MARKS or category(segment[0]).startswith("P")
+        ):
+            segment = segment[1:]
+        while segment and (
+            segment[-1] in _MARKS or category(segment[-1]).startswith("P")
+        ):
+            segment = segment[:-1]
         if (
             re.search(r"[A-Za-z]", segment)
             and re.search(r"\d", segment)
@@ -335,7 +362,7 @@ def borrow_units(tagged: Tagged) -> Tagged:
         found = list(_TAG.finditer(line))
         for index, match in enumerate(found):
             name, value = match.group(1), match.group(2)
-            if not re.fullmatch(_NUMBER, value):
+            if not re.fullmatch(rf"[-−+]?{_NUMBER}", value):
                 continue
             unit = next(
                 (
