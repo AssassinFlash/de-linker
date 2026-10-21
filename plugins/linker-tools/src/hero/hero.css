@@ -144,8 +144,9 @@
 	display: none;
 }
 
-/* Product cards: four columns at desktop, two on a phone (owner ruling
- * 2026-10-17, variant B). */
+/* Product cards: four columns at desktop, two on a tablet. Phone answers
+ * use the full column below after review found cramped action labels
+ * in the 2026-10-22 visual review. */
 .linker-genie-hero__cards {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -217,6 +218,27 @@
  * exits, so neither wraps mid-word. 600px is the prototype's phone
  * breakpoint (hero-prototype.css `@media (max-width: 600px)`). */
 @media (max-width: 600px) {
+	/* The earlier two-column phone cards left only about 130px for an
+	 * action (390px EN/DE review). Reuse the shared phone card's 72px media
+	 * row and 12px spacing in one full-width answer column, so a German
+	 * product action has room for whole words without a large image above it.
+	 * This subtree only exists after the visitor has opened the conversation. */
+	.linker-genie-hero__cards {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.linker-genie-hero__cards .linker-card {
+		display: grid;
+		grid-template-columns: 4.5rem minmax(0, 1fr);
+		gap: 12px;
+		height: auto;
+		padding: 12px;
+	}
+
+	.linker-genie-hero__cards .linker-card__media {
+		aspect-ratio: 1;
+	}
+
 	.linker-genie-hero__bar {
 		flex-wrap: wrap;
 		gap: 2px;

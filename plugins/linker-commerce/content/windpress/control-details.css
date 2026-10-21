@@ -55,6 +55,34 @@
 	grid-row: 2;
 }
 
+/* Five narrow phone columns reduce German navigation to 9px fragments.
+   Give all five destinations a visible place, with room for whole words. */
+@media (max-width: 560px) {
+	#tv-footer-v2 .footer-workspace .footer-dock {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: 8px;
+	}
+	#tv-footer-v2 .footer-dock .footer-tab {
+		grid-column: span 4;
+		font-size: 12px;
+	}
+	#tv-footer-v2 .footer-dock .footer-tab:first-child { grid-column: span 3; }
+	#tv-footer-v2 .footer-dock .footer-tab:nth-child(2) { grid-column: span 5; }
+	#tv-footer-v2 .footer-dock .footer-tab:nth-last-child(-n + 2) {
+		grid-column: span 6;
+	}
+	#tv-footer-v2 .footer-tab > span {
+		overflow-wrap: normal;
+		word-break: normal;
+	}
+}
+
+@media (max-width: 359px) {
+	#tv-footer-v2 .footer-workspace .footer-dock { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	#tv-footer-v2 .footer-dock .footer-tab:nth-child(n) { grid-column: auto; }
+	#tv-footer-v2 .footer-dock .footer-tab:last-child { grid-column: 1 / -1; }
+}
+
 /* All legal and consent entries have the same comfortable hit area. */
 #tv-footer-v2 .tv-footer-bar-legal :is(a, button) {
 	display: inline-flex;

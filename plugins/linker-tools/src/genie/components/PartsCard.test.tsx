@@ -6,7 +6,7 @@
 /**
  * External dependencies
  */
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 
 /**
@@ -173,3 +173,35 @@ test( 'a failed write says so inside the card', async () => {
 		await screen.findByText( 'Not everything was added. Try again.' )
 	).toBeInTheDocument();
 } );
+
+test.each( [ 'added', 'unverified' ] as const )(
+	'a %s parts-list write stays disabled but leaves the busy phase',
+	async ( result ) => {
+		let complete!: ( value: typeof result ) => void;
+		const onAdd = vi.fn(
+			() =>
+				new Promise< typeof result >( ( resolve ) => {
+					complete = resolve;
+				} )
+		);
+		render(
+			<PartsCard
+				block={ SETTLED }
+				onAsk={ vi.fn() }
+				onAdd={ onAdd }
+				onTypeModel={ vi.fn() }
+			/>
+		);
+		const button = screen.getByRole( 'button', {
+			name: 'Add 2 products to the solution draft',
+		} );
+		fireEvent.click( button );
+		expect( button ).toBeDisabled();
+		expect( button ).toHaveAttribute( 'aria-busy', 'true' );
+		await act( async () => complete( result ) );
+		expect( button ).toBeDisabled();
+		expect( button ).not.toHaveAttribute( 'aria-busy' );
+		fireEvent.click( button );
+		expect( onAdd ).toHaveBeenCalledTimes( 1 );
+	}
+);

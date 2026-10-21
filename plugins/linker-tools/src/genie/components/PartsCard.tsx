@@ -212,6 +212,7 @@ export function PartsCard( {
 					<button
 						type="button"
 						className="linker-genie-app__action"
+						aria-busy={ phase === 'sending' || undefined }
 						onClick={ add }
 						disabled={
 							phase === 'sending' ||

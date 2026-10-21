@@ -116,7 +116,7 @@ export function GenieCard( {
 				<button
 					key="draft"
 					type="button"
-					className="linker-genie-app__card-action"
+					className="linker-genie-app__card-action linker-genie-app__card-action--primary"
 					disabled={ 'pending' === status.state }
 					onClick={ () => onAdd( productId ) }
 				>

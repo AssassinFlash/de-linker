@@ -1335,6 +1335,160 @@ body:has(.linker-genie-workspace)
 	gap: 0.75rem;
 }
 
+/* Answer actions use the approved contact/send pill: 44px touch target,
+ * 14px type, ink primary and a bordered secondary. The app's button reset
+ * otherwise removes every affordance from the product card's two actions.
+ * The home scope also outranks its LC #home-a button font/colour reset;
+ * it is limited to the unfolded Genie surface, never the resting page. */
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card
+	.linker-genie-app__card-action,
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-app__action {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 44px;
+	max-width: 100%;
+	padding: 10px 16px;
+	border: 1px solid #d1d5d5;
+	border-radius: 99px;
+	background: #fff;
+	box-shadow: none;
+	color: #181818;
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.5;
+	text-align: center;
+	text-decoration: none;
+	white-space: normal;
+	overflow-wrap: anywhere;
+	cursor: pointer;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card
+	.linker-genie-app__card-action--primary,
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-app__action {
+	border-color: #181818;
+	background: #181818;
+	color: #fff;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card
+	.linker-genie-app__card-action:hover:not(:disabled) {
+	border-color: #8f8f8f;
+	background: #f7f8f8;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card
+	.linker-genie-app__card-action--primary:hover:not(:disabled),
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-app__action:hover:not(:disabled) {
+	border-color: #303030;
+	background: #303030;
+	color: #fff;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card
+	.linker-genie-app__card-action:focus-visible,
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-app__action:focus-visible {
+	outline: 2px solid #181818;
+	outline-offset: 3px;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card
+	.linker-genie-app__card-action:disabled,
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-app__action:disabled {
+	border-color: #d1d5d5;
+	background: #ededed;
+	color: #5d5d5d;
+	opacity: 1;
+	cursor: default;
+}
+
+/* Product actions are disabled only while writing. A parts-list action can
+ * also be disabled after completion, so only its explicit busy phase waits. */
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card
+	.linker-genie-app__card-action:disabled,
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-app__action[aria-busy="true"]:disabled {
+	cursor: wait;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card
+	.linker-card__actions {
+	gap: 10px;
+	margin-top: 8px;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card[data-state="added"] {
+	border-color: #2a7a58;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	:is(.linker-card__status--retry, .linker-card__status--unverified) {
+	color: #92432f;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-card__status--pending {
+	color: #5d5d5d;
+}
+
+/* Hosted documents are one whole linked row, with the title allowed to wrap
+ * between its document and external-link glyphs instead of pushing them out. */
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-document-row {
+	margin: 12px 0;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-app__document {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 44px;
+	padding: 10px 12px;
+	border: 1px solid #e2e5e5;
+	border-radius: 12px;
+	background: #fff;
+	color: #181818;
+	font-size: 14px;
+	line-height: 1.5;
+	text-decoration: none;
+}
+
+.linker-genie-app__document span:first-of-type {
+	flex: 1;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-app__document:hover {
+	border-color: #8f8f8f;
+	background: #f7f8f8;
+}
+
+:is(.linker-genie-app, #home-a .linker-genie-hero__surface)
+	.linker-genie-app__document:focus-visible {
+	outline: 2px solid #181818;
+	outline-offset: 3px;
+}
+
 .linker-genie-app__error {
 	margin: 0;
 	color: var(--proto-sem-danger, #b85a45);
