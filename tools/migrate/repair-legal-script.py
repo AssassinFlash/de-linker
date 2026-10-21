@@ -105,7 +105,10 @@ def invoke(prefix: str, payload: dict[str, Any]) -> dict[str, Any]:
         )
     for line in result.stdout.splitlines():
         if line.startswith(MARKER):
-            return json.loads(line[len(MARKER) :])
+            decoded = json.loads(line[len(MARKER) :])
+            if not isinstance(decoded, dict):
+                raise RuntimeError("WordPress readback must be a JSON object")
+            return decoded
     raise RuntimeError("WordPress returned no structured readback")
 
 

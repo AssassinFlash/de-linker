@@ -2,6 +2,7 @@
 
 import importlib.util
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -16,7 +17,7 @@ GOOD = r"""<script id="tv-legal-js">var svg='\u003csvg>'; var text=/\s+/g; var f
 BAD = GOOD.replace("\\", "")
 
 
-def test_restore_preserves_current_copy_and_every_other_byte():
+def test_restore_preserves_current_copy_and_every_other_byte() -> None:
     current = (
         "<p>Current inquiry summary and cookie policy. Grüße.</p>"
         + BAD
@@ -31,20 +32,20 @@ def test_restore_preserves_current_copy_and_every_other_byte():
 @pytest.mark.parametrize(
     "script", [BAD.replace("var svg", "var changed"), "", BAD + BAD]
 )
-def test_refuses_unrelated_script_changes_or_ambiguous_blocks(script):
+def test_refuses_unrelated_script_changes_or_ambiguous_blocks(script: str) -> None:
     with pytest.raises(ValueError):
         repair.restore_script(script, GOOD)
 
 
-def test_no_shell_execution_in_remote_content(monkeypatch):
+def test_no_shell_execution_in_remote_content(monkeypatch: pytest.MonkeyPatch) -> None:
     class Result:
         stdout = '@@legal-script@@{"ok": true}'
         stderr = ""
         returncode = 0
 
-    seen = []
+    seen: list[tuple[list[str], dict[str, Any]]] = []
 
-    def run(command, **kwargs):
+    def run(command: list[str], **kwargs: Any) -> Result:
         seen.append((command, kwargs))
         return Result()
 
