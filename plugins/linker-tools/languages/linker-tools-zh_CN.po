@@ -1,0 +1,22 @@
+# Copyright (C) 2026 Linker Technology GmbH
+msgid ""
+msgstr ""
+"Project-Id-Version: Linker Tools 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-tools\n"
+"POT-Creation-Date: 2026-10-21T09:00:00+00:00\n"
+"PO-Revision-Date: 2026-10-21 09:00+00:00\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Domain: linker-tools\n"
+
+msgid "Genie quality check"
+msgstr "Genie AI 对话质检"
+
+msgid "Genie quality check, last 24 hours: %1$d answers judged, %2$d flagged, %3$d decided by the second judge, %4$d could not be judged."
+msgstr "Genie 对话质检（近 24 小时）：已质检 %1$d 条回复，标记 %2$d 条异常，二级质检复核 %3$d 条，未判定 %4$d 条。"
+
+msgid "Open"
+msgstr "查看质检详情"

@@ -29,7 +29,14 @@ final class Format {
 	 * @param int $timestamp Unix time.
 	 */
 	public static function date( int $timestamp ): string {
-		$format = str_starts_with( determine_locale(), 'de' ) ? 'j. F Y' : 'F j, Y';
+		$locale = determine_locale();
+		if ( str_starts_with( $locale, 'zh' ) ) {
+			$format = 'Y年n月j日';
+		} elseif ( str_starts_with( $locale, 'de' ) ) {
+			$format = 'j. F Y';
+		} else {
+			$format = 'F j, Y';
+		}
 		return (string) wp_date( $format, $timestamp, new \DateTimeZone( self::TIMEZONE ) );
 	}
 

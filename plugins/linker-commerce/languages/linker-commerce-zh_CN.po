@@ -1,0 +1,99 @@
+# Copyright (C) 2026 Linker Technology GmbH
+msgid ""
+msgstr ""
+"Project-Id-Version: Linker Commerce 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
+"POT-Creation-Date: 2026-10-21T09:00:00+00:00\n"
+"PO-Revision-Date: 2026-10-21 09:00+00:00\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Domain: linker-commerce\n"
+
+msgid "Daily digest"
+msgstr "每日业务简报"
+
+msgid "Daily digest, {date}"
+msgstr "【Linker 业务简报】{date}{summary}"
+
+msgid "Accounts waiting for approval"
+msgstr "待审核客户账号"
+
+msgid "No account is waiting for approval."
+msgstr "暂无等待审核的客户账号。"
+
+msgid "Restricted, awaiting customer information: %s"
+msgstr "受限账户（等待补充信息）：%s"
+
+msgid "View restricted accounts"
+msgstr "查看受限账户列表"
+
+msgid "Open the customer"
+msgstr "查看客户资料"
+
+msgid "Registered on %s"
+msgstr "注册于 %s"
+
+msgid "Inquiries waiting for a Proforma invoice"
+msgstr "待开形式发票（PI）的询盘"
+
+msgid "No inquiry is waiting for more than 24 hours."
+msgstr "暂无等待超过 24 小时的询盘。"
+
+msgid "Inquiry #%1$s – %2$s"
+msgstr "询盘 #%1$s – %2$s"
+
+msgid "Received on %1$s at %2$s (%3$s)"
+msgstr "接收于 %1$s %2$s（%3$s）"
+
+msgid "Open the inquiry"
+msgstr "查看询盘"
+
+msgid "Proforma invoices without a reply"
+msgstr "已发 PI 超 3 天未回复"
+
+msgid "No Proforma invoice has waited more than 3 days for a reply."
+msgstr "暂无已发 PI 超过 3 天未收到客户回复。"
+
+msgid "Proforma invoice %1$s issued on %2$s at %3$s (%4$s)"
+msgstr "形式发票 %1$s 开具于 %2$s %3$s（%4$s）"
+
+msgid "Emails that could not be delivered"
+msgstr "邮件发送失败记录"
+
+msgid "No email failed to send."
+msgstr "暂无邮件发送失败记录。"
+
+msgid "To: %1$s – Error: %2$s"
+msgstr "收件人：%1$s – 错误：%2$s"
+
+msgid "Internal mail authentication"
+msgstr "系统发信鉴权状态"
+
+msgid "Last SMTP attempt succeeded at %s UTC."
+msgstr "最近一次 SMTP 发信测试成功于 %s UTC。"
+
+msgid "SMTP configured; no SMTP attempt has been recorded."
+msgstr "已配置 SMTP，暂无发信记录。"
+
+msgid "The last SMTP attempt failed."
+msgstr "最近一次 SMTP 发信尝试失败。"
+
+msgid "Last attempt: %1$s UTC. Reason: %2$s. Internal notifications fall back to PHP mail()."
+msgstr "最近尝试时刻：%1$s UTC。原因：%2$s。内部通知已自动降级至 PHP mail()。"
+
+msgid "Internal mail not authenticated."
+msgstr "内部发信未通过 SMTP 鉴权。"
+
+msgid "Internal notifications use PHP mail(). Check the SMTP configuration on the server."
+msgstr "内部通知当前使用 PHP mail()。请检查服务器上的 SMTP 配置。"
+
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d 小时前"
+
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "%d 天前"

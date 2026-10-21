@@ -56,17 +56,53 @@ final class DigestEmail extends TeamEmail {
 	 * @param Block[] $blocks The blocks, in order.
 	 */
 	public function send_report( array $blocks ): void {
-		$this->blocks = $blocks;
-		// WC_Email's "no object" value: there is no customer to reply to.
-		$this->object                 = false;
-		$this->recipient              = $this->options->notify_to();
-		$this->placeholders['{date}'] = Format::today();
-		$this->locale_switch->to( LocaleSwitch::site_default() );
+		$this->blocks    = $blocks;
+		$this->object    = false;
+		$this->recipient = $this->options->notify_to();
+		$this->locale_switch->to( LocaleSwitch::team_default() );
+		$this->placeholders['{date}']    = Format::today();
+		$this->placeholders['{summary}'] = $this->build_summary( $blocks );
 		try {
 			$this->send_notification();
 		} finally {
 			$this->locale_switch->back();
 		}
+	}
+
+	/**
+	 * Summarizes active blocks for the subject line.
+	 *
+	 * @param Block[] $blocks The blocks.
+	 */
+	private function build_summary( array $blocks ): string {
+		$parts = array();
+		foreach ( $blocks as $block ) {
+			$entries = $block->entries();
+			$count   = count( $entries );
+			if ( 0 === $count ) {
+				continue;
+			}
+			if ( $block instanceof InquiriesAwaitingProforma ) {
+				/* translators: %d: number of inquiries waiting for a Proforma invoice. */
+				$parts[] = sprintf( __( '%d 条待开 PI', 'linker-commerce' ), $count );
+			} elseif ( 'pending_accounts' === $block->id() ) {
+				$pending = $count > 1 ? $count - 1 : ( empty( $entries[0]['url'] ) ? 0 : 1 );
+				if ( $pending > 0 ) {
+					/* translators: %d: number of customer accounts waiting for approval. */
+					$parts[] = sprintf( __( '%d 个待审客户', 'linker-commerce' ), $pending );
+				}
+			}
+		}
+		return array() === $parts ? '' : '：' . implode( ' · ', $parts );
+	}
+
+	/**
+	 * From name in the team notification language.
+	 *
+	 * @param string $from_name Default from name.
+	 */
+	public function get_from_name( $from_name = '' ) {
+		return str_starts_with( determine_locale(), 'zh' ) ? 'Linker 业务通知' : parent::get_from_name( $from_name );
 	}
 
 	/**
