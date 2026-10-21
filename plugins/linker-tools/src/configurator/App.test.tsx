@@ -5,7 +5,14 @@
 /**
  * External dependencies
  */
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import {
+	act,
+	fireEvent,
+	render,
+	screen,
+	waitFor,
+	within,
+} from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
 
 /**
@@ -737,10 +744,12 @@ test( 'Ask Genie does not open Genie when the solution could not be saved', asyn
 	await act( async () => {
 		fireEvent.click( ask );
 	} );
+	// One sentence, at the report where the customer clicked; the Save
+	// status does not repeat it.
+	await screen.findByText( 'The solution could not be saved. Try again.' );
 	expect(
-		( await screen.findAllByText( /The solution could not be saved/ ) )
-			.length
-	).toBeGreaterThan( 0 );
+		screen.getAllByText( 'The solution could not be saved. Try again.' )
+	).toHaveLength( 1 );
 	expect( asks.asks ).toEqual( [] );
 	asks.stop();
 } );
@@ -850,5 +859,136 @@ test( 'Ask Genie while a save is in flight awaits that save, not a second one', 
 	expect( asks.asks ).toEqual( [
 		{ message: 'What are the figures in my saved solution?', solution: 61 },
 	] );
+	asks.stop();
+} );
+
+test( 'a save that resolves after a recalculation is not reused for the new design', async () => {
+	const save = vi.mocked( saveSolution );
+	let finishOld: ( value: { id: number; url: string } ) => void = () => {
+		throw new Error( 'not started' );
+	};
+	save.mockReturnValueOnce(
+		new Promise( ( resolve ) => {
+			finishOld = resolve;
+		} )
+	);
+	save.mockResolvedValueOnce( {
+		id: 62,
+		url: '/my-account/solutions/62/',
+	} );
+	const asks = genieAsks();
+	const { engine, calls } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const saveButton = await screen.findByRole( 'button', {
+		name: 'Save solution',
+	} );
+	await act( async () => {
+		fireEvent.click( saveButton );
+	} );
+	expect( save ).toHaveBeenCalledTimes( 1 );
+
+	// A different design while that save is still in flight.
+	fill( /PV array/, '12' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Calculate system' } )
+		);
+	} );
+	await waitFor( () =>
+		expect(
+			calls.filter( ( call ) => call.name === 'residential' )
+		).toHaveLength( 2 )
+	);
+	// The old save resolves after the new report exists: it must not become
+	// the current design's saved solution.
+	await act( async () => {
+		finishOld( { id: 61, url: '/my-account/solutions/61/' } );
+	} );
+	expect( screen.queryByText( 'Saved to your account.' ) ).toBeNull();
+
+	const askButton = await screen.findByRole( 'button', {
+		name: 'Ask Genie',
+	} );
+	await act( async () => {
+		fireEvent.click( askButton );
+	} );
+	// A fresh save of the new design, and Genie opens on that one.
+	expect( save ).toHaveBeenCalledTimes( 2 );
+	expect( asks.asks ).toEqual( [
+		{ message: 'What are the figures in my saved solution?', solution: 62 },
+	] );
+	asks.stop();
+} );
+
+test( 'an Ask started before a recalculation does not hand over the previous design', async () => {
+	const save = vi.mocked( saveSolution );
+	let finishOld: ( value: { id: number; url: string } ) => void = () => {
+		throw new Error( 'not started' );
+	};
+	save.mockReturnValueOnce(
+		new Promise( ( resolve ) => {
+			finishOld = resolve;
+		} )
+	);
+	save.mockResolvedValueOnce( {
+		id: 62,
+		url: '/my-account/solutions/62/',
+	} );
+	const asks = genieAsks();
+	const { engine, calls } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const askButton = await screen.findByRole( 'button', {
+		name: 'Ask Genie',
+	} );
+	await act( async () => {
+		fireEvent.click( askButton );
+	} );
+	expect( save ).toHaveBeenCalledTimes( 1 );
+
+	fill( /PV array/, '12' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Calculate system' } )
+		);
+	} );
+	await waitFor( () =>
+		expect(
+			calls.filter( ( call ) => call.name === 'residential' )
+		).toHaveLength( 2 )
+	);
+	await act( async () => {
+		finishOld( { id: 61, url: '/my-account/solutions/61/' } );
+	} );
+	// The old ask resolved after the customer left that design: no handover.
+	expect( asks.asks ).toEqual( [] );
+
+	const nextAsk = await screen.findByRole( 'button', {
+		name: 'Ask Genie',
+	} );
+	await act( async () => {
+		fireEvent.click( nextAsk );
+	} );
+	await waitFor( () =>
+		expect( asks.asks ).toEqual( [
+			{
+				message: 'What are the figures in my saved solution?',
+				solution: 62,
+			},
+		] )
+	);
 	asks.stop();
 } );

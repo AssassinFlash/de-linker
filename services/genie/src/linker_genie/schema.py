@@ -302,8 +302,9 @@ class UserContext(Strict):
             "marks it used, the window is the whole of its life). The service "
             "sends it back on the abilities that "
             "answer for this customer (abilities.USER_CONTEXT_ABILITIES: the "
-            "inquiry list and the product abilities, whose prices follow the "
-            "account) and never stores or logs it."
+            "inquiry list, the customer's own saved solution, and the product "
+            "abilities, whose prices follow the account) and never stores or "
+            "logs it."
         ),
     )
 

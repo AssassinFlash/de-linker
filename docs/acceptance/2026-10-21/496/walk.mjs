@@ -8,6 +8,12 @@
  *
  * Instance: w496 on http://127.0.0.1:9267 (snapshot 20261021-1023). No inquiry,
  * no registration, no mail. The owner is user 43, the other customer user 44.
+ *
+ * Run (each phase needs fresh one-time links, they are one-use):
+ *   W496_OWNER_LOGIN=$(just login w496 --user=w496owner | tail -1) \
+ *   W496_OTHER_LOGIN=$(just login w496 --user=w496other | tail -1) \
+ *   PHASE=main node walk.mjs
+ *   PHASE=pending|restricted node walk.mjs   (owner state set first)
  */
 import { createRequire } from 'node:module';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -24,8 +30,13 @@ const shotsDir = join(here, 'shots');
 mkdirSync(shotsDir, { recursive: true });
 
 const ORIGIN = 'http://127.0.0.1:9267';
-const OWNER = { login: 'w496owner', password: 'W496-owner-pass!' };
-const OTHER = { login: 'w496other', password: 'W496-other-pass!' };
+// No password lives in the repository. The two accounts log in with the local
+// stack's one-time link (`just login w496 --user=…`), passed for this run only;
+// the link is one-use, so each PHASE gets fresh ones.
+const LOGIN_URLS = {
+	owner: process.env.W496_OWNER_LOGIN || '',
+	other: process.env.W496_OTHER_LOGIN || '',
+};
 const MONEY = /(?:€|EUR)\s*\d|\d[\d.,]*\s*(?:€|EUR)/;
 const INPUTS = { plz: '80538', annual: '5000', pv: '10' };
 
@@ -39,7 +50,6 @@ const CASES = {
 		calculate: 'Calculate system',
 		save: 'Save solution',
 		ask: 'Ask Genie',
-		note: 'Your saved solution stays with this session',
 		question: 'Show me the products of my solution as cards.',
 		loginPrice: 'Log in for prices',
 	},
@@ -52,7 +62,6 @@ const CASES = {
 		calculate: 'System berechnen',
 		save: 'Lösung speichern',
 		ask: 'Genie fragen',
-		note: 'Ihre gespeicherte Lösung bleibt in dieser Sitzung',
 		question: 'Zeigen Sie mir die Produkte meiner Lösung als Karten.',
 		loginPrice: 'Preise nach Anmeldung',
 	},
@@ -85,12 +94,25 @@ function numbers( text ) {
 	return ( text || '' ).match( /\d[\d.,]*/g ) || [];
 }
 
-async function login( context, account ) {
+const loginStates = new Map();
+
+/**
+ * The storage state of a logged-in account, from its one-time login link.
+ * Captured once per run; every case context reuses it.
+ */
+async function loginState( browser, which ) {
+	if ( loginStates.has( which ) ) {
+		return loginStates.get( which );
+	}
+	const url = LOGIN_URLS[ which ];
+	if ( ! url ) {
+		throw new Error(
+			`set W496_${ which.toUpperCase() }_LOGIN to a one-time link: just login w496 --user=w496${ which }`
+		);
+	}
+	const context = await browser.newContext();
 	const page = await context.newPage();
-	await page.goto( `${ ORIGIN }/wp-login.php`, { waitUntil: 'domcontentloaded' } );
-	await page.fill( '#user_login', account.login );
-	await page.fill( '#user_pass', account.password );
-	await page.click( '#wp-submit' );
+	await page.goto( url, { waitUntil: 'domcontentloaded' } );
 	// A customer who logs in is sent on to the account page (the site's own
 	// gate), not to wp-admin; leaving the login page is the signed-in mark.
 	await page.waitForFunction(
@@ -98,7 +120,10 @@ async function login( context, account ) {
 		null,
 		{ timeout: 30000 }
 	);
-	await page.close();
+	const state = await context.storageState();
+	await context.close();
+	loginStates.set( which, state );
+	return state;
 }
 
 async function resetThread( page, lang ) {
@@ -219,13 +244,13 @@ async function shot( page, name ) {
 
 async function caseAccount( browser, lang, viewport, account ) {
 	const c = CASES[ lang ];
+	const storageState =
+		account === 'guest' ? undefined : await loginState( browser, 'owner' );
 	const context = await browser.newContext( {
 		viewport,
 		locale: c.locale,
+		...( storageState ? { storageState } : {} ),
 	} );
-	if ( account !== 'guest' ) {
-		await login( context, OWNER );
-	}
 	const page = await context.newPage();
 	const solutions = [];
 	const turns = [];
@@ -315,8 +340,8 @@ async function reuseCase( browser ) {
 	const context = await browser.newContext( {
 		viewport: { width: 1440, height: 1000 },
 		locale: CASES.en.locale,
+		storageState: await loginState( browser, 'owner' ),
 	} );
-	await login( context, OWNER );
 	const page = await context.newPage();
 	const solutions = [];
 	const turns = [];
@@ -360,13 +385,15 @@ async function reuseCase( browser ) {
 async function abilityCase( browser, solutionId ) {
 	// An owner, a guest, and another customer ask the same ability directly.
 	const request = async ( account ) => {
+		const storageState =
+			account === 'guest'
+				? undefined
+				: await loginState( browser, account === 'owner' ? 'owner' : 'other' );
 		const context = await browser.newContext( {
 			viewport: { width: 1440, height: 1000 },
 			locale: 'en-GB',
+			...( storageState ? { storageState } : {} ),
 		} );
-		if ( account !== 'guest' ) {
-			await login( context, account === 'owner' ? OWNER : OTHER );
-		}
 		const page = await context.newPage();
 		await page.goto( ORIGIN + CASES.en.path, {
 			waitUntil: 'domcontentloaded',
@@ -403,8 +430,8 @@ async function gateCase( browser, state ) {
 	const context = await browser.newContext( {
 		viewport: { width: 1440, height: 1000 },
 		locale: 'en-GB',
+		storageState: await loginState( browser, 'owner' ),
 	} );
-	await login( context, OWNER );
 	const page = await context.newPage();
 	const solutions = [];
 	page.on( 'response', async ( response ) => {

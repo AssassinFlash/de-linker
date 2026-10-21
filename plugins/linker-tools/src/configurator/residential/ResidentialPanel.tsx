@@ -60,6 +60,26 @@ export interface ResidentialPanelProps {
 	onStep?: ( step: StepNumber ) => void;
 }
 
+/**
+ * The design a save describes: this input and the selection the engine made
+ * from it. A save belongs to one design; a recalculation makes an older save's
+ * record stale and it must not be offered as the current solution (#496).
+ *
+ * @param input    The configurator input.
+ * @param selected The engine's selection for that input.
+ */
+function designKey(
+	input: ResidentialInput,
+	selected: NonNullable< ResidentialResult[ 'selected' ] >
+): string {
+	const lines = selected.lines
+		.map( ( line ) => `${ line.product?.id ?? 0 }x${ line.quantity }` )
+		.join( ',' );
+	return `${ JSON.stringify( input ) }|${ selected.inverter.id }|${
+		selected.battery?.product.id ?? 0
+	}|${ lines }`;
+}
+
 function errorText( error: unknown ): string {
 	if ( error instanceof EngineError ) {
 		if ( error.kind === 'unavailable' ) {
@@ -104,17 +124,25 @@ export function ResidentialPanel( {
 	>( 'none' );
 	const [ saveState, setSaveState ] = useState< SaveState >( 'idle' );
 	const [ savedUrl, setSavedUrl ] = useState< string | null >( null );
-	// The save this panel made, so "Ask Genie" saves once and asks about the
-	// solution it already has (#496). A recalculation clears it with the state.
-	const [ saved, setSaved ] = useState< SavedSolution | null >( null );
+	// The save this panel made and the design it belongs to, so "Ask Genie"
+	// saves once and asks about the solution it already has (#496). A
+	// recalculation clears it; a save of another design never fills it.
+	const saved = useRef< { key: string; record: SavedSolution } | null >(
+		null
+	);
 	const [ askState, setAskState ] = useState< AskState >( 'idle' );
 	// A double click must not save twice: the state disables the button on the
 	// next render, the ref guards the same tick; a save in flight is the one
-	// promise both the Save button and Ask Genie await.
-	const asking = useRef( false );
-	const saveInFlight = useRef< Promise< SavedSolution | null > | null >(
-		null
-	);
+	// promise both the Save button and Ask Genie await, and only for the design
+	// it was started for.
+	const askingKey = useRef< string | null >( null );
+	const saveInFlight = useRef< {
+		key: string;
+		promise: Promise< SavedSolution | null >;
+	} | null >( null );
+	// Bumped by every calculation: a save or an ask that resolves after it
+	// belongs to the previous design and is dropped silently.
+	const designEpoch = useRef( 0 );
 	const results = useRef< HTMLDivElement >( null );
 	const [ viewed, setViewed ] = useState( 0 );
 	const reportReady = status === 'done' && !! result?.selected;
@@ -160,13 +188,14 @@ export function ResidentialPanel( {
 	}, [ config.openRoof, defaults?.plz ] );
 
 	async function calculate( next: ResidentialInput ) {
+		designEpoch.current += 1;
 		setInput( next );
 		setStatus( 'computing' );
 		setError( '' );
 		setStatuses( new Map() );
 		setAddOutcome( 'none' );
 		setSaveState( 'idle' );
-		setSaved( null );
+		saved.current = null;
 		setAskState( 'idle' );
 		results.current?.scrollIntoView( {
 			block: 'start',
@@ -210,20 +239,21 @@ export function ResidentialPanel( {
 		setAdding( false );
 	}
 
-	async function save(): Promise< SavedSolution | null > {
-		// One save at a time: the Save button and the report's Ask Genie share
-		// this path, and a click on Ask while a save is still in flight must
-		// await that save, not make a second solution post.
-		if ( saveInFlight.current ) {
-			return saveInFlight.current;
-		}
+	async function save( fromAsk = false ): Promise< SavedSolution | null > {
 		if ( ! input || ! result?.selected ) {
 			return null;
 		}
-		// The values this save describes, fixed now: a recalculation while the
-		// POST is in flight must not change what the saved solution holds.
 		const savingInput = input;
 		const savingSelected = result.selected;
+		const key = designKey( savingInput, savingSelected );
+		// A click on Ask while this design's save is in flight awaits that save;
+		// a save of another design is not reused.
+		if ( saveInFlight.current?.key === key ) {
+			return saveInFlight.current.promise;
+		}
+		const epoch = designEpoch.current;
+		// The values this save describes, fixed now: a recalculation while the
+		// POST is in flight must not change what the saved solution holds.
 		const savingLines = draftLines();
 		const savingReport = result.report;
 		const work = ( async (): Promise< SavedSolution | null > => {
@@ -247,20 +277,31 @@ export function ResidentialPanel( {
 					},
 					config.locale
 				);
-				setSavedUrl( record.url );
-				setSaved( record );
-				setSaveState( 'saved' );
+				// A recalculation while the save or its report PDF was in
+				// flight makes this record stale: drop it silently, never
+				// offer it as the current design's solution.
+				if ( designEpoch.current === epoch ) {
+					setSavedUrl( record.url );
+					saved.current = { key, record };
+					setSaveState( 'saved' );
+				}
 				return record;
 			} catch {
-				setSaveState( 'failed' );
+				// One failure sentence: the Save button's own status for its
+				// click, the report's Ask status when Ask started the save.
+				if ( designEpoch.current === epoch ) {
+					setSaveState( fromAsk ? 'idle' : 'failed' );
+				}
 				return null;
 			}
 		} )();
-		saveInFlight.current = work;
+		saveInFlight.current = { key, promise: work };
 		try {
 			return await work;
 		} finally {
-			saveInFlight.current = null;
+			if ( saveInFlight.current?.promise === work ) {
+				saveInFlight.current = null;
+			}
 		}
 	}
 
@@ -271,18 +312,37 @@ export function ResidentialPanel( {
 	// WooCommerce session and has no post (C30): there is nothing to read yet,
 	// and the report asks them to sign in, where the claim makes it theirs.
 	async function ask() {
-		if ( ! input || ! result?.selected || asking.current ) {
+		if ( ! input || ! result?.selected ) {
 			return;
 		}
-		asking.current = true;
+		const key = designKey( input, result.selected );
+		if ( askingKey.current === key ) {
+			return;
+		}
+		const epoch = designEpoch.current;
+		askingKey.current = key;
 		setAskState( 'saving' );
 		let target: SavedSolution | null = null;
 		try {
-			target = saved ?? ( await save() );
+			target =
+				saved.current?.key === key
+					? saved.current.record
+					: await save( true );
 		} finally {
-			asking.current = false;
+			if ( askingKey.current === key ) {
+				askingKey.current = null;
+			}
+		}
+		// A recalculation happened while the save ran: the record describes the
+		// previous design. The new report's Ask starts its own save; do not
+		// open Genie on the design the customer has already left.
+		if ( designEpoch.current !== epoch ) {
+			return;
 		}
 		if ( ! target ) {
+			// The report carries the failure sentence; the Save status would
+			// repeat it (or still show a save the customer did not click).
+			setSaveState( 'idle' );
 			setAskState( 'failed' );
 			return;
 		}
@@ -444,7 +504,7 @@ export function ResidentialPanel( {
 							calculate( { ...input, battery_id: id } )
 						}
 						onAddAll={ addAll }
-						onSave={ save }
+						onSave={ () => void save() }
 					/>
 				) : null }
 			</section>

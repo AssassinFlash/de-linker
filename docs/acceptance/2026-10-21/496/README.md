@@ -4,11 +4,13 @@
 `http://127.0.0.1:9268`, Genie `http://127.0.0.1:9269`. No inquiry, no registration, no
 login form mail: the two walk accounts were created with WP-CLI. No mail was sent.
 
-Accounts: **owner** user 43 (`w496owner`, email withheld; approved, and set to pending and
-restricted for those gates), **other** user 44 (`w496other`). Fixture: PLZ 80538, 5000 kWh,
-10 kWp, three-phase, no backup.
+Accounts: **owner** user 43 (`w496owner`; approved, and set to pending and restricted for
+those gates), **other** user 44 (`w496other`). The walk logs in with the local stack's
+one-time links (`W496_OWNER_LOGIN` / `W496_OTHER_LOGIN`, from
+`just login w496 --user=…`); no password is stored in the repository. Fixture: PLZ 80538,
+5000 kWh, 10 kWp, three-phase, no backup.
 
-Run at the PR head after the rebase onto main (#500/#499/#498). The walk (`walk.mjs`) clicks the configurator: inputs → solution → design report →
+Run at the #496 head after the rebase onto main (#500/#499/#498/#501). The walk (`walk.mjs`) clicks the configurator: inputs → solution → design report →
 **Ask Genie**. It records the save response, the Genie turn's page context, the answer
 text, the product cards' price lines, and direct ability calls. `record.json` is the raw
 record; the screenshots are in `shots/`.
@@ -17,24 +19,26 @@ record; the screenshots are in `shots/`.
 
 | State | Saves | Genie turns (`page.solution_id`) | Evidence |
 | --- | --- | --- | --- |
-| approved EN 1440 | 201, id 8048 | 1 turn, `8048` | [answer](shots/approved-en-1440-answer.png), [cards](shots/approved-en-1440-cards.png) |
-| approved EN 390 | 201, id 8050 | 1 turn, `8050` | [answer](shots/approved-en-390-answer.png), [cards](shots/approved-en-390-cards.png) |
-| approved DE 1440 | 201, id 8052 | 1 turn, `8052` | [answer](shots/approved-de-1440-answer.png), [cards](shots/approved-de-1440-cards.png) |
-| approved DE 390 | 201, id 8054 | 1 turn, `8054` | [answer](shots/approved-de-390-answer.png), [cards](shots/approved-de-390-cards.png) |
+| approved EN 1440 | 201, id 8062 | 2 turns, `8062` | [answer](shots/approved-en-1440-answer.png), [cards](shots/approved-en-1440-cards.png) |
+| approved EN 390 | 201, id 8064 | 2 turns, `8064` | [answer](shots/approved-en-390-answer.png), [cards](shots/approved-en-390-cards.png) |
+| approved DE 1440 | 201, id 8066 | 2 turns, `8066` | [answer](shots/approved-de-1440-answer.png), [cards](shots/approved-de-1440-cards.png) |
+| approved DE 390 | 201, id 8068 | 2 turns, `8068` | [answer](shots/approved-de-390-answer.png), [cards](shots/approved-de-390-cards.png) |
 | guest EN 1440 | 202, `id: 0` | 0 | [report + sign-in note](shots/guest-en-1440-report.png) |
 | guest EN 390 | 202, `id: 0` | 0 | [report + sign-in note](shots/guest-en-390-report.png) |
 | guest DE 1440 | 202, `id: 0` | 0 | [report + sign-in note](shots/guest-de-1440-report.png) |
 | guest DE 390 | 202, `id: 0` | 0 | [report + sign-in note](shots/guest-de-390-report.png) |
 
 The save precedes the turn in every approved case: the recorded `/linker/v1/solutions`
-response is 201 with the id the turn then carries. The guest's save is the session keep
+response is 201 with the id the turns then carry. Approved cases have **two** turns:
+the entry question and the “show me the products as cards” follow-up; both carry
+`page.solution_id =` the saved id (the column above). The guest's save is the session keep
 (202, `id: 0`, C30): the report shows “Your saved solution stays in this browser for
 now…” / “Ihre gespeicherte Lösung bleibt vorerst in diesem Browser…” and **no** Genie turn
 is sent.
 
 **Save once, ask once:** `record.json` → `reuse = {savePosts: 1, statuses: [201]}` after
 clicking **Save solution** and then **Ask Genie**: the report's button reuses the save,
-and the single turn carries `solution_id: 8056`. A save in flight is awaited, not
+and the single turn carries `solution_id: 8070`. A save in flight is awaited, not
 repeated (the promise both paths share, tested in `App.test.tsx`).
 
 ## The answer cites the report's own figures
@@ -78,7 +82,7 @@ including the Genie token path with no cookie session.
 
 The read-solution payload carries no price-bearing fact at any state. The cards the answer
 shows take their price line from the account's own product ability (`prices.fill`), the
-one price rule of the site. Pending/restricted screenshots:
+one price rule of the site. Pending/restricted evidence is EN at 1440 only (one state each):
 [pending](shots/pending-en-1440-answer.png), [restricted](shots/restricted-en-1440-answer.png).
 
 ## Regression row and tests
@@ -86,19 +90,24 @@ one price rule of the site. Pending/restricted screenshots:
 - `services/genie/tests/fixtures/339/manifest.json` → `496-saved-solution` (locales en/de;
   accounts approved/pending/restricted/guest; names the 401/403 and no-money conditions).
   `services/genie/tests/test_solution.py` names the row and holds the reader/route tests.
-- PHP: `ReadSolutionTest` 10 tests/46 assertions; `ReadSolutionRestTest` 6 tests/57
+- PHP: `ReadSolutionTest` 10 tests/49 assertions; `ReadSolutionRestTest` 6 tests/57
   assertions on `w496` and in CI (`mu-smoke`, filter `ReadSolutionRestTest`);
   Registrar/PageContext/UserContext/Entries tests updated.
-- Python: `services/genie` pytest 1838 passed, 1 skipped; ruff, mypy clean.
-- JS: linker-tools vitest 355 passed; types, ESLint, Prettier clean.
+- Python: `services/genie` pytest 1880 passed, 1 skipped (after the final rebase incl. #501); ruff, mypy clean.
+- JS: linker-tools vitest 374 passed; types, ESLint, Prettier clean.
 - `just check` exit 0 (PHPCS + PHPStan level 8 all projects, JS checks, Python checks,
   German copy, i18n coverage/validity, build manifest).
 - Build: `npm run build` + `build:check` in linker-tools.
 
 ## Open
 
-- **Coordinator sign-off: pending** on `copy-review.md`.
+- **Coordinator sign-off: approved (2026-10-21)** on `copy-review.md`.
 - This is the local snapshot walk; production re-verification happens with the deploy
   (the ticket's acceptance is local, and AGENTS.md keeps production out of first looks).
 - The owner's conversations from the walk remain in `w496` (local only); the walk deletes
   the thread at the start of each case.
+- Known edge, recorded not changed: `SavedSolutions::owner()` checks the post type and
+  author but not `post_status`, so a trashed saved solution is still readable by its owner
+  through `linker/read-solution` if its id is known. The report entry only references a
+  solution the configurator just saved; the trash is a staff action and no customer flow
+  hands out the id. Changing the ownership rule is a separate decision.
