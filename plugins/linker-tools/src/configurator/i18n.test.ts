@@ -77,21 +77,23 @@ function used( dirs: string[] ): Map< string, number > {
 const messages = german.locale_data.messages as Record< string, unknown >;
 
 test( 'every configurator text has a German translation', () => {
-	const missing = [ ...used( [ 'src/configurator' ] ).keys() ].filter(
-		( id ) => ! ( id in messages )
-	);
+	const missing = [
+		...used( [ 'src/configurator', 'src/protection' ] ).keys(),
+	].filter( ( id ) => ! ( id in messages ) );
 	expect( missing ).toEqual( [] );
 } );
 
 test( 'plural texts carry both German forms', () => {
-	const wrong = [ ...used( [ 'src/configurator' ] ) ].filter(
+	const wrong = [
+		...used( [ 'src/configurator', 'src/protection' ] ),
+	].filter(
 		( [ id, forms ] ) => ( messages[ id ] as string[] ).length !== forms
 	);
 	expect( wrong ).toEqual( [] );
 } );
 
 test( 'the translation file holds only texts the code uses', () => {
-	const ids = used( [ 'src/configurator' ] );
+	const ids = used( [ 'src/configurator', 'src/protection' ] );
 	const unused = Object.keys( messages ).filter(
 		( id ) => id && ! ids.has( id )
 	);
@@ -114,14 +116,14 @@ const genieMessages = germanGenie.locale_data.messages as Record<
 >;
 
 test( 'every genie text has a German translation', () => {
-	const missing = [ ...used( [ 'src/genie', 'src/shared' ] ).keys() ].filter(
-		( id ) => ! ( id in genieMessages ) && ! ( id in messages )
-	);
+	const missing = [
+		...used( [ 'src/genie', 'src/shared', 'src/protection' ] ).keys(),
+	].filter( ( id ) => ! ( id in genieMessages ) && ! ( id in messages ) );
 	expect( missing ).toEqual( [] );
 } );
 
 test( 'the genie translation file holds only texts the code uses', () => {
-	const ids = used( [ 'src/genie', 'src/shared' ] );
+	const ids = used( [ 'src/genie', 'src/shared', 'src/protection' ] );
 	const unused = Object.keys( genieMessages ).filter(
 		( id ) => id && ! ids.has( id )
 	);

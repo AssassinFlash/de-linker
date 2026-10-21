@@ -82,6 +82,12 @@ function designKey(
 
 function errorText( error: unknown ): string {
 	if ( error instanceof EngineError ) {
+		if ( error.kind === 'limited' ) {
+			return __(
+				'The calculation is temporarily unavailable. Your entries are still here. Please try again later.',
+				'linker-tools'
+			);
+		}
 		if ( error.kind === 'unavailable' ) {
 			return __(
 				'The yield service did not answer. Try again in a minute.',

@@ -133,7 +133,9 @@ final class EngineProxy {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function forward( WP_REST_Request $request ) {
-		$path    = trim( (string) $request->get_param( 'path' ), '/' );
+		// The native route capture is authoritative. JSON/query `path` must not
+		// turn an unprotected read/unknown route into paid engineering work.
+		$path    = trim( (string) ( $request->get_url_params()['path'] ?? '' ), '/' );
 		$allowed = false;
 		foreach ( self::PATHS as $pattern ) {
 			if ( 1 === preg_match( $pattern, $path ) ) {
@@ -220,8 +222,17 @@ final class EngineProxy {
 			// Generous: one roof outline can spend seconds in the LoD2 source
 			// before the engine answers, and the engine caps its own work.
 			'timeout' => 60.0,
-			'headers' => array( 'Content-Type' => 'application/json' ),
+			'headers' => array(
+				'Content-Type'           => 'application/json',
+				'X-Linker-Service-Token' => defined( 'LINKER_GENIE_SERVICE_TOKEN' ) ? (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ) : '',
+			),
 		);
+		if ( class_exists( \Linker\Commerce\Protection\Identity::class ) ) {
+			$identity = \Linker\Commerce\Protection\Identity::current();
+			if ( ! is_wp_error( $identity ) ) {
+				$args['headers']['X-Linker-Resource-Subject'] = '' !== $identity->account ? $identity->account : $identity->browser;
+			}
+		}
 		if ( 'POST' === $method ) {
 			$args['body'] = $body;
 		}

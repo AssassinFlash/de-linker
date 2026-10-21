@@ -155,7 +155,7 @@ class Attachments {
 			$this->log( (string) $files->get_error_code() );
 			return $files;
 		}
-		if ( ! ( $this->take )( $who, count( $files ) ) ) {
+		if ( ! \Linker\Tools\Protection\Resources::verified() && ! ( $this->take )( $who, count( $files ) ) ) {
 			return $this->throttled();
 		}
 		return $files;

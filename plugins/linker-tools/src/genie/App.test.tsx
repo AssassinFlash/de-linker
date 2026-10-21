@@ -2683,3 +2683,43 @@ test( 'a delayed explicit refresh cannot overwrite a newer ask outside the share
 	expect( screen.getByText( 'The newer answer.' ) ).toBeVisible();
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );
+
+test( 'a resource refusal retains the question and file and offers native inquiry', async () => {
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new TurnError( 429, 'linker_admission_quota' )
+	);
+	render(
+		<App config={ { ...config(), requestPageUrl: '/proforma-request/' } } />
+	);
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: 'Keep my inverter question' },
+	} );
+	fireEvent.change(
+		document.querySelector( 'input[type="file"]' ) as HTMLInputElement,
+		{
+			target: {
+				files: [
+					new File( [ '%PDF-1.7' ], 'synthetic-datasheet.pdf', {
+						type: 'application/pdf',
+					} ),
+				],
+			},
+		}
+	);
+	const send = screen.getByRole( 'button', { name: 'Send' } );
+	await waitFor( () => expect( send ).toBeEnabled() );
+	await act( async () => fireEvent.click( send ) );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie is temporarily unavailable.'
+	);
+	expect( screen.getByLabelText( 'Ask Genie' ) ).toHaveValue(
+		'Keep my inverter question'
+	);
+	expect( screen.getByText( 'synthetic-datasheet.pdf' ) ).toBeInTheDocument();
+	expect(
+		screen.getByRole( 'link', { name: 'Send an inquiry' } )
+	).toHaveAttribute( 'href', '/proforma-request/' );
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
+} );

@@ -98,6 +98,21 @@ final class DeepSeekClient implements Client {
 				$endpoint = $stub;
 			}
 		}
+		// #508/#521: this is one actual paid request, independent of public
+		// observe mode. Missing Tools/service guard must never grant a permit.
+		$mode_environment = getenv( 'LINKER_PROVIDER_BUDGET_MODE' );
+		$budget_mode      = defined( 'LINKER_PROVIDER_BUDGET_MODE' ) ? constant( 'LINKER_PROVIDER_BUDGET_MODE' ) : ( is_string( $mode_environment ) ? $mode_environment : 'off' );
+		if ( 'off' !== $budget_mode ) {
+			/**
+			 * Private Tools dispatch budget.
+			 *
+			 * @since 0.1.0
+			 */
+			$permit = 'enforce' === $budget_mode ? apply_filters( 'linker_tools_provider_debit', false, 'deepseek' ) : false; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Tools owns the trusted provider budget.
+			if ( true !== $permit ) {
+				throw new TranslationFailed( 'Provider budget unavailable or exhausted.', true );
+			}
+		}
 		$response = wp_remote_post(
 			$endpoint,
 			array(

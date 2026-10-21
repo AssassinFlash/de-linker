@@ -141,7 +141,20 @@ final class PluginTest extends TestCase {
 		WP_Mock::expectActionAdded( 'edited_term', array( $page_cache, 'term_saved' ), 10, 3 );
 		WP_Mock::expectActionAdded( 'set_object_terms', array( $page_cache, 'object_terms_set' ), 10, 6 );
 
-		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero, $page_cache ) )->register();
+		$replies       = new \Linker\Tools\Protection\Replies();
+		$native_engine = new \Linker\Tools\Protection\NativeEngine();
+		$resources     = new \Linker\Tools\Protection\Resources( $replies, $native_engine );
+		WP_Mock::expectFilterAdded( 'linker_tools_engine_request', array( $native_engine, 'request' ), 10, 3 );
+		$provider_budget = new \Linker\Tools\Protection\ProviderBudget();
+		WP_Mock::expectFilterAdded( 'linker_tools_provider_debit', array( $provider_budget, 'take' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'rest_dispatch_request', array( $resources, 'dispatch' ), 10, 4 );
+		WP_Mock::expectFilterAdded( 'linker_commerce_public_business_context', array( $resources, 'context' ) );
+		WP_Mock::expectActionAdded( 'init', array( $replies, 'register' ) );
+		WP_Mock::expectActionAdded( 'linker_tools_reply_cleanup', array( $replies, 'expire' ) );
+		WP_Mock::expectActionAdded( 'wp_print_footer_scripts', array( $resources, 'assets' ), 0 );
+		WP_Mock::userFunction( 'wp_next_scheduled', array( 'return' => 1 ) );
+
+		( new Plugin( $assets, $redirects, $chrome, $conversations, $proxy, $entries, $retention, $user_context, $windpress, $mount, $engine, $quality, $quality_route, $quality_page, $preview, $mail, $contact, $inquiry, $inquiry_card, $hero, $page_cache, $resources, $provider_budget ) )->register();
 
 		$this->assertSame( array( 'registered' ), $entries->calls );
 		$this->assertTrue( $user_context->registered, 'the identity seam is hooked' );

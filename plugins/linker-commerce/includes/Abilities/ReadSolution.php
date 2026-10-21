@@ -263,11 +263,27 @@ final class ReadSolution {
 		if ( is_callable( $this->fetch ) ) {
 			return ( $this->fetch )( $url, $body );
 		}
+		// #521: a saved design read can recompute. The trusted Tools adapter
+		// shares sizing quotas/deduplication; no browser can supply this permit.
+		$mode_environment = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );
+		$guard_mode       = defined( 'LINKER_PUBLIC_PROTECTION_MODE' ) ? constant( 'LINKER_PUBLIC_PROTECTION_MODE' ) : ( is_string( $mode_environment ) ? $mode_environment : 'off' );
+		if ( 'off' !== $guard_mode ) {
+			/**
+			 * Server-only account-owned engine request; Tools returns the native result.
+			 *
+			 * @since 0.1.0
+			 */
+			return apply_filters( 'linker_tools_engine_request', new WP_Error( 'linker_engine_admission', 'Sizing could not be admitted.' ), $url, $body ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Trusted Tools resource seam.
+		}
 		$response = wp_remote_post(
 			$url,
 			array(
 				'timeout' => self::TIMEOUT_SECONDS,
-				'headers' => array( 'Content-Type' => 'application/json' ),
+				'headers' => array(
+					'Content-Type'              => 'application/json',
+					'X-Linker-Service-Token'    => defined( 'LINKER_GENIE_SERVICE_TOKEN' ) ? (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ) : '',
+					'X-Linker-Resource-Subject' => \Linker\Commerce\Protection\Identity::account( get_current_user_id() ),
+				),
 				'body'    => $body,
 			)
 		);

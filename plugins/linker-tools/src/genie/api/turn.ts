@@ -21,6 +21,8 @@ import type { Upload } from '../attachments/prepare';
 import type { SentInquiry } from './inquiry';
 import { restoreArtifacts, type ArtifactContext } from './historyArtifacts';
 
+import { resourceFetch } from '../../protection/request';
+
 type Fetch = typeof fetch;
 
 /** A text block; its `{fact:ID}` placeholders are already filled server-side. */
@@ -389,7 +391,7 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 	// failure. Promise.resolve(fetcher()) would let that throw escape first.
 	const attempt = Promise.resolve()
 		.then( () =>
-			fetcher( turnUrl, {
+			resourceFetch( fetcher, turnUrl, {
 				method: 'POST',
 				credentials: 'same-origin',
 				headers: {
@@ -516,7 +518,7 @@ export async function readThread(
 } > {
 	const empty = { messages: [], turn: null, contacts: [], inquiries: [] };
 	try {
-		const response = await fetcher( threadUrl, {
+		const response = await resourceFetch( fetcher, threadUrl, {
 			credentials: 'same-origin',
 			// A per-visitor answer: never from the browser's cache.
 			cache: 'no-store',
@@ -598,7 +600,7 @@ export async function listConversations(
 ): Promise< ConversationList > {
 	const failed = { currentId: 0, conversations: [], ok: false };
 	try {
-		const response = await fetcher( url, {
+		const response = await resourceFetch( fetcher, url, {
 			credentials: 'same-origin',
 			cache: 'no-store',
 			headers: { 'X-WP-Nonce': nonce },
@@ -639,7 +641,7 @@ export async function selectConversation(
 	id?: number,
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< ConversationList > {
-	const response = await fetcher( url, {
+	const response = await resourceFetch( fetcher, url, {
 		method: 'POST',
 		credentials: 'same-origin',
 		cache: 'no-store',
@@ -674,7 +676,7 @@ export async function deleteConversation(
 	id: number,
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< ConversationList > {
-	const response = await fetcher( `${ url }/${ id }`, {
+	const response = await resourceFetch( fetcher, `${ url }/${ id }`, {
 		method: 'DELETE',
 		credentials: 'same-origin',
 		cache: 'no-store',
@@ -762,18 +764,22 @@ export async function emailConversation(
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< EmailResult > {
 	try {
-		const response = await fetcher( `${ url }/${ id }/email`, {
-			method: 'POST',
-			credentials: 'same-origin',
-			cache: 'no-store',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce,
-			},
-			body: JSON.stringify(
-				email ? { locale, email, ...guard } : { locale }
-			),
-		} );
+		const response = await resourceFetch(
+			fetcher,
+			`${ url }/${ id }/email`,
+			{
+				method: 'POST',
+				credentials: 'same-origin',
+				cache: 'no-store',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': nonce,
+				},
+				body: JSON.stringify(
+					email ? { locale, email, ...guard } : { locale }
+				),
+			}
+		);
 		const body = ( await response.json().catch( () => ( {} ) ) ) as {
 			status?: string;
 			to?: string;
@@ -812,15 +818,19 @@ export async function sendVote(
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< boolean > {
 	try {
-		const response = await fetcher( `${ voteUrl }/${ turnId }/vote`, {
-			method: 'POST',
-			credentials: 'same-origin',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce,
-			},
-			body: JSON.stringify( { vote } ),
-		} );
+		const response = await resourceFetch(
+			fetcher,
+			`${ voteUrl }/${ turnId }/vote`,
+			{
+				method: 'POST',
+				credentials: 'same-origin',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': nonce,
+				},
+				body: JSON.stringify( { vote } ),
+			}
+		);
 		return response.ok;
 	} catch {
 		return false;

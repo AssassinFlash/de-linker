@@ -214,17 +214,25 @@ def build_model() -> Any:
     every request (the output tool would force `required`, since TurnOutput
     leaves no direct text output) down to `auto` itself.
     """
+    import httpx2
     from openai import AsyncOpenAI
     from pydantic_ai.models.openai import OpenAIChatModel
     from pydantic_ai.profiles.openai import OpenAIModelProfile
     from pydantic_ai.providers.deepseek import DeepSeekProvider
+
+    from linker_genie.provider_budget import OpenAITransport
 
     access = deepseek_access()
     return OpenAIChatModel(
         model_name(),
         provider=DeepSeekProvider(
             openai_client=AsyncOpenAI(
-                base_url=access.base_url.rstrip("/") + "/v1", api_key=access.key
+                base_url=access.base_url.rstrip("/") + "/v1",
+                api_key=access.key,
+                # cycle.run already owns the bounded retry; keep budget errors
+                # out of SDK connection retries and debit every actual send.
+                max_retries=0,
+                http_client=httpx2.AsyncClient(transport=OpenAITransport()),
             ),
         ),
         profile=OpenAIModelProfile(
@@ -317,7 +325,19 @@ def make_generate(
             model_settings=settings,
             retries={"output": 1, "tools": TOOL_RETRIES},
         )
-        result = agent.run_sync(_user_prompt(request, retry_reason, prepared))
+        try:
+            result = agent.run_sync(_user_prompt(request, retry_reason, prepared))
+        except Exception as error:
+            # The SDK wraps transport failures. Budget refusal must remain an
+            # explicit refusal, rather than a generated degraded answer.
+            from linker_judges.budget import BudgetError
+
+            cause: BaseException | None = error
+            while cause is not None:
+                if isinstance(cause, BudgetError):
+                    raise cause from None
+                cause = cause.__cause__
+            raise
         output = result.output
         if not isinstance(output, TurnOutput):
             output = TurnOutput.model_validate(output)

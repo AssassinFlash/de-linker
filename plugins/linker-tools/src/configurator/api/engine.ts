@@ -20,6 +20,7 @@ export type EngineErrorKind =
 	| 'invalid' // 422: the engine refused an input (`field` names it)
 	| 'unavailable' // 503: PVGIS or the LoD2 source did not answer
 	| 'not_found' // 404: unknown postcode
+	| 'limited' // 429: a resource allowance or actual work slot is full
 	| 'network'; // no answer at all
 
 export class EngineError extends Error {
@@ -30,6 +31,8 @@ export class EngineError extends Error {
 		super( kind );
 	}
 }
+
+import { resourceFetch } from '../../protection/request';
 
 type Fetch = typeof fetch;
 
@@ -49,6 +52,9 @@ async function call( response: Promise< Response > ): Promise< Response > {
 		field = body?.detail?.field;
 	} catch {
 		field = undefined;
+	}
+	if ( answer.status === 429 ) {
+		throw new EngineError( 'limited' );
 	}
 	if ( answer.status === 422 ) {
 		throw new EngineError( 'invalid', field );
@@ -89,7 +95,7 @@ export function engineClient(
 ): EngineClient {
 	const post = async ( path: string, body: unknown ) =>
 		call(
-			fetcher( `${ baseUrl }${ path }`, {
+			resourceFetch( fetcher, `${ baseUrl }${ path }`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify( body ),
@@ -97,7 +103,11 @@ export function engineClient(
 		);
 	return {
 		place: async ( plz ) =>
-			( await call( fetcher( `${ baseUrl }/geo/plz/${ plz }` ) ) ).json(),
+			(
+				await call(
+					resourceFetch( fetcher, `${ baseUrl }/geo/plz/${ plz }` )
+				)
+			).json(),
 		residential: async ( input ) =>
 			( await post( '/design/residential', input ) ).json(),
 		commercial: async ( input ) =>

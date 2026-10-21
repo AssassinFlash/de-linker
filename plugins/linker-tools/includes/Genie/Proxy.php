@@ -506,7 +506,7 @@ class Proxy {
 		$started = microtime( true );
 		$stream  = $this->post( $base . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
-			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
+			return $stream;
 		}
 		// An answered turn is the conversation's record, kept so a reload
 		// restores it. A second turn that snapped the same history is
@@ -649,9 +649,10 @@ class Proxy {
 			$url,
 			array(
 				'headers' => array(
-					'Content-Type'     => 'application/json',
-					'Accept'           => 'text/event-stream',
-					self::TOKEN_HEADER => $this->token,
+					'Content-Type'              => 'application/json',
+					'Accept'                    => 'text/event-stream',
+					self::TOKEN_HEADER          => $this->token,
+					'X-Linker-Resource-Subject' => $this->resource_subject( $body ),
 				),
 				'body'    => (string) wp_json_encode( $body ),
 				// TURN_BUDGET: one turn makes at most four ability calls (each
@@ -666,10 +667,33 @@ class Proxy {
 			return $response;
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( in_array( $code, array( 429, 503 ), true ) ) {
+			$failure = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+			if ( is_array( $failure ) && ( str_starts_with( (string) ( $failure['code'] ?? '' ), 'provider_budget_' ) || str_starts_with( (string) ( $failure['code'] ?? '' ), 'genie_resource_' ) ) ) {
+				return new WP_Error( 'linker_genie_quota', __( 'Genie is temporarily unavailable. Your message is still here. You can send an inquiry to our team.', 'linker-tools' ), array( 'status' => $code ) );
+			}
+		}
 		if ( $code >= 400 ) {
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}
 		return (string) wp_remote_retrieve_body( $response );
+	}
+
+	/**
+	 * Server-selected stable subject for actual service work, across conversations.
+	 *
+	 * @param array<string,mixed> $body Native validated turn, never an arbitrary URL.
+	 */
+	private function resource_subject( array $body ): string {
+		if ( class_exists( \Linker\Commerce\Protection\Identity::class ) ) {
+			$identity = \Linker\Commerce\Protection\Identity::current();
+			if ( ! is_wp_error( $identity ) ) {
+				return '' !== $identity->account ? $identity->account : $identity->browser;
+			}
+		}
+		// Off/observe must retain native behavior if a new cookie cannot be
+		// issued. Enforce already established stable identity before callback.
+		return hash( 'sha256', 'native-genie-conversation|' . (string) ( $body['conversation_id'] ?? '' ) );
 	}
 
 	/**

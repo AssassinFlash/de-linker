@@ -595,6 +595,10 @@ class Anonymizer:
         )
 
     def _posts(self, table: Table, row: Row) -> bool:
+        # #521 private replay receipts contain customer-visible answers/PDFs.
+        # They are not content and must never travel into development snapshots.
+        if row[table.index("post_type")].text == "linker_tool_reply":
+            return False
         if row[table.index("post_type")].text in ORDER_POST_TYPES:
             # A classic order keeps its order key in post_password and the
             # customer's note in its excerpt.
@@ -644,6 +648,8 @@ class Anonymizer:
         """The buyer's order meta, in wp_postmeta or wp_wc_orders_meta."""
         key = row[table.index("meta_key")].text or ""
         value = row[table.index("meta_value")].text
+        if key in {"_linker_binding", "_linker_recipient", "_linker_expires"}:
+            return False
         if key in EMPTIED_ORDER_META:
             self._set(table, row, "meta_value", "")
         elif key == "_order_key" and value:

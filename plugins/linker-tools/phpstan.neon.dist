@@ -11,6 +11,8 @@ parameters:
 	excludePaths:
 		# Stand-ins for WordPress classes; PHPStan reads the real ones from the stubs.
 		- tests/php/Doubles
+	scanDirectories:
+		- ../linker-commerce/includes/Protection
 	scanFiles:
 		# The optional commerce digest boundary; no runtime dependency before
 		# the linker_commerce_digest_blocks filter runs.

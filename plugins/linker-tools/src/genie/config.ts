@@ -67,6 +67,7 @@ export interface GenieConfig {
 	contactUrl: string;
 	/** The inquiry confirmation card's route (#250). */
 	inquiryUrl: string;
+	requestPageUrl?: string;
 }
 
 function readPage(
@@ -120,6 +121,7 @@ export function readConfig( element: HTMLElement ): GenieConfig {
 		mailStarted: data.mailStarted ?? '',
 		mailStartedNonce: data.mailStartedNonce ?? '',
 		contactUrl: data.contactUrl ?? '/wp-json/linker-ai/v1/genie/contact',
+		requestPageUrl: data.requestPageUrl,
 		inquiryUrl: data.inquiryUrl ?? '/wp-json/linker-ai/v1/genie/inquiry',
 	};
 }

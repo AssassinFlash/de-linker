@@ -17,7 +17,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import type { EngineClient } from '../api/engine';
+import { EngineError, type EngineClient } from '../api/engine';
 import type { StoreClient } from '../api/store';
 import type { Config } from '../config';
 import { Field } from '../Field';
@@ -203,12 +203,17 @@ export function CommercialPanel( {
 			setProducts(
 				new Map( found.map( ( product ) => [ product.id, product ] ) )
 			);
-		} catch {
+		} catch ( error ) {
 			setFailure(
-				__(
-					'The load profile could not be read, or the calculation failed. Check the file and try again.',
-					'linker-tools'
-				)
+				error instanceof EngineError && error.kind === 'limited'
+					? __(
+							'The calculation is temporarily unavailable. Your entries are still here. Please try again later.',
+							'linker-tools'
+						)
+					: __(
+							'The load profile could not be read, or the calculation failed. Check the file and try again.',
+							'linker-tools'
+						)
 			);
 		}
 		setBusy( false );

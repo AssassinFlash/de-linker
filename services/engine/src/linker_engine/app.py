@@ -25,6 +25,7 @@ from fastapi.responses import Response
 from . import commercial, geo, imagery, pdf, report, residential
 from .compatibility import Compatibility
 from .engine import Engine
+from .gate import Gate
 from .models import (
     CommercialInput,
     CommercialResult,
@@ -95,6 +96,9 @@ def now() -> str:
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     app = FastAPI(title="Solution Configurator engine")
+    # Commercial CSV is capped at 4MB; report logo at 700kB (models.py).
+    # 6MiB leaves JSON headroom without accepting unbounded parse/temp work.
+    app.add_middleware(Gate, limit=6 * 1024 * 1024)
     origins = [
         o.strip()
         for o in os.environ.get("LINKER_ENGINE_CORS_ORIGINS", "").split(",")
