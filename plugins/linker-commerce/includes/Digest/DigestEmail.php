@@ -84,6 +84,50 @@ final class DigestEmail extends TeamEmail {
 	}
 
 	/**
+	 * Adds the digest presentation to this email only. WooCommerce inlines it
+	 * when the message is sent (docs/specs/74-daily-digest.md).
+	 *
+	 * @param string $css   The email stylesheet so far.
+	 * @param mixed  $email The email being rendered.
+	 */
+	public static function append_styles( string $css, $email ): string {
+		if ( ! is_object( $email ) || ! isset( $email->id ) || self::ID !== $email->id ) {
+			return $css;
+		}
+		return $css . self::presentation_css();
+	}
+
+	/**
+	 * Presentation for the digest body. Class selectors, so the template stays
+	 * free of style attributes.
+	 */
+	public static function presentation_css(): string {
+		return '
+			body, #outer_wrapper, #wrapper, #inner_wrapper, #template_container, #template_body, #body_content { background-color: #f4f4f5; }
+			#template_header_image { padding: 28px 32px 0; }
+			.email-logo-text, .email-logo-text a { color: #71717a; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+			#template_header, #header_wrapper { background-color: #f4f4f5; }
+			#header_wrapper { padding: 8px 32px 0; }
+			#header_wrapper h1 { color: #18181b; font-size: 28px; font-weight: 650; letter-spacing: -0.4px; }
+			#body_content_inner_cell { background-color: #f4f4f5; padding: 8px 32px 8px; }
+			#credit { border-top: 0; color: #a1a1aa; padding: 8px 32px 28px; }
+			.linker-digest-date { margin: 0 0 16px; color: #71717a; font-size: 13px; }
+			.linker-digest-card { width: 100%; background-color: #ffffff; border: 1px solid #e6e6ea; border-radius: 12px; margin: 0 0 12px; }
+			.linker-digest-num { width: 56px; padding: 16px 0 4px 16px; font-size: 26px; line-height: 1; font-weight: 700; color: #18181b; vertical-align: top; }
+			.linker-digest-title { padding: 18px 16px 4px 0; font-size: 15px; line-height: 1.35; font-weight: 650; color: #18181b; vertical-align: top; }
+			.linker-digest-body { padding: 0 16px 8px; }
+			.linker-digest-rows { width: 100%; }
+			.linker-digest-main { padding: 12px 0; border-top: 1px solid #f0f0f2; font-size: 14px; line-height: 1.45; color: #18181b; }
+			.linker-digest-detail { color: #71717a; font-size: 12px; }
+			.linker-digest-link { color: #6d28d9; font-size: 13px; font-weight: 600; text-decoration: none; }
+			.linker-digest-quiet { width: 100%; background-color: #ffffff; border: 1px solid #e6e6ea; border-radius: 12px; margin: 4px 0 0; }
+			.linker-digest-empty { padding: 12px 16px; border-top: 1px solid #f0f0f2; color: #71717a; font-size: 13px; line-height: 1.4; }
+			.linker-digest-quiet tr:first-child .linker-digest-empty { border-top: 0; }
+			.linker-digest-empty strong { color: #3f3f46; font-weight: 600; }
+		';
+	}
+
+	/**
 	 * The blocks for the template.
 	 *
 	 * @return array<string, mixed>

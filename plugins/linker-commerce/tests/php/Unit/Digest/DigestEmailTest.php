@@ -84,4 +84,18 @@ final class DigestEmailTest extends TestCase {
 		$this->assertSame( 'html', $email->get_email_type() );
 		$this->assertSame( array( 'html' => 'HTML' ), $email->get_email_type_options() );
 	}
+
+	/**
+	 * The presentation is added only while this email is rendering.
+	 */
+	public function test_styles_attach_only_to_the_digest(): void {
+		$other = (object) array( 'id' => 'customer_note' );
+		$this->assertSame( 'base', DigestEmail::append_styles( 'base', $other ) );
+
+		$ours = (object) array( 'id' => 'linker_digest' );
+		$css  = DigestEmail::append_styles( 'base', $ours );
+
+		$this->assertStringContainsString( 'linker-digest-card', $css );
+		$this->assertStringStartsWith( 'base', $css );
+	}
 }
