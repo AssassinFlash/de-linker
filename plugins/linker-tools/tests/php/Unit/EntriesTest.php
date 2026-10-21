@@ -533,6 +533,11 @@ click(pill);
 window.dispatchEvent(new CustomEvent('linker-genie-ask', {
 	detail: { refresh: true, fromHome: true }
 }));
+// The design report's "Ask Genie" (#496) hands the saved solution's id on
+// with the first question; the app sends it in the page context of every turn.
+window.dispatchEvent(new CustomEvent('linker-genie-ask', {
+	detail: { message: 'What does my saved solution say?', solution: 45 }
+}));
 process.stdout.write(JSON.stringify({
 	asks: asks,
 	opens: opens,
@@ -558,7 +563,7 @@ JS
 		unlink( $fixture );
 		$this->assertSame( 0, $code, $err );
 		$result = (array) json_decode( (string) $out, true );
-		$this->assertSame( array( '', 'Where is my Proforma?', '', '' ), $result['asks'] ?? null, 'every opener asks, the anchor included' );
+		$this->assertSame( array( '', 'Where is my Proforma?', '', '', 'What does my saved solution say?' ), $result['asks'] ?? null, 'every opener asks, the anchor included' );
 		$this->assertFalse( (bool) ( $result['buttonPrevented'] ?? true ), 'a button opener has no default action to cancel' );
 		$this->assertTrue( (bool) ( $result['anchorPrevented'] ?? false ), 'the anchor opener must not navigate away from the page' );
 		$this->assertSame(
@@ -568,9 +573,22 @@ JS
 				'list'     => false,
 				'refresh'  => true,
 				'fromHome' => true,
+				'solution' => 0,
 			),
 			$result['opens'][3] ?? null,
 			'the hero handoff re-reads the thread and names its origin'
+		);
+		$this->assertSame(
+			array(
+				'message'  => 'What does my saved solution say?',
+				'attach'   => false,
+				'list'     => false,
+				'refresh'  => false,
+				'fromHome' => false,
+				'solution' => 45,
+			),
+			$result['opens'][4] ?? null,
+			'the report hands the saved solution on with the question'
 		);
 		$this->assertConditionsMet();
 	}

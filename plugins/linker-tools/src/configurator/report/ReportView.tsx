@@ -1,5 +1,7 @@
 /**
- * The design report under the solution, and its PDF with the installer's logo.
+ * The design report under the solution, its PDF with the installer's logo, and
+ * the way into Genie: "Ask Genie" saves the solution first and opens the dock
+ * with the saved solution's id (#496).
  */
 
 /**
@@ -20,10 +22,22 @@ const LOGO_BYTES = 500 * 1024; // the engine accepts data URLs up to about 700 k
 
 type PdfState = 'idle' | 'working' | 'failed';
 
+/**
+ * What the "Ask Genie" click did: the save it needs is running, its save
+ * failed (the configurator's own failure copy), or the solution stays in the
+ * guest's session and has no account post to read yet.
+ */
+export type AskState = 'idle' | 'saving' | 'failed' | 'signin';
+
 export interface ReportViewProps {
 	report: Report;
 	input: ResidentialInput;
 	engine: EngineClient;
+	/** Save the solution (once) and open Genie on it. */
+	onAsk: () => void;
+	askState: AskState;
+	/** Where the account shows the saved solution; the guest's sign-in link. */
+	savedUrl: string | null;
 }
 
 function readLogo( file: File ): Promise< string > {
@@ -35,7 +49,14 @@ function readLogo( file: File ): Promise< string > {
 	} );
 }
 
-export function ReportView( { report, input, engine }: ReportViewProps ) {
+export function ReportView( {
+	report,
+	input,
+	engine,
+	onAsk,
+	askState,
+	savedUrl,
+}: ReportViewProps ) {
 	const [ logo, setLogo ] = useState< { name: string; data: string } | null >(
 		null
 	);
@@ -125,6 +146,40 @@ export function ReportView( { report, input, engine }: ReportViewProps ) {
 								)
 							: '' }
 					</p>
+				</div>
+				<div className="linker-report__ask">
+					<button
+						type="button"
+						className="linker-button linker-button--secondary"
+						onClick={ onAsk }
+						disabled={ askState === 'saving' }
+						aria-busy={ askState === 'saving' }
+					>
+						{ askState === 'saving'
+							? __( 'Opening Genie…', 'linker-tools' )
+							: __( 'Ask Genie', 'linker-tools' ) }
+					</button>
+					<p className="linker-report__status" role="status">
+						{ askState === 'failed'
+							? __(
+									'The solution could not be saved. Try again.',
+									'linker-tools'
+								)
+							: '' }
+					</p>
+					{ askState === 'signin' ? (
+						<p className="linker-report__ask-note" role="status">
+							{ __(
+								'Your saved solution stays in this browser for now. Genie reads a saved solution only when it is in your account. Sign in or create an account to keep it.',
+								'linker-tools'
+							) }{ ' ' }
+							{ savedUrl ? (
+								<a href={ savedUrl }>
+									{ __( 'Sign in', 'linker-tools' ) }
+								</a>
+							) : null }
+						</p>
+					) : null }
 				</div>
 			</div>
 			<p className="linker-report__meta">

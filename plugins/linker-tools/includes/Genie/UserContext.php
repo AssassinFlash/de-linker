@@ -5,14 +5,15 @@
  *
  * The service holds no WordPress session (docs/specs/13-genie.md §B). Some
  * abilities answer for *this* customer: `linker/inquiry-status` lists their
- * inquiries, and `linker/search-products` / `linker/get-product` carry the
- * prices their account sees (#242). The shell therefore mints a short-lived,
- * signed token for the signed-in customer, hands it to the service with the
- * turn, and the service sends it back on those calls as `X-Linker-User-Context`.
- * This class signs the request in as that customer only while WordPress
- * dispatches one of those three abilities (`ABILITIES`, matched against the
- * route WordPress parsed, never the address text), and signs it out again
- * after the answer, which it marks `no-store, private`.
+ * inquiries, `linker/read-solution` reads their own saved solution (#496), and
+ * `linker/search-products` / `linker/get-product` carry the prices their account
+ * sees (#242). The shell therefore mints a short-lived, signed token for the
+ * signed-in customer, hands it to the service with the turn, and the service
+ * sends it back on those calls as `X-Linker-User-Context`. This class signs the
+ * request in as that customer only while WordPress dispatches one of those
+ * abilities (`ABILITIES`, matched against the route WordPress parsed, never the
+ * address text), and signs it out again after the answer, which it marks
+ * `no-store, private`.
  *
  * The token is not a capability: it names a user, is valid for `TTL` seconds
  * after it is minted (nothing marks it used — the window is the whole of its
@@ -54,7 +55,7 @@ class UserContext {
 	 * The abilities whose answer depends on the customer: the only ones a
 	 * token signs in (the service's abilities.USER_CONTEXT_ABILITIES).
 	 */
-	public const ABILITIES = array( 'linker/inquiry-status', 'linker/search-products', 'linker/get-product' );
+	public const ABILITIES = array( 'linker/inquiry-status', 'linker/read-solution', 'linker/search-products', 'linker/get-product' );
 
 	/**
 	 * Whether this request was signed in by a token (and must be signed out

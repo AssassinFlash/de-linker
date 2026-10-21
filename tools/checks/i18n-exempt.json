@@ -255,6 +255,61 @@
         "msgid": "The product's stock status after the push.",
         "reason": "JSON Schema property description on the stock-push answer. Machine-facing.",
         "evidence": "plugins/linker-commerce/includes/Stock/StockController.php:206"
+      },
+      {
+        "msgid": "Read a saved solution",
+        "reason": "WordPress Abilities API label of linker/read-solution (#496). Consumed by the Genie service over wp-abilities/v1, not rendered on a customer or staff page.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:101 label inside wp_register_ability() args; RestMeta.php show_in_rest."
+      },
+      {
+        "msgid": "Returns this account's own saved solution: its figures from the sizing engine and its selection basis. Requires a logged-in customer; another customer's solution is refused.",
+        "reason": "Ability description in the same JSON schema. Machine-facing contract text.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:102"
+      },
+      {
+        "msgid": "A solution ID is required.",
+        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:204"
+      },
+      {
+        "msgid": "Sign in to read your saved solution.",
+        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:207"
+      },
+      {
+        "msgid": "The saved solution was not found.",
+        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:211"
+      },
+      {
+        "msgid": "This saved solution belongs to another account.",
+        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:214"
+      },
+      {
+        "msgid": "This saved solution cannot be read by the sizing engine.",
+        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:219"
+      },
+      {
+        "msgid": "The saved design could not be read.",
+        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:226"
+      },
+      {
+        "msgid": "The sizing engine did not answer.",
+        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
+        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:230"
+      },
+      {
+        "msgid": "%d 条待开 PI",
+        "reason": "The team daily digest is rendered in Chinese (#495); this string is the digest subject/count line, not German customer copy.",
+        "evidence": "plugins/linker-commerce/includes/Digest/DigestEmail.php:87"
+      },
+      {
+        "msgid": "%d 个待审客户",
+        "reason": "The team daily digest is rendered in Chinese (#495); this string is the digest subject/count line, not German customer copy.",
+        "evidence": "plugins/linker-commerce/includes/Digest/DigestEmail.php:92"
       }
     ]
   }

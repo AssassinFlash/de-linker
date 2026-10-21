@@ -3,8 +3,9 @@ how a transiently failing ability call is retried.
 
 The service holds no identity of its own; the only identity it ever carries is
 the shell's short-lived token, and only on the abilities whose answer depends on
-the browsing customer: the inquiry list, and the product abilities whose prices
-follow the account (#242, docs/specs/13-genie.md 价格跟账号走).
+the browsing customer: the inquiry list, the customer's own saved solution
+(#496), and the product abilities whose prices follow the account (#242,
+docs/specs/13-genie.md 价格跟账号走).
 
 The retry tests stand in for the storm: a Redis hiccup on the WordPress side
 kills the ability's request mid-read, which the service sees as a 5xx or a
@@ -21,6 +22,7 @@ import pytest
 
 from linker_genie.abilities import (
     ABILITY_ATTEMPTS,
+    SOLUTION_ABILITY,
     USER_CONTEXT_ABILITIES,
     USER_CONTEXT_ABILITY,
     USER_CONTEXT_HEADER,
@@ -93,16 +95,18 @@ def test_a_call_without_a_customer_carries_no_identity() -> None:
 def test_the_customer_context_rides_the_abilities_that_answer_for_the_customer() -> (
     None
 ):
-    """The inquiry list and the two product abilities with a commerce object
-    answer with the customer's inquiries or prices; the comparison (no price),
-    the compatibility contract, the sizing hint and the team sentence are the
-    same for everybody and never see the token."""
+    """The inquiry list, the customer's own saved solution and the two product
+    abilities with a commerce object answer with the customer's inquiries,
+    solution or prices; the comparison (no price), the compatibility contract,
+    the sizing hint and the team sentence are the same for everybody and never
+    see the token."""
     recorder = Recorder()
     client = client_for(recorder)
     token = "40|1792300000|signature"
 
     for name in (
         USER_CONTEXT_ABILITY,
+        SOLUTION_ABILITY,
         "linker/search-products",
         "linker/get-product",
         "linker/compare-products",
@@ -119,6 +123,7 @@ def test_the_customer_context_rides_the_abilities_that_answer_for_the_customer()
     ]
     assert carried == [
         "linker/inquiry-status",
+        "linker/read-solution",
         "linker/search-products",
         "linker/get-product",
     ]

@@ -294,6 +294,8 @@ class Entries {
 		var pendingAttach = false;
 		// Opened for a parts list (#251): the picker expects the list's file.
 		var pendingList = false;
+		// The saved solution the design report's "Ask Genie" opened with (#496).
+		var pendingSolution = 0;
 		// Opening from the home hero (#232): re-read the thread the hero
 		// wrote, and mark it as asked from the homepage.
 		var pendingRefresh = false;
@@ -346,23 +348,26 @@ class Entries {
 		var list = pendingList;
 		var refresh = pendingRefresh;
 		var fromHome = pendingFromHome;
+		var solution = pendingSolution;
 		pendingOpen = false;
 		pendingAsk = '';
 		pendingAttach = false;
 		pendingList = false;
 		pendingRefresh = false;
 		pendingFromHome = false;
+		pendingSolution = 0;
 		window.dispatchEvent(new CustomEvent('linker-genie-open', {
 			detail: {
 				message: message,
 				attach: attach,
 				list: list,
 				refresh: refresh,
-				fromHome: fromHome
+				fromHome: fromHome,
+				solution: solution
 			}
 		}));
 	}
-	function open(message, refresh, fromHome) {
+	function open(message, refresh, fromHome, solution) {
 		pendingOpen = true;
 		// A plain reopen during loading must not erase the first question.
 		if (message && !pendingAsk) {
@@ -373,6 +378,12 @@ class Entries {
 		}
 		if (fromHome) {
 			pendingFromHome = true;
+		}
+		// A saved solution reference (#496): the report's "Ask Genie" saves the
+		// solution first and hands its id to the app, which sends it with the
+		// page context of every later turn.
+		if (typeof solution === 'number' && solution > 0) {
+			pendingSolution = solution;
 		}
 		boot();
 		deliver();
@@ -392,16 +403,18 @@ class Entries {
 		var detail = event.detail;
 		var refresh = !!detail && true === detail.refresh;
 		var fromHome = !!detail && true === detail.fromHome;
+		// The saved solution the design report's "Ask Genie" saved (#496).
+		var solution = detail && typeof detail.solution === 'number' ? detail.solution : 0;
 		if (detail && typeof detail.message === 'string' && detail.message.trim()) {
-			open(detail.message, refresh, fromHome);
+			open(detail.message, refresh, fromHome, solution);
 		} else if (detail && true === detail.attach) {
 			pendingAttach = true;
 			pendingList = true === detail.list;
-			open('', refresh, fromHome);
+			open('', refresh, fromHome, solution);
 		} else if (refresh) {
 			// The home hero hands its conversation to the dock without a
 			// new question (#232).
-			open('', true, fromHome);
+			open('', true, fromHome, solution);
 		}
 	});
 			function boot() {

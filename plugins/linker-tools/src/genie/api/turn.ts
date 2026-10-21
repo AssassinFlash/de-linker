@@ -278,6 +278,12 @@ export interface PageContext {
 	product_id?: number;
 	post_id?: number;
 	category_id?: number;
+	/**
+	 * The customer's own saved solution (#496), added when the design report's
+	 * "Ask Genie" saved it and opened the dock. The service's read-solution
+	 * ability checks the owner; a guest's solution has no post and no id.
+	 */
+	solution_id?: number;
 }
 
 /**

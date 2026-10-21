@@ -27,9 +27,16 @@ require_once __DIR__ . '/vendor/autoload.php';
 \Linker\Commerce\Autoload::register();
 require_once __DIR__ . '/includes/Presentation/template-functions.php';
 
+// One store of saved solutions: the account module owns the pages, and the
+// read ability (#496) reads the same posts.
+$linker_commerce_solutions = new Account\SavedSolutions(
+	new Account\PrivateFiles( Account\SavedSolutions::REPORTS_DIRECTORY ),
+	plugin_dir_path( __FILE__ ) . 'templates/'
+);
+
 ( new Plugin(
 	__FILE__,
-	new Abilities\Registrar( __FILE__ ),
+	new Abilities\Registrar( __FILE__, $linker_commerce_solutions ),
 	new Products\SelectionFactsController(),
 	new Products\EngineeringFeedController(),
 	new Products\ProductSearchController(),
@@ -37,5 +44,6 @@ require_once __DIR__ . '/includes/Presentation/template-functions.php';
 	new Contact\Module(),
 	new Admin\FiguresMetaBox(),
 	new Admin\FaqsMetaBox(),
-	new Admin\DocumentsMetaBox()
+	new Admin\DocumentsMetaBox(),
+	$linker_commerce_solutions
 ) )->register();

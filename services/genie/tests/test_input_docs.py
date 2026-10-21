@@ -98,6 +98,7 @@ def test_check_compatibility_describes_both_input_forms() -> None:
         ("linker/check-compatibility", "CheckCompatibility.php"),
         ("linker/size-hint", "SizeHint.php"),
         ("linker/inquiry-status", "InquiryStatus.php"),
+        ("linker/read-solution", "ReadSolution.php"),
         ("linker/handoff-team", "HandoffTeam.php"),
     ],
 )

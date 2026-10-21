@@ -21,12 +21,12 @@ signed-in customer's turn carries the shell's short-lived identity token (valid
 `UserContext::TTL` seconds after it is minted, plugins/linker-tools; the browser
 never sees it, the service never stores or logs it), and the service sends it as
 `USER_CONTEXT_HEADER` on the abilities in `USER_CONTEXT_ABILITIES` — the
-customer's own inquiry list, and the product abilities whose prices follow the
-account (#242: CommerceState shows an approved account its net prices and nobody
-else). WordPress signs the request in only while it dispatches one of those same
-three abilities (`UserContext::ABILITIES`, matched against the parsed route),
-after checking the signature and the expiry; an expired or forged token, or any
-other route, answers as a guest.
+customer's own inquiry list, their own saved solution (#496), and the product
+abilities whose prices follow the account (#242: CommerceState shows an approved
+account its net prices and nobody else). WordPress signs the request in only while
+it dispatches one of those same abilities (`UserContext::ABILITIES`, matched
+against the parsed route), after checking the signature and the expiry; an expired
+or forged token, or any other route, answers as a guest.
 """
 
 from __future__ import annotations
@@ -42,16 +42,21 @@ from linker_genie.facts import TurnFacts, collect, merge
 
 # The header the shell's token travels in; WordPress' UserContext accepts it.
 USER_CONTEXT_HEADER = "X-Linker-User-Context"
+# The ability that answers about the browsing customer's own saved solution
+# (#496): the shell signs the request in as the solution's owner, and the
+# ability refuses another customer's id with 403.
+SOLUTION_ABILITY = "linker/read-solution"
 # The ability that answers about the browsing customer's own inquiries.
 USER_CONTEXT_ABILITY = "linker/inquiry-status"
 # Every ability whose answer depends on the browsing customer: the inquiry list,
-# and the two product abilities whose commerce object carries the customer's
-# prices (ProductCommerce in linker-commerce). compare-products returns no price,
-# and check-compatibility, size-hint and handoff-team answer the same for
-# everybody: they never see the token.
+# the saved solution, and the two product abilities whose commerce object
+# carries the customer's prices (ProductCommerce in linker-commerce).
+# compare-products returns no price, and check-compatibility, size-hint and
+# handoff-team answer the same for everybody: they never see the token.
 USER_CONTEXT_ABILITIES = frozenset(
     {
         USER_CONTEXT_ABILITY,
+        SOLUTION_ABILITY,
         "linker/search-products",
         "linker/get-product",
     }
@@ -65,6 +70,7 @@ ABILITY_NAMES = (
     "linker/size-hint",
     "linker/inquiry-status",
     "linker/handoff-team",
+    SOLUTION_ABILITY,
 )
 
 # Attempts per ability call, and the first backoff wait (doubled per retry).

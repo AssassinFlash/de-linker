@@ -32,16 +32,17 @@ final class Plugin {
 	/**
 	 * Sets up the plugin.
 	 *
-	 * @param string                    $file            Absolute path of the main plugin file.
-	 * @param Registrar                 $abilities       Registers the plugin's abilities.
-	 * @param SelectionFactsController  $selection_facts REST route of the selection facts.
-	 * @param EngineeringFeedController $engineering     REST route of the engineering feed (#8).
-	 * @param ProductSearchController   $product_search  REST route of the catalogue search (#68).
-	 * @param SearchScope               $search_scope    The scope of the site search results (#68).
-	 * @param ContactModule             $contact         The contact form of the /contact/ page (#68).
-	 * @param FiguresMetaBox            $figures         The figure-citation meta box of the product edit screen (#8).
-	 * @param FaqsMetaBox               $faqs            The FAQ meta box of the product edit screen (#15).
-	 * @param DocumentsMetaBox          $documents       The document meta box of the product edit screen (#68).
+	 * @param string                      $file            Absolute path of the main plugin file.
+	 * @param Registrar                   $abilities       Registers the plugin's abilities.
+	 * @param SelectionFactsController    $selection_facts REST route of the selection facts.
+	 * @param EngineeringFeedController   $engineering     REST route of the engineering feed (#8).
+	 * @param ProductSearchController     $product_search  REST route of the catalogue search (#68).
+	 * @param SearchScope                 $search_scope    The scope of the site search results (#68).
+	 * @param ContactModule               $contact         The contact form of the /contact/ page (#68).
+	 * @param FiguresMetaBox              $figures         The figure-citation meta box of the product edit screen (#8).
+	 * @param FaqsMetaBox                 $faqs            The FAQ meta box of the product edit screen (#15).
+	 * @param DocumentsMetaBox            $documents       The document meta box of the product edit screen (#68).
+	 * @param Account\SavedSolutions|null $solutions    The plugin's one store of saved solutions, shared with the read ability (#496).
 	 */
 	public function __construct(
 		private readonly string $file,
@@ -53,7 +54,8 @@ final class Plugin {
 		private readonly ContactModule $contact,
 		private readonly FiguresMetaBox $figures,
 		private readonly FaqsMetaBox $faqs,
-		private readonly DocumentsMetaBox $documents
+		private readonly DocumentsMetaBox $documents,
+		private readonly ?Account\SavedSolutions $solutions = null
 	) {}
 
 	/**
@@ -158,7 +160,7 @@ final class Plugin {
 		$jobs      = new Mail\JobStore();
 		$vat       = new Registration\VatProfile( new Registration\ViesClient() );
 		$proformas = new Account\PrivateFiles( Proforma\Issuer::DIRECTORY );
-		$solutions = new Account\SavedSolutions( new Account\PrivateFiles( Account\SavedSolutions::REPORTS_DIRECTORY ), $templates );
+		$solutions = $this->solutions ?? new Account\SavedSolutions( new Account\PrivateFiles( Account\SavedSolutions::REPORTS_DIRECTORY ), $templates );
 		$issuer    = new Proforma\Issuer( $options, new Proforma\Sequence(), new Proforma\Document( $options ), new Proforma\Renderer( $this->file ), $proformas, $prices );
 		$documents = new Account\Documents( $solutions, $templates );
 		$gate      = new Presentation\LoginGate( $approval );

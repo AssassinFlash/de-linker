@@ -177,6 +177,16 @@ jobs:
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter InquiryStatusRestTest
+      # #496: the design report's "Ask Genie" reference. The route refuses a
+      # guest (401) and another customer's solution (403), and the owner's
+      # solution carries the engine's figures and no price. The engine is a
+      # pre_http_request double, so the bare instance needs no tuning.
+      - name: saved solution reader
+        working-directory: plugins/linker-commerce
+        run: |
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter ReadSolutionRestTest
       # #405: an edit drops the cached page through wp_remote_post. After the
       # mail tests, so Polylang setup does not change their instance.
       - name: page cache follows a save
