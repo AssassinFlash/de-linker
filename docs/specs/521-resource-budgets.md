@@ -160,7 +160,9 @@ launcher derives that release from engine source, actual feed and compatibility
 bytes. Production #522 must publish the actual release value alongside those
 artifacts; missing version refuses enforced recomputation. Object key ordering
 uses #519's canonical input HMAC. The semantic key is the actual JSON body plus
-engine route; query/default REST fields not forwarded upstream cannot create
+engine route. The full upstream input is nested separately from adapter metadata;
+JSON fields that look like form transport remain part of the actual input.
+Query/default REST fields not forwarded upstream cannot create
 fresh work. The native proxy reads its path from `get_url_params()` so a body or
 query `path` cannot turn an unguarded route into an expensive engineering POST. An in-flight duplicate returns an explicit
 pending status, and a completed duplicate restores the private native response.

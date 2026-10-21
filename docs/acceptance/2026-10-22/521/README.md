@@ -96,8 +96,8 @@ all-site live/local pixel-zero comparison.
   check passed. Existing webpack size/runtime recommendations remain warnings.
   Native `just i18n-tools` make-json/msgfmt and `just i18n-coverage` passed.
 - Tools PHP unit:286 tests,2338 assertions. Real g521 resource integration:
-  18 tests,251 assertions. The additional complete Tools real-WP integration run
-  finished82 total tests/590 assertions/23 prerequisite skips with no failures.
+  18 tests,270 assertions. The additional complete Tools real-WP integration run
+  finished82 total tests/609 assertions/23 prerequisite skips with no failures.
   CI mu-smoke explicitly runs the resource and shared-owner classes against its
   bare native instance with synthetic release/loopback settings and intercepted
   HTTP; no paid API or real mail is used. PHPStan and WPCS passed. The real journal/native

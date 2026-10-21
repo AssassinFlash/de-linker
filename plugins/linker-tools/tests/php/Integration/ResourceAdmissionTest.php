@@ -306,6 +306,17 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertInstanceOf( WP_REST_Response::class, $b );
 		$this->assertSame( $a->get_data(), $b->get_data() );
 		$this->assertSame( 1, $calls );
+		$nested = array( 'value' => 'synthetic' );
+		for ( $depth = 0; $depth < 20; ++$depth ) {
+			$nested = array( 'child' => $nested );
+		}
+		$too_deep = $this->request( '/linker-ai/v1/engine/design/residential', $nested, 'design' );
+		$refused  = $resources->dispatch( null, $too_deep, '', $handler );
+		$this->assertInstanceOf( WP_Error::class, $refused );
+		$this->assertSame( 400, $refused->get_error_data()['status'] );
+		$this->assertSame( 1, $calls );
+		putenv( 'LINKER_PUBLIC_PROTECTION_MODE=observe' );
+		$this->assertNull( $resources->dispatch( null, $too_deep, '', $handler ) );
 	}
 
 	/** A single-use business proof cannot hand off twice; old floor is scoped. */
@@ -730,9 +741,11 @@ final class ResourceAdmissionTest extends TestCase {
 		$fixture = static function ( mixed $old, array $args, string $url ) use ( $base, &$urls ): mixed {
 			if ( ! str_starts_with( $url, $base . '/' ) ) {
 				return $old; }
-			$urls[] = $url;
+			$urls[]  = $url;
+			$input   = json_decode( $args['body'], true );
+			$invalid = isset( $input['_route'] ) || isset( $input['started_nonce'] );
 			return array(
-				'response' => array( 'code' => 200 ),
+				'response' => array( 'code' => $invalid ? 422 : 200 ),
 				'body'     => '{"synthetic":"native-engine"}',
 				'headers'  => array( 'content-type' => 'application/json' ),
 			);
@@ -758,6 +771,21 @@ final class ResourceAdmissionTest extends TestCase {
 				$this->assertSame( 200, rest_do_request( $request )->get_status() );
 			}
 			$this->assertSame( array( $base . '/design/residential' ), $urls );
+			// Actual upstream JSON is nested apart from adapter metadata. Fields
+			// that look like transport keys still change the real engine input.
+			foreach ( array( '_route', 'started_nonce' ) as $field ) {
+				$request = $this->request(
+					'/linker-ai/v1/engine/design/residential',
+					array(
+						'plz'        => '80538',
+						'annual_kwh' => 5000,
+						$field       => 'synthetic-extra',
+					),
+					'design'
+				);
+				$this->assertSame( 422, rest_do_request( $request )->get_status() );
+			}
+			$this->assertCount( 3, $urls );
 			foreach ( array(
 				array( 'plz' => '80538' ),
 				array(
@@ -773,7 +801,7 @@ final class ResourceAdmissionTest extends TestCase {
 				$this->assertSame( 404, $response->get_status() );
 				$this->assertSame( 'linker_engine_path', $response->get_data()['code'] );
 			}
-			$this->assertCount( 1, $urls, 'No query/body override reaches any additional upstream work.' );
+			$this->assertCount( 3, $urls, 'No query/body override reaches any additional upstream work.' );
 		} finally {
 			remove_filter( 'pre_http_request', $fixture, 0 );
 		}

@@ -110,9 +110,11 @@ final class Resources {
 			return 'observe' === $configuration->mode ? $result : self::error( 'body', 413 );
 		}
 		$engineering = in_array( $action, array( 'design', 'roof', 'report_pdf' ), true );
-		$payload     = $engineering ? (array) $request->get_json_params() : $request->get_params();
-		foreach ( array( 'website', 'started', 'started_nonce', '_wpnonce' ) as $field ) {
-			unset( $payload[ $field ] );
+		$payload     = $engineering ? array( 'input' => (array) $request->get_json_params() ) : $request->get_params();
+		if ( ! $engineering ) {
+			foreach ( array( 'website', 'started', 'started_nonce', '_wpnonce' ) as $field ) {
+				unset( $payload[ $field ] );
+			}
 		}
 		$payload['_route']  = strtolower( $request->get_route() );
 		$payload['_method'] = $request->get_method();
@@ -143,7 +145,11 @@ final class Resources {
 			}
 			// The immutable engine/feed release is deployed with the service.
 			// Identical input/version/subject/day cannot spend another unit.
-			$hash      = hash_hmac( 'sha256', (string) wp_json_encode( array( $identity->binding(), $version, Fingerprint::make( $identity, $action, $payload ), intdiv( time(), DAY_IN_SECONDS ) ) ), wp_salt( 'nonce' ) );
+			$semantic = Fingerprint::make( $identity, $action, $payload );
+			if ( is_wp_error( $semantic ) ) {
+				return 'observe' === $configuration->mode ? $result : self::error( 'input', 400 );
+			}
+			$hash      = hash_hmac( 'sha256', (string) wp_json_encode( array( $identity->binding(), $version, $semantic, intdiv( time(), DAY_IN_SECONDS ) ) ), wp_salt( 'nonce' ) );
 			$operation = substr( $hash, 0, 8 ) . '-' . substr( $hash, 8, 4 ) . '-4' . substr( $hash, 13, 3 ) . '-a' . substr( $hash, 17, 3 ) . '-' . substr( $hash, 20, 12 );
 		}
 		$admission = new Admission( $configuration );
