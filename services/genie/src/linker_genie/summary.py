@@ -35,6 +35,7 @@ import httpx
 from pydantic import Field, ValidationError
 
 from linker_genie.agent import deepseek_access, model_name
+from linker_genie.provider_budget import Transport
 from linker_genie.schema import Locale, Strict, TurnMessage
 
 PROMPT = Path(__file__).resolve().parents[2] / "prompts" / "summary.md"
@@ -218,7 +219,9 @@ def deepseek(transport: httpx.BaseTransport | None = None) -> Complete:
 
     def complete(system: str, user: str) -> str:
         try:
-            with httpx.Client(transport=transport, timeout=TIMEOUT_SECONDS) as client:
+            with httpx.Client(
+                transport=Transport("deepseek", transport), timeout=TIMEOUT_SECONDS
+            ) as client:
                 response = client.post(
                     base.rstrip("/") + "/v1/chat/completions",
                     headers={"Authorization": f"Bearer {key}"},

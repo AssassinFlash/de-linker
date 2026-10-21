@@ -36,6 +36,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
 
+from linker_judges.budget import take
+
 ARCTIC_M = "Snowflake/snowflake-arctic-embed-m-v2.0"
 E5_SMALL = "intfloat/multilingual-e5-small"
 E5_BASE = "intfloat/multilingual-e5-base"
@@ -388,6 +390,7 @@ class GeminiEmbedder:
         timeout: float = BUILD_TIMEOUT,
         attempts: int = BUILD_ATTEMPTS,
         backoff: float = 0.0,
+        runtime: bool = False,
     ) -> list[bytes]:
         """Vectors of `texts`, or EmbeddingError once every attempt has failed.
 
@@ -403,6 +406,8 @@ class GeminiEmbedder:
             },
         )
         for attempt in range(1, attempts + 1):
+            if runtime:
+                take("embedding")
             try:
                 with self._urlopen(request, timeout=timeout) as response:
                     payload = json.load(response)
@@ -472,6 +477,7 @@ class GeminiEmbedder:
             timeout=QUERY_TIMEOUT,
             attempts=QUERY_ATTEMPTS,
             backoff=QUERY_BACKOFF,
+            runtime=True,
         )[0]
 
 

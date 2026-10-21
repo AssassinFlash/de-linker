@@ -160,6 +160,7 @@ export function startHero(
 				onConversation={ ( has ) =>
 					update( { type: 'conversation', has } )
 				}
+				readPrompt={ () => prompt!.value }
 				setPrompt={ ( text ) => {
 					prompt!.value = text;
 				} }

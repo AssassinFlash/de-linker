@@ -45,10 +45,10 @@ final class AssetsTest extends TestCase {
 			)
 		);
 
-		foreach ( array( 'configurator', 'genie', 'hero', 'preview' ) as $entry ) {
+		foreach ( array( 'configurator', 'genie', 'hero', 'inquiry-handoff', 'preview' ) as $entry ) {
 			$asset = require $plugin_dir . 'build/' . $entry . '.asset.php';
 
-			if ( 'preview' === $entry ) {
+			if ( in_array( $entry, array( 'preview', 'inquiry-handoff' ), true ) ) {
 				// The preview card's page script (ticket #249) is no app: it
 				// loads on the pages with the card, without React.
 				$this->assertNotContains( 'react-jsx-runtime', $asset['dependencies'] );

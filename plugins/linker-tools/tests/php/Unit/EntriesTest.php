@@ -49,9 +49,16 @@ final class EntriesTest extends TestCase {
 
 	/**
 	 * A previous test's shortcode must not mark this request as a workspace.
+	 *
+	 * @throws \LogicException Invalid WP_Mock filter responder.
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		$responder = WP_Mock::onFilter( 'linker_genie_inquiry_page' )->withAnyArgs();
+		if ( ! $responder instanceof WP_Mock\Filter_Responder ) {
+			throw new \LogicException( 'WP_Mock::onFilter() answers with a Filter_Responder.' );
+		}
+		$responder->reply( 'https://site.test/proforma-request/' );
 		Entries::reset_workspace_rendered();
 	}
 

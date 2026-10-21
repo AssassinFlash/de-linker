@@ -36,27 +36,29 @@ final class Plugin {
 	/**
 	 * Sets up the plugin.
 	 *
-	 * @param Assets           $assets        Registers the built apps as scripts.
-	 * @param Redirects        $redirects     Retires the tool entry addresses that moved.
-	 * @param SiteChrome       $site_chrome   The chrome's scripts (menu images, hover).
-	 * @param Conversations    $conversations Conversation posts for Genie.
-	 * @param Proxy            $proxy         REST proxy to the Genie service.
-	 * @param Entries          $entries       Chips, dock and disclosure.
-	 * @param Retention        $retention     Deletes expired guest conversations.
-	 * @param UserContext      $user_context  The customer-identity seam.
-	 * @param WindPress        $windpress     Scan provider for the entries' Tailwind classes.
-	 * @param Mount            $mount         The Solution Configurator's mount point.
-	 * @param EngineProxy      $engine_proxy  The same-origin route to the sizing engine.
-	 * @param QualityStore     $quality       The quality check's verdicts and the digest's summary.
-	 * @param QualityRoute     $quality_route The route the quality worker reports to.
-	 * @param QualityPage      $quality_page  The quality check's admin page.
-	 * @param Preview          $preview       Genie's preview card (ticket #249).
-	 * @param ConversationMail $mail        "Email me this conversation" and its confirmation link (ticket #235).
-	 * @param ContactRequest   $contact       "Let Linker contact me": the contact card's route (#243).
-	 * @param InquirySummary   $inquiry       The conversation summary an inquiry carries (#244).
-	 * @param InquiryRequest   $inquiry_card  The inquiry confirmation card's route (#250).
-	 * @param Hero             $hero          The home hero's Genie entry (#232).
-	 * @param PageCache        $page_cache    Drops Genie's cached copy of a page when it is saved (#405).
+	 * @param Assets                    $assets        Registers the built apps as scripts.
+	 * @param Redirects                 $redirects     Retires the tool entry addresses that moved.
+	 * @param SiteChrome                $site_chrome   The chrome's scripts (menu images, hover).
+	 * @param Conversations             $conversations Conversation posts for Genie.
+	 * @param Proxy                     $proxy         REST proxy to the Genie service.
+	 * @param Entries                   $entries       Chips, dock and disclosure.
+	 * @param Retention                 $retention     Deletes expired guest conversations.
+	 * @param UserContext               $user_context  The customer-identity seam.
+	 * @param WindPress                 $windpress     Scan provider for the entries' Tailwind classes.
+	 * @param Mount                     $mount         The Solution Configurator's mount point.
+	 * @param EngineProxy               $engine_proxy  The same-origin route to the sizing engine.
+	 * @param QualityStore              $quality       The quality check's verdicts and the digest's summary.
+	 * @param QualityRoute              $quality_route The route the quality worker reports to.
+	 * @param QualityPage               $quality_page  The quality check's admin page.
+	 * @param Preview                   $preview       Genie's preview card (ticket #249).
+	 * @param ConversationMail          $mail        "Email me this conversation" and its confirmation link (ticket #235).
+	 * @param ContactRequest            $contact       "Let Linker contact me": the contact card's route (#243).
+	 * @param InquirySummary            $inquiry       The conversation summary an inquiry carries (#244).
+	 * @param InquiryRequest            $inquiry_card  The inquiry confirmation card's route (#250).
+	 * @param Hero                      $hero          The home hero's Genie entry (#232).
+	 * @param PageCache                 $page_cache    Drops Genie's cached copy of a page when it is saved (#405).
+	 * @param Protection\Resources      $resources Public resource admission.
+	 * @param Protection\ProviderBudget $provider_budget Private provider transport seam.
 	 */
 	public function __construct(
 		private readonly Assets $assets,
@@ -79,7 +81,9 @@ final class Plugin {
 		private readonly InquirySummary $inquiry,
 		private readonly InquiryRequest $inquiry_card,
 		private readonly Hero $hero,
-		private readonly PageCache $page_cache
+		private readonly PageCache $page_cache,
+		private readonly Protection\Resources $resources = new Protection\Resources(),
+		private readonly Protection\ProviderBudget $provider_budget = new Protection\ProviderBudget()
 	) {}
 
 	/**
@@ -113,5 +117,7 @@ final class Plugin {
 		$this->hero->register();
 		// A saved page drops Genie's cached copy of it and of its language twin (#405).
 		$this->page_cache->register();
+		$this->provider_budget->register();
+		$this->resources->register();
 	}
 }

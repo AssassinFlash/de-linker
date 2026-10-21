@@ -22,6 +22,8 @@
 import type { Locale, ResidentialInput } from '../types';
 import type { DraftLine } from './store';
 
+import { resourceFetch } from '../../protection/request';
+
 type Fetch = typeof fetch;
 
 export interface SavedSolution {
@@ -78,7 +80,7 @@ export async function saveSolution(
 ): Promise< SavedSolution > {
 	const reportPdf = body.reportPdf ? await pdfBase64( body.reportPdf ) : '';
 	const endpoint = `${ restUrl }linker/v1/solutions?lang=${ locale }`;
-	const response = await fetcher( endpoint, {
+	const response = await resourceFetch( fetcher, endpoint, {
 		method: 'POST',
 		credentials: 'same-origin',
 		headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },

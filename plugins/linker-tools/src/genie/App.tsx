@@ -14,6 +14,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { storeClient } from '../configurator/api/store';
+import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { GenieConfig } from './config';
 import { idsOf, pricesOf } from './shared/blocks';
 import { useCardActions } from './shared/cardActions';
@@ -383,6 +384,16 @@ export function App( { config }: { config: GenieConfig } ) {
 			draft: FailureDraft
 		) => {
 			const settled = settleTurnFailure( error, before, draft );
+			if ( 'resource' === settled.action ) {
+				commitFailure( { type: 'upstream' } );
+				placeChips( draft.uploads );
+				setThread( before );
+				currentThread.current = before;
+				setInput( settled.field );
+				setRefused( settled.reason );
+				setPhase( 'ask' );
+				return;
+			}
 			if ( 'refusal' === settled.action ) {
 				commitFailure( { type: 'abandon' } );
 				placeChips( [] );
@@ -1488,12 +1499,31 @@ export function App( { config }: { config: GenieConfig } ) {
 								onRemove={ files.remove }
 							/>
 						) : null }
-						{ ! workspace && ! historyView && refused ? (
+						{ ! historyView && refused ? (
 							<p
 								role="alert"
 								className="linker-genie-app__refused"
 							>
 								{ refused }
+								{ config.requestPageUrl ? (
+									<>
+										{ ' ' }
+										<a
+											href={ config.requestPageUrl }
+											onClick={ () =>
+												rememberInquiry(
+													config.requestPageUrl!,
+													input
+												)
+											}
+										>
+											{ __(
+												'Send an inquiry',
+												'linker-tools'
+											) }
+										</a>
+									</>
+								) : null }
 							</p>
 						) : null }
 						{ ! historyView && conflict ? (

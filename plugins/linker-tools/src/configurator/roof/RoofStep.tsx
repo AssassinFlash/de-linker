@@ -50,6 +50,7 @@ type Status =
 	| 'refused'
 	| 'none'
 	| 'unavailable'
+	| 'limited'
 	| 'error';
 
 const ZOOM = 19; // one house fills the map at this zoom on a 390 px wide phone
@@ -320,6 +321,13 @@ export function RoofStep( {
 			} )
 			.catch( ( error ) => {
 				if ( ! cancelled ) {
+					if (
+						error instanceof EngineError &&
+						error.kind === 'limited'
+					) {
+						setStatus( 'limited' );
+						return;
+					}
 					setStatus(
 						error instanceof EngineError &&
 							error.kind === 'unavailable'
@@ -402,6 +410,10 @@ export function RoofStep( {
 			setChosen( ( current ) => new Set( [ ...current, id ] ) );
 			setStatus( 'drawn' );
 		} catch ( error ) {
+			if ( error instanceof EngineError && error.kind === 'limited' ) {
+				setStatus( 'limited' );
+				return;
+			}
 			setStatus(
 				error instanceof EngineError && error.kind === 'invalid'
 					? 'refused'
@@ -472,6 +484,10 @@ export function RoofStep( {
 		),
 		unavailable: __(
 			'No official building model is available here. Draw the roof plane yourself.',
+			'linker-tools'
+		),
+		limited: __(
+			'The calculation is temporarily unavailable. Your entries are still here. Please try again later.',
 			'linker-tools'
 		),
 		error: __( 'The roof could not be loaded. Try again.', 'linker-tools' ),

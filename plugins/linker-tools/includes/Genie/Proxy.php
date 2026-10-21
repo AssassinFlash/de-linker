@@ -506,7 +506,7 @@ class Proxy {
 		$started = microtime( true );
 		$stream  = $this->post( $base . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
-			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
+			return $stream;
 		}
 		// An answered turn is the conversation's record, kept so a reload
 		// restores it. A second turn that snapped the same history is
@@ -666,6 +666,12 @@ class Proxy {
 			return $response;
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( in_array( $code, array( 429, 503 ), true ) ) {
+			$failure = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+			if ( is_array( $failure ) && str_starts_with( (string) ( $failure['code'] ?? '' ), 'provider_budget_' ) ) {
+				return new WP_Error( 'linker_genie_quota', __( 'Genie is temporarily unavailable. Your message is still here. You can send an inquiry to our team.', 'linker-tools' ), array( 'status' => $code ) );
+			}
+		}
 		if ( $code >= 400 ) {
 			return new WP_Error( 'linker_genie_upstream', 'Genie did not answer.', array( 'status' => 502 ) );
 		}

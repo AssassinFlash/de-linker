@@ -7,6 +7,7 @@ linker_engine_url (the Solution Configurator's engine) and linker_genie_url
 
 from __future__ import annotations
 
+import hashlib
 import os
 import secrets
 import shutil
@@ -122,6 +123,22 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         env = dict(os.environ)
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
+            source = checkout.root / "services/engine/src/linker_engine"
+            release = hashlib.sha256()
+            for path in sorted(source.rglob("*.py")):
+                release.update(path.read_bytes())
+            release.update(Path(env["LINKER_ENGINE_FEED"]).read_bytes())
+            release.update(Path(env["LINKER_ENGINE_COMPATIBILITY"]).read_bytes())
+            wp.run(
+                "config",
+                "set",
+                "LINKER_ENGINE_RESOURCE_VERSION",
+                release.hexdigest(),
+                "--type=constant",
+            )
+            env.update(
+                {"GENIE_SERVICE_TOKEN": token, "LINKER_ENGINE_GATE_MODE": "enforce"}
+            )
         else:
             env.update(genie_environment(instance, index.path, token))
         service.process(instance).restart(
@@ -231,6 +248,7 @@ def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str
         ) from error
     return {
         "LINKER_ENGINE_FEED": str(feed),
+        "LINKER_ENGINE_CACHE": str(directory / "cache"),
         "LINKER_ENGINE_COMPATIBILITY": str(compatibility),
         # The configurator calls the engine cross-origin from the page; without
         # this allowance the browser blocks every call (the roof step first).

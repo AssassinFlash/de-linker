@@ -167,4 +167,28 @@ final class DeepSeekClientTest extends TestCase {
 
 		$this->client()->translate( array( 'Hello' ) );
 	}
+	/**
+	 * A missing or depleted hard budget cannot issue a paid translation request.
+	 *
+	 * @throws \LogicException Invalid WP_Mock filter responder.
+	 */
+	public function test_enforced_budget_refusal_is_transient_without_dispatch(): void {
+		$previous = getenv( 'LINKER_PROVIDER_BUDGET_MODE' );
+		putenv( 'LINKER_PROVIDER_BUDGET_MODE=enforce' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Isolated test value restored in finally.
+		WP_Mock::userFunction( 'wp_remote_post', array( 'times' => 0 ) );
+		$responder = WP_Mock::onFilter( 'linker_tools_provider_debit' )->with( false, 'deepseek' );
+		if ( ! $responder instanceof WP_Mock\Filter_Responder ) {
+			throw new \LogicException( 'WP_Mock::onFilter() answers with a Filter_Responder.' );
+		}
+		$responder->reply( false );
+		try {
+			$this->client()->translate( array( 'Synthetic source' ) );
+			$this->fail( 'A refused provider budget must stop dispatch.' );
+		} catch ( TranslationFailed $failure ) {
+			$this->assertTrue( $failure->transient );
+			$this->assertSame( 'Provider budget unavailable or exhausted.', $failure->getMessage() );
+		} finally {
+			putenv( false === $previous ? 'LINKER_PROVIDER_BUDGET_MODE' : 'LINKER_PROVIDER_BUDGET_MODE=' . $previous ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Restore the previous environment.
+		}
+	}
 }

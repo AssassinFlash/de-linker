@@ -18,6 +18,7 @@ const titles: Record< string, string > = {
 };
 const scripts: Record< string, string > = {
 	preview: './src/preview/index.ts',
+	'inquiry-handoff': './src/protection/inquiryEntry.ts',
 	// The home hero mounts into the page's own `.hero-cinematic` (ticket #232),
 	// not into a `data-linker-app` mount.
 	hero: './src/hero/index.tsx',

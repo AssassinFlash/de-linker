@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from linker_judges.budget import BudgetError, take
+
 # docs/specs/33-judge-bakeoff.md: keys live in these files and never enter the
 # repository — OpenRouter for the Jev first pass since 2026-10-11 (owner ruling:
 # aihubmix's balance is depleted and drops to fallback), deepseek for the direct
@@ -112,6 +114,17 @@ def post_json(
         request = urllib.request.Request(url, data=data, headers=headers, method="POST")
         started = time.time()
         clock = time.perf_counter()
+        # Registry routes only these two paid runtime judges. Embedding has
+        # its separate owner-approved channel and is not a chat substitute.
+        try:
+            if body.get("model") == "deepseek-flash":
+                take("deepseek")
+            elif body.get("model") == "typesafe/jev-1.13":
+                take("jev")
+        except BudgetError as error:
+            # The quality worker records this as an explicit failed verdict;
+            # it must not silently pick a different judge or crash its loop.
+            raise HttpError(str(error)) from error
         try:
             with opener.open(request, timeout=timeout) as reply:
                 raw = reply.read()

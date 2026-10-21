@@ -476,3 +476,27 @@ def test_public_admission_receipts_are_dropped_without_replacing_site_settings()
     assert "linker_public_admission_ledger" not in names
     assert "blogname" in names
     assert "private-pseudonymous-receipts" not in out
+
+
+def test_private_tool_answers_and_encoded_pdfs_never_enter_snapshots() -> None:
+    dump = (
+        "CREATE TABLE `wp_posts` (\n  `ID` bigint,\n  `post_type` varchar(20),\n"
+        "  `post_content` longtext,\n  `post_password` varchar(255)\n) ENGINE=InnoDB;\n"
+        "INSERT INTO `wp_posts` VALUES\n"
+        "(1,'linker_tool_reply','cHJpdmF0ZS1jdXN0b21lci1QREY=',''),\n"
+        "(2,'page','Published page','');\n"
+        "CREATE TABLE `wp_postmeta` (\n  `meta_id` bigint,\n  `post_id` bigint,\n"
+        "  `meta_key` varchar(255),\n  `meta_value` longtext\n) ENGINE=InnoDB;\n"
+        "INSERT INTO `wp_postmeta` VALUES\n"
+        "(1,1,'_linker_binding','private-binding'),\n"
+        "(2,1,'_linker_recipient','private-recipient'),\n"
+        "(3,1,'_linker_expires','123456'),\n"
+        "(4,2,'public_field','Published meta');\n"
+    )
+    out = "".join(Anonymizer([]).run(iter(dump.splitlines(keepends=True))))
+    assert "cHJpdmF0ZS1jdXN0b21lci1QREY=" not in out
+    assert "private-binding" not in out
+    assert "private-recipient" not in out
+    assert "123456" not in out
+    assert "Published page" in out
+    assert "Published meta" in out

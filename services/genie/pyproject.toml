@@ -7,6 +7,8 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.143.0",
     "httpx>=0.28.0",
+    # The installed OpenAI SDK transport contract; direct Jev/Vision use HTTPX 0.28.
+    "httpx2>=2.13.1",
     # The Jev -> deepseek-flash cascade the VPS quality worker runs
     # (linker_genie.quality; docs/specs/33-judge-bakeoff.md "部署目标"):
     # standard library only, so it adds no third-party code to the service.

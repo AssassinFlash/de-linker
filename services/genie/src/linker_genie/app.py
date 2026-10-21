@@ -24,9 +24,13 @@ import os
 import time
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Literal
+from uuid import UUID
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from linker_judges.budget import BudgetError, take
+from pydantic import BaseModel, ConfigDict
 
 from linker_genie import contact, ground, inquiry, jev, page, parts, summary, timing
 from linker_genie.abilities import AbilityClient
@@ -137,6 +141,33 @@ def understander() -> Understander:
             see=vision(),
         )
     return _understander
+
+
+class ProviderDebit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    provider: Literal["deepseek", "jev", "embedding"]
+    attempt: UUID
+
+
+@app.exception_handler(BudgetError)
+async def provider_refused(request: Request, error: BudgetError) -> JSONResponse:
+    return JSONResponse(
+        status_code=error.status,
+        content={
+            "code": str(error),
+            "detail": "The model request could not be admitted.",
+        },
+    )
+
+
+@app.post("/budget/take")
+def provider_debit(body: ProviderDebit) -> dict[str, int | None]:
+    """Private PHP translation seam; Gate requires the existing service token.
+
+    Not exposed through the public WordPress proxy. A successful receipt is for
+    exactly one immediate send; a lost response must never be retried as a permit.
+    """
+    return {"remaining": take(body.provider, str(body.attempt))}
 
 
 @app.get("/health")

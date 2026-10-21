@@ -2234,3 +2234,36 @@ msgstr "Broschüre"
 #: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
 msgid "Document"
 msgstr "Dokument"
+
+#: build/genie.js build/hero.js build/configurator.js
+msgid "Checking verification…"
+msgstr "Die Überprüfung läuft …"
+
+#: build/genie.js build/hero.js build/configurator.js
+msgid "Verification could not be completed. Your input is still here. Please try again."
+msgstr "Die Überprüfung konnte nicht abgeschlossen werden. Ihre Eingaben sind erhalten. Bitte versuchen Sie es erneut."
+
+#: includes/Genie/Proxy.php build/genie.js build/hero.js
+msgid "Genie is temporarily unavailable. Your message is still here. You can send an inquiry to our team."
+msgstr "Genie ist vorübergehend nicht verfügbar. Ihre Nachricht ist erhalten. Über das Anfrageformular erreichen Sie unser Team."
+
+#: includes/Protection/Resources.php
+msgid "Your request could not be completed. Your input is still here. Please try again."
+msgstr "Ihre Anfrage konnte nicht verarbeitet werden. Ihre Eingaben sind erhalten. Bitte versuchen Sie es erneut."
+
+#: includes/Protection/Replies.php
+msgid "The request status could not be confirmed. Please check before sending it again."
+msgstr "Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Versand."
+
+#: build/configurator.js
+msgid "The calculation is temporarily unavailable. Your entries are still here. Please try again later."
+msgstr "Die Berechnung ist vorübergehend nicht verfügbar. Ihre Eingaben sind erhalten. Bitte versuchen Sie es später erneut."
+
+
+#: build/genie.js build/hero.js
+msgid "Send an inquiry"
+msgstr "Anfrage senden"
+
+#: includes/Protection/ReplyPrivacy.php
+msgid "Response"
+msgstr "Antwort"

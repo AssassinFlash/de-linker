@@ -19,6 +19,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { storeClient } from '../configurator/api/store';
+import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { SentInquiry } from '../genie/api/inquiry';
 import {
 	assistantMessage,
@@ -90,6 +91,8 @@ export interface HeroConversationProps {
 	onConversation: ( has: boolean ) => void;
 	/** Writes the page's follow-up field (the manual model exit). */
 	setPrompt: ( text: string ) => void;
+	/** Reads the current page field only after an explicit fallback click. */
+	readPrompt?: () => string;
 	/** Focuses the page's follow-up field. */
 	focusPrompt: () => void;
 	/** Opens the page's file picker. */
@@ -106,6 +109,7 @@ export function HeroConversation( {
 	onClose,
 	onConversation,
 	setPrompt,
+	readPrompt,
 	focusPrompt,
 	requestPicker,
 }: HeroConversationProps ) {
@@ -239,6 +243,15 @@ export function HeroConversation( {
 			draft: FailureDraft
 		) => {
 			const settled = settleTurnFailure( error, before, draft );
+			if ( 'resource' === settled.action ) {
+				commitFailure( { type: 'upstream' } );
+				placeChips( draft.uploads );
+				setThread( before );
+				setPrompt( settled.field );
+				setRefused( settled.reason );
+				setPhase( 'ask' );
+				return;
+			}
 			if ( 'refusal' === settled.action ) {
 				commitFailure( { type: 'abandon' } );
 				placeChips( [] );
@@ -663,6 +676,24 @@ export function HeroConversation( {
 			{ refused ? (
 				<p role="alert" className="linker-genie-app__refused">
 					{ refused }
+					{ config.requestPageUrl ? (
+						<>
+							{ ' ' }
+							<a
+								href={ config.requestPageUrl }
+								onClick={ () =>
+									rememberInquiry(
+										config.requestPageUrl!,
+										readPrompt?.() ??
+											failureState.current.draft?.text ??
+											''
+									)
+								}
+							>
+								{ __( 'Send an inquiry', 'linker-tools' ) }
+							</a>
+						</>
+					) : null }
 				</p>
 			) : null }
 			{ 'error' === phase ? (

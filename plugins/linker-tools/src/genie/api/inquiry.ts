@@ -15,6 +15,8 @@
 import type { Locale } from '../../configurator/types';
 import type { PageContext } from './turn';
 
+import { resourceFetch } from '../../protection/request';
+
 type Fetch = typeof fetch;
 
 /** One line of the solution draft, as the request page lists it. */
@@ -219,7 +221,7 @@ export async function sendInquiry(
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< InquiryResult > {
 	try {
-		const response = await fetcher( url, {
+		const response = await resourceFetch( fetcher, url, {
 			method: 'POST',
 			credentials: 'same-origin',
 			cache: 'no-store',

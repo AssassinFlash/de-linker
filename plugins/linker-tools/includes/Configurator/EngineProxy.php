@@ -220,8 +220,17 @@ final class EngineProxy {
 			// Generous: one roof outline can spend seconds in the LoD2 source
 			// before the engine answers, and the engine caps its own work.
 			'timeout' => 60.0,
-			'headers' => array( 'Content-Type' => 'application/json' ),
+			'headers' => array(
+				'Content-Type'           => 'application/json',
+				'X-Linker-Service-Token' => defined( 'LINKER_GENIE_SERVICE_TOKEN' ) ? (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ) : '',
+			),
 		);
+		if ( class_exists( \Linker\Commerce\Protection\Identity::class ) ) {
+			$identity = \Linker\Commerce\Protection\Identity::current();
+			if ( ! is_wp_error( $identity ) ) {
+				$args['headers']['X-Linker-Resource-Subject'] = '' !== $identity->account ? $identity->account : $identity->browser;
+			}
+		}
 		if ( 'POST' === $method ) {
 			$args['body'] = $body;
 		}

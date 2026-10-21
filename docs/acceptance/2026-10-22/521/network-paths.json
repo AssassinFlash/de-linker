@@ -1,0 +1,86 @@
+{
+  "truncated": true,
+  "hasMore": false,
+  "responses": [
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker/v1/protection/prepare",
+      "status": 200,
+      "type": "Fetch"
+    },
+    {
+      "url": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/av0/rch/x5wc0/1x00000000000000000000AA/auto/fbE/new/normal",
+      "status": 200,
+      "type": "Document"
+    },
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker/v1/protection/verify",
+      "status": 200,
+      "type": "Fetch"
+    },
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker-ai/v1/engine/report/pdf",
+      "status": 200,
+      "type": "Fetch"
+    },
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker-ai/v1/engine/design/residential",
+      "status": 429,
+      "type": "Fetch"
+    },
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker/v1/protection/prepare",
+      "status": 200,
+      "type": "Fetch"
+    },
+    {
+      "url": "https://challenges.cloudflare.com/turnstile/v0/b/d2d3316b729e/api.js",
+      "status": 200,
+      "type": "Script"
+    },
+    {
+      "url": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/av0/rch/7elgu/1x00000000000000000000AA/auto/fbE/new/normal",
+      "status": 200,
+      "type": "Document"
+    },
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker/v1/protection/verify",
+      "status": 200,
+      "type": "Fetch"
+    },
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker-ai/v1/engine/design/residential",
+      "status": 429,
+      "type": "Fetch"
+    },
+    {
+      "url": "https://challenges.cloudflare.com/turnstile/v0/b/d2d3316b729e/api.js",
+      "status": 200,
+      "type": "Other"
+    },
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker-ai/v1/engine/design/residential",
+      "status": 200,
+      "type": "Fetch"
+    },
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker/v1/protection/prepare",
+      "status": 200,
+      "type": "Fetch"
+    },
+    {
+      "url": "https://challenges.cloudflare.com/turnstile/v0/b/d2d3316b729e/api.js",
+      "status": 200,
+      "type": "Script"
+    },
+    {
+      "url": "https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/av0/rch/98ceb/1x00000000000000000000AA/auto/fbE/new/normal",
+      "status": 200,
+      "type": "Document"
+    },
+    {
+      "url": "http://127.0.0.1:9285/wp-json/linker/v1/protection/verify",
+      "status": 503,
+      "type": "Fetch"
+    }
+  ]
+}
