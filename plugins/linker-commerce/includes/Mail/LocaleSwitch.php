@@ -168,6 +168,6 @@ final class LocaleSwitch {
 	 */
 	public static function team_default(): string {
 		$locale = get_option( 'linker_commerce_team_locale' );
-		return is_string( $locale ) && '' !== $locale ? $locale : 'zh_CN';
+		return is_string( $locale ) && '' !== $locale ? $locale : self::site_default();
 	}
 }

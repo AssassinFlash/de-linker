@@ -47,7 +47,7 @@ final class DigestEmailTest extends TestCase {
 				'return' => static fn ( string $format ): string => 'H:i' === $format ? '09:00' : 'October 11, 2026',
 			)
 		);
-		$this->allow_locale_switch( 'zh_CN' );
+		$this->allow_locale_switch( 'en_US' );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@sunriverinverter.com' );
 
 		$email = new DigestEmail( '/plugin/linker-commerce.php', new Options() );
@@ -110,8 +110,9 @@ final class DigestEmailTest extends TestCase {
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 		$this->options(
 			array(
-				Options::TEAM_TO => 'sales@de-linker.com',
-				'WPLANG'         => '',
+				Options::TEAM_TO              => 'sales@de-linker.com',
+				'linker_commerce_team_locale' => 'zh_CN',
+				'WPLANG'                      => '',
 			)
 		);
 		WP_Mock::userFunction(

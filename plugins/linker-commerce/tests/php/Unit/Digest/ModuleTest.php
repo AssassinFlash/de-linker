@@ -84,7 +84,7 @@ final class ModuleTest extends TestCase {
 				'date_format'       => 'F j, Y',
 			)
 		);
-		$this->allow_locale_switch( 'zh_CN' );
+		$this->allow_locale_switch( 'en_US' );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@sunriverinverter.com' );
 		$this->filter_returns( 'linker_commerce_digest_blocks', null );
 		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array() ) );
