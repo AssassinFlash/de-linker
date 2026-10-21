@@ -18,12 +18,12 @@ Fixture: PLZ 80538, Triftstraße 5 (the R04 fixture): 16 LoD2 planes — 6 usabl
 | R06 | Draw a plane by hand and pack it; reject a plane over 3000 m² or outside Germany | defect | **Defect #484**: the engine pack works, but the click that closes the polygon also selects a building and replaces the drawn plane; the refusal sentence is overwritten. Engine bounds verified |
 | R08 | After adopting a roof: “Change roof” reopens the step; “Enter kWp instead” clears the roof and makes kWp manual again | 验收记录缺口 | **Verified** EN/DE × 1440/390 |
 | R10 | An excluded plane shows its reason (north-facing / too steep) | 验收记录缺口 | **Verified** EN/DE × 1440/390 (7 × steeper than 60°, 3 × faces north) |
-| R11 | Four failure states: no building, LoD2 unavailable, drawn plane refused, roof data load failure | 验收记录缺口 (3 states) + defect #484 (drawn-plane refusal) | **Verified** for no building, LoD2 503 and unknown-postcode load failure; the drawn-plane refusal is the R06 defect #484 (sentence appears, is not stable) |
-| R13 | Closing without adopting returns to the form and keeps kWp manual | 验收记录缺口 | **Verified** EN/DE × 1440/390 (with a selected plane in the step before closing) |
+| R11 | Four failure states: no building, LoD2 unavailable, drawn plane refused, roof data load failure | 验收记录缺口 (3 states) + defect #484 (drawn-plane refusal) | **3 pass + 1 defect (#484)**: no building, LoD2 503 and unknown-postcode load failure pass; the drawn-plane refusal is the R06 defect #484 (sentence appears, is not stable) |
+| R13 | Closing without adopting returns to the form and keeps kWp manual | 验收记录缺口 | **Verified** EN/DE × 1440/390 — closing after an in-step selection applies no roof; the form keeps manual kWp editable (`readOnly: false`) |
 
 ## R05 — a checked plane changes the totals
 
-The first enabled checkbox, “Facing south, tilt 14° 6 modules” (“Ausrichtung Süd, Neigung 14° 6 Module” — the record keeps the UI's text exactly), was unchecked and checked again.
+The first enabled checkbox, “Facing south, tilt 14° 6 modules” (“Ausrichtung Süd, Neigung 14° 6 Module” — the record's text is the UI text with whitespace collapsed), was unchecked and checked again.
 
 | | EN | DE |
 | --- | --- | --- |
@@ -94,7 +94,7 @@ The 16-plane list has 10 excluded planes: 7 show “steeper than 60°” / “st
 
 The fixture has no LoD2 `roof_geometry` plane, so the third sentence (“outline cannot be used”) was not exercised through the map. The engine branch is probed with a self-intersecting drawn polygon: 200, `excluded_reason: roof_geometry` (`engineProbes.packGeometry`). It is the same `exclusionText` mapping.
 
-The ticket's “flat roof” wording has no exclusion behind it: `geometry.ts` has no flat-roof sentence, and the engine treats planes below `ROOF_FLAT_TILT_DEG = 10°` (`services/engine/src/linker_engine/rules.py:286-288`) as usable flat roofs whose rows face south (`roof/packing.py:34-49`, `ROOF_ASSUMPTIONS` in `roof/service.py:32-38`). The three reason sentences in `exclusionText` are north, steeper than 60°, and outline cannot be used. This walk records that as the implementation's behaviour; it is not a defect ticket.
+The ticket's (and `docs/research/2026-10-21-configurator-rooftop/inventory.md:180`'s) “flat roof” wording has no exclusion behind it: `geometry.ts` has no flat-roof sentence, and the engine treats planes below `ROOF_FLAT_TILT_DEG = 10°` (`services/engine/src/linker_engine/rules.py:286-288`) as usable flat roofs whose rows face south (`roof/packing.py:34-49`, `ROOF_ASSUMPTIONS` in `roof/service.py:32-38`). The three reason sentences in `exclusionText` are north, steeper than 60°, and outline cannot be used. This walk records that as the implementation's behaviour; it is not a defect ticket.
 
 | State | EN 1440 | EN 390 | DE 1440 | DE 390 |
 | --- | --- | --- | --- | --- |
@@ -110,7 +110,7 @@ The ticket's “flat roof” wording has no exclusion behind it: `geometry.ts` h
 | Drawn plane refused | A rectangle beyond 3000 m²; engine 422 | “Draw the plane on one roof: this one is too large or outside Germany.” / “Zeichnen Sie die Fläche auf einem einzelnen Dach ein: Diese ist zu groß oder liegt außerhalb Deutschlands.” | Sentence appears but is replaced by the outline; **#484** |
 | Roof data load failure | PLZ 99999; `/geo/plz` 404 `unknown_plz`; no map is built | “The roof could not be loaded. Try again.” / “Das Dach konnte nicht geladen werden. Versuchen Sie es erneut.” | Pass |
 
-The fourth state is the component's `error` state. It is reached when the postcode/place load fails; MapLibre itself has no error handler (`RoofStep.tsx` has no `map.on('error')`), so a tile or style failure does not set this sentence. The walk records the reachable load-failure trigger and its sentence; whether tile errors also need the sentence is not decided by this walk.
+The fourth state is the component's `error` state. It is reached when the postcode/place load fails; MapLibre itself has no error handler (`RoofStep.tsx` has no `map.on('error')`), so a tile or style failure does not set this sentence. The walk records the reachable load-failure trigger and its sentence; whether tile errors also need the sentence is not decided by this walk. The screenshot files keep the harness state name `r11-map-error`; that state is this postcode/place-load failure, not a MapLibre tile or style error.
 
 The drawn-plane-refused state has no stable screenshot of its own: its post-state is the R06 refused pair above (`roof-*-r06-refused-attempt.png`), where the sentence is in the ordered `record.json` trace and the final list is the building's.
 
@@ -124,7 +124,7 @@ The drawn-plane-refused state has no stable screenshot of its own: its post-stat
 
 ## R13 — close without adopting
 
-After R08's “Enter kWp instead”, the roof step was opened again and Triftstraße 5 was selected in it (14 modules, 6.44 kWp / 14 Module, 6,44 kWp), then closed with “Close roof step” (“Dachauswahl schließen”) without applying. The form is unchanged: the summary is the open-roof button, `#linker-kwp` is `6.44` / `6,44` and editable (`readOnly: false`), and no roof summary appears. The in-step selection is discarded. `record.json` `cases[*].steps.r13`.
+After R08's “Enter kWp instead”, the roof step was opened again and Triftstraße 5 was selected in it (14 modules, 6.44 kWp / 14 Module, 6,44 kWp), then closed with “Close roof step” (“Dachauswahl schließen”) without applying. The form is unchanged: the summary is the open-roof button, `#linker-kwp` is `6.44` / `6,44` and editable (`readOnly: false`), and no roof summary appears. The in-step selection was not applied: no roof is adopted, and the manual kWp stays editable. `record.json` `cases[*].steps.r13`.
 
 | State | EN 1440 | EN 390 | DE 1440 | DE 390 |
 | --- | --- | --- | --- | --- |
