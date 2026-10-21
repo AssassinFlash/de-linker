@@ -162,9 +162,10 @@ class _Pages(FakeTarget):
         self, path: str, *, cache_buster: str | None = None
     ) -> tuple[int, str]:
         del cache_buster
-        return self.statuses.get(path, 200), self.pages.get(
-            path, '<html lang="de">ok</html>'
-        )
+        default = '<html lang="de">ok</html>'
+        if path in plan.VERIFY_LEGAL_PATHS:
+            default += r"""<script id="tv-legal-js">var svg='\u003csvg>';var space=/\s+/g;</script>"""
+        return self.statuses.get(path, 200), self.pages.get(path, default)
 
     @staticmethod
     def redirects_are_served() -> dict[str, int]:
@@ -279,6 +280,11 @@ class FilesystemTarget(Target):
         self.pages.append(path)
         if path == self.failed_page:
             return 500, "failed"
+        if path in plan.VERIFY_LEGAL_PATHS:
+            return (
+                200,
+                r"""<html lang="de"><script id="tv-legal-js">var svg='\u003csvg>';var space=/\s+/g;</script></html>""",
+            )
         return dict(plan.VERIFY_REDIRECTS).get(path, 200), _product_page(_PRODUCT)
 
 
@@ -948,6 +954,23 @@ def test_the_product_pages_must_carry_exactly_one_product_node(tmp_path: Path) -
     assert result.notes == [
         f"{path} carries 2 {plan.VERIFY_PRODUCT_TYPE} nodes, expected exactly 1"
         for path in plan.VERIFY_PRODUCT_PATHS
+    ]
+
+
+@pytest.mark.parametrize(
+    "body",
+    ["", '<script id="tv-legal-js">var svg="u003csvg>";var space=/s+/g;</script>'],
+)
+def test_verify_rejects_missing_or_unslashed_legal_scripts(
+    tmp_path: Path, body: str
+) -> None:
+    pages = {path: _product_page(_PRODUCT) for path in plan.VERIFY_PRODUCT_PATHS}
+    pages["/privacy-policy/"] = body
+    result = steps.verify(
+        _Pages(tmp_path, pages, _Pages.redirects_are_served()), cache_buster="x"
+    )
+    assert result.notes == [
+        "/privacy-policy/ legal script is missing or has lost backslashes"
     ]
 
 

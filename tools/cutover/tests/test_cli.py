@@ -30,6 +30,11 @@ class CliTarget(Target):
 
     def http(self, path: str, *, cache_buster: str | None = None) -> tuple[int, str]:
         del cache_buster
+        if path in plan.VERIFY_LEGAL_PATHS:
+            return (
+                200,
+                r"""<html lang="de"><script id="tv-legal-js">var svg='\u003csvg>';var space=/\s+/g;</script></html>""",
+            )
         return (
             dict(plan.VERIFY_REDIRECTS).get(path, 200),
             '<html lang="de"><script type="application/ld+json">{"@type":"Product"}</script></html>',

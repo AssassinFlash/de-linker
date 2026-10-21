@@ -49,8 +49,9 @@ final class LanguageLinks {
 	 * header's halves, with the same destinations.
 	 */
 	public function footer(): string {
-		return '<a data-lnk-flang="en" href="' . esc_url( $this->url( 'en' ) ) . '" hreflang="en" lang="en">' . esc_html__( 'English', 'linker-commerce' ) . '</a>'
-			. "\n" . '<a data-linker-language-choice="de" data-lnk-flang="de" href="' . esc_url( $this->url( 'de' ) ) . '" hreflang="de" lang="de">' . esc_html( 'Deutsch' ) . '</a>';
+		$is_de = \function_exists( 'pll_current_language' ) && 'de' === pll_current_language();
+		return '<a data-linker-language-choice="en" data-lnk-flang="en" href="' . esc_url( $this->url( 'en' ) ) . '" hreflang="en" lang="en"' . ( $is_de ? '' : ' aria-current="true"' ) . '>' . esc_html__( 'English', 'linker-commerce' ) . '</a>'
+			. "\n" . '<a data-linker-language-choice="de" data-lnk-flang="de" href="' . esc_url( $this->url( 'de' ) ) . '" hreflang="de" lang="de"' . ( $is_de ? ' aria-current="true"' : '' ) . '>' . esc_html( 'Deutsch' ) . '</a>';
 	}
 
 	/**

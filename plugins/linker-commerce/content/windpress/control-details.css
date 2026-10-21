@@ -1,0 +1,183 @@
+/* Existing site controls: the owner's 2026-10-21 visual review. Spacing and
+   focus treatment reuse the site's tokens; no separate CSS delivery path. */
+
+/* Native fieldset legends sit outside their grid's gap. Give the choice
+   heading the same explicit space as the neighbouring labelled controls. */
+.linker-configurator .linker-form__choice > legend {
+	float: none;
+	width: auto;
+	margin: 0 0 var(--proto-space-2, 0.5rem);
+	padding: 0;
+}
+
+.linker-configurator .linker-form__choice input[type="radio"] {
+	flex: 0 0 1.125rem;
+}
+
+.linker-configurator .linker-cards-choice label:hover {
+	border-color: var(--linker-accent);
+}
+
+.linker-configurator .linker-cards-choice label:has(input:focus-visible) {
+	outline: 2px solid var(--linker-accent);
+	outline-offset: 2px;
+}
+
+/* The brand capsules now lead to the existing product, capability and
+   support pages. Preserve the diagram while making its affordance real. */
+#tv-footer-v2 .footer-identity-network {
+	align-items: stretch;
+}
+
+#tv-footer-v2 .footer-identity-node {
+	min-height: var(--proto-control-height, 2.75rem);
+	text-decoration: none;
+	transition: background 0.18s, border-color 0.18s;
+}
+
+#tv-footer-v2 .footer-identity-node:hover,
+#tv-footer-v2 .footer-identity-node:focus-visible {
+	background: #fff;
+	border-color: currentColor;
+}
+
+/* DOM order follows keyboard use: tablist, active panel, its links. */
+#tv-footer-v2 .footer-panels {
+	grid-row: 1;
+}
+
+#tv-footer-v2 .footer-dock {
+	grid-row: 2;
+}
+
+/* All legal and consent entries have the same comfortable hit area. */
+#tv-footer-v2 .tv-footer-bar-legal :is(a, button) {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--proto-control-height, 2.75rem);
+}
+
+/* The processing register contains prose, including the long Genie entry.
+   Reuse the legal page's existing mobile record layout on desktop too, so
+   category and basis cannot squeeze the purpose into a narrow column.
+   Print keeps the document's existing compact table and repeated headings. */
+@media screen {
+	.legal-root[data-doc="privacy"] #section-2 .lg-table-wrap {
+		overflow: visible;
+		border: 0;
+		border-radius: 0;
+		background: none;
+	}
+	.legal-root[data-doc="privacy"] #section-2 :is(table, tbody, tr, th, td) {
+		display: block;
+		min-width: 0;
+	}
+	.legal-root[data-doc="privacy"] #section-2 thead {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+	.legal-root[data-doc="privacy"] #section-2 tbody {
+		display: grid;
+		gap: 16px;
+	}
+	.legal-root[data-doc="privacy"] #section-2 tbody tr {
+		display: grid;
+		gap: 12px;
+		padding: 20px;
+		border: 1px solid var(--lg-line);
+		border-radius: 12px;
+	}
+	.legal-root[data-doc="privacy"] #section-2 tbody :is(th, td) {
+		padding: 0;
+		border: 0;
+		font-size: 16px;
+		line-height: 1.65;
+		overflow-wrap: break-word;
+	}
+	.legal-root[data-doc="privacy"] #section-2 tbody th {
+		font-size: 18px;
+		line-height: 1.4;
+	}
+	.legal-root[data-doc="privacy"] #section-2 td[data-label]::before {
+		content: attr(data-label);
+		display: block;
+		margin-bottom: 6px;
+		font: 600 13px/1.4 var(--lg-font);
+		color: var(--lg-muted);
+	}
+	.legal-root[data-doc="privacy"] #section-2 td:has(.lg-basis) {
+		padding-top: 12px;
+		border-top: 1px solid var(--lg-line);
+	}
+	.legal-root[data-doc="privacy"] #section-2 .lg-basis {
+		max-width: 100%;
+		white-space: normal;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#tv-footer-v2 .footer-identity-node {
+		transition: none;
+	}
+}
+
+/* WordPress inserts paragraph wrappers around the utility accordion's
+   disclosure icon. Flex keeps the title in the flexible middle slot instead
+   of putting it in the narrow third grid column after an empty paragraph. */
+@media (max-width: 767px) {
+	#tv-utility-page-v1 .us-platform-mobile .us-platform > summary {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+	#tv-utility-page-v1 .us-platform-mobile summary > h3 {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: break-word;
+	}
+	#tv-utility-page-v1 .us-platform-mobile summary > p { margin: 0; }
+	#tv-utility-page-v1 .us-platform-mobile summary > p:empty { display: none; }
+}
+
+/* Three product actions share a narrow row. Put each icon above its label
+   so Documents / Dokumente never leaves a single letter on a second line. */
+@media (max-width: 639px) {
+	#tv-storefront-pdp .pdp-product-tools .pdp-tool {
+		flex-direction: column;
+		gap: 6px;
+		min-height: 64px;
+		white-space: nowrap;
+		overflow-wrap: normal;
+	}
+}
+
+/* Narrow-screen rules in the saved legal documents also match print
+   emulation. Restore native table display explicitly for paper at any width. */
+@media print {
+	#tv-legal .lg-table-wrap table { display: table; min-width: 0; }
+	#tv-legal .lg-table-wrap tbody { display: table-row-group; }
+	#tv-legal .lg-table-wrap thead {
+		display: table-header-group;
+		position: static;
+		width: auto;
+		height: auto;
+		overflow: visible;
+		clip-path: none;
+		white-space: normal;
+	}
+	#tv-legal .lg-table-wrap tr {
+		display: table-row;
+		padding: 0;
+		border: 0;
+	}
+	#tv-legal .lg-table-wrap :is(th, td) {
+		display: table-cell;
+		padding: 6pt 8pt;
+		border-top: 1px solid var(--lg-line);
+	}
+	#tv-legal .lg-table-wrap td[data-label]::before { content: none; }
+}

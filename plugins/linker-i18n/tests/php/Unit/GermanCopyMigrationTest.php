@@ -118,12 +118,21 @@ final class GermanCopyMigrationTest extends TestCase {
 			'update_post_meta',
 			array(
 				'return' => function ( int $id, string $key, $value ): bool {
-					$this->site['meta'][ $id ][ $key ] = (string) $value;
+					$this->site['meta'][ $id ][ $key ] = stripslashes( (string) $value );
 					return true;
 				},
 			)
 		);
-		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn( $value ) => $value ) );
+		// Native post writes remove one slash layer. The flat post fields in
+		// this fixture must receive the same slashed input as WordPress.
+		WP_Mock::userFunction(
+			'wp_slash',
+			array(
+				'return' => static fn( mixed $value ): mixed => is_array( $value )
+					? array_map( static fn( mixed $field ): mixed => is_string( $field ) ? addslashes( $field ) : $field, $value )
+					: ( is_string( $value ) ? addslashes( $value ) : $value ),
+			)
+		);
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 	}
 
@@ -163,6 +172,55 @@ final class GermanCopyMigrationTest extends TestCase {
 		$this->assertSame( 'Neu', $this->site['meta'][6853]['_seopress_titles_desc'] );
 		$migration->verify();
 		$this->assertSame( 0, $migration->apply() );
+	}
+
+	/** Legal icon escapes and regexes survive apply, repeat and rollback. */
+	public function test_post_content_retains_backslashes_through_apply_and_rollback(): void {
+		$before                                  = '<script>var icon="\u003csvg>";var space=/\s+/g;</script>';
+		$after                                   = '<p>Grüße an Partner.</p>' . $before;
+		$this->site['posts'][6853]->post_content = $before;
+		$backup                                  = null;
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'return' => static function () use ( &$backup ) {
+					return $backup;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'update_option',
+			array(
+				'return' => static function ( string $key, array $value ) use ( &$backup ): bool {
+					$backup = $value;
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_update_post',
+			array(
+				'return' => function ( array $data ): int {
+					$id = (int) $data['ID'];
+					$this->site['posts'][ $id ]->post_content = stripslashes( (string) $data['post_content'] );
+					return $id;
+				},
+			)
+		);
+		$manifest  = array(
+			array(
+				'type'   => 'page',
+				'source' => 'products',
+				'set'    => array( 'post_content' => $after ),
+			),
+		);
+		$migration = new GermanCopyMigration( new Languages(), $manifest );
+		$this->assertSame( 1, $migration->apply() );
+		$this->assertSame( $after, $this->site['posts'][6853]->post_content );
+		$migration->verify();
+		$this->assertSame( 0, $migration->apply() );
+		$this->assertSame( 1, $migration->rollback() );
+		$this->assertSame( $before, $this->site['posts'][6853]->post_content );
 	}
 
 	/**
