@@ -34,11 +34,11 @@ uv run --locked python prod_smoke.py --site https://de-linker.com --confirm-prod
 
 - 失败要对顾客可见：明确错误，或降级句。有可引用产品时只出产品句、meta 里才有 `fallback`，记缺陷。
 - 壳上的 502 / 无 `done` 的 200，当场应出现 “Genie did not answer. Please try again.” 空白停住记缺陷。
-- 刷新后的状态单独记。问题还在但错误消失，或问题与错误一起消失，都记缺陷。看过屏的只有英语桌面：模型 500，以及完整 block 后的 SSE 截断。VPS-DOWN 的当场 502 以 HTTP 行为主证据；`vps-down-error.png` 与 SSE 截断那张是同一文件。没有 390 宽，没有德语界面，VPS-KILL 的界面是从 VPS-DOWN 的同一 502 推出来的。这三处截图仍缺，跟在 #433，不记成已覆盖。界限写在 `NOTES.md`。
+- 刷新后的状态单独记。问题还在但错误消失，或问题与错误一起消失，都记缺陷。本批当时看过屏的是英语桌面：模型 500，以及完整 block 后的 SSE 截断；VPS-DOWN 的当场 502 以 HTTP 行为主证据，`vps-down-error.png` 与 SSE 截断那张是同一文件。2026-10-21 的 #433 补拍补上了 390 宽、德语界面和 VPS-KILL 的当场：`docs/acceptance/2026-10-21/433/`（同文件在 `~/de-linker-data/campaign-332/ui/`）有 1440/390 × EN/DE 的 SSE-CUT、VPS-KILL、VPS-DOWN 当场与刷新后共 24 张图。VPS-KILL 的界面现在是直接看屏；390 宽与德语已看过。补拍跑在 #411 之后，刷新后错误与问句保留、首页 hero 展开，与 2026-10-20 当时的“刷新后消失/空”不是同一段时间的行为；D3/D4 的判定保持原样。界限写在 `NOTES.md`。
 - 重试在故障撤掉后应是扎实回答。
 - “不静默换模型”看聊天桩记下的请求 `model`，不看 turn log。每一笔都要是 `deepseek-flash`，本机 OpenRouter 桩命中为 0。日志列仍是 `app.py` 写的配置名。已发布的 27 条没有这两个字段，不因此改判。Jev 失败后 SSE meta 带 `jev_error` 就按规格放行。
 - 失败回合里写成事实的测量值（kW、kWh、W、V、A、€、mm）记缺陷。目录卡上的真实价格、以及有 `done` 的健康回合里的目录功率，不记。无 `done` 的块不渲染，里面的数字不算已发布事实。
 
 ## 结论
 
-见 `NOTES.md` 与 `cases.md`。原先 23 条 pass 12 / defect 11。补跑的 4 条都是 defect，合计 pass 12 / defect 15。痛点仍是 4 条，按顾客痛苦排序：停机时仍像一次成功推荐、目录工具故障被说成去信销售、SSE 截断刷新后错误消失、502 刷新后问题也不见。
+见 `NOTES.md` 与 `cases.md`。原先 23 条 pass 12 / defect 11。补跑的 4 条都是 defect，合计 pass 12 / defect 15。痛点仍是 4 条，2026-10-20 当时按顾客痛苦排序：停机时仍像一次成功推荐、目录工具故障被说成去信销售、SSE 截断刷新后错误消失、502 刷新后问题也不见。

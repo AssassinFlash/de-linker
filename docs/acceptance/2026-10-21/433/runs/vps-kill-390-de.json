@@ -1,0 +1,67 @@
+{
+  "id": "vps-kill",
+  "url": "http://127.0.0.1:9187/de/",
+  "width": 390,
+  "height": 844,
+  "lang": "de",
+  "question": "Wie hoch ist die maximale PV-Eingangsleistung des SAJ H2-10K-T2? Nutzen Sie das Datenblatt.",
+  "question_key": "doc",
+  "failure_sentence": "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut.",
+  "shots": {
+    "live": "vps-kill-live-390-de.png",
+    "reload": "vps-kill-reload-390-de.png"
+  },
+  "live": {
+    "surface": "dock",
+    "error_text": "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut.",
+    "error_visible": true,
+    "retry_visible": true,
+    "field_value": "Wie hoch ist die maximale PV-Eingangsleistung des SAJ H2-10K-T2? Nutzen Sie das Datenblatt.",
+    "thread_text": "",
+    "app_box": {
+      "x": 0,
+      "y": 125,
+      "width": 390,
+      "height": 719
+    },
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "reload": {
+    "opened": "auto",
+    "surface": "hero",
+    "error_text": "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut.",
+    "error_visible": true,
+    "retry_visible": true,
+    "field_value": "Wie hoch ist die maximale PV-Eingangsleistung des SAJ H2-10K-T2? Nutzen Sie das Datenblatt.",
+    "thread_text": "",
+    "app_box": {
+      "x": 40,
+      "y": 194,
+      "width": 318.796875,
+      "height": 211.890625
+    },
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "turns": [
+    {
+      "status": 502,
+      "url": "http://127.0.0.1:9187/wp-json/linker-ai/v1/genie/turn",
+      "bytes": 88,
+      "code": "linker_genie_upstream",
+      "message": "Genie did not answer."
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "question_key": "doc",
+      "outcome": "live failure captured"
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 - 日期：2026-10-20。票 #332（地图 #329）。只测试，不改产品。装具与笔记在本目录，`justfile` 只把装具接进 `py_projects`。
 - 本地：`c332`，快照 `20261019-1715`（2026-10-19T09:18:02Z；212 个产品）。WP `127.0.0.1:9187`，Genie `127.0.0.1:9189`，索引 `/Users/chesterjohn/de-linker-data/index/builds/20261018T173840Z/index.sqlite`。插件链到本 worktree。
 - 原先 23 个场景的手判不变：pass 12，defect 11。补跑 4 条都是 defect。合计记录 27 条，pass 12 / defect 15。归并后的顾客痛点仍是 4 条。
-- 证据：`~/de-linker-data/campaign-332/evidence/cases.jsonl`（30 行，27 个 id；同一 id 取最后一行）。`summary.json` 现在只覆盖这次补跑的自动分（pass 0 / defect 4），不发布。第二轮 `--only` 的自动分是 pass 5 / defect 9，文件已被这次运行覆盖，数字留在这里。界面截图在 `~/de-linker-data/campaign-332/ui/`。生产冒烟在 `evidence/prod-smoke.jsonl`。
+- 证据：`~/de-linker-data/campaign-332/evidence/cases.jsonl`（30 行，27 个 id；同一 id 取最后一行）。`summary.json` 现在只覆盖这次补跑的自动分（pass 0 / defect 4），不发布。第二轮 `--only` 的自动分是 pass 5 / defect 9，文件已被这次运行覆盖，数字留在这里。界面截图在 `~/de-linker-data/campaign-332/ui/`；2026-10-21 的 #433 补拍同文件也在 `docs/acceptance/2026-10-21/433/`。生产冒烟在 `evidence/prod-smoke.jsonl`。
 - `8456cd2c` 的说明写成已经记录半条 block、attachment / reading 截断和空 SSE。那时只有装具单测，没有 c332 的行。这一轮补跑了这四条，行在 `verdicts.jsonl`。
 - 第一轮在 `stop_genie` 上中断，能力桩也没打中（`rest_pre_dispatch` 优先级被 ACF 清掉）。能力两例以第二轮为准。`RATE-BURST` 的第一轮自动分把目录 kW 算成编造，已撤回；发布的 `verdict` 是 pass。
 - 跑完栈是健康的。`c332/mail` 在 2026-10-19 23:00 之后没有新文件。没有发询盘或联系邮件。
@@ -69,7 +69,7 @@ dossier §1.15：**须自行设计**。SSE 中途断流的界面状态与重试�
 
 当场：壳 `parseStream` 抛 “stream without done”，停靠条出现 “Genie did not answer. Please try again.” 输入框被清空，问题没有回到输入框。截图 `ui/sse-cut-live-error.png`。
 
-刷新后再打开：用户句 “Do you stock the SAJ H2-10K-T2?” 还在，错误没有，答案没有，卡 0。`reload_hides_error` true。截图 `ui/sse-cut-reload.png`。
+刷新后再打开：用户句 “Do you stock the SAJ H2-10K-T2?” 还在，错误没有，答案没有，卡 0。`reload_hides_error` true。截图 `ui/sse-cut-reload.png`。2026-10-21 的 #433 补拍在 #411 之后重看了刷新：错误与问句都保留，首页 hero 展开；见 §界面覆盖的界限。
 
 代理指回 `http://127.0.0.1:9189` 后，在同一对话里再发同一问，约 20s 出扎实回答（T2 不在目录，T3 家族，含目录上的 29.999 kW）。截图 `ui/sse-cut-retry.png`。
 
@@ -91,19 +91,23 @@ dossier §1.15：**须自行设计**。SSE 中途断流的界面状态与重试�
 
 浏览器做在 VPS-DOWN（停进程，`/health` 失败）：用户气泡在，红色 “Genie did not answer. Please try again.”，输入框空。文件名是 `ui/vps-down-error.png`。刷新后重新打开停靠条：气泡 0，错误 null，输入框空。服务拉起后把同一问重新打进输入框，约 25s 答出 T3。502 不会像 409 那样把问题放回输入框；这次请求没有 200 正文，刷新后什么都不留。
 
-`ui/vps-down-error.png` 与 `ui/sse-cut-live-error.png` 字节相同（`cmp -s` 退出码 0，SHA-256 `44a412dd09ab236a60c613365902d5d6076ca19cec80e3d990d51a077c60ab85`，1938808 字节）。同一张渲染不能同时当两个场景的界面证据。VPS-DOWN 的主证据是 502 那一行：HTTP 502，`linker_genie_upstream`，1.109s，故障期间没有 turn 日志。这张 PNG 只记在 SSE-CUT 的当场错误上。
+`ui/vps-down-error.png` 与 `ui/sse-cut-live-error.png` 字节相同（`cmp -s` 退出码 0，SHA-256 `44a412dd09ab236a60c613365902d5d6076ca19cec80e3d990d51a077c60ab85`，1938808 字节）。同一张渲染不能同时当两个场景的界面证据。VPS-DOWN 的主证据是 502 那一行：HTTP 502，`linker_genie_upstream`，1.109s，故障期间没有 turn 日志。这张 PNG 只记在 SSE-CUT 的当场错误上。2026-10-21 的 #433 独立 VPS-DOWN 当场（`vps-down-live-390-de.png`）是问句回到输入框、thread 空；2026-10-20 上面那句“用户气泡在、输入框空”来自与 SSE-CUT 同一张图，不是 VPS-DOWN 的独立观察。
 
-VPS-KILL 走同一代理错误码。浏览器只做了 VPS-DOWN 的当场错误，没有单独截 VPS-KILL，也没有截 VPS-DOWN 刷新后的空停靠条。VPS-KILL 的界面是从同一 502 推出来的，不是另一次看屏。
+VPS-KILL 走同一代理错误码。本批浏览器只做了 VPS-DOWN 的当场错误，没有单独截 VPS-KILL；VPS-KILL 的界面当时是从同一 502 推出来的，不是另一次看屏。2026-10-21 的 #433 补拍补上了 VPS-KILL 的当场：`docs/acceptance/2026-10-21/433/vps-kill-live-390-de.png` 与 1440/EN 的对应图，turn 路由 502 `linker_genie_upstream`。VPS-DOWN 刷新后的状态也同批看过（#411 之后不再是空停靠条，见 §界面覆盖的界限）。
 
 ### 界面覆盖的界限
 
-看过屏的只有英语、桌面宽度的停靠条，三态：
+本批（2026-10-20）自己拍过的屏是英语、桌面宽度的停靠条：模型 500（`ui/model-500-cards.png`、`ui/model-500-cards-scrolled.png`）、SSE 截断（`ui/sse-cut-live-error.png`、`ui/sse-cut-reload.png`、`ui/sse-cut-retry.png`）。VPS-DOWN 的当场主证据是 502 行；`ui/vps-down-error.png` 与 `sse-cut-live-error.png` 是同一文件，不另作这一态的截图。
 
-- 模型 500（M500-EN）：`ui/model-500-cards.png`、`ui/model-500-cards-scrolled.png`
-- SSE 截断（完整 block 之后）：`ui/sse-cut-live-error.png`、`ui/sse-cut-reload.png`、`ui/sse-cut-retry.png`
-- VPS 停机的当场 502：HTTP 行（见 D4）。`ui/vps-down-error.png` 与 `sse-cut-live-error.png` 是同一文件，不能另作此态的截图。
+2026-10-21 的 #433 补拍（当前代码，快照 `20261021-1023`）在 `docs/acceptance/2026-10-21/433/`，同文件复制到 `~/de-linker-data/campaign-332/ui/`：1440 与 390、EN 与 DE 各一组，SSE-CUT、VPS-KILL、VPS-DOWN 的当场与刷新后都看了屏，共 24 张。
 
-没有的：390 宽、德语界面、VPS-KILL、VPS-DOWN 刷新后的空状态。半条 block、attachment / reading 事件已经对 c332 重放，仍没有截图。也没有 Jev 502、AB-500 的 handoff 句的截图。M500-DE 的德语句子来自 API 正文，不是截图。VPS-DOWN 的当场画面没有独立截图，主证据是 502 行。“界面没有空白”只覆盖模型 500 和 SSE-CUT 当场这两张不同的图，不是一张状态表。390 宽、德语和 VPS-KILL 的截图跟在 #433，这轮没有补拍。
+- SSE-CUT：当场 200、只有 `meta` + 一条完整 `block`、无 `done`；停靠条错误句 + Try again。问句留在 thread，输入框空。390 德语是 `sse-cut-live-390-de.png`。
+- VPS-KILL：当场 502 `linker_genie_upstream`；停靠条错误句 + Try again，问句回到输入框。390 德语是 `vps-kill-live-390-de.png`，1440 英语是 `vps-kill-live-1440-en.png`。不再从 VPS-DOWN 推断。
+- VPS-DOWN：当场 502 同上，是独立的一张；`vps-down-live-390-de.png`。
+
+刷新后的画面是 #411 之后的代码：失败记录保留，首页 hero 自动展开并显示同一句错误，问句按失败类型留在 thread 或回到输入框。390 宽下停靠条的入口气泡由 `plugins/linker-tools/src/genie/genie.css` 的 `@media (max-width: 860px)` 隐藏，刷新后出现的是 hero；记录里的 `surface` 写明是 `dock` 还是 `hero`。旧的“刷新后空停靠条”不再是当前行为；#332 当时的 defect 判定保持原样。
+
+仍然没有截图的：半条 block、attachment / reading 事件截断；Jev 502 与 AB-500 的 handoff 句；M500-DE 的德语模型 500（德语句子仍是 API 正文）。“界面不是空白”现在覆盖 SSE-CUT、VPS-KILL、VPS-DOWN 三态的 1440/390 × EN/DE，不再只是两张桌面英语图。
 
 ## 3. 放行与观察
 
