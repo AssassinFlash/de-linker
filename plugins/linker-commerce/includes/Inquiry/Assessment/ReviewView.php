@@ -30,6 +30,7 @@ final class ReviewView {
 		}
 		$id       = 'linker-assessment-correction-' . $order->get_id();
 		$revision = (int) Reviews::state( $order )['revision'];
+		$basis    = Reviews::reference( $order );
 		echo '<h3>' . esc_html__( 'Staff review', 'linker-commerce' ) . '</h3><p>' . esc_html__( 'Saving a review changes this internal record only. It does not send mail or change the account decision.', 'linker-commerce' ) . '</p>';
 		echo '<p><label>' . esc_html__( 'Staff correction', 'linker-commerce' ) . ' <select form="' . esc_attr( $id ) . '" name="label">';
 		foreach ( array( 'uncertain', 'normal', 'suspected_spam' ) as $label ) {
@@ -45,9 +46,10 @@ final class ReviewView {
 		self::history( $order );
 		add_action(
 			'admin_footer',
-			static function () use ( $order, $id, $revision ): void {
+			static function () use ( $order, $id, $revision, $basis ): void {
 				echo '<form id="' . esc_attr( $id ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="linker_inquiry_assessment_correct" /><input type="hidden" name="inquiry" value="' . esc_attr( (string) $order->get_id() ) . '" /><input type="hidden" name="revision" value="' . esc_attr( (string) $revision ) . '" />';
-				wp_nonce_field( 'linker_assessment_' . $order->get_id() );
+				echo '<input type="hidden" name="basis" value="' . esc_attr( $basis ) . '" />';
+				wp_nonce_field( 'linker_assessment_' . $order->get_id() . '_' . $basis );
 				echo '</form>';
 			}
 		);
@@ -68,6 +70,9 @@ final class ReviewView {
 		);
 		foreach ( Reviews::history( $order ) as $event ) {
 			echo '<li><strong>' . esc_html( $labels[ (string) $event['operation'] ] ?? '' ) . '</strong><p>' . esc_html( EvidenceView::date( (int) $event['at'] ) ) . ' · ' . esc_html__( 'Staff user ID', 'linker-commerce' ) . ': ' . esc_html( (string) $event['user'] ) . '</p>';
+			if ( isset( $event['basis'], $event['previous'] ) ) {
+				echo '<p>' . esc_html__( 'Previous assessment', 'linker-commerce' ) . ': ' . esc_html( Result::label( (string) $event['previous']['label'] ) ) . '</p><details><summary>' . esc_html__( 'Observation and evidence used for this review', 'linker-commerce' ) . '</summary><textarea readonly class="large-text code" rows="6" aria-label="' . esc_attr__( 'Observation and evidence used for this review', 'linker-commerce' ) . '">' . esc_textarea( (string) wp_json_encode( $event['basis'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ) . '</textarea></details>';
+			}
 			if ( '' !== ( $event['label'] ?? '' ) ) {
 				echo '<p>' . esc_html( Result::label( (string) $event['label'] ) ) . '</p>';
 			}

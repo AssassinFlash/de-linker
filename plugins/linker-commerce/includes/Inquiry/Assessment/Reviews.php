@@ -54,6 +54,28 @@ final class Reviews {
 	}
 
 	/**
+	 * Bind a rendered form to the exact observation and frozen local evidence.
+	 *
+	 * @param WC_Order $order Inquiry as displayed to staff.
+	 */
+	public static function reference( WC_Order $order ): string {
+		return hash( 'sha256', (string) wp_json_encode( self::basis( $order ) ) );
+	}
+
+	/**
+	 * Keep the observation itself: a later model result may replace the live one.
+	 *
+	 * @param WC_Order $order Current loaded inquiry.
+	 * @return array<string, mixed>
+	 */
+	private static function basis( WC_Order $order ): array {
+		return array(
+			'observation'        => Queue::data( $order )['result'] ?? Result::unknown( 'pending' ),
+			'evidence_reference' => hash( 'sha256', (string) wp_json_encode( $order->get_meta( CustomerEvidence::META ) ) ),
+		);
+	}
+
+	/**
 	 * Compare-and-append. Nonce verification belongs to the HTTP controller.
 	 *
 	 * @param int                  $id Inquiry id.
@@ -87,7 +109,7 @@ final class Reviews {
 					return;
 				}
 				$state = self::state( $order );
-				if ( (int) $state['revision'] !== $revision ) {
+				if ( (int) $state['revision'] !== $revision || ! is_string( $input['basis'] ?? null ) || ! hash_equals( self::reference( $order ), $input['basis'] ) ) {
 					$result = new WP_Error( 'review_stale', __( 'This review has changed. Reload the inquiry to see the latest revision; your change was not saved.', 'linker-commerce' ) );
 					return;
 				}
@@ -114,6 +136,13 @@ final class Reviews {
 						'note'      => (string) ( $input['note'] ?? '' ),
 						'user'      => get_current_user_id(),
 						'at'        => time(),
+						'basis'     => array_merge( self::basis( $order ), array( 'reference' => self::reference( $order ) ) ),
+						'previous'  => array(
+							'label'    => is_array( $legacy ) ? (string) $legacy['label'] : (string) ( Queue::data( $order )['result']['label'] ?? 'uncertain' ),
+							'source'   => is_array( $legacy ) ? 'staff_correction' : 'model_observation',
+							'event'    => (int) ( $state['event'] ?? 0 ),
+							'revision' => $revision,
+						),
 					);
 					if ( 'evidence' === $operation ) {
 						$event['source']      = $input['source'];

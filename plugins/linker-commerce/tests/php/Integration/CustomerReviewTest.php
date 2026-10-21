@@ -53,6 +53,56 @@ final class CustomerReviewTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * Submit the same reference that a freshly rendered staff form supplies.
+	 *
+	 * @param int                  $id Inquiry.
+	 * @param int                  $revision Displayed revision.
+	 * @param string               $operation Staff action.
+	 * @param array<string, mixed> $input Form fields; explicit basis tests staleness.
+	 * @return array<string, mixed>|WP_Error Save result.
+	 */
+	private function save_review( int $id, int $revision, string $operation, array $input ): array|WP_Error {
+		$order = wc_get_order( $id );
+		$this->assertInstanceOf( WC_Order::class, $order );
+		return Reviews::save( $id, $revision, $operation, array_merge( array( 'basis' => Reviews::reference( $order ) ), $input ) );
+	}
+
+	/** A late model response cannot silently change the observation being corrected. */
+	public function test_review_binds_the_rendered_observation_and_previous_value(): void {
+		$order                    = $this->inquiry();
+		$basis                    = Reviews::reference( $order );
+		$data                     = Queue::data( $order );
+		$data['result']['reason'] = 'late_fixture';
+		$order->update_meta_data( Queue::META, $data );
+		$order->save_meta_data();
+		$stale = $this->save_review(
+			$order->get_id(),
+			0,
+			'correct',
+			array(
+				'basis' => $basis,
+				'label' => 'normal',
+			)
+		);
+		$this->assertInstanceOf( WP_Error::class, $stale );
+		$this->assertSame( 'review_stale', $stale->get_error_code() );
+		$this->assertSame( array(), Reviews::history( $order ) );
+		$this->assertIsArray( $this->save_review( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) ) );
+		$reviewed = wc_get_order( $order->get_id() );
+		$this->assertInstanceOf( WC_Order::class, $reviewed );
+		$events = Reviews::history( $reviewed );
+		$this->assertSame( $data['result'], $events[0]['basis']['observation'] );
+		$this->assertSame( Reviews::reference( $order ), $events[0]['basis']['reference'] );
+		$this->assertSame( 'uncertain', $events[0]['previous']['label'] );
+		$this->assertIsArray( $this->save_review( $order->get_id(), 1, 'withdraw', array() ) );
+		$withdrawn = wc_get_order( $order->get_id() );
+		$this->assertInstanceOf( WC_Order::class, $withdrawn );
+		$events = Reviews::history( $withdrawn );
+		$this->assertSame( 'normal', $events[1]['previous']['label'] );
+		$this->assertSame( $events[0]['id'], $events[1]['previous']['event'] );
+	}
+
+	/**
 	 * Corrections, sources and withdrawal never alter raw evidence or send mail.
 	 */
 	public function test_review_history_and_native_privacy(): void {
@@ -60,7 +110,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		$original = Queue::data( $order );
 		$marker   = self::newest_mail_job();
 		$note     = 'Reviewed "synthetic" claim C:\\docs\\evidence';
-		$state    = Reviews::save(
+		$state    = $this->save_review(
 			$order->get_id(),
 			0,
 			'correct',
@@ -71,7 +121,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		);
 		$this->assertIsArray( $state );
 		$this->assertSame( 1, $state['revision'] );
-		$stale = Reviews::save(
+		$stale = $this->save_review(
 			$order->get_id(),
 			0,
 			'correct',
@@ -82,7 +132,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		);
 		$this->assertInstanceOf( WP_Error::class, $stale );
 		$this->assertSame( 'review_stale', $stale->get_error_code() );
-		$state = Reviews::save(
+		$state = $this->save_review(
 			$order->get_id(),
 			1,
 			'evidence',
@@ -97,7 +147,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		$this->assertSame( 2, $state['revision'] );
 		$order->read_meta_data( true );
 		$this->assertSame( 'normal', $order->get_meta( Admin::OVERRIDE )['label'], 'Adding evidence cannot change the correction.' );
-		$state = Reviews::save( $order->get_id(), 2, 'withdraw', array( 'note' => 'Correction no longer needed' ) );
+		$state = $this->save_review( $order->get_id(), 2, 'withdraw', array( 'note' => 'Correction no longer needed' ) );
 		$this->assertIsArray( $state );
 		$this->assertSame( 3, $state['revision'] );
 		$order->read_meta_data( true );
@@ -125,7 +175,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		$this->assertSame( '', $order->get_meta( Reviews::META ) );
 		$this->assertSame( array(), Reviews::history( $order ) );
 		$this->assertSame( array(), ( new EvidencePrivacy() )->export( array(), $order ) );
-		$erased = Reviews::save( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) );
+		$erased = $this->save_review( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) );
 		$this->assertInstanceOf( WP_Error::class, $erased );
 		$this->assertSame( 'invalid_inquiry', $erased->get_error_code() );
 	}
@@ -141,7 +191,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		);
 		$order->update_meta_data( Admin::OVERRIDE, $legacy );
 		$order->save_meta_data();
-		$this->assertIsArray( Reviews::save( $order->get_id(), 0, 'withdraw', array( 'note' => 'Reviewed again' ) ) );
+		$this->assertIsArray( $this->save_review( $order->get_id(), 0, 'withdraw', array( 'note' => 'Reviewed again' ) ) );
 		$events = Reviews::history( $order );
 		$this->assertCount( 2, $events );
 		$this->assertSame( 'legacy', $events[0]['operation'] );
@@ -156,7 +206,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		$block = static fn ( $value, $id, $key ) => Reviews::EVENT === $key ? false : $value;
 		add_filter( 'add_comment_metadata', $block, 10, 3 );
 		try {
-			$result = Reviews::save(
+			$result = $this->save_review(
 				$order->get_id(),
 				0,
 				'correct',
@@ -174,7 +224,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		$this->assertSame( 0, Reviews::state( $order )['revision'] );
 		$this->assertSame( '', $order->get_meta( Admin::OVERRIDE ) );
 		$this->assertCount( $count, wc_get_order_notes( array( 'order_id' => $order->get_id() ) ) );
-		$this->assertIsArray( Reviews::save( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) ) );
+		$this->assertIsArray( $this->save_review( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) ) );
 		$this->assertCount( 1, Reviews::history( $order ) );
 	}
 
@@ -182,11 +232,11 @@ final class CustomerReviewTest extends IntegrationTestCase {
 	public function test_staff_capability_and_source_validation(): void {
 		$order = $this->inquiry();
 		$this->as_user( 0 );
-		$result = Reviews::save( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) );
+		$result = $this->save_review( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) );
 		$this->assertInstanceOf( WP_Error::class, $result );
 		$this->assertSame( 'forbidden', $result->get_error_code() );
 		$this->as_user( 1 );
-		$result = Reviews::save( $order->get_id(), 0, 'evidence', array( 'note' => 'No provenance' ) );
+		$result = $this->save_review( $order->get_id(), 0, 'evidence', array( 'note' => 'No provenance' ) );
 		$this->assertInstanceOf( WP_Error::class, $result );
 		$this->assertSame( 'invalid_evidence', $result->get_error_code() );
 		$this->assertSame( array(), Reviews::history( $order ) );
@@ -197,7 +247,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		$order = $this->inquiry();
 		$raw   = Queue::data( $order );
 		$this->assertIsArray(
-			Reviews::save(
+			$this->save_review(
 				$order->get_id(),
 				0,
 				'correct',
@@ -208,7 +258,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 			)
 		);
 		$this->assertIsArray(
-			Reviews::save(
+			$this->save_review(
 				$order->get_id(),
 				1,
 				'correct',
@@ -266,7 +316,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- A real second connection owns the server-wide mutex during this race fixture.
 		$this->assertSame( '1', (string) $other->get_var( $other->prepare( 'SELECT GET_LOCK(%s, 0)', $name ) ) );
 		try {
-			$result = Reviews::save( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) );
+			$result = $this->save_review( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) );
 			$this->assertInstanceOf( WP_Error::class, $result );
 			$this->assertSame( 'review_busy', $result->get_error_code() );
 			try {
@@ -283,7 +333,7 @@ final class CustomerReviewTest extends IntegrationTestCase {
 		$order->read_meta_data( true );
 		$this->assertIsArray( $order->get_meta( CustomerEvidence::META ) );
 		$this->assertSame( 0, Reviews::state( $order )['revision'] );
-		$this->assertIsArray( Reviews::save( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) ) );
+		$this->assertIsArray( $this->save_review( $order->get_id(), 0, 'correct', array( 'label' => 'normal' ) ) );
 		$this->assertCount( 1, Reviews::history( $order ) );
 	}
 }

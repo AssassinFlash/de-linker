@@ -55,8 +55,9 @@ final class Admin {
 
 	/** Correction preserves raw evidence and emits no email or status change. */
 	public function correct(): void {
-		$id = isset( $_POST['inquiry'] ) ? absint( $_POST['inquiry'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification -- Verified with the record-specific nonce below.
-		check_admin_referer( 'linker_assessment_' . $id );
+		$id    = isset( $_POST['inquiry'] ) ? absint( $_POST['inquiry'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification -- Verified with the record-specific nonce below.
+		$basis = isset( $_POST['basis'] ) && is_string( $_POST['basis'] ) ? sanitize_text_field( wp_unslash( $_POST['basis'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification -- This exact reference is bound into the nonce action below.
+		check_admin_referer( 'linker_assessment_' . $id . '_' . $basis );
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You cannot review this inquiry.', 'linker-commerce' ), '', array( 'response' => 403 ) );
 		}
@@ -84,6 +85,7 @@ final class Admin {
 			$revision,
 			$operation,
 			array(
+				'basis'       => $basis,
 				'label'       => $label,
 				'note'        => $note,
 				'source'      => $source,

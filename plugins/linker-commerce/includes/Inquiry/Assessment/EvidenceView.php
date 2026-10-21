@@ -44,7 +44,13 @@ final class EvidenceView {
 			default => '',
 		};
 		self::field( __( 'Source', 'linker-commerce' ), $source, __( 'Site record', 'linker-commerce' ) );
-		self::field( __( 'This is about', 'linker-commerce' ), '' !== ( $request['topic'] ?? '' ) ? \Linker\Commerce\Contact\Form::intent_label( (string) $request['topic'] ) : '', $stated );
+		$topic = (string) ( $request['topic'] ?? '' );
+		self::field(
+			__( 'This is about', 'linker-commerce' ),
+			'general' === $topic ? __( 'General enquiry (default form option)', 'linker-commerce' ) : ( '' !== $topic ? \Linker\Commerce\Contact\Form::intent_label( $topic ) : '' ),
+			'general' === $topic ? __( 'Form value; no selection history recorded', 'linker-commerce' ) : $stated,
+			2
+		);
 		echo '<details><summary>' . esc_html__( 'Contact details as submitted', 'linker-commerce' ) . '</summary>';
 		self::field( __( 'Name', 'linker-commerce' ), trim( (string) ( $billing['first_name'] ?? '' ) . ' ' . (string) ( $billing['last_name'] ?? '' ) ), $stated );
 		self::field( __( 'Email', 'linker-commerce' ), (string) ( $billing['email'] ?? '' ), $stated );

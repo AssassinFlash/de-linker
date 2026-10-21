@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-21T18:29:48+00:00\n"
+"POT-Creation-Date: 2026-10-21T18:45:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -539,8 +539,8 @@ msgstr ""
 
 #: includes/Account/Menu.php:52 includes/Account/Menu.php:88
 #: includes/Contact/Form.php:158
-#: includes/Inquiry/Assessment/EvidenceView.php:51
-#: includes/Inquiry/Assessment/EvidenceView.php:65
+#: includes/Inquiry/Assessment/EvidenceView.php:56
+#: includes/Inquiry/Assessment/EvidenceView.php:70
 #: includes/Registration/AccountsTable.php:43
 msgid "Company"
 msgstr ""
@@ -721,7 +721,7 @@ msgid "What would you like to know?"
 msgstr ""
 
 #: includes/Contact/Form.php:146
-#: includes/Inquiry/Assessment/EvidenceView.php:47
+#: includes/Inquiry/Assessment/EvidenceView.php:49
 msgid "This is about"
 msgstr ""
 
@@ -730,7 +730,7 @@ msgid "Where can we reply?"
 msgstr ""
 
 #: includes/Contact/Form.php:153
-#: includes/Inquiry/Assessment/EvidenceView.php:49
+#: includes/Inquiry/Assessment/EvidenceView.php:54
 #: includes/Inquiry/Form.php:156 includes/Settings/SettingsTab.php:137
 msgid "Name"
 msgstr ""
@@ -1156,18 +1156,18 @@ msgstr ""
 msgid "Original model result"
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:61
-#: includes/Inquiry/Assessment/Reviews.php:67
+#: includes/Inquiry/Assessment/Admin.php:62
+#: includes/Inquiry/Assessment/Reviews.php:89
 msgid "You cannot review this inquiry."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:74
+#: includes/Inquiry/Assessment/Admin.php:75
 msgid "Reload this inquiry before saving a review."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:107
-#: includes/Inquiry/Assessment/Reviews.php:81
-#: includes/Inquiry/Assessment/Reviews.php:86
+#: includes/Inquiry/Assessment/Admin.php:109
+#: includes/Inquiry/Assessment/Reviews.php:103
+#: includes/Inquiry/Assessment/Reviews.php:108
 msgid "This inquiry is unavailable."
 msgstr ""
 
@@ -1195,10 +1195,10 @@ msgstr ""
 
 #: includes/Inquiry/Assessment/EvidenceView.php:36
 #: includes/Inquiry/Assessment/EvidenceView.php:46
-#: includes/Inquiry/Assessment/EvidenceView.php:72
-#: includes/Inquiry/Assessment/EvidenceView.php:73
-#: includes/Inquiry/Assessment/EvidenceView.php:74
-#: includes/Inquiry/Assessment/EvidenceView.php:84
+#: includes/Inquiry/Assessment/EvidenceView.php:77
+#: includes/Inquiry/Assessment/EvidenceView.php:78
+#: includes/Inquiry/Assessment/EvidenceView.php:79
+#: includes/Inquiry/Assessment/EvidenceView.php:89
 msgid "Site record"
 msgstr ""
 
@@ -1207,7 +1207,7 @@ msgid "1. This request"
 msgstr ""
 
 #: includes/Inquiry/Assessment/EvidenceView.php:40
-#: includes/Inquiry/Assessment/EvidenceView.php:129
+#: includes/Inquiry/Assessment/EvidenceView.php:134
 msgid "Customer statement"
 msgstr ""
 
@@ -1228,215 +1228,223 @@ msgstr ""
 msgid "Source"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:48
+#: includes/Inquiry/Assessment/EvidenceView.php:50
+msgid "General enquiry (default form option)"
+msgstr ""
+
+#: includes/Inquiry/Assessment/EvidenceView.php:51
+msgid "Form value; no selection history recorded"
+msgstr ""
+
+#: includes/Inquiry/Assessment/EvidenceView.php:53
 msgid "Contact details as submitted"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:50
+#: includes/Inquiry/Assessment/EvidenceView.php:55
 #: includes/Settings/SettingsTab.php:143
 msgid "Email"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:53
+#: includes/Inquiry/Assessment/EvidenceView.php:58
 msgid "Message"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:55
+#: includes/Inquiry/Assessment/EvidenceView.php:60
 #: templates/emails/linker-genie-handoff.php:63
 #: templates/proforma/proforma.php:111
 msgid "Product"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:55
+#: includes/Inquiry/Assessment/EvidenceView.php:60
 msgid "Products in the submitted solution draft"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:58
+#: includes/Inquiry/Assessment/EvidenceView.php:63
 msgid "2. Company and account records"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:61
+#: includes/Inquiry/Assessment/EvidenceView.php:66
 msgid "Guest inquiry. An account and VAT ID are optional."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:61
+#: includes/Inquiry/Assessment/EvidenceView.php:66
 msgid "The linked account record was unavailable when this inquiry arrived."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:63
+#: includes/Inquiry/Assessment/EvidenceView.php:68
 msgid "Saved account details"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:64
+#: includes/Inquiry/Assessment/EvidenceView.php:69
 msgid "Account value at submission; supplied by the customer"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:66
-#: includes/Inquiry/Assessment/ReviewView.php:89
+#: includes/Inquiry/Assessment/EvidenceView.php:71
+#: includes/Inquiry/Assessment/ReviewView.php:94
 #: includes/Registration/Accounts.php:163 includes/Registration/Fields.php:110
 msgid "Company website"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:67
+#: includes/Inquiry/Assessment/EvidenceView.php:72
 #: includes/Registration/BillingVatField.php:94
 #: includes/Registration/Fields.php:95
 msgid "Business type"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:68
+#: includes/Inquiry/Assessment/EvidenceView.php:73
 msgid "Country"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:70
+#: includes/Inquiry/Assessment/EvidenceView.php:75
 msgid "Account status"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:70
+#: includes/Inquiry/Assessment/EvidenceView.php:75
 msgid "Site decision; this does not verify company identity"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:72
+#: includes/Inquiry/Assessment/EvidenceView.php:77
 msgid "Decision recorded at"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:73
-#: includes/Inquiry/Assessment/ReviewView.php:70
+#: includes/Inquiry/Assessment/EvidenceView.php:78
+#: includes/Inquiry/Assessment/ReviewView.php:72
 msgid "Staff user ID"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:74
+#: includes/Inquiry/Assessment/EvidenceView.php:79
 msgid "Recorded reason"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:78
+#: includes/Inquiry/Assessment/EvidenceView.php:83
 msgid "VAT numbers and check records"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:79
+#: includes/Inquiry/Assessment/EvidenceView.php:84
 msgid "VAT ID in this request"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:80
+#: includes/Inquiry/Assessment/EvidenceView.php:85
 msgid "VAT ID saved on the account"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:81
-#: includes/Inquiry/Assessment/EvidenceView.php:82
-#: includes/Inquiry/Assessment/EvidenceView.php:83
-#: includes/Inquiry/Assessment/EvidenceView.php:85
+#: includes/Inquiry/Assessment/EvidenceView.php:86
+#: includes/Inquiry/Assessment/EvidenceView.php:87
+#: includes/Inquiry/Assessment/EvidenceView.php:88
+#: includes/Inquiry/Assessment/EvidenceView.php:90
 msgid "Recorded VAT check"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:81
+#: includes/Inquiry/Assessment/EvidenceView.php:86
 msgid "VAT ID actually checked"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:82
+#: includes/Inquiry/Assessment/EvidenceView.php:87
 msgid "Original check time"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:83
+#: includes/Inquiry/Assessment/EvidenceView.php:88
 msgid "Recorded check result"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:84
+#: includes/Inquiry/Assessment/EvidenceView.php:89
 msgid "VAT result on this inquiry"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:85
+#: includes/Inquiry/Assessment/EvidenceView.php:90
 msgid "Check detail"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:87
+#: includes/Inquiry/Assessment/EvidenceView.php:92
 msgid "3. Points to review"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:89
+#: includes/Inquiry/Assessment/EvidenceView.php:94
 msgid ""
 "The company name in this request differs from the saved account value. Both "
 "are shown above."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:91
+#: includes/Inquiry/Assessment/EvidenceView.php:96
 msgid ""
 "No automatic company lookup was made. Missing optional details are not a "
 "spam finding."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:92
+#: includes/Inquiry/Assessment/EvidenceView.php:97
 msgid "Frozen source references"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:96
+#: includes/Inquiry/Assessment/EvidenceView.php:101
 msgid "References identify the saved record. They do not verify a company."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:106
+#: includes/Inquiry/Assessment/EvidenceView.php:111
 msgid ""
 "The recorded VAT check was valid for the number and time shown. It does not "
 "verify the contact person or authority to buy."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:107
+#: includes/Inquiry/Assessment/EvidenceView.php:112
 msgid ""
 "The recorded VAT check returned invalid. Review the number with the "
 "customer; this is not a spam decision."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:108
+#: includes/Inquiry/Assessment/EvidenceView.php:113
 msgid ""
 "The submitted, saved or checked VAT numbers differ. The stored result cannot "
 "confirm the current number."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:109
+#: includes/Inquiry/Assessment/EvidenceView.php:114
 msgid ""
 "The request and account VAT results differ. Review the underlying records "
 "before relying on either result."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:110
+#: includes/Inquiry/Assessment/EvidenceView.php:115
 msgid ""
 "The checked number or original check time is missing. VAT verification "
 "cannot be confirmed."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:111
+#: includes/Inquiry/Assessment/EvidenceView.php:116
 msgid ""
 "This number is outside the EU VIES check. Company verification remains open."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:112
+#: includes/Inquiry/Assessment/EvidenceView.php:117
 msgid "No VAT ID was provided. It is optional for this inquiry."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:113
+#: includes/Inquiry/Assessment/EvidenceView.php:118
 msgid ""
 "VAT verification was unavailable or inconclusive. Review the recorded detail "
 "if needed."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:124
+#: includes/Inquiry/Assessment/EvidenceView.php:129
 msgid "No related Genie context was available at submission."
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:127
+#: includes/Inquiry/Assessment/EvidenceView.php:132
 msgid "Related Genie context at submission"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:129
+#: includes/Inquiry/Assessment/EvidenceView.php:134
 msgid "Genie AI response"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:133
+#: includes/Inquiry/Assessment/EvidenceView.php:138
 msgid "AI extraction from customer attachments; verify against the original"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:133
+#: includes/Inquiry/Assessment/EvidenceView.php:138
 msgid "Attachment readings"
 msgstr ""
 
-#: includes/Inquiry/Assessment/EvidenceView.php:147
+#: includes/Inquiry/Assessment/EvidenceView.php:152
 msgid "Not recorded"
 msgstr ""
 
@@ -1481,120 +1489,128 @@ msgid "Plausible business or contact request."
 msgstr ""
 
 #: includes/Inquiry/Assessment/ReviewView.php:28
-#: includes/Inquiry/Assessment/ReviewView.php:34
+#: includes/Inquiry/Assessment/ReviewView.php:35
 msgid "Staff correction"
 msgstr ""
 
 #: includes/Inquiry/Assessment/ReviewView.php:29
-#: includes/Inquiry/Assessment/ReviewView.php:77
+#: includes/Inquiry/Assessment/ReviewView.php:82
 msgid "Recorded review note"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:33
+#: includes/Inquiry/Assessment/ReviewView.php:34
 msgid ""
 "Saving a review changes this internal record only. It does not send mail or "
 "change the account decision."
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:33
+#: includes/Inquiry/Assessment/ReviewView.php:34
 msgid "Staff review"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:38
+#: includes/Inquiry/Assessment/ReviewView.php:39
 msgid "Review note"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:39
+#: includes/Inquiry/Assessment/ReviewView.php:40
 msgid "Save correction"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:39
+#: includes/Inquiry/Assessment/ReviewView.php:40
 msgid "Withdraw correction"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:40
+#: includes/Inquiry/Assessment/ReviewView.php:41
 msgid "Add a source you checked"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:40
+#: includes/Inquiry/Assessment/ReviewView.php:41
 msgid ""
 "Record your source and finding in the review note. The website does not "
 "check this source automatically."
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:40
+#: includes/Inquiry/Assessment/ReviewView.php:41
 msgid "Source type"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:44
+#: includes/Inquiry/Assessment/ReviewView.php:45
 msgid "Checked at (UTC)"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:44
+#: includes/Inquiry/Assessment/ReviewView.php:45
 msgid "Record source and finding"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:44
-#: includes/Inquiry/Assessment/ReviewView.php:75
+#: includes/Inquiry/Assessment/ReviewView.php:45
+#: includes/Inquiry/Assessment/ReviewView.php:80
 msgid "Source URL"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:62
+#: includes/Inquiry/Assessment/ReviewView.php:64
 msgid "Review history"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:64
+#: includes/Inquiry/Assessment/ReviewView.php:66
 msgid "Correction recorded"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:65
+#: includes/Inquiry/Assessment/ReviewView.php:67
 msgid "Correction withdrawn"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:66
+#: includes/Inquiry/Assessment/ReviewView.php:68
 msgid "Source recorded by staff"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:67
+#: includes/Inquiry/Assessment/ReviewView.php:69
 msgid "Earlier correction; detailed history starts here"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:90
+#: includes/Inquiry/Assessment/ReviewView.php:74
+msgid "Observation and evidence used for this review"
+msgstr ""
+
+#: includes/Inquiry/Assessment/ReviewView.php:74
+msgid "Previous assessment"
+msgstr ""
+
+#: includes/Inquiry/Assessment/ReviewView.php:95
 msgid "Official register"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:91
+#: includes/Inquiry/Assessment/ReviewView.php:96
 msgid "Official VAT service"
 msgstr ""
 
-#: includes/Inquiry/Assessment/ReviewView.php:92
+#: includes/Inquiry/Assessment/ReviewView.php:97
 msgid "Other source"
 msgstr ""
 
-#: includes/Inquiry/Assessment/Reviews.php:70
+#: includes/Inquiry/Assessment/Reviews.php:92
 msgid "Please choose a valid assessment."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Reviews.php:73
+#: includes/Inquiry/Assessment/Reviews.php:95
 msgid ""
 "Enter the source, its URL, when you checked it and the relevant finding."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Reviews.php:75
+#: includes/Inquiry/Assessment/Reviews.php:97
 msgid "Another review is being saved. Reload this inquiry before trying again."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Reviews.php:91
+#: includes/Inquiry/Assessment/Reviews.php:113
 msgid ""
 "This review has changed. Reload the inquiry to see the latest revision; your "
 "change was not saved."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Reviews.php:149
+#: includes/Inquiry/Assessment/Reviews.php:178
 msgid "The review could not be saved. Reload the inquiry before trying again."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Reviews.php:164
+#: includes/Inquiry/Assessment/Reviews.php:193
 msgid "Staff review recorded."
 msgstr ""
 

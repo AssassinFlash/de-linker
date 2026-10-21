@@ -21,6 +21,8 @@ approval decision, message, or customer-page change belongs to this ticket.
 - Show source kinds (customer statement, site record, recorded VAT check, model
   observation, staff record, missing) and fixed field/hash references. A hash does
   not verify a company. No source is invented from an absent value.
+- Treat `general` as the default form option; the record does not establish
+  whether the customer deliberately selected it.
 - Preserve submitted VAT, saved VAT, checked VAT, original check time, status and
   detail separately. A successful recorded check only applies to its exact
   normalized number and original time. Missing provenance, conflicting numbers,
@@ -38,7 +40,11 @@ Use native Woo private order notes for appended events, with a generic note body
 and protected structured comment metadata. Corrections, withdrawing a correction
 and staff-recorded evidence append events. Keep revision/current correction in
 order metadata. Check capability, per-record nonce, expected revision and a
-connection-owned lock. Reject stale/busy submissions explicitly. Persist event
+connection-owned lock. Bind the nonce/form to the displayed observation and
+frozen-evidence hash; reject changed sources as stale even if the staff revision
+is unchanged. Each new event keeps the observation itself, evidence reference and
+previous label/source/event/revision, so a later model update cannot change its
+meaning. Reject stale/busy submissions explicitly. Persist event
 and pointer in one transaction with readback. Preserve a pre-history correction
 with its existing actor/time on the first change; do not invent earlier events.
 Never rewrite Jev raw, the first notification, account status or the request.

@@ -38,6 +38,11 @@ score. Country, language, email provider, short messages and complaints do not
 participate in a rule. Sources, original model output and staff corrections
 remain separate. Staff actions say that they do not send mail or change approval.
 
+The independent Spec review additionally identified the general-topic attribution.
+The final copy calls it “General enquiry (default form option)” and says the
+selection history was not recorded. The German counterpart states the same
+limitation. Native two-row fields keep this wording readable on a phone.
+
 The German copy uses Sie and the existing USt-IdNr./Kontofreigabe/Lösungsentwurf
-terms. The review still needs the final rendered EN/DE desktop/mobile check and
-the independent source reviews; this record does not claim those gates passed.
+terms. The real EN/DE desktop/mobile rendering and form interactions were inspected.
+Independent source-review readback and CI remain separately recorded in checks.md.
