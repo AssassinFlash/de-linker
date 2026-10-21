@@ -39,7 +39,16 @@ const withLocale: Decorator = ( Story, context ) => {
 		}
 	}
 	document.documentElement.lang = locale === 'de' ? 'de-DE' : 'en-GB';
-	return <Story key={ locale } />;
+	const story = <Story key={ locale } />;
+	// The configurator reads its mount root's data attribute: Steps publishes
+	// the sticky clearance there and the section scroll margins consume it.
+	// The page's PHP prints the same attribute around the app; without it the
+	// stories would scroll to a different place than the site.
+	return context.title.startsWith( 'Configurator/' ) ? (
+		<div data-linker-app="configurator">{ story }</div>
+	) : (
+		story
+	);
 };
 
 const preview: Preview = {

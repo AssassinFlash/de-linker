@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 /**
  * WordPress dependencies
  */
-import { useMemo, useState } from '@wordpress/element';
+import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -24,6 +24,7 @@ import { Field } from '../Field';
 import { FilePicker } from '../FilePicker';
 import { MobileNavigation } from '../MobileNavigation';
 import schema from '../schema/commercial-input.schema.json';
+import type { StepNumber } from '../Steps';
 import type {
 	CommercialInput,
 	CommercialResult as Result,
@@ -107,6 +108,8 @@ export interface CommercialPanelProps {
 	engine: EngineClient;
 	store: StoreClient;
 	defaults?: Partial< CommercialValues >;
+	/** The section the customer is at, for the page's step rail. */
+	onStep?: ( step: StepNumber ) => void;
 }
 
 export function CommercialPanel( {
@@ -114,6 +117,7 @@ export function CommercialPanel( {
 	engine,
 	store,
 	defaults,
+	onStep,
 }: CommercialPanelProps ) {
 	const locale = config.locale;
 	const [ profile, setProfile ] = useState< {
@@ -127,6 +131,7 @@ export function CommercialPanel( {
 	);
 	const [ busy, setBusy ] = useState( false );
 	const [ failure, setFailure ] = useState( '' );
+	const [ viewed, setViewed ] = useState( 0 );
 	const {
 		register,
 		handleSubmit,
@@ -157,6 +162,17 @@ export function CommercialPanel( {
 		],
 		[]
 	);
+	const railCurrent = useCallback( ( index: number ) => {
+		setViewed( index );
+	}, [] );
+	// As on the residential side: the calculation moves the rail to the
+	// result, and the result section is the furthest this flow goes. Before a
+	// calculation the rail stays at the inputs.
+	const flowStep = result || failure || busy ? 2 : 1;
+	const step = flowStep === 1 ? 1 : Math.max( flowStep, viewed + 1 );
+	useEffect( () => {
+		onStep?.( step as StepNumber );
+	}, [ step, onStep ] );
 
 	async function run( values: CommercialValues ) {
 		setBusy( true );
@@ -170,7 +186,17 @@ export function CommercialPanel( {
 			const answer = await engine.commercial( input );
 			setResult( answer );
 			setCap( input.target_peak_kw ?? null );
-			const ids = answer.systems.map( ( system ) => system.inverter.id );
+			// The card states the stock of the whole system it draws, so the
+			// battery is read beside its inverter.
+			const ids = [
+				...new Set(
+					answer.systems.flatMap( ( system ) =>
+						system.battery
+							? [ system.inverter.id, system.battery.id ]
+							: [ system.inverter.id ]
+					)
+				),
+			];
 			const found = ids.length
 				? await store.products( ids, config.locale ).catch( () => [] )
 				: [];
@@ -550,7 +576,7 @@ export function CommercialPanel( {
 					/>
 				) : null }
 			</section>
-			<MobileNavigation steps={ mobileSteps } />
+			<MobileNavigation steps={ mobileSteps } onCurrent={ railCurrent } />
 		</div>
 	);
 }

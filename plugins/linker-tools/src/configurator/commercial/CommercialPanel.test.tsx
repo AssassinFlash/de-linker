@@ -28,7 +28,9 @@ const config = {
 
 async function run(
 	outcome: 'sized' | 'indicative',
-	fill: () => Promise< void > = async () => undefined
+	fill: () => Promise< void > = async () => undefined,
+	/** Products WooCommerce would report as currently unavailable. */
+	outOfStock: number[] = []
 ) {
 	const { engine, calls } = fakeEngine( {
 		locale: 'en',
@@ -38,7 +40,7 @@ async function run(
 		<App
 			config={ config }
 			engine={ engine }
-			store={ fakeStore().store }
+			store={ fakeStore( 'added', outOfStock ).store }
 			initialSegment="commercial"
 		/>
 	);
@@ -142,4 +144,33 @@ test( 'commercial inputs stay in one expanded form', () => {
 	expect(
 		screen.queryByRole( 'button', { name: 'Continue' } )
 	).not.toBeInTheDocument();
+} );
+
+test( 'a system states that one of its parts is currently unavailable', async () => {
+	await run(
+		'sized',
+		async () => {
+			fireEvent.change( screen.getByLabelText( /Target peak/ ), {
+				target: { value: '150' },
+			} );
+			const file = new File(
+				[ fixtures.loadProfile ],
+				'load-profile-15min.csv',
+				{ type: 'text/csv' }
+			);
+			await act( async () => {
+				fireEvent.change(
+					screen.getByLabelText( /15-minute load profile/ ),
+					{ target: { files: [ file ] } }
+				);
+			} );
+			await screen.findByText( 'load-profile-15min.csv' );
+		},
+		// Two of the three recorded systems pair this battery.
+		[ 1954 ]
+	);
+	expect(
+		await screen.findAllByText( 'Currently unavailable' )
+	).toHaveLength( 2 );
+	expect( screen.getAllByText( 'In stock' ) ).toHaveLength( 1 );
 } );

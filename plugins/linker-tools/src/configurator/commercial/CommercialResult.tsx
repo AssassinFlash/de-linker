@@ -12,9 +12,10 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { ProductCard } from '../../shared/ProductCard';
+import { ProductCard, type CardBadge } from '../../shared/ProductCard';
 import { formatNumber, formatRange } from '../format';
 import { verdictText } from '../solution/Solution';
+import { stockBadge } from '../stock';
 import { Table } from '../Table';
 import type {
 	CommercialResult as Result,
@@ -117,6 +118,33 @@ function Curve( {
 			</figcaption>
 		</figure>
 	);
+}
+
+/**
+ * A system's card badges: its stock state over its whole build (inverter and
+ * battery, when it has one), then the release verdict.
+ * @param system
+ * @param products
+ */
+function systemBadges(
+	system: Result[ 'systems' ][ number ],
+	products: Map< number, StoreProduct >
+): CardBadge[] {
+	const badges: CardBadge[] = [];
+	const stock = stockBadge( [
+		products.get( system.inverter.id ),
+		...( system.battery ? [ products.get( system.battery.id ) ] : [] ),
+	] );
+	if ( stock ) {
+		badges.push( stock );
+	}
+	if ( system.release ) {
+		badges.push( {
+			tone: 'info',
+			text: verdictText( system.release.verdict ),
+		} );
+	}
+	return badges;
 }
 
 export interface CommercialResultProps {
@@ -293,18 +321,7 @@ export function CommercialResult( {
 									formatNumber( system.power_kw, locale ),
 									formatNumber( system.usable_kwh, locale )
 								) }
-								badges={
-									system.release
-										? [
-												{
-													tone: 'info',
-													text: verdictText(
-														system.release.verdict
-													),
-												},
-											]
-										: []
-								}
+								badges={ systemBadges( system, products ) }
 								facts={ system.lines.map( ( line ) => ( {
 									label: line.label,
 									value: `${ formatNumber( line.quantity, locale ) } × ${ line.product?.model ?? '' }`,

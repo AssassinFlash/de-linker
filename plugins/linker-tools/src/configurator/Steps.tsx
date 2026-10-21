@@ -17,6 +17,8 @@ import { __ } from '@wordpress/i18n';
 /** Matches `.linker-steps { top }` in the narrow-viewport sticky rule. */
 const STICKY_TOP_PX = 89;
 
+export type StepNumber = 1 | 2 | 3;
+
 function stepClass( step: number, current: number ): string {
 	if ( step === current ) {
 		return 'linker-steps__item is-current';
@@ -27,7 +29,7 @@ function stepClass( step: number, current: number ): string {
 	return 'linker-steps__item';
 }
 
-export function Steps( { current }: { current: 1 | 2 | 3 } ) {
+export function Steps( { current }: { current: StepNumber } ) {
 	const rail = useRef< HTMLElement >( null );
 	const steps = [
 		__( 'Inputs', 'linker-tools' ),

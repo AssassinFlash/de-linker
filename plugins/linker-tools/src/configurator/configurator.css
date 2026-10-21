@@ -1487,15 +1487,21 @@
 
 	.linker-mobile-nav {
 		position: fixed;
-		inset: auto var(--proto-space-4) 0;
+		/* Fallbacks are the token values in
+		   plugins/linker-commerce/content/windpress/tokens.css: a harness
+		   without the site tokens (Storybook, the phone e2e) must still pin
+		   the bar to the viewport. */
+		inset: auto var(--proto-space-4, 1rem) 0;
 		z-index: 45;
 		display: flex;
-		gap: var(--proto-space-2);
+		gap: var(--proto-space-2, 0.5rem);
 		/* Reserve the existing 50px site launcher + its 16px right gutter.
 		   It stays usable without changing any Genie surface. */
-		padding: var(--proto-space-3) 4.25rem
-			calc(var(--proto-space-3) + env(safe-area-inset-bottom, 0px))
-			var(--proto-space-2);
+		padding: var(--proto-space-3, 0.75rem) 4.25rem
+			calc(
+				var(--proto-space-3, 0.75rem) + env(safe-area-inset-bottom, 0px)
+			)
+			var(--proto-space-2, 0.5rem);
 		border: 1px solid var(--linker-line);
 		border-radius: var(--linker-card-radius) var(--linker-card-radius) 0 0;
 		background: var(--linker-surface);
@@ -1513,14 +1519,14 @@
 		min-height: 3rem;
 		display: grid;
 		align-content: center;
-		gap: var(--proto-space-1);
-		padding: var(--proto-space-2);
+		gap: var(--proto-space-1, 0.25rem);
+		padding: var(--proto-space-2, 0.5rem);
 		border: 1px solid var(--linker-line);
 		border-radius: var(--linker-radius);
 		background: var(--linker-surface);
 		color: var(--linker-ink);
 		font: inherit;
-		font-size: var(--proto-size-xs);
+		font-size: var(--proto-size-xs, 0.75rem);
 		font-weight: 700;
 		cursor: pointer;
 	}
@@ -1536,7 +1542,7 @@
 	}
 
 	.linker-mobile-nav__step:focus-visible {
-		outline: var(--proto-focus-ring);
-		outline-offset: var(--proto-focus-offset);
+		outline: var(--proto-focus-ring, 2px solid var(--linker-accent));
+		outline-offset: var(--proto-focus-offset, 2px);
 	}
 }

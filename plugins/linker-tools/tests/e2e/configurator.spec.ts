@@ -100,6 +100,59 @@ test( 'German throughout', async ( { page } ) => {
 	).toBeVisible();
 } );
 
+test( 'the step rail follows the screen from inputs to solution to report', async ( {
+	page,
+} ) => {
+	const current = page.locator( '.linker-steps .is-current' );
+	await page.goto( story( 'app--inputs' ) );
+	await expect( current ).toHaveText( /^01/ );
+	await page.goto( story( 'app--solution' ) );
+	await expect( page.getByRole( 'article' ).first() ).toBeVisible();
+	await expect( current ).toHaveText( /^02/ );
+	await page.evaluate( () =>
+		document
+			.getElementById( 'linker-report-section' )
+			?.scrollIntoView( { block: 'start' } )
+	);
+	await expect( current ).toHaveText( /^03/ );
+} );
+
+test( 'the calculation leaves the rail at the solution when the page returns to the top', async ( {
+	page,
+} ) => {
+	await page.goto( story( 'app--solution' ) );
+	await expect( page.getByRole( 'article' ).first() ).toBeVisible();
+	await page.evaluate( () => window.scrollTo( 0, 0 ) );
+	await expect( page.locator( '.linker-steps .is-current' ) ).toHaveText(
+		/^02/
+	);
+} );
+
+test( 'a proposal states that a product is currently unavailable', async ( {
+	page,
+} ) => {
+	await page.goto( story( 'app--solution-unavailable' ) );
+	await expect( page.getByRole( 'article' ).first() ).toBeVisible();
+	await expect( page.getByText( 'Currently unavailable' ) ).toHaveCount( 2 );
+	await expect( page.getByText( 'In stock' ) ).toHaveCount( 0 );
+} );
+
+test( 'the unavailable state is German too', async ( { page } ) => {
+	await page.goto( story( 'app--solution-unavailable', 'de' ) );
+	await expect( page.getByText( 'Derzeit nicht verfügbar' ) ).toHaveCount(
+		2
+	);
+	await expect( page.getByText( 'Auf Lager' ) ).toHaveCount( 0 );
+} );
+
+test( 'a C&I system states that one of its parts is unavailable', async ( {
+	page,
+} ) => {
+	await page.goto( story( 'app--commercial-unavailable' ) );
+	await expect( page.getByText( 'Currently unavailable' ) ).toHaveCount( 2 );
+	await expect( page.getByText( 'In stock' ) ).toHaveCount( 1 );
+} );
+
 test( 'commercial: a load profile gives power, energy and the options', async ( {
 	page,
 } ) => {

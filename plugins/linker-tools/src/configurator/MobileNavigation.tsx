@@ -1,6 +1,9 @@
 /**
  * Phone shortcuts to the existing, expanded sections — not a second wizard.
- * No calculation, candidate selection or handoff rule lives here.
+ * No calculation, candidate selection or handoff rule lives here. The bar also
+ * reports the section on screen, and the panel combines that reading with its
+ * flow state for the step rail, so both indicators measure the page the same
+ * way.
  */
 
 /**
@@ -14,7 +17,14 @@ export interface MobileStep {
 	label: string;
 }
 
-export function MobileNavigation( { steps }: { steps: MobileStep[] } ) {
+export function MobileNavigation( {
+	steps,
+	onCurrent,
+}: {
+	steps: MobileStep[];
+	/** The active step's index in `steps`, for the page's step rail. */
+	onCurrent?: ( index: number ) => void;
+} ) {
 	const [ current, setCurrent ] = useState( steps[ 0 ].id );
 	const [ visible, setVisible ] = useState( true );
 	const navigation = useRef< HTMLElement >( null );
@@ -70,6 +80,7 @@ export function MobileNavigation( { steps }: { steps: MobileStep[] } ) {
 				}
 			}
 			setCurrent( active );
+			onCurrent?.( steps.findIndex( ( step ) => step.id === active ) );
 			const app = root?.getBoundingClientRect();
 			setVisible(
 				! app ||
@@ -84,7 +95,7 @@ export function MobileNavigation( { steps }: { steps: MobileStep[] } ) {
 			window.removeEventListener( 'scroll', update );
 			window.removeEventListener( 'resize', update );
 		};
-	}, [ steps ] );
+	}, [ steps, onCurrent ] );
 
 	return (
 		<nav

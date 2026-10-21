@@ -10,6 +10,7 @@
 import {
 	lazy,
 	Suspense,
+	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
@@ -28,6 +29,7 @@ import { MobileNavigation } from '../MobileNavigation';
 import { ReportView } from '../report/ReportView';
 import { NoCandidate } from '../solution/NoCandidate';
 import { Solution, type SaveState } from '../solution/Solution';
+import type { StepNumber } from '../Steps';
 import type {
 	ResidentialInput,
 	ResidentialResult,
@@ -54,6 +56,8 @@ export interface ResidentialPanelProps {
 	/** Stories and tests start from given inputs. */
 	defaults?: Partial< ResidentialValues >;
 	initialRoof?: RoofSelection | null;
+	/** The section the customer is at, for the page's step rail. */
+	onStep?: ( step: StepNumber ) => void;
 }
 
 function errorText( error: unknown ): string {
@@ -80,6 +84,7 @@ export function ResidentialPanel( {
 	store,
 	defaults,
 	initialRoof = null,
+	onStep,
 }: ResidentialPanelProps ) {
 	const [ roof, setRoof ] = useState< RoofSelection | null >( initialRoof );
 	const [ roofPlz, setRoofPlz ] = useState< string | null >( null );
@@ -100,6 +105,7 @@ export function ResidentialPanel( {
 	const [ saveState, setSaveState ] = useState< SaveState >( 'idle' );
 	const [ savedUrl, setSavedUrl ] = useState< string | null >( null );
 	const results = useRef< HTMLDivElement >( null );
+	const [ viewed, setViewed ] = useState( 0 );
 	const reportReady = status === 'done' && !! result?.selected;
 	const mobileSteps = useMemo(
 		() => [
@@ -122,6 +128,19 @@ export function ResidentialPanel( {
 		],
 		[ reportReady ]
 	);
+	const railCurrent = useCallback( ( index: number ) => {
+		setViewed( index );
+	}, [] );
+	// The rail shows how far the flow has come: a calculation (even a running
+	// or failed one) leaves the inputs, and reaching the report advances to it.
+	// Before a calculation the rail stays at the inputs, even when the empty
+	// Solution section is on screen; scrolling back does not undo a
+	// calculation.
+	const flowStep = status === 'empty' ? 1 : 2;
+	const step = flowStep === 1 ? 1 : Math.max( flowStep, viewed + 1 );
+	useEffect( () => {
+		onStep?.( step as StepNumber );
+	}, [ step, onStep ] );
 
 	useEffect( () => {
 		if ( config.openRoof && defaults?.plz ) {
@@ -377,7 +396,7 @@ export function ResidentialPanel( {
 					/>
 				</section>
 			) : null }
-			<MobileNavigation steps={ mobileSteps } />
+			<MobileNavigation steps={ mobileSteps } onCurrent={ railCurrent } />
 		</div>
 	);
 }
