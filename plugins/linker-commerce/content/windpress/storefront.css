@@ -1229,6 +1229,8 @@ body.woocommerce-cart #tv-storefront-cart h1 {
 #tv-storefront-cart table.cart .product-name { grid-column: 2; grid-row: 1; }
 #tv-storefront-cart table.cart .product-subtotal { grid-column: 3; grid-row: 1; }
 #tv-storefront-cart table.cart .product-price { grid-column: 2 / 4; grid-row: 2; }
+/* The price gate is already shown in the subtotal cell. Keep numeric unit prices. */
+#tv-storefront-cart table.cart .product-price:has(.linker-price-entries) { display: none !important; }
 #tv-storefront-cart table.cart .product-quantity { grid-column: 2; grid-row: 3; }
 #tv-storefront-cart table.cart .product-remove {
   grid-column: 3;
@@ -1251,7 +1253,12 @@ body.woocommerce-cart #tv-storefront-cart h1 {
   line-height: 1.4;
   text-decoration: none;
 }
-#tv-storefront-cart table.cart .product-name > a:hover { text-decoration: underline; text-underline-offset: 4px; }
+#tv-storefront-cart table.cart .product-name > a:hover,
+#tv-storefront-cart table.cart .product-name > a:focus-visible {
+  color: var(--sf-primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 #tv-storefront-cart table.cart .product-subtotal {
   font-size: 0.875rem;
   font-weight: 500;
@@ -1324,6 +1331,15 @@ body.woocommerce-cart #tv-storefront-cart h1 {
 }
 #tv-storefront-cart table.cart input.qty::-webkit-inner-spin-button,
 #tv-storefront-cart table.cart input.qty::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+#tv-storefront-cart table.cart .quantity:not([data-tv-cart-quantity]) input.qty {
+  width: 5rem;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-radius);
+  appearance: auto;
+  padding: 0.5rem;
+}
+#tv-storefront-cart table.cart .quantity:not([data-tv-cart-quantity]) input.qty::-webkit-inner-spin-button,
+#tv-storefront-cart table.cart .quantity:not([data-tv-cart-quantity]) input.qty::-webkit-outer-spin-button { -webkit-appearance: auto; }
 #tv-storefront-cart .tv-woo-cart-qty-step {
   min-width: 2.75rem;
   min-height: 44px;
@@ -1336,21 +1352,24 @@ body.woocommerce-cart #tv-storefront-cart h1 {
 #tv-storefront-cart table.cart .product-remove a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   width: auto;
   height: auto;
   min-width: 44px;
   min-height: 44px;
-  background: transparent;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-radius);
+  background: #fff;
   color: var(--sf-muted) !important;
-  font-size: 0.875rem !important;
+  font-size: 1.25rem !important;
   font-weight: 400;
   line-height: 1.4;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  text-decoration: none;
 }
 #tv-storefront-cart table.cart .product-remove a:hover {
-  background: transparent;
-  color: var(--sf-fg) !important;
+  border-color: var(--proto-sem-danger);
+  background: #fff;
+  color: var(--proto-sem-danger) !important;
 }
 #tv-storefront-cart table.cart .actions {
   padding: 1rem 0 0 !important;
@@ -1385,6 +1404,42 @@ body.woocommerce-cart #tv-storefront-cart h1 {
   border: 0;
 }
 #tv-storefront-cart .cart_totals > h2 { display: none; }
+#tv-storefront-cart .cart_totals.linker-login-box {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-radius-card);
+  background: #fff;
+}
+#tv-storefront-cart .sf-draft-summary__intro {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+#tv-storefront-cart .linker-login-box .wc-proceed-to-checkout { padding: 0 !important; }
+#tv-storefront-cart .sf-draft-summary__account:empty { display: none; }
+#tv-storefront-cart .sf-draft-summary__account .linker-create-account {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--sf-primary);
+  border-radius: var(--sf-radius);
+  background: #fff;
+  color: var(--sf-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+}
+#tv-storefront-cart .sf-draft-summary__account .linker-create-account:hover {
+  background: var(--sf-soft);
+  border-color: var(--sf-primary-hover);
+}
 #tv-storefront-cart .tv-woo-cart-summary-intro {
   display: flex;
   flex-wrap: wrap;

@@ -55,11 +55,121 @@
 	grid-row: 2;
 }
 
+/* Five narrow phone columns reduce German navigation to 9px fragments.
+   Give all five destinations a visible place, with room for whole words. */
+@media (max-width: 560px) {
+	#tv-footer-v2 .footer-workspace .footer-dock {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: 8px;
+	}
+	#tv-footer-v2 .footer-dock .footer-tab {
+		grid-column: span 4;
+		font-size: 12px;
+	}
+	#tv-footer-v2 .footer-dock .footer-tab:first-child { grid-column: span 3; }
+	#tv-footer-v2 .footer-dock .footer-tab:nth-child(2) { grid-column: span 5; }
+	#tv-footer-v2 .footer-dock .footer-tab:nth-last-child(-n + 2) {
+		grid-column: span 6;
+	}
+	#tv-footer-v2 .footer-tab > span {
+		overflow-wrap: normal;
+		word-break: normal;
+	}
+}
+
+@media (max-width: 359px) {
+	#tv-footer-v2 .footer-workspace .footer-dock { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	#tv-footer-v2 .footer-dock .footer-tab:nth-child(n) { grid-column: auto; }
+	#tv-footer-v2 .footer-dock .footer-tab:last-child { grid-column: 1 / -1; }
+}
+
 /* All legal and consent entries have the same comfortable hit area. */
 #tv-footer-v2 .tv-footer-bar-legal :is(a, button) {
 	display: inline-flex;
 	align-items: center;
 	min-height: var(--proto-control-height, 2.75rem);
+}
+
+/* Native Woo updates keep their handler and receive the site's secondary
+   action vocabulary. Disabled stays legible; processing reuses the account
+   spinner's existing size and timing. */
+#tv-storefront-cart table.cart .actions button[name="update_cart"],
+#tv-woo-b2b-checkout .linker-inquiry-draft .linker-inquiry-update {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--proto-space-2);
+	min-height: var(--proto-control-height);
+	padding: 12px 18px;
+	border: 1px solid var(--proto-teal-600) !important;
+	border-radius: var(--proto-radius-md) !important;
+	background: var(--proto-teal-50) !important;
+	color: var(--proto-teal-800) !important;
+	font-size: 14px;
+	font-weight: 600 !important;
+	line-height: 1.5;
+	cursor: pointer;
+}
+#tv-storefront-cart table.cart .actions button[name="update_cart"]:hover:enabled,
+#tv-woo-b2b-checkout .linker-inquiry-draft .linker-inquiry-update:hover:enabled {
+	background: var(--proto-teal-600) !important;
+	color: #fff !important;
+}
+#tv-storefront-cart table.cart .actions button[name="update_cart"]:focus-visible,
+#tv-woo-b2b-checkout .linker-inquiry-draft .linker-inquiry-update:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: 3px;
+}
+#tv-storefront-cart table.cart .actions button[name="update_cart"]:disabled,
+#tv-woo-b2b-checkout .linker-inquiry-draft .linker-inquiry-update:disabled {
+	border-color: var(--proto-neutral-200) !important;
+	background: var(--proto-neutral-100) !important;
+	color: var(--proto-neutral-500) !important;
+	opacity: 1;
+	cursor: default;
+}
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-cart-form.processing button[name="update_cart"]::after {
+	content: "";
+	width: 18px;
+	height: 18px;
+	border: 2px solid var(--proto-teal-200);
+	border-top-color: var(--proto-teal-700);
+	border-radius: 50%;
+	animation: linker-account-spin 0.8s linear infinite;
+}
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-cart-form.processing > .blockUI.blockOverlay { background: #fff !important; opacity: 0.35 !important; }
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-notices-wrapper:empty { display: none; }
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-notices-wrapper :is(.woocommerce-message, .woocommerce-info, .woocommerce-error) {
+	padding: 16px 20px;
+	border: 1px solid #d3e8dc;
+	border-radius: var(--proto-radius-md);
+	background: var(--acct-ok-bg);
+	color: var(--acct-ok-ink);
+	font-size: 14px;
+	line-height: 1.6;
+}
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-notices-wrapper :is(.woocommerce-message, .woocommerce-info, .woocommerce-error)::before { content: none; display: none; }
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-notices-wrapper .woocommerce-info { border-color: var(--proto-teal-200); background: var(--proto-teal-50); color: var(--proto-teal-800); }
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-notices-wrapper .woocommerce-error { border-color: #eed5cd; background: var(--acct-danger-bg); color: var(--acct-danger-ink); }
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-notices-wrapper .restore-item {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--proto-control-height);
+	margin-inline-start: 8px;
+	padding: 0 12px;
+	border: 1px solid currentColor;
+	border-radius: var(--proto-radius-md);
+	color: inherit;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-notices-wrapper .restore-item:hover,
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-notices-wrapper .restore-item:focus-visible { background: #fff; text-decoration: underline; text-underline-offset: 3px; }
+:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-notices-wrapper .restore-item:focus-visible { outline: var(--proto-focus-ring); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+	:is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-cart-form.processing button[name="update_cart"]::after { animation: none; }
 }
 
 /* The processing register contains prose, including the long Genie entry.

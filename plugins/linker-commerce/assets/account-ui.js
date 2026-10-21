@@ -9,6 +9,26 @@
 	// The account chain's forms: the guest cards, the workspace and the gates.
 	const FORMS = '.linker-auth form, .linker-account form, .linker-gate form, .linker-inquiry-form';
 
+	// Woo blocks only the independent draft form while an edit is pending.
+	// Keep the inquiry from overtaking that write and submitting the old lines.
+	const inquiry = document.querySelector( '.linker-inquiry' );
+	const draftBusy = () => Boolean( inquiry?.querySelector( '.woocommerce-cart-form.processing' ) );
+	if ( inquiry ) {
+		const send = inquiry.querySelector( '.linker-inquiry-form button[type="submit"]' );
+		if ( send ) {
+			const syncDraftState = () => {
+				send.disabled = draftBusy();
+			};
+			new MutationObserver( syncDraftState ).observe( inquiry, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+				attributeFilter: [ 'class' ],
+			} );
+			syncDraftState();
+		}
+	}
+
 	// The second field of a two-field password check, and the line under it.
 	function passwordPair( form ) {
 		const first = form.querySelector( '[name="password_1"]' );
@@ -52,6 +72,10 @@
 		( event ) => {
 			const form = event.target;
 			if ( ! ( form instanceof HTMLFormElement ) || ! form.matches( FORMS ) ) {
+				return;
+			}
+			if ( form.matches( '.linker-inquiry-form' ) && draftBusy() ) {
+				event.preventDefault();
 				return;
 			}
 			// The register card's step 1 is not a submission: the step script

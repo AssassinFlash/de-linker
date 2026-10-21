@@ -1192,6 +1192,7 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 	line-height: var(--proto-leading-body);
 }
 .linker-inquiry-promise { margin: 0; }
+#tv-woo-b2b-checkout .linker-inquiry-form .linker-form-primary:disabled { opacity: 0.6; cursor: wait; }
 .linker-inquiry-guest { padding-top: var(--proto-space-4); border-top: 1px solid var(--proto-line-journal); font-size: var(--proto-size-xs); line-height: var(--proto-leading-body); }
 #tv-woo-b2b-checkout .linker-inquiry-guest a { color: var(--proto-ink-muted-deep); text-decoration: none; }
 #tv-woo-b2b-checkout .linker-inquiry-guest a:hover { color: var(--proto-teal-600); text-decoration: underline; text-underline-offset: 3px; }
@@ -1210,12 +1211,49 @@ body.woocommerce-account:not(.logged-in) .linker-account #container-content-acco
 .linker-inquiry-line:last-child { border-bottom: 0; padding-bottom: 0; }
 .linker-inquiry-product { display: flex; align-items: center; gap: var(--proto-space-3); min-width: 0; text-decoration: none; }
 .linker-inquiry-product > span:last-child { overflow-wrap: anywhere; }
+#tv-woo-b2b-checkout .linker-inquiry-product:hover,
+#tv-woo-b2b-checkout .linker-inquiry-product:focus-visible {
+	color: var(--proto-teal-600);
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+#tv-woo-b2b-checkout .linker-inquiry-product:focus-visible {
+	outline: 2px solid var(--proto-teal-600);
+	outline-offset: 4px;
+	border-radius: var(--proto-radius-md);
+}
 .linker-inquiry-image { display: block; flex: 0 0 var(--proto-space-7); width: var(--proto-space-7); height: var(--proto-space-7); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-md); background: var(--proto-canvas-white); padding: var(--proto-space-1); }
 .linker-inquiry-image img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .linker-inquiry-price { grid-column: 1 / -1; color: var(--proto-ink-muted-deep); font-size: var(--proto-size-xs); }
+.linker-inquiry-line .product-remove { grid-column: 1 / -1; justify-self: start; }
+#tv-woo-b2b-checkout .linker-inquiry-remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--proto-space-2);
+	min-height: var(--proto-control-height);
+	padding: var(--proto-space-2) var(--proto-space-3);
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-md);
+	background: var(--proto-canvas-white);
+	color: var(--proto-ink-muted-deep);
+	font-size: var(--proto-size-xs);
+	text-decoration: none;
+}
+#tv-woo-b2b-checkout .linker-inquiry-remove:hover,
+#tv-woo-b2b-checkout .linker-inquiry-remove:focus-visible {
+	border-color: var(--proto-sem-danger);
+	color: var(--proto-sem-danger);
+}
+#tv-woo-b2b-checkout .linker-inquiry-remove:focus-visible {
+	outline: 2px solid var(--proto-sem-danger);
+	outline-offset: 3px;
+}
 #tv-woo-b2b-checkout .linker-inquiry-quantity { display: grid; justify-items: center; gap: var(--proto-space-1); margin: 0; color: var(--proto-ink-muted-deep); font-size: var(--proto-size-xs); line-height: var(--proto-leading-caption); }
 .linker-inquiry-line input { box-sizing: border-box; width: var(--proto-space-7); min-height: var(--proto-control-height); padding: var(--proto-space-2); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-md); background: var(--proto-canvas-white); font: inherit; text-align: center; }
 #tv-woo-b2b-checkout .linker-inquiry-update { margin-top: var(--proto-space-5); min-height: var(--proto-control-height); border: 1px solid var(--proto-line-journal); border-radius: var(--proto-radius-lg); padding: var(--proto-space-2) var(--proto-space-4); color: var(--proto-teal-600); background: var(--proto-canvas-white); font-size: var(--proto-size-xs); cursor: pointer; }
+#tv-woo-b2b-checkout .linker-inquiry-update:disabled { opacity: 0.55; cursor: default; }
+#tv-woo-b2b-checkout .linker-inquiry-update:hover:enabled { border-color: var(--proto-teal-600); background: var(--proto-canvas-white); }
 .linker-inquiry-empty { display: grid; justify-items: start; gap: var(--proto-space-3); padding-top: var(--proto-space-5); color: var(--proto-ink-muted-deep); }
 .linker-inquiry-empty svg { color: var(--proto-neutral-400); }
 .linker-inquiry-empty p { margin: 0; font-size: var(--proto-size-sm); line-height: var(--proto-leading-body); }

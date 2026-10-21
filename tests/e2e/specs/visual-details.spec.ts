@@ -111,6 +111,47 @@ for (const locale of ['en', 'de'] as const) {
 				await expect(page).toHaveURL(`${instance().url}${path}`);
 			}
 			const tab = page.locator('#footer-tab-services');
+			if (width === 390) {
+				const tabs = page.locator('.footer-tab');
+				await expect(tabs).toHaveCount(5);
+				const positions = await tabs.evaluateAll((nodes) =>
+					nodes.map((node) => ({
+						top: node.getBoundingClientRect().top,
+						font: parseFloat(getComputedStyle(node).fontSize),
+					}))
+				);
+				for (const position of positions)
+					expect(position.font).toBeGreaterThanOrEqual(12);
+				expect(positions[0]!.top).toBe(positions[2]!.top);
+				expect(positions[3]!.top).toBe(positions[4]!.top);
+				expect(positions[3]!.top).toBeGreaterThan(positions[2]!.top);
+				const labels = await page
+					.locator('.footer-tab > span')
+					.evaluateAll((nodes) =>
+						nodes.map((node) => {
+							const text = node.firstChild!;
+							return node
+								.textContent!.split(/\s+/)
+								.map((word) => {
+									const range = document.createRange();
+									const start =
+										node.textContent!.indexOf(word);
+									range.setStart(text, start);
+									range.setEnd(text, start + word.length);
+									return {
+										height: range.getBoundingClientRect()
+											.height,
+										line: parseFloat(
+											getComputedStyle(node).lineHeight
+										),
+									};
+								});
+						})
+					);
+				// Words stay whole; multi-word labels may occupy separate lines.
+				for (const label of labels.flat())
+					expect(label.height).toBeLessThanOrEqual(label.line + 1);
+			}
 			await tab.click();
 			await tab.press('Tab');
 			await expect(page.locator('#footer-panel-services')).toBeFocused();
