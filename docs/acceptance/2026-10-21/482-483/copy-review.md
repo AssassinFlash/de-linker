@@ -15,9 +15,12 @@
 | H2 meter condition | `The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 2.2 Unpacking, PDF p. 36 English / p. 7 German).` | `Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 2.2 Auspacken, PDF-S. 36 englisch / S. 7 deutsch).` |
 | `warn.no_storage_backup` | `With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery for self-consumption. The battery in this proposal holds the backup reserve.` | `Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher zur Eigenverbrauchsoptimierung ab. Der Speicher in diesem Vorschlag deckt die Notstromreserve.` |
 | `warn.no_storage_none` | `With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery.` | `Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher ab.` |
+| `warn.no_storage_retrofit` | `With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery for self-consumption. This proposal adds the battery to your existing inverter.` | `Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher zur Eigenverbrauchsoptimierung ab. Dieser Vorschlag ergänzt den Speicher an Ihrem vorhandenen Wechselrichter.` |
 | `basis.battery_fit_reserve` | `Largest released configuration within the backup reserve of {upper} kWh` | `Größte freigegebene Konfiguration innerhalb der Notstromreserve von {upper} kWh` |
 | `basis.battery_above_reserve` | `Smallest released configuration; it exceeds the backup reserve of {upper} kWh` | `Kleinste freigegebene Konfiguration; sie überschreitet die Notstromreserve von {upper} kWh` |
+| `basis.battery_above_retrofit` | `Released configuration; HTW Berlin does not recommend a battery at this PV-to-consumption ratio` | `Freigegebene Konfiguration; die HTW Berlin empfiehlt bei diesem Verhältnis von PV-Leistung zu Verbrauch keinen Batteriespeicher` |
 | `warn.battery_above_reserve` | `No released battery configuration fits within the backup reserve of {upper} kWh. The smallest released configuration, {usable} kWh, is proposed and marked.` | `Keine freigegebene Batteriekonfiguration passt in die Notstromreserve von {upper} kWh. Vorgeschlagen und markiert ist die kleinste freigegebene Konfiguration mit {usable} kWh.` |
+| `warn.battery_above_retrofit` | `HTW Berlin does not recommend a battery at this PV-to-consumption ratio. The proposed battery configuration is marked; it is added to your existing inverter.` | `Die HTW Berlin empfiehlt bei diesem Verhältnis von PV-Leistung zu Verbrauch keinen Batteriespeicher. Die vorgeschlagene Batteriekonfiguration ist markiert; sie ergänzt Ihren vorhandenen Wechselrichter.` |
 
 删除的旧串：`rule.backup`（`Backup supply`）、`value.backup.native/accessory/none`、
 `relax.backup`（`Accept an accessory for backup supply.`）。旧串只服务于已移除的
@@ -46,12 +49,16 @@
   自助消费不被建议，提案中的电池覆盖备电预留”，DE 用 `Eigenverbrauchsoptimierung`
   与 `Notstromreserve`，同义。没有方案时用 `warn.no_storage_none`（只说 HTW 不建议
   配储，不提提案），避免在无候选屏上说“提案里的电池”。有方案但没有电池时仍用
-  `warn.no_storage`。
+  `warn.no_storage`。有方案、带电池、但没要备电的 retrofit 用
+  `warn.no_storage_retrofit`（电池是加到现有逆变器上），不再落回
+  `warn.no_storage` 的“电池以后再加”。
 - **不建议配储但带备电电池时，上限是预留而不是 HTW**：`basis.battery_fit_reserve` /
   `basis.battery_above_reserve` / `warn.battery_above_reserve` 把 “HTW limit” 换成
   “backup reserve / Notstromreserve”，因为此时 `upper_kwh` 就是客户输入的备电预留
   （3 kW × 4 h），不是 HTW 给日常循环的上限；EN/DE 同义，德语 `Notstromreserve`
-  与报告既有行一致。
+  与报告既有行一致。同一 retrofit 路径的上限是 0（HTW 不建议配储），
+  `basis.battery_above_retrofit` / `warn.battery_above_retrofit` 不再写
+  “HTW limit of 0 kWh”，改说 HTW 不建议配储、电池加到现有逆变器；EN/DE 同义。
 - **一处一实现**：新串只在 `services/engine/src/linker_engine/texts.py`；H2 条件在
   `plugins/linker-commerce/data/compatibility.json`（运行时合同）、
   `plugins/linker-commerce/data/compatibility-lists.json`（合同数据源）与

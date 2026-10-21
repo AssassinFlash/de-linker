@@ -145,6 +145,10 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Smallest released configuration; it exceeds the backup reserve of {upper} kWh",
         "Kleinste freigegebene Konfiguration; sie überschreitet die Notstromreserve von {upper} kWh",
     ),
+    "basis.battery_above_retrofit": (
+        "Released configuration; HTW Berlin does not recommend a battery at this PV-to-consumption ratio",
+        "Freigegebene Konfiguration; die HTW Berlin empfiehlt bei diesem Verhältnis von PV-Leistung zu Verbrauch keinen Batteriespeicher",
+    ),
     "basis.stacks.one": (
         "{quantity} modules in one stack",
         "{quantity} Module in einem Stapel",
@@ -211,6 +215,12 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery.",
         "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher ab.",
     ),
+    "warn.no_storage_retrofit": (
+        "With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery for self-consumption. "
+        "This proposal adds the battery to your existing inverter.",
+        "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher zur Eigenverbrauchsoptimierung ab. "
+        "Dieser Vorschlag ergänzt den Speicher an Ihrem vorhandenen Wechselrichter.",
+    ),
     "warn.no_storage_backup": (
         "With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery for self-consumption. "
         "The battery in this proposal holds the backup reserve.",
@@ -234,6 +244,12 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "The smallest released configuration, {usable} kWh, is proposed and marked.",
         "Keine freigegebene Batteriekonfiguration passt in die Notstromreserve von {upper} kWh. "
         "Vorgeschlagen und markiert ist die kleinste freigegebene Konfiguration mit {usable} kWh.",
+    ),
+    "warn.battery_above_retrofit": (
+        "HTW Berlin does not recommend a battery at this PV-to-consumption ratio. "
+        "The proposed battery configuration is marked; it is added to your existing inverter.",
+        "Die HTW Berlin empfiehlt bei diesem Verhältnis von PV-Leistung zu Verbrauch keinen Batteriespeicher. "
+        "Die vorgeschlagene Batteriekonfiguration ist markiert; sie ergänzt Ihren vorhandenen Wechselrichter.",
     ),
     "warn.backup_reserve_missing": (
         "Backup supply is selected without a load and duration, so no reserve is added to the capacity.",

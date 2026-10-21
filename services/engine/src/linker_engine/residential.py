@@ -363,6 +363,7 @@ def stueckliste(
     upper_kwh: float,
     existing: bool,
     reserve_only: bool = False,
+    retrofit_only: bool = False,
 ) -> list[Line]:
     locale = request.locale
     inverter = evaluation.inverter
@@ -394,7 +395,12 @@ def stueckliste(
         )
     if fit:
         lines += _battery_lines(
-            engine, fit, locale, upper_kwh, reserve_only=reserve_only
+            engine,
+            fit,
+            locale,
+            upper_kwh,
+            reserve_only=reserve_only,
+            retrofit_only=retrofit_only,
         )
     if not existing:
         lines += _requirement_lines(engine, inverter, request, evaluation.backup_parts)
@@ -409,11 +415,19 @@ def _battery_lines(
     locale: Locale,
     upper_kwh: float,
     reserve_only: bool = False,
+    retrofit_only: bool = False,
 ) -> list[Line]:
     config = fit.config
-    basis_key = "basis.battery_above" if fit.above else "basis.battery_fit"
-    if reserve_only:
-        basis_key += "_reserve"
+    if fit.above:
+        basis_key = (
+            "basis.battery_above_retrofit"
+            if retrofit_only
+            else (
+                "basis.battery_above_reserve" if reserve_only else "basis.battery_above"
+            )
+        )
+    else:
+        basis_key = "basis.battery_fit_reserve" if reserve_only else "basis.battery_fit"
     basis = [t(basis_key, locale, upper=upper_kwh)]
     if config.modular:
         if config.quantity == 1:
@@ -847,6 +861,7 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
     reserve_only = (
         not sizing.recommended and request.backup != "none" and bool(sizing.reserve_kwh)
     )
+    retrofit_only = not sizing.recommended and existing and not reserve_only
     if chosen and (chosen.layout or existing):
         fit = None
         if chosen.batteries:
@@ -861,9 +876,13 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
             if fit.above:
                 warnings.append(
                     t(
-                        "warn.battery_above_reserve"
-                        if reserve_only
-                        else "warn.battery_above",
+                        "warn.battery_above_retrofit"
+                        if retrofit_only
+                        else (
+                            "warn.battery_above_reserve"
+                            if reserve_only
+                            else "warn.battery_above"
+                        ),
                         locale,
                         upper=sizing.high_kwh,
                         usable=fit.config.usable_kwh,
@@ -884,6 +903,7 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
                 sizing.high_kwh,
                 existing,
                 reserve_only=reserve_only,
+                retrofit_only=retrofit_only,
             ),
         )
         usable = fit.config.usable_kwh if fit else 0.0
@@ -924,10 +944,16 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
         )
 
     if not sizing.recommended:
-        # The proposal wording must match the result: a covered reserve, an
-        # inverter-only proposal, or no proposal at all.
+        # The proposal wording must match the result: a covered backup
+        # reserve, a battery added to an existing inverter, an inverter-only
+        # proposal, or no proposal at all.
         if selected and selected.battery:
-            key = "warn.no_storage_backup"
+            if request.backup != "none" and reserve:
+                key = "warn.no_storage_backup"
+            elif existing:
+                key = "warn.no_storage_retrofit"
+            else:
+                key = "warn.no_storage"
         elif selected:
             key = "warn.no_storage"
         else:

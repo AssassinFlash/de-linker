@@ -292,6 +292,52 @@ def test_the_backup_no_candidate_does_not_claim_a_proposal(
     assert not any("Vorschlag" in warning for warning in german.warnings)
 
 
+def test_a_non_backup_retrofit_does_not_claim_a_backup_reserve(
+    engine_without_backup: Engine,
+) -> None:
+    """A retrofit with a battery but no backup keeps truthful warnings.
+
+    Outer re-verify repro: existing HS2-10K-T2-X, 5000 kWh, 2 kWp,
+    three-phase, backup none. The battery is an addition to the existing
+    inverter; nothing in the proposal holds a backup reserve.
+    """
+    fields = {
+        "annual_kwh": 5000,
+        "pv_kwp": 2,
+        "phase": 3,
+        "backup": "none",
+        "existing_inverter": "HS2-10K-T2-X",
+    }
+    result = design(engine_without_backup, **fields)
+    assert result.selected is not None
+    assert result.selected.inverter.model == "HS2-10K-T2-X"
+    assert result.sizing.recommended is False
+    assert result.sizing.reserve_kwh == 0
+    battery = result.selected.battery
+    assert battery is not None
+    assert battery.product.model == "BU2-5.0-HV1"
+    assert battery.quantity == 2
+    assert battery.usable_kwh == pytest.approx(9.0)
+    assert any(
+        "adds the battery to your existing inverter" in warning
+        for warning in result.warnings
+    )
+    assert not any("backup reserve" in warning for warning in result.warnings)
+    assert not any("HTW limit of 0" in warning for warning in result.warnings)
+    battery_line = next(
+        line for line in result.selected.lines if line.role == "battery"
+    )
+    basis = " ".join(battery_line.basis)
+    assert "HTW Berlin does not recommend a battery" in basis
+    assert "HTW limit of 0" not in basis
+
+    german = design(engine_without_backup, locale="de", **fields)
+    assert german.selected is not None
+    assert any("vorhandenen Wechselrichter" in warning for warning in german.warnings)
+    assert not any("Notstromreserve" in warning for warning in german.warnings)
+    assert not any("HTW-Grenze von 0" in warning for warning in german.warnings)
+
+
 def test_backup_accessory_ok_keeps_candidates_without_backup_figures(
     engine_without_backup: Engine,
 ) -> None:
