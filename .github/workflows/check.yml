@@ -220,6 +220,16 @@ jobs:
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter GenieInquiryTest
 
+      # The observation-only classifier uses fake service answers and local
+      # Outbox data. Includes private review history, native privacy, two real
+      # PHP connections, and rollback after a failed metadata write.
+      - name: inquiry assessment, customer evidence and staff review
+        working-directory: plugins/linker-commerce
+        run: |
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter 'InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest'
+
       # The cleanup runs even when an earlier step failed and the instance was
       # never built, so it reports rather than failing the job twice.
       - name: stop the instance

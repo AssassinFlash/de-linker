@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-21T12:14:46+00:00\n"
+"POT-Creation-Date: 2026-10-21T18:45:20+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -552,7 +552,10 @@ msgid "Documents"
 msgstr "Dokumente"
 
 #: includes/Account/Menu.php:52 includes/Account/Menu.php:88
-#: includes/Contact/Form.php:158 includes/Registration/AccountsTable.php:43
+#: includes/Contact/Form.php:158
+#: includes/Inquiry/Assessment/EvidenceView.php:56
+#: includes/Inquiry/Assessment/EvidenceView.php:70
+#: includes/Registration/AccountsTable.php:43
 msgid "Company"
 msgstr "Unternehmen"
 
@@ -752,6 +755,7 @@ msgid "What would you like to know?"
 msgstr "Was möchten Sie wissen?"
 
 #: includes/Contact/Form.php:146
+#: includes/Inquiry/Assessment/EvidenceView.php:49
 msgid "This is about"
 msgstr "Es geht um"
 
@@ -759,8 +763,9 @@ msgstr "Es geht um"
 msgid "Where can we reply?"
 msgstr "Wohin dürfen wir antworten?"
 
-#: includes/Contact/Form.php:153 includes/Inquiry/Form.php:156
-#: includes/Settings/SettingsTab.php:137
+#: includes/Contact/Form.php:153
+#: includes/Inquiry/Assessment/EvidenceView.php:54
+#: includes/Inquiry/Form.php:156 includes/Settings/SettingsTab.php:137
 msgid "Name"
 msgstr "Name"
 
@@ -976,7 +981,7 @@ msgstr "Anfrage #%1$s – %2$s"
 
 #: includes/Digest/InquiriesAwaitingProforma.php:107
 #: includes/Digest/ProformasAwaitingReply.php:105
-#: templates/emails/linker-new-inquiry.php:45
+#: templates/emails/linker-new-inquiry.php:52
 msgid "Open the inquiry"
 msgstr "Anfrage öffnen"
 
@@ -1188,6 +1193,545 @@ msgstr ""
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
 
+#: includes/Inquiry/Assessment/Admin.php:27
+msgid "Inquiry review"
+msgstr "Anfrage prüfen"
+
+#: includes/Inquiry/Assessment/Admin.php:44
+msgid "No assessment was requested."
+msgstr "Für diese Anfrage wurde keine Einschätzung angefordert."
+
+#: includes/Inquiry/Assessment/Admin.php:48
+#: templates/emails/linker-new-inquiry.php:49
+msgid "Jev initial assessment"
+msgstr "Ersteinschätzung durch Jev"
+
+#: includes/Inquiry/Assessment/Admin.php:50
+msgid "Initial guidance only. Every inquiry is accepted and notified."
+msgstr ""
+"Die Einschätzung dient als Hinweis. Jede Anfrage wird gespeichert und dem "
+"Team gemeldet."
+
+#: includes/Inquiry/Assessment/Admin.php:51
+msgid "Diagnostic"
+msgstr "Diagnosehinweis"
+
+#: includes/Inquiry/Assessment/Admin.php:51
+msgid "Elapsed time"
+msgstr "Verstrichene Zeit"
+
+#: includes/Inquiry/Assessment/Admin.php:51
+msgid "Model / rubric"
+msgstr "Modell / Bewertungsregeln"
+
+#: includes/Inquiry/Assessment/Admin.php:52
+msgid "Original model result"
+msgstr "Ursprüngliches Modellergebnis"
+
+#: includes/Inquiry/Assessment/Admin.php:62
+#: includes/Inquiry/Assessment/Reviews.php:89
+msgid "You cannot review this inquiry."
+msgstr "Sie sind nicht berechtigt, diese Anfrage zu prüfen."
+
+#: includes/Inquiry/Assessment/Admin.php:75
+msgid "Reload this inquiry before saving a review."
+msgstr "Laden Sie diese Anfrage neu, bevor Sie eine Prüfung speichern."
+
+#: includes/Inquiry/Assessment/Admin.php:109
+#: includes/Inquiry/Assessment/Reviews.php:103
+#: includes/Inquiry/Assessment/Reviews.php:108
+msgid "This inquiry is unavailable."
+msgstr "Diese Anfrage ist nicht verfügbar."
+
+#: includes/Inquiry/Assessment/EvidencePrivacy.php:36
+msgid "Customer evidence and staff review"
+msgstr "Kundenangaben, Belege und interne Prüfung"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:29
+msgid "Customer evidence"
+msgstr "Angaben und Belege zum Kunden"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:32
+msgid "No frozen customer evidence is available for this inquiry."
+msgstr ""
+"Für diese Anfrage wurden keine Kundenangaben zum Eingangszeitpunkt "
+"festgehalten."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:35
+msgid ""
+"Details saved when this inquiry arrived. Account approval remains a staff "
+"decision."
+msgstr ""
+"Diese Angaben wurden beim Eingang der Anfrage gespeichert. Über die "
+"Kontofreigabe entscheidet das Team."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:36
+msgid "Saved at"
+msgstr "Gespeichert am"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:36
+#: includes/Inquiry/Assessment/EvidenceView.php:46
+#: includes/Inquiry/Assessment/EvidenceView.php:77
+#: includes/Inquiry/Assessment/EvidenceView.php:78
+#: includes/Inquiry/Assessment/EvidenceView.php:79
+#: includes/Inquiry/Assessment/EvidenceView.php:89
+msgid "Site record"
+msgstr "Eintrag auf dieser Website"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:37
+msgid "1. This request"
+msgstr "1. Diese Anfrage"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:40
+#: includes/Inquiry/Assessment/EvidenceView.php:134
+msgid "Customer statement"
+msgstr "Angabe des Kunden"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:42
+#: includes/Inquiry/OrderAdmin.php:74
+#: templates/emails/linker-new-inquiry.php:58
+msgid "Contact form"
+msgstr "Kontaktformular"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:43
+#: includes/Inquiry/OrderAdmin.php:74 includes/Vocabulary/Labels.php:179
+#: includes/Vocabulary/Terms.php:40
+msgid "Proforma request"
+msgstr "Proforma-Anfrage"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:46
+#: includes/Inquiry/OrderAdmin.php:55
+msgid "Source"
+msgstr "Eingang"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:50
+msgid "General enquiry (default form option)"
+msgstr "Allgemeine Anfrage (Vorgabe im Formular)"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:51
+msgid "Form value; no selection history recorded"
+msgstr "Formularwert; es ist nicht erfasst, ob die Auswahl geändert wurde"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:53
+msgid "Contact details as submitted"
+msgstr "Übermittelte Kontaktdaten"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:55
+#: includes/Settings/SettingsTab.php:143
+msgid "Email"
+msgstr "E-Mail"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:58
+msgid "Message"
+msgstr "Nachricht"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:60
+#: templates/emails/linker-genie-handoff.php:63
+#: templates/proforma/proforma.php:111
+msgid "Product"
+msgstr "Produkt"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:60
+msgid "Products in the submitted solution draft"
+msgstr "Produkte im übermittelten Lösungsentwurf"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:63
+msgid "2. Company and account records"
+msgstr "2. Angaben zu Unternehmen und Konto"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:66
+msgid "Guest inquiry. An account and VAT ID are optional."
+msgstr ""
+"Gastanfrage. Ein Konto und eine USt-IdNr. sind für diese Anfrage freiwillig."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:66
+msgid "The linked account record was unavailable when this inquiry arrived."
+msgstr ""
+"Beim Eingang dieser Anfrage war der Eintrag des zugeordneten Kontos nicht "
+"verfügbar."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:68
+msgid "Saved account details"
+msgstr "Gespeicherte Kontoangaben"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:69
+msgid "Account value at submission; supplied by the customer"
+msgstr "Vom Kunden angegebener Kontowert zum Zeitpunkt der Anfrage"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:71
+#: includes/Inquiry/Assessment/ReviewView.php:94
+#: includes/Registration/Accounts.php:163 includes/Registration/Fields.php:110
+msgid "Company website"
+msgstr "Unternehmenswebsite"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:72
+#: includes/Registration/BillingVatField.php:94
+#: includes/Registration/Fields.php:95
+msgid "Business type"
+msgstr "Unternehmensart"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:73
+msgid "Country"
+msgstr "Land"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:75
+msgid "Account status"
+msgstr "Kontostatus"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:75
+msgid "Site decision; this does not verify company identity"
+msgstr ""
+"Kontofreigabe auf dieser Website; die Unternehmensidentität wurde damit "
+"nicht bestätigt"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:77
+msgid "Decision recorded at"
+msgstr "Entscheidung erfasst am"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:78
+#: includes/Inquiry/Assessment/ReviewView.php:72
+msgid "Staff user ID"
+msgstr "Mitarbeiter-ID"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:79
+msgid "Recorded reason"
+msgstr "Gespeicherte Begründung"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:83
+msgid "VAT numbers and check records"
+msgstr "USt-IdNrn. und gespeicherte Prüfergebnisse"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:84
+msgid "VAT ID in this request"
+msgstr "USt-IdNr. in dieser Anfrage"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:85
+msgid "VAT ID saved on the account"
+msgstr "Im Konto gespeicherte USt-IdNr."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:86
+#: includes/Inquiry/Assessment/EvidenceView.php:87
+#: includes/Inquiry/Assessment/EvidenceView.php:88
+#: includes/Inquiry/Assessment/EvidenceView.php:90
+msgid "Recorded VAT check"
+msgstr "Gespeicherte USt-IdNr.-Prüfung"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:86
+msgid "VAT ID actually checked"
+msgstr "Tatsächlich geprüfte USt-IdNr."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:87
+msgid "Original check time"
+msgstr "Ursprünglicher Prüfzeitpunkt"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:88
+msgid "Recorded check result"
+msgstr "Gespeichertes Prüfergebnis"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:89
+msgid "VAT result on this inquiry"
+msgstr "USt-IdNr.-Ergebnis dieser Anfrage"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:90
+msgid "Check detail"
+msgstr "Details der Prüfung"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:92
+msgid "3. Points to review"
+msgstr "3. Punkte zur Prüfung"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:94
+msgid ""
+"The company name in this request differs from the saved account value. Both "
+"are shown above."
+msgstr ""
+"Der Unternehmensname in dieser Anfrage weicht von der gespeicherten "
+"Kontoangabe ab. Beide Angaben sind oben einsehbar."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:96
+msgid ""
+"No automatic company lookup was made. Missing optional details are not a "
+"spam finding."
+msgstr ""
+"Es erfolgte keine automatische Unternehmensrecherche. Fehlende freiwillige "
+"Angaben gelten nicht als Spamhinweis."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:97
+msgid "Frozen source references"
+msgstr "Referenzen der gespeicherten Angaben"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:101
+msgid "References identify the saved record. They do not verify a company."
+msgstr ""
+"Die Referenzen kennzeichnen den gespeicherten Datensatz. Sie bestätigen "
+"keine Unternehmensidentität."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:111
+msgid ""
+"The recorded VAT check was valid for the number and time shown. It does not "
+"verify the contact person or authority to buy."
+msgstr ""
+"Die gespeicherte Prüfung ergab für die angezeigte USt-IdNr. zum angegebenen "
+"Zeitpunkt ein gültiges Ergebnis. Daraus folgt keine Bestätigung der "
+"Kontaktperson oder ihrer Einkaufsbefugnis."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:112
+msgid ""
+"The recorded VAT check returned invalid. Review the number with the "
+"customer; this is not a spam decision."
+msgstr ""
+"Bei der gespeicherten Prüfung wurde die USt-IdNr. als ungültig gemeldet. "
+"Klären Sie die Nummer mit dem Kunden. Dieses Ergebnis stuft die Anfrage "
+"nicht als Spam ein."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:113
+msgid ""
+"The submitted, saved or checked VAT numbers differ. The stored result cannot "
+"confirm the current number."
+msgstr ""
+"Die übermittelte, gespeicherte oder geprüfte USt-IdNr. weichen voneinander "
+"ab. Das gespeicherte Ergebnis bestätigt die aktuelle Nummer nicht."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:114
+msgid ""
+"The request and account VAT results differ. Review the underlying records "
+"before relying on either result."
+msgstr ""
+"Die USt-IdNr.-Ergebnisse der Anfrage und des Kontos weichen voneinander ab. "
+"Prüfen Sie die zugrunde liegenden Einträge, bevor Sie eines der Ergebnisse "
+"verwenden."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:115
+msgid ""
+"The checked number or original check time is missing. VAT verification "
+"cannot be confirmed."
+msgstr ""
+"Die geprüfte Nummer oder der ursprüngliche Prüfzeitpunkt fehlt. Eine Prüfung "
+"der USt-IdNr. lässt sich nicht bestätigen."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:116
+msgid ""
+"This number is outside the EU VIES check. Company verification remains open."
+msgstr ""
+"Diese Nummer fällt nicht unter die EU-Prüfung über VIES. Die "
+"Unternehmensprüfung ist damit offen."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:117
+msgid "No VAT ID was provided. It is optional for this inquiry."
+msgstr ""
+"Es wurde keine USt-IdNr. angegeben. Für diese Anfrage ist sie freiwillig."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:118
+msgid ""
+"VAT verification was unavailable or inconclusive. Review the recorded detail "
+"if needed."
+msgstr ""
+"Die Prüfung der USt-IdNr. war nicht verfügbar oder lieferte kein eindeutiges "
+"Ergebnis. Prüfen Sie bei Bedarf die gespeicherten Details."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:129
+msgid "No related Genie context was available at submission."
+msgstr "Beim Eingang der Anfrage war kein zugehöriger Genie-Kontext verfügbar."
+
+#: includes/Inquiry/Assessment/EvidenceView.php:132
+msgid "Related Genie context at submission"
+msgstr "Zugehöriger Genie-Kontext beim Eingang der Anfrage"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:134
+msgid "Genie AI response"
+msgstr "KI-Antwort von Genie"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:138
+msgid "AI extraction from customer attachments; verify against the original"
+msgstr "KI-Auswertung der Kundenanhänge; bitte am Original prüfen"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:138
+msgid "Attachment readings"
+msgstr "Auswertungen der Anhänge"
+
+#: includes/Inquiry/Assessment/EvidenceView.php:152
+msgid "Not recorded"
+msgstr "Nicht erfasst"
+
+#: includes/Inquiry/Assessment/Result.php:110
+msgid "Likely genuine"
+msgstr "Vermutlich echte Anfrage"
+
+#: includes/Inquiry/Assessment/Result.php:111
+msgid "Suspected spam"
+msgstr "Spamverdacht"
+
+#: includes/Inquiry/Assessment/Result.php:112
+msgid "Unable to assess"
+msgstr "Keine Beurteilung möglich"
+
+#: includes/Inquiry/Assessment/Result.php:123
+msgid "No reliable assessment was available. Please review the inquiry."
+msgstr ""
+"Eine verlässliche Einschätzung liegt nicht vor. Bitte prüfen Sie die Anfrage."
+
+#: includes/Inquiry/Assessment/Result.php:126
+msgid "Possible fraud or phishing."
+msgstr "Möglicher Betrugs- oder Phishingversuch."
+
+#: includes/Inquiry/Assessment/Result.php:127
+msgid "Possible unsolicited bulk promotion."
+msgstr "Mögliche unerwünschte Massenwerbung."
+
+#: includes/Inquiry/Assessment/Result.php:128
+msgid "Repeated content with no clear request."
+msgstr "Wiederholter Inhalt ohne erkennbare Anfrage."
+
+#: includes/Inquiry/Assessment/Result.php:129
+msgid "Service request or complaint."
+msgstr "Serviceanfrage oder Beschwerde."
+
+#: includes/Inquiry/Assessment/Result.php:130
+msgid "Report of suspected abuse."
+msgstr "Meldung eines möglichen Missbrauchs."
+
+#: includes/Inquiry/Assessment/Result.php:131
+msgid "Plausible business or contact request."
+msgstr "Plausible geschäftliche Anfrage oder Kontaktaufnahme."
+
+#: includes/Inquiry/Assessment/ReviewView.php:28
+#: includes/Inquiry/Assessment/ReviewView.php:35
+msgid "Staff correction"
+msgstr "Manuelle Korrektur"
+
+#: includes/Inquiry/Assessment/ReviewView.php:29
+#: includes/Inquiry/Assessment/ReviewView.php:82
+msgid "Recorded review note"
+msgstr "Gespeicherte Prüfnotiz"
+
+#: includes/Inquiry/Assessment/ReviewView.php:34
+msgid ""
+"Saving a review changes this internal record only. It does not send mail or "
+"change the account decision."
+msgstr ""
+"Eine gespeicherte Prüfung aktualisiert diesen internen Eintrag. Dabei werden "
+"keine E-Mails versendet und keine Kontofreigaben geändert."
+
+#: includes/Inquiry/Assessment/ReviewView.php:34
+msgid "Staff review"
+msgstr "Interne Prüfung"
+
+#: includes/Inquiry/Assessment/ReviewView.php:39
+msgid "Review note"
+msgstr "Prüfvermerk"
+
+#: includes/Inquiry/Assessment/ReviewView.php:40
+msgid "Save correction"
+msgstr "Korrektur speichern"
+
+#: includes/Inquiry/Assessment/ReviewView.php:40
+msgid "Withdraw correction"
+msgstr "Korrektur zurücknehmen"
+
+#: includes/Inquiry/Assessment/ReviewView.php:41
+msgid "Add a source you checked"
+msgstr "Eine von Ihnen geprüfte Quelle ergänzen"
+
+#: includes/Inquiry/Assessment/ReviewView.php:41
+msgid ""
+"Record your source and finding in the review note. The website does not "
+"check this source automatically."
+msgstr ""
+"Halten Sie die Quelle und Ihren Befund in der Prüfnotiz fest. Diese Website "
+"prüft die Quelle nicht automatisch."
+
+#: includes/Inquiry/Assessment/ReviewView.php:41
+msgid "Source type"
+msgstr "Art der Quelle"
+
+#: includes/Inquiry/Assessment/ReviewView.php:45
+msgid "Checked at (UTC)"
+msgstr "Geprüft am (UTC)"
+
+#: includes/Inquiry/Assessment/ReviewView.php:45
+msgid "Record source and finding"
+msgstr "Quelle und Befund speichern"
+
+#: includes/Inquiry/Assessment/ReviewView.php:45
+#: includes/Inquiry/Assessment/ReviewView.php:80
+msgid "Source URL"
+msgstr "URL der Quelle"
+
+#: includes/Inquiry/Assessment/ReviewView.php:64
+msgid "Review history"
+msgstr "Prüfverlauf"
+
+#: includes/Inquiry/Assessment/ReviewView.php:66
+msgid "Correction recorded"
+msgstr "Korrektur gespeichert"
+
+#: includes/Inquiry/Assessment/ReviewView.php:67
+msgid "Correction withdrawn"
+msgstr "Korrektur zurückgenommen"
+
+#: includes/Inquiry/Assessment/ReviewView.php:68
+msgid "Source recorded by staff"
+msgstr "Quelle vom Team erfasst"
+
+#: includes/Inquiry/Assessment/ReviewView.php:69
+msgid "Earlier correction; detailed history starts here"
+msgstr "Frühere Korrektur; der detaillierte Verlauf beginnt hier"
+
+#: includes/Inquiry/Assessment/ReviewView.php:74
+msgid "Observation and evidence used for this review"
+msgstr "Beobachtung und Belege dieser Prüfung"
+
+#: includes/Inquiry/Assessment/ReviewView.php:74
+msgid "Previous assessment"
+msgstr "Vorherige Einschätzung"
+
+#: includes/Inquiry/Assessment/ReviewView.php:95
+msgid "Official register"
+msgstr "Amtliches Register"
+
+#: includes/Inquiry/Assessment/ReviewView.php:96
+msgid "Official VAT service"
+msgstr "Amtlicher Dienst zur USt-IdNr.-Prüfung"
+
+#: includes/Inquiry/Assessment/ReviewView.php:97
+msgid "Other source"
+msgstr "Andere Quelle"
+
+#: includes/Inquiry/Assessment/Reviews.php:92
+msgid "Please choose a valid assessment."
+msgstr "Bitte wählen Sie eine gültige Einschätzung."
+
+#: includes/Inquiry/Assessment/Reviews.php:95
+msgid ""
+"Enter the source, its URL, when you checked it and the relevant finding."
+msgstr ""
+"Geben Sie die Quelle, ihre URL, den Prüfzeitpunkt und den relevanten Befund "
+"an."
+
+#: includes/Inquiry/Assessment/Reviews.php:97
+msgid "Another review is being saved. Reload this inquiry before trying again."
+msgstr ""
+"Eine andere Prüfung wird gerade gespeichert. Laden Sie diese Anfrage vor "
+"einem erneuten Versuch neu."
+
+#: includes/Inquiry/Assessment/Reviews.php:113
+msgid ""
+"This review has changed. Reload the inquiry to see the latest revision; your "
+"change was not saved."
+msgstr ""
+"Diese Prüfung wurde inzwischen geändert. Laden Sie die Anfrage neu, um den "
+"aktuellen Stand zu sehen. Ihre Änderung wurde nicht gespeichert."
+
+#: includes/Inquiry/Assessment/Reviews.php:178
+msgid "The review could not be saved. Reload the inquiry before trying again."
+msgstr ""
+"Die Prüfung konnte nicht gespeichert werden. Laden Sie die Anfrage vor einem "
+"erneuten Versuch neu."
+
+#: includes/Inquiry/Assessment/Reviews.php:193
+msgid "Staff review recorded."
+msgstr "Interne Prüfung gespeichert."
+
 #: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:143
 msgid "Please use the inquiry form to send your inquiry."
 msgstr "Bitte senden Sie Ihre Anfrage über das Anfrageformular."
@@ -1230,12 +1774,12 @@ msgstr "Geht an den Kunden, wenn eine Anfrage eingegangen ist."
 msgid "Your inquiry #{order_number} has been received"
 msgstr "Ihre Anfrage #{order_number} ist eingegangen"
 
-#: includes/Inquiry/Emails/NewInquiryEmail.php:36
+#: includes/Inquiry/Emails/NewInquiryEmail.php:38
 #: includes/Inquiry/OrderAdmin.php:36
 msgid "New inquiry"
 msgstr "Neue Anfrage"
 
-#: includes/Inquiry/Emails/NewInquiryEmail.php:37
+#: includes/Inquiry/Emails/NewInquiryEmail.php:39
 msgid ""
 "Sent to the internal notification address, with blind copies, when an "
 "inquiry is received."
@@ -1244,12 +1788,12 @@ msgstr ""
 "eine Anfrage eingegangen ist."
 
 #. translators: {order_number}: inquiry number, {company}: customer's company.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:71
+#: includes/Inquiry/Emails/NewInquiryEmail.php:109
 msgid "New inquiry #{order_number} from {company}"
 msgstr "Neue Anfrage #{order_number} von {company}"
 
 #. translators: {order_number}: inquiry number.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:79
+#: includes/Inquiry/Emails/NewInquiryEmail.php:117
 msgid "New inquiry #{order_number}"
 msgstr "Neue Anfrage #{order_number}"
 
@@ -1363,20 +1907,6 @@ msgstr "Navigation der Anfragen"
 msgid "Inquiries list"
 msgstr "Liste der Anfragen"
 
-#: includes/Inquiry/OrderAdmin.php:55
-msgid "Source"
-msgstr "Eingang"
-
-#: includes/Inquiry/OrderAdmin.php:74
-#: templates/emails/linker-new-inquiry.php:51
-msgid "Contact form"
-msgstr "Kontaktformular"
-
-#: includes/Inquiry/OrderAdmin.php:74 includes/Vocabulary/Labels.php:179
-#: includes/Vocabulary/Terms.php:40
-msgid "Proforma request"
-msgstr "Proforma-Anfrage"
-
 #: includes/Inquiry/OrderAdmin.php:93
 #: templates/emails/linker-inquiry-summary.php:19
 msgid "Conversation with Genie"
@@ -1426,11 +1956,11 @@ msgstr ""
 msgid "Website"
 msgstr "Website"
 
-#: includes/Inquiry/Sender.php:52
+#: includes/Inquiry/Sender.php:53
 msgid "Please add a product or write a message."
 msgstr "Bitte fügen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht."
 
-#: includes/Inquiry/Sender.php:77
+#: includes/Inquiry/Sender.php:78
 msgid "Please try sending your inquiry again."
 msgstr "Bitte senden Sie Ihre Anfrage erneut."
 
@@ -1688,7 +2218,7 @@ msgstr "Privat"
 msgid "Commercial"
 msgstr "Gewerbe"
 
-#: includes/Presentation/LanguageLinks.php:52
+#: includes/Presentation/LanguageLinks.php:53
 #: includes/Presentation/LibraryPage.php:515
 msgid "English"
 msgstr "Englisch"
@@ -3088,10 +3618,6 @@ msgstr ""
 "Kein auffälliges Muster im Unternehmensnamen erkannt. Bitte prüfen Sie das "
 "Unternehmen."
 
-#: includes/Registration/Accounts.php:163 includes/Registration/Fields.php:110
-msgid "Company website"
-msgstr "Unternehmenswebsite"
-
 #: includes/Registration/Accounts.php:163
 msgid "Website (from email domain)"
 msgstr "Website der E-Mail-Domain"
@@ -3216,11 +3742,6 @@ msgstr "USt-IdNr.-Prüfung:"
 #: includes/Registration/BillingVatField.php:91
 msgid "Customer check"
 msgstr "Kundenprüfung"
-
-#: includes/Registration/BillingVatField.php:94
-#: includes/Registration/Fields.php:95
-msgid "Business type"
-msgstr "Unternehmensart"
 
 #: includes/Registration/BillingVatField.php:99
 #: templates/emails/linker-new-customer.php:30
@@ -3543,10 +4064,6 @@ msgid ""
 msgstr ""
 "Wird Kunden oben in ihrem Konto angezeigt. Ohne E-Mail-Adresse erscheint das "
 "Team-Postfach."
-
-#: includes/Settings/SettingsTab.php:143
-msgid "Email"
-msgstr "E-Mail"
 
 #: includes/Settings/SettingsTab.php:149
 msgid "Phone"
@@ -4264,11 +4781,6 @@ msgstr "Letzte Nachrichten des Kunden, neueste zuerst"
 msgid "Open the conversation"
 msgstr "Unterhaltung öffnen"
 
-#: templates/emails/linker-genie-handoff.php:63
-#: templates/proforma/proforma.php:111
-msgid "Product"
-msgstr "Produkt"
-
 #: templates/emails/linker-inquiry-received.php:27
 msgid "Hello,"
 msgstr "Guten Tag,"
@@ -4315,7 +4827,7 @@ msgid "New inquiry %1$s from %2$s (%3$s)."
 msgstr "Neue Anfrage %1$s von %2$s (%3$s)."
 
 #. translators: %s: topic selected in the contact form.
-#: templates/emails/linker-new-inquiry.php:55
+#: templates/emails/linker-new-inquiry.php:62
 #, php-format
 msgid "This is about: %s"
 msgstr "Es geht um: %s"

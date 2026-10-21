@@ -41,6 +41,7 @@ from linker_genie.cycle import TurnResult, fatal_class, run
 from linker_genie.facts import TurnFacts
 from linker_genie.failure import from_log, is_row
 from linker_genie.gate import Gate
+from linker_genie.inquiry_assessment import AssessmentInput, assess
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup, fill
@@ -607,3 +608,9 @@ def _sse(
 
 def _event(name: str, payload: object) -> str:
     return f"event: {name}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+@app.post("/inquiries/assess")
+async def assess_inquiry(body: AssessmentInput) -> dict[str, object]:
+    """Authenticated shell background jobs only; never a browser submit call."""
+    return await assess(body)

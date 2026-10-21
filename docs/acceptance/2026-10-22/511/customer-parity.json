@@ -1,0 +1,54 @@
+[
+  {
+    "lang": "en",
+    "viewport_width": 390,
+    "before_size": [
+      390,
+      3318
+    ],
+    "after_size": [
+      390,
+      3318
+    ],
+    "different_pixels": 0
+  },
+  {
+    "lang": "en",
+    "viewport_width": 1440,
+    "before_size": [
+      1440,
+      3530
+    ],
+    "after_size": [
+      1440,
+      3530
+    ],
+    "different_pixels": 0
+  },
+  {
+    "lang": "de",
+    "viewport_width": 390,
+    "before_size": [
+      390,
+      3489
+    ],
+    "after_size": [
+      390,
+      3489
+    ],
+    "different_pixels": 0
+  },
+  {
+    "lang": "de",
+    "viewport_width": 1440,
+    "before_size": [
+      1440,
+      3578
+    ],
+    "after_size": [
+      1440,
+      3578
+    ],
+    "different_pixels": 0
+  }
+]

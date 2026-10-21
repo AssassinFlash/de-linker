@@ -124,6 +124,12 @@ final class PluginTest extends TestCase {
 		// The confirmation link of a guest's "email me" (ticket #235).
 		WP_Mock::expectActionAdded( 'admin_post_nopriv_' . ConversationMail::CONFIRM_ACTION, array( $mail, 'handle_link' ) );
 		WP_Mock::expectActionAdded( 'admin_post_' . ConversationMail::CONFIRM_ACTION, array( $mail, 'handle_link' ) );
+		/**
+		 * WP_Mock supports a nested instance matcher for a method callback.
+		 *
+		 * @phpstan-ignore argument.type
+		 */
+		WP_Mock::expectFilterAdded( 'linker_commerce_inquiry_assessment_context', array( WP_Mock\Functions::type( \Linker\Tools\Genie\InquiryAssessmentContext::class ), 'read' ), 10, 3 );
 		// The inquiry's conversation summary (#244).
 		WP_Mock::expectFilterAdded( \Linker\Tools\Genie\InquirySummary::FILTER, array( $inquiry, 'answer' ), 10, 2 );
 		// The home hero's entry (#232).

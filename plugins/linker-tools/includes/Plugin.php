@@ -110,6 +110,7 @@ final class Plugin {
 		$this->preview->register();
 		$this->mail->register();
 		$this->inquiry->register();
+		( new \Linker\Tools\Genie\InquiryAssessmentContext() )->register();
 		$this->hero->register();
 		// A saved page drops Genie's cached copy of it and of its language twin (#405).
 		$this->page_cache->register();

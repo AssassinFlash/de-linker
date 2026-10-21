@@ -45,9 +45,10 @@ final class Sender {
 	 *        Genie confirmation card showed (#250): an array stores it, false
 	 *        stores none (the customer turned the summary off), null asks the
 	 *        filter as the request page does (#244).
+	 * @param array<string, mixed>            $context Trusted related Genie conversation/page.
 	 * @return WC_Order|WP_Error Received inquiry or validation failure.
 	 */
-	public function request( Submission $details, array $billing = array(), array|false|null $summary = null ): WC_Order|WP_Error {
+	public function request( Submission $details, array $billing = array(), array|false|null $summary = null, array $context = array() ): WC_Order|WP_Error {
 		if ( WC()->cart->is_empty() && '' === $details->message ) {
 			return new WP_Error( 'linker_inquiry_empty', __( 'Please add a product or write a message.', 'linker-commerce' ) );
 		}
@@ -77,7 +78,7 @@ final class Sender {
 			return new WP_Error( 'linker_inquiry_create', __( 'Please try sending your inquiry again.', 'linker-commerce' ) );
 		}
 		$this->attach_summary( $order, $summary );
-		$this->receive( $order, $details, 'proforma' );
+		$this->receive( $order, $details, 'proforma', $context );
 		WC()->cart->empty_cart();
 		return $order;
 	}
@@ -137,17 +138,19 @@ final class Sender {
 	/**
 	 * One stored record and status-driven mail; the receipt alone has a daily cap.
 	 *
-	 * @param WC_Order   $order Native inquiry.
-	 * @param Submission $details Validated reply details.
-	 * @param string     $source proforma or contact.
+	 * @param WC_Order             $order Native inquiry.
+	 * @param Submission           $details Validated reply details.
+	 * @param string               $source proforma or contact.
+	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
 	 */
-	private function receive( WC_Order $order, Submission $details, string $source ): void {
+	private function receive( WC_Order $order, Submission $details, string $source, array $context = array() ): void {
 		$order->set_payment_method_title( '' );
 		$this->line_language( $order, $details->locale );
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
 		$order->update_meta_data( '_linker_inquiry_topic', $details->intent );
 		$order->update_meta_data( ReceiptLimit::SKIPPED_META, ( new ReceiptLimit() )->take() ? '' : 'daily_cap' );
+		Assessment\Queue::prepare( $order, $context );
 		$order->save();
 		// Woo loads transactional email listeners lazily. Load before the transition.
 		WC()->mailer();
