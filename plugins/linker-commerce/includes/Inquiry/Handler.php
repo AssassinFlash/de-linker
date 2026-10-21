@@ -45,7 +45,7 @@ final class Handler {
 		try {
 			$guard = new PublicGuard();
 			$nonce = $post[ self::NONCE ] ?? '';
-			if ( ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION ) || ( ! Business::enabled() && ! $guard->allows( $post ) ) ) {
+			if ( ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION ) || ! $guard->allows( $post, ! Business::enabled() ) ) {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 			}
 			$details = Submission::from_post( $post, false );
@@ -61,7 +61,8 @@ final class Handler {
 				'billing' => BillingFields::values( $post ),
 				'draft'   => $draft,
 			);
-			return Business::run( 'inquiry', $post, $payload, static fn () => ( new Sender() )->request( $details, $post ), ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft ) );
+			$sender  = new Sender();
+			return Business::run( 'inquiry', $post, $payload, static fn () => $sender->request( $details, $post ), ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft ), static fn () => $sender->preflight( $details ) );
 		} finally {
 			$locale->back();
 		}

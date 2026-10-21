@@ -476,3 +476,27 @@ def test_public_admission_receipts_are_dropped_without_replacing_site_settings()
     assert "linker_public_admission_ledger" not in names
     assert "blogname" in names
     assert "private-pseudonymous-receipts" not in out
+
+
+@pytest.mark.parametrize("table", ["wp_postmeta", "wp_wc_orders_meta"])
+def test_native_order_retry_associations_do_not_survive_live_pull(table: str) -> None:
+    owner_column = "post_id" if table == "wp_postmeta" else "order_id"
+    keys = ("_linker_public_request", "_linker_public_input", "_linker_public_subject")
+    rows = ",\n".join(
+        f"({index},13,'{key}','synthetic-live-association-{index}')"
+        for index, key in enumerate(keys, start=1)
+    )
+    dump = (
+        f"CREATE TABLE `{table}` (\n  `meta_id` bigint,\n"
+        f"  `{owner_column}` bigint,\n  `meta_key` varchar(191),\n"
+        "  `meta_value` longtext\n) ENGINE=InnoDB;\n"
+        f"INSERT INTO `{table}` VALUES\n{rows},\n"
+        "(4,13,'_order_total','125.00');\n"
+    )
+    out = "".join(Anonymizer([]).run(iter(dump.splitlines(keepends=True))))
+    values = {
+        row["meta_key"]: row["meta_value"]
+        for row in tables(out.splitlines(keepends=True))[table]
+    }
+    assert values == {**dict.fromkeys(keys, ""), "_order_total": "125.00"}
+    assert "synthetic-live-association" not in out

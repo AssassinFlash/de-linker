@@ -23,3 +23,18 @@ The first generic receipt wording addressed the email recipient as the submitter
 Other prompts name the actual registration/request/comment verification, refresh or sign-in action. JavaScript fallback gives the same public team address. DE uses Sie and Lösungsentwurf/Anfrage; EN uses solution draft/inquiry. No country, language, email-provider or AI risk accusation appears. Complete literals are in the source and native PO/JSON catalogs.
 
 The author critique and revisions are recorded above. Independent Spec/Standards review must also assess these promises; findings go in review.md when returned. This document alone is not an independent review claim.
+
+## Independent critique: unverified registration recipient
+
+Spec review found that the first implementation neutralized inquiry receipt
+copy while leaving registration's “your partner registration/account”. This
+did not meet the same unverified-recipient contract. Enforce now uses the
+existing neutral subject “Registration received” / “Registrierung eingegangen”.
+The fixed opening is “A partner registration was submitted using this email
+address.” / “Über diese E-Mail-Adresse wurde eine Partnerregistrierung
+eingereicht.” It describes review of company details and price access after
+approval without asserting that the addressee submitted anything. “If you did
+not submit this registration, you can ignore this email.” / “Falls Sie diese
+Registrierung nicht eingereicht haben, können Sie diese E-Mail ignorieren.”
+No supplied company, person, message or link appears in these fixed paragraphs.
+Native rendered-email assertions exercise the actual template.

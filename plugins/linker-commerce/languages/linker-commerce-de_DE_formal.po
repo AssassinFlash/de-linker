@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-21T21:51:35+00:00\n"
+"POT-Creation-Date: 2026-10-21T22:29:46+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -137,13 +137,18 @@ msgstr ""
 msgid ""
 "Verification could not be completed. Your entries are still here. Please try "
 "again or email sales@de-linker.com."
-msgstr "Die Prüfung konnte nicht abgeschlossen werden. Ihre Angaben bleiben erhalten. Sie können es erneut versuchen oder uns unter sales@de-linker.com schreiben."
+msgstr ""
+"Die Prüfung konnte nicht abgeschlossen werden. Ihre Angaben bleiben "
+"erhalten. Sie können es erneut versuchen oder uns unter sales@de-linker.com "
+"schreiben."
 
 #: build/protection.js:1
 msgid ""
 "Verification could not be completed. Your solution draft is unchanged. "
 "Please try again."
-msgstr "Die Prüfung konnte nicht abgeschlossen werden. Ihr Lösungsentwurf bleibt erhalten. Bitte versuchen Sie es erneut."
+msgstr ""
+"Die Prüfung konnte nicht abgeschlossen werden. Ihr Lösungsentwurf bleibt "
+"erhalten. Bitte versuchen Sie es erneut."
 
 #: build/protection.js:1
 msgid "Verification expired. Please try again."
@@ -908,22 +913,30 @@ msgstr "Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut."
 msgid ""
 "The message limit has been reached. Your entries are still here. You can try "
 "again later or email sales@de-linker.com."
-msgstr "Die Nachrichtenbegrenzung ist erreicht. Ihre Angaben bleiben erhalten. Sie können es später erneut versuchen oder uns unter sales@de-linker.com schreiben."
+msgstr ""
+"Die Nachrichtenbegrenzung ist erreicht. Ihre Angaben bleiben erhalten. Sie "
+"können es später erneut versuchen oder uns unter sales@de-linker.com "
+"schreiben."
 
 #: includes/Contact/Form.php:276
 msgid ""
 "Verification expired or could not be confirmed. Your entries are still here. "
 "Please try again."
-msgstr "Die Sicherheitsprüfung ist abgelaufen oder konnte nicht bestätigt werden. Ihre Angaben bleiben erhalten. Bitte versuchen Sie es erneut."
+msgstr ""
+"Die Sicherheitsprüfung ist abgelaufen oder konnte nicht bestätigt werden. "
+"Ihre Angaben bleiben erhalten. Bitte versuchen Sie es erneut."
 
 #: includes/Contact/Form.php:277
 msgid ""
 "Verification is temporarily unavailable. Your entries are still here. Please "
 "try again or email sales@de-linker.com."
-msgstr "Die Sicherheitsprüfung ist vorübergehend nicht verfügbar. Ihre Angaben bleiben erhalten. Sie können es erneut versuchen oder uns unter sales@de-linker.com schreiben."
+msgstr ""
+"Die Sicherheitsprüfung ist vorübergehend nicht verfügbar. Ihre Angaben "
+"bleiben erhalten. Sie können es erneut versuchen oder uns unter sales@de-"
+"linker.com schreiben."
 
-#: includes/Contact/Form.php:278 includes/Protection/Admission.php:178
-#: includes/Protection/Business.php:66
+#: includes/Contact/Form.php:278 includes/Protection/Admission.php:193
+#: includes/Protection/Business.php:75
 msgid ""
 "The request status could not be confirmed. Please check before sending it "
 "again."
@@ -1238,36 +1251,37 @@ msgstr ""
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
 
-#: includes/Inquiry/Checkout.php:44 includes/Inquiry/Checkout.php:155
+#: includes/Inquiry/Checkout.php:27 includes/Inquiry/Checkout.php:54
+#: includes/Inquiry/Checkout.php:165
 msgid "Please use the inquiry form to send your inquiry."
 msgstr "Bitte senden Sie Ihre Anfrage über das Anfrageformular."
 
-#: includes/Inquiry/Checkout.php:110
+#: includes/Inquiry/Checkout.php:120
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:35
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:73
 #: includes/Vocabulary/Labels.php:97 includes/Vocabulary/Terms.php:107
 msgid "Inquiry received"
 msgstr "Anfrage eingegangen"
 
-#: includes/Inquiry/Checkout.php:111 includes/Inquiry/Form.php:165
-#: templates/emails/linker-inquiry-received.php:48
+#: includes/Inquiry/Checkout.php:121 includes/Inquiry/Form.php:165
+#: templates/emails/linker-inquiry-received.php:49
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
 
-#: includes/Inquiry/Checkout.php:113
+#: includes/Inquiry/Checkout.php:123
 msgid "Create an account with this email"
 msgstr "Konto mit dieser E-Mail-Adresse erstellen"
 
-#: includes/Inquiry/Checkout.php:113
+#: includes/Inquiry/Checkout.php:123
 msgid "View inquiries"
 msgstr "Anfragen ansehen"
 
-#: includes/Inquiry/Checkout.php:114
-#: templates/emails/linker-inquiry-received.php:48
+#: includes/Inquiry/Checkout.php:124
+#: templates/emails/linker-inquiry-received.php:49
 msgid "The Linker team will reply to the email address you provided."
 msgstr "Das Linker-Team antwortet Ihnen an die angegebene E-Mail-Adresse."
 
-#: includes/Inquiry/Checkout.php:116
+#: includes/Inquiry/Checkout.php:126
 msgid "We have not sent a confirmation email."
 msgstr "Es wurde keine Bestätigungs-E-Mail versendet."
 
@@ -1490,13 +1504,20 @@ msgstr ""
 msgid "Website"
 msgstr "Website"
 
-#: includes/Inquiry/Sender.php:52
+#: includes/Inquiry/Sender.php:73
+msgid "Please try sending your inquiry again."
+msgstr "Bitte senden Sie Ihre Anfrage erneut."
+
+#: includes/Inquiry/Sender.php:88
 msgid "Please add a product or write a message."
 msgstr "Bitte fügen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht."
 
-#: includes/Inquiry/Sender.php:77
-msgid "Please try sending your inquiry again."
-msgstr "Bitte senden Sie Ihre Anfrage erneut."
+#: includes/Inquiry/Sender.php:95 includes/Protection/Business.php:56
+msgid ""
+"Your solution draft changed. Please review it and send your inquiry again."
+msgstr ""
+"Ihr Lösungsentwurf hat sich geändert. Bitte prüfen Sie die Produkte und "
+"senden Sie Ihre Anfrage erneut."
 
 #: includes/Inquiry/Statuses.php:45 includes/Inquiry/Statuses.php:80
 #: includes/Inquiry/Statuses.php:84
@@ -1631,7 +1652,7 @@ msgstr "Noch keine Anfragen."
 #: includes/Presentation/LoginGate.php:64
 #: includes/Presentation/Shortcodes.php:367 includes/Vocabulary/Terms.php:38
 #: templates/emails/linker-approval-approved.php:26
-#: templates/emails/linker-registration-received.php:38
+#: templates/emails/linker-registration-received.php:44
 msgid "Browse products"
 msgstr "Zu den Produkten"
 
@@ -1921,7 +1942,7 @@ msgid "Your account is under review"
 msgstr "Ihr Konto wird geprüft"
 
 #: includes/Presentation/LoginGate.php:57
-#: templates/emails/linker-registration-received.php:24
+#: templates/emails/linker-registration-received.php:29
 msgid ""
 "We are reviewing your partner account and will email you when it is "
 "approved. You can send inquiries now; approval opens net prices."
@@ -1941,7 +1962,7 @@ msgstr ""
 
 #. translators: %s: the team's email address.
 #: includes/Presentation/LoginGate.php:61
-#: templates/emails/linker-registration-received.php:32
+#: templates/emails/linker-registration-received.php:38
 #, php-format
 msgid "Until then, browse the products and write to %s with any question."
 msgstr ""
@@ -3126,33 +3147,33 @@ msgstr ""
 "Es konnte keine Proforma-Nummer vergeben werden. Bitte versuchen Sie es "
 "erneut."
 
-#: includes/Protection/Accounts.php:103
+#: includes/Protection/Accounts.php:119
 msgid "Please verify your registration and try again."
-msgstr "Bitte bestätigen Sie die Sicherheitsprüfung für Ihre Registrierung und versuchen Sie es erneut."
+msgstr ""
+"Bitte bestätigen Sie die Sicherheitsprüfung für Ihre Registrierung und "
+"versuchen Sie es erneut."
 
-#: includes/Protection/Accounts.php:146
+#: includes/Protection/Accounts.php:162
 msgid "Please verify your request and try again."
-msgstr "Bitte schließen Sie die Sicherheitsprüfung ab und versuchen Sie es erneut."
+msgstr ""
+"Bitte schließen Sie die Sicherheitsprüfung ab und versuchen Sie es erneut."
 
-#: includes/Protection/Admission.php:178
+#: includes/Protection/Admission.php:193
 msgid "Your request could not be processed. Please try again."
 msgstr ""
 "Ihre Anfrage konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut."
 
-#: includes/Protection/Business.php:55
-msgid ""
-"Your solution draft changed. Please review it and send your inquiry again."
-msgstr "Ihr Lösungsentwurf hat sich geändert. Bitte prüfen Sie die Produkte und senden Sie Ihre Anfrage erneut."
-
 #: includes/Protection/Comments.php:58
 msgid "Please verify your comment and try again."
-msgstr "Bitte schließen Sie die Sicherheitsprüfung für Ihren Kommentar ab und versuchen Sie es erneut."
+msgstr ""
+"Bitte schließen Sie die Sicherheitsprüfung für Ihren Kommentar ab und "
+"versuchen Sie es erneut."
 
-#: includes/Protection/Draft.php:122
+#: includes/Protection/Draft.php:126
 msgid "Please refresh your solution draft and try again."
 msgstr "Bitte laden Sie Ihren Lösungsentwurf neu und versuchen Sie es erneut."
 
-#: includes/Protection/Draft.php:129 includes/Protection/Draft.php:136
+#: includes/Protection/Draft.php:133 includes/Protection/Draft.php:141
 msgid "Please sign in to use your saved solution."
 msgstr "Bitte melden Sie sich an, um Ihre gespeicherte Lösung zu verwenden."
 
@@ -3160,7 +3181,9 @@ msgstr "Bitte melden Sie sich an, um Ihre gespeicherte Lösung zu verwenden."
 msgid ""
 "Please enable JavaScript to verify this request, or email sales@de-"
 "linker.com."
-msgstr "Für die Sicherheitsprüfung muss JavaScript aktiviert sein. Sie erreichen uns auch unter sales@de-linker.com."
+msgstr ""
+"Für die Sicherheitsprüfung muss JavaScript aktiviert sein. Sie erreichen uns "
+"auch unter sales@de-linker.com."
 
 #: includes/Protection/HealthPage.php:26 includes/Protection/HealthPage.php:60
 msgid "Public entry protection"
@@ -3331,16 +3354,18 @@ msgstr ""
 "Beobachtungsmodus dienen die Ergebnisse nur als Hinweis. Die Zähler werden "
 "um Mitternacht UTC zurückgesetzt."
 
-#: includes/Protection/Module.php:95
+#: includes/Protection/Module.php:117
 msgid "This verification request is too large. Please try again."
 msgstr ""
 "Diese Verifizierungsanfrage ist zu groß. Bitte versuchen Sie es erneut."
 
-#: includes/Protection/Operation.php:59
+#: includes/Protection/Operation.php:61
 msgid ""
 "This request has already been processed. Please check the result before "
 "sending it again."
-msgstr "Diese Anfrage wurde bereits verarbeitet. Bitte prüfen Sie den bisherigen Vorgang, bevor Sie sie erneut senden."
+msgstr ""
+"Diese Anfrage wurde bereits verarbeitet. Bitte prüfen Sie den bisherigen "
+"Vorgang, bevor Sie sie erneut senden."
 
 #: includes/Protection/Privacy.php:28 includes/Protection/Privacy.php:42
 #: includes/Protection/Privacy.php:71 includes/Protection/Privacy.php:84
@@ -3534,7 +3559,7 @@ msgid "Set by the VIES check; change it after a manual check."
 msgstr ""
 "Wird von der VIES-Prüfung gesetzt; nach einer manuellen Prüfung hier ändern."
 
-#: includes/Registration/BotGuard.php:74
+#: includes/Registration/BotGuard.php:72
 msgid ""
 "We could not process this registration. Please check your entries and try "
 "again."
@@ -3542,7 +3567,7 @@ msgstr ""
 "Wir konnten Ihre Registrierung nicht verarbeiten. Bitte prüfen Sie Ihre "
 "Angaben und versuchen Sie es erneut."
 
-#: includes/Registration/BotGuard.php:82
+#: includes/Registration/BotGuard.php:80
 msgid ""
 "We received several registrations from this connection. Please try again "
 "later or write to sales@de-linker.com."
@@ -3605,7 +3630,8 @@ msgid "New customer: {company}"
 msgstr "Neuer Kunde: {company}"
 
 #: includes/Registration/Emails/RegistrationReceivedEmail.php:35
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:92
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:86
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:94
 msgid "Registration received"
 msgstr "Registrierung eingegangen"
 
@@ -3616,7 +3642,7 @@ msgstr ""
 "Geht an den Kunden, wenn das Konto registriert ist und auf die Prüfung "
 "wartet."
 
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:85
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:87
 msgid "We received your partner registration"
 msgstr "Wir haben Ihre Partner-Registrierung erhalten"
 
@@ -4566,7 +4592,7 @@ msgid "Product"
 msgstr "Produkt"
 
 #: templates/emails/linker-inquiry-received.php:25
-#: templates/emails/linker-inquiry-received.php:35
+#: templates/emails/linker-inquiry-received.php:36
 msgid "Hello,"
 msgstr "Guten Tag,"
 
@@ -4574,22 +4600,24 @@ msgstr "Guten Tag,"
 msgid ""
 "We received a message addressed to the Linker team. We reply within one "
 "business day."
-msgstr "Beim Linker-Team ist eine Nachricht eingegangen. Wir antworten innerhalb eines Werktags."
+msgstr ""
+"Beim Linker-Team ist eine Nachricht eingegangen. Wir antworten innerhalb "
+"eines Werktags."
 
 #. translators: %s: the customer's full name.
-#: templates/emails/linker-inquiry-received.php:38
+#: templates/emails/linker-inquiry-received.php:39
 #: templates/emails/linker-proforma-issued.php:27
 #, php-format
 msgid "Hello %s,"
 msgstr "Guten Tag %s,"
 
 #. translators: %s: inquiry number. The sentence follows the salutation "Hello %s,".
-#: templates/emails/linker-inquiry-received.php:45
+#: templates/emails/linker-inquiry-received.php:46
 #, php-format
 msgid "Thank you for your inquiry %s."
 msgstr "vielen Dank für Ihre Anfrage %s."
 
-#: templates/emails/linker-inquiry-received.php:51
+#: templates/emails/linker-inquiry-received.php:52
 msgid ""
 "Create an account with this email to see net prices after approval and track "
 "your inquiry."
@@ -4646,7 +4674,21 @@ msgstr ""
 "Zum Öffnen müssen Sie angemeldet sein. Sie finden sie auch in Ihrem Konto "
 "unter %s."
 
-#: templates/emails/linker-registration-received.php:23
+#: templates/emails/linker-registration-received.php:24
+msgid "A partner registration was submitted using this email address."
+msgstr "Über diese E-Mail-Adresse wurde eine Partnerregistrierung eingereicht."
+
+#: templates/emails/linker-registration-received.php:25
+msgid ""
+"Our team will review the company details. Approved partner accounts can view "
+"net prices. Inquiries do not require an account."
+msgstr "Unser Team prüft die Unternehmensangaben. Freigegebene Partnerkonten können Nettopreise sehen. Anfragen können Sie auch ohne Konto senden."
+
+#: templates/emails/linker-registration-received.php:26
+msgid "If you did not submit this registration, you can ignore this email."
+msgstr "Falls Sie diese Registrierung nicht eingereicht haben, können Sie diese E-Mail ignorieren."
+
+#: templates/emails/linker-registration-received.php:28
 msgid "We received your partner registration."
 msgstr "Wir haben Ihre Partner-Registrierung erhalten."
 

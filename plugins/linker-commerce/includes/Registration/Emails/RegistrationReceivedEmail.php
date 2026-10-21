@@ -82,7 +82,9 @@ final class RegistrationReceivedEmail extends CustomerApprovalEmail {
 	 * Default subject.
 	 */
 	public function get_default_subject() {
-		return __( 'We received your partner registration', 'linker-commerce' );
+		return 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
+			? __( 'Registration received', 'linker-commerce' )
+			: __( 'We received your partner registration', 'linker-commerce' );
 	}
 
 	/**

@@ -61,43 +61,50 @@ export function connectForms( root: ParentNode = document ): void {
 		};
 		form.addEventListener( 'focusin', warm, { once: true } );
 		form.addEventListener( 'pointerdown', warm, { once: true } );
-		form.addEventListener( 'submit', async ( event: SubmitEvent ) => {
-			if (
-				verified ||
-				window.linkerPublicProtectionConfig?.mode !== 'enforce'
-			) {
-				return;
-			}
-			event.preventDefault();
-			if ( submitting ) {
-				return;
-			}
-			submitting = true;
-			status.hidden = false;
-			widget.hidden = false;
-			status.textContent = __(
-				'Checking verification…',
-				'linker-commerce'
-			);
-			const button = event.submitter;
-			try {
-				const token = await window.linkerPublicProtection?.proof(
-					action,
-					widget
-				);
-				if ( ! token ) {
-					throw new Error( 'verification_unavailable' );
+		form.addEventListener(
+			'submit',
+			async ( event: SubmitEvent ) => {
+				if (
+					verified ||
+					window.linkerPublicProtectionConfig?.mode !== 'enforce'
+				) {
+					return;
 				}
-				widget.hidden = true;
-				proof.value = token;
-				verified = true;
-				form.requestSubmit( button );
-			} catch {
-				failed();
-			} finally {
-				verified = false;
-				submitting = false;
-			}
-		} );
+				event.preventDefault();
+				// Woo's delegated submit handler does not inspect defaultPrevented.
+				// Let it serialize/block the form only on the verified native resubmit.
+				event.stopImmediatePropagation();
+				if ( submitting ) {
+					return;
+				}
+				submitting = true;
+				status.hidden = false;
+				widget.hidden = false;
+				status.textContent = __(
+					'Checking verification…',
+					'linker-commerce'
+				);
+				const button = event.submitter;
+				try {
+					const token = await window.linkerPublicProtection?.proof(
+						action,
+						widget
+					);
+					if ( ! token ) {
+						throw new Error( 'verification_unavailable' );
+					}
+					widget.hidden = true;
+					proof.value = token;
+					verified = true;
+					form.requestSubmit( button );
+				} catch {
+					failed();
+				} finally {
+					verified = false;
+					submitting = false;
+				}
+			},
+			{ capture: true }
+		);
 	} );
 }

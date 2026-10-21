@@ -20,8 +20,14 @@ defined( 'ABSPATH' ) || exit;
 /** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
+<?php if ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() ) : ?>
+<p><?php esc_html_e( 'A partner registration was submitted using this email address.', 'linker-commerce' ); ?></p>
+<p><?php esc_html_e( 'Our team will review the company details. Approved partner accounts can view net prices. Inquiries do not require an account.', 'linker-commerce' ); ?></p>
+<p><?php esc_html_e( 'If you did not submit this registration, you can ignore this email.', 'linker-commerce' ); ?></p>
+<?php else : ?>
 <p><?php esc_html_e( 'We received your partner registration.', 'linker-commerce' ); ?></p>
 <p><?php esc_html_e( 'We are reviewing your partner account and will email you when it is approved. You can send inquiries now; approval opens net prices.', 'linker-commerce' ); ?></p>
+<?php endif; ?>
 <?php
 // The address is the message's own placeholder so the gate can link the same
 // sentence; in the email it stays the plain address the reader saw before.

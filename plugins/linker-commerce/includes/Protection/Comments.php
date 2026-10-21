@@ -80,7 +80,7 @@ final class Comments {
 	 */
 	public function rest( mixed $result, WP_REST_Request $request, string $route, array $handler ): mixed {
 		unset( $route );
-		if ( null !== $result || ! Business::enabled() || current_user_can( 'moderate_comments' ) || 'POST' !== $request->get_method() || '/wp/v2/comments' !== $request->get_route() ) {
+		if ( null !== $result || ! Business::enabled() || current_user_can( 'moderate_comments' ) || 'POST' !== $request->get_method() || 0 !== strcasecmp( '/wp/v2/comments', $request->get_route() ) ) {
 			return $result;
 		}
 		$params  = $request->get_params();

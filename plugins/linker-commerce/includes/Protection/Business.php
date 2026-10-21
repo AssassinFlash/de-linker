@@ -23,9 +23,10 @@ final class Business {
 	 * @param array<string,mixed>             $payload Validated semantic input, without credentials.
 	 * @param callable(): (WC_Order|WP_Error) $work Native writer.
 	 * @param bool                            $current Whether the submitted draft still matches the current draft.
+	 * @param (callable():?WP_Error)|null     $preflight Optional read-only native checks, after completed-record recovery.
 	 * @return WC_Order|WP_Error Native result or explicit refusal.
 	 */
-	public static function run( string $action, array $post, array $payload, callable $work, bool $current = true ): WC_Order|WP_Error {
+	public static function run( string $action, array $post, array $payload, callable $work, bool $current = true, ?callable $preflight = null ): WC_Order|WP_Error {
 		if ( 'off' === Configuration::active_mode() ) {
 			return $work();
 		}
@@ -53,6 +54,12 @@ final class Business {
 		}
 		if ( 'enforce' === $config->mode && ! $current ) {
 			return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
+		}
+		if ( null !== $preflight ) {
+			$error = $preflight();
+			if ( $error instanceof WP_Error ) {
+				return $error;
+			}
 		}
 		$limits = apply_filters( 'linker_commerce_public_business_limits', array(), $action, $identity ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Trusted business policy dimensions; BusinessPolicy owns the numeric policy.
 		$carry  = apply_filters( 'linker_commerce_public_business_carry', array(), $action, $identity ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Trusted account carry links, never browser values.

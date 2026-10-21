@@ -195,11 +195,13 @@ final class PublicControllerTest extends IntegrationTestCase {
 
 	/** The actually wired pre-dispatch cap rejects JSON before route schema work. */
 	public function test_oversized_verification_body_has_no_provider_side_effect(): void {
-		$request = new WP_REST_Request( 'POST', '/linker/v1/protection/verify' );
-		$request->set_header( 'origin', self::origin() );
-		$request->set_header( 'content-type', 'application/json' );
-		$request->set_body( str_repeat( 'x', 16385 ) );
-		$this->assertSame( 413, rest_do_request( $request )->get_status() );
+		foreach ( array( '/linker/v1/protection/verify', '/LINKER/V1/Protection/VERIFY' ) as $route ) {
+			$request = new WP_REST_Request( 'POST', $route );
+			$request->set_header( 'origin', self::origin() );
+			$request->set_header( 'content-type', 'application/json' );
+			$request->set_body( str_repeat( 'x', 16385 ) );
+			$this->assertSame( 413, rest_do_request( $request )->get_status() );
+		}
 		$this->assertSame( 0, $this->calls );
 		$this->assertFalse( get_option( Ledger::OPTION ) );
 	}

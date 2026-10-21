@@ -55,9 +55,6 @@ final class BotGuard {
 	 * @param WP_Error $errors Errors so far.
 	 */
 	public function validate( WP_Error $errors ): WP_Error {
-		if ( \Linker\Commerce\Protection\Business::enabled() ) {
-			return $errors;
-		}
 		$guard = new PublicGuard();
 		// The request's own field names are strings; the loop gives the guard
 		// the string-keyed request it documents.
@@ -68,7 +65,8 @@ final class BotGuard {
 				$post[ $key ] = $value;
 			}
 		}
-		$refusal = $guard->refusal( $post );
+		$protected = \Linker\Commerce\Protection\Business::enabled();
+		$refusal   = $guard->refusal( $post, ! $protected );
 		if ( '' !== $refusal ) {
 			BlockedRegistrations::record( $refusal );
 			$errors->add( self::ERROR, __( 'We could not process this registration. Please check your entries and try again.', 'linker-commerce' ) );
@@ -77,7 +75,7 @@ final class BotGuard {
 		if ( $errors->has_errors() ) {
 			return $errors;
 		}
-		if ( ! $guard->take() ) {
+		if ( ! $protected && ! $guard->take() ) {
 			BlockedRegistrations::record( self::LIMIT );
 			$errors->add( self::ERROR, __( 'We received several registrations from this connection. Please try again later or write to sales@de-linker.com.', 'linker-commerce' ) );
 		}

@@ -166,7 +166,7 @@ final class Draft {
 	 */
 	public function rest( mixed $result, WP_REST_Request $request, string $route, array $handler ): mixed {
 		unset( $route );
-		if ( null !== $result || ! Business::enabled() || in_array( $request->get_method(), array( 'GET', 'HEAD', 'OPTIONS' ), true ) || ! preg_match( '#^/wc/store/v[0-9]+/cart/(?:add-item|remove-item|update-item|apply-coupon|remove-coupon|update-customer|select-shipping-rate)$#', $request->get_route() ) ) {
+		if ( null !== $result || ! Business::enabled() || in_array( $request->get_method(), array( 'GET', 'HEAD', 'OPTIONS' ), true ) || ! preg_match( '#^/wc/store/v[0-9]+/cart(?:/.*)?$#i', $request->get_route() ) ) {
 			return $result;
 		}
 		$params  = $request->get_params();

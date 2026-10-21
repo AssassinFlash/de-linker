@@ -71,7 +71,7 @@ final class Handler {
 		}
 
 		$submission = Submission::from_post( $post );
-		if ( $submission instanceof WP_Error || ( ! Business::enabled() && ! ( new PublicGuard() )->allows( $post ) ) ) {
+		if ( $submission instanceof WP_Error || ! ( new PublicGuard() )->allows( $post, ! Business::enabled() ) ) {
 			return 'invalid';
 		}
 

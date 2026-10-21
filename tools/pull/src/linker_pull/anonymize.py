@@ -276,6 +276,11 @@ EMPTIED_ORDER_META = frozenset(
         "_wc_order_attribution_user_agent",
         "_wc_order_attribution_session_entry",
         "_wc_order_attribution_referrer",
+        # Native public-admission retry links identify an individual order's
+        # request and subject; they must not survive a live-to-local pull (#520).
+        "_linker_public_request",
+        "_linker_public_input",
+        "_linker_public_subject",
         "tv_b2b_company_snapshot",
         "tv_b2b_document_ledger_v2",  # the buyer block of every proforma
         "tv_b2b_order_vat_snapshot",  # VIES name and address

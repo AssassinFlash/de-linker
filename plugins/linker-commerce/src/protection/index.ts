@@ -12,6 +12,14 @@ if ( config ) {
 connectForms();
 connectDraftLinks();
 
+// Woo replaces the native cart form after quantity/removal AJAX. Reconnect the
+// new semantic fields; connectForms itself avoids duplicate listeners.
+window
+	.jQuery?.( document.body )
+	.on( 'updated_wc_div updated_cart_totals', () => {
+		connectForms();
+	} );
+
 // This native staff diagnostic invokes verification only on an explicit click.
 document
 	.querySelectorAll< HTMLElement >( '[data-linker-protection-check]' )

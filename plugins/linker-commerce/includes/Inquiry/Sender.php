@@ -48,13 +48,9 @@ final class Sender {
 	 * @return WC_Order|WP_Error Received inquiry or validation failure.
 	 */
 	public function request( Submission $details, array $billing = array(), array|false|null $summary = null ): WC_Order|WP_Error {
-		if ( WC()->cart->is_empty() && '' === $details->message ) {
-			return new WP_Error( 'linker_inquiry_empty', __( 'Please add a product or write a message.', 'linker-commerce' ) );
-		}
-		foreach ( array( WC()->cart->check_cart_item_validity(), WC()->cart->check_cart_item_stock() ) as $valid ) {
-			if ( $valid instanceof WP_Error ) {
-				return $valid;
-			}
+		$error = $this->preflight( $details );
+		if ( $error instanceof WP_Error ) {
+			return $error;
 		}
 		$data = array_merge(
 			BillingFields::values( $billing ),
@@ -80,6 +76,27 @@ final class Sender {
 		$this->receive( $order, $details, 'proforma' );
 		WC()->cart->empty_cart();
 		return $order;
+	}
+
+	/**
+	 * Read-only checks can fail before admission consumes a business attempt.
+	 *
+	 * @param Submission $details Validated reply details.
+	 */
+	public function preflight( Submission $details ): ?WP_Error {
+		if ( WC()->cart->is_empty() && '' === $details->message ) {
+			return new WP_Error( 'linker_inquiry_empty', __( 'Please add a product or write a message.', 'linker-commerce' ) );
+		}
+		// Woo's check_cart_item_validity removes an invalid line. Before proof
+		// consumption, inspect the same native product facts without that write.
+		foreach ( WC()->cart->get_cart() as $line ) {
+			$product = $line['data'];
+			if ( ! $product || ! $product->exists() || 'trash' === $product->get_status() ) {
+				return new WP_Error( 'linker_draft_changed', __( 'Your solution draft changed. Please review it and send your inquiry again.', 'linker-commerce' ) );
+			}
+		}
+		$stock = WC()->cart->check_cart_item_stock();
+		return $stock instanceof WP_Error ? $stock : null;
 	}
 
 	/**

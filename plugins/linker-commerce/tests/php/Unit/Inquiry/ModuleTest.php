@@ -59,6 +59,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_get_checkout_order_received_url', array( $checkout, 'received_url' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_order_item_permalink', array( $checkout, 'item_permalink' ), 10, 3 );
 		WP_Mock::expectActionAdded( 'woocommerce_after_checkout_validation', array( $checkout, 'validate_public' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'woocommerce_before_checkout_process', array( $checkout, 'block_native_checkout' ) );
 		WP_Mock::expectFilterAdded( 'rest_pre_dispatch', array( $checkout, 'block_store_checkout' ), 10, 3 );
 		WP_Mock::expectFilterAdded( 'manage_edit-shop_order_columns', array( $admin, 'columns' ) );
 		WP_Mock::expectFilterAdded( 'manage_woocommerce_page_wc-orders_columns', array( $admin, 'columns' ) );

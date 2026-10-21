@@ -102,3 +102,48 @@ test( 'repeated clicks during verification cannot submit twice and observe never
 	expect( event.defaultPrevented ).toBe( false );
 	expect( observe.proof ).not.toHaveBeenCalled();
 } );
+
+test( 'native delegated AJAX sees only the verified resubmit and replaced forms reconnect', async () => {
+	const f = fixture();
+	let finish!: ( proof: string ) => void;
+	f.proof.mockReturnValue(
+		new Promise( ( resolve ) => {
+			finish = resolve;
+		} )
+	);
+	const native = vi.fn();
+	document.body.addEventListener( 'submit', native );
+	f.submit.mockImplementation( ( button ) => {
+		f.form.dispatchEvent(
+			new SubmitEvent( 'submit', {
+				bubbles: true,
+				cancelable: true,
+				submitter: button,
+			} )
+		);
+	} );
+	f.form.dispatchEvent(
+		new SubmitEvent( 'submit', {
+			bubbles: true,
+			cancelable: true,
+			submitter: f.button,
+		} )
+	);
+	expect( native ).not.toHaveBeenCalled();
+	finish( 'verified-proof' );
+	await vi.waitFor( () => expect( native ).toHaveBeenCalledTimes( 1 ) );
+	document.body.removeEventListener( 'submit', native );
+	const replacement = fixture();
+	connectForms();
+	replacement.proof.mockResolvedValue( 'replacement-proof' );
+	replacement.form.dispatchEvent(
+		new SubmitEvent( 'submit', {
+			bubbles: true,
+			cancelable: true,
+			submitter: replacement.button,
+		} )
+	);
+	await vi.waitFor( () =>
+		expect( replacement.submit ).toHaveBeenCalledTimes( 1 )
+	);
+} );

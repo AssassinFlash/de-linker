@@ -110,7 +110,7 @@ final class Module {
 	 * @return mixed Earlier result or bounded-body refusal.
 	 */
 	public function body_limit( mixed $result, mixed $server, WP_REST_Request $request ): mixed {
-		if ( null !== $result || ! in_array( $request->get_route(), array( '/linker/v1/protection/prepare', '/linker/v1/protection/verify' ), true ) ) {
+		if ( null !== $result || ! in_array( strtolower( $request->get_route() ), array( '/linker/v1/protection/prepare', '/linker/v1/protection/verify' ), true ) ) {
 			return $result;
 		}
 		$length = $request->get_header( 'content-length' ) ?? '';

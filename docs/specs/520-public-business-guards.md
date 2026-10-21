@@ -15,7 +15,9 @@ password flow without a challenge; repeated failures trigger verification.
 The shared modes are off, observe and enforce. Observe is advisory and cannot
 block a customer. Enforce requires a scoped, server-validated proof and an atomic
 allowance. Valid verified autofill replaces the old three-second and three-per-IP
-rules. Invalid proof creates no business record or business mail. A protection
+rules. Native signed-start and empty-honeypot checks remain; only the minimum
+fill delay and low connection quota are replaced. Invalid proof creates no
+business record or business mail. A protection
 outage reports failure, retains editable input and the existing solution draft,
 and offers retry or sales@de-linker.com. It never reports an unsaved inquiry as
 received. Passwords, reset tokens and proof secrets are not recovery payloads.
@@ -34,6 +36,13 @@ received. Passwords, reset tokens and proof secrets are not recovery payloads.
 | Woo Store API cart mutations | rest_dispatch_request after native permission and parameter validation | Native cart mutation callback, including native batch subrequests |
 | Comments and REST comments | preprocess_comment; REST wrapper after native permissions | Comment insert/notification; staff moderation retained |
 | XML-RPC | Native method map | Enforce removes unauthenticated pingback.ping; authenticated methods and read-only pingback lookup retained |
+
+Store API matching follows WordPress's case-insensitive native route matching.
+Every mutating native cart route is covered, including /cart/items and
+/cart/coupons collection/item aliases and batch subrequests; reads stay native.
+Retired native checkout stops at woocommerce_before_checkout_process, before
+Woo updates customer/session totals, alongside the existing Store API checkout
+closure. Neither is a second inquiry writer.
 
 Snapshot inspection: core users_can_register=0, Woo account registration enabled;
 default comments and pings open, with a native filter currently closing public
@@ -90,6 +99,13 @@ record recovers the result without repeating Sender. A pending record is not
 success and is not blindly replayed. HPOS and classic storage use their native
 exact lookup, then the same status and binding checks.
 
+Completed-record recovery runs before read-only preflight. Empty inquiries and
+native stock refusal are checked before reserve/dispatch, so correcting an
+ordinary validation error can use the same still-unspent logical UUID/proof.
+Woo's check_cart_item_validity would remove a line: preflight reads the same
+native product existence/status without that mutation and reports the existing
+draft-review message. Sender repeats preflight at its own write boundary.
+
 Inquiry fingerprint includes the original Woo cart hash and validated fields.
 A changed draft before first submission requests review; successful retry uses
 the original posted hash after cart clearing. Failed inquiry fields reuse the
@@ -103,6 +119,8 @@ The wording acknowledges a message addressed to the team rather than claiming
 that the recipient personally submitted it. Trusted recipient ownership HMACs
 associate admission records with native privacy erasure; native Woo erasure
 anonymizes the order's retry references along with its personal data.
+The live-pull anonymizer clears all three associations in both classic postmeta
+and HPOS order meta; an order-erasure hook alone cannot protect a snapshot.
 
 ## Native UI and minimal custom seams
 
@@ -113,6 +131,11 @@ interaction-only widget next to the original submit action. Idle widget is
 hidden to avoid adding a gap to native layout. Pending verification deduplicates
 clicks; retry keeps the actual submitter and rechecks proof. Ordinary draft links
 become native POSTs with proof outside the URL; Woo AJAX retains its own path.
+While waiting, submit propagation is stopped before Woo can serialize/block an
+unverified form. The verified native resubmit alone reaches delegated handlers.
+Woo's cart refresh events reconnect the replacement form without duplicate
+listeners. Registration confirmations also use neutral wording about use of an
+email address and let an unintended recipient ignore the message.
 
 Woo/WordPress provide forms, nonce/capabilities, persistence, privacy and mail.
 They do not provide this site's cross-entry subject allowance, scoped Siteverify
