@@ -26,3 +26,7 @@ The hidden native proceed field returns the quantity POST to the checkout GET be
 The existing account interaction script observes Woo's processing state, visibly disables the inquiry send action and rejects a submit event while the draft write is pending. A held-request browser fixture checks that no admin-post submission happens, and that sending re-enables after readback. Product links gain color/underline/focus; draft-page remove icons also receive visible 44px bordered controls.
 
 Staff price checks snapshot the existing local Woo session and persistent cart into a guarded local-only fixture option, then stop the page and restore inside nested finally blocks. Native cache deletion and strict row/meta readback precede snapshot cleanup. No production user session is changed by those tests.
+
+## Native Woo visual finish
+
+The owner explicitly requested evaluating and improving native update visuals. The native update controls now use the site's 44px secondary action style, legible disabled colors, hover/focus feedback and the existing account loading spinner. Native success/info/error notices use the established semantic palettes and a 44px Undo target. The native handler, overlay interception and response protocol remain in use; reduced motion stops the spinner.

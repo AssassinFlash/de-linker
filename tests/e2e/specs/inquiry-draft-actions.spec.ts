@@ -81,6 +81,13 @@ for (const locale of ['en', 'de'] as const) {
 			await expect(lines).toHaveCount(0);
 			await expect(page.locator('.linker-inquiry-empty')).toBeVisible();
 			await unchanged();
+			await expect(page.locator('.woocommerce-message')).toHaveCSS(
+				'background-color',
+				'rgb(237, 246, 241)'
+			);
+			expect(
+				(await page.locator('.restore-item').boundingBox())!.height
+			).toBeGreaterThanOrEqual(44);
 			await page.locator('.restore-item').click();
 			await expect(lines).toHaveCount(1);
 			await unchanged();
@@ -88,6 +95,12 @@ for (const locale of ['en', 'de'] as const) {
 			await quantity.fill('2');
 			await quantity.press('Tab');
 			const update = page.locator('.linker-inquiry-update');
+			await expect(update).toHaveCSS('font-size', '14px');
+			await update.hover();
+			await expect(update).toHaveCSS('color', 'rgb(255, 255, 255)');
+			await page.mouse.move(0, 0);
+			await update.focus();
+			await expect(update).toHaveCSS('outline-style', 'solid');
 			let release!: () => void;
 			const held = new Promise<void>((resolve) => {
 				release = resolve;
@@ -113,6 +126,11 @@ for (const locale of ['en', 'de'] as const) {
 					'opacity',
 					'0.6'
 				);
+				expect(
+					await update.evaluate(
+						(node) => getComputedStyle(node, '::after').width
+					)
+				).toBe('18px');
 				await main.evaluate((form) =>
 					(form as HTMLFormElement).requestSubmit()
 				);
