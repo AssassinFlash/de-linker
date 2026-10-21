@@ -7,7 +7,8 @@ answered. This probe opens the data the answer cannot show:
    the datasheet figure and page each number is cited to (engineering feed and
    `plugins/linker-commerce/data/compatibility.json`), plus each inverter's
    application and phase.
-2. C53's allowed stacking configurations and the pick at the HTW upper limit.
+2. C53's allowed stacking configurations and the pick at the HTW upper limit,
+   with the pair's own module range (the release minimum the pick depends on).
 3. C56's matching release entries for named pairs, including a pair the live
    contract covers with two entries of different strictness (min wins) and a
    pair nobody covers (unknown).
@@ -111,6 +112,10 @@ def pair_facts(compatibility: Compatibility, inverter: str, battery: str) -> dic
             for accessory in result.accessories
         ],
         "documents": [document.url for document in result.documents],
+        "conditions": {
+            "en": [condition.en for condition in result.conditions],
+            "de": [condition.de for condition in result.conditions],
+        },
         "matching_entries": entries(compatibility, inverter, battery),
     }
 
@@ -124,6 +129,8 @@ def stacking_facts(
         "inverter": inverter.model,
         "battery": battery.model,
         "upper_kwh": upper,
+        "pair_verdict": pair.verdict,
+        "pair_modules": None if pair.modules is None else list(pair.modules),
         "allowed": [
             {
                 "quantity": config.quantity,
