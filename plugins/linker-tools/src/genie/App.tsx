@@ -143,6 +143,14 @@ export function resetTurnLane(): void {
  * @param root0.config
  */
 export function App( { config }: { config: GenieConfig } ) {
+	const loadThread = useCallback(
+		() =>
+			readThread( config.threadUrl, config.restNonce, undefined, {
+				restUrl: config.restUrl,
+				locale: config.locale,
+			} ),
+		[ config.threadUrl, config.restNonce, config.restUrl, config.locale ]
+	);
 	const [ open, setOpen ] = useState( false );
 	// The page context every turn carries (#234). The mount sets it, and the
 	// design report's "Ask Genie" adds the saved solution's id (#496): it is
@@ -357,7 +365,7 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const showStored = useCallback( async () => {
 		setRevealingAt( null );
-		const stored = await readThread( config.threadUrl, config.restNonce );
+		const stored = await loadThread();
 		currentThread.current = stored.messages;
 		setThread( stored.messages );
 		setTurn( stored.turn );
@@ -366,7 +374,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		setInquiries( stored.inquiries ?? [] );
 		applyRecord( stored.messages, true );
 		setMail( 'idle' );
-	}, [ config.threadUrl, config.restNonce, applyRecord ] );
+	}, [ loadThread, applyRecord ] );
 
 	const onTurnError = useCallback(
 		async (
@@ -387,10 +395,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			}
 			if ( 'conflict' === settled.action ) {
 				commitFailure( { type: 'abandon' } );
-				const latest = await readThread(
-					config.threadUrl,
-					config.restNonce
-				);
+				const latest = await loadThread();
 				const messages =
 					latest.messages.length > 0 ? latest.messages : before;
 				currentThread.current = messages;
@@ -420,13 +425,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			setPhase( 'error' );
 			setOpen( true );
 		},
-		[
-			commitFailure,
-			config.threadUrl,
-			config.restNonce,
-			placeChips,
-			refreshHistory,
-		]
+		[ commitFailure, loadThread, placeChips, refreshHistory ]
 	);
 
 	const ask = useCallback(
@@ -463,10 +462,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				// turn the other tab stored is the base; an empty read (the
 				// route failed, and readThread swallows that) keeps the
 				// thread already on screen.
-				const stored = await readThread(
-					config.threadUrl,
-					config.restNonce
-				);
+				const stored = await loadThread();
 				let before = currentThread.current;
 				if ( stored.messages.length > 0 ) {
 					before = stored.messages;
@@ -488,6 +484,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					setThread( next );
 					const answer = await sendTurn( {
 						turnUrl: config.turnUrl,
+						restUrl: config.restUrl,
 						nonce: config.restNonce,
 						locale: config.locale,
 						messages: next,
@@ -521,6 +518,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		},
 		[
 			config,
+			loadThread,
 			refreshHistory,
 			files,
 			listPrompt,
@@ -549,10 +547,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			let before = currentThread.current;
 			let payload = previewRetry( draft, kind, before );
 			try {
-				const stored = await readThread(
-					config.threadUrl,
-					config.restNonce
-				);
+				const stored = await loadThread();
 				if ( stored.messages.length > 0 ) {
 					before = stored.messages;
 					currentThread.current = stored.messages;
@@ -574,6 +569,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				setThread( next );
 				const answer = await sendTurn( {
 					turnUrl: config.turnUrl,
+					restUrl: config.restUrl,
 					nonce: config.restNonce,
 					locale: config.locale,
 					messages: next,
@@ -608,6 +604,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		} );
 	}, [
 		config,
+		loadThread,
 		refreshHistory,
 		commitFailure,
 		onTurnError,
@@ -638,7 +635,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		} >();
 		void enqueue( async () => {
 			const stored = await Promise.race( [
-				readThread( config.threadUrl, config.restNonce ),
+				loadThread(),
 				pending.promise,
 			] );
 			if ( cancelled ) {
@@ -674,7 +671,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				inquiries: [],
 			} );
 		};
-	}, [ config.threadUrl, config.restNonce, refreshHistory, applyRecord ] );
+	}, [ loadThread, refreshHistory, applyRecord ] );
 
 	const continueConversation = useCallback(
 		( id?: number ) => {
@@ -865,7 +862,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				// shut: read it before showing, then deliver any question.
 				const message =
 					typeof detail.message === 'string' ? detail.message : '';
-				void showStored()
+				void enqueue( showStored )
 					.then( () => {
 						if ( message ) {
 							void ask( message );

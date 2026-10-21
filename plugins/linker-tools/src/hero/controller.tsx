@@ -83,6 +83,7 @@ export function startHero(
 		( () =>
 			options.session ??
 			new HeroSession( {
+				restUrl: options.config.restUrl,
 				turnUrl: options.config.turnUrl,
 				threadUrl: options.config.threadUrl,
 				nonce: options.config.restNonce,

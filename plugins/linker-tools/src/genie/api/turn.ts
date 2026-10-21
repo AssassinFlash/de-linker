@@ -19,6 +19,7 @@ import { __ } from '@wordpress/i18n';
 import type { Locale } from '../../configurator/types';
 import type { Upload } from '../attachments/prepare';
 import type { SentInquiry } from './inquiry';
+import { restoreArtifacts, type ArtifactContext } from './historyArtifacts';
 
 type Fetch = typeof fetch;
 
@@ -96,6 +97,8 @@ export interface DocumentBlock {
 	ref: string;
 	label: string | null;
 	url: string | null;
+	/** Original document title, preserved when history UI is localized. */
+	sourceTitle?: string;
 }
 
 /** Why Genie offers the team's contact (the service's contact.py, #243). */
@@ -328,6 +331,8 @@ export interface ConversationList {
 
 /** One turn. The test seams sit on the object, not further positional arguments. */
 export interface TurnRequest {
+	/** Current REST root for document presentation from existing product metadata. */
+	restUrl?: string;
 	/** Proxy route URL. */
 	turnUrl: string;
 	/** wp_rest nonce. */
@@ -357,6 +362,7 @@ export interface TurnRequest {
 export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 	const {
 		turnUrl,
+		restUrl,
 		nonce,
 		locale,
 		messages,
@@ -440,7 +446,24 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 		const body = ( await deadline( response.json() ) ) as {
 			stream: string;
 		};
-		return parseStream( body.stream ?? '' );
+		const turn = parseStream( body.stream ?? '' );
+		// A complete valid SSE answer is already committed server-side. End
+		// its connection deadline before optional metadata presentation; that
+		// read has its own short budget and must not turn success into retry.
+		if ( timer !== undefined ) {
+			clearTimeout( timer );
+			timer = undefined;
+		}
+		return restUrl &&
+			turn.blocks.some( ( block ) => block.type === 'document' )
+			? await restoreArtifacts(
+					turn,
+					{ restUrl, locale },
+					nonce,
+					fetcher,
+					{ refreshPrices: false }
+				)
+			: turn;
 	} finally {
 		won = true;
 		if ( timer !== undefined ) {
@@ -476,11 +499,13 @@ export function assistantMessage( turn: Turn ): TurnMessage {
  * @param threadUrl Proxy route that answers `{ conversation_id, messages, stream, contacts, inquiries }`.
  * @param nonce     wp_rest nonce.
  * @param fetcher   Fetch for tests.
+ * @param artifacts Current page context for refreshing stored artifact UI.
  */
 export async function readThread(
 	threadUrl: string,
 	nonce: string,
-	fetcher: Fetch = ( ...args ) => fetch( ...args )
+	fetcher: Fetch = ( ...args ) => fetch( ...args ),
+	artifacts?: ArtifactContext
 ): Promise< {
 	messages: TurnMessage[];
 	turn: Turn | null;
@@ -530,6 +555,9 @@ export async function readThread(
 				// thread's words stay, its blocks do not.
 				turn = null;
 			}
+		}
+		if ( turn && artifacts ) {
+			turn = await restoreArtifacts( turn, artifacts, nonce, fetcher );
 		}
 		return {
 			messages: turn

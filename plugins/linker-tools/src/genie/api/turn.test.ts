@@ -395,3 +395,96 @@ test( 'a reload keeps the sent contact cards where they were (#243)', async () =
 		{ after: 1, email: 'maria@example.test' },
 	] );
 } );
+
+test( 'a complete answer near its connection deadline survives a slow auxiliary metadata read, with its live price unchanged', async () => {
+	vi.useFakeTimers();
+	const stream = [
+		[ 'block', { type: 'text', text: 'A valid answer.', refs: [] } ],
+		[
+			'block',
+			{
+				type: 'cards',
+				product_ids: [ 3573 ],
+				prices: [
+					{
+						product_id: 3573,
+						text: 'Current service line',
+						reason: 'login',
+					},
+				],
+			},
+		],
+		[
+			'block',
+			{
+				type: 'document',
+				ref: 'p3573.document.0',
+				label: 'Old label · p. 1',
+				url: 'https://de-linker.test/file.pdf#page=1',
+			},
+		],
+		[ 'done', { ok: true } ],
+	]
+		.map(
+			( [ event, data ] ) =>
+				`event: ${ event }\ndata: ${ JSON.stringify( data ) }\n\n`
+		)
+		.join( '' );
+	let release!: () => void;
+	const fetcher = vi.fn( async ( url: RequestInfo | URL ) => {
+		if ( String( url ) === '/turn' ) {
+			return {
+				ok: true,
+				json: () =>
+					new Promise( ( resolve ) => {
+						release = () => resolve( { stream } );
+					} ),
+			} as unknown as Response;
+		}
+		return {
+			ok: true,
+			json: () =>
+				new Promise( ( resolve ) =>
+					setTimeout(
+						() =>
+							resolve( {
+								product_id: 3573,
+								model: 'eSolar AIO3',
+								documents: [
+									{
+										url: 'https://de-linker.test/file.pdf',
+										type: 'datasheet',
+										lang: 'en',
+									},
+								],
+							} ),
+						3_000
+					)
+				),
+		} as unknown as Response;
+	} );
+	try {
+		const result = sendTurn( {
+			turnUrl: '/turn',
+			restUrl: '/wp-json/',
+			nonce: 'n',
+			locale: 'en',
+			messages: [],
+			page: { type: 'home' },
+			fetcher,
+		} );
+		await vi.advanceTimersByTimeAsync( TURN_TIMEOUT_MS - 2_000 );
+		release();
+		await vi.advanceTimersByTimeAsync( 3_000 );
+		const turn = await result;
+		expect( turn.blocks[ 1 ] ).toMatchObject( {
+			prices: [ { text: 'Current service line' } ],
+		} );
+		expect( turn.blocks[ 2 ] ).toMatchObject( {
+			label: 'eSolar AIO3 · Datasheet (EN) · p.\u00a01',
+		} );
+		expect( vi.getTimerCount() ).toBe( 0 );
+	} finally {
+		vi.useRealTimers();
+	}
+} );

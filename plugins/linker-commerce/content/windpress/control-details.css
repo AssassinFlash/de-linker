@@ -296,3 +296,76 @@
 	}
 	#tv-legal .lg-table-wrap td[data-label]::before { content: none; }
 }
+
+/* Expanded Genie answers use their own surface width. A helper is 400px
+   even on a desktop viewport, so reuse the shared phone card's 72px media,
+   12px gap and padding rather than its desktop 120px media column. This
+   leaves whole German title words the same room they already have on phones. */
+.linker-genie-app:not(.linker-genie-app--workspace) .linker-card {
+	grid-template-columns: 4.5rem minmax(0, 1fr);
+	gap: var(--proto-space-3, 0.75rem);
+	padding: var(--proto-space-3, 0.75rem);
+}
+
+/* The hero's existing four-column comparison remains for multiple cards.
+   One result occupies one answer row instead of one quarter-width column.
+   The 600px boundary is hero.css's existing phone layout; that layout stays.
+   Geometry and reading measure reuse ProductCard and the site's own tokens. */
+@media (min-width: 601px) {
+	.hero-cinematic.linker-genie-hero--open
+	.linker-genie-hero__cards:has(> .linker-card:only-child) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.hero-cinematic.linker-genie-hero--open
+	.linker-genie-hero__cards > .linker-card:only-child {
+		display: grid;
+		grid-template-columns: 7.5rem minmax(0, 1fr);
+		gap: var(--proto-space-4, 1rem);
+		padding: var(--proto-space-4, 1rem);
+		height: auto;
+	}
+
+	.hero-cinematic.linker-genie-hero--open
+	.linker-genie-hero__cards > .linker-card:only-child .linker-card__media {
+		aspect-ratio: 1;
+	}
+
+	.hero-cinematic.linker-genie-hero--open
+	.linker-genie-hero__cards > .linker-card:only-child .linker-card__body {
+		max-inline-size: var(--proto-measure-narrow, 34rem);
+	}
+
+	.hero-cinematic.linker-genie-hero--open
+	.linker-genie-hero__cards > .linker-card:only-child .linker-card__title {
+		font-size: var(--proto-size-md, 1rem);
+		line-height: var(--proto-leading-tight, 1.3);
+	}
+
+	.hero-cinematic.linker-genie-hero--open
+	.linker-genie-hero__cards > .linker-card:only-child .linker-card__actions {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.hero-cinematic.linker-genie-hero--open
+	.linker-genie-hero__cards > .linker-card:only-child .linker-genie-app__card-action {
+		width: auto;
+	}
+}
+
+/* Equal-height desktop comparison cards still have different title/price
+   heights. Let each existing flex body fill its card, then push the actions
+   to the same bottom zone. Preserve the old 8px breathing room as padding;
+   no title truncation or fixed card height, and the phone layout is untouched. */
+@media (min-width: 601px) {
+	.hero-cinematic.linker-genie-hero--open
+	.linker-genie-hero__cards > .linker-card:not(:only-child) .linker-card__body {
+		flex: 1;
+	}
+
+	#home-a .linker-genie-hero__cards > .linker-card:not(:only-child) .linker-card__actions {
+		margin-top: auto;
+		padding-top: var(--proto-space-2, 0.5rem);
+	}
+}

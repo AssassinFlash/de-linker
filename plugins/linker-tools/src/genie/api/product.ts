@@ -48,3 +48,104 @@ export async function productModel(
 		return '';
 	}
 }
+
+/** Current customer and document data, from the same read-only product ability. */
+export interface ProductPresentation {
+	product_id: number;
+	model?: string | null;
+	documents?: Array< {
+		url?: string;
+		title?: string;
+		type?: string;
+		lang?: string;
+	} >;
+	commerce?: {
+		price_visible?: boolean;
+		price_line?: string;
+		price_reason?: string | null;
+	};
+}
+
+/**
+ * Auxiliary UI reads get five seconds, never the full model turn budget:
+ * local full restore fixtures finish in 0.6–1.1 seconds, and a failed lookup
+ * may omit a price rather than hold the shared composer indefinitely.
+ * This presentation budget is recorded in docs/specs/13-genie.md (2026-10-22).
+ */
+export const ARTIFACT_TIMEOUT_MS = 5_000;
+
+/**
+ * Historical prices are snapshots, so restore them from current authority.
+ * REST cookie authentication requires the page's nonce; no-store also prevents
+ * an approved response being reused after the customer or locale changes.
+ *
+ * @param restUrl   WordPress REST root.
+ * @param productId Product ID.
+ * @param locale    Current page language.
+ * @param nonce     Current page's wp_rest nonce.
+ * @param fetcher   Fetch for tests.
+ */
+export async function productPresentation(
+	restUrl: string,
+	productId: number,
+	locale: Locale,
+	nonce: string,
+	fetcher: Fetch = ( ...args ) => fetch( ...args )
+): Promise< ProductPresentation | null > {
+	const controller = new AbortController();
+	let timer: ReturnType< typeof setTimeout > | undefined;
+	const timeout = new Promise< null >( ( resolve ) => {
+		timer = setTimeout( () => {
+			controller.abort();
+			resolve( null );
+		}, ARTIFACT_TIMEOUT_MS );
+	} );
+	const attempt = async (): Promise< ProductPresentation | null > => {
+		try {
+			const url =
+				`${ restUrl.replace( /\/?$/, '/' ) }wp-abilities/v1/abilities/linker/get-product/run` +
+				`?input[product_id]=${ productId }&input[lang]=${ locale }`;
+			const response = await fetcher( url, {
+				credentials: 'same-origin',
+				cache: 'no-store',
+				headers: { 'X-WP-Nonce': nonce },
+				signal: controller.signal,
+			} );
+			if ( ! response.ok ) {
+				return null;
+			}
+			const body = await response.json();
+			const product = body?.result ?? body;
+			if ( product?.product_id !== productId ) {
+				return null;
+			}
+			return {
+				...product,
+				model: typeof product.model === 'string' ? product.model : null,
+				documents: Array.isArray( product.documents )
+					? product.documents.filter( ( item: unknown ) => {
+							if ( ! item || typeof item !== 'object' ) {
+								return false;
+							}
+							const document = item as Record< string, unknown >;
+							return [ 'url', 'title', 'type', 'lang' ].every(
+								( key ) =>
+									document[ key ] === undefined ||
+									typeof document[ key ] === 'string'
+							);
+						} )
+					: [],
+			};
+		} catch {
+			return null;
+		}
+	};
+	try {
+		// Race the body too, and settle even when a transport ignores abort.
+		return await Promise.race( [ attempt(), timeout ] );
+	} finally {
+		if ( timer !== undefined ) {
+			clearTimeout( timer );
+		}
+	}
+}

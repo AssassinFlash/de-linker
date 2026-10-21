@@ -1,7 +1,7 @@
 /**
- * A hosted document as a link (#233): the service filled the label (title and
- * page) and the URL from this turn's tool results, so no address ever stands
- * in the answer text.
+ * A hosted document as a link (#233): the service supplies the source URL;
+ * live and restored turns share current-locale metadata labels. The original
+ * document title stays in the link title, never guessed from translated prose.
  */
 
 /**
@@ -18,6 +18,7 @@ export function DocumentLink( { block }: { block: DocumentBlock } ) {
 			<a
 				className="linker-genie-app__document"
 				href={ block.url }
+				title={ block.sourceTitle }
 				target="_blank"
 				rel="noopener noreferrer"
 			>

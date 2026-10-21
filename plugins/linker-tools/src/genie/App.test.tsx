@@ -185,6 +185,7 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
 		messages: [
@@ -557,6 +558,7 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 	).toBeNull();
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
 		messages: [ ...server, { role: 'user', content: 'EV chargers' } ],
@@ -2183,6 +2185,7 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 	).toBeInTheDocument();
 	expect( sendTurn ).toHaveBeenLastCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
 		messages: [
@@ -2630,4 +2633,45 @@ test( 'the saved solution handed over with the open rides every turn (#496)', as
 		type: 'category',
 		solution_id: 61,
 	} );
+} );
+
+test( 'a delayed explicit refresh cannot overwrite a newer ask outside the shared turn lane', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
+	render( <App config={ config() } /> );
+	await act( async () => undefined );
+	let release!: ( value: Awaited< ReturnType< typeof readThread > > ) => void;
+	vi.mocked( readThread ).mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				release = resolve;
+			} )
+	);
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'The newer answer.', refs: [] } ],
+		} );
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: { refresh: true },
+			} )
+		);
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: { message: 'A newer question' },
+			} )
+		);
+	} );
+	expect( sendTurn ).not.toHaveBeenCalled();
+	await act( async () => {
+		release( {
+			messages: [ { role: 'user', content: 'An older question' } ],
+			turn: null,
+		} );
+	} );
+	expect( screen.getByText( 'The newer answer.' ) ).toBeVisible();
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );

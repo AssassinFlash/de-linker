@@ -84,6 +84,7 @@ function reply( text: string ): Turn {
 }
 
 const SESSION_CONFIG: HeroSessionConfig = {
+	restUrl: CONFIG.restUrl,
 	turnUrl: CONFIG.turnUrl,
 	threadUrl: CONFIG.threadUrl,
 	nonce: CONFIG.restNonce,

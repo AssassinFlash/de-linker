@@ -1,0 +1,39 @@
+# Genie restored artifact presentation — 22 October 2026
+
+The live inspection restored a German response on an English Genie page. Product title and action buttons used English, while the old price prompt and document label remained German. The original dialogue must remain historical; these attached controls must use current page language and current customer authority.
+
+Existing contracts consulted: `docs/specs/13-genie.md` (history, current-account PAGE price and document citation); `docs/research/2026-10-19-genie-campaign-gaps/DOSSIER.md` §1.3, §1.6, §1.7 and §1.13. Its competition evidence supports current customer data and persistent history; it specifies no public cross-language restoration format. This change therefore uses the site's existing product/document vocabulary and adds no model behavior.
+
+- Keep server history and original user/assistant message content unchanged. The current page's read-only presentation copy is refreshed after parsing the stored SSE.
+- Read existing `linker/get-product` once per referenced card/comparison/product-document ID. Use same-origin cookies, the current page's REST nonce and `cache: no-store`. That ability's `commerce` is produced by the existing CommerceState and ProductView PAGE surface; never use historical amounts as a fallback. Missing/failed authority omits that card's price line.
+- Match document URLs exactly after removing their page fragment. Reuse authoritative model, document type and original PDF language. Local instance product 3573 exposes `SAJ eSolar AIO3 Datasheet (EN)`, type `datasheet`, language `en`; its German twin 6676 has no document records. The current product ID's record is therefore useful; guessing a German twin title is not.
+- Label format: `eSolar AIO3 · Datasheet (EN) · p. 1` / `eSolar AIO3 · Datenblatt (EN) · S. 1`. The nonbreaking space before the page number follows existing service hydration. Preserve the full canonical source title as the anchor's `title`, all cited page numbers, original URL and `#page`.
+- Unknown metadata: show current-language `Document` / `Dokument`, the actual filename and current-language pagination. Preserve original title in `title`; do not guess-translate a specialist document name or infer its PDF language. An existing `pID.document.N` reference permits metadata lookup even when no card is shown. Knowledge chunk IDs with no product association trigger no speculative lookup.
+
+Copy review:
+
+1. Draft: reuse `Datasheet`, `Manual`, `Warranty`, `Certificate`, `Compatibility list`, `Brochure`, `Document` and the existing English/German page abbreviations.
+2. Challenge: finite regex translation of a historical full title can miss unknown German phrases and corrupt manufacturer names or PDF language. Historical price translation can also disclose an old approved amount to a current visitor. Do not translate either snapshot.
+3. Final: current metadata and current price authority; title remains source evidence in the tooltip, original transcript stays untouched. The seven document terms and German equivalents are copied verbatim from `Materials::document_kind_label` and the existing linker-commerce German catalog, with no new promises or prose.
+
+The fixture intercepts only the history endpoints and prohibits any new model call. Product/model, document metadata and commerce price requests use the real local WordPress endpoints. The historical fixture deliberately contains an approved amount, proving that the current guest does not inherit it. No inquiry, save, cart or email action is submitted.
+
+Independent review added four boundary checks before final freeze:
+
+- The homepage HeroSession had its own stored-thread reader. Its mount, reload, send and retry paths now provide the same current REST root and locale as the dock/workspace. The explicit home-to-dock refresh also uses the existing shared turn lane so a delayed restoration cannot overwrite a later answer.
+- New German turns can retain a canonical English source title. New and restored turns therefore use the same document formatter; a new turn keeps its service-filled prices. Parsing a valid complete SSE ends its model/connection timer before the optional document read, so slow metadata does not invalidate a successful committed answer.
+- Auxiliary product reads use a five-second presentation budget, with AbortController plus a race covering both response headers and body, and timer cleanup on every result. The real complete local restore cases originally took 0.6–1.1 seconds. Five seconds provides time for an auxiliary read while bounding its effect on the shared composer; this is a UI decision, not a claimed vendor SLA. A timeout omits historical prices and uses the current-language filename fallback for documents. It cannot fall back to saved amounts.
+- A hidden price needs explicit `price_visible: false` plus a known reason; an approved price needs explicit `true` with no reason. Missing or contradictory authority is omitted. A shared series PDF follows an explicit `pID.document.N` owner before URL matching; unowned chunks matching several product models use the real filename instead of guessing the first model.
+
+Regression coverage includes permanently pending headers, headers with a permanently pending body, a complete valid answer at 58 seconds with a three-second auxiliary read, missing permission fields, shared PDFs, and held explicit refresh followed immediately by a new ask. The extended browser matrix covers workspace, homepage and dock × EN/DE × 1440/390, and within each case checks history → fresh fixture response → reload label consistency. Only the local fixture receives the simulated turn; it calls no model or email channel.
+
+
+The final local visual inspection also found and resolved two layout causes in the existing WindPress `control-details.css` volume:
+
+- A singleton desktop hero result inherited a four-column grid. Above the existing 600px phone boundary, only a single child now occupies a full answer row with ProductCard's fixed 120px square media, the existing 34rem reading measure, and inline actions. The phone layout and existing multi-card grid are unchanged.
+- A 400px dock was using the viewport's desktop 120px image column. Its title column was narrower than the existing phone card, forcing Bluetooth to break inside the word. The helper now consistently uses the already accepted 72px media, 12px gap/padding geometry; workspace and Configurator cards are untouched.
+
+Final official WindPress compilation was parent-owned. A single final browser run passed all fourteen cases: twelve language/restoration/live/reload cases and two real four-product desktop comparisons. All card actions retain 44px minimum height; DOM Range assertions keep Bluetooth whole; singleton width and image dimensions are asserted. Final forty screenshot artifacts cover transcript, restored card, fresh answer and four-product comparison states. No production write, real model request, inquiry or email was performed by this child.
+
+
+The final desktop comparison review also aligned the action rows. Equal-height cards previously retained content-height flex bodies, leaving the buttons below their own title/price rather than at a common bottom position. Above 600px, multi-card bodies now fill the available height and use automatic top margin on their action groups, preserving the original 8px breathing room as padding. Titles remain complete and card heights stay automatic. Both affected real-product cases passed again after official compilation: English Add tops `[789,789,789,789]`, Save `[843,843,843,843]`; German Add `[808,808,808,808]`, Save `[882,882,882,882]`. JSON geometry and final aligned screenshots are saved beside this report. The previous twelve singleton/mobile cases are excluded by the new multi-card selector, and their passing evidence remains applicable.

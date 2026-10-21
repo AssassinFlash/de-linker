@@ -18,6 +18,18 @@ use WC_Order;
  */
 final class Checkout {
 	/**
+	 * Consume a successful native product add before the inquiry is rendered.
+	 * Leaving add-to-cart in the address repeats that command on reload and on
+	 * Woo's native undo fragment refresh. Woo owns the add, notice and redirect;
+	 * its checkout URL already resolves the current language.
+	 *
+	 * @param string|false $url An earlier explicit Woo redirect, or no destination.
+	 */
+	public function after_add_destination( string|false $url ): string {
+		return $url ? $url : wc_get_checkout_url();
+	}
+
+	/**
 	 * Blocks the unused Store API checkout before it can create a draft order.
 	 * The Store API cart and product routes remain available.
 	 *
