@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-21T12:14:46+00:00\n"
+"POT-Creation-Date: 2026-10-21T16:40:24+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -976,7 +976,7 @@ msgstr "Anfrage #%1$s – %2$s"
 
 #: includes/Digest/InquiriesAwaitingProforma.php:107
 #: includes/Digest/ProformasAwaitingReply.php:105
-#: templates/emails/linker-new-inquiry.php:45
+#: templates/emails/linker-new-inquiry.php:52
 msgid "Open the inquiry"
 msgstr "Anfrage öffnen"
 
@@ -1188,6 +1188,96 @@ msgstr ""
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
 
+#: includes/Inquiry/Assessment/Admin.php:27
+#: templates/emails/linker-new-inquiry.php:49
+msgid "Jev initial assessment"
+msgstr "Ersteinschätzung durch Jev"
+
+#: includes/Inquiry/Assessment/Admin.php:43
+msgid "No assessment was requested."
+msgstr "Für diese Anfrage wurde keine Einschätzung angefordert."
+
+#: includes/Inquiry/Assessment/Admin.php:48
+msgid "Initial guidance only. Every inquiry is accepted and notified."
+msgstr "Die Einschätzung dient als Hinweis. Jede Anfrage wird gespeichert und dem Team gemeldet."
+
+#: includes/Inquiry/Assessment/Admin.php:49
+msgid "Diagnostic"
+msgstr "Diagnosehinweis"
+
+#: includes/Inquiry/Assessment/Admin.php:49
+msgid "Elapsed time"
+msgstr "Verstrichene Zeit"
+
+#: includes/Inquiry/Assessment/Admin.php:49
+msgid "Model / rubric"
+msgstr "Modell / Bewertungsregeln"
+
+#: includes/Inquiry/Assessment/Admin.php:50
+msgid "Original model result"
+msgstr "Ursprüngliches Modellergebnis"
+
+#: includes/Inquiry/Assessment/Admin.php:53
+#: includes/Inquiry/Assessment/Admin.php:57
+msgid "Staff correction"
+msgstr "Manuelle Korrektur"
+
+#: includes/Inquiry/Assessment/Admin.php:61
+msgid "Review note"
+msgstr "Prüfvermerk"
+
+#: includes/Inquiry/Assessment/Admin.php:62
+msgid "Save correction"
+msgstr "Korrektur speichern"
+
+#: includes/Inquiry/Assessment/Admin.php:78
+msgid "You cannot review this inquiry."
+msgstr "Sie sind nicht berechtigt, diese Anfrage zu prüfen."
+
+#: includes/Inquiry/Assessment/Admin.php:84
+msgid "Please choose a valid assessment."
+msgstr "Bitte wählen Sie eine gültige Einschätzung."
+
+#: includes/Inquiry/Assessment/Result.php:100
+msgid "Likely genuine"
+msgstr "Vermutlich echte Anfrage"
+
+#: includes/Inquiry/Assessment/Result.php:101
+msgid "Suspected spam"
+msgstr "Spamverdacht"
+
+#: includes/Inquiry/Assessment/Result.php:102
+msgid "Unable to assess"
+msgstr "Keine Beurteilung möglich"
+
+#: includes/Inquiry/Assessment/Result.php:113
+msgid "No reliable assessment was available. Please review the inquiry."
+msgstr "Eine verlässliche Einschätzung liegt nicht vor. Bitte prüfen Sie die Anfrage."
+
+#: includes/Inquiry/Assessment/Result.php:116
+msgid "Possible fraud or phishing."
+msgstr "Möglicher Betrugs- oder Phishingversuch."
+
+#: includes/Inquiry/Assessment/Result.php:117
+msgid "Possible unsolicited bulk promotion."
+msgstr "Mögliche unerwünschte Massenwerbung."
+
+#: includes/Inquiry/Assessment/Result.php:118
+msgid "Repeated content with no clear request."
+msgstr "Wiederholter Inhalt ohne erkennbare Anfrage."
+
+#: includes/Inquiry/Assessment/Result.php:119
+msgid "Service request or complaint."
+msgstr "Serviceanfrage oder Beschwerde."
+
+#: includes/Inquiry/Assessment/Result.php:120
+msgid "Report of suspected abuse."
+msgstr "Meldung eines möglichen Missbrauchs."
+
+#: includes/Inquiry/Assessment/Result.php:121
+msgid "Plausible business or contact request."
+msgstr "Plausible geschäftliche Anfrage oder Kontaktaufnahme."
+
 #: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:143
 msgid "Please use the inquiry form to send your inquiry."
 msgstr "Bitte senden Sie Ihre Anfrage über das Anfrageformular."
@@ -1230,12 +1320,12 @@ msgstr "Geht an den Kunden, wenn eine Anfrage eingegangen ist."
 msgid "Your inquiry #{order_number} has been received"
 msgstr "Ihre Anfrage #{order_number} ist eingegangen"
 
-#: includes/Inquiry/Emails/NewInquiryEmail.php:36
+#: includes/Inquiry/Emails/NewInquiryEmail.php:38
 #: includes/Inquiry/OrderAdmin.php:36
 msgid "New inquiry"
 msgstr "Neue Anfrage"
 
-#: includes/Inquiry/Emails/NewInquiryEmail.php:37
+#: includes/Inquiry/Emails/NewInquiryEmail.php:39
 msgid ""
 "Sent to the internal notification address, with blind copies, when an "
 "inquiry is received."
@@ -1244,12 +1334,12 @@ msgstr ""
 "eine Anfrage eingegangen ist."
 
 #. translators: {order_number}: inquiry number, {company}: customer's company.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:71
+#: includes/Inquiry/Emails/NewInquiryEmail.php:109
 msgid "New inquiry #{order_number} from {company}"
 msgstr "Neue Anfrage #{order_number} von {company}"
 
 #. translators: {order_number}: inquiry number.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:79
+#: includes/Inquiry/Emails/NewInquiryEmail.php:117
 msgid "New inquiry #{order_number}"
 msgstr "Neue Anfrage #{order_number}"
 
@@ -1368,7 +1458,7 @@ msgid "Source"
 msgstr "Eingang"
 
 #: includes/Inquiry/OrderAdmin.php:74
-#: templates/emails/linker-new-inquiry.php:51
+#: templates/emails/linker-new-inquiry.php:58
 msgid "Contact form"
 msgstr "Kontaktformular"
 
@@ -1426,11 +1516,11 @@ msgstr ""
 msgid "Website"
 msgstr "Website"
 
-#: includes/Inquiry/Sender.php:52
+#: includes/Inquiry/Sender.php:53
 msgid "Please add a product or write a message."
 msgstr "Bitte fügen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht."
 
-#: includes/Inquiry/Sender.php:77
+#: includes/Inquiry/Sender.php:78
 msgid "Please try sending your inquiry again."
 msgstr "Bitte senden Sie Ihre Anfrage erneut."
 
@@ -1688,7 +1778,7 @@ msgstr "Privat"
 msgid "Commercial"
 msgstr "Gewerbe"
 
-#: includes/Presentation/LanguageLinks.php:52
+#: includes/Presentation/LanguageLinks.php:53
 #: includes/Presentation/LibraryPage.php:515
 msgid "English"
 msgstr "Englisch"
@@ -4315,7 +4405,7 @@ msgid "New inquiry %1$s from %2$s (%3$s)."
 msgstr "Neue Anfrage %1$s von %2$s (%3$s)."
 
 #. translators: %s: topic selected in the contact form.
-#: templates/emails/linker-new-inquiry.php:55
+#: templates/emails/linker-new-inquiry.php:62
 #, php-format
 msgid "This is about: %s"
 msgstr "Es geht um: %s"

@@ -265,6 +265,11 @@ SETTING_USERMETA_PREFIXES = (
 # are the live ones of 2026-10-09 and WooCommerce's classic order fields.
 EMPTIED_ORDER_META = frozenset(
     {
+        # Full current inquiry business evidence and staff free text (issue 511).
+        # Neither raw contacts nor an operational pending task belong in snapshots.
+        "_linker_inquiry_assessment",
+        "_linker_inquiry_assessment_override",
+        "_linker_inquiry_assessment_pending",
         "_billing_address_index",
         "_shipping_address_index",
         "_customer_ip_address",
@@ -567,6 +572,12 @@ class Anonymizer:
 
     def _options(self, table: Table, row: Row) -> bool:
         name = row[table.index("option_name")].text or ""
+        if name in {
+            "linker_inquiry_assessment_enabled",
+            "linker_inquiry_assessment_recovery",
+        }:
+            # A local copy must establish its own worker/configuration readiness.
+            return False
         return not (
             TRANSIENT_OPTION.search(name)
             or SECRET_OPTION.search(name)

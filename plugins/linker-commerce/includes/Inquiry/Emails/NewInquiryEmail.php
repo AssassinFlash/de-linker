@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Inquiry\Emails;
 
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Inquiry\Assessment\Queue;
+use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Mail\TeamEmail;
 use Linker\Commerce\Settings\Options;
 use WC_Order;
@@ -55,12 +57,48 @@ final class NewInquiryEmail extends TeamEmail {
 		if ( ! $order instanceof WC_Order ) {
 			return;
 		}
+		if ( Queue::defer( $order ) ) {
+			return;
+		}
+		$this->notify_received( $order );
+	}
+
+	/**
+	 * Renders this notification alone, without a Woo status transition.
+	 *
+	 * @param WC_Order $order Received inquiry.
+	 */
+	private function notify_received( WC_Order $order ): void {
 		$this->placeholders['{order_number}'] = $order->get_order_number();
 		$name                                 = trim( $order->get_formatted_billing_full_name() );
 		$this->placeholders['{company}']      = '' !== $order->get_billing_company()
 			? $order->get_billing_company()
 			: ( '' !== $name ? $name : $order->get_billing_email() );
 		$this->notify( $order );
+	}
+
+
+	/**
+	 * Capture one immutable message for an atomic durable Outbox handoff.
+	 *
+	 * @param WC_Order $order The locked inquiry, including initial_result.
+	 */
+	public function capture( WC_Order $order ): ?Message {
+		$message = null;
+		$capture = static function ( $pre, array $atts ) use ( &$message ) {
+			if ( null === $pre ) {
+				$message = Message::from_wp_mail( $atts );
+			}
+			return true;
+		};
+		// Before Outbox's priority 10; native WC locale/sender filters are active.
+		add_filter( 'pre_wp_mail', $capture, 9, 2 );
+		try {
+			$this->notify_received( $order );
+		} finally {
+			remove_filter( 'pre_wp_mail', $capture, 9 );
+		}
+		return $message;
 	}
 
 	/**

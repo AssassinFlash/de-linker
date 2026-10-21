@@ -32,6 +32,11 @@ final class ModuleTest extends TestCase {
 	 * Statuses, stock, gateway, request page, admin labels and emails are hooked; stock is never reduced.
 	 */
 	public function test_register_adds_the_hooks(): void {
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::PROCESS, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'process' );
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::EXPIRE, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'expire' );
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::FINISH, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'finish', 10, 2 );
+		$this->expect_action_on_any( 'add_meta_boxes', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'boxes' );
+		$this->expect_action_on_any( 'admin_post_linker_inquiry_assessment_correct', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'correct' );
 		WP_Mock::userFunction( 'add_shortcode', array( 'return' => true ) );
 		$this->expect_action_on_any( 'woocommerce_created_customer', \Linker\Commerce\Inquiry\AccountLink::class, 'claim', 20 );
 		$this->expect_action_on_any( 'admin_post_nopriv_linker_inquiry', \Linker\Commerce\Inquiry\Handler::class, 'handle' );

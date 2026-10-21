@@ -174,6 +174,10 @@ final class Module {
 		if ( ! is_array( $details ) || ! is_array( $details['customer'] ?? null ) ) {
 			return null;
 		}
+		$context = array(
+			'conversation' => $details['conversation'] ?? 0,
+			'page'         => $details['page'] ?? array(),
+		);
 		$summary = $details['summary'] ?? false;
 		$details = Submission::from_post(
 			array(
@@ -191,7 +195,7 @@ final class Module {
 		if ( $details instanceof WP_Error ) {
 			return $details;
 		}
-		$order = ( new Sender() )->request( $details, array(), is_array( $summary ) ? $summary : false );
+		$order = ( new Sender() )->request( $details, array(), is_array( $summary ) ? $summary : false, $context );
 		if ( $order instanceof WP_Error ) {
 			return $order;
 		}
