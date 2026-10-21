@@ -1,0 +1,544 @@
+{
+  "evidence": [
+    {
+      "locale": "en",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 datasheet (English)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 561.15625,
+          "width": 1278,
+          "height": 91,
+          "top": 561.15625,
+          "right": 1359,
+          "bottom": 652.15625,
+          "left": 81
+        },
+        "title": {
+          "x": 253.40625,
+          "y": 565.15625,
+          "width": 964.40625,
+          "height": 20.25,
+          "top": 565.15625,
+          "right": 1217.8125,
+          "bottom": 585.40625,
+          "left": 253.40625
+        },
+        "action": {
+          "x": 1231.8125,
+          "y": 579.65625,
+          "width": 111.1875,
+          "height": 44,
+          "top": 579.65625,
+          "right": 1343,
+          "bottom": 623.65625,
+          "left": 1231.8125
+        }
+      }
+    },
+    {
+      "locale": "en",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 quick installation guide (English)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 681.296875,
+          "width": 1278,
+          "height": 91,
+          "top": 681.296875,
+          "right": 1359,
+          "bottom": 772.296875,
+          "left": 81
+        },
+        "title": {
+          "x": 236.25,
+          "y": 685.296875,
+          "width": 981.5625,
+          "height": 20.25,
+          "top": 685.296875,
+          "right": 1217.8125,
+          "bottom": 705.546875,
+          "left": 236.25
+        },
+        "action": {
+          "x": 1231.8125,
+          "y": 699.796875,
+          "width": 111.1875,
+          "height": 44,
+          "top": 699.796875,
+          "right": 1343,
+          "bottom": 743.796875,
+          "left": 1231.8125
+        }
+      }
+    },
+    {
+      "locale": "en",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 EU declaration of conformity (multilingual)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 801.4375,
+          "width": 1278,
+          "height": 91,
+          "top": 801.4375,
+          "right": 1359,
+          "bottom": 892.4375,
+          "left": 81
+        },
+        "title": {
+          "x": 261.234375,
+          "y": 805.4375,
+          "width": 956.578125,
+          "height": 20.25,
+          "top": 805.4375,
+          "right": 1217.8125,
+          "bottom": 825.6875,
+          "left": 261.234375
+        },
+        "action": {
+          "x": 1231.8125,
+          "y": 819.9375,
+          "width": 111.1875,
+          "height": 44,
+          "top": 819.9375,
+          "right": 1343,
+          "bottom": 863.9375,
+          "left": 1231.8125
+        }
+      }
+    },
+    {
+      "locale": "en",
+      "width": 1440,
+      "state": "faq-keyboard-pager",
+      "productCount": 228,
+      "path": "http://127.0.0.1:9270/faq-download/",
+      "focus": {
+        "rect": {
+          "x": 345,
+          "y": 214.1875,
+          "width": 1014,
+          "height": 75.59375,
+          "top": 214.1875,
+          "right": 1359,
+          "bottom": 289.78125,
+          "left": 345
+        },
+        "stickyBottom": 137,
+        "inReader": true
+      }
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 datasheet (English)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": -22.109375,
+          "width": 348,
+          "height": 214.09375,
+          "top": -22.109375,
+          "right": 369,
+          "bottom": 191.984375,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 7.890625,
+          "width": 254,
+          "height": 40.5,
+          "top": 7.890625,
+          "right": 355,
+          "bottom": 48.390625,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 133.984375,
+          "width": 111.1875,
+          "height": 44,
+          "top": 133.984375,
+          "right": 212.1875,
+          "bottom": 177.984375,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 quick installation guide (English)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": 221.125,
+          "width": 348,
+          "height": 208.34375,
+          "top": 221.125,
+          "right": 369,
+          "bottom": 429.46875,
+          "left": 21
+        },
+        "title": {
+          "x": 168.390625,
+          "y": 225.125,
+          "width": 186.609375,
+          "height": 60.75,
+          "top": 225.125,
+          "right": 355,
+          "bottom": 285.875,
+          "left": 168.390625
+        },
+        "action": {
+          "x": 101,
+          "y": 371.46875,
+          "width": 111.1875,
+          "height": 44,
+          "top": 371.46875,
+          "right": 212.1875,
+          "bottom": 415.46875,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 EU declaration of conformity (multilingual)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": 458.609375,
+          "width": 348,
+          "height": 214.09375,
+          "top": 458.609375,
+          "right": 369,
+          "bottom": 672.703125,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 488.609375,
+          "width": 254,
+          "height": 40.5,
+          "top": 488.609375,
+          "right": 355,
+          "bottom": 529.109375,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 614.703125,
+          "width": 111.1875,
+          "height": 44,
+          "top": 614.703125,
+          "right": 212.1875,
+          "bottom": 658.703125,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "state": "faq-keyboard-pager",
+      "productCount": 228,
+      "path": "http://127.0.0.1:9270/faq-download/",
+      "focus": {
+        "rect": {
+          "x": 21,
+          "y": 299.765625,
+          "width": 348,
+          "height": 94.4375,
+          "top": 299.765625,
+          "right": 369,
+          "bottom": 394.203125,
+          "left": 21
+        },
+        "stickyBottom": 192,
+        "inReader": true
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Datenblatt (Englisch)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 585.953125,
+          "width": 1278,
+          "height": 91,
+          "top": 585.953125,
+          "right": 1359,
+          "bottom": 676.953125,
+          "left": 81
+        },
+        "title": {
+          "x": 260.140625,
+          "y": 589.953125,
+          "width": 931.75,
+          "height": 20.25,
+          "top": 589.953125,
+          "right": 1191.890625,
+          "bottom": 610.203125,
+          "left": 260.140625
+        },
+        "action": {
+          "x": 1205.890625,
+          "y": 604.453125,
+          "width": 137.109375,
+          "height": 44,
+          "top": 604.453125,
+          "right": 1343,
+          "bottom": 648.453125,
+          "left": 1205.890625
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Kurzanleitung zur Installation (Englisch)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 706.09375,
+          "width": 1278,
+          "height": 91,
+          "top": 706.09375,
+          "right": 1359,
+          "bottom": 797.09375,
+          "left": 81
+        },
+        "title": {
+          "x": 254.546875,
+          "y": 710.09375,
+          "width": 937.34375,
+          "height": 20.25,
+          "top": 710.09375,
+          "right": 1191.890625,
+          "bottom": 730.34375,
+          "left": 254.546875
+        },
+        "action": {
+          "x": 1205.890625,
+          "y": 724.59375,
+          "width": 137.109375,
+          "height": 44,
+          "top": 724.59375,
+          "right": 1343,
+          "bottom": 768.59375,
+          "left": 1205.890625
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 EU-Konformitätserklärung (mehrsprachig)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 826.234375,
+          "width": 1278,
+          "height": 91,
+          "top": 826.234375,
+          "right": 1359,
+          "bottom": 917.234375,
+          "left": 81
+        },
+        "title": {
+          "x": 250.75,
+          "y": 830.234375,
+          "width": 941.140625,
+          "height": 20.25,
+          "top": 830.234375,
+          "right": 1191.890625,
+          "bottom": 850.484375,
+          "left": 250.75
+        },
+        "action": {
+          "x": 1205.890625,
+          "y": 844.734375,
+          "width": 137.109375,
+          "height": 44,
+          "top": 844.734375,
+          "right": 1343,
+          "bottom": 888.734375,
+          "left": 1205.890625
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "faq-keyboard-pager",
+      "productCount": 228,
+      "path": "http://127.0.0.1:9270/de/faq-dokumente/",
+      "focus": {
+        "rect": {
+          "x": 345,
+          "y": 213.984375,
+          "width": 1014,
+          "height": 75.59375,
+          "top": 213.984375,
+          "right": 1359,
+          "bottom": 289.578125,
+          "left": 345
+        },
+        "stickyBottom": 137,
+        "inReader": true
+      }
+    },
+    {
+      "locale": "de",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Datenblatt (Englisch)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": -27.109375,
+          "width": 348,
+          "height": 214.09375,
+          "top": -27.109375,
+          "right": 369,
+          "bottom": 186.984375,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 2.890625,
+          "width": 254,
+          "height": 40.5,
+          "top": 2.890625,
+          "right": 355,
+          "bottom": 43.390625,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 128.984375,
+          "width": 137.109375,
+          "height": 44,
+          "top": 128.984375,
+          "right": 238.109375,
+          "bottom": 172.984375,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Kurzanleitung zur Installation (Englisch)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": 216.125,
+          "width": 348,
+          "height": 214.09375,
+          "top": 216.125,
+          "right": 369,
+          "bottom": 430.21875,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 246.125,
+          "width": 254,
+          "height": 40.5,
+          "top": 246.125,
+          "right": 355,
+          "bottom": 286.625,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 372.21875,
+          "width": 137.109375,
+          "height": 44,
+          "top": 372.21875,
+          "right": 238.109375,
+          "bottom": 416.21875,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 EU-Konformitätserklärung (mehrsprachig)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": 459.359375,
+          "width": 348,
+          "height": 234.34375,
+          "top": 459.359375,
+          "right": 369,
+          "bottom": 693.703125,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 489.359375,
+          "width": 254,
+          "height": 60.75,
+          "top": 489.359375,
+          "right": 355,
+          "bottom": 550.109375,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 635.703125,
+          "width": 137.109375,
+          "height": 44,
+          "top": 635.703125,
+          "right": 238.109375,
+          "bottom": 679.703125,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 390,
+      "state": "faq-keyboard-pager",
+      "productCount": 228,
+      "path": "http://127.0.0.1:9270/de/faq-dokumente/",
+      "focus": {
+        "rect": {
+          "x": 21,
+          "y": 297.015625,
+          "width": 348,
+          "height": 116.1875,
+          "top": 297.015625,
+          "right": 369,
+          "bottom": 413.203125,
+          "left": 21
+        },
+        "stickyBottom": 192,
+        "inReader": true
+      }
+    }
+  ]
+}

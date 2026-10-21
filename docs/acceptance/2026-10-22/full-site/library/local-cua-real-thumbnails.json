@@ -1,0 +1,32 @@
+{
+  "capturedAt": "2026-10-21T19:44:41.517Z",
+  "url": "http://127.0.0.1:9270/de/faq-dokumente/?tab=documents",
+  "viewport": {
+    "width": 390,
+    "height": 1000
+  },
+  "fixture": "snapshot native file metadata and real thumbnail bytes; no network intercept",
+  "images": [
+    {
+      "complete": true,
+      "hidden": false,
+      "naturalWidth": 160,
+      "opacity": "1",
+      "src": "http://127.0.0.1:9270/wp-content/plugins/linker-commerce/assets/faq-thumbs/108e054e92978925fcba84fdec47c8de6ab0dc5b.webp"
+    },
+    {
+      "complete": true,
+      "hidden": false,
+      "naturalWidth": 305,
+      "opacity": "1",
+      "src": "http://127.0.0.1:9270/wp-content/plugins/linker-commerce/assets/faq-thumbs/6e7ee13ea8f08abfe07a32925375e04f629ec48e.webp"
+    },
+    {
+      "complete": true,
+      "hidden": false,
+      "naturalWidth": 153,
+      "opacity": "1",
+      "src": "http://127.0.0.1:9270/wp-content/plugins/linker-commerce/assets/faq-thumbs/9d87402c9650607103f05e8157f28d1d2b6ff99b.webp"
+    }
+  ]
+}

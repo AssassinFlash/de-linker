@@ -218,6 +218,71 @@ test('a document row keeps its tile slot in the flat result list, thumbnail or n
  assert.ok(rows.some((row) => row.querySelector('.linker-library-thumb.is-type')), 'a row without a page image keeps its type tile');
 });
 
+for (const outcome of ['load', 'error', 'cached-load', 'cached-error']) {
+ test(`a search clone reconciles its own thumbnail: ${outcome}`, () => {
+  const dom = fixture();
+  let completed = outcome.startsWith('cached');
+  let width = outcome === 'cached-load' ? 160 : 0;
+  Object.defineProperties(dom.window.HTMLImageElement.prototype, {
+   complete: {configurable: true, get: () => completed},
+   naturalWidth: {configurable: true, get: () => width}
+  });
+  const tile = dom.window.document.querySelector('.linker-library-thumb');
+  tile.className = 'linker-library-thumb has-src';
+  tile.innerHTML = '<img src="/thumb.webp" alt=""><svg class="linker-library-icon"></svg>';
+  const doc = boot(dom);
+  const input = doc.querySelector('.linker-library-q');
+  input.value = 'document 1';
+  input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+  doc.querySelector('#linker-library-tab-documents').click();
+  const clone = doc.querySelector('[data-library-results] .linker-library-thumb');
+  const image = clone.querySelector('img');
+  assert.ok(image, 'the actual result cloned the source thumbnail');
+  if (!completed) {
+   completed = true;
+   width = outcome === 'load' ? 160 : 0;
+   image.dispatchEvent(new dom.window.Event(outcome));
+  }
+  if (width) {
+   assert.equal(clone.classList.contains('has-img'), true);
+   assert.equal(image.hidden, false);
+  } else {
+   assert.equal(clone.classList.contains('has-src'), false);
+   assert.equal(clone.classList.contains('is-type'), true);
+   assert.equal(image.hidden, true);
+  }
+  dom.window.close();
+ });
+}
+
+test('keyboard suggestion selection transfers focus to the actual answer', async () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const input = doc.querySelector('.linker-library-q');
+ input.focus();
+ input.value = 'stackable';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ input.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true, cancelable: true}));
+ input.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key: 'Enter', bubbles: true, cancelable: true}));
+ await new Promise(resolve => dom.window.requestAnimationFrame(resolve));
+ const summary = doc.querySelector('#linker-library-answers-chint summary');
+ assert.equal(summary.parentElement.open, true);
+ assert.equal(doc.activeElement, summary);
+ dom.window.close();
+});
+
+test('paging returns focus to the first visible result instead of a detached control', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ doc.querySelector('#linker-library-tab-documents').click();
+ const next = doc.querySelector('#linker-library-docs-chint [data-library-page="next"]');
+ next.focus();
+ next.click();
+ const result = doc.querySelector('#linker-library-docs-chint [data-library-item]:not([hidden]) .linker-library-dl');
+ assert.equal(doc.activeElement, result);
+ dom.window.close();
+});
+
 test('the rail marks the zone of the card the reader is in', () => {
  const dom = fixture();
  const doc = boot(dom);

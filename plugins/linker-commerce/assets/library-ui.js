@@ -193,6 +193,7 @@
 	var suggestBox = root.querySelector("#linker-library-suggest");
 	var filters = root.querySelector("[data-library-filters]");
 	var main = root.querySelector(".linker-library-main");
+	var preparedThumbnails = new WeakSet();
 
 	var state = {
 		tab: tabFromSearch(scope.location.search),
@@ -238,6 +239,7 @@
 				kind: card.kind,
 				type: row.getAttribute("data-library-type") || "",
 				group: row.getAttribute("data-library-group") || card.title,
+				product: (row.querySelector(".linker-library-qa-product") || {}).textContent || "",
 				title: title ? title.textContent : row.textContent,
 				text: row.textContent,
 			});
@@ -296,6 +298,7 @@
 			}
 		}
 		mark(clone, query);
+		prepareThumbnails(clone);
 		return clone;
 	}
 
@@ -705,7 +708,7 @@
 				text.textContent = hit.title;
 				var meta = scope.document.createElement("span");
 				meta.className = "linker-library-sug-meta";
-				meta.textContent = hit.group + " · " + hitKind(hit);
+				meta.textContent = hit.group + (hit.product ? " · " + hit.product : "") + " · " + hitKind(hit);
 				item.appendChild(mark(text, query));
 				item.appendChild(meta);
 				if (state.suggest.length === state.suggestIndex) {
@@ -767,6 +770,10 @@
 		state.open[hit.order] = true;
 		hit.el.open = true;
 		scope.requestAnimationFrame(function () {
+			var summary = hit.el.querySelector("summary");
+			if (summary) {
+				summary.focus({ preventScroll: true });
+			}
 			scrollToElement(hit.el);
 		});
 	}
@@ -850,6 +857,36 @@
 
 	/* ---------- wiring ---------- */
 
+	/** Every source and search clone owns its own image readiness listeners. */
+	function prepareThumbnails(container) {
+		slice.call(container.querySelectorAll(".linker-library-thumb img")).forEach(function (image) {
+			if (preparedThumbnails.has(image)) {
+				return;
+			}
+			preparedThumbnails.add(image);
+			var tile = image.parentNode;
+			var shown = function () {
+				image.hidden = false;
+				tile.classList.remove("is-type");
+				tile.classList.add("has-src", "has-img");
+			};
+			var failed = function () {
+				image.hidden = true;
+				tile.classList.remove("has-img", "has-src");
+				tile.classList.add("is-type");
+			};
+			image.addEventListener("load", shown, { once: true });
+			image.addEventListener("error", failed, { once: true });
+			if (image.complete) {
+				if (image.naturalWidth) {
+					shown();
+				} else {
+					failed();
+				}
+			}
+		});
+	}
+
 	function prepare() {
 		cards.forEach(function (card) {
 			if (card.kind !== "document") {
@@ -861,26 +898,7 @@
 			card.empty.hidden = true;
 			card.rowsWrap.appendChild(card.empty);
 		});
-		slice.call(root.querySelectorAll(".linker-library-thumb img")).forEach(function (image) {
-			var tile = image.parentNode;
-			var shown = function () {
-				tile.classList.add("has-img");
-			};
-			var failed = function () {
-				// The page image is gone: the tile's own type icon stands in
-				// for it, which is what the design shows for a document the
-				// build could not render.
-				image.hidden = true;
-				tile.classList.remove("has-img", "has-src");
-				tile.classList.add("is-type");
-			};
-			if (image.complete && image.naturalWidth) {
-				shown();
-				return;
-			}
-			image.addEventListener("load", shown, { once: true });
-			image.addEventListener("error", failed, { once: true });
-		});
+		prepareThumbnails(root);
 	}
 
 	function movedPage(list, raw) {
@@ -1001,6 +1019,11 @@
 					}
 				}
 				var anchor = list === "search" ? root.querySelector("[data-library-results]") : scope.document.getElementById(list);
+				var first = anchor && anchor.querySelector("[data-library-item]:not([hidden])");
+				var action = first && first.querySelector("summary, .linker-library-dl");
+				if (action) {
+					action.focus({ preventScroll: true });
+				}
 				var bar = root.querySelector(".linker-library-tabbar");
 				if (anchor && bar && anchor.getBoundingClientRect().top < bar.getBoundingClientRect().bottom) {
 					scrollToElement(anchor);
