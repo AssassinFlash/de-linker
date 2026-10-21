@@ -24,7 +24,9 @@ use WC_Order;
  * in, and a customer who does not own the document, get 403
  * (docs/specs/11-commerce.md, acceptance). A pending or restricted owner gets
  * no Proforma link and a 404 with no PDF bytes (#425): that account may not
- * read amounts. The PDF in the account is the copy a customer can trust for
+ * read amounts. The design report is not that document: it carries no amounts
+ * (quantity, item, model and scope only), so the owning account keeps its
+ * link and file. The PDF in the account is the copy a customer can trust for
  * the bank details (account-workspace.md §0.2).
  */
 final class DocumentDownload {
@@ -70,6 +72,10 @@ final class DocumentDownload {
 
 	/**
 	 * Link to the design report of a saved solution.
+	 *
+	 * Not the Proforma price gate. The engine design report has no net prices,
+	 * so a pending or restricted owner is not refused here; serve() still
+	 * refuses a guest and a customer who does not own the solution.
 	 *
 	 * @param int $solution_id Solution.
 	 */

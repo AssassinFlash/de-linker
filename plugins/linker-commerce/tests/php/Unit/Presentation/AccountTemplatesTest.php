@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Unit\Presentation;
 
+use Linker\Commerce\Account\PrivateFiles;
+use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Presentation\AccountTemplates;
 use Linker\Commerce\Proforma\Issuer;
@@ -454,6 +456,73 @@ final class AccountTemplatesTest extends TestCase {
 		$this->assertSame( 3, substr_count( $html, '#20' ) );
 		$this->assertStringContainsString( 'linker-account-panel', $html );
 		$this->assertStringContainsString( 'linker-account-empty', $html );
+	}
+
+	/**
+	 * A saved solution shows its design report only when the file is stored.
+	 * The link is not a price gate: a pending account still gets it, and
+	 * another customer's solution is omitted.
+	 */
+	public function test_saved_solution_links_its_design_report_without_prices(): void {
+		$this->visible_prices( false );
+		$this->plain_text();
+		WP_Mock::userFunction( 'add_shortcode' );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );
+		WP_Mock::userFunction( 'wp_date', array( 'return' => '9 Oct 2026' ) );
+		WP_Mock::userFunction( 'get_post_timestamp', array( 'return' => 1700000000 ) );
+		WP_Mock::userFunction( 'wp_nonce_field', array( 'return' => '<input type="hidden" name="_wpnonce" value="n" />' ) );
+		$root = sys_get_temp_dir() . '/linker-report-gate-' . getmypid();
+		mkdir( $root . '/solution-reports/45', 0777, true );
+		file_put_contents( $root . '/solution-reports/45/design-report.pdf', '%PDF-1.4' );
+		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => $root ) ) );
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => static function ( int $id, string $key ): string {
+					return SavedSolutions::REPORT_META === $key && 45 === $id ? '45/design-report.pdf' : '';
+				},
+			)
+		);
+		$saved          = new SavedSolutions( new PrivateFiles( 'solution-reports' ), '/plugin/templates/' );
+		$with_report    = (object) array(
+			'ID'          => 45,
+			'post_author' => 5,
+			'post_title'  => 'Munich home',
+		);
+		$without_report = (object) array(
+			'ID'          => 46,
+			'post_author' => 5,
+			'post_title'  => 'No report yet',
+		);
+		$other          = (object) array(
+			'ID'          => 47,
+			'post_author' => 9,
+			'post_title'  => 'Someone else',
+		);
+		$adapter        = new AccountTemplates();
+		WP_Mock::expectFilterAdded( 'wc_get_template', array( $adapter, 'template' ), 20, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $adapter, 'orders_query' ) );
+		$adapter->register();
+		$this->expand_fields( $adapter );
+		ob_start();
+		AccountTemplates::output(
+			array(
+				'template_name' => 'myaccount/linker-saved-solutions.php',
+				'args'          => array(
+					'saved'     => $saved,
+					'solutions' => array( $with_report, $without_report, $other ),
+				),
+			)
+		);
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'Munich home', $html );
+		$this->assertStringContainsString( 'No report yet', $html );
+		$this->assertStringNotContainsString( 'Someone else', $html );
+		$this->assertSame( 1, substr_count( $html, 'Design report (PDF)' ) );
+		$this->assertStringContainsString( 'linker-document=report&id=45', $html );
+		$this->assertStringNotContainsString( 'linker-document=report&id=46', $html );
+		$this->assertStringNotContainsString( 'linker-document=report&id=47', $html );
 	}
 
 	/**

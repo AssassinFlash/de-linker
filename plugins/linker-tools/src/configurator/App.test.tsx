@@ -365,7 +365,7 @@ test.each( [
 test( 'a saved solution names the account and links to it', async () => {
 	const save = vi.mocked( saveSolution );
 	save.mockResolvedValue( { id: 61, url: '/my-account/solutions/61/' } );
-	const { engine } = fakeEngine( { locale: 'en' } );
+	const { engine, calls } = fakeEngine( { locale: 'en' } );
 	render(
 		<App
 			config={ config( 'en' ) }
@@ -387,9 +387,45 @@ test( 'a saved solution names the account and links to it', async () => {
 		screen.getByRole( 'link', { name: 'Open saved solution' } )
 	).toHaveAttribute( 'href', '/my-account/solutions/61/' );
 	expect( save ).toHaveBeenCalledTimes( 1 );
-	expect( save.mock.calls[ 0 ][ 2 ] ).toEqual(
+	const body = save.mock.calls[ 0 ][ 2 ];
+	expect( body ).toEqual(
 		expect.objectContaining( { kind: 'residential' } )
 	);
+	expect( body.reportPdf ).toBeInstanceOf( Blob );
+	expect( await body.reportPdf.text() ).toBe( '%PDF-1.4' );
+	expect( calls ).toContainEqual( {
+		name: 'pdf',
+		body: {
+			input: expect.objectContaining( { plz: '80538' } ),
+			logo: null,
+		},
+	} );
+} );
+
+test( 'a design report that cannot be built is not saved without it', async () => {
+	const save = vi.mocked( saveSolution );
+	const { engine } = fakeEngine( { locale: 'en' } );
+	engine.reportPdf = vi.fn().mockRejectedValue( new Error( 'pdf' ) );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const saveButton = await screen.findByRole( 'button', {
+		name: 'Save solution',
+	} );
+	await act( async () => {
+		fireEvent.click( saveButton );
+	} );
+	expect(
+		await screen.findByText(
+			'The solution could not be saved. Try again.'
+		)
+	).toBeInTheDocument();
+	expect( save ).not.toHaveBeenCalled();
 } );
 
 test( 'a refused save says so and can be tried again', async () => {

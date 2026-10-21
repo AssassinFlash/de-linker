@@ -68,6 +68,36 @@ test( 'posts the design and its lines with the nonce', async () => {
 	} );
 } );
 
+test( 'posts the design report as the base64 PDF the route already accepts', async () => {
+	const bytes = new Uint8Array( [
+		0x25, 0x50, 0x44, 0x46, 0x2d, 0xff, 0x00, 0x80,
+	] );
+	const fetcher = vi.fn< typeof fetch >(
+		async () =>
+			new Response(
+				JSON.stringify( { id: 62, url: '/my-account/solutions/62/' } ),
+				{ status: 201 }
+			)
+	);
+	await saveSolution(
+		'https://site.test/wp-json/',
+		'nonce-1',
+		{
+			kind: 'residential',
+			title: 'Munich home',
+			input,
+			lines: [],
+			reportPdf: new Blob( [ bytes ], { type: 'application/pdf' } ),
+		},
+		fetcher
+	);
+	const posted = JSON.parse( String( fetcher.mock.calls[ 0 ][ 1 ]?.body ) );
+	expect( posted.report_pdf ).toBe(
+		Buffer.from( bytes ).toString( 'base64' )
+	);
+	expect( posted.kind ).toBe( 'residential' );
+} );
+
 test( 'a refused save throws instead of reporting a saved solution', async () => {
 	const fetcher = vi.fn< typeof fetch >(
 		async () => new Response( '[]', { status: 403 } )

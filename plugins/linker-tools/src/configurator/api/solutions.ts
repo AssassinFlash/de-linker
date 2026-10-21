@@ -25,6 +25,31 @@ export interface SolutionBody {
 	title: string;
 	input: ResidentialInput;
 	lines: DraftLine[];
+	/**
+	 * Design report PDF for this input, from the engine's existing
+	 * `report/pdf` path. Omitted when the save has no design report
+	 * (a product card, not a configurator result).
+	 */
+	reportPdf?: Blob | null;
+}
+
+/**
+ * Base64 of PDF bytes, the shape SolutionsRoute already accepts as `report_pdf`.
+ *
+ * @param blob Design report PDF.
+ */
+function pdfBase64( blob: Blob ): Promise< string > {
+	return new Promise( ( resolve, reject ) => {
+		const reader = new FileReader();
+		reader.onload = () => {
+			const data = String( reader.result );
+			const comma = data.indexOf( ',' );
+			resolve( comma >= 0 ? data.slice( comma + 1 ) : data );
+		};
+		reader.onerror = () =>
+			reject( reader.error ?? new Error( 'report' ) );
+		reader.readAsDataURL( blob );
+	} );
 }
 
 export async function saveSolution(
@@ -33,6 +58,9 @@ export async function saveSolution(
 	body: SolutionBody,
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< SavedSolution > {
+	const reportPdf = body.reportPdf
+		? await pdfBase64( body.reportPdf )
+		: '';
 	const response = await fetcher( `${ restUrl }linker/v1/solutions`, {
 		method: 'POST',
 		credentials: 'same-origin',
@@ -45,6 +73,7 @@ export async function saveSolution(
 				product_id: line.productId,
 				quantity: line.quantity,
 			} ) ),
+			...( reportPdf ? { report_pdf: reportPdf } : {} ),
 		} ),
 	} );
 	if ( ! response.ok ) {

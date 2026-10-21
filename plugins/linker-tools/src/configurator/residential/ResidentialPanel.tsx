@@ -184,6 +184,12 @@ export function ResidentialPanel( {
 		}
 		setSaveState( 'saving' );
 		try {
+			// The design report exists once this input has a solution. The
+			// PDF is the engine's existing report/pdf answer for that input
+			// (logo stays on the download button; it is not part of the input).
+			const reportPdf = result.report
+				? await engine.reportPdf( input, null )
+				: null;
 			const saved = await saveSolution(
 				config.restUrl,
 				config.restNonce,
@@ -192,6 +198,7 @@ export function ResidentialPanel( {
 					title: `${ result.selected.inverter.brand } ${ result.selected.inverter.model }, ${ input.plz }`,
 					input,
 					lines: draftLines(),
+					reportPdf,
 				}
 			);
 			setSavedUrl( saved.url );
