@@ -1,6 +1,5 @@
 {
  "schema_version": 1,
- "version": "361fb80a995f7b2ae538fd87dc7cd1cddbf0c4e53bd71042d3d9d4ad445ea3d2",
  "pairs": [
   {
    "inverter": "^EF HD-P1-(3|3\\.68|4\\.6|5|5\\.75|6)K-S2$",
@@ -5943,13 +5942,14 @@
    "included": true,
    "conditions": [
     {
-     "en": "The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 4.1.2 Scope of Delivery, PDF p. 12).",
-     "de": "Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 4.1.2 Lieferumfang, PDF-S. 12)."
+     "en": "The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 2.2 Unpacking, PDF p. 36 English / p. 7 German).",
+     "de": "Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 2.2 Auspacken, PDF-S. 36 englisch / S. 7 deutsch)."
     }
    ],
    "documents": [
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+     "page": 36
     }
    ]
   },
@@ -5982,30 +5982,6 @@
    "documents": [
     {
      "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf"
-    }
-   ]
-  },
-  {
-   "inverter": "^H2-\\d+K-T3(-DE)?$",
-   "kind": "meter",
-   "included": false,
-   "phase": 3,
-   "accessories": [
-    {
-     "model": "^DTSU666$",
-     "quantity": 1,
-     "per": "system"
-    }
-   ],
-   "conditions": [
-    {
-     "en": "SAJ's Configuration Instructions V1.0 set up the Chint DTSU666 as the three-phase meter of the H2, HS2 and HS3 systems (section 5.1, PDF pp. 32–33).",
-     "de": "Die SAJ-Konfigurationsanleitung V1.0 richtet den Chint DTSU666 als dreiphasigen Zähler der Systeme H2, HS2 und HS3 ein (Abschnitt 5.1, PDF-S. 32–33)."
-    }
-   ],
-   "documents": [
-    {
-     "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
     }
    ]
   },
@@ -6056,5 +6032,6 @@
     }
    ]
   }
- ]
+ ],
+ "version": "5d2a85676432d1501620997a21359782defcd8aa64b644c7799eb32d054a23b8"
 }

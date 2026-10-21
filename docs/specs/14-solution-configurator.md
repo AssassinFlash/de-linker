@@ -15,7 +15,7 @@
   - 产量：pvlib + PVGIS（按邮编、倾角、朝向；缓存按 0.05° 网格）。
   - 定容：HTW Berlin 三条上限（≤1.5 kWh/kWp、≤1.5 kWh/MWh 年用电、第三条按 planner-methods.md 的规格），备电预留另加；输出区间。
   - 自给率/自用比例：HTW 式查表（规格里的表），输出区间，不做逐小时模拟。
-  - 资格：application=home、相数、单相 ≤4.6 kVA、DC/AC ≤ 厂商上限、`pv_input_kw ≥ kWp`、放行配对（三值）。
+  - 资格：application=home、相数、单相 ≤4.6 kVA、DC/AC ≤ 厂商上限、`pv_input_kw ≥ kWp`、放行配对（三值）；备电请求另要求放行电池配置能容纳备电预留（见 2026-10-21 变更记录）。
   - Stückliste：逆变器、电池模块/柜（按堆叠规则）、必要配件（电表/互感器按放行条件、线缆与连接器按 Stückliste 规则，熔断器按每路 MPPT 并联数）。
 - `POST /design/commercial`：有负荷数据 → 负荷持续曲线定 kW/kWh，并联台数按控制器数据手册；无 → 指示区间。
 - `POST /report/pdf`：报告模板 EN/DE，Logo 上传。
@@ -64,3 +64,7 @@
   由站点 PHP 带着既有证书钉扎完成服务端跳跃（与 Genie 同一条路）；白名单=应用实际调用的路径集，状态码原样透传，
   `report/pdf` 走字节流直出。选项 `linker_engine_url` 仍是服务端地址（代理与健康监控读它）。前端配置形状不变
   （仍读 `data-engine-url`）。
+
+- 2026-10-21（#482、#483，走查 #478）：
+  - **H2 T3 的电表只有一条事实**：合同对 H2 只保留 `included` 一条。H2 手册 §2.2 Auspacken（PDF-S. 36 英文 / S. 7 德文）把智能电表、三只电流互感器和 10 m 通信线列进交付范围；原条件写的 §4.1.2 / PDF-S. 12 不符，已改。SAJ 配置说明 §5.1（PDF-S. 32–33）的 DTSU666 是这只随箱三相表的配置对象，不是加购件。重复的 `included: false` H2 电表记录已删；`_requirement_lines` 仍只列 `not included`。同一事实也落在 `data/compatibility-lists.json`（H2 的 `meter_documented` 删除、交付文本改正）；引擎夹具生成器 `scripts/build_fixtures.py` 增加同一条覆盖，重生成不会带回旧引用。回归读 shipping 合同：H2 的 Stückliste 没有额外电表行，GW10K 没有电表行，HS2 仍有一只 DTSU666。
+  - **备电是定容输入，不是逆变器资格**：本规格第 16 行只要求预留另加，第 18 行的资格清单没有点名 backup。线上 feed 不含户用逆变器的 `backup_power_kw`（产品 meta 有该图值，但引用只写文档名、没有托管 URL，feed 只收带托管引用的图值），所以把 backup 当硬资格会让 `needed` 与 `needed_accessory_ok` 成为死输入。现在只检查**放行电池配置的可用容量 ≥ 备电预留**（`backup_storage`）；配置上限取自数据表堆叠上限（`stacking.configurations` 的 `modules_per_stack` / `stacks_parallel_max` / `modules_per_system_max` / `max_battery_modules`），不新增阈值。HTW 区间仍是上限：电池不必顶到区间顶，但必须能把预留从日常循环中留出。`needed_accessory_ok` 仍把合同写明的备电配件列入 Stückliste。没有电池能容纳预留时返回 `no_candidate`，放宽句给出本选择中最大的放行配置容量，不再表现为死输入。候选电池只保留能容纳预留的配置，换电池不能绕过这道检查；区间内最大一档低于预留时，按既有的 smallest-above 规则提出能容纳预留的下一档并标“高于 HTW 上限”，不因上一档低于预留而丢掉整只电池。报告只证明预留可被放行电池容纳，不声明逆变器有备电输出；这一点由团队在询盘阶段按数据手册核实。回归（EN/DE）：#478 C17（80538 / 5000 kWh / 10 kWp / 三相 / 3 kW × 4 h）得到方案，预留 12.77 kWh，所选 20 kWh 电池覆盖预留。

@@ -48,6 +48,18 @@ from typing import Any
 OLD_REF = "refs/landed/chain-tip"
 HOST = "https://de-linker.com/"
 
+# #482: the old contract's H2 delivery text cites section 4.1.2 and PDF p. 12,
+# which the hosted manual does not have. Its section 2.2 Unpacking (PDF p. 36
+# English / p. 7 German) lists the smart meter, three current transformers and
+# the 10 m cable. A regeneration must keep that fact, not the old citation.
+DELIVERY_OVERRIDES: dict[str, dict[str, Any]] = {
+    "saj-h2-t3": {
+        "en": "The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 2.2 Unpacking, PDF p. 36 English / p. 7 German).",
+        "de": "Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 2.2 Auspacken, PDF-S. 36 englisch / S. 7 deutsch).",
+        "page": 36,
+    }
+}
+
 # #7 table: phase spellings found in `pa_phase` and the figures.
 PHASE_THREE = (
     "three-phase",
@@ -501,13 +513,24 @@ def requirements(contract: dict[str, Any]) -> list[dict[str, Any]]:
         pattern = family_pattern(family["patterns"])
         delivery = family.get("delivery_contents")
         if delivery and delivery.get("meter_included"):
+            override = DELIVERY_OVERRIDES.get(family["id"])
+            documents = doc_refs(contract, delivery["docs"])
+            if override:
+                condition = text(override["en"], override["de"])
+                if documents:
+                    documents = [
+                        {**documents[0], "page": override["page"]},
+                        *documents[1:],
+                    ]
+            else:
+                condition = text(delivery["en"], delivery["de"])
             out.append(
                 {
                     "inverter": pattern,
                     "kind": "meter",
                     "included": True,
-                    "conditions": [text(delivery["en"], delivery["de"])],
-                    "documents": doc_refs(contract, delivery["docs"]),
+                    "conditions": [condition],
+                    "documents": documents,
                 }
             )
             continue

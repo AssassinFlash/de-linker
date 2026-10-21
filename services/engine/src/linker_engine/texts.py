@@ -30,7 +30,10 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "DC/AC ratio within the manufacturer's limit",
         "DC/AC-Verhältnis innerhalb der Herstellergrenze",
     ),
-    "rule.backup": ("Backup supply", "Notstrom- oder Ersatzstromversorgung"),
+    "rule.backup_storage": (
+        "Released battery configuration covers the backup reserve",
+        "Freigegebene Batteriekonfiguration deckt die Notstromreserve",
+    ),
     "rule.engineering_data": (
         "Cited datasheet values for the string layout",
         "Belegte Datenblattwerte für die Stringauslegung",
@@ -235,9 +238,13 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Three-phase connection: more inverters qualify.",
         "Dreiphasiger Anschluss: Mehr Wechselrichter kommen in Frage.",
     ),
-    "relax.backup": (
-        "Accept an accessory for backup supply.",
-        "Zubehör für die Ersatzstromversorgung zulassen.",
+    "relax.backup_storage": (
+        "Less backup reserve: the largest released configuration in this selection holds {kwh} kWh.",
+        "Kleinere Notstromreserve: Die größte freigegebene Konfiguration dieser Auswahl fasst {kwh} kWh.",
+    ),
+    "relax.backup_storage_none": (
+        "Less backup reserve: no released configuration in this selection can hold it.",
+        "Kleinere Notstromreserve: Keine freigegebene Konfiguration dieser Auswahl kann sie aufnehmen.",
     ),
     "relax.backup_none": ("Plan without backup supply.", "Ohne Notstrom planen."),
     "relax.kwp": (
@@ -272,14 +279,9 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "{value}, at most {limit} per the manufacturer",
         "{value}, laut Hersteller höchstens {limit}",
     ),
-    "value.backup.native": ("backup output {value} kVA", "Notstromausgang {value} kVA"),
-    "value.backup.accessory": (
-        "with the documented accessory",
-        "mit dem dokumentierten Zubehör",
-    ),
-    "value.backup.none": (
-        "no backup output in the datasheet data",
-        "kein Notstromausgang in den Datenblattwerten",
+    "value.backup_storage": (
+        "{value} kWh usable for a {limit} kWh reserve",
+        "{value} kWh nutzbar für eine Reserve von {limit} kWh",
     ),
     "value.modules": ("{value} modules connected", "{value} Module angeschlossen"),
     "value.batteries.one": ("one released battery", "eine freigegebene Batterie"),

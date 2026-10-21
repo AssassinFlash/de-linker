@@ -136,20 +136,29 @@ class BatteryFit:
 
 
 def battery_options(
-    engine: Engine, inverter: Product, upper_kwh: float
+    engine: Engine,
+    inverter: Product,
+    upper_kwh: float,
+    reserve_kwh: float = 0.0,
 ) -> list[BatteryFit]:
     """The best configuration of every released battery for the inverter, best first.
 
     Within the limit the largest configuration ranks first, above it the
     smallest; then a plain release before one that needs an accessory, then
-    fewer pieces, then the product id, so the order is stable.
+    fewer pieces, then the product id, so the order is stable. With a backup
+    reserve, only configurations that can hold it are offered: the largest
+    within the limit, else the smallest that covers the reserve (above the
+    limit, flagged). A battery with no such configuration is left out.
     """
     fits: list[BatteryFit] = []
     for battery in engine.products.in_class(*BATTERY_CLASSES):
         pair = engine.compatibility.pair(inverter.model, battery.model)
-        picked = stacking.pick(
-            stacking.configurations(inverter, battery, pair), upper_kwh
-        )
+        configs = stacking.configurations(inverter, battery, pair)
+        if reserve_kwh:
+            configs = [
+                config for config in configs if config.usable_kwh >= reserve_kwh - 1e-9
+            ]
+        picked = stacking.pick(configs, upper_kwh)
         if picked:
             fits.append(BatteryFit(*picked))
 
@@ -165,6 +174,26 @@ def battery_options(
         )
 
     return sorted(fits, key=key)
+
+
+def max_released_kwh(engine: Engine, inverter: Product) -> float | None:
+    """The largest usable capacity any released configuration of this inverter reaches.
+
+    Used when no configuration covers the reserve: the rule then reports what
+    the datasheets allow, including an above-band configuration that would
+    have been offered marked had it covered. None when no battery is released
+    for the inverter, so the answer does not claim a 0 kWh configuration.
+    """
+    values = [
+        config.usable_kwh
+        for battery in engine.products.in_class(*BATTERY_CLASSES)
+        for config in stacking.configurations(
+            inverter,
+            battery,
+            engine.compatibility.pair(inverter.model, battery.model),
+        )
+    ]
+    return max(values) if values else None
 
 
 def battery_choice(fit: BatteryFit, locale: Locale) -> BatteryChoice:
@@ -204,15 +233,15 @@ def evaluate(
 ) -> Evaluation:
     kwp = request.pv_kwp
     checks: list[eligibility.Check] = []
-    backup_check, backup_parts = eligibility.backup(
-        inverter, request.backup, engine.compatibility
+    backup_parts = (
+        engine.compatibility.requirements(inverter.model, "backup")
+        if request.backup == "needed_accessory_ok"
+        else []
     )
     layout: strings.StringLayout | None = None
     if existing:
         # A retrofit keeps the installed inverter and its array; only the battery is new.
         checks.append(eligibility.phase(inverter, request.phase))
-        if backup_check:
-            checks.append(backup_check)
     else:
         checks.append(eligibility.application(inverter))
         checks.append(eligibility.phase(inverter, request.phase))
@@ -223,8 +252,6 @@ def evaluate(
             eligibility.pv_input(inverter, kwp),
             eligibility.dc_ac_ratio(inverter, kwp),
         ]
-        if backup_check:
-            checks.append(backup_check)
         result = strings.layout(
             inverter, [p.kwp for p in planes_of(request)], engine.products.module
         )
@@ -238,10 +265,27 @@ def evaluate(
         )
     batteries: list[BatteryFit] = []
     if sizing.recommended or existing:
-        batteries = battery_options(engine, inverter, sizing.high_kwh)
+        released = battery_options(engine, inverter, sizing.high_kwh)
         checks.append(
-            eligibility.Check("battery_release", bool(batteries), len(batteries))
+            eligibility.Check("battery_release", bool(released), len(released))
         )
+        if request.backup != "none" and sizing.reserve_kwh:
+            # The reserve is a sizing input (spec 14). What the design must
+            # prove is that a released configuration can hold it; the caps are
+            # the datasheet stacking figures, not a new threshold. Only
+            # covering configurations stay in the choice, so a swap cannot
+            # undercut the reserve the design was checked against.
+            batteries = battery_options(
+                engine, inverter, sizing.high_kwh, sizing.reserve_kwh
+            )
+            coverage = (
+                max(fit.config.usable_kwh for fit in batteries)
+                if batteries
+                else max_released_kwh(engine, inverter)
+            )
+            checks.append(eligibility.backup_storage(coverage, sizing.reserve_kwh))
+        else:
+            batteries = released
     return Evaluation(inverter, checks, layout, backup_parts, batteries)
 
 
@@ -685,9 +729,24 @@ def _relaxations(
         out.append(t("relax.existing", locale))
     if request.phase == 1 and failed & {"phase", "single_phase_limit"}:
         out.append(t("relax.phase", locale))
-    if request.backup == "needed" and "backup" in failed:
-        out.append(t("relax.backup", locale))
-    if request.backup != "none" and "backup" in failed:
+    if "backup_storage" in failed:
+        coverage = [
+            float(check.value)
+            for evaluation in evaluations
+            if all(
+                c.passed for c in evaluation.checks if c.id in ("application", "phase")
+            )
+            for check in evaluation.checks
+            if check.id == "backup_storage"
+            and isinstance(check.value, int | float)
+            and check.value > 0
+        ]
+        if coverage:
+            out.append(
+                t("relax.backup_storage", locale, kwh=fmt(max(coverage), locale))
+            )
+        else:
+            out.append(t("relax.backup_storage_none", locale))
         out.append(t("relax.backup_none", locale))
     if "pv_input" in failed:
         inputs = [

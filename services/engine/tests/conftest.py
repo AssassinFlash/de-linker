@@ -9,6 +9,7 @@ Munich, the LoD2 cut a real Bavarian tile (see tests/fixtures/*/source.json).
 from __future__ import annotations
 
 import gzip
+import json
 import shutil
 from collections.abc import Iterator
 from pathlib import Path
@@ -25,10 +26,19 @@ from linker_engine.pvgis import Pvgis
 from linker_engine.roof import lod2
 
 FIXTURES = Path(__file__).parent / "fixtures"
+<<<<<<< HEAD
 # The contract the site ships, so the tests that pin a release decision read the
 # file production reads (#481, #489).
 SHIPPED_COMPATIBILITY = (
     Path(__file__).parents[3] / "plugins/linker-commerce/data/compatibility.json"
+=======
+SHIPPING_COMPATIBILITY = (
+    Path(__file__).resolve().parents[3]
+    / "plugins"
+    / "linker-commerce"
+    / "data"
+    / "compatibility.json"
+>>>>>>> 613ad845 (fix(#482,#483): one meter truth and a live backup path)
 )
 MUNICH_LOD2 = FIXTURES / "lod2" / "munich-80538-triftstrasse.gml.gz"
 TRIFTSTRASSE_5 = (
@@ -52,8 +62,31 @@ def compatibility() -> Compatibility:
 
 
 @pytest.fixture(scope="session")
+<<<<<<< HEAD
 def shipped_compatibility() -> Compatibility:
     return Compatibility.load(SHIPPED_COMPATIBILITY)
+=======
+def shipping_compatibility() -> Compatibility:
+    """The contract the plugin ships, not a test copy: #482's lock."""
+    return Compatibility.load(SHIPPING_COMPATIBILITY)
+
+
+@pytest.fixture(scope="session")
+def products_without_backup() -> Products:
+    """The test feed as the live feed reaches the engine: no backup figures.
+
+    Production product meta carries `backup_power_kw` with a doc-name citation,
+    and the feed carries only figures whose citation names a hosted URL, so the
+    engine sees no backup output for the residential inverters. Missing
+    capability data must not turn the backup input into a dead input (#483).
+    """
+    feed = json.loads((FIXTURES / "feed.json").read_text())
+    for item in feed["products"]:
+        item["figures"] = {
+            key: value for key, value in item["figures"].items() if "backup" not in key
+        }
+    return Products.from_feed(feed)
+>>>>>>> 613ad845 (fix(#482,#483): one meter truth and a live backup path)
 
 
 @pytest.fixture
@@ -69,11 +102,36 @@ def engine(products: Products, compatibility: Compatibility, pvgis: Pvgis) -> En
 
 
 @pytest.fixture
+<<<<<<< HEAD
 def shipped_engine(
     products: Products, shipped_compatibility: Compatibility, pvgis: Pvgis
 ) -> Engine:
     """The engine on the fixture feed and the shipped contract (#481, #489)."""
     return Engine(products=products, compatibility=shipped_compatibility, pvgis=pvgis)
+=======
+def engine_without_backup(
+    products_without_backup: Products, compatibility: Compatibility, pvgis: Pvgis
+) -> Engine:
+    return Engine(
+        products=products_without_backup,
+        compatibility=compatibility,
+        pvgis=pvgis,
+    )
+
+
+@pytest.fixture
+def shipping_engine(
+    products_without_backup: Products,
+    shipping_compatibility: Compatibility,
+    pvgis: Pvgis,
+) -> Engine:
+    """The live shape: the shipped contract and a feed with no backup figures."""
+    return Engine(
+        products=products_without_backup,
+        compatibility=shipping_compatibility,
+        pvgis=pvgis,
+    )
+>>>>>>> 613ad845 (fix(#482,#483): one meter truth and a live backup path)
 
 
 def munich_tile(tile: lod2.Tile, target: Path) -> None:

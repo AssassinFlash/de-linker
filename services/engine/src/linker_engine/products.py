@@ -158,15 +158,6 @@ class Product:
     def battery_voltage_range_v(self) -> tuple[float, float] | None:
         return units.number_range(self.value("battery_voltage_range_v"))
 
-    @cached_property
-    def backup_power_kva(self) -> float | None:
-        """Rated output of the backup (EPS) port, from its cited datasheet line."""
-        for key in ("backup_power_kw", "backup_power_va"):
-            found = self.figures.get(key)
-            if found:
-                return units.kilo(found.value, found.unit)
-        return None
-
     # Battery side ----------------------------------------------------------
 
     @cached_property

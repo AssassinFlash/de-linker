@@ -692,14 +692,6 @@
 						"text": "3-phase; selected: 1-phase"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "battery_release",
 						"passed": false,
 						"value": 0.0,
@@ -816,14 +808,6 @@
 						"text": "2.40, at most 2.00 per the manufacturer"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "engineering_data",
 						"passed": false,
 						"value": null,
@@ -851,14 +835,6 @@
 						"text": "3-phase; selected: 1-phase"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "engineering_data",
 						"passed": false,
 						"value": null,
@@ -884,14 +860,6 @@
 						"limit": 1.0,
 						"label": "Grid connection phases",
 						"text": "3-phase; selected: 1-phase"
-					},
-					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
 					},
 					{
 						"id": "engineering_data",
@@ -929,14 +897,6 @@
 						"text": "4.00, at most 3.00 per the manufacturer"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "engineering_data",
 						"passed": false,
 						"value": null,
@@ -972,14 +932,6 @@
 						"text": "3.26, at most 2.63 per the manufacturer"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "engineering_data",
 						"passed": false,
 						"value": null,
@@ -1013,14 +965,6 @@
 						"limit": 2.3,
 						"label": "DC/AC ratio within the manufacturer's limit",
 						"text": "2.61, at most 2.30 per the manufacturer"
-					},
-					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
 					},
 					{
 						"id": "engineering_data",
@@ -1066,14 +1010,6 @@
 						"text": "2.40, at most 2.20 per the manufacturer"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "engineering_data",
 						"passed": false,
 						"value": null,
@@ -1117,14 +1053,6 @@
 						"text": "2.09, at most 1.91 per the manufacturer"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "engineering_data",
 						"passed": false,
 						"value": null,
@@ -1150,14 +1078,6 @@
 						"limit": 4.6,
 						"label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
 						"text": "6 kVA, at most 4.6 kVA"
-					},
-					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
 					},
 					{
 						"id": "engineering_data",
@@ -1195,14 +1115,6 @@
 						"text": "3-phase; selected: 1-phase"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "battery_release",
 						"passed": false,
 						"value": 0.0,
@@ -1236,14 +1148,6 @@
 						"limit": 1.0,
 						"label": "Grid connection phases",
 						"text": "3-phase; selected: 1-phase"
-					},
-					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
 					},
 					{
 						"id": "battery_release",
@@ -1281,14 +1185,6 @@
 						"text": "3-phase; selected: 1-phase"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "battery_release",
 						"passed": false,
 						"value": 0.0,
@@ -1322,14 +1218,6 @@
 						"limit": 1.0,
 						"label": "Grid connection phases",
 						"text": "3-phase; selected: 1-phase"
-					},
-					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
 					},
 					{
 						"id": "battery_release",
@@ -1367,14 +1255,6 @@
 						"text": "3-phase; selected: 1-phase"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "battery_release",
 						"passed": false,
 						"value": 0.0,
@@ -1408,14 +1288,6 @@
 						"limit": 1.0,
 						"label": "Grid connection phases",
 						"text": "3-phase; selected: 1-phase"
-					},
-					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
 					},
 					{
 						"id": "battery_release",
@@ -1602,14 +1474,6 @@
 						"text": "4.00, at most 2.00 per the manufacturer"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "engineering_data",
 						"passed": false,
 						"value": null,
@@ -1643,14 +1507,6 @@
 						"limit": 2.0,
 						"label": "DC/AC ratio within the manufacturer's limit",
 						"text": "3.33, at most 2.00 per the manufacturer"
-					},
-					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
 					},
 					{
 						"id": "engineering_data",
@@ -1696,14 +1552,6 @@
 						"text": "2.40, at most 2.00 per the manufacturer"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "engineering_data",
 						"passed": false,
 						"value": null,
@@ -1729,14 +1577,6 @@
 						"limit": 4.6,
 						"label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
 						"text": "6 kVA, at most 4.6 kVA"
-					},
-					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
 					},
 					{
 						"id": "engineering_data",
@@ -1766,14 +1606,6 @@
 						"text": "8 kVA, at most 4.6 kVA"
 					},
 					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
-					},
-					{
 						"id": "engineering_data",
 						"passed": false,
 						"value": null,
@@ -1799,14 +1631,6 @@
 						"limit": 4.6,
 						"label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
 						"text": "10 kVA, at most 4.6 kVA"
-					},
-					{
-						"id": "backup",
-						"passed": false,
-						"value": null,
-						"limit": "needed",
-						"label": "Backup supply",
-						"text": "not in the datasheet data"
 					},
 					{
 						"id": "engineering_data",
@@ -1851,8 +1675,6 @@
 	],
 	"relaxations": [
 		"Three-phase connection: more inverters qualify.",
-		"Accept an accessory for backup supply.",
-		"Plan without backup supply.",
 		"Smaller array: the largest PV input in this selection is 24 kWp."
 	],
 	"report": {
