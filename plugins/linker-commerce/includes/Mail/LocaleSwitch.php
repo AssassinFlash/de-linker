@@ -162,4 +162,12 @@ final class LocaleSwitch {
 		$locale = get_option( 'WPLANG' );
 		return is_string( $locale ) && '' !== $locale ? $locale : 'en_US';
 	}
+
+	/**
+	 * The team's notification language: Chinese for the internal team (#74).
+	 */
+	public static function team_default(): string {
+		$locale = get_option( 'linker_commerce_team_locale' );
+		return is_string( $locale ) && '' !== $locale ? $locale : self::site_default();
+	}
 }

@@ -98,4 +98,55 @@ final class DigestEmailTest extends TestCase {
 		$this->assertStringContainsString( 'linker-digest-card', $css );
 		$this->assertStringStartsWith( 'base', $css );
 	}
+
+	/**
+	 * Summary placeholder computes counts for the subject line.
+	 */
+	public function test_summary_placeholder_builds_counts(): void {
+		$this->plain_text();
+		$this->reload_plugin_textdomain();
+		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
+		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => $email ) );
+		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
+		$this->options(
+			array(
+				Options::TEAM_TO              => 'sales@de-linker.com',
+				'linker_commerce_team_locale' => 'zh_CN',
+				'WPLANG'                      => '',
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_date',
+			array(
+				'return' => static fn ( string $format ): string => 'H:i' === $format ? '09:00' : '2026年10月22日',
+			)
+		);
+		$this->allow_locale_switch( 'zh_CN' );
+		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@sunriverinverter.com' );
+
+		$accounts = $this->createMock( \Linker\Commerce\Digest\Block::class );
+		$accounts->method( 'id' )->willReturn( 'pending_accounts' );
+		$accounts->method( 'entries' )->willReturn(
+			array(
+				array(
+					'label'     => 'Acme',
+					'url'       => 'https://example.test',
+					'link_text' => 'Open',
+					'detail'    => '',
+				),
+				array(
+					'label'     => 'Restricted',
+					'url'       => '',
+					'link_text' => '',
+					'detail'    => '',
+				),
+			)
+		);
+
+		$email = new DigestEmail( '/plugin/linker-commerce.php', new Options() );
+		$email->send_report( array( $accounts ) );
+
+		$this->assertSame( '：1 个待审客户', $email->placeholders['{summary}'] );
+		$this->assertConditionsMet();
+	}
 }

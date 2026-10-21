@@ -1,0 +1,19 @@
+# Copyright (C) 2026 Linker Technology GmbH
+msgid ""
+msgstr ""
+"Project-Id-Version: Linker i18n 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-i18n\n"
+"POT-Creation-Date: 2026-10-21T09:00:00+00:00\n"
+"PO-Revision-Date: 2026-10-21 09:00+00:00\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Domain: linker-i18n\n"
+
+msgid "German translation exceptions (%d)"
+msgstr "德语自动同步异常 (%d)"
+
+msgid "No German translation exceptions."
+msgstr "暂无德语翻译同步异常。"
