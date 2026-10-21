@@ -1,0 +1,11 @@
+{
+  "locale": "de",
+  "plz": "80538",
+  "annual_kwh": 5000,
+  "pv_kwp": 10,
+  "phase": 3,
+  "backup": "none",
+  "heat_pump": false,
+  "electric_vehicle": false,
+  "inverter_id": 4107
+}

@@ -1,0 +1,1883 @@
+{
+  "ticket": 478,
+  "instance": "w478",
+  "feed_generated_at": "2026-10-21T03:42:37+00:00",
+  "compatibility_version": "81f8688f5d0383bf275607b0aaaf4367963881f1b9c4c47f0450ac7b55f980e6",
+  "compatibility_file": "plugins/linker-commerce/data/compatibility.json",
+  "c44_dc_ac_caps": [
+    {
+      "model": "H2-25K-T3",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 25,
+      "pv_input_kw": 45,
+      "cap": 1.8,
+      "ac_figure": {
+        "value": "25000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "45000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "H2-30K-T3-DE",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 29.999,
+      "pv_input_kw": 45,
+      "cap": 1.5,
+      "ac_figure": {
+        "value": "29999",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "45000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "HS2-10K-T2-X",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 15,
+      "cap": 1.5,
+      "ac_figure": {
+        "value": "10000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "15000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "HS2-6K-T2-X",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 6,
+      "pv_input_kw": 9,
+      "cap": 1.5,
+      "ac_figure": {
+        "value": "6000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "9000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "HS2-8K-T2-X",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 8,
+      "pv_input_kw": 12,
+      "cap": 1.5,
+      "ac_figure": {
+        "value": "8000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "12000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "HS3-12K-T2-W/G-PX",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 12,
+      "pv_input_kw": 15,
+      "cap": 1.25,
+      "ac_figure": {
+        "value": "12000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "15000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "HS3-6K-T2-W/G-PX",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 6,
+      "pv_input_kw": 12,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "6000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "12000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "HS3-8K-T2-W/G-PX",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 8,
+      "pv_input_kw": 12,
+      "cap": 1.5,
+      "ac_figure": {
+        "value": "8000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "12000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW80K-ET-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 80,
+      "pv_input_kw": 160,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "80",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "160",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW99.99K-ET-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 99.99,
+      "pv_input_kw": 200,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "99.99",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "200",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW100K-ET-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 100,
+      "pv_input_kw": 200,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "100",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "200",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "H2-15K-T3",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 15,
+      "pv_input_kw": 30,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "15000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "30000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "H2-20K-T3",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 20,
+      "pv_input_kw": 40,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "20000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "40000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "HS3-5K-T2-W/G-PX",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 5,
+      "pv_input_kw": 10,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "5000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "10000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "HS3-10K-T2-W/G-PX",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 15,
+      "cap": 1.5,
+      "ac_figure": {
+        "value": "10000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "15000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "EF HD-P3-10K0-S2",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "10000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "20000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW10K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "10",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "20",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "EF HD-P3-6K0-S2",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 6,
+      "pv_input_kw": 12,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "6000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "12000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "EF HD-P3-8K0-S2",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 8,
+      "pv_input_kw": 16,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "8000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "16000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "EF HD-P3-12K0-S2",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 12,
+      "pv_input_kw": 24,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "12000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "24000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "EF HD-P1-6K0-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 6,
+      "pv_input_kw": 12,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "6000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "page": 3
+        }
+      },
+      "pv_figure": {
+        "value": "12000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "page": 3
+        }
+      }
+    },
+    {
+      "model": "EF HD-P1-8K0-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 8,
+      "pv_input_kw": 16,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "8000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "page": 3
+        }
+      },
+      "pv_figure": {
+        "value": "16000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "page": 3
+        }
+      }
+    },
+    {
+      "model": "EF HD-P1-10K0-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "10000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "page": 3
+        }
+      },
+      "pv_figure": {
+        "value": "20000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "page": 3
+        }
+      }
+    },
+    {
+      "model": "EF HD-P1-12K0-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 12,
+      "pv_input_kw": 24,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "12000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "page": 3
+        }
+      },
+      "pv_figure": {
+        "value": "24000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "page": 3
+        }
+      }
+    },
+    {
+      "model": "GW8K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 8,
+      "pv_input_kw": 16,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "8",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "16",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW12K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 12,
+      "pv_input_kw": 24,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "12",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "24",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW15K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 15,
+      "pv_input_kw": 30,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "15",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "30",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW125K-ETR-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 125,
+      "pv_input_kw": 250,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "125.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "250",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "H2-10K-T3",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "10000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "20000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "H2-12K-T3",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 12,
+      "pv_input_kw": 24,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "12000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "24000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "HS2-5K-T2-X",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 5,
+      "pv_input_kw": 7.5,
+      "cap": 1.5,
+      "ac_figure": {
+        "value": "5000",
+        "unit": "W",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "7500",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "EF HD-P3-5K0-S2",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 5,
+      "pv_input_kw": 10,
+      "cap": 2.0,
+      "ac_figure": null,
+      "pv_figure": null
+    },
+    {
+      "model": "EF HD-P3-15K-G2",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 15,
+      "pv_input_kw": 24,
+      "cap": 1.6,
+      "ac_figure": null,
+      "pv_figure": null
+    },
+    {
+      "model": "EF HD-P3-15K-G2F",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 15,
+      "pv_input_kw": 24,
+      "cap": 1.6,
+      "ac_figure": null,
+      "pv_figure": null
+    },
+    {
+      "model": "EF HD-P1-3K-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 3,
+      "pv_input_kw": 9,
+      "cap": 3.0,
+      "ac_figure": null,
+      "pv_figure": null
+    },
+    {
+      "model": "EF HD-P1-3K68-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 3.68,
+      "pv_input_kw": 9.68,
+      "cap": 2.63,
+      "ac_figure": null,
+      "pv_figure": null
+    },
+    {
+      "model": "EF HD-P1-4K6-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 4.6,
+      "pv_input_kw": 10.6,
+      "cap": 2.3,
+      "ac_figure": null,
+      "pv_figure": null
+    },
+    {
+      "model": "EF HD-P1-5K-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 5,
+      "pv_input_kw": 11,
+      "cap": 2.2,
+      "ac_figure": null,
+      "pv_figure": null
+    },
+    {
+      "model": "EF HD-P1-5K75-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 5.75,
+      "pv_input_kw": 11,
+      "cap": 1.91,
+      "ac_figure": null,
+      "pv_figure": null
+    },
+    {
+      "model": "EF HD-P1-6K-S2",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 6,
+      "pv_input_kw": 12,
+      "cap": 2.0,
+      "ac_figure": null,
+      "pv_figure": null
+    },
+    {
+      "model": "GW75K-ET-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 75,
+      "pv_input_kw": 150,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "75",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "150",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW80K-ETR-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 80,
+      "pv_input_kw": 160,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "80.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "160",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW99.99K-ETR-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 99.99,
+      "pv_input_kw": 200,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "99.99",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "200",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW100K-ETR-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 100,
+      "pv_input_kw": 200,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "100",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "200",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW110K-ETR-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 110,
+      "pv_input_kw": 220,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "110.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "220",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW124.99K-ETR-G10",
+      "application": "commercial",
+      "phase": 3,
+      "ac_power_kw": 124.99,
+      "pv_input_kw": 250,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "124.99",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "250",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW5K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 5,
+      "pv_input_kw": 10,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "5",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "10",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW6K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 6,
+      "pv_input_kw": 12,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "6",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "12",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW9.999K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 9.999,
+      "pv_input_kw": 20,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "9.999",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "20",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW20K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 20,
+      "pv_input_kw": 40,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "20",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "40",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW25K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 25,
+      "pv_input_kw": 50,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "25",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "50",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW29.999K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 29.999,
+      "pv_input_kw": 60,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "29.999",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "60",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW30K-ETA-G20",
+      "application": "home",
+      "phase": 3,
+      "ac_power_kw": 30,
+      "pv_input_kw": 60,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "30",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "60",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW3K-EHA-G20",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 3,
+      "pv_input_kw": 6,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "3.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "6.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW3.6K-EHA-G20",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 3.6,
+      "pv_input_kw": 7.2,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "3.6",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "7.2",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW5K-EHA-G20",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 5,
+      "pv_input_kw": 10,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "5.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "10.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW6K-EHA-G20",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 6,
+      "pv_input_kw": 12,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "6.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "12.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW8K-EHA-G20",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 8,
+      "pv_input_kw": 16,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "8.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "16.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    {
+      "model": "GW10K-EHA-G20",
+      "application": "home",
+      "phase": 1,
+      "ac_power_kw": 10,
+      "pv_input_kw": 20,
+      "cap": 2.0,
+      "ac_figure": {
+        "value": "10.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "pv_figure": {
+        "value": "20.0",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    }
+  ],
+  "c17_backup_capable_inverters": [],
+  "c17_backup_requirements_in_contract": 0,
+  "c53_stack_within": {
+    "inverter": "GW10K-ETA-G20",
+    "battery": "GW5.1-BAT-D-G20",
+    "upper_kwh": 15.0,
+    "pair_verdict": "released",
+    "pair_modules": null,
+    "allowed": [
+      {
+        "quantity": 1,
+        "stacks": 1,
+        "usable_kwh": 5
+      },
+      {
+        "quantity": 2,
+        "stacks": 1,
+        "usable_kwh": 10
+      },
+      {
+        "quantity": 3,
+        "stacks": 1,
+        "usable_kwh": 15
+      },
+      {
+        "quantity": 4,
+        "stacks": 1,
+        "usable_kwh": 20
+      },
+      {
+        "quantity": 5,
+        "stacks": 1,
+        "usable_kwh": 25
+      },
+      {
+        "quantity": 6,
+        "stacks": 1,
+        "usable_kwh": 30
+      }
+    ],
+    "pick": {
+      "quantity": 3,
+      "stacks": 1,
+      "usable_kwh": 15,
+      "above_upper_limit": false
+    }
+  },
+  "c53_smallest_above": {
+    "inverter": "HS2-5K-T2-X",
+    "battery": "BU2-5.0-HV1",
+    "upper_kwh": 0.9,
+    "pair_verdict": "released",
+    "pair_modules": null,
+    "allowed": [
+      {
+        "quantity": 1,
+        "stacks": 1,
+        "usable_kwh": 4.5
+      },
+      {
+        "quantity": 2,
+        "stacks": 1,
+        "usable_kwh": 9.0
+      },
+      {
+        "quantity": 3,
+        "stacks": 1,
+        "usable_kwh": 13.5
+      },
+      {
+        "quantity": 4,
+        "stacks": 1,
+        "usable_kwh": 18.0
+      },
+      {
+        "quantity": 5,
+        "stacks": 1,
+        "usable_kwh": 22.5
+      }
+    ],
+    "pick": {
+      "quantity": 1,
+      "stacks": 1,
+      "usable_kwh": 4.5,
+      "above_upper_limit": true
+    }
+  },
+  "c54_meter_requirements": {
+    "GW10K-ETA-G20": [
+      {
+        "included": true,
+        "phase": null,
+        "accessories": []
+      }
+    ],
+    "H2-10K-T3": [
+      {
+        "included": true,
+        "phase": null,
+        "accessories": []
+      },
+      {
+        "included": false,
+        "phase": 3,
+        "accessories": [
+          "^DTSU666$"
+        ]
+      }
+    ],
+    "HS2-10K-T2-X": [
+      {
+        "included": false,
+        "phase": 3,
+        "accessories": [
+          "^DTSU666$"
+        ]
+      }
+    ],
+    "HS2-5K-T2-X": [
+      {
+        "included": false,
+        "phase": 3,
+        "accessories": [
+          "^DTSU666$"
+        ]
+      }
+    ]
+  },
+  "c56_pairs": [
+    {
+      "inverter": "H2-10K-T3",
+      "battery": "B2-5.0-HV1",
+      "verdict": "released_with_accessory",
+      "released": true,
+      "modules": null,
+      "accessories": [
+        {
+          "model": "^BC2-HV1$",
+          "quantity": 1,
+          "per": "system"
+        }
+      ],
+      "documents": [
+        "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+      ],
+      "conditions": {
+        "en": [
+          "The H2 T3 manual gives a battery voltage range of 180 to 800 V; SAJ's B2 datasheet gives 89.6 to 115.2 V for the one-module B2-5.0."
+        ],
+        "de": [
+          "Das H2-T3-Handbuch nennt einen Batteriespannungsbereich von 180 bis 800 V; das SAJ-Datenblatt der B2 nennt f\u00fcr die B2-5.0 mit einem Modul 89,6 bis 115,2 V."
+        ]
+      },
+      "matching_entries": [
+        {
+          "verdict": "released_with_accessory",
+          "inverter": "^H2-\\d+K-T3(-DE)?$",
+          "battery": "^B2-5\\.0-HV[15]$"
+        }
+      ]
+    },
+    {
+      "inverter": "H2-10K-T3",
+      "battery": "BU2-5.0-HV1",
+      "verdict": "released_with_accessory",
+      "released": true,
+      "modules": null,
+      "accessories": [
+        {
+          "model": "^BC2-HV1$",
+          "quantity": 1,
+          "per": "system"
+        }
+      ],
+      "documents": [
+        "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+      ],
+      "conditions": {
+        "en": [
+          "SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and the B2 manual (V1.2, PDF p5) says the B2 can only be used as such a set: the control module is an article of its own.",
+          "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and SAJ's B2 manual (V1.2, PDF p5) says the B2 can only be used as a set with SAJ's H2 high voltage series storage inverter. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the H2 T3's battery voltage range.",
+          "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the H2 T3's battery voltage range of 180 to 800 V; two modules operate at 179.2 to 230.4 V."
+        ],
+        "de": [
+          "SAJs B2-Datenblatt nennt B2-5.0 bis B2-25.0 als ein bis f\u00fcnf BU2-5.0-Module mit einem Steuermodul BC2-HV1, und das B2-Handbuch (V1.2, PDF-S. 5) gibt an, dass die B2 nur als solches Set eingesetzt werden kann: Das Steuermodul ist ein eigener Artikel.",
+          "Die SAJ-Konfigurationsanleitung V1.0 (Abschnitt 2) gibt das System der H2-Serie als H2 + BC2 + BU2 an. Das SAJ-Datenblatt der B2 nennt B2-5.0 bis B2-25.0 als ein bis f\u00fcnf BU2-5.0-Module mit einem Steuermodul BC2-HV1, und das SAJ-Handbuch der B2 (V1.2, PDF-S. 5) gibt an, dass die B2 nur im Verbund mit dem Hochvolt-Speicherwechselrichter der SAJ-H2-Serie eingesetzt werden kann. Die Listung umfasst die B2-5.0 mit einem Modul nicht; ihre Betriebsspannung liegt unter dem Batteriespannungsbereich des H2 T3.",
+          "Ein einzelnes BU2-5.0-Modul arbeitet mit 89,6 bis 115,2 V (diese Werte nennt das SAJ-Datenblatt der B2 f\u00fcr die B2-5.0 mit einem Modul), unterhalb des Batteriespannungsbereichs des H2 T3 von 180 bis 800 V; zwei Module arbeiten mit 179,2 bis 230,4 V."
+        ]
+      },
+      "matching_entries": [
+        {
+          "verdict": "released_with_accessory",
+          "inverter": "^H2-\\d+K-T3(-DE)?$",
+          "battery": "(?:^B2-10\\.0-|^B2-15\\.0-|^B2-20\\.0-|^B2-25\\.0-|^BU2-|^BC2-)"
+        },
+        {
+          "verdict": "released_with_accessory",
+          "inverter": "^H2-\\d+K-T3(-DE)?$",
+          "battery": "^BU2-5\\.0-HV[15]$"
+        }
+      ]
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "battery": "BU2-5.0-HV1",
+      "verdict": "released",
+      "released": true,
+      "modules": null,
+      "accessories": [],
+      "documents": [
+        "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+      ],
+      "conditions": {
+        "en": [
+          "The HS2 takes two to five BU2-5.0 battery modules (HS2/AS2 manual V0.3, PDF p12). Battery voltage range 180 to 600 V.",
+          "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the HS2's battery voltage range of 180 to 600 V; the HS2 manual gives two modules as the smallest stack."
+        ],
+        "de": [
+          "Der HS2 nimmt zwei bis f\u00fcnf Batteriemodule BU2-5.0 auf (HS2/AS2-Handbuch V0.3, PDF-S. 12). Batteriespannungsbereich 180 bis 600 V.",
+          "Ein einzelnes BU2-5.0-Modul arbeitet mit 89,6 bis 115,2 V (diese Werte nennt das SAJ-Datenblatt der B2 f\u00fcr die B2-5.0 mit einem Modul), unterhalb des Batteriespannungsbereichs des HS2 von 180 bis 600 V; das HS2-Handbuch nennt zwei Module als kleinsten Stapel."
+        ]
+      },
+      "matching_entries": [
+        {
+          "verdict": "released",
+          "inverter": "(?:^HS2-(5|6|8|10)K-T2-X$|^HS2-10K-T2-B-X$)",
+          "battery": "(?:^BU2-5\\.0-HV1$|^BU2-5\\.0-HV5$)"
+        },
+        {
+          "verdict": "released",
+          "inverter": "(?:^HS2-(5|6|8|10)K-T2-X$|^HS2-10K-T2-B-X$)",
+          "battery": "^BU2-5\\.0-HV[15]$"
+        }
+      ]
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "battery": "B2-5.0-HV1",
+      "verdict": "unknown",
+      "released": false,
+      "modules": null,
+      "accessories": [],
+      "documents": [],
+      "conditions": {
+        "en": [],
+        "de": []
+      },
+      "matching_entries": []
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "battery": "EF BD-5-S2",
+      "verdict": "not_released",
+      "released": false,
+      "modules": null,
+      "accessories": [],
+      "documents": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf"
+      ],
+      "conditions": {
+        "en": [
+          "The cited documents do not list this pair. This states no incompatibility and makes no claim about documents not checked.",
+          "The cited documents do not list this pairing. That finding establishes neither compatibility nor incompatibility; confirm the exact models against manufacturer pairing evidence before procurement."
+        ],
+        "de": [
+          "Die zitierten Dokumente f\u00fchren dieses Paar nicht auf. Das stellt keine Inkompatibilit\u00e4t fest und sagt nichts \u00fcber nicht gepr\u00fcfte Dokumente aus.",
+          "Die zitierten Unterlagen f\u00fchren diese Kombination nicht auf. Daraus folgt weder Kompatibilit\u00e4t noch Inkompatibilit\u00e4t; vor der Beschaffung sind die genauen Modelle anhand von Herstellerunterlagen zur Kombination zu pr\u00fcfen."
+        ]
+      },
+      "matching_entries": [
+        {
+          "verdict": "not_released",
+          "inverter": "(?:^HS2-(5|6|8|10)K-T2-X$|^HS2-10K-T2-B-X$)",
+          "battery": "^EF BD-(5|8)-S2$"
+        }
+      ]
+    },
+    {
+      "inverter": "GW10K-ETA-G20",
+      "battery": "GW6.0-BAT-D-G20",
+      "verdict": "released",
+      "released": true,
+      "modules": null,
+      "accessories": [],
+      "documents": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf"
+      ],
+      "conditions": {
+        "en": [
+          "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+        ],
+        "de": [
+          "Das GoodWe-ESA-Datenblatt nennt die Module GW6.0-BAT-D-G20 und GW9.0-BAT-D-G20 und gibt eine Skalierbarkeit von 12 St\u00fcck an (S. 3). Das Benutzerhandbuch begrenzt eine S\u00e4ule auf sechs Batterien und nennt ein Batterie-Erweiterungsset f\u00fcr mehr Kapazit\u00e4t oder eine niedrigere S\u00e4ule (S. 79)."
+        ]
+      },
+      "matching_entries": [
+        {
+          "verdict": "released",
+          "inverter": "^GW(5|6|8|9\\.999|10|12|15|20|25|29\\.999|30)K-ETA-G20$",
+          "battery": "^GW(5\\.1|6\\.0|8\\.3|9\\.0)-BAT-D-G2[01]$"
+        }
+      ]
+    },
+    {
+      "inverter": "EF HD-P1-10K0-S2",
+      "battery": "EF BD-5.1-S1",
+      "verdict": "not_released",
+      "released": false,
+      "modules": null,
+      "accessories": [
+        {
+          "model": "^EF BD-B-S1$",
+          "quantity": 1,
+          "per": "stack"
+        }
+      ],
+      "documents": [
+        "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanSinglePhase_Datasheet_EN_20241230.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanThree-phase_Datasheet_EN_20241226.pdf"
+      ],
+      "conditions": {
+        "en": [
+          "The cited documents do not list this pair. This states no incompatibility and makes no claim about documents not checked.",
+          "The cited inverter documents do not establish a direct PowerOcean LFP battery-only pairing with OCEAN 2. The OCEAN 2 LFP Battery 5kWh User Manual (p. 7) and the OCEAN 2 LFP Battery 8kWh User Manual (p. 10) document mixed stacking of older PowerOcean battery modules with OCEAN 2 5 kWh and 8 kWh batteries respectively. That module statement does not establish the older EF BD-B-S1 base for an OCEAN 2 tower or the old battery as a stand-alone direct pair.",
+          "For the single-phase PowerOcean inverter, the single-phase datasheet (p. 1) names EF BD-5.1-S1 x N with EF BD-B-S1 x 1 and up to 15.3 kWh in one battery tower; the single-phase inverter reaches 45 kWh only by cascading three inverters."
+        ],
+        "de": [
+          "Die zitierten Dokumente f\u00fchren dieses Paar nicht auf. Das stellt keine Inkompatibilit\u00e4t fest und sagt nichts \u00fcber nicht gepr\u00fcfte Dokumente aus.",
+          "Die zitierten Wechselrichterunterlagen belegen keinen direkten Anschluss einer PowerOcean-LFP-Batterie allein an OCEAN 2. Die Benutzerhandb\u00fccher der OCEAN 2 LFP Battery 5kWh (S. 7) und der OCEAN 2 LFP Battery 8kWh (S. 10) dokumentieren gemischte Stapel aus \u00e4lteren PowerOcean-Batteriemodulen und OCEAN-2-Batterien mit 5 bzw. 8 kWh. Die Modulaussage belegt weder den \u00e4lteren Sockel EF BD-B-S1 f\u00fcr einen OCEAN-2-Turm noch eine direkte Kombination mit der \u00e4lteren Batterie allein.",
+          "F\u00fcr den einphasigen PowerOcean-Wechselrichter nennt das Datenblatt PowerOcean einphasig (S. 1) EF BD-5.1-S1 x N mit EF BD-B-S1 x 1 und bis zu 15,3 kWh in einem Batterieturm; 45 kWh erreicht der einphasige Wechselrichter nur durch Kaskadierung von drei Wechselrichtern."
+        ]
+      },
+      "matching_entries": [
+        {
+          "verdict": "not_released",
+          "inverter": "^EF HD-P1-(6|8|10|12)K0-S2$",
+          "battery": "^EF BD-(5\\.1|B)-S1$"
+        },
+        {
+          "verdict": "released_with_accessory",
+          "inverter": "^EF HD-P1-",
+          "battery": "^EF BD-(5\\.1|B)-S1$"
+        }
+      ]
+    },
+    {
+      "inverter": "EF HD-P1-10K0-S2",
+      "battery": "EF BD-5-S2",
+      "verdict": "released",
+      "released": true,
+      "modules": null,
+      "accessories": [],
+      "documents": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanSinglePhase_Datasheet_EN_20241230.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanThree-phase_Datasheet_EN_20241226.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf"
+      ],
+      "conditions": {
+        "en": [
+          "EcoFlow lists the OCEAN 2 LFP batteries EF BD-5-S2 and EF BD-8-S2 for the OCEAN 2 Plus single-phase inverters. Up to 12 packs / 60 kWh per inverter; one junction box connects up to 6 packs; floor stacks up to 6, wall up to 3 (installation guide, pp. 6, 26).",
+          "The OCEAN 2 Plus single-phase datasheet (p. 4) lists EF BD-5-S2 in its battery combination.",
+          "The PowerOcean single-phase datasheet (p. 2) names the exact single-phase inverter models. A directly integrated stack with the single-phase PowerOcean inverter needs no battery junction box; an expanded or parallel-tower layout needs its own installation check."
+        ],
+        "de": [
+          "EcoFlow f\u00fchrt die OCEAN 2 LFP-Batterien EF BD-5-S2 und EF BD-8-S2 f\u00fcr die einphasigen OCEAN 2 Plus Wechselrichter auf. Pro Wechselrichter bis zu 12 Packs / 60 kWh; ein Anschlusskasten verbindet bis zu 6 Packs; Bodenstapel bis zu 6, Wandmontage bis zu 3 (Installationsanleitung, S. 6, 26).",
+          "Das Datenblatt OCEAN 2 Plus einphasig (S. 4) f\u00fchrt EF BD-5-S2 in der Batteriekombination auf.",
+          "Das Datenblatt PowerOcean einphasig (S. 2) nennt die genauen einphasigen Wechselrichtermodelle. Ein direkt integrierter Stapel mit dem einphasigen PowerOcean-Wechselrichter ben\u00f6tigt keinen Batterieanschlusskasten; bei Erweiterung oder parallelen T\u00fcrmen ist die Installation gesondert zu pr\u00fcfen."
+        ]
+      },
+      "matching_entries": [
+        {
+          "verdict": "released",
+          "inverter": "^EF HD-P1-(6|8|10|12)K0-S2$",
+          "battery": "^EF BD-(5|8)-S2$"
+        },
+        {
+          "verdict": "released",
+          "inverter": "^EF HD-P1-(6|8|10|12)K0-S2$",
+          "battery": "^EF BD-5-S2$"
+        },
+        {
+          "verdict": "released",
+          "inverter": "^EF HD-P1-",
+          "battery": "(?:^EF BD-5-S2$|^EF BD-8-S2$)"
+        }
+      ]
+    }
+  ],
+  "c56_published_batteries": [
+    {
+      "model": "B2-5.0-HV1",
+      "device_class": "home-storage",
+      "usable_kwh": 4.5,
+      "pair_with_h2": "released_with_accessory",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "GW61.4-BAT-AC-G10",
+      "device_class": "battery-systems",
+      "usable_kwh": 60,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "GW112.6-BAT-AC-G10",
+      "device_class": "battery-systems",
+      "usable_kwh": 110,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "GW208.9-BAT-LC-G10",
+      "device_class": "battery-systems",
+      "usable_kwh": null,
+      "pair_with_h2": "unknown",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "GW208.9-BAT-LCD-G10",
+      "device_class": "battery-systems",
+      "usable_kwh": null,
+      "pair_with_h2": "unknown",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "GW261.2-BAT-LCD-G10",
+      "device_class": "battery-systems",
+      "usable_kwh": null,
+      "pair_with_h2": "unknown",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "B2-10.0-HV1",
+      "device_class": "home-storage",
+      "usable_kwh": 9,
+      "pair_with_h2": "released_with_accessory",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "B2-15.0-HV1",
+      "device_class": "home-storage",
+      "usable_kwh": 13.5,
+      "pair_with_h2": "released_with_accessory",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "B2-20.0-HV1",
+      "device_class": "home-storage",
+      "usable_kwh": 18,
+      "pair_with_h2": "released_with_accessory",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "B2-25.0-HV1",
+      "device_class": "home-storage",
+      "usable_kwh": 22.5,
+      "pair_with_h2": "released_with_accessory",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "BU2-5.0-HV1",
+      "device_class": "home-storage",
+      "usable_kwh": 4.5,
+      "pair_with_h2": "released_with_accessory",
+      "pair_with_hs2": "released"
+    },
+    {
+      "model": "BC2-HV1",
+      "device_class": "home-storage",
+      "usable_kwh": null,
+      "pair_with_h2": "released_with_accessory",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "BU3-5.0-TV2-PRO",
+      "device_class": "home-storage",
+      "usable_kwh": 4.8,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "EF BD-5-S2",
+      "device_class": "home-storage",
+      "usable_kwh": 4.85,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "EF BD-8-S2",
+      "device_class": "home-storage",
+      "usable_kwh": 7.76,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "GW6.0-BAT-D-G20",
+      "device_class": "home-storage",
+      "usable_kwh": 5.8,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "GW9.0-BAT-D-G20",
+      "device_class": "home-storage",
+      "usable_kwh": 8.7,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "CB2-57.3-HV5",
+      "device_class": "battery-systems",
+      "usable_kwh": 51.5,
+      "pair_with_h2": "unknown",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "CB2-71.6-HV5",
+      "device_class": "battery-systems",
+      "usable_kwh": 64.4,
+      "pair_with_h2": "unknown",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "CB2-85.9-HV5",
+      "device_class": "battery-systems",
+      "usable_kwh": 77.3,
+      "pair_with_h2": "unknown",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "CB2-100.3-HV5",
+      "device_class": "battery-systems",
+      "usable_kwh": 90.2,
+      "pair_with_h2": "unknown",
+      "pair_with_hs2": "unknown"
+    },
+    {
+      "model": "GW5.1-BAT-D-G20",
+      "device_class": "home-storage",
+      "usable_kwh": 5,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "GW8.3-BAT-D-G20",
+      "device_class": "home-storage",
+      "usable_kwh": 8,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "GW5.1-BAT-D-G21",
+      "device_class": "home-storage",
+      "usable_kwh": 5,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    },
+    {
+      "model": "GW8.3-BAT-D-G21",
+      "device_class": "home-storage",
+      "usable_kwh": 8,
+      "pair_with_h2": "not_released",
+      "pair_with_hs2": "not_released"
+    }
+  ],
+  "c56_published_conflicts": []
+}
