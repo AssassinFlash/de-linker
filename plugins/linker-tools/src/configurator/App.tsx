@@ -16,7 +16,7 @@ import { storeClient, type StoreClient } from './api/store';
 import { CommercialPanel } from './commercial/CommercialPanel';
 import type { Config } from './config';
 import { ResidentialPanel } from './residential/ResidentialPanel';
-import { Steps } from './Steps';
+import { Steps, type StepNumber } from './Steps';
 import { UtilityForm } from './utility/UtilityForm';
 import './configurator.css';
 
@@ -41,6 +41,17 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 	const [ segment, setSegment ] = useState< Segment >(
 		initialSegment ?? 'residential'
 	);
+	// The rail follows the screen the panel shows; another project type starts
+	// at its inputs again. Clicking the type already chosen keeps the panel
+	// and its result, so it must keep the step as it is.
+	const [ step, setStep ] = useState< StepNumber >( 1 );
+	function selectSegment( id: Segment ) {
+		if ( id === segment ) {
+			return;
+		}
+		setSegment( id );
+		setStep( 1 );
+	}
 	const tabs = useRef< Record< Segment, HTMLButtonElement | null > >( {
 		residential: null,
 		commercial: null,
@@ -75,20 +86,20 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 	];
 
 	function onTabKey( event: React.KeyboardEvent, index: number ) {
-		const step = { ArrowRight: 1, ArrowLeft: -1 }[ event.key ];
-		if ( ! step ) {
+		const offset = { ArrowRight: 1, ArrowLeft: -1 }[ event.key ];
+		if ( ! offset ) {
 			return;
 		}
 		const next =
-			segments[ ( index + step + segments.length ) % segments.length ];
-		setSegment( next.id );
+			segments[ ( index + offset + segments.length ) % segments.length ];
+		selectSegment( next.id );
 		tabs.current[ next.id ]?.focus();
 	}
 
 	return (
 		<div className="linker-configurator" lang={ config.locale }>
 			<div className="linker-shell">
-				<Steps current={ 1 } />
+				<Steps current={ step } />
 				<div className="linker-stage">
 					<div className="linker-screen">
 						<header className="linker-configurator__header">
@@ -147,7 +158,9 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 											segment === item.id ? 0 : -1
 										}
 										className="linker-segments__tab"
-										onClick={ () => setSegment( item.id ) }
+										onClick={ () =>
+											selectSegment( item.id )
+										}
 										onKeyDown={ ( event ) =>
 											onTabKey( event, index )
 										}
@@ -179,6 +192,7 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 								engine={ clients.engine }
 								store={ clients.store }
 								defaults={ config.defaults }
+								onStep={ setStep }
 							/>
 						) : null }
 						{ segment === 'commercial' ? (
@@ -186,6 +200,7 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 								config={ config }
 								engine={ clients.engine }
 								store={ clients.store }
+								onStep={ setStep }
 							/>
 						) : null }
 						{ segment === 'utility' ? (

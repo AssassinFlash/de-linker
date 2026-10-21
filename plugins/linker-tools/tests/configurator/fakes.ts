@@ -117,16 +117,22 @@ export function fakeEngine( options: FakeEngineOptions ) {
 }
 
 export function fakeStore(
-	outcome: 'added' | 'unverified' | 'retry' = 'added'
+	outcome: 'added' | 'unverified' | 'retry' = 'added',
+	/** Products WooCommerce would report as currently unavailable. */
+	outOfStock: number[] = []
 ) {
 	const added: { productId: number; quantity: number }[] = [];
 	const langs: string[] = [];
 	const store: StoreClient = {
 		async products( ids, locale ) {
 			langs.push( locale );
-			return fixtures.products.filter( ( product ) =>
-				ids.includes( product.id )
-			);
+			return fixtures.products
+				.filter( ( product ) => ids.includes( product.id ) )
+				.map( ( product ) =>
+					outOfStock.includes( product.id )
+						? { ...product, is_in_stock: false }
+						: product
+				);
 		},
 		async addAll(
 			lines,

@@ -1,0 +1,44 @@
+rail-01-inputs-1440-en: rail="01Inputs" bar="01Inputs"
+rail-02-solution-1440-en: rail="02Solution" bar="01Inputs"
+rail-03-report-1440-en: rail="03Design report" bar="03Design report" (full page, rail at the document top)
+stock-residential-in-1440-en: rail="02Solution" bar="02Solution"
+stock-residential-in-1440-en: labels=["In stock","In stock","Released by the manufacturer"]
+stock-residential-out-1440-en: rail="02Solution" bar="02Solution"
+stock-residential-out-1440-en: labels=["Currently unavailable","Currently unavailable","Released by the manufacturer"]
+stock-commercial-in-1440-en: rail="02Solution" bar="02Result"
+stock-commercial-in-1440-en: labels=["In stock","Released by the manufacturer","In stock","Released by the manufacturer","In stock","Released by the manufacturer"]
+stock-commercial-out-1440-en: rail="02Solution" bar="02Result"
+stock-commercial-out-1440-en: labels=["Currently unavailable","Released by the manufacturer","In stock","Released by the manufacturer","Currently unavailable","Released by the manufacturer"]
+rail-01-inputs-390-en: rail="01Inputs" bar="01Inputs"
+rail-02-solution-390-en: rail="02Solution" bar="02Solution"
+rail-03-report-390-en: rail="03Design report" bar="03Design report"
+stock-residential-in-390-en: rail="02Solution" bar="02Solution"
+stock-residential-in-390-en: labels=["In stock","In stock","Released by the manufacturer"]
+stock-residential-out-390-en: rail="02Solution" bar="02Solution"
+stock-residential-out-390-en: labels=["Currently unavailable","Currently unavailable","Released by the manufacturer"]
+stock-commercial-in-390-en: rail="02Solution" bar="02Result"
+stock-commercial-in-390-en: labels=["In stock","Released by the manufacturer","In stock","Released by the manufacturer","In stock","Released by the manufacturer"]
+stock-commercial-out-390-en: rail="02Solution" bar="02Result"
+stock-commercial-out-390-en: labels=["Currently unavailable","Released by the manufacturer","In stock","Released by the manufacturer","Currently unavailable","Released by the manufacturer"]
+rail-01-inputs-1440-de: rail="01Eingaben" bar="01Eingaben"
+rail-02-solution-1440-de: rail="02Lösung" bar="01Eingaben"
+rail-03-report-1440-de: rail="03Auslegungsbericht" bar="03Auslegungsbericht" (full page, rail at the document top)
+stock-residential-in-1440-de: rail="02Lösung" bar="02Lösung"
+stock-residential-in-1440-de: labels=["Auf Lager","Auf Lager","Vom Hersteller freigegeben"]
+stock-residential-out-1440-de: rail="02Lösung" bar="02Lösung"
+stock-residential-out-1440-de: labels=["Derzeit nicht verfügbar","Derzeit nicht verfügbar","Vom Hersteller freigegeben"]
+stock-commercial-in-1440-de: rail="02Lösung" bar="02Ergebnis"
+stock-commercial-in-1440-de: labels=["Auf Lager","Vom Hersteller freigegeben","Auf Lager","Vom Hersteller freigegeben","Auf Lager","Vom Hersteller freigegeben"]
+stock-commercial-out-1440-de: rail="02Lösung" bar="02Ergebnis"
+stock-commercial-out-1440-de: labels=["Derzeit nicht verfügbar","Vom Hersteller freigegeben","Auf Lager","Vom Hersteller freigegeben","Derzeit nicht verfügbar","Vom Hersteller freigegeben"]
+rail-01-inputs-390-de: rail="01Eingaben" bar="01Eingaben"
+rail-02-solution-390-de: rail="02Lösung" bar="02Lösung"
+rail-03-report-390-de: rail="03Auslegungsbericht" bar="03Auslegungsbericht"
+stock-residential-in-390-de: rail="02Lösung" bar="02Lösung"
+stock-residential-in-390-de: labels=["Auf Lager","Auf Lager","Vom Hersteller freigegeben"]
+stock-residential-out-390-de: rail="02Lösung" bar="02Lösung"
+stock-residential-out-390-de: labels=["Derzeit nicht verfügbar","Derzeit nicht verfügbar","Vom Hersteller freigegeben"]
+stock-commercial-in-390-de: rail="02Lösung" bar="02Ergebnis"
+stock-commercial-in-390-de: labels=["Auf Lager","Vom Hersteller freigegeben","Auf Lager","Vom Hersteller freigegeben","Auf Lager","Vom Hersteller freigegeben"]
+stock-commercial-out-390-de: rail="02Lösung" bar="02Ergebnis"
+stock-commercial-out-390-de: labels=["Derzeit nicht verfügbar","Vom Hersteller freigegeben","Auf Lager","Vom Hersteller freigegeben","Derzeit nicht verfügbar","Vom Hersteller freigegeben"]

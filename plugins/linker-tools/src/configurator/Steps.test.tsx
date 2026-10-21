@@ -75,6 +75,65 @@ async function calculate() {
 	} );
 }
 
+/**
+ * A mount whose section tops are what the test says they are: jsdom has no
+ * layout, so the scroll position of each section has to be staged. `tops` is
+ * read through the closure on every measurement, so a test moves a section by
+ * changing the object and firing a scroll.
+ * @param tops      Section id to its distance from the top of the viewport.
+ * @param barHeight The rail height the layout would give it.
+ */
+function mountWithTops( tops: Record< string, number >, barHeight = 48 ) {
+	const config: Config = {
+		engineUrl: 'https://engine.test',
+		restUrl: '/wp-json/',
+		restNonce: 'n',
+		locale: 'en',
+		openRoof: false,
+	};
+	const root = document.createElement( 'div' );
+	root.dataset.linkerApp = 'configurator';
+	document.body.append( root );
+	const rect = Element.prototype.getBoundingClientRect;
+	Element.prototype.getBoundingClientRect = function getBoundingClientRect() {
+		const box = rect.call( this );
+		if ( this.classList.contains( 'linker-steps' ) ) {
+			return { ...box, height: barHeight, bottom: box.top + barHeight };
+		}
+		const top = this.id ? tops[ this.id ] : undefined;
+		return top === undefined ? box : { ...box, top };
+	};
+	const view = render(
+		<App
+			config={ config }
+			engine={ fakeEngine( { locale: 'en' } ).engine }
+			store={ fakeStore().store }
+		/>,
+		{ container: root }
+	);
+	return {
+		...view,
+		tops,
+		restore() {
+			Element.prototype.getBoundingClientRect = rect;
+			root.remove();
+		},
+	};
+}
+
+function currentItem( container: HTMLElement ) {
+	const rail = container.querySelector( '.linker-steps' ) as HTMLElement;
+	return within( rail )
+		.getAllByRole( 'listitem' )
+		.find( ( item ) => item.getAttribute( 'aria-current' ) === 'step' );
+}
+
+async function scroll() {
+	await act( async () => {
+		window.dispatchEvent( new Event( 'scroll' ) );
+	} );
+}
+
 test( 'a model change scrolls the Solution clear of the measured step list', async () => {
 	const scrolls: { target: Element; options: ScrollIntoViewOptions }[] = [];
 	Element.prototype.scrollIntoView = function scrollIntoView( options ) {
@@ -251,5 +310,183 @@ test( 'a model change lands the Solution clear of the sticky rail', async () => 
 		);
 	} finally {
 		await browser.close();
+	}
+} );
+
+test( 'the step rail follows the inputs, the solution and the report', async () => {
+	const tops: Record< string, number > = {
+		'linker-inputs-section': 0,
+		'linker-solution-section': 900,
+		'linker-report-section': 1800,
+	};
+	const harness = mountWithTops( tops );
+	try {
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'01Inputs'
+		);
+
+		await calculate();
+		await screen.findByRole( 'heading', { name: 'Design report' } );
+		// The calculation itself moves the rail off the inputs, so it reads 02
+		// when the customer scrolls back up to the rail on a wide screen.
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'02Solution'
+		);
+		// The app scrolls the Solution into view once it has an answer.
+		tops[ 'linker-inputs-section' ] = -900;
+		tops[ 'linker-solution-section' ] = 0;
+		tops[ 'linker-report-section' ] = 900;
+		await scroll();
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'02Solution'
+		);
+		// The phone shortcuts read the same section: one page, one indicator.
+		const bar = harness.container.querySelector( '.linker-mobile-nav' );
+		expect(
+			bar?.querySelector( '[aria-current="step"]' )?.textContent
+		).toBe( '02Solution' );
+
+		// The report is reached once its section passes the rail.
+		tops[ 'linker-solution-section' ] = -900;
+		tops[ 'linker-report-section' ] = 0;
+		await scroll();
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'03Design report'
+		);
+		expect(
+			bar?.querySelector( '[aria-current="step"]' )?.textContent
+		).toBe( '03Design report' );
+		const rail = harness.container.querySelector( '.linker-steps' );
+		const items = within( rail as HTMLElement ).getAllByRole( 'listitem' );
+		expect( items[ 0 ] ).toHaveClass( 'is-reached' );
+		expect( items[ 1 ] ).toHaveClass( 'is-reached' );
+		expect( items[ 2 ] ).toHaveClass( 'is-current' );
+
+		// Scrolling back does not undo the calculation: the rail keeps the
+		// solution step, the phone bar points at the section on screen.
+		tops[ 'linker-inputs-section' ] = 0;
+		tops[ 'linker-solution-section' ] = 900;
+		tops[ 'linker-report-section' ] = 1800;
+		await scroll();
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'02Solution'
+		);
+	} finally {
+		harness.restore();
+	}
+} );
+
+test( 'a project type starts again at its inputs', async () => {
+	const tops: Record< string, number > = {
+		'linker-inputs-section': 0,
+		'linker-solution-section': 900,
+		'linker-report-section': 900,
+		'linker-ci-inputs-section': 0,
+		'linker-ci-result-section': 900,
+	};
+	const harness = mountWithTops( tops );
+	try {
+		await calculate();
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'02Solution'
+		);
+
+		await act( async () => {
+			fireEvent.click(
+				screen.getByRole( 'radio', {
+					name: 'Commercial & industrial',
+				} )
+			);
+		} );
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'01Inputs'
+		);
+	} finally {
+		harness.restore();
+	}
+} );
+
+test( 'commercial keeps the rail at its inputs until the result', async () => {
+	const tops: Record< string, number > = {
+		'linker-ci-inputs-section': 0,
+		'linker-ci-result-section': 900,
+	};
+	const harness = mountWithTops( tops );
+	try {
+		await act( async () => {
+			fireEvent.click(
+				screen.getByRole( 'radio', {
+					name: 'Commercial & industrial',
+				} )
+			);
+		} );
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'01Inputs'
+		);
+
+		fireEvent.change( screen.getByLabelText( /Postcode of the site/ ), {
+			target: { value: '80538' },
+		} );
+		fireEvent.change( screen.getByLabelText( /Grid connection capacity/ ), {
+			target: { value: '250' },
+		} );
+		fireEvent.change( screen.getByLabelText( /Annual consumption/ ), {
+			target: { value: '380000' },
+		} );
+		await act( async () => {
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Calculate storage' } )
+			);
+		} );
+		await screen.findByText( 'Usable energy, indicative' );
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'02Solution'
+		);
+	} finally {
+		harness.restore();
+	}
+} );
+
+test( 'the empty solution section does not advance the rail', async () => {
+	const tops: Record< string, number > = {
+		'linker-inputs-section': 0,
+		'linker-solution-section': 900,
+	};
+	const harness = mountWithTops( tops );
+	try {
+		tops[ 'linker-inputs-section' ] = -900;
+		tops[ 'linker-solution-section' ] = 0;
+		await scroll();
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'01Inputs'
+		);
+	} finally {
+		harness.restore();
+	}
+} );
+
+test( 'clicking the chosen project type keeps the rail where the flow is', async () => {
+	const tops: Record< string, number > = {
+		'linker-inputs-section': 0,
+		'linker-solution-section': 900,
+		'linker-report-section': 1800,
+	};
+	const harness = mountWithTops( tops );
+	try {
+		await calculate();
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'02Solution'
+		);
+
+		await act( async () => {
+			fireEvent.click(
+				screen.getByRole( 'radio', { name: 'Residential' } )
+			);
+		} );
+		expect( currentItem( harness.container )?.textContent ).toBe(
+			'02Solution'
+		);
+	} finally {
+		harness.restore();
 	}
 } );

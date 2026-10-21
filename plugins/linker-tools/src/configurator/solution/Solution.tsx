@@ -15,6 +15,7 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { ProductCard, type CardState } from '../../shared/ProductCard';
 import type { AddStatus } from '../api/store';
 import { formatNumber, formatPercentRange, formatRange } from '../format';
+import { stockBadge } from '../stock';
 import { Table } from '../Table';
 import type {
 	Line,
@@ -255,11 +256,9 @@ export function Solution( props: SolutionProps ) {
 					const product = line.product!;
 					const store = products.get( product.id );
 					const badges = [];
-					if ( store?.is_in_stock ) {
-						badges.push( {
-							tone: 'ok' as const,
-							text: __( 'In stock', 'linker-tools' ),
-						} );
+					const stock = stockBadge( [ store ] );
+					if ( stock ) {
+						badges.push( stock );
 					}
 					if ( line.role === 'battery' && battery ) {
 						badges.push( {

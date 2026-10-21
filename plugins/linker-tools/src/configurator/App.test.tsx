@@ -172,6 +172,83 @@ test( 'a household becomes a released system with its report', async () => {
 	}
 } );
 
+test( 'an in-stock solution keeps its In stock badge', async () => {
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	expect( await screen.findAllByText( 'In stock' ) ).toHaveLength( 2 );
+	expect( screen.queryByText( 'Currently unavailable' ) ).toBeNull();
+} );
+
+test( 'a solution states that a product is currently unavailable', async () => {
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			// The inverter and the battery the recorded answer proposes.
+			store={ fakeStore( 'added', [ 3556, 3611 ] ).store }
+		/>
+	);
+	await calculate();
+	expect(
+		await screen.findAllByText( 'Currently unavailable' )
+	).toHaveLength( 2 );
+	expect( screen.queryByText( 'In stock' ) ).toBeNull();
+} );
+
+test( 'German says a product is currently unavailable', async () => {
+	setLocaleData( german.locale_data.messages, 'linker-tools' );
+	const { engine } = fakeEngine( { locale: 'de' } );
+	render(
+		<App
+			config={ config( 'de' ) }
+			engine={ engine }
+			store={ fakeStore( 'added', [ 3556, 3611 ] ).store }
+		/>
+	);
+	fill( /Postleitzahl des Standorts/, '80538' );
+	fill( /Jahresverbrauch des Haushalts/, '5000' );
+	fill( /PV-Leistung/, '10' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'System berechnen' } )
+		);
+	} );
+	expect(
+		await screen.findAllByText( 'Derzeit nicht verfügbar' )
+	).toHaveLength( 2 );
+	expect( screen.queryByText( 'Auf Lager' ) ).toBeNull();
+} );
+
+test( 'German keeps the In stock badge for an available solution', async () => {
+	setLocaleData( german.locale_data.messages, 'linker-tools' );
+	const { engine } = fakeEngine( { locale: 'de' } );
+	render(
+		<App
+			config={ config( 'de' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	fill( /Postleitzahl des Standorts/, '80538' );
+	fill( /Jahresverbrauch des Haushalts/, '5000' );
+	fill( /PV-Leistung/, '10' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'System berechnen' } )
+		);
+	} );
+	expect( await screen.findAllByText( 'Auf Lager' ) ).toHaveLength( 2 );
+	expect( screen.queryByText( 'Derzeit nicht verfügbar' ) ).toBeNull();
+} );
+
 test( 'a draft that does not confirm shows it in the cards', async () => {
 	const { engine } = fakeEngine( { locale: 'en' } );
 	render(

@@ -26,6 +26,15 @@ type Args = {
 	commercial: 'sized' | 'indicative';
 	segment: AppProps[ 'initialSegment' ];
 	draft: 'added' | 'unverified' | 'retry';
+	/** The stock state WooCommerce reports for the answer's products. */
+	stock: 'in' | 'out';
+};
+
+// The products the recorded answers propose: the residential inverter and
+// battery, and the C&I battery two of the three systems pair.
+const OUT_OF_STOCK = {
+	residential: [ 3556, 3611 ],
+	commercial: [ 1954 ],
 };
 
 function Harness( {
@@ -33,6 +42,7 @@ function Harness( {
 	commercial,
 	segment,
 	draft,
+	stock,
 	locale,
 }: Args & { locale: Locale } ) {
 	const { engine } = fakeEngine( {
@@ -40,7 +50,14 @@ function Harness( {
 		residential: outcome,
 		commercial,
 	} );
-	const { store } = fakeStore( draft );
+	const { store } = fakeStore(
+		draft,
+		stock === 'out'
+			? OUT_OF_STOCK[
+					segment === 'commercial' ? 'commercial' : 'residential'
+				]
+			: []
+	);
 	return (
 		<App
 			config={ {
@@ -64,6 +81,7 @@ const meta = {
 		commercial: 'indicative',
 		segment: 'residential',
 		draft: 'added',
+		stock: 'in',
 	},
 	render: ( args, context ) => (
 		<Harness
@@ -153,6 +171,12 @@ export const Solution: Story = {
 			await within( canvasElement ).findAllByRole( 'article' )
 		).not.toHaveLength( 0 );
 	},
+};
+
+/** The proposal when WooCommerce reports its products as currently unavailable. */
+export const SolutionUnavailable: Story = {
+	args: { stock: 'out' },
+	play: async ( context ) => Solution.play!( context ),
 };
 
 /** The solution after "Add all to solution draft". */
@@ -256,6 +280,12 @@ export const CommercialSized: Story = {
 	args: { segment: 'commercial', commercial: 'sized' },
 	play: async ( { canvasElement, globals } ) =>
 		commercialRun( canvasElement, globals.locale, 'sized' ),
+};
+
+/** The sized systems when WooCommerce reports one battery as unavailable. */
+export const CommercialUnavailable: Story = {
+	args: { segment: 'commercial', commercial: 'sized', stock: 'out' },
+	play: async ( context ) => CommercialSized.play!( context ),
 };
 
 export const Utility: Story = { args: { segment: 'utility' } };

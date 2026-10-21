@@ -528,13 +528,14 @@ msgstr "Anfrage ansehen"
 msgid "Model"
 msgstr "Modell"
 
-#: build/genie.js:1 src/configurator/solution/Solution.tsx:256 build/hero.js
+#: build/genie.js:1 src/configurator/stock.ts:31 build/hero.js
 #: src/genie/components/Compare.tsx:55 src/genie/components/GenieCard.tsx:86
 #: build/configurator.js
 msgid "In stock"
 msgstr "Auf Lager"
 
-#: build/genie.js src/genie/components/GenieCard.tsx
+#: build/genie.js src/configurator/stock.ts:34 build/configurator.js
+#: src/genie/components/GenieCard.tsx
 msgid "Currently unavailable"
 msgstr "Derzeit nicht verfügbar"
 
