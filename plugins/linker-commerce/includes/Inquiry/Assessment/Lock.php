@@ -19,7 +19,9 @@ final class Lock {
 	 */
 	public static function run( string $key, callable $work ): bool {
 		global $wpdb;
-		$name = 'linker-assessment-' . md5( $wpdb->prefix . $key );
+		// Follow Genie's proven database/prefix namespace for server-wide locks.
+		$database = isset( $wpdb->dbname ) && is_string( $wpdb->dbname ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? (string) constant( 'DB_NAME' ) : '' );
+		$name     = 'linker-assessment-' . md5( $database . '/' . $wpdb->prefix . '/' . $key );
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- A MySQL connection mutex has no WordPress API; zero wait protects the caller.
 		$taken = $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 0)', $name ) );
 		if ( '1' !== (string) $taken ) {

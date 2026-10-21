@@ -49,7 +49,7 @@ final class Result {
 		if ( ! in_array( $label, array( 'normal', 'suspected_spam', 'uncertain' ), true ) || ! in_array( $basis, self::BASES, true ) ) {
 			return self::unknown( 'invalid_response' );
 		}
-		$conflict = ( 'normal' === $label && ( in_array( $basis, self::ABUSE, true ) || 'insufficient_context' === $basis ) ) || ( 'suspected_spam' === $label && ! in_array( $basis, self::ABUSE, true ) );
+		$conflict = self::conflicts( $label, $basis );
 		$reason   = is_string( $data['reason'] ?? null ) ? $data['reason'] : '';
 		// Only fixed codes may enter logs/admin; never a provider's response text.
 		if ( 1 !== preg_match( '/^(classified|conflict|insufficient_context|missing_credentials|invalid_model|invalid_response|transport_error|deadline|provider_http_[0-9]{3})$/D', $reason ) ) {
@@ -61,7 +61,7 @@ final class Result {
 				return self::unknown( 'invalid_response' );
 			}
 			$raw_label    = $raw['classification']['choice'];
-			$raw_conflict = ( 'normal' === $raw_label && ( in_array( $basis, self::ABUSE, true ) || 'insufficient_context' === $basis ) ) || ( 'suspected_spam' === $raw_label && ! in_array( $basis, self::ABUSE, true ) );
+			$raw_conflict = self::conflicts( $raw_label, $basis );
 			if ( ! $raw_conflict && $raw_label !== $label ) {
 				return self::unknown( 'invalid_response' );
 			}
@@ -88,6 +88,16 @@ final class Result {
 			'raw'     => is_array( $raw ) ? $raw : array(),
 			'seconds' => is_numeric( $data['seconds'] ?? null ) ? max( 0.0, (float) $data['seconds'] ) : 0.0,
 		);
+	}
+
+	/**
+	 * The two typed decisions must express a consistent purpose.
+	 *
+	 * @param string $label Classification.
+	 * @param string $basis Evidence category.
+	 */
+	private static function conflicts( string $label, string $basis ): bool {
+		return ( 'normal' === $label && ( in_array( $basis, self::ABUSE, true ) || 'insufficient_context' === $basis ) ) || ( 'suspected_spam' === $label && ! in_array( $basis, self::ABUSE, true ) );
 	}
 
 	/**

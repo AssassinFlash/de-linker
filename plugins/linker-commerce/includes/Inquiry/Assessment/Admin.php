@@ -47,7 +47,7 @@ final class Admin {
 		echo '<p><strong>' . esc_html( Result::label( (string) $result['label'] ) ) . '</strong><br />' . esc_html( Result::explanation( $result ) ) . '</p>';
 		echo '<p>' . esc_html__( 'Initial guidance only. Every inquiry is accepted and notified.', 'linker-commerce' ) . '</p>';
 		echo '<dl><dt>' . esc_html__( 'Diagnostic', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $result['reason'] ) . '</dd><dt>' . esc_html__( 'Elapsed time', 'linker-commerce' ) . '</dt><dd>' . esc_html( number_format_i18n( (float) ( $data['elapsed'] ?? 0 ), 2 ) ) . ' s</dd><dt>' . esc_html__( 'Model / rubric', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $result['model'] . ' / ' . (string) $result['rubric'] ) . '</dd></dl>';
-		echo '<details><summary>' . esc_html__( 'Original model result', 'linker-commerce' ) . '</summary><pre>' . esc_html( (string) wp_json_encode( $result['raw'] ?? array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ) . '</pre></details>';
+		echo '<details><summary>' . esc_html__( 'Original model result', 'linker-commerce' ) . '</summary><textarea readonly class="large-text code" rows="10" aria-label="' . esc_attr__( 'Original model result', 'linker-commerce' ) . '">' . esc_textarea( (string) wp_json_encode( $result['raw'] ?? array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ) . '</textarea></details>';
 		$override = $order->get_meta( self::OVERRIDE );
 		if ( is_array( $override ) ) {
 			echo '<p><strong>' . esc_html__( 'Staff correction', 'linker-commerce' ) . ': ' . esc_html( Result::label( (string) $override['label'] ) ) . '</strong><br />' . esc_html( (string) $override['note'] ) . '</p>';
@@ -56,9 +56,9 @@ final class Admin {
 		$id = 'linker-assessment-correction-' . $order->get_id();
 		echo '<p><label>' . esc_html__( 'Staff correction', 'linker-commerce' ) . ' <select form="' . esc_attr( $id ) . '" name="label">';
 		foreach ( array( 'uncertain', 'normal', 'suspected_spam' ) as $label ) {
-			echo '<option value="' . esc_attr( $label ) . '">' . esc_html( Result::label( $label ) ) . '</option>';
+			echo '<option value="' . esc_attr( $label ) . '"' . selected( is_array( $override ) ? (string) $override['label'] : 'uncertain', $label, false ) . '>' . esc_html( Result::label( $label ) ) . '</option>';
 		}
-		echo '</select></label></p><p><label>' . esc_html__( 'Review note', 'linker-commerce' ) . '<br /><textarea form="' . esc_attr( $id ) . '" name="note" rows="2"></textarea></label></p>';
+		echo '</select></label></p><p><label>' . esc_html__( 'Review note', 'linker-commerce' ) . '<br /><textarea form="' . esc_attr( $id ) . '" name="note" rows="2">' . esc_textarea( is_array( $override ) ? (string) $override['note'] : '' ) . '</textarea></label></p>';
 		echo '<button class="button" type="submit" form="' . esc_attr( $id ) . '">' . esc_html__( 'Save correction', 'linker-commerce' ) . '</button>';
 		add_action(
 			'admin_footer',

@@ -124,7 +124,9 @@ final class Queue {
 					$now - (float) get_option( self::HEARTBEAT, 0 ) > self::RECOVERY_STALE => 'recovery_unavailable',
 					default => '',
 				};
-				$result = '' !== $reason ? Result::unknown( $reason ) : ( new Client() )->assess( (array) $data['snapshot'], $deadline );
+				$result                  = '' !== $reason ? Result::unknown( $reason ) : ( new Client() )->assess( (array) $data['snapshot'], $deadline );
+				$result['started_at']    = $now;
+				$result['queue_seconds'] = max( 0.0, $now - (float) $data['accepted_at'] );
 				$this->finish( $id, $result );
 			}
 		);
@@ -222,9 +224,17 @@ final class Queue {
 			if ( 0 === $job ) {
 				throw new \RuntimeException( 'assessment_outbox_write_failed' );
 			}
+			$stored = $job > 0 ? ( new JobStore() )->load( $job ) : null;
+			if ( $job > 0 && ( null === $stored || $stored['message']->to_array() !== $message->to_array() ) ) {
+				throw new \RuntimeException( 'assessment_outbox_readback_failed' );
+			}
 			$data['notification_job'] = $job;
 			$order->update_meta_data( self::META, $data );
 			$order->save_meta_data();
+			$order->read_meta_data( true );
+			if ( self::data( $order ) !== $data ) {
+				throw new \RuntimeException( 'assessment_ledger_readback_failed' );
+			}
 			wc_transaction_query( 'commit' );
 		} catch ( \Throwable $error ) {
 			wc_transaction_query( 'rollback' );

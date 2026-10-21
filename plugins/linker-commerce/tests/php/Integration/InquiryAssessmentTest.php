@@ -177,6 +177,8 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$data = Queue::data( $order );
 		$this->assertSame( 'uncertain', $data['initial_result']['label'] );
 		$this->assertSame( 'service_unavailable', $data['initial_result']['reason'] );
+		$this->assertGreaterThanOrEqual( $data['accepted_at'], $data['result']['started_at'] );
+		$this->assertGreaterThanOrEqual( 0, $data['result']['queue_seconds'] );
 		$this->assertCount( 2, self::mail_jobs_after( $marker ) );
 		( new Queue() )->process( $order->get_id() );
 		( new Queue() )->expire( $order->get_id() );
@@ -281,6 +283,35 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$this->assertNotNull( ( new JobStore() )->load( $data['notification_job'] ) );
 	}
 
+	/** A partially persisted Outbox job must roll back and remain recoverable. */
+	public function test_failed_mail_meta_write_stays_pending_until_recovery(): void {
+		$order  = $this->inquiry();
+		$marker = self::newest_mail_job();
+		$deny   = static function ( $check, $id, $key ) {
+			return '_linker_mail_message' === $key ? false : $check;
+		};
+		add_filter( 'add_post_metadata', $deny, 10, 3 );
+		add_filter( 'update_post_metadata', $deny, 10, 3 );
+		try {
+			( new Queue() )->finish( $order->get_id(), self::result() );
+		} finally {
+			remove_filter( 'add_post_metadata', $deny, 10 );
+			remove_filter( 'update_post_metadata', $deny, 10 );
+		}
+		$order->read_meta_data( true );
+		$this->assertSame( 0, Queue::data( $order )['notification_job'] );
+		$this->assertSame( 'yes', $order->get_meta( Queue::PENDING ) );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ), 'A partial job is rolled back.' );
+		$data             = Queue::data( $order );
+		$data['deadline'] = microtime( true ) - 1;
+		$order->update_meta_data( Queue::META, $data );
+		$order->save_meta_data();
+		( new Queue() )->recover();
+		$order->read_meta_data( true );
+		$this->assertGreaterThan( 0, Queue::data( $order )['notification_job'] );
+		$this->assertCount( 1, self::mail_jobs_after( $marker ) );
+	}
+
 	/** Snapshot the owned retained transcript/readings and never another account's. */
 	public function test_owned_full_context_is_frozen_and_foreign_context_is_unavailable(): void {
 		$customer = $this->customer();
@@ -325,6 +356,9 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		$this->assertSame( 'Please check the complete project file.', $snapshot['context']['conversation'][0]['content'] );
 		$this->assertSame( str_repeat( 'Engineering requirement. ', 1000 ), $snapshot['context']['attachments'][0]['text'] );
 		$this->assertNotEmpty( $snapshot['account']['registration'] );
+		// Account ownership alone does not make an old conversation relevant.
+		$unlinked = ( new \Linker\Tools\Genie\InquiryAssessmentContext() )->read( array(), array(), false );
+		$this->assertSame( 'not_present', $unlinked['status'] );
 		$this->as_user( 0 );
 		$foreign = \Linker\Commerce\Inquiry\Assessment\Snapshot::make( $order, array( 'conversation' => $id ) );
 		$this->assertSame( 'unavailable', $foreign['context']['status'] );

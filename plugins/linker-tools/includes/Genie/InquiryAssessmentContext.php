@@ -29,7 +29,7 @@ final class InquiryAssessmentContext {
 		$id            = is_array( $locator ) ? (int) ( $locator['id'] ?? 0 ) : (int) $locator;
 		$conversations = new Conversations();
 		if ( $id < 1 && ! $contact ) {
-			$id = $conversations->existing_id();
+			$id = $conversations->selected_id();
 		}
 		if ( $id < 1 ) {
 			return array(

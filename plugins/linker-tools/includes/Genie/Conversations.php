@@ -208,8 +208,8 @@ class Conversations {
 	 * conversation post.
 	 */
 	public function existing_id(): int {
-		$id = $this->from_cookie();
-		if ( $id > 0 && $this->may_use( $id ) ) {
+		$id = $this->selected_id();
+		if ( $id > 0 ) {
 			return $id;
 		}
 		if ( ! is_user_logged_in() ) {
@@ -227,6 +227,12 @@ class Conversations {
 			)
 		);
 		return array() === $owned ? 0 : (int) $owned[0];
+	}
+
+	/** Only the authenticated browser-selected thread, without account-history fallback. */
+	public function selected_id(): int {
+		$id = $this->from_cookie();
+		return $id > 0 && $this->may_use( $id ) ? $id : 0;
 	}
 
 	/**
