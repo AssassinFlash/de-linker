@@ -35,6 +35,11 @@
 	transition: background 0.18s, border-color 0.18s;
 }
 
+#tv-footer-v2 .footer-identity-network .footer-identity-node {
+	flex: 1 1 auto;
+	white-space: nowrap;
+}
+
 #tv-footer-v2 .footer-identity-node:hover,
 #tv-footer-v2 .footer-identity-node:focus-visible {
 	background: #fff;
