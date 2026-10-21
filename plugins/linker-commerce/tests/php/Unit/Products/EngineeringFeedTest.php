@@ -292,9 +292,10 @@ final class EngineeringFeedTest extends TestCase {
 	}
 
 	/**
-	 * The envelope carries the versions of the data files and the overlay.
+	 * The envelope carries the versions of the data files, the contract itself
+	 * and the overlay.
 	 */
-	public function test_the_envelope_carries_the_schema_version_the_compatibility_version_and_the_overlay(): void {
+	public function test_the_envelope_carries_the_schema_version_the_compatibility_contract_and_the_overlay(): void {
 		$this->mock_cache_warming();
 		$this->mock_query();
 		$this->mock_meta( 4107, array() );
@@ -304,6 +305,12 @@ final class EngineeringFeedTest extends TestCase {
 		$this->assertSame( 1, $feed['schema_version'] );
 		$this->assertSame( EngineeringData::compatibility_version(), $feed['compatibility_version'] );
 		$this->assertSame( 64, strlen( $feed['compatibility_version'] ), 'the version the data file states' );
+		$this->assertArrayHasKey( 'compatibility', $feed );
+		$contract = $feed['compatibility'];
+		$this->assertIsArray( $contract );
+		$this->assertSame( EngineeringData::json( EngineeringData::COMPATIBILITY_FILE ), $contract );
+		$this->assertSame( $feed['compatibility_version'], $contract['version'] ?? null, 'the contract the feed carries states the version it reports' );
+		$this->assertNotEmpty( $contract['pairs'] ?? array() );
 		$this->assertIsArray( $feed['overlay'] );
 		$this->assertSame( 'mat_trina_solar_tsm_460neg9r_28', $feed['overlay'][0]['id'] );
 		$this->assertSame( 'pv_module', $feed['overlay'][0]['kind'] );

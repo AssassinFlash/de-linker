@@ -2347,9 +2347,10 @@ msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:115
 msgid ""
-"The engineering data of every published product, the overlay components and "
-"the compatibility version (docs/specs/8-engineering-data.md, target shape 5; "
-"the binding contract is services/engine/schemas/feed.schema.json)."
+"The engineering data of every published product, the overlay components, "
+"the compatibility contract and its version (docs/specs/8-engineering-data.md, "
+"target shape 5; the binding contract is "
+"services/engine/schemas/feed.schema.json)."
 msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:120
@@ -2362,34 +2363,41 @@ msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:132
 msgid ""
+"The compatibility contract itself (data/compatibility.json), so the "
+"engine's sync refreshes its copy from the same fetch; its version equals "
+"compatibility_version. Absent when the site cannot read the file."
+msgstr ""
+
+#: includes/Products/EngineeringFeedController.php:136
+msgid ""
 "Engineering components that are not products (data/engineering-overlay.json)."
 msgstr ""
 
-#: includes/Products/EngineeringFeedController.php:167
+#: includes/Products/EngineeringFeedController.php:171
 msgid "One entry per published product."
 msgstr ""
 
-#: includes/Products/EngineeringFeedController.php:181
+#: includes/Products/EngineeringFeedController.php:185
 msgid "Rated AC power in kW, or unknown (#7 SelectionFactSet)."
 msgstr ""
 
-#: includes/Products/EngineeringFeedController.php:185
+#: includes/Products/EngineeringFeedController.php:189
 msgid "Maximum PV input power in kW, or unknown."
 msgstr ""
 
-#: includes/Products/EngineeringFeedController.php:189
+#: includes/Products/EngineeringFeedController.php:193
 msgid "Usable energy in kWh, or unknown."
 msgstr ""
 
-#: includes/Products/EngineeringFeedController.php:193
+#: includes/Products/EngineeringFeedController.php:197
 msgid "Nominal energy in kWh, or unknown."
 msgstr ""
 
-#: includes/Products/EngineeringFeedController.php:197
+#: includes/Products/EngineeringFeedController.php:201
 msgid "Energy range in kWh the product data states; null when it states none."
 msgstr ""
 
-#: includes/Products/EngineeringFeedController.php:201
+#: includes/Products/EngineeringFeedController.php:205
 msgid ""
 "Figure entries with a citation of a hosted document; a value without one is "
 "not in the feed."

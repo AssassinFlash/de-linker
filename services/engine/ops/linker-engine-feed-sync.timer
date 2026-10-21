@@ -1,8 +1,9 @@
-# Nightly run of the feed refresh (#354). 03:40 UTC — clear of the 03:30
-# window the old material-registry sync used — with the same randomized
-# delay; Persistent catches up after the VPS was down at the scheduled time.
+# Nightly run of the feed and contract refresh (#354, #493). 03:40 UTC —
+# clear of the 03:30 window the old material-registry sync used — with the
+# same randomized delay; Persistent catches up after the VPS was down at the
+# scheduled time.
 [Unit]
-Description=Nightly Linker design engine feed refresh
+Description=Nightly Linker design engine data refresh
 
 [Timer]
 OnCalendar=*-*-* 03:40:00 UTC

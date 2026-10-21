@@ -2483,12 +2483,13 @@ msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:115
 msgid ""
-"The engineering data of every published product, the overlay components and "
-"the compatibility version (docs/specs/8-engineering-data.md, target shape 5; "
-"the binding contract is services/engine/schemas/feed.schema.json)."
+"The engineering data of every published product, the overlay components, "
+"the compatibility contract and its version (docs/specs/8-engineering-data.md, "
+"target shape 5; the binding contract is "
+"services/engine/schemas/feed.schema.json)."
 msgstr ""
 "Die technischen Daten aller veröffentlichten Produkte, die Overlay-"
-"Komponenten und die Version des Kompatibilitätsvertrags (docs/specs/8-"
+"Komponenten, der Kompatibilitätsvertrag und seine Version (docs/specs/8-"
 "engineering-data.md, Zielform 5; der verbindliche Vertrag ist services/"
 "engine/schemas/feed.schema.json)."
 
@@ -2502,38 +2503,49 @@ msgstr "Die in data/compatibility.json angegebene Version."
 
 #: includes/Products/EngineeringFeedController.php:132
 msgid ""
+"The compatibility contract itself (data/compatibility.json), so the "
+"engine's sync refreshes its copy from the same fetch; its version equals "
+"compatibility_version. Absent when the site cannot read the file."
+msgstr ""
+"Der Kompatibilitätsvertrag selbst (data/compatibility.json), damit die "
+"Synchronisierung der Engine ihre Kopie aus demselben Abruf erneuert; seine "
+"Version entspricht compatibility_version. Fehlt, wenn die Website die Datei "
+"nicht lesen kann."
+
+#: includes/Products/EngineeringFeedController.php:136
+msgid ""
 "Engineering components that are not products (data/engineering-overlay.json)."
 msgstr ""
 "Technische Komponenten, die keine Produkte sind (data/engineering-"
 "overlay.json)."
 
-#: includes/Products/EngineeringFeedController.php:167
+#: includes/Products/EngineeringFeedController.php:171
 msgid "One entry per published product."
 msgstr "Ein Eintrag je veröffentlichtem Produkt."
 
-#: includes/Products/EngineeringFeedController.php:181
+#: includes/Products/EngineeringFeedController.php:185
 msgid "Rated AC power in kW, or unknown (#7 SelectionFactSet)."
 msgstr "AC-Nennleistung in kW oder unbekannt (#7 SelectionFactSet)."
 
-#: includes/Products/EngineeringFeedController.php:185
+#: includes/Products/EngineeringFeedController.php:189
 msgid "Maximum PV input power in kW, or unknown."
 msgstr "Maximale PV-Eingangsleistung in kW oder unbekannt."
 
-#: includes/Products/EngineeringFeedController.php:189
+#: includes/Products/EngineeringFeedController.php:193
 msgid "Usable energy in kWh, or unknown."
 msgstr "Nutzbare Energie in kWh oder unbekannt."
 
-#: includes/Products/EngineeringFeedController.php:193
+#: includes/Products/EngineeringFeedController.php:197
 msgid "Nominal energy in kWh, or unknown."
 msgstr "Nennenergie in kWh oder unbekannt."
 
-#: includes/Products/EngineeringFeedController.php:197
+#: includes/Products/EngineeringFeedController.php:201
 msgid "Energy range in kWh the product data states; null when it states none."
 msgstr ""
 "Energiebereich in kWh, den die Produktdaten angeben; null, wenn keiner "
 "angegeben ist."
 
-#: includes/Products/EngineeringFeedController.php:201
+#: includes/Products/EngineeringFeedController.php:205
 msgid ""
 "Figure entries with a citation of a hosted document; a value without one is "
 "not in the feed."

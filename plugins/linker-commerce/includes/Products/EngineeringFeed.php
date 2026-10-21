@@ -14,9 +14,10 @@ namespace Linker\Commerce\Products;
  * services/engine/schemas/feed.schema.json): every published product with the
  * model, brand and series the product data states, the five selection facts
  * of #7, the figure entries that carry a citation of a document we host, and
- * the product's documents — plus the engineering overlay and the version of
- * the compatibility contract. The Solution Configurator's engine reads
- * nothing else.
+ * the product's documents — plus the engineering overlay, the compatibility
+ * contract itself and its version. The contract travels with the feed so the
+ * engine's nightly sync can refresh LINKER_ENGINE_COMPATIBILITY from the same
+ * fetch; the Solution Configurator's engine reads nothing else.
  */
 final class EngineeringFeed {
 
@@ -64,7 +65,14 @@ final class EngineeringFeed {
 			'overlay'               => EngineeringData::json( EngineeringData::OVERLAY_FILE )['overlay'] ?? array(),
 			'products'              => array(),
 		);
-		$ids  = self::product_ids( $since );
+		// The contract itself, so the engine's sync refreshes its copy from the
+		// same fetch; a broken file stays out of the feed (it reads as null),
+		// and the engine keeps the contract it already has.
+		$compatibility = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
+		if ( null !== $compatibility ) {
+			$feed['compatibility'] = $compatibility;
+		}
+		$ids = self::product_ids( $since );
 		// One bulk load each: the items below read every product's meta and
 		// taxonomy terms, not one database round-trip per item.
 		update_postmeta_cache( $ids );

@@ -15,10 +15,10 @@ use WP_REST_Request;
 /**
  * GET /wp-json/linker/v1/engineering-feed returns the feed of docs/specs/
  * 8-engineering-data.md: every published product's engineering data, the
- * overlay and the compatibility version. With ?since= only the products
- * modified after that moment. It is public and the same for every visitor:
- * no login, nonce or cookie, so a page cache may keep it. An OPTIONS request
- * shows the schema.
+ * overlay, the compatibility contract and its version. With ?since= only the
+ * products modified after that moment. It is public and the same for every
+ * visitor: no login, nonce or cookie, so a page cache may keep it. An OPTIONS
+ * request shows the schema.
  */
 final class EngineeringFeedController extends WP_REST_Controller {
 
@@ -112,7 +112,7 @@ final class EngineeringFeedController extends WP_REST_Controller {
 			$this->schema = array(
 				'$schema'     => 'http://json-schema.org/draft-04/schema#',
 				'title'       => 'engineering-feed',
-				'description' => __( 'The engineering data of every published product, the overlay components and the compatibility version (docs/specs/8-engineering-data.md, target shape 5; the binding contract is services/engine/schemas/feed.schema.json).', 'linker-commerce' ),
+				'description' => __( 'The engineering data of every published product, the overlay components, the compatibility contract and its version (docs/specs/8-engineering-data.md, target shape 5; the binding contract is services/engine/schemas/feed.schema.json).', 'linker-commerce' ),
 				'type'        => 'object',
 				'properties'  => array(
 					'schema_version'        => array(
@@ -126,6 +126,10 @@ final class EngineeringFeedController extends WP_REST_Controller {
 					'compatibility_version' => array(
 						'type'        => 'string',
 						'description' => __( 'The version stated by data/compatibility.json.', 'linker-commerce' ),
+					),
+					'compatibility'         => array(
+						'type'        => 'object',
+						'description' => __( 'The compatibility contract itself (data/compatibility.json), so the engine\'s sync refreshes its copy from the same fetch; its version equals compatibility_version. Absent when the site cannot read the file.', 'linker-commerce' ),
 					),
 					'overlay'               => array(
 						'type'        => 'array',

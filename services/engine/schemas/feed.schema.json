@@ -14,6 +14,10 @@
 			"type": "string",
 			"minLength": 1
 		},
+		"compatibility": {
+			"description": "The compatibility contract itself (data/compatibility.json), carried so the nightly sync refreshes LINKER_ENGINE_COMPATIBILITY from the same fetch. Its own consumer validates it against compatibility.schema.json; absent when the site cannot read the file, and then the engine keeps the contract it already has.",
+			"type": "object"
+		},
 		"products": { "type": "array", "items": { "$ref": "#/$defs/product" } },
 		"overlay": {
 			"description": "data/engineering-overlay.json: engineering items that are not products (the reference PV module).",
