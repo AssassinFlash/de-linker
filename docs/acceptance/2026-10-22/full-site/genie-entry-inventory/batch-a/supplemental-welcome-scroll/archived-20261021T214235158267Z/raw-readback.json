@@ -1,0 +1,17 @@
+{
+  "observed": {
+    "clientHeight": 101,
+    "scrollHeight": 228,
+    "titleTop": 462,
+    "scrollViewportTop": 438,
+    "scrollViewportBottom": 538.90625,
+    "scrolledTo": 127,
+    "lastPrompt": {
+      "top": 471,
+      "bottom": 515,
+      "height": 44
+    },
+    "fullyReachable": true
+  },
+  "turns": 0
+}

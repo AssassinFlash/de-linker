@@ -128,6 +128,149 @@
 	opacity: 1;
 	cursor: default;
 }
+
+/* Recovery and draft choices reuse the existing quiet pill controls, with
+   room for the full German label and a comfortable touch target. */
+.linker-genie-app .linker-genie-app__prompt,
+#home-a .linker-genie-hero__surface .linker-genie-app__prompt {
+	min-height: var(--proto-control-height, 44px);
+	max-width: 100%;
+	white-space: normal;
+	text-align: left;
+	line-height: 1.5;
+	cursor: pointer;
+}
+.linker-genie-app .linker-genie-app__prompt:hover:enabled,
+#home-a .linker-genie-hero__surface .linker-genie-app__prompt:hover:enabled {
+	border-color: var(--proto-teal-600);
+	background: var(--proto-teal-50);
+	color: var(--proto-teal-800);
+}
+.linker-genie-app .linker-genie-app__prompt:focus-visible,
+#home-a .linker-genie-hero__surface .linker-genie-app__prompt:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
+.linker-genie-app .linker-genie-app__prompt:disabled,
+#home-a .linker-genie-hero__surface .linker-genie-app__prompt:disabled { cursor: default; }
+.linker-genie-app :is(.linker-genie-app__error, .linker-genie-app__refused) > .linker-genie-app__prompt,
+#home-a .linker-genie-hero__surface .linker-genie-app__refused > .linker-genie-app__prompt { margin-top: var(--proto-space-2); }
+.linker-genie-app .linker-genie-app__photo-prompt p { max-width: 100%; overflow-wrap: anywhere; }
+
+/* The same file and source actions are reachable in a phone helper and on
+   the marketing editor; their small glyph is not their entire touch target. */
+.linker-genie-app .linker-genie-app__attachment-remove,
+#home-a .linker-genie-hero__surface .linker-genie-app__attachment-remove {
+	width: var(--proto-control-height, 44px);
+	height: var(--proto-control-height, 44px);
+	min-width: var(--proto-control-height, 44px);
+	min-height: var(--proto-control-height, 44px);
+	flex: 0 0 var(--proto-control-height, 44px);
+	padding: 0;
+	border: 1px solid transparent;
+	border-radius: var(--proto-radius-round, 999px);
+	color: var(--proto-neutral-700);
+	font-size: 20px;
+	line-height: 1;
+	cursor: pointer;
+}
+.linker-genie-app .linker-genie-app__attachment-remove:hover,
+#home-a .linker-genie-hero__surface .linker-genie-app__attachment-remove:hover {
+	border-color: var(--proto-teal-600);
+	background: var(--proto-teal-50);
+	color: var(--proto-teal-800);
+}
+.linker-genie-app .linker-genie-app__attachment-remove:focus-visible,
+#home-a .linker-genie-hero__surface .linker-genie-app__attachment-remove:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
+#system-search :is(.lk-send-btn, [data-linker-assistant-open]),
+#installer-journal .installer-mobile-assistant :is(.installer-assistant-send, [data-linker-assistant-open]) {
+	min-width: var(--proto-control-height, 44px);
+	min-height: var(--proto-control-height, 44px);
+	flex-shrink: 0;
+}
+
+/* The resting homepage stays unchanged. Expanded controls must fit long
+   German labels and two complete lines in the native follow-up field. */
+#home-a .hero-cinematic.linker-genie-hero--open .hero-nameplate-btn {
+	min-width: 0;
+	max-width: 100%;
+	height: auto;
+	min-height: var(--proto-control-height, 44px);
+	padding: 8px 12px;
+	white-space: normal;
+	text-align: left;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+#home-a .hero-cinematic.linker-genie-hero--open .hero-prompt {
+	min-height: calc(2lh + 8px);
+	overflow-y: auto;
+}
+#home-a .hero-cinematic.linker-genie-hero--open .hero-dialog:focus-within .hero-send,
+#home-a .hero-cinematic.linker-genie-hero--open .hero-send:hover {
+	color: #fff;
+}
+
+/* The loader renders this semantic fallback before the app stylesheet exists.
+   Its recovery controls must remain legible and usable when that file fails. */
+[data-linker-genie-load-error] {
+	display: flex;
+	flex-direction: column;
+	gap: var(--proto-space-4, 16px);
+	min-width: 0;
+	padding: var(--proto-space-4, 16px);
+	color: var(--proto-neutral-900);
+}
+[data-linker-genie-load-error] .linker-genie-load-error__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--proto-space-3, 12px);
+}
+[data-linker-genie-load-error] .linker-genie-load-error__header h2 {
+	margin: 0;
+	font-size: 16px;
+	line-height: 1.4;
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+[data-linker-genie-load-error] .linker-genie-app__error { margin: 0; }
+[data-linker-genie-load-error] .linker-genie-load-error__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--proto-space-3, 12px);
+}
+[data-linker-genie-load-error] button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: var(--proto-control-height, 44px);
+	min-height: var(--proto-control-height, 44px);
+	max-width: 100%;
+	padding: 10px 16px;
+	border: 1px solid var(--proto-neutral-300);
+	border-radius: var(--proto-radius-pill, 999px);
+	background: #fff;
+	color: var(--proto-neutral-900);
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.5;
+	white-space: normal;
+	text-decoration: none;
+	cursor: pointer;
+}
+[data-linker-genie-load-error] button:hover:enabled {
+	border-color: var(--proto-teal-600);
+	background: var(--proto-teal-50);
+	color: var(--proto-teal-800);
+}
+[data-linker-genie-load-error] button:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
 :is(#tv-storefront-cart, #tv-woo-b2b-checkout) .woocommerce-cart-form.processing button[name="update_cart"]::after {
 	content: "";
 	width: 18px;
@@ -295,6 +438,66 @@
 		border-top: 1px solid var(--lg-line);
 	}
 	#tv-legal .lg-table-wrap td[data-label]::before { content: none; }
+}
+
+/* The homepage reset wins over the app's class-only defaults. Keep the
+   disclosure separate from the scrolling answer and use the shared 44px
+   control target on the expanded surface only. */
+#home-a .linker-genie-hero__intro {
+	margin: 0 2px var(--proto-space-3, 0.75rem);
+}
+#home-a .linker-genie-hero__surface .linker-genie-app__transcript {
+	padding: 4px 2px;
+}
+#home-a :is(.linker-genie-hero__continue, .linker-genie-hero__close) {
+	min-height: 44px;
+	min-width: 44px;
+	color: var(--proto-teal-600, #0c7f73);
+	border-radius: 8px;
+}
+#home-a .linker-genie-hero__continue {
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+#home-a .linker-genie-hero__close {
+	font-size: 20px;
+	line-height: 1;
+}
+#home-a :is(.linker-genie-hero__continue, .linker-genie-hero__close):is(:hover, :focus-visible) {
+	background: #eef7f6;
+}
+#home-a :is(.linker-genie-hero__continue, .linker-genie-hero__close):focus-visible {
+	outline: 2px solid var(--proto-teal-600, #0c7f73);
+	outline-offset: 2px;
+}
+
+/* The dock already switches to a phone sheet at 860px. Reuse the hero's
+   stacked phone header so larger touch targets do not truncate its title. */
+@media (max-width: 860px) {
+	.linker-genie-panel .linker-genie-app .linker-genie-app__bar {
+		flex-wrap: wrap;
+	}
+	.linker-genie-panel .linker-genie-app .linker-genie-app__bar-lead {
+		flex: 1 1 100%;
+		overflow: visible;
+	}
+	.linker-genie-panel .linker-genie-app .linker-genie-app__title {
+		white-space: normal;
+		overflow: visible;
+	}
+	.linker-genie-panel .linker-genie-app .linker-genie-app__bar-actions {
+		margin-inline-start: auto;
+		gap: 4px;
+	}
+	.linker-genie-app .linker-genie-app__icon,
+	.linker-genie-app .linker-genie-app__rail-toggle,
+	.linker-genie-app .linker-genie-answer-actions .linker-genie-app__vote {
+		width: 44px;
+		height: 44px;
+		min-width: 44px;
+		min-height: 44px;
+	}
 }
 
 /* Expanded Genie answers use their own surface width. A helper is 400px

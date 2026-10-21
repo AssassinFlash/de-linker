@@ -55,7 +55,7 @@ msgstr "Wie geht es weiter?"
 msgid "Where is my Proforma?"
 msgstr "Wo steht meine Proforma?"
 
-#: includes/Genie/Entries.php
+#: includes/Genie/Entries.php build/marketing.js build/genie.js build/hero.js
 msgid "Genie could not load."
 msgstr "Genie konnte nicht geladen werden."
 
@@ -2234,3 +2234,48 @@ msgstr "Broschüre"
 #: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
 msgid "Document"
 msgstr "Dokument"
+
+#: src/genie/components/EntryInbox.tsx build/genie.js
+msgid "Question from this page"
+msgstr "Frage von dieser Seite"
+
+#: src/genie/components/EntryInbox.tsx build/genie.js
+msgid "Keep current draft"
+msgstr "Bisherigen Entwurf behalten"
+
+#: src/genie/components/EntryInbox.tsx build/genie.js
+msgid "Add to current draft"
+msgstr "Zum Entwurf hinzufügen"
+
+#: src/genie/components/EntryInbox.tsx build/genie.js
+msgid "Send question separately"
+msgstr "Frage separat senden"
+
+#: src/genie/components/EntryInbox.tsx src/hero/Hero.tsx build/genie.js build/hero.js
+msgid "Current unsent draft"
+msgstr "Bisheriger ungesendeter Entwurf"
+
+#: src/genie/components/EntryInbox.tsx src/hero/Hero.tsx build/genie.js build/hero.js
+msgid "Restore unsent draft"
+msgstr "Bisherigen Entwurf wiederherstellen"
+
+#. translators: %s is the name of a file that must be selected again.
+#: src/genie/components/EntryInbox.tsx src/hero/Hero.tsx build/genie.js build/hero.js
+msgid "Select %s again before sending."
+msgstr "Wählen Sie %s vor dem Senden erneut aus."
+
+#: src/genie/App.tsx build/genie.js
+msgid "Dictation is not available in this browser. You can type your question."
+msgstr "Dieser Browser unterstützt keine Spracheingabe. Sie können Ihre Frage eintippen."
+
+#: src/genie/App.tsx build/genie.js
+msgid "Dictation could not start. You can type your question."
+msgstr "Die Spracheingabe konnte nicht gestartet werden. Sie können Ihre Frage eintippen."
+
+#: src/genie/components/EntryInbox.tsx build/genie.js
+msgid "Open as draft"
+msgstr "Als Entwurf öffnen"
+
+#: src/genie/components/EntryInbox.tsx src/hero/Hero.tsx build/genie.js build/hero.js
+msgid "Remove"
+msgstr "Entfernen"

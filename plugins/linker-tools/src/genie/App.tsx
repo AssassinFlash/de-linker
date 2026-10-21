@@ -52,7 +52,7 @@ import {
 	type Turn,
 	type TurnMessage,
 } from './api/turn';
-import { ACCEPT } from './attachments/prepare';
+import { ACCEPT, type Upload } from './attachments/prepare';
 import { useAttachments } from './attachments/useAttachments';
 import { AttachmentCard } from './components/AttachmentCard';
 import { AttachmentChips, refusalText } from './components/AttachmentChips';
@@ -85,6 +85,12 @@ import {
 	readLinkResult,
 } from './components/EmailConversation';
 import { VoteButtons } from './components/VoteButtons';
+import { verifiedEntryFailure } from './shared/entryFailure';
+import { newEntryId } from './shared/entryDraft';
+import { useEntryInbox } from './shared/useEntryInbox';
+import { useHelperDialog } from './shared/useHelperDialog';
+import { useComposerSize } from './shared/useComposerSize';
+import { EntryInbox } from './components/EntryInbox';
 import './genie.css';
 
 /** Test seam: the dictation test stubs the constructor (shared/dictation.ts). */
@@ -181,6 +187,26 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ revealingAt, setRevealingAt ] = useState< number | null >( null );
 	const finishReveal = useCallback( () => setRevealingAt( null ), [] );
 	const [ input, setInput ] = useState( '' );
+	const entryOwnsComposer = useRef( false );
+	const entryRecoveryBlocksSend = useRef< () => boolean >( () => false );
+	const claimEntryComposer = useRef< ( scope: string ) => void >(
+		() => undefined
+	);
+	const blockEntryRecovery = useRef< () => void >( () => undefined );
+	const resolveEntryRecovery = useRef< () => void >( () => undefined );
+	const offerEntryRecovery = useRef<
+		(
+			scope: string,
+			candidate: { text: string; uploads: Upload[]; missing: string[] }
+		) => boolean
+	>( () => true );
+	const verifiedEntryScope = useRef( '' );
+	const resetEntryComposer = useRef< () => void >( () => undefined );
+	const authorizeEntry = useRef< ( scope?: string ) => Promise< boolean > >(
+		async () => true
+	);
+	const missingEntryFiles = useRef( false );
+	const [ voiceError, setVoiceError ] = useState( false );
 	const [ history, setHistory ] = useState< ConversationSummary[] >( [] );
 	const [ historyPhase, setHistoryPhase ] =
 		useState< HistoryPhase >( 'loading' );
@@ -210,20 +236,11 @@ export function App( { config }: { config: GenieConfig } ) {
 	// rides in the question, so the thread says what was sent. What the
 	// dictation heard lands in the field.
 	const attachInput = useRef< HTMLInputElement >( null );
-	const field = useRef< HTMLTextAreaElement >( null );
+	const { field, ref: composerFieldRef } = useComposerSize(
+		input,
+		( open || config.surface === 'workspace' ) && ! dockHistory
+	);
 	const dictation = useRef< DictationSession | null >( null );
-	// The composer grows with a pasted parts list (#251) up to six 24px lines,
-	// then scrolls; a one-line question keeps the bar's 44px height.
-	useEffect( () => {
-		const node = field.current;
-		if ( ! node ) {
-			return;
-		}
-		node.style.height = '24px';
-		const height = Math.min( node.scrollHeight, 144 );
-		node.style.height = `${ height }px`;
-		node.style.overflowY = node.scrollHeight > 144 ? 'auto' : 'hidden';
-	}, [ input ] );
 	const files = useAttachments();
 	const filesRef = useRef( files );
 	filesRef.current = files;
@@ -235,6 +252,8 @@ export function App( { config }: { config: GenieConfig } ) {
 	// Opened to send a nameplate photo (the preview card's suggestion): the
 	// panel offers the picker, which only a click may open.
 	const [ photoPrompt, setPhotoPrompt ] = useState( false );
+	const [ filePrompt, setFilePrompt ] = useState( false );
+	const [ voicePrompt, setVoicePrompt ] = useState( false );
 	// Opened for a parts list (the preview card's suggestion, #251): the
 	// picker is offered for a CSV, an Excel file or a photo of the list.
 	const [ listPrompt, setListPrompt ] = useState( false );
@@ -248,7 +267,6 @@ export function App( { config }: { config: GenieConfig } ) {
 		commitFailure,
 		placeChips,
 		openRetry,
-		previewRetry,
 		payloadOrRestore,
 	} = useFailure( files );
 	// The conversation on screen, for the lane jobs: a delete that clears
@@ -325,18 +343,59 @@ export function App( { config }: { config: GenieConfig } ) {
 	// A reload, or the hero handing the thread over, shows a failed turn
 	// again: the error, and for a 502 the question back in the field.
 	const applyRecord = useCallback(
-		( messages: TurnMessage[], resetField = false ) => {
+		async ( messages: TurnMessage[], resetField = false ) => {
 			// A send that is already in flight owns the record. The mount's
 			// read can resolve after that send started; reconciling it here
 			// would show a failure for a turn that has not failed.
-			if ( 'pending' === failureState.current.phase ) {
+			const hasPendingOwner = () =>
+				'pending' === failureState.current.phase;
+			if ( hasPendingOwner() ) {
 				return;
 			}
-			const record = readFailure( pageFailureStore() );
-			const restored = writeFailure(
-				pageFailureStore(),
-				reconcile( record, messages )
-			);
+			let record = readFailure( pageFailureStore() );
+			if ( record?.entryId ) {
+				const checked = await verifiedEntryFailure(
+					config,
+					pageFailureStore()
+				);
+				if ( ! checked || ! checked.unchanged() || hasPendingOwner() ) {
+					if (
+						! checked &&
+						readFailure( pageFailureStore() )?.entryId
+					) {
+						blockEntryRecovery.current();
+					} else if (
+						! checked &&
+						! hasPendingOwner() &&
+						! readFailure( pageFailureStore() )
+					) {
+						resolveEntryRecovery.current();
+					}
+					return;
+				}
+				record = checked.record;
+			}
+			const reconciled = reconcile( record, messages );
+			if (
+				reconciled.phase === 'failed' &&
+				reconciled.draft?.entryScope &&
+				reconciled.kind
+			) {
+				const candidate = composerFor(
+					reconciled.kind,
+					reconciled.draft
+				);
+				if (
+					! offerEntryRecovery.current( reconciled.draft.entryScope, {
+						text: candidate.field || reconciled.draft.text,
+						uploads: [ ...candidate.chips ],
+						missing: candidate.omitted,
+					} )
+				) {
+					return;
+				}
+			}
+			const restored = writeFailure( pageFailureStore(), reconciled );
 			failureState.current = restored;
 			if (
 				'failed' === restored.phase &&
@@ -344,6 +403,9 @@ export function App( { config }: { config: GenieConfig } ) {
 				restored.kind
 			) {
 				const composer = composerFor( restored.kind, restored.draft );
+				if ( restored.draft.entryScope ) {
+					claimEntryComposer.current( restored.draft.entryScope );
+				}
 				setInput( composer.field );
 				placeChips( composer.chips );
 				setOmitted( composer.omitted );
@@ -355,12 +417,12 @@ export function App( { config }: { config: GenieConfig } ) {
 			// A mount with no record must not wipe a question the visitor
 			// already started typing. A refresh, or a record the server has
 			// since answered, clears the field.
-			if ( resetField || record ) {
+			if ( ( resetField || record ) && ! entryOwnsComposer.current ) {
 				setPhase( 'ask' );
 				setInput( '' );
 			}
 		},
-		[ placeChips, failureState, setOmitted ]
+		[ placeChips, failureState, setOmitted, config ]
 	);
 
 	const showStored = useCallback( async () => {
@@ -372,7 +434,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
 		setContacts( stored.contacts ?? [] );
 		setInquiries( stored.inquiries ?? [] );
-		applyRecord( stored.messages, true );
+		await applyRecord( stored.messages, true );
 		setMail( 'idle' );
 	}, [ loadThread, applyRecord ] );
 
@@ -429,18 +491,33 @@ export function App( { config }: { config: GenieConfig } ) {
 	);
 
 	const ask = useCallback(
-		async ( text: string ) => {
-			const uploads = files.uploads;
+		async ( text: string, entryId?: string, entryScope?: string ) => {
+			const uploads = entryId ? [] : files.uploads;
 			const question = buildQuestion( text, uploads, listPrompt );
-			if ( ! question || sending.current || files.busy ) {
-				return;
+			if (
+				! question ||
+				entryRecoveryBlocksSend.current() ||
+				sending.current ||
+				files.busy ||
+				( ! entryId && missingEntryFiles.current )
+			) {
+				return false;
 			}
 			const draft: FailureDraft = {
 				text,
 				question,
 				uploads,
 				omitted: [],
+				...( entryId || entryOwnsComposer.current
+					? {
+							entryId: entryId ?? newEntryId(),
+							entryScope:
+								entryScope ?? verifiedEntryScope.current,
+						}
+					: {} ),
 			};
+			// Reserve synchronously before entering the shared lane.
+			sending.current = true;
 			// Before the request leaves: a reload while it is in flight can
 			// still put the question back.
 			commitFailure( { type: 'send', draft } );
@@ -452,12 +529,12 @@ export function App( { config }: { config: GenieConfig } ) {
 			setRefused( '' );
 			setConflict( '' );
 			setPhotoPrompt( false );
+			setFilePrompt( false );
+			setVoicePrompt( false );
 			setListPrompt( false );
 			return enqueue( async () => {
-				// Claim the composer only once this ask is the lane's head.
-				// Setting it before the queue would drop a history click that
-				// arrives while a switch is still resolving.
-				sending.current = true;
+				// The synchronous reservation above covers time spent waiting
+				// behind an existing restore/switch as well as the actual send.
 				// The dock re-reads before every send, as the hero does. A
 				// turn the other tab stored is the base; an empty read (the
 				// route failed, and readThread swallows that) keeps the
@@ -476,6 +553,12 @@ export function App( { config }: { config: GenieConfig } ) {
 					setInquiries( stored.inquiries ?? [] );
 				}
 				try {
+					if (
+						! ( await authorizeEntry.current( draft.entryScope ) )
+					) {
+						setPhase( 'ask' );
+						return;
+					}
 					const next: TurnMessage[] = [
 						...before,
 						{ role: 'user', content: question },
@@ -491,7 +574,9 @@ export function App( { config }: { config: GenieConfig } ) {
 						page: pageRef.current,
 						uploads,
 					} );
-					filesRef.current.clear();
+					if ( ! entryId ) {
+						filesRef.current.clear();
+					}
 					commitFailure( { type: 'answered' } );
 					const assistant = assistantMessage( answer );
 					currentThread.current = next.concat( assistant );
@@ -514,7 +599,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				} finally {
 					sending.current = false;
 				}
-			} );
+			} ).then( () => true );
 		},
 		[
 			config,
@@ -530,6 +615,9 @@ export function App( { config }: { config: GenieConfig } ) {
 	// One resend of the failed question. The machine leaves `failed` before
 	// this returns, so a second click does not send.
 	const retry = useCallback( () => {
+		if ( entryRecoveryBlocksSend.current() ) {
+			return;
+		}
 		const opened = openRetry( currentThread.current );
 		if ( ! opened ) {
 			return;
@@ -545,9 +633,14 @@ export function App( { config }: { config: GenieConfig } ) {
 		return enqueue( async () => {
 			sending.current = true;
 			let before = currentThread.current;
-			let payload = previewRetry( draft, kind, before );
+			let payload: ReturnType< typeof payloadOrRestore< TurnMessage > > =
+				null;
 			try {
 				const stored = await loadThread();
+				if ( ! ( await authorizeEntry.current( draft.entryScope ) ) ) {
+					setPhase( 'ask' );
+					return;
+				}
 				if ( stored.messages.length > 0 ) {
 					before = stored.messages;
 					currentThread.current = stored.messages;
@@ -609,7 +702,6 @@ export function App( { config }: { config: GenieConfig } ) {
 		commitFailure,
 		onTurnError,
 		openRetry,
-		previewRetry,
 		payloadOrRestore,
 	] );
 
@@ -620,7 +712,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		// the words before it, ready for the customer to type the name.
 		setInput( typeModelPrompt() );
 		field.current?.focus();
-	}, [] );
+	}, [ field ] );
 
 	// The conversation the browser already has comes back on mount: a reload,
 	// or opening Genie on another page of the site, shows the thread instead
@@ -651,7 +743,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					setTurn( stored.turn );
 				}
 			}
-			applyRecord( stored.messages );
+			await applyRecord( stored.messages );
 		} )
 			.then( () => {
 				if ( ! cancelled ) {
@@ -698,6 +790,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						setRailOpen( false );
 					}
 					setOpen( true );
+					resetEntryComposer.current();
 					await showStored();
 				} catch {
 					setHistoryPhase( 'failed' );
@@ -804,21 +897,29 @@ export function App( { config }: { config: GenieConfig } ) {
 			dictation.current?.stop();
 			return;
 		}
+		setVoiceError( false );
+		let insertion = field.current?.selectionStart ?? input.length;
 		const session = startDictation(
 			window,
 			config.locale,
 			( heard ) =>
-				setInput( ( current ) =>
-					current ? `${ current } ${ heard }` : heard
-				),
-			() => setDictating( false )
+				setInput( ( text ) => {
+					const at = Math.min( insertion, text.length );
+					const before = text.slice( 0, at );
+					const after = text.slice( at );
+					const added = `${ before && ! /\s$/.test( before ) ? ' ' : '' }${ heard }${ after && ! /^\s/.test( after ) ? ' ' : '' }`;
+					insertion = at + added.length;
+					return before + added + after;
+				} ),
+			() => setDictating( false ),
+			() => setVoiceError( true )
 		);
 		if ( ! session ) {
 			return;
 		}
 		dictation.current = session;
 		setDictating( true );
-	}, [ config.locale, dictating ] );
+	}, [ config.locale, dictating, input.length, field ] );
 
 	// The mount's own cleanup, not a reaction to a render; the ref is the
 	// one thing the deps rule treats as stable, so the list stays empty.
@@ -827,6 +928,74 @@ export function App( { config }: { config: GenieConfig } ) {
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const cardPrices = pricesOf( turn?.blocks ?? [] );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
+
+	const entryInbox = useEntryInbox( {
+		config,
+		input,
+		setInput,
+		files,
+		busy: phase === 'waiting',
+		ask: ( text, entryId, entryScope ) => ask( text, entryId, entryScope ),
+		onRecovery: showStored,
+		onComposerClaim: () => {
+			entryOwnsComposer.current = true;
+		},
+		onVerified: ( scope ) => {
+			verifiedEntryScope.current = scope;
+		},
+		onInvalidated: ( scope ) => {
+			const record = readFailure( pageFailureStore() );
+			if ( record?.entryScope === scope ) {
+				commitFailure( { type: 'abandon' } );
+			}
+			setPhase( 'ask' );
+		},
+		onReplace: () => {
+			commitFailure( { type: 'abandon' } );
+			setPhase( 'ask' );
+		},
+		onMode: ( mode ) => {
+			setPhotoPrompt( mode === 'nameplate' );
+			setListPrompt( false );
+			setFilePrompt( mode === 'attach' );
+			setVoicePrompt( mode === 'voice' );
+		},
+	} );
+	entryOwnsComposer.current = entryInbox.owned.current;
+	claimEntryComposer.current = ( scope ) => {
+		entryInbox.claimComposer( scope, true );
+		entryOwnsComposer.current = true;
+	};
+	blockEntryRecovery.current = entryInbox.blockRecovery;
+	resolveEntryRecovery.current = entryInbox.resolveRecovery;
+	offerEntryRecovery.current = entryInbox.offerRecovery;
+	entryRecoveryBlocksSend.current = () => entryInbox.recoveryPending.current;
+	authorizeEntry.current = entryInbox.authorize;
+	resetEntryComposer.current = entryInbox.resetComposer;
+	missingEntryFiles.current = entryInbox.missing.length > 0;
+	const receiveEntry = entryInbox.receive;
+	useEffect( () => {
+		if ( ! open ) {
+			dictation.current?.stop();
+			setDictating( false );
+		}
+	}, [ open ] );
+
+	const helperDialog = useHelperDialog( {
+		open,
+		workspace,
+		close: () => {
+			if ( dockHistory ) {
+				setDockHistory( false );
+				requestAnimationFrame( () =>
+					field.current?.focus( { preventScroll: true } )
+				);
+			} else {
+				setOpen( false );
+			}
+		},
+	} );
+	const rememberOpener = helperDialog.remember;
 
 	// All page entries go through the dock loader. Ready is emitted only after
 	// this listener exists, so even a click while the bundle loads is delivered
@@ -837,6 +1006,8 @@ export function App( { config }: { config: GenieConfig } ) {
 			setDockHistory( false );
 			const detail = (
 				event as CustomEvent< {
+					entry?: unknown;
+					opener?: unknown;
 					message?: unknown;
 					attach?: unknown;
 					refresh?: unknown;
@@ -845,6 +1016,11 @@ export function App( { config }: { config: GenieConfig } ) {
 					solution?: unknown;
 				} >
 			 ).detail;
+			rememberOpener( detail?.opener );
+			if ( detail?.entry ) {
+				receiveEntry( detail.entry );
+				return;
+			}
 			if (
 				detail &&
 				typeof detail.solution === 'number' &&
@@ -888,7 +1064,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		}
 		window.addEventListener( 'linker-genie-open', onOpen );
 		return () => window.removeEventListener( 'linker-genie-open', onOpen );
-	}, [ ask, showStored, handOverSolution ] );
+	}, [ ask, showStored, handOverSolution, receiveEntry, rememberOpener ] );
 
 	useEffect( () => {
 		window.dispatchEvent(
@@ -952,6 +1128,8 @@ export function App( { config }: { config: GenieConfig } ) {
 	);
 	return (
 		<section
+			ref={ helperDialog.panel }
+			tabIndex={ -1 }
 			className={ `linker-genie-app${
 				workspace ? ' linker-genie-app--workspace' : ''
 			}` }
@@ -967,6 +1145,8 @@ export function App( { config }: { config: GenieConfig } ) {
 				<button
 					type="button"
 					className="linker-genie-dock-mask"
+					tabIndex={ -1 }
+					aria-hidden="true"
 					onClick={ () => {
 						setDockHistory( false );
 						setOpen( false );
@@ -1481,6 +1661,52 @@ export function App( { config }: { config: GenieConfig } ) {
 								{ offersInquiry ? inquiryAfterAnswer : null }
 							</Transcript>
 						) : null }
+						{ ! historyView ? (
+							<EntryInbox
+								inbox={ entryInbox }
+								busy={ phase === 'waiting' || files.busy }
+								composerOccupied={
+									!! input ||
+									files.picked.length > 0 ||
+									entryInbox.missing.length > 0
+								}
+							/>
+						) : null }
+						{ ! historyView && voiceError ? (
+							<p role="alert" className="linker-genie-app__error">
+								{ __(
+									'Dictation could not start. You can type your question.',
+									'linker-tools'
+								) }
+							</p>
+						) : null }
+						{ ! historyView && voicePrompt ? (
+							<div className="linker-genie-app__photo-prompt">
+								{ ! canDictate ? (
+									<p>
+										{ __(
+											'Dictation is not available in this browser. You can type your question.',
+											'linker-tools'
+										) }
+									</p>
+								) : null }
+								{ canDictate ? (
+									<button
+										type="button"
+										className="linker-genie-app__prompt"
+										aria-pressed={ dictating }
+										onClick={ dictate }
+									>
+										{ dictating
+											? __(
+													'Stop dictation',
+													'linker-tools'
+												)
+											: __( 'Dictate', 'linker-tools' ) }
+									</button>
+								) : null }
+							</div>
+						) : null }
 						{ /* The picked files, over the composer (#236). */ }
 						{ ! workspace && ! historyView ? (
 							<AttachmentChips
@@ -1523,19 +1749,25 @@ export function App( { config }: { config: GenieConfig } ) {
 						) : null }
 						{ ! workspace &&
 						! historyView &&
-						( photoPrompt || listPrompt ) &&
+						( photoPrompt || listPrompt || filePrompt ) &&
 						files.picked.length === 0 ? (
 							<div className="linker-genie-app__photo-prompt">
 								<p>
-									{ listPrompt
+									{ filePrompt
+										? __( 'Attach a file', 'linker-tools' )
+										: null }
+									{ ! filePrompt && listPrompt
 										? __(
 												'Genie checks every line of a parts list against our products. You can use a CSV or Excel (.xlsx) file, or a photo of the list.',
 												'linker-tools'
 											)
-										: __(
+										: null }
+									{ ! filePrompt && ! listPrompt
+										? __(
 												'Genie reads the brand and model from a nameplate photo and checks them against our range.',
 												'linker-tools'
-											) }
+											)
+										: null }
 								</p>
 								<button
 									type="button"
@@ -1545,7 +1777,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									}
 								>
 									<AttachIcon />
-									{ listPrompt
+									{ listPrompt || filePrompt
 										? __( 'Choose a file', 'linker-tools' )
 										: __(
 												'Choose a photo',
@@ -1610,7 +1842,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									{ __( 'Ask Genie', 'linker-tools' ) }
 								</label>
 								<textarea
-									ref={ field }
+									ref={ composerFieldRef }
 									id="linker-genie-input"
 									className="linker-genie-app__input"
 									rows={ 1 }
@@ -1629,7 +1861,9 @@ export function App( { config }: { config: GenieConfig } ) {
 										// still sends as before.
 										if (
 											'Enter' === event.key &&
-											! event.shiftKey
+											! event.shiftKey &&
+											! event.nativeEvent.isComposing &&
+											event.keyCode !== 229
 										) {
 											event.preventDefault();
 											void ask( input );
@@ -1662,6 +1896,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									className="linker-genie-app__send"
 									disabled={
 										phase === 'waiting' ||
+										entryInbox.missing.length > 0 ||
 										files.busy ||
 										( ! input.trim() &&
 											files.uploads.length === 0 )

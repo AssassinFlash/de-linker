@@ -7,7 +7,8 @@ import { instance, REPO_ROOT } from '../lib/instance';
 const PRODUCT = 3573;
 const OUTPUT = join(
 	REPO_ROOT,
-	'docs/acceptance/2026-10-22/genie-history-locale'
+	'docs/acceptance/2026-10-22/full-site/hero-rhythm',
+	new Date().toISOString().replaceAll(/[-:.]/g, '')
 );
 
 test.use({ reducedMotion: 'reduce' });
@@ -30,6 +31,10 @@ for (const locale of ['en', 'de'] as const) {
 				const originalReply = german
 					? 'Here is the datasheet you asked for.'
 					: 'Hier ist das gewünschte Datenblatt.';
+				const originalBody =
+					surface === 'hero'
+						? `${originalReply}\n\nA second preserved paragraph.\n\n## Source details\n\n- First source item\n- Second source item`
+						: originalReply;
 				const pdf = `${instance().url}/wp-content/uploads/2026/08/saj_esolar-aio3_datasheet_en.pdf#page=1`;
 				const oldLabel = german
 					? 'SAJ eSolar AIO3 Datasheet (EN) · p. 1'
@@ -45,7 +50,7 @@ for (const locale of ['en', 'de'] as const) {
 							language: german ? 'en' : 'de',
 						},
 					],
-					['block', { type: 'text', text: originalReply, refs: [] }],
+					['block', { type: 'text', text: originalBody, refs: [] }],
 					[
 						'block',
 						{
@@ -196,7 +201,72 @@ for (const locale of ['en', 'de'] as const) {
 				const app = await currentApp();
 				const card = app.locator('.linker-card').first();
 				await expect(card).toBeVisible();
+				if (width === 390 && surface !== 'hero') {
+					const controls = app.locator(
+						'.linker-genie-app__bar :is(.linker-genie-app__icon, .linker-genie-app__rail-toggle)'
+					);
+					await expect(controls).toHaveCount(
+						surface === 'workspace' ? 1 : 4
+					);
+					for (const control of await controls.all()) {
+						const target = await control.boundingBox();
+						expect(target!.width).toBeGreaterThanOrEqual(44);
+						expect(target!.height).toBeGreaterThanOrEqual(44);
+					}
+					await expect(
+						app.locator('.linker-genie-app__title')
+					).not.toHaveCSS('white-space', 'nowrap');
+				}
 				if (surface === 'hero') {
+					const reading = await app
+						.locator('.linker-genie-message-body')
+						.first()
+						.evaluate((element) => {
+							const paragraph = element.querySelector('p')!;
+							const heading = element.querySelector('h2')!;
+							const list = element.querySelector('ul')!;
+							return {
+								paragraphGap: parseFloat(
+									getComputedStyle(paragraph).marginBottom
+								),
+								paragraphSize: parseFloat(
+									getComputedStyle(paragraph).fontSize
+								),
+								headingSize: parseFloat(
+									getComputedStyle(heading).fontSize
+								),
+								listStyle: getComputedStyle(list).listStyleType,
+								listInset: parseFloat(
+									getComputedStyle(list).paddingLeft
+								),
+							};
+						});
+					expect(reading.paragraphGap).toBeGreaterThan(0);
+					expect(reading.headingSize).toBeGreaterThan(
+						reading.paragraphSize
+					);
+					expect(reading.listStyle).toBe('disc');
+					expect(reading.listInset).toBeGreaterThan(0);
+					const intro = app.locator('.linker-genie-hero__intro');
+					const separation = await intro.evaluate((element) => {
+						const reader = element.parentElement!.querySelector(
+							'.linker-genie-app__transcript'
+						)!;
+						return (
+							reader.getBoundingClientRect().top -
+							element.getBoundingClientRect().bottom
+						);
+					});
+					expect(separation).toBeGreaterThan(0);
+					const topControls = app.locator(
+						'.linker-genie-hero__bar button'
+					);
+					await expect(topControls).toHaveCount(2);
+					for (const control of await topControls.all()) {
+						const target = await control.boundingBox();
+						expect(target!.width).toBeGreaterThanOrEqual(44);
+						expect(target!.height).toBeGreaterThanOrEqual(44);
+					}
 					const grid = app.locator('.linker-genie-hero__cards');
 					const geometry = await card.evaluate((element) => {
 						const parent =

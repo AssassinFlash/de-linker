@@ -14,6 +14,8 @@ export function HelperFooter( {
 		const element = details.current;
 		const escape = ( event: KeyboardEvent ) => {
 			if ( event.key === 'Escape' && element?.open ) {
+				event.preventDefault();
+				event.stopPropagation();
 				element.open = false;
 				element.querySelector( 'summary' )?.focus();
 			}

@@ -1,0 +1,10 @@
+{
+  "boundary": "Actual native localhost voice entry UI only. No microphone permission requested, no speech capture and no model turn.",
+  "focus": {
+    "entry": "voice",
+    "label": "Spracheingabe",
+    "tag": "BUTTON"
+  },
+  "url": "http://127.0.0.1:9270/de/fuer-installateur/",
+  "visibleModal": []
+}

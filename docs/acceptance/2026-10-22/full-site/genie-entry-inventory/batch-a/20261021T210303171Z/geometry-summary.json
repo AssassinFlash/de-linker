@@ -1,0 +1,65 @@
+{
+  "geometry_files": 74,
+  "targets": {
+    "source-controls": {
+      "observations": 178,
+      "min_width": 44,
+      "min_height": 44
+    },
+    "prompt-action": {
+      "observations": 144,
+      "min_width": 62.625,
+      "min_height": 44
+    },
+    "attachment-remove": {
+      "observations": 16,
+      "min_width": 44,
+      "min_height": 44
+    }
+  },
+  "App_composer": {
+    "observations": 40,
+    "height_contract_all": true,
+    "over_six_lines": [
+      {
+        "clientHeight": 144,
+        "scrollHeight": 192,
+        "overflowY": "auto"
+      },
+      {
+        "clientHeight": 144,
+        "scrollHeight": 192,
+        "overflowY": "auto"
+      },
+      {
+        "clientHeight": 144,
+        "scrollHeight": 192,
+        "overflowY": "auto"
+      },
+      {
+        "clientHeight": 144,
+        "scrollHeight": 192,
+        "overflowY": "auto"
+      }
+    ]
+  },
+  "Hero": {
+    "field_observations": 12,
+    "full_fixture_content_visible": true,
+    "min_clientHeight": 62,
+    "send_min_contrast": 13.475581913364644,
+    "actual_states": [
+      "active rgb(255, 255, 255) on rgb(5, 53, 48)",
+      "default rgb(15, 23, 42) on rgb(226, 232, 240)"
+    ]
+  },
+  "welcome": {
+    "observations": 30,
+    "scroll_origin_title_reachable": true,
+    "overflowing_boxes": 10
+  },
+  "source_errors": {
+    "visible_observations": 12,
+    "no_empty_visible_error": true
+  }
+}

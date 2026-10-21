@@ -1,0 +1,112 @@
+{
+  "recorded_at": "2026-10-21T21:24:58.660870+00:00",
+  "status": "bounded local Spec and Standards PASS; production gates remain pending",
+  "product_source": {
+    "product_source_sha256": "38342862231861ddf57a6e8792c04e323e5cddbfaea66fc7f59907f2681a8fd1",
+    "aggregation": "sha256 of UTF-8 JSON files mapping with sorted keys and compact separators",
+    "files": {
+      "plugins/linker-tools/includes/Genie/Conversations.php": "54078455d5de19704497d770ff47bdb89d7d668c1cc33c8bd307404584c9af2c",
+      "plugins/linker-tools/includes/Genie/Entries.php": "f1ca301e819872e156aef6cb9291d4bfe4e4b3d46281bae7817a97e049d53744",
+      "plugins/linker-tools/includes/Genie/EntryContext.php": "ccb2a8949dde38c20bb9b6fa3e5e51fab8ab8dbe1b2369a2cbd1997cae929ede",
+      "plugins/linker-tools/src/genie/App.tsx": "db9261afeca76f33d2675e31c8a2569e9c57d7421aed05afa3c944450f015cfc",
+      "plugins/linker-tools/src/genie/components/EntryInbox.tsx": "7a4a1fcff59f741041a7aaa0b3baa0e6ea885d5676ff9fc85244269dfd99f445",
+      "plugins/linker-tools/src/genie/components/HelperFooter.tsx": "a3f39db9646804c635dabc6a803776d3f0cecedaafec290af6b4dd329c751efe",
+      "plugins/linker-tools/src/genie/shared/dictation.ts": "e9e488c553648913ae72a88bd7933b4aa4c8a1374a8889adba6f916a9128a056",
+      "plugins/linker-tools/src/genie/shared/entryDraft.ts": "08ae95f35d0c9168c438124627ceaa796498f037d3f09d37cc7f62706145aa2a",
+      "plugins/linker-tools/src/genie/shared/entryFailure.ts": "fb533487bdc41919668217d2cf490fd21dd34e143a89607fa9e64d92df837429",
+      "plugins/linker-tools/src/genie/shared/failure.ts": "e30262531a0f58323cab8e1427ff988abbc7c0bddc6c25e5bdde62206eef5293",
+      "plugins/linker-tools/src/genie/shared/useComposerSize.ts": "552d5649eceaba91efa7d1fb84fd024d16af9c9d66aad533c964a099a12ee404",
+      "plugins/linker-tools/src/genie/shared/useEntryInbox.ts": "2b94c232dec9b342d2472eaad7536d849c6917daa8aecba5d6faba0e36af54d1",
+      "plugins/linker-tools/src/genie/shared/useFailure.ts": "30819e6406b86e79ee103aa54042cf0c49c48eacdc68690542b8607d70dfd507",
+      "plugins/linker-tools/src/genie/shared/useHelperDialog.ts": "c960697d3d1f56e9d78570217f3086cfe74232fa326b186550ca61122af30451",
+      "plugins/linker-tools/src/hero/Hero.tsx": "96ef75f27c2fd7e82ec60ba92599ef26bfdcc2b9b148edffe82d4dc6db895d02",
+      "plugins/linker-tools/src/hero/controller.tsx": "d0e9e72cd5d473320535fe24f32a1424e5bf6b80696e364916ad420aa43e0e25",
+      "plugins/linker-tools/src/hero/session.ts": "28ba8de394e987bee0bd77112ded38bc8c9f74d63b82fc87542c085c942fd0fe",
+      "plugins/linker-tools/src/marketing/entries.ts": "a5f0480dee0f3872149229e1c397096ed8039354321739ebdc90e7273e4829a6",
+      "plugins/linker-tools/src/marketing/index.ts": "cda5e299daf2c39234b26133e4bafcc6552e4b0be02c255f11f7844807ec155c",
+      "plugins/linker-tools/webpack.config.js": "e97362e781c1ec0ae3df9afe0afb081574c9ea8d0fb2b12aa38b8bfa124269f9"
+    },
+    "notes": "Voice-presentational increment only:19 product sources unchanged;App only removes redundant supported Dictate paragraph,retains unavailable explanation and all button/owner behavior. Before hash saved in source-hashes-before-voice.json."
+  },
+  "generated_manifest": {
+    "file": "plugins/linker-tools/build/manifest.json",
+    "sha256": "56264733bd5a790a83b17d8ed65668201713d7a5ecfee2166c96e9cb158f58c4",
+    "inputs": 94,
+    "outputs": 22
+  },
+  "windpress": {
+    "source_files": {
+      "plugins/linker-commerce/content/windpress/account-links.css": "2c55f55dcdbaef00f5b1379b61130732649e879ecdc293fd763d3fa4e0d24029",
+      "plugins/linker-commerce/content/windpress/control-details.css": "e9bc143282f31f601a9db1ce1edfa71962b48f23c32d202bddf68ca291566831"
+    },
+    "final_local_mtime": 1792617293,
+    "final_local_bytes": 701525
+  },
+  "browser_runs": [
+    {
+      "run": "20261021T210303171Z",
+      "source_sha256": "94d6c8fe960b59833ddee9f589ad23478ffb39bb1031aa51e60ef758b8244d0f",
+      "cases": 32,
+      "passed": 32,
+      "original_pngs": 74,
+      "css_mtime": 1792616532,
+      "evidence_sha256": {
+        "summary.json": "aa7e71348e5bbc1830173e76c5188858cfec7a7ffbb7b82bcfd8bae49d65729c",
+        "images.json": "00bfc567636a3509abda1ac05620a8b70deae6eb88ce9821a6e5094d36464938",
+        "geometry-summary.json": "9d95735e15b30b9ed1f35d8a546c4fee1cddee78aee6acdfba5546803aca2165",
+        "playwright-report.json": "ad630b9138820e1dbe7aece3a1c48666b9907826d47a439e6284f55c049645b5",
+        "browser-records.json": "56b337b953f0fb7322ce582131de28a1cf6c79ccb28551d17320cd630fa7cc54"
+      }
+    },
+    {
+      "run": "20261021T212024202Z",
+      "source_sha256": "38342862231861ddf57a6e8792c04e323e5cddbfaea66fc7f59907f2681a8fd1",
+      "cases": 8,
+      "passed": 8,
+      "original_pngs": 24,
+      "css_mtime": 1792617293,
+      "evidence_sha256": {
+        "summary.json": "f3111e239b32c49bd1abbe6ee6229b3aa3c02ca5b5dec5c8d3a80230164f52f8",
+        "images.json": "9335a360d6192efc9ba3a0db0544d7e5628af34b0e32cdb940798a79758de2c7",
+        "geometry-summary.json": "0896c59d526c4af27d74ddb1c2df4d1b6d6602304310699c9e1d59dd2bb47d74",
+        "playwright-report.json": "fb6d39e668c308c1046ca3015f99291b1f11a204cc8cc93a7c63f5e3f0c684a4",
+        "browser-records.json": "0fcb832d2293a91c2d97b412373f0ca113e5efbdd2bd9751b851a81abb5fee32"
+      }
+    }
+  ],
+  "checks": {
+    "full_check": "PASS before final isolated presentation/test-fixture increment",
+    "final_complete_test_exit": 0,
+    "final_generated_and_i18n_exit": 0
+  },
+  "full_site_goal": "ACTIVE; no full-site closure or production pass inferred",
+  "production_inquiry_registration_or_mail": false,
+  "raw_check_records_pack": {
+    "file": "checks/raw-records.json",
+    "sha256": "811c52bd088e3c9d86805611bea58cd35341427e01d1d8dacf0c9ba6236538cf",
+    "original_log_sha256": {
+      "checks/full-check-before-final-presentation.log": "2aeebb65e59b981f7e24685dda2881bd37e54d60c60b0cef77ed716c78af8a5a",
+      "checks/full-test-final.log": "31b60232d24cd64194e0f3a2a343be8223e6c93587ed27ff928a05d3a66755d7",
+      "checks/generated-and-i18n-final.log": "6d78a1cd7ef0701d213adfaed1c2f3dffe68b501547fde3b5efe9851171bde53",
+      "checks/windpress-final.log": "e0dc08514ee7b0d5ac580168fe59a4ef00b1e6f6159c41417684e2bb0b4258fd"
+    },
+    "public_log_sha256": {
+      "full-check-before-final-presentation.log": "2aeebb65e59b981f7e24685dda2881bd37e54d60c60b0cef77ed716c78af8a5a",
+      "full-test-final.log": "31b60232d24cd64194e0f3a2a343be8223e6c93587ed27ff928a05d3a66755d7",
+      "generated-and-i18n-final.log": "6d78a1cd7ef0701d213adfaed1c2f3dffe68b501547fde3b5efe9851171bde53",
+      "windpress-final.log": "79ad2bfb290bc5771a2d2273860a9ae7356be7c9d49af904162981494df4cfc0"
+    },
+    "redaction": "Only the local administrator email in the compile log is omitted; original SHA is retained, original bytes remain private."
+  },
+  "independent_review": {
+    "Spec": "spec-review.md",
+    "Standards": "standards-review.md",
+    "manual_original_PNGs": 98,
+    "scope": "Batch A only; ordinary failure repair, Installer desktop and full-site matrices remain open"
+  },
+  "supplemental_scroll": {
+    "directory": "supplemental-welcome-scroll/archived-20261021T214235158267Z",
+    "status": "unversioned supplemental observation, not final-run acceptance",
+    "metadata_sha256": "67d908e546913ddb4984b66958239c396ee7aa44242dc11eb6b1b42d8e8c9ce7"
+  }
+}

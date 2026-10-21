@@ -23,8 +23,8 @@ final class AssetsTest extends TestCase {
 	private const PLUGIN_URL = 'https://de-linker.test/wp-content/plugins/linker-tools/';
 
 	/**
-	 * Each entry is registered from its asset file, with WordPress's React and
-	 * JSX runtime as dependencies instead of bundled copies.
+	 * Each entry registers its own extracted dependencies. React applications
+	 * use WordPress's runtime; page binders do not load React.
 	 */
 	public function test_registers_every_built_entry_from_its_asset_file(): void {
 		$plugin_file = dirname( __DIR__, 3 ) . '/linker-tools.php';
@@ -45,10 +45,13 @@ final class AssetsTest extends TestCase {
 			)
 		);
 
-		foreach ( array( 'configurator', 'genie', 'hero', 'preview' ) as $entry ) {
+		foreach ( array( 'configurator', 'genie', 'hero', 'marketing', 'preview' ) as $entry ) {
 			$asset = require $plugin_dir . 'build/' . $entry . '.asset.php';
 
-			if ( 'preview' === $entry ) {
+			if ( 'marketing' === $entry ) {
+				// The page binder uses native DOM events and the shared translation runtime.
+				$this->assertSame( array( 'wp-dom-ready', 'wp-i18n' ), $asset['dependencies'] );
+			} elseif ( 'preview' === $entry ) {
 				// The preview card's page script (ticket #249) is no app: it
 				// loads on the pages with the card, without React.
 				$this->assertNotContains( 'react-jsx-runtime', $asset['dependencies'] );

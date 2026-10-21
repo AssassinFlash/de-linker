@@ -18,6 +18,7 @@ import {
 	failureReducer,
 	failureWithUploads,
 	pageFailureStore,
+	readFailure,
 	retryPayload,
 	writeFailure,
 	type FailureDraft,
@@ -59,8 +60,17 @@ export function useFailure( files: FailureFiles ) {
 	filesRef.current = files;
 
 	const commitFailure = useCallback( ( event: FailureEvent ) => {
-		const reduced = failureReducer( failureState.current, event );
-		const stored = writeFailure( pageFailureStore(), reduced );
+		const previous = failureState.current;
+		const reduced = failureReducer( previous, event );
+		const shared = readFailure( pageFailureStore() );
+		const owner = previous.draft?.entryId;
+		const superseded =
+			event.type !== 'send' &&
+			!! ( owner || shared?.entryId ) &&
+			owner !== shared?.entryId;
+		const stored = superseded
+			? reduced
+			: writeFailure( pageFailureStore(), reduced );
 		failureState.current = stored;
 		setOmitted(
 			'failed' === stored.phase ? ( stored.draft?.omitted ?? [] ) : []
@@ -87,7 +97,13 @@ export function useFailure( files: FailureFiles ) {
 		if ( next === failureState.current ) {
 			return;
 		}
-		failureState.current = writeFailure( pageFailureStore(), next );
+		const shared = readFailure( pageFailureStore() );
+		const owner = failureState.current.draft?.entryId;
+		const superseded =
+			!! ( owner || shared?.entryId ) && owner !== shared?.entryId;
+		failureState.current = superseded
+			? next
+			: writeFailure( pageFailureStore(), next );
 		setOmitted( failureState.current.draft?.omitted ?? [] );
 	}, [ files.uploads ] );
 

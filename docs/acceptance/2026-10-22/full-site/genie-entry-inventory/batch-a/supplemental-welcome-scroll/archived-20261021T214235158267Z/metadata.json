@@ -1,0 +1,44 @@
+{
+  "kind": "Separate supplemental actual-browser scroll observation;not part of immutable32-case run",
+  "archived_at_utc": "2026-10-21T21:42:35.158267+00:00",
+  "collection_time_utc": "not recorded by collector",
+  "time_evidence_limitation": "Original raw file mtime is filesystem write metadata,not an explicitly captured browser observation timestamp;its birth time belongs to an earlier preliminary attempt at the same temporary path. Do not use archive or32-run time as collection time.",
+  "requested_url": "http://127.0.0.1:9270/solution/residential-storage/",
+  "observed_final_url": "not recorded",
+  "configured_viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "separately_measured_window_viewport": "not recorded",
+  "configured_browser": "Playwright Chromium,headless default,reducedMotion reduce",
+  "browser_version": "not recorded",
+  "runtime_source_fingerprint": "not recorded during this collection;no commit,20-source hash,loaded bundle hash orCSS cache hash was captured. The observation cannot be attributed to a version merely from its former directory.",
+  "source_boundary": {
+    "actual": "Local published residential page,itsnative loader/App/helper,entry-context authority and DOM scroll;actual composer was awaited144px before reading welcome",
+    "controlled": "SpeechRecognition availability stub only;turn route aborted if called;raw counter0",
+    "history": "No conversation/history response intercept in this standalone collector",
+    "procedure": "Click native voice entry,await voice prompt,fill8lines,await clientHeight144,set welcome.scrollTop to its scrollHeight,read last button box,restore original scrollTop;no model or email request",
+    "limitations": "No screenshot in this standalone collector. Source-version,final URL and explicit browser collection timestamp were not recorded."
+  },
+  "collector_provenance": "collector-stdin.txt is a transcription of the already executed stdin script from this conversation;the script was not originally saved. It is not rerun for this supplement.",
+  "raw_original": {
+    "path": "/tmp/marketing-welcome-scroll-readback.json",
+    "sha256": "46b5e068d85a3fd127ba1a4647db2824787287729bfc81eb6b3ea70c8f8c327a",
+    "size": 312,
+    "filesystem_mtime_utc": "2026-10-21T21:05:48.519734+00:00",
+    "filesystem_birthtime_utc": "2026-10-21T21:04:07.661596+00:00"
+  },
+  "previously_misplaced_annotated_copy": {
+    "path": "docs/acceptance/2026-10-22/full-site/genie-entry-inventory/batch-a/20261021T210303171Z/welcome-scroll-readback.json",
+    "sha256": "d42d5b0ef6f26fb6b1d5531b89cf48b0bc1d0f8b5cbebb652228e083cdcbec17",
+    "size": 564,
+    "filesystem_mtime_utc": "2026-10-21T21:06:04.776759+00:00",
+    "filesystem_birthtime_utc": "2026-10-21T21:06:04.776677+00:00"
+  },
+  "copies": {
+    "raw-readback.json": "byte-identical copy of original312-byte raw collector output",
+    "readback.json": "byte-identical copy of previously misplaced564-byte annotated JSON"
+  },
+  "old_directory_policy": "Old local misplaced copy untouched;do not stage it or add this supplement to the immutable32 original package",
+  "browser_rerun_for_supplement": false
+}

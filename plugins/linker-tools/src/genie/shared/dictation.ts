@@ -46,28 +46,41 @@ declare global {
  * @param onTranscript Called with each heard phrase.
  * @param onEnd        Called when the engine ends or errors, and when start()
  *                     refuses the microphone.
+ * @param onError      Optional explicit refusal state for a composer.
  * @return The running session, or null when the browser has no dictation.
  */
 export function startDictation(
 	win: Window,
 	locale: Locale,
 	onTranscript: ( text: string ) => void,
-	onEnd: () => void
+	onEnd: () => void,
+	onError?: () => void
 ): DictationSession | null {
 	const Ctor = win.SpeechRecognition ?? win.webkitSpeechRecognition;
 	if ( ! Ctor ) {
 		return null;
 	}
 	const session = new Ctor();
+	let stopped = false;
 	session.lang = 'de' === locale ? 'de-DE' : 'en-US';
 	session.onresult = ( event ) => {
+		if ( stopped ) {
+			return;
+		}
 		const heard = event.results[ 0 ]?.[ 0 ]?.transcript ?? '';
 		if ( heard ) {
 			onTranscript( heard );
 		}
 	};
-	session.onend = onEnd;
-	session.onerror = onEnd;
+	session.onend = () => {
+		stopped = true;
+		onEnd();
+	};
+	session.onerror = () => {
+		stopped = true;
+		onError?.();
+		onEnd();
+	};
 	try {
 		session.start();
 	} catch {
@@ -75,8 +88,14 @@ export function startDictation(
 		// keeps its own field.
 		session.onend = null;
 		session.onerror = null;
+		onError?.();
 		onEnd();
 		return null;
 	}
-	return { stop: () => session.stop() };
+	return {
+		stop: () => {
+			stopped = true;
+			session.stop();
+		},
+	};
 }

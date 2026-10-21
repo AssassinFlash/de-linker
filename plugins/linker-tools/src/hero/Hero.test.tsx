@@ -540,3 +540,191 @@ test( 'the #250 inquiry confirmation card renders in the hero', async () => {
 		screen.getByText( 'We reply within one business day.' )
 	).toBeInTheDocument();
 } );
+
+test( 'a scoped marketing failure is never painted by Hero for another principal', async () => {
+	const original = 'Customer A private failed attachment';
+	sessionStorage.setItem(
+		'linker-genie-turn-failure',
+		JSON.stringify( {
+			v: 1,
+			kind: 'upstream',
+			text: original,
+			question: original,
+			uploads: [],
+			omitted: [],
+			entryId: 'marketing-a',
+			entryScope: 'a'.repeat( 64 ),
+		} )
+	);
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( async () => ( {
+			ok: true,
+			json: async () => ( { scope: 'b'.repeat( 64 ) } ),
+		} ) )
+	);
+	try {
+		const calls = renderHero( session().session );
+		await waitFor( () =>
+			expect(
+				sessionStorage.getItem( 'linker-genie-turn-failure' )
+			).toBeNull()
+		);
+		expect( calls.setPrompt ).not.toHaveBeenCalledWith( original );
+		expect( document.body.textContent ).not.toContain( original );
+	} finally {
+		vi.unstubAllGlobals();
+	}
+} );
+test( 'Hero retry checks the entry owner after the shared-thread refresh', async () => {
+	const original = 'Customer A recovered question';
+	let scope = 'a'.repeat( 64 );
+	sessionStorage.setItem(
+		'linker-genie-turn-failure',
+		JSON.stringify( {
+			v: 1,
+			kind: 'upstream',
+			text: original,
+			question: original,
+			uploads: [],
+			omitted: [],
+			entryId: 'marketing-a',
+			entryScope: scope,
+		} )
+	);
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( async () => ( { ok: true, json: async () => ( { scope } ) } ) )
+	);
+	try {
+		const model = session();
+		const calls = renderHero( model.session );
+		await waitFor( () =>
+			expect( calls.setPrompt ).toHaveBeenCalledWith( original )
+		);
+		scope = 'b'.repeat( 64 );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Try again' } )
+			)
+		);
+		expect( model.send ).not.toHaveBeenCalled();
+	} finally {
+		vi.unstubAllGlobals();
+	}
+} );
+
+for ( const action of [ 'send', 'retry' ] as const ) {
+	test( `Hero ${ action } preserves scoped text and bytes when the auxiliary identity service is unavailable`, async () => {
+		const original = 'Keep scoped Hero schematic';
+		const upload = {
+			name: 'keep.pdf',
+			type: 'application/pdf',
+			data: 'YWJj',
+		};
+		let available = true;
+		sessionStorage.setItem(
+			'linker-genie-turn-failure',
+			JSON.stringify( {
+				v: 1,
+				kind: 'upstream',
+				text: original,
+				question: original + '\nAttached: keep.pdf',
+				uploads: [ upload ],
+				omitted: [],
+				entryId: 'hero-marketing',
+				entryScope: 'a'.repeat( 64 ),
+			} )
+		);
+		vi.stubGlobal(
+			'fetch',
+			vi.fn( async () => ( {
+				ok: available,
+				json: async () => ( { scope: 'a'.repeat( 64 ) } ),
+			} ) )
+		);
+		try {
+			const model = session();
+			const calls = renderHero( model.session );
+			await waitFor( () =>
+				expect( calls.setPrompt ).toHaveBeenCalledWith( original )
+			);
+			available = false;
+			await act( async () =>
+				action === 'send'
+					? calls.bridge().ask( original )
+					: fireEvent.click(
+							screen.getByRole( 'button', { name: 'Try again' } )
+						)
+			);
+			expect( model.send ).not.toHaveBeenCalled();
+			expect( calls.setPrompt ).toHaveBeenLastCalledWith( original );
+			expect( screen.getByText( 'keep.pdf' ) ).toBeInTheDocument();
+			const record = JSON.parse(
+				sessionStorage.getItem( 'linker-genie-turn-failure' )!
+			);
+			expect( record.entryScope ).toBe( 'a'.repeat( 64 ) );
+			expect( record.uploads ).toEqual( [ upload ] );
+			available = true;
+			await act( async () =>
+				fireEvent.click(
+					screen.getByRole( 'button', { name: 'Try again' } )
+				)
+			);
+			await waitFor( () =>
+				expect( model.send ).toHaveBeenCalledTimes( 1 )
+			);
+			expect( model.send.mock.calls[ 0 ]?.[ 0 ].uploads ).toEqual( [
+				upload,
+			] );
+		} finally {
+			vi.unstubAllGlobals();
+		}
+	} );
+}
+
+test( 'Hero initial scoped failure outage stays hidden and retry restores through fresh verification', async () => {
+	let available = false;
+	const original = 'Private Hero recovery';
+	sessionStorage.setItem(
+		'linker-genie-turn-failure',
+		JSON.stringify( {
+			v: 1,
+			kind: null,
+			text: original,
+			question: original,
+			uploads: [],
+			omitted: [],
+			entryId: 'hero-recovery',
+			entryScope: 'a'.repeat( 64 ),
+		} )
+	);
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( async () => ( {
+			ok: available,
+			json: async () => ( { scope: 'a'.repeat( 64 ) } ),
+		} ) )
+	);
+	try {
+		const model = session();
+		const calls = renderHero( model.session );
+		await screen.findByRole( 'button', { name: 'Try again' } );
+		expect( calls.setPrompt ).not.toHaveBeenCalledWith( original );
+		expect(
+			sessionStorage.getItem( 'linker-genie-turn-failure' )
+		).not.toBeNull();
+		available = true;
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Try again' } )
+			)
+		);
+		await waitFor( () =>
+			expect( calls.setPrompt ).toHaveBeenCalledWith( original )
+		);
+		expect( model.send ).not.toHaveBeenCalled();
+	} finally {
+		vi.unstubAllGlobals();
+	}
+} );

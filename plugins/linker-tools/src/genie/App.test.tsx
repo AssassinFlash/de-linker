@@ -1525,6 +1525,9 @@ test( 'a file sent from the list prompt says it is a parts list', async () => {
 		fireEvent.change( picker, { target: { files: [ file ] } } );
 	} );
 	await screen.findByText( 'parts.csv' );
+	await waitFor( () =>
+		expect( screen.getByRole( 'button', { name: 'Send' } ) ).toBeEnabled()
+	);
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
 	} );
@@ -1659,7 +1662,12 @@ test( 'the dock mask folds the sheet', () => {
 	try {
 		render( <App config={ config() } /> );
 		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
-		fireEvent.click( screen.getByRole( 'button', { name: 'Hide' } ) );
+		// The backdrop remains a pointer target, outside the keyboard sequence.
+		const mask = document.querySelector< HTMLButtonElement >(
+			'.linker-genie-dock-mask'
+		)!;
+		expect( mask.tabIndex ).toBe( -1 );
+		fireEvent.click( mask );
 		expect( states.at( -1 ) ).toBe( false );
 	} finally {
 		window.removeEventListener( 'linker-genie-state', onState );

@@ -1,0 +1,13 @@
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/marketing/entries.test.tsx > temporary scope outage preserves entry composer and files for a fresh retry
+AssertionError: expected '' to be 'Keep this scoped schematic' // Object.is equality
+ FAIL  src/marketing/entries.test.tsx > temporary scope outage on Retry keeps the exact failed entry retryable
+AssertionError: expected '' to be 'Keep failed scoped requirement' // Object.is equality
+ FAIL  src/marketing/entries.test.tsx > verified scoped pending failure reclaimed by composer stays scoped after edited ordinary send
+AssertionError: expected undefined to be 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa…' // Object.is equality
+ FAIL  src/hero/Hero.test.tsx > Hero send preserves scoped text and bytes when the auxiliary identity service is unavailable
+ FAIL  src/hero/Hero.test.tsx > Hero retry preserves scoped text and bytes when the auxiliary identity service is unavailable
+AssertionError: expected last "vi.fn()" call to have been called with [ 'Keep scoped Hero schematic' ]
+      Tests  5 failed | 38 passed (43)
+
+After fixes: /tmp/marketing-ownership-restore.log: 2 files / 47 tests PASS.

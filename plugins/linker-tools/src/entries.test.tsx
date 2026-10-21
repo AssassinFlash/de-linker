@@ -17,6 +17,7 @@ const titles: Record< string, string > = {
 	configurator: 'Solution Configurator',
 };
 const scripts: Record< string, string > = {
+	marketing: './src/marketing/index.ts',
 	preview: './src/preview/index.ts',
 	// The home hero mounts into the page's own `.hero-cinematic` (ticket #232),
 	// not into a `data-linker-app` mount.

@@ -1,0 +1,279 @@
+{
+  "source": "real published local LC/App/attachment preparation and native scope/login/logout; turn and empty-history fixtures; home-recovery alone uses seeded scoped failure and scope503→verified fixture; controlled SpeechRecognition available/unavailable API in capability/draft cases",
+  "testResults": [
+    {
+      "title": "draft-de-1440: real attachment preparation, refusal, reload and voice capability",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "draft-de-1440",
+        "states": [
+          "attachment-intent",
+          "refusal",
+          "prepared",
+          "reload-missing",
+          "voice-conflict",
+          "voice-unavailable-explicit-draft"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "draft-de-390: real attachment preparation, refusal, reload and voice capability",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "draft-de-390",
+        "states": [
+          "attachment-intent",
+          "refusal",
+          "prepared",
+          "reload-missing",
+          "voice-conflict",
+          "voice-unavailable-explicit-draft"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "draft-en-1440: real attachment preparation, refusal, reload and voice capability",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "draft-en-1440",
+        "states": [
+          "attachment-intent",
+          "refusal",
+          "prepared",
+          "reload-missing",
+          "voice-conflict",
+          "voice-unavailable-explicit-draft"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "capabilities-de-390: IME, dictation insertion/stop/refusal and image/PDF payload",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "capabilities-de-390",
+        "states": [
+          "IME-no-turn",
+          "shift-enter",
+          "voice-no-autostart",
+          "selection-insert",
+          "stop-late-ignored",
+          "refused-preserved",
+          "empty-picker",
+          "image-PDF-transport"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "draft-en-390: real attachment preparation, refusal, reload and voice capability",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "draft-en-390",
+        "states": [
+          "attachment-intent",
+          "refusal",
+          "prepared",
+          "reload-missing",
+          "voice-conflict",
+          "voice-unavailable-explicit-draft"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "capabilities-en-1440: IME, dictation insertion/stop/refusal and image/PDF payload",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "capabilities-en-1440",
+        "states": [
+          "IME-no-turn",
+          "shift-enter",
+          "voice-no-autostart",
+          "selection-insert",
+          "stop-late-ignored",
+          "refused-preserved",
+          "empty-picker",
+          "image-PDF-transport"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "capabilities-de-1440: IME, dictation insertion/stop/refusal and image/PDF payload",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "capabilities-de-1440",
+        "states": [
+          "IME-no-turn",
+          "shift-enter",
+          "voice-no-autostart",
+          "selection-insert",
+          "stop-late-ignored",
+          "refused-preserved",
+          "empty-picker",
+          "image-PDF-transport"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "capabilities-en-390: IME, dictation insertion/stop/refusal and image/PDF payload",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "capabilities-en-390",
+        "states": [
+          "IME-no-turn",
+          "shift-enter",
+          "voice-no-autostart",
+          "selection-insert",
+          "stop-late-ignored",
+          "refused-preserved",
+          "empty-picker",
+          "image-PDF-transport"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    }
+  ],
+  "rows": [
+    {
+      "name": "draft-de-1440",
+      "states": [
+        "attachment-intent",
+        "refusal",
+        "prepared",
+        "reload-missing",
+        "voice-conflict",
+        "voice-unavailable-explicit-draft"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "draft-de-390",
+      "states": [
+        "attachment-intent",
+        "refusal",
+        "prepared",
+        "reload-missing",
+        "voice-conflict",
+        "voice-unavailable-explicit-draft"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "draft-en-1440",
+      "states": [
+        "attachment-intent",
+        "refusal",
+        "prepared",
+        "reload-missing",
+        "voice-conflict",
+        "voice-unavailable-explicit-draft"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "capabilities-de-390",
+      "states": [
+        "IME-no-turn",
+        "shift-enter",
+        "voice-no-autostart",
+        "selection-insert",
+        "stop-late-ignored",
+        "refused-preserved",
+        "empty-picker",
+        "image-PDF-transport"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "draft-en-390",
+      "states": [
+        "attachment-intent",
+        "refusal",
+        "prepared",
+        "reload-missing",
+        "voice-conflict",
+        "voice-unavailable-explicit-draft"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "capabilities-en-1440",
+      "states": [
+        "IME-no-turn",
+        "shift-enter",
+        "voice-no-autostart",
+        "selection-insert",
+        "stop-late-ignored",
+        "refused-preserved",
+        "empty-picker",
+        "image-PDF-transport"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "capabilities-de-1440",
+      "states": [
+        "IME-no-turn",
+        "shift-enter",
+        "voice-no-autostart",
+        "selection-insert",
+        "stop-late-ignored",
+        "refused-preserved",
+        "empty-picker",
+        "image-PDF-transport"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "capabilities-en-390",
+      "states": [
+        "IME-no-turn",
+        "shift-enter",
+        "voice-no-autostart",
+        "selection-insert",
+        "stop-late-ignored",
+        "refused-preserved",
+        "empty-picker",
+        "image-PDF-transport"
+      ],
+      "turns": 1,
+      "errors": []
+    }
+  ]
+}

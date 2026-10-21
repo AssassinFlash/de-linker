@@ -1,0 +1,150 @@
+{
+  "count": 24,
+  "images": [
+    {
+      "file": "capabilities-de-1440-eight-lines.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "5365b4d62056c1d3c49904a49ec223a86f19f302fd13fee97ff034823f8b859d"
+    },
+    {
+      "file": "capabilities-de-1440-prepared.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "19eefd2c09d388f3eccc27fd7e961ce7b2f3801a2484bc980f30cb0606922287"
+    },
+    {
+      "file": "capabilities-de-390-eight-lines.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2ccfe203bb9df223a0f84db48bed1490969c886a6163dc04db3a2f48caf62fdf"
+    },
+    {
+      "file": "capabilities-de-390-prepared.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "27f1c385da0642cc9c7cfee71950ad7f0d3d7afd52a1db7f7f084f924feaeb8d"
+    },
+    {
+      "file": "capabilities-en-1440-eight-lines.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "7ed8c45e141394981fe2179e291fd104be0b31132128f5dbf31184141a0d20de"
+    },
+    {
+      "file": "capabilities-en-1440-prepared.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "6796f008ff58822fd46d3f8273cb29ec909245bd0c7dd1a261f8e01c976bae95"
+    },
+    {
+      "file": "capabilities-en-390-eight-lines.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "295e5bf55d837aedd1c7edaf684c61263b9a05786baae5965fd8a951bf2e3eee"
+    },
+    {
+      "file": "capabilities-en-390-prepared.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "10f0b2addb0685f5d52f5e8e03f44bd47e941aa821140a62d9c71cd70fff3e6a"
+    },
+    {
+      "file": "draft-de-1440-missing.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "5cddb6fa8ba39e49ed7dd9c631a3c9aac496b3183c710298d28d6b87c10351c4"
+    },
+    {
+      "file": "draft-de-1440-prepared.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "5b43fe1fa84f3f4223a365e763d59c5ba39e0c385c6af7086d67fc3d4c565db0"
+    },
+    {
+      "file": "draft-de-1440-voice-conflict.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "e951136bd212f6e8290e9d26eb9b58109a8681ecc90951d5f6146e838a1bd1e4"
+    },
+    {
+      "file": "draft-de-1440-voice-unavailable.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "939693b57be58ea0e7830e5b372f002a80f6fae4e18e405a72aba6900d554fd9"
+    },
+    {
+      "file": "draft-de-390-missing.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "65b389916bccf290cc1052397bb8378ff2c98128133a98705c577e666dd10d09"
+    },
+    {
+      "file": "draft-de-390-prepared.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "2fc88cd17eeef3ccd57ad5943f9de6d6f19bc54bf0e3f24233c3975638155e15"
+    },
+    {
+      "file": "draft-de-390-voice-conflict.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "59720a096a8ffcccd72860c56c442404631662de7c56f59a5f3e4cc19ef115cc"
+    },
+    {
+      "file": "draft-de-390-voice-unavailable.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d3754df243f34441d7a5b9406045883e72da458a1fd77b9182c728d373e18962"
+    },
+    {
+      "file": "draft-en-1440-missing.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "a7028292520d04ef0772612ca87906d58511a65207b48b0917d205b2a21fc0a4"
+    },
+    {
+      "file": "draft-en-1440-prepared.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "60daa4f7893415d660570294c470affd761b4c27f529693d50581979cd9c539c"
+    },
+    {
+      "file": "draft-en-1440-voice-conflict.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "d27a31c41e12d9c4cbf23075629d31466b2e35e8d532da351236c4cde3439a49"
+    },
+    {
+      "file": "draft-en-1440-voice-unavailable.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "901460c33eb640d98ab0e740fdd6d98248fc9c341f0535dbb918d1a87c7c7fad"
+    },
+    {
+      "file": "draft-en-390-missing.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "e820d9174b8cc50fda9a007fbb279551c5de15614c6aff9309dc848ab3b80ac8"
+    },
+    {
+      "file": "draft-en-390-prepared.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "4d871ccd7fe6f7b657cccd9e703bdb4ce0ff19f5681243548a9fe8ab8a8c870c"
+    },
+    {
+      "file": "draft-en-390-voice-conflict.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "6881ddc38ed321050fc942a210f6886003968a6ad6f3b9a76f4f73d166c3bcc8"
+    },
+    {
+      "file": "draft-en-390-voice-unavailable.png",
+      "width": 390,
+      "height": 844,
+      "sha256": "d745431b7f3ad2d573cd6aa91bf573bc851b00704eb2d84f3fd180f5278e3e34"
+    }
+  ],
+  "source": "Unedited original Playwright PNGs from immutable current pure-presentation8 run"
+}

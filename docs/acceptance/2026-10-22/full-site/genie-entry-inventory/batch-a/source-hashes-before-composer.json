@@ -1,0 +1,25 @@
+{
+  "product_source_sha256": "0e8553a46b895be2fc19d834db1df01c03cc0c4e58dbbc2230d247767e2f6fb8",
+  "files": {
+    "plugins/linker-tools/includes/Genie/Conversations.php": "54078455d5de19704497d770ff47bdb89d7d668c1cc33c8bd307404584c9af2c",
+    "plugins/linker-tools/includes/Genie/Entries.php": "bfb960d899e2c2eced328b53a99eafd478482b0c5072f8920b8918586d7832c2",
+    "plugins/linker-tools/includes/Genie/EntryContext.php": "ccb2a8949dde38c20bb9b6fa3e5e51fab8ab8dbe1b2369a2cbd1997cae929ede",
+    "plugins/linker-tools/src/genie/App.tsx": "917f641852a0efa5cbea479d4a150acd1b2b4e925f1b0a1a687c25a1bd3b070b",
+    "plugins/linker-tools/src/genie/components/EntryInbox.tsx": "7a4a1fcff59f741041a7aaa0b3baa0e6ea885d5676ff9fc85244269dfd99f445",
+    "plugins/linker-tools/src/genie/components/HelperFooter.tsx": "a3f39db9646804c635dabc6a803776d3f0cecedaafec290af6b4dd329c751efe",
+    "plugins/linker-tools/src/genie/shared/dictation.ts": "e9e488c553648913ae72a88bd7933b4aa4c8a1374a8889adba6f916a9128a056",
+    "plugins/linker-tools/src/genie/shared/entryDraft.ts": "08ae95f35d0c9168c438124627ceaa796498f037d3f09d37cc7f62706145aa2a",
+    "plugins/linker-tools/src/genie/shared/entryFailure.ts": "fb533487bdc41919668217d2cf490fd21dd34e143a89607fa9e64d92df837429",
+    "plugins/linker-tools/src/genie/shared/failure.ts": "e30262531a0f58323cab8e1427ff988abbc7c0bddc6c25e5bdde62206eef5293",
+    "plugins/linker-tools/src/genie/shared/useEntryInbox.ts": "2b94c232dec9b342d2472eaad7536d849c6917daa8aecba5d6faba0e36af54d1",
+    "plugins/linker-tools/src/genie/shared/useFailure.ts": "30819e6406b86e79ee103aa54042cf0c49c48eacdc68690542b8607d70dfd507",
+    "plugins/linker-tools/src/genie/shared/useHelperDialog.ts": "c960697d3d1f56e9d78570217f3086cfe74232fa326b186550ca61122af30451",
+    "plugins/linker-tools/src/hero/Hero.tsx": "96ef75f27c2fd7e82ec60ba92599ef26bfdcc2b9b148edffe82d4dc6db895d02",
+    "plugins/linker-tools/src/hero/controller.tsx": "d0e9e72cd5d473320535fe24f32a1424e5bf6b80696e364916ad420aa43e0e25",
+    "plugins/linker-tools/src/hero/session.ts": "28ba8de394e987bee0bd77112ded38bc8c9f74d63b82fc87542c085c942fd0fe",
+    "plugins/linker-tools/src/marketing/entries.ts": "a5f0480dee0f3872149229e1c397096ed8039354321739ebdc90e7273e4829a6",
+    "plugins/linker-tools/src/marketing/index.ts": "cda5e299daf2c39234b26133e4bafcc6552e4b0be02c255f11f7844807ec155c",
+    "plugins/linker-tools/webpack.config.js": "e97362e781c1ec0ae3df9afe0afb081574c9ea8d0fb2b12aa38b8bfa124269f9"
+  },
+  "notes": "Products only; generated bundle/catalog, tests and evidence are separately checked."
+}

@@ -1,0 +1,15 @@
+
+Running 8 tests using 1 worker
+
+(node:65992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › specs/genie-marketing-entries.spec.ts:591:3 › draft-en-1440: real attachment preparation, refusal, reload and voice capability (3.6s)
+  ✓  2 [chromium] › specs/genie-marketing-entries.spec.ts:591:3 › draft-en-390: real attachment preparation, refusal, reload and voice capability (2.4s)
+  ✓  3 [chromium] › specs/genie-marketing-entries.spec.ts:591:3 › draft-de-1440: real attachment preparation, refusal, reload and voice capability (3.2s)
+  ✓  4 [chromium] › specs/genie-marketing-entries.spec.ts:591:3 › draft-de-390: real attachment preparation, refusal, reload and voice capability (2.3s)
+  ✓  5 [chromium] › specs/genie-marketing-entries.spec.ts:717:3 › capabilities-en-1440: IME, dictation insertion/stop/refusal and image/PDF payload (2.0s)
+  ✓  6 [chromium] › specs/genie-marketing-entries.spec.ts:717:3 › capabilities-en-390: IME, dictation insertion/stop/refusal and image/PDF payload (2.0s)
+  ✓  7 [chromium] › specs/genie-marketing-entries.spec.ts:717:3 › capabilities-de-1440: IME, dictation insertion/stop/refusal and image/PDF payload (2.4s)
+  ✓  8 [chromium] › specs/genie-marketing-entries.spec.ts:717:3 › capabilities-de-390: IME, dictation insertion/stop/refusal and image/PDF payload (2.0s)
+
+  8 passed (20.9s)

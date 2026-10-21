@@ -147,6 +147,15 @@ markup 归 archive 的 LC 模板（#16 重建），行为与数据归本票，�
   - **站头站脚**：`/genie/` 的链接（页头菜单卡、移动链接、站脚 Plan with Linker 面板）与全站常驻 dock；工作区页（`/genie/`）由 `[linker_genie_workspace]` 承载。
   - **首页 hero**（#232）：首页 `.hero-cinematic` 自己的输入框、发送、胶囊、拍照、附件与语音按钮；见下节"首页 hero"。
   - `Entries::*_chips()` 仍是可挂载的钩子（Woo 模板面：`woocommerce_single_product_summary` / `woocommerce_account_dashboard`），当前 LiveCanvas 模板不触发；`[linker_genie_chips page_type="…"]` 可随时显式挂载。首次点击才加载 JS。
+- **营销页输入转入同一个 Genie（2026-10-22，Batch A）**：住宅、工商业英德页的 `#system-search` 与 Installer 手机的 `.installer-mobile-assistant`，由 tools 的 `marketing` 入口绑定现有 LC 输入框。胶囊仍只预填原输入框；普通 Genie 链接仍是导航；Installer 桌面 Plan 仍进入配置器，项目原文完整下传属于另一个尚未完成的 Batch B。
+  - 输入框 Enter 发送，Shift+Enter 换行，IME 合成期间 Enter 不发送。源问题在接收方成功持久接管前保留；加载失败解除 busy 并允许重试同一 attempt。App 在 await/队列前同步认领 attempt，同 tick 重投及 ready 后 ACK 重投不会新增一轮。暖态已有轮次忙碌时，下一问题保留为待处理项，不接入上一轮的附件。
+  - 当前输入框、文件或待重选文件名算已有草稿，显示保留、添加、单独发送的明确选择。单独发送先原子停放旧草稿；停放/认领持久写入失败不清原 owner，也不回 accepted ACK。恢复停放稿等待身份核验后再次检查输入版本、文件与 busy，避免迟到恢复覆盖新一轮。未发送附件字节只在组件内存；刷新只恢复文本和待重选文件名，重选或明确移除前禁止发送。
+  - 附件、铭牌、语音只将原文接入现有 composer，并展示现有选择/听写操作，不自动发送或启动麦克风。浏览器原生听写使用当前页面语言，插在光标处；拒绝、不支持、停止与关闭均保留原文，停止后的迟到转录不得再插入。
+  - 恢复记录仅在同标签页 sessionStorage，附带比较用 opaque scope。私有 `POST linker-ai/v1/genie/entry-context` 只回 HMAC scope，`private, no-store`、`Vary: Cookie`，归属由原生 WP cookie/REST nonce 及真实 Genie guest browser epoch 决定。tab token 不赋权；不返回用户、cookie 或 token。已有 guest epoch 的辅助读取不重写 cookie；没有 epoch 时沿用原 Conversations 建立机制。初始并发读取可合并，每次回显/消费/实际 send/retry 都重新核验，不能复用先前 pending 的身份读。5 秒辅助读取预算沿用当前商品元数据读取约定，独立于模型时限。首次核验不可用时不显示旧缓存，并提供现有错误与重试操作；已合法恢复的当前原文与附件遇暂时核验失败保持可重试，确认身份变化才丢弃原 scope 的本地记录；guest 登录不自动认领未发送文本，原生历史认领不变。
+  - App、首页 hero 和共享失败记录均保留营销来源 scope。entry 派生的编辑、附件、语音和失败重试不脱离该 scope。所有经过验证的 composer 恢复入口（独立失败记录、未发送恢复、停放稿恢复、明确添加）共用 claimComposer 归还 scope 与同步 owner，不依赖另一缓存记录是否存在。回显前先验身份，实际传输在重读线程之后再核验；旧失败恢复的异步结果不得覆盖新记录，旧轮次完成不得清另一个 attempt 的失败记录。无 entry scope 的既有失败恢复合同保持原状。
+  - composer 沿用最多六行（24px × 6 = 144px），超出则内部滚动；恢复后即使原文没变，实际 textarea 重新挂载、面板打开、宽度变化与字体就绪都要重新测量，不能隐藏第二行。打开 dock 后焦点进入 composer。860px 以下为当前完整可见 sheet 的 dialog 边界（含 React 根外 LC 账号链接），背景 inert、原 body scroll 状态保存/恢复、Tab 不离开；关闭的 Help details 仅首个 summary 可 Tab。桌面 dock 为非模态，不锁页面焦点。Help/history 优先处理 Esc，再按现有关闭动作关闭 dock；仅在焦点仍属于该面或丢失时返回有效原触发器，不抢用户已主动移开的焦点。
+  - 应用 bundle 加载失败时，由既有原生 loader 提供 Genie 标题、错误、重试；helper 另有 Close/Esc 和同一完整 mount 的临时键盘边界，workspace 不提供 Close。重试前释放该边界，再交给 React；重试不覆盖有效原触发器。关闭取消本次尚未发送的 volatile 问题/entry 投递意图，但保留源输入与 durable entry。迟到 ready 不重开、不发送；plain Open 仅恢复可选稿，新问题不得自动先发已关闭的旧问题。所有 fallback 样式经同一 WindPress 管线，在缺少应用 CSS 时仍可用。
+  - 本地真实 LC → App → 单一 turn 的模型拦截夹具与状态截图见 `docs/acceptance/2026-10-22/full-site/genie-entry-inventory/batch-a/`。单测、设计评审、浏览器与线上读回分别记录，不互相代替。该段为本批实现合同；最终验收状态以证据记录为准。
 - 组件：线程、消息、追问芯片、ProductCard（加入 Lösungsentwurf 并读回数量；加入方案；状态 pending/added/unverified/retry 在卡内、高度稳定）、CompareTable、Handoff。
 - 文案：按 AGENTS.md 规则逐处写，EN/DE；对抗评审记录附 PR。
 

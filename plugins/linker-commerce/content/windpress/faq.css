@@ -160,6 +160,7 @@
 #linker-faq-page .linker-library-qa[open] > .linker-library-qa-head { background: rgba(12, 127, 115, 0.08); }
 #linker-faq-page .linker-library-qa-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 #linker-faq-page .linker-library-qa-q { font-size: 15px; font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
+#linker-faq-page .linker-library-qa-product { color: var(--ll-accent-dark); font-size: 13px; font-weight: 500; line-height: 1.45; overflow-wrap: anywhere; }
 #linker-faq-page .linker-library-qa-where { font-size: 12px; font-weight: 500; color: var(--ll-muted); }
 #linker-faq-page .linker-library-qa-a { padding: 0 46px 18px 18px; }
 #linker-faq-page .linker-library-qa-a > p { max-width: 68ch; font-size: 15px; line-height: 1.65; color: var(--ll-muted); }
@@ -194,12 +195,9 @@
 #linker-faq-page .linker-library-badge.is-brochure { background: #eeeaf4; color: #3d3560; }
 #linker-faq-page .linker-library-thumb { grid-area: thumb; width: 52px; height: 72px; flex: none; display: grid; place-items: center; overflow: hidden; position: relative; border: 1px solid rgba(21, 53, 47, 0.14); border-radius: 3px; background: #fff; color: var(--ll-muted); box-shadow: 0 1px 2px rgba(21, 53, 47, 0.05), 0 4px 12px rgba(21, 53, 47, 0.07); }
 #linker-faq-page .linker-library-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
-/* The tile's type icon is the fallback the design shows for a document with
- * no thumbnail: it stands until a page image is there (`has-src`, printed by
- * the fragments) and the script's error path puts it back by taking that
- * class off. The image fades in once it has loaded — never before, because an
- * image hidden by CSS that no script reveals would be a blank row. */
-#linker-faq-page .linker-library-thumb.has-src .linker-library-icon,
+/* Keep a type icon until this particular image has loaded. A search clone
+ * may have a source URL before its own readiness listener has completed. */
+#linker-faq-page:not(.is-enhanced) .linker-library-thumb.has-src .linker-library-icon,
 #linker-faq-page .linker-library-thumb.has-img .linker-library-icon { visibility: hidden; }
 #linker-faq-page.is-enhanced .linker-library-thumb.has-src img { opacity: 0; transition: opacity 0.16s linear; }
 #linker-faq-page.is-enhanced .linker-library-thumb.has-img img { opacity: 1; }
@@ -239,6 +237,14 @@
 #linker-faq-page .linker-library-genie { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border: 1px solid var(--ll-accent); border-radius: 8px; background: #fff; color: var(--ll-accent-dark); font-size: 14px; font-weight: 700; text-decoration: none; }
 #linker-faq-page .linker-library-genie:hover { background: var(--ll-accent); color: #fff; }
 
+/* The same 44px action target used by the site's shared controls also applies
+ * to filtering, paging and file actions, including long German labels. */
+#linker-faq-page .linker-library-dl,
+#linker-faq-page .linker-library-chip,
+#linker-faq-page .linker-library-pager button,
+#linker-faq-page .linker-library-genie { min-height: 44px; height: auto; }
+#linker-faq-page .linker-library-pager button { min-width: 44px; }
+
 /* ---- narrow viewports: the rail folds into the pinned chip row ---- */
 @media (max-width: 1023px) {
 	#linker-faq-page { --ll-sticky: calc(var(--ll-tab-h) + 57px); }
@@ -262,6 +268,8 @@
 	#linker-faq-page .linker-library-logo img { height: 32px; }
 	#linker-faq-page .linker-library-card-title { flex: 1 1 60%; }
 	#linker-faq-page .linker-library-qa-a { padding-right: 18px; }
+	#linker-faq-page .linker-library-doc.has-tile { grid-template-columns: 52px minmax(0, 1fr); grid-template-areas: "thumb lead" "thumb meta" ". dl"; gap: 10px 14px; }
+	#linker-faq-page .linker-library-dl { justify-self: start; margin-top: 2px; }
 }
 @media (max-width: 520px) {
 	#linker-faq-page .linker-library-hero { padding-top: 24px; }
@@ -271,12 +279,8 @@
 	#linker-faq-page .linker-library-suggest { max-height: 46vh; }
 }
 @media (max-width: 420px) {
-	/* The rows keep their tile column here too (the prototype re-states its own
-	 * thumb areas at this breakpoint for the same reason); only the paddings
-	 * and the badges tighten. The .has-tile selector outranks the bare row. */
-	#linker-faq-page .linker-library-doc.has-tile { grid-template-columns: 52px minmax(0, 1fr) auto; grid-template-areas: "thumb lead dl" "thumb meta dl"; align-items: start; }
 	#linker-faq-page .linker-library-doc { padding-inline: 14px; }
-	#linker-faq-page .linker-library-dl { min-height: 34px; padding: 6px 10px; }
+	#linker-faq-page .linker-library-dl { padding: 8px 12px; }
 	#linker-faq-page .linker-library-badge { font-size: 10px; letter-spacing: 0.04em; }
 	#linker-faq-page .linker-library-doc-meta { font-size: 12px; }
 }

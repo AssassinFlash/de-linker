@@ -1,0 +1,18 @@
+{
+  "observed": {
+    "clientHeight": 101,
+    "scrollHeight": 228,
+    "titleTop": 462,
+    "scrollViewportTop": 438,
+    "scrollViewportBottom": 538.90625,
+    "scrolledTo": 127,
+    "lastPrompt": {
+      "top": 471,
+      "bottom": 515,
+      "height": 44
+    },
+    "fullyReachable": true
+  },
+  "turns": 0,
+  "source": "Separate actual local desktop helper: controlled browser SpeechRecognition availability only, native entry scope, 8-line composer awaited144px, actual welcome scrollTop assigned to max and restored; any turn guarded/aborted, zero calls"
+}

@@ -1,0 +1,36 @@
+{
+  "cases": 8,
+  "rows": 8,
+  "all_passed": true,
+  "original_PNGs": 24,
+  "target_observations": 168,
+  "targets_min_width": 44,
+  "targets_min_height": 44,
+  "welcome_observations": 24,
+  "all_welcome_title_reachable": true,
+  "all_composer_heights": true,
+  "over_six_lines": [
+    {
+      "clientHeight": 144,
+      "scrollHeight": 192,
+      "overflow": "auto"
+    },
+    {
+      "clientHeight": 144,
+      "scrollHeight": 192,
+      "overflow": "auto"
+    },
+    {
+      "clientHeight": 144,
+      "scrollHeight": 192,
+      "overflow": "auto"
+    },
+    {
+      "clientHeight": 144,
+      "scrollHeight": 192,
+      "overflow": "auto"
+    }
+  ],
+  "source_errors_nonempty": true,
+  "voice_contract": "4available:explicit voice button/no duplicatep/no autostart;4unsupported:exact current-locale capability explanation/no action,original draft/files/missing/refusal preserved;turn/history fixture boundaries in summary"
+}

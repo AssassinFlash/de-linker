@@ -288,6 +288,7 @@ final class LibraryPage {
 			foreach ( $answers as $answer ) {
 				$rows .= '<details class="linker-library-qa" data-library-item data-library-group="' . esc_attr( $brand['name'] ) . '">';
 				$rows .= '<summary class="linker-library-qa-head"><span class="linker-library-qa-text">';
+				$rows .= '<span class="linker-library-qa-product">' . esc_html( $answer['product'] ) . '</span>';
 				$rows .= '<span class="linker-library-qa-q">' . esc_html( $answer['question'] ) . '</span>' . $where;
 				$rows .= '</span></summary>';
 				$rows .= '<div class="linker-library-qa-a"><p>' . wp_kses_post( $answer['answer'] ) . '</p>';
@@ -456,7 +457,7 @@ final class LibraryPage {
 		$out .= '<span class="linker-library-doc-title">' . esc_html( $document['title'] ) . '</span></span>';
 		$out .= '<p class="linker-library-doc-meta"><span class="linker-library-doc-covers">' . esc_html( $document['covers'] ) . '</span>';
 		$out .= '<span class="linker-library-lang"><span aria-hidden="true">' . esc_html( $document['language'] ) . '</span><span class="linker-library-sr">' . esc_html( $document['language_label'] ) . '</span></span></p>';
-		$out .= '<a class="linker-library-dl" href="' . esc_url( $document['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( (string) __( 'Download', 'linker-commerce' ) ) . self::DOWNLOAD_ICON . '</a>';
+		$out .= '<a class="linker-library-dl" href="' . esc_url( $document['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( (string) __( 'Download', 'linker-commerce' ) ) . '<span class="linker-library-sr"> ' . esc_html( $document['title'] ) . '</span>' . self::DOWNLOAD_ICON . '</a>';
 		$out .= '</li>';
 
 		return $out;

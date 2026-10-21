@@ -1,0 +1,245 @@
+{
+  "recorded_at": "2026-10-21T21:38:33.907028+00:00",
+  "state": "Batch A bounded local acceptance PASS:dual-source review,root full suites/generated checks,adjacent complete32 plus current pure-presentation8,independent98-original-image review",
+  "source_checks": {
+    "typescript": "PASS",
+    "targeted_eslint": "PASS",
+    "vitest": {
+      "files": 52,
+      "tests": 451,
+      "result": "PASS",
+      "log": "voice-presentation/all-js-green.log"
+    },
+    "phpunit": {
+      "tests": 45,
+      "assertions": 236,
+      "result": "PASS",
+      "log": "bootstrap/php-green.log"
+    },
+    "wpcs": {
+      "files": 5,
+      "result": "PASS"
+    },
+    "phpstan": {
+      "source_files": 3,
+      "result": "PASS"
+    },
+    "po_msgfmt_check": "PASS",
+    "diff_check": "PASS",
+    "asset_registration_fixture": {
+      "result": "PASS1test14assertions",
+      "PHPCS": "PASS",
+      "red": "asset-registration/red.log",
+      "green": "asset-registration/green.log",
+      "scope": "Test only adds marketing entry and native DOM/i18n dependencies;correct Assets source unchanged"
+    },
+    "entries_registration_fixture": {
+      "result": "PASS1file3tests",
+      "red": "voice-presentation/entries-red.log",
+      "green": "voice-presentation/entries-green.log",
+      "scope": "Adds actual marketing DOM script map;full webpack equality still asserts all entries;only true React apps enter app-mount loop"
+    }
+  },
+  "counterexamples": {
+    "red": "source-counterexamples.txt",
+    "green_related": {
+      "files": 2,
+      "tests": 47,
+      "result": "PASS"
+    },
+    "boundaries": [
+      "same-tick receive claim before queue",
+      "ack replay idempotent",
+      "source-first write / claim second quota failure",
+      "park quota failure preserves both owners",
+      "missing filename counts as occupied draft",
+      "restore scope await versus new turn",
+      "A\u2192B ordinary Send and Retry reject transport",
+      "A\u2192B failure restore zero private textarea paint",
+      "older shared failure reader/completion preserve newer owner",
+      "temporary identity outage send/retry preserves text and bytes",
+      "initial identity outage hides private text and offers actual retry",
+      "independent FAILURE_KEY pending/edit restores composer scope",
+      "parked\u2192conversation switch\u2192restore\u2192failed ordinary Send\u2192B remount zero private paint",
+      "closed details native first-summary focus boundary",
+      "dictation late result after stop ignored",
+      "App delayed failure/Retry never overwrites newly edited composer",
+      "Hero actual controller scope outage exposes retry without private text",
+      "Hero delayed failure parks original beside newly edited prompt",
+      "Busy preparation retains actionable recovery and owner barrier before new Send",
+      "Hero double swap preserves omitted names and reselect UI"
+    ]
+  },
+  "browser_contract": {
+    "cases": 32,
+    "current_result": "Current source8/8 PASS20.9s,composed with adjacent complete32/32 PASS1.3m",
+    "real": [
+      "published LC pages",
+      "single loader and App consumer",
+      "private native identity endpoint",
+      "image/PDF browser preparation",
+      "native cookie and WP login/logout"
+    ],
+    "fixtures": [
+      "turn response",
+      "empty conversation/list response",
+      "SpeechRecognition callbacks in capability cases",
+      "home recovery cases only: auxiliary scope503\u2192fixture verified scope"
+    ],
+    "production": "parent-owned; no production action by this agent",
+    "interaction_run": "20261021T202455072Z: second run after correcting local account fixture, 28/28 PASS; frames overwritten from first run, first run only log retained",
+    "visual_result": "Spec bounded source+98 original images PASS:74 adjacent complete-run originals plus24 current pure-presentation originals;owner actual targeted frames PASS;production not claimed",
+    "composer_corrected_run": "20261021T203334923Z: final326,28/28 interaction+actual height/scroll assertions PASS;58 original frames,immutable run",
+    "bootstrap_debug_run": "20261021T204533930Z:4/4 actual helper+workspace boot failure/retry cases PASS;16 original frames,before final touch-target CSS",
+    "final_run": "20261021T212024202Z",
+    "original_PNGs": {
+      "adjacent_complete32": 74,
+      "current_targeted8": 24
+    },
+    "geometry": "20261021T210303171Z/geometry-summary.json:source/remove44,promptmin44,App144scroll,Hero62fullfield/nameplate/contrast13.48,welcome title reachable30observations,source noempty12observations PASS",
+    "geometry_files": {
+      "adjacent_complete32": 74,
+      "current_targeted8": 24
+    },
+    "CSS": {
+      "mtime": 1792617293,
+      "bytes": 701525
+    },
+    "welcome_scroll": "20261021T210303171Z/welcome-scroll-readback.json:actual maxscroll127,last44px suggestion fully visible,zero turn",
+    "current_targeted_cases": 8,
+    "acceptance_composition": {
+      "adjacent_complete": {
+        "run": "20261021T210303171Z",
+        "source_sha256": "94d6c8fe960b59833ddee9f589ad23478ffb39bb1031aa51e60ef758b8244d0f",
+        "cases": 32,
+        "result": "PASS",
+        "images": 74,
+        "status": "Immediately before only redundant supported-voice paragraph removal;remaining source byte-identical outside voicePrompt"
+      },
+      "current_increment": {
+        "run": "20261021T212024202Z",
+        "source_sha256": "38342862231861ddf57a6e8792c04e323e5cddbfaea66fc7f59907f2681a8fd1",
+        "cases": 8,
+        "result": "PASS",
+        "images": 24,
+        "covers": [
+          "ENDE1440/390 supported action/no duplicatep/noautostart,dictation flow,imagePDF payload",
+          "ENDE1440/390 explicit noSpeech native entry acceptance:existing explanation,no voice button,text/files/missing owner preserved,0turn"
+        ],
+        "fixture_limits": "Native LC/App/scope/attachment preparation;model turn and empty history fixtures;SpeechRecognition explicitly available/unavailable"
+      }
+    }
+  },
+  "outside_batch_a": [
+    "Installer desktop Plan/project_brief downstream",
+    "Commerce inquiry prefill and notes",
+    "mail/order changes",
+    "Unscoped ordinary legacy failure identity isolation (separate parent-owned batch)"
+  ],
+  "source_sha256": "38342862231861ddf57a6e8792c04e323e5cddbfaea66fc7f59907f2681a8fd1",
+  "independent_review": {
+    "standards": {
+      "result": "SOURCE PASS",
+      "source_sha256": "0e8553a46b895be2fc19d834db1df01c03cc0c4e58dbbc2230d247767e2f6fb8",
+      "independent_counterexamples": 12,
+      "independent_vitest": {
+        "files": 33,
+        "tests": 322
+      }
+    },
+    "spec": {
+      "result": "SOURCE PASS",
+      "source_sha256": "0e8553a46b895be2fc19d834db1df01c03cc0c4e58dbbc2230d247767e2f6fb8",
+      "independent_counterexamples": 9,
+      "targeted_tests": 79,
+      "files": 5
+    },
+    "limitations": "No browser/build/production PASS implied; unscoped legacy failure remains parent-owned."
+  },
+  "composer_review": {
+    "standards": "SOURCE INCREMENT PASS",
+    "spec": "SOURCE INCREMENT PASS",
+    "source_sha256": "0e3e5910a835107c226cfdb90944453eed12da42c8ff85ab58a0cebbbfd55c0b"
+  },
+  "bootstrap_increment": {
+    "source_sha256": "94d6c8fe960b59833ddee9f589ad23478ffb39bb1031aa51e60ef758b8244d0f",
+    "changed_product_source": [
+      "plugins/linker-tools/includes/Genie/Entries.php"
+    ],
+    "unchanged_product_files": 19,
+    "native_VM": "4 actual PHP loader scenarios PASS; old staged loader same fixture RED",
+    "behavior": [
+      "helper Close/Esc and original opener return",
+      "cancel volatile delivery while retaining source/durable entry",
+      "late ready0turn/no reopen",
+      "plain reopen recoverable0turn",
+      "different new entry does not automatically send old",
+      "workspace retry without Close"
+    ],
+    "independent_review": {
+      "Spec": "PASS",
+      "Standards": "PASS",
+      "hash": "94d6c8fe960b59833ddee9f589ad23478ffb39bb1031aa51e60ef758b8244d0f",
+      "independent_PHP_EntriesTest": "30tests/176assertions PASS"
+    },
+    "parent_CSS": {
+      "mtime": 1792616532,
+      "bytes": 701525,
+      "scope": "boot fallback;source errors/empty and targets;attachment remove;expanded Hero field/nameplate/contrast;helper welcome safe alignment"
+    },
+    "final_browser": {
+      "run": "20261021T210303171Z",
+      "cases": 32,
+      "result": "PASS",
+      "original_PNGs": 74
+    }
+  },
+  "parent_full_suite": {
+    "result": "PASS(exit0),run by root",
+    "log": "parent-private marketing-library-final-test-complete.log",
+    "PHP": {
+      "commerce": "1336tests6039assertions;161existing skipped",
+      "i18n": "238tests583assertions",
+      "tools": "289tests2352assertions",
+      "mu": "12tests40assertions"
+    },
+    "JS": {
+      "tools": "52files451tests",
+      "account": "2files6tests"
+    },
+    "tool_fixture_browser": "18PASS",
+    "other_suites": "Python/local/migration/pull/cutover completed;existing skip,xfailed,deselected remain as recorded in parent log,no total-coverage claim"
+  },
+  "parent_generated_checks": {
+    "result": "PASS(exit0)",
+    "log": "parent-private marketing-voice-generated-check.log",
+    "builds": "both plugin build::check",
+    "i18n": "8catalog valid/coverage0gap",
+    "manifest": {
+      "sha256": "56264733bd5a790a83b17d8ed65668201713d7a5ecfee2166c96e9cb158f58c4",
+      "inputs": 94,
+      "outputs": 22,
+      "independent_Standards": "build:check PASS;native JSON names/mappings/catalog values match MO"
+    }
+  },
+  "voice_presentation_increment": {
+    "source_sha256": "38342862231861ddf57a6e8792c04e323e5cddbfaea66fc7f59907f2681a8fd1",
+    "before_sha256": "94d6c8fe960b59833ddee9f589ad23478ffb39bb1031aa51e60ef758b8244d0f",
+    "changed_product": "App.tsx voicePrompt presentation only",
+    "outside_voice_prompt_identical": true,
+    "unchanged_other_product_sources": 19,
+    "delta": "voice-presentation/App-only.diff",
+    "browser_current": "20261021T212024202Z",
+    "independent_review": {
+      "Standards": "PASS,current20-source383428;19files unchanged,pure voice block independently verified;build/catalog match",
+      "Spec": "PASS,bounded source and98 original frames with explicit32+8 version boundary;full suites executed by root,not claimed as independent reviewer execution"
+    }
+  },
+  "independent_review_final": {
+    "product_source_sha256": "38342862231861ddf57a6e8792c04e323e5cddbfaea66fc7f59907f2681a8fd1",
+    "Spec": "PASS (bounded source +98original images)",
+    "Standards": "PASS (source,fixtures,manifest,catalog)",
+    "scope": "Local Batch A only;no production or whole-site completion claim",
+    "root_owned_review_notes": "Review document full-check timing and separate actual scroll-readback location clarified by reviewer before parent commit"
+  }
+}

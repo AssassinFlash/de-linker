@@ -89,3 +89,29 @@ test( 'an upstream retry with no words left puts the failure back', () => {
 	expect( payload ).toBeNull();
 	expect( result.current.failureState.current.phase ).toBe( 'failed' );
 } );
+
+test( 'an older entry completion or file edit cannot erase a newer failure owner', () => {
+	const prior = {
+		...DRAFT,
+		entryId: 'entry-a',
+		entryScope: 'a'.repeat( 64 ),
+	};
+	const current = {
+		...DRAFT,
+		entryId: 'entry-b',
+		entryScope: 'b'.repeat( 64 ),
+		text: 'Current owner B',
+		question: 'Current owner B',
+	};
+	const older = renderHook( () => useFailure( files( [ PDF ] ) ) );
+	act( () =>
+		older.result.current.commitFailure( { type: 'send', draft: prior } )
+	);
+	const newer = renderHook( () => useFailure( files( [] ) ) );
+	act( () =>
+		newer.result.current.commitFailure( { type: 'send', draft: current } )
+	);
+	const raw = sessionStorage.getItem( 'linker-genie-turn-failure' );
+	act( () => older.result.current.commitFailure( { type: 'answered' } ) );
+	expect( sessionStorage.getItem( 'linker-genie-turn-failure' ) ).toBe( raw );
+} );
