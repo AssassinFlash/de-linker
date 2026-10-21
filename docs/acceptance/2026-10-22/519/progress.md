@@ -50,3 +50,6 @@ The helper classes are not yet wired into public handlers. No business/resource
 door is claimed as protected by this checkpoint. No production change, model
 request or external mail was performed. #520/#521 own actual door integration,
 and #522 owns joint acceptance and controlled activation.
+
+
+Final implementation, repairs and real-browser evidence supersede this early checkpoint; see checks.md and review.md. PR #523 remains separate from production rollout.
