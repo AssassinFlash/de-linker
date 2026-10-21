@@ -1,0 +1,314 @@
+{
+  "ticket": 473,
+  "engine": "local snapshot instance fix473",
+  "origin": "http://127.0.0.1:9249",
+  "guest": [
+    {
+      "kind": "guest",
+      "lang": "en",
+      "at": "2026-10-21T01:27:28.165Z",
+      "posts": [
+        "/wp-json/linker-ai/v1/engine/design/residential",
+        "/wp-json/wc/store/v1/cart/add-item",
+        "/wp-json/wc/store/v1/cart/add-item",
+        "/wp-json/linker-ai/v1/engine/report/pdf",
+        "/wp-json/linker/v1/solutions",
+        "/wp-json/wc/store/v1/cart/remove-item",
+        "/wp-json/wc/store/v1/cart/remove-item"
+      ],
+      "designStatus": 200,
+      "lines": [
+        {
+          "id": 3556,
+          "model": "GW10K-ETA-G20",
+          "quantity": 1
+        },
+        {
+          "id": 3611,
+          "model": "GW6.0-BAT-D-G20",
+          "quantity": 1
+        }
+      ],
+      "saveRequested": "http://127.0.0.1:9249/wp-json/linker/v1/solutions?lang=en",
+      "save": {
+        "status": 202,
+        "body": {
+          "id": 0,
+          "url": "http://127.0.0.1:9249/my-account/saved-solutions/"
+        }
+      },
+      "saved": {
+        "url": "http://127.0.0.1:9249/solution-configurator/",
+        "lang": "en-US",
+        "title": "Configure a Storage System | Linker",
+        "status": "All products are in your solution draft.Saved to your account. Open saved solution",
+        "saveHref": "http://127.0.0.1:9249/my-account/saved-solutions/"
+      },
+      "shots": {
+        "save": [
+          "shots/en-guest-save-1440.png",
+          "shots/en-guest-save-390.png"
+        ],
+        "account": [
+          "shots/en-guest-account-1440.png",
+          "shots/en-guest-account-390.png"
+        ]
+      },
+      "accountRequested": "http://127.0.0.1:9249/my-account/saved-solutions/",
+      "account": {
+        "url": "http://127.0.0.1:9249/my-account/saved-solutions/",
+        "lang": "en-US",
+        "title": "Partner Account: Sign In or Register | Linker",
+        "hasPassword": true,
+        "hasRegisterForm": false,
+        "links": [],
+        "text": "Your partner account The workspace for installers, EPCs and distributors. Net prices after account approval Every inquiry and document in one place We answer inquiries within one working day Sign in Your inquiries, documents and prices in one place. Username or email address * Required Password * Required Remember me Log in Lost your password? No partner account yet? Create your business account"
+      },
+      "cleanup": {
+        "removed": [
+          {
+            "id": 3556,
+            "status": 200
+          },
+          {
+            "id": 3611,
+            "status": 200
+          }
+        ],
+        "remaining": 0,
+        "left": []
+      },
+      "guestCheck": 401
+    },
+    {
+      "kind": "guest",
+      "lang": "de",
+      "at": "2026-10-21T01:27:39.283Z",
+      "posts": [
+        "/wp-json/linker-ai/v1/engine/design/residential",
+        "/wp-json/wc/store/v1/cart/add-item",
+        "/wp-json/wc/store/v1/cart/add-item",
+        "/wp-json/linker-ai/v1/engine/report/pdf",
+        "/wp-json/linker/v1/solutions",
+        "/wp-json/wc/store/v1/cart/remove-item",
+        "/wp-json/wc/store/v1/cart/remove-item"
+      ],
+      "designStatus": 200,
+      "lines": [
+        {
+          "id": 3556,
+          "model": "GW10K-ETA-G20",
+          "quantity": 1
+        },
+        {
+          "id": 3611,
+          "model": "GW6.0-BAT-D-G20",
+          "quantity": 1
+        }
+      ],
+      "saveRequested": "http://127.0.0.1:9249/wp-json/linker/v1/solutions?lang=de",
+      "save": {
+        "status": 202,
+        "body": {
+          "id": 0,
+          "url": "http://127.0.0.1:9249/de/mein-konto/gespeicherte-loesungen/"
+        }
+      },
+      "saved": {
+        "url": "http://127.0.0.1:9249/de/loesungskonfigurator/",
+        "lang": "de-DE",
+        "title": "Lösungskonfigurator | Linker",
+        "status": "Alle Produkte sind in Ihrem Lösungsentwurf.In Ihrem Konto gespeichert. Gespeicherte Lösung öffnen",
+        "saveHref": "http://127.0.0.1:9249/de/mein-konto/gespeicherte-loesungen/"
+      },
+      "shots": {
+        "save": [
+          "shots/de-guest-save-1440.png",
+          "shots/de-guest-save-390.png"
+        ],
+        "account": [
+          "shots/de-guest-account-1440.png",
+          "shots/de-guest-account-390.png"
+        ]
+      },
+      "accountRequested": "http://127.0.0.1:9249/de/mein-konto/gespeicherte-loesungen/",
+      "account": {
+        "url": "http://127.0.0.1:9249/de/mein-konto/gespeicherte-loesungen/",
+        "lang": "de-DE",
+        "title": "Gespeicherte Lösungen | Linker",
+        "hasPassword": true,
+        "hasRegisterForm": false,
+        "links": [],
+        "text": "Ihr Partner-Konto Der Arbeitsbereich für Installationsbetriebe, EPC-Unternehmen und Händler. Nettopreise nach Freigabe Ihres Kontos Alle Anfragen und Dokumente an einem Ort Wir beantworten Anfragen innerhalb eines Arbeitstages Anmelden Ihre Anfragen, Dokumente und Preise an einem Ort. Benutzername oder E-Mail-Adresse * Erforderlich Passwort * Erforderlich Angemeldet bleiben Anmelden Passwort vergessen? Noch kein Partner-Konto? Erstellen Sie Ihr Firmenkonto"
+      },
+      "cleanup": {
+        "removed": [
+          {
+            "id": 3556,
+            "status": 200
+          },
+          {
+            "id": 3611,
+            "status": 200
+          }
+        ],
+        "remaining": 0,
+        "left": []
+      },
+      "guestCheck": 401
+    }
+  ],
+  "member": [
+    {
+      "kind": "member",
+      "lang": "en",
+      "at": "2026-10-21T01:27:52.550Z",
+      "designStatus": 200,
+      "lines": [
+        {
+          "id": 3556,
+          "model": "GW10K-ETA-G20",
+          "quantity": 1
+        },
+        {
+          "id": 3611,
+          "model": "GW6.0-BAT-D-G20",
+          "quantity": 1
+        }
+      ],
+      "saveRequested": "http://127.0.0.1:9249/wp-json/linker/v1/solutions?lang=en",
+      "save": {
+        "status": 201,
+        "body": {
+          "id": 7442,
+          "url": "http://127.0.0.1:9249/my-account/saved-solutions/#linker-solution-7442"
+        }
+      },
+      "saved": {
+        "url": "http://127.0.0.1:9249/solution-configurator/",
+        "lang": "en-US",
+        "title": "Configure a Storage System | Linker",
+        "status": "All products are in your solution draft.Saved to your account. Open saved solution",
+        "saveHref": "http://127.0.0.1:9249/my-account/saved-solutions/#linker-solution-7442"
+      },
+      "shots": {
+        "save": [
+          "shots/en-member-save-1440.png",
+          "shots/en-member-save-390.png"
+        ],
+        "account": [
+          "shots/en-member-account-1440.png",
+          "shots/en-member-account-390.png"
+        ]
+      },
+      "accountRequested": "http://127.0.0.1:9249/my-account/saved-solutions/#linker-solution-7442",
+      "account": {
+        "url": "http://127.0.0.1:9249/my-account/saved-solutions/#linker-solution-7442",
+        "lang": "en-US",
+        "title": "Partner Account: Sign In or Register | Linker",
+        "hasPassword": false,
+        "hasRegisterForm": false,
+        "links": [
+          {
+            "text": "Saved solutions",
+            "href": "http://127.0.0.1:9249/my-account/saved-solutions/"
+          }
+        ],
+        "text": "WORKPLACE Overview Inquiries Saved solutions Documents ACCOUNT Company Account details Log out Saved solutions GoodWe GW10K-ETA-G20, 80538 Saved on · 21 October 2026 1 × GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module) 1 × GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh) Add to solution draft Design report (PDF) Your contact person sales@de-linker.com"
+      },
+      "cleanup": {
+        "removed": [
+          {
+            "id": 3556,
+            "status": 200
+          },
+          {
+            "id": 3611,
+            "status": 200
+          }
+        ],
+        "remaining": 0,
+        "left": []
+      }
+    },
+    {
+      "kind": "member",
+      "lang": "de",
+      "at": "2026-10-21T01:28:03.949Z",
+      "designStatus": 200,
+      "lines": [
+        {
+          "id": 3556,
+          "model": "GW10K-ETA-G20",
+          "quantity": 1
+        },
+        {
+          "id": 3611,
+          "model": "GW6.0-BAT-D-G20",
+          "quantity": 1
+        }
+      ],
+      "saveRequested": "http://127.0.0.1:9249/wp-json/linker/v1/solutions?lang=de",
+      "save": {
+        "status": 201,
+        "body": {
+          "id": 7443,
+          "url": "http://127.0.0.1:9249/de/mein-konto/gespeicherte-loesungen/#linker-solution-7443"
+        }
+      },
+      "saved": {
+        "url": "http://127.0.0.1:9249/de/loesungskonfigurator/",
+        "lang": "de-DE",
+        "title": "Lösungskonfigurator | Linker",
+        "status": "Alle Produkte sind in Ihrem Lösungsentwurf.In Ihrem Konto gespeichert. Gespeicherte Lösung öffnen",
+        "saveHref": "http://127.0.0.1:9249/de/mein-konto/gespeicherte-loesungen/#linker-solution-7443"
+      },
+      "shots": {
+        "save": [
+          "shots/de-member-save-1440.png",
+          "shots/de-member-save-390.png"
+        ],
+        "account": [
+          "shots/de-member-account-1440.png",
+          "shots/de-member-account-390.png"
+        ]
+      },
+      "accountRequested": "http://127.0.0.1:9249/de/mein-konto/gespeicherte-loesungen/#linker-solution-7443",
+      "account": {
+        "url": "http://127.0.0.1:9249/de/mein-konto/gespeicherte-loesungen/#linker-solution-7443",
+        "lang": "de-DE",
+        "title": "Gespeicherte Lösungen | Linker",
+        "hasPassword": false,
+        "hasRegisterForm": false,
+        "links": [
+          {
+            "text": "Gespeicherte Lösungen",
+            "href": "http://127.0.0.1:9249/de/mein-konto/gespeicherte-loesungen/"
+          }
+        ],
+        "text": "ARBEITSBEREICH Übersicht Anfragen Gespeicherte Lösungen Dokumente KONTO Unternehmen Kontodetails Abmelden Gespeicherte Lösungen GoodWe GW10K-ETA-G20, 80538 Gespeichert am · 21. Oktober 2026 1 × GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul) 1 × GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh) Zum Lösungsentwurf hinzufügen Auslegungsbericht (PDF) GoodWe GW10K-ETA-G20, 80538 Gespeichert am · 21. Oktober 2026 1 × GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul) 1 × GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh) Zum Lösungsentwurf hinzufügen Auslegungsbericht (PDF) Ihre Ansprechperson sales@de-linker.com"
+      },
+      "cleanup": {
+        "removed": [
+          {
+            "id": 3556,
+            "status": 200
+          },
+          {
+            "id": 3611,
+            "status": 200
+          }
+        ],
+        "remaining": 0,
+        "left": []
+      }
+    }
+  ],
+  "mailSent": false,
+  "inquirySent": false,
+  "registered": false,
+  "startedAt": "2026-10-21T01:27:27.632Z",
+  "forbiddenPosts": [],
+  "memberUser": 401,
+  "finishedAt": "2026-10-21T01:28:17.601Z"
+}

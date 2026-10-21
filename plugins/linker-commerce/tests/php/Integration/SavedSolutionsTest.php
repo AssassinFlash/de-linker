@@ -70,12 +70,61 @@ final class SavedSolutionsTest extends IntegrationTestCase {
 	}
 
 	/**
+	 * The save answers the account page of the request's language (#473).
+	 *
+	 * The configurator's "Open saved solution" link is the route's `url`, which
+	 * SavedSolutions::url() builds with wc_get_account_endpoint_url(). That
+	 * function is language-blind in itself; linker-i18n answers it in German
+	 * while the request is German (RestLang's `?lang=`, Storefront's German
+	 * page id, GermanRoutes' endpoint), so the client's `lang` decides the
+	 * address: English without it, the German account path in a German save.
+	 */
+	public function test_the_open_link_follows_the_request_language(): void {
+		$account = (int) get_option( 'woocommerce_myaccount_page_id' );
+		if ( ! function_exists( 'pll_get_post' ) || ! pll_get_post( $account, 'de' ) ) {
+			$this->markTestSkipped( 'The instance has no German account page; load a live snapshot (just pull load).' );
+		}
+		$product  = $this->product( '1680' );
+		$customer = $this->customer();
+		// The guest's drafts would join the next test's account; they are this
+		// test's own writes and leave with it.
+		$this->later(
+			static function (): void {
+				WC()->session->set( SavedSolutions::SESSION_KEY, null );
+			}
+		);
+
+		$this->as_user( 0 );
+		$english = $this->save( 'Guest house', $product->get_id(), 'en' )->get_data();
+		$this->assertIsArray( $english );
+		$this->assertSame( home_url( '/my-account/saved-solutions/' ), $english['url'] );
+
+		$german = $this->save( 'Guest house', $product->get_id(), 'de' )->get_data();
+		$this->assertIsArray( $german );
+		$this->assertSame( home_url( '/de/mein-konto/gespeicherte-loesungen/' ), $german['url'] );
+
+		// A logged-in save takes the same url() with the solution's fragment.
+		$this->as_user( $customer->get_id() );
+		$response = $this->save( 'Haus Barleben', $product->get_id(), 'de' );
+		$this->assertSame( 201, $response->get_status() );
+		$data = $response->get_data();
+		$this->assertIsArray( $data );
+		$saved = (int) $data['id'];
+		$this->forget( $saved );
+		$this->assertSame(
+			home_url( '/de/mein-konto/gespeicherte-loesungen/#linker-solution-' . $saved ),
+			$data['url']
+		);
+	}
+
+	/**
 	 * Sends a solution with one product.
 	 *
-	 * @param string $title      Name.
-	 * @param int    $product_id Product.
+	 * @param string      $title      Name.
+	 * @param int         $product_id Product.
+	 * @param string|null $language   The request's `lang` (linker-i18n RestLang), absent for English.
 	 */
-	private function save( string $title, int $product_id ): \WP_REST_Response {
+	private function save( string $title, int $product_id, ?string $language = null ): \WP_REST_Response {
 		$request = new WP_REST_Request( 'POST', '/linker/v1/solutions' );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
@@ -93,6 +142,12 @@ final class SavedSolutionsTest extends IntegrationTestCase {
 				)
 			)
 		);
+		// After the body: parsing JSON replaces the JSON params, while the
+		// client's language rides in the query string (linker-tools
+		// solutions.ts asks `?lang=`).
+		if ( null !== $language ) {
+			$request->set_query_params( array( 'lang' => $language ) );
+		}
 		return rest_do_request( $request );
 	}
 

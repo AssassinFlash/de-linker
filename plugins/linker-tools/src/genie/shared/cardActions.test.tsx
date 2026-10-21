@@ -16,6 +16,7 @@ import { beforeEach, expect, test, vi } from 'vitest';
  */
 import { saveSolution } from '../../configurator/api/solutions';
 import type { storeClient } from '../../configurator/api/store';
+import type { Locale } from '../../configurator/types';
 import { useCardActions } from './cardActions';
 
 vi.mock( '../../configurator/api/solutions', () => ( {
@@ -28,12 +29,12 @@ function store() {
 	} as unknown as ReturnType< typeof storeClient >;
 }
 
-function hook( client = store() ) {
+function hook( client = store(), locale: Locale = 'en' ) {
 	return renderHook( () =>
 		useCardActions( {
 			restUrl: '/wp-json/',
 			restNonce: 'n',
-			locale: 'en',
+			locale,
 			store: client,
 		} )
 	);
@@ -87,7 +88,31 @@ test( 'saving a solution reports the saved card', async () => {
 			kind: 'residential',
 			title: 'SAJ H2-10K-T3',
 			lines: [ { productId: 5, quantity: 1 } ],
-		} )
+		} ),
+		'en'
+	);
+	expect( result.current.statusFor( 5 ) ).toEqual( {
+		state: 'added',
+		text: 'Saved to your account.',
+	} );
+} );
+
+test( 'a German card asks for the save in German', async () => {
+	vi.mocked( saveSolution ).mockResolvedValue( {
+		id: 9,
+		url: '/de/mein-konto/gespeicherte-loesungen/#linker-solution-9',
+	} );
+	const { result } = hook( store(), 'de' );
+
+	await act( async () => {
+		await result.current.saveCardSolution( 5, 'SAJ H2-10K-T3' );
+	} );
+
+	expect( saveSolution ).toHaveBeenCalledWith(
+		'/wp-json/',
+		'n',
+		expect.objectContaining( { kind: 'residential' } ),
+		'de'
 	);
 	expect( result.current.statusFor( 5 ) ).toEqual( {
 		state: 'added',

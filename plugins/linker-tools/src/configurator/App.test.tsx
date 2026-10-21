@@ -359,6 +359,7 @@ test.each( [
 		expect(
 			await screen.findByText( /In Ihrem Konto gespeichert\./ )
 		).toBeInTheDocument();
+		expect( vi.mocked( saveSolution ).mock.calls[ 0 ][ 3 ] ).toBe( 'de' );
 	}
 );
 
@@ -387,6 +388,7 @@ test( 'a saved solution names the account and links to it', async () => {
 		screen.getByRole( 'link', { name: 'Open saved solution' } )
 	).toHaveAttribute( 'href', '/my-account/solutions/61/' );
 	expect( save ).toHaveBeenCalledTimes( 1 );
+	expect( save.mock.calls[ 0 ][ 3 ] ).toBe( 'en' );
 	const body = save.mock.calls[ 0 ][ 2 ];
 	expect( body ).toEqual(
 		expect.objectContaining( { kind: 'residential' } )

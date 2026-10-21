@@ -119,21 +119,26 @@ export function useCardActions( {
 		async ( productId: number, title: string ) => {
 			status( productId, 'pending', __( 'Saving…', 'linker-tools' ) );
 			try {
-				await saveSolution( restUrl, restNonce, {
-					kind: 'residential',
-					title,
-					input: {
-						locale,
-						plz: '',
-						annual_kwh: 0,
-						pv_kwp: 0,
-						phase: 3,
-						backup: 'none',
-						heat_pump: false,
-						electric_vehicle: false,
+				await saveSolution(
+					restUrl,
+					restNonce,
+					{
+						kind: 'residential',
+						title,
+						input: {
+							locale,
+							plz: '',
+							annual_kwh: 0,
+							pv_kwp: 0,
+							phase: 3,
+							backup: 'none',
+							heat_pump: false,
+							electric_vehicle: false,
+						},
+						lines: [ { productId, quantity: 1 } ],
 					},
-					lines: [ { productId, quantity: 1 } ],
-				} );
+					locale
+				);
 				status(
 					productId,
 					'added',
