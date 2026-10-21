@@ -1,0 +1,10 @@
+{
+  "id": "jDHwFtVVld2L1bmCh",
+  "actId": "aYG0l9s7dbB7j3gbS",
+  "status": "SUCCEEDED",
+  "defaultDatasetId": "uIg39pG1mpt5zccyt",
+  "startedAt": "2026-10-21T17:29:29.145Z",
+  "finishedAt": "2026-10-21T17:29:34.997Z",
+  "statusMessage": "Finished! Total 3 requests: 3 succeeded, 0 failed.",
+  "usageTotalUsd": 0.0029679083531383016
+}

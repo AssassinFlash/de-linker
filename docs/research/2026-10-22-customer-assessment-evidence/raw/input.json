@@ -1,0 +1,22 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.intercom.com/help/en/articles/14079086-enriching-leads-with-fin-for-sales"
+    },
+    {
+      "url": "https://www.intercom.com/help/en/articles/13927115-fin-for-sales-faqs"
+    },
+    {
+      "url": "https://europa.eu/youreurope/business/finance-and-tax/vat/check-vat-number-vies/index_en.htm"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "maxConcurrency": 3,
+  "saveMarkdown": true,
+  "removeCookieWarnings": true,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}
