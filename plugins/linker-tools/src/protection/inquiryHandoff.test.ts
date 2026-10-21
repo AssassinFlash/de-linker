@@ -22,7 +22,10 @@ test( 'explicit navigation carries plain text once, without URL or files', () =>
 } );
 
 test( 'an explicit same-origin empty question clears an earlier handoff', () => {
-	rememberInquiry( window.location.href, 'Earlier question opened in another tab' );
+	rememberInquiry(
+		window.location.href,
+		'Earlier question opened in another tab'
+	);
 	rememberInquiry( window.location.href, '' );
 	restoreInquiry();
 	expect( document.querySelector( 'textarea' )!.value ).toBe(
