@@ -1206,23 +1206,30 @@ def test_the_roof_step_turn_ships_the_signed_sentence_and_size_hints_url() -> No
     assert action.args == {"url": "https://de-linker.test/solution-configurator/"}
 
 
-def test_a_failed_size_hint_is_a_degraded_roof_turn_and_no_action() -> None:
-    """#497 review: a failed route call is visible, and no action without its URL."""
-    message = "Was passiert, wenn ich das Dach weglasse?"
-    route = plan(message, [], _reading("sizing"), NONE, "de")
+@pytest.mark.parametrize(
+    "failure",
+    [
+        {"text": "linker/size-hint: returned 503", "kind": "ability"},
+        {"text": "linker/size-hint: returned 404"},
+    ],
+)
+def test_a_failed_size_hint_is_a_degraded_roof_turn_in_the_question_language(
+    failure: dict[str, str],
+) -> None:
+    """#497 review: a failed route call is visible, and no action without its URL.
+
+    The page locale is German and the question English: the degraded sentence
+    follows the question, not the page. An unclassed 4xx is still the degraded
+    sentence, never the outage handoff.
+    """
+    message = "What happens if I skip the roof?"
+    route = plan(message, [], _reading("sizing"), NONE, "en")
     body = TurnRequest(
         conversation_id="c-497-failed",
         locale="de",
         messages=[TurnMessage(role="user", content=message)],
     )
-    prepared = Prepared(
-        route=route,
-        log={
-            "call_failures": [
-                {"text": "linker/size-hint: returned 503", "kind": "ability"}
-            ]
-        },
-    )
+    prepared = Prepared(route=route, log={"call_failures": [failure]})
     result, block = _answer(
         body,
         prepared,
@@ -1232,10 +1239,10 @@ def test_a_failed_size_hint_is_a_degraded_roof_turn_and_no_action() -> None:
     assert block is None
     assert result.grounded is False
     assert result.fallback is True
-    assert result.failures == ("linker/size-hint: returned 503",)
+    assert result.failures == (failure["text"],)
     (handoff,) = result.output.blocks
     assert isinstance(handoff, HandoffBlock)
-    assert handoff.summary == DEGRADED["de"]
+    assert handoff.summary == DEGRADED["en"]
     assert not any(isinstance(item, ActionBlock) for item in result.output.blocks)
 
 

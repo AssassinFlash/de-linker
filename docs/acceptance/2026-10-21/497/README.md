@@ -18,7 +18,7 @@
 
 ## 2. 两个问题与签定回答
 
-复刻来源：作用句逐字复用 #12 站点文案；末句逐字复用引擎 `limit.default_orientation`（#479 C57）。文案对抗评审见 [copy-review.md](copy-review.md)，**Coordinator sign-off: pending**。
+复刻来源：作用句逐字复用 #12 站点文案；末句逐字复用引擎 `limit.default_orientation`（#479 C57）。文案对抗评审见 [copy-review.md](copy-review.md)，**Coordinator sign-off: approved (2026-10-21)**。
 
 | 语言 | 问题 | 解释 |
 |---|---|---|
@@ -63,4 +63,5 @@ DE（逐字）：
 - `?step=roof` 未动：#462 方案 (a) 保持不变（跳转仍是稳定落点，画布仍只从按钮打开）。本票不读地址栏，也不改配置器的挂载属性。
 - 未改模型通道：本路由不调用模型；`provider=service`、`model=none` 是回合日志的读回，不是配置。
 - 未改其它签定句、未改 UI 文案（动作标签是既有 `.po` 的 “Open the configurator” / “Konfigurator öffnen”）。
-- `size-hint` 失败：客户看到降级句，回合 `grounded=false`、`fallback=true`、`failures` 带工具句，不画没有 URL 的动作。测试是 `tests/test_next_step.py::test_a_failed_size_hint_is_a_degraded_roof_turn_and_no_action` 与 `test_a_roof_answer_without_the_size_hint_fact_has_no_action`；正常路径的上表不受影响。
+- `size-hint` 失败：客户看到降级句，回合 `grounded=false`、`fallback=true`、`failures` 带工具句，不画没有 URL 的动作。测试是 `tests/test_next_step.py::test_a_failed_size_hint_is_a_degraded_roof_turn_in_the_question_language` 与 `test_a_roof_answer_without_the_size_hint_fact_has_no_action`；正常路径的上表不受影响。
+- 路由边界（外审四条探针，修复后）：`Wie viel kWp kann ich auf meiner Dachfläche aufnehmen?` → `sizing`；`Ich möchte 12 kWp, aber ohne Dachdurchdringung planen.` → `sizing`；`Bieten Sie Anlagen ohne Dachmontage an?` → `service`；`Gibt es den SAJ H2-10K-T3 auch ohne Dachmontage?` → `products`（型号词）。步骤名的问题仍是 `roof`；`Dachmontage` / `Dachdurchdringung` / `Dachneigung` 是屋面构件，不触发弱标记。测试是 `tests/test_route.py::test_a_roof_measurement_product_or_company_question_keeps_its_route` 与 `test_every_roof_marker_is_its_sources_normalized_form`。

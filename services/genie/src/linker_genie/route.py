@@ -289,6 +289,10 @@ _ANNUAL = re.compile(
     r"pro\s+jahr|im\s+jahr|jährlich|yearly|annual)",
     re.IGNORECASE,
 )
+# A size word keeps a skipping question on sizing even without a figure: "Wie
+# viel kWp kann ich auf meiner Dachfläche aufnehmen?" asks for the size, not
+# about the step (#497 review).
+_SIZE_WORD = re.compile(r"\b(?:kwp|kwh|kw)\b", re.IGNORECASE)
 # Extreme words, EN and DE. Comparatives (kleiner, größer, günstiger) are not
 # extremes. ß and ss both occur.
 _SMALLEST = re.compile(
@@ -724,8 +728,10 @@ def _plan_turn(
         return scripted
     # The Roof detail step's role and the cost of skipping it (#497). The
     # sentence is signed, and the configurator action's URL comes from
-    # size-hint. A confident sizing or document reading does not replace it.
-    roof = _roof_step(message, lang, reasons)
+    # size-hint. A named product, a stated or asked size or a company reading
+    # keeps its own route; a confident sizing reading does not replace the
+    # step's name.
+    roof = _roof_step(message, matches, intent, lang, reasons)
     if roof is not None:
         return roof
     # A brand or series extreme is one aggregate (#368), not a brand/model
@@ -2302,69 +2308,110 @@ def _whole_project(compact: str) -> bool:
     return english or german
 
 
-# Roof-step questions (#497), on the compact form `lexicon.normalize` produces.
-# The step's own name is enough ("Roof detail", "Dachdetails"); the other half
-# is skipping it ("skip the roof", "ohne Dach"). A sizing question that names
-# roof measurements ("12 kWp on the roof") matches none of these. Umlauts stay
-# letters in the compact form; the German skipping words are listed with and
-# without them.
-_ROOF_STEP = (
-    "roofdetail",
-    "roofstep",
-    "skiptheroof",
-    "skiproof",
-    "withouttheroof",
-    "withoutaroof",
-    "leavetheroofout",
-    "leaveouttheroof",
-    "ignoretheroof",
-    "dontusetheroof",
-    "donotusetheroof",
-    "notusetheroof",
-    "dontdrawtheroof",
-    "fillintheroof",
-    "dontprovidetheroof",
-    "norofplane",
-    "roofoptional",
-    "roofmatter",
-    "dachdetail",
-    "dachschritt",
-    "dachweglass",
-    "dachauslass",
-    "dachignorier",
-    "dachflächeaufnehm",
-    "dachflaecheaufnehm",
-    "dachnichtaufnehm",
-    "dacheinzeich",
-    "dachnichtangeb",
-    "dachnichtausfüll",
-    "dachnichtausfuell",
-    "dachflächenichtausfüll",
-    "dachflaechenichtausfuell",
-    "dachüberspring",
-    "dachueberspring",
-    "ohnedach",
-    "ohnedasdach",
-    "keinedach",
-    "keindach",
-    "dachfehlt",
-    "dachflächefehlt",
-    "dachflaechefehlt",
+# Roof-step questions (#497). Each entry is (marker, source stem): the marker is
+# `lexicon.normalize(source)`, so spaces, case and punctuation do not matter and
+# the stem stops before the inflection ("Dach weglass" covers weglasse and
+# weglassen). Sources: the step's name in the site copy (#12), the ticket's two
+# questions and their natural variants, and the engine's "without a roof plane"
+# sentence (#479 C57). `test_every_roof_marker_is_its_sources_normalized_form`
+# holds the generation rule.
+_ROOF_STEP_NAMES = (
+    ("roofdetail", "Roof detail"),
+    ("roofstep", "Roof step"),
+    ("dachdetail", "Dachdetail"),
+    ("dachschritt", "Dachschritt"),
+)
+_ROOF_STEP_SKIPS = (
+    ("skiptheroof", "skip the roof"),
+    ("skiproof", "skip roof"),
+    ("withouttheroof", "without the roof"),
+    ("withoutaroof", "without a roof"),
+    ("leavetheroofout", "leave the roof out"),
+    ("leaveouttheroof", "leave out the roof"),
+    ("ignoretheroof", "ignore the roof"),
+    ("dontusetheroof", "don't use the roof"),
+    ("donotusetheroof", "do not use the roof"),
+    ("notusetheroof", "not use the roof"),
+    ("dontdrawtheroof", "don't draw the roof"),
+    ("fillintheroof", "fill in the roof"),
+    ("dontprovidetheroof", "don't provide the roof"),
+    ("roofoptional", "roof optional"),
+    ("roofmatter", "roof matter"),
+    ("dachweglass", "Dach weglass"),
+    ("dachauslass", "Dach auslass"),
+    ("dachignorier", "Dach ignorier"),
+    ("dachflächeaufnehm", "Dachfläche aufnehm"),
+    ("dachflaecheaufnehm", "Dachflaeche aufnehm"),
+    ("dachnichtaufnehm", "Dach nicht aufnehm"),
+    ("dacheinzeich", "Dach einzeich"),
+    ("dachnichtangeb", "Dach nicht angeb"),
+    ("dachnichtausfüll", "Dach nicht ausfüll"),
+    ("dachnichtausfuell", "Dach nicht ausfuell"),
+    ("dachflächenichtausfüll", "Dachfläche nicht ausfüll"),
+    ("dachflaechenichtausfuell", "Dachflaeche nicht ausfuell"),
+    ("dachüberspring", "Dach überspring"),
+    ("dachueberspring", "Dach ueberspring"),
+    ("ohnedach", "ohne Dach"),
+    ("ohnedasdach", "ohne das Dach"),
+    ("keinedach", "keine Dach"),
+    ("keindach", "kein Dach"),
+    ("dachfehlt", "Dach fehlt"),
+    ("dachflächefehlt", "Dachfläche fehlt"),
+    ("dachflaechefehlt", "Dachflaeche fehlt"),
+)
+# Roof components that are not the step: "ohne Dachmontage" and "ohne
+# Dachdurchdringung" are planning constraints, "keine Dachneigung" a property of
+# the building. An absence marker does not fire when one of these is named.
+_ROOF_COMPONENTS = (
+    ("dachmontage", "Dachmontage"),
+    ("dachdurchdring", "Dachdurchdring"),
+    ("dachneigung", "Dachneigung"),
+    ("dachfenster", "Dachfenster"),
+    ("dachrinne", "Dachrinne"),
+    ("dachhaube", "Dachhaube"),
+    ("dachdämm", "Dachdämm"),
+    ("dachdaemm", "Dachdaemm"),
+    ("dachbefestig", "Dachbefestig"),
+    ("dachhaken", "Dachhaken"),
+    ("dachziegel", "Dachziegel"),
+    ("dachaufbau", "Dachaufbau"),
+    ("dachanlage", "Dachanlage"),
+    ("dachabstand", "Dachabstand"),
 )
 
 
-def _roof_step(message: str, lang: str, reasons: list[str]) -> Route | None:
+def _roof_step(
+    message: str,
+    matches: Sequence[Match],
+    intent: str | None,
+    lang: str,
+    reasons: list[str],
+) -> Route | None:
     """The Roof detail step's role and the cost of skipping it (#497).
 
-    Matched on `lexicon.normalize`, so spaces and punctuation do not matter.
-    The sentence is signed in `template.ROOF`. size-hint supplies the
-    configurator URL with no fields, so the action carries no figure the
-    customer did not state. No model runs.
+    Matched on `lexicon.normalize`. The step's own name answers even when Jev
+    reads the question as sizing: the acceptance questions name the step. A
+    skipping phrase is weaker, and a route that already has evidence keeps it:
+    a named product word, a stated or asked kWp/kWh size, or a confident
+    company reading wins over the sentence. A named roof component ("ohne
+    Dachmontage", "keine Dachneigung") is not the step, so the absence words do
+    not fire on it. The sentence is signed in `template.ROOF`; size-hint
+    supplies the configurator URL with no fields. No model runs.
     """
     compact = normalize(message)
-    marker = next((item for item in _ROOF_STEP if item in compact), None)
-    if marker is None:
+    if any(match.kind in ("brand", "series", "model") for match in matches):
         return None
+    marker = next((item for item, _ in _ROOF_STEP_NAMES if item in compact), None)
+    if marker is None:
+        if any(item in compact for item, _ in _ROOF_COMPONENTS):
+            return None
+        if intent == "company_logistics_service":
+            return None
+        if _SIZE_WORD.search(message):
+            return None
+        marker = next((item for item, _ in _ROOF_STEP_SKIPS if item in compact), None)
+        if marker is None:
+            return None
     # Lazy: template imports Route from this module.
     from linker_genie.template import ROOF
 

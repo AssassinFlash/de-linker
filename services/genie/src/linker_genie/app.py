@@ -416,13 +416,15 @@ def _answer(
             from_log(entry) for entry in prepared.log.get("call_failures", ())
         ]
         if roof_failures:
+            # A 4xx ability answer carries no fatal class; this route cannot
+            # answer without its one tool, so it is an ability failure here.
             return (
                 TurnResult(
                     output=fallback(
                         prepared.facts,
-                        body.locale,
+                        language,
                         prepared.route,
-                        failure_class=fatal_class(roof_failures),
+                        failure_class=fatal_class(roof_failures) or "ability",
                     ),
                     facts=prepared.facts,
                     grounded=False,

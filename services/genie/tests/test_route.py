@@ -3,9 +3,18 @@
 import pytest
 
 from linker_genie.jev import Reading
-from linker_genie.lexicon import Match
+from linker_genie.lexicon import Match, normalize
 from linker_genie.prefill import sizing_input
-from linker_genie.route import CONFIDENT, SEARCH_LIMIT, Call, Subject, plan
+from linker_genie.route import (
+    _ROOF_COMPONENTS,
+    _ROOF_STEP_NAMES,
+    _ROOF_STEP_SKIPS,
+    CONFIDENT,
+    SEARCH_LIMIT,
+    Call,
+    Subject,
+    plan,
+)
 from linker_genie.template import ROOF
 
 NONE = Subject((), {}, {})
@@ -83,21 +92,85 @@ def test_a_roof_step_question_is_the_signed_sentence_and_the_configurator(
 
 
 @pytest.mark.parametrize(
-    "message",
+    ("message", "lang", "intent", "expected", "named"),
     [
-        "What size battery for 8 kWp PV and 6000 kWh per year?",
-        "I need a hybrid inverter for a three-phase house, 12 kWp on the roof, backup is a must",
-        "Which inverter fits a south roof?",
-        "Wie viel kWp passen auf mein Dach?",
-        "Wie viel kWp kann ich auf dem Dach aufnehmen?",
-        "Wie viele Module kann ich auf dem Dach aufnehmen?",
+        (
+            "What size battery for 8 kWp PV and 6000 kWh per year?",
+            "en",
+            "sizing",
+            "sizing",
+            False,
+        ),
+        (
+            "I need a hybrid inverter for a three-phase house, 12 kWp on the roof, backup is a must",
+            "en",
+            "sizing",
+            "sizing",
+            False,
+        ),
+        ("Which inverter fits a south roof?", "en", "sizing", "sizing", False),
+        (
+            "Do you have the GW50K-ETA-G20 in stock?",
+            "en",
+            "documents_specs",
+            "documents",
+            True,
+        ),
+        ("Wie viel kWp passen auf mein Dach?", "de", "sizing", "sizing", False),
+        (
+            "Wie viel kWp kann ich auf meiner Dachfläche aufnehmen?",
+            "de",
+            "sizing",
+            "sizing",
+            False,
+        ),
+        (
+            "Wie viele Module kann ich auf dem Dach aufnehmen?",
+            "de",
+            "sizing",
+            "sizing",
+            False,
+        ),
+        (
+            "Ich möchte 12 kWp, aber ohne Dachdurchdringung planen.",
+            "de",
+            "sizing",
+            "sizing",
+            False,
+        ),
+        (
+            "Bieten Sie Anlagen ohne Dachmontage an?",
+            "de",
+            "company_logistics_service",
+            "service",
+            False,
+        ),
+        (
+            "Gibt es den SAJ H2-10K-T3 auch ohne Dachmontage?",
+            "de",
+            "find_products",
+            "products",
+            True,
+        ),
+        ("Was passiert bei keiner Dachneigung?", "de", "sizing", "sizing", False),
     ],
 )
-def test_a_roof_measurement_does_not_take_the_roof_step_sentence(message: str) -> None:
-    """A sizing question that mentions the roof is still a sizing question."""
-    lang = "de" if "Dach" in message else "en"
-    route = plan(message, [], _reading("sizing", 1.0), NONE, lang)
-    assert route.name != "roof"
+def test_a_roof_measurement_product_or_company_question_keeps_its_route(
+    message: str, lang: str, intent: str, expected: str, named: bool
+) -> None:
+    """A stated figure, a product word or a company reading wins over the roof sentence."""
+    matches = [_model("GW50K-ETA-G20")] if named else []
+    route = plan(message, matches, _reading(intent, 1.0), NONE, lang)
+    assert route.name != "roof", message
+    assert route.name == expected, message
+
+
+def test_every_roof_marker_is_its_sources_normalized_form() -> None:
+    """The marker table is generated from phrases, not free-hand substrings."""
+    groups = (_ROOF_STEP_NAMES, _ROOF_STEP_SKIPS, _ROOF_COMPONENTS)
+    for group in groups:
+        for marker, source in group:
+            assert normalize(source) == marker, source
 
 
 @pytest.mark.parametrize(

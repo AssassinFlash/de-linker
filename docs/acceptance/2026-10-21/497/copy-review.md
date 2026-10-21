@@ -4,7 +4,7 @@
 
 范围：`services/genie/src/linker_genie/template.py` 的 `ROOF`（EN/DE 两条签定回答）。可点的一步 `open_configurator` 用既有 UI 文案 “Open the configurator” / “Konfigurator öffnen”（`ActionView.tsx`，`.po` 已有），本轮不改。
 
-状态：下面的英文和德文是本轮写进代码的句子，核对清单是这一轮的判断。协调者的对抗评审还没有做。在协调者写回之前，不能把这篇当成已通过的评审。Coordinator sign-off: approved (2026-10-20).
+状态：下面的英文和德文是本轮写进代码的句子，核对清单是这一轮的判断。协调者已于 2026-10-21 签收（见文末）；本记录是定稿记录。Coordinator sign-off: approved (2026-10-21).
 
 ## 复刻来源
 
@@ -54,7 +54,7 @@
 
 ## 核对清单
 
-这一轮的判断写在每条后面。未签收不等于这些句子已通过对抗评审。
+这一轮的判断写在每条后面。协调者的签收见文末。
 
 - Hard Stop 1：通过这一轮的自查。没有 `proven`、`tier-1`、`leading`。
 - Hard Stop 2：通过这一轮的自查。没有把证书、协议、RMA 堆成卖点。
@@ -69,11 +69,6 @@
 - 句式：通过这一轮的自查。没有「不是…而是…」，没有三连排比，没有收束句。`35°` 的度号来自引擎句，不是散文里的符号装饰。
 - 德语：通过这一轮的自查。Sie 体。首句与末句逐字取自已定稿的站点句与引擎句，中间句独立写成，不是英文的逐句对译。
 - 数字：`35°` 与 `HTW Berlin calculator default` / `Vorgabe des HTW-Rechners` 只出现在逐字复用的引擎句里；回答没有其它数字。`optional`、`maps`、`zeichnet … ein` 不是数字断言。
-
-## 协调者对抗评审
-
-待协调者在交付后写回。签署前本记录不构成通过。
-
 
 ## 协调者对抗评审（2026-10-21）
 
