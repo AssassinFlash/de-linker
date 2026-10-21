@@ -124,12 +124,136 @@ function fixture() {
 }
 
 function boot(dom) {
- dom.window.eval(source);
- // jsdom has no layout: the sticky measurement would read zeros and scroll
- // nothing, which is all the assertions below need.
+ // jsdom has no layout or scroll implementation; real reader geometry is
+ // asserted by library-visual-details.spec.ts, never by synthetic boxes here.
  dom.window.scrollTo = () => {};
+ dom.window.eval(source);
  return dom.window.document;
 }
+
+for (const [reduced, behavior] of [[true, 'instant'], [false, 'smooth']]) {
+ test(`native anchor navigation requests ${behavior} scrolling for reduced-motion=${reduced}`, () => {
+  const dom = fixture();
+  boot(dom);
+  dom.window.matchMedia = () => ({matches: reduced});
+  const moves = [];
+  dom.window.scrollTo = options => moves.push(options);
+  dom.window.history.replaceState(null, '', '#linker-library-panel-documents');
+  dom.window.dispatchEvent(new dom.window.HashChangeEvent('hashchange'));
+  assert.equal(moves.length, 1);
+  assert.equal(moves[0].behavior, behavior);
+  // This asserts the native scroll request only. Actual motion/position
+  // under the site's CSS belongs to the real-layout browser cases.
+  dom.window.close();
+ });
+}
+
+test('a native documents anchor clicked before the script loads keeps its selected panel', async () => {
+ const dom = fixture();
+ const doc = dom.window.document;
+ doc.querySelector('[data-library-panel="documents"]').hidden = false;
+ const changed = new Promise(resolve => dom.window.addEventListener('hashchange', resolve, {once: true}));
+ doc.querySelector('#linker-library-tab-documents').click();
+ await changed;
+ assert.equal(dom.window.location.hash, '#linker-library-panel-documents');
+ boot(dom);
+ assert.equal(doc.querySelector('#linker-library-tab-documents').getAttribute('aria-selected'), 'true');
+ assert.equal(doc.querySelector('[data-library-panel="documents"]').hidden, false);
+ assert.equal(doc.querySelector('[data-library-panel="faq"]').hidden, true);
+ assert.equal(dom.window.location.hash, '#linker-library-panel-documents');
+ dom.window.close();
+});
+
+for (const [url, selected] of [
+ ['?tab=faq#linker-library-docs-chint', 'documents'],
+ ['?tab=documents#linker-library-answers-chint', 'faq'],
+ ['?tab=documents#unrecognized-anchor', 'documents'],
+ ['?tab=documents#outside-library', 'documents'],
+ ['#%E0%A4%A', 'faq']
+]) {
+ test(`initial native anchor and query select ${selected}: ${url}`, () => {
+  const dom = fixture();
+  dom.reconfigure({url: 'https://de-linker.test/faq-download/' + url});
+  const outside = dom.window.document.createElement('div');
+  outside.id = 'outside-library';
+  dom.window.document.body.appendChild(outside);
+  const doc = boot(dom);
+  assert.equal(doc.querySelector('#linker-library-tab-' + selected).getAttribute('aria-selected'), 'true');
+  assert.equal(doc.querySelector('[data-library-panel="' + selected + '"]').hidden, false);
+  dom.window.close();
+ });
+}
+
+test('native hash and back/forward reconcile panels without clearing the query or stealing focus', async () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const input = doc.querySelector('.linker-library-q');
+ input.focus();
+ input.value = 'chint';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ const nativeHash = async hash => {
+  const changed = new Promise(resolve => dom.window.addEventListener('hashchange', resolve, {once: true}));
+  dom.window.location.hash = hash;
+  await changed;
+ };
+ const travel = async direction => {
+  const changed = new Promise(resolve => dom.window.addEventListener('popstate', resolve, {once: true}));
+  dom.window.history[direction]();
+  await changed;
+ };
+ await nativeHash('#linker-library-panel-documents');
+ assert.equal(doc.querySelector('#linker-library-tab-documents').getAttribute('aria-selected'), 'true');
+ assert.equal(doc.querySelectorAll('[data-library-results] .linker-library-doc').length, 20);
+ await nativeHash('#linker-library-panel-faq');
+ assert.equal(doc.querySelector('#linker-library-tab-faq').getAttribute('aria-selected'), 'true');
+ await travel('back');
+ assert.equal(doc.querySelector('#linker-library-tab-documents').getAttribute('aria-selected'), 'true');
+ await travel('forward');
+ assert.equal(doc.querySelector('#linker-library-tab-faq').getAttribute('aria-selected'), 'true');
+ assert.equal(input.value, 'chint');
+ assert.equal(doc.activeElement, input);
+ dom.window.close();
+});
+
+test('the spy never measures a hidden panel target', () => {
+ const dom = fixture();
+ dom.window.document.querySelectorAll('[data-library-panel="documents"] [data-library-spy]').forEach(node => {
+  node.getBoundingClientRect = () => { throw new Error('hidden document target must not win the FAQ spy'); };
+ });
+ assert.doesNotThrow(() => boot(dom));
+ dom.window.close();
+});
+
+test('an explicit category anchor marks its destination before the scroll lock', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const old = doc.querySelector('[data-library-spy-link]');
+ old.classList.add('is-active');
+ old.setAttribute('aria-current', 'location');
+ const destination = doc.querySelector('a[href="#linker-library-answers-chint"]');
+ destination.click();
+ assert.equal(destination.getAttribute('aria-current'), 'location');
+ assert.equal(destination.classList.contains('is-active'), true);
+ assert.equal(old.hasAttribute('aria-current'), false);
+ assert.equal(old.classList.contains('is-active'), false);
+ assert.equal(dom.window.location.hash, '#linker-library-answers-chint');
+ dom.window.close();
+});
+
+test('search removes stale active markers while all source panels are hidden', () => {
+ const dom = fixture();
+ const doc = boot(dom);
+ const link = doc.querySelector('[data-library-spy-link]');
+ link.click();
+ link.classList.add('is-active');
+ link.setAttribute('aria-current', 'location');
+ const input = doc.querySelector('.linker-library-q');
+ input.value = 'chint';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles: true}));
+ assert.equal(doc.querySelectorAll('[data-library-spy-link].is-active').length, 0);
+ assert.equal(doc.querySelectorAll('[data-library-spy-link][aria-current]').length, 0);
+ dom.window.close();
+});
 
 test('the script reveals the search field and the filters, and hides the inactive tab', () => {
  const dom = fixture();
@@ -283,12 +407,11 @@ test('paging returns focus to the first visible result instead of a detached con
  dom.window.close();
 });
 
-test('the rail marks the zone of the card the reader is in', () => {
+test('the rail keeps the explicit zone identities printed by the fragments', () => {
  const dom = fixture();
  const doc = boot(dom);
- // jsdom has no layout, so the spy reads every target's top as 0 and marks the
- // last one; what this asserts is that the zone comes off the element and not
- // off an id's prefix.
+ // Actual visible-brand selection is a browser assertion. These source
+ // elements keep their explicit zone metadata; no geometry is fabricated.
  const links = [...doc.querySelectorAll('.linker-library-rail [data-library-spy-link]')];
  const zone = doc.querySelector('#linker-library-zone-documents');
  assert.equal(zone.getAttribute('data-library-zone'), 'linker-library-zone-documents');

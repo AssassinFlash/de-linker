@@ -10,6 +10,11 @@ const output = join(
 	new Date().toISOString().replaceAll(/[-:.]/g, '')
 );
 const evidence: Record<string, unknown>[] = [];
+const navigationOutput = join(
+	REPO_ROOT,
+	'docs/acceptance/2026-10-22/full-site/marketing-library-online/navigation-local',
+	new Date().toISOString().replaceAll(/[-:.]/g, '')
+);
 const paths = { en: '/faq-download/', de: '/de/faq-dokumente/' };
 const thumbnail =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="160" height="220"><rect width="160" height="220" fill="white"/><path d="M20 30h120M20 50h80M20 70h110" stroke="#0c7f73" stroke-width="8"/></svg>';
@@ -45,6 +50,58 @@ async function focusGeometry(page: Page) {
 	});
 }
 
+/** Capture the uncorrected reader position before assertions or diagnostics. */
+async function captureNavigation(page: Page, name: string) {
+	const geometry = await page.evaluate(() => {
+		const root = document.querySelector('#linker-faq-page')!;
+		const host = root.querySelector<HTMLElement>('[data-library-results]');
+		const first = host?.querySelector('.linker-library-doc');
+		const stickyBottom = [
+			'#lc-header',
+			'.linker-library-tabbar',
+			'.linker-library-chips',
+		].reduce((bottom, selector) => {
+			const node = document.querySelector(selector);
+			return node && getComputedStyle(node).display !== 'none'
+				? Math.max(bottom, node.getBoundingClientRect().bottom)
+				: bottom;
+		}, 0);
+		return {
+			url: location.href,
+			scrollY,
+			width: innerWidth,
+			height: innerHeight,
+			stickyBottom,
+			selected: root
+				.querySelector('[data-library-tab][aria-selected="true"]')
+				?.getAttribute('data-library-tab'),
+			query: root.querySelector<HTMLInputElement>('.linker-library-q')
+				?.value,
+			first: first?.getBoundingClientRect().toJSON() ?? null,
+			results: host?.getBoundingClientRect().toJSON() ?? null,
+			active: Array.from(
+				root.querySelectorAll('[data-library-spy-link].is-active')
+			).map((link) => ({
+				href: link.getAttribute('href'),
+				current: link.getAttribute('aria-current'),
+				hidden: !!link.closest('[hidden]'),
+			})),
+			focus: {
+				id: document.activeElement?.id,
+				tag: document.activeElement?.tagName,
+			},
+		};
+	});
+	mkdirSync(navigationOutput, { recursive: true });
+	writeFileSync(
+		join(navigationOutput, `${name}.json`),
+		JSON.stringify(geometry, null, 2)
+	);
+	await page.screenshot({ path: join(navigationOutput, `${name}.png`) });
+	evidence.push({ state: name, ...geometry });
+	return geometry;
+}
+
 test.use({ reducedMotion: 'no-preference' });
 test.describe.configure({ timeout: 45_000 });
 test.afterEach(async ({ page }, info) => {
@@ -65,6 +122,188 @@ test.afterEach(async ({ page }, info) => {
 
 for (const locale of ['en', 'de'] as const) {
 	for (const width of [1440, 390]) {
+		test(`${locale} ${width}: native early anchor and hash history keep the intended tab`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height: 1000 });
+			await page.emulateMedia({ reducedMotion: 'reduce' });
+			// Establish only the native consent choice before holding the deferred
+			// Library script; no page DOM or Library state is substituted.
+			await page.goto(`${instance().url}${paths[locale]}`);
+			await dismissConsent(page);
+			let release!: () => void;
+			let intercepted = false;
+			const held = new Promise<void>((resolve) => {
+				release = resolve;
+			});
+			await page.route('**/library-ui.js*', async (route) => {
+				intercepted = true;
+				await held;
+				await route.continue();
+			});
+			try {
+				await page.goto(`${instance().url}${paths[locale]}`, {
+					waitUntil: 'commit',
+				});
+				const root = page.locator('#linker-faq-page');
+				await expect.poll(() => intercepted).toBe(true);
+				await expect(root).not.toHaveClass(/is-enhanced/);
+				await root.locator('#linker-library-tab-documents').click();
+				await expect(page).toHaveURL(
+					/#linker-library-panel-documents$/
+				);
+				await captureNavigation(
+					page,
+					`${locale}-${width}-native-early-documents`
+				);
+				release();
+				await expect(root).toHaveClass(/is-enhanced/);
+				await expect(
+					root.locator('#linker-library-tab-documents')
+				).toHaveAttribute('aria-selected', 'true');
+				await expect(
+					root.locator('[data-library-panel="documents"]')
+				).toBeVisible();
+				await expect(
+					root.locator('[data-library-panel="faq"]')
+				).toBeHidden();
+				await expect(page).toHaveURL(
+					/#linker-library-panel-documents$/
+				);
+				const input = root.locator('#linker-library-q');
+				await input.fill('AIO3');
+				await input.press('Escape');
+				await expect(
+					root.locator('[data-library-results] .linker-library-doc')
+				).toHaveCount(3);
+				await page.evaluate(() => {
+					location.hash = '#linker-library-panel-faq';
+				});
+				await expect(
+					root.locator('#linker-library-tab-faq')
+				).toHaveAttribute('aria-selected', 'true');
+				await input.fill('AIO3');
+				await page.goBack();
+				await expect(
+					root.locator('#linker-library-tab-documents')
+				).toHaveAttribute('aria-selected', 'true');
+				await expect(input).toHaveValue('AIO3');
+				await page.goForward();
+				await expect(
+					root.locator('#linker-library-tab-faq')
+				).toHaveAttribute('aria-selected', 'true');
+				await expect(input).toHaveValue('AIO3');
+				await captureNavigation(
+					page,
+					`${locale}-${width}-hash-forward-preserved-query`
+				);
+			} finally {
+				release();
+				await page.unroute('**/library-ui.js*');
+			}
+		});
+
+		test(`${locale} ${width}: visible FAQ brand and deep filtered tab switch preserve the reader`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height: 1000 });
+			await page.emulateMedia({ reducedMotion: 'reduce' });
+			await page.goto(`${instance().url}${paths[locale]}`);
+			await dismissConsent(page);
+			const root = page.locator('#linker-faq-page');
+			const input = root.locator('#linker-library-q');
+			// A directory click must identify its destination immediately; a
+			// reduced-motion jump may finish before the scroll-spy lock expires.
+			const directory = root.locator(
+				width === 1440
+					? '.linker-library-rail [data-library-nav="faq"]'
+					: '.linker-library-chips [data-library-nav="faq"]'
+			);
+			await directory
+				.locator('a[href="#linker-library-answers-saj"]')
+				.click();
+			await expect(
+				directory.locator('a[href="#linker-library-answers-saj"]')
+			).toHaveAttribute('aria-current', 'location');
+			await input.fill('AIO3');
+			await input.press('ArrowDown');
+			await input.press('Enter');
+			const summary = root
+				.locator('#linker-library-answers-saj details[open] summary')
+				.first();
+			await expect(summary).toBeFocused();
+			await expect
+				.poll(async () => (await focusGeometry(page)).inReader)
+				.toBe(true);
+			const navigation = root.locator(
+				width === 1440
+					? '.linker-library-rail [data-library-nav="faq"]'
+					: '.linker-library-chips [data-library-nav="faq"]'
+			);
+			await expect(
+				navigation.locator('a[href="#linker-library-answers-saj"]')
+			).toHaveAttribute('aria-current', 'location');
+			await expect(
+				navigation.locator('a[href="#linker-library-answers-goodwe"]')
+			).not.toHaveClass(/is-active/);
+			await captureNavigation(
+				page,
+				`${locale}-${width}-saj-visible-brand`
+			);
+			await input.fill('AIO3');
+			await input.press('Escape');
+			const questions = root.locator(
+				'[data-library-results] .linker-library-qa summary'
+			);
+			expect(await questions.count()).toBeGreaterThan(3);
+			await questions.last().scrollIntoViewIfNeeded();
+			const before = await captureNavigation(
+				page,
+				`${locale}-${width}-deep-faq-before-tab`
+			);
+			expect(before.scrollY).toBeGreaterThan(500);
+			await root.locator('#linker-library-tab-documents').click();
+			await expect(
+				root.locator('[data-library-results] .linker-library-doc')
+			).toHaveCount(3);
+			// Do not focus/scroll a result to make this pass: observe the actual
+			// tab transition before any optional diagnostic reader movement.
+			const after = await captureNavigation(
+				page,
+				`${locale}-${width}-deep-documents-after-tab`
+			);
+			expect(after.query).toBe('AIO3');
+			expect(after.selected).toBe('documents');
+			expect(after.first).not.toBeNull();
+			expect(after.first!.top).toBeGreaterThanOrEqual(after.stickyBottom);
+			expect(after.first!.bottom).toBeLessThanOrEqual(after.height);
+			await expect(
+				root.locator('#linker-library-tab-documents')
+			).toBeFocused();
+		});
+
+		test(`${locale} ${width}: refining a visible search does not pull the reader or move focus`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width, height: 1000 });
+			await page.emulateMedia({ reducedMotion: 'reduce' });
+			await page.goto(`${instance().url}${paths[locale]}?tab=documents`);
+			await dismissConsent(page);
+			const input = page.locator('#linker-library-q');
+			await input.fill('AIO');
+			await input.press('Escape');
+			const before = await page.evaluate(() => scrollY);
+			await input.press('3');
+			await input.press('Escape');
+			await expect(input).toBeFocused();
+			await expect(input).toHaveValue('AIO3');
+			const after = await captureNavigation(
+				page,
+				`${locale}-${width}-visible-query-no-scroll`
+			);
+			expect(Math.abs(after.scrollY - before)).toBeLessThanOrEqual(1);
+		});
+
 		test(`${locale} ${width}: native details and real document thumbnails remain usable without JavaScript`, async ({
 			browser,
 		}) => {

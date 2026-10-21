@@ -1,0 +1,35 @@
+{
+  "active": [],
+  "first": {
+    "bottom": 270.1640625,
+    "height": 91,
+    "left": 81,
+    "right": 1359,
+    "top": 179.1640625,
+    "width": 1278,
+    "x": 81,
+    "y": 179.1640625
+  },
+  "height": 1000,
+  "host": {
+    "bottom": 511.4609375,
+    "height": 361.4453125,
+    "left": 80,
+    "right": 1360,
+    "top": 150.015625,
+    "width": 1280,
+    "x": 80,
+    "y": 150.015625
+  },
+  "overflow": false,
+  "query": "AIO3",
+  "reduced": true,
+  "scripts": [
+    "http://127.0.0.1:9296/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624197"
+  ],
+  "selected": "documents",
+  "stickyBottom": 137,
+  "url": "http://127.0.0.1:9296/faq-download/?tab=documents",
+  "width": 1440,
+  "y": 382
+}

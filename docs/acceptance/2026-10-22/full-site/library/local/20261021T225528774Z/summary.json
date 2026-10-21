@@ -1,0 +1,155 @@
+{
+  "evidence": [
+    {
+      "state": "en-1440-native-early-documents",
+      "url": "http://127.0.0.1:9296/faq-download/#linker-library-panel-documents",
+      "scrollY": 0,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 444.015625,
+      "selected": "faq",
+      "query": "",
+      "first": null,
+      "results": null,
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    },
+    {
+      "state": "en-1440-hash-forward-preserved-query",
+      "url": "http://127.0.0.1:9296/faq-download/#linker-library-panel-faq",
+      "scrollY": 385,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "faq",
+      "query": "AIO3",
+      "first": null,
+      "results": {
+        "x": 80,
+        "y": 147.015625,
+        "width": 1280,
+        "height": 1147.609375,
+        "top": 147.015625,
+        "right": 1360,
+        "bottom": 1294.625,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    },
+    {
+      "state": "en-1440-saj-visible-brand",
+      "url": "http://127.0.0.1:9296/faq-download/",
+      "scrollY": 5560,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "faq",
+      "query": "",
+      "first": null,
+      "results": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "active": [
+        {
+          "href": "#linker-library-zone-answers",
+          "current": null,
+          "hidden": false
+        },
+        {
+          "href": "#linker-library-answers-saj",
+          "current": "location",
+          "hidden": false
+        },
+        {
+          "href": "#linker-library-zone-answers",
+          "current": null,
+          "hidden": false
+        },
+        {
+          "href": "#linker-library-answers-saj",
+          "current": "location",
+          "hidden": false
+        }
+      ],
+      "focus": {
+        "id": "",
+        "tag": "SUMMARY"
+      }
+    },
+    {
+      "state": "en-1440-deep-faq-before-tab",
+      "url": "http://127.0.0.1:9296/faq-download/",
+      "scrollY": 1307,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "faq",
+      "query": "AIO3",
+      "first": null,
+      "results": {
+        "x": 80,
+        "y": -774.984375,
+        "width": 1280,
+        "height": 1324.109375,
+        "top": -774.984375,
+        "right": 1360,
+        "bottom": 549.125,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-q",
+        "tag": "INPUT"
+      }
+    },
+    {
+      "state": "en-1440-deep-documents-after-tab",
+      "url": "http://127.0.0.1:9296/faq-download/?tab=documents",
+      "scrollY": 558,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "documents",
+      "query": "AIO3",
+      "first": {
+        "x": 81,
+        "y": 3.15625,
+        "width": 1278,
+        "height": 91,
+        "top": 3.15625,
+        "right": 1359,
+        "bottom": 94.15625,
+        "left": 81
+      },
+      "results": {
+        "x": 80,
+        "y": -25.984375,
+        "width": 1280,
+        "height": 361.421875,
+        "top": -25.984375,
+        "right": 1360,
+        "bottom": 335.4375,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-tab-documents",
+        "tag": "A"
+      }
+    }
+  ]
+}

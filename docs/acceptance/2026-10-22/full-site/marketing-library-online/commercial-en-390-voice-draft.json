@@ -1,0 +1,38 @@
+{
+  "active": "linker-genie-input",
+  "ariaModal": "true",
+  "bodyOverflow": "hidden",
+  "height": 1000,
+  "inertElements": 48,
+  "lang": "en-US",
+  "mountRole": "dialog",
+  "observedAt": "2026-10-21T22:28:58.089Z",
+  "question": "Check the commercial storage documents.\nPlease retain this question as a draft.",
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/marketing.js?ver=11f066f5b3470f448790",
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/genie.js?ver=76fa2a5fdc263f719473"
+  ],
+  "sourceControls": [
+    {
+      "height": 44,
+      "name": "Attach schematic",
+      "width": 44
+    },
+    {
+      "height": 44,
+      "name": "Voice input",
+      "width": 44
+    }
+  ],
+  "sources": [
+    {
+      "ariaLabel": null,
+      "bound": "1",
+      "placeholder": "Search outdoor cabinets, peak-shaving, or datasheets...",
+      "value": ""
+    }
+  ],
+  "url": "https://de-linker.com/solution/commercial-storage/",
+  "voiceParagraphs": [],
+  "width": 390
+}

@@ -1,0 +1,333 @@
+{
+  "evidence": [
+    {
+      "state": "de-1440-visible-query-no-scroll",
+      "url": "http://127.0.0.1:9296/de/faq-dokumente/?tab=documents",
+      "scrollY": 0,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 532.8125,
+      "selected": "documents",
+      "query": "AIO3",
+      "first": {
+        "x": 81,
+        "y": 585.953125,
+        "width": 1278,
+        "height": 91,
+        "top": 585.953125,
+        "right": 1359,
+        "bottom": 676.953125,
+        "left": 81
+      },
+      "results": {
+        "x": 80,
+        "y": 556.8125,
+        "width": 1280,
+        "height": 361.421875,
+        "top": 556.8125,
+        "right": 1360,
+        "bottom": 918.234375,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-q",
+        "tag": "INPUT"
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "no-js-native-details-and-real-thumbnail",
+      "title": "Chint DTSU666 Produktübersicht (EN)",
+      "path": "http://127.0.0.1:9296/de/faq-dokumente/",
+      "source": "native library fragments and real thumbnail bytes; no network intercept"
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Datenblatt (Englisch)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 585.953125,
+          "width": 1278,
+          "height": 91,
+          "top": 585.953125,
+          "right": 1359,
+          "bottom": 676.953125,
+          "left": 81
+        },
+        "title": {
+          "x": 260.140625,
+          "y": 589.953125,
+          "width": 931.75,
+          "height": 20.25,
+          "top": 589.953125,
+          "right": 1191.890625,
+          "bottom": 610.203125,
+          "left": 260.140625
+        },
+        "action": {
+          "x": 1205.890625,
+          "y": 604.453125,
+          "width": 137.109375,
+          "height": 44,
+          "top": 604.453125,
+          "right": 1343,
+          "bottom": 648.453125,
+          "left": 1205.890625
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Kurzanleitung zur Installation (Englisch)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 706.09375,
+          "width": 1278,
+          "height": 91,
+          "top": 706.09375,
+          "right": 1359,
+          "bottom": 797.09375,
+          "left": 81
+        },
+        "title": {
+          "x": 254.546875,
+          "y": 710.09375,
+          "width": 937.34375,
+          "height": 20.25,
+          "top": 710.09375,
+          "right": 1191.890625,
+          "bottom": 730.34375,
+          "left": 254.546875
+        },
+        "action": {
+          "x": 1205.890625,
+          "y": 724.59375,
+          "width": 137.109375,
+          "height": 44,
+          "top": 724.59375,
+          "right": 1343,
+          "bottom": 768.59375,
+          "left": 1205.890625
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 EU-Konformitätserklärung (mehrsprachig)",
+      "geometry": {
+        "row": {
+          "x": 81,
+          "y": 826.234375,
+          "width": 1278,
+          "height": 91,
+          "top": 826.234375,
+          "right": 1359,
+          "bottom": 917.234375,
+          "left": 81
+        },
+        "title": {
+          "x": 250.75,
+          "y": 830.234375,
+          "width": 941.140625,
+          "height": 20.25,
+          "top": 830.234375,
+          "right": 1191.890625,
+          "bottom": 850.484375,
+          "left": 250.75
+        },
+        "action": {
+          "x": 1205.890625,
+          "y": 844.734375,
+          "width": 137.109375,
+          "height": 44,
+          "top": 844.734375,
+          "right": 1343,
+          "bottom": 888.734375,
+          "left": 1205.890625
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 1440,
+      "state": "faq-keyboard-pager",
+      "productCount": 228,
+      "path": "http://127.0.0.1:9296/de/faq-dokumente/",
+      "focus": {
+        "rect": {
+          "x": 345,
+          "y": 213.984375,
+          "width": 1014,
+          "height": 75.59375,
+          "top": 213.984375,
+          "right": 1359,
+          "bottom": 289.578125,
+          "left": 345
+        },
+        "stickyBottom": 137,
+        "inReader": true
+      }
+    },
+    {
+      "state": "de-390-native-early-documents",
+      "url": "http://127.0.0.1:9296/de/faq-dokumente/#linker-library-panel-documents",
+      "scrollY": 0,
+      "width": 390,
+      "height": 1000,
+      "stickyBottom": 559.75,
+      "selected": "faq",
+      "query": "",
+      "first": null,
+      "results": null,
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    },
+    {
+      "state": "de-390-hash-forward-preserved-query",
+      "url": "http://127.0.0.1:9296/de/faq-dokumente/#linker-library-panel-faq",
+      "scrollY": 341,
+      "width": 390,
+      "height": 1000,
+      "stickyBottom": 141.75,
+      "selected": "faq",
+      "query": "AIO3",
+      "first": null,
+      "results": {
+        "x": 20,
+        "y": 165.75,
+        "width": 350,
+        "height": 1415.828125,
+        "top": 165.75,
+        "right": 370,
+        "bottom": 1581.578125,
+        "left": 20
+      },
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    },
+    {
+      "state": "de-390-saj-visible-brand",
+      "url": "http://127.0.0.1:9296/de/faq-dokumente/",
+      "scrollY": 7668,
+      "width": 390,
+      "height": 1000,
+      "stickyBottom": 192,
+      "selected": "faq",
+      "query": "",
+      "first": null,
+      "results": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "active": [
+        {
+          "href": "#linker-library-zone-answers",
+          "current": null,
+          "hidden": false
+        },
+        {
+          "href": "#linker-library-answers-saj",
+          "current": "location",
+          "hidden": false
+        },
+        {
+          "href": "#linker-library-zone-answers",
+          "current": null,
+          "hidden": false
+        },
+        {
+          "href": "#linker-library-answers-saj",
+          "current": "location",
+          "hidden": false
+        }
+      ],
+      "focus": {
+        "id": "",
+        "tag": "SUMMARY"
+      }
+    },
+    {
+      "state": "de-390-deep-faq-before-tab",
+      "url": "http://127.0.0.1:9296/de/faq-dokumente/",
+      "scrollY": 1811,
+      "width": 390,
+      "height": 1000,
+      "stickyBottom": 129,
+      "selected": "faq",
+      "query": "AIO3",
+      "first": null,
+      "results": {
+        "x": 20,
+        "y": -1304.25,
+        "width": 350,
+        "height": 1864.578125,
+        "top": -1304.25,
+        "right": 370,
+        "bottom": 560.328125,
+        "left": 20
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-q",
+        "tag": "INPUT"
+      }
+    },
+    {
+      "state": "de-390-deep-documents-after-tab",
+      "url": "http://127.0.0.1:9296/de/faq-dokumente/?tab=documents",
+      "scrollY": 1178,
+      "width": 390,
+      "height": 1000,
+      "stickyBottom": 81,
+      "selected": "documents",
+      "query": "AIO3",
+      "first": {
+        "x": 21,
+        "y": -642.109375,
+        "width": 348,
+        "height": 214.09375,
+        "top": -642.109375,
+        "right": 369,
+        "bottom": -428.015625,
+        "left": 21
+      },
+      "results": {
+        "x": 20,
+        "y": -671.25,
+        "width": 350,
+        "height": 750.953125,
+        "top": -671.25,
+        "right": 370,
+        "bottom": 79.703125,
+        "left": 20
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-tab-documents",
+        "tag": "A"
+      }
+    }
+  ]
+}

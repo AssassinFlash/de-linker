@@ -1,0 +1,25 @@
+{
+  "active": [],
+  "height": 1000,
+  "host": {
+    "bottom": 549.1953125,
+    "height": 1324.1796875,
+    "left": 80,
+    "right": 1360,
+    "top": -774.984375,
+    "width": 1280,
+    "x": 80,
+    "y": -774.984375
+  },
+  "overflow": false,
+  "query": "AIO3",
+  "reduced": true,
+  "scripts": [
+    "http://127.0.0.1:9296/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624197"
+  ],
+  "selected": "faq",
+  "stickyBottom": 137,
+  "url": "http://127.0.0.1:9296/faq-download/",
+  "width": 1440,
+  "y": 1307
+}

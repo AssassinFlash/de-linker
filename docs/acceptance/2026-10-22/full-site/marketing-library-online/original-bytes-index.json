@@ -1,0 +1,1787 @@
+{
+  "scope": "All files in this directory except this self-index. Original captures are not edited; earlier candidates/failures remain distinct.",
+  "files": [
+    {
+      "path": "commercial-de-1440-voice-draft.json",
+      "bytes": 1006,
+      "sha256": "b5d757ed3db100cb873871b010da6edefc04de6b8d864cafcd4822bb72aa84eb",
+      "native_format": null
+    },
+    {
+      "path": "commercial-de-1440-voice-draft.png",
+      "bytes": 158010,
+      "sha256": "c7551d57784f72443b0abab5f2f8b658acb7dcda287d079f90eb9f6d9dc688ea",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "commercial-de-390-voice-draft.json",
+      "bytes": 1045,
+      "sha256": "447d2dd56d2e5581829bf337cc5ea0cca260d50f89032b0458f0e0b4bb53a281",
+      "native_format": null
+    },
+    {
+      "path": "commercial-de-390-voice-draft.png",
+      "bytes": 57060,
+      "sha256": "69768c4bc79514cab8a4a9d93b3a5852a4878449b8e9336f5e41adf43cdeb5f5",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "commercial-en-1440-voice-draft.json",
+      "bytes": 993,
+      "sha256": "93f01d8da76d85b575f17a56b060b0f2352de32cbc44cab1042c1521b2fe7ae8",
+      "native_format": null
+    },
+    {
+      "path": "commercial-en-1440-voice-draft.png",
+      "bytes": 158017,
+      "sha256": "873247361fdf4e4b6fde289405da47ff89952d6f79c75ba00719e9de2bd5a47a",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "commercial-en-390-voice-draft.json",
+      "bytes": 1009,
+      "sha256": "aed6856b7af0f2683ba85e23706f604058085bf556580ff805c613c8c6943cd2",
+      "native_format": null
+    },
+    {
+      "path": "commercial-en-390-voice-draft.png",
+      "bytes": 55592,
+      "sha256": "169289a23d61a8a16f3906f1c3eda8685124fd968137bdd524b063e594e98945",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "early-tab-diagnosis.md",
+      "bytes": 16765,
+      "sha256": "b870507ec1f5121bc8383c8e5ebf67f31a22c037d48b9078d9a5ad7d03d3e1d7",
+      "native_format": null
+    },
+    {
+      "path": "installer-de-390-voice-draft.json",
+      "bytes": 950,
+      "sha256": "5fa74b4728d11bc65bc37b84596cd399a503ec74255db897ccd99ab87733eb22",
+      "native_format": null
+    },
+    {
+      "path": "installer-de-390-voice-draft.png",
+      "bytes": 54196,
+      "sha256": "0e135d8b3e980cc821fe6c46bc9aa3f516c22719bf0bf4b9be7bb419f1f4c516",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "installer-en-390-voice-draft.json",
+      "bytes": 998,
+      "sha256": "f8164ac2937bdb90e2b4f8c1ffc7b7c351503597ea1e81fc60fe06f064cc1308",
+      "native_format": null
+    },
+    {
+      "path": "installer-en-390-voice-draft.png",
+      "bytes": 52003,
+      "sha256": "b957693c65d1c226171b8cd122e4668771d500dfc6e433dcd1890492d059949e",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-de-1440-doc-search.json",
+      "bytes": 3693,
+      "sha256": "75674cae463c60073ec2eae786d2fef5e06ea17e3bccd8aeb3d011d7aff08cad",
+      "native_format": null
+    },
+    {
+      "path": "library-de-1440-doc-search.png",
+      "bytes": 90708,
+      "sha256": "e8dd67580eb7ae4c76d8553fc272a56b28904955ff4789ffcb2f53e15ea0b404",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-de-1440-early-tab-race.json",
+      "bytes": 265,
+      "sha256": "cf79d57ea6b5e70b9f31d5d914f05697d0dca83e27e723cbf9f0532cd30e9775",
+      "native_format": null
+    },
+    {
+      "path": "library-de-1440-faq-pager.json",
+      "bytes": 1050,
+      "sha256": "4f854d4f244fffe0ebc179114a0d73afe2875da0bd735444fc531c3170146c80",
+      "native_format": null
+    },
+    {
+      "path": "library-de-1440-faq-pager.png",
+      "bytes": 126299,
+      "sha256": "0b9a68d95865b9cd57adc4954b6a088f209570d3938d39e8295d2d2559caf939",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-de-1440-faq-search-focus.json",
+      "bytes": 1026,
+      "sha256": "0e8a194341aedb05fb5e053fb1f094c6748f414f9f8495f8b4421d3b7d7d573b",
+      "native_format": null
+    },
+    {
+      "path": "library-de-1440-faq-search-focus.png",
+      "bytes": 138214,
+      "sha256": "a2cc945835d66fef4b72f684321d4f35d7f3a86cd2b7663884259f26679ebc73",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-de-1440-faq-source-tab.json",
+      "bytes": 957,
+      "sha256": "90fec7f5d2be808045cd4072f88caea0f862fa10b367bbfa464484fdb6d01c6b",
+      "native_format": null
+    },
+    {
+      "path": "library-de-1440-faq-source-tab.png",
+      "bytes": 133114,
+      "sha256": "4ac333159dd371d842cc9b0da44b14b70dc8def98f53a97eab8b79422a9cbc9f",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-de-390-doc-search-manual-scroll.json",
+      "bytes": 3665,
+      "sha256": "91dd71c71ccfc7cf67b249b88c53bcb25cf41df5a0632c894b575266988bf8d2",
+      "native_format": null
+    },
+    {
+      "path": "library-de-390-doc-search-manual-scroll.png",
+      "bytes": 46399,
+      "sha256": "f317d8b8875ce2f7f01f746f632c3222c56f442c669474801775b6a54654fd97",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-de-390-doc-search.json",
+      "bytes": 3669,
+      "sha256": "52290e6c584a5d927afbe73bc460976a7ae89af06d3fd23cb022039033304838",
+      "native_format": null
+    },
+    {
+      "path": "library-de-390-doc-search.png",
+      "bytes": 35433,
+      "sha256": "f8ee0c0fb7b32bee71cd3422a02af157d40826e324fc805fbc259bfe26b3e929",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-de-390-faq-pager.json",
+      "bytes": 1042,
+      "sha256": "692cabb0667eacdc9becb92bd7f6280d255cc0a0be1695bef2f8bca0e346d54b",
+      "native_format": null
+    },
+    {
+      "path": "library-de-390-faq-pager.png",
+      "bytes": 62894,
+      "sha256": "595717582f8295952a0c1bfa1653aa809e211b2ca12af5afcaf870f080b29b3f",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-de-390-faq-search-focus.json",
+      "bytes": 1021,
+      "sha256": "c3da43c509268882892a059c3fdc572f46c4a731d429d56f6765a884fb176e00",
+      "native_format": null
+    },
+    {
+      "path": "library-de-390-faq-search-focus.png",
+      "bytes": 65689,
+      "sha256": "2081cd3c25a134f3e2472406cfbcd0b9f301898c7b39af2c6d1f0b80d22f17fc",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-de-390-faq-source-tab.json",
+      "bytes": 959,
+      "sha256": "b48b4af49c0d8292f5e6fccd23205f9d6df3108c9f9b946e552d767dcedcae2d",
+      "native_format": null
+    },
+    {
+      "path": "library-de-390-faq-source-tab.png",
+      "bytes": 62746,
+      "sha256": "d96b9a4c39f0bebae02d9f2b09a0a6c17dc2bc407c31facadd549bb7ddbad1df",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-en-1440-doc-search.json",
+      "bytes": 3630,
+      "sha256": "a3a27b60e787bae6ffac0347c783d5c76b059bb2802224fc70e3e877db8a638e",
+      "native_format": null
+    },
+    {
+      "path": "library-en-1440-doc-search.png",
+      "bytes": 85813,
+      "sha256": "c415a58cbe6c167f56c344861729e055196b8a2673bd1d21f2ada2639cb32389",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-en-1440-faq-pager.json",
+      "bytes": 985,
+      "sha256": "1ba44e7abead507e471135dd28c86d50d55d415934c4535ebed93e5e6e0f4929",
+      "native_format": null
+    },
+    {
+      "path": "library-en-1440-faq-pager.png",
+      "bytes": 117966,
+      "sha256": "0afbfdf2d07b7fbeed55ce1d7db480c51752bbdee048e00ae2c4b5d21889b672",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-en-1440-faq-search-focus.json",
+      "bytes": 1000,
+      "sha256": "b098632c5435b9d1ee25f1eac42fdf65bb93aa9a887c6881de77f8a3bd83d502",
+      "native_format": null
+    },
+    {
+      "path": "library-en-1440-faq-search-focus.png",
+      "bytes": 132206,
+      "sha256": "38fb6422156289715a569315b690b9817b91c30fdfdc44aa054ceb47fff2eeea",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-en-1440-faq-source-tab.json",
+      "bytes": 952,
+      "sha256": "2f27568b23230a154a825ac77a3028b1e80bb4e19b05821384118cbc5e4632eb",
+      "native_format": null
+    },
+    {
+      "path": "library-en-1440-faq-source-tab.png",
+      "bytes": 123637,
+      "sha256": "63ab01a27859eaa3011513a556ea2c45032549cb48a194775ebb04a45ad6b8e3",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-en-390-doc-search.json",
+      "bytes": 3597,
+      "sha256": "2df0cab3111a208f94b72c319f5d22aad1c250081bec0909cbbef8acbf30b70a",
+      "native_format": null
+    },
+    {
+      "path": "library-en-390-doc-search.png",
+      "bytes": 42439,
+      "sha256": "2cdfd5095bbf83b8a4e46e766bc1f3875bbcd36177469213d1591e91fa0d7a74",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-en-390-faq-pager.json",
+      "bytes": 981,
+      "sha256": "c8e22e233e2778552d2bbed42890e02ced67c958e763ed79962478cd066d7044",
+      "native_format": null
+    },
+    {
+      "path": "library-en-390-faq-pager.png",
+      "bytes": 59951,
+      "sha256": "1e1c02273663a3bbd77a4bfa5d56b910f96e2cd8ed6916d0a535e5872e859eb9",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-en-390-faq-search-focus.json",
+      "bytes": 1002,
+      "sha256": "87f3c40c5b2f9dc1f1c4ac4d96be82073c1de0f4fbae390337bed48ee08d8673",
+      "native_format": null
+    },
+    {
+      "path": "library-en-390-faq-search-focus.png",
+      "bytes": 64948,
+      "sha256": "31e4b97d5a5826b01cbc66bdb04f7a4f263758c9add7d2ee4e2b9946e77edf1c",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "library-en-390-faq-source-tab.json",
+      "bytes": 955,
+      "sha256": "7704c12425e86a030306e26b3ea6d01cefc0bd4698fe12bdbf776b33de7e80a3",
+      "native_format": null
+    },
+    {
+      "path": "library-en-390-faq-source-tab.png",
+      "bytes": 61296,
+      "sha256": "d880a8d1ea6d2af6b557eb3bfdaf4cb83bd15f53a0cf6d26715e8f41fd70a55d",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-browser-final-24.log",
+      "bytes": 4074,
+      "sha256": "ec8d7468571fa7ae9d2f9365757044759867e42da95d8b7382e59658ea212275",
+      "native_format": null
+    },
+    {
+      "path": "navigation-continuity-design.md",
+      "bytes": 7380,
+      "sha256": "b6366db886c2f16301566008737c1045d305898e6c524124ae38f4601414ac26",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-1440-current-source-deep-faq.jpg",
+      "bytes": 104709,
+      "sha256": "ca49bde552f4627f10ab500b61125bf64e47ca36fc79fa705210c3e00552b9dd",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-1440-current-source-deep-faq.json",
+      "bytes": 521,
+      "sha256": "b9812503204fb2f399ea4b36d4a303534b1effecbb3618f677475da819a0704c",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-1440-deep-faq-before-documents.jpg",
+      "bytes": 103651,
+      "sha256": "73ef217daae92a01fc36e1a2d98f135febe23309e4f4bf6fb402b1aa1bc70420",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-1440-deep-faq-before-documents.json",
+      "bytes": 520,
+      "sha256": "360eae32b402d2c060947b6c6383e592debf98c1865bea199520b4758599ab40",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-1440-final-source-normal-motion-documents.jpg",
+      "bytes": 89049,
+      "sha256": "30fbd4a9d50be8e21b287752cd756d93df0bba73815d4db80cba25ebe0dec981",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-1440-final-source-normal-motion-documents.json",
+      "bytes": 712,
+      "sha256": "aaf6a12b47657ef18e1f7778c997214eedf87b162e4725ba615702aa959ffbe2",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-1440-reduced-deep-documents.jpg",
+      "bytes": 90807,
+      "sha256": "c986f178a055bd3344955b325363797a555a75370864621fded6d7f45c75799a",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-1440-reduced-deep-documents.json",
+      "bytes": 711,
+      "sha256": "aa564362d2e35d71dc7313afdd710e6015b390f1f7f40517cf05549de6dc6666",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-390-anchor-lock-diagnostic.jpg",
+      "bytes": 50121,
+      "sha256": "cc92df3fb25069b51567a5700d38eff48c627d427bc1fee739a913074d11badf",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-390-anchor-lock-diagnostic.json",
+      "bytes": 582,
+      "sha256": "63aa8a17495b3dfa311f37b6b685079e75f55a2b92fa2eebd14e6f41a7d8da70",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-390-anchor-settled-without-extra-scroll.jpg",
+      "bytes": 49890,
+      "sha256": "86628c6276c5affd354d7376fcb6d3aa452cf54b72af78046a31bd0ca5881ea6",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-390-anchor-settled-without-extra-scroll.json",
+      "bytes": 582,
+      "sha256": "63aa8a17495b3dfa311f37b6b685079e75f55a2b92fa2eebd14e6f41a7d8da70",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-390-deep-faq-before-documents.jpg",
+      "bytes": 37716,
+      "sha256": "8f498aaf127c216af5e6322a63db560732548dc0fe99806ff3638f98c3e4313a",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-390-deep-faq-before-documents.json",
+      "bytes": 523,
+      "sha256": "26d04f82d24d59bc3a4af5803e5761674b135c200af800227740d4d53c3b5b15",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-390-explicit-anchor-current-repaired.jpg",
+      "bytes": 49949,
+      "sha256": "b57cab2a681babca11661cb6b10916fc263cfd0e6bd4e0095cb516c0e46570b6",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-390-explicit-anchor-current-repaired.json",
+      "bytes": 792,
+      "sha256": "796088349573dbd1c933b701382d100fc65af555274d7b190343c576721a9cbd",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-390-final-source-normal-deep-faq.jpg",
+      "bytes": 38509,
+      "sha256": "293d599803493e7fc39e13184cf00fcfd97d4bf378b347db896961653371be87",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-390-final-source-normal-deep-faq.json",
+      "bytes": 524,
+      "sha256": "983c0ea25b3f68e9842c107d5f2f1792d387dc5d2407841c916de5f555754ec7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-390-reduced-deep-documents-final.jpg",
+      "bytes": 42272,
+      "sha256": "70cf1e705efef1aaebf5ba43c83c2963665767b89ca7eb43bc21d47da70766e8",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-390-reduced-deep-documents-final.json",
+      "bytes": 717,
+      "sha256": "3051e2de8fd67caff31609af2d8ecccb8f8f4f2b7c08ce75b38f3a31433ec96b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/de-390-reduced-deep-documents.jpg",
+      "bytes": 45069,
+      "sha256": "5e67c5f065500b2f0c93d1d71469500fbe30e1d7ea649d66d83ff88f5482f554",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-390-reduced-deep-documents.json",
+      "bytes": 723,
+      "sha256": "d885ccca4569db801ad9b2ec393211c8e6d6d3639637e4df988967b4b47ca367",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/en-1440-deep-faq-before-documents.jpg",
+      "bytes": 71946,
+      "sha256": "3e19d37d7bbf4a6431de6405b51db76063b8c685605a286c012de983c6e5b34f",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/en-1440-deep-faq-before-documents.json",
+      "bytes": 520,
+      "sha256": "bc4c7f03c4af08c51eab68c6b52962f5ea2b14453e3f98df61694b8d0eaeddff",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/en-1440-reduced-deep-documents.jpg",
+      "bytes": 87701,
+      "sha256": "eaaabb06fbf705a73ad37a32cf7bd8f68c65fb71f1e0c13f2a6ea8e2f0ff631a",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/en-1440-reduced-deep-documents.json",
+      "bytes": 711,
+      "sha256": "d86771b504dbe6565837db3bef25f384041ce552b40499265a066f852f031ac6",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/en-390-deep-faq-before-documents-final.jpg",
+      "bytes": 62176,
+      "sha256": "4386ee1eab364ca3980e345297258845c429b253043c48e31df30a58bef90b80",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/en-390-deep-faq-before-documents-final.json",
+      "bytes": 520,
+      "sha256": "495b9b9ff88cb71a0481b5ec17f052883b3deead7044c5217fe5aaffcc445715",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/en-390-explicit-anchor-current-repaired.jpg",
+      "bytes": 46775,
+      "sha256": "8ebc775f3a5135030fab6166169e2bbd7e9f059f310c0cd1ea8c48b770681bee",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/en-390-explicit-anchor-current-repaired.json",
+      "bytes": 788,
+      "sha256": "be8d341a3bc8a7634b882f4206b3edb36dae8d5c5ff1c8c474f3bdf08466cc0c",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/en-390-reduced-deep-documents-final.jpg",
+      "bytes": 42700,
+      "sha256": "6fc7d959aef06beb056bc2a0629a3d57b8e11ae0c97f3e3361b1cb840dabec83",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/en-390-reduced-deep-documents-final.json",
+      "bytes": 713,
+      "sha256": "e99b3f9469fcc1a5a865ea743159b18c14c1a00604048b8181c3c1d1490ceb16",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/en-390-reduced-deep-documents.jpg",
+      "bytes": 41619,
+      "sha256": "4cab697cdf9f8aed40085c7b2a89c9ebf2895639d058b3be67ddcd355d068daa",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/en-390-reduced-deep-documents.json",
+      "bytes": 713,
+      "sha256": "79ba82f227c7f997dee77c2b7b70a215db99a1a7b2eb3d92c98a3408fe3a319a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-local/en-390-visible-saj-spy.jpg",
+      "bytes": 46787,
+      "sha256": "f855268351a49a4777811794e9807ea497e1221f11a39e489dbd1d6075a78ea1",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/en-390-visible-saj-spy.json",
+      "bytes": 713,
+      "sha256": "e4ac06fddbf046ae45bbbd19c4a662e7d162344a275e194097765535d289721f",
+      "native_format": null
+    },
+    {
+      "path": "navigation-explicit-anchor-red.log",
+      "bytes": 1068,
+      "sha256": "8f047182ffc3320aab53700cf8821007c48b348a55c44a468e4aa35905262ad6",
+      "native_format": null
+    },
+    {
+      "path": "navigation-full-check-before-anchor-increment.log",
+      "bytes": 8160,
+      "sha256": "3861439881591f7393efd07a75a30ab440c6a4133ac8b4bb663adb07d44ce871",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-deep-documents-after-tab.json",
+      "bytes": 621,
+      "sha256": "113c2ff2c387328a527437a783627ce07d49a8598e8169681566efeea9a983b7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-deep-documents-after-tab.png",
+      "bytes": 345483,
+      "sha256": "6deec8223e349a4b6eff9d180b26156c2f44e6250e07e1e54aa843f0ae81ccf7",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-deep-faq-before-tab.json",
+      "bytes": 449,
+      "sha256": "90e49958bd2fe72a5960c22529ee73fcfa1e4a6f07b40144769545ddf00909f0",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-deep-faq-before-tab.png",
+      "bytes": 236801,
+      "sha256": "71cc29828df231fd791e5e7355d1ead4d87599300b56af31a15717058abcac2e",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-hash-forward-preserved-query.json",
+      "bytes": 455,
+      "sha256": "db328c9bd0112abddea2ede8a5faa7aa310677d9fc1c03c26c94130938577274",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-hash-forward-preserved-query.png",
+      "bytes": 203195,
+      "sha256": "f842da0249b61683ee619f2aeeffb247862610c9fa85b0b8e8d0af3cc29f745c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-native-early-documents.json",
+      "bytes": 300,
+      "sha256": "01de9cbdb908fd48a4bd2a174fe322e9d8d8a6d84ae5acf7494b7641358d5ec7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-native-early-documents.png",
+      "bytes": 150249,
+      "sha256": "1ce042386f606a44c3dc021d68ed5a11ee2bb731d85791d1714b28f127c75b3c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-saj-visible-brand.json",
+      "bytes": 815,
+      "sha256": "e51c73893c99a2090eed0a35d76a037dc34cb5ddc1ec496d8e8819b543c66945",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225528774Z/en-1440-saj-visible-brand.png",
+      "bytes": 210013,
+      "sha256": "73f6e8a3e3bec2718f4b34413ec765d77eafed78dd3a8f9e21b8fe7b271cbb85",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-1440-visible-query-no-scroll.json",
+      "bytes": 623,
+      "sha256": "38eebffd353f5ac182463f2647b90c6418095de00cf777295654305b3ab0a83b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-1440-visible-query-no-scroll.png",
+      "bytes": 369400,
+      "sha256": "2897769549f3b09769dbd48fe2b4cc19fb1444b205d0874b85d32af0da1af52d",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-deep-documents-after-tab.json",
+      "bytes": 631,
+      "sha256": "1352c13223f220ae135e9de4e6ab33aa2b315a463cf55ab88db9b6ca4fa9f975",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-deep-documents-after-tab.png",
+      "bytes": 136334,
+      "sha256": "236905f593d0ce9abe7e719b29689c53fb6138d21ca5dd1b2115d6d60b9a56fd",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-deep-faq-before-tab.json",
+      "bytes": 443,
+      "sha256": "1b7543fed1dc54c6ddc64c50e2e8053a17bd8c4c2af3a6a3e4d667e5cfe6307a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-deep-faq-before-tab.png",
+      "bytes": 117125,
+      "sha256": "46b833021cce37702bed3cdd266e303e25f29f373a682c9455afca66eba6a2f4",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-hash-forward-preserved-query.json",
+      "bytes": 450,
+      "sha256": "d25eab337466f7525e9ffd091481a44b3902a793d22121a2a11d6a3b4085bac1",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-hash-forward-preserved-query.png",
+      "bytes": 132626,
+      "sha256": "404ce2a40a50cda9b3b329f0231818ead9f66d3c0e838963dd4154a0a03fa804",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-native-early-documents.json",
+      "bytes": 295,
+      "sha256": "6e4136604316a8590ec47570e4382ae81a31773d44ba6e5f810a47e799b39792",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-native-early-documents.png",
+      "bytes": 83981,
+      "sha256": "c7347e82fbd8b4783ea74f0b9e2973fcc4ed407bff6ed7453d457d7b9d587fa5",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-saj-visible-brand.json",
+      "bytes": 814,
+      "sha256": "06abfc22cb9d539e00f42e2558542d309bbe03ee2abd027cf390fe38d83c75ed",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225535946Z/en-390-saj-visible-brand.png",
+      "bytes": 110661,
+      "sha256": "c2d642f75ec93f33818bfdfa77c2907a9dd91776f0a247177985f53e66e1f28f",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-deep-documents-after-tab.json",
+      "bytes": 626,
+      "sha256": "c21342ef9669c6441a66f4061d3e00e4c0f7c974e32e8fc195f9821e3bfb7636",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-deep-documents-after-tab.png",
+      "bytes": 346662,
+      "sha256": "457ecb3b11c9e65e04ebe4f36286699c35dbff2fcf35293c489d3775392136fa",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-deep-faq-before-tab.json",
+      "bytes": 452,
+      "sha256": "755e811213a93e369a7b3a39e10f67c1426c17625451523ee2be7c14c369cf33",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-deep-faq-before-tab.png",
+      "bytes": 237861,
+      "sha256": "c2cd60f849f3cd73333e5980e8296b81bde6808fb1c093789c80032452a55ee3",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-hash-forward-preserved-query.json",
+      "bytes": 463,
+      "sha256": "aef7410ba00783082e70a5d98413571648e68d2357db0de75bef35722588e3dd",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-hash-forward-preserved-query.png",
+      "bytes": 209165,
+      "sha256": "3cb514e9f07e5391200e076c253da4e7578dce8e1e7353bb7b3be156fb4cca90",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-native-early-documents.json",
+      "bytes": 302,
+      "sha256": "61c326227c2e0073d0577167f95b104dc35dac2294845f62f353e2c1edd67802",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-native-early-documents.png",
+      "bytes": 146780,
+      "sha256": "5b84546ed847e733d7636432dd7ce5b36721865ff3ef39ee4ddd2137fa419aa4",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-saj-visible-brand.json",
+      "bytes": 819,
+      "sha256": "381c6c7b98f3d244c615ec44eed9e9c79be974bdf296243e18d929aa04f6971e",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/de-1440-saj-visible-brand.png",
+      "bytes": 210960,
+      "sha256": "d4649234bd5f026ad6cda2937d5fd6c83d19aa4e388db3dc76cd6f8191f36818",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/en-390-visible-query-no-scroll.json",
+      "bytes": 619,
+      "sha256": "ba46f3d6cbb4d543aefa99a7ba91948c230b3e3d923e1b5769a2193a833c02d9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225546674Z/en-390-visible-query-no-scroll.png",
+      "bytes": 175990,
+      "sha256": "393ee0b844451841b0f545ff0ac33826344ba76df9ec0aa5813d874e3b8ba51e",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-1440-visible-query-no-scroll.json",
+      "bytes": 626,
+      "sha256": "4017084d9d4ec5a43b6ce7acced3dfb638073011def9905afc29454c07ca562a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-1440-visible-query-no-scroll.png",
+      "bytes": 362738,
+      "sha256": "48a52162f28106d2f615a40a2904c4446ef163099ae3e1f29c829bf7ede91bf3",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-deep-documents-after-tab.json",
+      "bytes": 633,
+      "sha256": "0ff13e99e77d3d793369a04f1881dc0b9cf9ac313319b2865849a7560c34e74d",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-deep-documents-after-tab.png",
+      "bytes": 141717,
+      "sha256": "2783863eae1563584b5dc4288b6e9f01708c2e8318384af3f8b9cf4c4063e81c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-deep-faq-before-tab.json",
+      "bytes": 447,
+      "sha256": "31271628f1c6cfa6fc689bcf4676f9cb5e32c223a21369b3e399fce3c45809c9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-deep-faq-before-tab.png",
+      "bytes": 117156,
+      "sha256": "727df0c7973b07484b6cf31ffedfc75f1f58f0bfd776401a005a5f57bda1e2ba",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-hash-forward-preserved-query.json",
+      "bytes": 454,
+      "sha256": "edf4e0a26f76205f2f600a9e0bc99f1b9a6251fd8e710e77fa1721802ab54689",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-hash-forward-preserved-query.png",
+      "bytes": 130972,
+      "sha256": "34c30078d5bf4de2e3d4f5688532454ff82080a08957c04c0a9520eaad35aaa3",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-native-early-documents.json",
+      "bytes": 299,
+      "sha256": "a1741848a8077811c77c8d6e482bdea97695dd9679a9587fbc57ce82ddb91dda",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-native-early-documents.png",
+      "bytes": 83775,
+      "sha256": "2759ecf8434c040cff95b212571c4431d4a2dcd245fa3c0d07eb0e306060128c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-saj-visible-brand.json",
+      "bytes": 818,
+      "sha256": "70312d734785d807ea3b684993cc40320e7458ed2f84159860d4d58bc887a9dd",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225558916Z/de-390-saj-visible-brand.png",
+      "bytes": 109442,
+      "sha256": "43afba69bcca1cc8d93c2ef2728b357e229ee488c054ffa86897d59d41c1a7c8",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225610550Z/de-390-visible-query-no-scroll.json",
+      "bytes": 623,
+      "sha256": "df86f42ca4fb5cd91d2c78093c3a87ff5f8a3c78baab493aa24c5a97b2893d35",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225610550Z/de-390-visible-query-no-scroll.png",
+      "bytes": 179136,
+      "sha256": "9584b3d0b97a1ee961f7aa467f3523437a67fc96111b78abfc009e32ffe8f830",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-1440-deep-documents-after-tab.json",
+      "bytes": 631,
+      "sha256": "7c5df9b57b1441988a7d2fe0cbed36231946d14d6b69d2aae1e7a61509adfbe3",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-1440-deep-documents-after-tab.png",
+      "bytes": 287178,
+      "sha256": "1e4af0a0dad90d6484103fba9a41c1d1f6b531125609ec781c34bdd5815c7a7f",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-1440-deep-faq-before-tab.json",
+      "bytes": 452,
+      "sha256": "755e811213a93e369a7b3a39e10f67c1426c17625451523ee2be7c14c369cf33",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-1440-deep-faq-before-tab.png",
+      "bytes": 238073,
+      "sha256": "5353cd609f643bb5289fca78613e88ce997998ee0a1eb0fad98e9ecdb277ebc4",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-1440-saj-visible-brand.json",
+      "bytes": 819,
+      "sha256": "92ed59617a8c2c699eb6cfbfb60cdb0ac030d0a7fada5cf33c13c2ab0bbe1326",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-1440-saj-visible-brand.png",
+      "bytes": 220824,
+      "sha256": "e8ec5460a5b8c2700e2a22921c22ca2611f007933a175062710c916b46fa40db",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-390-deep-documents-after-tab.json",
+      "bytes": 629,
+      "sha256": "7019afe4610e82258c5b70283c73540c826ec3c90a56553d947284cb1d9325d7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-390-deep-documents-after-tab.png",
+      "bytes": 117668,
+      "sha256": "e04a898307accdcb35f815f6ec5e16e0d9ebeb9c744a6b25425b4be8ded0ff1c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-390-deep-faq-before-tab.json",
+      "bytes": 447,
+      "sha256": "31271628f1c6cfa6fc689bcf4676f9cb5e32c223a21369b3e399fce3c45809c9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-390-deep-faq-before-tab.png",
+      "bytes": 117338,
+      "sha256": "c9250b1445722f3bb34d84f604fb9e337b5b7355e9f17be7c90c44fb3487c3df",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-390-saj-visible-brand.json",
+      "bytes": 818,
+      "sha256": "82ba6d4b9c956a13d95dbeefbaca9b5106136fb754f46b53c66a5cd1ae29d928",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/de-390-saj-visible-brand.png",
+      "bytes": 107912,
+      "sha256": "9a10f5a017d3b6ddde217500351d1032e4cfb5ad988f62dd187b62b8f7376fcb",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-1440-deep-documents-after-tab.json",
+      "bytes": 626,
+      "sha256": "51970b90a697031ee165286a1f569c30363f5cf537ce73a62c58f9b8c70dee78",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-1440-deep-documents-after-tab.png",
+      "bytes": 286919,
+      "sha256": "d01f1b175a60e8062a07fabe5b25721d8fb4532e9faf3b05ff249a25205c2a2d",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-1440-deep-faq-before-tab.json",
+      "bytes": 449,
+      "sha256": "90e49958bd2fe72a5960c22529ee73fcfa1e4a6f07b40144769545ddf00909f0",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-1440-deep-faq-before-tab.png",
+      "bytes": 236818,
+      "sha256": "280389153e20d74a64a04683192d0e45244f77c5d667000620ba34862a8df06a",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-1440-saj-visible-brand.json",
+      "bytes": 815,
+      "sha256": "16103a68b93a1fdb82f941fd428c87ef4d0e13285d388caa4f1c5c7f3f83b274",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-1440-saj-visible-brand.png",
+      "bytes": 213537,
+      "sha256": "a6551caed527b81ba44c671d0ceb652b44b8be1a57a74b4fb4f26c77d6d41208",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-390-deep-documents-after-tab.json",
+      "bytes": 625,
+      "sha256": "8ee609b630e1df801f182dd4ed114e42a241077e035cf3a85185302455cb2141",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-390-deep-documents-after-tab.png",
+      "bytes": 119994,
+      "sha256": "4d2c84e67cd0be9e8e9435e370759e37e4e2b4bceaee092cb22f98abce5eb199",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-390-deep-faq-before-tab.json",
+      "bytes": 443,
+      "sha256": "1b7543fed1dc54c6ddc64c50e2e8053a17bd8c4c2af3a6a3e4d667e5cfe6307a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-390-deep-faq-before-tab.png",
+      "bytes": 117125,
+      "sha256": "46b833021cce37702bed3cdd266e303e25f29f373a682c9455afca66eba6a2f4",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-390-saj-visible-brand.json",
+      "bytes": 814,
+      "sha256": "815c161ecb8aad32bcaa3abf1fffbcd82f28b62005c3d657cd8c7d6722c8843b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225839594Z/en-390-saj-visible-brand.png",
+      "bytes": 109750,
+      "sha256": "ed3aca1b2dcd1eb3e6d765ef2b6763b183998209bb781d98dcd9e93525e09305",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-deep-documents-after-tab.json",
+      "bytes": 631,
+      "sha256": "7c5df9b57b1441988a7d2fe0cbed36231946d14d6b69d2aae1e7a61509adfbe3",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-deep-documents-after-tab.png",
+      "bytes": 287178,
+      "sha256": "1e4af0a0dad90d6484103fba9a41c1d1f6b531125609ec781c34bdd5815c7a7f",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-deep-faq-before-tab.json",
+      "bytes": 452,
+      "sha256": "755e811213a93e369a7b3a39e10f67c1426c17625451523ee2be7c14c369cf33",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-deep-faq-before-tab.png",
+      "bytes": 238073,
+      "sha256": "5353cd609f643bb5289fca78613e88ce997998ee0a1eb0fad98e9ecdb277ebc4",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-hash-forward-preserved-query.json",
+      "bytes": 458,
+      "sha256": "6229a4b86a1e33aea7bc96340f58bd902c94925a477ffa2418a893d1dd529446",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-hash-forward-preserved-query.png",
+      "bytes": 207946,
+      "sha256": "5d1d06e4846958a0a21c87114f5125c3f477581d529179126f50bd295aa25141",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-native-early-documents.json",
+      "bytes": 302,
+      "sha256": "61c326227c2e0073d0577167f95b104dc35dac2294845f62f353e2c1edd67802",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-native-early-documents.png",
+      "bytes": 146780,
+      "sha256": "5b84546ed847e733d7636432dd7ce5b36721865ff3ef39ee4ddd2137fa419aa4",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-saj-visible-brand.json",
+      "bytes": 819,
+      "sha256": "92ed59617a8c2c699eb6cfbfb60cdb0ac030d0a7fada5cf33c13c2ab0bbe1326",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-saj-visible-brand.png",
+      "bytes": 220824,
+      "sha256": "e8ec5460a5b8c2700e2a22921c22ca2611f007933a175062710c916b46fa40db",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-visible-query-no-scroll.json",
+      "bytes": 626,
+      "sha256": "4017084d9d4ec5a43b6ce7acced3dfb638073011def9905afc29454c07ca562a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-1440-visible-query-no-scroll.png",
+      "bytes": 362738,
+      "sha256": "48a52162f28106d2f615a40a2904c4446ef163099ae3e1f29c829bf7ede91bf3",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-deep-documents-after-tab.json",
+      "bytes": 629,
+      "sha256": "7019afe4610e82258c5b70283c73540c826ec3c90a56553d947284cb1d9325d7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-deep-documents-after-tab.png",
+      "bytes": 117668,
+      "sha256": "e04a898307accdcb35f815f6ec5e16e0d9ebeb9c744a6b25425b4be8ded0ff1c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-deep-faq-before-tab.json",
+      "bytes": 447,
+      "sha256": "31271628f1c6cfa6fc689bcf4676f9cb5e32c223a21369b3e399fce3c45809c9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-deep-faq-before-tab.png",
+      "bytes": 117338,
+      "sha256": "c9250b1445722f3bb34d84f604fb9e337b5b7355e9f17be7c90c44fb3487c3df",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-hash-forward-preserved-query.json",
+      "bytes": 451,
+      "sha256": "2a13d25b9836d4cf427117e405640c441095565bd28e2343358e88242530b848",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-hash-forward-preserved-query.png",
+      "bytes": 126693,
+      "sha256": "872068f2a1bb788c66659aa5442363cb09ee84529773c8238924f20bd04d4309",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-native-early-documents.json",
+      "bytes": 299,
+      "sha256": "a1741848a8077811c77c8d6e482bdea97695dd9679a9587fbc57ce82ddb91dda",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-native-early-documents.png",
+      "bytes": 83775,
+      "sha256": "2759ecf8434c040cff95b212571c4431d4a2dcd245fa3c0d07eb0e306060128c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-saj-visible-brand.json",
+      "bytes": 818,
+      "sha256": "82ba6d4b9c956a13d95dbeefbaca9b5106136fb754f46b53c66a5cd1ae29d928",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-saj-visible-brand.png",
+      "bytes": 107912,
+      "sha256": "9a10f5a017d3b6ddde217500351d1032e4cfb5ad988f62dd187b62b8f7376fcb",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-visible-query-no-scroll.json",
+      "bytes": 623,
+      "sha256": "df86f42ca4fb5cd91d2c78093c3a87ff5f8a3c78baab493aa24c5a97b2893d35",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/de-390-visible-query-no-scroll.png",
+      "bytes": 179136,
+      "sha256": "9584b3d0b97a1ee961f7aa467f3523437a67fc96111b78abfc009e32ffe8f830",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-deep-documents-after-tab.json",
+      "bytes": 626,
+      "sha256": "51970b90a697031ee165286a1f569c30363f5cf537ce73a62c58f9b8c70dee78",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-deep-documents-after-tab.png",
+      "bytes": 286919,
+      "sha256": "d01f1b175a60e8062a07fabe5b25721d8fb4532e9faf3b05ff249a25205c2a2d",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-deep-faq-before-tab.json",
+      "bytes": 449,
+      "sha256": "90e49958bd2fe72a5960c22529ee73fcfa1e4a6f07b40144769545ddf00909f0",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-deep-faq-before-tab.png",
+      "bytes": 236818,
+      "sha256": "280389153e20d74a64a04683192d0e45244f77c5d667000620ba34862a8df06a",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-hash-forward-preserved-query.json",
+      "bytes": 455,
+      "sha256": "269e8a0584c48d37662c24139959e214ad0561e784a2a1125ee25c333dfd268b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-hash-forward-preserved-query.png",
+      "bytes": 201322,
+      "sha256": "dd91161ddc758e02c4818545994f283bc4d8072879dcbab8c031a3cfd038d8bd",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-native-early-documents.json",
+      "bytes": 300,
+      "sha256": "01de9cbdb908fd48a4bd2a174fe322e9d8d8a6d84ae5acf7494b7641358d5ec7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-native-early-documents.png",
+      "bytes": 150249,
+      "sha256": "1ce042386f606a44c3dc021d68ed5a11ee2bb731d85791d1714b28f127c75b3c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-saj-visible-brand.json",
+      "bytes": 815,
+      "sha256": "16103a68b93a1fdb82f941fd428c87ef4d0e13285d388caa4f1c5c7f3f83b274",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-saj-visible-brand.png",
+      "bytes": 213537,
+      "sha256": "a6551caed527b81ba44c671d0ceb652b44b8be1a57a74b4fb4f26c77d6d41208",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-visible-query-no-scroll.json",
+      "bytes": 623,
+      "sha256": "38eebffd353f5ac182463f2647b90c6418095de00cf777295654305b3ab0a83b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-1440-visible-query-no-scroll.png",
+      "bytes": 369400,
+      "sha256": "2897769549f3b09769dbd48fe2b4cc19fb1444b205d0874b85d32af0da1af52d",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-deep-documents-after-tab.json",
+      "bytes": 625,
+      "sha256": "8ee609b630e1df801f182dd4ed114e42a241077e035cf3a85185302455cb2141",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-deep-documents-after-tab.png",
+      "bytes": 119994,
+      "sha256": "4d2c84e67cd0be9e8e9435e370759e37e4e2b4bceaee092cb22f98abce5eb199",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-deep-faq-before-tab.json",
+      "bytes": 443,
+      "sha256": "1b7543fed1dc54c6ddc64c50e2e8053a17bd8c4c2af3a6a3e4d667e5cfe6307a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-deep-faq-before-tab.png",
+      "bytes": 117125,
+      "sha256": "46b833021cce37702bed3cdd266e303e25f29f373a682c9455afca66eba6a2f4",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-hash-forward-preserved-query.json",
+      "bytes": 447,
+      "sha256": "19c3addc648ad38366c45619faa86b66faf2d94e52173458522d3ca914191a76",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-hash-forward-preserved-query.png",
+      "bytes": 126580,
+      "sha256": "54bfcaa854907abed1655be82c4e7e2efa44871791a31bc9c4a447b030a67b18",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-native-early-documents.json",
+      "bytes": 295,
+      "sha256": "6e4136604316a8590ec47570e4382ae81a31773d44ba6e5f810a47e799b39792",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-native-early-documents.png",
+      "bytes": 83981,
+      "sha256": "c7347e82fbd8b4783ea74f0b9e2973fcc4ed407bff6ed7453d457d7b9d587fa5",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-saj-visible-brand.json",
+      "bytes": 814,
+      "sha256": "815c161ecb8aad32bcaa3abf1fffbcd82f28b62005c3d657cd8c7d6722c8843b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-saj-visible-brand.png",
+      "bytes": 110161,
+      "sha256": "a6da9882e26fe0e1e852b910c3ea99e846403cb18bc69a35b1b9efa7bb60c2a0",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-visible-query-no-scroll.json",
+      "bytes": 619,
+      "sha256": "ba46f3d6cbb4d543aefa99a7ba91948c230b3e3d923e1b5769a2193a833c02d9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T225946054Z/en-390-visible-query-no-scroll.png",
+      "bytes": 175990,
+      "sha256": "393ee0b844451841b0f545ff0ac33826344ba76df9ec0aa5813d874e3b8ba51e",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230815389Z/en-1440-hash-forward-preserved-query.json",
+      "bytes": 455,
+      "sha256": "269e8a0584c48d37662c24139959e214ad0561e784a2a1125ee25c333dfd268b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230815389Z/en-1440-hash-forward-preserved-query.png",
+      "bytes": 201322,
+      "sha256": "dd91161ddc758e02c4818545994f283bc4d8072879dcbab8c031a3cfd038d8bd",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230815389Z/en-1440-native-early-documents.json",
+      "bytes": 300,
+      "sha256": "01de9cbdb908fd48a4bd2a174fe322e9d8d8a6d84ae5acf7494b7641358d5ec7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230815389Z/en-1440-native-early-documents.png",
+      "bytes": 149826,
+      "sha256": "298fcc16cd4be71d1b472c2fa950e9ff2a823ee9fe151dbd5a01795e0fdac4b6",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230834530Z/en-1440-visible-query-no-scroll.json",
+      "bytes": 623,
+      "sha256": "38eebffd353f5ac182463f2647b90c6418095de00cf777295654305b3ab0a83b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230834530Z/en-1440-visible-query-no-scroll.png",
+      "bytes": 369390,
+      "sha256": "82f9d795d19f5d7065aaf3e587753e313cce216d38511ab9aa4dd2b20f92c637",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230834530Z/en-390-hash-forward-preserved-query.json",
+      "bytes": 447,
+      "sha256": "19c3addc648ad38366c45619faa86b66faf2d94e52173458522d3ca914191a76",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230834530Z/en-390-hash-forward-preserved-query.png",
+      "bytes": 126580,
+      "sha256": "54bfcaa854907abed1655be82c4e7e2efa44871791a31bc9c4a447b030a67b18",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230834530Z/en-390-native-early-documents.json",
+      "bytes": 295,
+      "sha256": "6e4136604316a8590ec47570e4382ae81a31773d44ba6e5f810a47e799b39792",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230834530Z/en-390-native-early-documents.png",
+      "bytes": 83981,
+      "sha256": "c7347e82fbd8b4783ea74f0b9e2973fcc4ed407bff6ed7453d457d7b9d587fa5",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230856988Z/de-1440-hash-forward-preserved-query.json",
+      "bytes": 458,
+      "sha256": "6229a4b86a1e33aea7bc96340f58bd902c94925a477ffa2418a893d1dd529446",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230856988Z/de-1440-hash-forward-preserved-query.png",
+      "bytes": 207946,
+      "sha256": "5d1d06e4846958a0a21c87114f5125c3f477581d529179126f50bd295aa25141",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230856988Z/de-1440-native-early-documents.json",
+      "bytes": 302,
+      "sha256": "61c326227c2e0073d0577167f95b104dc35dac2294845f62f353e2c1edd67802",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230856988Z/de-1440-native-early-documents.png",
+      "bytes": 146780,
+      "sha256": "5b84546ed847e733d7636432dd7ce5b36721865ff3ef39ee4ddd2137fa419aa4",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230856988Z/en-390-visible-query-no-scroll.json",
+      "bytes": 619,
+      "sha256": "ba46f3d6cbb4d543aefa99a7ba91948c230b3e3d923e1b5769a2193a833c02d9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230856988Z/en-390-visible-query-no-scroll.png",
+      "bytes": 175990,
+      "sha256": "393ee0b844451841b0f545ff0ac33826344ba76df9ec0aa5813d874e3b8ba51e",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230919705Z/de-1440-visible-query-no-scroll.json",
+      "bytes": 626,
+      "sha256": "4017084d9d4ec5a43b6ce7acced3dfb638073011def9905afc29454c07ca562a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230919705Z/de-1440-visible-query-no-scroll.png",
+      "bytes": 362751,
+      "sha256": "f176928f66c3bb219309b1835df65f284a93dfc3043f10efc3c4a03dcfb4b4b5",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230919705Z/de-390-hash-forward-preserved-query.json",
+      "bytes": 451,
+      "sha256": "2a13d25b9836d4cf427117e405640c441095565bd28e2343358e88242530b848",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230919705Z/de-390-hash-forward-preserved-query.png",
+      "bytes": 126693,
+      "sha256": "872068f2a1bb788c66659aa5442363cb09ee84529773c8238924f20bd04d4309",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230919705Z/de-390-native-early-documents.json",
+      "bytes": 299,
+      "sha256": "a1741848a8077811c77c8d6e482bdea97695dd9679a9587fbc57ce82ddb91dda",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230919705Z/de-390-native-early-documents.png",
+      "bytes": 83775,
+      "sha256": "2759ecf8434c040cff95b212571c4431d4a2dcd245fa3c0d07eb0e306060128c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T230942797Z/de-390-visible-query-no-scroll.json",
+      "bytes": 623,
+      "sha256": "df86f42ca4fb5cd91d2c78093c3a87ff5f8a3c78baab493aa24c5a97b2893d35",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T230942797Z/de-390-visible-query-no-scroll.png",
+      "bytes": 179136,
+      "sha256": "9584b3d0b97a1ee961f7aa467f3523437a67fc96111b78abfc009e32ffe8f830",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-deep-documents-after-tab.json",
+      "bytes": 631,
+      "sha256": "7c5df9b57b1441988a7d2fe0cbed36231946d14d6b69d2aae1e7a61509adfbe3",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-deep-documents-after-tab.png",
+      "bytes": 287178,
+      "sha256": "1e4af0a0dad90d6484103fba9a41c1d1f6b531125609ec781c34bdd5815c7a7f",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-deep-faq-before-tab.json",
+      "bytes": 452,
+      "sha256": "755e811213a93e369a7b3a39e10f67c1426c17625451523ee2be7c14c369cf33",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-deep-faq-before-tab.png",
+      "bytes": 238065,
+      "sha256": "2b7256def1a98c3578a90421d882b5cb262c21e57d8e090f927cc3f0a933f5b7",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-hash-forward-preserved-query.json",
+      "bytes": 458,
+      "sha256": "6229a4b86a1e33aea7bc96340f58bd902c94925a477ffa2418a893d1dd529446",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-hash-forward-preserved-query.png",
+      "bytes": 207946,
+      "sha256": "5d1d06e4846958a0a21c87114f5125c3f477581d529179126f50bd295aa25141",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-native-early-documents.json",
+      "bytes": 302,
+      "sha256": "61c326227c2e0073d0577167f95b104dc35dac2294845f62f353e2c1edd67802",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-native-early-documents.png",
+      "bytes": 146780,
+      "sha256": "5b84546ed847e733d7636432dd7ce5b36721865ff3ef39ee4ddd2137fa419aa4",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-saj-visible-brand.json",
+      "bytes": 819,
+      "sha256": "92ed59617a8c2c699eb6cfbfb60cdb0ac030d0a7fada5cf33c13c2ab0bbe1326",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-saj-visible-brand.png",
+      "bytes": 219761,
+      "sha256": "f054b7d8093b8405dedf8ee98f64af450de090c8cdd5d74d733be8be9d59426b",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-visible-query-no-scroll.json",
+      "bytes": 626,
+      "sha256": "4017084d9d4ec5a43b6ce7acced3dfb638073011def9905afc29454c07ca562a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-1440-visible-query-no-scroll.png",
+      "bytes": 362738,
+      "sha256": "48a52162f28106d2f615a40a2904c4446ef163099ae3e1f29c829bf7ede91bf3",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-deep-documents-after-tab.json",
+      "bytes": 629,
+      "sha256": "7019afe4610e82258c5b70283c73540c826ec3c90a56553d947284cb1d9325d7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-deep-documents-after-tab.png",
+      "bytes": 117668,
+      "sha256": "e04a898307accdcb35f815f6ec5e16e0d9ebeb9c744a6b25425b4be8ded0ff1c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-deep-faq-before-tab.json",
+      "bytes": 447,
+      "sha256": "31271628f1c6cfa6fc689bcf4676f9cb5e32c223a21369b3e399fce3c45809c9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-deep-faq-before-tab.png",
+      "bytes": 116335,
+      "sha256": "00e8ed3c5cec60aeb4bca8e594f1bb26a01cb1729ee583d9759c0b2783ffd441",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-hash-forward-preserved-query.json",
+      "bytes": 451,
+      "sha256": "2a13d25b9836d4cf427117e405640c441095565bd28e2343358e88242530b848",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-hash-forward-preserved-query.png",
+      "bytes": 126693,
+      "sha256": "872068f2a1bb788c66659aa5442363cb09ee84529773c8238924f20bd04d4309",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-native-early-documents.json",
+      "bytes": 299,
+      "sha256": "a1741848a8077811c77c8d6e482bdea97695dd9679a9587fbc57ce82ddb91dda",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-native-early-documents.png",
+      "bytes": 83775,
+      "sha256": "2759ecf8434c040cff95b212571c4431d4a2dcd245fa3c0d07eb0e306060128c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-saj-visible-brand.json",
+      "bytes": 818,
+      "sha256": "82ba6d4b9c956a13d95dbeefbaca9b5106136fb754f46b53c66a5cd1ae29d928",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-saj-visible-brand.png",
+      "bytes": 109913,
+      "sha256": "3c04e683ec67f67c3c41e296174a17d47a67203961c22d7393695878e4d5aa00",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-visible-query-no-scroll.json",
+      "bytes": 623,
+      "sha256": "df86f42ca4fb5cd91d2c78093c3a87ff5f8a3c78baab493aa24c5a97b2893d35",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/de-390-visible-query-no-scroll.png",
+      "bytes": 179136,
+      "sha256": "9584b3d0b97a1ee961f7aa467f3523437a67fc96111b78abfc009e32ffe8f830",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-deep-documents-after-tab.json",
+      "bytes": 626,
+      "sha256": "51970b90a697031ee165286a1f569c30363f5cf537ce73a62c58f9b8c70dee78",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-deep-documents-after-tab.png",
+      "bytes": 286697,
+      "sha256": "49d83784e72d6718b33bcdecae4631f7a73334ae373e595671112444aed337fa",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-deep-faq-before-tab.json",
+      "bytes": 449,
+      "sha256": "90e49958bd2fe72a5960c22529ee73fcfa1e4a6f07b40144769545ddf00909f0",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-deep-faq-before-tab.png",
+      "bytes": 236785,
+      "sha256": "9e17a3b94abdb9f381eae9704b3f84d1f3b024ef87940ebe693188aa59d1d328",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-hash-forward-preserved-query.json",
+      "bytes": 455,
+      "sha256": "269e8a0584c48d37662c24139959e214ad0561e784a2a1125ee25c333dfd268b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-hash-forward-preserved-query.png",
+      "bytes": 201322,
+      "sha256": "dd91161ddc758e02c4818545994f283bc4d8072879dcbab8c031a3cfd038d8bd",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-native-early-documents.json",
+      "bytes": 300,
+      "sha256": "01de9cbdb908fd48a4bd2a174fe322e9d8d8a6d84ae5acf7494b7641358d5ec7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-native-early-documents.png",
+      "bytes": 150249,
+      "sha256": "1ce042386f606a44c3dc021d68ed5a11ee2bb731d85791d1714b28f127c75b3c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-saj-visible-brand.json",
+      "bytes": 815,
+      "sha256": "16103a68b93a1fdb82f941fd428c87ef4d0e13285d388caa4f1c5c7f3f83b274",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-saj-visible-brand.png",
+      "bytes": 212372,
+      "sha256": "1fe1ba0ae594b891c9262d6c58edc14ddf5acc9f2b455a3616486b74c349f18c",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-visible-query-no-scroll.json",
+      "bytes": 623,
+      "sha256": "38eebffd353f5ac182463f2647b90c6418095de00cf777295654305b3ab0a83b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-1440-visible-query-no-scroll.png",
+      "bytes": 369400,
+      "sha256": "2897769549f3b09769dbd48fe2b4cc19fb1444b205d0874b85d32af0da1af52d",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-deep-documents-after-tab.json",
+      "bytes": 625,
+      "sha256": "8ee609b630e1df801f182dd4ed114e42a241077e035cf3a85185302455cb2141",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-deep-documents-after-tab.png",
+      "bytes": 119994,
+      "sha256": "4d2c84e67cd0be9e8e9435e370759e37e4e2b4bceaee092cb22f98abce5eb199",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-deep-faq-before-tab.json",
+      "bytes": 443,
+      "sha256": "1b7543fed1dc54c6ddc64c50e2e8053a17bd8c4c2af3a6a3e4d667e5cfe6307a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-deep-faq-before-tab.png",
+      "bytes": 116813,
+      "sha256": "20ff6eeef088861538db6fd732e8a3ceda51a2f65f82ef77273e6f29dcd11d77",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-hash-forward-preserved-query.json",
+      "bytes": 447,
+      "sha256": "19c3addc648ad38366c45619faa86b66faf2d94e52173458522d3ca914191a76",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-hash-forward-preserved-query.png",
+      "bytes": 126580,
+      "sha256": "54bfcaa854907abed1655be82c4e7e2efa44871791a31bc9c4a447b030a67b18",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-native-early-documents.json",
+      "bytes": 295,
+      "sha256": "6e4136604316a8590ec47570e4382ae81a31773d44ba6e5f810a47e799b39792",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-native-early-documents.png",
+      "bytes": 83981,
+      "sha256": "c7347e82fbd8b4783ea74f0b9e2973fcc4ed407bff6ed7453d457d7b9d587fa5",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-saj-visible-brand.json",
+      "bytes": 814,
+      "sha256": "815c161ecb8aad32bcaa3abf1fffbcd82f28b62005c3d657cd8c7d6722c8843b",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-saj-visible-brand.png",
+      "bytes": 111069,
+      "sha256": "d7874862f34d46f7177e3220d9bb81e06ecbbfb2d86e9508dd1470ad77c11aa7",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-visible-query-no-scroll.json",
+      "bytes": 619,
+      "sha256": "ba46f3d6cbb4d543aefa99a7ba91948c230b3e3d923e1b5769a2193a833c02d9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-local/20261021T231000183Z/en-390-visible-query-no-scroll.png",
+      "bytes": 175990,
+      "sha256": "393ee0b844451841b0f545ff0ac33826344ba76df9ec0aa5813d874e3b8ba51e",
+      "native_format": "png"
+    },
+    {
+      "path": "navigation-node-final-40.log",
+      "bytes": 3558,
+      "sha256": "3e646c1bbdb6f606f6f5d2a2271bea9d0740b161e4b552bf8c35fa92202a7474",
+      "native_format": null
+    },
+    {
+      "path": "navigation-node-green.log",
+      "bytes": 3275,
+      "sha256": "f986f270e13bb1408a5371162c82edaefb9589d62a948c9b2d777e3a59e44a97",
+      "native_format": null
+    },
+    {
+      "path": "navigation-node-red.log",
+      "bytes": 10262,
+      "sha256": "393dc8f0a78292307ef9198fdf33b54aef4af24f17b717bab9e1a2943b7129ba",
+      "native_format": null
+    },
+    {
+      "path": "navigation-source-identity.json",
+      "bytes": 367,
+      "sha256": "ddd6ea80fbb16370c28cb239406ca59874612a5060eece1c4f4aaa3934670503",
+      "native_format": null
+    },
+    {
+      "path": "navigation-spec-review.md",
+      "bytes": 4679,
+      "sha256": "663eb1cd746deff0d7182ac9bbf0b0b7818aa3ef54fbd8029e80b13e223e9bc7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-standards-review.md",
+      "bytes": 12938,
+      "sha256": "478e06195c560e789c652d546ba8d9b17f39f4d9231e4e042a7380e21fa7215c",
+      "native_format": null
+    },
+    {
+      "path": "readback.md",
+      "bytes": 5440,
+      "sha256": "9600955c7e2f40312686215f14dea7280f8ea662126b196b40997fc8455912d8",
+      "native_format": null
+    },
+    {
+      "path": "residential-de-1440-voice-draft.json",
+      "bytes": 584,
+      "sha256": "809be341b7bf8b693fa6e00f47a1de799adb1ef8497c395b44ab7dc31807d5a8",
+      "native_format": null
+    },
+    {
+      "path": "residential-de-1440-voice-draft.png",
+      "bytes": 160860,
+      "sha256": "405fd7c75b0f34b2f9eb09e97e7a448db326aa654654c2167d7016c46cde6484",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "residential-de-390-after-escape.json",
+      "bytes": 215,
+      "sha256": "c8a0d93a2d118195fef2612ffd8e276fd8a77ffc36ac6796072e28aacdd9fe66",
+      "native_format": null
+    },
+    {
+      "path": "residential-de-390-voice-draft.json",
+      "bytes": 631,
+      "sha256": "b58420c5627235b4df48141102039c583b9199c0f6410bb889adbce4b79da220",
+      "native_format": null
+    },
+    {
+      "path": "residential-de-390-voice-draft.png",
+      "bytes": 54922,
+      "sha256": "8978935552bde6b3358d0b56d3b94c26c9f65a786071aa99d3654c8e8c8f33cb",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "residential-en-1440-voice-draft.json",
+      "bytes": 479,
+      "sha256": "751a7bfd574059a7b883fc987c3ec65cb2c079fa3ab5edbbb836435af19d6ebb",
+      "native_format": null
+    },
+    {
+      "path": "residential-en-1440-voice-draft.png",
+      "bytes": 158639,
+      "sha256": "ae6ed17dc71d681ab022c376d9a889031826e0ac24ccd09c2b58483ea5d4f86a",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "residential-en-390-voice-draft.json",
+      "bytes": 602,
+      "sha256": "1e94b10eeffd816f5eb7a6bc77d4fcfa1d393833b4a3be2ccde1471efff83742",
+      "native_format": null
+    },
+    {
+      "path": "residential-en-390-voice-draft.png",
+      "bytes": 53233,
+      "sha256": "f16c686213e6476f6d5527bff510fc7796c2b5f2d9fe86e0e9382497b7e31193",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "runtime-after-browser.json",
+      "bytes": 1174,
+      "sha256": "e39abc23baf8d8cc5796d7f989f8ddb5f6d87388c32da0f8f77e7736a0c50eb7",
+      "native_format": null
+    }
+  ]
+}

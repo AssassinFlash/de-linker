@@ -195,8 +195,26 @@
 	var main = root.querySelector(".linker-library-main");
 	var preparedThumbnails = new WeakSet();
 
+	/** A native anchor may already have been followed while this script loaded. */
+	function hashTarget() {
+		var id;
+		try {
+			id = decodeURIComponent(scope.location.hash.slice(1));
+		} catch (error) {
+			return null;
+		}
+		var target = id && scope.document.getElementById(id);
+		return target && root.contains(target) ? target : null;
+	}
+
+	function tabFromLocation() {
+		var target = hashTarget();
+		var panel = target && target.closest("[data-library-panel]");
+		return panel ? panel.getAttribute("data-library-panel") : tabFromSearch(scope.location.search);
+	}
+
 	var state = {
-		tab: tabFromSearch(scope.location.search),
+		tab: tabFromLocation(),
 		q: "",
 		type: "all",
 		pages: {},
@@ -363,6 +381,7 @@
 	function setTab(tab, options) {
 		var next = tab === "documents" ? "documents" : "faq";
 		var moved = next !== state.tab;
+		var activePanel;
 		state.tab = next;
 		tabs.forEach(function (element) {
 			var on = element.getAttribute("data-library-tab") === next;
@@ -371,6 +390,9 @@
 		});
 		panels.forEach(function (panel) {
 			panel.hidden = panel.getAttribute("data-library-panel") !== next || !!state.q.trim();
+			if (panel.getAttribute("data-library-panel") === next) {
+				activePanel = panel;
+			}
 		});
 		slice.call(root.querySelectorAll("[data-library-nav]")).forEach(function (group) {
 			group.hidden = group.getAttribute("data-library-nav") !== next;
@@ -387,20 +409,13 @@
 			// shows, from its first page.
 			state.searchPage = 1;
 			renderSearch();
-			return;
 		}
-		if (moved) {
-			// The list starts where the tab bar does: a reader who switched tabs
-			// from further down the page sees the first card, not the middle of
-			// the other one.
-			var bar = root.querySelector(".linker-library-tabbar");
-			measureSticky();
-			var offset = parseFloat(readVar("--ll-header-h")) || 0;
-			var top = bar ? bar.getBoundingClientRect().top + scope.scrollY - offset : 0;
-			if (bar && scope.scrollY > top + 8) {
-				scope.scrollTo(0, Math.max(0, top));
-			}
+		if (moved && (!options || options.reveal !== false)) {
+			// The pinned tab bar's rect no longer locates the content's start.
+			// Reveal the new non-sticky list only when its start is offscreen.
+			revealReaderStart(state.q.trim() ? resultsHost() : activePanel);
 		}
+		markActive();
 	}
 
 	/* ---------- cards: pagination and the soft empty ---------- */
@@ -633,6 +648,8 @@
 		var query = state.q.trim();
 		state.rendering = true;
 		if (query) {
+			// Searching supersedes the earlier directory-scroll transaction.
+			state.spyLock = 0;
 			root.classList.add("is-searching");
 			panels.forEach(function (panel) {
 				panel.hidden = true;
@@ -657,6 +674,9 @@
 			clearButton.hidden = !query;
 		}
 		renderSuggestions();
+		if (query) {
+			keepResultsVisible();
+		}
 		markActive();
 	}
 
@@ -821,18 +841,50 @@
 			return;
 		}
 		var top = element.getBoundingClientRect().top + scope.scrollY - stickyOffset();
-		scope.scrollTo({ top: Math.max(0, top), behavior: prefersReduced() ? "auto" : "smooth" });
+		// "auto" inherits the page's CSS smooth scrolling, even for a reader
+		// who requested reduced motion. An explicit instant move bypasses it.
+		scope.scrollTo({ top: Math.max(0, top), behavior: prefersReduced() ? "instant" : "smooth" });
+	}
+
+	function revealReaderStart(element) {
+		if (!element || element.hidden) {
+			return;
+		}
+		var top = element.getBoundingClientRect().top;
+		if (top < stickyOffset() || top >= scope.innerHeight) {
+			scrollToElement(element);
+		}
+	}
+
+	/** A shrinking result set must not leave its reader stranded in the footer. */
+	function keepResultsVisible() {
+		var host = root.querySelector("[data-library-results]");
+		if (host && !host.hidden && host.getBoundingClientRect().bottom <= stickyOffset()) {
+			scrollToElement(host);
+		}
+	}
+
+	/** Native hash/history navigation selects content without replacing history. */
+	function restoreLocation() {
+		setTab(tabFromLocation(), { url: false, reveal: false });
+		var target = hashTarget();
+		if (target && !state.q.trim() && !target.closest("[hidden]")) {
+			scrollToElement(target);
+		} else if (state.q.trim()) {
+			keepResultsVisible();
+		}
+		markActive();
 	}
 
 	/** Marks the rail and chip link of the card the reader is in. */
 	function markActive() {
-		if (state.rendering || Date.now() < state.spyLock) {
+		if (state.rendering || (!state.q.trim() && Date.now() < state.spyLock)) {
 			return;
 		}
-		var nodes = slice.call(root.querySelectorAll("[data-library-spy]"));
-		if (!nodes.length) {
-			return;
-		}
+		var panel = root.querySelector('[data-library-panel="' + state.tab + '"]');
+		var nodes = panel ? slice.call(panel.querySelectorAll("[data-library-spy]")).filter(function (node) {
+			return !node.closest("[hidden]") && node.getClientRects().length > 0;
+		}) : [];
 		var line = stickyOffset() + 24;
 		var current = nodes[0];
 		nodes.forEach(function (node) {
@@ -840,8 +892,13 @@
 				current = node;
 			}
 		});
-		var id = current.id;
-		var zone = current.getAttribute("data-library-zone") || "";
+		markCurrent(current);
+	}
+
+	/** Explicit navigation names its destination while animation locks the spy. */
+	function markCurrent(current) {
+		var id = current ? current.id : "";
+		var zone = current ? current.getAttribute("data-library-zone") || "" : "";
 		slice.call(root.querySelectorAll("[data-library-spy-link]")).forEach(function (link) {
 			var href = (link.getAttribute("href") || "").slice(1);
 			var linkZone = link.getAttribute("data-library-zone") || "";
@@ -1040,7 +1097,7 @@
 				event.preventDefault();
 				scope.history.replaceState(null, "", scope.location.pathname + scope.location.search + "#" + id);
 				state.spyLock = Date.now() + 900;
-				markActive();
+				markCurrent(element);
 				scrollToElement(element);
 			}
 		});
@@ -1101,6 +1158,8 @@
 		scope.addEventListener("resize", function () {
 			measureSticky();
 		});
+		scope.addEventListener("hashchange", restoreLocation);
+		scope.addEventListener("popstate", restoreLocation);
 	}
 
 	function start() {
@@ -1117,12 +1176,9 @@
 		setTab(state.tab, { url: false });
 		resetCounts();
 		setType("all");
-		var hash = scope.location.hash.slice(1);
-		if (hash) {
-			var element = scope.document.getElementById(hash);
-			if (element) {
-				scrollToElement(element);
-			}
+		var target = hashTarget();
+		if (target && !target.closest("[hidden]")) {
+			scrollToElement(target);
 		}
 		markActive();
 	}
