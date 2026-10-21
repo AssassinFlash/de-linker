@@ -177,6 +177,46 @@ final class Ledger {
 	}
 
 	/**
+	 * Check the native verification receipt before expensive reversible parsing.
+	 * Dispatch still repeats this check inside its atomic transition (#521).
+	 *
+	 * @param array{id:string,binding:string,action:string,single:bool} $proof Signed proof reference.
+	 * @param string                                                    $operation Reserved operation UUID.
+	 * @return array<string,mixed>|WP_Error Safe validity, no provider work.
+	 */
+	public function verified( array $proof, string $operation ): array|WP_Error {
+		return $this->edit(
+			static function ( array &$state, int $now ) use ( $proof, $operation ): array|WP_Error {
+				$receipt = $state['receipts'][ $operation ] ?? null;
+				if ( ! is_array( $receipt ) || 'reserved' !== $receipt['status'] || $proof['action'] !== $receipt['purpose'] || $proof['binding'] !== $receipt['binding'] ) {
+					return self::error( 'proof' );
+				}
+				return self::proof_error( $state, $proof, $operation, $now ) ?? array( 'valid' => true );
+			}
+		);
+	}
+
+	/**
+	 * One predicate at pre-parse and atomic dispatch; neither trusts the MAC alone.
+	 *
+	 * @param array<string,mixed>                                       $state Private journal.
+	 * @param array{id:string,binding:string,action:string,single:bool} $proof Checked reference.
+	 * @param string                                                    $operation Current logical operation.
+	 * @param int                                                       $now Server clock.
+	 */
+	private static function proof_error( array $state, array $proof, string $operation, int $now ): ?WP_Error {
+		$parent  = $state['receipts'][ $proof['id'] ] ?? null;
+		$purpose = 'verification_' . $proof['action'];
+		if ( ! is_array( $parent ) || $purpose !== $parent['purpose'] || $proof['binding'] !== $parent['binding'] || 'completed' !== $parent['status'] || 1 !== $parent['outcome'] || $parent['created_at'] + Proof::LIFETIME <= $now ) {
+			return self::error( 'proof' );
+		}
+		if ( $proof['single'] && isset( $parent['consumed_by'] ) && $parent['consumed_by'] !== $operation ) {
+			return self::error( 'proof_reused' );
+		}
+		return null;
+	}
+
+	/**
 	 * Mark the irreversible boundary before any upstream/business side effect.
 	 *
 	 * @phpstan-impure
@@ -461,15 +501,11 @@ final class Ledger {
 				$status = (string) $receipt['status'];
 				if ( 'dispatch' === $operation && 'reserved' === $status ) {
 					if ( array() !== $proof ) {
-						$parent  = $state['receipts'][ $proof['id'] ] ?? null;
-						$purpose = 'verification_' . $proof['action'];
-						if ( ! is_array( $parent ) || $purpose !== $parent['purpose'] || $proof['binding'] !== $parent['binding'] || 'completed' !== $parent['status'] || 1 !== $parent['outcome'] || $parent['created_at'] + Proof::LIFETIME <= $now ) {
-							return self::error( 'proof' );
+						$invalid = self::proof_error( $state, $proof, $id, $now );
+						if ( null !== $invalid ) {
+							return $invalid;
 						}
 						if ( $proof['single'] ) {
-							if ( isset( $parent['consumed_by'] ) && $parent['consumed_by'] !== $id ) {
-								return self::error( 'proof_reused' );
-							}
 							$state['receipts'][ $proof['id'] ]['consumed_by'] = $id;
 						}
 					}

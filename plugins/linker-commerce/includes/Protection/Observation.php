@@ -23,9 +23,10 @@ final class Observation {
 	 * @param Allowance[]                                    $limits Server policy.
 	 * @param int                                            $lease In-flight recovery.
 	 * @param list<array{source:Allowance,target:Allowance}> $carry Login associations.
+	 * @param string[]                                       $owners Additional trusted privacy owner HMACs.
 	 * @return array<string,mixed> Non-blocking permit and safe advisory diagnostic.
 	 */
-	public static function reserve( Ledger $ledger, string $action, string $id, array $payload, array $limits, int $lease, array $carry ): array {
+	public static function reserve( Ledger $ledger, string $action, string $id, array $payload, array $limits, int $lease, array $carry, array $owners = array() ): array {
 		$permit   = array(
 			'mode'     => 'observe',
 			'enforced' => false,
@@ -38,7 +39,7 @@ final class Observation {
 		if ( is_wp_error( $fingerprint ) ) {
 			return $permit + array( 'advisory' => array( 'reason' => 'input' ) );
 		}
-		$result = $ledger->reserve( $id, $fingerprint, $limits, $lease, $carry, 'observe_' . $action, $identity->binding(), $identity->owners() );
+		$result = $ledger->reserve( $id, $fingerprint, $limits, $lease, $carry, 'observe_' . $action, $identity->binding(), array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ) );
 		if ( is_wp_error( $result ) ) {
 			return $permit + array( 'advisory' => self::failure( $result ) );
 		}

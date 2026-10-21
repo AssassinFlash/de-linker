@@ -32,11 +32,12 @@ final class Admission {
 	 * @param int                                            $lease Required in-flight lease.
 	 * @param bool                                           $single A business proof admits one logical submission.
 	 * @param list<array{source:Allowance,target:Allowance}> $carry Login carry policy.
+	 * @param string[]                                       $owners Additional trusted privacy owner HMACs.
 	 * @return array<string,mixed>|WP_Error Native permit or explicit refusal.
 	 */
-	public function reserve( string $action, string $proof, string $id, array $payload, array $limits, int $lease, bool $single = false, array $carry = array() ): array|WP_Error {
+	public function reserve( string $action, string $proof, string $id, array $payload, array $limits, int $lease, bool $single = false, array $carry = array(), array $owners = array() ): array|WP_Error {
 		if ( 'observe' === $this->configuration->mode ) {
-			return Observation::reserve( $this->ledger ?? new Ledger(), $action, $id, $payload, $limits, $lease, $carry );
+			return Observation::reserve( $this->ledger ?? new Ledger(), $action, $id, $payload, $limits, $lease, $carry, $owners );
 		}
 		if ( 'off' === $this->configuration->mode ) {
 			return array(
@@ -75,7 +76,7 @@ final class Admission {
 		if ( null === $checked ) {
 			return self::failure( 'proof', 400 );
 		}
-		$receipt = $ledger->reserve( $id, $fingerprint, $limits, $lease, $carry, $action, $identity->binding(), $identity->owners() );
+		$receipt = $ledger->reserve( $id, $fingerprint, $limits, $lease, $carry, $action, $identity->binding(), array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ) );
 		if ( is_wp_error( $receipt ) ) {
 			return self::ledger_failure( $receipt );
 		}
@@ -92,6 +93,20 @@ final class Admission {
 				'single'  => $single,
 			),
 		);
+	}
+
+	/**
+	 * A real successful verification receipt is needed before attachment parsing.
+	 *
+	 * @param array<string,mixed> $permit Reserved server permit.
+	 * @return array<string,mixed>|WP_Error Safe result; dispatch remains mandatory.
+	 */
+	public function validate( array $permit ): array|WP_Error {
+		if ( empty( $permit['enforced'] ) || ! empty( $permit['reused'] ) ) {
+			return $permit;
+		}
+		$result = ( $this->ledger ?? new Ledger() )->verified( $permit['proof'], $permit['id'] );
+		return is_wp_error( $result ) ? self::ledger_failure( $result ) : $permit;
 	}
 
 	/**
