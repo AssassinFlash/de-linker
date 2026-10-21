@@ -1,4 +1,4 @@
-# Customer evidence acceptance — in progress
+# Customer evidence acceptance
 
 Implementation issue: https://github.com/AssassinFlash/de-linker/issues/516
 
@@ -78,8 +78,10 @@ and quoted/backslashed message with both new snapshots in both storage modes.
 ## Remaining gates
 
 `just check` and `just test` completed successfully. The latest focused PHPStan
-and PHPCS runs also cover the final missing-account safeguard. The final review repairs pass scoped PHPStan/PHPCS and both real storage runs;
-fixed-diff review readback, final aggregate check, PR and CI remain separate gates. No merge, deployment or
+and PHPCS runs also cover the final missing-account safeguard. The final aggregate `just check` also completed successfully. Independent Spec
+and Standards readback passed at `7855b538`; see review.md. PR #518 is open against
+the inquiry observation branch, with GitHub CI in progress. CI and operational
+rollout remain separate gates. No merge, deployment or
 production activation has occurred for this implementation. The 29-case research
 matrix remains the acceptance boundary; test counts alone do not prove every
 rendered or operational case.
