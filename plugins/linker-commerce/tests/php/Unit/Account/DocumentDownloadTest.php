@@ -167,4 +167,42 @@ final class DocumentDownloadTest extends TestCase {
 		$this->assertSame( 'https://example.test/?linker-document=proforma&id=20', DocumentDownload::proforma_url( $order ) );
 		$this->assertSame( 'https://example.test/?linker-document=report&id=45', DocumentDownload::report_url( 45 ) );
 	}
+
+	/**
+	 * Account states for the report link, which is not a price gate.
+	 *
+	 * @return array<string, array{string, bool}>
+	 */
+	public static function report_link_states(): array {
+		return array(
+			'pending'    => array( Approval::PENDING, false ),
+			'restricted' => array( Approval::RESTRICTED, false ),
+			'rejected'   => array( Approval::REJECTED, false ),
+			'approved'   => array( Approval::APPROVED, true ),
+		);
+	}
+
+	/**
+	 * A design report has no amounts, so its link stays for every approval
+	 * state. The Proforma link stays empty unless the account sees prices.
+	 *
+	 * @dataProvider report_link_states
+	 *
+	 * @param string $status Approval state.
+	 * @param bool   $prices Whether that state sees net prices.
+	 */
+	public function test_report_url_is_not_a_price_gate( string $status, bool $prices ): void {
+		$this->approval_meta( array( Approval::STATUS_META => $status ) );
+		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => true ) );
+		WP_Mock::userFunction( 'current_user_can', array( 'return' => false ) );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $args, string $url ): string => $url . '?' . http_build_query( $args ) ) );
+		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_id' )->andReturn( 20 );
+
+		$proforma = DocumentDownload::proforma_url( $order );
+		$report   = DocumentDownload::report_url( 45 );
+
+		$this->assertSame( $prices ? 'http://linker.test/?linker-document=proforma&id=20' : '', $proforma );
+		$this->assertSame( 'http://linker.test/?linker-document=report&id=45', $report );
+	}
 }
