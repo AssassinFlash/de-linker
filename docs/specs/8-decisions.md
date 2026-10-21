@@ -103,7 +103,7 @@
 
 `released_with_accessory` 的两格（判据：文件的原话使配对本身经由一个单独售卖、且不在任一配对商品交付清单里的部件）：
 
-- **SAJ H2 + B2/BU2**：B2 只能作为"1-5 个 BU2-5.0 模块 + 1 个 BC2-HV1 控制模块"的整套使用（B2 手册 V1.2 p5）→ `accessories: [{model: "^BC2-HV1$", quantity: 1, per: "system"}]`；
+- **SAJ H2 + B2/BU2**：B2 只能作为"2-5 个 BU2-5.0 模块（H2/HS2 下限 2，B2 数据手册与 HS2/AS2 V0.3 p12） + 1 个 BC2-HV1 控制模块"的整套使用（B2 手册 V1.2 p5）→ `accessories: [{model: "^BC2-HV1$", quantity: 1, per: "system"}]`；
 - **EcoFlow PowerOcean（单相）+ EF BD-5.1-S1**：单相手册 p1 写塔 = "EF BD-5.1-S1 × N **with EF BD-B-S1 × 1**"，底座是单独商品（1990）且电池本体交付清单不含它 → `accessories: [{model: "^EF BD-B-S1$", quantity: 1, per: "stack"}]`。
 
 EcoFlow OCEAN 2 三相 + 电池的 EF BD-JC-S2 接线盒只是多塔级联才需要 → 记为 `released` + 条件，不改 verdict；ESA 的"电池扩展件"同理。

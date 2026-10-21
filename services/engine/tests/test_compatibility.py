@@ -87,7 +87,7 @@ def test_parallel_limits_come_from_the_controller_documents(
 def test_the_shipped_contract_keeps_the_one_module_b2_off_the_h2(
     shipped_compatibility: Compatibility,
 ) -> None:
-    # B2 datasheet p1: the one-module B2-5.0 runs at 89.6 to 115.2 V, under the
+    # B2 datasheet p2: the one-module B2-5.0 runs at 89.6 to 115.2 V, under the
     # 180 to 800 V H2 battery range (H2 manual p37).
     for variant in ("HV1", "HV5"):
         pair = shipped_compatibility.pair("H2-10K-T3", f"B2-5.0-{variant}")
