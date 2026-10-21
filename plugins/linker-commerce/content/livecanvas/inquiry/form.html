@@ -1,5 +1,5 @@
-<div class="linker-inquiry">
-	[lc_wc_notices]
+<div class="linker-inquiry woocommerce-cart">
+	<div class="woocommerce-notices-wrapper">[lc_wc_notices]</div>
 	[linker_inquiry_restriction]
 	<div class="linker-inquiry-columns">
 		<form class="linker-inquiry-form" method="post" action="{{action}}">
@@ -21,6 +21,6 @@
 			<div class="linker-inquiry-reassurance"><span {{guest-hide}}>[linker_inquiry_text key="no-account"]</span><p class="linker-inquiry-promise">[linker_inquiry_text key="promise"]</p></div>
 			<div class="linker-inquiry-guest" {{guest-hide}}><a href="{{login-url}}">[linker_inquiry_text key="partner"]</a> [linker_create_account]</div>
 		</form>
-		<aside class="linker-inquiry-draft"><form method="post" action="{{draft-url}}"><div class="linker-inquiry-draft-head"><h2>[linker_inquiry_text key="draft"]</h2><a href="{{draft-url}}">[linker_inquiry_text key="edit"]</a></div><div class="linker-inquiry-lines">[linker_inquiry_lines]</div>[linker_inquiry_draft_nonce]<button class="linker-inquiry-update" type="submit" name="update_cart" value="1" {{draft-empty}}>[linker_inquiry_text key="update"]</button></form></aside>
+		<aside class="linker-inquiry-draft"><form class="woocommerce-cart-form" method="post" action="{{draft-action}}"><input type="hidden" name="proceed" value="1" /><div class="linker-inquiry-draft-head"><h2>[linker_inquiry_text key="draft"]</h2><a href="{{draft-url}}">[linker_inquiry_text key="edit"]</a></div><div class="linker-inquiry-lines woocommerce-cart-form__contents">[linker_inquiry_lines]</div>[linker_inquiry_draft_nonce]<button class="linker-inquiry-update" type="submit" name="update_cart" value="1" {{draft-empty}}>[linker_inquiry_text key="update"]</button></form></aside>
 	</div>
 </div>

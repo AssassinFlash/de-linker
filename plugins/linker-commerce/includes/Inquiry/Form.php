@@ -94,6 +94,7 @@ final class Form {
 			'message'            => $this->summary_note(),
 			'action'             => admin_url( 'admin-post.php' ),
 			'draft-url'          => wc_get_cart_url(),
+			'draft-action'       => wc_get_checkout_url(),
 			'login-url'          => wc_get_page_permalink( 'myaccount' ),
 			'privacy'            => \Linker\Commerce\Presentation\PageUrls::translated( 'privacy-policy' ),
 			'open'               => is_user_logged_in() && '' !== $name && '' !== $email && array() === $previous ? '' : 'open',
@@ -183,8 +184,8 @@ final class Form {
 			$html .= strtr(
 				Tokens::read( dirname( __DIR__, 2 ) . '/content/livecanvas/inquiry/line.html' ),
 				array(
-					'{{name}}'           => esc_html( $product->get_name() ),
-					'{{image}}'          => wp_kses_post(
+					'{{name}}'               => esc_html( $product->get_name() ),
+					'{{image}}'              => wp_kses_post(
 						$product->get_image(
 							'woocommerce_thumbnail',
 							array(
@@ -193,13 +194,16 @@ final class Form {
 							)
 						)
 					),
-					'{{quantity}}'       => esc_html( (string) $line['quantity'] ),
-					'{{quantity-label}}' => esc_html__( 'Quantity', 'linker-commerce' ),
-					'{{key}}'            => esc_attr( $key ),
-					'{{label}}'          => esc_attr( sprintf( /* translators: %s: product name. */ __( 'Quantity for %s', 'linker-commerce' ), $product->get_name() ) ),
-					'{{price}}'          => wp_kses_post( $product->get_price_html() ),
+					'{{quantity}}'           => esc_html( (string) $line['quantity'] ),
+					'{{quantity-label}}'     => esc_html__( 'Quantity', 'linker-commerce' ),
+					'{{key}}'                => esc_attr( $key ),
+					'{{label}}'              => esc_attr( sprintf( /* translators: %s: product name. */ __( 'Quantity for %s', 'linker-commerce' ), $product->get_name() ) ),
+					'{{price}}'              => wp_kses_post( $product->get_price_html() ),
+					'{{remove-url}}'         => esc_url( wc_get_cart_remove_url( $key ) ),
+					'{{remove}}'             => esc_html__( 'Remove', 'linker-commerce' ),
+					'{{remove-description}}' => esc_attr( sprintf( /* translators: %s: product name. */ __( 'Remove %s from the solution draft', 'linker-commerce' ), $product->get_name() ) ),
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WooCommerce.Commenting.CommentHooks.HookCommentWrongStyle, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Woo's native cart link filter resolves the language twin.
-					'{{url}}'            => esc_url( (string) apply_filters( 'woocommerce_cart_item_permalink', $product->get_permalink(), $line, $key ) ),
+					'{{url}}'                => esc_url( (string) apply_filters( 'woocommerce_cart_item_permalink', $product->get_permalink(), $line, $key ) ),
 				)
 			);
 		}

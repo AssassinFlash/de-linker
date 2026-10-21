@@ -1,6 +1,6 @@
 # Populated drafts and Genie answer actions
 
-The owner supplied screenshots showing cramped draft summary actions, dark text on a purple button, and unstyled Genie product actions. The follow-up audits rendered states rather than treating page loads as sufficient evidence. Existing customer copy, price permissions, models, API handlers and submission behavior stay unchanged.
+The owner supplied screenshots showing cramped draft summary actions, dark text on a purple button, and unstyled Genie product actions. The follow-up audits rendered states rather than treating page loads as sufficient evidence. Existing customer copy, price permissions, models and backend API handlers stay unchanged. Inquiry submission waits for an in-flight draft edit.
 
 ## Presentation changes
 
@@ -16,3 +16,13 @@ Spec review found one defect: completed PartsCard actions inherited the busy cur
 ## Acceptance boundary
 
 Browser tests use the real local app with deterministic response fixtures for otherwise difficult error states. They intercept model/cart/save writes. Guest draft tests use native Woo quantity and page navigation, and an existing local staff session verifies priced-unit visibility. No account, inquiry or email is submitted. Production publication, real model product-card response and native draft readback are separately recorded in the adjacent local evidence package after deployment.
+
+## Inquiry continuation from the owner screenshot
+
+The inquiry summary had no explicit remove control, no product-link hover color, and no native notice target. LC now supplies the native Woo cart-form/contents/line/remove hooks and a notices wrapper; PHP supplies only native escaped remove URLs and already-translated Remove terms. Woo cart.js handles quantity, remove, undo, nonce validation, feedback and fragment readback. The separate main inquiry form is not replaced, preserving unsent message/name/email/consent.
+
+The hidden native proceed field returns the quantity POST to the checkout GET before rendering. This matters for German: the Woo update handler sets WOOCOMMERCE_CART during POST, so an immediate German LC fallback otherwise chooses the cart template. Native redirect avoids rendering in that transient context. No alternate cart API or custom writer was introduced.
+
+The existing account interaction script observes Woo's processing state, visibly disables the inquiry send action and rejects a submit event while the draft write is pending. A held-request browser fixture checks that no admin-post submission happens, and that sending re-enables after readback. Product links gain color/underline/focus; draft-page remove icons also receive visible 44px bordered controls.
+
+Staff price checks snapshot the existing local Woo session and persistent cart into a guarded local-only fixture option, then stop the page and restore inside nested finally blocks. Native cache deletion and strict row/meta readback precede snapshot cleanup. No production user session is changed by those tests.

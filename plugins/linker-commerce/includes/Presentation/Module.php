@@ -78,6 +78,12 @@ final class Module {
 		if ( ! $is_chain ) {
 			return;
 		}
+		if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+			// Native Woo draft updates replace only its form. The separate inquiry
+			// form keeps the customer's message/details while quantities, remove
+			// and undo follow Woo's nonce, validation, notices and readback.
+			wp_enqueue_script( 'wc-cart' );
+		}
 		$base = plugins_url( 'assets/', dirname( __DIR__, 2 ) . '/linker-commerce.php' );
 		// The register card initializes WooCommerce's selectWoo on its country
 		// field; the country-select script also carries that field's

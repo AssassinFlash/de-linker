@@ -1,6 +1,7 @@
 /** Filled drafts must inherit the same usable actions as the empty state. */
 import { expect, test } from '@playwright/test';
-import { instance, loginLink } from '../lib/instance';
+import { join } from 'node:path';
+import { instance, loginLink, REPO_ROOT, wp } from '../lib/instance';
 
 test.setTimeout(60_000);
 
@@ -86,15 +87,28 @@ for (const locale of ['en', 'de'] as const) {
 				.click();
 			await expect(page).toHaveURL(/\/(?:register|registrieren)\/$/);
 			// Existing local staff has approved price access; no account is created.
-			await page.goto(loginLink(instance().name, '857558227@qq.com'));
-			await page.goto(base + draft);
-			await expect(page.locator('.linker-login-box')).toHaveCount(0);
-			const priced = page
-				.locator('.cart_item')
-				.filter({ hasText: 'SAJ BU2-5.0-HV1' });
-			await expect(
-				priced.locator('.product-price .woocommerce-Price-amount')
-			).toBeVisible();
+			const fixture = join(
+				REPO_ROOT,
+				'tests/e2e/fixtures/draft-staff-session.php'
+			);
+			wp(['eval-file', fixture, 'snapshot']);
+			try {
+				await page.goto(loginLink(instance().name, '857558227@qq.com'));
+				await page.goto(base + draft);
+				await expect(page.locator('.linker-login-box')).toHaveCount(0);
+				const priced = page
+					.locator('.cart_item')
+					.filter({ hasText: 'SAJ BU2-5.0-HV1' });
+				await expect(
+					priced.locator('.product-price .woocommerce-Price-amount')
+				).toBeVisible();
+			} finally {
+				try {
+					await page.goto('about:blank');
+				} finally {
+					wp(['eval-file', fixture, 'restore']);
+				}
+			}
 		});
 	}
 }
