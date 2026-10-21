@@ -15,7 +15,7 @@
 2. **系列属性**：全局属性 `pa_series`，值来自注册表 family（如 goodwe-etr、saj-h2），每个商品一个值；配置器与 Genie 用它表达"系列"，不再有五套系列概念。
 3. **`data/compatibility.json`**：`{ "pairs": [ { "inverter": "<model pattern>", "battery": "<model pattern>", "verdict": "released|released_with_accessory|not_released", "conditions": ["…"], "documents": [{ "url": "…", "page": n }] } ] }`，由旧合同格子与 patterns 翻译而来；运行时用 pattern 匹配商品型号（`pa_model`）即时得出配对，不再有 relationships 投影。
 4. **`data/engineering-overlay.json`**：非商品元件（参考组件 `mat_trina_solar_tsm_460neg9r_28` 等约 3 条）的工程字段与引用；只供引擎用。
-5. **feed**：`GET /wp-json/linker/v1/engineering-feed`（匿名、只读、可缓存、按 `?since=` 增量）→ 每个已发布商品 `{ id, sku, model, brand, series, device_class, application, phase, figures{key:{value,unit,citation}}, documents[{url,title,type,lang}] }` + overlay + compatibility 版本号。`services/engine` 只读它。
+5. **feed**：`GET /wp-json/linker/v1/engineering-feed`（匿名、只读、可缓存、按 `?since=` 增量）→ 每个已发布商品 `{ id, sku, model, brand, series, device_class, application, phase, figures{key:{value,unit,citation}}, documents[{url,title,type,lang}] }` + overlay + `compatibility` 合同全量与版本号（`version` 与 `compatibility_version` 同值）。`services/engine` 只读它。
 
 ## 迁移脚本 `tools/migrate/8-engineering.py`
 - `plan`：对比每件商品现有图值与注册表/组件库，列出"补充/冲突/漂移"（已知 17 件漂移，以数据手册页为准逐件决定，决定写入 `docs/specs/8-decisions.md`）。
@@ -49,3 +49,4 @@
 
 - 2026-10-10（#8 实施）：逐件决定与来源见 `docs/specs/8-decisions.md`；feed 与旧 materials 的字段映射表见 `docs/specs/8-field-mapping.md`。规格的 19 键中 `mppt_max_current_a`/`mppt_max_isc_a` 是注册表 `max_input_current_per_mppt_a`/`max_isc_per_mppt_a` 的改名。overlay 实际为 1 条（Trina 460 参考组件；其余无绑定材料是已发布模块的组合或无规格占位，见 8-decisions §8）。数据文件落在 `plugins/linker-commerce/data/`（compatibility.json 248 对、engineering-overlay.json），feed 路由 `linker/v1/engineering-feed` 由 linker-commerce 提供。
 - 2026-10-11（#68）：`_linker_documents` 的后台维护入口（Documents meta box）落地：编辑标题/URL/类型/语言、删行、空行新增；只收本站 URL。入口只做维护，文档内容仍逐项确认。
+- 2026-10-21（#493）：feed 在版本号之外携带 `compatibility` 全量（`data/compatibility.json` 原对象）；引擎的 `sync-feed.py` 用同一次抓取把 `state/compatibility.json` 一并校验、原子换、失败保旧，合同变更不再人工 scp。合同文件不可读时该键缺席（feed 其余部分照常），引擎保留旧合同。`feed.schema.json` 把该键列为可选对象，合法性由引擎的 `Compatibility` 加载器判定；新引擎对键的有无都接受，部署顺序照旧先 services、后 site。

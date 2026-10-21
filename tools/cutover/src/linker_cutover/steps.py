@@ -941,7 +941,13 @@ def services(*, repository: Path, addresses: dict[str, str], run: bool) -> Resul
     After both publishes it runs `ops/activate.sh` there (venvs, the quality
     worker's unit, daemon-reload, restarts, every unit up), so a services
     deploy is this one step; the environments, the tokens and the engine's
-    feed stay host setup. Without `run` it reports the command lines instead.
+    data files — state/feed.json and state/compatibility.json, refreshed
+    nightly by linker-engine-feed-sync.timer — stay host setup. The site's
+    feed now carries the compatibility contract, so a contract change reaches
+    the engine through that timer, not through a hand copy. The timer runs the
+    stable copy /opt/linker-engine/ops/sync-feed.py, which this step does not
+    install: copy services/engine/ops/sync-feed.py there once when it changes.
+    Without `run` it reports the command lines instead.
     """
     actions: list[str] = []
     notes: list[str] = []

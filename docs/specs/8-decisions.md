@@ -137,7 +137,7 @@ EcoFlow OCEAN 2 三相 + 电池的 EF BD-JC-S2 接线盒只是多塔级联才需
 
 ## 9. feed 的实现决定（形状 = `services/engine/schemas/feed.schema.json`）
 
-- 顶层 `{schema_version: 1, generated_at, compatibility_version, products, overlay}`，`additionalProperties: false`；`compatibility_version` = compatibility.json 自述的 `version` 字段值（见 §6）。商品级无 `modified_gmt`（schema 拒绝；`?since=` 仍按 `post_modified_gmt` 服务端过滤）。
+- 顶层 `{schema_version: 1, generated_at, compatibility_version, compatibility, products, overlay}`（`compatibility` 为可选：合同本体随 feed 下发，读不到则缺省——#493），`additionalProperties: false`；`compatibility_version` = compatibility.json 自述的 `version` 字段值（见 §6）。商品级无 `modified_gmt`（schema 拒绝；`?since=` 仍按 `post_modified_gmt` 服务端过滤）。
 - 每件商品带 #7 SelectionFactSet 的五个事实 `ac_power_kw`/`pv_input_kw`/`usable_kwh`/`nominal_kwh`/`kwh_range`（`kwh_range` 无区间时为 `null`；`ac_apparent_kva` 不在 feed schema，不发送——#7 的 REST 路由仍提供它）。
 - `figures` 是对象（键 → 条目），**空集序列化为 `{}` 而非 `[]`**（PHP 空数组的 JSON 陷阱；构建处 `(object)` 强制）；只含带"我们托管 URL"引用的条目（验收"无引用的值不进 feed"），每条 `{value, unit, citation{url,page?}}`（存储侧的 `evidence_refs` 不进 feed）。
 - overlay 条目 `{id, kind: "pv_module", brand, model, figures, documents[{url,title,type,lang}]}`（无 series/device_class；lang 规则同 §5）。

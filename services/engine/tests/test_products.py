@@ -69,6 +69,14 @@ def test_a_feed_that_breaks_the_schema_is_refused() -> None:
         Products.from_feed(foreign)
 
 
+def test_a_feed_that_carries_the_compatibility_contract_is_accepted() -> None:
+    """#493: the nightly sync reads the contract from the same feed."""
+    feed = json.loads((FIXTURES / "feed.json").read_text())
+    feed["compatibility"] = json.loads((FIXTURES / "compatibility.json").read_text())
+    products = Products.from_feed(feed)
+    assert len(products.products) == 106
+
+
 def test_the_reference_module_comes_from_the_overlay(products: Products) -> None:
     module = products.module
     assert (module.model, module.pmax_w, module.isc_a, module.max_series_fuse_a) == (
