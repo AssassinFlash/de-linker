@@ -98,7 +98,9 @@ all-site live/local pixel-zero comparison.
 - Tools PHP unit:286 tests,2338 assertions. Real g521 resource integration:
   18 tests,251 assertions. The additional complete Tools real-WP integration run
   finished82 total tests/590 assertions/23 prerequisite skips with no failures.
-  PHPStan and WPCS passed. The real journal/native
+  CI mu-smoke explicitly runs the resource and shared-owner classes against its
+  bare native instance with synthetic release/loopback settings and intercepted
+  HTTP; no paid API or real mail is used. PHPStan and WPCS passed. The real journal/native
   fixtures cover bad/revoked proof before heavy decode, single dispatch,
   completed replay, crash ambiguity, trusted-context cleanup, free reads,
   no model cost for storage writes, same-input design success deduplication,
