@@ -1,0 +1,14 @@
+{
+  "startUrls": [
+    {
+      "url": "https://developers.cloudflare.com/cloudflare-challenges/concepts/clearance/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 1,
+  "saveMarkdown": true,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

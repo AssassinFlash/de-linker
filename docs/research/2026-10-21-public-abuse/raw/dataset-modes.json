@@ -1,0 +1,387 @@
+[
+  {
+    "url": "https://developers.cloudflare.com/turnstile/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/",
+      "loadedTime": "2026-10-21T14:38:26.457Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 123182,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/",
+      "title": "Overview · Cloudflare Turnstile docs",
+      "description": "Verify visitors are human with a CAPTCHA-free, privacy-preserving alternative.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Cloudflare Turnstile"
+        },
+        {
+          "property": "og:title",
+          "content": "Overview · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Verify visitors are human with a CAPTCHA-free, privacy-preserving alternative."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/turnstile/og.png?v=f32f2fffb8d054ed"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/turnstile/og.png?v=f32f2fffb8d054ed"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "@id": "https://developers.cloudflare.com/turnstile/#page",
+          "headline": "Cloudflare Turnstile",
+          "description": "Verify visitors are human with a CAPTCHA-free, privacy-preserving alternative.",
+          "url": "https://developers.cloudflare.com/turnstile/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/turnstile/og.png?v=f32f2fffb8d054ed",
+          "dateModified": "2026-08-14",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          },
+          "keywords": [
+            "Privacy"
+          ]
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e10186bb40e97b-EWR",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=3T55zACvAXgBzGCgCrCdF3Ma1bGrzBWImOnPCpB35ik-1792593506.3532152-1.0.1.1-IXEqu0LtQ_Wmk4A7urZNBjqNr0Wuyd9GkTEFY1Pbxy46k69jkvIC.Y7V4iPBz1EXi049biO08BAIzB3dyxyUXfDzFgbjbeTgfvz7ZCxI7QEF.IZrlbXrWJQU5ApmzY4TVLw6yjc74RSZ0_bMu0kr_lg2GIjwen1pmngr90RT.APFCuXdsY3bzbNIwC6D12sFpy4QR3zKKCXlicORv5IIAQ; report-to cf-uvgwyycpvbutuxzf",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:38:26 GMT",
+        "report-to": "{\"group\":\"cf-uvgwyycpvbutuxzf\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=3T55zACvAXgBzGCgCrCdF3Ma1bGrzBWImOnPCpB35ik-1792593506.3532152-1.0.1.1-IXEqu0LtQ_Wmk4A7urZNBjqNr0Wuyd9GkTEFY1Pbxy46k69jkvIC.Y7V4iPBz1EXi049biO08BAIzB3dyxyUXfDzFgbjbeTgfvz7ZCxI7QEF.IZrlbXrWJQU5ApmzY4TVLw6yjc74RSZ0_bMu0kr_lg2GIjwen1pmngr90RT.APFCuXdsY3bzbNIwC6D12sFpy4QR3zKKCXlicORv5IIAQ\"}]}",
+        "reporting-endpoints": "cf-uvgwyycpvbutuxzf=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=3T55zACvAXgBzGCgCrCdF3Ma1bGrzBWImOnPCpB35ik-1792593506.3532152-1.0.1.1-IXEqu0LtQ_Wmk4A7urZNBjqNr0Wuyd9GkTEFY1Pbxy46k69jkvIC.Y7V4iPBz1EXi049biO08BAIzB3dyxyUXfDzFgbjbeTgfvz7ZCxI7QEF.IZrlbXrWJQU5ApmzY4TVLw6yjc74RSZ0_bMu0kr_lg2GIjwen1pmngr90RT.APFCuXdsY3bzbNIwC6D12sFpy4QR3zKKCXlicORv5IIAQ\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=11,cfOrigin;dur=0,cfWorker;dur=7",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=oUc50.9w8s3h2Xn4LYwAuWu56EzPaj14_7Hoch1cT08-1792593506.3532152-1.0.1.1-AtLcS95PQmBJb29r0jGr2H.Z2o73lBFtfGEzlR1ZGXTj4FGBq.oqyoX8EnhX95lVx7z6v8ewBcknS.rDrG0c74WVAwbAZKIb_SZCypFSS1VZzA8CmSrADJPFUz42sHUo; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:08:26 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Overview · Cloudflare Turnstile docs\nCloudflare's smart CAPTCHA alternative.\nTurnstile can be embedded into any website without sending traffic through Cloudflare and works without showing visitors a CAPTCHA.\nCloudflare issues challenges through the Challenge Platform, which is the same underlying technology powering Turnstile.\nIn contrast to our Challenge page offerings, Turnstile allows you to run challenges anywhere on your site in a less-intrusive way without requiring the use of Cloudflare's CDN.\nTurnstile adapts the challenge outcome to the individual visitor or browser. First, we run a series of small non-interactive JavaScript challenges to gather signals about the visitor or browser environment.\nThese challenges include proof-of-work (computational puzzles), proof-of-space, probing for web APIs, and various other challenges for detecting browser-quirks and human behavior. As a result, we can fine-tune the difficulty of the challenge to the specific request and avoid showing a visual or interactive puzzle to a user.\nTurnstile performs client-side security challenges on behalf of the website operator to distinguish human visitors from automated traffic. To do so, Turnstile processes only the data strictly necessary to provide this security function. Turnstile does not access, store, or transmit user communications, form entries, or other page inputs.\nTurnstile widget types include:\nManaged (recommended): Automatically decides whether to show a checkbox based on visitor risk level.\nNon-interactive: Visitors never need to interact with the widget.\nInvisible: The widget is completely hidden from the visitor.\nTurnstile is WCAG 2.2 AA compliant.\nPre-clearance\nIntegrate Cloudflare challenges on single-page applications (SPAs) by allowing Turnstile to issue a Pre-Clearance cookie.\nBots\nCloudflare bot solutions identify and mitigate automated traffic to protect your domain from bad bots.\nDDoS Protection\nDetect and mitigate Distributed Denial of Service (DDoS) attacks using Cloudflare's Autonomous Edge.\nWAF\nGet automatic protection from vulnerabilities and the flexibility to create custom rules.\nPlans\nLearn more about Turnstile's plan availability.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Overview · Cloudflare Turnstile docs\n\nCloudflare's smart CAPTCHA alternative.\n\nTurnstile can be embedded into any website without sending traffic through Cloudflare and works without showing visitors a CAPTCHA.\n\nCloudflare issues challenges through the [Challenge Platform](https://developers.cloudflare.com/cloudflare-challenges/), which is the same underlying technology powering [Turnstile](https://developers.cloudflare.com/turnstile/).\n\nIn contrast to our Challenge page offerings, Turnstile allows you to run challenges anywhere on your site in a less-intrusive way without requiring the use of Cloudflare's CDN.\n\n![Turnstile Overview](https://developers.cloudflare.com/cdn-cgi/image/onerror=redirect,width=3757,height=2700,format=webp/_astro/turnstile-overview.BlA8uXVD.png)\n\nTurnstile adapts the challenge outcome to the individual visitor or browser. First, we run a series of small non-interactive JavaScript challenges to gather signals about the visitor or browser environment.\n\nThese challenges include proof-of-work (computational puzzles), proof-of-space, probing for web APIs, and various other challenges for detecting browser-quirks and human behavior. As a result, we can fine-tune the difficulty of the challenge to the specific request and avoid showing a visual or interactive puzzle to a user.\n\nTurnstile performs client-side security challenges on behalf of the website operator to distinguish human visitors from automated traffic. To do so, Turnstile processes only the data strictly necessary to provide this security function. Turnstile does not access, store, or transmit user communications, form entries, or other page inputs.\n\nTurnstile [widget types](https://developers.cloudflare.com/turnstile/concepts/widget/) include:\n\n*   **Managed** (recommended): Automatically decides whether to show a checkbox based on visitor risk level.\n*   **Non-interactive**: Visitors never need to interact with the widget.\n*   **Invisible**: The widget is completely hidden from the visitor.\n\n* * *\n\nTurnstile is WCAG 2.2 AA compliant.\n\n* * *\n\n[Pre-clearance](https://developers.cloudflare.com/cloudflare-challenges/concepts/clearance/#pre-clearance-support-in-turnstile)\n\nIntegrate Cloudflare challenges on single-page applications (SPAs) by allowing Turnstile to issue a Pre-Clearance cookie.\n\n* * *\n\n[Bots](https://developers.cloudflare.com/bots/)\n\nCloudflare bot solutions identify and mitigate automated traffic to protect your domain from bad bots.\n\n[DDoS Protection](https://developers.cloudflare.com/ddos-protection/)\n\nDetect and mitigate Distributed Denial of Service (DDoS) attacks using Cloudflare's Autonomous Edge.\n\n[WAF](https://developers.cloudflare.com/waf/)\n\nGet automatic protection from vulnerabilities and the flexibility to create custom rules.\n\n* * *\n\n### [Plans](https://developers.cloudflare.com/turnstile/plans/)\n\nLearn more about Turnstile's plan availability.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/",
+      "loadedTime": "2026-10-21T14:38:26.506Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 206310,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/",
+      "title": "Widget configurations · Cloudflare Turnstile docs",
+      "description": "Configure widget appearance, language, and callback functions.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Widget configurations"
+        },
+        {
+          "property": "og:title",
+          "content": "Widget configurations · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Configure widget appearance, language, and callback functions."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/og.png?v=200be8a9b419a2f9"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/og.png?v=200be8a9b419a2f9"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          "@id": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/#page",
+          "headline": "Widget configurations",
+          "description": "Configure widget appearance, language, and callback functions.",
+          "url": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/og.png?v=200be8a9b419a2f9",
+          "dateModified": "2026-06-28",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          },
+          "keywords": [
+            "JavaScript"
+          ]
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e10186ba37f833-ORD",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=DNzpz43Oko_JS5MICIWnlupXgpPWnCrzAA0OUZ31cJc-1792593506.3605998-1.0.1.1-oLrkT9OMZgZyeiLocc5.b5mTx8xUwL1NkD7CqcErbWaCS3uU2XJe86vyrxjolzxnhnzXwdUwP7GvBmbcVVibPHr4eWeLjkwRasQ2OSF4yA_DGqLAbMxLjrN5RP_T_kTtDPDLXElFEYfH9KzzB0rqBYRQ2Krwa.N9NaXF2dL2Yzx_6DdeEjA0dp0bkqJiyGfoMcrwnezRei.ZRMW30mdelg; report-to cf-vtwsganohdtomhjr",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:38:26 GMT",
+        "report-to": "{\"group\":\"cf-vtwsganohdtomhjr\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=DNzpz43Oko_JS5MICIWnlupXgpPWnCrzAA0OUZ31cJc-1792593506.3605998-1.0.1.1-oLrkT9OMZgZyeiLocc5.b5mTx8xUwL1NkD7CqcErbWaCS3uU2XJe86vyrxjolzxnhnzXwdUwP7GvBmbcVVibPHr4eWeLjkwRasQ2OSF4yA_DGqLAbMxLjrN5RP_T_kTtDPDLXElFEYfH9KzzB0rqBYRQ2Krwa.N9NaXF2dL2Yzx_6DdeEjA0dp0bkqJiyGfoMcrwnezRei.ZRMW30mdelg\"}]}",
+        "reporting-endpoints": "cf-vtwsganohdtomhjr=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=DNzpz43Oko_JS5MICIWnlupXgpPWnCrzAA0OUZ31cJc-1792593506.3605998-1.0.1.1-oLrkT9OMZgZyeiLocc5.b5mTx8xUwL1NkD7CqcErbWaCS3uU2XJe86vyrxjolzxnhnzXwdUwP7GvBmbcVVibPHr4eWeLjkwRasQ2OSF4yA_DGqLAbMxLjrN5RP_T_kTtDPDLXElFEYfH9KzzB0rqBYRQ2Krwa.N9NaXF2dL2Yzx_6DdeEjA0dp0bkqJiyGfoMcrwnezRei.ZRMW30mdelg\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=22,cfOrigin;dur=0,cfWorker;dur=13",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=INdZyba0TSKqXLniVneI3MVGHGtN27SbHTIOurksqCE-1792593506.3605998-1.0.1.1-g.I6iVWOMuPziv3o2LChUDfeIbkHU2aLe.ycyBLjEA2.gXjsGGRG4IGkgsGiIS_H6C.qI9egHLJd9Wbxm454WfuPLbnno7SEBR0HG6owB5GZFvVu8121WHDMZQUqMm_Q; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:08:26 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Widget configurations · Cloudflare Turnstile docs\nConfigure your Turnstile widget's appearance, behavior, and functionality using data attributes or JavaScript render parameters.\nTurnstile widgets can be implemented using implicit or explicit rendering.\nImplicit rendering automatically scans your HTML for elements with the cf-turnstile class and renders the widget when the page loads. It is best used for simple implementations, static websites, or when you want widgets to appear immediately on page load.\nHow it works\nAdd the Turnstile script to your page.\nInclude <div class=\"cf-turnstile\" data-sitekey=\"your-key\"></div> elements.\nWidgets will render automatically when the page loads.\nConfigure the widget using data-* attributes on the HTML element.\nExamplehtml\n<script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js\" async defer></script> <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-theme=\"light\"></div>\nExplicit rendering gives you programmatic control over when and how widgets are created using JavaScript functions. It is best used for dynamic websites and single-page applications (SPAs), when you need to control timing of widget creation, conditional rendering based on visitor interactions, or for multiple widgets with different configurations.\nHow it works\nAdd the Turnstile script with ?render=explicit parameter.\nCreate container elements (without the cf-turnstile class).\nCall turnstile.render() function when you want to create widgets.\nConfigure the widget using JavaScript object parameters.\nExamplehtml\n<script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit\" defer></script> <div id=\"my-widget\"></div> <script> window.onload = function() { turnstile.render('#my-widget', { sitekey: '<YOUR-SITE-KEY>', theme: 'light', callback: function(token) { console.log('Success:', token); } }); }; </script>\nThe Turnstile widget can have two different fixed sizes or a flexible width size when using the Managed or Non-Interactive modes.\nSize Width Height Use case \nNormal\t300px\t65px\tStandard implementation\t\nFlexible\t100% (min: 300px)\t65px\tResponsive design\t\nCompact\t150px\t140px\tSpace-constrained layouts\t\nnormal: The default size works well for most desktop and mobile layouts. Use this if you have adequate horizontal space on your website or form.\nflexible: Automatically adapts to the container width while maintaining minimum usability. Use this for responsive designs that need to work across all screen sizes.\ncompact: Ideal for mobile interfaces, sidebars, or any space where horizontal space is limited. The compact widget is taller than normal to accommodate the smaller width.\nNormal size (default)html\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\nFlexible sizehtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-size=\"flexible\"></div>\nCompact sizehtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-size=\"compact\"></div>\nNormal size (default)js\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>' });\nFlexible sizejs\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>', size: 'flexible' });\nCompact sizejs\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>', size: 'compact' });\nCustomize the widget's visual appearance to match your website's design.\nauto (default): Automatically matches the visitor's system theme preference. Auto is recommended for most implementations as it respects the visitor's preferences and provides the best accessibility experience.\nlight: Light theme with bright colors and clear contrast. Light theme works best on bright backgrounds and provides high contrast for readability.\ndark: Dark theme optimized for dark interfaces. Dark theme is ideal for dark interfaces, gaming sites, or applications with dark color schemes.\nAuto theme (default)html\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\nLight themehtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-theme=\"light\"></div>\nDark themehtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-theme=\"dark\"></div>\nAuto theme (default)js\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>' });\nLight themejs\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>', theme: 'light' });\nDark themejs\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>', theme: 'dark' });\nControl when the widget becomes visible to visitors using the appearance mode.\nalways (default): The widget is always visible from page load. This is the best option for most implementations where you want your visitors to see the widget immediately as it provides clear visual feedback that security verification is in place.\nexecute: The widget only becomes visible after the challenge begins. This is useful for when you need to control the timing of widget appearance, such as showing it only when a visitor starts filling out a form or selecting a submit button.\ninteraction-only: The widget becomes visible only when visitor interaction is required and provides the cleanest visitor experience. Most visitors will never see the widget, but suspected bots will encounter the interactive challenge.\nAlways visible (default)html\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\nVisible only after challenge beginshtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-appearance=\"execute\"></div>\nVisible only when interaction is neededhtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-appearance=\"interaction-only\"></div>\nAlways visible (default)js\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>' });\nVisible only after challenge beginsjs\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>', appearance: 'execute' });\nVisible only when interaction is neededjs\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>', appearance: 'interaction-only' });\nControl when the challenge runs and a token is generated.\nrender (default): The challenge runs automatically after calling the render() function and provides immediate protection as soon as the widget loads. The challenge runs in the background while the page loads, ensuring the token is ready when the visitor submits data.\nexecute: The challenge runs after calling the turnstile.execute() function separately and gives you precise control over when verification occurs. This option is useful for multi-step forms, conditional verification, or when you want to defer the challenge until the visitor actually attempts to submit data. This can improve page load performance and visitor experience by only running verification when needed.\nCommon scenarios\nMulti-step forms: Run verification only on the final step.\nConditional protection: Only verify visitors who meet certain criteria.\nPerformance optimization: Defer verification to reduce initial page load time.\nUser-triggered verification: Let visitors manually start the verification process.\nAuto execution (default)html\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\nManual executionhtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-execution=\"execute\"></div>\nAuto execution (default)js\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>' });\nManual executionjs\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>', execution: 'execute' });\nExecute the challenge laterjs\nturnstile.execute('#widget-container');\nSet the language for the widget interface.\nauto (default): Uses the visitor's browser language preference.\nSpecific language codes: ISO 639-1 two-letter codes, such as es, fr, de.\nLanguage and region: Combined codes for regional variants, such as en-US, es-MX, pt-BR.\nAuto language (default)html\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\nSpecific languagehtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-language=\"es\"></div>\nLanguage and countryhtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-language=\"en-US\"></div>\nAuto language (default)js\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>' });\nSpecific languagejs\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>', language: 'es' });\nHandle widget events with callbacks.\ncallback: Triggered when the challenge is successfully completed.\nerror-callback: Triggered when an error occurs during the challenge.\nexpired-callback: Triggered when a token expires (before timeout).\ntimeout-callback: Triggered when an interactive challenge times out.\nThe success callback receives a token that must be validated on your server using the Siteverify API. Tokens are single-use and expire after 300 seconds (five minutes).\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-callback=\"onSuccess\" data-error-callback=\"onError\" data-expired-callback=\"onExpired\" data-timeout-callback=\"onTimeout\"></div> <script> function onSuccess(token) { console.log('Challenge Success:', token); } function onError(errorCode) { console.log('Challenge Error:', errorCode); } function onExpired() { console.log('Token expired'); } function onTimeout() { console.log('Challenge timed out'); } </script>\nturnstile.render('#widget-container', { sitekey: '<YOUR-SITE-KEY>', callback: function(token) { console.log('Challenge Success:', token); }, 'error-callback': function(errorCode) { console.log('Challenge Error:', errorCode); }, 'expired-callback': function() { console.log('Token expired'); }, 'timeout-callback': function() { console.log('Challenge timed out'); } });\nAlways implement the success callback to handle the token and proceed with form submission or next steps.\nUse error callbacks for graceful error handling and visitor feedback.\nMonitor expired tokens to refresh challenges before they become invalid.\nHandle timeouts to guide visitors through challenge resolution.\nControl how Turnstile handles failed challenges.\nauto (default): Automatically retries failed challenges. Auto retry provides better visitor experience by automatically recovering from temporary network issues or processing errors.\nnever: Disables automatic retry. This requires manual intervention and gives you full control over error handling in applications that need custom retry logic.\nretry-interval: Controls the time between retry attempts (default: 8000ms) and lets you balance between quick recovery and server load.\nAuto retry (default)html\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\nDisable retryhtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-retry=\"never\"></div>\nCustom retry interval (8000ms default)html\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-retry-interval=\"0000\"></div>\nControl how Turnstile handles token expiration and interactive timeouts.\nrefresh-expired: Controls behavior when tokens expire (auto, manual, never).\nrefresh-timeout: Controls behavior when interactive challenges timeout (auto, manual, never).\nauto refresh provides seamless visitor experience but uses more resources.\nmanual refresh gives visitors control but requires them to take action.\nnever refresh requires your application to handle all refresh logic.\nDifferent strategies can be used for token expiration versus interactive timeouts based on your visitor experience requirements.\nAuto refresh expired tokens (default)html\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\nManual refreshhtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-refresh-expired=\"manual\"></div>\nAuto refresh timeouts (default for Managed mode)html\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-refresh-timeout=\"auto\"></div>\nAdd custom identifiers and data to your challenges.\naction: A custom identifier for analytics and differentiation (maximum 32 characters).\ncData: Custom payload data returned during validation (maximum 255 characters).\nAction tracking: Differentiate between login, signup, contact forms, and more. in your analytics.\nVisitor context: Pass visitor IDs, session information, or other contextual data.\nA/B testing: Track different widget configurations or page variants.\nFraud detection: Include additional context for risk assessment.\nAdd custom action identifierhtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-action=\"login\"></div>\nAdd custom data payloadhtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-cdata=\"user-cdata\"></div>\nConfigure how Turnstile integrates with HTML forms.\nWhen enabled, Turnstile automatically creates a hidden <input> element with the verification token. This gets submitted along with your other form data, making server-side validation straightforward.\nresponse-field: Determines whether to create a hidden form field with the token (default: true)\nresponse-field-name: Custom name for the hidden form field (default: cf-turnstile-response)\nAutomatic form integration means that the token is included when the form is submitted, requiring no additional JavaScript.\nCustom field names helps avoid conflicts with existing form fields.\nDisabled response fields give you full control over token handling for complex form scenarios.\nCustom response field namehtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-response-field-name=\"turnstile-token\"></div>\nDisable response fieldhtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-response-field=\"false\"></div>\nJavaScript Render Parameters Data Attribute Description \nsitekey\tdata-sitekey\tEvery widget has a sitekey. This sitekey is associated with the corresponding widget configuration and is created upon the widget creation.\t\naction\tdata-action\tA customer value that can be used to differentiate widgets under the same sitekey in analytics and which is returned upon validation. This can only contain up to 32 alphanumeric characters including _ and -.\t\ncData\tdata-cdata\tA customer payload that can be used to attach customer data to the challenge throughout its issuance and which is returned upon validation. This can only contain up to 255 alphanumeric characters including _ and -.\t\ncallback\tdata-callback\tA JavaScript callback invoked upon success of the challenge. The callback is passed a token that can be validated.\t\nerror-callback\tdata-error-callback\tA JavaScript callback invoked when there is an error (e.g. network error or the challenge failed). Refer to Client-side errors.\t\nexecution\tdata-execution\tExecution controls when to obtain the token of the widget and can be on render (default) or on execute. Refer to Execution Modes for more information.\t\nexpired-callback\tdata-expired-callback\tA JavaScript callback invoked when the token expires and does not reset the widget.\t\nbefore-interactive-callback\tdata-before-interactive-callback\tA JavaScript callback invoked before the challenge enters interactive mode.\t\nafter-interactive-callback\tdata-after-interactive-callback\tA JavaScript callback invoked when challenge has left interactive mode.\t\nunsupported-callback\tdata-unsupported-callback\tA JavaScript callback invoked when a given client/browser is not supported by Turnstile.\t\ntheme\tdata-theme\tThe widget theme. Can take the following values: light, dark, auto. \nThe default is auto, which respects the visitor preference. This can be forced to light or dark by setting the theme accordingly.\n\t\nlanguage\tdata-language\tLanguage to display, must be either: auto (default) to use the language that the visitor has chosen, or an ISO 639-1 two-letter language code (e.g. en) or language and country code (e.g. en-US). Refer to the list of supported languages for more information.\t\ntabindex\tdata-tabindex\tThe tabindex of Turnstile's iframe for accessibility purposes. The default value is 0.\t\ntimeout-callback\tdata-timeout-callback\tA JavaScript callback invoked when the challenge presents an interactive challenge but was not solved within a given time. A callback will reset the widget to allow a visitor to solve the challenge again.\t\nresponse-field\tdata-response-field\tA boolean that controls if an input element with the response token is created, defaults to true.\t\nresponse-field-name\tdata-response-field-name\tName of the input element, defaults to cf-turnstile-response.\t\nsize\tdata-size\tThe widget size. Can take the following values: normal, flexible, compact.\t\nretry\tdata-retry\tControls whether the widget should automatically retry to obtain a token if it did not succeed. The default is auto, which will retry automatically. This can be set to never to disable retry on failure.\t\nretry-interval\tdata-retry-interval\tWhen retry is set to auto, retry-interval controls the time between retry attempts in milliseconds. Value must be a positive integer less than 900000, defaults to 8000.\t\nrefresh-expired\tdata-refresh-expired\tAutomatically refreshes the token when it expires. Can take auto, manual, or never, defaults to auto.\t\nrefresh-timeout\tdata-refresh-timeout\tControls whether the widget should automatically refresh upon entering an interactive challenge and observing a timeout. Can take auto (automatically refreshes upon encountering an interactive timeout), manual (prompts the visitor to manually refresh) or never (will show a timeout), defaults to auto. Only applies to widgets of Managed mode.\t\nappearance\tdata-appearance\tAppearance controls when the widget is visible. It can be always (default), execute, or interaction-only. Refer to Appearance modes for more information.\t\nfeedback-enabled\tdata-feedback-enabled\tAllows Cloudflare to gather visitor feedback upon widget failure. It can be true (default) or false.\t\nofflabel-show-privacy\tdata-offlabel-show-privacy\tDisplays privacy link for unbranded Turnstile widgets. Can be true (default) or false.\t\nofflabel-show-help\tdata-offlabel-show-help\tDisplays help link for unbranded Turnstile widgets. Can be true (default) or false.\t\nResponsive design widgethtml\n<div style=\"max-width: 500px;\"> <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-size=\"flexible\" data-theme=\"auto\"></div> </div>\nMobile-optimized compact widgethtml\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-size=\"compact\" data-theme=\"light\" data-language=\"en\"> </div>",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Widget configurations · Cloudflare Turnstile docs\n\nConfigure your Turnstile widget's appearance, behavior, and functionality using data attributes or JavaScript render parameters.\n\nTurnstile widgets can be implemented using implicit or explicit rendering.\n\nImplicit rendering automatically scans your HTML for elements with the `cf-turnstile` class and renders the widget when the page loads. It is best used for simple implementations, static websites, or when you want widgets to appear immediately on page load.\n\n**How it works**\n\n1.  Add the Turnstile script to your page.\n2.  Include `<div class=\"cf-turnstile\" data-sitekey=\"your-key\"></div>` elements.\n3.  Widgets will render automatically when the page loads.\n4.  Configure the widget using `data-*` attributes on the HTML element.\n\nExamplehtml\n\n```\n\t<script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js\" async defer></script>\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-theme=\"light\"></div>\n```\n\nExplicit rendering gives you programmatic control over when and how widgets are created using JavaScript functions. It is best used for dynamic websites and single-page applications (SPAs), when you need to control timing of widget creation, conditional rendering based on visitor interactions, or for multiple widgets with different configurations.\n\n**How it works**\n\n1.  Add the Turnstile script with `?render=explicit` parameter.\n2.  Create container elements (without the `cf-turnstile` class).\n3.  Call `turnstile.render()` function when you want to create widgets.\n4.  Configure the widget using JavaScript object parameters.\n\nExamplehtml\n\n```\n\t<script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit\" defer></script>\n\t<div id=\"my-widget\"></div>\n\t\n\t<script>\n\twindow.onload = function() {\n\t\tturnstile.render('#my-widget', {\n\t\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\t\ttheme: 'light',\n\t\t\tcallback: function(token) {\n\t\t\t\tconsole.log('Success:', token);\n\t\t\t}\n\t\t});\n\t};\n\t</script>\n```\n\n* * *\n\nThe Turnstile widget can have two different fixed sizes or a flexible width size when using the Managed or Non-Interactive modes.\n\n| Size | Width | Height | Use case |\n| --- | --- | --- | --- |\n| Normal | 300px | 65px | Standard implementation |\n| Flexible | 100% (min: 300px) | 65px | Responsive design |\n| Compact | 150px | 140px | Space-constrained layouts |\n\n*   `normal`: The default size works well for most desktop and mobile layouts. Use this if you have adequate horizontal space on your website or form.\n*   `flexible`: Automatically adapts to the container width while maintaining minimum usability. Use this for responsive designs that need to work across all screen sizes.\n*   `compact`: Ideal for mobile interfaces, sidebars, or any space where horizontal space is limited. The compact widget is taller than normal to accommodate the smaller width.\n\nNormal size (default)html\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n```\n\nFlexible sizehtml\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-size=\"flexible\"></div>\n```\n\nCompact sizehtml\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-size=\"compact\"></div>\n```\n\nNormal size (default)js\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>'\n\t});\n```\n\nFlexible sizejs\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\tsize: 'flexible'\n\t});\n```\n\nCompact sizejs\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\tsize: 'compact'\n\t});\n```\n\n* * *\n\nCustomize the widget's visual appearance to match your website's design.\n\n*   `auto` (default): Automatically matches the visitor's system theme preference. Auto is recommended for most implementations as it respects the visitor's preferences and provides the best accessibility experience.\n*   `light`: Light theme with bright colors and clear contrast. Light theme works best on bright backgrounds and provides high contrast for readability.\n*   `dark`: Dark theme optimized for dark interfaces. Dark theme is ideal for dark interfaces, gaming sites, or applications with dark color schemes.\n\nAuto theme (default)html\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n```\n\nLight themehtml\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-theme=\"light\"></div>\n```\n\nDark themehtml\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-theme=\"dark\"></div>\n```\n\nAuto theme (default)js\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>'\n\t});\n```\n\nLight themejs\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\ttheme: 'light'\n\t});\n```\n\nDark themejs\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\ttheme: 'dark'\n\t});\n```\n\n* * *\n\nControl when the widget becomes visible to visitors using the appearance mode.\n\n*   `always` (default): The widget is always visible from page load. This is the best option for most implementations where you want your visitors to see the widget immediately as it provides clear visual feedback that security verification is in place.\n*   `execute`: The widget only becomes visible after the challenge begins. This is useful for when you need to control the timing of widget appearance, such as showing it only when a visitor starts filling out a form or selecting a submit button.\n*   `interaction-only`: The widget becomes visible only when visitor interaction is required and provides the cleanest visitor experience. Most visitors will never see the widget, but suspected bots will encounter the interactive challenge.\n\nAlways visible (default)html\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n```\n\nVisible only after challenge beginshtml\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-appearance=\"execute\"></div>\n```\n\nVisible only when interaction is neededhtml\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-appearance=\"interaction-only\"></div>\n```\n\nAlways visible (default)js\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>'\n\t});\n```\n\nVisible only after challenge beginsjs\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\tappearance: 'execute'\n\t});\n```\n\nVisible only when interaction is neededjs\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\tappearance: 'interaction-only'\n\t});\n```\n\n* * *\n\nControl when the challenge runs and a token is generated.\n\n*   `render` (default): The challenge runs automatically after calling the `render()` function and provides immediate protection as soon as the widget loads. The challenge runs in the background while the page loads, ensuring the token is ready when the visitor submits data.\n    \n*   `execute`: The challenge runs after calling the `turnstile.execute()` function separately and gives you precise control over when verification occurs. This option is useful for multi-step forms, conditional verification, or when you want to defer the challenge until the visitor actually attempts to submit data. This can improve page load performance and visitor experience by only running verification when needed.\n    \n    **Common scenarios**\n    \n    *   Multi-step forms: Run verification only on the final step.\n    *   Conditional protection: Only verify visitors who meet certain criteria.\n    *   Performance optimization: Defer verification to reduce initial page load time.\n    *   User-triggered verification: Let visitors manually start the verification process.\n\nAuto execution (default)html\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n```\n\nManual executionhtml\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-execution=\"execute\"></div>\n```\n\nAuto execution (default)js\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>'\n\t});\n```\n\nManual executionjs\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\texecution: 'execute'\n\t});\n```\n\nExecute the challenge laterjs\n\n```\n\tturnstile.execute('#widget-container');\n```\n\n* * *\n\nSet the language for the widget interface.\n\n*   `auto` (default): Uses the visitor's browser language preference.\n*   Specific language codes: ISO 639-1 two-letter codes, such as `es`, `fr`, `de`.\n*   Language and region: Combined codes for regional variants, such as `en-US`, `es-MX`, `pt-BR`.\n\nAuto language (default)html\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n```\n\nSpecific languagehtml\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-language=\"es\"></div>\n```\n\nLanguage and countryhtml\n\n```\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-language=\"en-US\"></div>\n```\n\nAuto language (default)js\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>'\n\t});\n```\n\nSpecific languagejs\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\tlanguage: 'es'\n\t});\n```\n\n* * *\n\nHandle widget events with callbacks.\n\n*   `callback`: Triggered when the challenge is successfully completed.\n*   `error-callback`: Triggered when an error occurs during the challenge.\n*   `expired-callback`: Triggered when a token expires (before timeout).\n*   `timeout-callback`: Triggered when an interactive challenge times out.\n\nThe success callback receives a token that must be validated on your server using the Siteverify API. Tokens are single-use and expire after 300 seconds (five minutes).\n\n```\n\t<div class=\"cf-turnstile\"\n\t\tdata-sitekey=\"<YOUR-SITE-KEY>\"\n\t\tdata-callback=\"onSuccess\"\n\t\tdata-error-callback=\"onError\"\n\t\tdata-expired-callback=\"onExpired\"\n\t\tdata-timeout-callback=\"onTimeout\"></div>\n\t<script>\n\tfunction onSuccess(token) {\n\tconsole.log('Challenge Success:', token);\n\t}\n\tfunction onError(errorCode) {\n\tconsole.log('Challenge Error:', errorCode);\n\t}\n\tfunction onExpired() {\n\tconsole.log('Token expired');\n\t}\n\tfunction onTimeout() {\n\tconsole.log('Challenge timed out');\n\t}\n\t</script>\n```\n\n```\n\tturnstile.render('#widget-container', {\n\t\tsitekey: '<YOUR-SITE-KEY>',\n\t\tcallback: function(token) {\n\t\t\tconsole.log('Challenge Success:', token);\n\t\t},\n\t\t'error-callback': function(errorCode) {\n\t\t\tconsole.log('Challenge Error:', errorCode);\n\t\t},\n\t\t'expired-callback': function() {\n\t\t\tconsole.log('Token expired');\n\t\t},\n\t\t'timeout-callback': function() {\n\t\t\tconsole.log('Challenge timed out');\n\t\t}\n\t});\n```\n\n*   Always implement the success callback to handle the token and proceed with form submission or next steps.\n*   Use error callbacks for graceful error handling and visitor feedback.\n*   Monitor expired tokens to refresh challenges before they become invalid.\n*   Handle timeouts to guide visitors through challenge resolution.\n\n* * *\n\nControl how Turnstile handles failed challenges.\n\n*   `auto` (default): Automatically retries failed challenges. Auto retry provides better visitor experience by automatically recovering from temporary network issues or processing errors.\n*   `never`: Disables automatic retry. This requires manual intervention and gives you full control over error handling in applications that need custom retry logic.\n*   `retry-interval`: Controls the time between retry attempts (default: 8000ms) and lets you balance between quick recovery and server load.\n\nAuto retry (default)html\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n```\n\nDisable retryhtml\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-retry=\"never\"></div>\n```\n\nCustom retry interval (8000ms default)html\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-retry-interval=\"0000\"></div>\n```\n\nControl how Turnstile handles token expiration and interactive timeouts.\n\n*   `refresh-expired`: Controls behavior when tokens expire (`auto`, `manual`, `never`).\n*   `refresh-timeout`: Controls behavior when interactive challenges timeout (`auto`, `manual`, `never`).\n\n*   `auto` refresh provides seamless visitor experience but uses more resources.\n*   `manual` refresh gives visitors control but requires them to take action.\n*   `never` refresh requires your application to handle all refresh logic.\n\nDifferent strategies can be used for token expiration versus interactive timeouts based on your visitor experience requirements.\n\nAuto refresh expired tokens (default)html\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n```\n\nManual refreshhtml\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-refresh-expired=\"manual\"></div>\n```\n\nAuto refresh timeouts (default for Managed mode)html\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-refresh-timeout=\"auto\"></div>\n```\n\nAdd custom identifiers and data to your challenges.\n\n*   `action`: A custom identifier for analytics and differentiation (maximum 32 characters).\n*   `cData`: Custom payload data returned during validation (maximum 255 characters).\n\n*   Action tracking: Differentiate between login, signup, contact forms, and more. in your analytics.\n*   Visitor context: Pass visitor IDs, session information, or other contextual data.\n*   A/B testing: Track different widget configurations or page variants.\n*   Fraud detection: Include additional context for risk assessment.\n\nAdd custom action identifierhtml\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-action=\"login\"></div>\n```\n\nAdd custom data payloadhtml\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-cdata=\"user-cdata\"></div>\n```\n\nConfigure how Turnstile integrates with HTML forms.\n\nWhen enabled, Turnstile automatically creates a hidden `<input>` element with the verification token. This gets submitted along with your other form data, making server-side validation straightforward.\n\n*   `response-field`: Determines whether to create a hidden form field with the token (`default: true`)\n*   `response-field-name`: Custom name for the hidden form field (`default: cf-turnstile-response`)\n\n*   Automatic form integration means that the token is included when the form is submitted, requiring no additional JavaScript.\n*   Custom field names helps avoid conflicts with existing form fields.\n*   Disabled response fields give you full control over token handling for complex form scenarios.\n\nCustom response field namehtml\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-response-field-name=\"turnstile-token\"></div>\n```\n\nDisable response fieldhtml\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-response-field=\"false\"></div>\n```\n\n* * *\n\n| JavaScript Render Parameters | Data Attribute | Description |\n| --- | --- | --- |\n| `sitekey` | `data-sitekey` | Every widget has a sitekey. This sitekey is associated with the corresponding widget configuration and is created upon the widget creation. |\n| `action` | `data-action` | A customer value that can be used to differentiate widgets under the same sitekey in analytics and which is returned upon validation. This can only contain up to 32 alphanumeric characters including `_` and `-`. |\n| `cData` | `data-cdata` | A customer payload that can be used to attach customer data to the challenge throughout its issuance and which is returned upon validation. This can only contain up to 255 alphanumeric characters including `_` and `-`. |\n| `callback` | `data-callback` | A JavaScript callback invoked upon success of the challenge. The callback is passed a token that can be validated. |\n| `error-callback` | `data-error-callback` | A JavaScript callback invoked when there is an error (e.g. network error or the challenge failed). Refer to [Client-side errors](https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/). |\n| `execution` | `data-execution` | Execution controls when to obtain the token of the widget and can be on `render` (default) or on `execute`. Refer to [Execution Modes](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/#execution-modes) for more information. |\n| `expired-callback` | `data-expired-callback` | A JavaScript callback invoked when the token expires and does not reset the widget. |\n| `before-interactive-callback` | `data-before-interactive-callback` | A JavaScript callback invoked before the challenge enters interactive mode. |\n| `after-interactive-callback` | `data-after-interactive-callback` | A JavaScript callback invoked when challenge has left interactive mode. |\n| `unsupported-callback` | `data-unsupported-callback` | A JavaScript callback invoked when a given client/browser is not supported by Turnstile. |\n| `theme` | `data-theme` | The widget theme. Can take the following values: `light`, `dark`, `auto`.<br><br>The default is `auto`, which respects the visitor preference. This can be forced to light or dark by setting the theme accordingly. |\n| `language` | `data-language` | Language to display, must be either: `auto` (default) to use the language that the visitor has chosen, or an ISO 639-1 two-letter language code (e.g. `en`) or language and country code (e.g. `en-US`). Refer to the [list of supported languages](https://developers.cloudflare.com/turnstile/reference/supported-languages/) for more information. |\n| `tabindex` | `data-tabindex` | The tabindex of Turnstile's iframe for accessibility purposes. The default value is `0`. |\n| `timeout-callback` | `data-timeout-callback` | A JavaScript callback invoked when the challenge presents an interactive challenge but was not solved within a given time. A callback will reset the widget to allow a visitor to solve the challenge again. |\n| `response-field` | `data-response-field` | A boolean that controls if an input element with the response token is created, defaults to `true`. |\n| `response-field-name` | `data-response-field-name` | Name of the input element, defaults to `cf-turnstile-response`. |\n| `size` | `data-size` | The widget size. Can take the following values: `normal`, `flexible`, `compact`. |\n| `retry` | `data-retry` | Controls whether the widget should automatically retry to obtain a token if it did not succeed. The default is `auto`, which will retry automatically. This can be set to `never` to disable retry on failure. |\n| `retry-interval` | `data-retry-interval` | When `retry` is set to `auto`, `retry-interval` controls the time between retry attempts in milliseconds. Value must be a positive integer less than `900000`, defaults to `8000`. |\n| `refresh-expired` | `data-refresh-expired` | Automatically refreshes the token when it expires. Can take `auto`, `manual`, or `never`, defaults to `auto`. |\n| `refresh-timeout` | `data-refresh-timeout` | Controls whether the widget should automatically refresh upon entering an interactive challenge and observing a timeout. Can take `auto` (automatically refreshes upon encountering an interactive timeout), `manual` (prompts the visitor to manually refresh) or `never` (will show a timeout), defaults to `auto`. Only applies to widgets of Managed mode. |\n| `appearance` | `data-appearance` | Appearance controls when the widget is visible. It can be `always` (default), `execute`, or `interaction-only`. Refer to [Appearance modes](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/#appearance-modes) for more information. |\n| `feedback-enabled` | `data-feedback-enabled` | Allows Cloudflare to gather visitor feedback upon widget failure. It can be `true` (default) or `false`. |\n| `offlabel-show-privacy` | `data-offlabel-show-privacy` | Displays privacy link for unbranded Turnstile widgets. Can be `true` (default) or `false`. |\n| `offlabel-show-help` | `data-offlabel-show-help` | Displays help link for unbranded Turnstile widgets. Can be `true` (default) or `false`. |\n\nResponsive design widgethtml\n\n```\n<div style=\"max-width: 500px;\">\n  <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-size=\"flexible\" data-theme=\"auto\"></div>\n</div>\n```\n\nMobile-optimized compact widgethtml\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-size=\"compact\" data-theme=\"light\" data-language=\"en\">\n</div>\n```",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.cloudflare.com/turnstile/additional-configuration/pre-clearance-support/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/additional-configuration/pre-clearance-support/",
+      "loadedTime": "2026-10-21T14:38:27.390Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/additional-configuration/pre-clearance-support/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 93528,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/additional-configuration/pre-clearance-support/",
+      "title": "Pre-clearance support · Cloudflare Turnstile docs",
+      "description": "Issue clearance cookies to reduce repeated challenges for valid visitors.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Pre-clearance support"
+        },
+        {
+          "property": "og:title",
+          "content": "Pre-clearance support · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Issue clearance cookies to reduce repeated challenges for valid visitors."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/additional-configuration/pre-clearance-support/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/og-docs.png"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/og-docs.png"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e1018c6d594692-DFW",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=YNitkGcC.hWYCubKB8auV225p9mDcwNbdb0Rqn73hKQ-1792593507.2662299-1.0.1.1-hOcrz5lgmOD4FAVBVYamTcvv_5uHyzLKtKIaFriX0zYsdPgffUemUjorctMHOM8UsRt5q1_aFoS0Bt_idzVPzhw5h7ZWtRomAX._EjQ4UUkmBk9fdxkFzcJv5R5M8imU0Xo1tIHHkvi85f2d2hMVxAKRk5v3b9UDe0Eebf1G_yrrp4B.87WCaQoI_2TBWPJOg8x7HKXWMciPcYo.PzaQ9A; report-to cf-detqieurktmaatfd",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:38:27 GMT",
+        "report-to": "{\"group\":\"cf-detqieurktmaatfd\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=YNitkGcC.hWYCubKB8auV225p9mDcwNbdb0Rqn73hKQ-1792593507.2662299-1.0.1.1-hOcrz5lgmOD4FAVBVYamTcvv_5uHyzLKtKIaFriX0zYsdPgffUemUjorctMHOM8UsRt5q1_aFoS0Bt_idzVPzhw5h7ZWtRomAX._EjQ4UUkmBk9fdxkFzcJv5R5M8imU0Xo1tIHHkvi85f2d2hMVxAKRk5v3b9UDe0Eebf1G_yrrp4B.87WCaQoI_2TBWPJOg8x7HKXWMciPcYo.PzaQ9A\"}]}",
+        "reporting-endpoints": "cf-detqieurktmaatfd=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=YNitkGcC.hWYCubKB8auV225p9mDcwNbdb0Rqn73hKQ-1792593507.2662299-1.0.1.1-hOcrz5lgmOD4FAVBVYamTcvv_5uHyzLKtKIaFriX0zYsdPgffUemUjorctMHOM8UsRt5q1_aFoS0Bt_idzVPzhw5h7ZWtRomAX._EjQ4UUkmBk9fdxkFzcJv5R5M8imU0Xo1tIHHkvi85f2d2hMVxAKRk5v3b9UDe0Eebf1G_yrrp4B.87WCaQoI_2TBWPJOg8x7HKXWMciPcYo.PzaQ9A\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=41,cfOrigin;dur=0,cfWorker;dur=20",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=EYnuMi78bmp47TuradSLZ6TT2HviNpCffc4C3eKDaS8-1792593507.2662299-1.0.1.1-0B8i_HbsSAaYMU5qE2aCQFDNrn.jUNxbr5mSeuVRoU7kwc1OvbFOgOGUyw0hnvFNEppMYNNOdbi7TpTAdAfYyD0noTMkGyjS2zm5BZmq1C7yC_XeSMlWZCJfwEYRTB_5; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:08:27 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Pre-clearance support · Cloudflare Turnstile docs\nLast updated Apr 16, 2026View as MarkdownAgent setup\nWas this helpful?",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Pre-clearance support · Cloudflare Turnstile docs\n\nLast updated Apr 16, 2026[View as Markdown](https://developers.cloudflare.com/turnstile/additional-configuration/pre-clearance-support/index.md)[Agent setup](https://developers.cloudflare.com/agent-setup/)\n\nWas this helpful?",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

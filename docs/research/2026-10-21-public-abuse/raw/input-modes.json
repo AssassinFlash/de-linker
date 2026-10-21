@@ -1,0 +1,22 @@
+{
+  "startUrls": [
+    {
+      "url": "https://developers.cloudflare.com/turnstile/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/turnstile/additional-configuration/pre-clearance-support/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "maxConcurrency": 3,
+  "saveMarkdown": true,
+  "removeCookieWarnings": true,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

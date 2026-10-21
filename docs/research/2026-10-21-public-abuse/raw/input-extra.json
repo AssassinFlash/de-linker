@@ -1,0 +1,25 @@
+{
+  "startUrls": [
+    {
+      "url": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 4,
+  "maxConcurrency": 3,
+  "saveMarkdown": true,
+  "removeCookieWarnings": true,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

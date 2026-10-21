@@ -1,0 +1,600 @@
+[
+  {
+    "url": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/",
+      "loadedTime": "2026-10-21T14:35:20.031Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 127752,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/",
+      "title": "Client-side errors · Cloudflare Turnstile docs",
+      "description": "Resolve client-side errors in Turnstile widget rendering.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Client-side errors"
+        },
+        {
+          "property": "og:title",
+          "content": "Client-side errors · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Resolve client-side errors in Turnstile widget rendering."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/og.png?v=dbb522d41981b293"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/og.png?v=dbb522d41981b293"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          "@id": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/#page",
+          "headline": "Client-side errors",
+          "description": "Resolve client-side errors in Turnstile widget rendering.",
+          "url": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/og.png?v=dbb522d41981b293",
+          "dateModified": "2026-05-05",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          },
+          "keywords": [
+            "Debugging",
+            "JavaScript"
+          ]
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e0fcf98cfe7aea-EWR",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=.z6HnG.k9yEmurQRVkMs.QnAKRnLtI.fA_hfp82C4E8-1792593319.9298463-1.0.1.1-T5IbLgMQ_dREUwqjpvE47M68fDu7eaw0JDWnzNu6fl_KqjzSEANusy_LyqS0wAvAiiEtSlBF9cY2mFArQZJCkvj.g18WlPqU7HVYJ9EtNkCwquKp18uS3gSA4CU7_3Z7GIMepCqnTitv6PJi5P5IsgwUQqwcBUNqnO8CrJ86aptq7FTpzNvWCIFZPWFXSvasNs7CKnfoFlfk.Qlw9TpU4w; report-to cf-gzljodtyweadxede",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:35:19 GMT",
+        "report-to": "{\"group\":\"cf-gzljodtyweadxede\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=.z6HnG.k9yEmurQRVkMs.QnAKRnLtI.fA_hfp82C4E8-1792593319.9298463-1.0.1.1-T5IbLgMQ_dREUwqjpvE47M68fDu7eaw0JDWnzNu6fl_KqjzSEANusy_LyqS0wAvAiiEtSlBF9cY2mFArQZJCkvj.g18WlPqU7HVYJ9EtNkCwquKp18uS3gSA4CU7_3Z7GIMepCqnTitv6PJi5P5IsgwUQqwcBUNqnO8CrJ86aptq7FTpzNvWCIFZPWFXSvasNs7CKnfoFlfk.Qlw9TpU4w\"}]}",
+        "reporting-endpoints": "cf-gzljodtyweadxede=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=.z6HnG.k9yEmurQRVkMs.QnAKRnLtI.fA_hfp82C4E8-1792593319.9298463-1.0.1.1-T5IbLgMQ_dREUwqjpvE47M68fDu7eaw0JDWnzNu6fl_KqjzSEANusy_LyqS0wAvAiiEtSlBF9cY2mFArQZJCkvj.g18WlPqU7HVYJ9EtNkCwquKp18uS3gSA4CU7_3Z7GIMepCqnTitv6PJi5P5IsgwUQqwcBUNqnO8CrJ86aptq7FTpzNvWCIFZPWFXSvasNs7CKnfoFlfk.Qlw9TpU4w\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=13,cfOrigin;dur=0,cfWorker;dur=8",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=59P28kCh4XyTqbLHSESPuhwwSIArU2cscqI_ohxcwTo-1792593319.9298463-1.0.1.1-xxPX2lYmDb4CO9dusHl6ErOJKup3evaje4Bqe1A9gz7ueyu2nZGIp3pvrX5sfXS7CKMSfu7DO4QErSk3yULX14gEeIYREyR.p7Dc7yxYUCOC2qo6DQuomXfqQR2AR7wy; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:05:19 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Client-side errors · Cloudflare Turnstile docs\nThere are instances where Turnstile may encounter problems, invoking the error-callback.\nThese problems can range from network connectivity issues and browser compatibility problems to configuration errors and challenge failures.\nWhen errors occur, implementing proper error handling ensures your visitors receive helpful feedback and your application can recover from temporary issues.\nRefer to the Error codes for troubleshooting guidance to address specific error conditions.\nThe error-callback option for explicitly rendering widgets and the data-error-callback attribute for implicit rendering provides a JavaScript callback to handle potential errors that occur.\nThis callback mechanism gives you complete control over how errors are presented to visitors and allows you to implement custom recovery strategies tailored to your application's needs.\nturnstile.render('#my-widget', { sitekey: 'your-sitekey', 'error-callback': function(errorCode) { console.error('Turnstile error occurred:', errorCode); handleTurnstileError(errorCode); return true; // Indicates we handled the error } });\nHTMLhtml\n<div class=\"cf-turnstile\" data-sitekey=\"your-sitekey\" data-error-callback=\"onTurnstileError\"></div>\nSpecifying an error callback is optional, but recommended for production applications. If no error callback is set, Turnstile will throw a JavaScript exception upon error, which can disrupt your page's functionality and create a poor user experience. By providing an error callback, you can catch these exceptions and handle them.\nIf an error callback returns with a non-falsy result, Turnstile will assume that the error callback handled the error accordingly and will not perform any additional error logging. If the error callback returns with a falsy result (including undefined), Turnstile will log a warning to the JavaScript console containing the error code, which can be useful for debugging during development.\nAn error callback will retrieve an error code as its first parameter. This error code follows a structured format where the first three digits indicate the error family (such as configuration issues, network problems, or challenge failures), and the remaining digits specify the exact error within that family.\nfunction handleTurnstileError(errorCode) { const errorFamily = Math.floor(errorCode / 1000); switch(errorFamily) { case 100: showMessage('Please refresh the page and try again.'); break; case 110: showMessage('Configuration error. Please contact support.'); break; case 300: case 600: showMessage('Security check failed. Please try refreshing or using a different browser.'); break; default: showMessage('An unexpected error occurred. Please try again.'); } }\nBy default, Turnstile will automatically retry upon encountering a problem, which helps handle transient network issues or temporary service disruptions without requiring user intervention.\nThis automatic retry mechanism is useful for mobile visitors who may experience intermittent connectivity or visitors on networks with occasional stability issues.\nWhen subsequent failures due to retries are observed, the error callback can be invoked multiple times for the same underlying issue. Your error handling code should account for this possibility to avoid showing duplicate error messages or performing the same recovery action repeatedly.\nlet retryCount = 0; turnstile.render('#my-widget', { sitekey: 'your-sitekey', 'error-callback': function(errorCode) { retryCount++; if (retryCount <= 2) { console.log(`Turnstile retry attempt ${retryCount}`); return false; // Let Turnstile handle the retry } else { showPersistentErrorMessage(errorCode); return true; // We'll handle it from here } } });\nYou can adjust the retry behavior by setting the retry value to never instead of the default auto. This will result in Turnstile not automatically retrying, giving you control over when and how recovery attempts are made. If there is any issue or error verifying the visitor, the widget will not retry and will remain in the respective failure state until you take manual action.\nturnstile.render('#my-widget', { sitekey: 'your-sitekey', retry: 'never', 'error-callback': function(errorCode) { // You control all retry logic setTimeout(() => { turnstile.reset('#my-widget'); }, 3000); } });\nYou may call turnstile.reset() in the corresponding error-callback to manually trigger a retry. This approach is useful for when you want to implement custom retry logic, such as exponential backoff, user confirmation before retrying, or different retry strategies based on the specific error encountered.\nThe interval between retries for Turnstile can be configured by the retry-interval option, allowing you to optimize retry timing for your visitors’ typical network conditions. A longer interval may be more appropriate for visitors on slower or less reliable connections, while shorter intervals work well in environments with typically stable connectivity.\nturnstile.render('#my-widget', { sitekey: 'your-sitekey', retry: 'auto', 'retry-interval': 8000, // Wait 8 seconds between retries 'error-callback': handleError });\nIf the visitor fails to engage with an interactive challenge within a reasonable timeframe, the timeout callback function is triggered. This timeout mechanism prevents challenges from remaining in a pending state indefinitely and ensures that visitors receive feedback when action is required.\nFor instance, in a scenario where the Turnstile widget is implemented within a form that may require several minutes to complete, the interactive challenge within the widget becomes outdated if it remains unaddressed for an extended period. Visitors might focus on filling out form fields and overlook the Turnstile challenge, leading to a situation where they attempt to submit the form with an expired or invalid token.\nIn such instances, the timeout-callback of the widget is activated, enabling the widget to reset itself as needed and provide appropriate guidance. This callback allows you to implement user-friendly timeout handling, such as highlighting the Turnstile widget, displaying a notification, or automatically refreshing the challenge.\nturnstile.render('#my-widget', { sitekey: 'your-sitekey', callback: function(token) { console.log('Challenge completed successfully'); }, 'timeout-callback': function() { console.log('Challenge timed out - user action required'); document.getElementById('challenge-notice').textContent = 'Please complete the security check above to continue.'; // Optionally highlight the widget document.getElementById('my-widget').style.border = '2px solid orange'; }, 'expired-callback': function() { console.log('Token expired - challenge needs refresh'); document.getElementById('challenge-notice').textContent = 'Security check expired. Please try again.'; } });",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Client-side errors · Cloudflare Turnstile docs\n\nThere are instances where Turnstile may encounter problems, invoking the `error-callback`.\n\nThese problems can range from network connectivity issues and browser compatibility problems to configuration errors and challenge failures.\n\nWhen errors occur, implementing proper error handling ensures your visitors receive helpful feedback and your application can recover from temporary issues.\n\nRefer to the [Error codes](https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/) for troubleshooting guidance to address specific error conditions.\n\nThe `error-callback` option for explicitly rendering widgets and the `data-error-callback` attribute for implicit rendering provides a JavaScript callback to handle potential errors that occur.\n\nThis callback mechanism gives you complete control over how errors are presented to visitors and allows you to implement custom recovery strategies tailored to your application's needs.\n\n```\nturnstile.render('#my-widget', {\n  sitekey: 'your-sitekey',\n  'error-callback': function(errorCode) {\n    console.error('Turnstile error occurred:', errorCode);\n    handleTurnstileError(errorCode);\n    return true; // Indicates we handled the error\n  }\n});\n```\n\nHTMLhtml\n\n```\n<div class=\"cf-turnstile\" \n     data-sitekey=\"your-sitekey\" \n     data-error-callback=\"onTurnstileError\"></div>\n```\n\nSpecifying an error callback is optional, but recommended for production applications. If no error callback is set, Turnstile will throw a JavaScript exception upon error, which can disrupt your page's functionality and create a poor user experience. By providing an error callback, you can catch these exceptions and handle them.\n\nIf an error callback returns with a non-falsy result, Turnstile will assume that the error callback handled the error accordingly and will not perform any additional error logging. If the error callback returns with a falsy result (including `undefined`), Turnstile will log a warning to the JavaScript console containing the error code, which can be useful for debugging during development.\n\nAn error callback will retrieve an error code as its first parameter. This error code follows a structured format where the first three digits indicate the error family (such as configuration issues, network problems, or challenge failures), and the remaining digits specify the exact error within that family.\n\n```\nfunction handleTurnstileError(errorCode) {\n  const errorFamily = Math.floor(errorCode / 1000);\n  \n  switch(errorFamily) {\n    case 100:\n      showMessage('Please refresh the page and try again.');\n      break;\n    case 110:\n      showMessage('Configuration error. Please contact support.');\n      break;\n    case 300:\n    case 600:\n      showMessage('Security check failed. Please try refreshing or using a different browser.');\n      break;\n    default:\n      showMessage('An unexpected error occurred. Please try again.');\n  }\n}\n```\n\nBy default, Turnstile will automatically retry upon encountering a problem, which helps handle transient network issues or temporary service disruptions without requiring user intervention.\n\nThis automatic retry mechanism is useful for [mobile visitors](https://developers.cloudflare.com/turnstile/get-started/mobile-implementation/) who may experience intermittent connectivity or visitors on networks with occasional stability issues.\n\nWhen subsequent failures due to retries are observed, the error callback can be invoked multiple times for the same underlying issue. Your error handling code should account for this possibility to avoid showing duplicate error messages or performing the same recovery action repeatedly.\n\n```\nlet retryCount = 0;\n\nturnstile.render('#my-widget', {\n  sitekey: 'your-sitekey',\n  'error-callback': function(errorCode) {\n    retryCount++;\n    \n    if (retryCount <= 2) {\n      console.log(`Turnstile retry attempt ${retryCount}`);\n      return false; // Let Turnstile handle the retry\n    } else {\n      showPersistentErrorMessage(errorCode);\n      return true; // We'll handle it from here\n    }\n  }\n});\n```\n\nYou can adjust the retry behavior by setting the retry value to `never` instead of the default `auto`. This will result in Turnstile not automatically retrying, giving you control over when and how recovery attempts are made. If there is any issue or error verifying the visitor, the widget will not retry and will remain in the respective failure state until you take manual action.\n\n```\nturnstile.render('#my-widget', {\n  sitekey: 'your-sitekey',\n  retry: 'never',\n  'error-callback': function(errorCode) {\n    // You control all retry logic\n    setTimeout(() => {\n      turnstile.reset('#my-widget');\n    }, 3000);\n  }\n});\n```\n\nYou may call `turnstile.reset()` in the corresponding `error-callback` to manually trigger a retry. This approach is useful for when you want to implement custom retry logic, such as exponential backoff, user confirmation before retrying, or different retry strategies based on the specific error encountered.\n\nThe interval between retries for Turnstile can be configured by the `retry-interval` option, allowing you to optimize retry timing for your visitors’ typical network conditions. A longer interval may be more appropriate for visitors on slower or less reliable connections, while shorter intervals work well in environments with typically stable connectivity.\n\n```\nturnstile.render('#my-widget', {\n  sitekey: 'your-sitekey',\n  retry: 'auto',\n  'retry-interval': 8000, // Wait 8 seconds between retries\n  'error-callback': handleError\n});\n```\n\nIf the visitor fails to engage with an interactive challenge within a reasonable timeframe, the timeout callback function is triggered. This timeout mechanism prevents challenges from remaining in a pending state indefinitely and ensures that visitors receive feedback when action is required.\n\nFor instance, in a scenario where the Turnstile widget is implemented within a form that may require several minutes to complete, the interactive challenge within the widget becomes outdated if it remains unaddressed for an extended period. Visitors might focus on filling out form fields and overlook the Turnstile challenge, leading to a situation where they attempt to submit the form with an expired or invalid token.\n\nIn such instances, the `timeout-callback` of the widget is activated, enabling the widget to reset itself as needed and provide appropriate guidance. This callback allows you to implement user-friendly timeout handling, such as highlighting the Turnstile widget, displaying a notification, or automatically refreshing the challenge.\n\n```\nturnstile.render('#my-widget', {\n  sitekey: 'your-sitekey',\n  callback: function(token) {\n    console.log('Challenge completed successfully');\n  },\n  'timeout-callback': function() {\n    console.log('Challenge timed out - user action required');\n    document.getElementById('challenge-notice').textContent = \n      'Please complete the security check above to continue.';\n    \n    // Optionally highlight the widget\n    document.getElementById('my-widget').style.border = '2px solid orange';\n  },\n  'expired-callback': function() {\n    console.log('Token expired - challenge needs refresh');\n    document.getElementById('challenge-notice').textContent = \n      'Security check expired. Please try again.';\n  }\n});\n```",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/",
+      "loadedTime": "2026-10-21T14:35:20.506Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 209080,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/",
+      "title": "Embed the widget · Cloudflare Turnstile docs",
+      "description": "Embed a Turnstile widget on your website with JavaScript or HTML.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Embed the widget"
+        },
+        {
+          "property": "og:title",
+          "content": "Embed the widget · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Embed a Turnstile widget on your website with JavaScript or HTML."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/og.png?v=fa66c781356da0ea"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/og.png?v=fa66c781356da0ea"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          "@id": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/#page",
+          "headline": "Embed the widget",
+          "description": "Embed a Turnstile widget on your website with JavaScript or HTML.",
+          "url": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/og.png?v=fa66c781356da0ea",
+          "dateModified": "2026-06-17",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          },
+          "keywords": [
+            "JavaScript",
+            "SPA"
+          ]
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e0fcfbaee86bec-DFW",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=QIunfZbmyx9q3v8iwyz4EVdcq8X2d04.fSwDUr6pxys-1792593320.2659998-1.0.1.1-4BYVRqmehve02u2fqdjKmXFoUA1ROIM0ve0UTDcTMrrUtutzzZT68TwNNQJdpvV5MBRmVesIpEi92ovMs.7h6kLnx3EvutS91nVgL3eIIcWiqjZEhfTzeFhKhnefE9wCpUgx6JrFdulZ.4eCkJICAWSFGbLQq98S5v.bdVaRk8G98o86wX729ui2k2RnjDb8hVs0A1ILd_OU6GF0cU1i9g; report-to cf-jixdlvahxeeeqkkd",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:35:20 GMT",
+        "report-to": "{\"group\":\"cf-jixdlvahxeeeqkkd\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=QIunfZbmyx9q3v8iwyz4EVdcq8X2d04.fSwDUr6pxys-1792593320.2659998-1.0.1.1-4BYVRqmehve02u2fqdjKmXFoUA1ROIM0ve0UTDcTMrrUtutzzZT68TwNNQJdpvV5MBRmVesIpEi92ovMs.7h6kLnx3EvutS91nVgL3eIIcWiqjZEhfTzeFhKhnefE9wCpUgx6JrFdulZ.4eCkJICAWSFGbLQq98S5v.bdVaRk8G98o86wX729ui2k2RnjDb8hVs0A1ILd_OU6GF0cU1i9g\"}]}",
+        "reporting-endpoints": "cf-jixdlvahxeeeqkkd=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=QIunfZbmyx9q3v8iwyz4EVdcq8X2d04.fSwDUr6pxys-1792593320.2659998-1.0.1.1-4BYVRqmehve02u2fqdjKmXFoUA1ROIM0ve0UTDcTMrrUtutzzZT68TwNNQJdpvV5MBRmVesIpEi92ovMs.7h6kLnx3EvutS91nVgL3eIIcWiqjZEhfTzeFhKhnefE9wCpUgx6JrFdulZ.4eCkJICAWSFGbLQq98S5v.bdVaRk8G98o86wX729ui2k2RnjDb8hVs0A1ILd_OU6GF0cU1i9g\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=43,cfOrigin;dur=0,cfWorker;dur=27",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=2yKFAHo4Fx2nSokAXQCSgVK0VAk6cZ9nUIHBAisCfjs-1792593320.2659998-1.0.1.1-lPGNmPg00O8PuW_T3yNPaOj7ma1wOdoJzq2Hf6psUk7HdgPjR3Dy9pkgS.Y08DlwBpf_VmOAwLmLjUzvhoFgUe4GZAQ5mjcBmNiquL.ojnxH1.Z6JTHzLiyjQfc8nYs4; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:05:20 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Embed the widget · Cloudflare Turnstile docs\nLearn how to add the Turnstile widget to your webpage using implicit or explicit rendering methods.\nTurnstile offers two ways to add widgets to your page. Implicit rendering automatically scans your HTML for widget containers when the page loads. Explicit rendering gives you programmatic control to create widgets at any time using JavaScript. Use implicit rendering for static pages where forms exist at page load. Use explicit rendering for dynamic content and single-page applications (SPAs) where forms are created after the initial page load.\nFeature Implicit rendering Explicit rendering \nEase of setup\tSimple, minimal code\tRequires additional JavaScript\t\nControl over timing\tRenders automatically on page load\tFull control over rendering timing\t\nUse cases\tStatic content\tDynamic or interactive content\t\nCustomization\tLimited to HTML attributes\tExtensive via JavaScript API\t\nBefore you begin, you must have:\nA Cloudflare account\nA Turnstile widget with a sitekey\nAccess to edit your website's HTML\nBasic knowledge of HTML and JavaScript\nPage load: The Turnstile script loads and scans for elements or waits for programmatic calls.\nWidget rendering: Widgets are created and begin running challenges.\nToken generation: When a challenge is completed, a token is generated.\nForm integration: The token is made available via callbacks or hidden form fields.\nServer validation: Your server receives the token and validates it using the Siteverify API.\nImplicit rendering automatically scans your HTML for elements with the cf-turnstile class and renders widgets without additional JavaScript code. This set up is ideal for static pages where you want the widget to load immediately when the page loads.\nCloudflare recommends using implicit rendering on the following scenarios:\nYou have simple implementations and want a quick integration.\nYou have static websites with straightforward forms.\nYou want widgets to appear immediately on pageload.\nYou do not need programmatic control of the widget.\nInclude the Turnstile Script: Add the Turnstile JavaScript API to your HTML file within the <head> section or just before the closing </body> tag.\n<script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js\" async defer ></script>\nAdd resource hints to improve loading performance by establishing early connections to Cloudflare servers. Place this <link> tag in your HTML <head> section before the Turnstile script.\n<link rel=\"preconnect\" href=\"https://challenges.cloudflare.com\" />\nAdd widget containers where you want the challenges to appear on your website.\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\nCustomize your widgets using data attributes. Insert a div element where you want the widget to appear.\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-theme=\"light\" data-size=\"normal\" data-callback=\"onSuccess\" ></div>\nOnce a challenge has been solved, a token is passed to the success callback. This token must be validated against our Siteverify endpoint.\nBasic login form\nTurnstile is often used to protect forms on websites such as login forms or contact forms. You can embed the widget within your <form> tag.\nExamplehtml\n<!DOCTYPE html> <html> <head> <title>Login Form</title> <script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js\" async defer></script> </head> <body> <form action=\"/login\" method=\"POST\"> <input type=\"text\" name=\"username\" placeholder=\"Username\" autocomplete=\"username\" required /> <input type=\"password\" name=\"password\" placeholder=\"Password\" autocomplete=\"current-password\" required /> <!-- Turnstile widget with basic configuration --> <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div> <button type=\"submit\">Log in</button> </form> </body> </html>\nAn invisible input with the name cf-turnstile-response is added and will be sent to the server with the other fields.\nComplete HTML examplehtml\n<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"UTF-8\" /> <title>Implicit Rendering with Cloudflare Turnstile</title> <script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js\" async defer ></script> </head> <body> <h1>Contact Us</h1> <form action=\"/submit\" method=\"POST\"> <label for=\"name\">Name:</label><br /> <input type=\"text\" id=\"name\" name=\"name\" required /><br /> <label for=\"email\">Email:</label><br /> <input type=\"email\" id=\"email\" name=\"email\" required /><br /> <!-- Turnstile Widget --> <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div> <br /> <button type=\"submit\">Submit</button> </form> </body> </html>\nAdvanced form with callbacks\nExamplehtml\n<form action=\"/contact\" method=\"POST\" id=\"contact-form\"> <input type=\"email\" name=\"email\" placeholder=\"Email\" required /> <textarea name=\"message\" placeholder=\"Message\" required></textarea> <!-- Widget with callbacks and custom configuration --> <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-theme=\"auto\" data-size=\"flexible\" data-callback=\"onTurnstileSuccess\" data-error-callback=\"onTurnstileError\" data-expired-callback=\"onTurnstileExpired\" ></div> <button type=\"submit\" id=\"submit-btn\" disabled>Send Message</button> </form> <script> function onTurnstileSuccess(token) { console.log(\"Turnstile success:\", token); document.getElementById(\"submit-btn\").disabled = false; } function onTurnstileError(errorCode) { console.error(\"Turnstile error:\", errorCode); document.getElementById(\"submit-btn\").disabled = true; } function onTurnstileExpired() { console.warn(\"Turnstile token expired\"); document.getElementById(\"submit-btn\").disabled = true; } </script>\nMultiple widgets with different configurations\nExamplehtml\n<!-- Compact widget for newsletter signup --> <form action=\"/newsletter\" method=\"POST\"> <input type=\"email\" name=\"email\" placeholder=\"Email\" /> <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-size=\"compact\" data-action=\"newsletter\" ></div> <button type=\"submit\">Subscribe</button> </form> <!-- Normal widget for contact form --> <form action=\"/contact\" method=\"POST\"> <input type=\"text\" name=\"name\" placeholder=\"Name\" /> <input type=\"email\" name=\"email\" placeholder=\"Email\" /> <textarea name=\"message\" placeholder=\"Message\"></textarea> <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\" data-action=\"contact\" data-theme=\"dark\" ></div> <button type=\"submit\">Send</button> </form>\nAutomatic form integration\nWhen you embed a Turnstile widget inside a <form> element, an invisible input field with the name cf-turnstile-response is automatically created. This field contains the verification token and gets submitted with your other form data.\n<form action=\"/submit\" method=\"POST\"> <input type=\"text\" name=\"data\" /> <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div> <!-- Hidden field automatically added: --> <!-- <input type=\"hidden\" name=\"cf-turnstile-response\" value=\"TOKEN_VALUE\" /> --> <button type=\"submit\">Submit</button> </form>\nExplicit rendering gives you programmatic control over when and where the widget appears and how the widgets are created using JavaScript functions. This method is suitable for dynamic content, single-page applications (SPAs), or conditional rendering based on user interactions.\nCloudflare recommends using explicit rendering on the following scenarios:\nYou have dynamic websites and single-page applications (SPAs).\nYou need to control the timing of widget creation.\nYou want to conditionally render the widget based on visitor interactions.\nYou want multiple widgets with different configurations.\nYou have complex applications requiring widget lifecycle management.\n<script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit\" defer ></script>\nCreate containers without the cf-turnstile class.\n<div id=\"turnstile-container\"></div>\nCall turnstile.render() when you are ready to create the widget.\nconst widgetId = turnstile.render(\"#turnstile-container\", { sitekey: \"<YOUR-SITE-KEY>\", callback: function (token) { console.log(\"Success:\", token); }, });\nAfter rendering the Turnstile widget explicitly, you may need to interact with it based on your application's requirements. Refer to the sections below to manage the widget's state.\nTo reset the widget if the given widget timed out or expired, you can use the function:\nturnstile.reset(widgetId);\nRetrieve the current response token at any time:\nconst responseToken = turnstile.getResponse(widgetId);\nWhen a widget is no longer needed, it can be removed from the page using:\nturnstile.remove(widgetId);\nThis will not call any callback and will remove all related DOM elements.\nBasic explicit implementation\nExamplehtml\n<!DOCTYPE html> <html> <head> <title>Explicit Rendering</title> <script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit\" defer ></script> </head> <body> <form id=\"login-form\"> <input type=\"text\" name=\"username\" placeholder=\"Username\" autocomplete=\"username\" /> <input type=\"password\" name=\"password\" placeholder=\"Password\" autocomplete=\"current-password\" /> <div id=\"turnstile-widget\"></div> <button type=\"submit\">Login</button> </form> <script> window.onload = function () { turnstile.render(\"#turnstile-widget\", { sitekey: \"<YOUR-SITE-KEY>\", callback: function (token) { console.log(\"Turnstile token:\", token); // Handle successful verification }, \"error-callback\": function (errorCode) { console.error(\"Turnstile error:\", errorCode); }, }); }; </script> </body> </html>\nUsing onload callback\nExamplehtml\n<script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad\" defer ></script> <div id=\"widget-container\"></div> <script> function onTurnstileLoad() { turnstile.render(\"#widget-container\", { sitekey: \"<YOUR-SITE-KEY>\", theme: \"light\", callback: function (token) { console.log(\"Challenge completed:\", token); }, }); } </script>\nAdvanced SPA implementation\nExamplehtml\n<div id=\"dynamic-form-container\"></div> <script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit\"></script> <script> class TurnstileManager { constructor() { this.widgets = new Map(); } createWidget(containerId, config) { // Wait for Turnstile to be ready turnstile.ready(() => { const widgetId = turnstile.render(containerId, { sitekey: config.sitekey, theme: config.theme || \"auto\", size: config.size || \"normal\", callback: (token) => { console.log(`Widget ${widgetId} completed:`, token); if (config.onSuccess) config.onSuccess(token, widgetId); }, \"error-callback\": (error) => { console.error(`Widget ${widgetId} error:`, error); if (config.onError) config.onError(error, widgetId); }, }); this.widgets.set(containerId, widgetId); return widgetId; }); } removeWidget(containerId) { const widgetId = this.widgets.get(containerId); if (widgetId) { turnstile.remove(widgetId); this.widgets.delete(containerId); } } resetWidget(containerId) { const widgetId = this.widgets.get(containerId); if (widgetId) { turnstile.reset(widgetId); } } } // Usage const manager = new TurnstileManager(); // Create a widget when user clicks a button document.getElementById(\"show-form-btn\").addEventListener(\"click\", () => { document.getElementById(\"dynamic-form-container\").innerHTML = ` <form> <input type=\"email\" placeholder=\"Email\" /> <div id=\"turnstile-widget\"></div> <button type=\"submit\">Submit</button> </form> `; manager.createWidget(\"#turnstile-widget\", { sitekey: \"<YOUR-SITE-KEY>\", theme: \"dark\", onSuccess: (token) => { // Handle successful verification console.log(\"Form ready for submission\"); }, }); }); </script>\nExplicit rendering provides full control over the widget lifecycle.\n// Render a widget const widgetId = turnstile.render(\"#container\", { sitekey: \"<YOUR-SITE-KEY>\", callback: handleSuccess, }); // Get the current token const token = turnstile.getResponse(widgetId); // Check if widget is expired const isExpired = turnstile.isExpired(widgetId); // Reset the widget (clears current state) turnstile.reset(widgetId); // Remove the widget completely turnstile.remove(widgetId);\nControl when challenges run with execution modes.\n// Render widget but don't run challenge yet const widgetId = turnstile.render(\"#container\", { sitekey: \"<YOUR-SITE-KEY>\", execution: \"execute\", // Don't auto-execute }); // Later, run the challenge when needed turnstile.execute(\"#container\");\nCloudflare recommends that you execute the Turnstile script as early upon the visitor's page entry as possible, so that the verification is complete and the interaction is available once the visitor attempts an action on the page.\nBoth implicit and explicit rendering methods support the same configuration options. Refer to the table below for the most commonly used configurations.\nOption Description Values \nsitekey\tYour widget's sitekey\tRequired string\t\ntheme\tVisual theme\tauto, light, dark\t\nsize\tWidget size\tnormal, flexible, compact\t\ncallback\tSuccess callback\tFunction\t\nerror-callback\tError callback\tFunction\t\nexecution\tWhen to run the challenge\trender, execute\t\nappearance\tWhen the widget is visible\talways, execute, interaction-only\t\nFor a complete list of configuration options, refer to Widget configurations.\nYou can test your Turnstile widget on your webpage without triggering an actual Cloudflare Challenge by using a testing sitekey.\nRefer to Testing for more information.\nTurnstile is designed to function only on pages using http:// or https:// URI schemes. Other protocols, such as file://, are not supported for embedding the widget.\nServer-side validation is mandatory. It is critical to enforce Turnstile tokens with the Siteverify API. The Turnstile token could be invalid, expired, or already redeemed. Not verifying the token will leave major vulnerabilities in your implementation. You must call Siteverify to complete your Turnstile configuration. Otherwise, it is incomplete and will result in zeroes for token validation when viewing your metrics in Turnstile Analytics.\nTokens expire after 300 seconds (5 minutes). Each token can only be validated once. Expired or used tokens must be replaced with fresh challenges.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Embed the widget · Cloudflare Turnstile docs\n\nLearn how to add the Turnstile widget to your webpage using implicit or explicit rendering methods.\n\nTurnstile offers two ways to add widgets to your page. **Implicit rendering** automatically scans your HTML for widget containers when the page loads. **Explicit rendering** gives you programmatic control to create widgets at any time using JavaScript. Use implicit rendering for static pages where forms exist at page load. Use explicit rendering for dynamic content and single-page applications (SPAs) where forms are created after the initial page load.\n\n| Feature | Implicit rendering | Explicit rendering |\n| --- | --- | --- |\n| **Ease of setup** | Simple, minimal code | Requires additional JavaScript |\n| **Control over timing** | Renders automatically on page load | Full control over rendering timing |\n| **Use cases** | Static content | Dynamic or interactive content |\n| **Customization** | Limited to HTML attributes | Extensive via JavaScript API |\n\nBefore you begin, you must have:\n\n*   A Cloudflare account\n*   [A Turnstile widget](https://developers.cloudflare.com/turnstile/get-started/#1-create-your-widget) with a sitekey\n*   Access to edit your website's HTML\n*   Basic knowledge of HTML and JavaScript\n\n1.  Page load: The Turnstile script loads and scans for elements or waits for programmatic calls.\n2.  Widget rendering: Widgets are created and begin running challenges.\n3.  Token generation: When a challenge is completed, a token is generated.\n4.  Form integration: The token is made available via callbacks or hidden form fields.\n5.  Server validation: Your server receives the token and validates it using the Siteverify API.\n\nImplicit rendering automatically scans your HTML for elements with the `cf-turnstile` class and renders widgets without additional JavaScript code. This set up is ideal for static pages where you want the widget to load immediately when the page loads.\n\nCloudflare recommends using implicit rendering on the following scenarios:\n\n*   You have simple implementations and want a quick integration.\n*   You have static websites with straightforward forms.\n*   You want widgets to appear immediately on pageload.\n*   You do not need programmatic control of the widget.\n\n**Include the Turnstile Script**: Add the Turnstile JavaScript API to your HTML file within the `<head>` section or just before the closing `</body>` tag.\n\n```\n<script\n\tsrc=\"https://challenges.cloudflare.com/turnstile/v0/api.js\"\n\tasync\n\tdefer\n></script>\n```\n\nAdd resource hints to improve loading performance by establishing early connections to Cloudflare servers. Place this `<link>` tag in your HTML `<head>` section before the Turnstile script.\n\n```\n<link rel=\"preconnect\" href=\"https://challenges.cloudflare.com\" />\n```\n\nAdd widget containers where you want the challenges to appear on your website.\n\n```\n<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n```\n\n[Customize your widgets](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/) using data attributes. Insert a `div` element where you want the widget to appear.\n\n```\n<div\n\tclass=\"cf-turnstile\"\n\tdata-sitekey=\"<YOUR-SITE-KEY>\"\n\tdata-theme=\"light\"\n\tdata-size=\"normal\"\n\tdata-callback=\"onSuccess\"\n></div>\n```\n\nOnce a challenge has been solved, a token is passed to the success callback. This token must be validated against our [Siteverify endpoint](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).\n\nBasic login form\n\nTurnstile is often used to protect forms on websites such as login forms or contact forms. You can embed the widget within your `<form>` tag.\n\nExamplehtml\n\n```\n<!DOCTYPE html>\n<html>\n<head>\n    <title>Login Form</title>\n    <script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js\" async defer></script>\n</head>\n<body>\n    <form action=\"/login\" method=\"POST\">\n        <input type=\"text\" name=\"username\" placeholder=\"Username\" autocomplete=\"username\" required />\n        <input type=\"password\" name=\"password\" placeholder=\"Password\" autocomplete=\"current-password\" required />\n\n        <!-- Turnstile widget with basic configuration -->\n        <div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n        <button type=\"submit\">Log in</button>\n    </form>\n\n</body>\n</html>\n```\n\nAn invisible input with the name `cf-turnstile-response` is added and will be sent to the server with the other fields.\n\nComplete HTML examplehtml\n\n```\n<!DOCTYPE html>\n<html lang=\"en\">\n\t<head>\n\t\t<meta charset=\"UTF-8\" />\n\t\t<title>Implicit Rendering with Cloudflare Turnstile</title>\n\t\t<script\n\t\t\tsrc=\"https://challenges.cloudflare.com/turnstile/v0/api.js\"\n\t\t\tasync\n\t\t\tdefer\n\t\t></script>\n\t</head>\n\t<body>\n\t\t<h1>Contact Us</h1>\n\t\t<form action=\"/submit\" method=\"POST\">\n\t\t\t<label for=\"name\">Name:</label><br />\n\t\t\t<input type=\"text\" id=\"name\" name=\"name\" required /><br />\n\t\t\t<label for=\"email\">Email:</label><br />\n\t\t\t<input type=\"email\" id=\"email\" name=\"email\" required /><br />\n\t\t\t<!-- Turnstile Widget -->\n\t\t\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n\t\t\t<br />\n\t\t\t<button type=\"submit\">Submit</button>\n\t\t</form>\n\t</body>\n</html>\n```\n\nAdvanced form with callbacks\n\nExamplehtml\n\n```\n<form action=\"/contact\" method=\"POST\" id=\"contact-form\">\n\t<input type=\"email\" name=\"email\" placeholder=\"Email\" required />\n\t<textarea name=\"message\" placeholder=\"Message\" required></textarea>\n\t<!-- Widget with callbacks and custom configuration -->\n\t<div\n\t\tclass=\"cf-turnstile\"\n\t\tdata-sitekey=\"<YOUR-SITE-KEY>\"\n\t\tdata-theme=\"auto\"\n\t\tdata-size=\"flexible\"\n\t\tdata-callback=\"onTurnstileSuccess\"\n\t\tdata-error-callback=\"onTurnstileError\"\n\t\tdata-expired-callback=\"onTurnstileExpired\"\n\t></div>\n\t<button type=\"submit\" id=\"submit-btn\" disabled>Send Message</button>\n</form>\n\n<script>\n\tfunction onTurnstileSuccess(token) {\n\t\tconsole.log(\"Turnstile success:\", token);\n\t\tdocument.getElementById(\"submit-btn\").disabled = false;\n\t}\n\tfunction onTurnstileError(errorCode) {\n\t\tconsole.error(\"Turnstile error:\", errorCode);\n\t\tdocument.getElementById(\"submit-btn\").disabled = true;\n\t}\n\tfunction onTurnstileExpired() {\n\t\tconsole.warn(\"Turnstile token expired\");\n\t\tdocument.getElementById(\"submit-btn\").disabled = true;\n\t}\n</script>\n```\n\nMultiple widgets with different configurations\n\nExamplehtml\n\n```\n<!-- Compact widget for newsletter signup -->\n<form action=\"/newsletter\" method=\"POST\">\n\t<input type=\"email\" name=\"email\" placeholder=\"Email\" />\n\t<div\n\t\tclass=\"cf-turnstile\"\n\t\tdata-sitekey=\"<YOUR-SITE-KEY>\"\n\t\tdata-size=\"compact\"\n\t\tdata-action=\"newsletter\"\n\t></div>\n\t<button type=\"submit\">Subscribe</button>\n</form>\n\n<!-- Normal widget for contact form -->\n<form action=\"/contact\" method=\"POST\">\n\t<input type=\"text\" name=\"name\" placeholder=\"Name\" />\n\t<input type=\"email\" name=\"email\" placeholder=\"Email\" />\n\t<textarea name=\"message\" placeholder=\"Message\"></textarea>\n\t<div\n\t\tclass=\"cf-turnstile\"\n\t\tdata-sitekey=\"<YOUR-SITE-KEY>\"\n\t\tdata-action=\"contact\"\n\t\tdata-theme=\"dark\"\n\t></div>\n\t<button type=\"submit\">Send</button>\n</form>\n```\n\nAutomatic form integration\n\nWhen you embed a Turnstile widget inside a `<form>` element, an invisible input field with the name `cf-turnstile-response` is automatically created. This field contains the verification token and gets submitted with your other form data.\n\n```\n<form action=\"/submit\" method=\"POST\">\n\t<input type=\"text\" name=\"data\" />\n\t<div class=\"cf-turnstile\" data-sitekey=\"<YOUR-SITE-KEY>\"></div>\n\t<!-- Hidden field automatically added: -->\n\t<!-- <input type=\"hidden\" name=\"cf-turnstile-response\" value=\"TOKEN_VALUE\" /> -->\n\t<button type=\"submit\">Submit</button>\n</form>\n```\n\n* * *\n\nExplicit rendering gives you programmatic control over when and where the widget appears and how the widgets are created using JavaScript functions. This method is suitable for dynamic content, single-page applications (SPAs), or conditional rendering based on user interactions.\n\nCloudflare recommends using explicit rendering on the following scenarios:\n\n*   You have dynamic websites and single-page applications (SPAs).\n*   You need to control the timing of widget creation.\n*   You want to conditionally render the widget based on visitor interactions.\n*   You want multiple widgets with different configurations.\n*   You have complex applications requiring widget lifecycle management.\n\n```\n<script\n\tsrc=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit\"\n\tdefer\n></script>\n```\n\nCreate containers without the `cf-turnstile` class.\n\n```\n<div id=\"turnstile-container\"></div>\n```\n\nCall `turnstile.render()` when you are ready to create the widget.\n\n```\nconst widgetId = turnstile.render(\"#turnstile-container\", {\n\tsitekey: \"<YOUR-SITE-KEY>\",\n\tcallback: function (token) {\n\t\tconsole.log(\"Success:\", token);\n\t},\n});\n```\n\nAfter rendering the Turnstile widget explicitly, you may need to interact with it based on your application's requirements. Refer to the sections below to manage the widget's state.\n\nTo reset the widget if the given widget timed out or expired, you can use the function:\n\n```\nturnstile.reset(widgetId);\n```\n\nRetrieve the current response token at any time:\n\n```\nconst responseToken = turnstile.getResponse(widgetId);\n```\n\nWhen a widget is no longer needed, it can be removed from the page using:\n\n```\nturnstile.remove(widgetId);\n```\n\nThis will not call any callback and will remove all related DOM elements.\n\nBasic explicit implementation\n\nExamplehtml\n\n```\n<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<title>Explicit Rendering</title>\n\t\t<script\n\t\t\tsrc=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit\"\n\t\t\tdefer\n\t\t></script>\n\t</head>\n\t<body>\n\t\t<form id=\"login-form\">\n\t\t\t<input\n\t\t\t\ttype=\"text\"\n\t\t\t\tname=\"username\"\n\t\t\t\tplaceholder=\"Username\"\n\t\t\t\tautocomplete=\"username\"\n\t\t\t/>\n\t\t\t<input\n\t\t\t\ttype=\"password\"\n\t\t\t\tname=\"password\"\n\t\t\t\tplaceholder=\"Password\"\n\t\t\t\tautocomplete=\"current-password\"\n\t\t\t/>\n\t\t\t<div id=\"turnstile-widget\"></div>\n\t\t\t<button type=\"submit\">Login</button>\n\t\t</form>\n\n\t\t<script>\n\t\t\twindow.onload = function () {\n\t\t\t\tturnstile.render(\"#turnstile-widget\", {\n\t\t\t\t\tsitekey: \"<YOUR-SITE-KEY>\",\n\t\t\t\t\tcallback: function (token) {\n\t\t\t\t\t\tconsole.log(\"Turnstile token:\", token);\n\t\t\t\t\t\t// Handle successful verification\n\t\t\t\t\t},\n\t\t\t\t\t\"error-callback\": function (errorCode) {\n\t\t\t\t\t\tconsole.error(\"Turnstile error:\", errorCode);\n\t\t\t\t\t},\n\t\t\t\t});\n\t\t\t};\n\t\t</script>\n\t</body>\n</html>\n```\n\nUsing onload callback\n\nExamplehtml\n\n```\n<script\n\tsrc=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad\"\n\tdefer\n></script>\n<div id=\"widget-container\"></div>\n<script>\n\tfunction onTurnstileLoad() {\n\t\tturnstile.render(\"#widget-container\", {\n\t\t\tsitekey: \"<YOUR-SITE-KEY>\",\n\t\t\ttheme: \"light\",\n\t\t\tcallback: function (token) {\n\t\t\t\tconsole.log(\"Challenge completed:\", token);\n\t\t\t},\n\t\t});\n\t}\n</script>\n```\n\nAdvanced SPA implementation\n\nExamplehtml\n\n```\n<div id=\"dynamic-form-container\"></div>\n\n<script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit\"></script>\n\n<script>\n\tclass TurnstileManager {\n\t\tconstructor() {\n\t\t\tthis.widgets = new Map();\n\t\t}\n\t\tcreateWidget(containerId, config) {\n\t\t\t// Wait for Turnstile to be ready\n\t\t\tturnstile.ready(() => {\n\t\t\t\tconst widgetId = turnstile.render(containerId, {\n\t\t\t\t\tsitekey: config.sitekey,\n\t\t\t\t\ttheme: config.theme || \"auto\",\n\t\t\t\t\tsize: config.size || \"normal\",\n\t\t\t\t\tcallback: (token) => {\n\t\t\t\t\t\tconsole.log(`Widget ${widgetId} completed:`, token);\n\t\t\t\t\t\tif (config.onSuccess) config.onSuccess(token, widgetId);\n\t\t\t\t\t},\n\t\t\t\t\t\"error-callback\": (error) => {\n\t\t\t\t\t\tconsole.error(`Widget ${widgetId} error:`, error);\n\t\t\t\t\t\tif (config.onError) config.onError(error, widgetId);\n\t\t\t\t\t},\n\t\t\t\t});\n\n\t\t\t\tthis.widgets.set(containerId, widgetId);\n\t\t\t\treturn widgetId;\n\t\t\t});\n\t\t}\n\t\tremoveWidget(containerId) {\n\t\t\tconst widgetId = this.widgets.get(containerId);\n\t\t\tif (widgetId) {\n\t\t\t\tturnstile.remove(widgetId);\n\t\t\t\tthis.widgets.delete(containerId);\n\t\t\t}\n\t\t}\n\t\tresetWidget(containerId) {\n\t\t\tconst widgetId = this.widgets.get(containerId);\n\t\t\tif (widgetId) {\n\t\t\t\tturnstile.reset(widgetId);\n\t\t\t}\n\t\t}\n\t}\n\n\t// Usage\n\tconst manager = new TurnstileManager();\n\n\t// Create a widget when user clicks a button\n\tdocument.getElementById(\"show-form-btn\").addEventListener(\"click\", () => {\n\t\tdocument.getElementById(\"dynamic-form-container\").innerHTML = `\n        <form>\n            <input type=\"email\" placeholder=\"Email\" />\n            <div id=\"turnstile-widget\"></div>\n            <button type=\"submit\">Submit</button>\n        </form>\n    `;\n\t\tmanager.createWidget(\"#turnstile-widget\", {\n\t\t\tsitekey: \"<YOUR-SITE-KEY>\",\n\t\t\ttheme: \"dark\",\n\t\t\tonSuccess: (token) => {\n\t\t\t\t// Handle successful verification\n\t\t\t\tconsole.log(\"Form ready for submission\");\n\t\t\t},\n\t\t});\n\t});\n</script>\n```\n\nExplicit rendering provides full control over the widget lifecycle.\n\n```\n// Render a widget\nconst widgetId = turnstile.render(\"#container\", {\n\tsitekey: \"<YOUR-SITE-KEY>\",\n\tcallback: handleSuccess,\n});\n\n// Get the current token\nconst token = turnstile.getResponse(widgetId);\n\n// Check if widget is expired\nconst isExpired = turnstile.isExpired(widgetId);\n\n// Reset the widget (clears current state)\nturnstile.reset(widgetId);\n\n// Remove the widget completely\nturnstile.remove(widgetId);\n```\n\nControl when challenges run with execution modes.\n\n```\n// Render widget but don't run challenge yet\nconst widgetId = turnstile.render(\"#container\", {\n\tsitekey: \"<YOUR-SITE-KEY>\",\n\texecution: \"execute\", // Don't auto-execute\n});\n\n// Later, run the challenge when needed\nturnstile.execute(\"#container\");\n```\n\n* * *\n\nCloudflare recommends that you execute the Turnstile script as early upon the visitor's page entry as possible, so that the verification is complete and the interaction is available once the visitor attempts an action on the page.\n\n* * *\n\nBoth implicit and explicit rendering methods support the same configuration options. Refer to the table below for the most commonly used configurations.\n\n| Option | Description | Values |\n| --- | --- | --- |\n| `sitekey` | Your widget's sitekey | Required string |\n| `theme` | Visual theme | `auto`, `light`, `dark` |\n| `size` | Widget size | `normal`, `flexible`, `compact` |\n| `callback` | Success callback | Function |\n| `error-callback` | Error callback | Function |\n| `execution` | When to run the challenge | `render`, `execute` |\n| `appearance` | When the widget is visible | `always`, `execute`, `interaction-only` |\n\nFor a complete list of configuration options, refer to [Widget configurations](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/).\n\n* * *\n\nYou can test your Turnstile widget on your webpage without triggering an actual Cloudflare Challenge by using a testing sitekey.\n\nRefer to [Testing](https://developers.cloudflare.com/turnstile/troubleshooting/testing/) for more information.\n\n* * *\n\nTurnstile is designed to function only on pages using `http://` or `https://` URI schemes. Other protocols, such as `file://`, are not supported for embedding the widget.\n\n* * *\n\n*   Server-side validation is mandatory. It is critical to enforce Turnstile tokens with the Siteverify API. The Turnstile token could be invalid, expired, or already redeemed. Not verifying the token will leave major vulnerabilities in your implementation. You must call Siteverify to complete your Turnstile configuration. Otherwise, it is incomplete and will result in zeroes for token validation when viewing your metrics in [Turnstile Analytics](https://developers.cloudflare.com/turnstile/turnstile-analytics/).\n    \n*   Tokens expire after 300 seconds (5 minutes). Each token can only be validated once. Expired or used tokens must be replaced with fresh challenges.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/",
+      "loadedTime": "2026-10-21T14:35:21.089Z",
+      "referrerUrl": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 112593,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/",
+      "title": "Challenge solve issues · Cloudflare challenges docs",
+      "description": "Fix challenge loops, unsupported browser errors, and other solve failures.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Challenge solve issues"
+        },
+        {
+          "property": "og:title",
+          "content": "Challenge solve issues · Cloudflare challenges docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Fix challenge loops, unsupported browser errors, and other solve failures."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/og.png?v=9a5beb1cbd8d6267"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/og.png?v=9a5beb1cbd8d6267"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          "@id": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/#page",
+          "headline": "Challenge solve issues",
+          "description": "Fix challenge loops, unsupported browser errors, and other solve failures.",
+          "url": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/og.png?v=9a5beb1cbd8d6267",
+          "dateModified": "2026-09-08",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          },
+          "keywords": [
+            "Debugging"
+          ]
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e0fd005d7a514c-ORD",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=jr_4Yi3aBk6mCQcvjlhbca7yuR9fmLxDWEjoAWonTQA-1792593321.0205615-1.0.1.1-qy.OKxxqUHADQASxb7wKw3g.dNuZHQBZhAMZQd3N0DXa_1JtH7gqDhJ.HfxJQEn.NAmQ8wwQoCfG85P3xqHnbAgiG4C.bHr8Uew7KXgEkdGZohao_hAULtQP.0BPG7jetY3Ie8Rjfi5lGMN9m8Eqq0FfYwqDjFfZp8vmOE11X9ZKM9AXMb_MiB2UVeEmYiMJofMU19Du0espDsRELae6HQ; report-to cf-dmxuebctmzhbubqh",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:35:21 GMT",
+        "report-to": "{\"group\":\"cf-dmxuebctmzhbubqh\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=jr_4Yi3aBk6mCQcvjlhbca7yuR9fmLxDWEjoAWonTQA-1792593321.0205615-1.0.1.1-qy.OKxxqUHADQASxb7wKw3g.dNuZHQBZhAMZQd3N0DXa_1JtH7gqDhJ.HfxJQEn.NAmQ8wwQoCfG85P3xqHnbAgiG4C.bHr8Uew7KXgEkdGZohao_hAULtQP.0BPG7jetY3Ie8Rjfi5lGMN9m8Eqq0FfYwqDjFfZp8vmOE11X9ZKM9AXMb_MiB2UVeEmYiMJofMU19Du0espDsRELae6HQ\"}]}",
+        "reporting-endpoints": "cf-dmxuebctmzhbubqh=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=jr_4Yi3aBk6mCQcvjlhbca7yuR9fmLxDWEjoAWonTQA-1792593321.0205615-1.0.1.1-qy.OKxxqUHADQASxb7wKw3g.dNuZHQBZhAMZQd3N0DXa_1JtH7gqDhJ.HfxJQEn.NAmQ8wwQoCfG85P3xqHnbAgiG4C.bHr8Uew7KXgEkdGZohao_hAULtQP.0BPG7jetY3Ie8Rjfi5lGMN9m8Eqq0FfYwqDjFfZp8vmOE11X9ZKM9AXMb_MiB2UVeEmYiMJofMU19Du0espDsRELae6HQ\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=11,cfOrigin;dur=0,cfWorker;dur=10",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=Y9PXRMdsqmsS5K8PK.2PzhOZl2I3Mm73lJ_0VQnERm0-1792593321.0205615-1.0.1.1-Cs8xL2iNsDjprU0YIxl.3qBpx7HNV98O2JRAEJznzqIufJ6K0XmtnTvqpVDCUiUX5vm4IsPeAAKSQeLa21MkqFpoV5G8xCgj01EVjGcB6FA_wDFLaAWmYpN.rrs.4QC5; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:05:21 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Challenge solve issues · Cloudflare challenges docs\nYou may encounter a challenge loop where the challenge keeps reappearing without being solved. This is in very specific cases where we detect strong bot signals. If you are a legitimate human, you can follow the troubleshooting guide below to resolve the issue or submit a feedback report. Challenge loops can happen for several reasons:\nNetwork issues: Poor or unstable network connections can prevent the challenge from being completed.\nBrowser configuration: Some browser settings or extensions may block the scripts needed to execute the challenge.\nUnsupported browsers: Using a browser that is not supported by Turnstile.\nJavaScript disabled: Turnstile relies on JavaScript to function properly.\nDetection errors: If Turnstile suspects bot-like behavior, you may encounter repeated challenges for verification.\nMost challenges are quick to complete and typically take only a few seconds. If it takes longer, ensure your network is stable and follow the troubleshooting steps.\nWhen a Challenge Page loads, the browser may request a Private Access Token (PAT) from a /cdn-cgi/challenge-platform/.../pat/... endpoint. On devices, browsers, or networks that cannot issue a token, this request returns an HTTP 401.\nThis response is expected and does not mean the visitor was blocked or that the widget failed. Cloudflare falls back to a standard challenge and the visitor proceeds as normal. A 401 on this request — for example, one seen in browser developer tools or a HAR capture — is not, on its own, a sign of a misconfiguration, a false positive, or a block. For more details, refer to Private Access Tokens.\nWhen looking at browser developer tools or capturing a HAR for Turnstile, it is not uncommon to notice certain requests to specific subdomains failing due to DNS host lookup errors. These subdomains live under the parent domain of challenges.cloudflare.com and dnstest.dev. The requests to them are part of Turnstile's normal execution. That said, these errors should not be perceived as failure root causes, as they are non-blocking to visitors.\nGiven that these DNS host lookup failures are expected and non-fatal for Turnstile's execution, avoid surfacing them as fatal execution errors, especially in the case of handler-based integrations of Turnstile such as WebView embeddings. For more fine-grained control, consider dropping network errors originating from requests to the *.challenges.cloudflare.com wildcard while preserving error visibility for the challenges.cloudflare.com apex.\nFollow the steps below to ensure that your environment is properly configured.\nVerify your browser compatibility. \nTurnstile supports all major browsers, except Internet Explorer.\nEnsure your browser is up to date. For more information, refer to our Supported browsers.\nRun a test on the compatibility checking tool ↗︎.\nDisable your browser extensions. \nSome browser extensions, such as ad blockers, may block the scripts Turnstile needs to operate.\nTemporarily disable all extensions and reload the page.\nEnable JavaScript. \nTurnstile requires JavaScript to run. Ensure it is enabled in your browser settings. Refer to your browser's documentation for instructions on enabling JavaScript.\nTry Incognito or Private mode. \nUse your browser's incognito or private mode to rule out issues caused by extensions or cached data.\nTest another browser or device. \nSwitch to a different browser or device to see if the issue is specific to your current setup.\nAvoid VPNs or proxies. \nSome virtual private networks (VPN) or proxies may interfere with Turnstile. Disable them temporarily to test.\nSwitch to a different network. \nYour current network may have restrictions causing Turnstile challenges to fail. Try switching to another network, such as a mobile hotspot.\nIf the issue persists, collect the following information before contacting the website administrator or Cloudflare Support:\nA HAR file captured while reproducing the issue. For challenge loops, enable Preserve log in your browser's developer tools before reproducing the problem. You may also need to select Disable cache.\nA browser console log export captured during the same session.\nFor step-by-step instructions, refer to Gathering information for troubleshooting sites.\nIf the challenge fails only inside a native app's WebView, review the required WebView settings in Mobile implementation. Common causes include disabled JavaScript, missing DOM storage or cookie support, blocked access to challenges.cloudflare.com, and a User Agent that changes during the session.\nIf none of the above resolves your issue, contact the website administrator with the error code and Ray ID or submit a feedback report through the Turnstile widget by selecting Submit Feedback.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Challenge solve issues · Cloudflare challenges docs\n\nYou may encounter a challenge loop where the challenge keeps reappearing without being solved. This is in very specific cases where we detect strong bot signals. If you are a legitimate human, you can follow the troubleshooting guide below to resolve the issue or submit a feedback report. Challenge loops can happen for several reasons:\n\n*   **Network issues**: Poor or unstable network connections can prevent the challenge from being completed.\n*   **Browser configuration**: Some browser settings or extensions may block the scripts needed to execute the challenge.\n*   **Unsupported browsers**: Using a browser that is not supported by Turnstile.\n*   **JavaScript disabled**: Turnstile relies on JavaScript to function properly.\n*   **Detection errors**: If Turnstile suspects bot-like behavior, you may encounter repeated challenges for verification.\n\nMost challenges are quick to complete and typically take only a few seconds. If it takes longer, ensure your network is stable and follow the [troubleshooting steps](https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/#troubleshooting).\n\nWhen a Challenge Page loads, the browser may request a [Private Access Token (PAT)](https://developers.cloudflare.com/cloudflare-challenges/reference/private-access-tokens/) from a `/cdn-cgi/challenge-platform/.../pat/...` endpoint. On devices, browsers, or networks that cannot issue a token, this request returns an HTTP `401`.\n\nThis response is **expected** and does not mean the visitor was blocked or that the widget failed. Cloudflare falls back to a standard challenge and the visitor proceeds as normal. A `401` on this request — for example, one seen in browser developer tools or a HAR capture — is not, on its own, a sign of a misconfiguration, a false positive, or a block. For more details, refer to [Private Access Tokens](https://developers.cloudflare.com/cloudflare-challenges/reference/private-access-tokens/).\n\nWhen looking at browser developer tools or capturing a HAR for Turnstile, it is not uncommon to notice certain requests to specific subdomains failing due to DNS host lookup errors. These subdomains live under the parent domain of `challenges.cloudflare.com` and `dnstest.dev`. The requests to them are part of Turnstile's normal execution. That said, these errors should not be perceived as failure root causes, as they are **non-blocking** to visitors.\n\nGiven that these DNS host lookup failures are **expected** and **non-fatal** for Turnstile's execution, avoid surfacing them as fatal execution errors, especially in the case of handler-based integrations of Turnstile such as WebView embeddings. For more fine-grained control, consider dropping network errors originating from requests to the `*.challenges.cloudflare.com` wildcard while preserving error visibility for the `challenges.cloudflare.com` apex.\n\nFollow the steps below to ensure that your environment is properly configured.\n\n1.  Verify your browser compatibility.\n    *   Turnstile supports all major browsers, except Internet Explorer.\n    *   Ensure your browser is up to date. For more information, refer to our [Supported browsers](https://developers.cloudflare.com/cloudflare-challenges/reference/supported-browsers/).\n    *   Run a test on the [compatibility checking tool ↗︎](https://debug.challenges.cloudflare.com/).\n2.  Disable your browser extensions.\n    *   Some browser extensions, such as ad blockers, may block the scripts Turnstile needs to operate.\n    *   Temporarily disable all extensions and reload the page.\n3.  Enable JavaScript.\n    *   Turnstile requires JavaScript to run. Ensure it is enabled in your browser settings. Refer to your browser's documentation for instructions on enabling JavaScript.\n4.  Try Incognito or Private mode.\n    *   Use your browser's incognito or private mode to rule out issues caused by extensions or cached data.\n5.  Test another browser or device.\n    *   Switch to a different browser or device to see if the issue is specific to your current setup.\n6.  Avoid VPNs or proxies.\n    *   Some virtual private networks (VPN) or proxies may interfere with Turnstile. Disable them temporarily to test.\n7.  Switch to a different network.\n    *   Your current network may have restrictions causing Turnstile challenges to fail. Try switching to another network, such as a mobile hotspot.\n\nIf the issue persists, collect the following information before contacting the website administrator or Cloudflare Support:\n\n*   A HAR file captured while reproducing the issue. For challenge loops, enable **Preserve log** in your browser's developer tools before reproducing the problem. You may also need to select **Disable cache**.\n*   A browser console log export captured during the same session.\n\nFor step-by-step instructions, refer to [Gathering information for troubleshooting sites](https://developers.cloudflare.com/support/troubleshooting/general-troubleshooting/gathering-information-for-troubleshooting-sites/).\n\nIf the challenge fails only inside a native app's WebView, review the required WebView settings in [Mobile implementation](https://developers.cloudflare.com/turnstile/get-started/mobile-implementation/). Common causes include disabled JavaScript, missing DOM storage or cookie support, blocked access to `challenges.cloudflare.com`, and a User Agent that changes during the session.\n\nIf none of the above resolves your issue, contact the website administrator with the [error code](https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/) and Ray ID or submit a [feedback report](https://developers.cloudflare.com/turnstile/troubleshooting/feedback-reports/) through the Turnstile widget by selecting **Submit Feedback**.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/",
+      "loadedTime": "2026-10-21T14:35:21.669Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 131266,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/",
+      "title": "Test your Turnstile implementation · Cloudflare Turnstile docs",
+      "description": "Test your Turnstile implementation with test site keys.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Test your Turnstile implementation"
+        },
+        {
+          "property": "og:title",
+          "content": "Test your Turnstile implementation · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Test your Turnstile implementation with test site keys."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/og.png?v=2f969f8ae0f3f8fb"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/og.png?v=2f969f8ae0f3f8fb"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          "@id": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/#page",
+          "headline": "Test your Turnstile implementation",
+          "description": "Test your Turnstile implementation with test site keys.",
+          "url": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/turnstile/troubleshooting/testing/og.png?v=2f969f8ae0f3f8fb",
+          "dateModified": "2026-10-20",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          },
+          "keywords": [
+            "Debugging"
+          ]
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e0fd037ea6d254-LAX",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=CjV4A6qWQeFA2q4OnukTb4nbtGLUQy6rToyMxiITOvc-1792593321.5136487-1.0.1.1-J4LUuZnma6vXUYee1RopJVAWxObdON7q8xkQXFyDtNVJegjSxOpKHgY.kr0rPpelk6fClgYJ9fa_EA_QNMN65Iethdmae8JTw_bLAgec5ExH33tI.6QOPic2ax11Zbpl5I7dU2M9BXv9zp_ui9qQmeibTvpej4wy.iNNOaq1an9XXhnmRAj1Fs.aGkPEWPRQCTybm2.JBEUUL2bFZ4lU8Q; report-to cf-dkcdrhubqucywhwt",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:35:21 GMT",
+        "report-to": "{\"group\":\"cf-dkcdrhubqucywhwt\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=CjV4A6qWQeFA2q4OnukTb4nbtGLUQy6rToyMxiITOvc-1792593321.5136487-1.0.1.1-J4LUuZnma6vXUYee1RopJVAWxObdON7q8xkQXFyDtNVJegjSxOpKHgY.kr0rPpelk6fClgYJ9fa_EA_QNMN65Iethdmae8JTw_bLAgec5ExH33tI.6QOPic2ax11Zbpl5I7dU2M9BXv9zp_ui9qQmeibTvpej4wy.iNNOaq1an9XXhnmRAj1Fs.aGkPEWPRQCTybm2.JBEUUL2bFZ4lU8Q\"}]}",
+        "reporting-endpoints": "cf-dkcdrhubqucywhwt=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=CjV4A6qWQeFA2q4OnukTb4nbtGLUQy6rToyMxiITOvc-1792593321.5136487-1.0.1.1-J4LUuZnma6vXUYee1RopJVAWxObdON7q8xkQXFyDtNVJegjSxOpKHgY.kr0rPpelk6fClgYJ9fa_EA_QNMN65Iethdmae8JTw_bLAgec5ExH33tI.6QOPic2ax11Zbpl5I7dU2M9BXv9zp_ui9qQmeibTvpej4wy.iNNOaq1an9XXhnmRAj1Fs.aGkPEWPRQCTybm2.JBEUUL2bFZ4lU8Q\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=24,cfOrigin;dur=0,cfWorker;dur=18",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=N9u4N4jl7hi77KcSvlkDipBLcpvVWwQL5VBE2uGSS5Q-1792593321.5136487-1.0.1.1-VzOdG_txcnvCjajrwlAwRPA21I_29LIaR2InR3L5Fgix9irDhqKljx1oSsvi2HAHpRsFQd3IFOd9.WVgsGSRa0lC1Jf1KMJstBU9eBGY0.1q3r8YKS6lyh328rX4tMZu; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:05:21 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Test your Turnstile implementation · Cloudflare Turnstile docs\nUse dummy sitekeys and secret keys to test your Turnstile implementation without triggering real challenges that would interfere with automated testing suites.\nAutomated testing suites (like Selenium, Cypress, or Playwright) are detected as bots by Turnstile, which can cause:\nTests to fail when Turnstile blocks automated browsers\nUnpredictable test results due to challenge variations\nInterference with form submission testing\nDifficulty testing complete user flows\nDummy keys solve this by providing predictable, controlled responses that work with automated testing tools.\nSitekey Behavior Widget Type Use case \n1x00000000000000000000AA\tAlways passes\tVisible\tTest successful form submissions\t\n2x00000000000000000000AB\tAlways fails\tVisible\tTest error handling and retry logic\t\n1x00000000000000000000BB\tAlways passes\tInvisible\tTest invisible widget success flows\t\n2x00000000000000000000BB\tAlways fails\tInvisible\tTest invisible widget error handling\t\n3x00000000000000000000FF\tForces interactive challenge\tVisible\tTest user interaction scenarios\t\nUse these secret keys for server-side validation testing:\nSecret key Behavior Use case \n1x0000000000000000000000000000000AA\tAlways passes validation\tTest successful token validation\t\n2x0000000000000000000000000000000AA\tAlways fails validation\tTest validation error handling\t\n3x0000000000000000000000000000000AA\tReturns \"token already spent\" error\tTest duplicate token handling\t\nTest keys work on any domain, including:\nlocalhost\n127.0.0.1\n0.0.0.0\nAny development domain\nCloudflare recommends that sitekeys used in production do not allow local domains (localhost or 127.0.0.1), but users can choose to add local domains to the list of allowed domains under Hostname Management. Dummy sitekeys can be used from any domain, including on localhost.\nReplace your production sitekey with a test sitekey.\n<!-- Development/Testing --> <div class=\"cf-turnstile\" data-sitekey=\"1x00000000000000000000AA\"></div> <!-- Production --> <div class=\"cf-turnstile\" data-sitekey=\"your-real-sitekey\"></div>\nReplace your production secret key with a test secret key.\n// Environment-based configuration const SECRET_KEY = process.env.NODE_ENV === 'production' ? process.env.TURNSTILE_SECRET_KEY : '1x0000000000000000000000000000000AA'; // Use in validation const validation = await validateTurnstile(token, SECRET_KEY);\nSet up different keys for different environments.\n# .env.development TURNSTILE_SITEKEY=1x00000000000000000000AA TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA # .env.test TURNSTILE_SITEKEY=2x00000000000000000000AB TURNSTILE_SECRET_KEY=2x0000000000000000000000000000000AA # .env.production TURNSTILE_SITEKEY=your-real-sitekey TURNSTILE_SECRET_KEY=your-real-secret-key\nTest sitekeys generate a dummy token: XXXX.DUMMY.TOKEN.XXXX\nTest secret keys: Only accept the dummy token, reject real tokens.\nProduction secret keys: Only accept real tokens, reject dummy tokens.\nSuccess responsejson\n{ \"success\": true, \"challenge_ts\": \"2022-02-28T15:14:30.096Z\", \"hostname\": \"localhost\", \"error-codes\": [], \"action\": \"test\", \"cdata\": \"test-data\" }\nFailure responsejson\n{ \"success\": false, \"error-codes\": [\"invalid-input-response\"] }\nToken already redeemedjson\n{ \"success\": false, \"error-codes\": [\"timeout-or-duplicate\"] }\nTest sitekey Test secret key \nTest case\n1x00000000000000000000AA\t1x0000000000000000000000000000000AA\tThis combination will always result in successful validation.\t\n2x00000000000000000000AB\t2x0000000000000000000000000000000AA\tThis combination will always fail.\t\n1x00000000000000000000AA\t3x0000000000000000000000000000000AA\tThis combination will always fail with \"timeout-or-duplicate\" error.\t\n3x00000000000000000000FF\t1x0000000000000000000000000000000AA\tThis combination forces an interactive challenge. After the visitor solves it, server-side validation always succeeds.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Test your Turnstile implementation · Cloudflare Turnstile docs\n\nUse dummy sitekeys and secret keys to test your Turnstile implementation without triggering real challenges that would interfere with automated testing suites.\n\nAutomated testing suites (like Selenium, Cypress, or Playwright) are detected as bots by Turnstile, which can cause:\n\n*   Tests to fail when Turnstile blocks automated browsers\n*   Unpredictable test results due to challenge variations\n*   Interference with form submission testing\n*   Difficulty testing complete user flows\n\nDummy keys solve this by providing predictable, controlled responses that work with automated testing tools.\n\n| Sitekey | Behavior | Widget Type | Use case |\n| --- | --- | --- | --- |\n| `1x00000000000000000000AA` | Always passes | Visible | Test successful form submissions |\n| `2x00000000000000000000AB` | Always fails | Visible | Test error handling and retry logic |\n| `1x00000000000000000000BB` | Always passes | Invisible | Test invisible widget success flows |\n| `2x00000000000000000000BB` | Always fails | Invisible | Test invisible widget error handling |\n| `3x00000000000000000000FF` | Forces interactive challenge | Visible | Test user interaction scenarios |\n\nUse these secret keys for server-side validation testing:\n\n| Secret key | Behavior | Use case |\n| --- | --- | --- |\n| `1x0000000000000000000000000000000AA` | Always passes validation | Test successful token validation |\n| `2x0000000000000000000000000000000AA` | Always fails validation | Test validation error handling |\n| `3x0000000000000000000000000000000AA` | Returns \"token already spent\" error | Test duplicate token handling |\n\n* * *\n\nTest keys work on any domain, including:\n\n*   `localhost`\n*   `127.0.0.1`\n*   `0.0.0.0`\n*   Any development domain\n\nCloudflare recommends that sitekeys used in production do not allow local domains (`localhost` or `127.0.0.1`), but users can choose to add local domains to the list of allowed domains under [Hostname Management](https://developers.cloudflare.com/turnstile/additional-configuration/hostname-management/). Dummy sitekeys can be used from any domain, including on `localhost`.\n\nReplace your production sitekey with a test sitekey.\n\n```\n<!-- Development/Testing -->\n<div class=\"cf-turnstile\" data-sitekey=\"1x00000000000000000000AA\"></div>\n\n<!-- Production -->\n<div class=\"cf-turnstile\" data-sitekey=\"your-real-sitekey\"></div>\n```\n\nReplace your production secret key with a test secret key.\n\n```\n// Environment-based configuration\nconst SECRET_KEY = process.env.NODE_ENV === 'production' \n  ? process.env.TURNSTILE_SECRET_KEY \n  : '1x0000000000000000000000000000000AA';\n\n// Use in validation\nconst validation = await validateTurnstile(token, SECRET_KEY);\n```\n\nSet up different keys for different environments.\n\n```\n\n# .env.development\nTURNSTILE_SITEKEY=1x00000000000000000000AA\nTURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA\n\n# .env.test  \nTURNSTILE_SITEKEY=2x00000000000000000000AB\nTURNSTILE_SECRET_KEY=2x0000000000000000000000000000000AA\n\n# .env.production\nTURNSTILE_SITEKEY=your-real-sitekey\nTURNSTILE_SECRET_KEY=your-real-secret-key\n```\n\n* * *\n\nTest sitekeys generate a dummy token: `XXXX.DUMMY.TOKEN.XXXX`\n\n*   Test secret keys: Only accept the dummy token, reject real tokens.\n*   Production secret keys: Only accept real tokens, reject dummy tokens.\n\nSuccess responsejson\n\n```\n{\n  \"success\": true,\n  \"challenge_ts\": \"2022-02-28T15:14:30.096Z\",\n  \"hostname\": \"localhost\",\n  \"error-codes\": [],\n  \"action\": \"test\",\n  \"cdata\": \"test-data\"\n}\n```\n\nFailure responsejson\n\n```\n{\n  \"success\": false,\n  \"error-codes\": [\"invalid-input-response\"]\n}\n```\n\nToken already redeemedjson\n\n```\n{\n  \"success\": false,\n  \"error-codes\": [\"timeout-or-duplicate\"]\n}\n```\n\n* * *\n\n| Test sitekey | Test secret key | Test case |\n| --- | --- | --- |\n| `1x00000000000000000000AA` | `1x0000000000000000000000000000000AA` | This combination will always result in successful validation. |\n| `2x00000000000000000000AB` | `2x0000000000000000000000000000000AA` | This combination will always fail. |\n| `1x00000000000000000000AA` | `3x0000000000000000000000000000000AA` | This combination will always fail with \"timeout-or-duplicate\" error. |\n| `3x00000000000000000000FF` | `1x0000000000000000000000000000000AA` | This combination forces an interactive challenge. After the visitor solves it, server-side validation always succeeds. |",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

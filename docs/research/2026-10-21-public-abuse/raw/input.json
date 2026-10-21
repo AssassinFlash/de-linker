@@ -1,0 +1,37 @@
+{
+  "startUrls": [
+    {
+      "url": "https://developer.wordpress.org/apis/security/nonces/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/turnstile/plans/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/turnstile/get-started/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/turnstile/troubleshooting/"
+    },
+    {
+      "url": "https://developers.cloudflare.com/turnstile/additional-configuration/widget-configurations/"
+    },
+    {
+      "url": "https://akismet.com/developers/comment-check/"
+    },
+    {
+      "url": "https://akismet.com/pricing/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 8,
+  "maxConcurrency": 3,
+  "saveMarkdown": true,
+  "removeCookieWarnings": true,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

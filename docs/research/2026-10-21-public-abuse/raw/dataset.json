@@ -1,0 +1,942 @@
+[
+  {
+    "url": "https://developers.cloudflare.com/turnstile/plans/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/plans/",
+      "loadedTime": "2026-10-21T14:33:47.760Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/plans/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 103634,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/plans/",
+      "title": "Cloudflare Turnstile plans · Cloudflare Turnstile docs",
+      "description": "Compare Turnstile feature availability and widget limits across plans.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Plans"
+        },
+        {
+          "property": "og:title",
+          "content": "Cloudflare Turnstile plans · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Compare Turnstile feature availability and widget limits across plans."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/plans/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/turnstile/plans/og.png?v=e352dcd51569d53d"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/turnstile/plans/og.png?v=e352dcd51569d53d"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "@id": "https://developers.cloudflare.com/turnstile/plans/#page",
+          "headline": "Plans",
+          "description": "Compare Turnstile feature availability and widget limits across plans.",
+          "url": "https://developers.cloudflare.com/turnstile/plans/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/turnstile/plans/og.png?v=e352dcd51569d53d",
+          "dateModified": "2026-08-14",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          }
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e0fab889d843b5-EWR",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=bH6amlSggbA28vvtl.A1Yavj73FOGL9XMgdBoto159I-1792593227.6029875-1.0.1.1-6U4cES_8TCWACN4xbCJ6..ee25i9e8h5IlUh4JbFUd7PDXuSr_EYgX2PMxoPjW9FxP2Bc0rBFRzkdNfni5xFeyitsJCD8DNRZfck4BCB7aJxs98oA1Bck9C73a_t10mjyLpmJQBQ.ybcsS5jD3BlX6VJXdMDKY3K3qOfm_eK9DvCtKkxkIz4arsq52OaD9wzAtLztEMIp1_hKTJj3e4wAg; report-to cf-jgqjdnwbugvewspm",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:33:47 GMT",
+        "report-to": "{\"group\":\"cf-jgqjdnwbugvewspm\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=bH6amlSggbA28vvtl.A1Yavj73FOGL9XMgdBoto159I-1792593227.6029875-1.0.1.1-6U4cES_8TCWACN4xbCJ6..ee25i9e8h5IlUh4JbFUd7PDXuSr_EYgX2PMxoPjW9FxP2Bc0rBFRzkdNfni5xFeyitsJCD8DNRZfck4BCB7aJxs98oA1Bck9C73a_t10mjyLpmJQBQ.ybcsS5jD3BlX6VJXdMDKY3K3qOfm_eK9DvCtKkxkIz4arsq52OaD9wzAtLztEMIp1_hKTJj3e4wAg\"}]}",
+        "reporting-endpoints": "cf-jgqjdnwbugvewspm=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=bH6amlSggbA28vvtl.A1Yavj73FOGL9XMgdBoto159I-1792593227.6029875-1.0.1.1-6U4cES_8TCWACN4xbCJ6..ee25i9e8h5IlUh4JbFUd7PDXuSr_EYgX2PMxoPjW9FxP2Bc0rBFRzkdNfni5xFeyitsJCD8DNRZfck4BCB7aJxs98oA1Bck9C73a_t10mjyLpmJQBQ.ybcsS5jD3BlX6VJXdMDKY3K3qOfm_eK9DvCtKkxkIz4arsq52OaD9wzAtLztEMIp1_hKTJj3e4wAg\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=16,cfOrigin;dur=0,cfWorker;dur=14",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=2szNgZNrN0YaE4lkN7lDQwAvhStMR1wfOK8K4VoVw6c-1792593227.6029875-1.0.1.1-UpdqEwvdLIBtM_GFqftqzj2CwvuHu0AbrYZGr8CtXnsH9jAcwNtTxW8wnaiVpi3pnIsxalVlBel5LTr5ud59cn6aT72YUSPb5SfPnZOI8XW3WZLxxSNsZEPWuSSHgPvW; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:03:47 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Cloudflare Turnstile plans · Cloudflare Turnstile docs\nCloudflare Turnstile is available on the following plans:\nFree plan\nThe Free plan is best for:\nPersonal websites and blogs\nSmall to medium businesses\nDevelopment and testing environments\nMost production applications\nEnterprise plan\nThe Enterprise plan is best for:\nLarge enterprises with high-volume traffic\nOrganizations requiring advanced bot detection and device fingerprinting\nOrganizations requiring custom branding, companies with strict compliance requirements\nMulti-domain or complex hosting environments\nFree Enterprise \nPricing\tFree\tContact Sales\t\nNumber of widgets\tUp to 20 widgets\tUnlimited\t\nAll widget types\tYes\tYes\t\nUnlimited challenges (traffic or verification requests)\tYes\tYes\t\nHostname management\t10 hostnames per widget\tMaximum of 200 hostnames per widget\t\nAny hostname widget (no preconfigured hostnames)\tNo\tYes\t\nAnalytics lookback\t7 days maximum\t30 days maximum\t\nPre-clearance support\tYes\tYes\t\nEphemeral IDs\tNo\tYes\t\nOfflabel (remove Cloudflare branding)\tNo\tYes\t\nWCAG 2.2 AAA compliance\tYes\tYes\t\nCommunity support\tYes\tYes",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Cloudflare Turnstile plans · Cloudflare Turnstile docs\n\nCloudflare Turnstile is available on the following plans:\n\nFree plan\n\nThe Free plan is best for:\n\n*   Personal websites and blogs\n*   Small to medium businesses\n*   Development and testing environments\n*   Most production applications\n\nEnterprise plan\n\nThe Enterprise plan is best for:\n\n*   Large enterprises with high-volume traffic\n*   Organizations requiring advanced bot detection and device fingerprinting\n*   Organizations requiring custom branding, companies with strict compliance requirements\n*   Multi-domain or complex hosting environments\n\n|     | Free | Enterprise |\n| --- | --- | --- |\n| Pricing | Free | Contact Sales |\n| Number of widgets | Up to 20 widgets | Unlimited |\n| All widget types | Yes | Yes |\n| Unlimited challenges (traffic or verification requests) | Yes | Yes |\n| Hostname management | 10 hostnames per widget | Maximum of 200 hostnames per widget |\n| Any hostname widget (no preconfigured hostnames) | No  | Yes |\n| Analytics lookback | 7 days maximum | 30 days maximum |\n| Pre-clearance support | Yes | Yes |\n| Ephemeral IDs | No  | Yes |\n| Offlabel (remove Cloudflare branding) | No  | Yes |\n| WCAG 2.2 AAA compliance | Yes | Yes |\n| Community support | Yes | Yes |",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developer.wordpress.org/apis/security/nonces/",
+    "crawl": {
+      "loadedUrl": "https://developer.wordpress.org/apis/security/nonces/",
+      "loadedTime": "2026-10-21T14:33:48.827Z",
+      "referrerUrl": "https://developer.wordpress.org/apis/security/nonces/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 199751,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developer.wordpress.org/apis/security/nonces/",
+      "title": "Nonces – Common APIs Handbook | Developer.WordPress.org",
+      "description": "A nonce is a “number used once” to help protect URLs and forms from certain types of misuse, malicious or otherwise.…",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Nonces – Common APIs Handbook | Developer.WordPress.org"
+        },
+        {
+          "property": "og:site_name",
+          "content": "WordPress Developer Resources"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://developer.wordpress.org/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developer.wordpress.org/wp-content/themes/wporg-developer-2023/images/opengraph-image.png"
+        },
+        {
+          "property": "og:description",
+          "content": "A nonce is a “number used once” to help protect URLs and forms from certain types of misuse, malicious or otherwise.…"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "alt-svc": "clear",
+        "content-encoding": "br",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Wed, 21 Oct 2026 14:33:48 GMT",
+        "link": "<https://developer.wordpress.org/wp-json/>; rel=\"https://api.w.org/\", <https://developer.wordpress.org/wp-json/wp/v2/apis-handbook/144474>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://developer.wordpress.org/?p=144474>; rel=shortlink",
+        "server": "nginx",
+        "vary": "Accept-Encoding, accept, content-type",
+        "x-frame-options": "SAMEORIGIN",
+        "x-nc": "EXPIRED dca 1",
+        "x-olaf": "â",
+        "x-remembering": "Eric Binnion <https://friendsofericbinnion.wordpress.com/>"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Nonces – Common APIs Handbook\nA nonce is a “number used once” to help protect URLs and forms from certain types of misuse, malicious or otherwise.\nTechnically, WordPress nonces aren’t strictly numbers; they are a hash made up of numbers and letters. Nor are they used only once: they have a limited “lifetime” after which they expire. During that time period, the same nonce will be generated for a given user in a given context. The nonce for that action will remain the same for that user until that nonce life cycle has completed.\nWordPress’s security tokens are called “nonces” (despite the above-noted differences from true nonces) because they serve much the same purpose as nonces do. They help protect against several types of attacks including CSRF, but do not protect against replay attacks because they aren’t checked for one-time use. Nonces should never be relied on for authentication, authorization, or access control. Protect your functions using current_user_can(), and always assume nonces can be compromised.\nWhy use a nonce?\nFor an example of why a nonce is used, consider that an admin screen might generate a URL like this that trashes post number 123.\nhttp://example.com/wp-admin/post.php?post=123&action=trash\nWhen you go to that URL, WordPress will validate your authentication cookie information and, if you’re allowed to delete that post, will proceed to delete it. What an attacker can do with this is make your browser go to that URL without your knowledge. For example, the attacker could craft a disguised link on a 3rd party page like this:\n<img src=\"http://example.com/wp-admin/post.php?post=123&action=trash\" />\nThis would trigger your browser to make a request to WordPress, and the browser would automatically attach your authentication cookie and WordPress would consider this a valid request.\nAdding a nonce would prevent this. For example, when using a nonce, the URLs that WordPress generate for the user look like this:\nhttp://example.com/wp-admin/post.php?post=123&action=trash&_wpnonce=b192fc4204\nIf anyone attempts to trash post number 123 without having the correct nonce generated by WordPress and given to the user, WordPress will send a “403 Forbidden” response to the browser.\nCreating a nonce\nYou can create a nonce and add it to the query string in a URL, you can add it in a hidden field in a form, or you can use it some other way.\nFor nonces that are to be used in AJAX requests, it is common to add the nonce to a hidden field, from which JavaScript code can fetch it.\nNote that the nonces are unique to the current user’s session, so if a user logs in or out asynchronously any nonces on the page will no longer be valid.\nCustomize nonces for guests (non logged-in users)\nWordPress core, by default, generates the same nonce for guests as they have the same user ID (value 0). That is, it does not prevent guests from CSRF attacks. To enhance this security aspect for critical actions, you can develop a session mechanism for your guests, and hook to the nonce_user_logged_out filter for replacing the user ID value 0 with another random ID from the session mechanism.\nAdding a nonce to a URL\nTo add a nonce to a URL, call wp_nonce_url() specifying the bare URL and a string representing the action. For example:\n$complete_url = wp_nonce_url( $bare_url, 'trash-post_'.$post->ID );\nFor maximum protection, ensure that the string representing the action is as specific as possible.\nBy default, wp_nonce_url() adds a field named _wpnonce. You can specify a different name in the function call. For example:\n$complete_url = wp_nonce_url( $bare_url, 'trash-post_'.$post->ID, 'my_nonce' );\nAdding a nonce to a form\nTo add a nonce to a form, call wp_nonce_field() specifying a string representing the action. By default wp_nonce_field() generates two hidden fields, one whose value is the nonce and one whose value is the current URL (the referrer), and it echoes the result. For example, this call:\nwp_nonce_field( 'delete-comment_'.$comment_id );\nmight echo something like:\n<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"796c7766b1\" /> <input type=\"hidden\" name=\"_wp_http_referer\" value=\"/wp-admin/edit-comments.php\" />\nFor maximum protection, ensure that the string representing the action is as specific as possible.\nYou can specify a different name for the nonce field, you can specify that you do not want a referrer field, and you can specify that you want the result to be returned and not echoed. For details of the syntax, see: wp_nonce_field().\nCreating a nonce for use in some other way\nTo create a nonce for use in some other way, call wp_create_nonce() specifying a string representing the action. For example:\n$nonce = wp_create_nonce( 'my-action_'.$post->ID );\nThis simply returns the nonce itself. For example: 295a686963\nFor maximum protection, ensure that the string representing the action is as specific as possible.\nVerifying a nonce\nYou can verify a nonce that was passed in a URL, a form in an admin screen, an AJAX request, or in some other context.\nVerifying a nonce passed from an admin screen\nTo verify a nonce that was passed in a URL or a form in an admin screen, call check_admin_referer() specifying the string representing the action.\nFor example:\ncheck_admin_referer( 'delete-comment_'.$comment_id );\nThis call checks the nonce and the referrer, and if the check fails it takes the normal action (terminating script execution with a “403 Forbidden” response and an error message).\nIf you did not use the default field name (_wpnonce) when you created the nonce, specify the field name.\nFor example:\ncheck_admin_referer( 'delete-comment_'.$comment_id, 'my_nonce' );\nVerifying a nonce passed in an AJAX request\nTo verify a nonce that was passed in an AJAX request, call check_ajax_referer() specifying the string representing the action. For example:\ncheck_ajax_referer( 'process-comment' );\nThis call checks the nonce (but not the referrer), and if the check fails then by default it terminates script execution.\nIf you did not use one of the default field names (_wpnonce or _ajax_nonce) when you created the nonce, or if you want to take some other action instead of terminating execution, you can specify additional parameters. For details, see: check_ajax_referer().\nVerifying a nonce passed in some other context\nTo verify a nonce passed in some other context, call wp_verify_nonce() specifying the nonce and the string representing the action.\nFor example:\nwp_verify_nonce( $_POST['my_nonce'], 'process-comment'.$comment_id );\nIf the result is false, do not continue processing the request. Instead, take some appropriate action. The usual action is to call wp_nonce_ays(), which sends a “403 Forbidden” response to the browser.\nModifying the nonce system\nYou can modify the nonce system by adding various actions and filters.\nModifying the nonce lifetime\nBy default, a nonce has a lifetime of one day. After that, the nonce is no longer valid even if it matches the action string. To change the lifetime, add a nonce_life filter specifying the lifetime in seconds.\nFor example, to change the lifetime to four hours:\nadd_filter( 'nonce_life', function () { return 4 * HOUR_IN_SECONDS; } );\nPerforming additional verification\nTo perform additional verification when check_admin_referrer() has found that the nonce and the referrer are valid, add a check_admin_referer action.\nFor example:\nfunction wporg_additional_check ( $action, $result ) { ... } add_action( 'check_admin_referer', 'wporg_additional_check', 10, 2 );\nFor check_ajax_referer() add a check_ajax_referer action in the same way.\nChanging the error message\nYou can change the error message sent when a nonce is not valid, by using the translation system. For example:\nfunction my_nonce_message ($translation) { if ($translation === 'Are you sure you want to do this?') { return 'No! No! No!'; } return $translation; } add_filter('gettext', 'my_nonce_message');\nAdditional information\nThis section contains additional information about the nonce system in WordPress that might occasionally be useful.\nNonce lifetime\nNote that just as a WordPress nonce is not “a number used once”, nonce lifetime isn’t really nonce lifetime. WordPress uses a system with two ticks (half of the lifetime) and validates nonces from the current tick and the last tick. In default settings (24h lifetime) this means that the time information in the nonce is related to how many 12h periods of time have passed since the Unix epoch. This means that a nonce made between midday and midnight will have a lifetime until midday the next day. The actual lifetime is thus variable between 12 and 24 hours.\nWhen a nonce is valid, the functions that validate nonces return the current tick number, 1 or 2. You could use this information, for example, to refresh nonces that are in their second tick so that they do not expire.\nNonce security\nNonces are generated using a key and salt that are unique to your site if you have installed WordPress correctly. NONCE_KEY and NONCE_SALT are defined in your wp-config.php file, and the file contains comments that provide more information.\nNonces should never be relied on for authentication or authorization, or for access control. Protect your functions using current_user_can(), always assume Nonces can be compromised.\nReplacing the nonce system\nSome of the functions that make up the nonce system are pluggable so that you can replace them by supplying your own functions.\nTo change the way admin requests or AJAX requests are verified, you can replace check_admin_referrer() or check_ajax_referrer(), or both.\nTo replace the nonce system with some other nonce system, you can replace wp_create_nonce(), wp_verify_nonce() and wp_nonce_tick().\nNonce functions: wp_nonce_ays(), wp_nonce_field(), wp_nonce_url(), wp_verify_nonce(), wp_create_nonce(), check_admin_referer(), check_ajax_referer(), wp_referer_field()\nNonce hooks: nonce_life, nonce_user_logged_out, explain_nonce_(verb)-(noun), check_admin_referer",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Nonces – Common APIs Handbook\n\nA nonce is a “number used once” to help protect URLs and forms from certain types of misuse, malicious or otherwise.\n\nTechnically, WordPress nonces aren’t strictly numbers; they are a hash made up of numbers and letters. Nor are they used only once: they have a limited “lifetime” after which they expire. During that time period, the same nonce will be generated for a given user in a given context. The nonce for that action will remain the same for that user until that nonce life cycle has completed.\n\nWordPress’s security tokens are called “nonces” (despite the above-noted differences from true nonces) because they serve much the same purpose as nonces do. They help protect against several types of attacks including CSRF, but do not protect against replay attacks because they aren’t checked for one-time use. Nonces should never be relied on for authentication, authorization, or access control. Protect your functions using `current_user_can()`, and always assume nonces can be compromised.\n\n## [Why use a nonce?](https://developer.wordpress.org/apis/security/nonces/#why-use-a-nonce)\n\nFor an example of why a nonce is used, consider that an admin screen might generate a URL like this that trashes post number 123.\n\n`http://example.com/wp-admin/post.php?post=123&action=trash`\n\nWhen you go to that URL, WordPress will validate your authentication cookie information and, if you’re allowed to delete that post, will proceed to delete it. What an attacker can do with this is make your browser go to that URL without your knowledge. For example, the attacker could craft a disguised link on a 3rd party page like this:\n\n`<img src=\"http://example.com/wp-admin/post.php?post=123&action=trash\" />`\n\nThis would trigger your browser to make a request to WordPress, and the browser would automatically attach your authentication cookie and WordPress would consider this a valid request.\n\nAdding a nonce would prevent this. For example, when using a nonce, the URLs that WordPress generate for the user look like this:\n\n`http://example.com/wp-admin/post.php?post=123&action=trash&_wpnonce=b192fc4204`\n\nIf anyone attempts to trash post number 123 without having the correct nonce generated by WordPress and given to the user, WordPress will send a “403 Forbidden” response to the browser.\n\n## [Creating a nonce](https://developer.wordpress.org/apis/security/nonces/#creating-a-nonce)\n\nYou can create a nonce and add it to the query string in a URL, you can add it in a hidden field in a form, or you can use it some other way.\n\nFor nonces that are to be used in AJAX requests, it is common to add the nonce to a hidden field, from which JavaScript code can fetch it.\n\nNote that the nonces are unique to the current user’s session, so if a user logs in or out asynchronously any nonces on the page will no longer be valid.\n\n### [Customize nonces for guests (non logged-in users)](https://developer.wordpress.org/apis/security/nonces/#customize-nonces-for-guests-non-logged-in-users)\n\nWordPress core, by default, generates the same nonce for guests as they have the same user ID (value `0`). That is, it does not prevent guests from CSRF attacks. To enhance this security aspect for critical actions, you can develop a session mechanism for your guests, and hook to the [nonce\\_user\\_logged\\_out](https://developer.wordpress.org/reference/hooks/nonce_user_logged_out/) filter for replacing the user ID value `0` with another random ID from the session mechanism.\n\n### [Adding a nonce to a URL](https://developer.wordpress.org/apis/security/nonces/#adding-a-nonce-to-a-url)\n\nTo add a nonce to a URL, call `wp_nonce_url()` specifying the bare URL and a string representing the action. For example:\n\n```\n$complete_url = wp_nonce_url( $bare_url, 'trash-post_'.$post->ID );\n```\n\nFor maximum protection, ensure that the string representing the action is as specific as possible.\n\nBy default, `wp_nonce_url()` adds a field named `_wpnonce`. You can specify a different name in the function call. For example:\n\n```\n$complete_url = wp_nonce_url( $bare_url, 'trash-post_'.$post->ID, 'my_nonce' );\n```\n\n### [Adding a nonce to a form](https://developer.wordpress.org/apis/security/nonces/#adding-a-nonce-to-a-form)\n\nTo add a nonce to a form, call `wp_nonce_field()` specifying a string representing the action. By default `wp_nonce_field()` generates two hidden fields, one whose value is the nonce and one whose value is the current URL (the referrer), and it echoes the result. For example, this call:\n\n```\nwp_nonce_field( 'delete-comment_'.$comment_id );\n```\n\nmight echo something like:\n\n```\n<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"796c7766b1\" />\n<input type=\"hidden\" name=\"_wp_http_referer\" value=\"/wp-admin/edit-comments.php\" />\n```\n\nFor maximum protection, ensure that the string representing the action is as specific as possible.\n\nYou can specify a different name for the nonce field, you can specify that you do not want a referrer field, and you can specify that you want the result to be returned and not echoed. For details of the syntax, see: `wp_nonce_field()`.\n\n### [Creating a nonce for use in some other way](https://developer.wordpress.org/apis/security/nonces/#creating-a-nonce-for-use-in-some-other-way)\n\nTo create a nonce for use in some other way, call `wp_create_nonce()` specifying a string representing the action. For example:\n\n```\n$nonce = wp_create_nonce( 'my-action_'.$post->ID );\n```\n\nThis simply returns the nonce itself. For example: `295a686963`\n\nFor maximum protection, ensure that the string representing the action is as specific as possible.\n\n### [Verifying a nonce](https://developer.wordpress.org/apis/security/nonces/#verifying-a-nonce)\n\nYou can verify a nonce that was passed in a URL, a form in an admin screen, an AJAX request, or in some other context.\n\nVerifying a nonce passed from an admin screen  \nTo verify a nonce that was passed in a URL or a form in an admin screen, call `check_admin_referer()` specifying the string representing the action.\n\nFor example:\n\n```\ncheck_admin_referer( 'delete-comment_'.$comment_id );\n```\n\nThis call checks the nonce and the referrer, and if the check fails it takes the normal action (terminating script execution with a “403 Forbidden” response and an error message).\n\nIf you did not use the default field name (`_wpnonce`) when you created the nonce, specify the field name.\n\nFor example:\n\n```\ncheck_admin_referer( 'delete-comment_'.$comment_id, 'my_nonce' );\n```\n\n### [Verifying a nonce passed in an AJAX request](https://developer.wordpress.org/apis/security/nonces/#verifying-a-nonce-passed-in-an-ajax-request)\n\nTo verify a nonce that was passed in an AJAX request, call [check\\_ajax\\_referer()](https://developer.wordpress.org/reference/functions/check_ajax_referer/) specifying the string representing the action. For example:\n\n```\ncheck_ajax_referer( 'process-comment' );\n```\n\nThis call checks the nonce (but not the referrer), and if the check fails then by default it terminates script execution.\n\nIf you did not use one of the default field names (`_wpnonce` or `_ajax_nonce`) when you created the nonce, or if you want to take some other action instead of terminating execution, you can specify additional parameters. For details, see: `check_ajax_referer()`.\n\n### [Verifying a nonce passed in some other context](https://developer.wordpress.org/apis/security/nonces/#verifying-a-nonce-passed-in-some-other-context)\n\nTo verify a nonce passed in some other context, call `wp_verify_nonce()` specifying the nonce and the string representing the action.\n\nFor example:\n\n```\nwp_verify_nonce( $_POST['my_nonce'], 'process-comment'.$comment_id );\n```\n\nIf the result is false, do not continue processing the request. Instead, take some appropriate action. The usual action is to call `wp_nonce_ays()`, which sends a “403 Forbidden” response to the browser.\n\n## [Modifying the nonce system](https://developer.wordpress.org/apis/security/nonces/#modifying-the-nonce-system)\n\nYou can modify the nonce system by adding various actions and filters.\n\n### [Modifying the nonce lifetime](https://developer.wordpress.org/apis/security/nonces/#modifying-the-nonce-lifetime)\n\nBy default, a nonce has a lifetime of one day. After that, the nonce is no longer valid even if it matches the action string. To change the lifetime, add a nonce\\_life filter specifying the lifetime in seconds.\n\nFor example, to change the lifetime to four hours:\n\n```\nadd_filter( 'nonce_life', function () { return 4 * HOUR_IN_SECONDS; } );\n```\n\n### [Performing additional verification](https://developer.wordpress.org/apis/security/nonces/#performing-additional-verification)\n\nTo perform additional verification when `check_admin_referrer()` has found that the nonce and the referrer are valid, add a `check_admin_referer` action.\n\nFor example:\n\n```\nfunction wporg_additional_check ( $action, $result ) {\n    ...\n}\nadd_action( 'check_admin_referer', 'wporg_additional_check', 10, 2 );\n```\n\nFor `check_ajax_referer()` add a `check_ajax_referer` action in the same way.\n\n### [Changing the error message](https://developer.wordpress.org/apis/security/nonces/#changing-the-error-message)\n\nYou can change the error message sent when a nonce is not valid, by using the translation system. For example:\n\n```\nfunction my_nonce_message ($translation) {\n    if ($translation === 'Are you sure you want to do this?') {\n       return 'No! No! No!';\n    } \n\n    return $translation;\n}\n\nadd_filter('gettext', 'my_nonce_message');\n```\n\n## [Additional information](https://developer.wordpress.org/apis/security/nonces/#additional-information)\n\nThis section contains additional information about the nonce system in WordPress that might occasionally be useful.\n\n### [Nonce lifetime](https://developer.wordpress.org/apis/security/nonces/#nonce-lifetime)\n\nNote that just as a WordPress nonce is not “a number used once”, nonce lifetime isn’t really nonce lifetime. WordPress uses a system with two ticks (half of the lifetime) and validates nonces from the current tick and the last tick. In default settings (24h lifetime) this means that the time information in the nonce is related to how many 12h periods of time have passed since the Unix epoch. This means that a nonce made between midday and midnight will have a lifetime until midday the next day. The actual lifetime is thus variable between 12 and 24 hours.\n\nWhen a nonce is valid, the functions that validate nonces return the current tick number, 1 or 2. You could use this information, for example, to refresh nonces that are in their second tick so that they do not expire.\n\n### [Nonce security](https://developer.wordpress.org/apis/security/nonces/#nonce-security)\n\nNonces are generated using a key and salt that are unique to your site if you have installed WordPress correctly. `NONCE_KEY` and `NONCE_SALT` are defined in your `wp-config.php` file, and the file contains comments that provide more information.\n\nNonces should never be relied on for authentication or authorization, or for access control. Protect your functions using `current_user_can()`, always assume Nonces can be compromised.\n\n### [Replacing the nonce system](https://developer.wordpress.org/apis/security/nonces/#replacing-the-nonce-system)\n\nSome of the functions that make up the nonce system are pluggable so that you can replace them by supplying your own functions.\n\nTo change the way admin requests or AJAX requests are verified, you can replace `check_admin_referrer()` or `check_ajax_referrer()`, or both.\n\nTo replace the nonce system with some other nonce system, you can replace `wp_create_nonce()`, `wp_verify_nonce()` and `wp_nonce_tick()`.\n\nNonce functions: `wp_nonce_ays()`, `wp_nonce_field()`, `wp_nonce_url()`, `wp_verify_nonce()`, `wp_create_nonce()`, `check_admin_referer()`, `check_ajax_referer()`, `wp_referer_field()`\n\nNonce hooks: `nonce_life`, `nonce_user_logged_out`, `explain_nonce_(verb)-(noun)`, `check_admin_referer`",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/",
+      "loadedTime": "2026-10-21T14:33:48.805Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 223350,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/",
+      "title": "Validate the token · Cloudflare Turnstile docs",
+      "description": "Validate Turnstile tokens on your server with the siteverify API.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Validate the token"
+        },
+        {
+          "property": "og:title",
+          "content": "Validate the token · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Validate Turnstile tokens on your server with the siteverify API."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/og.png?v=58220cfac6c19059"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/og.png?v=58220cfac6c19059"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          "@id": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/#page",
+          "headline": "Validate the token",
+          "description": "Validate Turnstile tokens on your server with the siteverify API.",
+          "url": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/turnstile/get-started/server-side-validation/og.png?v=58220cfac6c19059",
+          "dateModified": "2026-09-16",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          },
+          "keywords": [
+            "REST API"
+          ]
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e0fabdaaa8b66c-DFW",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=wheX6qFUcFeojRpWwWA66hJcuEoy628hZXrb5fEQBRM-1792593228.4305263-1.0.1.1-19V52QdhpRPf6kgi5Q0LneXNe7gwVqZ5OYc03XEHUcFZoK22MpDyLYuJG65lEJ5wAN91FYeFbVUGeSyCxqyDh0PTv0UeWXFP4CTfAlKmpwkQxjFimAotSKbPMMz.QOCeCHtp5QY9lEGGWH46BPmMaP81YWtvlHMd6X1GpnjtNUwKahbA1rLP.I4bQDcmaZaAPmq3EVNqcHyNY4FqLgC0Jw; report-to cf-pszdfbjzseoygapj",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:33:48 GMT",
+        "report-to": "{\"group\":\"cf-pszdfbjzseoygapj\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=wheX6qFUcFeojRpWwWA66hJcuEoy628hZXrb5fEQBRM-1792593228.4305263-1.0.1.1-19V52QdhpRPf6kgi5Q0LneXNe7gwVqZ5OYc03XEHUcFZoK22MpDyLYuJG65lEJ5wAN91FYeFbVUGeSyCxqyDh0PTv0UeWXFP4CTfAlKmpwkQxjFimAotSKbPMMz.QOCeCHtp5QY9lEGGWH46BPmMaP81YWtvlHMd6X1GpnjtNUwKahbA1rLP.I4bQDcmaZaAPmq3EVNqcHyNY4FqLgC0Jw\"}]}",
+        "reporting-endpoints": "cf-pszdfbjzseoygapj=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=wheX6qFUcFeojRpWwWA66hJcuEoy628hZXrb5fEQBRM-1792593228.4305263-1.0.1.1-19V52QdhpRPf6kgi5Q0LneXNe7gwVqZ5OYc03XEHUcFZoK22MpDyLYuJG65lEJ5wAN91FYeFbVUGeSyCxqyDh0PTv0UeWXFP4CTfAlKmpwkQxjFimAotSKbPMMz.QOCeCHtp5QY9lEGGWH46BPmMaP81YWtvlHMd6X1GpnjtNUwKahbA1rLP.I4bQDcmaZaAPmq3EVNqcHyNY4FqLgC0Jw\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=15,cfOrigin;dur=0,cfWorker;dur=17",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=VqBazynGR_Bhwk58b10vbdOoBMIJe.FQNiDl5MMX5wQ-1792593228.4305263-1.0.1.1-WmjcF7.FzkBJchxKvorRTv4HmSgrKQ_6aVOMWuNLZZemivn.cJg7KIfWmcW7syHnusmv0qjaaJpSHk.zGzWinccfD.NgJ2IroZQqS654bZNQd93arJ8RPFbF4orooWqZ; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:03:48 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Validate the token · Cloudflare Turnstile docs\nLearn how to securely validate Turnstile tokens on your server using the Siteverify API.\nClient generates token: Visitor completes Turnstile challenge on your webpage.\nToken sent to server: Form submission includes the Turnstile token.\nServer validates token: Your server calls Cloudflare's Siteverify API.\nCloudflare responds: Returns success or failure and additional data.\nServer takes action: Allow or reject the original request based on validation.\nEndpointshell\nPOST https://challenges.cloudflare.com/turnstile/v0/siteverify\nThe API accepts both application/x-www-form-urlencoded and application/json requests, but always returns JSON responses.\nParameter Required Description \nsecret\tYes\tYour widget's secret key from the Cloudflare dashboard\t\nresponse\tYes\tThe token from the client-side widget\t\nremoteip\tNo\tThe visitor's IP address\t\nidempotency_key\tNo\tA UUID you generate to safely retry validation requests\t\nMaximum length: 2048 characters\nValidity period: 300 seconds (5 minutes) from generation\nSingle use: Each token can only be validated once\nAutomatic expiry: Tokens automatically expire and cannot be reused\nThe validation token issued by Turnstile is valid for five minutes. If a user submits the form after this period, the token is considered expired. In this scenario, the server-side verification API will return a failure, and the error-codes field in the response will include timeout-or-duplicate.\nTo ensure a successful validation, the visitor must initiate the request and submit the token to your backend within the five-minute window. Otherwise, the Turnstile widget needs to be refreshed to generate a new token. This can be done using the turnstile.reset function.\nconst SECRET_KEY = \"your-secret-key\"; async function validateTurnstile(token, remoteip) { try { const response = await fetch( \"https://challenges.cloudflare.com/turnstile/v0/siteverify\", { method: \"POST\", headers: { \"Content-Type\": \"application/json\", }, body: JSON.stringify({ secret: SECRET_KEY, response: token, remoteip: remoteip, }), }, ); const result = await response.json(); return result; } catch (error) { console.error(\"Turnstile validation error:\", error); return { success: false, \"error-codes\": [\"internal-error\"] }; } }\nconst SECRET_KEY = \"your-secret-key\"; async function validateTurnstile(token, remoteip) { const formData = new FormData(); formData.append(\"secret\", SECRET_KEY); formData.append(\"response\", token); formData.append(\"remoteip\", remoteip); try { const response = await fetch( \"https://challenges.cloudflare.com/turnstile/v0/siteverify\", { method: \"POST\", body: formData, }, ); const result = await response.json(); return result; } catch (error) { console.error(\"Turnstile validation error:\", error); return { success: false, \"error-codes\": [\"internal-error\"] }; } } // Usage in form handler async function handleFormSubmission(request) { const body = await request.formData(); const token = body.get(\"cf-turnstile-response\"); const ip = request.headers.get(\"CF-Connecting-IP\") || request.headers.get(\"X-Forwarded-For\") || \"unknown\"; const validation = await validateTurnstile(token, ip); if (validation.success) { // Token is valid - process the form console.log(\"Valid submission from:\", validation.hostname); return processForm(body); } else { // Token is invalid - reject the submission console.log(\"Invalid token:\", validation[\"error-codes\"]); return new Response(\"Invalid verification\", { status: 400 }); } }\n<?php function validateTurnstile($token, $secret, $remoteip = null) { $url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'; $data = [ 'secret' => $secret, 'response' => $token ]; if ($remoteip) { $data['remoteip'] = $remoteip; } $options = [ 'http' => [ 'header' => \"Content-type: application/x-www-form-urlencoded\\r\\n\", 'method' => 'POST', 'content' => http_build_query($data) ] ]; $context = stream_context_create($options); $response = file_get_contents($url, false, $context); if ($response === FALSE) { return ['success' => false, 'error-codes' => ['internal-error']]; } return json_decode($response, true); } // Usage $secret_key = 'your-secret-key'; $token = $_POST['cf-turnstile-response'] ?? ''; $remoteip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR']; $validation = validateTurnstile($token, $secret_key, $remoteip); if ($validation['success']) { // Valid token - process form echo \"Form submission successful!\"; // Process your form data here } else { // Invalid token - show error echo \"Verification failed. Please try again.\"; error_log('Turnstile validation failed: ' . implode(', ', $validation['error-codes'])); } ?>\nimport requests def validate_turnstile(token, secret, remoteip=None): url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify' data = { 'secret': secret, 'response': token } if remoteip: data['remoteip'] = remoteip try: response = requests.post(url, data=data, timeout=10) response.raise_for_status() return response.json() except requests.RequestException as e: print(f\"Turnstile validation error: {e}\") return {'success': False, 'error-codes': ['internal-error']} # Usage with Flask from flask import Flask, request, jsonify app = Flask(__name__) SECRET_KEY = 'your-secret-key' @app.route('/submit-form', methods=['POST']) def submit_form(): token = request.form.get('cf-turnstile-response') remoteip = request.headers.get('CF-Connecting-IP') or \\ request.headers.get('X-Forwarded-For') or \\ request.remote_addr validation = validate_turnstile(token, SECRET_KEY, remoteip) if validation['success']: # Valid token - process form return jsonify({'status': 'success', 'message': 'Form submitted successfully'}) else: # Invalid token - reject submission return jsonify({ 'status': 'error', 'message': 'Verification failed', 'errors': validation['error-codes'] }), 400\nimport org.springframework.web.client.RestTemplate; import org.springframework.util.LinkedMultiValueMap; import org.springframework.util.MultiValueMap; import org.springframework.http.HttpEntity; import org.springframework.http.HttpHeaders; import org.springframework.http.MediaType; import org.springframework.http.ResponseEntity; @Service public class TurnstileService { private static final String SITEVERIFY_URL = \"https://challenges.cloudflare.com/turnstile/v0/siteverify\"; private final String secretKey = \"your-secret-key\"; private final RestTemplate restTemplate = new RestTemplate(); public TurnstileResponse validateToken(String token, String remoteip) { HttpHeaders headers = new HttpHeaders(); headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED); MultiValueMap<String, String> params = new LinkedMultiValueMap<>(); params.add(\"secret\", secretKey); params.add(\"response\", token); if (remoteip != null) { params.add(\"remoteip\", remoteip); } HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers); try { ResponseEntity<TurnstileResponse> response = restTemplate.postForEntity( SITEVERIFY_URL, request, TurnstileResponse.class); return response.getBody(); } catch (Exception e) { TurnstileResponse errorResponse = new TurnstileResponse(); errorResponse.setSuccess(false); errorResponse.setErrorCodes(List.of(\"internal-error\")); return errorResponse; } } } // Controller usage @PostMapping(\"/submit-form\") public ResponseEntity<?> submitForm( @RequestParam(\"cf-turnstile-response\") String token, HttpServletRequest request) { String remoteip = request.getHeader(\"CF-Connecting-IP\"); if (remoteip == null) { remoteip = request.getHeader(\"X-Forwarded-For\"); } if (remoteip == null) { remoteip = request.getRemoteAddr(); } TurnstileResponse validation = turnstileService.validateToken(token, remoteip); if (validation.isSuccess()) { // Valid token - process form return ResponseEntity.ok(\"Form submitted successfully\"); } else { // Invalid token - reject submission return ResponseEntity.badRequest() .body(\"Verification failed: \" + validation.getErrorCodes()); } }\nusing System.Text.Json; public class TurnstileService { private readonly HttpClient _httpClient; private readonly string _secretKey = \"your-secret-key\"; private const string SiteverifyUrl = \"https://challenges.cloudflare.com/turnstile/v0/siteverify\"; public TurnstileService(HttpClient httpClient) { _httpClient = httpClient; } public async Task<TurnstileResponse> ValidateTokenAsync(string token, string remoteip = null) { var parameters = new Dictionary<string, string> { { \"secret\", _secretKey }, { \"response\", token } }; if (!string.IsNullOrEmpty(remoteip)) { parameters.Add(\"remoteip\", remoteip); } var postContent = new FormUrlEncodedContent(parameters); try { var response = await _httpClient.PostAsync(SiteverifyUrl, postContent); var stringContent = await response.Content.ReadAsStringAsync(); return JsonSerializer.Deserialize<TurnstileResponse>(stringContent); } catch (Exception ex) { return new TurnstileResponse { Success = false, ErrorCodes = new[] { \"internal-error\" } }; } } } // Controller usage [HttpPost(\"submit-form\")] public async Task<IActionResult> SubmitForm([FromForm] string cfTurnstileResponse) { var remoteip = HttpContext.Request.Headers[\"CF-Connecting-IP\"].FirstOrDefault() ?? HttpContext.Request.Headers[\"X-Forwarded-For\"].FirstOrDefault() ?? HttpContext.Connection.RemoteIpAddress?.ToString(); var validation = await _turnstileService.ValidateTokenAsync(cfTurnstileResponse, remoteip); if (validation.Success) { // Valid token - process form return Ok(\"Form submitted successfully\"); } else { // Invalid token - reject submission return BadRequest($\"Verification failed: {string.Join(\", \", validation.ErrorCodes)}\"); } }\nIdempotency keys for retry operationjs\nconst crypto = require(\"crypto\"); async function validateWithRetry(token, remoteip, maxRetries = 3) { const idempotencyKey = crypto.randomUUID(); for (let attempt = 1; attempt <= maxRetries; attempt++) { try { const formData = new FormData(); formData.append(\"secret\", SECRET_KEY); formData.append(\"response\", token); formData.append(\"remoteip\", remoteip); formData.append(\"idempotency_key\", idempotencyKey); const response = await fetch( \"https://challenges.cloudflare.com/turnstile/v0/siteverify\", { method: \"POST\", body: formData, }, ); const result = await response.json(); if (response.ok) { return result; } // If this is the last attempt, return the error if (attempt === maxRetries) { return result; } // Wait before retrying (exponential backoff) await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000), ); } catch (error) { if (attempt === maxRetries) { return { success: false, \"error-codes\": [\"internal-error\"] }; } } } }\nEnhanced validation with custom checksjs\nasync function validateTurnstileEnhanced( token, remoteip, expectedAction = null, expectedHostname = null, ) { const validation = await validateTurnstile(token, remoteip); if (!validation.success) { return { valid: false, reason: \"turnstile_failed\", errors: validation[\"error-codes\"], }; } // Check if action matches expected value (if specified) if (expectedAction && validation.action !== expectedAction) { return { valid: false, reason: \"action_mismatch\", expected: expectedAction, received: validation.action, }; } // Check if hostname matches expected value (if specified) if (expectedHostname && validation.hostname !== expectedHostname) { return { valid: false, reason: \"hostname_mismatch\", expected: expectedHostname, received: validation.hostname, }; } // Check token age (warn if older than 4 minutes) const challengeTime = new Date(validation.challenge_ts); const now = new Date(); const ageMinutes = (now - challengeTime) / (1000 * 60); if (ageMinutes > 4) { console.warn(`Token is ${ageMinutes.toFixed(1)} minutes old`); } return { valid: true, data: validation, tokenAge: ageMinutes, }; } // Usage const result = await validateTurnstileEnhanced( token, remoteip, \"login\", // expected action \"example.com\", // expected hostname ); if (result.valid) { // Process the request console.log(\"Validation successful:\", result.data); } else { // Handle validation failure console.log(\"Validation failed:\", result.reason); }\nExamplejson\n{ \"success\": true, \"challenge_ts\": \"2022-02-28T15:14:30.096Z\", \"hostname\": \"example.com\", \"error-codes\": [], \"action\": \"login\", \"cdata\": \"sessionid-123456789\", \"metadata\": { \"ephemeral_id\": \"x:9f78e0ed210960d7693b167e\" } }\nExamplejson\n{ \"success\": false, \"error-codes\": [\"invalid-input-response\"] }\nField Description \nsuccess\tBoolean indicating if validation was successful\t\nchallenge_ts\tISO 8601 timestamp when the challenge was solved\t\nhostname\tHostname where the challenge was served\t\nerror-codes\tArray of error codes (if validation failed)\t\naction\tCustom action identifier from client-side\t\ncdata\tCustom data payload from client-side\t\nmetadata.ephemeral_id\tDevice fingerprint ID (Enterprise only)\t\nError code Description Action required \nmissing-input-secret\tSecret parameter not provided\tEnsure secret key is included\t\ninvalid-input-secret\tSecret key is invalid or expired\tCheck your secret key in the Cloudflare dashboard\t\nmissing-input-response\tResponse parameter was not provided\tEnsure token is included\t\ninvalid-input-response\tToken is invalid, malformed, or expired\tUser should retry the challenge\t\nbad-request\tRequest is malformed\tCheck request format and parameters\t\ntimeout-or-duplicate\tToken has already been validated\tEach token can only be used once\t\ninternal-error\tInternal error occurred\tRetry the request\t\nExample implementationjs\nclass TurnstileValidator { constructor(secretKey, timeout = 10000) { this.secretKey = secretKey; this.timeout = timeout; } async validate(token, remoteip, options = {}) { // Input validation if (!token || typeof token !== \"string\") { return { success: false, error: \"Invalid token format\" }; } if (token.length > 2048) { return { success: false, error: \"Token too long\" }; } // Prepare request const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), this.timeout); try { const formData = new FormData(); formData.append(\"secret\", this.secretKey); formData.append(\"response\", token); if (remoteip) { formData.append(\"remoteip\", remoteip); } if (options.idempotencyKey) { formData.append(\"idempotency_key\", options.idempotencyKey); } const response = await fetch( \"https://challenges.cloudflare.com/turnstile/v0/siteverify\", { method: \"POST\", body: formData, signal: controller.signal, }, ); const result = await response.json(); // Additional validation if (result.success) { if ( options.expectedAction && result.action !== options.expectedAction ) { return { success: false, error: \"Action mismatch\", expected: options.expectedAction, received: result.action, }; } if ( options.expectedHostname && result.hostname !== options.expectedHostname ) { return { success: false, error: \"Hostname mismatch\", expected: options.expectedHostname, received: result.hostname, }; } } return result; } catch (error) { if (error.name === \"AbortError\") { return { success: false, error: \"Validation timeout\" }; } console.error(\"Turnstile validation error:\", error); return { success: false, error: \"Internal error\" }; } finally { clearTimeout(timeoutId); } } } // Usage const validator = new TurnstileValidator(process.env.TURNSTILE_SECRET_KEY); const result = await validator.validate(token, remoteip, { expectedAction: \"login\", expectedHostname: \"example.com\", }); if (result.success) { // Process the request } else { // Handle failure console.log(\"Validation failed:\", result.error); }\nYou can test the dummy token generated with testing sitekey via Siteverify API with the testing secret key. Your production secret keys will reject dummy tokens.\nRefer to Testing for more information.\nStore your secret keys securely. Use environment variables or secure key management.\nValidate the token on every request. Never trust client-side validation alone.\nCheck additional fields. Validate the action and hostname when specified.\nMonitor for abuse and log failed validations and unusual patterns.\nUse HTTPS. Always validate over secure connections.\nOnly call the Siteverify API in your backend environment. If you expose the secret key in the front-end client code to call Siteverify, attackers can bypass the security check. Ensure that your client-side code sends the validation token to your backend, and that your backend is the sole caller of the Siteverify API.\nSet reasonable timeouts. Do not wait indefinitely for Siteverify responses.\nImplement retry logic and handle temporary network issues.\nCache validation results for the same token, if it is needed for your flow.\nMonitor your API latency. Track the Siteverify response time.\nHave fallback behavior for API failures.\nUse user-friendly messaging. Do not expose internal error details to users.\nProperly log errors for debugging without exposing secrets.\nRate limit to protect against validation flooding.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Validate the token · Cloudflare Turnstile docs\n\nLearn how to securely validate Turnstile tokens on your server using the Siteverify API.\n\n1.  Client generates token: Visitor completes Turnstile challenge on your webpage.\n2.  Token sent to server: Form submission includes the Turnstile token.\n3.  Server validates token: Your server calls Cloudflare's Siteverify API.\n4.  Cloudflare responds: Returns `success` or `failure` and additional data.\n5.  Server takes action: Allow or reject the original request based on validation.\n\nEndpointshell\n\n```\nPOST https://challenges.cloudflare.com/turnstile/v0/siteverify\n```\n\nThe API accepts both `application/x-www-form-urlencoded` and `application/json` requests, but always returns JSON responses.\n\n| Parameter | Required | Description |\n| --- | --- | --- |\n| `secret` | Yes | Your widget's secret key from the Cloudflare dashboard |\n| `response` | Yes | The token from the client-side widget |\n| `remoteip` | No  | The visitor's IP address |\n| `idempotency_key` | No  | A UUID you generate to safely retry validation requests |\n\n*   Maximum length: 2048 characters\n*   Validity period: 300 seconds (5 minutes) from generation\n*   Single use: Each token can only be validated once\n*   Automatic expiry: Tokens automatically expire and cannot be reused\n\nThe validation token issued by Turnstile is valid for five minutes. If a user submits the form after this period, the token is considered expired. In this scenario, the server-side verification API will return a failure, and the `error-codes` field in the response will include `timeout-or-duplicate`.\n\nTo ensure a successful validation, the visitor must initiate the request and submit the token to your backend within the five-minute window. Otherwise, the Turnstile widget needs to be refreshed to generate a new token. This can be done using the `turnstile.reset` function.\n\n* * *\n\n```\nconst SECRET_KEY = \"your-secret-key\";\n\nasync function validateTurnstile(token, remoteip) {\n\ttry {\n\t\tconst response = await fetch(\n\t\t\t\"https://challenges.cloudflare.com/turnstile/v0/siteverify\",\n\t\t\t{\n\t\t\t\tmethod: \"POST\",\n\t\t\t\theaders: {\n\t\t\t\t\t\"Content-Type\": \"application/json\",\n\t\t\t\t},\n\t\t\t\tbody: JSON.stringify({\n\t\t\t\t\tsecret: SECRET_KEY,\n\t\t\t\t\tresponse: token,\n\t\t\t\t\tremoteip: remoteip,\n\t\t\t\t}),\n\t\t\t},\n\t\t);\n\n\t\tconst result = await response.json();\n\t\treturn result;\n\t} catch (error) {\n\t\tconsole.error(\"Turnstile validation error:\", error);\n\t\treturn { success: false, \"error-codes\": [\"internal-error\"] };\n\t}\n}\n```\n\n```\nconst SECRET_KEY = \"your-secret-key\";\n\nasync function validateTurnstile(token, remoteip) {\n\tconst formData = new FormData();\n\tformData.append(\"secret\", SECRET_KEY);\n\tformData.append(\"response\", token);\n\tformData.append(\"remoteip\", remoteip);\n\n\ttry {\n\t\tconst response = await fetch(\n\t\t\t\"https://challenges.cloudflare.com/turnstile/v0/siteverify\",\n\t\t\t{\n\t\t\t\tmethod: \"POST\",\n\t\t\t\tbody: formData,\n\t\t\t},\n\t\t);\n\n\t\tconst result = await response.json();\n\t\treturn result;\n\t} catch (error) {\n\t\tconsole.error(\"Turnstile validation error:\", error);\n\t\treturn { success: false, \"error-codes\": [\"internal-error\"] };\n\t}\n}\n\n// Usage in form handler\nasync function handleFormSubmission(request) {\n\tconst body = await request.formData();\n\tconst token = body.get(\"cf-turnstile-response\");\n\tconst ip =\n\t\trequest.headers.get(\"CF-Connecting-IP\") ||\n\t\trequest.headers.get(\"X-Forwarded-For\") ||\n\t\t\"unknown\";\n\n\tconst validation = await validateTurnstile(token, ip);\n\n\tif (validation.success) {\n\t\t// Token is valid - process the form\n\t\tconsole.log(\"Valid submission from:\", validation.hostname);\n\t\treturn processForm(body);\n\t} else {\n\t\t// Token is invalid - reject the submission\n\t\tconsole.log(\"Invalid token:\", validation[\"error-codes\"]);\n\t\treturn new Response(\"Invalid verification\", { status: 400 });\n\t}\n}\n```\n\n```\n<?php\nfunction validateTurnstile($token, $secret, $remoteip = null) {\n    $url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';\n\n    $data = [\n        'secret' => $secret,\n        'response' => $token\n    ];\n\n    if ($remoteip) {\n        $data['remoteip'] = $remoteip;\n    }\n\n    $options = [\n        'http' => [\n            'header' => \"Content-type: application/x-www-form-urlencoded\\r\\n\",\n            'method' => 'POST',\n            'content' => http_build_query($data)\n        ]\n    ];\n\n    $context = stream_context_create($options);\n    $response = file_get_contents($url, false, $context);\n\n    if ($response === FALSE) {\n        return ['success' => false, 'error-codes' => ['internal-error']];\n    }\n\n    return json_decode($response, true);\n\n}\n\n// Usage\n$secret_key = 'your-secret-key';\n$token = $_POST['cf-turnstile-response'] ?? '';\n$remoteip = $_SERVER['HTTP_CF_CONNECTING_IP'] ??\n$_SERVER['HTTP_X_FORWARDED_FOR'] ??\n$_SERVER['REMOTE_ADDR'];\n\n$validation = validateTurnstile($token, $secret_key, $remoteip);\n\nif ($validation['success']) {\n// Valid token - process form\necho \"Form submission successful!\";\n// Process your form data here\n} else {\n// Invalid token - show error\necho \"Verification failed. Please try again.\";\nerror_log('Turnstile validation failed: ' . implode(', ', $validation['error-codes']));\n}\n?>\n```\n\n```\nimport requests\n\ndef validate_turnstile(token, secret, remoteip=None):\n    url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'\n\n    data = {\n        'secret': secret,\n        'response': token\n    }\n\n    if remoteip:\n        data['remoteip'] = remoteip\n\n    try:\n        response = requests.post(url, data=data, timeout=10)\n        response.raise_for_status()\n        return response.json()\n    except requests.RequestException as e:\n        print(f\"Turnstile validation error: {e}\")\n        return {'success': False, 'error-codes': ['internal-error']}\n\n# Usage with Flask\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\nSECRET_KEY = 'your-secret-key'\n\n@app.route('/submit-form', methods=['POST'])\ndef submit_form():\n    token = request.form.get('cf-turnstile-response')\n    remoteip = request.headers.get('CF-Connecting-IP') or \\\n               request.headers.get('X-Forwarded-For') or \\\n               request.remote_addr\n\n    validation = validate_turnstile(token, SECRET_KEY, remoteip)\n\n    if validation['success']:\n        # Valid token - process form\n        return jsonify({'status': 'success', 'message': 'Form submitted successfully'})\n    else:\n        # Invalid token - reject submission\n        return jsonify({\n            'status': 'error',\n            'message': 'Verification failed',\n            'errors': validation['error-codes']\n        }), 400\n```\n\n```\nimport org.springframework.web.client.RestTemplate;\nimport org.springframework.util.LinkedMultiValueMap;\nimport org.springframework.util.MultiValueMap;\nimport org.springframework.http.HttpEntity;\nimport org.springframework.http.HttpHeaders;\nimport org.springframework.http.MediaType;\nimport org.springframework.http.ResponseEntity;\n\n@Service\npublic class TurnstileService {\nprivate static final String SITEVERIFY_URL = \"https://challenges.cloudflare.com/turnstile/v0/siteverify\";\nprivate final String secretKey = \"your-secret-key\";\nprivate final RestTemplate restTemplate = new RestTemplate();\n\n    public TurnstileResponse validateToken(String token, String remoteip) {\n        HttpHeaders headers = new HttpHeaders();\n        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);\n\n        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();\n        params.add(\"secret\", secretKey);\n        params.add(\"response\", token);\n        if (remoteip != null) {\n            params.add(\"remoteip\", remoteip);\n        }\n\n        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);\n\n        try {\n            ResponseEntity<TurnstileResponse> response = restTemplate.postForEntity(\n                SITEVERIFY_URL, request, TurnstileResponse.class);\n            return response.getBody();\n        } catch (Exception e) {\n            TurnstileResponse errorResponse = new TurnstileResponse();\n            errorResponse.setSuccess(false);\n            errorResponse.setErrorCodes(List.of(\"internal-error\"));\n            return errorResponse;\n        }\n    }\n\n}\n\n// Controller usage\n@PostMapping(\"/submit-form\")\npublic ResponseEntity<?> submitForm(\n@RequestParam(\"cf-turnstile-response\") String token,\nHttpServletRequest request) {\n\n    String remoteip = request.getHeader(\"CF-Connecting-IP\");\n    if (remoteip == null) {\n        remoteip = request.getHeader(\"X-Forwarded-For\");\n    }\n    if (remoteip == null) {\n        remoteip = request.getRemoteAddr();\n    }\n\n    TurnstileResponse validation = turnstileService.validateToken(token, remoteip);\n\n    if (validation.isSuccess()) {\n        // Valid token - process form\n        return ResponseEntity.ok(\"Form submitted successfully\");\n    } else {\n        // Invalid token - reject submission\n        return ResponseEntity.badRequest()\n            .body(\"Verification failed: \" + validation.getErrorCodes());\n    }\n\n}\n```\n\n```\nusing System.Text.Json;\n\npublic class TurnstileService\n{\n    private readonly HttpClient _httpClient;\n    private readonly string _secretKey = \"your-secret-key\";\n    private const string SiteverifyUrl = \"https://challenges.cloudflare.com/turnstile/v0/siteverify\";\n\n    public TurnstileService(HttpClient httpClient)\n    {\n        _httpClient = httpClient;\n    }\n\n    public async Task<TurnstileResponse> ValidateTokenAsync(string token, string remoteip = null)\n    {\n        var parameters = new Dictionary<string, string>\n        {\n            { \"secret\", _secretKey },\n            { \"response\", token }\n        };\n\n        if (!string.IsNullOrEmpty(remoteip))\n        {\n            parameters.Add(\"remoteip\", remoteip);\n        }\n\n        var postContent = new FormUrlEncodedContent(parameters);\n\n        try\n        {\n            var response = await _httpClient.PostAsync(SiteverifyUrl, postContent);\n            var stringContent = await response.Content.ReadAsStringAsync();\n\n            return JsonSerializer.Deserialize<TurnstileResponse>(stringContent);\n        }\n        catch (Exception ex)\n        {\n            return new TurnstileResponse\n            {\n                Success = false,\n                ErrorCodes = new[] { \"internal-error\" }\n            };\n        }\n    }\n}\n\n// Controller usage\n[HttpPost(\"submit-form\")]\npublic async Task<IActionResult> SubmitForm([FromForm] string cfTurnstileResponse)\n{\n    var remoteip = HttpContext.Request.Headers[\"CF-Connecting-IP\"].FirstOrDefault() ??\n                   HttpContext.Request.Headers[\"X-Forwarded-For\"].FirstOrDefault() ??\n                   HttpContext.Connection.RemoteIpAddress?.ToString();\n\n    var validation = await _turnstileService.ValidateTokenAsync(cfTurnstileResponse, remoteip);\n\n    if (validation.Success)\n    {\n        // Valid token - process form\n        return Ok(\"Form submitted successfully\");\n    }\n    else\n    {\n        // Invalid token - reject submission\n        return BadRequest($\"Verification failed: {string.Join(\", \", validation.ErrorCodes)}\");\n    }\n}\n```\n\n* * *\n\nIdempotency keys for retry operationjs\n\n```\nconst crypto = require(\"crypto\");\n\nasync function validateWithRetry(token, remoteip, maxRetries = 3) {\n\tconst idempotencyKey = crypto.randomUUID();\n\n\tfor (let attempt = 1; attempt <= maxRetries; attempt++) {\n\t\ttry {\n\t\t\tconst formData = new FormData();\n\t\t\tformData.append(\"secret\", SECRET_KEY);\n\t\t\tformData.append(\"response\", token);\n\t\t\tformData.append(\"remoteip\", remoteip);\n\t\t\tformData.append(\"idempotency_key\", idempotencyKey);\n\n\t\t\tconst response = await fetch(\n\t\t\t\t\"https://challenges.cloudflare.com/turnstile/v0/siteverify\",\n\t\t\t\t{\n\t\t\t\t\tmethod: \"POST\",\n\t\t\t\t\tbody: formData,\n\t\t\t\t},\n\t\t\t);\n\n\t\t\tconst result = await response.json();\n\n\t\t\tif (response.ok) {\n\t\t\t\treturn result;\n\t\t\t}\n\n\t\t\t// If this is the last attempt, return the error\n\t\t\tif (attempt === maxRetries) {\n\t\t\t\treturn result;\n\t\t\t}\n\n\t\t\t// Wait before retrying (exponential backoff)\n\t\t\tawait new Promise((resolve) =>\n\t\t\t\tsetTimeout(resolve, Math.pow(2, attempt) * 1000),\n\t\t\t);\n\t\t} catch (error) {\n\t\t\tif (attempt === maxRetries) {\n\t\t\t\treturn { success: false, \"error-codes\": [\"internal-error\"] };\n\t\t\t}\n\t\t}\n\t}\n}\n```\n\nEnhanced validation with custom checksjs\n\n```\nasync function validateTurnstileEnhanced(\n\ttoken,\n\tremoteip,\n\texpectedAction = null,\n\texpectedHostname = null,\n) {\n\tconst validation = await validateTurnstile(token, remoteip);\n\n\tif (!validation.success) {\n\t\treturn {\n\t\t\tvalid: false,\n\t\t\treason: \"turnstile_failed\",\n\t\t\terrors: validation[\"error-codes\"],\n\t\t};\n\t}\n\n\t// Check if action matches expected value (if specified)\n\tif (expectedAction && validation.action !== expectedAction) {\n\t\treturn {\n\t\t\tvalid: false,\n\t\t\treason: \"action_mismatch\",\n\t\t\texpected: expectedAction,\n\t\t\treceived: validation.action,\n\t\t};\n\t}\n\n\t// Check if hostname matches expected value (if specified)\n\tif (expectedHostname && validation.hostname !== expectedHostname) {\n\t\treturn {\n\t\t\tvalid: false,\n\t\t\treason: \"hostname_mismatch\",\n\t\t\texpected: expectedHostname,\n\t\t\treceived: validation.hostname,\n\t\t};\n\t}\n\n\t// Check token age (warn if older than 4 minutes)\n\tconst challengeTime = new Date(validation.challenge_ts);\n\tconst now = new Date();\n\tconst ageMinutes = (now - challengeTime) / (1000 * 60);\n\n\tif (ageMinutes > 4) {\n\t\tconsole.warn(`Token is ${ageMinutes.toFixed(1)} minutes old`);\n\t}\n\n\treturn {\n\t\tvalid: true,\n\t\tdata: validation,\n\t\ttokenAge: ageMinutes,\n\t};\n}\n\n// Usage\nconst result = await validateTurnstileEnhanced(\n\ttoken,\n\tremoteip,\n\t\"login\", // expected action\n\t\"example.com\", // expected hostname\n);\n\nif (result.valid) {\n\t// Process the request\n\tconsole.log(\"Validation successful:\", result.data);\n} else {\n\t// Handle validation failure\n\tconsole.log(\"Validation failed:\", result.reason);\n}\n```\n\n* * *\n\nExamplejson\n\n```\n{\n  \"success\": true,\n  \"challenge_ts\": \"2022-02-28T15:14:30.096Z\",\n  \"hostname\": \"example.com\",\n  \"error-codes\": [],\n  \"action\": \"login\",\n  \"cdata\": \"sessionid-123456789\",\n  \"metadata\": {\n    \"ephemeral_id\": \"x:9f78e0ed210960d7693b167e\"\n  }\n}\n```\n\nExamplejson\n\n```\n{\n  \"success\": false,\n  \"error-codes\": [\"invalid-input-response\"]\n}\n```\n\n| Field | Description |\n| --- | --- |\n| `success` | Boolean indicating if validation was successful |\n| `challenge_ts` | ISO 8601 timestamp when the challenge was solved |\n| `hostname` | Hostname where the challenge was served |\n| `error-codes` | Array of error codes (if validation failed) |\n| `action` | Custom action identifier from client-side |\n| `cdata` | Custom data payload from client-side |\n| `metadata.ephemeral_id` | Device fingerprint ID (Enterprise only) |\n\n| Error code | Description | Action required |\n| --- | --- | --- |\n| `missing-input-secret` | Secret parameter not provided | Ensure secret key is included |\n| `invalid-input-secret` | Secret key is invalid or expired | Check your secret key in the Cloudflare dashboard |\n| `missing-input-response` | Response parameter was not provided | Ensure token is included |\n| `invalid-input-response` | Token is invalid, malformed, or expired | User should retry the challenge |\n| `bad-request` | Request is malformed | Check request format and parameters |\n| `timeout-or-duplicate` | Token has already been validated | Each token can only be used once |\n| `internal-error` | Internal error occurred | Retry the request |\n\n* * *\n\nExample implementationjs\n\n```\nclass TurnstileValidator {\n\tconstructor(secretKey, timeout = 10000) {\n\t\tthis.secretKey = secretKey;\n\t\tthis.timeout = timeout;\n\t}\n\n\tasync validate(token, remoteip, options = {}) {\n\t\t// Input validation\n\t\tif (!token || typeof token !== \"string\") {\n\t\t\treturn { success: false, error: \"Invalid token format\" };\n\t\t}\n\n\t\tif (token.length > 2048) {\n\t\t\treturn { success: false, error: \"Token too long\" };\n\t\t}\n\n\t\t// Prepare request\n\t\tconst controller = new AbortController();\n\t\tconst timeoutId = setTimeout(() => controller.abort(), this.timeout);\n\n\t\ttry {\n\t\t\tconst formData = new FormData();\n\t\t\tformData.append(\"secret\", this.secretKey);\n\t\t\tformData.append(\"response\", token);\n\n\t\t\tif (remoteip) {\n\t\t\t\tformData.append(\"remoteip\", remoteip);\n\t\t\t}\n\n\t\t\tif (options.idempotencyKey) {\n\t\t\t\tformData.append(\"idempotency_key\", options.idempotencyKey);\n\t\t\t}\n\n\t\t\tconst response = await fetch(\n\t\t\t\t\"https://challenges.cloudflare.com/turnstile/v0/siteverify\",\n\t\t\t\t{\n\t\t\t\t\tmethod: \"POST\",\n\t\t\t\t\tbody: formData,\n\t\t\t\t\tsignal: controller.signal,\n\t\t\t\t},\n\t\t\t);\n\n\t\t\tconst result = await response.json();\n\n\t\t\t// Additional validation\n\t\t\tif (result.success) {\n\t\t\t\tif (\n\t\t\t\t\toptions.expectedAction &&\n\t\t\t\t\tresult.action !== options.expectedAction\n\t\t\t\t) {\n\t\t\t\t\treturn {\n\t\t\t\t\t\tsuccess: false,\n\t\t\t\t\t\terror: \"Action mismatch\",\n\t\t\t\t\t\texpected: options.expectedAction,\n\t\t\t\t\t\treceived: result.action,\n\t\t\t\t\t};\n\t\t\t\t}\n\n\t\t\t\tif (\n\t\t\t\t\toptions.expectedHostname &&\n\t\t\t\t\tresult.hostname !== options.expectedHostname\n\t\t\t\t) {\n\t\t\t\t\treturn {\n\t\t\t\t\t\tsuccess: false,\n\t\t\t\t\t\terror: \"Hostname mismatch\",\n\t\t\t\t\t\texpected: options.expectedHostname,\n\t\t\t\t\t\treceived: result.hostname,\n\t\t\t\t\t};\n\t\t\t\t}\n\t\t\t}\n\n\t\t\treturn result;\n\t\t} catch (error) {\n\t\t\tif (error.name === \"AbortError\") {\n\t\t\t\treturn { success: false, error: \"Validation timeout\" };\n\t\t\t}\n\n\t\t\tconsole.error(\"Turnstile validation error:\", error);\n\t\t\treturn { success: false, error: \"Internal error\" };\n\t\t} finally {\n\t\t\tclearTimeout(timeoutId);\n\t\t}\n\t}\n}\n\n// Usage\nconst validator = new TurnstileValidator(process.env.TURNSTILE_SECRET_KEY);\n\nconst result = await validator.validate(token, remoteip, {\n\texpectedAction: \"login\",\n\texpectedHostname: \"example.com\",\n});\n\nif (result.success) {\n\t// Process the request\n} else {\n\t// Handle failure\n\tconsole.log(\"Validation failed:\", result.error);\n}\n```\n\n* * *\n\nYou can test the dummy token generated with testing sitekey via Siteverify API with the testing secret key. Your production secret keys will reject dummy tokens.\n\nRefer to [Testing](https://developers.cloudflare.com/turnstile/troubleshooting/testing/) for more information.\n\n* * *\n\n*   Store your secret keys securely. Use environment variables or secure key management.\n*   Validate the token on every request. Never trust client-side validation alone.\n*   Check additional fields. Validate the action and hostname when specified.\n*   Monitor for abuse and log failed validations and unusual patterns.\n*   Use HTTPS. Always validate over secure connections.\n*   Only call the Siteverify API in your backend environment. If you expose the secret key in the front-end client code to call Siteverify, attackers can bypass the security check. Ensure that your client-side code sends the validation token to your backend, and that your backend is the sole caller of the Siteverify API.\n\n*   Set reasonable timeouts. Do not wait indefinitely for Siteverify responses.\n*   Implement retry logic and handle temporary network issues.\n*   Cache validation results for the same token, if it is needed for your flow.\n*   Monitor your API latency. Track the Siteverify response time.\n\n*   Have fallback behavior for API failures.\n*   Use user-friendly messaging. Do not expose internal error details to users.\n*   Properly log errors for debugging without exposing secrets.\n*   Rate limit to protect against validation flooding.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.cloudflare.com/turnstile/get-started/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/get-started/",
+      "loadedTime": "2026-10-21T14:33:49.383Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/get-started/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 129618,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/get-started/",
+      "title": "Get started · Cloudflare Turnstile docs",
+      "description": "Set up Turnstile to verify visitors without a traditional CAPTCHA.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Get started"
+        },
+        {
+          "property": "og:title",
+          "content": "Get started · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Set up Turnstile to verify visitors without a traditional CAPTCHA."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/og.png?v=cb452fc457b818e0"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/turnstile/get-started/og.png?v=cb452fc457b818e0"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          "@id": "https://developers.cloudflare.com/turnstile/get-started/#page",
+          "headline": "Get started",
+          "description": "Set up Turnstile to verify visitors without a traditional CAPTCHA.",
+          "url": "https://developers.cloudflare.com/turnstile/get-started/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/turnstile/get-started/og.png?v=cb452fc457b818e0",
+          "dateModified": "2026-05-05",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          },
+          "keywords": [
+            "Forms"
+          ]
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e0fac2f8ee7ca7-IAD",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=hcgf.4Vq7gmAABVGf4zVwmZ6sPFmaYqt9BGkAci5m1k-1792593229.2740817-1.0.1.1-.eCuHBCND.OBqsi4XOYArq5ODAbi8uirjgLVY5Kk6lpOP40KhZbGwQ6_o7BRd3Jr8XLw7K2Hpx7osdFsd.vWN4AU_mZOFTixgZPEkb44BEKv_1mU0zvWzLH9kALPCQ_TIld1T5azPxTe2QVb9lBw_J9mU_HtPI5duWbLuqxqhZWr5y21MZG9uYFOgehN0_D8T1YUr5SZ65Kvr4bMGVkbPA; report-to cf-utifbvvbrsmbkhye",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:33:49 GMT",
+        "report-to": "{\"group\":\"cf-utifbvvbrsmbkhye\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=hcgf.4Vq7gmAABVGf4zVwmZ6sPFmaYqt9BGkAci5m1k-1792593229.2740817-1.0.1.1-.eCuHBCND.OBqsi4XOYArq5ODAbi8uirjgLVY5Kk6lpOP40KhZbGwQ6_o7BRd3Jr8XLw7K2Hpx7osdFsd.vWN4AU_mZOFTixgZPEkb44BEKv_1mU0zvWzLH9kALPCQ_TIld1T5azPxTe2QVb9lBw_J9mU_HtPI5duWbLuqxqhZWr5y21MZG9uYFOgehN0_D8T1YUr5SZ65Kvr4bMGVkbPA\"}]}",
+        "reporting-endpoints": "cf-utifbvvbrsmbkhye=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=hcgf.4Vq7gmAABVGf4zVwmZ6sPFmaYqt9BGkAci5m1k-1792593229.2740817-1.0.1.1-.eCuHBCND.OBqsi4XOYArq5ODAbi8uirjgLVY5Kk6lpOP40KhZbGwQ6_o7BRd3Jr8XLw7K2Hpx7osdFsd.vWN4AU_mZOFTixgZPEkb44BEKv_1mU0zvWzLH9kALPCQ_TIld1T5azPxTe2QVb9lBw_J9mU_HtPI5duWbLuqxqhZWr5y21MZG9uYFOgehN0_D8T1YUr5SZ65Kvr4bMGVkbPA\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=27,cfOrigin;dur=0,cfWorker;dur=19",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=2XUUMPdTvtGp8ms6doSvVl5oHuINbo86LcNVVBUovPA-1792593229.2740817-1.0.1.1-R_E28amdFr1gHkamTncWe05GwjihyRWVwmPZ7qmKZCPML_Uip1sS0mYG15wBICCheERDeSNOmXqhFrl.P4qly5L85z6yEnCkNWZ3c4c9qosIK.xRMw3AL8TZLjB.osz6; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:03:49 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Get started · Cloudflare Turnstile docs\nTurnstile protects your website forms from bots. It works in two steps: a JavaScript widget runs challenges in the visitor's browser and produces a token, then your server sends that token to Cloudflare to confirm it is valid. This guide covers how to set up both steps.\nBefore you begin, you must have:\nA Cloudflare account\nA website or web application to protect\nBasic knowledge of HTML and your preferred server-side language\nA Turnstile widget is an instance of Turnstile embedded on your webpage. Each widget has a sitekey (a public identifier you place in your HTML) and a secret key (a private credential your server uses to validate tokens).\nEach widget gets its own unique sitekey and secret key pair, and options for configurations.\nComponent Description \nSitekey\tPublic key used to invoke the Turnstile widget on your site.\t\nSecret key\tPrivate key used for server-side token validation.\t\nConfigurations\tMode, hostnames, appearance settings, and other options.\t\nImplementing Turnstile involves two essential components that work together:\nClient-side: Embed the widget\nAdd the Turnstile widget to your webpage to challenge visitors and generate tokens. A token is a string (up to 2,048 characters) generated when the visitor completes a challenge.\nServer-side: Validate the token\nSend tokens to Cloudflare's Siteverify API — the endpoint for validating Turnstile tokens — to confirm they are authentic and have not been tampered with.\nTurnstile is designed to be an independent service. You can use Turnstile on any website, regardless of whether it is proxied through the Cloudflare network. This allows for flexible deployment across multi-cloud environments, on-premises infrastructure, or sites using other CDNs. The client-side widget and server-side validation steps are completely self-contained.\nRefer to Implementation below for guidance on how to implement Turnstile on your website.\nFollow the steps below to implement Turnstile.\nFirst, you must create a Turnstile widget to get your sitekey and secret key.\nSelect your preferred implementation method:\nCloudflare dashboard\nAPI\nTerraform\nAdd the Turnstile widget to your webpage forms and applications.\nRefer to Embed the widget to learn more about implicit and explicit rendering methods.\nImplement server-side validation to verify the tokens generated by your widgets.\nRefer to Validate the token to secure your implementation with proper token verification.\nSpecial considerations are necessary for mobile applications and WebView implementations.\nRefer to Mobile implementation for more information on mobile application integration.\nIf you are currently using reCAPTCHA, hCaptcha, or another CAPTCHA service, Turnstile can be a drop-in replacement. You can copy and paste our script wherever you have deployed the existing script today.\nRefer to Migration for step-by-step migration guidance from other CAPTCHA services.\nServer-side validation is mandatory. It is critical to enforce Turnstile tokens with the Siteverify API. The Turnstile token could be invalid, expired, or already redeemed. Not verifying the token will leave major vulnerabilities in your implementation. You must call Siteverify to complete your Turnstile configuration. Otherwise, it is incomplete and will result in zeroes for token validation when viewing your metrics in Turnstile Analytics.\nTokens expire after 300 seconds (5 minutes). Each token can only be validated once. Expired or used tokens must be replaced with fresh challenges.\nProtect your secret keys. Never expose secret keys in client-side code.\nRotate your keys regularly. Use API or dashboard to rotate secret keys periodically.\nRestrict your hostnames. Only allow widgets on domains that you control.\nMonitor the usage. Use analytics to detect unusual patterns.\nUse descriptive names. Name widgets based on their purpose, such as \"Login Form\" or \"Contact Page\".\nSeparate your environments. Use different widgets for development, staging, and production.\nKeep track of which widgets are used at which locations.\nStore your widget configurations in version control when using Terraform.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Get started · Cloudflare Turnstile docs\n\nTurnstile protects your website forms from bots. It works in two steps: a JavaScript widget runs challenges in the visitor's browser and produces a token, then your server sends that token to Cloudflare to confirm it is valid. This guide covers how to set up both steps.\n\nBefore you begin, you must have:\n\n*   [A Cloudflare account](https://developers.cloudflare.com/fundamentals/account/create-account/)\n*   A website or web application to protect\n*   Basic knowledge of HTML and your preferred server-side language\n\n* * *\n\nA Turnstile widget is an instance of Turnstile embedded on your webpage. Each widget has a sitekey (a public identifier you place in your HTML) and a secret key (a private credential your server uses to validate tokens).\n\nEach widget gets its own unique sitekey and secret key pair, and options for configurations.\n\n| Component | Description |\n| --- | --- |\n| Sitekey | Public key used to invoke the Turnstile widget on your site. |\n| Secret key | Private key used for server-side token validation. |\n| Configurations | Mode, hostnames, appearance settings, and other options. |\n\nImplementing Turnstile involves two essential components that work together:\n\n1.  Client-side: [Embed the widget](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)\n    \n    Add the Turnstile widget to your webpage to challenge visitors and generate tokens. A token is a string (up to 2,048 characters) generated when the visitor completes a challenge.\n    \n2.  Server-side: [Validate the token](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/)\n    \n    Send tokens to Cloudflare's [Siteverify API](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/) — the endpoint for validating Turnstile tokens — to confirm they are authentic and have not been tampered with.\n    \n\nTurnstile is designed to be an independent service. You can use Turnstile on any website, regardless of whether it is proxied through the Cloudflare network. This allows for flexible deployment across multi-cloud environments, on-premises infrastructure, or sites using other CDNs. The client-side widget and server-side validation steps are completely self-contained.\n\nRefer to [Implementation](https://developers.cloudflare.com/turnstile/get-started/#implementation) below for guidance on how to implement Turnstile on your website.\n\n* * *\n\nFollow the steps below to implement Turnstile.\n\nFirst, you must create a Turnstile widget to get your sitekey and secret key.\n\nSelect your preferred implementation method:\n\n[\n\nCloudflare dashboard\n\n](https://developers.cloudflare.com/turnstile/get-started/widget-management/dashboard/)[\n\nAPI\n\n](https://developers.cloudflare.com/turnstile/get-started/widget-management/api/)[\n\nTerraform\n\n](https://developers.cloudflare.com/turnstile/get-started/widget-management/terraform/)\n\nAdd the Turnstile widget to your webpage forms and applications.\n\nRefer to [Embed the widget](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/) to learn more about implicit and explicit rendering methods.\n\nImplement server-side validation to verify the tokens generated by your widgets.\n\nRefer to [Validate the token](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/) to secure your implementation with proper token verification.\n\nSpecial considerations are necessary for mobile applications and WebView implementations.\n\nRefer to [Mobile implementation](https://developers.cloudflare.com/turnstile/get-started/mobile-implementation/) for more information on mobile application integration.\n\nIf you are currently using reCAPTCHA, hCaptcha, or another CAPTCHA service, Turnstile can be a drop-in replacement. You can copy and paste our script wherever you have deployed the existing script today.\n\nRefer to [Migration](https://developers.cloudflare.com/turnstile/migration/) for step-by-step migration guidance from other CAPTCHA services.\n\n* * *\n\n*   Server-side validation is mandatory. It is critical to enforce Turnstile tokens with the Siteverify API. The Turnstile token could be invalid, expired, or already redeemed. Not verifying the token will leave major vulnerabilities in your implementation. You must call Siteverify to complete your Turnstile configuration. Otherwise, it is incomplete and will result in zeroes for token validation when viewing your metrics in [Turnstile Analytics](https://developers.cloudflare.com/turnstile/turnstile-analytics/).\n    \n*   Tokens expire after 300 seconds (5 minutes). Each token can only be validated once. Expired or used tokens must be replaced with fresh challenges.\n    \n\n* * *\n\n*   Protect your secret keys. Never expose secret keys in client-side code.\n*   Rotate your keys regularly. Use API or dashboard to rotate secret keys periodically.\n*   Restrict your hostnames. Only allow widgets on domains that you control.\n*   Monitor the usage. Use analytics to detect unusual patterns.\n\n*   Use descriptive names. Name widgets based on their purpose, such as \"Login Form\" or \"Contact Page\".\n*   Separate your environments. Use different widgets for development, staging, and production.\n*   Keep track of which widgets are used at which locations.\n*   Store your widget configurations in version control when using Terraform.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.cloudflare.com/turnstile/troubleshooting/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/troubleshooting/",
+      "loadedTime": "2026-10-21T14:33:49.704Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/troubleshooting/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 99527,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/troubleshooting/",
+      "title": "Troubleshooting · Cloudflare Turnstile docs",
+      "description": "Troubleshoot common Turnstile widget and validation issues.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Troubleshooting"
+        },
+        {
+          "property": "og:title",
+          "content": "Troubleshooting · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:description",
+          "content": "Troubleshoot common Turnstile widget and validation issues."
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/troubleshooting/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/turnstile/troubleshooting/og.png?v=f990e1e6f6cf2958"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/turnstile/troubleshooting/og.png?v=f990e1e6f6cf2958"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "@id": "https://developers.cloudflare.com/turnstile/troubleshooting/#page",
+          "headline": "Troubleshooting",
+          "description": "Troubleshoot common Turnstile widget and validation issues.",
+          "url": "https://developers.cloudflare.com/turnstile/troubleshooting/",
+          "inLanguage": "en",
+          "image": "https://developers.cloudflare.com/turnstile/troubleshooting/og.png?v=f990e1e6f6cf2958",
+          "dateModified": "2026-04-16",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Cloudflare",
+            "description": "One platform for your apps, agents, and workforce. Build, secure, and scale without managing infrastructure",
+            "url": "https://www.cloudflare.com/",
+            "sameAs": [
+              "https://github.com/cloudflare",
+              "https://www.linkedin.com/company/cloudflare",
+              "https://x.com/cloudflare"
+            ],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://developers.cloudflare.com/logo.svg"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "101 Townsend St",
+              "addressLocality": "San Francisco",
+              "addressRegion": "CA",
+              "postalCode": "94107",
+              "addressCountry": "US"
+            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "Customer Support",
+                "url": "https://support.cloudflare.com/",
+                "availableLanguage": [
+                  "English"
+                ]
+              },
+              {
+                "@type": "ContactPoint",
+                "contactType": "Sales",
+                "url": "https://www.cloudflare.com/contact/",
+                "availableLanguage": [
+                  "English"
+                ]
+              }
+            ]
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://developers.cloudflare.com/#website",
+            "name": "Cloudflare Docs",
+            "url": "https://developers.cloudflare.com/"
+          }
+        }
+      ],
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e0fac45f6bd942-LAX",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=1eYq4SAFPGsYmn6otSlqhZH3WOhI.WRJAuUAcPNXw0s-1792593229.501181-1.0.1.1-A.eHabcSd7WNBKYMzQrbdYomjI2eJMGTsEqxJh89ElyI6OL5911gyMICXgchu2Sidh_Zz3g7KR_RT03x7FhdpiyJZ7td.QHi0cq38wQRZSRwGKO8QUmNvVqc6n5wWqZsFtZNst3mMPnMZzu25QPKRdzMxYMrNOZa8Ae6J6QiVemRPQbqjJPF5Y5GZpHHWvF8om71E0zQEGL4Eks_ySD5JQ; report-to cf-rdbgksygiaxsswkk",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:33:49 GMT",
+        "report-to": "{\"group\":\"cf-rdbgksygiaxsswkk\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=1eYq4SAFPGsYmn6otSlqhZH3WOhI.WRJAuUAcPNXw0s-1792593229.501181-1.0.1.1-A.eHabcSd7WNBKYMzQrbdYomjI2eJMGTsEqxJh89ElyI6OL5911gyMICXgchu2Sidh_Zz3g7KR_RT03x7FhdpiyJZ7td.QHi0cq38wQRZSRwGKO8QUmNvVqc6n5wWqZsFtZNst3mMPnMZzu25QPKRdzMxYMrNOZa8Ae6J6QiVemRPQbqjJPF5Y5GZpHHWvF8om71E0zQEGL4Eks_ySD5JQ\"}]}",
+        "reporting-endpoints": "cf-rdbgksygiaxsswkk=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=1eYq4SAFPGsYmn6otSlqhZH3WOhI.WRJAuUAcPNXw0s-1792593229.501181-1.0.1.1-A.eHabcSd7WNBKYMzQrbdYomjI2eJMGTsEqxJh89ElyI6OL5911gyMICXgchu2Sidh_Zz3g7KR_RT03x7FhdpiyJZ7td.QHi0cq38wQRZSRwGKO8QUmNvVqc6n5wWqZsFtZNst3mMPnMZzu25QPKRdzMxYMrNOZa8Ae6J6QiVemRPQbqjJPF5Y5GZpHHWvF8om71E0zQEGL4Eks_ySD5JQ\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=18,cfOrigin;dur=0,cfWorker;dur=36",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=Ylt83Cvvz8Mw9b6.O8oM3UO.tEhwL_ZXLKBGZ95vxck-1792593229.501181-1.0.1.1-sWdGmityPP7tMj9lkirPFmHdbi8h4_vO..vj02.StWFdDo1Z2nZhLt.ku5j14BpMPjGU5vFFr_n1DAp7XuMUJPmwxw4UsA.XuM2SHeLahLfY4a.FHNf8_g9pLFTJTC8D; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:03:49 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Troubleshooting · Cloudflare Turnstile docs\nRefer to the following pages for more information about troubleshooting Turnstile:\nTest your Turnstile implementation\nRotate secret key\nClient-side errors\nChallenge solve issues\nFeedback reports",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Troubleshooting · Cloudflare Turnstile docs\n\nRefer to the following pages for more information about troubleshooting Turnstile:\n\n*   [Test your Turnstile implementation](https://developers.cloudflare.com/turnstile/troubleshooting/testing/)\n*   [Rotate secret key](https://developers.cloudflare.com/turnstile/troubleshooting/rotate-secret-key/)\n*   [Client-side errors](https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/)\n*   [Challenge solve issues](https://developers.cloudflare.com/cloudflare-challenges/troubleshooting/challenge-solve-issues/)\n*   [Feedback reports](https://developers.cloudflare.com/turnstile/troubleshooting/feedback-reports/)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.cloudflare.com/turnstile/additional-configuration/widget-configurations/",
+    "crawl": {
+      "loadedUrl": "https://developers.cloudflare.com/turnstile/additional-configuration/widget-configurations/",
+      "loadedTime": "2026-10-21T14:33:49.851Z",
+      "referrerUrl": "https://developers.cloudflare.com/turnstile/additional-configuration/widget-configurations/",
+      "httpStatusCode": 404,
+      "depth": 0,
+      "contentLengthBytes": 68301,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.cloudflare.com/turnstile/404/",
+      "title": "404 - Page Not Found · Cloudflare Turnstile docs",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "404 - Page Not Found"
+        },
+        {
+          "property": "og:title",
+          "content": "404 - Page Not Found · Cloudflare Turnstile docs"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Cloudflare Docs"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.cloudflare.com/turnstile/404/"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.cloudflare.com/og-docs.png"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://developers.cloudflare.com/og-docs.png"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "access-control-allow-origin": "*",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e0fac5d9385d07-ORD",
+        "content-encoding": "br",
+        "content-security-policy": "form-action 'self'; frame-src 'self' company-target.com *.company-target.com cloudflarestream.com *.cloudflarestream.com youtube-nocookie.com *.youtube-nocookie.com videodelivery.net *.videodelivery.net cloudflare.com *.cloudflare.com; frame-ancestors 'self' cloudflare.com *.cloudflare.com; script-src 'self' cloudflarestream.com *.cloudflarestream.com cloudflareinsights.com *.cloudflareinsights.com cloudflare.com *.cloudflare.com google.com *.google.com demandbase.com *.demandbase.com bizible.com *.bizible.com jsdelivr.net *.jsdelivr.net 'wasm-unsafe-eval' 'unsafe-inline'; report-uri https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=XUq4BIKRnyDX4Lb9wgDJusjxXSCCk9_fjAgYR_C_V8g-1792593229.7432096-1.0.1.1-MjOVOe1D1HbnmxhGBxXdDXdU1ofCaIvlanhQvSYdDqBJZJFJEzYvDWJhHHhX3jkudBK3VTONmIDomCvc0c9VEeyc_ICItO.zxAOz6xH9T2mmlKxyS_RygP4exn9Oy90AlHLUzJ5GWXYOWeCHuuuGEvqcGee_h9vxkdqy9ezZF4WLIV3lNTDFtFLpRO03QJxgYRag5fYlwJ4RaV1xpkCWhw; report-to cf-blgxldiyyqlxwgnc",
+        "content-type": "text/html",
+        "date": "Wed, 21 Oct 2026 14:33:49 GMT",
+        "report-to": "{\"group\":\"cf-blgxldiyyqlxwgnc\",\"max_age\":86400,\"endpoints\":[{\"url\":\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=XUq4BIKRnyDX4Lb9wgDJusjxXSCCk9_fjAgYR_C_V8g-1792593229.7432096-1.0.1.1-MjOVOe1D1HbnmxhGBxXdDXdU1ofCaIvlanhQvSYdDqBJZJFJEzYvDWJhHHhX3jkudBK3VTONmIDomCvc0c9VEeyc_ICItO.zxAOz6xH9T2mmlKxyS_RygP4exn9Oy90AlHLUzJ5GWXYOWeCHuuuGEvqcGee_h9vxkdqy9ezZF4WLIV3lNTDFtFLpRO03QJxgYRag5fYlwJ4RaV1xpkCWhw\"}]}",
+        "reporting-endpoints": "cf-blgxldiyyqlxwgnc=\"https://csp-reporting.cloudflare.com/cdn-cgi/script_monitor/report?m=XUq4BIKRnyDX4Lb9wgDJusjxXSCCk9_fjAgYR_C_V8g-1792593229.7432096-1.0.1.1-MjOVOe1D1HbnmxhGBxXdDXdU1ofCaIvlanhQvSYdDqBJZJFJEzYvDWJhHHhX3jkudBK3VTONmIDomCvc0c9VEeyc_ICItO.zxAOz6xH9T2mmlKxyS_RygP4exn9Oy90AlHLUzJ5GWXYOWeCHuuuGEvqcGee_h9vxkdqy9ezZF4WLIV3lNTDFtFLpRO03QJxgYRag5fYlwJ4RaV1xpkCWhw\"",
+        "server": "cloudflare",
+        "server-timing": "cfCacheStatus;desc=\"HIT\", cfEdge;dur=31,cfOrigin;dur=0,cfWorker;dur=20",
+        "speculation-rules": "\"/cdn-cgi/speculation\"",
+        "strict-transport-security": "max-age=15552000; preload",
+        "vary": "accept-encoding",
+        "x-content-type-options": "nosniff",
+        "set-cookie": "__cf_bm=XccRd49Sq2EnYWpBgcALKPuGlfcTSbl416ZWYdx4kwA-1792593229.7432096-1.0.1.1-pArBXOoGeSgA0Qdqgkmzppv4IvvIJvSAnR7ptpP2ksAoNfyK38YA1VaRwO5.Gfx9eWF1sYaXXEd9rBjHyg6BP02iNsxAr.zLPG23j1lCaHvEJWwojwl_293.JeHpdZIQ; HttpOnly; SameSite=None; Secure; Path=/; Domain=developers.cloudflare.com; Expires=Wed, 21 Oct 2026 15:03:49 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Page Not Found · Cloudflare Turnstile docs\n404\nCheck the URL, try using our or try our LLM-friendly llms.txt directory.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Page Not Found · Cloudflare Turnstile docs\n\n## 404\n\nCheck the URL, try using our or try our LLM-friendly [llms.txt directory](https://developers.cloudflare.com/llms.txt).",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://akismet.com/pricing/",
+    "crawl": {
+      "loadedUrl": "https://akismet.com/pricing/",
+      "loadedTime": "2026-10-21T14:33:50.438Z",
+      "referrerUrl": "https://akismet.com/pricing/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 103924,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://akismet.com/pricing/",
+      "title": "Pricing – Akismet",
+      "description": "Compare Akismet plans for personal sites, businesses, and large networks. Stop comment and form spam on WordPress or any platform, starting today.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:title",
+          "content": "Pricing"
+        },
+        {
+          "property": "og:url",
+          "content": "https://akismet.com/pricing/"
+        },
+        {
+          "property": "article:published_time",
+          "content": "2022-04-28T07:49:10+00:00"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2023-12-06T12:13:58+00:00"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Akismet"
+        },
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        },
+        {
+          "property": "article:publisher",
+          "content": "https://www.facebook.com/WordPresscom"
+        },
+        {
+          "property": "og:description",
+          "content": "Compare Akismet plans for personal sites, businesses, and large networks. Stop comment and form spam on WordPress or any platform, starting today."
+        },
+        {
+          "property": "og:image",
+          "content": "https://akismet455732288.wordpress.com/wp-content/themes/a8c/akismet-2022/assets/images/social-banner.png?m=1681845962i"
+        },
+        {
+          "property": "og:image:secure_url",
+          "content": "https://akismet455732288.wordpress.com/wp-content/themes/a8c/akismet-2022/assets/images/social-banner.png?m=1681845962i"
+        },
+        {
+          "property": "og:image:height",
+          "content": "900"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1600"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "alt-svc": "clear",
+        "content-encoding": "br",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Wed, 21 Oct 2026 14:33:50 GMT",
+        "host-header": "WordPress.com",
+        "link": "<https://public-api.wordpress.com/wp-json/?rest_route=/sites/akismet455732288.wordpress.com>; rel=\"https://api.w.org/\", <https://wp.me/Pe9aAK-c>; rel=shortlink",
+        "server": "nginx",
+        "server-timing": "a8c-cdn, dc;desc=dfw, cache;desc=MISS;dur=198.0",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding, accept, content-type, cookie",
+        "x-ac": "4.dfw _dfw MISS",
+        "x-frame-options": "SAMEORIGIN",
+        "x-hacker": "Want root?  Visit join.a8c.com/hacker and mention this header.",
+        "x-remembering": "Eric Binnion <https://friendsofericbinnion.wordpress.com/>",
+        "set-cookie": "tk_ai=Odn9OLx%2FbuR%2Fdkn9VMjHvo8r; expires=Mon, 20 Oct 2031 14:33:50 GMT; Max-Age=157680000; path=/; domain=.wordpress.com"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Pricing – Akismet\nPersonal use \nSpam protection for personal sites and blogs. \nName your price \nPay what you can \nCommercial use \nFor professional or commercial sites and blogs. \n$ 9 .95 \nper month, billed yearly \nGet Pro \nSelect your plan\n500 spam calls/mo, up to 1 site $9.95 per month, billed yearly \n1000 spam calls/mo, up to 2 sites $19.90 per month, billed yearly \n1500 spam calls/mo, up to 3 sites $29.85 per month, billed yearly \n2000 spam calls/mo, up to 4 sites $39.80 per month, billed yearly \nFor large networks and multisite installations. \n$ 49 .95 \nper month, billed yearly \nLarge organizations \nTailored spam protection solutions for large businesses. \nCustom \nChoosing a plan \nWhat’s a spam check? \nA spam check (also called an API call) happens each time Akismet checks a comment, form submission, or other content for spam. \nNot sure how many spam checks you’ll need? \nIf your usage is hard to predict, don’t worry! Your spam protection keeps working even if you occasionally go over your monthly allowance, and our support team can help you pick or adjust your plan anytime.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Pricing – Akismet\n\n## ![](https://akismet455732288.wordpress.com/wp-content/themes/a8c/akismet-2022/assets/images/user-icon.svg) Personal use\n\nSpam protection for personal sites and blogs.\n\nName your price\n\nPay what you can\n\n## ![](https://akismet455732288.wordpress.com/wp-content/themes/a8c/akismet-2022/assets/images/users-icon.svg) Commercial use\n\nFor professional or commercial sites and blogs.\n\n$ 9 .95\n\nper month, billed yearly\n\n[Get Pro](https://wordpress.com/checkout/akismet/ak_pro5h_yearly/?checkoutBackUrl=https://akismet.com/pricing/)\n\nSelect your plan\n\n500 spam calls/mo, up to 1 site $9.95 per month, billed yearly\n\n1000 spam calls/mo, up to 2 sites $19.90 per month, billed yearly\n\n1500 spam calls/mo, up to 3 sites $29.85 per month, billed yearly\n\n2000 spam calls/mo, up to 4 sites $39.80 per month, billed yearly\n\nFor large networks and multisite installations.\n\n$ 49 .95\n\nper month, billed yearly\n\n## ![](https://akismet455732288.wordpress.com/wp-content/themes/a8c/akismet-2022/assets/images/network-icon.svg) Large organizations\n\nTailored spam protection solutions for large businesses.\n\nCustom\n\n## ![](https://akismet455732288.wordpress.com/wp-content/themes/a8c/akismet-2022/assets/images/info-icon.svg) Choosing a plan\n\n### What’s a spam check?\n\nA spam check (also called an [API call](https://akismet.com/support/general/akismet-api-usage-limits/)) happens each time Akismet checks a comment, form submission, or other content for spam.\n\n### Not sure how many spam checks you’ll need?\n\nIf your usage is hard to predict, don’t worry! Your spam protection keeps working even if you occasionally go over your [monthly allowance](https://akismet.com/support/general/akismet-api-usage-limits/#going-over), and our [support team](https://akismet.com/contact/?purpose=billing) can help you pick or adjust your plan anytime.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://akismet.com/developers/comment-check/",
+    "crawl": {
+      "loadedUrl": "https://akismet.com/developers/detailed-docs/comment-check/",
+      "loadedTime": "2026-10-21T14:33:57.971Z",
+      "referrerUrl": "https://akismet.com/developers/comment-check/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 121664,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://akismet.com/developers/detailed-docs/comment-check/",
+      "title": "Comment check – Akismet",
+      "description": "This is the call you will make the most. It takes a number of arguments and characteristics about the submitted content and then returns a thumbs up or thumbs down. Performance can drop dramatically if you choose to exclude data points. The more data you send Akismet about each comment, the greater the accuracy. We…",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:title",
+          "content": "Comment check"
+        },
+        {
+          "property": "og:url",
+          "content": "https://akismet.com/developers/detailed-docs/comment-check/"
+        },
+        {
+          "property": "og:description",
+          "content": "This is the call you will make the most. It takes a number of arguments and characteristics about the submitted content and then returns a thumbs up or thumbs down. Performance can drop dramaticall…"
+        },
+        {
+          "property": "article:published_time",
+          "content": "2022-06-16T05:28:08+00:00"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2026-10-14T21:44:25+00:00"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Akismet"
+        },
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        },
+        {
+          "property": "article:publisher",
+          "content": "https://www.facebook.com/WordPresscom"
+        },
+        {
+          "property": "og:image",
+          "content": "https://akismet455732288.wordpress.com/wp-content/themes/a8c/akismet-2022/assets/images/social-banner.png?m=1681845962i"
+        },
+        {
+          "property": "og:image:secure_url",
+          "content": "https://akismet455732288.wordpress.com/wp-content/themes/a8c/akismet-2022/assets/images/social-banner.png?m=1681845962i"
+        },
+        {
+          "property": "og:image:height",
+          "content": "900"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1600"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "alt-svc": "clear",
+        "content-encoding": "br",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Wed, 21 Oct 2026 14:33:57 GMT",
+        "host-header": "WordPress.com",
+        "link": "<https://public-api.wordpress.com/wp-json/?rest_route=/sites/akismet455732288.wordpress.com>; rel=\"https://api.w.org/\", <https://wp.me/pe9aAK-Gr>; rel=shortlink",
+        "server": "nginx",
+        "server-timing": "a8c-cdn, dc;desc=dfw, cache;desc=STALE;dur=2.0",
+        "strict-transport-security": "max-age=31536000",
+        "vary": "Accept-Encoding, accept, content-type, cookie",
+        "x-ac": "4.dfw _dfw STALE",
+        "x-frame-options": "SAMEORIGIN",
+        "x-hacker": "Want root?  Visit join.a8c.com/hacker and mention this header.",
+        "x-remembering": "Eric Binnion <https://friendsofericbinnion.wordpress.com/>"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Comment check – Akismet\nThis is the call you will make the most. It takes a number of arguments and characteristics about the submitted content and then returns a thumbs up or thumbs down. Performance can drop dramatically if you choose to exclude data points. The more data you send Akismet about each comment, the greater the accuracy. We recommend erring on the side of including too much data.\nThis method is called with the following URL:\nhttps://rest.akismet.com/1.1/comment-check\nImportant: All parameters should be sent via the POST method, form-encoded (Content-Type: application/x-www-form-urlencoded).\nParameters\napi_key (required)\nYour Akismet API key. You can find this on your account dashboard at https://akismet.com/account/\nblog (required)\nThe front page or home URL of the instance making the request. For a blog or wiki this would be the front page. Note: Must be a full URI, including http:// or https://.\nuser_ip (required)\nIP address of the comment submitter.\nuser_agent\nUser agent string of the web browser submitting the comment – typically the HTTP_USER_AGENT variable. Not to be confused with the user agent of your Akismet library.\nreferrer (note spelling)\nThe content of the HTTP_REFERER header should be sent here.\npermalink\nThe full permanent URL of the entry the comment was submitted to.\ncomment_type\nA string that describes the type of content being sent.\nExamples:\ncomment: A blog comment.\nforum-post: A top-level forum post.\nreply: A reply to a top-level forum post.\nblog-post: A blog post.\ncontact-form: A contact form or feedback form submission.\nsignup: A new user account.\nmessage: A message sent between just a few users.\nYou may send a value not listed above if none of them accurately describe your content.\ncomment_author\nName submitted with the comment.\ncomment_author_email\nEmail address submitted with the comment.\ncomment_author_url\nURL submitted with comment. Only send a URL that was manually entered by the user, not an automatically generated URL like the user’s profile URL on your site.\ncomment_content\nThe content that was submitted.\ncomment_date_gmt\nThe UTC timestamp of the creation of the comment, in ISO 8601 format. May be omitted for comment-check requests if the comment is sent to the API at the time it is created.\ncomment_post_modified_gmt\nThe UTC timestamp of the publication time for the post, page or thread on which the comment was posted.\nblog_lang\nIndicates the language(s) in use on the blog or site, comma-separated. You may send ISO 639-1 language codes such as en or fr, or locale identifiers such as en_US, en-US, or fr_CA. Akismet normalizes locale identifiers to their primary language.\nblog_charset\nThe character encoding for the form values included in comment_* parameters, such as “UTF-8” or “ISO-8859-1”.\nuser_role\nThe user role of the user who submitted the comment. This is an optional parameter. If you set it to “administrator”, Akismet will always return false.\nis_test\nThis is an optional parameter. You can use it when submitting test queries to Akismet.\nrecheck_reason\nIf you are sending content to Akismet to be rechecked, such as a post that has been edited or old pending comments that you’d like to recheck, include the parameter recheck_reason with a string describing why the content is being rechecked. For example, recheck_reason=edit.\nhoneypot_field_name\nIf you use a honeypot field in your implementation, include the name of the field in your request as well as the value of that field. For example, if you have a honeypot field that looks like <input type=”text” name=”hidden_honeypot_field” style=”display: none;” />, then you should include two extra parameters in your request: honeypot_field_name=hidden_honeypot_field and hidden_honeypot_field=[the value of the input].\ncomment_context\nThe comment_context parameter provides context for the environment in which the comment was posted: a list of tags or categories applied to the parent blog post or the site on which the comment was posted.\nSpecify comment_context using PHP-style array parameter notation: comment_context[]=cooking&comment_context[]=recipes&comment_context[]=bbq Note that any tags or categories should be taken from the parent post or environment; they should not be supplied by the commenters themselves.\nOther server environmental variables\nIn PHP, there is an array of environmental variables called $_SERVER that contains information about the Web server itself as well as a key/value for every HTTP header sent with the request. This data is highly useful to Akismet. How the submitted content interacts with the server can be very telling, so please include as much of it as possible.\nExample request\ncurl\nEach -d adds a form field to the POST body. Use --data-urlencode for free-text values with spaces or punctuation so curl encodes them for you. The -i flag prints the response headers so you can see any Akismet headers.\ncurl -i https://rest.akismet.com/1.1/comment-check \\\n  -d api_key=YOUR_API_KEY \\\n  -d blog=https://example.com \\\n  -d user_ip=203.0.113.42 \\\n  -d referrer=https://www.google.com/ \\\n  -d permalink=https://example.com/blog/hello-world/ \\\n  -d comment_type=comment \\\n  -d comment_author_email=wapuu@example.com \\\n  -d blog_lang=en \\\n  -d is_test=true \\\n  --data-urlencode \"user_agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5)\" \\\n  --data-urlencode \"comment_author=Wapuu\" \\\n  --data-urlencode \"comment_content=Thanks for the write-up, this fixed my problem.\"\nPHP SDK\nFor PHP applications outside WordPress, use the official Akismet PHP SDK (PHP 8.1+). It encodes the request, turns the response headers into methods on the result, and throws an exception (all implementing AkismetException) instead of returning an error body. WordPress sites should use the Akismet plugin instead.\ncomposer require automattic/akismet-sdk guzzlehttp/guzzle\n<?php\nuse Automattic\\Akismet\\Akismet;\nuse Automattic\\Akismet\\DTO\\Content;\nuse Automattic\\Akismet\\Enum\\ContentType;\n\n$akismet = Akismet::create(\n    apiKey: 'YOUR_API_KEY',\n    site: 'https://example.com'\n);\n\ntry {\n    $content = new Content(\n        userIp: $_SERVER['REMOTE_ADDR'],\n        userAgent: $_SERVER['HTTP_USER_AGENT'] ?? null,\n        referrer: $_SERVER['HTTP_REFERER'] ?? null,\n        permalink: 'https://example.com/blog/hello-world/',\n        type: ContentType::Comment,\n        authorName: $_POST['author'] ?? null,\n        authorEmail: $_POST['email'] ?? null,\n        body: $_POST['comment'] ?? null,\n        blogLang: 'en',\n    );\n\n    $result = $akismet->check($content);\n    if ($result->shouldDiscard()) {\n        // Blatant spam (X-akismet-pro-tip: discard) - safe to drop without storing.\n    } elseif ($result->isSpam()) {\n        // Spam - hold in your spam queue for review.\n    } elseif ($result->shouldRecheck()) {\n        // X-akismet-recheck-after: check again in $result->recheckAfter seconds\n        // with the same Content plus recheckReason: 'recheck'.\n    }\n} catch (AkismetException $e) {\n    // No verdict. Fail open and check it again later.\n}\n\n\nContentType covers the standard comment_type values. For a custom type, pass a plain string instead, for example type: 'product-review'. The SDK sends it unchanged.\nResponses\nThe response body is plain text: true if the content is spam, false if it isn’t, or something else if there was a problem with the request. Akismet may also send headers that tell you what to do next.\nHeaderSent withWhat to do\nX-akismet-pro-tip: discard\ttrue (spam)\tThe content is blatant spam. You can safely discard it without saving it to a spam queue. Read more.\t\nX-akismet-recheck-after: <seconds>\tfalse (not spam)\tSend the same comment-check request again after that many seconds, adding recheck_reason=recheck.\t\nX-akismet-debug-help: <message>\tAny other body (error)\tExplains what went wrong with the request. Not always sent when a request fails.\t\nSpam\nHTTP/1.1 200 OK\nContent-Type: text/plain; charset=utf-8\nX-akismet-pro-tip: discard\n\ntrue\nThe X-akismet-pro-tip header is only present when Akismet is confident the content can be discarded; many spam responses won’t include it.\nNot spam\nHTTP/1.1 200 OK\nContent-Type: text/plain; charset=utf-8\nX-akismet-recheck-after: 900\n\nfalse\nIn this example, the client should resend the same request in 900 seconds (15 minutes) with recheck_reason=recheck. Most responses won’t include this header.\nError\nHTTP/1.1 200 OK\nContent-Type: text/plain; charset=utf-8\nX-akismet-debug-help: We were unable to parse your blog URI\n\ninvalid\nErrors still return HTTP 200, so check the body rather than the status code. Treat anything other than true or false as an error.\nTesting your data\nTo check your integration handles each response:\nSpam: send akismet-guaranteed-spam as comment_author, or akismet-guaranteed-spam@example.com as comment_author_email. Either always returns true.\nNot spam: set user_role=administrator and is_test=true. This always returns false.\nTo judge accuracy, test Akismet with a significant amount of real, live data. Akismet works by comparing content to genuine spam activity happening right now (and this is based on more than just the content itself), so artificially generating spam comments is not a viable approach.\nWe’re here to help\nIf you ever get stuck or need help troubleshooting something, please don’t hesitate to contact us.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Comment check – Akismet\n\nThis is the call you will make the most. It takes a number of arguments and characteristics about the submitted content and then returns a thumbs up or thumbs down. **Performance can drop dramatically if you choose to exclude data points.** The more data you send Akismet about each comment, the greater the accuracy. We recommend erring on the side of including too much data.\n\nThis method is called with the following URL:\n\nhttps://rest.akismet.com/1.1/comment-check\n\n**Important: All parameters should be sent via the POST method**, form-encoded (`Content-Type: application/x-www-form-urlencoded`).\n\n## Parameters\n\n**api\\_key** (required)  \nYour Akismet API key. You can find this on your account dashboard at [https://akismet.com/account/](https://akismet.com/account/)\n\n**blog** (required)  \nThe front page or home URL of the instance making the request. For a blog or wiki this would be the front page. **Note:** Must be a full URI, including http:// or [https://](https://).\n\n**user\\_ip** (required)  \nIP address of the comment submitter.\n\n**user\\_agent**  \nUser agent string of the web browser submitting the comment – typically the HTTP\\_USER\\_AGENT variable. Not to be confused with the user agent of your Akismet library.\n\n**referrer** (note spelling)  \nThe content of the HTTP\\_REFERER header should be sent here.\n\n**permalink**  \nThe full permanent URL of the entry the comment was submitted to.\n\n**comment\\_type**  \nA string that describes the type of content being sent.\n\nExamples:\n\n*   `comment`: A blog comment.\n*   `forum-post`: A top-level forum post.\n*   `reply`: A reply to a top-level forum post.\n*   `blog-post`: A blog post.\n*   `contact-form`: A contact form or feedback form submission.\n*   `signup`: A new user account.\n*   `message`: A message sent between just a few users.\n\nYou may [send a value not listed above](https://akismet.com/blog/pro-tip-tell-us-your-comment_type/) if none of them accurately describe your content.\n\n**comment\\_author**  \nName submitted with the comment.\n\n**comment\\_author\\_email**  \nEmail address submitted with the comment.\n\n**comment\\_author\\_url**  \nURL submitted with comment. Only send a URL that was manually entered by the user, not an automatically generated URL like the user’s profile URL on your site.\n\n**comment\\_content**  \nThe content that was submitted.\n\n**comment\\_date\\_gmt**  \nThe UTC timestamp of the creation of the comment, in ISO 8601 format. May be omitted for comment-check requests if the comment is sent to the API at the time it is created.\n\n**comment\\_post\\_modified\\_gmt**  \nThe UTC timestamp of the publication time for the post, page or thread on which the comment was posted.\n\n**blog\\_lang**  \nIndicates the language(s) in use on the blog or site, comma-separated. You may send ISO 639-1 language codes such as `en` or `fr`, or locale identifiers such as `en_US`, `en-US`, or `fr_CA`. Akismet normalizes locale identifiers to their primary language.\n\n**blog\\_charset**  \nThe character encoding for the form values included in **comment\\_\\*** parameters, such as “UTF-8” or “ISO-8859-1”.\n\n**user\\_role**  \nThe user role of the user who submitted the comment. This is an optional parameter. If you set it to “administrator”, Akismet will always return false.\n\n**is\\_test**  \nThis is an optional parameter. You can use it when submitting test queries to Akismet.\n\n**recheck\\_reason**  \nIf you are sending content to Akismet to be rechecked, such as a post that has been edited or old pending comments that you’d like to recheck, include the parameter **recheck\\_reason** with a string describing why the content is being rechecked. For example, **recheck\\_reason=edit**.\n\n**honeypot\\_field\\_name**  \nIf you use a [honeypot field](https://en.wikipedia.org/wiki/Honeypot_\\(computing\\)) in your implementation, include the name of the field in your request as well as the value of that field. For example, if you have a honeypot field that looks like **<input type=”text” name=”hidden\\_honeypot\\_field” style=”display: none;” />**, then you should include two extra parameters in your request: **honeypot\\_field\\_name=hidden\\_honeypot\\_field** and **hidden\\_honeypot\\_field=\\[the value of the input\\]**.\n\n**comment\\_context**  \nThe **comment\\_context** parameter provides context for the environment in which the comment was posted: a list of tags or categories applied to the parent blog post or the site on which the comment was posted.\n\nSpecify **comment\\_context** using PHP-style array parameter notation: **comment\\_context\\[\\]=cooking&comment\\_context\\[\\]=recipes&comment\\_context\\[\\]=bbq** Note that any tags or categories should be taken from the parent post or environment; they should not be supplied by the commenters themselves.\n\n**Other server environmental variables**  \nIn PHP, there is an array of environmental variables called **$\\_SERVER** that contains information about the Web server itself as well as a key/value for every HTTP header sent with the request. This data is highly useful to Akismet. How the submitted content interacts with the server can be very telling, so please include as much of it as possible.\n\n## Example request\n\n### curl\n\nEach `-d` adds a form field to the POST body. Use `--data-urlencode` for free-text values with spaces or punctuation so curl encodes them for you. The `-i` flag prints the response headers so you can see any [Akismet headers](https://akismet.com/developers/detailed-docs/comment-check/#response-headers).\n\ncurl -i https://rest.akismet.com/1.1/comment-check \\\\\n  -d api\\_key=YOUR\\_API\\_KEY \\\\\n  -d blog=https://example.com \\\\\n  -d user\\_ip=203.0.113.42 \\\\\n  -d referrer=https://www.google.com/ \\\\\n  -d permalink=https://example.com/blog/hello-world/ \\\\\n  -d comment\\_type=comment \\\\\n  -d comment\\_author\\_email=wapuu@example.com \\\\\n  -d blog\\_lang=en \\\\\n  -d is\\_test=true \\\\\n  --data-urlencode \"user\\_agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 14\\_5)\" \\\\\n  --data-urlencode \"comment\\_author=Wapuu\" \\\\\n  --data-urlencode \"comment\\_content=Thanks for the write-up, this fixed my problem.\"\n\n### PHP SDK\n\nFor PHP applications outside WordPress, use the official [Akismet PHP SDK](https://packagist.org/packages/automattic/akismet-sdk) (PHP 8.1+). It encodes the request, turns the response headers into methods on the result, and throws an exception (all implementing `AkismetException`) instead of returning an error body. WordPress sites should use the [Akismet plugin](https://wordpress.org/plugins/akismet/) instead.\n\ncomposer require automattic/akismet-sdk guzzlehttp/guzzle\n\n<?php\nuse Automattic\\\\Akismet\\\\Akismet;\nuse Automattic\\\\Akismet\\\\DTO\\\\Content;\nuse Automattic\\\\Akismet\\\\Enum\\\\ContentType;\n\n$akismet = Akismet::create(\n    apiKey: 'YOUR\\_API\\_KEY',\n    site: 'https://example.com'\n);\n\ntry {\n    $content = new Content(\n        userIp: $\\_SERVER\\['REMOTE\\_ADDR'\\],\n        userAgent: $\\_SERVER\\['HTTP\\_USER\\_AGENT'\\] ?? null,\n        referrer: $\\_SERVER\\['HTTP\\_REFERER'\\] ?? null,\n        permalink: 'https://example.com/blog/hello-world/',\n        type: ContentType::Comment,\n        authorName: $\\_POST\\['author'\\] ?? null,\n        authorEmail: $\\_POST\\['email'\\] ?? null,\n        body: $\\_POST\\['comment'\\] ?? null,\n        blogLang: 'en',\n    );\n\n    $result = $akismet->check($content);\n    if ($result->shouldDiscard()) {\n        // Blatant spam (X-akismet-pro-tip: discard) - safe to drop without storing.\n    } elseif ($result->isSpam()) {\n        // Spam - hold in your spam queue for review.\n    } elseif ($result->shouldRecheck()) {\n        // X-akismet-recheck-after: check again in $result->recheckAfter seconds\n        // with the same Content plus recheckReason: 'recheck'.\n    }\n} catch (AkismetException $e) {\n    // No verdict. Fail open and check it again later.\n}\n\n`ContentType` covers the standard `comment_type` values. For a custom type, pass a plain string instead, for example `type: 'product-review'`. The SDK sends it unchanged.\n\n## Responses\n\nThe response body is plain text: `true` if the content is spam, `false` if it isn’t, or something else if there was a problem with the request. Akismet may also send headers that tell you what to do next.\n\n| Header | Sent with | What to do |\n| --- | --- | --- |\n| `X-akismet-pro-tip: discard` | `true` (spam) | The content is blatant spam. You can safely discard it without saving it to a spam queue. [Read more](https://akismet.com/blog/theres-a-ninja-in-your-akismet/). |\n| `X-akismet-recheck-after: <seconds>` | `false` (not spam) | Send the same `comment-check` request again after that many seconds, adding `recheck_reason=recheck`. |\n| `X-akismet-debug-help: <message>` | Any other body (error) | Explains what went wrong with the request. Not always sent when a request fails. |\n\n### Spam\n\nHTTP/1.1 200 OK\nContent-Type: text/plain; charset=utf-8\nX-akismet-pro-tip: discard\n\ntrue\n\nThe `X-akismet-pro-tip` header is only present when Akismet is confident the content can be discarded; many spam responses won’t include it.\n\n### Not spam\n\nHTTP/1.1 200 OK\nContent-Type: text/plain; charset=utf-8\nX-akismet-recheck-after: 900\n\nfalse\n\nIn this example, the client should resend the same request in 900 seconds (15 minutes) with `recheck_reason=recheck`. Most responses won’t include this header.\n\n### Error\n\nHTTP/1.1 200 OK\nContent-Type: text/plain; charset=utf-8\nX-akismet-debug-help: We were unable to parse your blog URI\n\ninvalid\n\nErrors still return HTTP 200, so check the body rather than the status code. Treat anything other than `true` or `false` as an error.\n\n## Testing your data\n\nTo check your integration handles each response:\n\n*   **Spam:** send `akismet-guaranteed-spam` as `comment_author`, or `akismet-guaranteed-spam@example.com` as `comment_author_email`. Either always returns `true`.\n*   **Not spam:** set `user_role=administrator` and `is_test=true`. This always returns `false`.\n\nTo judge accuracy, test Akismet with a significant amount of real, live data. Akismet works by comparing content to genuine spam activity happening **right now** (and this is based on more than just the content itself), so artificially generating spam comments is not a viable approach.\n\n## We’re here to help\n\nIf you ever get stuck or need help troubleshooting something, please don’t hesitate to [contact us](https://akismet.com/contact/).",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]
