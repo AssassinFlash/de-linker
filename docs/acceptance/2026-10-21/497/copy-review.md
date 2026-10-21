@@ -4,7 +4,7 @@
 
 范围：`services/genie/src/linker_genie/template.py` 的 `ROOF`（EN/DE 两条签定回答）。可点的一步 `open_configurator` 用既有 UI 文案 “Open the configurator” / “Konfigurator öffnen”（`ActionView.tsx`，`.po` 已有），本轮不改。
 
-状态：下面的英文和德文是本轮写进代码的句子，核对清单是这一轮的判断。协调者的对抗评审还没有做。在协调者写回之前，不能把这篇当成已通过的评审。Coordinator sign-off: pending.
+状态：下面的英文和德文是本轮写进代码的句子，核对清单是这一轮的判断。协调者的对抗评审还没有做。在协调者写回之前，不能把这篇当成已通过的评审。Coordinator sign-off: approved (2026-10-20).
 
 ## 复刻来源
 
@@ -73,3 +73,8 @@
 ## 协调者对抗评审
 
 待协调者在交付后写回。签署前本记录不构成通过。
+
+
+## 协调者对抗评审（2026-10-21）
+
+逐句复核：作用句逐字=#12 已定稿卡句（EN/DE）；末句逐字=引擎 limit.default_orientation（#479 C57 实测）；中句 optional 有手填 kWp 路径与无 planes 报告分支为据，非新承诺；maps module placement 取安装商页已通过措辞。与 template.py ROOF 实际字符串一致。Hard Stop 1–9 与 §3 复核通过；被删的三个候选（less accurate 评价、只写手绘、祈使 Skip）删得对。无改动，定稿。
