@@ -1,7 +1,10 @@
 """Release verdicts combine every matching document; a pair nobody documents is unknown."""
 
-<<<<<<< HEAD
+import hashlib
+import json
+
 import pytest
+from conftest import SHIPPED_COMPATIBILITY
 
 from linker_engine.compatibility import Compatibility, DocumentRef
 
@@ -30,19 +33,11 @@ REVIEWED_PAIRS = [
     ("HS2-10K-T2-X", "BU2-5.0-HV1"),
     ("HS2-10K-T2-X", "BU2-5.0-HV5"),
 ]
-=======
-import hashlib
-import json
-
-from conftest import SHIPPING_COMPATIBILITY
-
-from linker_engine.compatibility import Compatibility
->>>>>>> 613ad845 (fix(#482,#483): one meter truth and a live backup path)
 
 
-def test_the_shipping_contract_version_is_its_content_hash() -> None:
+def test_the_shipped_contract_version_is_its_content_hash() -> None:
     """The feed publishes this version, so a contract edit must bump it."""
-    contract = json.loads(SHIPPING_COMPATIBILITY.read_text())
+    contract = json.loads(SHIPPED_COMPATIBILITY.read_text())
     stored = contract.pop("version")
     canonical = json.dumps(
         contract, sort_keys=True, ensure_ascii=False, separators=(",", ":")

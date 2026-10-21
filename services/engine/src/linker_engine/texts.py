@@ -133,9 +133,17 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Largest released configuration within the HTW limit of {upper} kWh",
         "Größte freigegebene Konfiguration innerhalb der HTW-Grenze von {upper} kWh",
     ),
+    "basis.battery_fit_reserve": (
+        "Largest released configuration within the backup reserve of {upper} kWh",
+        "Größte freigegebene Konfiguration innerhalb der Notstromreserve von {upper} kWh",
+    ),
     "basis.battery_above": (
         "Smallest released configuration; it exceeds the HTW limit of {upper} kWh",
         "Kleinste freigegebene Konfiguration; sie überschreitet die HTW-Grenze von {upper} kWh",
+    ),
+    "basis.battery_above_reserve": (
+        "Smallest released configuration; it exceeds the backup reserve of {upper} kWh",
+        "Kleinste freigegebene Konfiguration; sie überschreitet die Notstromreserve von {upper} kWh",
     ),
     "basis.stacks.one": (
         "{quantity} modules in one stack",
@@ -199,6 +207,10 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher ab. "
         "Der Vorschlag umfasst den Wechselrichter; ein Speicher lässt sich später ergänzen.",
     ),
+    "warn.no_storage_none": (
+        "With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery.",
+        "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher ab.",
+    ),
     "warn.no_storage_backup": (
         "With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery for self-consumption. "
         "The battery in this proposal holds the backup reserve.",
@@ -215,6 +227,12 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "No released battery configuration fits within the HTW limit of {upper} kWh. "
         "The smallest released configuration, {usable} kWh, is proposed and marked.",
         "Keine freigegebene Batteriekonfiguration passt in die HTW-Grenze von {upper} kWh. "
+        "Vorgeschlagen und markiert ist die kleinste freigegebene Konfiguration mit {usable} kWh.",
+    ),
+    "warn.battery_above_reserve": (
+        "No released battery configuration fits within the backup reserve of {upper} kWh. "
+        "The smallest released configuration, {usable} kWh, is proposed and marked.",
+        "Keine freigegebene Batteriekonfiguration passt in die Notstromreserve von {upper} kWh. "
         "Vorgeschlagen und markiert ist die kleinste freigegebene Konfiguration mit {usable} kWh.",
     ),
     "warn.backup_reserve_missing": (

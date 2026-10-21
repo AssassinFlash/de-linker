@@ -238,14 +238,58 @@ def test_backup_needed_checks_the_reserve_without_an_htw_recommendation(
     assert result.sizing.recommended is False
     assert result.sizing.reserve_kwh == pytest.approx(12.77, abs=0.01)
     assert result.selected is not None
+    assert result.selected.inverter.model == "HS2-5K-T2-X"
     battery = result.selected.battery
     assert battery is not None
+    assert battery.product.model == "BU2-5.0-HV1"
+    assert battery.quantity == 3
+    assert battery.usable_kwh == pytest.approx(13.5)
+    assert battery.above_upper_limit is True
     assert battery.usable_kwh >= result.sizing.reserve_kwh
     storage_rule = next(
         rule for rule in result.selected.inverter_rules if rule.id == "backup_storage"
     )
     assert storage_rule.passed is True
     assert any("holds the backup reserve" in warning for warning in result.warnings)
+    assert not any("HTW limit" in warning for warning in result.warnings)
+    battery_line = next(
+        line for line in result.selected.lines if line.role == "battery"
+    )
+    assert "backup reserve of 12.8 kWh" in " ".join(battery_line.basis)
+
+
+def test_the_backup_no_candidate_does_not_claim_a_proposal(
+    engine_without_backup: Engine,
+) -> None:
+    """No candidate: the no-storage warning must not name a proposal or battery."""
+    result = design(
+        engine_without_backup,
+        annual_kwh=5000,
+        pv_kwp=2,
+        phase=3,
+        backup="needed",
+        backup_load_kw=50,
+        backup_hours=72,
+    )
+    assert result.selected is None
+    assert result.sizing.recommended is False
+    assert any("advises against a battery" in warning for warning in result.warnings)
+    assert not any("proposal" in warning for warning in result.warnings)
+    assert not any("holds the backup reserve" in warning for warning in result.warnings)
+
+    german = design(
+        engine_without_backup,
+        locale="de",
+        annual_kwh=5000,
+        pv_kwp=2,
+        phase=3,
+        backup="needed",
+        backup_load_kw=50,
+        backup_hours=72,
+    )
+    assert german.selected is None
+    assert any("rät die HTW Berlin" in warning for warning in german.warnings)
+    assert not any("Vorschlag" in warning for warning in german.warnings)
 
 
 def test_backup_accessory_ok_keeps_candidates_without_backup_figures(

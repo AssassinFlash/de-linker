@@ -362,6 +362,7 @@ def stueckliste(
     request: ResidentialInput,
     upper_kwh: float,
     existing: bool,
+    reserve_only: bool = False,
 ) -> list[Line]:
     locale = request.locale
     inverter = evaluation.inverter
@@ -392,7 +393,9 @@ def stueckliste(
             )
         )
     if fit:
-        lines += _battery_lines(engine, fit, locale, upper_kwh)
+        lines += _battery_lines(
+            engine, fit, locale, upper_kwh, reserve_only=reserve_only
+        )
     if not existing:
         lines += _requirement_lines(engine, inverter, request, evaluation.backup_parts)
         if evaluation.layout:
@@ -401,16 +404,17 @@ def stueckliste(
 
 
 def _battery_lines(
-    engine: Engine, fit: BatteryFit, locale: Locale, upper_kwh: float
+    engine: Engine,
+    fit: BatteryFit,
+    locale: Locale,
+    upper_kwh: float,
+    reserve_only: bool = False,
 ) -> list[Line]:
     config = fit.config
-    basis = [
-        t(
-            "basis.battery_above" if fit.above else "basis.battery_fit",
-            locale,
-            upper=upper_kwh,
-        )
-    ]
+    basis_key = "basis.battery_above" if fit.above else "basis.battery_fit"
+    if reserve_only:
+        basis_key += "_reserve"
+    basis = [t(basis_key, locale, upper=upper_kwh)]
     if config.modular:
         if config.quantity == 1:
             basis.append(t("basis.module.one", locale))
@@ -783,15 +787,6 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
     )
     sizing = htw.size(request.pv_kwp, use, reserve)
     warnings: list[str] = []
-    if not sizing.recommended:
-        warnings.append(
-            t(
-                "warn.no_storage_backup"
-                if request.backup != "none" and reserve
-                else "warn.no_storage",
-                locale,
-            )
-        )
     if request.backup != "none" and not reserve:
         warnings.append(t("warn.backup_reserve_missing", locale))
 
@@ -849,6 +844,9 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
 
     selected: Selection | None = None
     metrics: MetricsResult | None = None
+    reserve_only = (
+        not sizing.recommended and request.backup != "none" and bool(sizing.reserve_kwh)
+    )
     if chosen and (chosen.layout or existing):
         fit = None
         if chosen.batteries:
@@ -863,7 +861,9 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
             if fit.above:
                 warnings.append(
                     t(
-                        "warn.battery_above",
+                        "warn.battery_above_reserve"
+                        if reserve_only
+                        else "warn.battery_above",
                         locale,
                         upper=sizing.high_kwh,
                         usable=fit.config.usable_kwh,
@@ -876,7 +876,15 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
             strings=string_result(chosen.layout, engine.products)
             if chosen.layout
             else None,
-            lines=stueckliste(engine, chosen, fit, request, sizing.high_kwh, existing),
+            lines=stueckliste(
+                engine,
+                chosen,
+                fit,
+                request,
+                sizing.high_kwh,
+                existing,
+                reserve_only=reserve_only,
+            ),
         )
         usable = fit.config.usable_kwh if fit else 0.0
         # A backup reserve is held back in daily operation (HTW Berlin's storage
@@ -914,6 +922,17 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
         warnings.append(
             t("warn.no_battery_release", locale, model=existing_product.model)
         )
+
+    if not sizing.recommended:
+        # The proposal wording must match the result: a covered reserve, an
+        # inverter-only proposal, or no proposal at all.
+        if selected and selected.battery:
+            key = "warn.no_storage_backup"
+        elif selected:
+            key = "warn.no_storage"
+        else:
+            key = "warn.no_storage_none"
+        warnings.insert(0, t(key, locale))
 
     sizing_rules = _sizing_rules(sizing, request, use)
     all_rules = sizing_rules + (selected.inverter_rules if selected else [])
