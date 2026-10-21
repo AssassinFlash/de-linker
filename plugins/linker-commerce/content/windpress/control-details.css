@@ -146,7 +146,7 @@
 /* Three product actions share a narrow row. Put each icon above its label
    so Documents / Dokumente never leaves a single letter on a second line. */
 @media (max-width: 639px) {
-	#tv-storefront-pdp .pdp-tool {
+	#tv-storefront-pdp .pdp-product-tools .pdp-tool {
 		flex-direction: column;
 		gap: 6px;
 		min-height: 64px;
