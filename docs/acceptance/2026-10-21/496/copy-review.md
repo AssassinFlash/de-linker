@@ -9,7 +9,7 @@ linker-copywriting Hard Stops；两个插件的既有 `.po` 术语；EN 先定�
 评审意见按条目返回，本文的记录是评审后的定稿。定稿即代码里的 msgid / msgstr（`plugins/linker-tools/languages/linker-tools-de_DE_formal.po`，
 `just i18n-tools` 生成 JSON），以及 `solution.py` 的 LABELS 与两份 `system.md` 的模型规则。
 
-状态：**Coordinator sign-off: pending**（按票面）。
+状态：**Coordinator sign-off: approved (2026-10-21)**（见文末）。
 
 ## 逐条
 
@@ -35,3 +35,8 @@ linker-copywriting Hard Stops；两个插件的既有 `.po` 术语；EN 先定�
 - 独立评审代理是只读的，未改文件；定稿由实现会话落盘，评审者与作者不是同一代理，但也不是业主本人。
 - 没跑读屏实测；新按钮与提示沿用配置器既有的 `linker-button` / `role="status"` 结构。
 - 访客提示的截图文案为定稿；C 的“确定性失败仍显示 Try again”是已知的既有保存行为，未在本票修。
+
+
+## 协调者对抗评审（2026-10-21）
+
+逐条复核定稿列：A 复用既有 .po；B 补德语省略号前空格（与站点忙碌句惯例一致）；C 复用 C31 并如实记录"确定性失败不可重试"的限制（本票不改保存错误分类，正确）；D 是本轮最重要的修正——删掉"登录后问 Genie"的无承载承诺，改为只承诺会话保存+claim 入账，并把 Genie 读取的前提（在账户里）说清，德语 Sitzung→Browser 与 .po 一致；E 问数字不问"方案说话"；F 提示词与报告标签逐一对齐、隐私句限定为 read-solution 返回的这一份；G 本人限定+登录请求+handoff-team 禁用；H 产量标签对齐报告用语。两处不采用的理由均成立（访客无可读分支、状态句是数据非客户句）。与 .po/solution.py/prompts 的实际字符串一致。Hard Stop 1–9 与 §3 复核通过。无改动，定稿。
