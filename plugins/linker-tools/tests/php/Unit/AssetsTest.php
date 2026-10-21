@@ -45,13 +45,13 @@ final class AssetsTest extends TestCase {
 			)
 		);
 
-		foreach ( array( 'configurator', 'genie', 'hero', 'marketing', 'preview' ) as $entry ) {
+		foreach ( array( 'configurator', 'genie', 'hero', 'marketing', 'inquiry-handoff', 'preview' ) as $entry ) {
 			$asset = require $plugin_dir . 'build/' . $entry . '.asset.php';
 
 			if ( 'marketing' === $entry ) {
 				// The page binder uses native DOM events and the shared translation runtime.
 				$this->assertSame( array( 'wp-dom-ready', 'wp-i18n' ), $asset['dependencies'] );
-			} elseif ( 'preview' === $entry ) {
+			} elseif ( in_array( $entry, array( 'preview', 'inquiry-handoff' ), true ) ) {
 				// The preview card's page script (ticket #249) is no app: it
 				// loads on the pages with the card, without React.
 				$this->assertNotContains( 'react-jsx-runtime', $asset['dependencies'] );

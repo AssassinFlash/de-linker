@@ -121,6 +121,7 @@ final class Plugin {
 			return;
 		}
 		\WP_CLI::add_command( 'linker-commerce', new Cli\PresentCommand() );
+		\WP_CLI::add_command( 'linker-commerce inquiry-assessments', new Inquiry\Assessment\RecoveryCommand() );
 		\WP_CLI::add_command( 'linker-commerce stock-key', new Cli\StockKeyCommand() );
 		\WP_CLI::add_command( 'linker-commerce test-mail', new Cli\TestMailCommand() );
 		\WP_CLI::add_command( 'linker-commerce registration-blocks', new Cli\RegistrationBlocksCommand() );
@@ -149,7 +150,7 @@ final class Plugin {
 	/**
 	 * The modules of the inquiry chain, with what they share.
 	 *
-	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Proforma\Module|Account\Module|Presentation\Module|Stock\Module|Digest\Module|Genie\Module>
+	 * @return list<Settings\Module|Vocabulary\Module|Gating\Module|Mail\Module|Registration\Module|Inquiry\Module|Proforma\Module|Account\Module|Presentation\Module|Stock\Module|Digest\Module|Genie\Module|Protection\Module>
 	 */
 	private function commerce_modules(): array {
 		$templates = plugin_dir_path( $this->file ) . 'templates/';
@@ -170,6 +171,7 @@ final class Plugin {
 
 		return array(
 			new Settings\Module( new Settings\SettingsTab( $jobs ), new Settings\WooOptions() ),
+			new Protection\Module( $this->file ),
 			new Vocabulary\Module( new Vocabulary\Overrides( new Vocabulary\Terms() ), new Vocabulary\Labels(), new Vocabulary\LocaleFormat() ),
 			new Gating\Module( $prices, new Gating\DraftSummary( $state, $prices ), new Gating\StoreApiPrices( $state ), new Gating\ProductSorting( $state ) ),
 			new Mail\Module( new Mail\Outbox( $jobs, new Mail\Throttle() ), $jobs, new Mail\EmailLocale(), new Mail\EmailPolicy() ),

@@ -12,19 +12,23 @@ they are first needed; an invalid one is refused, never patched.
 
 from __future__ import annotations
 
+import hmac
+import json
 import os
+import threading
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from functools import cached_property
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
-from . import commercial, geo, imagery, pdf, report, residential
+from . import commercial, geo, imagery, pdf, report, residential, version
 from .compatibility import Compatibility
 from .engine import Engine
+from .gate import Gate
 from .models import (
     CommercialInput,
     CommercialResult,
@@ -71,16 +75,16 @@ class Settings:
 class Services:
     """The loaded data and clients, created once per process."""
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, source: tuple[bytes, ...]) -> None:
         self.settings = settings
-
-    @cached_property
-    def engine(self) -> Engine:
-        return Engine(
-            products=Products.load(self.settings.feed),
-            compatibility=Compatibility.load(self.settings.compatibility),
-            pvgis=Pvgis(self.settings.cache / "pvgis"),
+        feed = settings.feed.read_bytes()
+        compatibility = settings.compatibility.read_bytes()
+        self.engine = Engine(
+            products=Products.from_feed(json.loads(feed)),
+            compatibility=Compatibility(json.loads(compatibility)),
+            pvgis=Pvgis(settings.cache / "pvgis"),
         )
+        self.version = version.digest(source, feed, compatibility)
 
     @cached_property
     def roof(self) -> roof_service.RoofService:
@@ -89,12 +93,20 @@ class Services:
         )
 
 
+# Captured after module imports, before a running app accepts any requests.
+# Publishing uses immutable releases; later feed writes cannot relabel loaded data.
+SOURCE = version.source_bytes(Path(__file__).resolve().parent)
+
+
 def now() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     app = FastAPI(title="Solution Configurator engine")
+    # Commercial CSV is capped at 4MB; report logo at 700kB (models.py).
+    # 6MiB leaves JSON headroom without accepting unbounded parse/temp work.
+    app.add_middleware(Gate, limit=6 * 1024 * 1024, version=lambda: services().version)
     origins = [
         o.strip()
         for o in os.environ.get("LINKER_ENGINE_CORS_ORIGINS", "").split(",")
@@ -108,11 +120,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             allow_headers=["*"],
         )
     holder: dict[str, Services] = {}
+    loading = threading.Lock()
+    source = SOURCE
 
     def services() -> Services:
-        if "services" not in holder:
-            holder["services"] = Services(settings or Settings.from_environment())
-        return holder["services"]
+        with loading:
+            if "services" not in holder:
+                holder["services"] = Services(
+                    settings or Settings.from_environment(), source
+                )
+            return holder["services"]
 
     def unavailable(error: Exception, code: str) -> HTTPException:
         return HTTPException(
@@ -123,6 +140,28 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def health() -> dict[str, str]:
         """Report that the service is up."""
         return {"status": "ok"}
+
+    @app.get("/resource/version")
+    def resource_version(request: Request, response: Response) -> dict[str, str]:
+        """Authenticated read of the loaded snapshot; never an anonymous proxy route."""
+        if os.environ.get("LINKER_ENGINE_GATE_MODE", "off") != "enforce":
+            raise HTTPException(status_code=503, detail="engine gate unavailable")
+        expected = os.environ.get("GENIE_SERVICE_TOKEN", "")
+        if not expected:
+            raise HTTPException(status_code=503, detail="service token unavailable")
+        given = request.headers.get("x-linker-service-token", "").encode(
+            "latin-1", "ignore"
+        )
+        if not hmac.compare_digest(given, expected.encode()):
+            raise HTTPException(status_code=401, detail="unauthorized")
+        try:
+            current = services().version
+        except (OSError, ValueError, RuntimeError) as error:
+            raise HTTPException(
+                status_code=503, detail="engine version unavailable"
+            ) from error
+        response.headers["Cache-Control"] = "private, no-store"
+        return {"version": current}
 
     @app.get("/geo/plz/{plz}")
     def place(plz: str) -> PlaceResult:

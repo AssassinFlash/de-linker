@@ -265,6 +265,14 @@ SETTING_USERMETA_PREFIXES = (
 # are the live ones of 2026-10-09 and WooCommerce's classic order fields.
 EMPTIED_ORDER_META = frozenset(
     {
+        # Full current inquiry business evidence and staff free text (issue 511).
+        # Neither raw contacts nor an operational pending task belong in snapshots.
+        "_linker_inquiry_assessment",
+        "_linker_inquiry_assessment_override",
+        "_linker_inquiry_assessment_pending",
+        "_linker_inquiry_customer_evidence",
+        "_linker_customer_review",
+        "_linker_customer_evidence_erased",
         "_billing_address_index",
         "_shipping_address_index",
         "_customer_ip_address",
@@ -276,6 +284,11 @@ EMPTIED_ORDER_META = frozenset(
         "_wc_order_attribution_user_agent",
         "_wc_order_attribution_session_entry",
         "_wc_order_attribution_referrer",
+        # Native public-admission retry links identify an individual order's
+        # request and subject; they must not survive a live-to-local pull (#520).
+        "_linker_public_request",
+        "_linker_public_input",
+        "_linker_public_subject",
         "tv_b2b_company_snapshot",
         "tv_b2b_document_ledger_v2",  # the buyer block of every proforma
         "tv_b2b_order_vat_snapshot",  # VIES name and address
@@ -425,6 +438,7 @@ class Anonymizer:
             TABLE_PREFIX + "posts": self._posts,
             TABLE_PREFIX + "postmeta": self._order_meta,
             TABLE_PREFIX + "comments": self._comments,
+            TABLE_PREFIX + "commentmeta": self._comment_meta,
             TABLE_PREFIX + "wc_orders": self._orders,
             TABLE_PREFIX + "wc_order_addresses": self._order_addresses,
             TABLE_PREFIX + "wc_orders_meta": self._order_meta,
@@ -567,13 +581,24 @@ class Anonymizer:
 
     def _options(self, table: Table, row: Row) -> bool:
         name = row[table.index("option_name")].text or ""
+        if name in {
+            "linker_inquiry_assessment_enabled",
+            "linker_inquiry_assessment_recovery",
+        }:
+            # A local copy must establish its own worker/configuration readiness.
+            return False
         return not (
-            TRANSIENT_OPTION.search(name)
+            name == "linker_public_admission_ledger"
+            or TRANSIENT_OPTION.search(name)
             or SECRET_OPTION.search(name)
             or LOG_OPTION.search(name)
         )
 
     def _posts(self, table: Table, row: Row) -> bool:
+        # #521 private replay receipts contain customer-visible answers/PDFs.
+        # They are not content and must never travel into development snapshots.
+        if row[table.index("post_type")].text == "linker_tool_reply":
+            return False
         if row[table.index("post_type")].text in ORDER_POST_TYPES:
             # A classic order keeps its order key in post_password and the
             # customer's note in its excerpt.
@@ -592,6 +617,12 @@ class Anonymizer:
         address = row[table.index("comment_author_email")].text or ""
         if address and not self.emails.keeps(address):
             self._set(table, row, "comment_author", FIRST_NAME)
+        return True
+
+    def _comment_meta(self, table: Table, row: Row) -> bool:
+        """Staff evidence text lives in protected metadata, not the generic note."""
+        if row[table.index("meta_key")].text == "_linker_customer_review_event":
+            self._set(table, row, "meta_value", "")
         return True
 
     def _orders(self, table: Table, row: Row) -> bool:
@@ -617,6 +648,8 @@ class Anonymizer:
         """The buyer's order meta, in wp_postmeta or wp_wc_orders_meta."""
         key = row[table.index("meta_key")].text or ""
         value = row[table.index("meta_value")].text
+        if key in {"_linker_binding", "_linker_recipient", "_linker_expires"}:
+            return False
         if key in EMPTIED_ORDER_META:
             self._set(table, row, "meta_value", "")
         elif key == "_order_key" and value:

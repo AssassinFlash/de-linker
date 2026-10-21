@@ -456,3 +456,142 @@ def test_two_runs_over_the_same_dump_write_the_same_bytes() -> None:
     )
 
     assert first == second
+
+
+def test_inquiry_assessment_snapshots_and_local_worker_flags_do_not_survive_pull() -> (
+    None
+):
+    source = FIXTURE.read_text()
+    source = source.replace(
+        "(2,13,'is_vat_exempt','no'),",
+        "(22,13,'_linker_inquiry_assessment','private-current-inquiry-evidence'),\n"
+        "(23,13,'_linker_inquiry_assessment_override','staff-private-note'),\n"
+        "(24,13,'_linker_inquiry_assessment_pending','yes'),\n"
+        "(25,13,'_linker_inquiry_customer_evidence','private-frozen-company-evidence'),\n"
+        "(26,13,'_linker_customer_review','private-review-state'),\n"
+        "(2,13,'is_vat_exempt','no'),",
+    )
+    source = source.replace(
+        "(1,'siteurl','https://de-linker.com','on'),",
+        "(101,'linker_inquiry_assessment_enabled','yes','off'),\n"
+        "(102,'linker_inquiry_assessment_recovery','1234','off'),\n"
+        "(1,'siteurl','https://de-linker.com','on'),",
+    )
+    anonymizer = Anonymizer(accounts_from_dump(iter(source.splitlines(keepends=True))))
+    cleaned = "".join(anonymizer.run(iter(source.splitlines(keepends=True))))
+    result = tables(cleaned.splitlines(keepends=True))
+    values = {row["meta_key"]: row["meta_value"] for row in result["wp_wc_orders_meta"]}
+    assert values["_linker_inquiry_assessment"] == ""
+    assert values["_linker_inquiry_assessment_override"] == ""
+    assert values["_linker_inquiry_assessment_pending"] == ""
+    assert values["_linker_inquiry_customer_evidence"] == ""
+    assert values["_linker_customer_review"] == ""
+    assert "private-current-inquiry-evidence" not in cleaned
+    assert "staff-private-note" not in cleaned
+
+    names = {row["option_name"] for row in result["wp_options"]}
+    assert "linker_inquiry_assessment_enabled" not in names
+    assert "linker_inquiry_assessment_recovery" not in names
+
+
+@pytest.mark.parametrize("storage", ["wp_postmeta", "wp_wc_orders_meta"])
+def test_staff_review_event_metadata_is_removed_without_changing_other_notes(
+    storage: str,
+) -> None:
+    source = (
+        FIXTURE.read_text()
+        + f"""
+CREATE TABLE `wp_commentmeta` (
+  `meta_id` bigint NOT NULL,
+  `comment_id` bigint NOT NULL,
+  `meta_key` varchar(255),
+  `meta_value` longtext
+);
+INSERT INTO `wp_commentmeta` VALUES
+(1,1,'_linker_customer_review_event','private-staff-customer-evidence'),
+(2,1,'is_customer_note','0');
+INSERT INTO `{storage}` VALUES
+(9991,13,'_linker_inquiry_customer_evidence','private-company-evidence'),
+(9992,13,'_linker_customer_review','private-review-pointer');
+"""
+    )
+    anonymizer = Anonymizer(accounts_from_dump(iter(source.splitlines(keepends=True))))
+    cleaned = "".join(anonymizer.run(iter(source.splitlines(keepends=True))))
+    result = tables(cleaned.splitlines(keepends=True))
+    assert "private-staff-customer-evidence" not in cleaned
+    assert "private-company-evidence" not in cleaned
+    assert "private-review-pointer" not in cleaned
+    values = {row["meta_key"]: row["meta_value"] for row in result["wp_commentmeta"]}
+    assert values["_linker_customer_review_event"] == ""
+    assert values["is_customer_note"] == "0"
+    order_values = {row["meta_key"]: row["meta_value"] for row in result[storage]}
+    assert order_values["_linker_inquiry_customer_evidence"] == ""
+    assert order_values["_linker_customer_review"] == ""
+
+
+def test_public_admission_receipts_are_dropped_without_replacing_site_settings() -> (
+    None
+):
+    dump = (
+        "CREATE TABLE `wp_options` (\n  `option_id` bigint,\n  `option_name` varchar(191),\n"
+        "  `option_value` longtext,\n  `autoload` varchar(20)\n) ENGINE=InnoDB;\n"
+        "INSERT INTO `wp_options` VALUES\n"
+        "(1,'linker_public_admission_ledger','private-pseudonymous-receipts','off'),\n"
+        "(2,'blogname','Linker','on');\n"
+    )
+    out = "".join(Anonymizer([]).run(iter(dump.splitlines(keepends=True))))
+    names = {
+        row["option_name"]
+        for row in tables(out.splitlines(keepends=True))["wp_options"]
+    }
+    assert "linker_public_admission_ledger" not in names
+    assert "blogname" in names
+    assert "private-pseudonymous-receipts" not in out
+
+
+@pytest.mark.parametrize("table", ["wp_postmeta", "wp_wc_orders_meta"])
+def test_native_order_retry_associations_do_not_survive_live_pull(table: str) -> None:
+    owner_column = "post_id" if table == "wp_postmeta" else "order_id"
+    keys = ("_linker_public_request", "_linker_public_input", "_linker_public_subject")
+    rows = ",\n".join(
+        f"({index},13,'{key}','synthetic-live-association-{index}')"
+        for index, key in enumerate(keys, start=1)
+    )
+    dump = (
+        f"CREATE TABLE `{table}` (\n  `meta_id` bigint,\n"
+        f"  `{owner_column}` bigint,\n  `meta_key` varchar(191),\n"
+        "  `meta_value` longtext\n) ENGINE=InnoDB;\n"
+        f"INSERT INTO `{table}` VALUES\n{rows},\n"
+        "(4,13,'_order_total','125.00');\n"
+    )
+    out = "".join(Anonymizer([]).run(iter(dump.splitlines(keepends=True))))
+    values = {
+        row["meta_key"]: row["meta_value"]
+        for row in tables(out.splitlines(keepends=True))[table]
+    }
+    assert values == {**dict.fromkeys(keys, ""), "_order_total": "125.00"}
+    assert "synthetic-live-association" not in out
+
+
+def test_private_tool_answers_and_encoded_pdfs_never_enter_snapshots() -> None:
+    dump = (
+        "CREATE TABLE `wp_posts` (\n  `ID` bigint,\n  `post_type` varchar(20),\n"
+        "  `post_content` longtext,\n  `post_password` varchar(255)\n) ENGINE=InnoDB;\n"
+        "INSERT INTO `wp_posts` VALUES\n"
+        "(1,'linker_tool_reply','cHJpdmF0ZS1jdXN0b21lci1QREY=',''),\n"
+        "(2,'page','Published page','');\n"
+        "CREATE TABLE `wp_postmeta` (\n  `meta_id` bigint,\n  `post_id` bigint,\n"
+        "  `meta_key` varchar(255),\n  `meta_value` longtext\n) ENGINE=InnoDB;\n"
+        "INSERT INTO `wp_postmeta` VALUES\n"
+        "(1,1,'_linker_binding','private-binding'),\n"
+        "(2,1,'_linker_recipient','private-recipient'),\n"
+        "(3,1,'_linker_expires','123456'),\n"
+        "(4,2,'public_field','Published meta');\n"
+    )
+    out = "".join(Anonymizer([]).run(iter(dump.splitlines(keepends=True))))
+    assert "cHJpdmF0ZS1jdXN0b21lci1QREY=" not in out
+    assert "private-binding" not in out
+    assert "private-recipient" not in out
+    assert "123456" not in out
+    assert "Published page" in out
+    assert "Published meta" in out

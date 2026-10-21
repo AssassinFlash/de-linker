@@ -32,6 +32,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { resourceRefusalReason } from './resourceFailure';
 import { isTurnConflict, isUnfinishedStream } from '../api/turn';
 import { UPLOAD_TYPES, type Upload } from '../attachments/prepare';
 import { attachmentRefusalReason } from './conversation';
@@ -106,6 +107,7 @@ export interface PresentedFailure {
  * after the record is stored.
  */
 export type TurnSettlement =
+	| { action: 'resource'; reason: string; field: string }
 	| { action: 'refusal'; reason: string; field: string }
 	| { action: 'conflict'; field: string }
 	| { action: 'failed'; kind: FailureKind };
@@ -174,7 +176,11 @@ export function failureReducer(
  * @param error The rejection from sendTurn.
  */
 export function failureKind( error: unknown ): FailureKind | null {
-	if ( isTurnConflict( error ) || attachmentRefusalReason( error ) ) {
+	if (
+		isTurnConflict( error ) ||
+		resourceRefusalReason( error ) ||
+		attachmentRefusalReason( error )
+	) {
 		return null;
 	}
 	return isUnfinishedStream( error ) ? 'truncated' : 'upstream';
@@ -300,11 +306,20 @@ export function settleTurnFailure(
 	before: readonly FailureMessage[],
 	draft: FailureDraft
 ): TurnSettlement {
+	const resourceReason = resourceRefusalReason( error );
+	if ( resourceReason ) {
+		return {
+			action: 'resource',
+			reason: resourceReason,
+			field: draft.text,
+		};
+	}
 	const kind = failureKind( error );
 	if ( ! kind ) {
 		// The two recoveries that are not a failure. A refusal names its
 		// reason; everything else here is the 409.
-		const reason = attachmentRefusalReason( error );
+		const reason =
+			resourceRefusalReason( error ) || attachmentRefusalReason( error );
 		if ( reason ) {
 			return { action: 'refusal', reason, field: draft.text };
 		}

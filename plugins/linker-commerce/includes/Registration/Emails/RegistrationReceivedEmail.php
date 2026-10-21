@@ -64,6 +64,9 @@ final class RegistrationReceivedEmail extends CustomerApprovalEmail {
 		if ( ! $user instanceof \WP_User ) {
 			return;
 		}
+		if ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && '' !== \Linker\Commerce\Protection\ReceiptBudget::reason( $user->user_email, $user->ID, 'registration' ) ) {
+			return;
+		}
 		$this->object    = $user;
 		$this->recipient = $user->user_email;
 
@@ -79,7 +82,9 @@ final class RegistrationReceivedEmail extends CustomerApprovalEmail {
 	 * Default subject.
 	 */
 	public function get_default_subject() {
-		return __( 'We received your partner registration', 'linker-commerce' );
+		return 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
+			? __( 'Registration received', 'linker-commerce' )
+			: __( 'We received your partner registration', 'linker-commerce' );
 	}
 
 	/**

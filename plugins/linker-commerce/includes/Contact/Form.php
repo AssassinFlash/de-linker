@@ -117,8 +117,9 @@ final class Form {
 	 * @param string $state The state message to show above the fields, '' on a fresh visit.
 	 */
 	private function form( string $state ): string {
-		$field = 'linker-form-input';
-		$label = 'linker-form-label';
+		$previous = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
+		$field    = 'linker-form-input';
+		$label    = 'linker-form-label';
 
 		$html  = '<form class="linker-contact-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		$html .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
@@ -126,6 +127,7 @@ final class Form {
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, true, false );
 		$html .= ( new \Linker\Commerce\Inquiry\PublicGuard() )->fields();
+		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '' );
 
 		if ( '' !== $state ) {
 			$html .= $state;
@@ -173,6 +175,16 @@ final class Form {
 		$html .= '</div>';
 
 		$html .= '</form>';
+		if ( array() !== $previous ) {
+			// Insert escaped values after shortcode/template assembly; no user text is executable.
+			$html = preg_replace_callback( '/(<input[^>]+name="(name|email|company)"[^>]*)(\s\/>)/', static fn ( array $m ): string => $m[1] . ' value="' . esc_attr( $previous[ $m[2] ] ?? '' ) . '"' . $m[3], $html ) ?? $html;
+			$html = str_replace( 'required></textarea>', 'required>' . esc_textarea( $previous['message'] ?? '' ) . '</textarea>', $html );
+			$html = str_replace( 'name="consent" value="1" required', 'name="consent" value="1"' . ( '1' === ( $previous['consent'] ?? '' ) ? ' checked' : '' ) . ' required', $html );
+			$html = preg_replace( '/(<option[^>]+) selected/', '$1', $html ) ?? $html;
+			if ( in_array( $previous['intent'] ?? '', self::INTENTS, true ) ) {
+				$html = str_replace( '<option value="' . $previous['intent'] . '"', '<option value="' . $previous['intent'] . '" selected', $html );
+			}
+		}
 		return $html;
 	}
 
@@ -260,7 +272,10 @@ final class Form {
 			'sent_no_receipt' => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team. We have not sent a confirmation email. We reply within one business day.', 'linker-commerce' ) ),
 			'sent'      => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
 			'invalid'   => $this->notice( 'invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),
-			'throttled' => $this->notice( 'invalid', __( 'We received several messages from this connection. Please try again later or write to sales@de-linker.com.', 'linker-commerce' ) ),
+			'throttled' => $this->notice( 'invalid', __( 'The message limit has been reached. Your entries are still here. You can try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
+			'verification_failed' => $this->notice( 'invalid', __( 'Verification expired or could not be confirmed. Your entries are still here. Please try again.', 'linker-commerce' ) ),
+			'verification_unavailable' => $this->notice( 'invalid', __( 'Verification is temporarily unavailable. Your entries are still here. Please try again or email sales@de-linker.com.', 'linker-commerce' ) ),
+			'pending' => $this->notice( 'invalid', __( 'The request status could not be confirmed. Please check before sending it again.', 'linker-commerce' ) ),
 			default     => '',
 		};
 	}

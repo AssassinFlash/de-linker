@@ -228,7 +228,7 @@ final class FormTest extends TestCase {
 		$this->assertStringContainsString( 'type="submit"', $invalid, 'An invalid submission keeps the form available.' );
 
 		$_GET = array( Form::STATE_PARAM => 'throttled' );
-		$this->assertStringContainsString( 'Please try again later', ( new Form() )->render() );
+		$this->assertStringContainsString( 'You can try again later', ( new Form() )->render() );
 
 		$_GET = array( Form::STATE_PARAM => 'something-else' );
 		$this->assertStringNotContainsString( 'role="status"', ( new Form() )->render() );

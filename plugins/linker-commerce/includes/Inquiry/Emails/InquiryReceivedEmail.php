@@ -52,7 +52,7 @@ final class InquiryReceivedEmail extends CustomerOrderEmail {
 		if ( ! $order instanceof WC_Order ) {
 			return;
 		}
-		if ( 'daily_cap' === $order->get_meta( ReceiptLimit::SKIPPED_META ) ) {
+		if ( '' !== $order->get_meta( ReceiptLimit::SKIPPED_META ) ) {
 			return;
 		}
 		parent::trigger( $order_id, $order );

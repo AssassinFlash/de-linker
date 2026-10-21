@@ -25,6 +25,7 @@ from typing import Any, Literal, get_args
 import httpx
 
 from linker_genie.embedding import credentials
+from linker_genie.provider_budget import Transport
 from linker_genie.schema import PageType
 
 Intent = Literal[
@@ -148,7 +149,7 @@ class Jev:
                 "Content-Type": "application/json",
             },
             timeout=TIMEOUT_SECONDS,
-            transport=transport,
+            transport=Transport("jev", transport),
         )
         self._sleep = sleep
 

@@ -133,7 +133,9 @@ final class EngineProxy {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function forward( WP_REST_Request $request ) {
-		$path    = trim( (string) $request->get_param( 'path' ), '/' );
+		// The native route capture is authoritative. JSON/query `path` must not
+		// turn an unprotected read/unknown route into paid engineering work.
+		$path    = trim( (string) ( $request->get_url_params()['path'] ?? '' ), '/' );
 		$allowed = false;
 		foreach ( self::PATHS as $pattern ) {
 			if ( 1 === preg_match( $pattern, $path ) ) {
@@ -220,8 +222,21 @@ final class EngineProxy {
 			// Generous: one roof outline can spend seconds in the LoD2 source
 			// before the engine answers, and the engine caps its own work.
 			'timeout' => 60.0,
-			'headers' => array( 'Content-Type' => 'application/json' ),
+			'headers' => array(
+				'Content-Type'           => 'application/json',
+				'X-Linker-Service-Token' => defined( 'LINKER_GENIE_SERVICE_TOKEN' ) ? (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ) : '',
+			),
 		);
+		if ( class_exists( \Linker\Commerce\Protection\Identity::class ) ) {
+			$identity = \Linker\Commerce\Protection\Identity::current();
+			if ( ! is_wp_error( $identity ) ) {
+				$args['headers']['X-Linker-Resource-Subject'] = '' !== $identity->account ? $identity->account : $identity->browser;
+			}
+		}
+		$version = \Linker\Tools\Protection\Resources::engine_version();
+		if ( '' !== $version && 'POST' === $method ) {
+			$args['headers']['X-Linker-Engine-Version'] = $version;
+		}
 		if ( 'POST' === $method ) {
 			$args['body'] = $body;
 		}
@@ -230,6 +245,9 @@ final class EngineProxy {
 			: wp_remote_get( $url, $args );
 		if ( is_wp_error( $response ) ) {
 			return $response;
+		}
+		if ( '' !== $version && (int) wp_remote_retrieve_response_code( $response ) < 400 && wp_remote_retrieve_header( $response, 'x-linker-engine-version' ) !== $version ) {
+			return new WP_Error( 'linker_engine_version', 'The engine snapshot changed.', array( 'status' => 503 ) );
 		}
 		return array(
 			(int) wp_remote_retrieve_response_code( $response ),

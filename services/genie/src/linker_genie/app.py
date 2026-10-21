@@ -24,9 +24,13 @@ import os
 import time
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Literal
+from uuid import UUID
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from linker_judges.budget import BudgetError, take
+from pydantic import BaseModel, ConfigDict
 
 from linker_genie import contact, ground, inquiry, jev, page, parts, summary, timing
 from linker_genie.abilities import AbilityClient
@@ -41,6 +45,7 @@ from linker_genie.cycle import TurnResult, fatal_class, run
 from linker_genie.facts import TurnFacts
 from linker_genie.failure import from_log, is_row
 from linker_genie.gate import Gate
+from linker_genie.inquiry_assessment import AssessmentInput, assess
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup, fill
@@ -65,6 +70,7 @@ from linker_genie.template import (
 )
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
+from linker_genie.work import WorkError, hold
 
 app = FastAPI(title="Genie - Linker's AI assistant")
 logger = logging.getLogger(__name__)
@@ -139,15 +145,53 @@ def understander() -> Understander:
     return _understander
 
 
+class ProviderDebit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    provider: Literal["deepseek", "jev", "embedding"]
+    attempt: UUID
+
+
+@app.exception_handler(BudgetError)
+async def provider_refused(request: Request, error: BudgetError) -> JSONResponse:
+    return JSONResponse(
+        status_code=error.status,
+        content={
+            "code": str(error),
+            "detail": "The model request could not be admitted.",
+        },
+    )
+
+
+@app.post("/budget/take")
+def provider_debit(body: ProviderDebit) -> dict[str, int | None]:
+    """Private PHP translation seam; Gate requires the existing service token.
+
+    Not exposed through the public WordPress proxy. A successful receipt is for
+    exactly one immediate send; a lost response must never be retried as a permit.
+    """
+    return {"remaining": take(body.provider, str(body.attempt))}
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     """Report that the service is up."""
     return {"status": "ok"}
 
 
+@app.exception_handler(WorkError)
+async def work_refused(request: Request, error: WorkError) -> JSONResponse:
+    return JSONResponse(status_code=error.status, content={"code": str(error)})
+
+
 @app.post("/assistant/turn")
 @app.post("/turn")
 def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
+    """Hold actual cross-worker capacity until this sync computation finishes."""
+    with hold(request.headers.get("x-linker-resource-subject", "")):
+        return _assistant_turn(body, request)
+
+
+def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     """One conversation turn, grounded and hydrated, as SSE."""
     started = time.monotonic()
     # The turn's passive phase timings (#336, timing.py): measurement only, no
@@ -607,3 +651,9 @@ def _sse(
 
 def _event(name: str, payload: object) -> str:
     return f"event: {name}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+@app.post("/inquiries/assess")
+async def assess_inquiry(body: AssessmentInput) -> dict[str, object]:
+    """Authenticated shell background jobs only; never a browser submit call."""
+    return await assess(body)

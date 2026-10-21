@@ -42,6 +42,13 @@ if ( '' === trim( $order->get_formatted_billing_full_name() ) ) {
 }
 ?>
 </p>
+<?php
+$linker_assessment = \Linker\Commerce\Inquiry\Assessment\Queue::data( $order );
+if ( array() !== $linker_assessment ) {
+	$linker_initial = (array) ( $linker_assessment['initial_result'] ?? $linker_assessment['result'] );
+	echo '<p><strong>' . esc_html__( 'Jev initial assessment', 'linker-commerce' ) . ': ' . esc_html( \Linker\Commerce\Inquiry\Assessment\Result::label( (string) $linker_initial['label'] ) ) . '</strong><br />' . esc_html( \Linker\Commerce\Inquiry\Assessment\Result::explanation( $linker_initial ) ) . '</p>';
+}
+?>
 <p><a href="<?php echo esc_url( $order->get_edit_order_url() ); ?>"><?php esc_html_e( 'Open the inquiry', 'linker-commerce' ); ?></a></p>
 <?php
 // A contact message through Genie (#243) names its own door below, with its hand-off.

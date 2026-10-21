@@ -29,6 +29,8 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from linker_genie.provider_budget import Transport
+
 log = logging.getLogger(__name__)
 
 # One image read: probe P1 took 2.3 s at 611 tokens in and 414 out (research §3.4);
@@ -97,7 +99,9 @@ class Vision:
         )
         if self._refusal:
             log.error("genie vision: images will not be sent: %s", self._refusal)
-        self._client = httpx.Client(timeout=TIMEOUT_SECONDS, transport=transport)
+        self._client = httpx.Client(
+            timeout=TIMEOUT_SECONDS, transport=Transport("deepseek", transport)
+        )
         self._sleep = sleep
 
     def close(self) -> None:

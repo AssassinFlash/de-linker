@@ -15,6 +15,8 @@
 import type { Locale } from '../../configurator/types';
 import type { ContactReason, PageContext } from './turn';
 
+import { resourceFetch } from '../../protection/request';
+
 type Fetch = typeof fetch;
 
 export interface ContactState {
@@ -51,7 +53,7 @@ export async function readContact(
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< ContactState | null > {
 	try {
-		const response = await fetcher( url, {
+		const response = await resourceFetch( fetcher, url, {
 			credentials: 'same-origin',
 			cache: 'no-store',
 			headers: { 'X-WP-Nonce': nonce },
@@ -115,7 +117,7 @@ export async function sendContact(
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< ContactResult > {
 	try {
-		const response = await fetcher( url, {
+		const response = await resourceFetch( fetcher, url, {
 			method: 'POST',
 			credentials: 'same-origin',
 			cache: 'no-store',

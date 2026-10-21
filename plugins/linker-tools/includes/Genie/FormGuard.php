@@ -102,6 +102,9 @@ final class FormGuard {
 	 * @param int|null             $now   Unix time; the clock when omitted.
 	 */
 	public function passes( array $guard, ?int $now = null ): bool {
+		if ( \Linker\Tools\Protection\Resources::verified() ) {
+			return ! $this->trapped( $guard );
+		}
 		$started = $guard['started'] ?? '';
 		$nonce   = $guard['started_nonce'] ?? '';
 		$age     = ( $now ?? time() ) - (int) $started;
@@ -129,6 +132,9 @@ final class FormGuard {
 	 * @return string `connection` or `site` when that one is full, '' when both were taken.
 	 */
 	public function take(): string {
+		if ( \Linker\Tools\Protection\Resources::verified() ) {
+			return '';
+		}
 		if ( ! $this->connection->take( self::address() ) ) {
 			return 'connection';
 		}

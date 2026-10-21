@@ -167,6 +167,18 @@ jobs:
             --filter 'InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest'
 
       # #414: the abilities route, including the customer token. The test
+
+      # #519: real REST proof consumption, multi-dimensional admission,
+      # account privacy, advisory mode and actual disconnect/peer recovery.
+      # Uses synthetic inputs and intercepted HTTP; no external mail/provider.
+      - name: public verification and atomic admission
+        working-directory: plugins/linker-commerce
+        run: |
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter 'PublicControllerTest|PublicLedgerTest|PublicVerificationTest|PublicProofTest|PublicAdmissionOwnersTest|BusinessPolicyTest|BusinessAdmissionTest'
+
+      # #414: the abilities route, including the customer token. The test
       # builds its own account and inquiry on this bare instance. It is not
       # a #339 conversation case: Genie copies inquiry id and status only
       # (facts._from_inquiry), so a dialogue fixture would not show a leaked
@@ -191,6 +203,18 @@ jobs:
       # mail tests, so Polylang setup does not change their instance.
       - name: page cache follows a save
         run: just page-cache-chain smoke
+
+      # #521: native pre-dispatch resource/replay/privacy fixtures. The preceding
+      # page-cache step installs the local-only service token. All HTTP is
+      # intercepted; running-version responses and sizing inputs are synthetic.
+      - name: public resource admission and private service handoff
+        run: |
+          just wp smoke option update linker_engine_url http://127.0.0.1:9
+          just wp smoke option update linker_genie_url http://127.0.0.1:9
+          cd plugins/linker-tools
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter ResourceAdmissionTest
 
       # #425: an issued Proforma priced at 1680. Pending and restricted
       # accounts get no link and a 404 with no PDF bytes, in EN and DE,
@@ -219,6 +243,16 @@ jobs:
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter GenieInquiryTest
+
+      # The observation-only classifier uses fake service answers and local
+      # Outbox data. Includes private review history, native privacy, two real
+      # PHP connections, and rollback after a failed metadata write.
+      - name: inquiry assessment, customer evidence and staff review
+        working-directory: plugins/linker-commerce
+        run: |
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter 'InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest'
 
       # The cleanup runs even when an earlier step failed and the instance was
       # never built, so it reports rather than failing the job twice.

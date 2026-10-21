@@ -583,7 +583,7 @@ final class AccountTemplates {
 								'title'  => $solution->post_title,
 								'date'   => wp_date( LocaleFormat::date_format(), (int) get_post_timestamp( $solution ) ),
 								'items'  => $items,
-								'nonce'  => wp_nonce_field( SavedSolutions::ADD_ACTION . '_' . $solution->ID, '_wpnonce', true, false ),
+								'nonce'  => wp_nonce_field( SavedSolutions::ADD_ACTION . '_' . $solution->ID, '_wpnonce', true, false ) . \Linker\Commerce\Protection\FormFields::render( 'draft_write' ),
 								'report' => '' !== $saved->report_path( $solution->ID ) ? DocumentDownload::report_url( $solution->ID ) : '',
 							)
 						);

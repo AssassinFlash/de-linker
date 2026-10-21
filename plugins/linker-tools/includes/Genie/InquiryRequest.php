@@ -487,7 +487,7 @@ class InquiryRequest {
 			'order'   => $order->get_id(),
 			'number'  => (string) $order->get_order_number(),
 			'status'  => in_array( $status, self::STATUSES, true ) ? $status : 'inquiry-received',
-			'receipt' => 'daily_cap' !== (string) $order->get_meta( '_linker_receipt_skipped' ),
+			'receipt' => '' === (string) $order->get_meta( '_linker_receipt_skipped' ),
 			'email'   => (string) $order->get_billing_email(),
 			'url'     => 0 === (int) $order->get_customer_id() ? $order->get_checkout_order_received_url() : $order->get_view_order_url(),
 			'locale'  => $locale,

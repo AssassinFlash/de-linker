@@ -32,6 +32,17 @@ final class ModuleTest extends TestCase {
 	 * Statuses, stock, gateway, request page, admin labels and emails are hooked; stock is never reduced.
 	 */
 	public function test_register_adds_the_hooks(): void {
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::class, 'recover' );
+		// @phpstan-ignore argument.type (WP_Mock accepts its AnyInstance matcher for array callbacks, as below.)
+		WP_Mock::expectFilterAdded( 'cron_schedules', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::class ), 'schedules' ) );
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::PROCESS, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'process' );
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::EXPIRE, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'expire' );
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::FINISH, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'finish', 10, 2 );
+		$this->expect_action_on_any( 'add_meta_boxes', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'boxes' );
+		$this->expect_action_on_any( 'admin_post_linker_inquiry_assessment_correct', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'correct' );
+		// @phpstan-ignore argument.type (WP_Mock accepts its AnyInstance matcher for array callbacks, as in TestCase::plain_text.)
+		WP_Mock::expectFilterAdded( 'woocommerce_privacy_export_order_personal_data', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Inquiry\Assessment\EvidencePrivacy::class ), 'export' ), 10, 2 );
+		$this->expect_action_on_any( 'woocommerce_privacy_before_remove_order_personal_data', \Linker\Commerce\Inquiry\Assessment\EvidencePrivacy::class, 'erase' );
 		WP_Mock::userFunction( 'add_shortcode', array( 'return' => true ) );
 		$this->expect_action_on_any( 'woocommerce_created_customer', \Linker\Commerce\Inquiry\AccountLink::class, 'claim', 20 );
 		$this->expect_action_on_any( 'admin_post_nopriv_linker_inquiry', \Linker\Commerce\Inquiry\Handler::class, 'handle' );
@@ -59,6 +70,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_get_checkout_order_received_url', array( $checkout, 'received_url' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_order_item_permalink', array( $checkout, 'item_permalink' ), 10, 3 );
 		WP_Mock::expectActionAdded( 'woocommerce_after_checkout_validation', array( $checkout, 'validate_public' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'woocommerce_before_checkout_process', array( $checkout, 'block_native_checkout' ) );
 		WP_Mock::expectFilterAdded( 'rest_pre_dispatch', array( $checkout, 'block_store_checkout' ), 10, 3 );
 		WP_Mock::expectFilterAdded( 'manage_edit-shop_order_columns', array( $admin, 'columns' ) );
 		WP_Mock::expectFilterAdded( 'manage_woocommerce_page_wc-orders_columns', array( $admin, 'columns' ) );
