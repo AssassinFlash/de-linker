@@ -1,0 +1,44 @@
+[
+  {
+    "origin": "http://127.0.0.1:9153",
+    "lang": "de",
+    "at": "2026-10-20T23:49:14.709Z",
+    "pageLang": "de-DE",
+    "bundle": "http://127.0.0.1:9153/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010",
+    "save": {
+      "productId": 6530,
+      "status": 202,
+      "body": {
+        "id": 0,
+        "url": "http://127.0.0.1:9153/my-account/saved-solutions/"
+      }
+    },
+    "opened": {
+      "url": "http://127.0.0.1:9153/my-account/saved-solutions/",
+      "lang": "en-US",
+      "title": "Partner Account: Sign In or Register | Linker",
+      "hasPassword": true
+    }
+  },
+  {
+    "origin": "http://127.0.0.1:9153",
+    "lang": "en",
+    "at": "2026-10-20T23:49:18.661Z",
+    "pageLang": "en-US",
+    "bundle": "http://127.0.0.1:9153/wp-content/plugins/linker-tools/build/configurator.js?ver=e90a705b79f5bc1bc010",
+    "save": {
+      "productId": 6530,
+      "status": 202,
+      "body": {
+        "id": 0,
+        "url": "http://127.0.0.1:9153/my-account/saved-solutions/"
+      }
+    },
+    "opened": {
+      "url": "http://127.0.0.1:9153/my-account/saved-solutions/",
+      "lang": "en-US",
+      "title": "Partner Account: Sign In or Register | Linker",
+      "hasPassword": true
+    }
+  }
+]

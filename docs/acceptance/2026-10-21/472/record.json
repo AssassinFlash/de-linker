@@ -1,0 +1,935 @@
+{
+  "ticket": 472,
+  "engine": "production",
+  "origin": "https://de-linker.com",
+  "guestOnly": true,
+  "mailSent": false,
+  "inquirySent": false,
+  "registered": false,
+  "loggedIn": false,
+  "startedAt": "2026-10-20T23:47:42.119Z",
+  "inputs": {
+    "plz": "80538",
+    "annual_kwh": 4500,
+    "pv_kwp": 10,
+    "phase": 3,
+    "backup": "none"
+  },
+  "forbiddenPosts": [],
+  "cases": [
+    {
+      "lang": "en",
+      "at": "2026-10-20T23:47:42.227Z",
+      "posts": [
+        "https://www.google-analytics.com/g/collect",
+        "/wp-json/linker-ai/v1/engine/design/residential",
+        "https://www.google-analytics.com/g/collect",
+        "/wp-json/wc/store/v1/cart/add-item",
+        "/wp-json/wc/store/v1/cart/add-item",
+        "https://www.google-analytics.com/g/collect",
+        "/wp-json/linker/v1/solutions",
+        "/wp-json/wc/store/v1/cart/remove-item",
+        "/wp-json/wc/store/v1/cart/remove-item"
+      ],
+      "shots": {
+        "inputs": [
+          "shots/en-inputs-1440.png",
+          "shots/en-inputs-390.png"
+        ],
+        "solution": [
+          "shots/en-solution-1440.png",
+          "shots/en-solution-390.png"
+        ],
+        "report": [
+          "shots/en-report-1440.png",
+          "shots/en-report-390.png"
+        ],
+        "added": [
+          "shots/en-added-1440.png",
+          "shots/en-added-390.png"
+        ],
+        "save": [
+          "shots/en-save-1440.png",
+          "shots/en-save-390.png"
+        ],
+        "account": [
+          "shots/en-account-1440.png",
+          "shots/en-account-390.png"
+        ],
+        "draft": [
+          "shots/en-draft-1440.png",
+          "shots/en-draft-390.png"
+        ]
+      },
+      "guest": {
+        "usersMe": 401,
+        "cookieNames": [
+          "pll_language",
+          "cookieyes-consent",
+          "wp_consent_preferences",
+          "wp_consent_statistics",
+          "wp_consent_statistics-anonymous",
+          "wp_consent_functional",
+          "wp_consent_marketing",
+          "sbjs_migrations",
+          "sbjs_current_add",
+          "sbjs_first_add",
+          "sbjs_current",
+          "sbjs_first",
+          "sbjs_udata",
+          "sbjs_session"
+        ]
+      },
+      "bundle": "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=5ea89b36c5f6f438824b",
+      "before": {
+        "status": 200,
+        "items": [],
+        "totalsPresent": [
+          "total_items",
+          "total_items_tax",
+          "total_fees",
+          "total_fees_tax",
+          "total_discount",
+          "total_discount_tax",
+          "total_shipping",
+          "total_shipping_tax",
+          "total_price",
+          "total_tax",
+          "tax_lines",
+          "currency_code",
+          "currency_symbol",
+          "currency_minor_unit",
+          "currency_decimal_separator",
+          "currency_thousand_separator",
+          "currency_prefix",
+          "currency_suffix"
+        ],
+        "totalPrice": "0",
+        "totalItems": "0"
+      },
+      "inputs": {
+        "url": "https://de-linker.com/solution-configurator/",
+        "lang": "en-US",
+        "title": "Configure a Storage System | Linker",
+        "rail": "CONFIGURATOR 01 Inputs 02 Solution 03 Design report Three steps. The result follows the inputs you enter.",
+        "mounted": true,
+        "reportIds": [],
+        "reportTitles": [],
+        "status": "",
+        "saveHref": ""
+      },
+      "designStatus": 200,
+      "design": {
+        "status": "solution",
+        "selected": {
+          "inverter": "GW10K-ETA-G20",
+          "battery": null,
+          "release": "released"
+        },
+        "lines": [
+          {
+            "id": 3556,
+            "sku": "DLK-GOODWE-GW10KETAG20",
+            "model": "GW10K-ETA-G20",
+            "role": "inverter",
+            "quantity": 1
+          },
+          {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "role": "battery",
+            "quantity": 1
+          }
+        ],
+        "installerLines": 5
+      },
+      "solution": {
+        "url": "https://de-linker.com/solution-configurator/",
+        "lang": "en-US",
+        "title": "Configure a Storage System | Linker",
+        "rail": "CONFIGURATOR 01 Inputs 02 Solution 03 Design report Three steps. The result follows the inputs you enter.",
+        "mounted": true,
+        "reportIds": [
+          "linker-report-site",
+          "linker-report-yield",
+          "linker-report-storage",
+          "linker-report-metrics",
+          "linker-report-basis",
+          "linker-report-releases",
+          "linker-report-bom",
+          "linker-report-assumptions",
+          "linker-report-next"
+        ],
+        "reportTitles": [
+          "Site and inputs",
+          "PV yield",
+          "Storage sizing",
+          "Self-sufficiency and self-consumption",
+          "Selection basis",
+          "Manufacturer releases and documents",
+          "Bill of materials",
+          "Assumptions and limits",
+          "Next steps"
+        ],
+        "status": "",
+        "saveHref": ""
+      },
+      "report": {
+        "url": "https://de-linker.com/solution-configurator/",
+        "lang": "en-US",
+        "title": "Configure a Storage System | Linker",
+        "rail": "CONFIGURATOR 01 Inputs 02 Solution 03 Design report Three steps. The result follows the inputs you enter.",
+        "mounted": true,
+        "reportIds": [
+          "linker-report-site",
+          "linker-report-yield",
+          "linker-report-storage",
+          "linker-report-metrics",
+          "linker-report-basis",
+          "linker-report-releases",
+          "linker-report-bom",
+          "linker-report-assumptions",
+          "linker-report-next"
+        ],
+        "reportTitles": [
+          "Site and inputs",
+          "PV yield",
+          "Storage sizing",
+          "Self-sufficiency and self-consumption",
+          "Selection basis",
+          "Manufacturer releases and documents",
+          "Bill of materials",
+          "Assumptions and limits",
+          "Next steps"
+        ],
+        "status": "",
+        "saveHref": ""
+      },
+      "reportText": "Design report Design report Your logo on the PDF (optional) Choose logo No logo chosen PNG or JPEG, at most 500 kB. Download PDF Solution Configurator, residential system, 2026-10-20 23:47:57 UTC Site and inputs Postcode 80538 München Position 48.140, 11.588 Annual consumption 4,500 kWh PV array 10 kWp Roof plane 1 10 kWp, tilt 35°, facing 180° Grid connection 3-phase Backup supply Not needed Heat pump No Electric car No PV yield Annual yield, range over 2005–2023 10,034 – 12,164 kWh Mean annual yield 11,190 kWh Specific yield 1,003 – 1,216 kWh/kWp Source PVGIS 5 (PVGIS-SARAH3) through pvlib, system loss 14 % Storage sizing PV at least 0.5 kWp per MWh of annual consumption (HTW Berlin) 2.22 kWp per MWh, at least 0.5 · met Usable capacity at most 1.5 kWh per kWp (HTW Berlin) 1.5 kWh × 10 kWp = 15 kWh Usable capacity at most 1.5 kWh per MWh of annual consumption (HTW Berlin) 1.5 kWh × 4.5 MWh = 6.75 kWh Usable capacity, HTW upper limit 6.75 kWh Proposed usable capacity 5.8 kWh (1 × GW6.0-BAT-D-G20) Self-sufficiency and self-consumption Self-sufficiency with storage 65 % – 75 % Self-consumption with storage 31 % – 35 % Self-sufficiency without storage 32 % – 42 % Self-consumption without storage 14 % – 18 % Method HTW Berlin Unabhängigkeitsrechner tables; the range covers the spread of real households (most within 5 percentage points of the table value) Selection basis Inverter GoodWe GW10K-ETA-G20 Application residential, as selected · met Grid connection phases 3-phase, as sel",
+      "added": {
+        "url": "https://de-linker.com/solution-configurator/",
+        "lang": "en-US",
+        "title": "Configure a Storage System | Linker",
+        "rail": "CONFIGURATOR 01 Inputs 02 Solution 03 Design report Three steps. The result follows the inputs you enter.",
+        "mounted": true,
+        "reportIds": [
+          "linker-report-site",
+          "linker-report-yield",
+          "linker-report-storage",
+          "linker-report-metrics",
+          "linker-report-basis",
+          "linker-report-releases",
+          "linker-report-bom",
+          "linker-report-assumptions",
+          "linker-report-next"
+        ],
+        "reportTitles": [
+          "Site and inputs",
+          "PV yield",
+          "Storage sizing",
+          "Self-sufficiency and self-consumption",
+          "Selection basis",
+          "Manufacturer releases and documents",
+          "Bill of materials",
+          "Assumptions and limits",
+          "Next steps"
+        ],
+        "status": "All products are in your solution draft.",
+        "saveHref": ""
+      },
+      "afterAdd": {
+        "status": 200,
+        "items": [
+          {
+            "id": 3556,
+            "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+            "sku": "DLK-GOODWE-GW10KETAG20",
+            "quantity": 1,
+            "pricesNull": false,
+            "price": "0",
+            "regularPrice": "0",
+            "salePrice": "0",
+            "currency": "EUR",
+            "rawPrice": "0",
+            "lineTotal": "0"
+          },
+          {
+            "id": 3611,
+            "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "quantity": 1,
+            "pricesNull": false,
+            "price": "0",
+            "regularPrice": "0",
+            "salePrice": "0",
+            "currency": "EUR",
+            "rawPrice": "0",
+            "lineTotal": "0"
+          }
+        ],
+        "totalsPresent": [
+          "total_items",
+          "total_items_tax",
+          "total_fees",
+          "total_fees_tax",
+          "total_discount",
+          "total_discount_tax",
+          "total_shipping",
+          "total_shipping_tax",
+          "total_price",
+          "total_tax",
+          "tax_lines",
+          "currency_code",
+          "currency_symbol",
+          "currency_minor_unit",
+          "currency_decimal_separator",
+          "currency_thousand_separator",
+          "currency_prefix",
+          "currency_suffix"
+        ],
+        "totalPrice": "0",
+        "totalItems": "0"
+      },
+      "lineDiff": [],
+      "save": {
+        "status": 202,
+        "body": {
+          "id": 0,
+          "url": "https://de-linker.com/my-account/saved-solutions/"
+        }
+      },
+      "saved": {
+        "url": "https://de-linker.com/solution-configurator/",
+        "lang": "en-US",
+        "title": "Configure a Storage System | Linker",
+        "rail": "CONFIGURATOR 01 Inputs 02 Solution 03 Design report Three steps. The result follows the inputs you enter.",
+        "mounted": true,
+        "reportIds": [
+          "linker-report-site",
+          "linker-report-yield",
+          "linker-report-storage",
+          "linker-report-metrics",
+          "linker-report-basis",
+          "linker-report-releases",
+          "linker-report-bom",
+          "linker-report-assumptions",
+          "linker-report-next"
+        ],
+        "reportTitles": [
+          "Site and inputs",
+          "PV yield",
+          "Storage sizing",
+          "Self-sufficiency and self-consumption",
+          "Selection basis",
+          "Manufacturer releases and documents",
+          "Bill of materials",
+          "Assumptions and limits",
+          "Next steps"
+        ],
+        "status": "All products are in your solution draft.Saved to your account. Open saved solution",
+        "saveHref": "https://de-linker.com/my-account/saved-solutions/"
+      },
+      "cookieNamesAfterSave": [
+        "pll_language",
+        "cookieyes-consent",
+        "wp_consent_preferences",
+        "wp_consent_statistics",
+        "wp_consent_statistics-anonymous",
+        "wp_consent_functional",
+        "wp_consent_marketing",
+        "sbjs_migrations",
+        "sbjs_current_add",
+        "sbjs_first_add",
+        "sbjs_current",
+        "sbjs_first",
+        "sbjs_udata",
+        "sbjs_session",
+        "_ga",
+        "_ga_N2TGDM3193",
+        "woocommerce_items_in_cart",
+        "woocommerce_cart_hash"
+      ],
+      "accountRequested": "https://de-linker.com/my-account/saved-solutions/",
+      "account": {
+        "url": "https://de-linker.com/my-account/saved-solutions/",
+        "lang": "en-US",
+        "title": "Partner Account: Sign In or Register | Linker",
+        "hasPassword": true,
+        "hasRegisterForm": false,
+        "text": "Your partner account The workspace for installers, EPCs and distributors. Net prices after account approval Every inquiry and document in one place We answer inquiries within one working day Sign in Your inquiries, documents and prices in one place. Username or email address * Required Password * Required Remember me Log in Lost your password? No partner account yet? Create your business account"
+      },
+      "draft": {
+        "url": "https://de-linker.com/cart/",
+        "lang": "en-US",
+        "title": "Solution draft | Linker",
+        "lines": [
+          {
+            "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+            "qty": "1"
+          },
+          {
+            "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+            "qty": "1"
+          }
+        ],
+        "amounts": [],
+        "text": "Solution draft Check my draft What happens next? × GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module) Log in for prices Create account GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module) quantity Log in for prices Create account × GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh) Log in for prices Create account GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh) quantity Log in for prices Create account Update solution draft You can send this solution draft without an account. Net prices are available after account approval. Send inquiry Create account"
+      },
+      "draftCart": {
+        "status": 200,
+        "items": [
+          {
+            "id": 3556,
+            "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+            "sku": "DLK-GOODWE-GW10KETAG20",
+            "quantity": 1,
+            "pricesNull": false,
+            "price": "0",
+            "regularPrice": "0",
+            "salePrice": "0",
+            "currency": "EUR",
+            "rawPrice": "0",
+            "lineTotal": "0"
+          },
+          {
+            "id": 3611,
+            "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "quantity": 1,
+            "pricesNull": false,
+            "price": "0",
+            "regularPrice": "0",
+            "salePrice": "0",
+            "currency": "EUR",
+            "rawPrice": "0",
+            "lineTotal": "0"
+          }
+        ],
+        "totalsPresent": [
+          "total_items",
+          "total_items_tax",
+          "total_fees",
+          "total_fees_tax",
+          "total_discount",
+          "total_discount_tax",
+          "total_shipping",
+          "total_shipping_tax",
+          "total_price",
+          "total_tax",
+          "tax_lines",
+          "currency_code",
+          "currency_symbol",
+          "currency_minor_unit",
+          "currency_decimal_separator",
+          "currency_thousand_separator",
+          "currency_prefix",
+          "currency_suffix"
+        ],
+        "totalPrice": "0",
+        "totalItems": "0"
+      },
+      "draftDiff": [],
+      "emptied": {
+        "removed": [
+          {
+            "id": 3556,
+            "status": 200
+          },
+          {
+            "id": 3611,
+            "status": 200
+          }
+        ],
+        "remaining": 0,
+        "left": []
+      },
+      "emptiedRead": {
+        "status": 200,
+        "items": [],
+        "totalsPresent": [
+          "total_items",
+          "total_items_tax",
+          "total_fees",
+          "total_fees_tax",
+          "total_discount",
+          "total_discount_tax",
+          "total_shipping",
+          "total_shipping_tax",
+          "total_price",
+          "total_tax",
+          "tax_lines",
+          "currency_code",
+          "currency_symbol",
+          "currency_minor_unit",
+          "currency_decimal_separator",
+          "currency_thousand_separator",
+          "currency_prefix",
+          "currency_suffix"
+        ],
+        "totalPrice": "0",
+        "totalItems": "0"
+      },
+      "emptiedShot": "shots/en-emptied-1440.png"
+    },
+    {
+      "lang": "de",
+      "at": "2026-10-20T23:48:27.634Z",
+      "posts": [
+        "/wp-json/linker-ai/v1/engine/design/residential",
+        "https://www.google-analytics.com/g/collect",
+        "/wp-json/wc/store/v1/cart/add-item",
+        "/wp-json/wc/store/v1/cart/add-item",
+        "https://www.google-analytics.com/g/collect",
+        "/wp-json/linker/v1/solutions",
+        "/wp-json/wc/store/v1/cart/remove-item",
+        "/wp-json/wc/store/v1/cart/remove-item"
+      ],
+      "shots": {
+        "inputs": [
+          "shots/de-inputs-1440.png",
+          "shots/de-inputs-390.png"
+        ],
+        "solution": [
+          "shots/de-solution-1440.png",
+          "shots/de-solution-390.png"
+        ],
+        "report": [
+          "shots/de-report-1440.png",
+          "shots/de-report-390.png"
+        ],
+        "added": [
+          "shots/de-added-1440.png",
+          "shots/de-added-390.png"
+        ],
+        "save": [
+          "shots/de-save-1440.png",
+          "shots/de-save-390.png"
+        ],
+        "account": [
+          "shots/de-account-1440.png",
+          "shots/de-account-390.png"
+        ],
+        "draft": [
+          "shots/de-draft-1440.png",
+          "shots/de-draft-390.png"
+        ]
+      },
+      "guest": {
+        "usersMe": 401,
+        "cookieNames": [
+          "pll_language",
+          "cookieyes-consent",
+          "wp_consent_preferences",
+          "wp_consent_statistics",
+          "wp_consent_statistics-anonymous",
+          "wp_consent_functional",
+          "wp_consent_marketing",
+          "sbjs_migrations",
+          "sbjs_current_add",
+          "sbjs_first_add",
+          "sbjs_current",
+          "sbjs_first",
+          "sbjs_udata",
+          "sbjs_session"
+        ]
+      },
+      "bundle": "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js?ver=5ea89b36c5f6f438824b",
+      "before": {
+        "status": 200,
+        "items": [],
+        "totalsPresent": [
+          "total_items",
+          "total_items_tax",
+          "total_fees",
+          "total_fees_tax",
+          "total_discount",
+          "total_discount_tax",
+          "total_shipping",
+          "total_shipping_tax",
+          "total_price",
+          "total_tax",
+          "tax_lines",
+          "currency_code",
+          "currency_symbol",
+          "currency_minor_unit",
+          "currency_decimal_separator",
+          "currency_thousand_separator",
+          "currency_prefix",
+          "currency_suffix"
+        ],
+        "totalPrice": "0",
+        "totalItems": "0"
+      },
+      "inputs": {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "lang": "de-DE",
+        "title": "Lösungskonfigurator | Linker",
+        "rail": "KONFIGURATOR 01 Eingaben 02 Lösung 03 Auslegungsbericht Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen.",
+        "mounted": true,
+        "reportIds": [],
+        "reportTitles": [],
+        "status": "",
+        "saveHref": ""
+      },
+      "designStatus": 200,
+      "design": {
+        "status": "solution",
+        "selected": {
+          "inverter": "GW10K-ETA-G20",
+          "battery": null,
+          "release": "released"
+        },
+        "lines": [
+          {
+            "id": 3556,
+            "sku": "DLK-GOODWE-GW10KETAG20",
+            "model": "GW10K-ETA-G20",
+            "role": "inverter",
+            "quantity": 1
+          },
+          {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "role": "battery",
+            "quantity": 1
+          }
+        ],
+        "installerLines": 5
+      },
+      "solution": {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "lang": "de-DE",
+        "title": "Lösungskonfigurator | Linker",
+        "rail": "KONFIGURATOR 01 Eingaben 02 Lösung 03 Auslegungsbericht Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen.",
+        "mounted": true,
+        "reportIds": [
+          "linker-report-site",
+          "linker-report-yield",
+          "linker-report-storage",
+          "linker-report-metrics",
+          "linker-report-basis",
+          "linker-report-releases",
+          "linker-report-bom",
+          "linker-report-assumptions",
+          "linker-report-next"
+        ],
+        "reportTitles": [
+          "Standort und Eingaben",
+          "PV-Ertrag",
+          "Speicherauslegung",
+          "Autarkiegrad und Eigenverbrauchsanteil",
+          "Auswahlgrundlage",
+          "Herstellerfreigaben und Dokumente",
+          "Stückliste",
+          "Annahmen und Grenzen",
+          "Nächste Schritte"
+        ],
+        "status": "",
+        "saveHref": ""
+      },
+      "report": {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "lang": "de-DE",
+        "title": "Lösungskonfigurator | Linker",
+        "rail": "KONFIGURATOR 01 Eingaben 02 Lösung 03 Auslegungsbericht Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen.",
+        "mounted": true,
+        "reportIds": [
+          "linker-report-site",
+          "linker-report-yield",
+          "linker-report-storage",
+          "linker-report-metrics",
+          "linker-report-basis",
+          "linker-report-releases",
+          "linker-report-bom",
+          "linker-report-assumptions",
+          "linker-report-next"
+        ],
+        "reportTitles": [
+          "Standort und Eingaben",
+          "PV-Ertrag",
+          "Speicherauslegung",
+          "Autarkiegrad und Eigenverbrauchsanteil",
+          "Auswahlgrundlage",
+          "Herstellerfreigaben und Dokumente",
+          "Stückliste",
+          "Annahmen und Grenzen",
+          "Nächste Schritte"
+        ],
+        "status": "",
+        "saveHref": ""
+      },
+      "reportText": "Auslegungsbericht Auslegungsbericht Ihr Logo im PDF (optional) Logo auswählen Kein Logo ausgewählt PNG oder JPEG, höchstens 500 kB. PDF herunterladen Lösungskonfigurator, Anlage für ein Wohngebäude, 2026-10-20 23:48:39 UTC Standort und Eingaben Postleitzahl 80538 München Koordinaten 48,140, 11,588 Jahresverbrauch 4.500 kWh PV-Generator 10 kWp Dachfläche 1 10 kWp, Neigung 35°, Ausrichtung 180° Netzanschluss 3-phasig Notstrom Nicht benötigt Wärmepumpe Nein Elektroauto Nein PV-Ertrag Jahresertrag, Spanne 2005–2023 10.034 – 12.164 kWh Mittlerer Jahresertrag 11.190 kWh Spezifischer Ertrag 1.003 – 1.216 kWh/kWp Quelle PVGIS 5 (PVGIS-SARAH3) über pvlib, Systemverluste 14 % Speicherauslegung PV-Leistung mindestens 0,5 kWp je MWh Jahresverbrauch (HTW Berlin) 2,22 kWp je MWh, mindestens 0,5 · erfüllt Nutzbare Kapazität höchstens 1,5 kWh je kWp (HTW Berlin) 1,5 kWh × 10 kWp = 15 kWh Nutzbare Kapazität höchstens 1,5 kWh je MWh Jahresverbrauch (HTW Berlin) 1,5 kWh × 4,5 MWh = 6,75 kWh Nutzbare Kapazität, HTW-Obergrenze 6,75 kWh Vorgeschlagene nutzbare Kapazität 5,8 kWh (1 × GW6.0-BAT-D-G20) Autarkiegrad und Eigenverbrauchsanteil Autarkiegrad mit Speicher 65 % – 75 % Eigenverbrauchsanteil mit Speicher 31 % – 35 % Autarkiegrad ohne Speicher 32 % – 42 % Eigenverbrauchsanteil ohne Speicher 14 % – 18 % Methode Tabellen des Unabhängigkeitsrechners der HTW Berlin; die Spanne deckt die Streuung realer Haushalte ab (meist innerhalb von 5 Prozentpunkten des Tabellenwerts) Auswahlgrundlage Wechselri",
+      "added": {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "lang": "de-DE",
+        "title": "Lösungskonfigurator | Linker",
+        "rail": "KONFIGURATOR 01 Eingaben 02 Lösung 03 Auslegungsbericht Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen.",
+        "mounted": true,
+        "reportIds": [
+          "linker-report-site",
+          "linker-report-yield",
+          "linker-report-storage",
+          "linker-report-metrics",
+          "linker-report-basis",
+          "linker-report-releases",
+          "linker-report-bom",
+          "linker-report-assumptions",
+          "linker-report-next"
+        ],
+        "reportTitles": [
+          "Standort und Eingaben",
+          "PV-Ertrag",
+          "Speicherauslegung",
+          "Autarkiegrad und Eigenverbrauchsanteil",
+          "Auswahlgrundlage",
+          "Herstellerfreigaben und Dokumente",
+          "Stückliste",
+          "Annahmen und Grenzen",
+          "Nächste Schritte"
+        ],
+        "status": "Alle Produkte sind in Ihrem Lösungsentwurf.",
+        "saveHref": ""
+      },
+      "afterAdd": {
+        "status": 200,
+        "items": [
+          {
+            "id": 3556,
+            "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+            "sku": "DLK-GOODWE-GW10KETAG20",
+            "quantity": 1,
+            "pricesNull": false,
+            "price": "0",
+            "regularPrice": "0",
+            "salePrice": "0",
+            "currency": "EUR",
+            "rawPrice": "0",
+            "lineTotal": "0"
+          },
+          {
+            "id": 3611,
+            "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "quantity": 1,
+            "pricesNull": false,
+            "price": "0",
+            "regularPrice": "0",
+            "salePrice": "0",
+            "currency": "EUR",
+            "rawPrice": "0",
+            "lineTotal": "0"
+          }
+        ],
+        "totalsPresent": [
+          "total_items",
+          "total_items_tax",
+          "total_fees",
+          "total_fees_tax",
+          "total_discount",
+          "total_discount_tax",
+          "total_shipping",
+          "total_shipping_tax",
+          "total_price",
+          "total_tax",
+          "tax_lines",
+          "currency_code",
+          "currency_symbol",
+          "currency_minor_unit",
+          "currency_decimal_separator",
+          "currency_thousand_separator",
+          "currency_prefix",
+          "currency_suffix"
+        ],
+        "totalPrice": "0",
+        "totalItems": "0"
+      },
+      "lineDiff": [],
+      "save": {
+        "status": 202,
+        "body": {
+          "id": 0,
+          "url": "https://de-linker.com/my-account/saved-solutions/"
+        }
+      },
+      "saved": {
+        "url": "https://de-linker.com/de/loesungskonfigurator/",
+        "lang": "de-DE",
+        "title": "Lösungskonfigurator | Linker",
+        "rail": "KONFIGURATOR 01 Eingaben 02 Lösung 03 Auslegungsbericht Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen.",
+        "mounted": true,
+        "reportIds": [
+          "linker-report-site",
+          "linker-report-yield",
+          "linker-report-storage",
+          "linker-report-metrics",
+          "linker-report-basis",
+          "linker-report-releases",
+          "linker-report-bom",
+          "linker-report-assumptions",
+          "linker-report-next"
+        ],
+        "reportTitles": [
+          "Standort und Eingaben",
+          "PV-Ertrag",
+          "Speicherauslegung",
+          "Autarkiegrad und Eigenverbrauchsanteil",
+          "Auswahlgrundlage",
+          "Herstellerfreigaben und Dokumente",
+          "Stückliste",
+          "Annahmen und Grenzen",
+          "Nächste Schritte"
+        ],
+        "status": "Alle Produkte sind in Ihrem Lösungsentwurf.In Ihrem Konto gespeichert. Gespeicherte Lösung öffnen",
+        "saveHref": "https://de-linker.com/my-account/saved-solutions/"
+      },
+      "cookieNamesAfterSave": [
+        "pll_language",
+        "cookieyes-consent",
+        "wp_consent_preferences",
+        "wp_consent_statistics",
+        "wp_consent_statistics-anonymous",
+        "wp_consent_functional",
+        "wp_consent_marketing",
+        "sbjs_migrations",
+        "sbjs_current_add",
+        "sbjs_first_add",
+        "sbjs_current",
+        "sbjs_first",
+        "sbjs_udata",
+        "sbjs_session",
+        "_ga",
+        "_ga_N2TGDM3193",
+        "woocommerce_items_in_cart",
+        "woocommerce_cart_hash"
+      ],
+      "accountRequested": "https://de-linker.com/my-account/saved-solutions/",
+      "account": {
+        "url": "https://de-linker.com/my-account/saved-solutions/",
+        "lang": "en-US",
+        "title": "Partner Account: Sign In or Register | Linker",
+        "hasPassword": true,
+        "hasRegisterForm": false,
+        "text": "Your partner account The workspace for installers, EPCs and distributors. Net prices after account approval Every inquiry and document in one place We answer inquiries within one working day Sign in Your inquiries, documents and prices in one place. Username or email address * Required Password * Required Remember me Log in Lost your password? No partner account yet? Create your business account"
+      },
+      "draft": {
+        "url": "https://de-linker.com/de/loesungsentwurf/",
+        "lang": "de-DE",
+        "title": "Lösungsentwurf | Linker",
+        "lines": [
+          {
+            "name": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)",
+            "qty": "1"
+          },
+          {
+            "name": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)",
+            "qty": "1"
+          }
+        ],
+        "amounts": [],
+        "text": "Lösungsentwurf Meinen Entwurf prüfen Wie geht es weiter? × GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul) Preise nach Anmeldung Konto erstellen Menge für GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul) Preise nach Anmeldung Konto erstellen × GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh) Preise nach Anmeldung Konto erstellen Menge für GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh) Preise nach Anmeldung Konto erstellen Lösungsentwurf aktualisieren Sie können diesen Lösungsentwurf ohne Konto senden. Nettopreise sehen Sie nach der Freigabe Ihres Kontos. Anfrage senden Konto erstellen"
+      },
+      "draftCart": {
+        "status": 200,
+        "items": [
+          {
+            "id": 3556,
+            "name": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+            "sku": "DLK-GOODWE-GW10KETAG20",
+            "quantity": 1,
+            "pricesNull": false,
+            "price": "0",
+            "regularPrice": "0",
+            "salePrice": "0",
+            "currency": "EUR",
+            "rawPrice": "0",
+            "lineTotal": "0"
+          },
+          {
+            "id": 3611,
+            "name": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "quantity": 1,
+            "pricesNull": false,
+            "price": "0",
+            "regularPrice": "0",
+            "salePrice": "0",
+            "currency": "EUR",
+            "rawPrice": "0",
+            "lineTotal": "0"
+          }
+        ],
+        "totalsPresent": [
+          "total_items",
+          "total_items_tax",
+          "total_fees",
+          "total_fees_tax",
+          "total_discount",
+          "total_discount_tax",
+          "total_shipping",
+          "total_shipping_tax",
+          "total_price",
+          "total_tax",
+          "tax_lines",
+          "currency_code",
+          "currency_symbol",
+          "currency_minor_unit",
+          "currency_decimal_separator",
+          "currency_thousand_separator",
+          "currency_prefix",
+          "currency_suffix"
+        ],
+        "totalPrice": "0",
+        "totalItems": "0"
+      },
+      "draftDiff": [],
+      "emptied": {
+        "removed": [
+          {
+            "id": 3556,
+            "status": 200
+          },
+          {
+            "id": 3611,
+            "status": 200
+          }
+        ],
+        "remaining": 0,
+        "left": []
+      },
+      "emptiedRead": {
+        "status": 200,
+        "items": [],
+        "totalsPresent": [
+          "total_items",
+          "total_items_tax",
+          "total_fees",
+          "total_fees_tax",
+          "total_discount",
+          "total_discount_tax",
+          "total_shipping",
+          "total_shipping_tax",
+          "total_price",
+          "total_tax",
+          "tax_lines",
+          "currency_code",
+          "currency_symbol",
+          "currency_minor_unit",
+          "currency_decimal_separator",
+          "currency_thousand_separator",
+          "currency_prefix",
+          "currency_suffix"
+        ],
+        "totalPrice": "0",
+        "totalItems": "0"
+      },
+      "emptiedShot": "shots/de-emptied-1440.png"
+    }
+  ],
+  "bundleSha256": "26719fe1ae045d434ad4acfc8d8913f100c52de5474d1a777262ea07fd64351a",
+  "bundleBytes": 209080,
+  "bundleUrl": "https://de-linker.com/wp-content/plugins/linker-tools/build/configurator.js",
+  "updatedAt": "2026-10-20T23:49:11.974Z",
+  "finishedAt": "2026-10-20T23:49:12.045Z"
+}
