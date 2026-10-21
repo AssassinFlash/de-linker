@@ -24,6 +24,22 @@ use WC_Order;
  * @covers \Linker\Commerce\Inquiry\Checkout
  */
 final class CheckoutTest extends TestCase {
+	/** Native success uses Woo's localized checkout address without command arguments. */
+	public function test_after_add_uses_the_current_checkout_destination(): void {
+		WP_Mock::userFunction(
+			'wc_get_checkout_url',
+			array(
+				'return' => 'https://example.test/de/proforma-anfrage/',
+				'times'  => 1,
+			)
+		);
+		$this->assertSame( 'https://example.test/de/proforma-anfrage/', ( new Checkout() )->after_add_destination( false ) );
+	}
+
+	/** An existing explicit native destination remains authoritative. */
+	public function test_after_add_preserves_an_existing_destination(): void {
+		$this->assertSame( 'https://example.test/inquiry/', ( new Checkout() )->after_add_destination( 'https://example.test/inquiry/' ) );
+	}
 
 
 	/**

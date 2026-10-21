@@ -2206,3 +2206,31 @@ msgstr "Hier ist meine Teileliste."
 #: build/genie.js src/genie/shared/cardActions.ts build/hero.js
 msgid "Not added. Try again."
 msgstr "Nicht hinzugefügt. Bitte erneut versuchen."
+
+#: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
+msgid "Datasheet"
+msgstr "Datenblatt"
+
+#: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
+msgid "Manual"
+msgstr "Handbuch"
+
+#: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
+msgid "Warranty"
+msgstr "Garantie"
+
+#: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
+msgid "Certificate"
+msgstr "Zertifikat"
+
+#: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
+msgid "Compatibility list"
+msgstr "Kompatibilitätsliste"
+
+#: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
+msgid "Brochure"
+msgstr "Broschüre"
+
+#: src/genie/api/historyArtifacts.ts build/genie.js build/hero.js
+msgid "Document"
+msgstr "Dokument"

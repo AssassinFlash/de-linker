@@ -23,6 +23,7 @@ import type { Upload } from '../genie/attachments/prepare';
 import { HeroSession, type HeroSessionConfig } from './session';
 
 const CONFIG: HeroSessionConfig = {
+	restUrl: '/wp-json/',
 	turnUrl: '/wp-json/linker-ai/v1/genie/turn',
 	threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
 	nonce: 'n',
@@ -79,7 +80,12 @@ test( 'loading reads the thread the dock stored', async () => {
 
 	expect( stored.messages ).toEqual( DOCK_THREAD );
 	expect( session.messages ).toEqual( DOCK_THREAD );
-	expect( read ).toHaveBeenCalledWith( CONFIG.threadUrl, CONFIG.nonce );
+	expect( read ).toHaveBeenCalledWith(
+		CONFIG.threadUrl,
+		CONFIG.nonce,
+		undefined,
+		{ restUrl: CONFIG.restUrl, locale: CONFIG.locale }
+	);
 	expect( send ).not.toHaveBeenCalled();
 } );
 
@@ -189,4 +195,26 @@ test( 'every send re-reads the thread, so a dock turn is not overwritten', async
 		'Answer 5',
 	] );
 	expect( read ).toHaveBeenCalledTimes( 2 );
+} );
+
+test( 'all hero restore boundaries carry current presentation authority', async () => {
+	const { read, send } = server( DOCK_THREAD );
+	const config = { ...CONFIG, locale: 'de' as const };
+	const hero = new HeroSession( config, read, send );
+	await hero.load();
+	await hero.reload();
+	await hero.ask( 'Aktuelle Frage' );
+	await hero.retry( 'Noch einmal' );
+	expect( read ).toHaveBeenCalledTimes( 4 );
+	for ( const call of read.mock.calls ) {
+		expect( call ).toEqual( [
+			config.threadUrl,
+			config.nonce,
+			undefined,
+			{ restUrl: config.restUrl, locale: 'de' },
+		] );
+	}
+	expect( send ).toHaveBeenLastCalledWith(
+		expect.objectContaining( { restUrl: CONFIG.restUrl, locale: 'de' } )
+	);
 } );

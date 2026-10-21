@@ -26,6 +26,7 @@ import { retryMessages } from '../genie/shared/failure';
 
 /** What the hero's mount point gives the session (config.ts). */
 export interface HeroSessionConfig {
+	restUrl: string;
 	turnUrl: string;
 	threadUrl: string;
 	nonce: string;
@@ -43,10 +44,7 @@ export interface HeroStoredThread {
 }
 
 /** The one read the hero needs; a test passes the proxy's double. */
-export type HeroReadThread = (
-	url: string,
-	nonce: string
-) => Promise< HeroStoredThread >;
+export type HeroReadThread = typeof readThread;
 
 /** The one send the hero needs; the same proxy call the dock makes. */
 export type HeroSendTurn = typeof sendTurn;
@@ -112,7 +110,9 @@ export class HeroSession {
 	private async refresh(): Promise< void > {
 		this.loading = this.read(
 			this.config.threadUrl,
-			this.config.nonce
+			this.config.nonce,
+			undefined,
+			{ restUrl: this.config.restUrl, locale: this.config.locale }
 		).then( ( stored ) => {
 			this.messagesValue = stored.messages;
 			this.turnValue = stored.turn;
@@ -199,6 +199,7 @@ export class HeroSession {
 	} > {
 		const answer = await this.send( {
 			turnUrl: this.config.turnUrl,
+			restUrl: this.config.restUrl,
 			nonce: this.config.nonce,
 			locale: this.config.locale,
 			messages: next,
