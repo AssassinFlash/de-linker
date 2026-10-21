@@ -74,14 +74,15 @@ final class CheckCompatibilityTest extends TestCase {
 	}
 
 	/**
-	 * Known product pairs: released, released_with_accessory, not_released, unknown.
+	 * Known product pairs: released and not_released.
 	 *
 	 * @return list<array{int, int, string}>
 	 */
 	public function documented_pairs(): array {
 		return array(
 			array( 3556, 6519, 'released' ),
-			array( 4107, 1832, 'released_with_accessory' ),
+			// The one-module B2-5.0 runs below the H2 battery window (#481).
+			array( 4107, 1832, 'not_released' ),
 			array( 1182, 6519, 'not_released' ),
 		);
 	}

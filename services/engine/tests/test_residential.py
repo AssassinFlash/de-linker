@@ -4,7 +4,7 @@ import pytest
 
 from linker_engine import residential
 from linker_engine.engine import Engine
-from linker_engine.models import ResidentialInput
+from linker_engine.models import BatteryChoice, ResidentialInput
 
 # planner-methods.md section 4.1: the eight typical households (kWp, kWh per year).
 HOUSEHOLDS = [
@@ -28,6 +28,20 @@ def design(engine: Engine, **fields: object) -> residential.Design:
     }
     values.update(fields)
     return residential.design(engine, ResidentialInput.model_validate(values))
+
+
+def battery_shape(
+    choice: BatteryChoice | None,
+) -> tuple[str, int, float, bool] | None:
+    """The part of a battery choice these regressions pin."""
+    if choice is None:
+        return None
+    return (
+        choice.product.model,
+        choice.quantity,
+        choice.usable_kwh,
+        choice.above_upper_limit,
+    )
 
 
 @pytest.mark.parametrize(("kwp", "kwh"), HOUSEHOLDS)
@@ -156,3 +170,70 @@ def test_german_wording(engine: Engine) -> None:
     assert result.selected is not None
     assert result.selected.lines[0].label == "Hybridwechselrichter"
     assert all(rule.label for rule in result.rules)
+
+
+def test_the_shipped_contract_gives_the_hs2_two_modules(
+    shipped_engine: Engine,
+) -> None:
+    """#489: the 0.9 kWh cap takes 2 x 4.5 kWh on the HS2-5K, never one module.
+
+    The walked small household (600 kWh, 4 kWp) selected the HS2-5K at the
+    0.9 kWh cap. One BU2-5.0 module is not a released configuration, so its
+    smallest released configuration above the cap is 9.0 kWh, marked.
+    """
+    hs2 = next(
+        product
+        for product in shipped_engine.products.in_class("inverters")
+        if product.model == "HS2-5K-T2-X"
+    )
+    result = design(shipped_engine, annual_kwh=600, pv_kwp=4, inverter_id=hs2.id)
+    battery = result.selected.battery if result.selected else None
+    assert battery_shape(battery) == ("BU2-5.0-HV1", 2, 9.0, True)
+    assert all(
+        quantity >= 2
+        for quantity in (
+            candidate.quantity
+            for candidate in result.candidates.batteries
+            if candidate.product.model.startswith("BU2-5.0-")
+        )
+    )
+    assert any("9 kWh" in warning for warning in result.warnings)
+
+
+def test_the_shipped_contract_keeps_the_one_module_b2_out_of_the_h2_system(
+    shipped_engine: Engine,
+) -> None:
+    """#481: the H2-10K at 10 kWp no longer proposes the one-module B2-5.0."""
+    h2 = next(
+        product
+        for product in shipped_engine.products.in_class("inverters")
+        if product.model == "H2-10K-T3"
+    )
+    result = design(shipped_engine, inverter_id=h2.id)
+    chosen = result.selected
+    assert chosen is not None and chosen.battery is not None
+    assert battery_shape(chosen.battery) == ("B2-10.0-HV1", 1, 9.0, True)
+    assert chosen.battery.release.verdict == "released_with_accessory"
+    models = [candidate.product.model for candidate in result.candidates.batteries]
+    assert "B2-5.0-HV1" not in models and "B2-5.0-HV5" not in models
+    for candidate in result.candidates.batteries:
+        if candidate.product.model.startswith("BU2-5.0-"):
+            assert candidate.quantity >= 2
+    assert "B2-5.0-HV1" not in [
+        line.product.model for line in chosen.lines if line.product is not None
+    ]
+
+
+def test_the_small_household_takes_the_smallest_released_configuration(
+    shipped_engine: Engine,
+) -> None:
+    """#489: with the one-module answers gone, 4.8 kWh is the smallest above 0.9."""
+    result = design(shipped_engine, annual_kwh=600, pv_kwp=4)
+    chosen = result.selected
+    assert chosen is not None and chosen.battery is not None
+    assert chosen.inverter.model == "HS3-5K-T2-W/G-PX"
+    assert battery_shape(chosen.battery) == ("BU3-5.0-TV2-PRO", 1, 4.8, True)
+    for inverter in result.candidates.inverters:
+        battery = inverter.battery
+        if battery and battery.product.model.startswith("BU2-5.0-"):
+            assert battery.quantity >= 2
