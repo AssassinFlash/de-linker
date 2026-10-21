@@ -2587,3 +2587,47 @@ test( 'waiting for the unchanged turn request gives an accessible thinking statu
 	expect( screen.queryByRole( 'status' ) ).toBeNull();
 	expect( screen.getByText( 'A complete answer.' ) ).toBeInTheDocument();
 } );
+
+test( 'the saved solution handed over with the open rides every turn (#496)', async () => {
+	resetTurnLane();
+	vi.mocked( readThread ).mockResolvedValue( {
+		messages: [],
+		turn: null,
+		contacts: [],
+	} );
+	vi.mocked( sendTurn )
+		.mockClear()
+		.mockResolvedValue( {
+			meta: null,
+			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
+		} );
+	render( <App config={ config() } /> );
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: {
+					message: 'What does my saved solution say?',
+					solution: 61,
+				},
+			} )
+		);
+	} );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalled() );
+	expect( vi.mocked( sendTurn ).mock.calls[ 0 ][ 0 ].page ).toEqual( {
+		type: 'category',
+		solution_id: 61,
+	} );
+	// A later question in the same conversation carries it too.
+	await act( async () => {
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-open', {
+				detail: { message: 'And the yield?' },
+			} )
+		);
+	} );
+	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 2 ) );
+	expect( vi.mocked( sendTurn ).mock.calls[ 1 ][ 0 ].page ).toEqual( {
+		type: 'category',
+		solution_id: 61,
+	} );
+} );

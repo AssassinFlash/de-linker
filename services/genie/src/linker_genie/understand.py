@@ -22,7 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
 from typing import Any, Protocol
 
-from linker_genie import attachments, contact, knowledge, page, parts, timing
+from linker_genie import attachments, contact, knowledge, page, parts, solution, timing
 from linker_genie.abilities import AbilityClient, AbilityError
 from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
@@ -438,6 +438,17 @@ def _run_calls(
                 )
                 return call.arguments, payload, gathered
             language = turn_language(request)
+            if call.ability == solution.NAME:
+                # The customer's own saved solution (#496): the shell's
+                # read-only ability, as this customer, then the figures tagged
+                # the way the page reader tags a page's.
+                payload, gathered = solution.record(
+                    client,
+                    int(call.arguments.get("solution_id") or 0),
+                    request.user.context,
+                    language,
+                )
+                return call.arguments, payload, gathered
             if call.ability == knowledge.NAME:
                 # The document search runs in this process (knowledge.py, #257).
                 arguments = with_tool_lang(knowledge.NAME, call.arguments, language)

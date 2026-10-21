@@ -651,3 +651,204 @@ test( 'a refused save says so and can be tried again', async () => {
 		await screen.findByText( 'Saved to your account.' )
 	).toBeInTheDocument();
 } );
+
+// "Ask Genie" on the design report (#496): save first, then open the dock on
+// the saved solution. The event is the dock loader's own contract.
+
+function genieAsks() {
+	const asks: { message?: string; solution?: number }[] = [];
+	const listener = ( event: Event ) => {
+		asks.push( ( event as CustomEvent ).detail );
+	};
+	window.addEventListener( 'linker-genie-ask', listener );
+	return {
+		asks,
+		stop: () => window.removeEventListener( 'linker-genie-ask', listener ),
+	};
+}
+
+test( 'Ask Genie saves the solution first and opens Genie on it', async () => {
+	const save = vi.mocked( saveSolution );
+	save.mockResolvedValue( { id: 61, url: '/my-account/solutions/61/' } );
+	const asks = genieAsks();
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const ask = await screen.findByRole( 'button', { name: 'Ask Genie' } );
+	await act( async () => {
+		fireEvent.click( ask );
+	} );
+	expect( save ).toHaveBeenCalledTimes( 1 );
+	expect( asks.asks ).toEqual( [
+		{ message: 'What are the figures in my saved solution?', solution: 61 },
+	] );
+	asks.stop();
+} );
+
+test( 'Ask Genie reuses the solution this session already saved', async () => {
+	const save = vi.mocked( saveSolution );
+	save.mockResolvedValue( { id: 61, url: '/my-account/solutions/61/' } );
+	const asks = genieAsks();
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Save solution' } )
+		);
+	} );
+	await screen.findByText( 'Saved to your account.' );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Ask Genie' } ) );
+	} );
+	expect( save ).toHaveBeenCalledTimes( 1 );
+	expect( asks.asks ).toEqual( [
+		{ message: 'What are the figures in my saved solution?', solution: 61 },
+	] );
+	asks.stop();
+} );
+
+test( 'Ask Genie does not open Genie when the solution could not be saved', async () => {
+	const save = vi.mocked( saveSolution );
+	save.mockRejectedValue( new Error( 'save 500' ) );
+	const asks = genieAsks();
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const ask = await screen.findByRole( 'button', { name: 'Ask Genie' } );
+	await act( async () => {
+		fireEvent.click( ask );
+	} );
+	expect(
+		( await screen.findAllByText( /The solution could not be saved/ ) )
+			.length
+	).toBeGreaterThan( 0 );
+	expect( asks.asks ).toEqual( [] );
+	asks.stop();
+} );
+
+test( 'a guest save has no account solution, and the report asks for a sign-in', async () => {
+	const save = vi.mocked( saveSolution );
+	save.mockResolvedValue( { id: 0, url: '/my-account/saved-solutions/' } );
+	const asks = genieAsks();
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const ask = await screen.findByRole( 'button', { name: 'Ask Genie' } );
+	await act( async () => {
+		fireEvent.click( ask );
+	} );
+	expect(
+		await screen.findByText(
+			/Your saved solution stays in this browser for now/
+		)
+	).toBeInTheDocument();
+	expect( screen.getByRole( 'link', { name: 'Sign in' } ) ).toHaveAttribute(
+		'href',
+		'/my-account/saved-solutions/'
+	);
+	expect( asks.asks ).toEqual( [] );
+	asks.stop();
+} );
+
+test( 'German Ask Genie asks in German', async () => {
+	setLocaleData( german.locale_data.messages, 'linker-tools' );
+	setLocaleData( germanGenie.locale_data.messages, 'linker-tools' );
+	const save = vi.mocked( saveSolution );
+	save.mockResolvedValue( {
+		id: 61,
+		url: '/de/mein-konto/gespeicherte-loesungen/',
+	} );
+	const asks = genieAsks();
+	const { engine } = fakeEngine( { locale: 'de' } );
+	render(
+		<App
+			config={ config( 'de' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	fill( /Postleitzahl des Standorts/, '80538' );
+	fill( /Jahresverbrauch des Haushalts/, '5000' );
+	fill( /PV-Leistung/, '10' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'System berechnen' } )
+		);
+	} );
+	const ask = await screen.findByRole( 'button', { name: 'Genie fragen' } );
+	await act( async () => {
+		fireEvent.click( ask );
+	} );
+	expect( asks.asks ).toEqual( [
+		{
+			message: 'Welche Kennzahlen enthält meine gespeicherte Lösung?',
+			solution: 61,
+		},
+	] );
+	asks.stop();
+} );
+
+test( 'Ask Genie while a save is in flight awaits that save, not a second one', async () => {
+	const save = vi.mocked( saveSolution );
+	let finish: ( value: { id: number; url: string } ) => void = () => {
+		throw new Error( 'not started' );
+	};
+	save.mockReturnValue(
+		new Promise( ( resolve ) => {
+			finish = resolve;
+		} )
+	);
+	const asks = genieAsks();
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const saveButton = await screen.findByRole( 'button', {
+		name: 'Save solution',
+	} );
+	const askButton = await screen.findByRole( 'button', {
+		name: 'Ask Genie',
+	} );
+	await act( async () => {
+		fireEvent.click( saveButton );
+		fireEvent.click( askButton );
+	} );
+	expect( save ).toHaveBeenCalledTimes( 1 );
+	await act( async () => {
+		finish( { id: 61, url: '/my-account/solutions/61/' } );
+	} );
+	expect( asks.asks ).toEqual( [
+		{ message: 'What are the figures in my saved solution?', solution: 61 },
+	] );
+	asks.stop();
+} );

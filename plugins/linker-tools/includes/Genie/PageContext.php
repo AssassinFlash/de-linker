@@ -20,7 +20,9 @@ namespace Linker\Tools\Genie;
  * product, a product category, a solution or other marketing page, the blog,
  * the FAQ and documents page, the solution draft and the account. Every other
  * page — contact, the legal pages, the Proforma request, the tools — is
- * `other`; Genie still reads its address.
+ * `other`; Genie still reads its address. The design report of the Solution
+ * Configurator is `other` too, and carries `solution_id` once its "Ask Genie"
+ * has saved the solution (#496).
  */
 final class PageContext {
 
@@ -225,14 +227,19 @@ final class PageContext {
 	 * (`draft_ids()`). A browser-sent quantity is dropped the same way: the proxy
 	 * fills `draft_lines` from the visitor's cart.
 	 *
+	 * `solution_id` is the one ID the browser adds after the page loaded: the
+	 * design report's "Ask Genie" saves the solution and opens the dock with it
+	 * (#496). The read ability checks that the post is the current customer's
+	 * own; the proxy does not need to.
+	 *
 	 * @param mixed $raw The `page` parameter of a turn.
-	 * @return array{type: string, url?: string, title?: string, product_id?: int, post_id?: int, category_id?: int}
+	 * @return array{type: string, url?: string, title?: string, product_id?: int, post_id?: int, category_id?: int, solution_id?: int}
 	 */
 	public function sanitize( $raw ): array {
 		$raw  = is_array( $raw ) ? $raw : array();
 		$type = isset( $raw['type'] ) && in_array( $raw['type'], self::TYPES, true ) ? (string) $raw['type'] : 'other';
 		$page = array( 'type' => $type );
-		foreach ( array( 'product_id', 'post_id', 'category_id' ) as $key ) {
+		foreach ( array( 'product_id', 'post_id', 'category_id', 'solution_id' ) as $key ) {
 			$value = isset( $raw[ $key ] ) && is_numeric( $raw[ $key ] ) ? (int) $raw[ $key ] : 0;
 			if ( $value > 0 ) {
 				$page[ $key ] = $value;

@@ -272,6 +272,12 @@ class PageContext(Strict):
     post_id: int | None = None
     # The product category the page lists, in the page's own language.
     category_id: int | None = None
+    # The saved solution the page carries (#496): the design report's "Ask
+    # Genie" saves the solution first, then opens the dock with its id. Only a
+    # signed-in customer's own private post; the read-solution ability checks
+    # the owner and refuses another customer's id. Absent on a guest's turn:
+    # a guest's save waits in the WooCommerce session and has no post yet.
+    solution_id: int | None = Field(default=None, ge=1)
 
 
 class UserContext(Strict):

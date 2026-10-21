@@ -48,6 +48,7 @@ import {
 	type SentContact,
 	type SentInquiryCard,
 	type EmailOutcome,
+	type PageContext,
 	type Turn,
 	type TurnMessage,
 } from './api/turn';
@@ -143,6 +144,18 @@ export function resetTurnLane(): void {
  */
 export function App( { config }: { config: GenieConfig } ) {
 	const [ open, setOpen ] = useState( false );
+	// The page context every turn carries (#234). The mount sets it, and the
+	// design report's "Ask Genie" adds the saved solution's id (#496): it is
+	// the solution the customer asked about, for the rest of this conversation.
+	// The ref is the live value: an opener sets it and asks in the same tick,
+	// before React has re-rendered, and the first turn must carry it too.
+	const [ page, setPage ] = useState< PageContext >( config.page );
+	const pageRef = useRef( config.page );
+	const handOverSolution = useCallback( ( solution: number ) => {
+		const next = { ...pageRef.current, solution_id: solution };
+		pageRef.current = next;
+		setPage( next );
+	}, [] );
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	// The contact requests sent from this conversation, each after the answer
@@ -478,7 +491,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						nonce: config.restNonce,
 						locale: config.locale,
 						messages: next,
-						page: config.page,
+						page: pageRef.current,
 						uploads,
 					} );
 					filesRef.current.clear();
@@ -564,7 +577,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					nonce: config.restNonce,
 					locale: config.locale,
 					messages: next,
-					page: config.page,
+					page: pageRef.current,
 					uploads: payload.uploads,
 				} );
 				filesRef.current.clear();
@@ -832,8 +845,18 @@ export function App( { config }: { config: GenieConfig } ) {
 					refresh?: unknown;
 					fromHome?: unknown;
 					list?: unknown;
+					solution?: unknown;
 				} >
 			 ).detail;
+			if (
+				detail &&
+				typeof detail.solution === 'number' &&
+				detail.solution > 0
+			) {
+				// The design report's "Ask Genie" saved this solution (#496):
+				// every later turn of this conversation carries it.
+				handOverSolution( detail.solution );
+			}
 			if ( detail && true === detail.fromHome ) {
 				setFromHome( true );
 			}
@@ -868,7 +891,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		}
 		window.addEventListener( 'linker-genie-open', onOpen );
 		return () => window.removeEventListener( 'linker-genie-open', onOpen );
-	}, [ ask, showStored ] );
+	}, [ ask, showStored, handOverSolution ] );
 
 	useEffect( () => {
 		window.dispatchEvent(
@@ -926,7 +949,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			inquiryUrl={ config.inquiryUrl }
 			nonce={ config.restNonce }
 			locale={ config.locale }
-			page={ config.page }
+			page={ page }
 			onSent={ inquirySent }
 		/>
 	);
@@ -1450,7 +1473,7 @@ export function App( { config }: { config: GenieConfig } ) {
 											contactUrl={ config.contactUrl }
 											nonce={ config.restNonce }
 											locale={ config.locale }
-											page={ config.page }
+											page={ page }
 											onSent={ sent }
 										/>
 									) ) }

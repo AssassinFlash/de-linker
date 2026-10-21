@@ -85,10 +85,12 @@ final class UserContextTest extends TestCase {
 
 	/**
 	 * The token signs a request in only on the routes WordPress parsed for the
-	 * abilities it was issued for (inquiry-status, search-products,
-	 * get-product), and the user is signed out again after the answer.
+	 * abilities it was issued for (inquiry-status, read-solution,
+	 * search-products, get-product), and the user is signed out again after the
+	 * answer.
 	 *
 	 * @testWith ["/wp-abilities/v1/abilities/linker/inquiry-status/run", 44]
+	 *           ["/wp-abilities/v1/abilities/linker/read-solution/run", 44]
 	 *           ["/wp-abilities/v1/abilities/linker/search-products/run", 44]
 	 *           ["/wp-abilities/v1/abilities/linker/get-product/run", 44]
 	 *           ["/wp-abilities/v1/abilities/linker/compare-products/run", 0]

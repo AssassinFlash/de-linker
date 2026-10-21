@@ -22,11 +22,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { EngineError, type EngineClient } from '../api/engine';
-import { saveSolution } from '../api/solutions';
+import { saveSolution, type SavedSolution } from '../api/solutions';
 import type { AddStatus, StoreClient } from '../api/store';
 import type { Config } from '../config';
 import { MobileNavigation } from '../MobileNavigation';
-import { ReportView } from '../report/ReportView';
+import { ReportView, type AskState } from '../report/ReportView';
 import { NoCandidate } from '../solution/NoCandidate';
 import { Solution, type SaveState } from '../solution/Solution';
 import type { StepNumber } from '../Steps';
@@ -104,6 +104,17 @@ export function ResidentialPanel( {
 	>( 'none' );
 	const [ saveState, setSaveState ] = useState< SaveState >( 'idle' );
 	const [ savedUrl, setSavedUrl ] = useState< string | null >( null );
+	// The save this panel made, so "Ask Genie" saves once and asks about the
+	// solution it already has (#496). A recalculation clears it with the state.
+	const [ saved, setSaved ] = useState< SavedSolution | null >( null );
+	const [ askState, setAskState ] = useState< AskState >( 'idle' );
+	// A double click must not save twice: the state disables the button on the
+	// next render, the ref guards the same tick; a save in flight is the one
+	// promise both the Save button and Ask Genie await.
+	const asking = useRef( false );
+	const saveInFlight = useRef< Promise< SavedSolution | null > | null >(
+		null
+	);
 	const results = useRef< HTMLDivElement >( null );
 	const [ viewed, setViewed ] = useState( 0 );
 	const reportReady = status === 'done' && !! result?.selected;
@@ -155,6 +166,8 @@ export function ResidentialPanel( {
 		setStatuses( new Map() );
 		setAddOutcome( 'none' );
 		setSaveState( 'idle' );
+		setSaved( null );
+		setAskState( 'idle' );
 		results.current?.scrollIntoView( {
 			block: 'start',
 			behavior: 'smooth',
@@ -197,35 +210,98 @@ export function ResidentialPanel( {
 		setAdding( false );
 	}
 
-	async function save() {
+	async function save(): Promise< SavedSolution | null > {
+		// One save at a time: the Save button and the report's Ask Genie share
+		// this path, and a click on Ask while a save is still in flight must
+		// await that save, not make a second solution post.
+		if ( saveInFlight.current ) {
+			return saveInFlight.current;
+		}
 		if ( ! input || ! result?.selected ) {
+			return null;
+		}
+		// The values this save describes, fixed now: a recalculation while the
+		// POST is in flight must not change what the saved solution holds.
+		const savingInput = input;
+		const savingSelected = result.selected;
+		const savingLines = draftLines();
+		const savingReport = result.report;
+		const work = ( async (): Promise< SavedSolution | null > => {
+			setSaveState( 'saving' );
+			try {
+				// The design report exists once this input has a solution. The
+				// PDF is the engine's existing report/pdf answer for that input
+				// (logo stays on the download button; it is not part of the input).
+				const reportPdf = savingReport
+					? await engine.reportPdf( savingInput, null )
+					: null;
+				const record = await saveSolution(
+					config.restUrl,
+					config.restNonce,
+					{
+						kind: 'residential',
+						title: `${ savingSelected.inverter.brand } ${ savingSelected.inverter.model }, ${ savingInput.plz }`,
+						input: savingInput,
+						lines: savingLines,
+						reportPdf,
+					},
+					config.locale
+				);
+				setSavedUrl( record.url );
+				setSaved( record );
+				setSaveState( 'saved' );
+				return record;
+			} catch {
+				setSaveState( 'failed' );
+				return null;
+			}
+		} )();
+		saveInFlight.current = work;
+		try {
+			return await work;
+		} finally {
+			saveInFlight.current = null;
+		}
+	}
+
+	// "Ask Genie" (#496): the solution is saved first, through the one save
+	// path above, and only then does Genie open — with the saved solution's id
+	// in the page context. A save this panel already made is reused, so a
+	// second click does not save a duplicate. A guest's save waits in the
+	// WooCommerce session and has no post (C30): there is nothing to read yet,
+	// and the report asks them to sign in, where the claim makes it theirs.
+	async function ask() {
+		if ( ! input || ! result?.selected || asking.current ) {
 			return;
 		}
-		setSaveState( 'saving' );
+		asking.current = true;
+		setAskState( 'saving' );
+		let target: SavedSolution | null = null;
 		try {
-			// The design report exists once this input has a solution. The
-			// PDF is the engine's existing report/pdf answer for that input
-			// (logo stays on the download button; it is not part of the input).
-			const reportPdf = result.report
-				? await engine.reportPdf( input, null )
-				: null;
-			const saved = await saveSolution(
-				config.restUrl,
-				config.restNonce,
-				{
-					kind: 'residential',
-					title: `${ result.selected.inverter.brand } ${ result.selected.inverter.model }, ${ input.plz }`,
-					input,
-					lines: draftLines(),
-					reportPdf,
-				},
-				config.locale
-			);
-			setSavedUrl( saved.url );
-			setSaveState( 'saved' );
-		} catch {
-			setSaveState( 'failed' );
+			target = saved ?? ( await save() );
+		} finally {
+			asking.current = false;
 		}
+		if ( ! target ) {
+			setAskState( 'failed' );
+			return;
+		}
+		if ( target.id < 1 ) {
+			setAskState( 'signin' );
+			return;
+		}
+		setAskState( 'idle' );
+		window.dispatchEvent(
+			new CustomEvent( 'linker-genie-ask', {
+				detail: {
+					message: __(
+						'What are the figures in my saved solution?',
+						'linker-tools'
+					),
+					solution: target.id,
+				},
+			} )
+		);
 	}
 
 	return (
@@ -393,6 +469,9 @@ export function ResidentialPanel( {
 						report={ result.report }
 						input={ input }
 						engine={ engine }
+						onAsk={ ask }
+						askState={ askState }
+						savedUrl={ savedUrl }
 					/>
 				</section>
 			) : null }

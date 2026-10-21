@@ -9,6 +9,9 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
+use Linker\Commerce\Account\PrivateFiles;
+use Linker\Commerce\Account\SavedSolutions;
+
 /**
  * Registers the ability category and every ability of this plugin with the
  * WordPress Abilities API. Each ability class supplies its own arguments; the
@@ -24,9 +27,13 @@ final class Registrar {
 	/**
 	 * Sets up the registrar.
 	 *
-	 * @param string $plugin_file Absolute path of the main plugin file.
+	 * @param string              $plugin_file Absolute path of the main plugin file.
+	 * @param SavedSolutions|null $solutions   The plugin's one store of saved solutions, shared with the account module; a test may omit it.
 	 */
-	public function __construct( private readonly string $plugin_file ) {}
+	public function __construct(
+		private readonly string $plugin_file,
+		private readonly ?SavedSolutions $solutions = null
+	) {}
 
 	/**
 	 * Registers the category; runs on wp_abilities_api_categories_init.
@@ -63,7 +70,7 @@ final class Registrar {
 	 * (docs/specs/13-genie.md). Write actions are not in this list. The document
 	 * search is the Genie service's own tool (docs/specs/10-knowledge-index.md).
 	 *
-	 * @return array<string, CheckCompatibility|CompareProducts|GetCommerceVersion|GetProduct|HandoffTeam|InquiryStatus|SearchProducts|SizeHint>
+	 * @return array<string, CheckCompatibility|CompareProducts|GetCommerceVersion|GetProduct|HandoffTeam|InquiryStatus|ReadSolution|SearchProducts|SizeHint>
 	 */
 	public function abilities(): array {
 		return array(
@@ -74,6 +81,9 @@ final class Registrar {
 			CheckCompatibility::NAME => new CheckCompatibility(),
 			SizeHint::NAME           => new SizeHint(),
 			InquiryStatus::NAME      => new InquiryStatus(),
+			ReadSolution::NAME       => new ReadSolution(
+				$this->solutions ?? new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '' )
+			),
 			HandoffTeam::NAME        => new HandoffTeam(),
 		);
 	}

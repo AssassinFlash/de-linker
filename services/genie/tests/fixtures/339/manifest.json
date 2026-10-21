@@ -248,6 +248,13 @@
         "de": "Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners)."
       },
       "pass": "Both questions take the roof route and answer the signed ROOF sentence, the engine's limit.default_orientation verbatim. The turn carries open_configurator with size-hint's URL, no cards and no handoff. No model runs, so no figure is invented."
+    },
+    {
+      "id": "496-saved-solution",
+      "issue": 496,
+      "locales": ["en", "de"],
+      "accounts": ["approved", "pending", "restricted", "guest"],
+      "pass": "The design report's Ask Genie saves the solution first and opens the dock with page_context.solution_id. linker/read-solution re-runs the engine from _linker_solution_design in the turn's language and returns the customer's own solution's figures (yield, storage, self-sufficiency, self-consumption) and selection basis, tagged as solution.nK for hydration. A guest is refused 401 (no token), another customer's solution 403, and no account state receives a price or an amount of money from the solution payload; a product card it shows takes the account's own price line. Behaviour: services/genie/tests/test_solution.py, the commerce ReadSolutionTest and ReadSolutionRestTest, and the local walk."
     }
   ]
 }

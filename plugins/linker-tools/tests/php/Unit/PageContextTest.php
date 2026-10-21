@@ -230,11 +230,12 @@ final class PageContextTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'type'       => 'product',
-				'product_id' => 4107,
-				'post_id'    => 6741,
-				'url'        => 'https://de-linker.test/de/produkt/saj-h2-10k-t3/',
-				'title'      => 'SAJ H2-10K-T3',
+				'type'        => 'product',
+				'product_id'  => 4107,
+				'post_id'     => 6741,
+				'solution_id' => 45,
+				'url'         => 'https://de-linker.test/de/produkt/saj-h2-10k-t3/',
+				'title'       => 'SAJ H2-10K-T3',
 			),
 			$pages->sanitize(
 				array(
@@ -242,6 +243,7 @@ final class PageContextTest extends TestCase {
 					'product_id'  => '4107',
 					'post_id'     => 6741,
 					'category_id' => -3,
+					'solution_id' => '45',
 					'url'         => 'https://de-linker.test/de/produkt/saj-h2-10k-t3/',
 					'title'       => 'SAJ H2-10K-T3',
 					'draft_ids'   => array( 1, 2 ),
@@ -257,6 +259,16 @@ final class PageContextTest extends TestCase {
 		);
 		$this->assertSame( array( 'type' => 'other' ), $pages->sanitize( array( 'type' => 'checkout' ) ) );
 		$this->assertSame( array( 'type' => 'other' ), $pages->sanitize( 'product' ) );
+		// A solution reference is a positive ID: zero and negatives are dropped.
+		$this->assertSame(
+			array( 'type' => 'other' ),
+			$pages->sanitize(
+				array(
+					'type'        => 'other',
+					'solution_id' => 0,
+				)
+			)
+		);
 	}
 
 	/**

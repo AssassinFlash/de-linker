@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from linker_genie import attachments, knowledge, page, timing
+from linker_genie import attachments, knowledge, page, solution, timing
 from linker_genie.abilities import ABILITY_NAMES, AbilityClient, AbilityError
 from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
@@ -96,12 +96,21 @@ INPUT_DOCS: dict[str, str] = {
     ),
     "linker/inquiry-status": "{}",
     "linker/handoff-team": "{summary: string}",
+    solution.NAME: solution.INPUT_DOC,
     knowledge.NAME: knowledge.INPUT_DOC,
     page.NAME: page.INPUT_DOC,
 }
-# Every tool the model may call: the WordPress abilities, and the document search and
-# the page read this process runs itself (linker_genie.knowledge, linker_genie.page).
-TOOL_NAMES = (*ABILITY_NAMES, knowledge.NAME, page.NAME)
+# Every tool the model may call: the WordPress abilities, and the document search,
+# the page read and the saved-solution read this process runs itself (linker_genie.
+# knowledge, linker_genie.page, linker_genie.solution). The solution read is one of
+# the WordPress abilities but has its own runner, because its figures are tagged in
+# this process before the model reads them; it is not a generic ability tool.
+TOOL_NAMES = (
+    *(name for name in ABILITY_NAMES if name != solution.NAME),
+    knowledge.NAME,
+    page.NAME,
+    solution.NAME,
+)
 PROMPTS = Path(__file__).resolve().parents[2] / "prompts"
 # Owner ruling 2026-10-11: the one chat model, on the official DeepSeek API.
 CHAT_PROVIDER = "deepseek"
@@ -273,6 +282,8 @@ def make_generate(
                 )
             elif name == page.NAME:
                 runner = _page_runner(pages, budget, request, clock)
+            elif name == solution.NAME:
+                runner = _solution_runner(client, budget, request, expected, clock)
             else:
                 runner = _ability_runner(
                     client,
@@ -532,6 +543,43 @@ def _page_runner(
     return run
 
 
+def _solution_runner(
+    client: AbilityClient,
+    budget: ToolBudget,
+    request: TurnRequest,
+    locale: str = "en",
+    clock: timing.Timing | None = None,
+) -> Callable[[dict[str, Any] | None], Any]:
+    """The saved solution the page carries (#496); the model passes no argument.
+
+    The id is the page context's, never the model's: a solution is the one the
+    customer opened Genie on, and the ability refuses another customer's id in
+    any case.
+    """
+
+    def call(arguments: dict[str, Any] | None) -> Any:
+        del arguments
+        solution_id = request.page_context.solution_id or 0
+        if not solution_id:
+            return {"error": "no saved solution on this page"}
+        payload, gathered = solution.record(
+            client, solution_id, request.user.context, locale
+        )
+        budget.parts.append(gathered)
+        return solution.model_view(payload)
+
+    timed = _timed(clock, timing.tool_key(solution.NAME), call)
+
+    def run(arguments: dict[str, Any] | None = None) -> Any:
+        """Read the saved solution the customer's page carries and return its figures."""
+        if not budget.allow():
+            return {"error": f"tool budget {MAX_TOOL_CALLS} exhausted"}
+        return timed(arguments)
+
+    run.__name__ = _tool_name(solution.NAME)
+    return run
+
+
 def _page_lines(request: TurnRequest) -> list[str]:
     """The page the customer is on, as the prompt names it (#234)."""
     context = request.page_context
@@ -547,6 +595,13 @@ def _page_lines(request: TurnRequest) -> list[str]:
         "page says, use the read-page result (or call linker_read_page); the page "
         "rule is in the reminder below."
     )
+    if context.solution_id:
+        lines.append(
+            f"The page carries the customer's own saved solution {context.solution_id}: "
+            "'my solution', 'the design', 'the report' and its figures mean that "
+            "solution. To know its figures, use the read-solution result (or call "
+            "linker_read_solution); the solution rule is in the reminder below."
+        )
     return lines
 
 
@@ -559,6 +614,8 @@ def _result_view(item: dict[str, Any]) -> dict[str, Any]:
         return {**item, "result": knowledge.model_view(result)}
     if item.get("name") == page.NAME:
         return {**item, "result": page.model_view(result)}
+    if item.get("name") == solution.NAME:
+        return {**item, "result": solution.model_view(result)}
     return item
 
 
@@ -577,6 +634,8 @@ def _user_prompt(
         lines.append(
             "draft_ids=" + ",".join(str(i) for i in request.page_context.draft_ids)
         )
+    if request.page_context.solution_id:
+        lines.append(f"solution_id={request.page_context.solution_id}")
     if prepared is not None and prepared.route.hint:
         lines.append("Service routing: " + prepared.route.hint)
     if prepared is not None and prepared.results:
@@ -653,7 +712,7 @@ def _user_prompt(
         "text, not even as a placeholder: show the product as a card, whose "
         "price line the service fills for this account; with partner=True say "
         "the card shows the net price, otherwise say once that approved partner "
-        "accounts see net prices. " + page.RULE + " "
+        "accounts see net prices. " + page.RULE + " " + solution.RULE + " "
         "A document (a search-knowledge chunk ID, compat.document.N, "
         "compat.document.BATTERYID.N, or pPRODUCTID.document.N for the documents "
         "get-product listed this turn — such a ref exists only after get-product "

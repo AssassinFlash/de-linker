@@ -813,6 +813,18 @@
 	gap: var(--proto-space-1, 0.25rem);
 }
 
+.linker-report__ask {
+	display: grid;
+	gap: var(--proto-space-1, 0.25rem);
+}
+
+.linker-report__ask-note {
+	margin: 0;
+	max-width: 28rem;
+	font-size: var(--proto-size-sm, 0.875rem);
+	color: var(--linker-muted);
+}
+
 .linker-report a {
 	color: var(--linker-accent-ink);
 }

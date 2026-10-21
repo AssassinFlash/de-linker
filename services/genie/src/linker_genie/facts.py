@@ -13,7 +13,7 @@ from typing import Any
 
 from linker_genie.figures import swap_decimals
 from linker_genie.stock import phrase
-from linker_genie.tools import READ_ATTACHMENT, READ_PAGE
+from linker_genie.tools import READ_ATTACHMENT, READ_PAGE, READ_SOLUTION
 
 
 @dataclass
@@ -104,6 +104,8 @@ def collect(name: str, payload: Any, locale: str = "en") -> TurnFacts:
         _from_handoff(gathered, payload, locale)
     elif name == READ_PAGE:
         _from_page(gathered, payload)
+    elif name == READ_SOLUTION:
+        _from_solution(gathered, payload)
     elif name == READ_ATTACHMENT:
         _from_attachment(gathered, payload, locale)
     return gathered
@@ -535,6 +537,35 @@ def _from_page(gathered: TurnFacts, payload: dict[str, Any]) -> None:
                         source="read-page",
                     )
                 )
+
+
+def _from_solution(gathered: TurnFacts, payload: dict[str, Any]) -> None:
+    """The saved solution the customer asks about (`solution.py`, #496): the ref
+    `solution`, its text and figures (`solution.nK`), and the saved products.
+
+    The products of the saved solution are this turn's products, so the answer may
+    show them as cards (ground.py: card IDs ⊆ this turn's tool results). A refused
+    login (`{"error": "login_required"}`) is not a solution: no fact, no products.
+    """
+    if payload.get("error") == "login_required":
+        return
+    gathered.add(
+        Fact(
+            id="solution",
+            value=str(payload.get("title") or ""),
+            source="read-solution",
+        )
+    )
+    text = payload.get("text")
+    if isinstance(text, str) and text:
+        gathered.add(Fact(id="solution.text", value=text, source="read-solution"))
+    figures = payload.get("figures")
+    for figure, value in (figures if isinstance(figures, dict) else {}).items():
+        if isinstance(figure, str) and isinstance(value, str) and value:
+            gathered.add(Fact(id=figure, value=value, source="read-solution"))
+    for item in payload.get("products") or []:
+        if isinstance(item, dict) and isinstance(item.get("product_id"), int):
+            gathered.product_ids.add(item["product_id"])
 
 
 def _from_attachment(gathered: TurnFacts, payload: dict[str, Any], locale: str) -> None:

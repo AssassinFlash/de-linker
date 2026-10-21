@@ -26,7 +26,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: hand-written, reviewed\n"
 
-#: includes/Genie/Entries.php build/genie.js:19 build/hero.js
+#: includes/Genie/Entries.php src/configurator/report/ReportView.tsx
+#: build/genie.js:19 build/hero.js build/configurator.js
 msgid "Ask Genie"
 msgstr "Genie fragen"
 
@@ -884,6 +885,10 @@ msgstr "Lösung"
 msgid "Design report"
 msgstr "Auslegungsbericht"
 
+#: src/configurator/residential/ResidentialPanel.tsx:225 build/configurator.js
+msgid "What are the figures in my saved solution?"
+msgstr "Welche Kennzahlen enthält meine gespeicherte Lösung?"
+
 #: src/configurator/commercial/CommercialPanel.tsx:183 build/configurator.js
 msgid ""
 "The load profile could not be read, or the calculation failed. Check the "
@@ -1126,6 +1131,24 @@ msgstr "PDF herunterladen"
 #: src/configurator/report/ReportView.tsx:123 build/configurator.js
 msgid "The PDF could not be created. Try again."
 msgstr "Das PDF konnte nicht erstellt werden. Versuchen Sie es erneut."
+
+#: src/configurator/report/ReportView.tsx:146 build/configurator.js
+msgid "Opening Genie…"
+msgstr "Genie öffnet sich …"
+
+#: src/configurator/report/ReportView.tsx:164 build/configurator.js
+msgid ""
+"Your saved solution stays in this browser for now. Genie reads a saved "
+"solution only when it is in your account. Sign in or create an account to "
+"keep it."
+msgstr ""
+"Ihre gespeicherte Lösung bleibt vorerst in diesem Browser. Genie liest eine "
+"gespeicherte Lösung nur, wenn sie in Ihrem Konto liegt. Melden Sie sich an "
+"oder legen Sie ein Konto an, um sie zu behalten."
+
+#: src/configurator/report/ReportView.tsx:173 build/configurator.js
+msgid "Sign in"
+msgstr "Anmelden"
 
 #: src/configurator/report/ReportView.tsx:133 build/configurator.js
 msgid "%1$s, %2$s"

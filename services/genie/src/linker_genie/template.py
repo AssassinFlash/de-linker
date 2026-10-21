@@ -1439,6 +1439,13 @@ def seal(
     else is not stripped: that other half is a figure the question names and
     does not print (#415). The absence sentences are appended, not
     generated, and only the millimetres the facts already contain.
+
+    A turn that read the customer's saved solution (#496) is page-like: its
+    figures are licensed by the solution's own text, which the question does
+    not print, exactly as a page's are. The configurator's page type is
+    `other`, so the generic strip below would cut the answer's figures back to
+    the question's own digits. The clearance and document branches keep their
+    own allowances and still run.
     """
     if route is None or page_type not in (None, "other"):
         return output
@@ -1457,7 +1464,11 @@ def seal(
         return _append_document_sentences(
             rebound, grounding.document_blob(facts), question
         )
-    if route.name in _STRIP_ROUTES and not route.stock_beside:
+    if (
+        route.name in _STRIP_ROUTES
+        and not route.stock_beside
+        and "solution" not in facts.facts
+    ):
         return grounding.strip_unlicensed_numbers(
             output, grounding.question_allowance(question)
         )

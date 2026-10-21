@@ -22,6 +22,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 
 from linker_genie import page as page_tool
+from linker_genie import solution as solution_tool
 from linker_genie.jev import Reading
 from linker_genie.lexicon import MAX_WORDS, MIN_CODE, Match, _words, normalize
 from linker_genie.nameplate import Identified
@@ -95,6 +96,24 @@ ACCOUNT_HINT = (
     " The customer asks about their account page: it shows their inquiries, which "
     "are here; answer from them. Never mention a service, a reading, a tool or an "
     "id in the text."
+)
+SOLUTION_HINT = (
+    " The customer asks about their saved solution; its figures and its selection "
+    "basis are here. " + solution_tool.RULE + " Speak to the customer about their "
+    "saved solution; never mention a service, a reading, a tool or an id in the "
+    "text."
+)
+# A question on the design report names the solution in words Jev may not read as
+# "about this page": the page type is `other` (the configurator). These words make
+# the read deterministic; besides them Jev's about_this_page decides (#234).
+# `erdgas`-like false friends are not here; the words are the product's own
+# (solution, design report) and the report's metric names.
+_SOLUTION_WORDS = re.compile(
+    r"\b(?:solution|solutions|lösung|lösungen|loesung|loesungen|"
+    r"design[ -]report|auslegungsbericht|autarkie|autarky|"
+    r"self[ -]?sufficien\w*|eigenverbrauch\w*|self[ -]?consumption|"
+    r"jahresertrag|ertrag|erträge|yield)\b",
+    re.IGNORECASE,
 )
 SERVICE_HINT = (
     "This is a company, delivery or service question: answer with only the "
@@ -2454,16 +2473,25 @@ def with_page(
 
     Jev's `about_this_page` decides (#234). A signed-in customer's account page is
     their inquiries (inquiry-status); a solution draft is its products and the
-    pairings among them; any other page is read (read-page). A request for a person,
-    a company question, an inquiry status, a clarifying question, a scripted
-    sentence or the Roof detail step's sentence reads nothing, and a delivery
-    question about a page goes to the team whatever Jev says (`_LOGISTICS`).
+    pairings among them; a page that carries a saved solution (#496) is that
+    solution (read-solution); any other page is read (read-page). A request for a
+    person, a company question, an inquiry status, a clarifying question, a
+    scripted sentence or the Roof detail step's sentence reads nothing, and a
+    delivery question about a page goes to the team whatever Jev says
+    (`_LOGISTICS`).
+
+    A solution page also reads the solution when the message names it in
+    `_SOLUTION_WORDS`: the configurator is `other`, and the entry question of the
+    design report's "Ask Genie" is exactly such a question.
 
     The calls fit the turn's budget in a fixed priority: the route's own calls (the
     subject's get-product among them) first, then the page, then the draft's pairs; a
     documents route leaves one call to the model (`DOCUMENTS_SPARE`). What does not
     fit is dropped, named in the turn log and, for a pair, in the hint.
     """
+    about_page = about_page or (
+        page.solution_id is not None and _SOLUTION_WORDS.search(message) is not None
+    )
     if not about_page or route.name in (
         "person",
         "service",
@@ -2488,6 +2516,11 @@ def with_page(
             added.extend(pairs[:DRAFT_PAIRS])
             beyond = pairs[DRAFT_PAIRS:]
         hint = DRAFT_HINT
+    elif page.solution_id:
+        # The solution the design report's "Ask Genie" saved and opened with
+        # (#496): the ability checks the customer's ownership of the post.
+        added.append(Call(solution_tool.NAME, {"solution_id": page.solution_id}))
+        hint = SOLUTION_HINT
     elif page.url:
         added.append(Call(READ_PAGE, {}))
     else:
@@ -2505,6 +2538,11 @@ def with_page(
             " Pairs of the draft not checked in this turn (inverter ID + battery ID): "
             + ", ".join(unchecked)
             + "; say that they were not checked yet and offer to check them."
+        )
+    if any(c.ability == solution_tool.NAME for c in dropped):
+        hint += (
+            " The saved solution was not read in this turn: say that you could not "
+            "read it just now; never guess its figures."
         )
     # A dropped search whose text is the model code was not searched. A family
     # suffix (ETA-G20) is not the code, so dropping only that search leaves the
