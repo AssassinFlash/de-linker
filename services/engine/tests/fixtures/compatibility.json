@@ -5158,13 +5158,14 @@
 			"included": true,
 			"conditions": [
 				{
-					"en": "The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 4.1.2 Scope of Delivery, PDF p. 12).",
-					"de": "Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 4.1.2 Lieferumfang, PDF-S. 12)."
+					"en": "The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 2.2 Unpacking, PDF p. 36 English / p. 7 German).",
+					"de": "Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 2.2 Auspacken, PDF-S. 36 englisch / S. 7 deutsch)."
 				}
 			],
 			"documents": [
 				{
-					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+					"url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+					"page": 36
 				}
 			]
 		},

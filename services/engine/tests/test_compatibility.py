@@ -1,6 +1,10 @@
 """Release verdicts combine every matching document; a pair nobody documents is unknown."""
 
+import hashlib
+import json
+
 import pytest
+from conftest import SHIPPED_COMPATIBILITY
 
 from linker_engine.compatibility import Compatibility, DocumentRef
 
@@ -29,6 +33,16 @@ REVIEWED_PAIRS = [
     ("HS2-10K-T2-X", "BU2-5.0-HV1"),
     ("HS2-10K-T2-X", "BU2-5.0-HV5"),
 ]
+
+
+def test_the_shipped_contract_version_is_its_content_hash() -> None:
+    """The feed publishes this version, so a contract edit must bump it."""
+    contract = json.loads(SHIPPED_COMPATIBILITY.read_text())
+    stored = contract.pop("version")
+    canonical = json.dumps(
+        contract, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+    )
+    assert stored == hashlib.sha256(canonical.encode()).hexdigest()
 
 
 def test_a_documented_release(compatibility: Compatibility) -> None:
@@ -61,11 +75,19 @@ def test_no_document_means_unknown(compatibility: Compatibility) -> None:
     )
 
 
-def test_meters_in_and_beside_the_box(compatibility: Compatibility) -> None:
-    assert [r.included for r in compatibility.requirements("H2-10K-T3", "meter")] == [
-        True
-    ]
-    beside = compatibility.requirements("HS2-10K-T2-X", "meter")
+def test_meters_in_and_beside_the_box(
+    compatibility: Compatibility, shipping_compatibility: Compatibility
+) -> None:
+    # #482: the lock runs on the contract the plugin ships, not only on the
+    # fixture. The H2 T3 has exactly one meter requirement, and it is included:
+    # the manual's Unpacking section (PDF p. 36 EN / p. 7 DE) names the smart
+    # meter, three current transformers and the 10 m cable as delivered.
+    for contract in (compatibility, shipping_compatibility):
+        meters = contract.requirements("H2-10K-T3", "meter")
+        assert [r.included for r in meters] == [True]
+        assert meters[0].documents[0].page == 36
+    assert shipping_compatibility.requirements("GW10K-ETA-G20", "meter")[0].included
+    beside = shipping_compatibility.requirements("HS2-10K-T2-X", "meter")
     assert [(r.included, [a.model for a in r.accessories]) for r in beside] == [
         (False, ["^DTSU666$"])
     ]

@@ -37,10 +37,13 @@ def value_text(
             value=fmt(value, locale, 2),
             limit=fmt(limit, locale, 2),
         )
-    if rule_id == "backup":
-        if value == "accessory":
-            return t("value.backup.accessory", locale)
-        return t("value.backup.native", locale, value=value)
+    if rule_id == "backup_storage" and isinstance(value, int | float):
+        return t(
+            "value.backup_storage",
+            locale,
+            value=fmt(value, locale),
+            limit=fmt(limit, locale),
+        )
     if rule_id in (
         "string_count",
         "string_voltage",

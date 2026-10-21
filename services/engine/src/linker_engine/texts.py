@@ -30,7 +30,10 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "DC/AC ratio within the manufacturer's limit",
         "DC/AC-Verhältnis innerhalb der Herstellergrenze",
     ),
-    "rule.backup": ("Backup supply", "Notstrom- oder Ersatzstromversorgung"),
+    "rule.backup_storage": (
+        "Released battery configuration covers the backup reserve",
+        "Freigegebene Batteriekonfiguration deckt die Notstromreserve",
+    ),
     "rule.engineering_data": (
         "Cited datasheet values for the string layout",
         "Belegte Datenblattwerte für die Stringauslegung",
@@ -130,9 +133,21 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Largest released configuration within the HTW limit of {upper} kWh",
         "Größte freigegebene Konfiguration innerhalb der HTW-Grenze von {upper} kWh",
     ),
+    "basis.battery_fit_reserve": (
+        "Largest released configuration within the backup reserve of {upper} kWh",
+        "Größte freigegebene Konfiguration innerhalb der Notstromreserve von {upper} kWh",
+    ),
     "basis.battery_above": (
         "Smallest released configuration; it exceeds the HTW limit of {upper} kWh",
         "Kleinste freigegebene Konfiguration; sie überschreitet die HTW-Grenze von {upper} kWh",
+    ),
+    "basis.battery_above_reserve": (
+        "Smallest released configuration; it exceeds the backup reserve of {upper} kWh",
+        "Kleinste freigegebene Konfiguration; sie überschreitet die Notstromreserve von {upper} kWh",
+    ),
+    "basis.battery_above_retrofit": (
+        "Released configuration; HTW Berlin does not recommend a battery at this PV-to-consumption ratio",
+        "Freigegebene Konfiguration; die HTW Berlin empfiehlt bei diesem Verhältnis von PV-Leistung zu Verbrauch keinen Batteriespeicher",
     ),
     "basis.stacks.one": (
         "{quantity} modules in one stack",
@@ -196,6 +211,22 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher ab. "
         "Der Vorschlag umfasst den Wechselrichter; ein Speicher lässt sich später ergänzen.",
     ),
+    "warn.no_storage_none": (
+        "With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery.",
+        "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher ab.",
+    ),
+    "warn.no_storage_retrofit": (
+        "With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery for self-consumption. "
+        "This proposal adds the battery to your existing inverter.",
+        "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher zur Eigenverbrauchsoptimierung ab. "
+        "Dieser Vorschlag ergänzt den Speicher an Ihrem vorhandenen Wechselrichter.",
+    ),
+    "warn.no_storage_backup": (
+        "With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery for self-consumption. "
+        "The battery in this proposal holds the backup reserve.",
+        "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher zur Eigenverbrauchsoptimierung ab. "
+        "Der Speicher in diesem Vorschlag deckt die Notstromreserve.",
+    ),
     "warn.outside_table": (
         "The HTW tables cover 2,000 to 10,000 kWh per year in homes without heat pump or electric car; "
         "for this household the self-sufficiency figures are a rough guide.",
@@ -207,6 +238,18 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "The smallest released configuration, {usable} kWh, is proposed and marked.",
         "Keine freigegebene Batteriekonfiguration passt in die HTW-Grenze von {upper} kWh. "
         "Vorgeschlagen und markiert ist die kleinste freigegebene Konfiguration mit {usable} kWh.",
+    ),
+    "warn.battery_above_reserve": (
+        "No released battery configuration fits within the backup reserve of {upper} kWh. "
+        "The smallest released configuration, {usable} kWh, is proposed and marked.",
+        "Keine freigegebene Batteriekonfiguration passt in die Notstromreserve von {upper} kWh. "
+        "Vorgeschlagen und markiert ist die kleinste freigegebene Konfiguration mit {usable} kWh.",
+    ),
+    "warn.battery_above_retrofit": (
+        "HTW Berlin does not recommend a battery at this PV-to-consumption ratio. "
+        "The proposed battery configuration is marked; it is added to your existing inverter.",
+        "Die HTW Berlin empfiehlt bei diesem Verhältnis von PV-Leistung zu Verbrauch keinen Batteriespeicher. "
+        "Die vorgeschlagene Batteriekonfiguration ist markiert; sie ergänzt Ihren vorhandenen Wechselrichter.",
     ),
     "warn.backup_reserve_missing": (
         "Backup supply is selected without a load and duration, so no reserve is added to the capacity.",
@@ -235,9 +278,13 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Three-phase connection: more inverters qualify.",
         "Dreiphasiger Anschluss: Mehr Wechselrichter kommen in Frage.",
     ),
-    "relax.backup": (
-        "Accept an accessory for backup supply.",
-        "Zubehör für die Ersatzstromversorgung zulassen.",
+    "relax.backup_storage": (
+        "Less backup reserve: the largest released configuration in this selection holds {kwh} kWh.",
+        "Kleinere Notstromreserve: Die größte freigegebene Konfiguration dieser Auswahl fasst {kwh} kWh.",
+    ),
+    "relax.backup_storage_none": (
+        "Less backup reserve: no released configuration in this selection can hold it.",
+        "Kleinere Notstromreserve: Keine freigegebene Konfiguration dieser Auswahl kann sie aufnehmen.",
     ),
     "relax.backup_none": ("Plan without backup supply.", "Ohne Notstrom planen."),
     "relax.kwp": (
@@ -272,14 +319,9 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "{value}, at most {limit} per the manufacturer",
         "{value}, laut Hersteller höchstens {limit}",
     ),
-    "value.backup.native": ("backup output {value} kVA", "Notstromausgang {value} kVA"),
-    "value.backup.accessory": (
-        "with the documented accessory",
-        "mit dem dokumentierten Zubehör",
-    ),
-    "value.backup.none": (
-        "no backup output in the datasheet data",
-        "kein Notstromausgang in den Datenblattwerten",
+    "value.backup_storage": (
+        "{value} kWh usable for a {limit} kWh reserve",
+        "{value} kWh nutzbar für eine Reserve von {limit} kWh",
     ),
     "value.modules": ("{value} modules connected", "{value} Module angeschlossen"),
     "value.batteries.one": ("one released battery", "eine freigegebene Batterie"),

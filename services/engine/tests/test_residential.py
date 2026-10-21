@@ -2,7 +2,7 @@
 
 import pytest
 
-from linker_engine import residential
+from linker_engine import eligibility, residential
 from linker_engine.engine import Engine
 from linker_engine.models import BatteryChoice, ResidentialInput
 
@@ -165,10 +165,389 @@ def test_backup_reserve_and_heat_pump_widen_the_range(engine: Engine) -> None:
     assert any("Wärmepumpe" in w or "heat pump" in w for w in result.warnings)
 
 
+# #478 C17: 80538, 5,000 kWh, 10 kWp, three-phase, backup 3 kW for 4 h.
+C17 = {
+    "annual_kwh": 5000,
+    "pv_kwp": 10,
+    "phase": 3,
+    "backup": "needed",
+    "backup_load_kw": 3,
+    "backup_hours": 4,
+}
+
+
+def test_backup_storage_without_a_released_configuration_is_unknown() -> None:
+    """No released battery is not a 0 kWh battery: the rule stays unknown."""
+    check = eligibility.backup_storage(None, 12.77)
+    assert check.passed is None
+    assert check.value is None
+    assert check.limit == pytest.approx(12.77)
+
+
+def test_backup_needed_keeps_candidates_without_backup_figures(
+    engine_without_backup: Engine,
+) -> None:
+    """#483: the live feed carries no backup output for the home inverters.
+
+    The reserve is a sizing input (spec 14), so missing capability figures
+    must not empty the candidate list. A released battery that can hold the
+    reserve is the gate; the caps are the datasheet stacking figures.
+    """
+    result = design(engine_without_backup, **C17)
+    assert result.selected is not None
+    assert result.sizing.reserve_kwh == pytest.approx(12.77, abs=0.01)
+    assert result.sizing.high_kwh == pytest.approx(20.27, abs=0.01)
+    battery = result.selected.battery
+    assert battery is not None
+    assert battery.product.model == "GW5.1-BAT-D-G20"
+    assert battery.quantity == 4
+    assert battery.usable_kwh == pytest.approx(20.0)
+    assert battery.usable_kwh >= result.sizing.reserve_kwh
+    assert battery.above_upper_limit is False
+    assert [c.product.id for c in result.candidates.inverters]
+    storage_rule = next(
+        rule for rule in result.selected.inverter_rules if rule.id == "backup_storage"
+    )
+    assert storage_rule.passed is True
+    assert isinstance(storage_rule.value, float)
+    assert storage_rule.value >= result.sizing.reserve_kwh
+    assert storage_rule.limit == pytest.approx(12.77, abs=0.01)
+    # The removed capability rule filtered every home inverter; it is gone.
+    failed = {f.id for e in result.candidates.excluded for f in e.failed}
+    assert "backup" not in failed
+
+
+def test_backup_needed_checks_the_reserve_without_an_htw_recommendation(
+    engine_without_backup: Engine,
+) -> None:
+    """#483: HTW not recommending storage does not skip the reserve check.
+
+    Outer Spec review repro: 5000 kWh, 2 kWp, three-phase, backup 3 kW for
+    4 h. The reserve is 12.77 kWh; before the fix this returned a solution
+    with no battery at all.
+    """
+    result = design(
+        engine_without_backup,
+        annual_kwh=5000,
+        pv_kwp=2,
+        phase=3,
+        backup="needed",
+        backup_load_kw=3,
+        backup_hours=4,
+    )
+    assert result.sizing.recommended is False
+    assert result.sizing.reserve_kwh == pytest.approx(12.77, abs=0.01)
+    assert result.selected is not None
+    assert result.selected.inverter.model == "HS2-5K-T2-X"
+    battery = result.selected.battery
+    assert battery is not None
+    assert battery.product.model == "BU2-5.0-HV1"
+    assert battery.quantity == 3
+    assert battery.usable_kwh == pytest.approx(13.5)
+    assert battery.above_upper_limit is True
+    assert battery.usable_kwh >= result.sizing.reserve_kwh
+    storage_rule = next(
+        rule for rule in result.selected.inverter_rules if rule.id == "backup_storage"
+    )
+    assert storage_rule.passed is True
+    assert any("holds the backup reserve" in warning for warning in result.warnings)
+    assert not any("HTW limit" in warning for warning in result.warnings)
+    battery_line = next(
+        line for line in result.selected.lines if line.role == "battery"
+    )
+    assert "backup reserve of 12.8 kWh" in " ".join(battery_line.basis)
+
+
+def test_the_backup_no_candidate_does_not_claim_a_proposal(
+    engine_without_backup: Engine,
+) -> None:
+    """No candidate: the no-storage warning must not name a proposal or battery."""
+    result = design(
+        engine_without_backup,
+        annual_kwh=5000,
+        pv_kwp=2,
+        phase=3,
+        backup="needed",
+        backup_load_kw=50,
+        backup_hours=72,
+    )
+    assert result.selected is None
+    assert result.sizing.recommended is False
+    assert any("advises against a battery" in warning for warning in result.warnings)
+    assert not any("proposal" in warning for warning in result.warnings)
+    assert not any("holds the backup reserve" in warning for warning in result.warnings)
+
+    german = design(
+        engine_without_backup,
+        locale="de",
+        annual_kwh=5000,
+        pv_kwp=2,
+        phase=3,
+        backup="needed",
+        backup_load_kw=50,
+        backup_hours=72,
+    )
+    assert german.selected is None
+    assert any("rät die HTW Berlin" in warning for warning in german.warnings)
+    assert not any("Vorschlag" in warning for warning in german.warnings)
+
+
+def test_a_non_backup_retrofit_does_not_claim_a_backup_reserve(
+    engine_without_backup: Engine,
+) -> None:
+    """A retrofit with a battery but no backup keeps truthful warnings.
+
+    Outer re-verify repro: existing HS2-10K-T2-X, 5000 kWh, 2 kWp,
+    three-phase, backup none. The battery is an addition to the existing
+    inverter; nothing in the proposal holds a backup reserve.
+    """
+    fields = {
+        "annual_kwh": 5000,
+        "pv_kwp": 2,
+        "phase": 3,
+        "backup": "none",
+        "existing_inverter": "HS2-10K-T2-X",
+    }
+    result = design(engine_without_backup, **fields)
+    assert result.selected is not None
+    assert result.selected.inverter.model == "HS2-10K-T2-X"
+    assert result.sizing.recommended is False
+    assert result.sizing.reserve_kwh == 0
+    battery = result.selected.battery
+    assert battery is not None
+    assert battery.product.model == "BU2-5.0-HV1"
+    assert battery.quantity == 2
+    assert battery.usable_kwh == pytest.approx(9.0)
+    assert any(
+        "adds the battery to your existing inverter" in warning
+        for warning in result.warnings
+    )
+    assert not any("backup reserve" in warning for warning in result.warnings)
+    assert not any("HTW limit of 0" in warning for warning in result.warnings)
+    battery_line = next(
+        line for line in result.selected.lines if line.role == "battery"
+    )
+    basis = " ".join(battery_line.basis)
+    assert "HTW Berlin does not recommend a battery" in basis
+    assert "HTW limit of 0" not in basis
+
+    german = design(engine_without_backup, locale="de", **fields)
+    assert german.selected is not None
+    assert any("vorhandenen Wechselrichter" in warning for warning in german.warnings)
+    assert not any("Notstromreserve" in warning for warning in german.warnings)
+    assert not any("HTW-Grenze von 0" in warning for warning in german.warnings)
+
+
+def test_backup_accessory_ok_keeps_candidates_without_backup_figures(
+    engine_without_backup: Engine,
+) -> None:
+    """#483: `needed_accessory_ok` must not be a dead input either."""
+    result = design(engine_without_backup, **(C17 | {"backup": "needed_accessory_ok"}))
+    assert result.selected is not None
+    assert result.sizing.reserve_kwh == pytest.approx(12.77, abs=0.01)
+
+
+def test_backup_accessory_ok_selects_on_the_shipping_contract(
+    shipping_engine: Engine,
+) -> None:
+    """#483 on the contract the plugin ships: at least one system is selected."""
+    result = design(shipping_engine, **(C17 | {"backup": "needed_accessory_ok"}))
+    assert result.selected is not None
+    assert result.sizing.reserve_kwh == pytest.approx(12.77, abs=0.01)
+    assert result.selected.battery is not None
+    assert result.selected.battery.usable_kwh >= result.sizing.reserve_kwh
+
+
+def test_backup_reserve_beyond_every_released_battery_is_truthful(
+    engine_without_backup: Engine,
+) -> None:
+    """No released home battery holds this reserve: say so, do not crash."""
+    result = design(
+        engine_without_backup,
+        annual_kwh=5000,
+        pv_kwp=10,
+        phase=3,
+        backup="needed",
+        backup_load_kw=50,
+        backup_hours=72,
+    )
+    assert result.selected is None
+    assert result.sizing.reserve_kwh == pytest.approx(50 * 72 / 0.94, abs=0.1)
+    failed = {f.id for e in result.candidates.excluded for f in e.failed}
+    assert "backup_storage" in failed
+    assert any("Less backup reserve" in r for r in result.relaxations)
+    assert any("holds 186.2 kWh" in r for r in result.relaxations)
+    assert "Plan without backup supply." in result.relaxations
+    assert residential.storage_result(result).backup_reserve_kwh == pytest.approx(
+        50 * 72 / 0.94, abs=0.1
+    )
+
+
+def test_the_truthful_backup_no_candidate_speaks_german(
+    engine_without_backup: Engine,
+) -> None:
+    """The same no-candidate state in German, not a crash or a dead input."""
+    result = design(
+        engine_without_backup,
+        locale="de",
+        annual_kwh=5000,
+        pv_kwp=10,
+        phase=3,
+        backup="needed",
+        backup_load_kw=50,
+        backup_hours=72,
+    )
+    assert result.selected is None
+    assert any("Kleinere Notstromreserve" in r for r in result.relaxations)
+    assert "Ohne Notstrom planen." in result.relaxations
+
+
+def test_backup_regression_speaks_german(engine_without_backup: Engine) -> None:
+    """The C17 result carries German copy for the reserve rule."""
+    result = design(engine_without_backup, locale="de", **C17)
+    assert result.selected is not None
+    storage_rule = next(
+        rule for rule in result.selected.inverter_rules if rule.id == "backup_storage"
+    )
+    assert (
+        storage_rule.label
+        == "Freigegebene Batteriekonfiguration deckt die Notstromreserve"
+    )
+    assert "Reserve" in storage_rule.text
+
+
+def test_a_backup_swap_only_offers_configurations_that_hold_the_reserve(
+    engine_without_backup: Engine,
+) -> None:
+    """A swap cannot undercut the reserve the design was checked against."""
+    h2 = next(
+        p for p in engine_without_backup.products.products if p.model == "H2-10K-T3"
+    )
+    small = next(
+        p for p in engine_without_backup.products.products if p.model == "B2-10.0-HV1"
+    )
+    result = design(engine_without_backup, **(C17 | {"inverter_id": h2.id}))
+    assert result.selected is not None
+    assert result.candidates.batteries
+    assert all(
+        battery.usable_kwh >= result.sizing.reserve_kwh
+        for battery in result.candidates.batteries
+    )
+    assert small.id not in [b.product.id for b in result.candidates.batteries]
+    swapped = design(
+        engine_without_backup,
+        **(C17 | {"inverter_id": h2.id, "battery_id": small.id}),
+    )
+    assert swapped.selected is not None
+    assert swapped.selected.battery is not None
+    assert swapped.selected.battery.usable_kwh >= swapped.sizing.reserve_kwh
+    assert swapped.selected.battery.product.id != small.id
+
+
+def test_a_backup_reserve_offers_the_above_limit_configuration_that_covers_it(
+    engine_without_backup: Engine,
+) -> None:
+    """A covering configuration above the HTW limit stays as a marked option.
+
+    HS2-10K x BU2-5.0 at a 9.19 kWh reserve: the largest configuration within
+    the 10.69 kWh upper limit is 9 kWh and cannot hold the reserve; the next
+    step, 13.5 kWh, is above the limit and can. Dropping it with the battery
+    would turn a solvable backup request into a false no_candidate.
+    """
+    hs2 = next(
+        p for p in engine_without_backup.products.products if p.model == "HS2-10K-T2-X"
+    )
+    result = design(
+        engine_without_backup,
+        annual_kwh=1000,
+        pv_kwp=10,
+        phase=3,
+        backup="needed",
+        backup_load_kw=2.16,
+        backup_hours=4,
+        inverter_id=hs2.id,
+    )
+    assert result.selected is not None
+    assert result.sizing.reserve_kwh == pytest.approx(9.19, abs=0.01)
+    assert result.sizing.high_kwh == pytest.approx(10.69, abs=0.01)
+    battery = result.selected.battery
+    assert battery is not None
+    assert battery.usable_kwh == pytest.approx(13.5)
+    assert battery.above_upper_limit is True
+    assert battery.usable_kwh >= result.sizing.reserve_kwh
+    assert any(
+        battery.usable_kwh >= result.sizing.reserve_kwh
+        for battery in result.candidates.batteries
+    )
+
+
+def test_a_documented_backup_accessory_joins_the_bill_of_materials(
+    engine: Engine,
+) -> None:
+    """`needed_accessory_ok` adds the transfer switch the contract names."""
+    inverter = next(p for p in engine.products.products if p.model == "HS2-10K-T2-X")
+    result = design(
+        engine,
+        **(C17 | {"backup": "needed_accessory_ok", "inverter_id": inverter.id}),
+    )
+    assert result.selected is not None
+    assert result.selected.inverter.model == "HS2-10K-T2-X"
+    backup = [line for line in result.selected.lines if line.role == "backup"]
+    assert [line.product.model for line in backup if line.product] == ["ATS1-T63-A"]
+
+
+# #482: the shipping contract, not the fixture, decides the meter lines.
+def test_the_h2_bill_of_materials_has_no_second_meter(
+    shipping_engine: Engine,
+) -> None:
+    """The H2 T3 ships with a smart meter, three CTs and a 10 m cable.
+
+    The contract must not also list a DTSU666 beside the box: the manual's
+    Unpacking section names the meter as delivered, and the SAJ configuration
+    instructions describe that meter, not a second purchase.
+    """
+    inverter = next(
+        p for p in shipping_engine.products.products if p.model == "H2-10K-T3"
+    )
+    result = design(shipping_engine, inverter_id=inverter.id)
+    assert result.selected is not None
+    assert result.selected.inverter.model == "H2-10K-T3"
+    assert "meter" not in [line.role for line in result.selected.lines]
+    inverter_line = next(
+        line for line in result.selected.lines if line.role == "inverter"
+    )
+    basis = " ".join(inverter_line.basis)
+    assert "Ships with its meter" in basis
+    assert "section 2.2 Unpacking" in basis
+
+
+def test_the_gw10k_and_hs2_meter_lines_are_unchanged(
+    shipping_engine: Engine,
+) -> None:
+    """A meter in the box stays off the Stückliste; a meter beside it stays on."""
+    gw10k = next(
+        p for p in shipping_engine.products.products if p.model == "GW10K-ETA-G20"
+    )
+    gw_result = design(shipping_engine, inverter_id=gw10k.id)
+    assert gw_result.selected is not None
+    assert "meter" not in [line.role for line in gw_result.selected.lines]
+
+    hs2 = next(
+        p for p in shipping_engine.products.products if p.model == "HS2-10K-T2-X"
+    )
+    hs2_result = design(shipping_engine, inverter_id=hs2.id)
+    assert hs2_result.selected is not None
+    meters = [line for line in hs2_result.selected.lines if line.role == "meter"]
+    assert [line.product.model for line in meters if line.product] == ["DTSU666"]
+
+
 def test_german_wording(engine: Engine) -> None:
     result = design(engine, locale="de")
     assert result.selected is not None
-    assert result.selected.lines[0].label == "Hybridwechselrichter"
+    inverter_line = next(
+        line for line in result.selected.lines if line.role == "inverter"
+    )
+    assert inverter_line.label == "Hybridwechselrichter"
     assert all(rule.label for rule in result.rules)
 
 

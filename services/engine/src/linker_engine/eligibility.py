@@ -4,20 +4,19 @@ Each rule returns a check with its id, the value it read and whether it
 passed; `None` means the fact is unknown, which never passes (an engineering
 design only proposes what the data proves). The rules and their sources:
 application and phase from #7's SelectionFacts; the single-phase limit of
-VDE-AR-N 4105; the manufacturer's maximum PV input (the DC/AC limit); the
-backup output from the datasheet or a documented accessory.
+VDE-AR-N 4105; the manufacturer's maximum PV input (the DC/AC limit); and, for
+a backup request, that a released battery configuration can hold the reserve.
+Backup is a sizing input, not an inverter capability gate: spec 14 adds the
+reserve on top of the HTW band and its eligibility list does not name a backup
+output. The accessory a document names is added when the customer accepts one.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
 
 from . import rules
-from .compatibility import Compatibility, Requirement
 from .products import Product
-
-Backup = Literal["none", "needed", "needed_accessory_ok"]
 
 
 @dataclass(frozen=True)
@@ -71,22 +70,21 @@ def dc_ac_ratio(inverter: Product, kwp: float) -> Check:
     return Check("dc_ac_ratio", ratio <= limit + 1e-9, ratio, limit)
 
 
-def backup(
-    inverter: Product, wanted: Backup, compatibility: Compatibility
-) -> tuple[Check | None, list[Requirement]]:
-    """The backup check and, when only an accessory provides it, the requirement to add.
+def backup_storage(usable_kwh: float | None, reserve_kwh: float) -> Check:
+    """A released battery configuration of this inverter can hold the reserve.
 
-    The industry states backup in three values: yes, yes with an accessory, no
-    (docs/research/2026-10-09/pv-wholesale-selection-tools.md, section 2.1).
-    "needed" accepts the first; "needed_accessory_ok" also the second.
+    The caps behind `usable_kwh` are the datasheet stacking figures of
+    `stacking.configurations`; the reserve is the customer's load times its
+    duration over the discharge efficiency. No other threshold: the HTW band
+    is an upper limit, so the battery need not reach the band's top, but it
+    must be able to keep the reserve back from daily cycling. None means no
+    battery is released for the inverter, which never passes.
     """
-    if wanted == "none":
-        return None, []
-    native = inverter.backup_power_kva
-    if native:
-        # A backup output of its own ("ja" in the industry's three values) needs no part.
-        return Check("backup", True, native, wanted), []
-    documented = compatibility.requirements(inverter.model, "backup")
-    if wanted == "needed_accessory_ok" and documented:
-        return Check("backup", True, "accessory", wanted), documented
-    return Check("backup", False, None, wanted), []
+    if usable_kwh is None:
+        return Check("backup_storage", None, None, reserve_kwh)
+    return Check(
+        "backup_storage",
+        usable_kwh >= reserve_kwh - 1e-9,
+        usable_kwh,
+        reserve_kwh,
+    )

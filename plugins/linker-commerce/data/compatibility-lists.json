@@ -521,18 +521,10 @@
    ],
    "delivery_contents": {
     "meter_included": true,
-    "en": "The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 4.1.2 Scope of Delivery, PDF p. 12).",
-    "de": "Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 4.1.2 Lieferumfang, PDF-S. 12).",
+    "en": "The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 2.2 Unpacking, PDF p. 36 English / p. 7 German).",
+    "de": "Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 2.2 Auspacken, PDF-S. 36 englisch / S. 7 deutsch).",
     "docs": [
      "S6"
-    ]
-   },
-   "meter_documented": {
-    "material_id": "mat_chint_dtsu666",
-    "en": "SAJ's Configuration Instructions V1.0 set up the Chint DTSU666 as the three-phase meter of the H2, HS2 and HS3 systems (section 5.1, PDF pp. 32–33).",
-    "de": "Die SAJ-Konfigurationsanleitung V1.0 richtet den Chint DTSU666 als dreiphasigen Zähler der Systeme H2, HS2 und HS3 ein (Abschnitt 5.1, PDF-S. 32–33).",
-    "docs": [
-     "S2"
     ]
    }
   },
