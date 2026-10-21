@@ -136,7 +136,7 @@ final class Module {
 		$order = ( new Sender() )->message( $details, array( self::HANDOFF_META => $handoff ) );
 		return array(
 			'order'   => $order->get_id(),
-			'receipt' => 'daily_cap' !== $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'receipt' => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
 		);
 	}
 
@@ -201,7 +201,7 @@ final class Module {
 		}
 		return array(
 			'order'   => $order->get_id(),
-			'receipt' => 'daily_cap' !== (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'receipt' => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
 		);
 	}
 

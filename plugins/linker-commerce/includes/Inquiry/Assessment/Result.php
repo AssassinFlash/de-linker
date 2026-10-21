@@ -52,7 +52,7 @@ final class Result {
 		$conflict = self::conflicts( $label, $basis );
 		$reason   = is_string( $data['reason'] ?? null ) ? $data['reason'] : '';
 		// Only fixed codes may enter logs/admin; never a provider's response text.
-		if ( 1 !== preg_match( '/^(classified|conflict|insufficient_context|missing_credentials|invalid_model|invalid_response|transport_error|deadline|provider_http_[0-9]{3})$/D', $reason ) ) {
+		if ( 1 !== preg_match( '/^(classified|conflict|insufficient_context|missing_credentials|invalid_model|invalid_response|transport_error|deadline|provider_http_[0-9]{3}|provider_budget_(quota|unavailable|configuration|permissions|replayed|provider|attempt))$/D', $reason ) ) {
 			return self::unknown( 'invalid_response' );
 		}
 		$raw = $data['raw'] ?? array();

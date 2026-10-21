@@ -21,6 +21,16 @@ test( 'explicit navigation carries plain text once, without URL or files', () =>
 	expect( field.value ).toBe( 'Later edit' );
 } );
 
+test( 'an explicit same-origin empty question clears an earlier handoff', () => {
+	rememberInquiry( window.location.href, 'Earlier question opened in another tab' );
+	rememberInquiry( window.location.href, '' );
+	restoreInquiry();
+	expect( document.querySelector( 'textarea' )!.value ).toBe(
+		'Prior completed question'
+	);
+	expect( window.sessionStorage.length ).toBe( 0 );
+} );
+
 test( 'expiry, different destination and customer edits cannot overwrite the native field', () => {
 	const field = document.querySelector( 'textarea' )!;
 	rememberInquiry( window.location.href, 'Unsent question' );

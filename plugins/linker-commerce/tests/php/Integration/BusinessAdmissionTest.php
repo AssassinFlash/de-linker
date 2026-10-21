@@ -458,6 +458,47 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	/**
 	 * Login succeeds normally; only repeated failed use needs a scoped proof.
 	 */
+	public function test_genie_native_handoffs_report_all_suppressed_receipts(): void {
+		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
+		foreach ( array( 'contact', 'inquiry' ) as $door ) {
+			foreach ( array( 'target_cap', 'unavailable' ) as $reason ) {
+				delete_option( Ledger::OPTION );
+				$email = $door . '-' . $reason . '@example.test';
+				if ( 'target_cap' === $reason ) {
+					$this->assertTrue( ReceiptBudget::take( $email, wp_generate_uuid4() ) );
+					$this->assertTrue( ReceiptBudget::take( $email, wp_generate_uuid4() ) );
+				} else {
+					update_option( Ledger::OPTION, 'synthetic damaged journal', false );
+				}
+				$payload = array(
+					'customer' => array(
+						'name'  => 'Synthetic handoff',
+						'email' => $email,
+					),
+					'message'  => 'Please contact us.',
+					'summary'  => array( 'Please contact us.' ),
+					'locale'   => 'en',
+				);
+				$marker  = self::newest_mail_job();
+				// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Exercise the existing native Genie handoff constants.
+				$result = apply_filters( 'contact' === $door ? \Linker\Commerce\Genie\Module::CONTACT_FILTER : \Linker\Commerce\Genie\Module::INQUIRY_FILTER, null, $payload );
+				$this->assertIsArray( $result );
+				$this->assertFalse( $result['receipt'] );
+				$order = wc_get_order( $result['order'] );
+				$this->assertInstanceOf( WC_Order::class, $order );
+				$this->later(
+					static function () use ( $order ): void {
+						$order->delete( true );
+					}
+				);
+				$this->assertSame( 'inquiry-received', $order->get_status() );
+				$this->assertSame( $reason, $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+				$this->assertCount( 1, self::mail_jobs_after( $marker ), 'Only the normal team notice is queued.' );
+			}
+		}
+	}
+
+	/** Login's progressive challenge does not change its native password check. */
 	public function test_progressive_login_preserves_normal_success_and_gates_failed_use(): void {
 		$customer = $this->customer();
 		$user     = get_userdata( $customer->get_id() );

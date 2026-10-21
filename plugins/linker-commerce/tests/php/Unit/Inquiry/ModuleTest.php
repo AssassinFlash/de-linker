@@ -32,6 +32,9 @@ final class ModuleTest extends TestCase {
 	 * Statuses, stock, gateway, request page, admin labels and emails are hooked; stock is never reduced.
 	 */
 	public function test_register_adds_the_hooks(): void {
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::class, 'recover' );
+		// @phpstan-ignore argument.type (WP_Mock accepts its AnyInstance matcher for array callbacks, as below.)
+		WP_Mock::expectFilterAdded( 'cron_schedules', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::class ), 'schedules' ) );
 		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::PROCESS, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'process' );
 		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::EXPIRE, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'expire' );
 		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::FINISH, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'finish', 10, 2 );

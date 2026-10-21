@@ -65,7 +65,16 @@ final class Sender {
 			)
 		);
 		WC()->cart->calculate_totals();
-		$id = WC()->checkout()->create_order( $data );
+		$prepare = function ( WC_Order $order ) use ( $details, $summary, $context ): void {
+			$this->attach_summary( $order, $summary );
+			$this->prepare( $order, $details, 'proforma', $context );
+		};
+		add_action( 'woocommerce_checkout_create_order', $prepare );
+		try {
+			$id = WC()->checkout()->create_order( $data );
+		} finally {
+			remove_action( 'woocommerce_checkout_create_order', $prepare );
+		}
 		if ( $id instanceof WP_Error ) {
 			return $id;
 		}
@@ -73,7 +82,6 @@ final class Sender {
 		if ( ! $order instanceof WC_Order ) {
 			return new WP_Error( 'linker_inquiry_create', __( 'Please try sending your inquiry again.', 'linker-commerce' ) );
 		}
-		$this->attach_summary( $order, $summary );
 		$this->receive( $order, $details, 'proforma', $context );
 		WC()->cart->empty_cart();
 		return $order;
@@ -160,13 +168,25 @@ final class Sender {
 	 * @param string               $source proforma or contact.
 	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
 	 */
-	private function receive( WC_Order $order, Submission $details, string $source, array $context = array() ): void {
+	private function prepare( WC_Order $order, Submission $details, string $source, array $context = array() ): void {
 		$order->set_payment_method_title( '' );
-		$this->line_language( $order, $details->locale );
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
 		$order->update_meta_data( '_linker_inquiry_topic', $details->intent );
 		Assessment\Queue::prepare( $order, $context );
+	}
+
+	/**
+	 * Complete the prepared native record and trigger the existing mail owners.
+	 *
+	 * @param WC_Order             $order Native inquiry.
+	 * @param Submission           $details Validated reply details.
+	 * @param string               $source proforma or contact.
+	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
+	 */
+	private function receive( WC_Order $order, Submission $details, string $source, array $context = array() ): void {
+		$this->line_language( $order, $details->locale );
+		$this->prepare( $order, $details, $source, $context );
 		// A real native id stabilizes the receipt reservation across a resumed save.
 		$order->save();
 		$receipt_reason = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()

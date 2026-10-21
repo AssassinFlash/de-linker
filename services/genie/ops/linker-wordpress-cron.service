@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Linker native WordPress scheduler independently of page visits
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Existing public native endpoint; no new credential or API permission.
+# Native WordPress cron locking prevents overlapping scheduler execution.
+ExecStart=/usr/bin/curl --fail --silent --show-error --max-time 55 https://de-linker.com/wp-cron.php?doing_wp_cron
+TimeoutStartSec=60

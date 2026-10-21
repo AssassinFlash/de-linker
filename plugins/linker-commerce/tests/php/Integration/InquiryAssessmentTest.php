@@ -81,6 +81,104 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		return $order;
 	}
 
+	/** The independently driven native event releases an expired handoff. */
+	public function test_native_minute_recovery_event_releases_without_a_visitor(): void {
+		$order            = $this->inquiry();
+		$data             = Queue::data( $order );
+		$data['deadline'] = microtime( true ) - 1;
+		\Linker\Commerce\Inquiry\Assessment\StructuredMeta::update( $order, Queue::META, $data );
+		$order->save_meta_data();
+		$schedule = \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::class;
+		$this->assertTrue( wp_schedule_event( time(), $schedule::INTERVAL, $schedule::HOOK ) );
+		$this->later(
+			static function () use ( $schedule ): void {
+				wp_clear_scheduled_hook( $schedule::HOOK );
+			}
+		);
+		$event = wp_get_scheduled_event( $schedule::HOOK );
+		$this->assertIsObject( $event );
+		$this->assertSame( 60, $event->interval );
+		$this->assertSame( $schedule::HOOK, $event->hook );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Native event was checked against the fixed recovery hook above.
+		do_action_ref_array( $schedule::HOOK, $event->args );
+		$order->read_meta_data( true );
+		$this->assertGreaterThan( 0, Queue::data( $order )['notification_job'] );
+		$this->assertSame( 'deadline', Queue::data( $order )['initial_result']['reason'] );
+		$this->assertLessThan( 2, microtime( true ) - (float) get_option( Queue::HEARTBEAT ) );
+	}
+
+	/** Product inquiry evidence exists at Woo's first native order save. */
+	public function test_product_inquiry_has_evidence_before_first_native_save(): void {
+		$this->as_user( 0 );
+		WC()->cart->empty_cart();
+		$details = Submission::from_post(
+			array(
+				'name'    => 'Synthetic first save',
+				'email'   => self::TESTER,
+				'message' => 'First native save evidence',
+				'consent' => '1',
+				'lang'    => 'en',
+			)
+		);
+		$this->assertInstanceOf( Submission::class, $details );
+		$first = null;
+		$watch = static function ( $order ) use ( &$first ): void {
+			if ( $order instanceof WC_Order && 0 === $order->get_id() && self::TESTER === $order->get_billing_email() ) {
+				$first = array(
+					'data'    => Queue::data( $order ),
+					'pending' => $order->get_meta( Queue::PENDING ),
+					'source'  => $order->get_meta( '_linker_inquiry_source' ),
+				);
+			}
+		};
+		add_action( 'woocommerce_before_order_object_save', $watch, 100 );
+		try {
+			$order = ( new Sender() )->request( $details, array(), false );
+		} finally {
+			remove_action( 'woocommerce_before_order_object_save', $watch, 100 );
+		}
+		$this->assertInstanceOf( WC_Order::class, $order );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$this->assertIsArray( $first );
+		$this->assertSame( 'yes', $first['pending'] );
+		$this->assertSame( 'proforma', $first['source'] );
+		$this->assertSame( 'First native save evidence', $first['data']['snapshot']['submission']['message'] );
+		$this->assertSame( Queue::data( $order )['accepted_at'], $first['data']['accepted_at'] );
+	}
+
+	/** Actual service budget refusals retain their diagnostic and normal notice. */
+	public function test_provider_budget_failures_survive_client_and_notice(): void {
+		foreach ( array( 'quota', 'unavailable', 'configuration' ) as $reason ) {
+			$order             = $this->inquiry();
+			$result            = Result::unknown( 'provider_budget_' . $reason );
+			$result['seconds'] = 0.025;
+			$fetch             = static function ( $pre, $args, $url ) use ( $result ) {
+				return str_ends_with( $url, '/inquiries/assess' ) ? array(
+					'response' => array( 'code' => 200 ),
+					'body'     => wp_json_encode( $result ),
+				) : $pre;
+			};
+			add_filter( 'pre_http_request', $fetch, 10, 3 );
+			try {
+				( new Queue() )->process( $order->get_id() );
+			} finally {
+				remove_filter( 'pre_http_request', $fetch, 10 );
+			}
+			$order->read_meta_data( true );
+			$data = Queue::data( $order );
+			$this->assertSame( 'uncertain', $data['initial_result']['label'] );
+			$this->assertSame( 'provider_budget_' . $reason, $data['initial_result']['reason'] );
+			$this->assertSame( 0.025, $data['initial_result']['seconds'] );
+			$this->assertGreaterThan( 0, $data['notification_job'] );
+			$this->assertSame( 'inquiry-received', $order->get_status() );
+		}
+		$this->assertSame( 'invalid_response', Result::validate( Result::unknown( 'provider_budget_untrusted_text' ) )['reason'] );
+	}
+
 	/** Fraud outside the message field remains in the frozen provider input. */
 	public function test_fraud_in_name_is_sent_with_gibberish_body(): void {
 		$name  = 'Вам перевод 195753 руб. забрать тут https://reward.example.invalid/test';

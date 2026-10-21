@@ -318,6 +318,7 @@ final class Queue {
 
 	/** Register background handlers without doing any work in a submit. */
 	public function register(): void {
+		( new RecoverySchedule() )->register();
 		add_action( self::PROCESS, array( $this, 'process' ) );
 		add_action( self::EXPIRE, array( $this, 'expire' ) );
 		add_action( self::FINISH, array( $this, 'finish' ), 10, 2 );

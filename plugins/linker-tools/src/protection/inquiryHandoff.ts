@@ -10,7 +10,11 @@ const LIFETIME = 300_000;
 export function rememberInquiry( url: string, message: string ): void {
 	try {
 		const target = new URL( url, window.location.href );
-		if ( target.origin !== window.location.origin || ! message.trim() ) {
+		if ( target.origin !== window.location.origin ) {
+			return;
+		}
+		if ( ! message.trim() ) {
+			window.sessionStorage.removeItem( KEY );
 			return;
 		}
 		window.sessionStorage.setItem(
