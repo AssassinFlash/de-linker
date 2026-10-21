@@ -391,8 +391,12 @@ test( 'a saved solution names the account and links to it', async () => {
 	expect( body ).toEqual(
 		expect.objectContaining( { kind: 'residential' } )
 	);
-	expect( body.reportPdf ).toBeInstanceOf( Blob );
-	expect( await body.reportPdf.text() ).toBe( '%PDF-1.4' );
+	const reportPdf = body.reportPdf;
+	expect( reportPdf ).toBeInstanceOf( Blob );
+	if ( ! reportPdf ) {
+		throw new Error( 'missing report' );
+	}
+	expect( await reportPdf.text() ).toBe( '%PDF-1.4' );
 	expect( calls ).toContainEqual( {
 		name: 'pdf',
 		body: {
