@@ -43,7 +43,9 @@ def repair(content: str) -> str:
                 raise ValueError("Unexpected less-than token in utility script")
             return script
 
-        content = re.sub(r"<script\b[^>]*>.*?</script>", comparisons, content, flags=re.S)
+        content = re.sub(
+            r"<script\b[^>]*>.*?</script>", comparisons, content, flags=re.S
+        )
     content = re.sub(
         r"(<(script|style)\b[^>]*>)(.*?)(</\2>)",
         lambda match: match[1] + re.sub(r"\n[ \t]*(?=\n)", "", match[3]) + match[4],
@@ -73,7 +75,9 @@ def main() -> None:
             marker in row["content"]
             for marker in ('id="service-redesign"', 'id="tv-utility-page-v1"')
         ):
-            raise ValueError("Not an audited service or utility page; refusing to patch")
+            raise ValueError(
+                "Not an audited service or utility page; refusing to patch"
+            )
         changes.append(
             {"id": int(key), "before": row["content"], "after": repair(row["content"])}
         )

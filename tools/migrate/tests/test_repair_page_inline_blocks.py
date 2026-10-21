@@ -24,6 +24,6 @@ def test_only_blank_lines_in_inline_blocks_and_status_bar_newlines_change():
 def test_utility_comparisons_survive_texturize_without_changing_prose():
     content = '<div id="tv-utility-page-v1"><p>Keep <strong>copy</strong>.</p><script>if(i<3&&position<0&&dx<0&&delta<0&&track.scrollLeft<width)run();\n\nend();</script></div>'
     fixed = service.repair(content)
-    assert '<p>Keep <strong>copy</strong>.</p>' in fixed
-    assert 'if(3>i&&0>position&&0>dx&&0>delta&&width>track.scrollLeft)' in fixed
+    assert "<p>Keep <strong>copy</strong>.</p>" in fixed
+    assert "if(3>i&&0>position&&0>dx&&0>delta&&width>track.scrollLeft)" in fixed
     assert service.repair(fixed) == fixed
