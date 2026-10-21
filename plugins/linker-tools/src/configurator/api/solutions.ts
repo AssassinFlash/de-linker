@@ -77,8 +77,8 @@ export async function saveSolution(
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< SavedSolution > {
 	const reportPdf = body.reportPdf ? await pdfBase64( body.reportPdf ) : '';
-	const save = `${ restUrl }linker/v1/solutions?lang=${ locale }`;
-	const response = await fetcher( save, {
+	const endpoint = `${ restUrl }linker/v1/solutions?lang=${ locale }`;
+	const response = await fetcher( endpoint, {
 		method: 'POST',
 		credentials: 'same-origin',
 		headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },

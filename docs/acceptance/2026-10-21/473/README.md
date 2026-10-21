@@ -72,6 +72,10 @@ The German list shows both saves (“Gespeichert am 21. Oktober 2026”), each w
 
 Production re-verification is due once this lands: repeat the guest save on `de-linker.com` in both languages and open the answered link (expect `https://de-linker.com/de/mein-konto/gespeicherte-loesungen/` in German). Not done here: no deploy.
 
+## Observation (not this ticket)
+
+The English account page's document title is “Partner Account: Sign In or Register | Linker” on `/my-account/saved-solutions/` even when signed in, while the German page is “Gespeicherte Lösungen | Linker” (`record.json`, member rows). It is there before this change (the pre-fix instance `c351` answers the same two titles), so it is not caused by the save link, and this walk does not re-file it.
+
 ## Cleanup
 
 Guest drafts emptied (`remove-item` 200 ×2 each language, cart read 0). The member's two saved solutions (7442, 7443) and the test customer were deleted after the walk; no inquiry, no registration, no mail.

@@ -359,7 +359,12 @@ test.each( [
 		expect(
 			await screen.findByText( /In Ihrem Konto gespeichert\./ )
 		).toBeInTheDocument();
-		expect( vi.mocked( saveSolution ).mock.calls[ 0 ][ 3 ] ).toBe( 'de' );
+		expect( vi.mocked( saveSolution ) ).toHaveBeenCalledWith(
+			'/wp-json/',
+			'n',
+			expect.objectContaining( { kind: 'residential' } ),
+			'de'
+		);
 	}
 );
 
@@ -388,7 +393,12 @@ test( 'a saved solution names the account and links to it', async () => {
 		screen.getByRole( 'link', { name: 'Open saved solution' } )
 	).toHaveAttribute( 'href', '/my-account/solutions/61/' );
 	expect( save ).toHaveBeenCalledTimes( 1 );
-	expect( save.mock.calls[ 0 ][ 3 ] ).toBe( 'en' );
+	expect( save ).toHaveBeenCalledWith(
+		'/wp-json/',
+		'n',
+		expect.objectContaining( { kind: 'residential' } ),
+		'en'
+	);
 	const body = save.mock.calls[ 0 ][ 2 ];
 	expect( body ).toEqual(
 		expect.objectContaining( { kind: 'residential' } )
