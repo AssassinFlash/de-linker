@@ -1,0 +1,60 @@
+{
+  "id": "vps-down",
+  "url": "http://127.0.0.1:9187/",
+  "width": 1440,
+  "height": 900,
+  "lang": "en",
+  "question": "Do you stock the SAJ H2-10K-T2?",
+  "question_key": "stock",
+  "failure_sentence": "Genie did not answer. Please try again.",
+  "shots": {
+    "live": "vps-down-live-1440-en.png",
+    "reload": "vps-down-reload-1440-en.png"
+  },
+  "live": {
+    "surface": "dock",
+    "error_text": "Genie did not answer. Please try again.",
+    "error_visible": true,
+    "retry_visible": true,
+    "field_value": "Do you stock the SAJ H2-10K-T2?",
+    "thread_text": "",
+    "app_box": {
+      "x": 1020,
+      "y": 285,
+      "width": 400,
+      "height": 531
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "reload": {
+    "opened": "auto",
+    "surface": "hero",
+    "error_text": "Genie did not answer. Please try again.",
+    "error_visible": true,
+    "retry_visible": true,
+    "field_value": "Do you stock the SAJ H2-10K-T2?",
+    "thread_text": "",
+    "app_box": {
+      "x": 288,
+      "y": 371.65625,
+      "width": 904,
+      "height": 132.0625
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "turns": [
+    {
+      "status": 502,
+      "url": "http://127.0.0.1:9187/wp-json/linker-ai/v1/genie/turn",
+      "bytes": 88,
+      "code": "linker_genie_upstream",
+      "message": "Genie did not answer."
+    }
+  ]
+}

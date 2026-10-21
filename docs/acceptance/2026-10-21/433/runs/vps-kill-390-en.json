@@ -1,0 +1,72 @@
+{
+  "id": "vps-kill",
+  "url": "http://127.0.0.1:9187/",
+  "width": 390,
+  "height": 844,
+  "lang": "en",
+  "question": "Which three-phase hybrid inverters do you list for a home?",
+  "question_key": "model",
+  "failure_sentence": "Genie did not answer. Please try again.",
+  "shots": {
+    "live": "vps-kill-live-390-en.png",
+    "reload": "vps-kill-reload-390-en.png"
+  },
+  "live": {
+    "surface": "dock",
+    "error_text": "Genie did not answer. Please try again.",
+    "error_visible": true,
+    "retry_visible": true,
+    "field_value": "Which three-phase hybrid inverters do you list for a home?",
+    "thread_text": "",
+    "app_box": {
+      "x": 0,
+      "y": 125,
+      "width": 390,
+      "height": 719
+    },
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "reload": {
+    "opened": "auto",
+    "surface": "hero",
+    "error_text": "Genie did not answer. Please try again.",
+    "error_visible": true,
+    "retry_visible": true,
+    "field_value": "Which three-phase hybrid inverters do you list for a home?",
+    "thread_text": "",
+    "app_box": {
+      "x": 40,
+      "y": 194,
+      "width": 318.796875,
+      "height": 172.203125
+    },
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "turns": [
+    {
+      "status": 502,
+      "url": "http://127.0.0.1:9187/wp-json/linker-ai/v1/genie/turn",
+      "bytes": 88,
+      "code": "linker_genie_upstream",
+      "message": "Genie did not answer."
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "question_key": "doc",
+      "outcome": "no live failure"
+    },
+    {
+      "attempt": 2,
+      "question_key": "model",
+      "outcome": "live failure captured"
+    }
+  ]
+}

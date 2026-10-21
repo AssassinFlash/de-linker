@@ -1,0 +1,63 @@
+{
+  "id": "sse-cut",
+  "url": "http://127.0.0.1:9187/de/",
+  "width": 390,
+  "height": 844,
+  "lang": "de",
+  "question": "Haben Sie den SAJ H2-10K-T2 auf Lager?",
+  "question_key": "stock",
+  "failure_sentence": "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut.",
+  "shots": {
+    "live": "sse-cut-live-390-de.png",
+    "reload": "sse-cut-reload-390-de.png"
+  },
+  "live": {
+    "surface": "dock",
+    "error_text": "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut.",
+    "error_visible": true,
+    "retry_visible": true,
+    "field_value": "",
+    "thread_text": "Haben Sie den SAJ H2-10K-T2 auf Lager?",
+    "app_box": {
+      "x": 0,
+      "y": 125,
+      "width": 390,
+      "height": 719
+    },
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "reload": {
+    "opened": "auto",
+    "surface": "hero",
+    "error_text": "Genie hat nicht geantwortet. Bitte versuchen Sie es erneut.",
+    "error_visible": true,
+    "retry_visible": true,
+    "field_value": "",
+    "thread_text": "Haben Sie den SAJ H2-10K-T2 auf Lager?",
+    "app_box": {
+      "x": 40,
+      "y": 194,
+      "width": 318.796875,
+      "height": 306.078125
+    },
+    "viewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "turns": [
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:9187/wp-json/linker-ai/v1/genie/turn",
+      "bytes": 699,
+      "stream_events": [
+        "meta",
+        "block"
+      ],
+      "stream_has_done": false
+    }
+  ]
+}
