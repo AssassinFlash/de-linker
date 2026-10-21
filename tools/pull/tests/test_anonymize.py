@@ -456,3 +456,23 @@ def test_two_runs_over_the_same_dump_write_the_same_bytes() -> None:
     )
 
     assert first == second
+
+
+def test_public_admission_receipts_are_dropped_without_replacing_site_settings() -> (
+    None
+):
+    dump = (
+        "CREATE TABLE `wp_options` (\n  `option_id` bigint,\n  `option_name` varchar(191),\n"
+        "  `option_value` longtext,\n  `autoload` varchar(20)\n) ENGINE=InnoDB;\n"
+        "INSERT INTO `wp_options` VALUES\n"
+        "(1,'linker_public_admission_ledger','private-pseudonymous-receipts','off'),\n"
+        "(2,'blogname','Linker','on');\n"
+    )
+    out = "".join(Anonymizer([]).run(iter(dump.splitlines(keepends=True))))
+    names = {
+        row["option_name"]
+        for row in tables(out.splitlines(keepends=True))["wp_options"]
+    }
+    assert "linker_public_admission_ledger" not in names
+    assert "blogname" in names
+    assert "private-pseudonymous-receipts" not in out

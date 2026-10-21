@@ -568,7 +568,8 @@ class Anonymizer:
     def _options(self, table: Table, row: Row) -> bool:
         name = row[table.index("option_name")].text or ""
         return not (
-            TRANSIENT_OPTION.search(name)
+            name == "linker_public_admission_ledger"
+            or TRANSIENT_OPTION.search(name)
             or SECRET_OPTION.search(name)
             or LOG_OPTION.search(name)
         )
