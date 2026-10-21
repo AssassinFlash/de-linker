@@ -1,0 +1,10 @@
+{
+  "locale": "de",
+  "plz": "80538",
+  "annual_kwh": 600,
+  "pv_kwp": 4,
+  "phase": 3,
+  "backup": "none",
+  "heat_pump": false,
+  "electric_vehicle": false
+}

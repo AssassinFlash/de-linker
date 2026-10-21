@@ -1,0 +1,2921 @@
+{
+  "status": "solution",
+  "yield": {
+    "kwh_year_range": {
+      "low": 10034,
+      "high": 12164
+    },
+    "kwh_per_kwp_range": {
+      "low": 1003,
+      "high": 1216
+    },
+    "kwh_year_mean": 11190,
+    "monthly_kwh": [
+      454,
+      665,
+      1008,
+      1207,
+      1224,
+      1280,
+      1319,
+      1235,
+      1044,
+      817,
+      495,
+      442
+    ],
+    "years": [
+      2005,
+      2023
+    ],
+    "planes": [
+      {
+        "kwp": 10,
+        "tilt_deg": 35,
+        "azimuth_deg": 180
+      }
+    ],
+    "latitude": 48.1401,
+    "longitude": 11.5885,
+    "source": "PVGIS 5 (PVGIS-SARAH3) through pvlib, system loss 14 %"
+  },
+  "storage": {
+    "recommended": true,
+    "usable_kwh_range": {
+      "low": 7.5,
+      "high": 7.5
+    },
+    "upper_kwh": 7.5,
+    "backup_reserve_kwh": 0,
+    "basis": [
+      {
+        "id": "htw_min_pv",
+        "passed": true,
+        "value": 2,
+        "limit": 0.5,
+        "label": "PV at least 0.5 kWp per MWh of annual consumption (HTW Berlin)",
+        "text": "2 kWp per MWh, at least 0.5"
+      },
+      {
+        "id": "htw_max_per_kwp",
+        "passed": null,
+        "value": 15,
+        "limit": 1.5,
+        "label": "Usable capacity at most 1.5 kWh per kWp (HTW Berlin)",
+        "text": "1.5 kWh × 10 kWp = 15 kWh"
+      },
+      {
+        "id": "htw_max_per_mwh",
+        "passed": null,
+        "value": 7.5,
+        "limit": 1.5,
+        "label": "Usable capacity at most 1.5 kWh per MWh of annual consumption (HTW Berlin)",
+        "text": "1.5 kWh × 5 MWh = 7.5 kWh"
+      }
+    ]
+  },
+  "metrics": {
+    "usable_kwh": 4.5,
+    "autarky_range": {
+      "low": 0.5604,
+      "high": 0.6604
+    },
+    "self_consumption_range": {
+      "low": 0.2966,
+      "high": 0.3455
+    },
+    "without_storage_autarky_range": {
+      "low": 0.3088,
+      "high": 0.4088
+    },
+    "without_storage_self_consumption_range": {
+      "low": 0.1505,
+      "high": 0.1994
+    },
+    "basis": "HTW Berlin Unabhängigkeitsrechner, tables of 2024-08-23"
+  },
+  "selected": {
+    "inverter": {
+      "id": 1182,
+      "sku": "DLK-SAJ-HS210KT2X",
+      "model": "HS2-10K-T2-X",
+      "brand": "SAJ",
+      "device_class": "inverters"
+    },
+    "inverter_rules": [
+      {
+        "id": "application",
+        "passed": true,
+        "value": "home",
+        "limit": "home",
+        "label": "Application",
+        "text": "residential, as selected"
+      },
+      {
+        "id": "phase",
+        "passed": true,
+        "value": 3,
+        "limit": 3,
+        "label": "Grid connection phases",
+        "text": "3-phase, as selected"
+      },
+      {
+        "id": "pv_input",
+        "passed": true,
+        "value": 15,
+        "limit": 10,
+        "label": "Maximum PV input of the inverter covers the array",
+        "text": "15 kW for a 10 kWp array"
+      },
+      {
+        "id": "dc_ac_ratio",
+        "passed": true,
+        "value": 1,
+        "limit": 1.5,
+        "label": "DC/AC ratio within the manufacturer's limit",
+        "text": "1.00, at most 1.50 per the manufacturer"
+      },
+      {
+        "id": "string_count",
+        "passed": true,
+        "value": 22,
+        "limit": null,
+        "label": "Array fits the MPPT inputs",
+        "text": "22 modules connected"
+      },
+      {
+        "id": "battery_release",
+        "passed": true,
+        "value": 1,
+        "limit": null,
+        "label": "Battery released by the manufacturers",
+        "text": "one released battery"
+      }
+    ],
+    "battery": {
+      "product": {
+        "id": 2090,
+        "sku": "DLK-SAJ-BU250HV1",
+        "model": "BU2-5.0-HV1",
+        "brand": "SAJ",
+        "device_class": "home-storage"
+      },
+      "quantity": 1,
+      "stacks": 1,
+      "usable_kwh": 4.5,
+      "above_upper_limit": false,
+      "release": {
+        "verdict": "released",
+        "conditions": [
+          "The HS2 takes two to five BU2-5.0 battery modules (HS2/AS2 manual V0.3, PDF p12). Battery voltage range 180 to 600 V.",
+          "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the HS2's battery voltage range of 180 to 600 V; the HS2 manual gives two modules as the smallest stack."
+        ],
+        "documents": [
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+            "page": null
+          },
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+            "page": null
+          },
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+            "page": null
+          },
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": null
+          }
+        ]
+      }
+    },
+    "strings": {
+      "module": "Trina Solar TSM-460NEG9R.28",
+      "module_wp": 460,
+      "modules_per_string": 11,
+      "module_count": 22,
+      "array_kwp": 10.12,
+      "voc_cold_v": 58.3,
+      "vmp_hot_v": 40.5,
+      "groups": [
+        {
+          "mppt": 1,
+          "strings": 1,
+          "modules_per_string": 11,
+          "fuses": 0
+        },
+        {
+          "mppt": 2,
+          "strings": 1,
+          "modules_per_string": 11,
+          "fuses": 0
+        }
+      ]
+    },
+    "lines": [
+      {
+        "role": "inverter",
+        "product": {
+          "id": 1182,
+          "sku": "DLK-SAJ-HS210KT2X",
+          "model": "HS2-10K-T2-X",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "quantity": 1,
+        "unit": "pcs",
+        "label": "Hybrid inverter",
+        "basis": [
+          "Chosen by you"
+        ],
+        "documents": [
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+            "page": null
+          }
+        ]
+      },
+      {
+        "role": "battery",
+        "product": {
+          "id": 2090,
+          "sku": "DLK-SAJ-BU250HV1",
+          "model": "BU2-5.0-HV1",
+          "brand": "SAJ",
+          "device_class": "home-storage"
+        },
+        "quantity": 1,
+        "unit": "pcs",
+        "label": "Battery modules",
+        "basis": [
+          "Largest released configuration within the HTW limit of 7.5 kWh",
+          "One module in one stack",
+          "The HS2 takes two to five BU2-5.0 battery modules (HS2/AS2 manual V0.3, PDF p12). Battery voltage range 180 to 600 V.",
+          "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the HS2's battery voltage range of 180 to 600 V; the HS2 manual gives two modules as the smallest stack."
+        ],
+        "documents": [
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+            "page": null
+          },
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+            "page": null
+          },
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+            "page": null
+          },
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "page": null
+          }
+        ]
+      },
+      {
+        "role": "meter",
+        "product": {
+          "id": 2281,
+          "sku": "DLK-CHINT-DTSU666",
+          "model": "DTSU666",
+          "brand": "Chint",
+          "device_class": "accessories"
+        },
+        "quantity": 1,
+        "unit": "pcs",
+        "label": "Energy meter",
+        "basis": [
+          "The manufacturer names this meter for the inverter",
+          "SAJ's Configuration Instructions V1.0 set up the Chint DTSU666 as the three-phase meter of the H2, HS2 and HS3 systems (section 5.1, PDF pp. 32–33)."
+        ],
+        "documents": [
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+            "page": null
+          }
+        ]
+      },
+      {
+        "role": "pv_module",
+        "product": null,
+        "quantity": 22,
+        "unit": "pcs",
+        "label": "PV modules of your choice (layout checked with Trina Solar TSM-460NEG9R.28)",
+        "basis": [
+          "22 modules of 460 Wp in 2 strings of 11",
+          "No string fuses: on every MPPT the reverse current stays within the module's fuse rating"
+        ],
+        "documents": [
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+            "page": null
+          }
+        ]
+      },
+      {
+        "role": "mounting",
+        "product": null,
+        "quantity": 1,
+        "unit": "set",
+        "label": "Mounting system for 22 modules",
+        "basis": [],
+        "documents": []
+      },
+      {
+        "role": "dc_cable",
+        "product": null,
+        "quantity": 60,
+        "unit": "m",
+        "label": "PV string cable for both poles; measure the route on site",
+        "basis": [
+          "2 strings × 2 poles × 15 m"
+        ],
+        "documents": []
+      },
+      {
+        "role": "connector",
+        "product": null,
+        "quantity": 4,
+        "unit": "pairs",
+        "label": "PV connector pairs, mating the module and the inverter connectors",
+        "basis": [
+          "2 pairs per string"
+        ],
+        "documents": []
+      },
+      {
+        "role": "ac_protection",
+        "product": null,
+        "quantity": 1,
+        "unit": "set",
+        "label": "AC protection and grid connection to VDE-AR-N 4105",
+        "basis": [],
+        "documents": []
+      }
+    ]
+  },
+  "candidates": {
+    "inverters": [
+      {
+        "product": {
+          "id": 3556,
+          "sku": "DLK-GOODWE-GW10KETAG20",
+          "model": "GW10K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 10,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 6514,
+          "sku": "DLK-GOODWE-GW9999KETAG20",
+          "model": "GW9.999K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 9.999,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 3555,
+          "sku": "DLK-ECOFLOW-EFHDP310K0S2",
+          "model": "EF HD-P3-10K0-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 10,
+        "battery": {
+          "product": {
+            "id": 3581,
+            "sku": "DLK-ECOFLOW-EFBD5S2",
+            "model": "EF BD-5-S2",
+            "brand": "EcoFlow",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.85,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "EcoFlow lists the OCEAN 2 LFP batteries EF BD-5-S2 and EF BD-8-S2 for the OCEAN 2 three-phase inverters. Up to 12 battery packs cascade per inverter, up to 6 per tower (floor) or 3 (wall); a cascade of several towers needs the junction box EF BD-JC-S2 (installation guide V1.5, pp. 16, 30).",
+              "The OCEAN 2 three-phase datasheet (p. 3) lists EF BD-5-S2 for its battery system.",
+              "The PowerOcean three-phase datasheet (p. 2) names the exact three-phase inverter models. The three-phase PowerOcean inverter uses a separated modular connection that requires a battery junction box."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanSinglePhase_Datasheet_EN_20241230.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanThree-phase_Datasheet_EN_20241226.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 2199,
+          "sku": "DLK-SAJ-HS310KT2WP",
+          "model": "HS3-10K-T2-W/G-PX",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 10,
+        "battery": {
+          "product": {
+            "id": 2093,
+            "sku": "DLK-SAJ-BU350TV2PRO",
+            "model": "BU3-5.0-TV2-PRO",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "BU3-5.0-TV2-PRO modules, 1 to 8 per inverter (450 V nominal, 380-500 V window matching the HS3 battery port exactly)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 1182,
+          "sku": "DLK-SAJ-HS210KT2X",
+          "model": "HS2-10K-T2-X",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 10,
+        "battery": {
+          "product": {
+            "id": 2090,
+            "sku": "DLK-SAJ-BU250HV1",
+            "model": "BU2-5.0-HV1",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.5,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The HS2 takes two to five BU2-5.0 battery modules (HS2/AS2 manual V0.3, PDF p12). Battery voltage range 180 to 600 V.",
+              "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the HS2's battery voltage range of 180 to 600 V; the HS2 manual gives two modules as the smallest stack."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 4107,
+          "sku": "DLK-SAJ-H210KT3",
+          "model": "H2-10K-T3",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 10,
+        "battery": {
+          "product": {
+            "id": 1832,
+            "sku": "DLK-SAJ-B250HV1",
+            "model": "B2-5.0-HV1",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.5,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released_with_accessory",
+            "conditions": [
+              "The H2 T3 manual gives a battery voltage range of 180 to 800 V; SAJ's B2 datasheet gives 89.6 to 115.2 V for the one-module B2-5.0."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 3583,
+          "sku": "DLK-GOODWE-GW8KETAG20",
+          "model": "GW8K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 8,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 3584,
+          "sku": "DLK-GOODWE-GW12KETAG20",
+          "model": "GW12K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 12,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 3575,
+          "sku": "DLK-ECOFLOW-EFHDP38K0S2",
+          "model": "EF HD-P3-8K0-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 8,
+        "battery": {
+          "product": {
+            "id": 3581,
+            "sku": "DLK-ECOFLOW-EFBD5S2",
+            "model": "EF BD-5-S2",
+            "brand": "EcoFlow",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.85,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "EcoFlow lists the OCEAN 2 LFP batteries EF BD-5-S2 and EF BD-8-S2 for the OCEAN 2 three-phase inverters. Up to 12 battery packs cascade per inverter, up to 6 per tower (floor) or 3 (wall); a cascade of several towers needs the junction box EF BD-JC-S2 (installation guide V1.5, pp. 16, 30).",
+              "The OCEAN 2 three-phase datasheet (p. 3) lists EF BD-5-S2 for its battery system.",
+              "The PowerOcean three-phase datasheet (p. 2) names the exact three-phase inverter models. The three-phase PowerOcean inverter uses a separated modular connection that requires a battery junction box."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanSinglePhase_Datasheet_EN_20241230.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanThree-phase_Datasheet_EN_20241226.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 3576,
+          "sku": "DLK-ECOFLOW-EFHDP312K0S2",
+          "model": "EF HD-P3-12K0-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 12,
+        "battery": {
+          "product": {
+            "id": 3581,
+            "sku": "DLK-ECOFLOW-EFBD5S2",
+            "model": "EF BD-5-S2",
+            "brand": "EcoFlow",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.85,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "EcoFlow lists the OCEAN 2 LFP batteries EF BD-5-S2 and EF BD-8-S2 for the OCEAN 2 three-phase inverters. Up to 12 battery packs cascade per inverter, up to 6 per tower (floor) or 3 (wall); a cascade of several towers needs the junction box EF BD-JC-S2 (installation guide V1.5, pp. 16, 30).",
+              "The OCEAN 2 three-phase datasheet (p. 3) lists EF BD-5-S2 for its battery system.",
+              "The PowerOcean three-phase datasheet (p. 2) names the exact three-phase inverter models. The three-phase PowerOcean inverter uses a separated modular connection that requires a battery junction box."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanSinglePhase_Datasheet_EN_20241230.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanThree-phase_Datasheet_EN_20241226.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 1185,
+          "sku": "DLK-SAJ-HS312KT2WP",
+          "model": "HS3-12K-T2-W/G-PX",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 12,
+        "battery": {
+          "product": {
+            "id": 2093,
+            "sku": "DLK-SAJ-BU350TV2PRO",
+            "model": "BU3-5.0-TV2-PRO",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "BU3-5.0-TV2-PRO modules, 1 to 8 per inverter (450 V nominal, 380-500 V window matching the HS3 battery port exactly)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 1187,
+          "sku": "DLK-SAJ-HS38KT2WP",
+          "model": "HS3-8K-T2-W/G-PX",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 8,
+        "battery": {
+          "product": {
+            "id": 2093,
+            "sku": "DLK-SAJ-BU350TV2PRO",
+            "model": "BU3-5.0-TV2-PRO",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "BU3-5.0-TV2-PRO modules, 1 to 8 per inverter (450 V nominal, 380-500 V window matching the HS3 battery port exactly)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 1184,
+          "sku": "DLK-SAJ-HS28KT2X",
+          "model": "HS2-8K-T2-X",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 8,
+        "battery": {
+          "product": {
+            "id": 2090,
+            "sku": "DLK-SAJ-BU250HV1",
+            "model": "BU2-5.0-HV1",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.5,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The HS2 takes two to five BU2-5.0 battery modules (HS2/AS2 manual V0.3, PDF p12). Battery voltage range 180 to 600 V.",
+              "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the HS2's battery voltage range of 180 to 600 V; the HS2 manual gives two modules as the smallest stack."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 4108,
+          "sku": "DLK-SAJ-H212KT3",
+          "model": "H2-12K-T3",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 12,
+        "battery": {
+          "product": {
+            "id": 1832,
+            "sku": "DLK-SAJ-B250HV1",
+            "model": "B2-5.0-HV1",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.5,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released_with_accessory",
+            "conditions": [
+              "The H2 T3 manual gives a battery voltage range of 180 to 800 V; SAJ's B2 datasheet gives 89.6 to 115.2 V for the one-module B2-5.0."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 6513,
+          "sku": "DLK-GOODWE-GW6KETAG20",
+          "model": "GW6K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 6,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 3574,
+          "sku": "DLK-ECOFLOW-EFHDP36K0S2",
+          "model": "EF HD-P3-6K0-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 6,
+        "battery": {
+          "product": {
+            "id": 3581,
+            "sku": "DLK-ECOFLOW-EFBD5S2",
+            "model": "EF BD-5-S2",
+            "brand": "EcoFlow",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.85,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "EcoFlow lists the OCEAN 2 LFP batteries EF BD-5-S2 and EF BD-8-S2 for the OCEAN 2 three-phase inverters. Up to 12 battery packs cascade per inverter, up to 6 per tower (floor) or 3 (wall); a cascade of several towers needs the junction box EF BD-JC-S2 (installation guide V1.5, pp. 16, 30).",
+              "The OCEAN 2 three-phase datasheet (p. 3) lists EF BD-5-S2 for its battery system.",
+              "The PowerOcean three-phase datasheet (p. 2) names the exact three-phase inverter models. The three-phase PowerOcean inverter uses a separated modular connection that requires a battery junction box."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanSinglePhase_Datasheet_EN_20241230.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/EcoFlowPowerOceanThree-phase_Datasheet_EN_20241226.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 1186,
+          "sku": "DLK-SAJ-HS36KT2WP",
+          "model": "HS3-6K-T2-W/G-PX",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 6,
+        "battery": {
+          "product": {
+            "id": 2093,
+            "sku": "DLK-SAJ-BU350TV2PRO",
+            "model": "BU3-5.0-TV2-PRO",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "BU3-5.0-TV2-PRO modules, 1 to 8 per inverter (450 V nominal, 380-500 V window matching the HS3 battery port exactly)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 3585,
+          "sku": "DLK-GOODWE-GW15KETAG20",
+          "model": "GW15K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 15,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 6512,
+          "sku": "DLK-GOODWE-GW5KETAG20",
+          "model": "GW5K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 5,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 2198,
+          "sku": "DLK-SAJ-HS35KT2WP",
+          "model": "HS3-5K-T2-W/G-PX",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 5,
+        "battery": {
+          "product": {
+            "id": 2093,
+            "sku": "DLK-SAJ-BU350TV2PRO",
+            "model": "BU3-5.0-TV2-PRO",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "BU3-5.0-TV2-PRO modules, 1 to 8 per inverter (450 V nominal, 380-500 V window matching the HS3 battery port exactly)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 2063,
+          "sku": "DLK-SAJ-H215KT3",
+          "model": "H2-15K-T3",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 15,
+        "battery": {
+          "product": {
+            "id": 1832,
+            "sku": "DLK-SAJ-B250HV1",
+            "model": "B2-5.0-HV1",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.5,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released_with_accessory",
+            "conditions": [
+              "The H2 T3 manual gives a battery voltage range of 180 to 800 V; SAJ's B2 datasheet gives 89.6 to 115.2 V for the one-module B2-5.0."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 6515,
+          "sku": "DLK-GOODWE-GW20KETAG20",
+          "model": "GW20K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 20,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 2064,
+          "sku": "DLK-SAJ-H220KT3",
+          "model": "H2-20K-T3",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 20,
+        "battery": {
+          "product": {
+            "id": 1832,
+            "sku": "DLK-SAJ-B250HV1",
+            "model": "B2-5.0-HV1",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.5,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released_with_accessory",
+            "conditions": [
+              "The H2 T3 manual gives a battery voltage range of 180 to 800 V; SAJ's B2 datasheet gives 89.6 to 115.2 V for the one-module B2-5.0."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 6516,
+          "sku": "DLK-GOODWE-GW25KETAG20",
+          "model": "GW25K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 25,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 1179,
+          "sku": "DLK-SAJ-H225KT3",
+          "model": "H2-25K-T3",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 25,
+        "battery": {
+          "product": {
+            "id": 1832,
+            "sku": "DLK-SAJ-B250HV1",
+            "model": "B2-5.0-HV1",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.5,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released_with_accessory",
+            "conditions": [
+              "The H2 T3 manual gives a battery voltage range of 180 to 800 V; SAJ's B2 datasheet gives 89.6 to 115.2 V for the one-module B2-5.0."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 6517,
+          "sku": "DLK-GOODWE-GW29999KETAG20",
+          "model": "GW29.999K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 29.999,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 6518,
+          "sku": "DLK-GOODWE-GW30KETAG20",
+          "model": "GW30K-ETA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 30,
+        "battery": {
+          "product": {
+            "id": 3611,
+            "sku": "DLK-GOODWE-GW60BATDG20",
+            "model": "GW6.0-BAT-D-G20",
+            "brand": "GoodWe",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 5.8,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "product": {
+          "id": 1181,
+          "sku": "DLK-SAJ-H230KT3DE",
+          "model": "H2-30K-T3-DE",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "ac_power_kw": 29.999,
+        "battery": {
+          "product": {
+            "id": 1832,
+            "sku": "DLK-SAJ-B250HV1",
+            "model": "B2-5.0-HV1",
+            "brand": "SAJ",
+            "device_class": "home-storage"
+          },
+          "quantity": 1,
+          "stacks": 1,
+          "usable_kwh": 4.5,
+          "above_upper_limit": false,
+          "release": {
+            "verdict": "released_with_accessory",
+            "conditions": [
+              "The H2 T3 manual gives a battery voltage range of 180 to 800 V; SAJ's B2 datasheet gives 89.6 to 115.2 V for the one-module B2-5.0."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+                "page": null
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "batteries": [
+      {
+        "product": {
+          "id": 2090,
+          "sku": "DLK-SAJ-BU250HV1",
+          "model": "BU2-5.0-HV1",
+          "brand": "SAJ",
+          "device_class": "home-storage"
+        },
+        "quantity": 1,
+        "stacks": 1,
+        "usable_kwh": 4.5,
+        "above_upper_limit": false,
+        "release": {
+          "verdict": "released",
+          "conditions": [
+            "The HS2 takes two to five BU2-5.0 battery modules (HS2/AS2 manual V0.3, PDF p12). Battery voltage range 180 to 600 V.",
+            "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the HS2's battery voltage range of 180 to 600 V; the HS2 manual gives two modules as the smallest stack."
+          ],
+          "documents": [
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+              "page": null
+            }
+          ]
+        }
+      }
+    ],
+    "accessories": [
+      {
+        "id": 2281,
+        "sku": "DLK-CHINT-DTSU666",
+        "model": "DTSU666",
+        "brand": "Chint",
+        "device_class": "accessories"
+      }
+    ],
+    "excluded": [
+      {
+        "product": {
+          "id": 1183,
+          "sku": "DLK-SAJ-HS26KT2X",
+          "model": "HS2-6K-T2-X",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "pv_input",
+            "passed": false,
+            "value": 9,
+            "limit": 10,
+            "label": "Maximum PV input of the inverter covers the array",
+            "text": "9 kW for a 10 kWp array"
+          },
+          {
+            "id": "dc_ac_ratio",
+            "passed": false,
+            "value": 1.67,
+            "limit": 1.5,
+            "label": "DC/AC ratio within the manufacturer's limit",
+            "text": "1.67, at most 1.50 per the manufacturer"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 1946,
+          "sku": "DLK-GOODWE-GW80KETG10",
+          "model": "GW80K-ET-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 1947,
+          "sku": "DLK-GOODWE-GW9999KETG10",
+          "model": "GW99.99K-ET-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 1948,
+          "sku": "DLK-GOODWE-GW100KETG10",
+          "model": "GW100K-ET-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 3577,
+          "sku": "DLK-ECOFLOW-EFHDP16K0S2",
+          "model": "EF HD-P1-6K0-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 6,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "6 kVA, at most 4.6 kVA"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 3578,
+          "sku": "DLK-ECOFLOW-EFHDP18K0S2",
+          "model": "EF HD-P1-8K0-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 8,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "8 kVA, at most 4.6 kVA"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 3579,
+          "sku": "DLK-ECOFLOW-EFHDP110K0S2",
+          "model": "EF HD-P1-10K0-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 10,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "10 kVA, at most 4.6 kVA"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 3580,
+          "sku": "DLK-ECOFLOW-EFHDP112K0S2",
+          "model": "EF HD-P1-12K0-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 12,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "12 kVA, at most 4.6 kVA"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 3595,
+          "sku": "DLK-GOODWE-ETR125",
+          "model": "GW125K-ETR-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          },
+          {
+            "id": "battery_release",
+            "passed": false,
+            "value": 0,
+            "limit": null,
+            "label": "Battery released by the manufacturers",
+            "text": "0 released batteries"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 4109,
+          "sku": "DLK-SAJ-HS25KT2X",
+          "model": "HS2-5K-T2-X",
+          "brand": "SAJ",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "pv_input",
+            "passed": false,
+            "value": 7.5,
+            "limit": 10,
+            "label": "Maximum PV input of the inverter covers the array",
+            "text": "7.5 kW for a 10 kWp array"
+          },
+          {
+            "id": "dc_ac_ratio",
+            "passed": false,
+            "value": 2,
+            "limit": 1.5,
+            "label": "DC/AC ratio within the manufacturer's limit",
+            "text": "2.00, at most 1.50 per the manufacturer"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6480,
+          "sku": "DLK-ECOFLOW-EFHDP35K0S2",
+          "model": "EF HD-P3-5K0-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6481,
+          "sku": "DLK-ECOFLOW-EFHDP315KG2",
+          "model": "EF HD-P3-15K-G2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6482,
+          "sku": "DLK-ECOFLOW-EFHDP315KG2F",
+          "model": "EF HD-P3-15K-G2F",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6483,
+          "sku": "DLK-ECOFLOW-EFHDP13KS2",
+          "model": "EF HD-P1-3K-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "pv_input",
+            "passed": false,
+            "value": 9,
+            "limit": 10,
+            "label": "Maximum PV input of the inverter covers the array",
+            "text": "9 kW for a 10 kWp array"
+          },
+          {
+            "id": "dc_ac_ratio",
+            "passed": false,
+            "value": 3.33,
+            "limit": 3,
+            "label": "DC/AC ratio within the manufacturer's limit",
+            "text": "3.33, at most 3.00 per the manufacturer"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6484,
+          "sku": "DLK-ECOFLOW-EFHDP13K68S2",
+          "model": "EF HD-P1-3K68-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "pv_input",
+            "passed": false,
+            "value": 9.68,
+            "limit": 10,
+            "label": "Maximum PV input of the inverter covers the array",
+            "text": "9.68 kW for a 10 kWp array"
+          },
+          {
+            "id": "dc_ac_ratio",
+            "passed": false,
+            "value": 2.72,
+            "limit": 2.63,
+            "label": "DC/AC ratio within the manufacturer's limit",
+            "text": "2.72, at most 2.63 per the manufacturer"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6485,
+          "sku": "DLK-ECOFLOW-EFHDP14K6S2",
+          "model": "EF HD-P1-4K6-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6486,
+          "sku": "DLK-ECOFLOW-EFHDP15KS2",
+          "model": "EF HD-P1-5K-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 5,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "5 kVA, at most 4.6 kVA"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6487,
+          "sku": "DLK-ECOFLOW-EFHDP15K75S2",
+          "model": "EF HD-P1-5K75-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 5.75,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "5.75 kVA, at most 4.6 kVA"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6488,
+          "sku": "DLK-ECOFLOW-EFHDP16KS2",
+          "model": "EF HD-P1-6K-S2",
+          "brand": "EcoFlow",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 6,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "6 kVA, at most 4.6 kVA"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6506,
+          "sku": "DLK-GOODWE-GW75KETG10",
+          "model": "GW75K-ET-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          },
+          {
+            "id": "battery_release",
+            "passed": false,
+            "value": 0,
+            "limit": null,
+            "label": "Battery released by the manufacturers",
+            "text": "0 released batteries"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6507,
+          "sku": "DLK-GOODWE-GW80KETRG10",
+          "model": "GW80K-ETR-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          },
+          {
+            "id": "battery_release",
+            "passed": false,
+            "value": 0,
+            "limit": null,
+            "label": "Battery released by the manufacturers",
+            "text": "0 released batteries"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6508,
+          "sku": "DLK-GOODWE-GW9999KETRG10",
+          "model": "GW99.99K-ETR-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          },
+          {
+            "id": "battery_release",
+            "passed": false,
+            "value": 0,
+            "limit": null,
+            "label": "Battery released by the manufacturers",
+            "text": "0 released batteries"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6509,
+          "sku": "DLK-GOODWE-GW100KETRG10",
+          "model": "GW100K-ETR-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          },
+          {
+            "id": "battery_release",
+            "passed": false,
+            "value": 0,
+            "limit": null,
+            "label": "Battery released by the manufacturers",
+            "text": "0 released batteries"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6510,
+          "sku": "DLK-GOODWE-GW110KETRG10",
+          "model": "GW110K-ETR-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          },
+          {
+            "id": "battery_release",
+            "passed": false,
+            "value": 0,
+            "limit": null,
+            "label": "Battery released by the manufacturers",
+            "text": "0 released batteries"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6511,
+          "sku": "DLK-GOODWE-GW12499KETRG10",
+          "model": "GW124.99K-ETR-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "application",
+            "passed": false,
+            "value": "commercial",
+            "limit": "home",
+            "label": "Application",
+            "text": "commercial; selected: residential"
+          },
+          {
+            "id": "battery_release",
+            "passed": false,
+            "value": 0,
+            "limit": null,
+            "label": "Battery released by the manufacturers",
+            "text": "0 released batteries"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6523,
+          "sku": "DLK-GOODWE-GW3KEHAG20",
+          "model": "GW3K-EHA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "pv_input",
+            "passed": false,
+            "value": 6,
+            "limit": 10,
+            "label": "Maximum PV input of the inverter covers the array",
+            "text": "6 kW for a 10 kWp array"
+          },
+          {
+            "id": "dc_ac_ratio",
+            "passed": false,
+            "value": 3.33,
+            "limit": 2,
+            "label": "DC/AC ratio within the manufacturer's limit",
+            "text": "3.33, at most 2.00 per the manufacturer"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6524,
+          "sku": "DLK-GOODWE-GW36KEHAG20",
+          "model": "GW3.6K-EHA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "pv_input",
+            "passed": false,
+            "value": 7.2,
+            "limit": 10,
+            "label": "Maximum PV input of the inverter covers the array",
+            "text": "7.2 kW for a 10 kWp array"
+          },
+          {
+            "id": "dc_ac_ratio",
+            "passed": false,
+            "value": 2.78,
+            "limit": 2,
+            "label": "DC/AC ratio within the manufacturer's limit",
+            "text": "2.78, at most 2.00 per the manufacturer"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6525,
+          "sku": "DLK-GOODWE-GW5KEHAG20",
+          "model": "GW5K-EHA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 5,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "5 kVA, at most 4.6 kVA"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6526,
+          "sku": "DLK-GOODWE-GW6KEHAG20",
+          "model": "GW6K-EHA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 6,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "6 kVA, at most 4.6 kVA"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6527,
+          "sku": "DLK-GOODWE-GW8KEHAG20",
+          "model": "GW8K-EHA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 8,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "8 kVA, at most 4.6 kVA"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      },
+      {
+        "product": {
+          "id": 6528,
+          "sku": "DLK-GOODWE-GW10KEHAG20",
+          "model": "GW10K-EHA-G20",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "failed": [
+          {
+            "id": "phase",
+            "passed": false,
+            "value": 1,
+            "limit": 3,
+            "label": "Grid connection phases",
+            "text": "1-phase; selected: 3-phase"
+          },
+          {
+            "id": "single_phase_limit",
+            "passed": false,
+            "value": 10,
+            "limit": 4.6,
+            "label": "Single-phase feed-in at most 4.6 kVA (VDE-AR-N 4105)",
+            "text": "10 kVA, at most 4.6 kVA"
+          },
+          {
+            "id": "engineering_data",
+            "passed": false,
+            "value": null,
+            "limit": null,
+            "label": "Cited datasheet values for the string layout",
+            "text": "not in the datasheet data"
+          }
+        ]
+      }
+    ]
+  },
+  "rules": [
+    {
+      "id": "htw_min_pv",
+      "passed": true,
+      "value": 2,
+      "limit": 0.5,
+      "label": "PV at least 0.5 kWp per MWh of annual consumption (HTW Berlin)",
+      "text": "2 kWp per MWh, at least 0.5"
+    },
+    {
+      "id": "htw_max_per_kwp",
+      "passed": null,
+      "value": 15,
+      "limit": 1.5,
+      "label": "Usable capacity at most 1.5 kWh per kWp (HTW Berlin)",
+      "text": "1.5 kWh × 10 kWp = 15 kWh"
+    },
+    {
+      "id": "htw_max_per_mwh",
+      "passed": null,
+      "value": 7.5,
+      "limit": 1.5,
+      "label": "Usable capacity at most 1.5 kWh per MWh of annual consumption (HTW Berlin)",
+      "text": "1.5 kWh × 5 MWh = 7.5 kWh"
+    },
+    {
+      "id": "application",
+      "passed": true,
+      "value": "home",
+      "limit": "home",
+      "label": "Application",
+      "text": "residential, as selected"
+    },
+    {
+      "id": "phase",
+      "passed": true,
+      "value": 3,
+      "limit": 3,
+      "label": "Grid connection phases",
+      "text": "3-phase, as selected"
+    },
+    {
+      "id": "pv_input",
+      "passed": true,
+      "value": 15,
+      "limit": 10,
+      "label": "Maximum PV input of the inverter covers the array",
+      "text": "15 kW for a 10 kWp array"
+    },
+    {
+      "id": "dc_ac_ratio",
+      "passed": true,
+      "value": 1,
+      "limit": 1.5,
+      "label": "DC/AC ratio within the manufacturer's limit",
+      "text": "1.00, at most 1.50 per the manufacturer"
+    },
+    {
+      "id": "string_count",
+      "passed": true,
+      "value": 22,
+      "limit": null,
+      "label": "Array fits the MPPT inputs",
+      "text": "22 modules connected"
+    },
+    {
+      "id": "battery_release",
+      "passed": true,
+      "value": 1,
+      "limit": null,
+      "label": "Battery released by the manufacturers",
+      "text": "one released battery"
+    }
+  ],
+  "warnings": [],
+  "relaxations": [],
+  "report": {
+    "title": "Design report",
+    "subtitle": "Solution Configurator, residential system",
+    "generated_at": "2026-10-21T03:06:32Z",
+    "locale": "en",
+    "sections": [
+      {
+        "id": "site",
+        "title": "Site and inputs",
+        "rows": [
+          {
+            "label": "Postcode",
+            "value": "80538 München",
+            "href": null
+          },
+          {
+            "label": "Position",
+            "value": "48.140, 11.588",
+            "href": null
+          },
+          {
+            "label": "Annual consumption",
+            "value": "5,000 kWh",
+            "href": null
+          },
+          {
+            "label": "PV array",
+            "value": "10 kWp",
+            "href": null
+          },
+          {
+            "label": "Roof plane 1",
+            "value": "10 kWp, tilt 35°, facing 180°",
+            "href": null
+          },
+          {
+            "label": "Grid connection",
+            "value": "3-phase",
+            "href": null
+          },
+          {
+            "label": "Backup supply",
+            "value": "Not needed",
+            "href": null
+          },
+          {
+            "label": "Heat pump",
+            "value": "No",
+            "href": null
+          },
+          {
+            "label": "Electric car",
+            "value": "No",
+            "href": null
+          }
+        ],
+        "paragraphs": [],
+        "table": null
+      },
+      {
+        "id": "yield",
+        "title": "PV yield",
+        "rows": [
+          {
+            "label": "Annual yield, range over 2005–2023",
+            "value": "10,034 – 12,164 kWh",
+            "href": null
+          },
+          {
+            "label": "Mean annual yield",
+            "value": "11,190 kWh",
+            "href": null
+          },
+          {
+            "label": "Specific yield",
+            "value": "1,003 – 1,216 kWh/kWp",
+            "href": null
+          },
+          {
+            "label": "Source",
+            "value": "PVGIS 5 (PVGIS-SARAH3) through pvlib, system loss 14 %",
+            "href": null
+          }
+        ],
+        "paragraphs": [],
+        "table": null
+      },
+      {
+        "id": "storage",
+        "title": "Storage sizing",
+        "rows": [
+          {
+            "label": "PV at least 0.5 kWp per MWh of annual consumption (HTW Berlin)",
+            "value": "2 kWp per MWh, at least 0.5 · met",
+            "href": null
+          },
+          {
+            "label": "Usable capacity at most 1.5 kWh per kWp (HTW Berlin)",
+            "value": "1.5 kWh × 10 kWp = 15 kWh",
+            "href": null
+          },
+          {
+            "label": "Usable capacity at most 1.5 kWh per MWh of annual consumption (HTW Berlin)",
+            "value": "1.5 kWh × 5 MWh = 7.5 kWh",
+            "href": null
+          },
+          {
+            "label": "Usable capacity, HTW upper limit",
+            "value": "7.5 kWh",
+            "href": null
+          },
+          {
+            "label": "Proposed usable capacity",
+            "value": "4.5 kWh (1 × BU2-5.0-HV1)",
+            "href": null
+          }
+        ],
+        "paragraphs": [],
+        "table": null
+      },
+      {
+        "id": "metrics",
+        "title": "Self-sufficiency and self-consumption",
+        "rows": [
+          {
+            "label": "Self-sufficiency with storage",
+            "value": "56 % – 66 %",
+            "href": null
+          },
+          {
+            "label": "Self-consumption with storage",
+            "value": "30 % – 35 %",
+            "href": null
+          },
+          {
+            "label": "Self-sufficiency without storage",
+            "value": "31 % – 41 %",
+            "href": null
+          },
+          {
+            "label": "Self-consumption without storage",
+            "value": "15 % – 20 %",
+            "href": null
+          },
+          {
+            "label": "Method",
+            "value": "HTW Berlin Unabhängigkeitsrechner tables; the range covers the spread of real households (most within 5 percentage points of the table value)",
+            "href": null
+          }
+        ],
+        "paragraphs": [],
+        "table": null
+      },
+      {
+        "id": "basis",
+        "title": "Selection basis",
+        "rows": [
+          {
+            "label": "Inverter",
+            "value": "SAJ HS2-10K-T2-X",
+            "href": null
+          },
+          {
+            "label": "Application",
+            "value": "residential, as selected · met",
+            "href": null
+          },
+          {
+            "label": "Grid connection phases",
+            "value": "3-phase, as selected · met",
+            "href": null
+          },
+          {
+            "label": "Maximum PV input of the inverter covers the array",
+            "value": "15 kW for a 10 kWp array · met",
+            "href": null
+          },
+          {
+            "label": "DC/AC ratio within the manufacturer's limit",
+            "value": "1.00, at most 1.50 per the manufacturer · met",
+            "href": null
+          },
+          {
+            "label": "Array fits the MPPT inputs",
+            "value": "22 modules connected · met",
+            "href": null
+          },
+          {
+            "label": "Battery released by the manufacturers",
+            "value": "one released battery · met",
+            "href": null
+          },
+          {
+            "label": "String layout",
+            "value": "22 × 460 Wp in 2 strings; Voc at −10 °C: 58.3 V per module",
+            "href": null
+          }
+        ],
+        "paragraphs": [],
+        "table": null
+      },
+      {
+        "id": "releases",
+        "title": "Manufacturer releases and documents",
+        "rows": [
+          {
+            "label": "HS2-10K-T2-X + BU2-5.0-HV1",
+            "value": "Released",
+            "href": null
+          },
+          {
+            "label": "Document",
+            "value": "SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+            "href": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf"
+          },
+          {
+            "label": "Document",
+            "value": "saj_hs2-10k-t2-x_datasheet.pdf",
+            "href": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf"
+          },
+          {
+            "label": "Document",
+            "value": "H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+            "href": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
+          },
+          {
+            "label": "Document",
+            "value": "B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+            "href": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+          }
+        ],
+        "paragraphs": [
+          "The HS2 takes two to five BU2-5.0 battery modules (HS2/AS2 manual V0.3, PDF p12). Battery voltage range 180 to 600 V.",
+          "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the HS2's battery voltage range of 180 to 600 V; the HS2 manual gives two modules as the smallest stack."
+        ],
+        "table": null
+      },
+      {
+        "id": "bom",
+        "title": "Bill of materials",
+        "rows": [],
+        "paragraphs": [],
+        "table": {
+          "columns": [
+            "Qty",
+            "Item",
+            "Model",
+            "Supplied by"
+          ],
+          "rows": [
+            [
+              "1 pc",
+              "Hybrid inverter",
+              "SAJ HS2-10K-T2-X",
+              "Linker product"
+            ],
+            [
+              "1 pc",
+              "Battery modules",
+              "SAJ BU2-5.0-HV1",
+              "Linker product"
+            ],
+            [
+              "1 pc",
+              "Energy meter",
+              "Chint DTSU666",
+              "Linker product"
+            ],
+            [
+              "22 pcs",
+              "PV modules of your choice (layout checked with Trina Solar TSM-460NEG9R.28)",
+              "–",
+              "Installer's scope"
+            ],
+            [
+              "1 set",
+              "Mounting system for 22 modules",
+              "–",
+              "Installer's scope"
+            ],
+            [
+              "60 m",
+              "PV string cable for both poles; measure the route on site",
+              "–",
+              "Installer's scope"
+            ],
+            [
+              "4 pairs",
+              "PV connector pairs, mating the module and the inverter connectors",
+              "–",
+              "Installer's scope"
+            ],
+            [
+              "1 set",
+              "AC protection and grid connection to VDE-AR-N 4105",
+              "–",
+              "Installer's scope"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "assumptions",
+        "title": "Assumptions and limits",
+        "rows": [],
+        "paragraphs": [
+          "This report contains no economics: no payback period, cash flow or feed-in tariff.",
+          "The string layout uses Trina Solar TSM-460NEG9R.28 as a reference module; the module you install can change it.",
+          "Self-sufficiency figures describe an average household; measured values differ with each household's habits.",
+          "Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+          "Open-circuit voltage checked at −10 °C cell temperature. (Planning assumption without a published source)",
+          "MPP voltage checked at 70 °C cell temperature, with the module's Voc temperature coefficient. (Planning assumption without a published source)",
+          "DC cable: 15 m per string and pole until the route is measured. (Planning assumption without a published source)",
+          "Two connector pairs per string: one at the array, one at the inverter. (Planning assumption without a published source)"
+        ],
+        "table": null
+      },
+      {
+        "id": "next",
+        "title": "Next steps",
+        "rows": [],
+        "paragraphs": [
+          "Add the Linker products to your solution draft and request a Proforma; we reply within one business day.",
+          "Before ordering, confirm the string layout with the module you install, the cable routes and the grid connection on site."
+        ],
+        "table": null
+      }
+    ]
+  }
+}
