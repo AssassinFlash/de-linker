@@ -17,6 +17,7 @@ final class Actions {
 		'registration',
 		'login',
 		'password_reset',
+		'comment',
 		'genie',
 		'genie_contact',
 		'genie_inquiry',

@@ -13,6 +13,7 @@ use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Mail\LocaleSwitch;
 use WC_Order;
 use WP_Error;
+use Linker\Commerce\Protection\Business;
 
 /**
  * Transport, public-request checks, and a redirect; Sender owns the write.
@@ -44,17 +45,23 @@ final class Handler {
 		try {
 			$guard = new PublicGuard();
 			$nonce = $post[ self::NONCE ] ?? '';
-			if ( ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION ) || ! $guard->allows( $post ) ) {
+			if ( ! is_string( $nonce ) || ! wp_verify_nonce( $nonce, self::ACTION ) || ( ! Business::enabled() && ! $guard->allows( $post ) ) ) {
 				return new WP_Error( 'linker_inquiry_invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 			}
 			$details = Submission::from_post( $post, false );
 			if ( $details instanceof WP_Error ) {
 				return $details;
 			}
-			if ( ! $guard->take() ) {
+			if ( ! Business::enabled() && ! $guard->take() ) {
 				return new WP_Error( 'linker_inquiry_throttled', __( 'We received several messages from this connection. Please try again later or write to sales@de-linker.com.', 'linker-commerce' ) );
 			}
-			return ( new Sender() )->request( $details, $post );
+			$draft   = isset( $post['linker_draft_hash'] ) && is_string( $post['linker_draft_hash'] ) ? $post['linker_draft_hash'] : '';
+			$payload = array(
+				'details' => get_object_vars( $details ),
+				'billing' => BillingFields::values( $post ),
+				'draft'   => $draft,
+			);
+			return Business::run( 'inquiry', $post, $payload, static fn () => ( new Sender() )->request( $details, $post ), ! Business::enabled() || hash_equals( WC()->cart->get_cart_hash(), $draft ) );
 		} finally {
 			$locale->back();
 		}
@@ -78,7 +85,7 @@ final class Handler {
 				WC()->session->set_customer_session_cookie( true );
 			}
 			$fields = array();
-			foreach ( array( 'name', 'email', 'company', 'message' ) as $key ) {
+			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id' ) as $key ) {
 				$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_textarea_field( $post[ $key ] ) : '';
 			}
 			WC()->session->set( 'linker_inquiry_fields', $fields );

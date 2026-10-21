@@ -1,11 +1,16 @@
 import { __ } from '@wordpress/i18n';
 import { ProtectionClient } from './client';
+import { connectForms } from './forms';
+import { connectDraftLinks } from './draft';
 import type { ProtectionState } from './types';
 
 const config = window.linkerPublicProtectionConfig;
 if ( config ) {
 	window.linkerPublicProtection = new ProtectionClient( config );
 }
+
+connectForms();
+connectDraftLinks();
 
 // This native staff diagnostic invokes verification only on an explicit click.
 document

@@ -55,6 +55,9 @@ final class BotGuard {
 	 * @param WP_Error $errors Errors so far.
 	 */
 	public function validate( WP_Error $errors ): WP_Error {
+		if ( \Linker\Commerce\Protection\Business::enabled() ) {
+			return $errors;
+		}
 		$guard = new PublicGuard();
 		// The request's own field names are strings; the loop gives the guard
 		// the string-keyed request it documents.

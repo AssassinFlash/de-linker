@@ -20,6 +20,15 @@ defined( 'ABSPATH' ) || exit;
  * This action is documented in woocommerce/templates/emails/customer-on-hold-order.php
 */
 do_action( 'woocommerce_email_header', $email_heading, $email );
+if ( 'yes' === $order->get_meta( '_linker_fixed_receipt' ) ) {
+	?>
+	<p><?php esc_html_e( 'Hello,', 'linker-commerce' ); ?></p>
+	<p><?php esc_html_e( 'We received a message addressed to the Linker team. We reply within one business day.', 'linker-commerce' ); ?></p>
+	<?php
+	/** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php. */
+	do_action( 'woocommerce_email_footer', $email );
+	return;
+}
 ?>
 <p>
 <?php

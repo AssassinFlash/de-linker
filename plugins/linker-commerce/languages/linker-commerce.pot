@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-21T20:54:41+00:00\n"
+"POT-Creation-Date: 2026-10-21T21:52:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -121,6 +121,18 @@ msgstr ""
 
 #: build/protection.js:1 includes/Protection/Controller.php:222
 msgid "Verification could not be completed. Please try again."
+msgstr ""
+
+#: build/protection.js:1
+msgid ""
+"Verification could not be completed. Your entries are still here. Please try "
+"again or email sales@de-linker.com."
+msgstr ""
+
+#: build/protection.js:1
+msgid ""
+"Verification could not be completed. Your solution draft is unchanged. "
+"Please try again."
 msgstr ""
 
 #: build/protection.js:1
@@ -554,7 +566,7 @@ msgid "Documents"
 msgstr ""
 
 #: includes/Account/Menu.php:52 includes/Account/Menu.php:88
-#: includes/Contact/Form.php:158 includes/Registration/AccountsTable.php:43
+#: includes/Contact/Form.php:160 includes/Registration/AccountsTable.php:43
 msgid "Company"
 msgstr ""
 
@@ -625,7 +637,7 @@ msgid "Language"
 msgstr ""
 
 #: includes/Admin/DocumentsMetaBox.php:75
-#: includes/Admin/DocumentsMetaBox.php:140 includes/Inquiry/Form.php:203
+#: includes/Admin/DocumentsMetaBox.php:140 includes/Inquiry/Form.php:205
 #: includes/Presentation/ComparePage.php:220
 msgid "Remove"
 msgstr ""
@@ -711,147 +723,166 @@ msgid ""
 "the page it is printed on."
 msgstr ""
 
-#: includes/Contact/Form.php:135
+#: includes/Contact/Form.php:137
 #: includes/Presentation/ProductShortcodes.php:1577
 #: includes/Presentation/Shortcodes.php:278
 msgid "CONTACT LINKER"
 msgstr ""
 
-#: includes/Contact/Form.php:136
+#: includes/Contact/Form.php:138
 msgid "What can we help with?"
 msgstr ""
 
-#: includes/Contact/Form.php:137
+#: includes/Contact/Form.php:139
 msgid "Tell us what you need. We’ll use the email below for your reply."
 msgstr ""
 
-#: includes/Contact/Form.php:141
+#: includes/Contact/Form.php:143
 msgid "Your question"
 msgstr ""
 
-#: includes/Contact/Form.php:142
+#: includes/Contact/Form.php:144
 msgid "What would you like to know?"
 msgstr ""
 
-#: includes/Contact/Form.php:146
+#: includes/Contact/Form.php:148
 msgid "This is about"
 msgstr ""
 
-#: includes/Contact/Form.php:151
+#: includes/Contact/Form.php:153
 msgid "Where can we reply?"
 msgstr ""
 
-#: includes/Contact/Form.php:153 includes/Inquiry/Form.php:157
+#: includes/Contact/Form.php:155 includes/Inquiry/Form.php:159
 #: includes/Settings/SettingsTab.php:137
 msgid "Name"
 msgstr ""
 
-#: includes/Contact/Form.php:155 includes/Inquiry/Form.php:158
+#: includes/Contact/Form.php:157 includes/Inquiry/Form.php:160
 msgid "Reply email"
 msgstr ""
 
-#: includes/Contact/Form.php:158
+#: includes/Contact/Form.php:160
 msgid "optional"
 msgstr ""
 
-#: includes/Contact/Form.php:160
+#: includes/Contact/Form.php:162
 msgid "No account or Project is needed to ask a question."
 msgstr ""
 
-#: includes/Contact/Form.php:166 includes/Inquiry/Form.php:160
+#: includes/Contact/Form.php:168 includes/Inquiry/Form.php:162
 msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 
-#: includes/Contact/Form.php:168 includes/Inquiry/Form.php:161
+#: includes/Contact/Form.php:170 includes/Inquiry/Form.php:163
 #: templates/myaccount/auth/form-register.php:144
 msgid "Privacy"
 msgstr ""
 
-#: includes/Contact/Form.php:171
+#: includes/Contact/Form.php:173
 msgid "Send message"
 msgstr ""
 
-#: includes/Contact/Form.php:172
+#: includes/Contact/Form.php:174
 msgid ""
 "Your message goes to the Linker team. We reply to the address you give here."
 msgstr ""
 
-#: includes/Contact/Form.php:210
+#: includes/Contact/Form.php:222
 msgid "Product guidance"
 msgstr ""
 
-#: includes/Contact/Form.php:211
+#: includes/Contact/Form.php:223
 msgid "Price & availability"
 msgstr ""
 
-#: includes/Contact/Form.php:212
+#: includes/Contact/Form.php:224
 msgid "Product documents"
 msgstr ""
 
-#: includes/Contact/Form.php:213
+#: includes/Contact/Form.php:225
 msgid "Discuss a project"
 msgstr ""
 
-#: includes/Contact/Form.php:214
+#: includes/Contact/Form.php:226
 msgid "Support for an order"
 msgstr ""
 
-#: includes/Contact/Form.php:215
+#: includes/Contact/Form.php:227
 msgid "Work with Linker"
 msgstr ""
 
-#: includes/Contact/Form.php:216
+#: includes/Contact/Form.php:228
 msgid "A question"
 msgstr ""
 
-#: includes/Contact/Form.php:230
+#: includes/Contact/Form.php:242
 msgid "Prefer email?"
 msgstr ""
 
-#: includes/Contact/Form.php:232
+#: includes/Contact/Form.php:244
 msgid ""
 "Send your question directly to our team. Opening your email app does not "
 "send a message."
 msgstr ""
 
-#: includes/Contact/Form.php:235
+#: includes/Contact/Form.php:247
 msgid "Still exploring?"
 msgstr ""
 
-#: includes/Contact/Form.php:236
+#: includes/Contact/Form.php:248
 msgid "Take your time."
 msgstr ""
 
-#: includes/Contact/Form.php:237
+#: includes/Contact/Form.php:249
 msgid "Use Genie to explore the options, then return to your question."
 msgstr ""
 
-#: includes/Contact/Form.php:238
+#: includes/Contact/Form.php:250
 msgid "Explore with Genie"
 msgstr ""
 
-#: includes/Contact/Form.php:260
+#: includes/Contact/Form.php:272
 msgid ""
 "Thank you. Your message is with the Linker team. We have not sent a "
 "confirmation email. We reply within one business day."
 msgstr ""
 
-#: includes/Contact/Form.php:261
+#: includes/Contact/Form.php:273
 msgid "Thank you. Your message is with the Linker team."
 msgstr ""
 
-#: includes/Contact/Form.php:262 includes/Inquiry/Form.php:85
-#: includes/Inquiry/Handler.php:48
+#: includes/Contact/Form.php:274 includes/Inquiry/Form.php:85
+#: includes/Inquiry/Handler.php:49
 msgid "Please check your entries and send the form again."
 msgstr ""
 
-#: includes/Contact/Form.php:263 includes/Inquiry/Handler.php:55
+#: includes/Contact/Form.php:275
 msgid ""
-"We received several messages from this connection. Please try again later or "
-"write to sales@de-linker.com."
+"The message limit has been reached. Your entries are still here. You can try "
+"again later or email sales@de-linker.com."
 msgstr ""
 
-#: includes/Contact/Form.php:279
+#: includes/Contact/Form.php:276
+msgid ""
+"Verification expired or could not be confirmed. Your entries are still here. "
+"Please try again."
+msgstr ""
+
+#: includes/Contact/Form.php:277
+msgid ""
+"Verification is temporarily unavailable. Your entries are still here. Please "
+"try again or email sales@de-linker.com."
+msgstr ""
+
+#: includes/Contact/Form.php:278 includes/Protection/Admission.php:178
+#: includes/Protection/Business.php:66
+msgid ""
+"The request status could not be confirmed. Please check before sending it "
+"again."
+msgstr ""
+
+#: includes/Contact/Form.php:294
 msgid "Send another message"
 msgstr ""
 
@@ -986,7 +1017,7 @@ msgid ""
 "account."
 msgstr ""
 
-#: includes/Gating/DraftSummary.php:60 includes/Inquiry/Form.php:162
+#: includes/Gating/DraftSummary.php:60 includes/Inquiry/Form.php:164
 msgid "Send inquiry"
 msgstr ""
 
@@ -1145,8 +1176,8 @@ msgstr ""
 msgid "Inquiry received"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:111 includes/Inquiry/Form.php:163
-#: templates/emails/linker-inquiry-received.php:40
+#: includes/Inquiry/Checkout.php:111 includes/Inquiry/Form.php:165
+#: templates/emails/linker-inquiry-received.php:48
 msgid "We reply within one business day."
 msgstr ""
 
@@ -1159,7 +1190,7 @@ msgid "View inquiries"
 msgstr ""
 
 #: includes/Inquiry/Checkout.php:114
-#: templates/emails/linker-inquiry-received.php:40
+#: templates/emails/linker-inquiry-received.php:48
 msgid "The Linker team will reply to the email address you provided."
 msgstr ""
 
@@ -1197,40 +1228,40 @@ msgstr ""
 msgid "New inquiry #{order_number}"
 msgstr ""
 
-#: includes/Inquiry/Form.php:152 includes/Vocabulary/Labels.php:97
+#: includes/Inquiry/Form.php:154 includes/Vocabulary/Labels.php:97
 msgid "Send an inquiry"
 msgstr ""
 
-#: includes/Inquiry/Form.php:153
+#: includes/Inquiry/Form.php:155
 msgid ""
 "Tell us what you need. The products in your solution draft will be included."
 msgstr ""
 
-#: includes/Inquiry/Form.php:154
+#: includes/Inquiry/Form.php:156
 msgid "Message (optional)"
 msgstr ""
 
-#: includes/Inquiry/Form.php:155
+#: includes/Inquiry/Form.php:157
 msgid "Your reply details"
 msgstr ""
 
-#: includes/Inquiry/Form.php:156
+#: includes/Inquiry/Form.php:158
 msgid "Change"
 msgstr ""
 
-#: includes/Inquiry/Form.php:159
+#: includes/Inquiry/Form.php:161
 msgid "Company (optional)"
 msgstr ""
 
-#: includes/Inquiry/Form.php:164
+#: includes/Inquiry/Form.php:166
 msgid "No account needed."
 msgstr ""
 
-#: includes/Inquiry/Form.php:165
+#: includes/Inquiry/Form.php:167
 msgid "Have an approved account? Log in for net prices and saved details."
 msgstr ""
 
-#: includes/Inquiry/Form.php:166
+#: includes/Inquiry/Form.php:168
 #: includes/Presentation/ProductShortcodes.php:1917
 #: includes/Presentation/ProductShortcodes.php:1919
 #: includes/Vocabulary/Labels.php:101 includes/Vocabulary/Labels.php:176
@@ -1239,34 +1270,40 @@ msgstr ""
 msgid "Solution draft"
 msgstr ""
 
-#: includes/Inquiry/Form.php:167
+#: includes/Inquiry/Form.php:169
 msgid "Edit solution draft"
 msgstr ""
 
-#: includes/Inquiry/Form.php:168 includes/Inquiry/Form.php:198
+#: includes/Inquiry/Form.php:170 includes/Inquiry/Form.php:200
 #: includes/Vocabulary/Terms.php:65
 #: templates/emails/linker-genie-handoff.php:65
 msgid "Quantity"
 msgstr ""
 
-#: includes/Inquiry/Form.php:169 includes/Vocabulary/Terms.php:32
+#: includes/Inquiry/Form.php:171 includes/Vocabulary/Terms.php:32
 msgid "Update solution draft"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/Inquiry/Form.php:200
+#: includes/Inquiry/Form.php:202
 #, php-format
 msgid "Quantity for %s"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/Inquiry/Form.php:204 includes/Vocabulary/Terms.php:35
+#: includes/Inquiry/Form.php:206 includes/Vocabulary/Terms.php:35
 #, php-format
 msgid "Remove %s from the solution draft"
 msgstr ""
 
-#: includes/Inquiry/Form.php:210
+#: includes/Inquiry/Form.php:212
 msgid "You can send a message without products."
+msgstr ""
+
+#: includes/Inquiry/Handler.php:56
+msgid ""
+"We received several messages from this connection. Please try again later or "
+"write to sales@de-linker.com."
 msgstr ""
 
 #: includes/Inquiry/OrderAdmin.php:33
@@ -1492,13 +1529,13 @@ msgstr ""
 #: includes/Presentation/ProductShortcodes.php:628
 #: includes/Storefront/ProductView.php:339 includes/Vocabulary/Labels.php:33
 #: includes/Vocabulary/Terms.php:43
-#: templates/myaccount/linker-saved-solutions.php:54
+#: templates/myaccount/linker-saved-solutions.php:55
 msgid "Add to solution draft"
 msgstr ""
 
 #: includes/Presentation/AccountTemplates.php:465
 #: includes/Presentation/AccountTemplates.php:599
-#: templates/myaccount/linker-saved-solutions.php:57
+#: templates/myaccount/linker-saved-solutions.php:58
 msgid "Design report (PDF)"
 msgstr ""
 
@@ -2915,14 +2952,39 @@ msgstr ""
 msgid "No Proforma number could be reserved; please try again."
 msgstr ""
 
-#: includes/Protection/Admission.php:178
-msgid ""
-"The request status could not be confirmed. Please check before sending it "
-"again."
+#: includes/Protection/Accounts.php:103
+msgid "Please verify your registration and try again."
+msgstr ""
+
+#: includes/Protection/Accounts.php:146
+msgid "Please verify your request and try again."
 msgstr ""
 
 #: includes/Protection/Admission.php:178
 msgid "Your request could not be processed. Please try again."
+msgstr ""
+
+#: includes/Protection/Business.php:55
+msgid ""
+"Your solution draft changed. Please review it and send your inquiry again."
+msgstr ""
+
+#: includes/Protection/Comments.php:58
+msgid "Please verify your comment and try again."
+msgstr ""
+
+#: includes/Protection/Draft.php:122
+msgid "Please refresh your solution draft and try again."
+msgstr ""
+
+#: includes/Protection/Draft.php:129 includes/Protection/Draft.php:136
+msgid "Please sign in to use your saved solution."
+msgstr ""
+
+#: includes/Protection/FormFields.php:26
+msgid ""
+"Please enable JavaScript to verify this request, or email sales@de-"
+"linker.com."
 msgstr ""
 
 #: includes/Protection/HealthPage.php:26 includes/Protection/HealthPage.php:60
@@ -3075,8 +3137,14 @@ msgid ""
 "midnight."
 msgstr ""
 
-#: includes/Protection/Module.php:73
+#: includes/Protection/Module.php:95
 msgid "This verification request is too large. Please try again."
+msgstr ""
+
+#: includes/Protection/Operation.php:59
+msgid ""
+"This request has already been processed. Please check the result before "
+"sending it again."
 msgstr ""
 
 #: includes/Protection/Privacy.php:28 includes/Protection/Privacy.php:42
@@ -3258,13 +3326,13 @@ msgstr ""
 msgid "Set by the VIES check; change it after a manual check."
 msgstr ""
 
-#: includes/Registration/BotGuard.php:71
+#: includes/Registration/BotGuard.php:74
 msgid ""
 "We could not process this registration. Please check your entries and try "
 "again."
 msgstr ""
 
-#: includes/Registration/BotGuard.php:79
+#: includes/Registration/BotGuard.php:82
 msgid ""
 "We received several registrations from this connection. Please try again "
 "later or write to sales@de-linker.com."
@@ -3323,7 +3391,7 @@ msgid "New customer: {company}"
 msgstr ""
 
 #: includes/Registration/Emails/RegistrationReceivedEmail.php:35
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:89
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:92
 msgid "Registration received"
 msgstr ""
 
@@ -3332,7 +3400,7 @@ msgid ""
 "Sent to the customer when the account is registered and waiting for review."
 msgstr ""
 
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:82
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:85
 msgid "We received your partner registration"
 msgstr ""
 
@@ -4186,24 +4254,31 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: templates/emails/linker-inquiry-received.php:27
+#: templates/emails/linker-inquiry-received.php:25
+#: templates/emails/linker-inquiry-received.php:35
 msgid "Hello,"
 msgstr ""
 
+#: templates/emails/linker-inquiry-received.php:26
+msgid ""
+"We received a message addressed to the Linker team. We reply within one "
+"business day."
+msgstr ""
+
 #. translators: %s: the customer's full name.
-#: templates/emails/linker-inquiry-received.php:30
+#: templates/emails/linker-inquiry-received.php:38
 #: templates/emails/linker-proforma-issued.php:27
 #, php-format
 msgid "Hello %s,"
 msgstr ""
 
 #. translators: %s: inquiry number. The sentence follows the salutation "Hello %s,".
-#: templates/emails/linker-inquiry-received.php:37
+#: templates/emails/linker-inquiry-received.php:45
 #, php-format
 msgid "Thank you for your inquiry %s."
 msgstr ""
 
-#: templates/emails/linker-inquiry-received.php:43
+#: templates/emails/linker-inquiry-received.php:51
 msgid ""
 "Create an account with this email to see net prices after approval and track "
 "your inquiry."

@@ -176,7 +176,7 @@ jobs:
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'PublicControllerTest|PublicLedgerTest|PublicVerificationTest|PublicProofTest'
+            --filter 'PublicControllerTest|PublicLedgerTest|PublicVerificationTest|PublicProofTest|PublicAdmissionOwnersTest|BusinessPolicyTest|BusinessAdmissionTest'
 
       # #414: the abilities route, including the customer token. The test
       # builds its own account and inquiry on this bare instance. It is not

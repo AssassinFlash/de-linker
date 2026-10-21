@@ -11,15 +11,17 @@
 		"src/accounts/types.ts": "d3d3b5d1f8a691f990bbf3cec1a2510c4aec1132fd7af7c969d0602caeea5dab",
 		"src/css.d.ts": "da5bf71d48cf909584a01c80b445f730507068f5b34c920f352e2bfcf0315e4c",
 		"src/protection/client.ts": "921d84e9528db9c6b0b22577eb8ca9489e90c37a0dbfecdbfa071e10b75216aa",
-		"src/protection/index.ts": "3f5e7c7a9903c0d582dac6a08c4b07abbf4138da8cb2996aea75cb1690484db4",
+		"src/protection/draft.ts": "422d06ce4e990e75daebf27dbb36c6064dc2c11d3df9e4de1aa8c8ca4be57224",
+		"src/protection/forms.ts": "ee9a3742118bada550e13641bc51bf75b77e84255f5435051af17a696d8643cc",
+		"src/protection/index.ts": "b9885113f055fb84681ca1f96a6b382e730e6a93d673e0994554f33ec8f82903",
 		"src/protection/types.ts": "55170a2151c8285eb410ea5c8ff166a431f7f4770040fcff0eb309d663b7d0ab",
 		"webpack.config.js": "2cb64d1918918b81b390cc4621308d2a775f168a8573b36c68bb14f3ebc3884f"
 	},
 	"build": {
 		"build/accounts.asset.php": "1124301479c1da8772674e03ca70b8ca898f1b913642162222a0ea381ce51960",
 		"build/accounts.js": "b218e5fb42efd2bcf5d801f9cffeea684a8327f13ec63b5d2f78bbf279fb7f6d",
-		"build/protection.asset.php": "6d5bb268e3a99c3294c76953d87b7f1a688d78f431d2aae5c47b87af159dcf37",
-		"build/protection.js": "3921a050d7fbbcd8826807f45f13313accd4ff0aa90d0a70451cbc797398d78c",
+		"build/protection.asset.php": "afdbb8e4f130bbedf2976bf034653c19e6f3c8b63254d6e45cbabf57d05509da",
+		"build/protection.js": "88ca26be25ee61b8b6b9256e41a58e0c02643e6dfb550ebd8d3503520bda5117",
 		"build/style-accounts-rtl.css": "76b9f280e93eec63bcf3e2e18a0c4f7fe191002c3bc9c01642b63983ee4d02ea",
 		"build/style-accounts.css": "bf3039f48fd4dfb07f9752fe763d29f52eee185031f5217edf999ea6fa62e516"
 	}

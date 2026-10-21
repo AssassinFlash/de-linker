@@ -64,6 +64,9 @@ final class RegistrationReceivedEmail extends CustomerApprovalEmail {
 		if ( ! $user instanceof \WP_User ) {
 			return;
 		}
+		if ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && '' !== \Linker\Commerce\Protection\ReceiptBudget::reason( $user->user_email, $user->ID, 'registration' ) ) {
+			return;
+		}
 		$this->object    = $user;
 		$this->recipient = $user->user_email;
 

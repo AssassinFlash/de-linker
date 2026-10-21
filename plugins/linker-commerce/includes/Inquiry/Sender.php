@@ -147,7 +147,15 @@ final class Sender {
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
 		$order->update_meta_data( '_linker_inquiry_topic', $details->intent );
-		$order->update_meta_data( ReceiptLimit::SKIPPED_META, ( new ReceiptLimit() )->take() ? '' : 'daily_cap' );
+		// A real native id stabilizes the receipt reservation across a resumed save.
+		$order->save();
+		$receipt_reason = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
+			? \Linker\Commerce\Protection\ReceiptBudget::reason( $details->email, $order->get_id() )
+			: ( ( new ReceiptLimit() )->take() ? '' : 'daily_cap' );
+		$order->update_meta_data( ReceiptLimit::SKIPPED_META, $receipt_reason );
+		// Unverified destinations receive only a fixed acknowledgement, never
+		// attacker-supplied names, products, notes or links.
+		$order->update_meta_data( '_linker_fixed_receipt', \Linker\Commerce\Protection\Business::enabled() ? 'yes' : '' );
 		$order->save();
 		// Woo loads transactional email listeners lazily. Load before the transition.
 		WC()->mailer();

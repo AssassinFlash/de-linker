@@ -41,6 +41,49 @@ final class Module {
 		add_action( self::MAINTENANCE, array( $this, 'maintain' ) );
 		( new Privacy() )->register();
 		( new BusinessPolicy() )->register();
+		add_filter( 'linker_commerce_public_protection_consumers', array( $this, 'consumers' ) );
+		add_filter( 'linker_commerce_receipt_budget_reason', array( $this, 'receipt_budget' ), 10, 4 );
+		( new BusinessRecord() )->register();
+		( new Accounts() )->register();
+		( new Draft() )->register();
+		( new Login() )->register();
+		( new Comments() )->register();
+		if ( Business::enabled() ) {
+			add_action( 'wp_enqueue_scripts', array( $assets, 'enqueue' ) );
+		}
+	}
+
+	/**
+	 * Report actual native hooks; configured mode still determines enforcement.
+	 *
+	 * @param array<string,string> $existing Other connected modules.
+	 * @return array<string,string>
+	 */
+	public function consumers( array $existing ): array {
+		return array_merge(
+			$existing,
+			array(
+				'contact'        => 'Contact\\Handler::process (admin-post)',
+				'inquiry'        => 'Inquiry\\Handler::process (admin-post, guest/account)',
+				'registration'   => 'Accounts (Woo process_registration_errors; WordPress registration_errors)',
+				'password_reset' => 'Accounts (native lostpassword_post, before key/mail)',
+				'login'          => 'Login (wp_authenticate_user after failed use)',
+				'draft_write'    => 'Draft (Woo forms, session reorder, wc-ajax, Store API)',
+				'comment'        => 'Comments (native form, WordPress REST; pingback write closed in enforce)',
+			)
+		);
+	}
+
+	/**
+	 * Trusted optional-receipt seam shared with Tools; never a public endpoint.
+	 *
+	 * @param mixed      $reason Earlier trusted decision, null when unanswered.
+	 * @param string     $email Validated destination.
+	 * @param int|string $reference Stable native source id or logical UUID.
+	 * @param string     $kind Native source kind.
+	 */
+	public function receipt_budget( mixed $reason, string $email, int|string $reference, string $kind ): string {
+		return is_string( $reason ) ? $reason : ReceiptBudget::reason( $email, $reference, $kind );
 	}
 
 	/** Native hourly cleanup complements recovery on each actual admission. */

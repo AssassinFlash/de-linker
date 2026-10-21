@@ -29,11 +29,16 @@ final class Configuration {
 	/** Constants in private wp-config take precedence over the process environment. */
 	public static function current(): self {
 		return new self(
-			self::value( 'LINKER_PUBLIC_PROTECTION_MODE', 'off' ),
+			self::active_mode(),
 			self::value( 'LINKER_TURNSTILE_SITE_KEY' ),
 			self::value( 'LINKER_TURNSTILE_SECRET_KEY' ),
 			self::value( 'LINKER_TURNSTILE_HOSTNAME', (string) wp_parse_url( home_url(), PHP_URL_HOST ) )
 		);
+	}
+
+	/** Disabled consumers need only the private mode, without resolving site URLs. */
+	public static function active_mode(): string {
+		return self::value( 'LINKER_PUBLIC_PROTECTION_MODE', 'off' );
 	}
 
 	/** Do not treat an invalid mode or incomplete key pair as usable protection. */

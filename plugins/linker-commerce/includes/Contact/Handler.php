@@ -14,6 +14,7 @@ use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\ReceiptLimit;
 use Linker\Commerce\Presentation\PageUrls;
 use WP_Error;
+use Linker\Commerce\Protection\Business;
 
 /**
  * The admin-post handler of the contact form (ticket #68, GAP-8): the form
@@ -47,9 +48,13 @@ final class Handler {
 	 */
 	public function handle(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the nonce is verified below, before anything is read or sent.
-		$post = wp_unslash( $_POST );
-		$back = $this->back_url( $post );
-		$this->back( $back, $this->process( $post ) );
+		$post  = wp_unslash( $_POST );
+		$back  = $this->back_url( $post );
+		$state = $this->process( $post );
+		if ( ! in_array( $state, array( 'sent', 'sent_no_receipt' ), true ) ) {
+			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+		}
+		$this->back( $back, $state );
 	}
 
 	/**
@@ -60,22 +65,31 @@ final class Handler {
 	 * @return string `sent`, `sent_no_receipt`, `invalid` or `throttled`.
 	 */
 	public function process( array $post ): string {
-		$nonce = isset( $post[ Form::NONCE_FIELD ] ) ? sanitize_text_field( (string) $post[ Form::NONCE_FIELD ] ) : '';
+		$nonce = isset( $post[ Form::NONCE_FIELD ] ) && is_string( $post[ Form::NONCE_FIELD ] ) ? sanitize_text_field( $post[ Form::NONCE_FIELD ] ) : '';
 		if ( ! wp_verify_nonce( $nonce, Form::NONCE_ACTION ) ) {
 			return 'invalid';
 		}
 
 		$submission = Submission::from_post( $post );
-		if ( $submission instanceof WP_Error || ! ( new PublicGuard() )->allows( $post ) ) {
+		if ( $submission instanceof WP_Error || ( ! Business::enabled() && ! ( new PublicGuard() )->allows( $post ) ) ) {
 			return 'invalid';
 		}
 
-		if ( ! ( new PublicGuard() )->take() ) {
+		if ( ! Business::enabled() && ! ( new PublicGuard() )->take() ) {
 			return 'throttled';
 		}
 
-		$order = ( new Sender() )->message( $submission );
-		return 'daily_cap' === $order->get_meta( ReceiptLimit::SKIPPED_META ) ? 'sent_no_receipt' : 'sent';
+		$order = Business::run( 'contact', $post, get_object_vars( $submission ), static fn () => ( new Sender() )->message( $submission ) );
+		if ( $order instanceof WP_Error ) {
+			$code = $order->get_error_code();
+			return match ( $code ) {
+				'linker_admission_quota' => 'throttled',
+				'linker_admission_pending', 'linker_admission_already_completed' => 'pending',
+				'linker_admission_proof', 'linker_admission_proof_reused', 'linker_admission_payload_changed', 'linker_admission_input' => 'verification_failed',
+				default => 'verification_unavailable',
+			};
+		}
+		return '' !== $order->get_meta( ReceiptLimit::SKIPPED_META ) ? 'sent_no_receipt' : 'sent';
 	}
 
 	/**
