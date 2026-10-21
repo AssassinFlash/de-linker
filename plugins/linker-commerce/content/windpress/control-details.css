@@ -143,6 +143,18 @@
 	#tv-utility-page-v1 .us-platform-mobile summary > p:empty { display: none; }
 }
 
+/* Three product actions share a narrow row. Put each icon above its label
+   so Documents / Dokumente never leaves a single letter on a second line. */
+@media (max-width: 639px) {
+	#tv-storefront-pdp .pdp-tool {
+		flex-direction: column;
+		gap: 6px;
+		min-height: 64px;
+		white-space: nowrap;
+		overflow-wrap: normal;
+	}
+}
+
 /* Narrow-screen rules in the saved legal documents also match print
    emulation. Restore native table display explicitly for paper at any width. */
 @media print {
