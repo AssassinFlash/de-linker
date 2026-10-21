@@ -1,0 +1,14 @@
+{
+  "rubric_version": "inquiry-observation-v1",
+  "rubric_sha256": "de7a8e622b80c8721f7a8170eecf04eb250f7f107c488badd9ddb7e9597fef6f",
+  "cases_sha256": "20731251f92489cae777badd6411ea079ccafb97e800b96ba72715f62adcd822",
+  "endpoint": "https://openrouter.ai/api/v1/systemone",
+  "model": "typesafe/jev-1.13",
+  "rounds_planned": 2,
+  "request_timeout_seconds": 30,
+  "automatic_retries": 0,
+  "concurrency": 1,
+  "limit": 3,
+  "started_utc": "2026-10-21T15:56:18Z",
+  "labels_provenance": "Synthetic expected labels authored before calls; not independently owner-adjudicated customer gold labels"
+}

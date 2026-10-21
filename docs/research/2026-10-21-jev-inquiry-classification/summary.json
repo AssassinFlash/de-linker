@@ -1,0 +1,824 @@
+{
+  "requests": 60,
+  "valid": 60,
+  "errors": [],
+  "latency_valid": {
+    "count": 60,
+    "p50": 3.993,
+    "p90": 5.457,
+    "p95": 5.617,
+    "max": 5.901909
+  },
+  "latency_all": {
+    "count": 60,
+    "p50": 3.993,
+    "p90": 5.457,
+    "p95": 5.617,
+    "max": 5.901909
+  },
+  "rounds": {
+    "1": {
+      "count": 30,
+      "p50": 3.993,
+      "p90": 5.485,
+      "p95": 5.757,
+      "max": 5.901909
+    },
+    "2": {
+      "count": 30,
+      "p50": 3.901,
+      "p90": 5.069,
+      "p95": 5.569,
+      "max": 5.63596
+    }
+  },
+  "input_groups": {
+    "short_under_2000_chars": {
+      "count": 56,
+      "p50": 3.993,
+      "p90": 5.485,
+      "p95": 5.636,
+      "max": 5.901909
+    },
+    "rich_2000_to_9999_chars": {
+      "count": 2,
+      "p50": 2.937,
+      "p90": 3.431,
+      "p95": 3.431,
+      "max": 3.431288
+    },
+    "rich_at_least_10000_chars": {
+      "count": 2,
+      "p50": 4.546,
+      "p90": 5.457,
+      "p95": 5.457,
+      "max": 5.457273
+    }
+  },
+  "confusion": {
+    "normal -> normal": 32,
+    "suspected_spam -> suspected_spam": 20,
+    "uncertain -> uncertain": 6,
+    "uncertain -> normal": 2
+  },
+  "normal_as_spam": [],
+  "spam_not_spam": [],
+  "outside_allowed": [],
+  "repeat_stability": {
+    "paired": 30,
+    "same": 30,
+    "changed": {}
+  },
+  "deadlines": {
+    "2": {
+      "valid_in_time": 0,
+      "would_be_undetermined": 60,
+      "fraction_undetermined": 1.0,
+      "operational_undetermined_including_uncertain": 60
+    },
+    "3": {
+      "valid_in_time": 5,
+      "would_be_undetermined": 55,
+      "fraction_undetermined": 0.9167,
+      "operational_undetermined_including_uncertain": 55
+    },
+    "5": {
+      "valid_in_time": 50,
+      "would_be_undetermined": 10,
+      "fraction_undetermined": 0.1667,
+      "operational_undetermined_including_uncertain": 16
+    },
+    "8": {
+      "valid_in_time": 60,
+      "would_be_undetermined": 0,
+      "fraction_undetermined": 0.0,
+      "operational_undetermined_including_uncertain": 8
+    },
+    "10": {
+      "valid_in_time": 60,
+      "would_be_undetermined": 0,
+      "fraction_undetermined": 0.0,
+      "operational_undetermined_including_uncertain": 8
+    }
+  },
+  "reported_cost_usd": 0.002882712,
+  "cost_reported_count": 60,
+  "strict_three_way_agreement": {
+    "agree": 58,
+    "valid_denominator": 60,
+    "all_requests_denominator": 60
+  },
+  "within_predeclared_allowed_labels": 60,
+  "basis_label_conflicts": [
+    {
+      "case_id": "U03",
+      "round": 1,
+      "classification": "normal",
+      "basis": "unsolicited_bulk_promotion"
+    },
+    {
+      "case_id": "U03",
+      "round": 2,
+      "classification": "normal",
+      "basis": "unsolicited_bulk_promotion"
+    }
+  ],
+  "operational_undetermined": 8,
+  "models": [
+    "typesafe/jev-1.13-20260917"
+  ],
+  "usage_input_tokens": 68636,
+  "usage_output_tokens": 8456,
+  "cases": [
+    {
+      "id": "N01",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 5.616573,
+          "state_chars": 391,
+          "request_bytes": 2896
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 4.906837,
+          "state_chars": 391,
+          "request_bytes": 2896
+        }
+      ]
+    },
+    {
+      "id": "N02",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 4.263663,
+          "state_chars": 386,
+          "request_bytes": 2892
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 4.51246,
+          "state_chars": 386,
+          "request_bytes": 2892
+        }
+      ]
+    },
+    {
+      "id": "N03",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 3.337078,
+          "state_chars": 325,
+          "request_bytes": 2830
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 3.672581,
+          "state_chars": 325,
+          "request_bytes": 2830
+        }
+      ]
+    },
+    {
+      "id": "N04",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 3.928131,
+          "state_chars": 396,
+          "request_bytes": 2985
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 4.278548,
+          "state_chars": 396,
+          "request_bytes": 2985
+        }
+      ]
+    },
+    {
+      "id": "N05",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "service_or_complaint",
+          "status": "ok",
+          "seconds": 3.993136,
+          "state_chars": 402,
+          "request_bytes": 2907
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "service_or_complaint",
+          "status": "ok",
+          "seconds": 4.077593,
+          "state_chars": 402,
+          "request_bytes": 2907
+        }
+      ]
+    },
+    {
+      "id": "N06",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "service_or_complaint",
+          "status": "ok",
+          "seconds": 4.462002,
+          "state_chars": 420,
+          "request_bytes": 2925
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "service_or_complaint",
+          "status": "ok",
+          "seconds": 3.408645,
+          "state_chars": 420,
+          "request_bytes": 2925
+        }
+      ]
+    },
+    {
+      "id": "N07",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 4.218787,
+          "state_chars": 421,
+          "request_bytes": 2926
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 3.394563,
+          "state_chars": 421,
+          "request_bytes": 2926
+        }
+      ]
+    },
+    {
+      "id": "N08",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 4.976352,
+          "state_chars": 515,
+          "request_bytes": 3017
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 3.134973,
+          "state_chars": 515,
+          "request_bytes": 3017
+        }
+      ]
+    },
+    {
+      "id": "N09",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 3.930203,
+          "state_chars": 438,
+          "request_bytes": 2943
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 5.103045,
+          "state_chars": 438,
+          "request_bytes": 2943
+        }
+      ]
+    },
+    {
+      "id": "N10",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "reporting_abuse",
+          "status": "ok",
+          "seconds": 4.789143,
+          "state_chars": 471,
+          "request_bytes": 2976
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "reporting_abuse",
+          "status": "ok",
+          "seconds": 4.838178,
+          "state_chars": 471,
+          "request_bytes": 2976
+        }
+      ]
+    },
+    {
+      "id": "N11",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "reporting_abuse",
+          "status": "ok",
+          "seconds": 3.297581,
+          "state_chars": 445,
+          "request_bytes": 3037
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "reporting_abuse",
+          "status": "ok",
+          "seconds": 5.56932,
+          "state_chars": 445,
+          "request_bytes": 3037
+        }
+      ]
+    },
+    {
+      "id": "N12",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "reporting_abuse",
+          "status": "ok",
+          "seconds": 2.974893,
+          "state_chars": 649,
+          "request_bytes": 3153
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "reporting_abuse",
+          "status": "ok",
+          "seconds": 2.899338,
+          "state_chars": 649,
+          "request_bytes": 3153
+        }
+      ]
+    },
+    {
+      "id": "N13",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 4.364214,
+          "state_chars": 390,
+          "request_bytes": 2895
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 4.657828,
+          "state_chars": 390,
+          "request_bytes": 2895
+        }
+      ]
+    },
+    {
+      "id": "N14",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 2.794238,
+          "state_chars": 653,
+          "request_bytes": 3142
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 3.098814,
+          "state_chars": 653,
+          "request_bytes": 3142
+        }
+      ]
+    },
+    {
+      "id": "N15",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 2.937453,
+          "state_chars": 5563,
+          "request_bytes": 8063
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 3.431288,
+          "state_chars": 5563,
+          "request_bytes": 8063
+        }
+      ]
+    },
+    {
+      "id": "N16",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 5.457273,
+          "state_chars": 15623,
+          "request_bytes": 18123
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "business_request",
+          "status": "ok",
+          "seconds": 4.546135,
+          "state_chars": 15623,
+          "request_bytes": 18123
+        }
+      ]
+    },
+    {
+      "id": "S01",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 2.958079,
+          "state_chars": 392,
+          "request_bytes": 2920
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 4.683489,
+          "state_chars": 392,
+          "request_bytes": 2920
+        }
+      ]
+    },
+    {
+      "id": "S02",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 3.03413,
+          "state_chars": 424,
+          "request_bytes": 2929
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 3.900782,
+          "state_chars": 424,
+          "request_bytes": 2929
+        }
+      ]
+    },
+    {
+      "id": "S03",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 5.318007,
+          "state_chars": 422,
+          "request_bytes": 2927
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 3.259108,
+          "state_chars": 422,
+          "request_bytes": 2927
+        }
+      ]
+    },
+    {
+      "id": "S04",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "unsolicited_bulk_promotion",
+          "status": "ok",
+          "seconds": 4.581297,
+          "state_chars": 456,
+          "request_bytes": 2961
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "unsolicited_bulk_promotion",
+          "status": "ok",
+          "seconds": 3.878372,
+          "state_chars": 456,
+          "request_bytes": 2961
+        }
+      ]
+    },
+    {
+      "id": "S05",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "meaningless_abuse",
+          "status": "ok",
+          "seconds": 3.140108,
+          "state_chars": 1141,
+          "request_bytes": 3646
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "meaningless_abuse",
+          "status": "ok",
+          "seconds": 4.337246,
+          "state_chars": 1141,
+          "request_bytes": 3646
+        }
+      ]
+    },
+    {
+      "id": "S06",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 3.435911,
+          "state_chars": 491,
+          "request_bytes": 2996
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 3.783983,
+          "state_chars": 491,
+          "request_bytes": 2996
+        }
+      ]
+    },
+    {
+      "id": "S07",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 4.913972,
+          "state_chars": 469,
+          "request_bytes": 2972
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 5.068885,
+          "state_chars": 469,
+          "request_bytes": 2972
+        }
+      ]
+    },
+    {
+      "id": "S08",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "unsolicited_bulk_promotion",
+          "status": "ok",
+          "seconds": 3.856719,
+          "state_chars": 554,
+          "request_bytes": 3054
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "unsolicited_bulk_promotion",
+          "status": "ok",
+          "seconds": 3.040535,
+          "state_chars": 554,
+          "request_bytes": 3054
+        }
+      ]
+    },
+    {
+      "id": "S09",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 3.868254,
+          "state_chars": 466,
+          "request_bytes": 2971
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "fraud_or_phishing",
+          "status": "ok",
+          "seconds": 5.63596,
+          "state_chars": 466,
+          "request_bytes": 2971
+        }
+      ]
+    },
+    {
+      "id": "S10",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "suspected_spam",
+          "basis": "unsolicited_bulk_promotion",
+          "status": "ok",
+          "seconds": 5.485466,
+          "state_chars": 450,
+          "request_bytes": 3051
+        },
+        {
+          "round": 2,
+          "label": "suspected_spam",
+          "basis": "unsolicited_bulk_promotion",
+          "status": "ok",
+          "seconds": 3.07463,
+          "state_chars": 450,
+          "request_bytes": 3051
+        }
+      ]
+    },
+    {
+      "id": "U01",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "uncertain",
+          "basis": "insufficient_context",
+          "status": "ok",
+          "seconds": 3.030168,
+          "state_chars": 354,
+          "request_bytes": 2859
+        },
+        {
+          "round": 2,
+          "label": "uncertain",
+          "basis": "insufficient_context",
+          "status": "ok",
+          "seconds": 4.906652,
+          "state_chars": 354,
+          "request_bytes": 2859
+        }
+      ]
+    },
+    {
+      "id": "U02",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "uncertain",
+          "basis": "insufficient_context",
+          "status": "ok",
+          "seconds": 5.756676,
+          "state_chars": 406,
+          "request_bytes": 2906
+        },
+        {
+          "round": 2,
+          "label": "uncertain",
+          "basis": "insufficient_context",
+          "status": "ok",
+          "seconds": 3.66993,
+          "state_chars": 406,
+          "request_bytes": 2906
+        }
+      ]
+    },
+    {
+      "id": "U03",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "normal",
+          "basis": "unsolicited_bulk_promotion",
+          "status": "ok",
+          "seconds": 4.783573,
+          "state_chars": 404,
+          "request_bytes": 2911
+        },
+        {
+          "round": 2,
+          "label": "normal",
+          "basis": "unsolicited_bulk_promotion",
+          "status": "ok",
+          "seconds": 4.813218,
+          "state_chars": 404,
+          "request_bytes": 2911
+        }
+      ]
+    },
+    {
+      "id": "U04",
+      "rounds": [
+        {
+          "round": 1,
+          "label": "uncertain",
+          "basis": "insufficient_context",
+          "status": "ok",
+          "seconds": 5.901909,
+          "state_chars": 427,
+          "request_bytes": 2930
+        },
+        {
+          "round": 2,
+          "label": "uncertain",
+          "basis": "insufficient_context",
+          "status": "ok",
+          "seconds": 3.021124,
+          "state_chars": 427,
+          "request_bytes": 2930
+        }
+      ]
+    }
+  ]
+}
