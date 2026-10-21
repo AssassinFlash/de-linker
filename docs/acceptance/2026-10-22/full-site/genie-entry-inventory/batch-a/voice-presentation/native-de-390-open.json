@@ -1,0 +1,22 @@
+{
+  "focus": "linker-genie-input",
+  "prompt": [
+    {
+      "buttons": 1,
+      "p": 0,
+      "text": "Diktieren"
+    }
+  ],
+  "scripts": [
+    "http://127.0.0.1:9270/wp-content/plugins/linker-tools/build/genie.js?ver=76fa2a5fdc263f719473"
+  ],
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9270/de/fuer-installateur/",
+  "visibleModal": [
+    {
+      "cls": "linker-genie-panel",
+      "id": "linker-genie-mount"
+    }
+  ],
+  "width": 390
+}

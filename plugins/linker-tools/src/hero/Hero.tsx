@@ -13,7 +13,7 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -53,8 +53,8 @@ import {
 	failureText,
 	omittedFileNotice,
 	pageFailureStore,
-	presentFailure,
 	readFailure,
+	presentFailure,
 	reconcile,
 	refusalReason,
 	retryMessages,
@@ -62,8 +62,20 @@ import {
 	writeFailure,
 	type FailureDraft,
 } from '../genie/shared/failure';
+import {
+	EntryScopeError,
+	assertEntryScope,
+	verifiedEntryFailure,
+} from '../genie/shared/entryFailure';
+import {
+	newEntryId,
+	readEntryRecovery,
+	updateEntryRecovery,
+} from '../genie/shared/entryDraft';
 import { useFailure } from '../genie/shared/useFailure';
 import { HeroSession } from './session';
+
+const emptyPrompt = () => ( { text: '', version: 0 } );
 
 /** The controller's way into the conversation while it is unfolded. */
 export interface HeroBridge {
@@ -92,6 +104,7 @@ export interface HeroConversationProps {
 	setPrompt: ( text: string ) => void;
 	/** Focuses the page's follow-up field. */
 	focusPrompt: () => void;
+	readPrompt?: () => { text: string; version: number };
 	/** Opens the page's file picker. */
 	requestPicker: () => void;
 }
@@ -107,12 +120,21 @@ export function HeroConversation( {
 	onConversation,
 	setPrompt,
 	focusPrompt,
+	readPrompt = emptyPrompt,
 	requestPicker,
 }: HeroConversationProps ) {
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
 	const [ refused, setRefused ] = useState( '' );
+	const [ recoveryBlocked, setRecoveryBlocked ] = useState( false );
+	const [ recoveryAttempt, setRecoveryAttempt ] = useState( 0 );
+	const [ deferredRecovery, setDeferredRecovery ] = useState< {
+		scope: string;
+		text: string;
+		uploads: Upload[];
+		missing: string[];
+	} | null >( null );
 	// The stored thread moved while Genie was answering (#373). The question
 	// goes back into the page's field; it was not stored.
 	const [ conflict, setConflict ] = useState( '' );
@@ -126,6 +148,10 @@ export function HeroConversation( {
 	const [ inquiries, setInquiries ] = useState< SentInquiryCard[] >( [] );
 	const turnAt = useRef( -1 );
 	const sending = useRef( false );
+	const entryOwnerScope = useRef< string | undefined >( undefined );
+	const recoveryPending = useRef(
+		!! readFailure( pageFailureStore() )?.entryId
+	);
 	const closeRef = useRef< HTMLButtonElement >( null );
 	const files = useAttachments();
 	// The bridge is registered once; the refs keep it calling the latest
@@ -141,6 +167,8 @@ export function HeroConversation( {
 		openRetry,
 		payloadOrRestore,
 	} = useFailure( files );
+	const omittedRef = useRef( omitted );
+	omittedRef.current = omitted;
 	const sendRef = useRef< ( text: string ) => void >( () => undefined );
 	const [ store ] = useState( () => storeClient( config.restUrl ) );
 	const {
@@ -160,9 +188,10 @@ export function HeroConversation( {
 	// the hero itself asked before it was folded and unfolded again.
 	useEffect( () => {
 		let cancelled = false;
+		const promptBefore = readPrompt();
 		void session
 			.load()
-			.then( ( stored ) => {
+			.then( async ( stored ) => {
 				if ( cancelled || 'clear' !== failureState.current.phase ) {
 					// A send on this mount already owns the thread. Applying
 					// the read that started earlier would wipe it.
@@ -173,12 +202,109 @@ export function HeroConversation( {
 				setContacts( stored.contacts ?? [] );
 				setInquiries( stored.inquiries ?? [] );
 				turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
+				const checked = await verifiedEntryFailure(
+					config,
+					pageFailureStore()
+				);
+				if (
+					! checked &&
+					readFailure( pageFailureStore() )?.entryId &&
+					! cancelled
+				) {
+					setRecoveryBlocked( true );
+				}
+				if (
+					! checked &&
+					! readFailure( pageFailureStore() )?.entryId
+				) {
+					recoveryPending.current = false;
+				}
+				if (
+					! checked ||
+					! checked.unchanged() ||
+					cancelled ||
+					failureState.current.phase !== 'clear'
+				) {
+					return;
+				}
+				if ( checked.record?.entryScope ) {
+					const now = readPrompt();
+					const filesNow = filesRef.current;
+					if ( sending.current || filesNow.busy ) {
+						setRecoveryBlocked( true );
+						return;
+					}
+					if (
+						now.text ||
+						now.version !== promptBefore.version ||
+						filesNow.picked.length
+					) {
+						const candidate = {
+							scope: checked.record.entryScope,
+							text: checked.record.text,
+							uploads: checked.record.uploads,
+							missing: checked.record.omitted,
+						};
+						const existing = readEntryRecovery(
+							candidate.scope
+						).parked;
+						if (
+							existing &&
+							( existing.text !== candidate.text ||
+								JSON.stringify( existing.missing ) !==
+									JSON.stringify( [
+										...candidate.missing,
+										...candidate.uploads.map(
+											( file ) => file.name
+										),
+									] ) )
+						) {
+							setRecoveryBlocked( true );
+							return;
+						}
+						const saved = updateEntryRecovery(
+							candidate.scope,
+							( record ) => {
+								if ( record.parked ) {
+									return record;
+								}
+								return {
+									...record,
+									composer: {
+										text: now.text,
+										missing: filesNow.uploads.map(
+											( file ) => file.name
+										),
+									},
+									parked: {
+										text: candidate.text,
+										missing: [
+											...candidate.missing,
+											...candidate.uploads.map(
+												( file ) => file.name
+											),
+										],
+									},
+								};
+							}
+						);
+						if ( ! saved ) {
+							setRecoveryBlocked( true );
+							return;
+						}
+						entryOwnerScope.current = candidate.scope;
+						setDeferredRecovery( candidate );
+						recoveryPending.current = false;
+						setRecoveryBlocked( false );
+						return;
+					}
+				}
+				setRecoveryBlocked( false );
+				entryOwnerScope.current = checked.record?.entryScope;
+				recoveryPending.current = false;
 				const restored = writeFailure(
 					pageFailureStore(),
-					reconcile(
-						readFailure( pageFailureStore() ),
-						stored.messages
-					)
+					reconcile( checked.record, stored.messages )
 				);
 				failureState.current = restored;
 				if (
@@ -202,7 +328,86 @@ export function HeroConversation( {
 		return () => {
 			cancelled = true;
 		};
-	}, [ session, setPrompt, placeChips, failureState, setOmitted ] );
+	}, [
+		session,
+		setPrompt,
+		placeChips,
+		failureState,
+		setOmitted,
+		config,
+		recoveryAttempt,
+		readPrompt,
+	] );
+
+	const restoreDeferred = async () => {
+		const candidate = deferredRecovery;
+		if ( ! candidate || sending.current || filesRef.current.busy ) {
+			return;
+		}
+		const before = readPrompt();
+		const picked = filesRef.current.picked;
+		const missingBefore = omittedRef.current;
+		try {
+			await assertEntryScope( config, candidate.scope );
+			const now = readPrompt();
+			if (
+				sending.current ||
+				filesRef.current.busy ||
+				now.version !== before.version ||
+				now.text !== before.text ||
+				filesRef.current.picked !== picked ||
+				omittedRef.current !== missingBefore
+			) {
+				return;
+			}
+			const next =
+				now.text ||
+				filesRef.current.uploads.length ||
+				omittedRef.current.length
+					? {
+							scope: candidate.scope,
+							text: now.text,
+							uploads: [ ...filesRef.current.uploads ],
+							missing: [ ...omittedRef.current ],
+						}
+					: null;
+			if (
+				! updateEntryRecovery( candidate.scope, ( record ) => ( {
+					...record,
+					composer: {
+						text: candidate.text,
+						missing: [
+							...candidate.missing,
+							...candidate.uploads.map( ( file ) => file.name ),
+						],
+					},
+					parked: next
+						? {
+								text: next.text,
+								missing: [
+									...next.missing,
+									...next.uploads.map(
+										( file ) => file.name
+									),
+								],
+							}
+						: null,
+				} ) )
+			) {
+				setRecoveryBlocked( true );
+				return;
+			}
+			entryOwnerScope.current = candidate.scope;
+			setPrompt( candidate.text );
+			placeChips( candidate.uploads );
+			setOmitted( candidate.missing );
+			setDeferredRecovery( next );
+			setRecoveryBlocked( false );
+			setPhase( 'ask' );
+		} catch {
+			setRecoveryBlocked( true );
+		}
+	};
 
 	// The conversation has the focus when it unfolds; the page's trigger gets
 	// it back when it closes (the controller restores it).
@@ -281,7 +486,13 @@ export function HeroConversation( {
 		async ( text: string ) => {
 			const picked = filesRef.current.uploads;
 			const question = buildQuestion( text, picked );
-			if ( ! question || sending.current || filesRef.current.busy ) {
+			if (
+				! question ||
+				recoveryPending.current ||
+				sending.current ||
+				filesRef.current.busy ||
+				( entryOwnerScope.current && omittedRef.current.length > 0 )
+			) {
 				return;
 			}
 			const draft: FailureDraft = {
@@ -289,6 +500,12 @@ export function HeroConversation( {
 				question,
 				uploads: picked,
 				omitted: [],
+				...( entryOwnerScope.current
+					? {
+							entryId: newEntryId(),
+							entryScope: entryOwnerScope.current,
+						}
+					: {} ),
 			};
 			commitFailure( { type: 'send', draft } );
 			sending.current = true;
@@ -304,7 +521,11 @@ export function HeroConversation( {
 			try {
 				// session.ask re-reads the shared thread before it sends, so
 				// a dock turn is neither lost nor overwritten (session.ts).
-				const result = await session.ask( question, picked );
+				const result = await session.ask(
+					question,
+					picked,
+					draft.entryScope
+				);
 				filesRef.current.clear();
 				commitFailure( { type: 'answered' } );
 				setThread( result.messages );
@@ -315,6 +536,14 @@ export function HeroConversation( {
 				setLive( assistantMessage( result.answer ).content );
 				setPhase( 'ask' );
 			} catch ( error ) {
+				if ( error instanceof EntryScopeError && error.changed ) {
+					commitFailure( { type: 'abandon' } );
+					setPrompt( '' );
+					placeChips( [] );
+					setPhase( 'ask' );
+					setRefused( __( 'Genie could not load.', 'linker-tools' ) );
+					return;
+				}
 				// ask() commits the thread only after the proxy answered, so
 				// session.messages is the thread this question was not added to.
 				await handleTurnError( error, session.messages, draft );
@@ -322,14 +551,14 @@ export function HeroConversation( {
 				sending.current = false;
 			}
 		},
-		[ session, setPrompt, commitFailure, handleTurnError ]
+		[ session, setPrompt, commitFailure, handleTurnError, placeChips ]
 	);
 	sendRef.current = send;
 
 	// One resend. The machine leaves `failed` before the request, so a
 	// second click does not send.
 	const retry = useCallback( async () => {
-		if ( sending.current ) {
+		if ( sending.current || recoveryPending.current ) {
 			return;
 		}
 		const opened = openRetry( session.messages );
@@ -353,7 +582,8 @@ export function HeroConversation( {
 			}
 			const result = await session.retry(
 				payload.question,
-				payload.uploads
+				payload.uploads,
+				draft.entryScope
 			);
 			filesRef.current.clear();
 			commitFailure( { type: 'answered' } );
@@ -365,6 +595,14 @@ export function HeroConversation( {
 			setLive( assistantMessage( result.answer ).content );
 			setPhase( 'ask' );
 		} catch ( error ) {
+			if ( error instanceof EntryScopeError && error.changed ) {
+				commitFailure( { type: 'abandon' } );
+				setPrompt( '' );
+				placeChips( [] );
+				setPhase( 'ask' );
+				setRefused( __( 'Genie could not load.', 'linker-tools' ) );
+				return;
+			}
 			await handleTurnError( error, session.messages, {
 				...draft,
 				question: payload?.question ?? draft.question,
@@ -380,7 +618,34 @@ export function HeroConversation( {
 		handleTurnError,
 		openRetry,
 		payloadOrRestore,
+		placeChips,
 	] );
+
+	useEffect( () => {
+		if ( ! entryOwnerScope.current || omittedRef.current.length === 0 ) {
+			return;
+		}
+		const ready = new Set( files.uploads.map( ( file ) => file.name ) );
+		const names = omittedRef.current.filter(
+			( name ) => ! ready.has( name )
+		);
+		if (
+			names.length !== omittedRef.current.length &&
+			updateEntryRecovery( entryOwnerScope.current, ( record ) => ( {
+				...record,
+				composer: {
+					text: readPrompt().text,
+					missing: [
+						...names,
+						...files.uploads.map( ( file ) => file.name ),
+					],
+				},
+			} ) )
+		) {
+			omittedRef.current = names;
+			setOmitted( names );
+		}
+	}, [ files.uploads, readPrompt, setOmitted ] );
 
 	// Files were picked for the hero: once they are prepared, send them as
 	// the turn's question (a photo or a document is itself the question).
@@ -664,6 +929,97 @@ export function HeroConversation( {
 				<p role="alert" className="linker-genie-app__refused">
 					{ refused }
 				</p>
+			) : null }
+			{ deferredRecovery ? (
+				<section
+					className="linker-genie-app__photo-prompt"
+					data-genie-parked-draft
+				>
+					<p>
+						<strong>
+							{ __( 'Current unsent draft', 'linker-tools' ) }
+						</strong>
+					</p>
+					<p>{ deferredRecovery.text }</p>
+					{ [
+						...deferredRecovery.missing,
+						...deferredRecovery.uploads.map(
+							( file ) => file.name
+						),
+					].map( ( name ) => (
+						<p key={ name }>{ name }</p>
+					) ) }
+					<button
+						type="button"
+						className="linker-genie-app__prompt"
+						disabled={ phase === 'waiting' }
+						onClick={ restoreDeferred }
+					>
+						{ __( 'Restore unsent draft', 'linker-tools' ) }
+					</button>
+				</section>
+			) : null }
+			{ recoveryBlocked ? (
+				<div className="linker-genie-app__error" role="alert">
+					<p>{ __( 'Genie could not load.', 'linker-tools' ) }</p>
+					<button
+						type="button"
+						className="linker-genie-app__prompt"
+						onClick={ () =>
+							setRecoveryAttempt( ( attempt ) => attempt + 1 )
+						}
+					>
+						{ __( 'Try again', 'linker-tools' ) }
+					</button>
+				</div>
+			) : null }
+			{ entryOwnerScope.current && phase === 'ask' && omitted.length ? (
+				<div className="linker-genie-app__refused">
+					{ omitted.map( ( name ) => (
+						<p key={ name }>
+							{ sprintf(
+								// translators: %s is the name of a file that must be selected again.
+								__(
+									'Select %s again before sending.',
+									'linker-tools'
+								),
+								name
+							) }{ ' ' }
+							<button
+								type="button"
+								className="linker-genie-app__prompt"
+								onClick={ () => {
+									const names = omitted.filter(
+										( item ) => item !== name
+									);
+									if (
+										updateEntryRecovery(
+											entryOwnerScope.current!,
+											( record ) => ( {
+												...record,
+												composer: {
+													text: readPrompt().text,
+													missing: names,
+												},
+											} )
+										)
+									) {
+										setOmitted( names );
+									}
+								} }
+							>
+								{ __( 'Remove', 'linker-tools' ) }
+							</button>
+						</p>
+					) ) }
+					<button
+						type="button"
+						className="linker-genie-app__prompt"
+						onClick={ requestPicker }
+					>
+						{ __( 'Choose a file', 'linker-tools' ) }
+					</button>
+				</div>
 			) : null }
 			{ 'error' === phase ? (
 				<>

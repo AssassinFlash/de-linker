@@ -1,0 +1,38 @@
+{
+  "before_product_sha256": "0e8553a46b895be2fc19d834db1df01c03cc0c4e58dbbc2230d247767e2f6fb8",
+  "after_product_sha256": "0e3e5910a835107c226cfdb90944453eed12da42c8ff85ab58a0cebbbfd55c0b",
+  "unchanged_existing_source_files": 18,
+  "changed_existing": [
+    "plugins/linker-tools/src/genie/App.tsx"
+  ],
+  "added_product": [
+    "plugins/linker-tools/src/genie/shared/useComposerSize.ts"
+  ],
+  "added_test": [
+    "plugins/linker-tools/src/genie/shared/useComposerSize.test.tsx"
+  ],
+  "red_browser": {
+    "fixture": "draft-de-390",
+    "expected_min_height": 47,
+    "actual_height": 24,
+    "scrollHeight": 48,
+    "log": "browser-red.log"
+  },
+  "green_source": {
+    "files": 34,
+    "tests": 326,
+    "TS": "PASS",
+    "ESLint": "PASS"
+  },
+  "visual_browser": {
+    "run": "20261021T210303171Z",
+    "result": "PASS",
+    "App_observations": 40,
+    "over_cap": {
+      "cases": 4,
+      "clientHeight": 144,
+      "scrollHeight": 192,
+      "overflowY": "auto"
+    }
+  }
+}

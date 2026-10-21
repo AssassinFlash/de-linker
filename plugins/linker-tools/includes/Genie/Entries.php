@@ -88,6 +88,8 @@ class Entries {
 		add_shortcode( 'linker_genie_workspace', array( $this, 'workspace_shortcode' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'search_assets' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'dock_assets' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'marketing_assets' ) );
+		add_action( 'rest_api_init', array( new EntryContext(), 'register' ) );
 	}
 
 	/**
@@ -100,6 +102,17 @@ class Entries {
 			return;
 		}
 		wp_enqueue_style( self::HANDLE );
+	}
+
+	/** Loads the binder only on LC pages carrying the affected editor markup. */
+	public function marketing_assets(): void {
+		if ( is_admin() ) {
+			return;
+		}
+		$post = get_post();
+		if ( $post instanceof \WP_Post && ( str_contains( $post->post_content, 'lk-dialog-prompt' ) || str_contains( $post->post_content, 'installer-mobile-query' ) ) && ! is_front_page() ) {
+			wp_enqueue_script( 'linker-tools-marketing' );
+		}
 	}
 
 	/**
@@ -260,6 +273,8 @@ class Entries {
 			'translations' => $this->script_translations(),
 			'error'        => __( 'Genie could not load.', 'linker-tools' ),
 			'retry'        => __( 'Try again', 'linker-tools' ),
+			'title'        => __( "Genie - Linker's AI assistant", 'linker-tools' ),
+			'close'        => __( 'Close', 'linker-tools' ),
 			'open'         => $open,
 		);
 		if ( '' === $payload['src'] ) {
@@ -290,6 +305,8 @@ class Entries {
 	var ready = false;
 		var pendingOpen = false;
 		var pendingAsk = '';
+		var pendingEntries = Object.create(null);
+		var pendingOpener = null;
 		// Opened to send a nameplate photo (#236): the app offers the picker.
 		var pendingAttach = false;
 		// Opened for a parts list (#251): the picker expects the list's file.
@@ -301,13 +318,76 @@ class Entries {
 		var pendingRefresh = false;
 		var pendingFromHome = false;
 		var failure = null;
-		function clearFailure() {
+        var dismissed = false;
+        var failureBoundary = null;
+        function available(node) {
+            return node instanceof HTMLElement && node.isConnected && !node.matches(':disabled,[hidden],[tabindex="-1"]') && !node.closest('[hidden],[inert]') && node.getClientRects().length > 0;
+        }
+        // The existing helper mount, including its LC account row, owns focus while the app is unavailable.
+        function bindFailureBoundary(panel, initial) {
+            var mobile = window.innerWidth <= 860; // The current helper sheet breakpoint.
+            var saved = ['role','aria-modal','aria-label'].map(function(name) { return [name,panel.getAttribute(name)]; });
+            var overflow = document.body.style.overflow;
+            var background = [];
+            panel.setAttribute('role','dialog');
+            panel.setAttribute('aria-label',payload.title);
+            if (mobile) {
+                panel.setAttribute('aria-modal','true');
+                document.body.style.overflow = 'hidden';
+                var branch = panel;
+                while (branch.parentElement) {
+                    Array.from(branch.parentElement.children).forEach(function(sibling) {
+                        if (sibling !== branch && sibling instanceof HTMLElement) { background.push([sibling,Boolean(sibling.inert)]); sibling.inert = true; }
+                    });
+                    branch = branch.parentElement;
+                }
+            } else { panel.removeAttribute('aria-modal'); }
+            var frame = requestAnimationFrame(function() { if (available(initial)) { initial.focus({preventScroll:true}); } });
+            function key(event) {
+                if (event.defaultPrevented) { return; }
+                if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeFailure(); return; }
+                if (!mobile || event.key !== 'Tab') { return; }
+                var controls = Array.from(panel.querySelectorAll('button,a[href],input,textarea,summary,[tabindex]')).filter(available);
+                var first = controls[0], last = controls[controls.length-1], active = document.activeElement;
+                if (!first) { event.preventDefault(); return; }
+                if (event.shiftKey && (active === first || !panel.contains(active))) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && (active === last || !panel.contains(active))) { event.preventDefault(); first.focus(); }
+            }
+            function resize() {
+                if (failureBoundary) { failureBoundary(false); }
+                if (failure && !panel.hidden) { failureBoundary = bindFailureBoundary(panel,initial); }
+            }
+            document.addEventListener('keydown',key);
+            window.addEventListener('resize',resize);
+            return function(returnFocus) {
+                cancelAnimationFrame(frame);
+                document.removeEventListener('keydown',key);
+                window.removeEventListener('resize',resize);
+                background.forEach(function(item) { if (item[0].inert) { item[0].inert = item[1]; } });
+                if (mobile && document.body.style.overflow === 'hidden') { document.body.style.overflow = overflow; }
+                saved.forEach(function(item) { if (item[1] === null) { panel.removeAttribute(item[0]); } else { panel.setAttribute(item[0],item[1]); } });
+                var active = document.activeElement;
+                if (returnFocus && (!active || active === document.body || panel.contains(active)) && available(pendingOpener)) { pendingOpener.focus({preventScroll:true}); }
+            };
+        }
+        function closeFailure() {
+            dismissed = true;
+            pendingOpen = false;
+            // Cancel this delivery intent. The source and its persisted entry remain recoverable without auto-send.
+            pendingAsk = ''; pendingAttach = false; pendingList = false; pendingRefresh = false; pendingFromHome = false; pendingSolution = 0;
+            pendingEntries = Object.create(null);
+            shell(false);
+            clearFailure(true);
+        }
+		function clearFailure(returnFocus) {
+            if (failureBoundary) { failureBoundary(!!returnFocus); failureBoundary = null; }
 			if (failure) {
 				failure.remove();
 				failure = null;
 			}
 		}
 			function showFailure() {
+                if (dismissed && !payload.open) { return; }
 				clearFailure();
 				var panel = document.querySelector('[data-linker-genie-mount]');
 				if (!panel) {
@@ -316,19 +396,35 @@ class Entries {
 				failure = document.createElement('section');
 				failure.className = 'linker-genie-app';
 				failure.setAttribute('data-linker-genie-load-error', '');
-				var message = document.createElement('p');
+				var header = document.createElement('header');
+                header.className = 'linker-genie-load-error__header';
+                var title = document.createElement('h2');
+                title.textContent = payload.title;
+                header.appendChild(title);
+                if (!payload.open) {
+                    var close = document.createElement('button');
+                    close.type = 'button'; close.className = 'linker-genie-app__prompt'; close.textContent = payload.close;
+                    close.addEventListener('click',closeFailure);
+                    header.appendChild(close);
+                }
+                failure.appendChild(header);
+                var message = document.createElement('p');
 				message.className = 'linker-genie-app__error';
 				message.setAttribute('role', 'alert');
 				message.textContent = payload.error;
 				var retry = document.createElement('button');
 				retry.type = 'button';
-				retry.className = 'linker-genie-app__toggle';
+				retry.className = 'linker-genie-app__prompt';
 				retry.setAttribute('data-linker-genie-open', '');
 				retry.textContent = payload.retry;
 				failure.appendChild(message);
-				failure.appendChild(retry);
+				var actions = document.createElement('div');
+                actions.className = 'linker-genie-load-error__actions';
+                actions.appendChild(retry);
+                failure.appendChild(actions);
 				panel.appendChild(failure);
 				shell(true);
+                if (!payload.open) { failureBoundary = bindFailureBoundary(panel,retry); } else { retry.focus(); }
 			}
 		function shell(open) {
 		var panel = document.querySelector('[data-linker-genie-mount]');
@@ -340,9 +436,13 @@ class Entries {
 		});
 	}
 	function deliver() {
-		if (!ready || !pendingOpen) {
+		if (!ready || dismissed || (!pendingOpen && Object.keys(pendingEntries).length === 0)) {
 			return;
 		}
+		shell(true);
+		Object.keys(pendingEntries).forEach(function (id) {
+			window.dispatchEvent(new CustomEvent('linker-genie-open', { detail: { entry: pendingEntries[id], opener: pendingOpener } }));
+		});
 		var message = pendingAsk;
 		var attach = pendingAttach;
 		var list = pendingList;
@@ -363,11 +463,13 @@ class Entries {
 				list: list,
 				refresh: refresh,
 				fromHome: fromHome,
-				solution: solution
+				solution: solution,
+				opener: pendingOpener
 			}
 		}));
 	}
 	function open(message, refresh, fromHome, solution) {
+        dismissed = false;
 		pendingOpen = true;
 		// A plain reopen during loading must not erase the first question.
 		if (message && !pendingAsk) {
@@ -399,8 +501,17 @@ class Entries {
 		window.addEventListener('linker-genie-state', function (event) {
 		shell(event.detail.open);
 	});
+	window.addEventListener('linker-genie-entry-state', function (event) {
+		if (event.detail && event.detail.phase === 'accepted') { delete pendingEntries[event.detail.id]; }
+	});
 	window.addEventListener('linker-genie-ask', function (event) {
 		var detail = event.detail;
+		pendingOpener = detail && detail.opener instanceof HTMLElement ? detail.opener : document.activeElement;
+		if (detail && detail.entry && typeof detail.entry.id === 'string') {
+			pendingEntries[detail.entry.id] = detail.entry;
+			open('');
+			return;
+		}
 		var refresh = !!detail && true === detail.refresh;
 		var fromHome = !!detail && true === detail.fromHome;
 		// The saved solution the design report's "Ask Genie" saved (#496).
@@ -418,7 +529,7 @@ class Entries {
 		}
 	});
 			function boot() {
-				if (loaded) {
+				if (loaded || ready) {
 					return;
 				}
 				loaded = true;
@@ -438,6 +549,7 @@ class Entries {
 			inserted.forEach(function (script) { script.remove(); });
 			// Keep pendingOpen/pendingAsk: retry delivers the original ask.
 			showFailure();
+			Object.keys(pendingEntries).forEach(function (id) { window.dispatchEvent(new CustomEvent('linker-genie-entry-state', { detail: { id: id, phase: 'failed' } })); });
 		}
 		function append(script) {
 			inserted.push(script);
@@ -504,6 +616,7 @@ class Entries {
 					}
 					// A page chip carries its label as the first question. A plain
 					// opener (the bubble, a retry) has no payload and must not ask.
+					if (!failure || !failure.contains(trigger)) { pendingOpener = trigger; }
 					open(trigger.getAttribute('data-ask-message') || '');
 				},
 				true

@@ -1,0 +1,1035 @@
+{
+  "source": "real published local LC/App/attachment preparation and native scope/login/logout; turn and empty-history fixtures; home-recovery alone uses seeded scoped failure and scope503→verified fixture; controlled SpeechRecognition API in capability cases",
+  "testResults": [
+    {
+      "title": "commercial-de-390: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "commercial-de-390",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "draft-de-1440: real attachment preparation, refusal, reload and voice capability",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "draft-de-1440",
+        "states": [
+          "attachment-intent",
+          "refusal",
+          "prepared",
+          "reload-missing",
+          "voice-conflict"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "recovery-de-390: boot failure retries original, upstream retry is one user message",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "recovery-de-390",
+        "states": [
+          "boot-failed",
+          "same-attempt-retry",
+          "upstream-retry"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "recovery-en-390: boot failure retries original, upstream retry is one user message",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "recovery-en-390",
+        "states": [
+          "boot-failed",
+          "same-attempt-retry",
+          "upstream-retry"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "recovery-de-1440: boot failure retries original, upstream retry is one user message",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "recovery-de-1440",
+        "states": [
+          "boot-failed",
+          "same-attempt-retry",
+          "upstream-retry"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "draft-de-390: real attachment preparation, refusal, reload and voice capability",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "draft-de-390",
+        "states": [
+          "attachment-intent",
+          "refusal",
+          "prepared",
+          "reload-missing",
+          "voice-conflict"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "home-recovery-de-390: actual controller outage, new draft preserved, explicit recovery",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "home-recovery-de-390",
+        "states": [
+          "real-controller",
+          "scope-503-no-private-paint",
+          "new-draft-preserved",
+          "verified-park",
+          "explicit-swap"
+        ],
+        "turns": 0,
+        "fixtures": [
+          "turn/history",
+          "scope-503→verified-fixture"
+        ],
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "draft-en-1440: real attachment preparation, refusal, reload and voice capability",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "draft-en-1440",
+        "states": [
+          "attachment-intent",
+          "refusal",
+          "prepared",
+          "reload-missing",
+          "voice-conflict"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "capabilities-de-390: IME, dictation insertion/stop/refusal and image/PDF payload",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "capabilities-de-390",
+        "states": [
+          "IME-no-turn",
+          "shift-enter",
+          "voice-no-autostart",
+          "selection-insert",
+          "stop-late-ignored",
+          "refused-preserved",
+          "empty-picker",
+          "image-PDF-transport"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "draft-en-390: real attachment preparation, refusal, reload and voice capability",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "draft-en-390",
+        "states": [
+          "attachment-intent",
+          "refusal",
+          "prepared",
+          "reload-missing",
+          "voice-conflict"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "residential-en-390: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "residential-en-390",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "bootstrap-en-390: Close/Esc, real late-ready, safe reopen, new intent and workspace recovery",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "bootstrap-en-390",
+        "states": [
+          "native-failure-retry",
+          "native-phone-dialog-account-trap",
+          "Esc-original-opener",
+          "real-late-ready-no-reopen",
+          "plain-reopen-no-turn",
+          "different-intent-not-old-question",
+          "workspace-no-close",
+          "workspace-retry"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "commercial-en-1440: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "commercial-en-1440",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "native-scope-en: guest epoch, native login/logout, stale nonce and zero cached private rendering",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "native-scope-en",
+        "states": [
+          "native-private-response",
+          "invalid-nonce-rejected",
+          "guest-epoch-change",
+          "zero-private-paint",
+          "native-login",
+          "native-logout"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "bootstrap-en-1440: Close/Esc, real late-ready, safe reopen, new intent and workspace recovery",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "bootstrap-en-1440",
+        "states": [
+          "native-failure-retry",
+          "native-phone-dialog-account-trap",
+          "Esc-original-opener",
+          "real-late-ready-no-reopen",
+          "plain-reopen-no-turn",
+          "different-intent-not-old-question",
+          "workspace-no-close",
+          "workspace-retry"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "residential-en-1440: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "residential-en-1440",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "recovery-en-1440: boot failure retries original, upstream retry is one user message",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "recovery-en-1440",
+        "states": [
+          "boot-failed",
+          "same-attempt-retry",
+          "upstream-retry"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "capabilities-en-1440: IME, dictation insertion/stop/refusal and image/PDF payload",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "capabilities-en-1440",
+        "states": [
+          "IME-no-turn",
+          "shift-enter",
+          "voice-no-autostart",
+          "selection-insert",
+          "stop-late-ignored",
+          "refused-preserved",
+          "empty-picker",
+          "image-PDF-transport"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "native-scope-de: guest epoch, native login/logout, stale nonce and zero cached private rendering",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "native-scope-de",
+        "states": [
+          "native-private-response",
+          "invalid-nonce-rejected",
+          "guest-epoch-change",
+          "zero-private-paint",
+          "native-login",
+          "native-logout"
+        ],
+        "turns": 0,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "capabilities-de-1440: IME, dictation insertion/stop/refusal and image/PDF payload",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "capabilities-de-1440",
+        "states": [
+          "IME-no-turn",
+          "shift-enter",
+          "voice-no-autostart",
+          "selection-insert",
+          "stop-late-ignored",
+          "refused-preserved",
+          "empty-picker",
+          "image-PDF-transport"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "home-recovery-en-390: actual controller outage, new draft preserved, explicit recovery",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "home-recovery-en-390",
+        "states": [
+          "real-controller",
+          "scope-503-no-private-paint",
+          "new-draft-preserved",
+          "verified-park",
+          "explicit-swap"
+        ],
+        "turns": 0,
+        "fixtures": [
+          "turn/history",
+          "scope-503→verified-fixture"
+        ],
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "commercial-de-1440: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "commercial-de-1440",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "capabilities-en-390: IME, dictation insertion/stop/refusal and image/PDF payload",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "capabilities-en-390",
+        "states": [
+          "IME-no-turn",
+          "shift-enter",
+          "voice-no-autostart",
+          "selection-insert",
+          "stop-late-ignored",
+          "refused-preserved",
+          "empty-picker",
+          "image-PDF-transport"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "residential-de-1440: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "residential-de-1440",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "installer-de-390: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "installer-de-390",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "bootstrap-de-390: Close/Esc, real late-ready, safe reopen, new intent and workspace recovery",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "bootstrap-de-390",
+        "states": [
+          "native-failure-retry",
+          "native-phone-dialog-account-trap",
+          "Esc-original-opener",
+          "real-late-ready-no-reopen",
+          "plain-reopen-no-turn",
+          "different-intent-not-old-question",
+          "workspace-no-close",
+          "workspace-retry"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "home-recovery-de-1440: actual controller outage, new draft preserved, explicit recovery",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "home-recovery-de-1440",
+        "states": [
+          "real-controller",
+          "scope-503-no-private-paint",
+          "new-draft-preserved",
+          "verified-park",
+          "explicit-swap"
+        ],
+        "turns": 0,
+        "fixtures": [
+          "turn/history",
+          "scope-503→verified-fixture"
+        ],
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "bootstrap-de-1440: Close/Esc, real late-ready, safe reopen, new intent and workspace recovery",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "bootstrap-de-1440",
+        "states": [
+          "native-failure-retry",
+          "native-phone-dialog-account-trap",
+          "Esc-original-opener",
+          "real-late-ready-no-reopen",
+          "plain-reopen-no-turn",
+          "different-intent-not-old-question",
+          "workspace-no-close",
+          "workspace-retry"
+        ],
+        "turns": 1,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "home-recovery-en-1440: actual controller outage, new draft preserved, explicit recovery",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "home-recovery-en-1440",
+        "states": [
+          "real-controller",
+          "scope-503-no-private-paint",
+          "new-draft-preserved",
+          "verified-park",
+          "explicit-swap"
+        ],
+        "turns": 0,
+        "fixtures": [
+          "turn/history",
+          "scope-503→verified-fixture"
+        ],
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "installer-en-390: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "installer-en-390",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "commercial-en-390: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "commercial-en-390",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    },
+    {
+      "title": "residential-de-390: cold/warm exact question, keyboard and source ownership",
+      "status": "passed",
+      "expectedStatus": "passed",
+      "journey": {
+        "name": "residential-de-390",
+        "states": [
+          "cold",
+          "unique-turn",
+          "warm-enter",
+          "keyboard",
+          "focus-return"
+        ],
+        "turns": 2,
+        "errors": []
+      },
+      "errors": []
+    }
+  ],
+  "rows": [
+    {
+      "name": "commercial-de-390",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "draft-de-1440",
+      "states": [
+        "attachment-intent",
+        "refusal",
+        "prepared",
+        "reload-missing",
+        "voice-conflict"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "recovery-de-390",
+      "states": [
+        "boot-failed",
+        "same-attempt-retry",
+        "upstream-retry"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "recovery-en-390",
+      "states": [
+        "boot-failed",
+        "same-attempt-retry",
+        "upstream-retry"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "recovery-de-1440",
+      "states": [
+        "boot-failed",
+        "same-attempt-retry",
+        "upstream-retry"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "draft-de-390",
+      "states": [
+        "attachment-intent",
+        "refusal",
+        "prepared",
+        "reload-missing",
+        "voice-conflict"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "home-recovery-de-390",
+      "states": [
+        "real-controller",
+        "scope-503-no-private-paint",
+        "new-draft-preserved",
+        "verified-park",
+        "explicit-swap"
+      ],
+      "turns": 0,
+      "fixtures": [
+        "turn/history",
+        "scope-503→verified-fixture"
+      ],
+      "errors": []
+    },
+    {
+      "name": "draft-en-1440",
+      "states": [
+        "attachment-intent",
+        "refusal",
+        "prepared",
+        "reload-missing",
+        "voice-conflict"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "capabilities-de-390",
+      "states": [
+        "IME-no-turn",
+        "shift-enter",
+        "voice-no-autostart",
+        "selection-insert",
+        "stop-late-ignored",
+        "refused-preserved",
+        "empty-picker",
+        "image-PDF-transport"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "draft-en-390",
+      "states": [
+        "attachment-intent",
+        "refusal",
+        "prepared",
+        "reload-missing",
+        "voice-conflict"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "residential-en-390",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "bootstrap-en-390",
+      "states": [
+        "native-failure-retry",
+        "native-phone-dialog-account-trap",
+        "Esc-original-opener",
+        "real-late-ready-no-reopen",
+        "plain-reopen-no-turn",
+        "different-intent-not-old-question",
+        "workspace-no-close",
+        "workspace-retry"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "commercial-en-1440",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "native-scope-en",
+      "states": [
+        "native-private-response",
+        "invalid-nonce-rejected",
+        "guest-epoch-change",
+        "zero-private-paint",
+        "native-login",
+        "native-logout"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "bootstrap-en-1440",
+      "states": [
+        "native-failure-retry",
+        "native-phone-dialog-account-trap",
+        "Esc-original-opener",
+        "real-late-ready-no-reopen",
+        "plain-reopen-no-turn",
+        "different-intent-not-old-question",
+        "workspace-no-close",
+        "workspace-retry"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "residential-en-1440",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "recovery-en-1440",
+      "states": [
+        "boot-failed",
+        "same-attempt-retry",
+        "upstream-retry"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "capabilities-en-1440",
+      "states": [
+        "IME-no-turn",
+        "shift-enter",
+        "voice-no-autostart",
+        "selection-insert",
+        "stop-late-ignored",
+        "refused-preserved",
+        "empty-picker",
+        "image-PDF-transport"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "native-scope-de",
+      "states": [
+        "native-private-response",
+        "invalid-nonce-rejected",
+        "guest-epoch-change",
+        "zero-private-paint",
+        "native-login",
+        "native-logout"
+      ],
+      "turns": 0,
+      "errors": []
+    },
+    {
+      "name": "capabilities-de-1440",
+      "states": [
+        "IME-no-turn",
+        "shift-enter",
+        "voice-no-autostart",
+        "selection-insert",
+        "stop-late-ignored",
+        "refused-preserved",
+        "empty-picker",
+        "image-PDF-transport"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "home-recovery-en-390",
+      "states": [
+        "real-controller",
+        "scope-503-no-private-paint",
+        "new-draft-preserved",
+        "verified-park",
+        "explicit-swap"
+      ],
+      "turns": 0,
+      "fixtures": [
+        "turn/history",
+        "scope-503→verified-fixture"
+      ],
+      "errors": []
+    },
+    {
+      "name": "commercial-de-1440",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "capabilities-en-390",
+      "states": [
+        "IME-no-turn",
+        "shift-enter",
+        "voice-no-autostart",
+        "selection-insert",
+        "stop-late-ignored",
+        "refused-preserved",
+        "empty-picker",
+        "image-PDF-transport"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "residential-de-1440",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "installer-de-390",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "bootstrap-de-390",
+      "states": [
+        "native-failure-retry",
+        "native-phone-dialog-account-trap",
+        "Esc-original-opener",
+        "real-late-ready-no-reopen",
+        "plain-reopen-no-turn",
+        "different-intent-not-old-question",
+        "workspace-no-close",
+        "workspace-retry"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "home-recovery-de-1440",
+      "states": [
+        "real-controller",
+        "scope-503-no-private-paint",
+        "new-draft-preserved",
+        "verified-park",
+        "explicit-swap"
+      ],
+      "turns": 0,
+      "fixtures": [
+        "turn/history",
+        "scope-503→verified-fixture"
+      ],
+      "errors": []
+    },
+    {
+      "name": "bootstrap-de-1440",
+      "states": [
+        "native-failure-retry",
+        "native-phone-dialog-account-trap",
+        "Esc-original-opener",
+        "real-late-ready-no-reopen",
+        "plain-reopen-no-turn",
+        "different-intent-not-old-question",
+        "workspace-no-close",
+        "workspace-retry"
+      ],
+      "turns": 1,
+      "errors": []
+    },
+    {
+      "name": "home-recovery-en-1440",
+      "states": [
+        "real-controller",
+        "scope-503-no-private-paint",
+        "new-draft-preserved",
+        "verified-park",
+        "explicit-swap"
+      ],
+      "turns": 0,
+      "fixtures": [
+        "turn/history",
+        "scope-503→verified-fixture"
+      ],
+      "errors": []
+    },
+    {
+      "name": "installer-en-390",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "commercial-en-390",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    },
+    {
+      "name": "residential-de-390",
+      "states": [
+        "cold",
+        "unique-turn",
+        "warm-enter",
+        "keyboard",
+        "focus-return"
+      ],
+      "turns": 2,
+      "errors": []
+    }
+  ]
+}

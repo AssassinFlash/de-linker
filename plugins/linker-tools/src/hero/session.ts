@@ -22,6 +22,7 @@ import {
 	type TurnMessage,
 } from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
+import { assertEntryScope } from '../genie/shared/entryFailure';
 import { retryMessages } from '../genie/shared/failure';
 
 /** What the hero's mount point gives the session (config.ts). */
@@ -137,12 +138,14 @@ export class HeroSession {
 	 * refused turn (a file the proxy rejects, a service error) leaves the
 	 * conversation as it was, which is what the field then shows again.
 	 *
-	 * @param text    The question, file names already named in it.
-	 * @param uploads The turn's files, apart from the messages (#236).
+	 * @param text       The question, file names already named in it.
+	 * @param uploads    The turn's files, apart from the messages (#236).
+	 * @param entryScope Optional recovery owner, verified after shared-thread refresh.
 	 */
 	async ask(
 		text: string,
-		uploads: Upload[] = []
+		uploads: Upload[] = [],
+		entryScope?: string
 	): Promise< {
 		messages: TurnMessage[];
 		answer: Turn;
@@ -154,7 +157,8 @@ export class HeroSession {
 		await this.refresh();
 		return this.deliver(
 			[ ...this.messagesValue, { role: 'user', content: text } ],
-			uploads
+			uploads,
+			entryScope
 		);
 	}
 
@@ -162,12 +166,14 @@ export class HeroSession {
 	 * Sends a failed question again. The question is appended only when the
 	 * stored thread does not already end with it (ticket #411).
 	 *
-	 * @param text    The question, file names already named in it.
-	 * @param uploads The turn's files.
+	 * @param text       The question, file names already named in it.
+	 * @param uploads    The turn's files.
+	 * @param entryScope Optional recovery owner, verified after shared-thread refresh.
 	 */
 	async retry(
 		text: string,
-		uploads: Upload[] = []
+		uploads: Upload[] = [],
+		entryScope?: string
 	): Promise< {
 		messages: TurnMessage[];
 		answer: Turn;
@@ -177,7 +183,8 @@ export class HeroSession {
 		await this.refresh();
 		return this.deliver(
 			retryMessages( this.messagesValue, text ),
-			uploads
+			uploads,
+			entryScope
 		);
 	}
 
@@ -185,18 +192,24 @@ export class HeroSession {
 	 * Posts `next` and keeps the answer. `ask` always appends; `retry`
 	 * appends only when the stored thread does not already end with it.
 	 *
-	 * @param next    The thread to send.
-	 * @param uploads The turn's files.
+	 * @param next       The thread to send.
+	 * @param uploads    The turn's files.
+	 * @param entryScope Optional recovery owner, verified after shared-thread refresh.
 	 */
 	private async deliver(
 		next: TurnMessage[],
-		uploads: Upload[]
+		uploads: Upload[],
+		entryScope?: string
 	): Promise< {
 		messages: TurnMessage[];
 		answer: Turn;
 		contacts?: SentContact[];
 		inquiries?: SentInquiryCard[];
 	} > {
+		await assertEntryScope(
+			{ restUrl: this.config.restUrl, restNonce: this.config.nonce },
+			entryScope
+		);
 		const answer = await this.send( {
 			turnUrl: this.config.turnUrl,
 			restUrl: this.config.restUrl,

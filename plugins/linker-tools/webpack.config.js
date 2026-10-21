@@ -12,6 +12,7 @@ module.exports = {
 	...defaultConfig,
 	entry: {
 		genie: './src/genie/index.tsx',
+		marketing: './src/marketing/index.ts',
 		configurator: './src/configurator/index.tsx',
 		// Not an app: the small script of Genie's preview card (ticket #249),
 		// loaded with the pages that carry the card, before any app.

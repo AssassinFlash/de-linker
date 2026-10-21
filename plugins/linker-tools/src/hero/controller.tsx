@@ -27,6 +27,7 @@ import {
 	type DictationSession,
 } from '../genie/shared/dictation';
 import { readFailure, pageFailureStore } from '../genie/shared/failure';
+import { verifiedEntryFailure } from '../genie/shared/entryFailure';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession } from './session';
 import {
@@ -92,6 +93,7 @@ export function startHero(
 			} ) );
 
 	let state: HeroState = initialHeroState;
+	let stopped = false;
 	let expandedNow = false;
 	let root: ReturnType< typeof createRoot > | null = null;
 	let bridge: HeroBridge | null = null;
@@ -143,6 +145,12 @@ export function startHero(
 		syncPill();
 	}
 
+	let promptVersion = 0;
+	const onPromptInput = () => {
+		promptVersion += 1;
+	};
+	prompt.addEventListener( 'input', onPromptInput );
+
 	function mount(): void {
 		if ( root ) {
 			return;
@@ -163,6 +171,10 @@ export function startHero(
 				setPrompt={ ( text ) => {
 					prompt!.value = text;
 				} }
+				readPrompt={ () => ( {
+					text: prompt!.value,
+					version: promptVersion,
+				} ) }
 				focusPrompt={ () => prompt!.focus() }
 				requestPicker={ openPicker }
 			/>
@@ -431,11 +443,28 @@ export function startHero(
 	onScroll();
 	// A failed turn from before this load unfolds the conversation, so the
 	// error is on the page without another click (ticket #411).
-	if ( readFailure( pageFailureStore() ) ) {
+	const failed = readFailure( pageFailureStore() );
+	if ( failed?.entryId ) {
+		void verifiedEntryFailure( options.config, pageFailureStore() ).then(
+			( checked ) => {
+				if (
+					! stopped &&
+					( ( checked?.record && checked.unchanged() ) ||
+						( ! checked &&
+							readFailure( pageFailureStore() )?.entryId ===
+								failed.entryId ) )
+				) {
+					update( { type: 'ask' } );
+				}
+			}
+		);
+	} else if ( failed ) {
 		update( { type: 'ask' } );
 	}
 
 	return () => {
+		stopped = true;
+		prompt.removeEventListener( 'input', onPromptInput );
 		prompt.removeEventListener( 'keydown', onKeyDown );
 		sendButton.removeEventListener( 'click', onSendClick );
 		photoButton?.removeEventListener( 'click', onPhotoClick );

@@ -667,6 +667,23 @@ class Conversations {
 	}
 
 	/**
+	 * An irreversible current-identity comparison for same-tab entry recovery.
+	 * No conversation or account data is returned and this grants no authority.
+	 *
+	 * @param string $tab Random tab identity, not a credential.
+	 */
+	public function entry_scope( string $tab ): string {
+		$user    = get_current_user_id();
+		$browser = $this->browser_key();
+		// A read of an existing epoch sends no renewed Set-Cookie: a delayed
+		// auxiliary response must not replace a newer browser identity.
+		$principal = $user > 0
+			? 'user:' . $user . ':' . wp_get_session_token()
+			: 'guest:' . ( '' === $browser ? $this->ensure_browser_key() : $browser );
+		return hash_hmac( 'sha256', $tab . '|' . $principal, wp_salt( 'auth' ) );
+	}
+
+	/**
 	 * This browser's key, '' when it has none.
 	 */
 	private function browser_key(): string {

@@ -1,0 +1,506 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node@24/24.22.0/bin/node",
+      "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/node_modules/.bin/playwright",
+      "test",
+      "specs/genie-marketing-entries.spec.ts",
+      "--retries=0",
+      "--grep",
+      "capabilities-|draft-"
+    ],
+    "configFile": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/playwright.config.ts",
+    "rootDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/lib/health.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1792,
+            "height": 1120
+          },
+          "deviceScaleFactor": 2,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "webkit"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "webkit"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:157.0) Gecko/20100101 Firefox/157.0",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "firefox"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "firefox"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "artifacts/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "genie-marketing-entries.spec.ts",
+      "file": "genie-marketing-entries.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "draft-en-1440: real attachment preparation, refusal, reload and voice capability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3599,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:25.157Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-0fc82728b76040a2451d",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 591,
+          "column": 3
+        },
+        {
+          "title": "draft-en-390: real attachment preparation, refusal, reload and voice capability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2426,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:28.998Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-4d9af1ee8eb77ed2c63c",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 591,
+          "column": 3
+        },
+        {
+          "title": "draft-de-1440: real attachment preparation, refusal, reload and voice capability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3212,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:31.429Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-0295d4072270648ce341",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 591,
+          "column": 3
+        },
+        {
+          "title": "draft-de-390: real attachment preparation, refusal, reload and voice capability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2340,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:34.645Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-0e5444e88fd3529dd98b",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 591,
+          "column": 3
+        },
+        {
+          "title": "capabilities-en-1440: IME, dictation insertion/stop/refusal and image/PDF payload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2045,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:36.989Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-904d4169f8d5c37a5373",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 717,
+          "column": 3
+        },
+        {
+          "title": "capabilities-en-390: IME, dictation insertion/stop/refusal and image/PDF payload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1993,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:39.038Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-a53c95f9ffb8b729f410",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 717,
+          "column": 3
+        },
+        {
+          "title": "capabilities-de-1440: IME, dictation insertion/stop/refusal and image/PDF payload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2400,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:41.036Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-9c1921f4cd00922bd30c",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 717,
+          "column": 3
+        },
+        {
+          "title": "capabilities-de-390: IME, dictation insertion/stop/refusal and image/PDF payload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2021,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:20:43.441Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-30bce9b29ee2b3abcc66",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 717,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-21T21:20:24.557Z",
+    "duration": 20940.014,
+    "expected": 8,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

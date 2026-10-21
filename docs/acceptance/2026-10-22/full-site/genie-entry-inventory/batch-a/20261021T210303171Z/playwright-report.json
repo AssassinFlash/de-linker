@@ -1,0 +1,1320 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node@24/24.22.0/bin/node",
+      "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/node_modules/.bin/playwright",
+      "test",
+      "specs/genie-marketing-entries.spec.ts",
+      "--retries=0"
+    ],
+    "configFile": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/playwright.config.ts",
+    "rootDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/lib/health.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      },
+      {
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "header-parity.spec.ts"
+        ],
+        "timeout": 300000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "webkit",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Safari/605.1.15",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1792,
+            "height": 1120
+          },
+          "deviceScaleFactor": 2,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "webkit"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "webkit"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "firefox",
+        "testDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "snapshotDir": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": "header-parity.spec.ts",
+        "timeout": 300000,
+        "use": {
+          "trace": "off",
+          "screenshot": "off",
+          "video": "off",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:157.0) Gecko/20100101 Firefox/157.0",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "firefox"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "firefox"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "artifacts/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "genie-marketing-entries.spec.ts",
+      "file": "genie-marketing-entries.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "residential-en-1440: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2798,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:03.907Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-7429f3bcb8e05f2d50a1",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "commercial-en-1440: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2913,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:06.922Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-619070ae318ae9e9c5f5",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "recovery-en-1440: boot failure retries original, upstream retry is one user message",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2253,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:09.843Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-8f68dff914a222acfccd",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 536,
+          "column": 3
+        },
+        {
+          "title": "draft-en-1440: real attachment preparation, refusal, reload and voice capability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2826,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:12.104Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-0fc82728b76040a2451d",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 591,
+          "column": 3
+        },
+        {
+          "title": "residential-en-390: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2391,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:14.940Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-52dc4ffeeec87915f374",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "commercial-en-390: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2360,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:17.336Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-eebe6bd5da9dcae54cfd",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "installer-en-390: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2510,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:19.702Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-ec303d6e926c9fcfb631",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "recovery-en-390: boot failure retries original, upstream retry is one user message",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1801,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:22.219Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-0c0b1870d70b64a96e26",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 536,
+          "column": 3
+        },
+        {
+          "title": "draft-en-390: real attachment preparation, refusal, reload and voice capability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2271,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:24.025Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-4d9af1ee8eb77ed2c63c",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 591,
+          "column": 3
+        },
+        {
+          "title": "residential-de-1440: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2666,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:26.300Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-bb8c98098fa056721829",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "commercial-de-1440: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2723,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:28.972Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-a0e2227076dc22a5314b",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "recovery-de-1440: boot failure retries original, upstream retry is one user message",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2087,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:31.703Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-0c8f3fcdf6f2c1b9b733",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 536,
+          "column": 3
+        },
+        {
+          "title": "draft-de-1440: real attachment preparation, refusal, reload and voice capability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2769,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:33.796Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-0295d4072270648ce341",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 591,
+          "column": 3
+        },
+        {
+          "title": "residential-de-390: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2386,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:36.569Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-f9a346cdbcfcccd70a11",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "commercial-de-390: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1871,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:38.960Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-02341b1f8b8d673282e6",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "installer-de-390: cold/warm exact question, keyboard and source ownership",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2340,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:40.836Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-bca6cbfd5ec656653958",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 411,
+          "column": 4
+        },
+        {
+          "title": "recovery-de-390: boot failure retries original, upstream retry is one user message",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1648,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:43.182Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-08faa8bf932c1a65c276",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 536,
+          "column": 3
+        },
+        {
+          "title": "draft-de-390: real attachment preparation, refusal, reload and voice capability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2216,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:44.835Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-0e5444e88fd3529dd98b",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 591,
+          "column": 3
+        },
+        {
+          "title": "capabilities-en-1440: IME, dictation insertion/stop/refusal and image/PDF payload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2330,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:47.055Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-904d4169f8d5c37a5373",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 688,
+          "column": 3
+        },
+        {
+          "title": "capabilities-en-390: IME, dictation insertion/stop/refusal and image/PDF payload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1988,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:49.391Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-a53c95f9ffb8b729f410",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 688,
+          "column": 3
+        },
+        {
+          "title": "capabilities-de-1440: IME, dictation insertion/stop/refusal and image/PDF payload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2069,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:51.386Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-9c1921f4cd00922bd30c",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 688,
+          "column": 3
+        },
+        {
+          "title": "capabilities-de-390: IME, dictation insertion/stop/refusal and image/PDF payload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2001,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:53.461Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-30bce9b29ee2b3abcc66",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 688,
+          "column": 3
+        },
+        {
+          "title": "native-scope-en: guest epoch, native login/logout, stale nonce and zero cached private rendering",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5695,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:03:55.466Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-6921a3b86ff363577def",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 933,
+          "column": 2
+        },
+        {
+          "title": "native-scope-de: guest epoch, native login/logout, stale nonce and zero cached private rendering",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5221,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:04:01.165Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-99a9fff5d417fdde7d5c",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 933,
+          "column": 2
+        },
+        {
+          "title": "home-recovery-en-1440: actual controller outage, new draft preserved, explicit recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1122,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:04:06.390Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-e54f9d7223e904ad1fba",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 1062,
+          "column": 3
+        },
+        {
+          "title": "home-recovery-en-390: actual controller outage, new draft preserved, explicit recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 729,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:04:07.517Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-9eb2411ab707135f8708",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 1062,
+          "column": 3
+        },
+        {
+          "title": "home-recovery-de-1440: actual controller outage, new draft preserved, explicit recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1121,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:04:08.253Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-db9cb2786ca0ea84b8eb",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 1062,
+          "column": 3
+        },
+        {
+          "title": "home-recovery-de-390: actual controller outage, new draft preserved, explicit recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 710,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:04:09.379Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-0f6aef89be7ec5066923",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 1062,
+          "column": 3
+        },
+        {
+          "title": "bootstrap-en-1440: Close/Esc, real late-ready, safe reopen, new intent and workspace recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2428,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:04:10.092Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-703877cebebc417a404e",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 1159,
+          "column": 3
+        },
+        {
+          "title": "bootstrap-en-390: Close/Esc, real late-ready, safe reopen, new intent and workspace recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1869,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:04:12.525Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-5659d1c52c125546545a",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 1159,
+          "column": 3
+        },
+        {
+          "title": "bootstrap-de-1440: Close/Esc, real late-ready, safe reopen, new intent and workspace recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2371,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:04:14.399Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-e4e15c34e3abc98cbadb",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 1159,
+          "column": 3
+        },
+        {
+          "title": "bootstrap-de-390: Close/Esc, real late-ready, safe reopen, new intent and workspace recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 50000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1899,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T21:04:16.774Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4806712cee2fbbfeb5d9-c1d0b401b7baf34ac869",
+          "file": "genie-marketing-entries.spec.ts",
+          "line": 1159,
+          "column": 3
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-21T21:03:03.491Z",
+    "duration": 75218.352,
+    "expected": 32,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

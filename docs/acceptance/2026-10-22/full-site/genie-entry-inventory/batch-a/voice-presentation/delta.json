@@ -1,0 +1,24 @@
+{
+  "before_product_source_sha256": "94d6c8fe960b59833ddee9f589ad23478ffb39bb1031aa51e60ef758b8244d0f",
+  "after_product_source_sha256": "38342862231861ddf57a6e8792c04e323e5cddbfaea66fc7f59907f2681a8fd1",
+  "product_source_changed": [
+    "plugins/linker-tools/src/genie/App.tsx"
+  ],
+  "unchanged_product_sources": 19,
+  "outside_voice_prompt_block_identical": true,
+  "before_App_sha256": "a1da902024c4a5370ac07368c03330d305508f350e65b61bace16e13511f238b",
+  "after_App_sha256": "db9261afeca76f33d2675e31c8a2569e9c57d7421aed05afa3c944450f015cfc",
+  "source_checks": {
+    "full_Vitest": "52files451tests PASS",
+    "voice_red": "1failed/1passed,duplicate p actual",
+    "entries_fixture_red": "2failed,marketing incorrectly classified as React app",
+    "entries_fixture_green": "1file3tests PASS",
+    "TS_ESLint": "PASS"
+  },
+  "browser_contract": {
+    "adjacent_complete32": "20261021T210303171Z,32PASS74originals,source94d6",
+    "current_targeted8": "20261021T212024202Z,8PASS24originals,current383428",
+    "CSS": "1792617293/701525",
+    "original_red_fixture": "20261021T211715067Z:4supportedpass/4strictlocator failures retained;consumer-exact locator fixed without changing source or deleting assertions"
+  }
+}

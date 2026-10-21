@@ -124,3 +124,18 @@ test( 'a browser without dictation gets no session', () => {
 		)
 	).toBeNull();
 } );
+
+test( 'cancel ignores even a queued late transcript while keeping existing text owned by the caller', () => {
+	FakeRecognition.instances = [];
+	const heard = vi.fn();
+	const run = startDictation(
+		{ SpeechRecognition: FakeRecognition } as unknown as Window,
+		'en',
+		heard,
+		() => undefined
+	);
+	const late = FakeRecognition.instances[ 0 ].onresult;
+	run?.stop();
+	late?.( { results: [ [ { transcript: 'Late words after close' } ] ] } );
+	expect( heard ).not.toHaveBeenCalled();
+} );

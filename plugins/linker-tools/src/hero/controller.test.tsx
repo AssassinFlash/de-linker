@@ -546,3 +546,222 @@ test( 'the dock opening hides the way back until it closes again', async () => {
 	} );
 	expect( pill.hidden ).toBe( false );
 } );
+
+test( 'actual Hero controller offers hidden scoped outage recovery and fresh retry', async () => {
+	let available = false;
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: null,
+			text: 'Private old entry',
+			question: 'Private old entry',
+			uploads: [],
+			omitted: [],
+			entryId: 'scope-controller',
+			entryScope: 'a'.repeat( 64 ),
+		} )
+	);
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( async () => ( {
+			ok: available,
+			json: async () => ( { scope: 'a'.repeat( 64 ) } ),
+		} ) )
+	);
+	const model = session();
+	const { hero, stop } = start( model.session );
+	try {
+		await screen.findByRole( 'button', { name: 'Try again' } );
+		const prompt =
+			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+		expect( prompt.value ).toBe( '' );
+		expect( document.body.textContent ).not.toContain(
+			'Private old entry'
+		);
+		available = true;
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Try again' } )
+			)
+		);
+		await waitFor( () =>
+			expect( prompt.value ).toBe( 'Private old entry' )
+		);
+		expect( model.send ).not.toHaveBeenCalled();
+	} finally {
+		stop();
+		vi.unstubAllGlobals();
+	}
+} );
+test( 'delayed Hero failure is parked without replacing new prompt input', async () => {
+	const releases: Array< ( value: unknown ) => void > = [];
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( () => new Promise( ( resolve ) => releases.push( resolve ) ) )
+	);
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: 'upstream',
+			text: 'Old hero private draft',
+			question: 'Old hero private draft',
+			entryId: 'old-entry',
+			entryScope: 'a'.repeat( 64 ),
+			uploads: [],
+			omitted: [],
+		} )
+	);
+	const model = session();
+	const { hero, stop } = start( model.session );
+	try {
+		await act( async () =>
+			fireEvent.click( screen.getByRole( 'button', { name: 'Attach' } ) )
+		);
+		await waitFor( () =>
+			expect( releases.length ).toBeGreaterThanOrEqual( 2 )
+		);
+		const prompt =
+			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+		fireEvent.input( prompt, { target: { value: 'Fresh hero input' } } );
+		await act( async () =>
+			releases.forEach( ( resolve ) =>
+				resolve( {
+					ok: true,
+					json: async () => ( { scope: 'a'.repeat( 64 ) } ),
+				} )
+			)
+		);
+		await screen.findByText( 'Old hero private draft' );
+		expect( prompt.value ).toBe( 'Fresh hero input' );
+		expect(
+			JSON.parse( sessionStorage.getItem( 'linker-genie-entry-draft' )! )
+				.parked.text
+		).toBe( 'Old hero private draft' );
+		expect( model.send ).not.toHaveBeenCalled();
+	} finally {
+		stop();
+		vi.unstubAllGlobals();
+	}
+} );
+
+test( 'Hero restored pair retains missing attachments through a second swap', async () => {
+	let available = false;
+	const old = 'Original note whose PDF was not retained';
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: null,
+			text: old,
+			question: old,
+			uploads: [],
+			omitted: [ 'missing-schematic.pdf' ],
+			entryId: 'scope-pair',
+			entryScope: 'a'.repeat( 64 ),
+		} )
+	);
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( async () => ( {
+			ok: available,
+			json: async () => ( { scope: 'a'.repeat( 64 ) } ),
+		} ) )
+	);
+	const model = session();
+	const { hero, stop } = start( model.session );
+	try {
+		await screen.findByRole( 'button', { name: 'Try again' } );
+		const prompt =
+			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+		fireEvent.input( prompt, { target: { value: 'New current draft' } } );
+		available = true;
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Try again' } )
+			)
+		);
+		await screen.findByText( old );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Restore unsent draft' } )
+			)
+		);
+		expect( prompt.value ).toBe( old );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Restore unsent draft' } )
+			)
+		);
+		expect( prompt.value ).toBe( 'New current draft' );
+		expect(
+			JSON.parse( sessionStorage.getItem( 'linker-genie-entry-draft' )! )
+				.parked.missing
+		).toContain( 'missing-schematic.pdf' );
+		expect( model.send ).not.toHaveBeenCalled();
+	} finally {
+		stop();
+		vi.unstubAllGlobals();
+	}
+} );
+
+test( 'Hero cannot overwrite an unresolved scoped owner by sending a newly edited prompt', async () => {
+	let available = false;
+	sessionStorage.setItem(
+		FAILURE_KEY,
+		JSON.stringify( {
+			v: 1,
+			kind: null,
+			text: 'Old sole private owner',
+			question: 'Old sole private owner',
+			uploads: [],
+			omitted: [],
+			entryId: 'sole-hero-owner',
+			entryScope: 'a'.repeat( 64 ),
+		} )
+	);
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( async () => ( {
+			ok: available,
+			json: async () => ( { scope: 'a'.repeat( 64 ) } ),
+		} ) )
+	);
+	const model = session();
+	const { hero, stop } = start( model.session );
+	try {
+		await screen.findByRole( 'button', { name: 'Try again' } );
+		const prompt =
+			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+		fireEvent.input( prompt, {
+			target: { value: 'New current requirement' },
+		} );
+		await act( async () =>
+			fireEvent.click( hero.querySelector( '.hero-send' )! )
+		);
+		expect( model.send ).not.toHaveBeenCalled();
+		expect( prompt.value ).toBe( 'New current requirement' );
+		expect( sessionStorage.getItem( FAILURE_KEY ) ).toContain(
+			'Old sole private owner'
+		);
+		available = true;
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Try again' } )
+			)
+		);
+		await screen.findByText( 'Old sole private owner' );
+		await act( async () =>
+			fireEvent.click( hero.querySelector( '.hero-send' )! )
+		);
+		await waitFor( () => expect( model.send ).toHaveBeenCalledTimes( 1 ) );
+		expect(
+			JSON.parse( sessionStorage.getItem( 'linker-genie-entry-draft' )! )
+				.parked.text
+		).toBe( 'Old sole private owner' );
+	} finally {
+		stop();
+		vi.unstubAllGlobals();
+	}
+} );

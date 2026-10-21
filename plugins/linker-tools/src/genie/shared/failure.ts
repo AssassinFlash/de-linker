@@ -44,6 +44,9 @@ export type FailureKind = 'truncated' | 'upstream';
 
 /** The turn that was sent, or is about to be. */
 export interface FailureDraft {
+	/** Marketing ownership retained through retry/reload. */
+	entryId?: string;
+	entryScope?: string;
 	/** The words in the field, before file names are joined in. */
 	text: string;
 	/** The message the proxy received. A retry of an upstream failure may drop attachment lines the record could not keep. */
@@ -496,6 +499,9 @@ export function reconcile(
 		return CLEAR;
 	}
 	const draft: FailureDraft = {
+		...( stored.entryId
+			? { entryId: stored.entryId, entryScope: stored.entryScope }
+			: {} ),
 		text: stored.text,
 		question: stored.question,
 		uploads: stored.uploads,
@@ -674,6 +680,9 @@ function parseFailure( value: unknown ): StoredFailure | null {
 		: [];
 	return {
 		v: 1,
+		...( typeof record.entryId === 'string'
+			? { entryId: record.entryId, entryScope: record.entryScope }
+			: {} ),
 		text: record.text,
 		question: record.question,
 		uploads: uploads as Upload[],
@@ -714,6 +723,9 @@ function recordOf( state: FailureState ): StoredFailure {
 	const draft = state.draft as FailureDraft;
 	return {
 		v: 1,
+		...( draft.entryId
+			? { entryId: draft.entryId, entryScope: draft.entryScope }
+			: {} ),
 		text: draft.text,
 		question: draft.question,
 		uploads: draft.uploads,

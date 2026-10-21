@@ -148,8 +148,7 @@ final class EntriesTest extends TestCase {
 		$script = (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' );
 			$this->assertStringContainsString( 'if (!panel)', $script );
 			$this->assertStringContainsString( 'shell(!!payload.open)', $script );
-			$this->assertStringNotContainsString( 'shell(false)', $script );
-			$this->assertStringContainsString( 'if (payload.open)', $script );
+				$this->assertStringContainsString( 'if (payload.open)', $script );
 			$this->assertMatchesRegularExpression( '/if \(payload\.open\) \{\s*pendingOpen = true;\s*boot\(\);/', $script );
 		$this->assertConditionsMet();
 	}
@@ -472,6 +471,7 @@ class El {
 	closest(selector) { return selector === '[data-linker-genie-open]' && this.getAttribute('data-linker-genie-open') !== null ? this : null; }
 	dispatchEvent(event) { window.dispatchEvent(Object.assign(event, { target: this })); }
 }
+global.HTMLElement = El;
 const mount = new El('div');
 mount.setAttribute('data-linker-genie-mount', '');
 const loader = new El('script');
@@ -746,4 +746,38 @@ JS
 		$call();
 		return (string) ob_get_clean();
 	}
+	/**
+	 * The native boot state remains operable when its external application fails.
+	 *
+     * phpcs:disable WordPress.WP.AlternativeFunctions, WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open
+	 */
+	public function test_failed_boot_keeps_a_recoverable_source_and_owns_its_keyboard_boundary(): void {
+		$GLOBALS['linker_tools_test_inline_scripts'] = array();
+		$this->frontend( 'en', array( 'type' => 'category' ) );
+		WP_Mock::userFunction( 'wp_scripts', array( 'return' => static fn() => new FakeScripts() ) );
+		$this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+		$fixture = tempnam( sys_get_temp_dir(), 'genie-failed-boot-' );
+		$this->assertIsString( $fixture );
+		file_put_contents( $fixture, (string) ( $GLOBALS['linker_tools_test_inline_scripts'][0][0] ?? '' ) );
+		$script = dirname( __DIR__, 2 ) . '/js/genie-loader-failure.mjs';
+		$run    = proc_open(
+			array( 'node', $script, $fixture ),
+			array(
+				1 => array( 'pipe', 'w' ),
+				2 => array( 'pipe', 'w' ),
+			),
+			$pipes
+		);
+		$this->assertIsResource( $run );
+		$out = stream_get_contents( $pipes[1] );
+		$err = stream_get_contents( $pipes[2] );
+		fclose( $pipes[1] );
+		fclose( $pipes[2] );
+		$code = proc_close( $run );
+		unlink( $fixture );
+		$this->assertSame( 0, $code, (string) $err );
+		$this->assertCount( 4, (array) json_decode( (string) $out, true ) );
+		$this->assertConditionsMet();
+	}
+    // phpcs:enable
 }
