@@ -133,7 +133,9 @@ final class EngineProxy {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function forward( WP_REST_Request $request ) {
-		$path    = trim( (string) $request->get_param( 'path' ), '/' );
+		// The native route capture is authoritative. JSON/query `path` must not
+		// turn an unprotected read/unknown route into paid engineering work.
+		$path    = trim( (string) ( $request->get_url_params()['path'] ?? '' ), '/' );
 		$allowed = false;
 		foreach ( self::PATHS as $pattern ) {
 			if ( 1 === preg_match( $pattern, $path ) ) {

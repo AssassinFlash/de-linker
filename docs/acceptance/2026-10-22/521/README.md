@@ -77,22 +77,27 @@ all-site live/local pixel-zero comparison.
 
 ## Relevant checks
 
-- Genie full suite: 1937 passed, 1 skipped, 195 deselected, 6 existing xfails;
-  mypy67 source files and ruff passed. Eight new provider fixtures cover real
+- Genie full suite: 1940 passed, 1 skipped, 195 deselected, 6 existing xfails;
+  mypy180 project files and ruff passed. Eight new provider fixtures cover real
   SQLite workers/restart/crash, midnight/replay, damage/missing config, actual
   installed OpenAI HTTPX2 transport, each-loop HTTPX transport, timeouts without
   refunds, private authentication and absolute-deadline cancellation under a
-  real SQLite write lock. No late upstream request is sent after cancellation.
+  real SQLite write lock. No late upstream request is sent after cancellation. Three additional actual-work
+  fixtures cover private Genie slot configuration/damage, real process crash
+  recovery and real uvicorn HTTP disconnect while synchronous work is blocked:
+  same subject and third site request stay429 until the actual work finishes.
+  PHP adds the trusted stable subject to real private turn HTTP requests, and
+  changing conversations preserves it.
 - Engine full suite:151 passed; mypy28 source files, ruff and new-file format
   checks passed. Private actual-work slots are shared between processes,
   retain live work through caller disconnect, recover dead worker PIDs and
   reject unauthenticated/oversize input before parsing/work.
-- Tools JS:401 passed in50 files; types, eslint, Prettier and committed build
+- Tools JS:407 passed in50 files; types, eslint, Prettier and committed build
   check passed. Existing webpack size/runtime recommendations remain warnings.
   Native `just i18n-tools` make-json/msgfmt and `just i18n-coverage` passed.
 - Tools PHP unit:286 tests,2338 assertions. Real g521 resource integration:
-  11 tests,204 assertions. The additional complete Tools real-WP integration run
-  finished75 total tests/543 assertions/23 prerequisite skips with no failures.
+  18 tests,251 assertions. The additional complete Tools real-WP integration run
+  finished82 total tests/590 assertions/23 prerequisite skips with no failures.
   PHPStan and WPCS passed. The real journal/native
   fixtures cover bad/revoked proof before heavy decode, single dispatch,
   completed replay, crash ambiguity, trusted-context cleanup, free reads,
@@ -100,6 +105,11 @@ all-site live/local pixel-zero comparison.
   definite failure recovery, shared business seam, no confirmation secret/mail
   after recipient refusal, privacy erasure without late resurrection, PHP
   provider refusal and account-owned recomputation/service-token propagation.
+  Review regressions additionally cover mixed-case native REST routes, observe
+  CF/hash/cookie/body/file/storage failures retaining native validation, absent
+  observe-only release configuration, account-author OR recipient privacy and
+  late completion after erasure, unknown business502/503 retaining one UUID,
+  real native engine query deduplication and rejected body/query path overrides.
 - Shared Commerce additions: real WP3 tests/24 assertions, enforce/observe
   email-owner export/erasure and native parent revocation; PHPStan/WPCS passed.
   Commerce unit run:1376 total with190 integration skips,6039 assertions,
@@ -126,6 +136,9 @@ The root accepted this verified conservative boundary to preserve the absolute
 `AsyncTransport("jev", existing_transport)`, map BudgetError to undetermined,
 run its real absolute-deadline/normal-notification fixtures, load the real #520
 business and receipt filters, and publish/read back the same persistent provider
-path, mode, existing token and immutable engine/feed version. A missing guard
+path, mode, existing token and immutable engine/feed version. It must also set
+`LINKER_GENIE_WORK_MODE=enforce` and a shared persistent absolute
+`LINKER_GENIE_WORK_PATH` for all Genie workers; the local launcher and its native
+environment fixture already supply the per-instance private path. A missing guard
 must refuse paid/resource dispatch. Those are the planned joint acceptance steps,
 not a claim that this isolated branch already protects production.

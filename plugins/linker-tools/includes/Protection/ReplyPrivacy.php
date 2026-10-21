@@ -114,18 +114,43 @@ final class ReplyPrivacy {
 		if ( ! is_email( $email ) ) {
 			return array();
 		}
-		return get_posts(
-			array(
-				'post_type'      => Replies::TYPE,
-				'post_status'    => 'private',
-				'fields'         => 'ids',
-				'posts_per_page' => 100,
-				'paged'          => max( 1, $page ),
-				'meta_key'       => '_linker_recipient', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Bounded verified-email native privacy workflow, never a storefront query.
-				'meta_value'     => Identity::recipient( $email ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Exact private HMAC association.
-				'orderby'        => 'ID',
-				'order'          => 'ASC',
-			)
+		$args    = array(
+			'post_type'      => Replies::TYPE,
+			'post_status'    => 'private',
+			'fields'         => 'ids',
+			'posts_per_page' => 100,
+			'paged'          => max( 1, $page ),
+			'orderby'        => 'ID',
+			'order'          => 'ASC',
 		);
+		$account = get_user_by( 'email', $email );
+		if ( false === $account ) {
+			$args['meta_key']   = '_linker_recipient'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Bounded verified-email privacy workflow.
+			$args['meta_value'] = Identity::recipient( $email ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Private recipient HMAC.
+			return get_posts( $args );
+		}
+		// WP_Query has no native OR between author and meta. Keep its native
+		// pagination/status/type selection and scope one prepared WHERE extension.
+		$scope                              = wp_generate_uuid4();
+		$args['linker_reply_privacy_scope'] = $scope;
+		$args['suppress_filters']           = false;
+		$where                              = static function ( string $sql, \WP_Query $query ) use ( $scope, $account, $email ): string {
+			if ( $scope !== $query->get( 'linker_reply_privacy_scope' ) ) {
+				return $sql;
+			}
+			global $wpdb;
+			return $sql . $wpdb->prepare(
+				" AND ({$wpdb->posts}.post_author = %d OR EXISTS (SELECT 1 FROM {$wpdb->postmeta} linker_reply_owner WHERE linker_reply_owner.post_id = {$wpdb->posts}.ID AND linker_reply_owner.meta_key = %s AND linker_reply_owner.meta_value = %s))",
+				$account->ID,
+				'_linker_recipient',
+				Identity::recipient( $email )
+			);
+		};
+		add_filter( 'posts_where', $where, 10, 2 );
+		try {
+			return get_posts( $args );
+		} finally {
+			remove_filter( 'posts_where', $where, 10 );
+		}
 	}
 }

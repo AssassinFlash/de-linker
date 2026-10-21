@@ -175,13 +175,16 @@ def genie_environment(instance: Instance, index: Path, token: str) -> dict[str, 
     port 80 of this Mac and every ability call fails. Its turn log goes into
     the instance's own directory (`Instance.genie_log`): the service's default,
     `~/.cache/linker-genie/turns.sqlite`, is one file for every instance. Its
-    document index is `index` (`genie_index`).
+    document index is `index` (`genie_index`). Actual work slots persist in the
+    instance's private Genie directory across service restarts.
     """
     return {
         "GENIE_WP_URL": instance.url,
         "GENIE_LOG": str(instance.genie_log),
         "GENIE_INDEX": str(index),
         "GENIE_SERVICE_TOKEN": token,
+        "LINKER_GENIE_WORK_MODE": "enforce",
+        "LINKER_GENIE_WORK_PATH": str(instance.dir / "genie/private/work.sqlite"),
     }
 
 

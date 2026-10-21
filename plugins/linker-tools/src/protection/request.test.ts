@@ -41,6 +41,12 @@ test( 'reads never create proof/model work; selecting history uses a write scope
 	).toBe( 'conversation_write' );
 	expect(
 		resourceAction(
+			'https://site.test/WP-JSON/linker-ai/v1/GENIE/TURN',
+			'POST'
+		)
+	).toBe( 'genie' );
+	expect(
+		resourceAction(
 			'https://site.test/?rest_route=/linker-ai/v1/engine/roof/pack',
 			'POST'
 		)
@@ -105,7 +111,10 @@ test( 'a definite service refusal allows the next explicit operation UUID', asyn
 	const ids: string[] = [];
 	const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
 		ids.push( new Headers( init?.headers ).get( 'X-Linker-Operation' )! );
-		return new Response( '{}', { status: 503 } );
+		return new Response( '{}', {
+			status: 503,
+			headers: { 'X-Linker-Resource-Outcome': 'failed' },
+		} );
 	} );
 	const url =
 		'https://site.test/wp-json/linker-ai/v1/engine/design/residential';
@@ -113,4 +122,93 @@ test( 'a definite service refusal allows the next explicit operation UUID', asyn
 	await resourceFetch( fetcher, url, input );
 	await resourceFetch( fetcher, url, input );
 	expect( ids[ 0 ] ).not.toBe( ids[ 1 ] );
+} );
+
+test.each( [ 502, 503 ] )(
+	'an ambiguous business gateway %i keeps the logical UUID',
+	async ( status ) => {
+		const ids: string[] = [];
+		const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
+			ids.push(
+				new Headers( init?.headers ).get( 'X-Linker-Operation' )!
+			);
+			return new Response( '<html>synthetic gateway</html>', { status } );
+		} );
+		const url = 'https://site.test/wp-json/linker-ai/v1/genie/inquiry';
+		const input = {
+			method: 'POST',
+			body: JSON.stringify( { message: `gateway ${ status }` } ),
+		};
+		await resourceFetch( fetcher, url, input );
+		await resourceFetch( fetcher, url, input );
+		expect( ids[ 0 ] ).toBe( ids[ 1 ] );
+	}
+);
+
+test( 'a trusted pre-dispatch quota refusal permits a new explicit UUID', async () => {
+	const ids: string[] = [];
+	const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
+		ids.push( new Headers( init?.headers ).get( 'X-Linker-Operation' )! );
+		return new Response(
+			JSON.stringify( { code: 'linker_admission_quota' } ),
+			{ status: 429 }
+		);
+	} );
+	const input = { method: 'POST', body: '{"message":"quota fixture"}' };
+	const url = 'https://site.test/wp-json/linker-ai/v1/genie/contact';
+	await resourceFetch( fetcher, url, input );
+	await resourceFetch( fetcher, url, input );
+	expect( ids[ 0 ] ).not.toBe( ids[ 1 ] );
+} );
+
+test.each( [ true, false ] )(
+	'observe stays native when the Cloudflare client exists=%s',
+	async ( available ) => {
+		window.linkerPublicProtectionConfig!.mode = 'observe';
+		const proof = vi.fn( async () => {
+			throw new Error( 'synthetic outage' );
+		} );
+		window.linkerPublicProtection = available
+			? { proof, reset: vi.fn() }
+			: undefined;
+		const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
+			const headers = new Headers( init?.headers );
+			expect( headers.get( 'X-WP-Nonce' ) ).toBe( 'native-nonce' );
+			expect( headers.get( 'X-Linker-Operation' ) ).toMatch(
+				/^[a-f0-9-]{36}$/
+			);
+			expect( headers.has( 'X-Linker-Proof' ) ).toBe( false );
+			return new Response( '{}' );
+		} );
+		await resourceFetch(
+			fetcher,
+			'https://site.test/wp-json/linker-ai/v1/genie/turn',
+			{
+				method: 'POST',
+				body: '{}',
+				headers: { 'X-WP-Nonce': 'native-nonce' },
+			}
+		);
+		expect( fetcher ).toHaveBeenCalledOnce();
+		expect( proof ).not.toHaveBeenCalled();
+	}
+);
+
+test( 'observe preserves native fetch when shadow UUID hashing is unavailable', async () => {
+	window.linkerPublicProtectionConfig!.mode = 'observe';
+	vi.stubGlobal( 'crypto', {
+		subtle: {
+			digest: async () => {
+				throw new Error( 'synthetic hash unavailable' );
+			},
+		},
+	} );
+	const fetcher = vi.fn< typeof fetch >( async () => new Response( '{}' ) );
+	await resourceFetch(
+		fetcher,
+		'https://site.test/wp-json/linker-ai/v1/genie/turn',
+		{ method: 'POST', body: '{}' }
+	);
+	expect( fetcher ).toHaveBeenCalledOnce();
+	expect( window.linkerPublicProtection?.proof ).not.toHaveBeenCalled();
 } );

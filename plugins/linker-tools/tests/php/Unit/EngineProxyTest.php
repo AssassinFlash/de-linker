@@ -278,7 +278,7 @@ final class EngineProxyTest extends TestCase {
 	 */
 	private function request( string $method, string $path ): WP_REST_Request {
 		$request = new WP_REST_Request( $method, '/linker-ai/v1/engine/' . $path );
-		$request->set_param( 'path', $path );
+		$request->set_url_params( array( 'path' => $path ) );
 		return $request;
 	}
 }

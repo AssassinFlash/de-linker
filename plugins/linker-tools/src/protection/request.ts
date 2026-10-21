@@ -37,9 +37,10 @@ export function resourceAction(
 		return '';
 	}
 	const parsed = new URL( url, window.location.href );
-	const path =
+	const path = (
 		parsed.searchParams.get( 'rest_route' ) ??
-		parsed.pathname.replace( /^.*\/wp-json/, '' );
+		parsed.pathname.replace( /^.*\/wp-json/i, '' )
+	).toLowerCase();
 	if ( path.endsWith( '/genie/turn' ) ) {
 		return 'genie';
 	}
@@ -179,37 +180,49 @@ export async function resourceFetch(
 	if ( ! config || config.mode === 'off' || ! action ) {
 		return fetcher( input, init );
 	}
+	const observe = config.mode === 'observe';
 	const client = window.linkerPublicProtection;
-	if ( ! client ) {
+	if ( ! observe && ! client ) {
 		throw new Error( 'verification_unavailable' );
 	}
-	// Hash keys avoid retaining an extra copy of an uploaded file in the map.
-	const hash = await crypto.subtle.digest(
-		'SHA-256',
-		new TextEncoder().encode(
-			`${ init?.method }|${ url }|${ String( init?.body ?? '' ) }`
-		)
-	);
-	const key = Array.from( new Uint8Array( hash ), ( value ) =>
-		value.toString( 16 ).padStart( 2, '0' )
-	).join( '' );
-	let id = operations.get( key );
-	if ( ! id ) {
-		id = crypto.randomUUID();
-		// An app only keeps its current action and a few ambiguous retries.
-		if ( operations.size >= 8 ) {
-			operations.delete( operations.keys().next().value as string );
-		}
-		operations.set( key, id );
-	}
-	const proof = await client.proof( action, containerFor( action ) );
-	init?.signal?.throwIfAborted();
 	const headers = new Headers( init?.headers );
-	headers.set( 'X-Linker-Proof', proof );
-	headers.set( 'X-Linker-Operation', id );
 	if ( ! headers.has( 'X-WP-Nonce' ) ) {
 		headers.set( 'X-WP-Nonce', config.nonce );
 	}
+	let key = '';
+	let id = '';
+	try {
+		// Hash keys avoid retaining an extra copy of an uploaded file in the map.
+		const hash = await crypto.subtle.digest(
+			'SHA-256',
+			new TextEncoder().encode(
+				`${ init?.method }|${ url }|${ String( init?.body ?? '' ) }`
+			)
+		);
+		key = Array.from( new Uint8Array( hash ), ( value ) =>
+			value.toString( 16 ).padStart( 2, '0' )
+		).join( '' );
+		id = operations.get( key ) ?? crypto.randomUUID();
+		if ( ! operations.has( key ) ) {
+			if ( operations.size >= 8 ) {
+				operations.delete( operations.keys().next().value as string );
+			}
+			operations.set( key, id );
+		}
+	} catch ( error ) {
+		if ( ! observe ) {
+			throw error;
+		}
+		// Shadow diagnostics cannot prevent the original authenticated request.
+	}
+	if ( id ) {
+		headers.set( 'X-Linker-Operation', id );
+	}
+	if ( ! observe ) {
+		const proof = await client!.proof( action, containerFor( action ) );
+		headers.set( 'X-Linker-Proof', proof );
+	}
+	init?.signal?.throwIfAborted();
 	const response = await fetcher( input, {
 		...init,
 		headers,
@@ -222,16 +235,38 @@ export async function resourceFetch(
 				action
 			)
 		) {
-			client.reset( action );
+			if ( ! observe ) {
+				client?.reset( action );
+			}
 		}
 	} else if ( [ 429, 502, 503 ].includes( response.status ) ) {
-		// A known refusal can be retried as a new explicit action after the
-		// wait. Ambiguous network errors keep the original operation UUID.
-		operations.delete( key );
+		// A gateway status alone says nothing about a completed business write.
+		// Only the native adapter's known pure-work failure permits a fresh UUID.
+		const pure = [ 'design', 'roof', 'report_pdf' ].includes( action );
+		let code = '';
+		try {
+			const data: unknown = await response.clone().json();
+			if ( data && typeof data === 'object' && 'code' in data ) {
+				code = String( data.code );
+			}
+		} catch {
+			// An absent/untrusted body preserves the original operation identity.
+		}
+		if (
+			( pure &&
+				response.headers.get( 'X-Linker-Resource-Outcome' ) ===
+					'failed' ) ||
+			code === 'linker_admission_quota' ||
+			( action === 'genie' && code === 'linker_genie_quota' )
+		) {
+			operations.delete( key );
+		}
 	} else if ( [ 400, 409 ].includes( response.status ) ) {
 		// Proof expiry needs a new proof, not another side effect. The UUID
 		// remains stable so the journal can recover an already completed write.
-		client.reset( action );
+		if ( ! observe ) {
+			client?.reset( action );
+		}
 	}
 	return response;
 }

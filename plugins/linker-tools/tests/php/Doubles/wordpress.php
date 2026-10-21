@@ -109,6 +109,7 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 		private $route;
 		private $params = array();
 		private $query  = array();
+		private $url_params = array();
 		private $body   = '';
 		private $headers = array();
 		public function __construct( $method = '', $route = '' ) {
@@ -126,6 +127,12 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 		}
 		public function get_param( $key ) {
 			return $this->params[ $key ] ?? null;
+		}
+		public function set_url_params( $params ) {
+			$this->url_params = $params;
+		}
+		public function get_url_params() {
+			return $this->url_params;
 		}
 		public function set_query_params( $query ) {
 			$this->query = $query;

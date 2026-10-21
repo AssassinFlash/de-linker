@@ -69,6 +69,7 @@ from linker_genie.template import (
 )
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
+from linker_genie.work import WorkError, hold
 
 app = FastAPI(title="Genie - Linker's AI assistant")
 logger = logging.getLogger(__name__)
@@ -176,9 +177,20 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
+@app.exception_handler(WorkError)
+async def work_refused(request: Request, error: WorkError) -> JSONResponse:
+    return JSONResponse(status_code=error.status, content={"code": str(error)})
+
+
 @app.post("/assistant/turn")
 @app.post("/turn")
 def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
+    """Hold actual cross-worker capacity until this sync computation finishes."""
+    with hold(request.headers.get("x-linker-resource-subject", "")):
+        return _assistant_turn(body, request)
+
+
+def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     """One conversation turn, grounded and hydrated, as SSE."""
     started = time.monotonic()
     # The turn's passive phase timings (#336, timing.py): measurement only, no

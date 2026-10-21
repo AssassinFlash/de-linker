@@ -18,6 +18,13 @@ use WP_REST_Response;
 
 /** Native ability authentication is already checked before this trusted seam. */
 final class NativeEngine {
+	/**
+	 * Trusted immutable release, with private configuration as the default.
+	 *
+	 * @param string|null $release Release override for the native service adapter.
+	 */
+	public function __construct( private readonly ?string $release = null ) {}
+
 	/** Register a server-only filter; the public proxy cannot choose this seam. */
 	public function register(): void {
 		add_filter( 'linker_tools_engine_request', array( $this, 'request' ), 10, 3 );
@@ -46,11 +53,11 @@ final class NativeEngine {
 		// account is authoritative, and shares the public account dimensions.
 		$identity = new Identity( hash( 'sha256', 'ability|' . $account ), $account );
 		$input    = json_decode( $body, true );
-		$version  = defined( 'LINKER_ENGINE_RESOURCE_VERSION' ) ? (string) constant( 'LINKER_ENGINE_RESOURCE_VERSION' ) : '';
-		if ( ! is_array( $input ) || strlen( $body ) > 6 * 1024 * 1024 || '' === $version || rtrim( (string) get_option( 'linker_engine_url', '' ), '/' ) . '/design/residential' !== $url ) {
+		$version  = $this->release ?? ( defined( 'LINKER_ENGINE_RESOURCE_VERSION' ) ? (string) constant( 'LINKER_ENGINE_RESOURCE_VERSION' ) : '' );
+		if ( ! is_array( $input ) || ( 'enforce' === $mode && ( strlen( $body ) > 6 * 1024 * 1024 || '' === $version ) ) || rtrim( (string) get_option( 'linker_engine_url', '' ), '/' ) . '/design/residential' !== $url ) {
 			return self::failure();
 		}
-		$fingerprint = Fingerprint::make(
+		$fingerprint = 'enforce' === $mode ? Fingerprint::make(
 			$identity,
 			'design',
 			array(
@@ -58,7 +65,7 @@ final class NativeEngine {
 				'version' => $version,
 				'day'     => intdiv( time(), DAY_IN_SECONDS ),
 			)
-		);
+		) : '';
 		if ( is_wp_error( $fingerprint ) ) {
 			return $fingerprint;
 		}

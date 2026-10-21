@@ -97,7 +97,7 @@ final class Resources {
 		}
 		if ( ! class_exists( Configuration::class ) ) {
 			$mode = defined( 'LINKER_PUBLIC_PROTECTION_MODE' ) ? constant( 'LINKER_PUBLIC_PROTECTION_MODE' ) : ( is_string( getenv( 'LINKER_PUBLIC_PROTECTION_MODE' ) ) ? getenv( 'LINKER_PUBLIC_PROTECTION_MODE' ) : 'off' );
-			return 'off' === $mode ? $result : self::error( 'configuration', 503 );
+			return in_array( $mode, array( 'off', 'observe' ), true ) ? $result : self::error( 'configuration', 503 );
 		}
 		$configuration = Configuration::current();
 		if ( 'off' === $configuration->mode ) {
@@ -106,30 +106,31 @@ final class Resources {
 		// Encoded 20 MiB files need <28 MiB JSON. Two MiB of metadata is
 		// ample for the bounded native history (schema.MAX_REQUEST_BYTES).
 		$ceiling = 'genie' === $action ? 30 * 1024 * 1024 : 6 * 1024 * 1024;
-		if ( strlen( $request->get_body() ) > $ceiling ) {
-			return self::error( 'body', 413 );
+		if ( strlen( (string) $request->get_body() ) > $ceiling ) {
+			return 'observe' === $configuration->mode ? $result : self::error( 'body', 413 );
 		}
-		$payload = $request->get_params();
+		$engineering = in_array( $action, array( 'design', 'roof', 'report_pdf' ), true );
+		$payload     = $engineering ? (array) $request->get_json_params() : $request->get_params();
 		foreach ( array( 'website', 'started', 'started_nonce', '_wpnonce' ) as $field ) {
 			unset( $payload[ $field ] );
 		}
-		$payload['_route']  = $request->get_route();
+		$payload['_route']  = strtolower( $request->get_route() );
 		$payload['_method'] = $request->get_method();
 		$identity           = Identity::current();
 		if ( is_wp_error( $identity ) ) {
-			return $identity;
+			return 'observe' === $configuration->mode ? $result : $identity;
 		}
 		// Native ownership is retained; reject an explicitly foreign conversation
 		// before reserving any quota or exposing a previous receipt.
 		$id = (int) $request->get_param( 'id' );
-		if ( in_array( $action, array( 'conversation_write', 'conversation_mail' ), true ) && $id > 0 && ! ( new Conversations() )->may_use( $id ) ) {
+		if ( 'enforce' === $configuration->mode && in_array( $action, array( 'conversation_write', 'conversation_mail' ), true ) && $id > 0 && ! ( new Conversations() )->may_use( $id ) ) {
 			return self::error( 'conversation', 404 );
 		}
 		$raw_files = $request->get_param( 'attachments' );
-		if ( 'genie' === $action && null !== $raw_files && ( ! is_array( $raw_files ) || count( $raw_files ) > Attachments::MAX_FILES ) ) {
+		if ( 'enforce' === $configuration->mode && 'genie' === $action && null !== $raw_files && ( ! is_array( $raw_files ) || count( $raw_files ) > Attachments::MAX_FILES ) ) {
 			return self::error( 'files', 400 );
 		}
-		$plan = ResourcePolicy::plan( $action, $identity, is_array( $raw_files ) ? count( $raw_files ) : 0 );
+		$plan = ResourcePolicy::plan( $action, $identity, is_array( $raw_files ) && count( $raw_files ) <= Attachments::MAX_FILES ? count( $raw_files ) : 0 );
 		if ( 'enforce' === $configuration->mode && array() === $plan['limits'] ) {
 			// The shared Commerce business policy is a required dependency.
 			return self::error( 'configuration', 503 );
@@ -210,6 +211,11 @@ final class Resources {
 			$reply    = call_user_func( $callback, $request );
 			$response = is_wp_error( $reply ) ? rest_convert_error_to_response( $reply ) : rest_ensure_response( $reply );
 			$response->header( 'Cache-Control', 'private, no-store' );
+			if ( $engineering && $response->get_status() >= 400 ) {
+				// A native completed pure failure is safe to retry explicitly. A
+				// reverse proxy's ambiguous 5xx never carries this trusted marker.
+				$response->header( 'X-Linker-Resource-Outcome', 'failed' );
+			}
 			if ( $canonical_reply > 0 && $response->get_status() < 400 ) {
 				$this->replies->finish( $canonical_reply, $response );
 			}

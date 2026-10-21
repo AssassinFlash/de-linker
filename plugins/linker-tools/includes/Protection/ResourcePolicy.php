@@ -25,6 +25,8 @@ final class ResourcePolicy {
 		if ( ! in_array( $method, array( 'POST', 'DELETE' ), true ) ) {
 			return '';
 		}
+		// WP_REST_Server matches registered paths with the i modifier.
+		$route = strtolower( $route );
 		return match ( true ) {
 			'/linker-ai/v1/genie/turn' === $route => 'genie',
 			'/linker-ai/v1/genie/contact' === $route => 'genie_contact',

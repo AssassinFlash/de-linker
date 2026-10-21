@@ -33,7 +33,12 @@ The #519 WordPress admission journal protects browser/account resource actions.
 Its public `off/observe/enforce` mode controls that rollout. A native server
 callback context, unavailable from browser JSON, carries action, operation UUID,
 input HMAC, binding and receipt. `finally` restores the prior context even when
-work throws. Commerce reads `linker_commerce_public_business_context` before its
+work throws. In observe mode the browser sends the native nonce/credentials and
+a logical UUID when available, without waiting for Cloudflare. Missing browser
+client/hash/cookie, new body/file prechecks and shadow-store failure never add a
+block to the original native callback; its permissions and validation remain.
+Private provider and actual-work gates are independent and remain enforced.
+Commerce reads `linker_commerce_public_business_context` before its
 native save; it must not debit an already admitted Tools handoff again.
 
 A different, private SQLite journal protects actual provider requests. It lives
@@ -154,7 +159,10 @@ and immutable engine/feed release `LINKER_ENGINE_RESOURCE_VERSION`. The local
 launcher derives that release from engine source, actual feed and compatibility
 bytes. Production #522 must publish the actual release value alongside those
 artifacts; missing version refuses enforced recomputation. Object key ordering
-uses #519's canonical input HMAC. An in-flight duplicate returns an explicit
+uses #519's canonical input HMAC. The semantic key is the actual JSON body plus
+engine route; query/default REST fields not forwarded upstream cannot create
+fresh work. The native proxy reads its path from `get_url_params()` so a body or
+query `path` cannot turn an unguarded route into an expensive engineering POST. An in-flight duplicate returns an explicit
 pending status, and a completed duplicate restores the private native response.
 A definite failed pure calculation can be retried under a new explicit operation
 UUID, consuming a new recomputation unit. A successful retry updates the existing
@@ -167,9 +175,28 @@ recovery defect during acceptance and it was fixed in this branch.
 The account-only saved-solution read ability can recompute. Its trusted
 `linker_tools_engine_request` filter authenticates the native account, uses the
 same account sizing dimensions and deduplicates its input/version. It uses the
-existing service token and supplies an opaque subject to the engine.
+existing service token and supplies an opaque subject to the engine. Observe
+retains native recomputation when the new immutable release is absent; enforce
+requires the release before dispatch.
 
-## Actual engine work and ordinary reading
+## Actual work and ordinary reading
+
+Genie holds a second, private actual-work scope inside its synchronous turn
+worker, around attachment reading, understanding, model loops and ability calls.
+The response iterator only serializes the already completed answer. A PHP timeout
+or disconnected socket cannot release a still-running worker. All Genie processes
+share `LINKER_GENIE_WORK_PATH` (absolute, persistent, private SQLite path) with
+`LINKER_GENIE_WORK_MODE=enforce`. The existing private token authenticates the
+request; PHP adds `X-Linker-Resource-Subject`, a server-selected browser/account
+HMAC shared across conversations. These slots enforce subject1/site2 independently
+of WordPress's lease. No elapsed-time expiry frees live PID work; only actual
+finally or dead-worker recovery does. Store failure is503 and capacity refusal429
+(`genie_resource_*`), mapped to the existing visible Genie refusal with retained
+input/inquiry handoff. The local launcher supplies this configuration; #522 must
+publish/read back it on the service host alongside the provider guard. A real
+uvicorn fixture disconnects a caller during synthetic sync work, then verifies
+same-subject and third-site work remain refused until that work actually ends.
+
 
 The engine's private POST gate verifies the existing service token, counts the
 body before JSON parsing, then acquires a persistent SQLite work slot. Subject1 /
@@ -190,8 +217,12 @@ model turn. `GET /health` exposes only readiness, no private quota counters.
 The first-party verification client loads with the tool's existing site surface;
 the third-party widget/script is interaction-only. Managed proof is carried in a
 header, separate from semantic payload/operation UUID. Retry after an ambiguous
-lost response retains the UUID; a known quota refusal can become a new explicit
-attempt later. No request body is copied to localStorage. Genie's existing
+lost response retains the UUID, including an empty/HTML gateway502 or503 after
+a potentially saved business write. A native `linker_admission_quota` pre-dispatch
+refusal can become a fresh explicit attempt. Only a pure calculation with the
+native `X-Linker-Resource-Outcome: failed` completed-failure marker (or a Genie
+model-only quota refusal) may otherwise renew its operation UUID; business writes
+never treat a generic5xx as proof that nothing happened. No request body is copied to localStorage. Genie's existing
 failure record retains text/files in tab session state. A resource refusal restores
 the input and attachment chips, keeps thread/draft data, and presents the native
 inquiry-page link. Only an explicit click carries the unsent text through tab sessionStorage: destination path checked, 300-second maximum, delete-on-read, pure text `.value`, and no overwrite after a customer edit. No URL, attachment, log or server trust is involved. A 660-byte first-party entry restores it without eagerly loading the Genie app. Direct inquiries have their own business policy and remain
@@ -208,7 +239,9 @@ An empty private native receipt is allocated only after admission and before wor
 posts for24hours; the admission receipt stores only that native ID. Binary PDFs
 are base64 in that private response JSON. Raw submitted requests, proof strings
 and service tokens are not stored. Reply lookup rechecks subject binding. Native
-verified-email export/erasure handles linked receipts; native user deletion removes
+verified-email export/erasure handles linked receipts by recipient HMAC OR the
+account whose native email was verified, so account A's reply remains discoverable
+when the submitted response address was B; native user deletion removes
 account-owned records; hourly bounded cleanup removes expired guest records. The
 pull anonymizer drops these posts and their association metadata. Erasure never
 refunds dispatched quota, and deleting a reply cannot manufacture another permit.

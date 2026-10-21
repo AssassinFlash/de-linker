@@ -32,6 +32,8 @@ def test_each_instance_logs_genie_turns_in_its_own_directory() -> None:
         "GENIE_LOG": "/data/a/genie/turns.sqlite",
         "GENIE_INDEX": "/data/index/builds/v/index.sqlite",
         "GENIE_SERVICE_TOKEN": "t",
+        "LINKER_GENIE_WORK_MODE": "enforce",
+        "LINKER_GENIE_WORK_PATH": "/data/a/genie/private/work.sqlite",
     }
     assert (
         genie_environment(a, index, "t")["GENIE_LOG"]

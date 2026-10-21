@@ -280,15 +280,28 @@ final class ResourceAdmissionTest extends TestCase {
 			),
 			'design'
 		);
-		$calls     = 0;
-		$handler   = array(
+		// These query fields are not sent to the engine and cannot buy fresh work.
+		$first->set_query_params(
+			array(
+				'x'       => '1',
+				'_locale' => 'user',
+			)
+		);
+		$second->set_query_params(
+			array(
+				'x'       => '2',
+				'_locale' => 'site',
+			)
+		);
+		$calls   = 0;
+		$handler = array(
 			'callback' => static function () use ( &$calls ): WP_REST_Response {
-						++$calls;
-						return new WP_REST_Response( array( 'synthetic' => 'design' ) );
+				++$calls;
+				return new WP_REST_Response( array( 'synthetic' => 'design' ) );
 			},
 		);
-		$a         = $resources->dispatch( null, $first, '', $handler );
-		$b         = $resources->dispatch( null, $second, '', $handler );
+		$a       = $resources->dispatch( null, $first, '', $handler );
+		$b       = $resources->dispatch( null, $second, '', $handler );
 		$this->assertInstanceOf( WP_REST_Response::class, $a );
 		$this->assertInstanceOf( WP_REST_Response::class, $b );
 		$this->assertSame( $a->get_data(), $b->get_data() );
@@ -458,11 +471,13 @@ final class ResourceAdmissionTest extends TestCase {
 		$calls     = 0;
 		$handler   = array(
 			'callback' => static function () use ( &$calls ): WP_REST_Response {
-						++$calls;
-						return new WP_REST_Response( array( 'synthetic' => true ), 1 === $calls ? 503 : 200 );
+				++$calls;
+				return new WP_REST_Response( array( 'synthetic' => true ), 1 === $calls ? 503 : 200 );
 			},
 		);
-		$this->assertSame( 503, $resources->dispatch( null, $request, '', $handler )->get_status() );
+		$failed    = $resources->dispatch( null, $request, '', $handler );
+		$this->assertSame( 503, $failed->get_status() );
+		$this->assertSame( 'failed', $failed->get_headers()['X-Linker-Resource-Outcome'] );
 		$request->set_header( 'X-Linker-Operation', wp_generate_uuid4() );
 		$this->assertSame( 200, $resources->dispatch( null, $request, '', $handler )->get_status() );
 		$request->set_header( 'X-Linker-Operation', wp_generate_uuid4() );
@@ -513,6 +528,254 @@ final class ResourceAdmissionTest extends TestCase {
 			wp_set_current_user( 0 );
 			require_once ABSPATH . 'wp-admin/includes/user.php';
 			wp_delete_user( $user );
+		}
+	}
+	/**
+	 * WP's real case-insensitive route matcher cannot bypass resource admission.
+	 */
+	public function test_mixed_case_native_rest_route_refuses_before_records_or_upstream(): void {
+		$before  = wp_count_posts( \Linker\Tools\Genie\Conversations::POST_TYPE );
+		$http    = 0;
+		$fixture = static function () use ( &$http ): WP_Error {
+			++$http;
+			return new WP_Error( 'synthetic_unexpected_http' );
+		};
+		add_filter( 'pre_http_request', $fixture, 0 );
+		try {
+			$request = new WP_REST_Request( 'POST', '/LINKER-AI/v1/GeNiE/TuRn' );
+			$request->set_header( 'Content-Type', 'application/json' );
+			$request->set_header( 'X-Linker-Operation', wp_generate_uuid4() );
+			$request->set_body( '{"messages":[{"role":"user","content":"Synthetic case variation"}],"locale":"en"}' );
+			$response = rest_do_request( $request );
+			$this->assertSame( 400, $response->get_status(), (string) wp_json_encode( $response->get_data() ) );
+			$this->assertSame( 'linker_admission_proof', $response->get_data()['code'] );
+			$this->assertSame( 0, $http );
+			$this->assertEquals( $before, wp_count_posts( \Linker\Tools\Genie\Conversations::POST_TYPE ) );
+		} finally {
+			remove_filter( 'pre_http_request', $fixture, 0 );
+		}
+	}
+	/**
+	 * Observe adds no proof/parse/ledger block to the original native callback.
+	 */
+	public function test_observe_keeps_native_callback_on_protection_preflight_and_storage_failure(): void {
+		putenv( 'LINKER_PUBLIC_PROTECTION_MODE=observe' );
+		update_option( Ledger::OPTION, 'synthetic-corrupt-shadow-store', false );
+		$resources = new Resources();
+		$calls     = 0;
+		$handler   = array(
+			'callback' => static function () use ( &$calls ): WP_REST_Response {
+				++$calls;
+				return new WP_REST_Response( array( 'native' => true ) );
+			},
+		);
+		$request   = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_header( 'X-Linker-Operation', wp_generate_uuid4() );
+		$request->set_body( '{"attachments":[{}, {}, {}, {}],"website":"synthetic-bot-field"}' );
+		$this->assertInstanceOf( WP_REST_Response::class, $resources->dispatch( null, $request, '', $handler ) );
+		$this->assertSame( 1, $calls );
+		$this->assertFalse( Resources::verified() );
+		// New protection body ceilings are also advisory; native validation stays.
+		$request->set_route( '/linker-ai/v1/engine/design/residential' );
+		$request->set_body( str_repeat( 'x', 6 * 1024 * 1024 + 1 ) );
+		$this->assertNull( $resources->dispatch( null, $request, '', $handler ) );
+	}
+
+	/**
+	 * Missing release is advisory in observe; private service auth still applies.
+	 */
+	public function test_observe_native_saved_design_does_not_require_new_release_configuration(): void {
+		$user = wp_insert_user(
+			array(
+				'user_login' => 'g521-' . wp_generate_uuid4(),
+				'user_pass'  => wp_generate_password( 32 ),
+				'user_email' => wp_generate_uuid4() . '@example.test',
+				'role'       => 'customer',
+			)
+		);
+		$this->assertIsInt( $user );
+		wp_set_current_user( $user );
+		$url     = rtrim( (string) get_option( 'linker_engine_url', '' ), '/' ) . '/design/residential';
+		$calls   = 0;
+		$fixture = function ( mixed $old, array $args, string $target ) use ( $url, &$calls ): mixed {
+			if ( $target !== $url ) {
+				return $old;
+			}
+			++$calls;
+			$this->assertSame( (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ), $args['headers']['X-Linker-Service-Token'] );
+			return array(
+				'response' => array( 'code' => 200 ),
+				'body'     => '{"synthetic":true}',
+			);
+		};
+		add_filter( 'pre_http_request', $fixture, 0, 3 );
+		try {
+			$engine = new \Linker\Tools\Protection\NativeEngine( '' );
+			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=observe' );
+			$this->assertSame( array( 200, '{"synthetic":true}' ), $engine->request( null, $url, '{"synthetic":true}' ) );
+			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
+			$this->assertInstanceOf( WP_Error::class, $engine->request( null, $url, '{"synthetic":true}' ) );
+			$this->assertSame( 1, $calls );
+		} finally {
+			remove_filter( 'pre_http_request', $fixture, 0 );
+			wp_set_current_user( 0 );
+			include_once ABSPATH . 'wp-admin/includes/user.php';
+			wp_delete_user( $user );
+		}
+	}
+
+	/**
+	 * Verified account A owns its reply even when the requested reply address is B.
+	 */
+	public function test_native_privacy_finds_author_or_recipient_and_erasure_prevents_late_finish(): void {
+		$email = wp_generate_uuid4() . '@example.test';
+		$user  = wp_insert_user(
+			array(
+				'user_login' => 'g521-' . wp_generate_uuid4(),
+				'user_pass'  => wp_generate_password( 32 ),
+				'user_email' => $email,
+				'role'       => 'customer',
+			)
+		);
+		$this->assertIsInt( $user );
+		$replies = new Replies();
+		$privacy = new \Linker\Tools\Protection\ReplyPrivacy();
+		try {
+			wp_set_current_user( $user );
+			$own = $replies->open( hash( 'sha256', 'author-a' ), 'different-b@example.test' );
+			wp_set_current_user( 0 );
+			$recipient = $replies->open( hash( 'sha256', 'guest-for-a' ), $email );
+			$unrelated = $replies->open( hash( 'sha256', 'unrelated' ), 'different-b@example.test' );
+			$export    = $privacy->export( $email );
+			$this->assertSame( array( 'tool-reply-' . $own, 'tool-reply-' . $recipient ), array_column( $export['data'], 'item_id' ) );
+			$this->assertTrue( $privacy->erase( $email )['items_removed'] );
+			$this->assertSame( 0, $replies->finish( $own, new WP_REST_Response( array( 'late' => true ) ) ) );
+			$this->assertFalse( get_post_status( $recipient ) );
+			$this->assertSame( $unrelated, $replies->finish( $unrelated, new WP_REST_Response( array( 'keep' => true ) ) ) );
+			$this->assertCount( 1, $privacy->export( 'different-b@example.test' )['data'] );
+		} finally {
+			wp_set_current_user( 0 );
+			include_once ABSPATH . 'wp-admin/includes/user.php';
+			wp_delete_user( $user );
+		}
+	}
+	/**
+	 * A real cookie/header failure cannot replace native validation in observe.
+	 */
+	public function test_observe_cookie_failure_keeps_native_validation_in_a_real_process(): void {
+     // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Exercise PHP's real headers_sent state outside PHPUnit output buffering.
+		$process = proc_open(
+			array( PHP_BINARY, '-d', 'memory_limit=512M', __DIR__ . '/fixtures/resource-observe-cookie.php' ),
+			array(
+				1 => array( 'pipe', 'w' ),
+				2 => array( 'pipe', 'w' ),
+			),
+			$pipes
+		);
+		$this->assertIsResource( $process );
+		$output = (string) stream_get_contents( $pipes[1] );
+		$error  = (string) stream_get_contents( $pipes[2] );
+		fclose( $pipes[1] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Native process pipe.
+		fclose( $pipes[2] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Native process pipe.
+		$this->assertSame( 0, proc_close( $process ), $error );
+		$this->assertSame(
+			array(
+				'cookie_failed' => true,
+				'calls'         => 1,
+				'code'          => 'native_validation',
+			),
+			json_decode( substr( $output, strpos( $output, "\n" ) + 1 ), true ),
+			$output
+		);
+	}
+
+	/**
+	 * Actual PHP service transport binds work to the browser/account, never a conversation.
+	 */
+	public function test_genie_private_turn_transport_shares_subject_across_conversations(): void {
+		$headers = array();
+		$fixture = static function ( mixed $old, array $args, string $url ) use ( &$headers ): mixed {
+			if ( ! str_ends_with( $url, '/assistant/turn' ) ) {
+				return $old;
+			}
+			$headers[] = $args['headers'];
+			return array(
+				'response' => array( 'code' => 429 ),
+				'body'     => '{"code":"genie_resource_busy"}',
+			);
+		};
+		add_filter( 'pre_http_request', $fixture, 0, 3 );
+		try {
+			$proxy  = new \Linker\Tools\Genie\Proxy( new \Linker\Tools\Genie\Conversations() );
+			$post   = new \ReflectionMethod( $proxy, 'post' );
+			$first  = $post->invoke( $proxy, 'http://127.0.0.1:9/assistant/turn', array( 'conversation_id' => 'one' ) );
+			$second = $post->invoke( $proxy, 'http://127.0.0.1:9/assistant/turn', array( 'conversation_id' => 'two' ) );
+			$this->assertInstanceOf( WP_Error::class, $first );
+			$this->assertSame( 'linker_genie_quota', $first->get_error_code() );
+			$this->assertInstanceOf( WP_Error::class, $second );
+			$this->assertSame( $headers[0]['X-Linker-Resource-Subject'], $headers[1]['X-Linker-Resource-Subject'] );
+			$identity = Identity::current();
+			$this->assertInstanceOf( Identity::class, $identity );
+			$this->assertSame( $identity->browser, $headers[0]['X-Linker-Resource-Subject'] );
+			$this->assertSame( (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ), $headers[0]['X-Linker-Service-Token'] );
+		} finally {
+			remove_filter( 'pre_http_request', $fixture, 0 );
+		}
+	}
+	/** Native route capture wins over body/query path; irrelevant queries share one result. */
+	public function test_real_engine_proxy_cannot_override_route_or_duplicate_work_with_query(): void {
+		$base    = rtrim( (string) get_option( 'linker_engine_url', '' ), '/' );
+		$urls    = array();
+		$fixture = static function ( mixed $old, array $args, string $url ) use ( $base, &$urls ): mixed {
+			if ( ! str_starts_with( $url, $base . '/' ) ) {
+				return $old; }
+			$urls[] = $url;
+			return array(
+				'response' => array( 'code' => 200 ),
+				'body'     => '{"synthetic":"native-engine"}',
+				'headers'  => array( 'content-type' => 'application/json' ),
+			);
+		};
+		add_filter( 'pre_http_request', $fixture, 0, 3 );
+		try {
+			foreach ( array( 'roof/pack', 'report/pdf' ) as $index => $fake_path ) {
+				$request = $this->request(
+					'/linker-ai/v1/engine/design/residential',
+					array(
+						'plz'        => '80538',
+						'annual_kwh' => 5000,
+					),
+					'design'
+				);
+				$request->set_query_params(
+					array(
+						'path'    => $fake_path,
+						'x'       => $index,
+						'_locale' => $index,
+					)
+				);
+				$this->assertSame( 200, rest_do_request( $request )->get_status() );
+			}
+			$this->assertSame( array( $base . '/design/residential' ), $urls );
+			foreach ( array(
+				array( 'plz' => '80538' ),
+				array(
+					'plz'  => '80538',
+					'path' => 'design/residential',
+				),
+			) as $body ) {
+				$request = new WP_REST_Request( 'POST', '/linker-ai/v1/engine/unknown' );
+				$request->set_header( 'Content-Type', 'application/json' );
+				$request->set_body( (string) wp_json_encode( $body ) );
+				$request->set_query_params( array( 'path' => 'design/residential' ) );
+				$response = rest_do_request( $request );
+				$this->assertSame( 404, $response->get_status() );
+				$this->assertSame( 'linker_engine_path', $response->get_data()['code'] );
+			}
+			$this->assertCount( 1, $urls, 'No query/body override reaches any additional upstream work.' );
+		} finally {
+			remove_filter( 'pre_http_request', $fixture, 0 );
 		}
 	}
 }
