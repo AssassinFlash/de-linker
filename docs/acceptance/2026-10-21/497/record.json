@@ -4,8 +4,8 @@
   "instance": "w497",
   "origin": "http://127.0.0.1:9264",
   "genie": "http://127.0.0.1:9266",
-  "startedAt": "2026-10-21T11:58:12.534Z",
-  "startedDb": "2026-10-21 11:58:12",
+  "startedAt": "2026-10-21T12:19:21.350Z",
+  "startedDb": "2026-10-21 12:19:21",
   "mailSent": false,
   "accountUsed": false,
   "cases": [
@@ -196,7 +196,7 @@
   ],
   "turnLog": [
     {
-      "id": 37,
+      "id": 45,
       "question": "What does the Roof detail step do?",
       "locale": "en",
       "answeredIn": "en",
@@ -227,7 +227,7 @@
       "pass": true
     },
     {
-      "id": 38,
+      "id": 46,
       "question": "What happens if I skip the roof?",
       "locale": "en",
       "answeredIn": "en",
@@ -258,7 +258,7 @@
       "pass": true
     },
     {
-      "id": 39,
+      "id": 47,
       "question": "What does the Roof detail step do?",
       "locale": "en",
       "answeredIn": "en",
@@ -289,7 +289,7 @@
       "pass": true
     },
     {
-      "id": 40,
+      "id": 48,
       "question": "What happens if I skip the roof?",
       "locale": "en",
       "answeredIn": "en",
@@ -320,7 +320,7 @@
       "pass": true
     },
     {
-      "id": 41,
+      "id": 49,
       "question": "Was macht der Schritt Dachdetails?",
       "locale": "de",
       "answeredIn": "de",
@@ -351,7 +351,7 @@
       "pass": true
     },
     {
-      "id": 42,
+      "id": 50,
       "question": "Was passiert, wenn ich das Dach weglasse?",
       "locale": "de",
       "answeredIn": "de",
@@ -382,7 +382,7 @@
       "pass": true
     },
     {
-      "id": 43,
+      "id": 51,
       "question": "Was macht der Schritt Dachdetails?",
       "locale": "de",
       "answeredIn": "de",
@@ -413,7 +413,7 @@
       "pass": true
     },
     {
-      "id": 44,
+      "id": 52,
       "question": "Was passiert, wenn ich das Dach weglasse?",
       "locale": "de",
       "answeredIn": "de",
@@ -460,5 +460,5 @@
     "name": "20261021-1023",
     "taken": "2026-10-21T02:26:29+00:00"
   },
-  "finishedAt": "2026-10-21T11:58:33.625Z"
+  "finishedAt": "2026-10-21T12:19:48.727Z"
 }

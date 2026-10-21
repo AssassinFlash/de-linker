@@ -291,8 +291,13 @@ _ANNUAL = re.compile(
 )
 # A size word keeps a skipping question on sizing even without a figure: "Wie
 # viel kWp kann ich auf meiner Dachfläche aufnehmen?" asks for the size, not
-# about the step (#497 review).
-_SIZE_WORD = re.compile(r"\b(?:kwp|kwh|kw)\b", re.IGNORECASE)
+# about the step (#497 review). The size may sit against a digit ("12kWp"), so
+# the unit needs no boundary before it; a module count is a size too ("Wie
+# viele Module kann meine Dachfläche aufnehmen?").
+_SIZE_WORD = re.compile(
+    r"(?:kwp|kwh|kw)\b|\bmodules?\b|\bmodul\w*",
+    re.IGNORECASE,
+)
 # Extreme words, EN and DE. Comparatives (kleiner, größer, günstiger) are not
 # extremes. ß and ss both occur.
 _SMALLEST = re.compile(
@@ -2392,11 +2397,11 @@ def _roof_step(
     Matched on `lexicon.normalize`. The step's own name answers even when Jev
     reads the question as sizing: the acceptance questions name the step. A
     skipping phrase is weaker, and a route that already has evidence keeps it:
-    a named product word, a stated or asked kWp/kWh size, or a confident
-    company reading wins over the sentence. A named roof component ("ohne
-    Dachmontage", "keine Dachneigung") is not the step, so the absence words do
-    not fire on it. The sentence is signed in `template.ROOF`; size-hint
-    supplies the configurator URL with no fields. No model runs.
+    a named product word, a stated or asked kWp/kWh size or module count, or a
+    confident company reading wins over the sentence. A named roof component
+    ("ohne Dachmontage", "keine Dachneigung") is not the step, so the absence
+    words do not fire on it. The sentence is signed in `template.ROOF`;
+    size-hint supplies the configurator URL with no fields. No model runs.
     """
     compact = normalize(message)
     if any(match.kind in ("brand", "series", "model") for match in matches):
