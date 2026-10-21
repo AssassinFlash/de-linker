@@ -86,7 +86,7 @@
 
 ## 6. compatibility.json 的翻译（#14 引擎 schema 形状）
 
-形状由 `services/engine/schemas/compatibility.schema.json` 定（#14 契约）：顶层 `{schema_version: 1, version, pairs, requirements}`，`additionalProperties: false`（旧文件的 `verified_on`/`match` 说明移到本文件）。`version` = 对 `{schema_version, pairs, requirements}` 规范 JSON 的 sha256（自指字段外的内容哈希；feed 的 `compatibility_version` 报告它，实测两者相等）。当前值 `81f8688f5d03…`（64 hex）。
+形状由 `services/engine/schemas/compatibility.schema.json` 定（#14 契约）：顶层 `{schema_version: 1, version, pairs, requirements}`，`additionalProperties: false`（旧文件的 `verified_on`/`match` 说明移到本文件）。`version` = 对 `{schema_version, pairs, requirements}` 规范 JSON 的 sha256（自指字段外的内容哈希；feed 的 `compatibility_version` 报告它，实测两者相等）。当前值 `361fb80a995f…`（64 hex）。
 
 228 格 → 248 对（20 条型号级 model_constraints 拆为独立条目；型号级条目排在家族条目之前**仅为可读性**——引擎语义是多命中合并）：
 

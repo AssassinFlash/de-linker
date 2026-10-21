@@ -65,6 +65,8 @@ final class CompatibilityTest extends TestCase {
 			// saj-h2-t3|saj-bat: the B2 set runs through the BC2-HV1 control module.
 			array( 'H2-10K-T3', 'B2-10.0-HV1', 'released_with_accessory' ),
 			array( 'H2-10K-T3', 'BU2-5.0-HV1', 'released_with_accessory' ),
+			// The one-module B2-5.0 runs below the H2 battery window (#481).
+			array( 'H2-10K-T3', 'B2-5.0-HV1', 'not_released' ),
 			// eco-po|eco-po-b: every tower takes the battery base article.
 			array( 'EF HD-P1-5K-S1', 'EF BD-5.1-S1', 'released_with_accessory' ),
 			// eco-ocean2-p3|eco-ocean2-bat: listed; the junction box is a condition of cascading.
@@ -128,6 +130,18 @@ final class CompatibilityTest extends TestCase {
 	}
 
 	/**
+	 * The not_released B2-5.0 names no accessory (#481): one module is not a
+	 * released configuration, so the BC2-HV1 line drops.
+	 */
+	public function test_the_not_released_b2_5_0_names_no_bc2_accessory(): void {
+		$answer = Compatibility::for_models( 'H2-10K-T3', 'B2-5.0-HV1' );
+
+		$this->assertNotNull( $answer );
+		$this->assertSame( 'not_released', $answer['verdict'] );
+		$this->assertSame( array(), $answer['accessories'] );
+	}
+
+	/**
 	 * The model-level entry joins with its family entry, the way the engine
 	 * reads the file: the OCEAN 2 battery-model condition is part of the
 	 * answer beside the family constraint.
@@ -143,19 +157,18 @@ final class CompatibilityTest extends TestCase {
 
 	/**
 	 * When entries that match disagree, the most restrictive verdict wins
-	 * (not_released < released_with_accessory < released): the one-module
-	 * B2-5.0 answers released_with_accessory even though a model-level
-	 * entry repeats the family release.
+	 * (not_released < released_with_accessory < released): the single-phase
+	 * PowerOcean inverter joins its not_released model entry with the
+	 * released_with_accessory family entry.
 	 */
 	public function test_the_most_restrictive_verdict_wins(): void {
-		$answer = Compatibility::for_models( 'H2-10K-T3', 'B2-5.0-HV1' );
+		$answer = Compatibility::for_models( 'EF HD-P1-10K0-S2', 'EF BD-5.1-S1' );
 
 		$this->assertNotNull( $answer );
-		$this->assertSame( 'released_with_accessory', $answer['verdict'] );
-		// The one-module voltage caveat is part of the joined conditions.
+		$this->assertSame( 'not_released', $answer['verdict'] );
 		$joined = implode( "\n", array_column( $answer['conditions'], 'en' ) );
-		$this->assertStringContainsString( 'B2-5.0', $joined );
-		$this->assertStringContainsString( '115.2 V', $joined );
+		$this->assertStringContainsString( 'The cited documents do not list this pair.', $joined );
+		$this->assertStringContainsString( 'single-phase datasheet (p. 1)', $joined );
 	}
 
 	/**

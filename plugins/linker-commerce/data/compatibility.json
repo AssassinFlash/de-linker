@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "version": "81f8688f5d0383bf275607b0aaaf4367963881f1b9c4c47f0450ac7b55f980e6",
+ "version": "361fb80a995f7b2ae538fd87dc7cd1cddbf0c4e53bd71042d3d9d4ad445ea3d2",
  "pairs": [
   {
    "inverter": "^EF HD-P1-(3|3\\.68|4\\.6|5|5\\.75|6)K-S2$",
@@ -5144,10 +5144,12 @@
      "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+     "page": 2
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+     "page": 37
     }
    ],
    "accessories": [
@@ -5161,7 +5163,7 @@
   {
    "inverter": "^H2-\\d+K-T3(-DE)?$",
    "battery": "^B2-5\\.0-HV[15]$",
-   "verdict": "released_with_accessory",
+   "verdict": "not_released",
    "conditions": [
     {
      "en": "The H2 T3 manual gives a battery voltage range of 180 to 800 V; SAJ's B2 datasheet gives 89.6 to 115.2 V for the one-module B2-5.0.",
@@ -5176,17 +5178,12 @@
      "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+     "page": 2
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
-    }
-   ],
-   "accessories": [
-    {
-     "model": "^BC2-HV1$",
-     "quantity": 1,
-     "per": "system"
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+     "page": 37
     }
    ]
   },
@@ -5208,10 +5205,12 @@
      "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+     "page": 2
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+     "page": 37
     }
    ],
    "accessories": [
@@ -5240,10 +5239,12 @@
      "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf"
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+     "page": 2
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+     "page": 37
     }
    ],
    "accessories": [
@@ -5252,7 +5253,11 @@
      "quantity": 1,
      "per": "system"
     }
-   ]
+   ],
+   "modules": {
+    "min": 2,
+    "max": 5
+   }
   },
   {
    "inverter": "^H2-\\d+K-T3(-DE)?$",
@@ -5545,7 +5550,8 @@
    ],
    "documents": [
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+     "page": 12
     },
     {
      "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf"
@@ -5554,9 +5560,14 @@
      "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+     "page": 2
     }
-   ]
+   ],
+   "modules": {
+    "min": 2,
+    "max": 5
+   }
   },
   {
    "inverter": "(?:^HS2-(5|6|8|10)K-T2-X$|^HS2-10K-T2-B-X$)",
@@ -5570,7 +5581,8 @@
    ],
    "documents": [
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS2-AS2_5-10K-T2_User-Manual_DE_V0.3.pdf",
+     "page": 12
     },
     {
      "url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf"
@@ -5579,9 +5591,14 @@
      "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf"
     },
     {
-     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+     "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+     "page": 2
     }
-   ]
+   ],
+   "modules": {
+    "min": 2,
+    "max": 5
+   }
   },
   {
    "inverter": "(?:^HS2-(5|6|8|10)K-T2-X$|^HS2-10K-T2-B-X$)",

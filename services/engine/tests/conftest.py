@@ -25,6 +25,11 @@ from linker_engine.pvgis import Pvgis
 from linker_engine.roof import lod2
 
 FIXTURES = Path(__file__).parent / "fixtures"
+# The contract the site ships, so the tests that pin a release decision read the
+# file production reads (#481, #489).
+SHIPPED_COMPATIBILITY = (
+    Path(__file__).parents[3] / "plugins/linker-commerce/data/compatibility.json"
+)
 MUNICH_LOD2 = FIXTURES / "lod2" / "munich-80538-triftstrasse.gml.gz"
 TRIFTSTRASSE_5 = (
     48.140278,
@@ -46,6 +51,11 @@ def compatibility() -> Compatibility:
     return Compatibility.load(FIXTURES / "compatibility.json")
 
 
+@pytest.fixture(scope="session")
+def shipped_compatibility() -> Compatibility:
+    return Compatibility.load(SHIPPED_COMPATIBILITY)
+
+
 @pytest.fixture
 def pvgis(tmp_path: Path) -> Pvgis:
     cache = tmp_path / "pvgis"
@@ -56,6 +66,14 @@ def pvgis(tmp_path: Path) -> Pvgis:
 @pytest.fixture
 def engine(products: Products, compatibility: Compatibility, pvgis: Pvgis) -> Engine:
     return Engine(products=products, compatibility=compatibility, pvgis=pvgis)
+
+
+@pytest.fixture
+def shipped_engine(
+    products: Products, shipped_compatibility: Compatibility, pvgis: Pvgis
+) -> Engine:
+    """The engine on the fixture feed and the shipped contract (#481, #489)."""
+    return Engine(products=products, compatibility=shipped_compatibility, pvgis=pvgis)
 
 
 def munich_tile(tile: lod2.Tile, target: Path) -> None:
