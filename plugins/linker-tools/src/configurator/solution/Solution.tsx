@@ -339,18 +339,22 @@ export function Solution( props: SolutionProps ) {
 						: __( 'Save solution', 'linker-tools' ) }
 				</button>
 				<p className="linker-actions__status">
-					{ props.addOutcome === 'complete'
-						? __(
+					{ props.addOutcome === 'complete' ? (
+						<>
+							{ __(
 								'All products are in your solution draft.',
 								'linker-tools'
-							)
-						: null }
-					{ props.addOutcome === 'partial'
-						? __(
+							) }{ ' ' }
+						</>
+					) : null }
+					{ props.addOutcome === 'partial' ? (
+						<>
+							{ __(
 								'Some products are not confirmed in your solution draft. See the cards above.',
 								'linker-tools'
-							)
-						: null }
+							) }{ ' ' }
+						</>
+					) : null }
 					{ props.saveState === 'saved' ? (
 						<>
 							{ _x(

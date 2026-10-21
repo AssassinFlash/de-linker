@@ -57,6 +57,22 @@ const EMPTY: GeoJSON.FeatureCollection = {
 	type: 'FeatureCollection',
 	features: [],
 };
+// TerraDraw 1.35.0 closes the polygon in its canvas pointerup listener
+// (base.adapter.ts pointerup → the mode's onClick → close) and the finish
+// handler turns the mode static before MapLibre reports the same gesture as
+// a click. The browser dispatches that click right after pointerup, so the
+// window only has to span the gesture: 500 ms also covers the 300 ms click
+// delay some touch browsers still add, and stays well below a deliberate next
+// click. The two pixels absorb the sub-pixel rounding of a touch click.
+const FINISH_CLICK_MS = 500;
+const FINISH_CLICK_PX = 2;
+
+/** A pointer position with the event's monotonic timestamp. */
+interface ScreenGesture {
+	x: number;
+	y: number;
+	at: number;
+}
 
 export interface RoofStepProps {
 	plz: string;
@@ -78,6 +94,10 @@ export function RoofStep( {
 	// The overlay sources can take data once the map's style has been read.
 	const [ ready, setReady ] = useState( false );
 	const draw = useRef< TerraDraw | null >( null );
+	// The pointerup that closed the polygon, and the last pointerup on the
+	// canvas, so the click it produces is not read as a roof selection.
+	const lastPointerUp = useRef< ScreenGesture | null >( null );
+	const finishingGesture = useRef< ScreenGesture | null >( null );
 	const [ place, setPlace ] = useState< Place | null >( null );
 	const [ status, setStatus ] = useState< Status >( 'loading' );
 	const [ result, setResult ] = useState< RoofResult | null >( null );
@@ -221,9 +241,38 @@ export function RoofStep( {
 				setReady( true );
 			}
 		} );
-		// A click selects a roof, except while a plane is drawn corner by corner.
+		// The adapter finishes a drawn polygon in the canvas pointerup
+		// listener, before MapLibre reports that same gesture as a click.
+		const canvas = instance.getCanvas();
+		const rememberPointerUp = ( event: PointerEvent ) => {
+			lastPointerUp.current = {
+				x: event.clientX,
+				y: event.clientY,
+				at: event.timeStamp,
+			};
+		};
+		canvas.addEventListener( 'pointerup', rememberPointerUp, true );
+		// A click selects a roof, except while a plane is drawn corner by corner
+		// and except the click that finished the polygon: the finish handler has
+		// already turned the mode static when that click arrives.
 		instance.on( 'click', ( event: MapMouseEvent ) => {
 			if ( draw.current?.getMode() === 'polygon' ) {
+				return;
+			}
+			const finished = finishingGesture.current;
+			const pointer = event.originalEvent;
+			const age =
+				finished && pointer
+					? pointer.timeStamp - finished.at
+					: Infinity;
+			if (
+				finished &&
+				pointer &&
+				age >= 0 &&
+				age < FINISH_CLICK_MS &&
+				Math.abs( pointer.clientX - finished.x ) <= FINISH_CLICK_PX &&
+				Math.abs( pointer.clientY - finished.y ) <= FINISH_CLICK_PX
+			) {
 				return;
 			}
 			setClicked( {
@@ -234,6 +283,7 @@ export function RoofStep( {
 		map.current = instance;
 		return () => {
 			setReady( false );
+			canvas.removeEventListener( 'pointerup', rememberPointerUp, true );
 			draw.current?.stop();
 			draw.current = null;
 			instance.remove();
@@ -312,6 +362,8 @@ export function RoofStep( {
 			} );
 			terra.start();
 			terra.on( 'finish', ( id ) => {
+				finishingGesture.current = lastPointerUp.current;
+				lastPointerUp.current = null;
 				const feature = terra
 					.getSnapshot()
 					.find( ( item ) => item.id === id );
@@ -331,6 +383,7 @@ export function RoofStep( {
 			draw.current = terra;
 		}
 		draw.current.setMode( 'polygon' );
+		lastPointerUp.current = null;
 		setDrawing( true );
 	}
 

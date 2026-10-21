@@ -418,6 +418,108 @@ test( 'a saved solution names the account and links to it', async () => {
 	} );
 } );
 
+test( 'the add result and the save result stay separate sentences', async () => {
+	const save = vi.mocked( saveSolution );
+	save.mockRejectedValue( new Error( 'save 403' ) );
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const addAll = await screen.findByRole( 'button', {
+		name: 'Add all to solution draft',
+	} );
+	await act( async () => {
+		fireEvent.click( addAll );
+	} );
+	await screen.findByText( 'All products are in your solution draft.' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Save solution' } )
+		);
+	} );
+	await screen.findByText( /The solution could not be saved\. Try again\./ );
+	const failed = screen
+		.getByText( /All products are in your solution draft\./ )
+		.closest( 'p' );
+	expect( failed?.textContent ).toBe(
+		'All products are in your solution draft. The solution could not be saved. Try again.'
+	);
+
+	save.mockResolvedValue( { id: 70, url: '/my-account/solutions/70/' } );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Save solution' } )
+		);
+	} );
+	await screen.findByText( /Saved to your account\./ );
+	const saved = screen
+		.getByText( /All products are in your solution draft\./ )
+		.closest( 'p' );
+	expect( saved?.textContent ).toBe(
+		'All products are in your solution draft. Saved to your account. Open saved solution'
+	);
+} );
+
+test( 'German keeps the add result and the save result apart', async () => {
+	setLocaleData( german.locale_data.messages, 'linker-tools' );
+	const save = vi.mocked( saveSolution );
+	save.mockRejectedValue( new Error( 'save 403' ) );
+	const { engine } = fakeEngine( { locale: 'de' } );
+	render(
+		<App
+			config={ config( 'de' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	fill( /Postleitzahl des Standorts/, '80538' );
+	fill( /Jahresverbrauch des Haushalts/, '5000' );
+	fill( /PV-Leistung/, '10' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'System berechnen' } )
+		);
+	} );
+	const add = await screen.findByRole( 'button', {
+		name: 'Alles zum Lösungsentwurf hinzufügen',
+	} );
+	await act( async () => {
+		fireEvent.click( add );
+	} );
+	await screen.findByText( 'Alle Produkte sind in Ihrem Lösungsentwurf.' );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Lösung speichern' } )
+		);
+	} );
+	await screen.findByText( /Die Lösung konnte nicht gespeichert werden\./ );
+	const failed = screen
+		.getByText( /Alle Produkte sind in Ihrem Lösungsentwurf\./ )
+		.closest( 'p' );
+	expect( failed?.textContent ).toBe(
+		'Alle Produkte sind in Ihrem Lösungsentwurf. Die Lösung konnte nicht gespeichert werden. Versuchen Sie es erneut.'
+	);
+
+	save.mockResolvedValue( { id: 71, url: '/de/mein-konto/solutions/71/' } );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Lösung speichern' } )
+		);
+	} );
+	await screen.findByText( /In Ihrem Konto gespeichert\./ );
+	const status = screen
+		.getByText( /Alle Produkte sind in Ihrem Lösungsentwurf\./ )
+		.closest( 'p' );
+	expect( status?.textContent ).toBe(
+		'Alle Produkte sind in Ihrem Lösungsentwurf. In Ihrem Konto gespeichert. Gespeicherte Lösung öffnen'
+	);
+} );
+
 test( 'a design report that cannot be built is not saved without it', async () => {
 	const save = vi.mocked( saveSolution );
 	const { engine } = fakeEngine( { locale: 'en' } );
