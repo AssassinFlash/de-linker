@@ -1,0 +1,1542 @@
+{
+  "ticket": 480,
+  "instance": "w480",
+  "origin": "http://127.0.0.1:9252",
+  "engine": "http://127.0.0.1:9253",
+  "snapshot": "20261021-1023",
+  "startedAt": "2026-10-21T03:30:36.692Z",
+  "viewport": [
+    1440,
+    390
+  ],
+  "writes": {
+    "posts": [
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/pack",
+        "path": "/wp-json/linker-ai/v1/engine/roof/pack",
+        "status": 200
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/pack",
+        "path": "/wp-json/linker-ai/v1/engine/roof/pack",
+        "status": 422
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "en",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 503
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/pack",
+        "path": "/wp-json/linker-ai/v1/engine/roof/pack",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/pack",
+        "path": "/wp-json/linker-ai/v1/engine/roof/pack",
+        "status": 422
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 200
+      },
+      {
+        "lang": "de",
+        "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+        "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+        "status": 503
+      }
+    ],
+    "inquiry": false,
+    "registration": false,
+    "mail": false
+  },
+  "engineProbes": {
+    "packValid": {
+      "status": 200,
+      "modules": 66,
+      "kwp": 30.36,
+      "area_m2": 202.07
+    },
+    "packTooLarge": {
+      "status": 422,
+      "message": "Value error, a drawn plane covers at most 3000 m²"
+    },
+    "packOutsideGermany": {
+      "status": 422,
+      "constraints": [
+        "Input should be less than or equal to 15.1 (20)",
+        "Input should be less than or equal to 55.2 (60)",
+        "Input should be less than or equal to 15.1 (20.01)",
+        "Input should be less than or equal to 55.2 (60)",
+        "Input should be less than or equal to 15.1 (20.01)",
+        "Input should be less than or equal to 55.2 (60.01)",
+        "Input should be less than or equal to 15.1 (20)",
+        "Input should be less than or equal to 55.2 (60.01)"
+      ]
+    },
+    "packOutsideGermanyLow": {
+      "status": 422,
+      "constraints": [
+        "Input should be greater than or equal to 5.8 (0)",
+        "Input should be greater than or equal to 47 (40)",
+        "Input should be greater than or equal to 5.8 (0.01)",
+        "Input should be greater than or equal to 47 (40)",
+        "Input should be greater than or equal to 5.8 (0.01)",
+        "Input should be greater than or equal to 47 (40.01)",
+        "Input should be greater than or equal to 5.8 (0)",
+        "Input should be greater than or equal to 47 (40.01)"
+      ]
+    },
+    "packGeometry": {
+      "status": 200,
+      "usable": false,
+      "excluded_reason": "roof_geometry",
+      "modules": 0
+    },
+    "lod2Unavailable": {
+      "status": 503,
+      "detail": {
+        "error": "lod2_unavailable",
+        "message": "LoD2 for DE-ST is published through a portal workflow"
+      }
+    },
+    "unknownPostcode": {
+      "status": 404,
+      "detail": {
+        "error": "unknown_plz",
+        "field": "plz"
+      }
+    }
+  },
+  "cases": [
+    {
+      "lang": "en",
+      "url": "/solution-configurator/",
+      "steps": {
+        "select": {
+          "clicked": [
+            -23,
+            -50
+          ],
+          "status": "Official building model: Triftstraße 5"
+        },
+        "baseline": {
+          "status": "Official building model: Triftstraße 5",
+          "total": "Selected: 14 modules, 6.44 kWp",
+          "modulesRaw": "14",
+          "kwpRaw": "6.44",
+          "planes": [
+            {
+              "excluded": true,
+              "text": "Facing west, tilt 61° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Facing east, tilt 13° 0 modules",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Facing south, tilt 14° 6 modules",
+              "checked": true,
+              "disabled": false
+            },
+            {
+              "excluded": true,
+              "text": "Facing east, tilt 78° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Facing south, tilt 13° 0 modules",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 14° faces north",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Facing east, tilt 14° 5 modules",
+              "checked": true,
+              "disabled": false
+            },
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 62° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Facing west, tilt 13° 0 modules",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing south, tilt 66° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 63° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 14° faces north",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing south, tilt 78° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Facing west, tilt 14° 3 modules",
+              "checked": true,
+              "disabled": false
+            },
+            {
+              "excluded": true,
+              "text": "Facing east, tilt 67° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 13° faces north",
+              "checked": false,
+              "disabled": true
+            }
+          ],
+          "summary": "No PV figure yet? Estimate from the roof",
+          "roofButtons": [
+            "No PV figure yet? Estimate from the roof"
+          ],
+          "kwpField": {
+            "value": "",
+            "readOnly": false
+          },
+          "roofOpen": true,
+          "lang": "en-US",
+          "url": "http://127.0.0.1:9252/solution-configurator/",
+          "modules": 14,
+          "kwp": 6.44
+        },
+        "r05": {
+          "checkbox": "Facing south, tilt 14° 6 modules",
+          "initial": {
+            "modules": 14,
+            "kwp": 6.44
+          },
+          "unchecked": {
+            "modules": 8,
+            "kwp": 3.68
+          },
+          "rechecked": {
+            "modules": 14,
+            "kwp": 6.44
+          },
+          "changed": true,
+          "restored": true
+        },
+        "r10": {
+          "excluded": [
+            "Facing west, tilt 61° steeper than 60°",
+            "Facing east, tilt 78° steeper than 60°",
+            "Facing north, tilt 14° faces north",
+            "Facing north, tilt 62° steeper than 60°",
+            "Facing south, tilt 66° steeper than 60°",
+            "Facing north, tilt 63° steeper than 60°",
+            "Facing north, tilt 14° faces north",
+            "Facing south, tilt 78° steeper than 60°",
+            "Facing east, tilt 67° steeper than 60°",
+            "Facing north, tilt 13° faces north"
+          ],
+          "north": [
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 14° faces north",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 14° faces north",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 13° faces north",
+              "checked": false,
+              "disabled": true
+            }
+          ],
+          "steep": [
+            {
+              "excluded": true,
+              "text": "Facing west, tilt 61° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing east, tilt 78° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 62° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing south, tilt 66° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing north, tilt 63° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing south, tilt 78° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Facing east, tilt 67° steeper than 60°",
+              "checked": false,
+              "disabled": true
+            }
+          ]
+        },
+        "r08": {
+          "applied": {
+            "status": null,
+            "total": null,
+            "modulesRaw": null,
+            "kwpRaw": null,
+            "planes": [],
+            "summary": "From the roof: 14 modules on 3 planes, 6.44 kWp. Triftstraße 5 Change roof Enter kWp instead",
+            "roofButtons": [
+              "Change roof",
+              "Enter kWp instead"
+            ],
+            "kwpField": {
+              "value": "6.44",
+              "readOnly": true
+            },
+            "roofOpen": false,
+            "lang": "en-US",
+            "url": "http://127.0.0.1:9252/solution-configurator/",
+            "modules": null,
+            "kwp": null
+          },
+          "change": {
+            "reopened": true,
+            "status": "Click the roof of the building in the aerial image."
+          },
+          "afterClose": {
+            "roofOpen": false,
+            "summary": "From the roof: 14 modules on 3 planes, 6.44 kWp. Triftstraße 5 Change roof Enter kWp instead",
+            "kwp": {
+              "value": "6.44",
+              "readOnly": true
+            }
+          },
+          "manual": {
+            "summary": "No PV figure yet? Estimate from the roof",
+            "kwp": {
+              "value": "6.44",
+              "readOnly": false
+            },
+            "roofOpen": false
+          }
+        },
+        "r13": {
+          "opened": true,
+          "inStepSelection": {
+            "status": "Official building model: Triftstraße 5",
+            "modules": 14,
+            "kwp": 6.44,
+            "planes": 16
+          },
+          "closed": true,
+          "summary": "No PV figure yet? Estimate from the roof",
+          "before": "6.44",
+          "after": {
+            "value": "6.44",
+            "readOnly": false
+          },
+          "kept": true
+        },
+        "r06": {
+          "before": {
+            "modules": 14,
+            "kwp": 6.44,
+            "planes": 16
+          },
+          "after": {
+            "status": "Official building model found.",
+            "modules": 0,
+            "kwp": 0,
+            "planes": 1,
+            "questions": {
+              "planeCount": 1,
+              "hasDrawn": false,
+              "rows": [
+                "Facing north, tilt 0° 0 modules"
+              ]
+            }
+          },
+          "finishedBy": "first-corner click",
+          "statuses": [
+            {
+              "t": 0,
+              "text": "Official building model: Triftstraße 5"
+            },
+            {
+              "t": 19,
+              "text": "Click the corners of the plane; click the first corner again to finish."
+            },
+            {
+              "t": 2476,
+              "text": "Reading the official building model…"
+            },
+            {
+              "t": 2747,
+              "text": "The plane you drew is in the list."
+            },
+            {
+              "t": 2805,
+              "text": "Official building model found."
+            }
+          ],
+          "network": [
+            {
+              "method": "POST",
+              "path": "roof/pack",
+              "body": {
+                "polygon": [
+                  [
+                    11.588314609,
+                    48.140462472
+                  ],
+                  [
+                    11.588314609,
+                    48.140391995
+                  ],
+                  [
+                    11.588426775,
+                    48.140391995
+                  ],
+                  [
+                    11.588426775,
+                    48.140462472
+                  ],
+                  [
+                    11.588314609,
+                    48.140462472
+                  ]
+                ],
+                "tilt_deg": 35,
+                "azimuth_deg": 180
+              }
+            },
+            {
+              "method": "POST",
+              "path": "roof/outline",
+              "body": {
+                "plz": "80538",
+                "locale": "en",
+                "location": {
+                  "latitude": 48.14046247220591,
+                  "longitude": 11.588314215120306
+                }
+              }
+            },
+            {
+              "response": "roof/pack",
+              "status": 200,
+              "body": {
+                "id": 1,
+                "area_m2": 79.87,
+                "usable": true,
+                "excluded_reason": null,
+                "modules": 20,
+                "kwp": 9.2
+              }
+            },
+            {
+              "response": "roof/outline",
+              "status": 200,
+              "body": {
+                "found": true,
+                "address": null,
+                "building_id": "DEBY_LOD2_5006947",
+                "planes": 1,
+                "modules": 0,
+                "kwp": 0
+              }
+            }
+          ],
+          "refused": {
+            "before": {
+              "planes": 1
+            },
+            "finishedBy": "first-corner click",
+            "statuses": [
+              {
+                "t": 0,
+                "text": "Official building model found."
+              },
+              {
+                "t": 33,
+                "text": "Click the corners of the plane; click the first corner again to finish."
+              },
+              {
+                "t": 2478,
+                "text": "Reading the official building model…"
+              },
+              {
+                "t": 2632,
+                "text": "Draw the plane on one roof: this one is too large or outside Germany."
+              },
+              {
+                "t": 2803,
+                "text": "Official building model found."
+              }
+            ],
+            "status": "Official building model found.",
+            "planes": 32,
+            "modules": 204,
+            "kwp": 93.84,
+            "network": [
+              {
+                "method": "POST",
+                "path": "roof/pack",
+                "body": {
+                  "polygon": [
+                    [
+                      11.587388526,
+                      48.140852355
+                    ],
+                    [
+                      11.587388526,
+                      48.139850034
+                    ],
+                    [
+                      11.588759416,
+                      48.139850034
+                    ],
+                    [
+                      11.588759416,
+                      48.140852355
+                    ],
+                    [
+                      11.587388526,
+                      48.140852355
+                    ]
+                  ],
+                  "tilt_deg": 35,
+                  "azimuth_deg": 180
+                }
+              },
+              {
+                "method": "POST",
+                "path": "roof/outline",
+                "body": {
+                  "plz": "80538",
+                  "locale": "en",
+                  "location": {
+                    "latitude": 48.14085235521023,
+                    "longitude": 11.587386645094995
+                  }
+                }
+              },
+              {
+                "response": "roof/pack",
+                "status": 422,
+                "body": {}
+              },
+              {
+                "response": "roof/outline",
+                "status": 200,
+                "body": {
+                  "found": true,
+                  "address": null,
+                  "building_id": "DEBY_LOD2_5006514",
+                  "planes": 32,
+                  "modules": 204,
+                  "kwp": 93.84
+                }
+              }
+            ]
+          }
+        },
+        "r11": {
+          "noBuilding": {
+            "offset": [
+              180,
+              -120
+            ],
+            "trace": [
+              "Reading the official building model…",
+              "No building at this point. Click on a roof, or draw the plane yourself."
+            ],
+            "facts": {
+              "status": "No building at this point. Click on a roof, or draw the plane yourself.",
+              "total": "Selected: 0 modules, 0 kWp",
+              "modulesRaw": "0",
+              "kwpRaw": "0",
+              "planes": [],
+              "summary": "No PV figure yet? Estimate from the roof",
+              "roofButtons": [
+                "No PV figure yet? Estimate from the roof"
+              ],
+              "kwpField": {
+                "value": "6.44",
+                "readOnly": false
+              },
+              "roofOpen": true,
+              "lang": "en-US",
+              "url": "http://127.0.0.1:9252/solution-configurator/",
+              "modules": 0,
+              "kwp": 0
+            }
+          },
+          "lod2": {
+            "trace": [
+              "Reading the official building model…",
+              "No official building model is available here. Draw the roof plane yourself."
+            ],
+            "facts": {
+              "status": "No official building model is available here. Draw the roof plane yourself.",
+              "total": "Selected: 0 modules, 0 kWp",
+              "modulesRaw": "0",
+              "kwpRaw": "0",
+              "planes": [],
+              "summary": "No PV figure yet? Estimate from the roof",
+              "roofButtons": [
+                "No PV figure yet? Estimate from the roof"
+              ],
+              "kwpField": {
+                "value": "6.44",
+                "readOnly": false
+              },
+              "roofOpen": true,
+              "lang": "en-US",
+              "url": "http://127.0.0.1:9252/solution-configurator/",
+              "modules": 0,
+              "kwp": 0
+            }
+          },
+          "mapError": {
+            "trace": [
+              "The roof could not be loaded. Try again."
+            ],
+            "facts": {
+              "status": "The roof could not be loaded. Try again.",
+              "total": "Selected: 0 modules, 0 kWp",
+              "modulesRaw": "0",
+              "kwpRaw": "0",
+              "planes": [],
+              "summary": "No PV figure yet? Estimate from the roof",
+              "roofButtons": [
+                "No PV figure yet? Estimate from the roof"
+              ],
+              "kwpField": {
+                "value": "6.44",
+                "readOnly": false
+              },
+              "roofOpen": true,
+              "lang": "en-US",
+              "url": "http://127.0.0.1:9252/solution-configurator/",
+              "modules": 0,
+              "kwp": 0
+            }
+          }
+        }
+      },
+      "shots": [
+        "shots/roof-1440-en-r10-excluded.png",
+        "shots/roof-1440-en-r10-excluded-panel.png",
+        "shots/roof-390-en-r10-excluded.png",
+        "shots/roof-390-en-r10-excluded-panel.png",
+        "shots/roof-1440-en-r05-unchecked.png",
+        "shots/roof-390-en-r05-unchecked.png",
+        "shots/roof-1440-en-r05-rechecked.png",
+        "shots/roof-390-en-r05-rechecked.png",
+        "shots/roof-1440-en-r08-applied.png",
+        "shots/roof-390-en-r08-applied.png",
+        "shots/roof-1440-en-r08-change-roof.png",
+        "shots/roof-390-en-r08-change-roof.png",
+        "shots/roof-1440-en-r08-manual.png",
+        "shots/roof-390-en-r08-manual.png",
+        "shots/roof-1440-en-r13-closed.png",
+        "shots/roof-390-en-r13-closed.png",
+        "shots/roof-1440-en-r06-drawn-attempt.png",
+        "shots/roof-390-en-r06-drawn-attempt.png",
+        "shots/roof-1440-en-r06-refused-attempt.png",
+        "shots/roof-390-en-r06-refused-attempt.png",
+        "shots/roof-1440-en-r11-no-building.png",
+        "shots/roof-390-en-r11-no-building.png",
+        "shots/roof-1440-en-r11-lod2-unavailable.png",
+        "shots/roof-390-en-r11-lod2-unavailable.png",
+        "shots/roof-1440-en-r11-map-error.png",
+        "shots/roof-390-en-r11-map-error.png"
+      ],
+      "posts": [
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/pack",
+          "path": "/wp-json/linker-ai/v1/engine/roof/pack",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/pack",
+          "path": "/wp-json/linker-ai/v1/engine/roof/pack",
+          "status": 422
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 503
+        }
+      ],
+      "finishedAt": "2026-10-21T03:31:47.277Z"
+    },
+    {
+      "lang": "de",
+      "url": "/de/loesungskonfigurator/",
+      "steps": {
+        "select": {
+          "clicked": [
+            -23,
+            -50
+          ],
+          "status": "Amtliches Gebäudemodell: Triftstraße 5"
+        },
+        "baseline": {
+          "status": "Amtliches Gebäudemodell: Triftstraße 5",
+          "total": "Ausgewählt: 14 Module, 6,44 kWp",
+          "modulesRaw": "14",
+          "kwpRaw": "6,44",
+          "planes": [
+            {
+              "excluded": true,
+              "text": "Ausrichtung West, Neigung 61° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Ausrichtung Ost, Neigung 13° 0 Module",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Ausrichtung Süd, Neigung 14° 6 Module",
+              "checked": true,
+              "disabled": false
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Ost, Neigung 78° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Ausrichtung Süd, Neigung 13° 0 Module",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 14° nach Norden ausgerichtet",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Ausrichtung Ost, Neigung 14° 5 Module",
+              "checked": true,
+              "disabled": false
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 62° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Ausrichtung West, Neigung 13° 0 Module",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Süd, Neigung 66° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 63° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 14° nach Norden ausgerichtet",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Süd, Neigung 78° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": false,
+              "text": "Ausrichtung West, Neigung 14° 3 Module",
+              "checked": true,
+              "disabled": false
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Ost, Neigung 67° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 13° nach Norden ausgerichtet",
+              "checked": false,
+              "disabled": true
+            }
+          ],
+          "summary": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+          "roofButtons": [
+            "Noch keine PV-Leistung? Aus dem Dach abschätzen"
+          ],
+          "kwpField": {
+            "value": "",
+            "readOnly": false
+          },
+          "roofOpen": true,
+          "lang": "de-DE",
+          "url": "http://127.0.0.1:9252/de/loesungskonfigurator/",
+          "modules": 14,
+          "kwp": 6.44
+        },
+        "r05": {
+          "checkbox": "Ausrichtung Süd, Neigung 14° 6 Module",
+          "initial": {
+            "modules": 14,
+            "kwp": 6.44
+          },
+          "unchecked": {
+            "modules": 8,
+            "kwp": 3.68
+          },
+          "rechecked": {
+            "modules": 14,
+            "kwp": 6.44
+          },
+          "changed": true,
+          "restored": true
+        },
+        "r10": {
+          "excluded": [
+            "Ausrichtung West, Neigung 61° steiler als 60°",
+            "Ausrichtung Ost, Neigung 78° steiler als 60°",
+            "Ausrichtung Nord, Neigung 14° nach Norden ausgerichtet",
+            "Ausrichtung Nord, Neigung 62° steiler als 60°",
+            "Ausrichtung Süd, Neigung 66° steiler als 60°",
+            "Ausrichtung Nord, Neigung 63° steiler als 60°",
+            "Ausrichtung Nord, Neigung 14° nach Norden ausgerichtet",
+            "Ausrichtung Süd, Neigung 78° steiler als 60°",
+            "Ausrichtung Ost, Neigung 67° steiler als 60°",
+            "Ausrichtung Nord, Neigung 13° nach Norden ausgerichtet"
+          ],
+          "north": [
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 14° nach Norden ausgerichtet",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 14° nach Norden ausgerichtet",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 13° nach Norden ausgerichtet",
+              "checked": false,
+              "disabled": true
+            }
+          ],
+          "steep": [
+            {
+              "excluded": true,
+              "text": "Ausrichtung West, Neigung 61° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Ost, Neigung 78° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 62° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Süd, Neigung 66° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Nord, Neigung 63° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Süd, Neigung 78° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            },
+            {
+              "excluded": true,
+              "text": "Ausrichtung Ost, Neigung 67° steiler als 60°",
+              "checked": false,
+              "disabled": true
+            }
+          ]
+        },
+        "r08": {
+          "applied": {
+            "status": null,
+            "total": null,
+            "modulesRaw": null,
+            "kwpRaw": null,
+            "planes": [],
+            "summary": "Aus dem Dach: 14 Module auf 3 Flächen, 6,44 kWp. Triftstraße 5 Dach ändern Stattdessen kWp eingeben",
+            "roofButtons": [
+              "Dach ändern",
+              "Stattdessen kWp eingeben"
+            ],
+            "kwpField": {
+              "value": "6,44",
+              "readOnly": true
+            },
+            "roofOpen": false,
+            "lang": "de-DE",
+            "url": "http://127.0.0.1:9252/de/loesungskonfigurator/",
+            "modules": null,
+            "kwp": null
+          },
+          "change": {
+            "reopened": true,
+            "status": "Klicken Sie im Luftbild auf das Dach des Gebäudes."
+          },
+          "afterClose": {
+            "roofOpen": false,
+            "summary": "Aus dem Dach: 14 Module auf 3 Flächen, 6,44 kWp. Triftstraße 5 Dach ändern Stattdessen kWp eingeben",
+            "kwp": {
+              "value": "6,44",
+              "readOnly": true
+            }
+          },
+          "manual": {
+            "summary": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+            "kwp": {
+              "value": "6,44",
+              "readOnly": false
+            },
+            "roofOpen": false
+          }
+        },
+        "r13": {
+          "opened": true,
+          "inStepSelection": {
+            "status": "Amtliches Gebäudemodell: Triftstraße 5",
+            "modules": 14,
+            "kwp": 6.44,
+            "planes": 16
+          },
+          "closed": true,
+          "summary": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+          "before": "6,44",
+          "after": {
+            "value": "6,44",
+            "readOnly": false
+          },
+          "kept": true
+        },
+        "r06": {
+          "before": {
+            "modules": 14,
+            "kwp": 6.44,
+            "planes": 16
+          },
+          "after": {
+            "status": "Amtliches Gebäudemodell: Triftstraße 9",
+            "modules": 82,
+            "kwp": 37.72,
+            "planes": 4,
+            "questions": {
+              "planeCount": 4,
+              "hasDrawn": false,
+              "rows": [
+                "Ausrichtung Süd, Neigung 39° 13 Module",
+                "Ausrichtung West, Neigung 0° 6 Module",
+                "Ausrichtung Ost, Neigung 39° 33 Module",
+                "Ausrichtung West, Neigung 39° 30 Module"
+              ]
+            }
+          },
+          "finishedBy": "first-corner click",
+          "statuses": [
+            {
+              "t": 0,
+              "text": "Amtliches Gebäudemodell: Triftstraße 5"
+            },
+            {
+              "t": 33,
+              "text": "Klicken Sie die Ecken der Fläche an; ein Klick auf die erste Ecke schließt sie."
+            },
+            {
+              "t": 2486,
+              "text": "Amtliches Gebäudemodell wird gelesen …"
+            },
+            {
+              "t": 2636,
+              "text": "Die gezeichnete Fläche steht in der Liste."
+            },
+            {
+              "t": 2792,
+              "text": "Amtliches Gebäudemodell: Triftstraße 9"
+            }
+          ],
+          "network": [
+            {
+              "method": "POST",
+              "path": "roof/pack",
+              "body": {
+                "polygon": [
+                  [
+                    11.588314609,
+                    48.14053136
+                  ],
+                  [
+                    11.588314609,
+                    48.140460883
+                  ],
+                  [
+                    11.588426775,
+                    48.140460883
+                  ],
+                  [
+                    11.588426775,
+                    48.14053136
+                  ],
+                  [
+                    11.588314609,
+                    48.14053136
+                  ]
+                ],
+                "tilt_deg": 35,
+                "azimuth_deg": 180
+              }
+            },
+            {
+              "method": "POST",
+              "path": "roof/outline",
+              "body": {
+                "plz": "80538",
+                "locale": "de",
+                "location": {
+                  "latitude": 48.140531486172165,
+                  "longitude": 11.588314215118743
+                }
+              }
+            },
+            {
+              "response": "roof/pack",
+              "status": 200,
+              "body": {
+                "id": 1,
+                "area_m2": 79.87,
+                "usable": true,
+                "excluded_reason": null,
+                "modules": 20,
+                "kwp": 9.2
+              }
+            },
+            {
+              "response": "roof/outline",
+              "status": 200,
+              "body": {
+                "found": true,
+                "address": "Triftstraße 9",
+                "building_id": "DEBY_LOD2_5006491",
+                "planes": 4,
+                "modules": 82,
+                "kwp": 37.72
+              }
+            }
+          ],
+          "refused": {
+            "before": {
+              "planes": 4
+            },
+            "finishedBy": "first-corner click",
+            "statuses": [
+              {
+                "t": 0,
+                "text": "Amtliches Gebäudemodell: Triftstraße 9"
+              },
+              {
+                "t": 20,
+                "text": "Klicken Sie die Ecken der Fläche an; ein Klick auf die erste Ecke schließt sie."
+              },
+              {
+                "t": 2482,
+                "text": "Amtliches Gebäudemodell wird gelesen …"
+              },
+              {
+                "t": 2627,
+                "text": "Zeichnen Sie die Fläche auf einem einzelnen Dach ein: Diese ist zu groß oder liegt außerhalb Deutschlands."
+              },
+              {
+                "t": 2810,
+                "text": "Amtliches Gebäudemodell gefunden."
+              }
+            ],
+            "status": "Amtliches Gebäudemodell gefunden.",
+            "planes": 32,
+            "modules": 204,
+            "kwp": 93.84,
+            "network": [
+              {
+                "method": "POST",
+                "path": "roof/pack",
+                "body": {
+                  "polygon": [
+                    [
+                      11.587377659,
+                      48.141109787
+                    ],
+                    [
+                      11.587377659,
+                      48.13996299
+                    ],
+                    [
+                      11.588946155,
+                      48.13996299
+                    ],
+                    [
+                      11.588946155,
+                      48.141109787
+                    ],
+                    [
+                      11.587377659,
+                      48.141109787
+                    ]
+                  ],
+                  "tilt_deg": 35,
+                  "azimuth_deg": 180
+                }
+              },
+              {
+                "method": "POST",
+                "path": "roof/outline",
+                "body": {
+                  "plz": "80538",
+                  "locale": "de",
+                  "location": {
+                    "latitude": 48.14111081051735,
+                    "longitude": 11.587375507114245
+                  }
+                }
+              },
+              {
+                "response": "roof/pack",
+                "status": 422,
+                "body": {}
+              },
+              {
+                "response": "roof/outline",
+                "status": 200,
+                "body": {
+                  "found": true,
+                  "address": null,
+                  "building_id": "DEBY_LOD2_5006514",
+                  "planes": 32,
+                  "modules": 204,
+                  "kwp": 93.84
+                }
+              }
+            ]
+          }
+        },
+        "r11": {
+          "noBuilding": {
+            "offset": [
+              180,
+              -120
+            ],
+            "trace": [
+              "Amtliches Gebäudemodell wird gelesen …",
+              "An dieser Stelle steht kein Gebäude. Klicken Sie auf ein Dach oder zeichnen Sie die Fläche selbst."
+            ],
+            "facts": {
+              "status": "An dieser Stelle steht kein Gebäude. Klicken Sie auf ein Dach oder zeichnen Sie die Fläche selbst.",
+              "total": "Ausgewählt: 0 Module, 0 kWp",
+              "modulesRaw": "0",
+              "kwpRaw": "0",
+              "planes": [],
+              "summary": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+              "roofButtons": [
+                "Noch keine PV-Leistung? Aus dem Dach abschätzen"
+              ],
+              "kwpField": {
+                "value": "6,44",
+                "readOnly": false
+              },
+              "roofOpen": true,
+              "lang": "de-DE",
+              "url": "http://127.0.0.1:9252/de/loesungskonfigurator/",
+              "modules": 0,
+              "kwp": 0
+            }
+          },
+          "lod2": {
+            "trace": [
+              "Amtliches Gebäudemodell wird gelesen …",
+              "Hier ist kein amtliches Gebäudemodell verfügbar. Zeichnen Sie die Dachfläche selbst."
+            ],
+            "facts": {
+              "status": "Hier ist kein amtliches Gebäudemodell verfügbar. Zeichnen Sie die Dachfläche selbst.",
+              "total": "Ausgewählt: 0 Module, 0 kWp",
+              "modulesRaw": "0",
+              "kwpRaw": "0",
+              "planes": [],
+              "summary": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+              "roofButtons": [
+                "Noch keine PV-Leistung? Aus dem Dach abschätzen"
+              ],
+              "kwpField": {
+                "value": "6,44",
+                "readOnly": false
+              },
+              "roofOpen": true,
+              "lang": "de-DE",
+              "url": "http://127.0.0.1:9252/de/loesungskonfigurator/",
+              "modules": 0,
+              "kwp": 0
+            }
+          },
+          "mapError": {
+            "trace": [
+              "Das Dach konnte nicht geladen werden. Versuchen Sie es erneut."
+            ],
+            "facts": {
+              "status": "Das Dach konnte nicht geladen werden. Versuchen Sie es erneut.",
+              "total": "Ausgewählt: 0 Module, 0 kWp",
+              "modulesRaw": "0",
+              "kwpRaw": "0",
+              "planes": [],
+              "summary": "Noch keine PV-Leistung? Aus dem Dach abschätzen",
+              "roofButtons": [
+                "Noch keine PV-Leistung? Aus dem Dach abschätzen"
+              ],
+              "kwpField": {
+                "value": "6,44",
+                "readOnly": false
+              },
+              "roofOpen": true,
+              "lang": "de-DE",
+              "url": "http://127.0.0.1:9252/de/loesungskonfigurator/",
+              "modules": 0,
+              "kwp": 0
+            }
+          }
+        }
+      },
+      "shots": [
+        "shots/roof-1440-de-r10-excluded.png",
+        "shots/roof-1440-de-r10-excluded-panel.png",
+        "shots/roof-390-de-r10-excluded.png",
+        "shots/roof-390-de-r10-excluded-panel.png",
+        "shots/roof-1440-de-r05-unchecked.png",
+        "shots/roof-390-de-r05-unchecked.png",
+        "shots/roof-1440-de-r05-rechecked.png",
+        "shots/roof-390-de-r05-rechecked.png",
+        "shots/roof-1440-de-r08-applied.png",
+        "shots/roof-390-de-r08-applied.png",
+        "shots/roof-1440-de-r08-change-roof.png",
+        "shots/roof-390-de-r08-change-roof.png",
+        "shots/roof-1440-de-r08-manual.png",
+        "shots/roof-390-de-r08-manual.png",
+        "shots/roof-1440-de-r13-closed.png",
+        "shots/roof-390-de-r13-closed.png",
+        "shots/roof-1440-de-r06-drawn-attempt.png",
+        "shots/roof-390-de-r06-drawn-attempt.png",
+        "shots/roof-1440-de-r06-refused-attempt.png",
+        "shots/roof-390-de-r06-refused-attempt.png",
+        "shots/roof-1440-de-r11-no-building.png",
+        "shots/roof-390-de-r11-no-building.png",
+        "shots/roof-1440-de-r11-lod2-unavailable.png",
+        "shots/roof-390-de-r11-lod2-unavailable.png",
+        "shots/roof-1440-de-r11-map-error.png",
+        "shots/roof-390-de-r11-map-error.png"
+      ],
+      "posts": [
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/pack",
+          "path": "/wp-json/linker-ai/v1/engine/roof/pack",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/pack",
+          "path": "/wp-json/linker-ai/v1/engine/roof/pack",
+          "status": 422
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:9252/wp-json/linker-ai/v1/engine/roof/outline",
+          "path": "/wp-json/linker-ai/v1/engine/roof/outline",
+          "status": 503
+        }
+      ],
+      "finishedAt": "2026-10-21T03:32:57.372Z"
+    }
+  ],
+  "finishedAt": "2026-10-21T03:32:57.391Z"
+}
