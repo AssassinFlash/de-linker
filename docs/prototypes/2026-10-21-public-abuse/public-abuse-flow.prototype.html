@@ -1,214 +1,97 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Linker 询盘防护流程 · 一次性原型</title><style>html{color-scheme:light dark}body{margin:0;padding:24px;background:light-dark(#fff,#172320)}main{max-width:980px;margin:0 auto}button{cursor:pointer}@media(max-width:500px){body{padding:12px}}</style></head><body><main>
-<div id="linker-abuse-demo">
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Linker 垃圾留言处理 · 一步一步看</title><style>html{color-scheme:light dark}body{margin:0;padding:24px;background:light-dark(#fff,#18241f)}main{max-width:760px;margin:auto}@media(max-width:500px){body{padding:12px}}</style></head><body><main>
+<div id="linker-simple-story">
   <style>
-    #linker-abuse-demo { color-scheme: light dark; --ap-bg:light-dark(#f5f5f0,#172320); --ap-paper:light-dark(#fff,#21312c); --ap-ink:light-dark(#173d35,#e4efea); --ap-soft:light-dark(#eaf2ef,#2d423a); --ap-line:light-dark(#dce5df,#41574d); --ap-dim:light-dark(#526d64,#b2c6bc); --ap-teal:light-dark(#0c7f73,#80cfc1); --ap-onteal:light-dark(#fff,#17332a); font-family:system-ui,-apple-system,"PingFang SC",sans-serif; font-size:14px; line-height:1.5; color:var(--ap-ink); }
-    #linker-abuse-demo * { box-sizing:border-box; }
-    #linker-abuse-demo button,#linker-abuse-demo input,#linker-abuse-demo textarea { font:inherit; }
-    #linker-abuse-demo h2,#linker-abuse-demo h3,#linker-abuse-demo p { margin:0; font-size:inherit; font-weight:400; }
-    #linker-abuse-demo h2,#linker-abuse-demo h3,#linker-abuse-demo strong { font-weight:500; }
-    #linker-abuse-demo .ap-intro { display:flex; flex-wrap:wrap; gap:6px 16px; align-items:center; margin-bottom:12px; padding-right:90px; }
-    #linker-abuse-demo .ap-muted { color:var(--ap-dim); }
-    #linker-abuse-demo .ap-tag { display:inline-block; padding:3px 8px; border-radius:6px; background:var(--ap-soft); color:var(--ap-ink); }
-    #linker-abuse-demo .ap-toolbar { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; justify-content:space-between; margin:12px 0; }
-    #linker-abuse-demo .ap-buttons { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-    #linker-abuse-demo .ap-button { border:1px solid var(--ap-line); background:var(--ap-paper); color:var(--ap-ink); padding:8px 12px; border-radius:8px; min-height:38px; }
-    #linker-abuse-demo .ap-button[aria-pressed="true"],#linker-abuse-demo .ap-button[aria-selected="true"],#linker-abuse-demo .ap-primary { background:var(--ap-teal); color:var(--ap-onteal); border-color:var(--ap-teal); }
-    #linker-abuse-demo .ap-button:disabled { opacity:.5; }
-    #linker-abuse-demo .ap-scenarios { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
-    #linker-abuse-demo .ap-columns { display:grid; grid-template-columns:minmax(0,1.12fr) minmax(0,1fr); gap:14px; align-items:start; }
-    #linker-abuse-demo .ap-window { border:1px solid var(--ap-line); background:var(--ap-bg); border-radius:12px; overflow:hidden; min-width:0; }
-    #linker-abuse-demo .ap-chrome { padding:11px 14px; border-bottom:1px solid var(--ap-line); background:var(--ap-paper); display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center; justify-content:space-between; }
-    #linker-abuse-demo .ap-content { padding:14px; }
-    #linker-abuse-demo .ap-form { background:var(--ap-paper); border:1px solid var(--ap-line); border-radius:12px; padding:18px; }
-    #linker-abuse-demo .ap-form>p { margin-top:4px; }
-    #linker-abuse-demo .ap-fields { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    #linker-abuse-demo .ap-field { display:block; margin-top:12px; min-width:0; }
-    #linker-abuse-demo .ap-field input,#linker-abuse-demo .ap-field textarea { display:block; width:100%; border:1px solid var(--ap-line); border-radius:7px; background:var(--ap-paper); color:var(--ap-ink); padding:9px 10px; margin-top:5px; resize:vertical; }
-    #linker-abuse-demo .ap-field textarea { min-height:112px; }
-    #linker-abuse-demo .ap-consent { display:flex; gap:7px; align-items:flex-start; margin:14px 0; color:var(--ap-dim); }
-    #linker-abuse-demo .ap-consent input { margin-top:4px; }
-    #linker-abuse-demo .ap-send { width:100%; text-align:left; display:flex; justify-content:space-between; }
-    #linker-abuse-demo .ap-feedback { background:var(--ap-soft); padding:13px; margin-top:12px; border-radius:8px; }
-    #linker-abuse-demo .ap-feedback p+p { margin-top:6px; }
-    #linker-abuse-demo .ap-feedback .ap-buttons { margin-top:10px; }
-    #linker-abuse-demo .ap-check { padding:12px; margin:12px 0; border:1px solid var(--ap-line); border-radius:8px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; align-items:center; background:var(--ap-bg); }
-    #linker-abuse-demo .ap-check label { display:flex; align-items:center; gap:8px; }
-    #linker-abuse-demo .ap-check input { width:20px; height:20px; }
-    #linker-abuse-demo .ap-stafftabs { display:flex; gap:6px; margin-bottom:12px; }
-    #linker-abuse-demo .ap-mail { background:var(--ap-paper); border:1px solid var(--ap-line); border-radius:9px; padding:15px; overflow-wrap:anywhere; }
-    #linker-abuse-demo .ap-mail p+p { margin-top:10px; }
-    #linker-abuse-demo .ap-empty { padding:32px 12px; text-align:center; color:var(--ap-dim); border:1px dashed var(--ap-line); border-radius:9px; }
-    #linker-abuse-demo .ap-record { background:var(--ap-paper); border:1px solid var(--ap-line); border-radius:9px; padding:15px; }
-    #linker-abuse-demo .ap-record p+p { margin-top:10px; }
-    #linker-abuse-demo .ap-record .ap-buttons { margin-top:14px; }
-    #linker-abuse-demo .ap-message { white-space:pre-wrap; overflow-wrap:anywhere; border-left:2px solid var(--ap-line); padding-left:10px; }
-    #linker-abuse-demo .ap-state { margin-top:14px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; border-top:1px solid var(--ap-line); border-bottom:1px solid var(--ap-line); padding:12px 0; }
-    #linker-abuse-demo .ap-state>div { padding:0 10px; }
-    #linker-abuse-demo .ap-state strong { display:block; margin-top:4px; }
-    #linker-abuse-demo .ap-result { padding:12px 0; min-height:45px; }
-    #linker-abuse-demo .ap-walk { border-top:1px solid var(--ap-line); margin-top:14px; padding-top:14px; }
-    #linker-abuse-demo .ap-walk p { margin:7px 0 10px; }
-    #linker-abuse-demo .ap-steps { display:flex; flex-wrap:wrap; gap:6px; }
-    #linker-abuse-demo .ap-free { margin-top:14px; }
-    #linker-abuse-demo .ap-foot { margin-top:12px; color:var(--ap-dim); }
-    #linker-abuse-demo [hidden] { display:none!important; }
-    @media(max-width:640px) { #linker-abuse-demo .ap-columns { grid-template-columns:1fr; } #linker-abuse-demo .ap-intro { padding-right:0; } }
-    @media(max-width:380px) { #linker-abuse-demo .ap-fields { grid-template-columns:1fr; } #linker-abuse-demo .ap-content { padding:10px; } #linker-abuse-demo .ap-form { padding:13px; } }
-    @media(pointer:coarse) { #linker-abuse-demo .ap-button { min-height:44px; } #linker-abuse-demo input,#linker-abuse-demo textarea { font-size:16px; } }
+    #linker-simple-story { color-scheme:light dark; --story-ink:light-dark(#183d34,#e7efe9); --story-dim:light-dark(#52675f,#b6c7be); --story-paper:light-dark(#fff,#21302a); --story-wash:light-dark(#f3f5ef,#18241f); --story-line:light-dark(#dbe5dc,#43564a); --story-green:light-dark(#087d6c,#82d5c0); --story-on-green:light-dark(#fff,#142d24); --story-tint:light-dark(#eaf4ee,#2b4134); font:16px/1.6 system-ui,-apple-system,"PingFang SC",sans-serif; color:var(--story-ink); }
+    #linker-simple-story * { box-sizing:border-box; }
+    #linker-simple-story h2,#linker-simple-story h3,#linker-simple-story p { margin:0; font-size:inherit; font-weight:400; }
+    #linker-simple-story h2,#linker-simple-story h3,#linker-simple-story strong { font-weight:500; }
+    #linker-simple-story button,#linker-simple-story input { font:inherit; }
+    #linker-simple-story .story-intro { padding-right:90px; margin-bottom:16px; }
+    #linker-simple-story .story-intro p { margin-top:5px; color:var(--story-dim); }
+    #linker-simple-story .story-location { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; color:var(--story-dim); margin-bottom:8px; }
+    #linker-simple-story .story-frame { background:var(--story-wash); border:1px solid var(--story-line); border-radius:12px; overflow:hidden; }
+    #linker-simple-story .story-chrome { background:var(--story-paper); border-bottom:1px solid var(--story-line); padding:12px 18px; display:flex; flex-wrap:wrap; gap:4px 12px; justify-content:space-between; }
+    #linker-simple-story .story-body { padding:20px; }
+    #linker-simple-story .story-body h3 { margin-bottom:15px; }
+    #linker-simple-story .story-message { background:var(--story-paper); padding:18px; border-radius:8px; overflow-wrap:anywhere; }
+    #linker-simple-story .story-message p+p { margin-top:12px; }
+    #linker-simple-story .story-dim { color:var(--story-dim); }
+    #linker-simple-story .story-quote { border-left:2px solid var(--story-line); padding-left:12px; white-space:pre-wrap; }
+    #linker-simple-story .story-note { margin-top:14px; padding:12px 14px; background:var(--story-tint); border-radius:8px; }
+    #linker-simple-story .story-outcome { margin:16px 0; }
+    #linker-simple-story .story-outcome p { margin-top:5px; }
+    #linker-simple-story .story-action { display:block; width:100%; border:0; border-radius:9px; padding:14px 18px; background:var(--story-green); color:var(--story-on-green); text-align:center; font-weight:500; }
+    #linker-simple-story .story-check { display:flex; gap:12px; align-items:center; justify-content:center; }
+    #linker-simple-story .story-check input { width:24px; height:24px; flex:none; accent-color:var(--story-green); }
+    #linker-simple-story .story-navigation { margin-top:12px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    #linker-simple-story .story-back { border:0; padding:6px 0; background:transparent; color:var(--story-dim); }
+    #linker-simple-story .story-back:disabled { visibility:hidden; }
+    #linker-simple-story .story-status { color:var(--story-dim); }
+    #linker-simple-story .story-footer { margin-top:16px; border-top:1px solid var(--story-line); padding-top:12px; color:var(--story-dim); }
+    #linker-simple-story [hidden] { display:none!important; }
+    @media(max-width:500px) { #linker-simple-story .story-intro { padding-right:0; } #linker-simple-story .story-body { padding:14px; } #linker-simple-story .story-message { padding:14px; } }
   </style>
-  <div class="ap-intro"><h2>客户发一条留言，你这边会发生什么？</h2><span class="ap-tag">一次性流程原型 · 不发邮件</span></div>
-  <p class="ap-muted">同一张联系表单，试着发送，再看你的邮箱和待复核区。安全检查与垃圾判定均由所选场景模拟。</p>
-  <div class="ap-toolbar">
-    <div class="ap-buttons" aria-label="比较处理方式"><button type="button" class="ap-button cursor-interaction" data-policy="today">现在的处理</button><button type="button" class="ap-button cursor-interaction" data-policy="proposed">推荐方案</button></div>
-    <div class="ap-buttons" aria-label="客户页面语言"><span class="ap-muted">客户页面</span><button type="button" class="ap-button cursor-interaction" data-lang="en">EN</button><button type="button" class="ap-button cursor-interaction" data-lang="de">DE</button></div>
-  </div>
-  <div class="ap-scenarios" role="tablist" aria-label="演示场景"></div>
-  <div class="ap-columns">
-    <section class="ap-window" aria-label="客户视角">
-      <div class="ap-chrome"><strong>客户看到的页面</strong><span class="ap-muted">de-linker.com / contact · 示意</span></div>
-      <div class="ap-content"><form class="ap-form" novalidate>
-        <p class="ap-muted">CONTACT LINKER</p><h3 data-copy="title"></h3><p class="ap-muted" data-copy="intro"></p>
-        <label class="ap-field"><span data-copy="question"></span><textarea name="message" aria-label="留言"></textarea></label>
-        <div class="ap-fields"><label class="ap-field"><span data-copy="name"></span><input name="name" autocomplete="off" value="Alex Meyer"></label><label class="ap-field"><span data-copy="email"></span><input name="email" type="email" autocomplete="off" value="alex@example.com"></label></div>
-        <label class="ap-field"><span data-copy="company"></span><input name="company" autocomplete="off" value="Solar Demo GmbH"></label>
-        <label class="ap-consent"><input name="consent" type="checkbox" checked><span data-copy="consent"></span></label>
-        <div class="ap-check" hidden><label><input type="checkbox" name="human"><span data-copy="human"></span></label><span class="ap-muted">Turnstile · 模拟框</span></div>
-        <button class="ap-button ap-primary ap-send cursor-interaction" type="submit"><span data-copy="send"></span><span aria-hidden="true">↗</span></button>
-        <div class="ap-feedback" hidden aria-live="polite"></div>
-      </form></div>
-    </section>
-    <section class="ap-window" aria-label="团队视角">
-      <div class="ap-chrome"><strong>你这边</strong><span class="ap-muted">通知与后台 · 示意</span></div>
-      <div class="ap-content"><div class="ap-stafftabs"><button type="button" class="ap-button cursor-interaction" data-view="mail"></button><button type="button" class="ap-button cursor-interaction" data-view="review"></button></div><div class="ap-staffbody"></div></div>
-    </section>
-  </div>
-  <div class="ap-state" aria-live="polite"><div><span class="ap-muted">客户的提交</span><strong data-state="submission"></strong></div><div><span class="ap-muted">你收到的通知</span><strong data-state="mail"></strong></div><div><span class="ap-muted">保存在哪里</span><strong data-state="record"></strong></div></div>
-  <div class="ap-result" aria-live="polite"></div>
-  <div class="ap-walk"><h3>按步骤体验这个场景</h3><p class="ap-walkdesc ap-muted"></p><div class="ap-steps"></div></div>
-  <div class="ap-free"><div class="ap-buttons"><span class="ap-muted">自由试一试</span><button type="button" class="ap-button cursor-interaction" data-action="SEND">再点一次发送</button><button type="button" class="ap-button cursor-interaction" data-action="RECOVER">模拟网络恢复</button><button type="button" class="ap-button cursor-interaction" data-action="APPROVE">人工确认是真客户</button><button type="button" class="ap-button cursor-interaction" data-action="RESET">重来本场景</button></div></div>
-  <p class="ap-foot">这是流程讨论稿，验证框和后台都不是实际服务；没有连接网站、邮箱或模型。客户文案尚未定稿。</p>
+  <div class="story-intro"><h2>这封垃圾邮件，网站该怎么处理？</h2><p>按绿色按钮往下看。每次只走一步，全部用中文讲解。</p></div>
+  <div class="story-location"><span class="story-chapter"></span><span class="story-count"></span></div>
+  <section class="story-frame" aria-label="当前演示画面"><div class="story-chrome"><strong class="story-role"></strong><span class="story-dim">模拟画面</span></div><div class="story-body" aria-live="polite"></div></section>
+  <div class="story-outcome" aria-live="polite"></div>
+  <button type="button" class="story-action cursor-interaction"></button>
+  <label class="story-action story-check cursor-interaction" hidden><input type="checkbox" aria-label="确认您是真人，继续演示"><span>确认您是真人 · 点这里模拟勾选</span></label>
+  <div class="story-navigation"><button type="button" class="story-back cursor-interaction">← 上一步</button><span class="story-status"></span></div>
+  <p class="story-footer">中文流程讲解，不是最终网站界面。所有发送、验证和识别结果均为模拟，不会发出真实邮件。</p>
 </div>
 <script>
 (() => {
-  // PROTOTYPE ONLY. Pure business-state model; no DOM, network or storage.
-  const normal = 'We are planning a commercial energy storage project. Could your team help us choose suitable products?';
-  const russian = 'Здравствуйте! Подбираем оборудование для солнечной электростанции. Можно получить консультацию?';
-  const spam = 'Вам перевод 195753 руб. забрать тут [外部领取链接已隐藏] THRT332399MTGJNF';
-  const cases = {
-    normal:{name:'正常客户',message:normal,description:'客户正常填写。直接点发送，看看是否被额外打断。',steps:[['客户点发送','SEND'],['再点一次发送','SEND']]},
-    challenge:{name:'需要勾选时',message:normal,description:'这次安全检查需要客户勾选。勾选完成后继续同一次发送。',steps:[['客户点发送','SEND'],['客户勾选验证','CHECK'],['再点一次发送','SEND']]},
-    outage:{name:'验证服务故障',message:normal,description:'客户是真实的，但安全检查连不上。试着重试，或先保存给团队人工核验。',steps:[['客户点发送','SEND'],['客户重试验证','RETRY'],['先保存，待团队核验','SAVE'],['你确认是真客户','APPROVE']]},
-    spam:{name:'这次垃圾留言',message:spam,description:'模拟这次转账诱导留言。分别用“现在的处理”和“推荐方案”发送，比较你的邮箱。',steps:[['发出这条留言','SEND'],['你查看待复核区','OPEN_REVIEW'],['确认垃圾，保留隔离','MARK_SPAM']]},
-    russian:{name:'正常俄文客户',message:russian,description:'这是一条真实设备咨询的俄文示例。俄文自身不应让询盘进入垃圾区。',steps:[['客户点发送','SEND'],['查看团队通知','OPEN_MAIL']]},
-    approved:{name:'已批准客户',message:normal,description:'已批准且没有异常的登录客户，避免重复要求人机验证。',steps:[['客户点发送','SEND'],['再点一次发送','SEND']]}
-  };
-  function initial(scenario='normal',policy='proposed',lang='en') {
-    return {scenario,policy,lang,message:cases[scenario].message,name:scenario==='spam'?'Keelpelty':'Alex Meyer',email:'alex@example.com',company:scenario==='spam'?'google':'Solar Demo GmbH',consent:true,phase:'draft',verification:'idle',networkUp:false,notifications:0,receipts:0,record:'none',view:'mail',step:0,event:'选好场景后，点客户表单的发送按钮。'};
-  }
-  function accepted(s) {
-    return {...s,phase:'received',record:'inquiry',notifications:1,receipts:1,view:'mail',event:s.policy==='today'&&s.scenario==='spam'?'这就是本次问题：垃圾内容成为正式询盘，并触发了团队通知。':'询盘正常进入团队流程。相同提交不会重复发信。'};
-  }
-  function decide(s) {
-    if(s.scenario==='spam'&&s.policy==='proposed') return {...s,phase:'held',record:'suspected',notifications:0,receipts:0,view:'review',event:'这条已知垃圾样本进入待复核区，你的邮箱没有新增通知。'};
-    return accepted(s);
-  }
-  function reduce(s,a) {
-    if(a.type==='SCENARIO') return initial(a.value,s.policy,s.lang);
-    if(a.type==='POLICY') return initial(s.scenario,a.value,s.lang);
-    if(a.type==='LANG') return {...s,lang:a.value};
-    if(a.type==='EDIT') return {...s,[a.field]:a.value};
-    if(a.type==='RESET') return initial(s.scenario,s.policy,s.lang);
-    if(a.type==='OPEN_REVIEW') return {...s,view:'review',event:s.record==='none'?'当前没有待复核记录。':'查看待复核记录；它还没有触发即时邮件。'};
-    if(a.type==='OPEN_MAIL') return {...s,view:'mail',event:s.notifications?'这是模拟的团队通知。':'当前没有新增团队通知。'};
-    if(a.type==='RECOVER') return {...s,networkUp:true,event:'已模拟验证服务恢复。尚未发送的内容可以重试验证。'};
-    if(a.type==='SEND'||a.type==='RETRY') {
-      if(s.record!=='none') return {...s,event:'这是同一条提交。已去重，不新增记录，也不重复发信。'};
-      if(!s.message.trim()||!s.name.trim()||!s.email.includes('@')||!s.consent) return {...s,phase:'invalid',event:'请补齐留言、姓名、回复邮箱，并同意处理这次留言所需的数据。'};
-      if(s.policy==='today') return accepted({...s,verification:'basic'});
-      if(s.scenario==='outage'&&!s.networkUp) return {...s,phase:'unavailable',verification:'unavailable',event:'安全检查暂时连不上；文字仍在，没有发信。可以重试或保存给团队人工核验。'};
-      if(s.scenario==='challenge'&&s.verification!=='passed') return {...s,phase:'challenge',verification:'interaction',event:'这次需要客户勾选。勾选后继续发送，不需要再点一次发送。'};
-      return decide({...s,verification:s.scenario==='approved'?'approved':'passed'});
-    }
-    if(a.type==='CHECK') {
-      if(s.phase!=='challenge') return {...s,event:'当前没有待完成的验证框。'};
-      return decide({...s,verification:'passed'});
-    }
-    if(a.type==='SAVE') {
-      if(s.record!=='none') return {...s,event:'已经保存；重复操作不新增记录或邮件。'};
-      if(s.phase!=='unavailable') return {...s,event:'仅在验证不可用时使用受限暂存入口。'};
-      return {...s,phase:'held',record:'unverified',view:'review',notifications:0,receipts:0,event:'真实需求已保存到“验证未完成”待核区；没有丢失，也没有自动发信。'};
-    }
-    if(a.type==='APPROVE') {
-      if(s.record==='inquiry') return {...s,event:'已是正式询盘，重复确认不会重复发信。'};
-      if(!['suspected','unverified','retained'].includes(s.record)) return {...s,event:'没有待核记录，人工确认不会凭空创建询盘。'};
-      return {...accepted(s),event:'人工确认后转成正式询盘，并触发一次正常通知与固定回执。'};
-    }
-    if(a.type==='MARK_SPAM') {
-      if(s.record!=='suspected') return {...s,event:'当前没有待判定的疑似垃圾记录。'};
-      return {...s,record:'retained',event:'已标记垃圾并保留隔离；没有发信，也没有删除原始记录。'};
-    }
-    return s;
-  }
-  const root=document.getElementById('linker-abuse-demo');
-  if(!root) return;
-  let state=initial();
+  // THROWAWAY PROTOTYPE. A linear, in-memory story; no services or persistence.
+  const spam='Вам перевод 195753 руб. забрать тут\n[领取链接已隐藏，不可打开]';
+  const normal='我们有一个储能项目，想咨询设备选型。请团队联系我。';
+  const scenes=[
+    {chapter:'先看这次发生了什么',role:'网站上的联系表单',title:'机器人已经填好了这条留言',kind:'spam-form',explain:'它准备把你收到的那段俄文发进网站。',action:'模拟机器人点击「发送留言」',status:'尚未提交；你的邮箱还没有新邮件。'},
+    {chapter:'先看这次发生了什么',role:'你的邮箱',title:'网站给你发了这封通知',kind:'spam-mail',explain:'这就是本次问题：网站把垃圾留言当成询盘，触发了团队通知。',action:'看看加上防护后，同一条留言会怎样',status:'垃圾内容成为正式询盘；团队收到通知。'},
+    {chapter:'换成推荐方案，再试一次',role:'网站上的联系表单',title:'还是同一条垃圾留言',kind:'spam-form',explain:'推荐方案会先做安全检查，再决定是否进入正常询盘和发信流程。',action:'模拟发送同一条垃圾留言',status:'尚未提交；这次将使用推荐处理方式。'},
+    {chapter:'换成推荐方案，再试一次',role:'网站后台 · 待复核',title:'这次，它被留在待复核区',kind:'spam-held',explain:'本例假设命中了已知垃圾样本。原文保留在后台，你的邮箱不再收到这封垃圾通知。',action:'接着看：正常客户会不会受影响',status:'团队邮件 0 封；后台保存 1 条待复核记录。'},
+    {chapter:'再看正常客户',role:'网站上的联系表单',title:'这是一位真实客户的询盘',kind:'normal-form',explain:'客户仍然填写原来的信息。在这个场景里，安全检查在后台通过。',action:'替客户点击「发送询盘」',status:'客户不用注册账号，也没有新增必填资料。'},
+    {chapter:'再看正常客户',role:'你的邮箱',title:'正常询盘照常通知你',kind:'normal-mail',explain:'这位客户没有额外点验证码。你照常收到询盘，后续仍由团队线下处理。',action:'继续看：如果客户需要勾选一次',status:'正常询盘已保存；团队收到 1 封通知。'},
+    {chapter:'补充：有时需要多点一下',role:'客户看到的安全检查',title:'这次需要客户确认是真人',kind:'challenge',explain:'客户点一下下面的勾选框，系统就继续刚才的发送，不需要重新填写或再点发送。',action:'',status:'客户内容保留；完成这一步后继续发送。'},
+    {chapter:'补充：有时需要多点一下',role:'你的邮箱',title:'勾选后，询盘也正常到了',kind:'normal-mail',explain:'这次客户只多做了一次勾选。实际有多少客户会遇到这一步，需要接入后测量。',action:'最后看：安全检查连不上时怎么办',status:'同一次提交只保存一次、通知一次。'},
+    {chapter:'补充：安全检查连不上',role:'客户看到的页面',title:'客户已经写完，但验证服务暂时不可用',kind:'outage',explain:'客户的输入仍然保留。除重试外，推荐提供受限暂存入口，把需求交给团队人工核验。',action:'客户选择「先保存，交给团队核验」',status:'没有发信；客户填写的内容仍在。'},
+    {chapter:'补充：安全检查连不上',role:'网站后台 · 验证未完成',title:'需求保存了，没有当作垃圾',kind:'needs-review',explain:'它与疑似垃圾分开标记。团队在后台看到待办和汇总提醒，再判断是否是真实客户。',action:'你确认是真客户，接收这条询盘',status:'1 条需求待人工核验；暂不自动发邮件。'},
+    {chapter:'演示结束',role:'你的邮箱',title:'人工确认后，进入正常询盘流程',kind:'normal-mail',explain:'这就是推荐的处理方式：垃圾内容先隔离；正常询盘照常通知；验证故障时保留人工接回的路径。',action:'从头再看一遍',status:'人工确认只触发一次正常通知。'}
+  ];
+  const move=(index,action)=>action==='BACK'?Math.max(0,index-1):action==='NEXT'?(index+1)%scenes.length:index;
+  const root=document.getElementById('linker-simple-story');if(!root)return;
   const el=q=>root.querySelector(q);
-  const all=q=>Array.from(root.querySelectorAll(q));
-  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const text={
-    en:{title:'What can we help with?',intro:"Tell us what you need. We’ll use the email below for our reply.",question:'Your question',name:'Name',email:'Reply email',company:'Company · optional',consent:'I agree that my details may be used to respond to this message.',send:'Send message',human:'Confirm you are human',received:'Thank you. Your message has been received.',held:'Your message has been saved for review.',failed:'The security check is temporarily unavailable. Your entries are still here.',retry:'Try again',save:'Save for manual review',waiting:'Please complete the check to send your message.'},
-    de:{title:'Wie können wir Ihnen helfen?',intro:'Beschreiben Sie Ihr Anliegen. Wir antworten an die unten angegebene E-Mail-Adresse.',question:'Ihre Frage',name:'Name',email:'E-Mail für unsere Antwort',company:'Unternehmen · optional',consent:'Ich stimme der Verwendung meiner Angaben zur Beantwortung dieser Nachricht zu.',send:'Nachricht senden',human:'Bestätigen Sie, dass Sie ein Mensch sind',received:'Vielen Dank. Ihre Nachricht ist eingegangen.',held:'Ihre Nachricht wurde zur Prüfung gespeichert.',failed:'Die Sicherheitsprüfung ist derzeit nicht erreichbar. Ihre Eingaben bleiben erhalten.',retry:'Erneut versuchen',save:'Zur manuellen Prüfung speichern',waiting:'Schließen Sie die Prüfung ab, damit Ihre Nachricht gesendet werden kann.'}
-  };
-  function dispatch(a) {
-    const step=cases[state.scenario].steps[state.step];
-    const next=reduce(state,a);
-    state=step&&step[1]===a.type?{...next,step:Math.min(state.step+1,cases[state.scenario].steps.length)}:next;
-    render();
+  let index=0;
+  const safe=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const quote=s=>`<p class="story-quote">${safe(s)}</p>`;
+  function content(s) {
+    if(s.kind==='spam-form')return `<div class="story-message"><p><strong>公司</strong>　google</p><p><strong>留言</strong></p>${quote(spam)}<p class="story-dim">大意：声称有一笔转账，诱导收件人去外部链接领取。</p></div>`;
+    if(s.kind==='spam-mail')return `<div class="story-message"><p class="story-dim">发件人：Linker</p><p><strong>New inquiry #8009 from google</strong></p><p>联系表单收到一条新留言：</p>${quote(spam)}</div>`;
+    if(s.kind==='spam-held')return `<div class="story-message"><p><strong>疑似垃圾 · 待复核</strong></p><p>公司：google</p>${quote(spam)}<p class="story-dim">依据：本场景模拟识别出已知转账诱导样本。</p></div><div class="story-note">你的邮箱：没有新增这封通知。<br>原始留言：仍保存在后台，可复核。</div>`;
+    if(s.kind==='normal-form')return `<div class="story-message"><p><strong>客户</strong>　Alex Meyer（示例）</p><p><strong>回复邮箱</strong>　alex@example.com</p><p><strong>留言</strong></p>${quote(normal)}</div>`;
+    if(s.kind==='normal-mail')return `<div class="story-message"><p class="story-dim">发件人：Linker</p><p><strong>一条新的客户询盘（示意）</strong></p><p>客户：Alex Meyer</p>${quote(normal)}<p class="story-dim">现在可以由团队按原来的方式联系客户。</p></div>`;
+    if(s.kind==='challenge')return `<div class="story-message"><p><strong>您的询盘已经填写好</strong></p>${quote(normal)}<div class="story-note">完成下面的一次勾选，就继续发送这条询盘。</div></div>`;
+    if(s.kind==='outage')return `<div class="story-message"><p><strong>客户已填写的留言</strong></p>${quote(normal)}<div class="story-note">安全检查暂时无法完成。<br>您的输入仍然保留。</div></div>`;
+    return `<div class="story-message"><p><strong>验证未完成 · 优先待核</strong></p><p>客户：Alex Meyer</p>${quote(normal)}<p class="story-dim">原因：验证服务不可用。没有判定客户是垃圾发送者。</p></div><div class="story-note">保存只进入有额度限制的待核区。<br>不会立即发信、创建账号或调用 AI。</div>`;
   }
-  function render() {
-    const t=text[state.lang],s=state,c=cases[s.scenario];
-    all('[data-policy]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.policy===s.policy)));
-    all('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===s.lang)));
-    el('.ap-scenarios').innerHTML=Object.entries(cases).map(([id,v])=>`<button type="button" role="tab" class="ap-button cursor-interaction" data-scenario="${id}" aria-selected="${s.scenario===id}" aria-controls="ap-walkthrough" id="ap-case-${id}">${v.name}</button>`).join('');
-    all('[data-copy]').forEach(e=>e.textContent=t[e.dataset.copy]);
-    for(const field of ['message','name','email','company']) { const fieldEl=el(`[name="${field}"]`); if(fieldEl.value!==s[field])fieldEl.value=s[field]; fieldEl.readOnly=s.record!=='none'; }
-    el('[name="consent"]').checked=s.consent;
-    el('[name="consent"]').disabled=s.record!=='none';
-    el('.ap-check').hidden=s.phase!=='challenge';
-    el('[name="human"]').checked=false;
-    el('.ap-send').disabled=s.record!=='none';
-    const fb=el('.ap-feedback');fb.hidden=!['received','held','unavailable','challenge','invalid'].includes(s.phase);
-    fb.innerHTML=s.phase==='received'?`<p>${t.received}</p>`:s.phase==='held'?`<p>${t.held}</p><p class="ap-muted">演示说明：暂存不是自动审批，也未承诺已发邮件。</p>`:s.phase==='unavailable'?`<p>${t.failed}</p><div class="ap-buttons"><button type="button" class="ap-button cursor-interaction" data-action="RETRY">${t.retry}</button><button type="button" class="ap-button cursor-interaction" data-action="SAVE">${t.save}</button></div>`:s.phase==='challenge'?`<p>${t.waiting}</p>`:s.phase==='invalid'?'<p>请完成必填信息。</p>':'';
-    all('[data-view]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.view===s.view));b.textContent=b.dataset.view==='mail'?`你的邮箱 · ${s.notifications}`:`${s.record==='retained'?'已隔离':'待复核'} · ${['suspected','unverified','retained'].includes(s.record)?1:0}`;});
-    const body=el('.ap-staffbody');
-    if(s.view==='mail') {
-      body.innerHTML=s.notifications?`<article class="ap-mail"><p class="ap-muted">Linker · 刚刚（模拟）</p><p><strong>${esc(s.policy==='today'&&s.scenario==='spam'?'New inquiry #8009 from google':'New inquiry #DEMO-001 from '+s.company)}</strong></p><p class="ap-muted">Contact form</p><p class="ap-message">${esc(s.message)}</p><p class="ap-muted">客户回执：${s.policy==='today'?'仍按现有额度规则处理':'固定确认信息，不带原始留言或外链'}。</p></article>`:'<div class="ap-empty">邮箱没有新增通知。<br>等待客户提交，或查看待复核区。</div>';
-    } else if(['suspected','unverified','retained'].includes(s.record)) {
-      const reason=s.record==='unverified'?'验证未完成 · 优先待核':s.record==='retained'?'已标记垃圾 · 保留隔离':'疑似垃圾 · 待复核';
-      body.innerHTML=`<article class="ap-record"><span class="ap-tag">${reason}</span><p><strong>${esc(s.name)} · ${esc(s.company)}</strong></p><p class="ap-message">${esc(s.message)}</p><p class="ap-muted">${s.record==='unverified'?'安全检查不可用，尚未对客户内容作垃圾判定。':'本场景模拟命中已知转账诱导样本；俄文或带网址本身不作为拒绝理由。'}</p><p>即时团队邮件：0 封<br>自动客户回执：0 封</p><div class="ap-buttons"><button type="button" class="ap-button ap-primary cursor-interaction" data-action="APPROVE">确认是真客户</button>${s.record==='suspected'?'<button type="button" class="ap-button cursor-interaction" data-action="MARK_SPAM">确认垃圾，保留隔离</button>':''}</div></article>`;
-    } else body.innerHTML=`<div class="ap-empty">${s.record==='inquiry'?'这条已进入正式询盘。':'这里没有待核记录。'}</div>`;
-    const labels={draft:'尚未发送',invalid:'信息未完成',challenge:'等待勾选',unavailable:'验证暂时不可用',received:'已收到',held:'已保存，待核验'};
-    el('[data-state="submission"]').textContent=labels[s.phase];
-    el('[data-state="mail"]').textContent=`${s.notifications} 封（模拟）`;
-    el('[data-state="record"]').textContent=({none:'尚无记录',inquiry:'正式询盘',suspected:'疑似垃圾待复核',unverified:'验证未完成待核',retained:'已保留隔离'})[s.record];
-    el('.ap-result').textContent=s.event;
-    const walk=el('.ap-walk');walk.id='ap-walkthrough';walk.setAttribute('role','tabpanel');walk.setAttribute('aria-labelledby','ap-case-'+s.scenario);
-    el('.ap-walkdesc').textContent=s.policy==='today'?'当前处理方式没有新增的验证和待核路径。点击步骤可看见哪些动作现在还做不到。':c.description;
-    el('.ap-steps').innerHTML=c.steps.map(([label,action],i)=>`<button type="button" class="ap-button cursor-interaction" data-step="${i}" data-step-action="${action}" ${i>s.step?'disabled':''} aria-pressed="${i===s.step}">${i<s.step?'✓ ':String(i+1)+' · '}${label}</button>`).join('');
+  function render(){
+    const s=scenes[index];
+    el('.story-chapter').textContent=s.chapter;
+    el('.story-count').textContent=`${index+1} / ${scenes.length}`;
+    el('.story-role').textContent=s.role;
+    el('.story-body').innerHTML=`<h3>${s.title}</h3>${content(s)}`;
+    el('.story-outcome').innerHTML=`<p>${s.explain}</p>`;
+    el('.story-action').textContent=s.action;
+    el('button.story-action').hidden=s.kind==='challenge';
+    el('.story-check').hidden=s.kind!=='challenge';
+    el('.story-check input').checked=false;
+    el('.story-back').disabled=index===0;
+    el('.story-status').textContent=s.status;
   }
-  root.addEventListener('submit',e=>{e.preventDefault();dispatch({type:'SEND'});});
-  root.addEventListener('input',e=>{if(['message','name','email','company'].includes(e.target.name))state=reduce(state,{type:'EDIT',field:e.target.name,value:e.target.value});});
-  root.addEventListener('change',e=>{if(e.target.name==='human')dispatch({type:'CHECK'});if(e.target.name==='consent')state=reduce(state,{type:'EDIT',field:'consent',value:e.target.checked});});
-  root.addEventListener('click',e=>{
-    const b=e.target.closest('button');if(!b||!root.contains(b))return;
-    if(b.dataset.scenario)dispatch({type:'SCENARIO',value:b.dataset.scenario});
-    else if(b.dataset.policy)dispatch({type:'POLICY',value:b.dataset.policy});
-    else if(b.dataset.lang)dispatch({type:'LANG',value:b.dataset.lang});
-    else if(b.dataset.view)dispatch({type:b.dataset.view==='mail'?'OPEN_MAIL':'OPEN_REVIEW'});
-    else if(b.dataset.stepAction) {state=reduce(state,{type:b.dataset.stepAction});state={...state,step:Math.min(Number(b.dataset.step)+1,cases[state.scenario].steps.length)};render();}
-    else if(b.dataset.action)dispatch({type:b.dataset.action});
-  });
+  el('button.story-action').addEventListener('click',()=>{index=move(index,'NEXT');render();});
+  el('.story-check input').addEventListener('change',()=>{index=move(index,'NEXT');render();});
+  el('.story-back').addEventListener('click',()=>{index=move(index,'BACK');render();});
   render();
 })();
 </script>
