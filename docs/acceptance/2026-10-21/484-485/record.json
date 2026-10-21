@@ -1,0 +1,212 @@
+{
+  "ticket": [
+    484,
+    485
+  ],
+  "instance": "w480",
+  "origin": "http://127.0.0.1:9252",
+  "snapshot": "20261021-1023",
+  "build": "1a10470462d9176838fa",
+  "startedAt": "2026-10-21T05:08:27.579Z",
+  "runs": [
+    {
+      "fix": 485,
+      "lang": "en",
+      "width": 1440,
+      "path": "/solution-configurator/",
+      "status": "All products are in your solution draft. Saved to your account. Open saved solution",
+      "saveRequests": [
+        "http://127.0.0.1:9252/wp-json/linker/v1/solutions?lang=en"
+      ],
+      "shot": "485-en-1440.png"
+    },
+    {
+      "fix": 485,
+      "lang": "en",
+      "width": 390,
+      "path": "/solution-configurator/",
+      "status": "All products are in your solution draft. Saved to your account. Open saved solution",
+      "saveRequests": [
+        "http://127.0.0.1:9252/wp-json/linker/v1/solutions?lang=en"
+      ],
+      "shot": "485-en-390.png"
+    },
+    {
+      "fix": 485,
+      "lang": "de",
+      "width": 1440,
+      "path": "/de/loesungskonfigurator/",
+      "status": "Alle Produkte sind in Ihrem Lösungsentwurf. In Ihrem Konto gespeichert. Gespeicherte Lösung öffnen",
+      "saveRequests": [
+        "http://127.0.0.1:9252/wp-json/linker/v1/solutions?lang=de"
+      ],
+      "shot": "485-de-1440.png"
+    },
+    {
+      "fix": 485,
+      "lang": "de",
+      "width": 390,
+      "path": "/de/loesungskonfigurator/",
+      "status": "Alle Produkte sind in Ihrem Lösungsentwurf. In Ihrem Konto gespeichert. Gespeicherte Lösung öffnen",
+      "saveRequests": [
+        "http://127.0.0.1:9252/wp-json/linker/v1/solutions?lang=de"
+      ],
+      "shot": "485-de-390.png"
+    },
+    {
+      "fix": 484,
+      "lang": "en",
+      "width": 1440,
+      "refusal": false,
+      "path": "/solution-configurator/",
+      "selected": "Official building model: Triftstraße 5",
+      "planesBefore": 16,
+      "totalBefore": "Selected: 14 modules, 6.44 kWp",
+      "afterSelect": [
+        "roof/outline 200"
+      ],
+      "statusAfterFinish": "The plane you drew is in the list.",
+      "planesAfter": 17,
+      "totalAfter": "Selected: 15 modules, 6.9 kWp",
+      "afterFinish": [
+        "roof/outline 200",
+        "roof/pack 200"
+      ],
+      "afterGenuine": [
+        "roof/outline 200",
+        "roof/pack 200",
+        "roof/outline 200"
+      ],
+      "shot": "484-drawn-en-1440.png",
+      "shotTotal": "484-drawn-en-1440-total.png"
+    },
+    {
+      "fix": 484,
+      "lang": "en",
+      "width": 390,
+      "refusal": false,
+      "path": "/solution-configurator/",
+      "selected": "Official building model: Triftstraße 5",
+      "planesBefore": 16,
+      "totalBefore": "Selected: 14 modules, 6.44 kWp",
+      "afterSelect": [
+        "roof/outline 200"
+      ],
+      "statusAfterFinish": "The plane you drew is in the list.",
+      "planesAfter": 17,
+      "totalAfter": "Selected: 16 modules, 7.36 kWp",
+      "afterFinish": [
+        "roof/outline 200",
+        "roof/pack 200"
+      ],
+      "afterGenuine": [
+        "roof/outline 200",
+        "roof/pack 200",
+        "roof/outline 200"
+      ],
+      "shot": "484-drawn-en-390.png",
+      "shotTotal": "484-drawn-en-390-total.png"
+    },
+    {
+      "fix": 484,
+      "lang": "de",
+      "width": 1440,
+      "refusal": false,
+      "path": "/de/loesungskonfigurator/",
+      "selected": "Amtliches Gebäudemodell: Triftstraße 5",
+      "planesBefore": 16,
+      "totalBefore": "Ausgewählt: 14 Module, 6,44 kWp",
+      "afterSelect": [
+        "roof/outline 200"
+      ],
+      "statusAfterFinish": "Die gezeichnete Fläche steht in der Liste.",
+      "planesAfter": 17,
+      "totalAfter": "Ausgewählt: 15 Module, 6,9 kWp",
+      "afterFinish": [
+        "roof/outline 200",
+        "roof/pack 200"
+      ],
+      "afterGenuine": [
+        "roof/outline 200",
+        "roof/pack 200",
+        "roof/outline 200"
+      ],
+      "shot": "484-drawn-de-1440.png",
+      "shotTotal": "484-drawn-de-1440-total.png"
+    },
+    {
+      "fix": 484,
+      "lang": "de",
+      "width": 390,
+      "refusal": false,
+      "path": "/de/loesungskonfigurator/",
+      "selected": "Amtliches Gebäudemodell: Triftstraße 5",
+      "planesBefore": 16,
+      "totalBefore": "Ausgewählt: 14 Module, 6,44 kWp",
+      "afterSelect": [
+        "roof/outline 200"
+      ],
+      "statusAfterFinish": "Die gezeichnete Fläche steht in der Liste.",
+      "planesAfter": 17,
+      "totalAfter": "Ausgewählt: 16 Module, 7,36 kWp",
+      "afterFinish": [
+        "roof/outline 200",
+        "roof/pack 200"
+      ],
+      "afterGenuine": [
+        "roof/outline 200",
+        "roof/pack 200",
+        "roof/outline 200"
+      ],
+      "shot": "484-drawn-de-390.png",
+      "shotTotal": "484-drawn-de-390-total.png"
+    },
+    {
+      "fix": 484,
+      "lang": "en",
+      "width": 1440,
+      "refusal": true,
+      "path": "/solution-configurator/",
+      "selected": "Official building model: Triftstraße 5",
+      "planesBefore": 16,
+      "totalBefore": "Selected: 14 modules, 6.44 kWp",
+      "afterSelect": [
+        "roof/outline 200"
+      ],
+      "statusAfterFinish": "Draw the plane on one roof: this one is too large or outside Germany.",
+      "planesAfter": 16,
+      "totalAfter": "Selected: 14 modules, 6.44 kWp",
+      "afterFinish": [
+        "roof/outline 200",
+        "roof/pack 422"
+      ],
+      "afterGenuine": null,
+      "shot": "484-refused-en-1440.png",
+      "shotTotal": null
+    },
+    {
+      "fix": 484,
+      "lang": "de",
+      "width": 1440,
+      "refusal": true,
+      "path": "/de/loesungskonfigurator/",
+      "selected": "Amtliches Gebäudemodell: Triftstraße 5",
+      "planesBefore": 16,
+      "totalBefore": "Ausgewählt: 14 Module, 6,44 kWp",
+      "afterSelect": [
+        "roof/outline 200"
+      ],
+      "statusAfterFinish": "Zeichnen Sie die Fläche auf einem einzelnen Dach ein: Diese ist zu groß oder liegt außerhalb Deutschlands.",
+      "planesAfter": 16,
+      "totalAfter": "Ausgewählt: 14 Module, 6,44 kWp",
+      "afterFinish": [
+        "roof/outline 200",
+        "roof/pack 422"
+      ],
+      "afterGenuine": null,
+      "shot": "484-refused-de-1440.png",
+      "shotTotal": null
+    }
+  ],
+  "finishedAt": "2026-10-21T05:09:55.730Z"
+}
