@@ -1,0 +1,158 @@
+{
+  "hosted_pdf_url": "https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_datasheet_en.pdf",
+  "source_snapshot": "20261021-1023",
+  "pdf_page": 1,
+  "pdf_sha256": "1833312ad717e11d5fea900948ef7ac84446065af17d50565c9c2b42e4494ab1",
+  "pdf_text": [
+    "Operating temperature range                                                 -40℃~+60℃",
+    "Storage temperature range                                                   -45℃~+90℃"
+  ],
+  "root_cause": "Unsigned figure regex omitted unary signs from fact values; signs stayed outside placeholders and could be omitted by the model.",
+  "before": {
+    "tagged": "Operating temperature range -[n1=40℃]~+[n2=60℃]",
+    "facts": {
+      "aio3.n1": "40℃",
+      "aio3.n2": "60℃"
+    },
+    "german_hydrate": "Betriebstemperatur: 40℃ bis 60℃"
+  },
+  "after": {
+    "tagged": "Operating temperature range [n1=-40℃]~[n2=+60℃]",
+    "facts": {
+      "aio3.n1": "-40℃",
+      "aio3.n2": "+60℃"
+    },
+    "german_hydrate": "Betriebstemperatur: -40℃ bis +60℃"
+  },
+  "renderer_check": "MarkdownIt preserves literal -40℃ and +60℃; no renderer source changed.",
+  "red": {
+    "selected_new_tests": 11,
+    "failed": 10,
+    "passed": 1,
+    "ordinary_positive_range_was_already_correct": true
+  },
+  "green": {
+    "passed": 156,
+    "files": [
+      "test_figures.py",
+      "test_hydrate.py",
+      "test_knowledge.py",
+      "test_ground.py",
+      "test_ground_understanding.py"
+    ]
+  },
+  "production_deployed": false,
+  "reindex_required": false,
+  "reindex_reason": "knowledge.py tags retrieved raw chunk text at request time",
+  "initial_green_passed": 138,
+  "review_boundary_followup": {
+    "new_cases": 18,
+    "red": {
+      "failed": 15,
+      "passed": 3,
+      "log": "review-boundaries-red.log"
+    },
+    "green": {
+      "passed": 156,
+      "original_suite": 138,
+      "added": 18,
+      "log": "review-boundaries-green.log"
+    },
+    "sign_rule": "A sign at the word start or after a non-alphanumeric boundary is unary, unless it immediately follows the previous complete numeric figure including its unit.",
+    "model_guard": "Unicode minus separates model/measurement segments; surrounding Unicode punctuation is removed for number+unit classification only.",
+    "samples": [
+      {
+        "input": "Temperature ≥-40℃",
+        "tagged": "Temperature ≥[n1=-40℃]",
+        "facts": {
+          "c.n1": "-40℃"
+        }
+      },
+      {
+        "input": "Temperature ≤−20 °C",
+        "tagged": "Temperature ≤[n1=−20 °C]",
+        "facts": {
+          "c.n1": "−20 °C"
+        }
+      },
+      {
+        "input": "Temperature \"-40℃\"",
+        "tagged": "Temperature \"[n1=-40℃]\"",
+        "facts": {
+          "c.n1": "-40℃"
+        }
+      },
+      {
+        "input": "Temperature ‘−20°C’",
+        "tagged": "Temperature ‘[n1=−20°C]’",
+        "facts": {
+          "c.n1": "−20°C"
+        }
+      },
+      {
+        "input": "Temperature -40°C,-20°C",
+        "tagged": "Temperature [n1=-40°C],[n2=-20°C]",
+        "facts": {
+          "c.n1": "-40°C",
+          "c.n2": "-20°C"
+        }
+      },
+      {
+        "input": "Temperature -40...-20℃",
+        "tagged": "Temperature [n1=-40]...[n2=-20℃]",
+        "facts": {
+          "c.n1": "-40",
+          "c.n2": "-20℃"
+        }
+      },
+      {
+        "input": "Temperature −40−−20 °C",
+        "tagged": "Temperature [n1=−40]−[n2=−20 °C]",
+        "facts": {
+          "c.n1": "−40",
+          "c.n2": "−20 °C"
+        }
+      },
+      {
+        "input": "Voltage 180-900 V",
+        "tagged": "Voltage [n1=180]-[n2=900 V]",
+        "facts": {
+          "c.n1": "180",
+          "c.n2": "900 V"
+        }
+      },
+      {
+        "input": "Voltage 180−900 V",
+        "tagged": "Voltage [n1=180]−[n2=900 V]",
+        "facts": {
+          "c.n1": "180",
+          "c.n2": "900 V"
+        }
+      },
+      {
+        "input": "Temperature 40℃-60℃",
+        "tagged": "Temperature [n1=40℃]-[n2=60℃]",
+        "facts": {
+          "c.n1": "40℃",
+          "c.n2": "60℃"
+        }
+      },
+      {
+        "input": "SAJ H2-10K-T3, CB2-100.3-HV5 and GW10K-ET",
+        "tagged": "SAJ H2-10K-T3, CB2-100.3-HV5 and GW10K-ET",
+        "facts": {}
+      }
+    ],
+    "checks": [
+      "Ruff check",
+      "Ruff format check",
+      "mypy figures.py",
+      "git diff --check"
+    ],
+    "changed_source_files": [
+      "services/genie/src/linker_genie/figures.py",
+      "services/genie/tests/test_figures.py"
+    ],
+    "deployed": false
+  }
+}
