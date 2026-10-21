@@ -181,4 +181,4 @@ node docs/acceptance/2026-10-21/479/walk.mjs "$(just login walk479 --user=walk47
 - 无邮件、无询盘、无注册表单提交、无生产写入；`forbiddenPosts: []`。前后计数与断言：`record.json` `instance`（mail 文件 0→0、HPOS orders 66→66、solutions 0→0、customers 13→13）与 `assertions`（全 true，含 `countersNumeric`、`mailReadable`、计数逐项不变与 `engineOptionRestored`）。
 - 走查只写本地实例的测试会话与两条测试方案，均已删除；草稿读回 0。
 - `linker_engine_url` 已还原为 `http://127.0.0.1:9259` 并读回（`optionAfter.value`）。
-- 本票不合并、不部署；线上重走由协调者另行安排（部署后同两语言再走一次 26124 与访客保存）。
+- 本票不改产品代码、不部署；记录经 PR #487 合并。线上重走由协调者另行安排（部署后同两语言再走一次 26124 与访客保存）。
