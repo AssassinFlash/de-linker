@@ -1,0 +1,33 @@
+{
+  "active": "linker-genie-input",
+  "ariaModal": "true",
+  "bodyOverflow": "hidden",
+  "height": 1000,
+  "inertElements": 48,
+  "lang": "de-DE",
+  "mountRole": "dialog",
+  "observedAt": "2026-10-21T22:30:55.068Z",
+  "question": "Bitte prüfen Sie die Installationsunterlagen für ein dreiphasiges System.",
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/marketing.js?ver=11f066f5b3470f448790",
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/genie.js?ver=76fa2a5fdc263f719473"
+  ],
+  "sourceControls": [
+    {
+      "height": 44,
+      "name": "Spracheingabe",
+      "width": 44
+    }
+  ],
+  "sources": [
+    {
+      "ariaLabel": null,
+      "bound": "1",
+      "placeholder": "Suche nach Wechselrichtermodell, Batteriekapazität, Notstromlösungen oder Handbüchern...",
+      "value": ""
+    }
+  ],
+  "url": "https://de-linker.com/de/fuer-installateur/",
+  "voiceParagraphs": [],
+  "width": 390
+}

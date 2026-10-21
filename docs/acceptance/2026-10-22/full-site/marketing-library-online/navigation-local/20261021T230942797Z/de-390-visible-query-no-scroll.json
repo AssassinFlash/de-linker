@@ -1,0 +1,34 @@
+{
+  "url": "http://127.0.0.1:9296/de/faq-dokumente/?tab=documents",
+  "scrollY": 0,
+  "width": 390,
+  "height": 1000,
+  "stickyBottom": 482.75,
+  "selected": "documents",
+  "query": "AIO3",
+  "first": {
+    "x": 21,
+    "y": 535.890625,
+    "width": 348,
+    "height": 214.09375,
+    "top": 535.890625,
+    "right": 369,
+    "bottom": 749.984375,
+    "left": 21
+  },
+  "results": {
+    "x": 20,
+    "y": 506.75,
+    "width": 350,
+    "height": 750.953125,
+    "top": 506.75,
+    "right": 370,
+    "bottom": 1257.703125,
+    "left": 20
+  },
+  "active": [],
+  "focus": {
+    "id": "linker-library-q",
+    "tag": "INPUT"
+  }
+}

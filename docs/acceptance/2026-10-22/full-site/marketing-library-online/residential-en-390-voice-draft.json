@@ -1,0 +1,17 @@
+{
+  "active": "linker-genie-input",
+  "height": 1000,
+  "lang": "en-US",
+  "mountRole": "dialog",
+  "observedAt": "2026-10-21T22:22:45.091Z",
+  "question": "Check the residential storage documents.\n10 kW, three-phase system.",
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/marketing.js?ver=11f066f5b3470f448790",
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/genie.js?ver=76fa2a5fdc263f719473"
+  ],
+  "sourceControls": [],
+  "sourceText": "",
+  "url": "https://de-linker.com/solution/residential-storage/",
+  "voiceParagraphs": [],
+  "width": 390
+}

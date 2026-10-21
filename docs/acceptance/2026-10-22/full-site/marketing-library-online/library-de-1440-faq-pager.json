@@ -1,0 +1,46 @@
+{
+  "active": {
+    "id": "",
+    "rect": {
+      "bottom": 289.578125,
+      "height": 75.59375,
+      "left": 345,
+      "right": 1359,
+      "top": 213.984375,
+      "width": 1014,
+      "x": 345,
+      "y": 213.984375
+    },
+    "tag": "SUMMARY",
+    "text": "EcoFlow OCEAN 2 HD-P3-10K0-S2 (10 kW dreiphasiger Hybrid-Wechselrichter)Wie beschreibe ich zwei Batterietürme für ein Angebot?In der Antwort"
+  },
+  "inReader": true,
+  "lang": "de-DE",
+  "missingProductNames": 0,
+  "observedAt": "2026-10-21T22:33:51.255Z",
+  "openQuestions": [
+    "SAJ eSolar AIO3 Datenlogger (WLAN/Ethernet/Bluetooth)An welche SAJ-Wechselrichter passt der eSolar AIO3?In der Antwort"
+  ],
+  "pagers": [
+    {
+      "disabled": false,
+      "text": "Zurück"
+    },
+    {
+      "disabled": false,
+      "text": "1"
+    },
+    {
+      "disabled": false,
+      "text": "2"
+    },
+    {
+      "disabled": true,
+      "text": "Weiter"
+    }
+  ],
+  "productContextCount": 228,
+  "stickyBottom": 137,
+  "url": "https://de-linker.com/de/faq-dokumente/",
+  "width": 1440
+}

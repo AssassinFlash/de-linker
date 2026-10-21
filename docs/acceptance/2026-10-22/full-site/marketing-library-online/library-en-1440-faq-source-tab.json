@@ -1,0 +1,46 @@
+{
+  "active": {
+    "id": "",
+    "rect": {
+      "bottom": 535.46875,
+      "height": 19,
+      "left": 363,
+      "right": 783.6796875,
+      "top": 516.46875,
+      "width": 420.6796875,
+      "x": 363,
+      "y": 516.46875
+    },
+    "tag": "A",
+    "text": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)"
+  },
+  "inReader": true,
+  "lang": "en-US",
+  "missingProductNames": 0,
+  "observedAt": "2026-10-21T22:32:14.797Z",
+  "openQuestions": [
+    "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)Which SAJ inverters take the eSolar AIO3?In the answer"
+  ],
+  "pagers": [
+    {
+      "disabled": false,
+      "text": "Previous"
+    },
+    {
+      "disabled": false,
+      "text": "1"
+    },
+    {
+      "disabled": false,
+      "text": "2"
+    },
+    {
+      "disabled": true,
+      "text": "Next"
+    }
+  ],
+  "productContextCount": 228,
+  "stickyBottom": 137,
+  "url": "https://de-linker.com/faq-download/",
+  "width": 1440
+}

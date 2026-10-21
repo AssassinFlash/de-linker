@@ -1,0 +1,17 @@
+{
+  "active": "linker-genie-input",
+  "height": 1000,
+  "lang": "de-DE",
+  "mountRole": "dialog",
+  "observedAt": "2026-10-21T22:20:45.862Z",
+  "question": "Bitte prüfen Sie die Unterlagen zum SAJ-Heimspeicher.",
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/marketing.js?ver=11f066f5b3470f448790",
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/genie.js?ver=76fa2a5fdc263f719473"
+  ],
+  "sourceControls": [],
+  "sourceText": "",
+  "url": "https://de-linker.com/de/loesung/heimspeicher/",
+  "voiceParagraphs": [],
+  "width": 1440
+}

@@ -1,0 +1,25 @@
+{
+  "url": "http://127.0.0.1:9296/faq-download/#linker-library-panel-faq",
+  "scrollY": 365,
+  "width": 390,
+  "height": 1000,
+  "stickyBottom": 129,
+  "selected": "faq",
+  "query": "AIO3",
+  "first": null,
+  "results": {
+    "x": 20,
+    "y": 141.75,
+    "width": 350,
+    "height": 1415.828125,
+    "top": 141.75,
+    "right": 370,
+    "bottom": 1557.578125,
+    "left": 20
+  },
+  "active": [],
+  "focus": {
+    "id": "",
+    "tag": "BODY"
+  }
+}

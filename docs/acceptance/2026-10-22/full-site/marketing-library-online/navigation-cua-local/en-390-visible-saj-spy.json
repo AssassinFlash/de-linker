@@ -1,0 +1,36 @@
+{
+  "active": [
+    {
+      "current": "location",
+      "hidden": false,
+      "href": "#linker-library-zone-trade"
+    },
+    {
+      "current": "location",
+      "hidden": false,
+      "href": "#linker-library-zone-trade"
+    }
+  ],
+  "height": 1000,
+  "host": {
+    "bottom": 0,
+    "height": 0,
+    "left": 0,
+    "right": 0,
+    "top": 0,
+    "width": 0,
+    "x": 0,
+    "y": 0
+  },
+  "overflow": false,
+  "query": "",
+  "reduced": true,
+  "scripts": [
+    "http://127.0.0.1:9296/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792623517"
+  ],
+  "selected": "faq",
+  "stickyBottom": 192,
+  "url": "http://127.0.0.1:9296/faq-download/#linker-library-answers-saj",
+  "width": 390,
+  "y": 7503.5
+}
