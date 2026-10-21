@@ -40,6 +40,7 @@ final class Module {
 		add_action( 'init', array( $this, 'schedule' ) );
 		add_action( self::MAINTENANCE, array( $this, 'maintain' ) );
 		( new Privacy() )->register();
+		( new BusinessPolicy() )->register();
 	}
 
 	/** Native hourly cleanup complements recovery on each actual admission. */
