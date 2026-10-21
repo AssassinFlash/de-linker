@@ -199,7 +199,11 @@ def test_backup_needed_keeps_candidates_without_backup_figures(
     assert result.sizing.high_kwh == pytest.approx(20.27, abs=0.01)
     battery = result.selected.battery
     assert battery is not None
+    assert battery.product.model == "GW5.1-BAT-D-G20"
+    assert battery.quantity == 4
+    assert battery.usable_kwh == pytest.approx(20.0)
     assert battery.usable_kwh >= result.sizing.reserve_kwh
+    assert battery.above_upper_limit is False
     assert [c.product.id for c in result.candidates.inverters]
     storage_rule = next(
         rule for rule in result.selected.inverter_rules if rule.id == "backup_storage"
@@ -211,6 +215,37 @@ def test_backup_needed_keeps_candidates_without_backup_figures(
     # The removed capability rule filtered every home inverter; it is gone.
     failed = {f.id for e in result.candidates.excluded for f in e.failed}
     assert "backup" not in failed
+
+
+def test_backup_needed_checks_the_reserve_without_an_htw_recommendation(
+    engine_without_backup: Engine,
+) -> None:
+    """#483: HTW not recommending storage does not skip the reserve check.
+
+    Outer Spec review repro: 5000 kWh, 2 kWp, three-phase, backup 3 kW for
+    4 h. The reserve is 12.77 kWh; before the fix this returned a solution
+    with no battery at all.
+    """
+    result = design(
+        engine_without_backup,
+        annual_kwh=5000,
+        pv_kwp=2,
+        phase=3,
+        backup="needed",
+        backup_load_kw=3,
+        backup_hours=4,
+    )
+    assert result.sizing.recommended is False
+    assert result.sizing.reserve_kwh == pytest.approx(12.77, abs=0.01)
+    assert result.selected is not None
+    battery = result.selected.battery
+    assert battery is not None
+    assert battery.usable_kwh >= result.sizing.reserve_kwh
+    storage_rule = next(
+        rule for rule in result.selected.inverter_rules if rule.id == "backup_storage"
+    )
+    assert storage_rule.passed is True
+    assert any("holds the backup reserve" in warning for warning in result.warnings)
 
 
 def test_backup_accessory_ok_keeps_candidates_without_backup_figures(
@@ -251,6 +286,7 @@ def test_backup_reserve_beyond_every_released_battery_is_truthful(
     failed = {f.id for e in result.candidates.excluded for f in e.failed}
     assert "backup_storage" in failed
     assert any("Less backup reserve" in r for r in result.relaxations)
+    assert any("holds 186.2 kWh" in r for r in result.relaxations)
     assert "Plan without backup supply." in result.relaxations
     assert residential.storage_result(result).backup_reserve_kwh == pytest.approx(
         50 * 72 / 0.94, abs=0.1

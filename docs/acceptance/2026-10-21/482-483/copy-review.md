@@ -13,6 +13,7 @@
 | `relax.backup_storage` | `Less backup reserve: the largest released configuration in this selection holds {kwh} kWh.` | `Kleinere Notstromreserve: Die größte freigegebene Konfiguration dieser Auswahl fasst {kwh} kWh.` |
 | `relax.backup_storage_none` | `Less backup reserve: no released configuration in this selection can hold it.` | `Kleinere Notstromreserve: Keine freigegebene Konfiguration dieser Auswahl kann sie aufnehmen.` |
 | H2 meter condition | `The H2 T3 ships with a smart meter, three current transformers and a 10 m meter communication cable (H2 manual, section 2.2 Unpacking, PDF p. 36 English / p. 7 German).` | `Der H2 T3 wird mit einem Smart Meter, drei Stromwandlern und einem 10 m langen Zähler-Kommunikationskabel geliefert (H2-Handbuch, Abschnitt 2.2 Auspacken, PDF-S. 36 englisch / S. 7 deutsch).` |
+| `warn.no_storage_backup` | `With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery for self-consumption. The battery in this proposal holds the backup reserve.` | `Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher zur Eigenverbrauchsoptimierung ab. Der Speicher in diesem Vorschlag deckt die Notstromreserve.` |
 
 删除的旧串：`rule.backup`（`Backup supply`）、`value.backup.native/accessory/none`、
 `relax.backup`（`Accept an accessory for backup supply.`）。旧串只服务于已移除的
@@ -36,7 +37,10 @@
   无“不是…而是…”与三连排比；不出现旧政权编号。
 - **英德同义**：EN `holds {kwh} kWh` = DE `fasst {kwh} kWh`；EN `can hold it` =
   DE `kann sie aufnehmen`；`Less backup reserve` = `Kleinere Notstromreserve`，
-  都是“降低预留”的放宽方向，不把无候选说成系统错误。
+  都是“降低预留”的放宽方向，不把无候选说成系统错误。`warn.no_storage_backup` 只在
+  HTW 不建议配储、但客户要备电时出现：EN 说“电池用于自助消费不被建议，提案中的电池
+  覆盖备电预留”，DE 用 `Eigenverbrauchsoptimierung` 与 `Notstromreserve`，同义；
+  它取代原来“提案只含逆变器、电池以后再加”的句子，避免与所选备电电池矛盾。
 - **一处一实现**：新串只在 `services/engine/src/linker_engine/texts.py`；H2 条件在
   `plugins/linker-commerce/data/compatibility.json`（运行时合同）、
   `plugins/linker-commerce/data/compatibility-lists.json`（合同数据源）与

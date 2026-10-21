@@ -264,17 +264,20 @@ def evaluate(
             )
         )
     batteries: list[BatteryFit] = []
-    if sizing.recommended or existing:
+    backup_wanted = request.backup != "none" and bool(sizing.reserve_kwh)
+    if sizing.recommended or existing or backup_wanted:
         released = battery_options(engine, inverter, sizing.high_kwh)
         checks.append(
             eligibility.Check("battery_release", bool(released), len(released))
         )
-        if request.backup != "none" and sizing.reserve_kwh:
+        if backup_wanted:
             # The reserve is a sizing input (spec 14). What the design must
             # prove is that a released configuration can hold it; the caps are
             # the datasheet stacking figures, not a new threshold. Only
             # covering configurations stay in the choice, so a swap cannot
-            # undercut the reserve the design was checked against.
+            # undercut the reserve the design was checked against. A backup
+            # request needs this even where HTW does not recommend storage:
+            # the reserve is then the whole capacity the design must hold.
             batteries = battery_options(
                 engine, inverter, sizing.high_kwh, sizing.reserve_kwh
             )
@@ -781,7 +784,14 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
     sizing = htw.size(request.pv_kwp, use, reserve)
     warnings: list[str] = []
     if not sizing.recommended:
-        warnings.append(t("warn.no_storage", locale))
+        warnings.append(
+            t(
+                "warn.no_storage_backup"
+                if request.backup != "none" and reserve
+                else "warn.no_storage",
+                locale,
+            )
+        )
     if request.backup != "none" and not reserve:
         warnings.append(t("warn.backup_reserve_missing", locale))
 

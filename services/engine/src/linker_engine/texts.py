@@ -199,6 +199,12 @@ _TEXTS: dict[str, tuple[str, str]] = {
         "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher ab. "
         "Der Vorschlag umfasst den Wechselrichter; ein Speicher lässt sich später ergänzen.",
     ),
+    "warn.no_storage_backup": (
+        "With less than 0.5 kWp of PV per MWh of consumption, HTW Berlin advises against a battery for self-consumption. "
+        "The battery in this proposal holds the backup reserve.",
+        "Bei weniger als 0,5 kWp PV-Leistung je MWh Verbrauch rät die HTW Berlin von einem Batteriespeicher zur Eigenverbrauchsoptimierung ab. "
+        "Der Speicher in diesem Vorschlag deckt die Notstromreserve.",
+    ),
     "warn.outside_table": (
         "The HTW tables cover 2,000 to 10,000 kWh per year in homes without heat pump or electric car; "
         "for this household the self-sufficiency figures are a rough guide.",
