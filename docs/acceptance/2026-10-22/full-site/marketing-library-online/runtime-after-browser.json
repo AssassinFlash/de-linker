@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-21T22:35:30.908607+00:00",
+  "release": "20261021T220117023196Z-d27f3dc3",
+  "all_package_files_equal": true,
+  "packages": {
+    "linker-commerce": {
+      "files": 834,
+      "tree_sha256": "8dfa1c044fb010eff7cde6781d358053cc2d59d10e356dde5422a53e3ce792ac"
+    },
+    "linker-i18n": {
+      "files": 74,
+      "tree_sha256": "52b0bb3a2b180de5a9910baea2064a3df295382c93f6b718a994f38b60de95f9"
+    },
+    "linker-tools": {
+      "files": 243,
+      "tree_sha256": "50463dd78e234fe09b2385aa1667b6f79a77a5518952dcb57bd36a0048578b9e"
+    }
+  },
+  "checked_files": 1151,
+  "privacy": {
+    "1673": {
+      "sha256": "3fe2cbb8db0701c451a4a98959a08525dff4bb87db0996c6de0dd3ea38250b70",
+      "backslashes": 29
+    },
+    "6827": {
+      "sha256": "4afae354aa0a5e6e96581c74eea30e33b0b4651818a085e3b2c563a149da8fa2",
+      "backslashes": 29
+    }
+  },
+  "native_css": {
+    "mtime": 1792620880,
+    "bytes": 701525,
+    "sha256": "4d6074dd98f7bd580671ddda12a60b35896d1b4a5449ae27bb5a8799c4320a3a",
+    "defect": null
+  },
+  "pr_ci": {
+    "id": 39681878873,
+    "status": "success"
+  },
+  "main_ci": {
+    "id": 39683307369,
+    "status": "success"
+  }
+}

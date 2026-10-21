@@ -1,0 +1,25 @@
+{
+  "url": "http://127.0.0.1:9296/faq-download/",
+  "scrollY": 1712,
+  "width": 390,
+  "height": 1000,
+  "stickyBottom": 129,
+  "selected": "faq",
+  "query": "AIO3",
+  "first": null,
+  "results": {
+    "x": 20,
+    "y": -1205.25,
+    "width": 350,
+    "height": 1765.578125,
+    "top": -1205.25,
+    "right": 370,
+    "bottom": 560.328125,
+    "left": 20
+  },
+  "active": [],
+  "focus": {
+    "id": "linker-library-q",
+    "tag": "INPUT"
+  }
+}

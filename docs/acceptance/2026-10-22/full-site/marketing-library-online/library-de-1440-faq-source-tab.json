@@ -1,0 +1,46 @@
+{
+  "active": {
+    "id": "",
+    "rect": {
+      "bottom": 603.515625,
+      "height": 19,
+      "left": 363,
+      "right": 778.3125,
+      "top": 584.515625,
+      "width": 415.3125,
+      "x": 363,
+      "y": 584.515625
+    },
+    "tag": "A",
+    "text": "SAJ eSolar AIO3 Datenlogger (WLAN/Ethernet/Bluetooth)"
+  },
+  "inReader": true,
+  "lang": "de-DE",
+  "missingProductNames": 0,
+  "observedAt": "2026-10-21T22:33:36.924Z",
+  "openQuestions": [
+    "SAJ eSolar AIO3 Datenlogger (WLAN/Ethernet/Bluetooth)An welche SAJ-Wechselrichter passt der eSolar AIO3?In der Antwort"
+  ],
+  "pagers": [
+    {
+      "disabled": true,
+      "text": "Zurück"
+    },
+    {
+      "disabled": false,
+      "text": "1"
+    },
+    {
+      "disabled": false,
+      "text": "2"
+    },
+    {
+      "disabled": false,
+      "text": "Weiter"
+    }
+  ],
+  "productContextCount": 228,
+  "stickyBottom": 137,
+  "url": "https://de-linker.com/de/faq-dokumente/",
+  "width": 1440
+}

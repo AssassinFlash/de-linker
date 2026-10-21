@@ -1,0 +1,47 @@
+{
+  "evidence": [
+    {
+      "state": "en-1440-native-early-documents",
+      "url": "http://127.0.0.1:9296/faq-download/#linker-library-panel-documents",
+      "scrollY": 0,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 444.015625,
+      "selected": "faq",
+      "query": "",
+      "first": null,
+      "results": null,
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    },
+    {
+      "state": "en-1440-hash-forward-preserved-query",
+      "url": "http://127.0.0.1:9296/faq-download/#linker-library-panel-faq",
+      "scrollY": 392,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "faq",
+      "query": "AIO3",
+      "first": null,
+      "results": {
+        "x": 80,
+        "y": 140.015625,
+        "width": 1280,
+        "height": 1147.609375,
+        "top": 140.015625,
+        "right": 1360,
+        "bottom": 1287.625,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    }
+  ]
+}

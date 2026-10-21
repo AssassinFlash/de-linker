@@ -1,0 +1,182 @@
+{
+  "evidence": [
+    {
+      "state": "de-390-visible-query-no-scroll",
+      "url": "http://127.0.0.1:9296/de/faq-dokumente/?tab=documents",
+      "scrollY": 0,
+      "width": 390,
+      "height": 1000,
+      "stickyBottom": 482.75,
+      "selected": "documents",
+      "query": "AIO3",
+      "first": {
+        "x": 21,
+        "y": 535.890625,
+        "width": 348,
+        "height": 214.09375,
+        "top": 535.890625,
+        "right": 369,
+        "bottom": 749.984375,
+        "left": 21
+      },
+      "results": {
+        "x": 20,
+        "y": 506.75,
+        "width": 350,
+        "height": 750.953125,
+        "top": 506.75,
+        "right": 370,
+        "bottom": 1257.703125,
+        "left": 20
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-q",
+        "tag": "INPUT"
+      }
+    },
+    {
+      "locale": "de",
+      "width": 390,
+      "state": "no-js-native-details-and-real-thumbnail",
+      "title": "Chint DTSU666 Produktübersicht (EN)",
+      "path": "http://127.0.0.1:9296/de/faq-dokumente/",
+      "source": "native library fragments and real thumbnail bytes; no network intercept"
+    },
+    {
+      "locale": "de",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Datenblatt (Englisch)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": -27.109375,
+          "width": 348,
+          "height": 214.09375,
+          "top": -27.109375,
+          "right": 369,
+          "bottom": 186.984375,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 2.890625,
+          "width": 254,
+          "height": 40.5,
+          "top": 2.890625,
+          "right": 355,
+          "bottom": 43.390625,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 128.984375,
+          "width": 137.109375,
+          "height": 44,
+          "top": 128.984375,
+          "right": 238.109375,
+          "bottom": 172.984375,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 Kurzanleitung zur Installation (Englisch)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": 216.125,
+          "width": 348,
+          "height": 214.09375,
+          "top": 216.125,
+          "right": 369,
+          "bottom": 430.21875,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 246.125,
+          "width": 254,
+          "height": 40.5,
+          "top": 246.125,
+          "right": 355,
+          "bottom": 286.625,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 372.21875,
+          "width": 137.109375,
+          "height": 44,
+          "top": 372.21875,
+          "right": 238.109375,
+          "bottom": 416.21875,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 EU-Konformitätserklärung (mehrsprachig)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": 459.359375,
+          "width": 348,
+          "height": 234.34375,
+          "top": 459.359375,
+          "right": 369,
+          "bottom": 693.703125,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 489.359375,
+          "width": 254,
+          "height": 60.75,
+          "top": 489.359375,
+          "right": 355,
+          "bottom": 550.109375,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 635.703125,
+          "width": 137.109375,
+          "height": 44,
+          "top": 635.703125,
+          "right": 238.109375,
+          "bottom": 679.703125,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "de",
+      "width": 390,
+      "state": "faq-keyboard-pager",
+      "productCount": 228,
+      "path": "http://127.0.0.1:9296/de/faq-dokumente/",
+      "focus": {
+        "rect": {
+          "x": 21,
+          "y": 302.015625,
+          "width": 348,
+          "height": 116.1875,
+          "top": 302.015625,
+          "right": 369,
+          "bottom": 418.203125,
+          "left": 21
+        },
+        "stickyBottom": 192,
+        "inReader": true
+      }
+    }
+  ]
+}

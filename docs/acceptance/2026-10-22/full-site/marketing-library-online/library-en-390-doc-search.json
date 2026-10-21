@@ -1,0 +1,132 @@
+{
+  "active": {
+    "id": "linker-library-q",
+    "tag": "INPUT",
+    "text": ""
+  },
+  "faqSummaries": [],
+  "height": 1000,
+  "lang": "en-US",
+  "observedAt": "2026-10-21T22:31:26.371Z",
+  "overflow": false,
+  "query": "AIO3",
+  "results": [
+    {
+      "action": [
+        {
+          "href": "https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_datasheet_en.pdf",
+          "name": null,
+          "rect": {
+            "bottom": 736.0078125,
+            "height": 44,
+            "left": 101,
+            "right": 212.1875,
+            "top": 692.0078125,
+            "width": 111.1875,
+            "x": 101,
+            "y": 692.0078125
+          },
+          "text": "Download SAJ eSolar AIO3 datasheet (English)"
+        }
+      ],
+      "image": [
+        {
+          "complete": true,
+          "opacity": "1",
+          "src": "https://de-linker.com/wp-content/plugins/linker-commerce/assets/faq-thumbs/108e054e92978925fcba84fdec47c8de6ab0dc5b.webp",
+          "width": 160
+        }
+      ],
+      "rect": {
+        "bottom": 750.0078125,
+        "height": 214.09375,
+        "left": 21,
+        "right": 369,
+        "top": 535.9140625,
+        "width": 348,
+        "x": 21,
+        "y": 535.9140625
+      },
+      "title": "SAJ eSolar AIO3 datasheet (English)"
+    },
+    {
+      "action": [
+        {
+          "href": "https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_quick-install-guide_en.pdf",
+          "name": null,
+          "rect": {
+            "bottom": 973.5,
+            "height": 44,
+            "left": 101,
+            "right": 212.1875,
+            "top": 929.5,
+            "width": 111.1875,
+            "x": 101,
+            "y": 929.5
+          },
+          "text": "Download SAJ eSolar AIO3 quick installation guide (English)"
+        }
+      ],
+      "image": [
+        {
+          "complete": true,
+          "opacity": "1",
+          "src": "https://de-linker.com/wp-content/plugins/linker-commerce/assets/faq-thumbs/6e7ee13ea8f08abfe07a32925375e04f629ec48e.webp",
+          "width": 305
+        }
+      ],
+      "rect": {
+        "bottom": 987.5,
+        "height": 208.34375,
+        "left": 21,
+        "right": 369,
+        "top": 779.15625,
+        "width": 348,
+        "x": 21,
+        "y": 779.15625
+      },
+      "title": "SAJ eSolar AIO3 quick installation guide (English)"
+    },
+    {
+      "action": [
+        {
+          "href": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_eSolar-AIO3_EU-Declaration-of-Conformity.pdf",
+          "name": null,
+          "rect": {
+            "bottom": 1216.7421875,
+            "height": 44,
+            "left": 101,
+            "right": 212.1875,
+            "top": 1172.7421875,
+            "width": 111.1875,
+            "x": 101,
+            "y": 1172.7421875
+          },
+          "text": "Download SAJ eSolar AIO3 EU declaration of conformity (multilingual)"
+        }
+      ],
+      "image": [
+        {
+          "complete": true,
+          "opacity": "1",
+          "src": "https://de-linker.com/wp-content/plugins/linker-commerce/assets/faq-thumbs/9d87402c9650607103f05e8157f28d1d2b6ff99b.webp",
+          "width": 153
+        }
+      ],
+      "rect": {
+        "bottom": 1230.7421875,
+        "height": 214.09375,
+        "left": 21,
+        "right": 369,
+        "top": 1016.6484375,
+        "width": 348,
+        "x": 21,
+        "y": 1016.6484375
+      },
+      "title": "SAJ eSolar AIO3 EU declaration of conformity (multilingual)"
+    }
+  ],
+  "selectedTab": "Documents 3",
+  "url": "https://de-linker.com/faq-download/?tab=documents",
+  "width": 390
+}

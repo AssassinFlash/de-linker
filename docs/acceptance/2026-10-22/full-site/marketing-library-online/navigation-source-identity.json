@@ -1,0 +1,5 @@
+{
+  "plugins/linker-commerce/assets/library-ui.js": "d611a9778d9cc2a4f3478830c27b937cca666507487b0fbd9c816139cd7b155c",
+  "plugins/linker-commerce/tests/js/library-ui.test.mjs": "a35a6090bbced1f602781aaa3e2ebb4ebb2b66a8d5be11324055f244025cdc5b",
+  "tests/e2e/specs/library-visual-details.spec.ts": "bed29c6d4e56c2bd5c06f7cffd7405dbf89a49cf30684094b941f63ca281c449"
+}

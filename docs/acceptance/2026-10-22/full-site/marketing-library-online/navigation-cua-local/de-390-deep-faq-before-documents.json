@@ -1,0 +1,25 @@
+{
+  "active": [],
+  "height": 1000,
+  "host": {
+    "bottom": 560.1640625,
+    "height": 1415.8984375,
+    "left": 20,
+    "right": 370,
+    "top": -855.734375,
+    "width": 350,
+    "x": 20,
+    "y": -855.734375
+  },
+  "overflow": false,
+  "query": "AIO3",
+  "reduced": true,
+  "scripts": [
+    "http://127.0.0.1:9296/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624092"
+  ],
+  "selected": "faq",
+  "stickyBottom": 129,
+  "url": "http://127.0.0.1:9296/de/faq-dokumente/",
+  "width": 390,
+  "y": 1362.5
+}

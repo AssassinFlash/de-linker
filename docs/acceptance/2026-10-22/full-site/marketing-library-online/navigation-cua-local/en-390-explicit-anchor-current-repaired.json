@@ -1,0 +1,36 @@
+{
+  "active": [
+    {
+      "current": null,
+      "hidden": false,
+      "href": "#linker-library-zone-answers"
+    },
+    {
+      "current": "location",
+      "hidden": false,
+      "href": "#linker-library-answers-saj"
+    },
+    {
+      "current": null,
+      "hidden": false,
+      "href": "#linker-library-zone-answers"
+    },
+    {
+      "current": "location",
+      "hidden": false,
+      "href": "#linker-library-answers-saj"
+    }
+  ],
+  "height": 1000,
+  "overflow": false,
+  "query": "",
+  "reduced": true,
+  "scripts": [
+    "http://127.0.0.1:9296/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624197"
+  ],
+  "selected": "faq",
+  "stickyBottom": 192,
+  "url": "http://127.0.0.1:9296/faq-download/#linker-library-answers-saj",
+  "width": 390,
+  "y": 7503.5
+}

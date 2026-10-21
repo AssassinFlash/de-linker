@@ -1,0 +1,38 @@
+{
+  "active": "linker-genie-input",
+  "ariaModal": "true",
+  "bodyOverflow": "hidden",
+  "height": 1000,
+  "inertElements": 46,
+  "lang": "en-US",
+  "mountRole": "dialog",
+  "observedAt": "2026-10-21T22:30:34.512Z",
+  "question": "Check installation documents for a three-phase system.",
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/marketing.js?ver=11f066f5b3470f448790",
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/genie.js?ver=76fa2a5fdc263f719473"
+  ],
+  "sourceControls": [
+    {
+      "height": 44,
+      "name": "Attach schematic or document",
+      "width": 44
+    },
+    {
+      "height": 44,
+      "name": "Voice input",
+      "width": 44
+    }
+  ],
+  "sources": [
+    {
+      "ariaLabel": null,
+      "bound": "1",
+      "placeholder": "Search by inverter model, battery capacity, backup setups, or manuals...",
+      "value": ""
+    }
+  ],
+  "url": "https://de-linker.com/for-installer/",
+  "voiceParagraphs": [],
+  "width": 390
+}

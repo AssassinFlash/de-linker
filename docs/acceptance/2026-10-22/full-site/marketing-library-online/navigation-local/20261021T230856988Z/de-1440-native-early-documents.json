@@ -1,0 +1,16 @@
+{
+  "url": "http://127.0.0.1:9296/de/faq-dokumente/#linker-library-panel-documents",
+  "scrollY": 0,
+  "width": 1440,
+  "height": 1000,
+  "stickyBottom": 468.8125,
+  "selected": "faq",
+  "query": "",
+  "first": null,
+  "results": null,
+  "active": [],
+  "focus": {
+    "id": "",
+    "tag": "BODY"
+  }
+}

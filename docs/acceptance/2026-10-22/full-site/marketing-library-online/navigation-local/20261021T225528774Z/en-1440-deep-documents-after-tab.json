@@ -1,0 +1,34 @@
+{
+  "url": "http://127.0.0.1:9296/faq-download/?tab=documents",
+  "scrollY": 558,
+  "width": 1440,
+  "height": 1000,
+  "stickyBottom": 137,
+  "selected": "documents",
+  "query": "AIO3",
+  "first": {
+    "x": 81,
+    "y": 3.15625,
+    "width": 1278,
+    "height": 91,
+    "top": 3.15625,
+    "right": 1359,
+    "bottom": 94.15625,
+    "left": 81
+  },
+  "results": {
+    "x": 80,
+    "y": -25.984375,
+    "width": 1280,
+    "height": 361.421875,
+    "top": -25.984375,
+    "right": 1360,
+    "bottom": 335.4375,
+    "left": 80
+  },
+  "active": [],
+  "focus": {
+    "id": "linker-library-tab-documents",
+    "tag": "A"
+  }
+}

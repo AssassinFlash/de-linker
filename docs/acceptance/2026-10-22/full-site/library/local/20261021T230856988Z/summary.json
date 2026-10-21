@@ -1,0 +1,225 @@
+{
+  "evidence": [
+    {
+      "state": "en-390-visible-query-no-scroll",
+      "url": "http://127.0.0.1:9296/faq-download/?tab=documents",
+      "scrollY": 0,
+      "width": 390,
+      "height": 1000,
+      "stickyBottom": 482.75,
+      "selected": "documents",
+      "query": "AIO3",
+      "first": {
+        "x": 21,
+        "y": 535.890625,
+        "width": 348,
+        "height": 214.09375,
+        "top": 535.890625,
+        "right": 369,
+        "bottom": 749.984375,
+        "left": 21
+      },
+      "results": {
+        "x": 20,
+        "y": 506.75,
+        "width": 350,
+        "height": 724.953125,
+        "top": 506.75,
+        "right": 370,
+        "bottom": 1231.703125,
+        "left": 20
+      },
+      "active": [],
+      "focus": {
+        "id": "linker-library-q",
+        "tag": "INPUT"
+      }
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "state": "no-js-native-details-and-real-thumbnail",
+      "title": "Chint DTSU666 catalog (EN)",
+      "path": "http://127.0.0.1:9296/faq-download/",
+      "source": "native library fragments and real thumbnail bytes; no network intercept"
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 datasheet (English)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": -22.109375,
+          "width": 348,
+          "height": 214.09375,
+          "top": -22.109375,
+          "right": 369,
+          "bottom": 191.984375,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 7.890625,
+          "width": 254,
+          "height": 40.5,
+          "top": 7.890625,
+          "right": 355,
+          "bottom": 48.390625,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 133.984375,
+          "width": 111.1875,
+          "height": 44,
+          "top": 133.984375,
+          "right": 212.1875,
+          "bottom": 177.984375,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 quick installation guide (English)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": 221.125,
+          "width": 348,
+          "height": 208.34375,
+          "top": 221.125,
+          "right": 369,
+          "bottom": 429.46875,
+          "left": 21
+        },
+        "title": {
+          "x": 168.390625,
+          "y": 225.125,
+          "width": 186.609375,
+          "height": 60.75,
+          "top": 225.125,
+          "right": 355,
+          "bottom": 285.875,
+          "left": 168.390625
+        },
+        "action": {
+          "x": 101,
+          "y": 371.46875,
+          "width": 111.1875,
+          "height": 44,
+          "top": 371.46875,
+          "right": 212.1875,
+          "bottom": 415.46875,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "state": "search-document",
+      "title": "SAJ eSolar AIO3 EU declaration of conformity (multilingual)",
+      "geometry": {
+        "row": {
+          "x": 21,
+          "y": 458.609375,
+          "width": 348,
+          "height": 214.09375,
+          "top": 458.609375,
+          "right": 369,
+          "bottom": 672.703125,
+          "left": 21
+        },
+        "title": {
+          "x": 101,
+          "y": 488.609375,
+          "width": 254,
+          "height": 40.5,
+          "top": 488.609375,
+          "right": 355,
+          "bottom": 529.109375,
+          "left": 101
+        },
+        "action": {
+          "x": 101,
+          "y": 614.703125,
+          "width": 111.1875,
+          "height": 44,
+          "top": 614.703125,
+          "right": 212.1875,
+          "bottom": 658.703125,
+          "left": 101
+        }
+      }
+    },
+    {
+      "locale": "en",
+      "width": 390,
+      "state": "faq-keyboard-pager",
+      "productCount": 228,
+      "path": "http://127.0.0.1:9296/faq-download/",
+      "focus": {
+        "rect": {
+          "x": 21,
+          "y": 301.765625,
+          "width": 348,
+          "height": 94.4375,
+          "top": 301.765625,
+          "right": 369,
+          "bottom": 396.203125,
+          "left": 21
+        },
+        "stickyBottom": 192,
+        "inReader": true
+      }
+    },
+    {
+      "state": "de-1440-native-early-documents",
+      "url": "http://127.0.0.1:9296/de/faq-dokumente/#linker-library-panel-documents",
+      "scrollY": 0,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 468.8125,
+      "selected": "faq",
+      "query": "",
+      "first": null,
+      "results": null,
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    },
+    {
+      "state": "de-1440-hash-forward-preserved-query",
+      "url": "http://127.0.0.1:9296/de/faq-dokumente/#linker-library-panel-faq",
+      "scrollY": 417,
+      "width": 1440,
+      "height": 1000,
+      "stickyBottom": 137,
+      "selected": "faq",
+      "query": "AIO3",
+      "first": null,
+      "results": {
+        "x": 80,
+        "y": 139.8125,
+        "width": 1280,
+        "height": 1147.609375,
+        "top": 139.8125,
+        "right": 1360,
+        "bottom": 1287.421875,
+        "left": 80
+      },
+      "active": [],
+      "focus": {
+        "id": "",
+        "tag": "BODY"
+      }
+    }
+  ]
+}

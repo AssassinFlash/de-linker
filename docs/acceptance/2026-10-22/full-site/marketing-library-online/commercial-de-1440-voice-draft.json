@@ -1,0 +1,38 @@
+{
+  "active": "linker-genie-input",
+  "ariaModal": null,
+  "bodyOverflow": "visible",
+  "height": 1000,
+  "inertElements": 0,
+  "lang": "de-DE",
+  "mountRole": "dialog",
+  "observedAt": "2026-10-21T22:29:52.593Z",
+  "question": "Bitte prüfen Sie die Dokumente für den Gewerbespeicher.",
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/marketing.js?ver=11f066f5b3470f448790",
+    "https://de-linker.com/wp-content/plugins/linker-tools/build/genie.js?ver=76fa2a5fdc263f719473"
+  ],
+  "sourceControls": [
+    {
+      "height": 44,
+      "name": "Schema anhängen",
+      "width": 44
+    },
+    {
+      "height": 44,
+      "name": "Spracheingabe",
+      "width": 44
+    }
+  ],
+  "sources": [
+    {
+      "ariaLabel": null,
+      "bound": "1",
+      "placeholder": "Suchen Sie nach Außenschränken, Lastspitzenkappung oder Datenblättern...",
+      "value": ""
+    }
+  ],
+  "url": "https://de-linker.com/de/loesung/gewerbespeicher/",
+  "voiceParagraphs": [],
+  "width": 1440
+}
