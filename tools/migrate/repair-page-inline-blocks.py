@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Preserve service-page copy while protecting its inline blocks from wpautop.
+"""Preserve service and utility-page copy through WordPress formatting.
 
 The 2026-10-21 browser audit found formatting-generated breaks in the status
 bar and four invalid scripts. Removing blank lines inside existing inline
@@ -24,6 +24,26 @@ spec.loader.exec_module(writer)
 
 
 def repair(content: str) -> str:
+    if 'id="tv-utility-page-v1"' in content:
+        # These exact side-effect-free comparisons are the only literal '<'
+        # tokens in the audited utility scripts. wptexturize treats their span
+        # as markup and encodes subsequent && operators. Reverse the operands
+        # without introducing escapes that another unslashed save could lose.
+        def comparisons(match: re.Match[str]) -> str:
+            script = match[0]
+            for before, after in (
+                ("i<3", "3>i"),
+                ("position<0", "0>position"),
+                ("dx<0", "0>dx"),
+                ("delta<0", "0>delta"),
+                ("track.scrollLeft<width", "width>track.scrollLeft"),
+            ):
+                script = script.replace(before, after)
+            if "<" in script.split(">", 1)[1].rsplit("</script>", 1)[0]:
+                raise ValueError("Unexpected less-than token in utility script")
+            return script
+
+        content = re.sub(r"<script\b[^>]*>.*?</script>", comparisons, content, flags=re.S)
     content = re.sub(
         r"(<(script|style)\b[^>]*>)(.*?)(</\2>)",
         lambda match: match[1] + re.sub(r"\n[ \t]*(?=\n)", "", match[3]) + match[4],
@@ -49,8 +69,11 @@ def main() -> None:
     snapshot = writer.invoke(args.wp, {"operation": "read", "ids": args.page})
     changes = []
     for key, row in snapshot["rows"].items():
-        if row["type"] != "page" or 'id="service-redesign"' not in row["content"]:
-            raise ValueError("Not a service page; refusing to patch")
+        if row["type"] != "page" or not any(
+            marker in row["content"]
+            for marker in ('id="service-redesign"', 'id="tv-utility-page-v1"')
+        ):
+            raise ValueError("Not an audited service or utility page; refusing to patch")
         changes.append(
             {"id": int(key), "before": row["content"], "after": repair(row["content"])}
         )
@@ -58,7 +81,7 @@ def main() -> None:
         writer.verify_full_backup(args.full_backup)
         args.backup_dir.mkdir(parents=True, exist_ok=True)
         backup = args.backup_dir / (
-            "services-before-"
+            "inline-blocks-before-"
             + datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
             + ".json"
         )
@@ -71,7 +94,7 @@ def main() -> None:
         if any(
             readback["rows"][str(c["id"])]["content"] != c["after"] for c in changes
         ):
-            raise RuntimeError("Service-page readback differs")
+            raise RuntimeError("Page readback differs")
     print(
         json.dumps(
             {

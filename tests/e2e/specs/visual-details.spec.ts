@@ -203,6 +203,8 @@ for ( const locale of [ 'en', 'de' ] as const ) {
 		test( `${ locale } ${ width }: utility platform titles fit and details open`, async ( {
 			page,
 		} ) => {
+			const errors: string[] = [];
+			page.on( 'pageerror', ( error ) => errors.push( error.message ) );
 			await page.setViewportSize( { width, height: 900 } );
 			await page.goto(
 				`${ instance().url }${ locale === 'en' ? '/solution/utility-storage/' : '/de/loesung/grossspeicher/' }`
@@ -228,6 +230,13 @@ for ( const locale of [ 'en', 'de' ] as const ) {
 					card.locator( '.lk-runway-detail' )
 				).toBeVisible();
 			}
+			for ( let stage = 2; stage <= 4; stage++ ) {
+				await page.locator( `#us-stage-tab-${ stage }` ).click();
+				await expect(
+					page.locator( `#us-stage-tab-${ stage }` )
+				).toHaveAttribute( 'aria-selected', 'true' );
+			}
+			expect( errors ).toEqual( [] );
 		} );
 	}
 }

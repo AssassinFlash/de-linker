@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location(
-    "service_repair", Path(__file__).parents[1] / "repair-service-inline-blocks.py"
+    "service_repair", Path(__file__).parents[1] / "repair-page-inline-blocks.py"
 )
 assert spec and spec.loader
 service = importlib.util.module_from_spec(spec)
@@ -18,4 +18,12 @@ def test_only_blank_lines_in_inline_blocks_and_status_bar_newlines_change():
     assert fixed.endswith("<p>Unchanged end.</p>")
     assert '<a href="/account/">Portal</a> <span>·</span>' in fixed
     assert "var a=1;\n// retained comment\nvar b=2;" in fixed
+    assert service.repair(fixed) == fixed
+
+
+def test_utility_comparisons_survive_texturize_without_changing_prose():
+    content = '<div id="tv-utility-page-v1"><p>Keep <strong>copy</strong>.</p><script>if(i<3&&position<0&&dx<0&&delta<0&&track.scrollLeft<width)run();\n\nend();</script></div>'
+    fixed = service.repair(content)
+    assert '<p>Keep <strong>copy</strong>.</p>' in fixed
+    assert 'if(3>i&&0>position&&0>dx&&0>delta&&width>track.scrollLeft)' in fixed
     assert service.repair(fixed) == fixed
