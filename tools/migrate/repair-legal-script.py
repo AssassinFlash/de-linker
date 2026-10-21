@@ -3,7 +3,7 @@
 
 The reference revisions are supplied explicitly. A write needs a local backup;
 production additionally needs the completed full site backup's manifest. Payloads
-travel as base64 and one shell-quoted SSH argument. WordPress receives wp_slash()
+travel as base64 over STDIN, with only a small loader in SSH's command. WordPress receives wp_slash()
 and both pages are read back byte for byte, with rollback on a partial failure.
 """
 
@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import gzip
 import hashlib
 import json
 import re
@@ -19,6 +20,7 @@ import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 SCRIPT = re.compile(
     r'<script\b[^>]*\bid=["\']tv-legal-js["\'][^>]*>.*?</script>', re.S | re.I
@@ -46,6 +48,35 @@ def digest(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
 
 
+def verify_full_backup(directory: Path) -> None:
+    """Reject an incomplete manifest, missing file, or truncated database dump."""
+    manifest = json.loads((directory / "manifest.json").read_text())
+    files = manifest.get("files", {})
+    required = ("wp-content/uploads/", "wp-content/plugins/", "wp-content/mu-plugins/")
+    if manifest.get("target") != "hostinger-de-linker" or any(
+        not any(name.startswith(prefix) for name in files) for prefix in required
+    ):
+        raise ValueError("Backup is not a complete production snapshot")
+    for name, entry in files.items():
+        path = (directory / name).resolve()
+        if (
+            not path.is_relative_to(directory.resolve())
+            or not path.is_file()
+            or path.stat().st_size != entry["bytes"]
+        ):
+            raise ValueError("Backup file is missing or has changed size")
+    dump = directory / "db.sql.gz"
+    with dump.open("rb") as handle:
+        if (
+            hashlib.file_digest(handle, "sha256").hexdigest()
+            != files["db.sql.gz"]["sha256"]
+        ):
+            raise ValueError("Backup database hash differs")
+    with gzip.open(dump, "rb") as handle:
+        for _ in iter(lambda: handle.read(1024 * 1024), b""):
+            pass
+
+
 def invoke(prefix: str, payload: dict[str, Any]) -> dict[str, Any]:
     encoded = base64.b64encode(json.dumps(payload).encode()).decode()
     source = (
@@ -54,14 +85,24 @@ def invoke(prefix: str, payload: dict[str, Any]) -> dict[str, Any]:
         .replace("__LEGAL_SCRIPT_PAYLOAD__", encoded)
     )
     command = shlex.split(prefix)
-    tail = ["eval", source]
+    # Two full documents exceed Linux's single-argument limit. Stream the
+    # source to WP-CLI; neither page content nor credentials enter argv.
+    # WP-CLI eval-file silently reads no code from a large /dev/stdin pipe
+    # on this stack; a tiny eval loader explicitly drains STDIN instead.
+    tail = ["eval", "eval( stream_get_contents( STDIN ) );"]
     # ssh re-parses its trailing arguments in the remote shell.
     command = (
         [*command, shlex.join(tail)]
         if Path(command[0]).name == "ssh"
         else [*command, *tail]
     )
-    result = subprocess.run(command, text=True, capture_output=True, check=True)
+    result = subprocess.run(
+        command, input=source, text=True, capture_output=True, check=False
+    )
+    if result.returncode:
+        raise RuntimeError(
+            f"WordPress failed ({result.returncode}): {result.stderr[:800]}"
+        )
     for line in result.stdout.splitlines():
         if line.startswith(MARKER):
             return json.loads(line[len(MARKER) :])
@@ -98,12 +139,16 @@ def main() -> None:
     if args.write:
         if args.backup_dir is None:
             parser.error("--write requires --backup-dir")
-        if snapshot["home"].startswith("https://de-linker.com"):
+        if urlsplit(snapshot["home"]).hostname in {
+            "de-linker.com",
+            "www.de-linker.com",
+        }:
             if (
                 args.full_backup is None
                 or not (args.full_backup / "manifest.json").is_file()
             ):
                 parser.error("Production requires a completed --full-backup")
+            verify_full_backup(args.full_backup)
         args.backup_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
         stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
         backup = args.backup_dir / f"legal-script-before-{stamp}.json"

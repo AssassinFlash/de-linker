@@ -68,6 +68,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_footer', array( $compare, 'standing_chip' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_product_scripts' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_account_scripts' ) );
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( \Linker\Commerce\Presentation\LegalNavigation::class, 'enqueue' ) );
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		$module->register();

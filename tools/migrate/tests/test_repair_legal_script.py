@@ -39,11 +39,13 @@ def test_refuses_unrelated_script_changes_or_ambiguous_blocks(script):
 def test_no_shell_execution_in_remote_content(monkeypatch):
     class Result:
         stdout = '@@legal-script@@{"ok": true}'
+        stderr = ""
+        returncode = 0
 
     seen = []
 
     def run(command, **kwargs):
-        seen.append(command)
+        seen.append((command, kwargs))
         return Result()
 
     monkeypatch.setattr(repair.subprocess, "run", run)
@@ -51,6 +53,6 @@ def test_no_shell_execution_in_remote_content(monkeypatch):
         "ssh -o BatchMode=yes hostinger-de-linker /usr/local/bin/wp --path=/site",
         {"content": "`sensitive` $(bad)\n\\u003c"},
     ) == {"ok": True}
-    assert seen[0][:4] == ["ssh", "-o", "BatchMode=yes", "hostinger-de-linker"]
-    assert seen[0][-1].startswith("eval '")
-    assert "$(bad)" not in seen[0][-1]
+    assert seen[0][0][:4] == ["ssh", "-o", "BatchMode=yes", "hostinger-de-linker"]
+    assert seen[0][0][-1] == "eval 'eval( stream_get_contents( STDIN ) );'"
+    assert "$(bad)" not in seen[0][1]["input"]

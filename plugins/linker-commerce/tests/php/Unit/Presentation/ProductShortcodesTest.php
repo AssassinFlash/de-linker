@@ -190,6 +190,25 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertStringContainsString( 'href="http://linker.test/de/mein-konto/"', $html );
 		$this->assertStringContainsString( 'data-lnk-flang="en"', $html );
 		$this->assertStringContainsString( 'data-lnk-flang="de"', $html );
+		$this->assertStringContainsString( 'lang="en" aria-current="true"', $html );
+		$this->assertStringNotContainsString( 'lang="de" aria-current="true"', $html );
+		$this->assertStringContainsString( 'data-linker-language-choice="en"', $html );
+	}
+
+	/** The German footer marks German, while keeping both translated targets. */
+	public function test_the_german_footer_marks_its_actual_language(): void {
+		$this->page( 6869, 'http://linker.test/de/mein-konto/', array( 'en' => 1037 ), 'de' );
+		$this->permalink( 1037, 'http://linker.test/my-account/' );
+		$_SERVER['REQUEST_URI'] = '/de/mein-konto/';
+		$_GET                   = array();
+		WP_Mock::userFunction( 'pll_the_languages', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_home_url', array( 'return' => 'http://linker.test/' ) );
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/my-account/', array( 'http://linker.test/my-account/', 'en' ) );
+		$html = ( new LanguageLinks() )->footer();
+		$this->assertStringContainsString( 'lang="de" aria-current="true"', $html );
+		$this->assertStringNotContainsString( 'lang="en" aria-current="true"', $html );
+		$this->assertStringContainsString( 'href="http://linker.test/my-account/"', $html );
+		$this->assertStringContainsString( 'href="http://linker.test/de/mein-konto/"', $html );
 	}
 
 	/**
@@ -1128,8 +1147,9 @@ final class ProductShortcodesTest extends TestCase {
 	 * @param int                $id           Queried page id.
 	 * @param string             $permalink    Its permalink.
 	 * @param array<string, int> $translations Language => translated id.
+	 * @param string             $language     Current page language.
 	 */
-	private function page( int $id, string $permalink, array $translations ): void {
+	private function page( int $id, string $permalink, array $translations, string $language = 'en' ): void {
 		$page = new WP_Post(
 			(object) array(
 				'ID'        => $id,
@@ -1144,7 +1164,7 @@ final class ProductShortcodesTest extends TestCase {
 				'return' => $permalink,
 			)
 		);
-		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
+		WP_Mock::userFunction( 'pll_current_language', array( 'return' => $language ) );
 		WP_Mock::userFunction(
 			'pll_get_requested_url',
 			array(
