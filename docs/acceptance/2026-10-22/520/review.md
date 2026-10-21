@@ -1,8 +1,9 @@
 # Independent review and corrections
 
 Initial fixed range: 23516938...d2432cb3. Spec: five findings (two P1, three P2),
-Standards: two findings (one P1, one P2). Neither initial axis passed. Corrections
-are being verified at a new fixed head; this record does not imply final PASS.
+Standards: two findings (one P1, one P2). Neither initial axis passed. Both final
+axes PASS at 8dedcbc43f09a104d9001d11a8252ec960fcea31 after full initial review
+and independent delta checks.
 
 | Axis | Finding | Correction and evidence |
 | --- | --- | --- |
@@ -18,3 +19,12 @@ The case-insensitive native routing fact also applies to verification body caps
 and retired Store API checkout closure; those paths are normalized and tested.
 No additional model, content auto-rejection, customer CSS, global configuration
 change or production operation was introduced in these corrections.
+
+Final delta review also confirmed cart-only quantity Enter, native coupon POST
+carrying proof and cart nonce, early closure of the disabled shipping calculator,
+and actual native registration completion. Actual CUA discovered and reproduced
+the account-ui capture-handler conflict: the first unverified submit marked busy
+and the verified resubmit was discarded. Both reviewers checked the correction
+and native-validation interaction; the transient DOM marker grants no server
+permission and is cleared in finally. Real EN outage retry and DE draft-to-inquiry
+then succeeded. This source PASS does not replace combined #522 acceptance.
