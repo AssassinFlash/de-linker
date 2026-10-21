@@ -32,7 +32,7 @@
   `Smart meter *1`、`Current transformer *3`、`Meter COMM cable *1 (10m)`；原条件写的
   §4.1.2 / PDF-S. 12 不符，已改正。备电句的 `{kwh}` 来自客户输入（3 kW × 4 h）与
   引擎既有的放电效率，不是新常数。
-- **EN 先行**：新句都是陈述句或名词短语，无第二人称、无承诺、无时限；`released battery`
+- **EN 先行**：新句都是陈述句或名词短语，除改造句以第二人称指客户的既有逆变器（your existing inverter / Ihrem vorhandenen Wechselrichter，正式敬体）外无第二人称、无承诺、无时限；`released battery`
   与 `usable` 沿用引擎既有措辞（`Battery released by the manufacturers`、
   `Proposed usable capacity`），`backup reserve` 与报告既有行
   `Usable capacity, HTW upper limit plus backup reserve` 同词。
