@@ -270,6 +270,9 @@ EMPTIED_ORDER_META = frozenset(
         "_linker_inquiry_assessment",
         "_linker_inquiry_assessment_override",
         "_linker_inquiry_assessment_pending",
+        "_linker_inquiry_customer_evidence",
+        "_linker_customer_review",
+        "_linker_customer_evidence_erased",
         "_billing_address_index",
         "_shipping_address_index",
         "_customer_ip_address",
@@ -430,6 +433,7 @@ class Anonymizer:
             TABLE_PREFIX + "posts": self._posts,
             TABLE_PREFIX + "postmeta": self._order_meta,
             TABLE_PREFIX + "comments": self._comments,
+            TABLE_PREFIX + "commentmeta": self._comment_meta,
             TABLE_PREFIX + "wc_orders": self._orders,
             TABLE_PREFIX + "wc_order_addresses": self._order_addresses,
             TABLE_PREFIX + "wc_orders_meta": self._order_meta,
@@ -603,6 +607,12 @@ class Anonymizer:
         address = row[table.index("comment_author_email")].text or ""
         if address and not self.emails.keeps(address):
             self._set(table, row, "comment_author", FIRST_NAME)
+        return True
+
+    def _comment_meta(self, table: Table, row: Row) -> bool:
+        """Staff evidence text lives in protected metadata, not the generic note."""
+        if row[table.index("meta_key")].text == "_linker_customer_review_event":
+            self._set(table, row, "meta_value", "")
         return True
 
     def _orders(self, table: Table, row: Row) -> bool:

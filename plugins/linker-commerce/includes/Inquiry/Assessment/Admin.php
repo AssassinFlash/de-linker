@@ -24,7 +24,7 @@ final class Admin {
 	/** Both native Woo storage modes use the same staff view. */
 	public function boxes(): void {
 		foreach ( array( 'shop_order', 'woocommerce_page_wc-orders' ) as $screen ) {
-			add_meta_box( 'linker-inquiry-assessment', __( 'Jev initial assessment', 'linker-commerce' ), array( $this, 'box' ), $screen, 'normal' );
+			add_meta_box( 'linker-inquiry-assessment', __( 'Inquiry review', 'linker-commerce' ), array( $this, 'box' ), $screen, 'normal' );
 		}
 	}
 
@@ -38,36 +38,19 @@ final class Admin {
 		if ( ! $order instanceof WC_Order || ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
+		EvidenceView::render( $order );
 		$data = Queue::data( $order );
 		if ( array() === $data ) {
 			echo '<p>' . esc_html__( 'No assessment was requested.', 'linker-commerce' ) . '</p>';
 			return;
 		}
 		$result = is_array( $data['result'] ?? null ) ? $data['result'] : Result::unknown( 'pending' );
+		echo '<h3>' . esc_html__( 'Jev initial assessment', 'linker-commerce' ) . '</h3>';
 		echo '<p><strong>' . esc_html( Result::label( (string) $result['label'] ) ) . '</strong><br />' . esc_html( Result::explanation( $result ) ) . '</p>';
 		echo '<p>' . esc_html__( 'Initial guidance only. Every inquiry is accepted and notified.', 'linker-commerce' ) . '</p>';
 		echo '<dl><dt>' . esc_html__( 'Diagnostic', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $result['reason'] ) . '</dd><dt>' . esc_html__( 'Elapsed time', 'linker-commerce' ) . '</dt><dd>' . esc_html( number_format_i18n( (float) ( $data['elapsed'] ?? 0 ), 2 ) ) . ' s</dd><dt>' . esc_html__( 'Model / rubric', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $result['model'] . ' / ' . (string) $result['rubric'] ) . '</dd></dl>';
 		echo '<details><summary>' . esc_html__( 'Original model result', 'linker-commerce' ) . '</summary><textarea readonly class="large-text code" rows="10" aria-label="' . esc_attr__( 'Original model result', 'linker-commerce' ) . '">' . esc_textarea( (string) wp_json_encode( $result['raw'] ?? array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ) . '</textarea></details>';
-		$override = $order->get_meta( self::OVERRIDE );
-		if ( is_array( $override ) ) {
-			echo '<p><strong>' . esc_html__( 'Staff correction', 'linker-commerce' ) . ': ' . esc_html( Result::label( (string) $override['label'] ) ) . '</strong><br />' . esc_html( (string) $override['note'] ) . '</p>';
-		}
-		// These controls belong to an external form emitted after Woo's form.
-		$id = 'linker-assessment-correction-' . $order->get_id();
-		echo '<p><label>' . esc_html__( 'Staff correction', 'linker-commerce' ) . ' <select form="' . esc_attr( $id ) . '" name="label">';
-		foreach ( array( 'uncertain', 'normal', 'suspected_spam' ) as $label ) {
-			echo '<option value="' . esc_attr( $label ) . '"' . selected( is_array( $override ) ? (string) $override['label'] : 'uncertain', $label, false ) . '>' . esc_html( Result::label( $label ) ) . '</option>';
-		}
-		echo '</select></label></p><p><label>' . esc_html__( 'Review note', 'linker-commerce' ) . '<br /><textarea form="' . esc_attr( $id ) . '" name="note" rows="2">' . esc_textarea( is_array( $override ) ? (string) $override['note'] : '' ) . '</textarea></label></p>';
-		echo '<button class="button" type="submit" form="' . esc_attr( $id ) . '">' . esc_html__( 'Save correction', 'linker-commerce' ) . '</button>';
-		add_action(
-			'admin_footer',
-			static function () use ( $order, $id ): void {
-				echo '<form id="' . esc_attr( $id ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="linker_inquiry_assessment_correct" /><input type="hidden" name="inquiry" value="' . esc_attr( (string) $order->get_id() ) . '" />';
-				wp_nonce_field( 'linker_assessment_' . $order->get_id() );
-				echo '</form>';
-			}
-		);
+		ReviewView::render( $order );
 	}
 
 	/** Correction preserves raw evidence and emits no email or status change. */
@@ -77,22 +60,52 @@ final class Admin {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You cannot review this inquiry.', 'linker-commerce' ), '', array( 'response' => 403 ) );
 		}
-		$label = isset( $_POST['label'] ) ? sanitize_key( wp_unslash( $_POST['label'] ) ) : '';
-		$note  = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
-		$order = wc_get_order( $id );
-		if ( ! $order instanceof WC_Order || ! in_array( $label, array( 'normal', 'suspected_spam', 'uncertain' ), true ) ) {
-			wp_die( esc_html__( 'Please choose a valid assessment.', 'linker-commerce' ), '', array( 'response' => 400 ) );
+		$label     = isset( $_POST['label'] ) ? sanitize_key( wp_unslash( $_POST['label'] ) ) : '';
+		$note      = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
+		$revision  = isset( $_POST['revision'] ) ? filter_var( wp_unslash( $_POST['revision'] ), FILTER_VALIDATE_INT ) : false;
+		$operation = isset( $_POST['operation'] ) ? sanitize_key( wp_unslash( $_POST['operation'] ) ) : '';
+		$source    = isset( $_POST['source'] ) ? sanitize_key( wp_unslash( $_POST['source'] ) ) : '';
+		$url       = isset( $_POST['source_url'] ) && is_string( $_POST['source_url'] ) ? esc_url_raw( wp_unslash( $_POST['source_url'] ) ) : '';
+		$observed  = isset( $_POST['observed_at'] ) ? sanitize_text_field( wp_unslash( $_POST['observed_at'] ) ) : '';
+		$date      = 1 === preg_match( '/\A[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}\z/', $observed ) ? \DateTimeImmutable::createFromFormat( '!Y-m-d\TH:i', $observed, new \DateTimeZone( 'UTC' ) ) : false;
+		$at        = false !== $date && $date->format( 'Y-m-d\TH:i' ) === $observed ? $date->getTimestamp() : 0;
+		if ( false === $revision || $revision < 0 ) {
+			wp_die(
+				esc_html__( 'Reload this inquiry before saving a review.', 'linker-commerce' ),
+				'',
+				array(
+					'response'  => 409,
+					'back_link' => true,
+				)
+			);
 		}
-		$order->update_meta_data(
-			self::OVERRIDE,
+		$result = Reviews::save(
+			$id,
+			$revision,
+			$operation,
 			array(
-				'label' => $label,
-				'note'  => $note,
-				'user'  => get_current_user_id(),
-				'at'    => time(),
+				'label'       => $label,
+				'note'        => $note,
+				'source'      => $source,
+				'url'         => $url,
+				'observed_at' => $at,
 			)
 		);
-		$order->save_meta_data();
+		if ( is_wp_error( $result ) ) {
+			$status = in_array( $result->get_error_code(), array( 'review_busy', 'review_stale', 'review_write_failed' ), true ) ? 409 : 400;
+			wp_die(
+				esc_html( $result->get_error_message() ),
+				'',
+				array(
+					'response'  => (int) $status,
+					'back_link' => true,
+				)
+			);
+		}
+		$order = wc_get_order( $id );
+		if ( ! $order instanceof WC_Order ) {
+			wp_die( esc_html__( 'This inquiry is unavailable.', 'linker-commerce' ), '', array( 'response' => 404 ) );
+		}
 		wp_safe_redirect( $order->get_edit_order_url() );
 		exit;
 	}

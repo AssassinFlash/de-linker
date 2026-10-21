@@ -41,16 +41,31 @@ final class Queue {
 	 * @param array<string, mixed> $context Trusted current source link.
 	 */
 	public static function prepare( WC_Order $order, array $context = array() ): void {
-		if ( ! self::enabled() || is_array( $order->get_meta( self::META ) ) ) {
+		if ( ! self::enabled() || $order->get_meta( Reviews::ERASED ) || is_array( $order->get_meta( self::META ) ) ) {
 			return;
 		}
-		$now = microtime( true );
-		$order->update_meta_data(
+		$now      = microtime( true );
+		$snapshot = Snapshot::make( $order, $context );
+		// Staff decision provenance stays local; the provider snapshot is unchanged.
+		try {
+			StructuredMeta::update( $order, CustomerEvidence::META, CustomerEvidence::capture( $order, $snapshot, $now ) );
+		} catch ( \Throwable $error ) {
+			// A local advisory record cannot prevent the normal inquiry path.
+			$order->update_meta_data(
+				CustomerEvidence::META,
+				array(
+					'captured_at' => $now,
+					'status'      => 'unavailable',
+				)
+			);
+		}
+		StructuredMeta::update(
+			$order,
 			self::META,
 			array(
 				'accepted_at'      => $now,
 				'deadline'         => $now + self::WAIT_SECONDS,
-				'snapshot'         => Snapshot::make( $order, $context ),
+				'snapshot'         => $snapshot,
 				'result'           => Result::unknown( 'pending' ),
 				'notification_job' => 0,
 			)
@@ -69,6 +84,7 @@ final class Queue {
 		}
 		self::prepare( $order );
 		$order->save_meta_data();
+		$order->read_meta_data( true );
 		$unavailable = ! Client::configured() ? 'service_unavailable' : ( microtime( true ) - (float) get_option( self::HEARTBEAT, 0 ) > self::RECOVERY_STALE ? 'recovery_unavailable' : '' );
 		if ( ! function_exists( 'as_enqueue_async_action' ) || '' !== $unavailable ) {
 			// No independent recovery: preserve the existing immediate delivery path.
@@ -306,5 +322,6 @@ final class Queue {
 		add_action( self::EXPIRE, array( $this, 'expire' ) );
 		add_action( self::FINISH, array( $this, 'finish' ), 10, 2 );
 		( new Admin() )->register();
+		( new EvidencePrivacy() )->register();
 	}
 }

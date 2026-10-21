@@ -467,6 +467,8 @@ def test_inquiry_assessment_snapshots_and_local_worker_flags_do_not_survive_pull
         "(22,13,'_linker_inquiry_assessment','private-current-inquiry-evidence'),\n"
         "(23,13,'_linker_inquiry_assessment_override','staff-private-note'),\n"
         "(24,13,'_linker_inquiry_assessment_pending','yes'),\n"
+        "(25,13,'_linker_inquiry_customer_evidence','private-frozen-company-evidence'),\n"
+        "(26,13,'_linker_customer_review','private-review-state'),\n"
         "(2,13,'is_vat_exempt','no'),",
     )
     source = source.replace(
@@ -482,9 +484,46 @@ def test_inquiry_assessment_snapshots_and_local_worker_flags_do_not_survive_pull
     assert values["_linker_inquiry_assessment"] == ""
     assert values["_linker_inquiry_assessment_override"] == ""
     assert values["_linker_inquiry_assessment_pending"] == ""
+    assert values["_linker_inquiry_customer_evidence"] == ""
+    assert values["_linker_customer_review"] == ""
     assert "private-current-inquiry-evidence" not in cleaned
     assert "staff-private-note" not in cleaned
 
     names = {row["option_name"] for row in result["wp_options"]}
     assert "linker_inquiry_assessment_enabled" not in names
     assert "linker_inquiry_assessment_recovery" not in names
+
+
+@pytest.mark.parametrize("storage", ["wp_postmeta", "wp_wc_orders_meta"])
+def test_staff_review_event_metadata_is_removed_without_changing_other_notes(
+    storage: str,
+) -> None:
+    source = (
+        FIXTURE.read_text()
+        + f"""
+CREATE TABLE `wp_commentmeta` (
+  `meta_id` bigint NOT NULL,
+  `comment_id` bigint NOT NULL,
+  `meta_key` varchar(255),
+  `meta_value` longtext
+);
+INSERT INTO `wp_commentmeta` VALUES
+(1,1,'_linker_customer_review_event','private-staff-customer-evidence'),
+(2,1,'is_customer_note','0');
+INSERT INTO `{storage}` VALUES
+(9991,13,'_linker_inquiry_customer_evidence','private-company-evidence'),
+(9992,13,'_linker_customer_review','private-review-pointer');
+"""
+    )
+    anonymizer = Anonymizer(accounts_from_dump(iter(source.splitlines(keepends=True))))
+    cleaned = "".join(anonymizer.run(iter(source.splitlines(keepends=True))))
+    result = tables(cleaned.splitlines(keepends=True))
+    assert "private-staff-customer-evidence" not in cleaned
+    assert "private-company-evidence" not in cleaned
+    assert "private-review-pointer" not in cleaned
+    values = {row["meta_key"]: row["meta_value"] for row in result["wp_commentmeta"]}
+    assert values["_linker_customer_review_event"] == ""
+    assert values["is_customer_note"] == "0"
+    order_values = {row["meta_key"]: row["meta_value"] for row in result[storage]}
+    assert order_values["_linker_inquiry_customer_evidence"] == ""
+    assert order_values["_linker_customer_review"] == ""
