@@ -9,7 +9,7 @@
 		"src/configurator/Steps.tsx": "9487b9cc072a2fe5ccf974b88a80c8c9c690963404ea8e9e561b3b570ade6adf",
 		"src/configurator/Table.tsx": "68b5f50937e0500894b2d273218930e96c9b9ddec543aafc704805d8c85c2346",
 		"src/configurator/api/engine.ts": "6f30880ceced5fb12d4045c28bbb607f6cf8c5057a2f71ca8ca2591941c0df09",
-		"src/configurator/api/solutions.ts": "a9ac6f386876293d6dd3957cf51553a0985758869dddd167c50b0b02903b0937",
+		"src/configurator/api/solutions.ts": "50d4ea859b7f26b6f7cc96de8b80467bb2b10f04efa69fab47a64ea2f6ac60ab",
 		"src/configurator/api/store.ts": "07bfa0c4a0d5afacc16c2a16693afbccb1db23850e54b8073c1ff197a7166cba",
 		"src/configurator/commercial/CommercialPanel.tsx": "c230f8895cbabbc96d7bc75a64c615802944552af66873521e754f330f202774",
 		"src/configurator/commercial/CommercialResult.tsx": "a5298b944fee43efa1c3c5aaeaecbab58dc5a15bd502c259c40900f58daa4f4a",

@@ -10,8 +10,8 @@
  * linker-commerce builds it with `wc_get_account_endpoint_url()`, and
  * linker-i18n answers that in German only while the request is German
  * (RestLang's `?lang=`, Storefront's German page id, GermanRoutes'
- * endpoint). The page's language is sent the same way the product reads
- * in store.ts send it, so a German page opens
+ * endpoint). The save names the page's language the way store.ts's product
+ * reads do, so a German page opens
  * `/de/mein-konto/gespeicherte-loesungen/` and an English one
  * `/my-account/saved-solutions/`.
  */
