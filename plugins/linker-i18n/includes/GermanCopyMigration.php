@@ -326,7 +326,7 @@ final class GermanCopyMigration {
 			};
 		}
 		if ( count( $postarr ) > 1 ) {
-			$result = wp_update_post( $postarr, true );
+			$result = wp_update_post( wp_slash( $postarr ), true );
 			if ( is_wp_error( $result ) ) {
 				throw new \RuntimeException( esc_html( $result->get_error_message() ) );
 			}
