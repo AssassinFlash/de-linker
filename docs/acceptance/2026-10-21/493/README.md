@@ -64,7 +64,7 @@ the staging directory holds only the two target files afterwards.
 `test_the_written_contract_keeps_the_shipped_contracts_content_hash` pushes the
 shipped contract through the sync and asserts the written file's `version` is
 the sha256 of the contract minus that key (sorted keys, compact separators) —
-the ticket's "VPS contract version = content hash" condition, proven locally.
+the ticket's "VPS contract version = content hash（对 {schema_version, pairs, requirements} 规范 JSON：sort_keys、紧凑分隔符、ensure_ascii=False，见 8-decisions §6）" condition, proven locally.
 
 Manual regression against the live pre-deploy feed (temp state directory, no
 production write): `feed refreshed (106 products, ...)`; `feed carries no
