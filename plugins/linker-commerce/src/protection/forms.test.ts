@@ -75,6 +75,28 @@ test( 'verification outage retains all input and permits an explicit retry', asy
 	await vi.waitFor( () => expect( f.submit ).toHaveBeenCalledTimes( 1 ) );
 } );
 
+test( 'a warmed proof resumes after the original native submit dispatch', async () => {
+	vi.useFakeTimers();
+	try {
+		const f = fixture();
+		f.proof.mockResolvedValue( 'already-warmed-proof' );
+		f.form.dispatchEvent(
+			new SubmitEvent( 'submit', {
+				cancelable: true,
+				submitter: f.button,
+			} )
+		);
+		await Promise.resolve();
+		await Promise.resolve();
+		// Native requestSubmit is ignored while its original dispatch is active.
+		expect( f.submit ).not.toHaveBeenCalled();
+		await vi.runOnlyPendingTimersAsync();
+		expect( f.submit ).toHaveBeenCalledExactlyOnceWith( f.button );
+	} finally {
+		vi.useRealTimers();
+	}
+} );
+
 test( 'repeated clicks during verification cannot submit twice and observe never blocks', async () => {
 	const f = fixture();
 	let resolve!: ( value: string ) => void;

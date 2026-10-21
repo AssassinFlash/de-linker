@@ -122,6 +122,11 @@ export function connectForms( root: ParentNode = document ): void {
 					if ( ! token ) {
 						throw new Error( 'verification_unavailable' );
 					}
+					// A warmed proof may resolve during native submit dispatch.
+					// The browser ignores requestSubmit while that dispatch is active.
+					await new Promise< void >( ( resolve ) =>
+						setTimeout( resolve, 0 )
+					);
 					widget.hidden = true;
 					proof.value = token;
 					if (

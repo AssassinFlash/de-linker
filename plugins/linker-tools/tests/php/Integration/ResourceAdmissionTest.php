@@ -264,7 +264,8 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertInstanceOf( Identity::class, $identity );
 		$plan = ResourcePolicy::plan( 'genie', $identity );
 		$this->assertSame( array( 'genie_day', 'genie_burst', 'genie_busy', 'genie_site_day', 'genie_site_busy' ), array_map( static fn( Allowance $a ): string => $a->name, $plan['limits'] ) );
-		$now    = time();
+		// Burst advances must stay within one synthetic UTC day, even near midnight.
+		$now    = intdiv( time(), DAY_IN_SECONDS ) * DAY_IN_SECONDS + HOUR_IN_SECONDS;
 		$ledger = new Ledger(
 			static function () use ( &$now ): int {
 				return $now;
