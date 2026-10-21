@@ -1037,6 +1037,23 @@ def verify(target: Target, *, cache_buster: str) -> Result:
             notes.append(f"{path} answered {status}")
         if german and not language:
             notes.append(f"{path} is not German")
+        if path in plan.VERIFY_LEGAL_PATHS:
+            # The 2026-10-21 live defect still answered 200. Its saved script
+            # had lost every backslash, breaking SVG, whitespace and labels.
+            scripts = re.findall(
+                r'<script\b[^>]*\bid=["\']tv-legal-js["\'][^>]*>(.*?)</script>',
+                body,
+                re.DOTALL | re.IGNORECASE,
+            )
+            intact = (
+                len(scripts) == 1
+                and r"\u003csvg" in scripts[0]
+                and r"/\s+/g" in scripts[0]
+                and not re.search(r"(?<!\\)u003c(?:svg|path|rect|/svg)", scripts[0])
+            )
+            actions.append(f"GET {path} -> legal script escapes intact: {intact}")
+            if not intact:
+                notes.append(f"{path} legal script is missing or has lost backslashes")
         if path not in plan.VERIFY_PRODUCT_PATHS:
             continue
         products, unreadable = product_nodes(body)

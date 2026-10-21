@@ -226,6 +226,16 @@ VERIFY_PRODUCT_PATHS = (
     "/product/saj-b2-10-0-hv1/",
     "/de/produkt/saj-b2-10-0-hv1/",
 )
+VERIFY_LEGAL_PATHS = (
+    "/privacy-policy/",
+    "/de/datenschutz/",
+    "/imprint/",
+    "/de/impressum/",
+    "/terms-of-sale/",
+    "/de/verkaufsbedingungen/",
+    "/refund-returns/",
+    "/de/rueckgabe-erstattung/",
+)
 VERIFY_PATHS = (
     "/",
     "/de/",
@@ -236,6 +246,7 @@ VERIFY_PATHS = (
     "/my-account/",
     "/de/mein-konto/",
     *VERIFY_PRODUCT_PATHS,
+    *VERIFY_LEGAL_PATHS,
 )
 # The schema.org type the product pages must carry exactly once.
 VERIFY_PRODUCT_TYPE = "Product"
