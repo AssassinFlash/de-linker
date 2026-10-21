@@ -8,6 +8,10 @@ the home modules, tests/conftest.py drops the home copy so the condition
 runs once. A case that needs a live instance and the model stays a harness
 case.
 
+The #330 rows' own per-question conditions (#431) are reexported from
+`test_campaign_330_rows.py`: fourteen run green, six are marked `gap` and run
+as xfail. That file also holds the manifest precondition.
+
 docs/acceptance/2026-10-20/339/case-map.md is the ticket → fixture →
 assertion → command index. `just test` collects this module with the rest
 of services/genie. Nothing here calls the model.
@@ -25,6 +29,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import test_campaign_330_rows as campaign_330
 import test_contact
 import test_cycle
 import test_ground_understanding
@@ -64,7 +69,8 @@ GENIE_MANIFEST = Path(__file__).parent / "fixtures" / "339" / "manifest.json"
 I8_FIXTURE = Path(__file__).parent / "fixtures" / "412" / "i8-persist.json"
 CODE = "ZEPHYR-C334"
 
-# Class-level unit tests. Not a pass/fail for one #330 question. That gap is #431.
+# Class-level unit tests. The per-question conditions for the #330 rows are
+# `test_campaign_330_rows.py` (#431); these remain the class-level mechanisms.
 UNIT_DEFECTS = {
     "D1": "product words",
     "D2": "product words",
@@ -131,6 +137,8 @@ MAP_NEEDLES = (
     "#334",
     "#335",
     "#431",
+    "services/genie/eval/regression/339-campaign-330.jsonl",
+    "tests/test_campaign_330_rows.py::test_330_row",
     "PR #409",
     "PR #416 已合并（a74116d8）",
     "`tests/test_grade.py`，20 条",
@@ -232,6 +240,11 @@ for _owned in (
     test_prices.test_a_card_price_for_an_account_not_approved_is_flagged,
     test_prices.test_a_card_price_no_tool_returned_is_flagged,
     *INJECTION,
+    campaign_330.test_330_row,
+    campaign_330.test_the_fixture_covers_the_campaign_manifest,
+    campaign_330.test_the_questions_are_verbatim_from_the_evidence,
+    campaign_330.test_every_row_carries_a_condition_and_the_gaps_are_listed,
+    campaign_330.test_the_certificate_condition_has_its_source_and_fixed_answer,
 ):
     _publish(_owned)
 
@@ -438,7 +451,7 @@ def test_the_roof_step_case_is_the_497_signed_rows() -> None:
 
 
 def test_the_330_manifest_classifies_every_registered_defect() -> None:
-    """Live #330 rows stay registered. Per-question assertions are #431."""
+    """Live #330 rows stay registered. Their questions are in #431's fixture."""
     payload = _load(HARNESS_330)
     assert payload["ticket"] == 339
     cases = payload["cases"]
@@ -502,13 +515,20 @@ def test_the_case_map_names_every_runner_and_its_count(
     )
     repeat = _collected(items, "test_s4_repeat_h2_10k_t3_four_rounds_de_and_en")
     injection = sum(_collected(items, fn.__name__) for fn in INJECTION)
+    campaign = _collected(items, "test_330_row")
+    campaign_rows = campaign_330._rows()
+    fixed = sum(1 for row in campaign_rows if row["status"] == "fixed")
+    gaps = sum(1 for row in campaign_rows if row["status"] == "gap")
     assert product == len(regression._rows())
     assert injection == len(INJECTION) == 7
+    assert campaign == len(campaign_rows) == 20
+    assert gaps == len(campaign_330.GAPS)
     sentence = (
         "计数（夹具长度或本模块 pytest 条目，跳过的不计）："
         f"产品词 {product}，语言 {language}，填充词 {fillers}，"
         f"重复卡片 {repeat}，预填 {prefill}，短码 {short}，"
-        f"降级 {degrade}，极值 {extreme}，价格门 {price}，注入 {injection}。"
+        f"降级 {degrade}，极值 {extreme}，价格门 {price}，注入 {injection}，"
+        f"逐题 {campaign}（缺口 {gaps}）。"
     )
     assert sentence in text, sentence
     assert f"（{language} 条）" in text
@@ -517,7 +537,9 @@ def test_the_case_map_names_every_runner_and_its_count(
     gap = (
         f"#330 清单有 {len(rows)} 行（`regrade.KEPT_DEFECTS`、`regrade.OVERTURNS`，"
         f"加上 `round3-runs.jsonl` 里 grade 为 defect 或 parity 的行）。"
-        f"这 {len(rows)} 行没有逐题自动断言，缺口在 #431。"
+        f"逐题通过条件在 `services/genie/eval/regression/339-campaign-330.jsonl`："
+        f"{fixed} 行有合并修复，{gaps} 行没有，标为 `gap` 跑成 xfail；"
+        f"`tests/test_campaign_330_rows.py::test_330_row` 是断言。"
     )
     assert gap in text, gap
     stale = (
@@ -531,6 +553,7 @@ def test_the_case_map_names_every_runner_and_its_count(
         "PR #416 未合并",
         "提示词里「引用口令」那几句不在本分支",
         "注入不在这条计数里",
+        "这 20 行没有逐题自动断言，缺口在 #431。",
     )
     for phrase in stale:
         assert phrase not in text, phrase
