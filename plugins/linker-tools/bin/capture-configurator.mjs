@@ -191,7 +191,7 @@ const STATES = {
 	'solution-saved': {
 		page: 'solution',
 		async prepare( page ) {
-			await page.route( '**/linker/v1/solutions', ( route ) =>
+			await page.route( '**/linker/v1/solutions*', ( route ) =>
 				route.fulfill( {
 					status: 201,
 					contentType: 'application/json',
