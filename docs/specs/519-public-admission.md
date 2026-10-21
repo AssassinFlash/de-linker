@@ -80,3 +80,39 @@ independent Spec/Standards reviews, and real EN/DE 390/1440 states. Dummy-key
 fixtures and real network/widget availability are reported separately. Local
 instance g519 uses the live theme/uploads snapshot before any UI work. No model,
 mail, production enablement, DNS change or purchase is required by this ticket.
+
+## Shared runtime and initial verification bounds
+
+Verification-only dispatch limits: 20/browser/minute, 100/direct-connection/hour,
+5,000/site/UTC day; one browser and two site verification calls concurrently.
+The caller supplies no limit or identity. These are initial operational safety
+bounds under the owner's delegated recommendation; they are separate from the
+business/model quotas in #508. Verification leases are ten seconds. The two REST
+verification routes reject raw bodies over 16KiB before argument validation.
+This bounds application parsing; host-level ingress protection remains a rollout
+check. Preparation signs a small stamp and never invokes the provider.
+
+Native hooks are registered from Commerce's actual module list. The same REST
+controller is used by the staff diagnostic and future native consumers. A verified
+proof must also resolve to the successfully completed verification receipt at the
+last dispatch boundary. A business proof is consumed once atomically with dispatch;
+resource proofs remain scoped and budgeted during their original lifetime. A retry
+with the same completed operation/payload recovers its native outcome before asking
+for a fresh challenge. Unknown in-flight outcomes tell the customer to check the
+status; they never falsely claim the submission was not received.
+
+The shared client loads only its first-party bundle when enqueued. No Cloudflare
+script, cookie or provider call is created by passive browsing. Actual interaction
+prepares a stamp and loads the fixed official explicit-render script; concurrent
+warm/submit calls share one attempt. Requests have a 15-second network timeout;
+a challenge has a two-minute interaction timeout. Those client bounds are initial
+usability recommendations, not provider guarantees. Expiry/error removes the
+attempt and permits a fresh retry, without storing or clearing customer fields.
+The client supports native pretty and query-string REST URLs, account REST nonces,
+user locale and EN/DE vendor language. No customer CSS is introduced.
+
+The staff diagnostic displays off/configuration separately, declares actual
+consumer modules, and has a verification-only button. Counts are journal receipts
+within the original 24-hour retry window, not a full traffic/cost history. It
+contains no credential editor. Hourly native WordPress maintenance and every
+admission use the same recovery operation; cron delivery must be checked in #522.

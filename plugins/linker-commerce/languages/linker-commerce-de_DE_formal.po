@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-21T12:14:46+00:00\n"
+"POT-Creation-Date: 2026-10-21T20:31:00+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -122,6 +122,22 @@ msgstr "Schließen"
 #: build/accounts.js:2
 msgid "Review account"
 msgstr "Konto prüfen"
+
+#: build/protection.js:1
+msgid "Checking verification…"
+msgstr "Verifizierung läuft …"
+
+#: build/protection.js:1 includes/Protection/Controller.php:221
+msgid "Verification could not be completed. Please try again."
+msgstr "Die Verifizierung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
+
+#: build/protection.js:1
+msgid "Verification expired. Please try again."
+msgstr "Die Verifizierung ist abgelaufen. Bitte versuchen Sie es erneut."
+
+#: build/protection.js:1
+msgid "Verification passed. No business request was submitted."
+msgstr "Verifizierung erfolgreich. Es wurde keine Geschäftsanfrage übermittelt."
 
 #: content/livecanvas/archive_product.html:12
 #: content/livecanvas/shop_page.html:12
@@ -633,7 +649,7 @@ msgid "Language"
 msgstr "Sprache"
 
 #: includes/Admin/DocumentsMetaBox.php:75
-#: includes/Admin/DocumentsMetaBox.php:140
+#: includes/Admin/DocumentsMetaBox.php:140 includes/Inquiry/Form.php:203
 #: includes/Presentation/ComparePage.php:220
 msgid "Remove"
 msgstr "Entfernen"
@@ -759,12 +775,12 @@ msgstr "Es geht um"
 msgid "Where can we reply?"
 msgstr "Wohin dürfen wir antworten?"
 
-#: includes/Contact/Form.php:153 includes/Inquiry/Form.php:156
+#: includes/Contact/Form.php:153 includes/Inquiry/Form.php:157
 #: includes/Settings/SettingsTab.php:137
 msgid "Name"
 msgstr "Name"
 
-#: includes/Contact/Form.php:155 includes/Inquiry/Form.php:157
+#: includes/Contact/Form.php:155 includes/Inquiry/Form.php:158
 msgid "Reply email"
 msgstr "E-Mail für die Antwort"
 
@@ -776,13 +792,13 @@ msgstr "optional"
 msgid "No account or Project is needed to ask a question."
 msgstr "Für eine Frage brauchen Sie weder ein Konto noch ein Projekt."
 
-#: includes/Contact/Form.php:166 includes/Inquiry/Form.php:159
+#: includes/Contact/Form.php:166 includes/Inquiry/Form.php:160
 msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 "Ich bin damit einverstanden, dass meine Angaben zur Beantwortung dieser "
 "Nachricht verwendet werden."
 
-#: includes/Contact/Form.php:168 includes/Inquiry/Form.php:160
+#: includes/Contact/Form.php:168 includes/Inquiry/Form.php:161
 #: templates/myaccount/auth/form-register.php:144
 msgid "Privacy"
 msgstr "Datenschutz"
@@ -1024,7 +1040,7 @@ msgstr ""
 "Sie können diesen Lösungsentwurf senden. Nettopreise sind für Ihr Konto "
 "nicht verfügbar."
 
-#: includes/Gating/DraftSummary.php:60 includes/Inquiry/Form.php:161
+#: includes/Gating/DraftSummary.php:60 includes/Inquiry/Form.php:162
 msgid "Send inquiry"
 msgstr "Anfrage senden"
 
@@ -1188,36 +1204,36 @@ msgstr ""
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
 
-#: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:143
+#: includes/Inquiry/Checkout.php:44 includes/Inquiry/Checkout.php:155
 msgid "Please use the inquiry form to send your inquiry."
 msgstr "Bitte senden Sie Ihre Anfrage über das Anfrageformular."
 
-#: includes/Inquiry/Checkout.php:98
+#: includes/Inquiry/Checkout.php:110
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:35
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:73
 #: includes/Vocabulary/Labels.php:97 includes/Vocabulary/Terms.php:107
 msgid "Inquiry received"
 msgstr "Anfrage eingegangen"
 
-#: includes/Inquiry/Checkout.php:99 includes/Inquiry/Form.php:162
+#: includes/Inquiry/Checkout.php:111 includes/Inquiry/Form.php:163
 #: templates/emails/linker-inquiry-received.php:40
 msgid "We reply within one business day."
 msgstr "Wir antworten innerhalb eines Arbeitstags."
 
-#: includes/Inquiry/Checkout.php:101
+#: includes/Inquiry/Checkout.php:113
 msgid "Create an account with this email"
 msgstr "Konto mit dieser E-Mail-Adresse erstellen"
 
-#: includes/Inquiry/Checkout.php:101
+#: includes/Inquiry/Checkout.php:113
 msgid "View inquiries"
 msgstr "Anfragen ansehen"
 
-#: includes/Inquiry/Checkout.php:102
+#: includes/Inquiry/Checkout.php:114
 #: templates/emails/linker-inquiry-received.php:40
 msgid "The Linker team will reply to the email address you provided."
 msgstr "Das Linker-Team antwortet Ihnen an die angegebene E-Mail-Adresse."
 
-#: includes/Inquiry/Checkout.php:104
+#: includes/Inquiry/Checkout.php:116
 msgid "We have not sent a confirmation email."
 msgstr "Es wurde keine Bestätigungs-E-Mail versendet."
 
@@ -1253,44 +1269,44 @@ msgstr "Neue Anfrage #{order_number} von {company}"
 msgid "New inquiry #{order_number}"
 msgstr "Neue Anfrage #{order_number}"
 
-#: includes/Inquiry/Form.php:151 includes/Vocabulary/Labels.php:97
+#: includes/Inquiry/Form.php:152 includes/Vocabulary/Labels.php:97
 msgid "Send an inquiry"
 msgstr "Anfrage senden"
 
-#: includes/Inquiry/Form.php:152
+#: includes/Inquiry/Form.php:153
 msgid ""
 "Tell us what you need. The products in your solution draft will be included."
 msgstr ""
 "Teilen Sie uns Ihr Anliegen mit. Die Produkte aus Ihrem Lösungsentwurf "
 "werden mitgesendet."
 
-#: includes/Inquiry/Form.php:153
+#: includes/Inquiry/Form.php:154
 msgid "Message (optional)"
 msgstr "Nachricht (optional)"
 
-#: includes/Inquiry/Form.php:154
+#: includes/Inquiry/Form.php:155
 msgid "Your reply details"
 msgstr "Ihre Kontaktdaten"
 
-#: includes/Inquiry/Form.php:155
+#: includes/Inquiry/Form.php:156
 msgid "Change"
 msgstr "Ändern"
 
-#: includes/Inquiry/Form.php:158
+#: includes/Inquiry/Form.php:159
 msgid "Company (optional)"
 msgstr "Unternehmen (optional)"
 
-#: includes/Inquiry/Form.php:163
+#: includes/Inquiry/Form.php:164
 msgid "No account needed."
 msgstr "Kein Konto erforderlich."
 
-#: includes/Inquiry/Form.php:164
+#: includes/Inquiry/Form.php:165
 msgid "Have an approved account? Log in for net prices and saved details."
 msgstr ""
 "Sie haben bereits ein freigegebenes Partnerkonto? Melden Sie sich an, um "
 "Nettopreise zu sehen und Ihre gespeicherten Angaben zu verwenden."
 
-#: includes/Inquiry/Form.php:165
+#: includes/Inquiry/Form.php:166
 #: includes/Presentation/ProductShortcodes.php:1917
 #: includes/Presentation/ProductShortcodes.php:1919
 #: includes/Vocabulary/Labels.php:101 includes/Vocabulary/Labels.php:176
@@ -1299,27 +1315,33 @@ msgstr ""
 msgid "Solution draft"
 msgstr "Lösungsentwurf"
 
-#: includes/Inquiry/Form.php:166
+#: includes/Inquiry/Form.php:167
 msgid "Edit solution draft"
 msgstr "Lösungsentwurf bearbeiten"
 
-#: includes/Inquiry/Form.php:167 includes/Inquiry/Form.php:197
+#: includes/Inquiry/Form.php:168 includes/Inquiry/Form.php:198
 #: includes/Vocabulary/Terms.php:65
 #: templates/emails/linker-genie-handoff.php:65
 msgid "Quantity"
 msgstr "Menge"
 
-#: includes/Inquiry/Form.php:168 includes/Vocabulary/Terms.php:32
+#: includes/Inquiry/Form.php:169 includes/Vocabulary/Terms.php:32
 msgid "Update solution draft"
 msgstr "Lösungsentwurf aktualisieren"
 
 #. translators: %s: product name.
-#: includes/Inquiry/Form.php:199
+#: includes/Inquiry/Form.php:200
 #, php-format
 msgid "Quantity for %s"
 msgstr "Menge für %s"
 
-#: includes/Inquiry/Form.php:206
+#. translators: %s: product name.
+#: includes/Inquiry/Form.php:204 includes/Vocabulary/Terms.php:35
+#, php-format
+msgid "Remove %s from the solution draft"
+msgstr "%s aus dem Lösungsentwurf entfernen"
+
+#: includes/Inquiry/Form.php:210
 msgid "You can send a message without products."
 msgstr "Sie können uns auch ohne Produkte eine Nachricht senden."
 
@@ -1688,7 +1710,7 @@ msgstr "Privat"
 msgid "Commercial"
 msgstr "Gewerbe"
 
-#: includes/Presentation/LanguageLinks.php:52
+#: includes/Presentation/LanguageLinks.php:53
 #: includes/Presentation/LibraryPage.php:515
 msgid "English"
 msgstr "Englisch"
@@ -3062,6 +3084,152 @@ msgstr ""
 "Es konnte keine Proforma-Nummer vergeben werden. Bitte versuchen Sie es "
 "erneut."
 
+#: includes/Protection/Admission.php:166
+msgid ""
+"The request status could not be confirmed. Please check before sending it "
+"again."
+msgstr "Der Status Ihrer Anfrage lässt sich derzeit nicht bestätigen. Bitte prüfen Sie ihn, bevor Sie die Anfrage erneut senden."
+
+#: includes/Protection/Admission.php:166
+msgid "Your request could not be processed. Please try again."
+msgstr "Ihre Anfrage konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut."
+
+#: includes/Protection/HealthPage.php:26 includes/Protection/HealthPage.php:60
+msgid "Public entry protection"
+msgstr "Schutz öffentlicher Zugänge"
+
+#: includes/Protection/HealthPage.php:43
+msgid "Off"
+msgstr "Aus"
+
+#: includes/Protection/HealthPage.php:44
+msgid "Observe"
+msgstr "Beobachten"
+
+#: includes/Protection/HealthPage.php:45
+msgid "Enforce"
+msgstr "Durchsetzen"
+
+#: includes/Protection/HealthPage.php:60
+msgid "Configuration"
+msgstr "Konfiguration"
+
+#: includes/Protection/HealthPage.php:60
+msgid "Configured"
+msgstr "Konfiguriert"
+
+#: includes/Protection/HealthPage.php:60
+msgid "Environment"
+msgstr "Umgebung"
+
+#: includes/Protection/HealthPage.php:60
+msgid "Invalid configuration"
+msgstr "Ungültige Konfiguration"
+
+#: includes/Protection/HealthPage.php:60
+msgid "Live keys or not configured"
+msgstr "Produktivschlüssel oder nicht konfiguriert"
+
+#: includes/Protection/HealthPage.php:60
+msgid "Mode"
+msgstr "Modus"
+
+#: includes/Protection/HealthPage.php:60
+msgid "Not configured"
+msgstr "Nicht konfiguriert"
+
+#: includes/Protection/HealthPage.php:60
+msgid "Test keys; not permitted in production"
+msgstr "Testschlüssel; im Produktivbetrieb nicht zulässig"
+
+#: includes/Protection/HealthPage.php:60
+msgid "Validation keys"
+msgstr "Prüfschlüssel"
+
+#: includes/Protection/HealthPage.php:61
+msgid "Connected handlers"
+msgstr "Angebundene Verarbeitung"
+
+#: includes/Protection/HealthPage.php:61
+msgid ""
+"The mode and keys do not prove that every entry is protected. Check the "
+"connected handlers and observed results below."
+msgstr "Modus und Schlüssel belegen keinen vollständigen Schutz aller Zugänge. Prüfen Sie die angebundenen Verarbeitungen und die unten erfassten Ergebnisse."
+
+#: includes/Protection/HealthPage.php:63
+msgid ""
+"No business or resource handlers have been connected to this shared service."
+msgstr "An diesen gemeinsamen Dienst sind noch keine Verarbeitungen für Geschäftsanfragen oder Ressourcen angebunden."
+
+#: includes/Protection/HealthPage.php:71
+msgid "Check verification"
+msgstr "Prüfung starten"
+
+#: includes/Protection/HealthPage.php:71
+msgid ""
+"This checks the shared verification service. It does not create an inquiry, "
+"send mail or call a model."
+msgstr "Hier prüfen Sie den gemeinsamen Verifizierungsdienst. Dabei werden keine Anfrage angelegt, keine E-Mail versendet und kein Modell aufgerufen."
+
+#: includes/Protection/HealthPage.php:71
+msgid "Verification check"
+msgstr "Verifizierung prüfen"
+
+#: includes/Protection/HealthPage.php:72
+msgid ""
+"Counts cover receipts still in the retry window. They are not a complete "
+"traffic history or an exact cost report."
+msgstr "Die Zählung umfasst die noch gespeicherten Verarbeitungsbelege innerhalb der Wiederholungsfrist. Sie zeigt weder den vollständigen Datenverkehr noch genaue Kosten."
+
+#: includes/Protection/HealthPage.php:72
+msgid "Observed processing"
+msgstr "Erfasste Verarbeitung"
+
+#: includes/Protection/HealthPage.php:74
+msgid ""
+"The admission journal is unavailable. No successful protection check can be "
+"inferred from this page."
+msgstr "Das Verarbeitungsprotokoll ist derzeit nicht verfügbar. Diese Seite bestätigt daher keine erfolgreiche Schutzprüfung."
+
+#: includes/Protection/HealthPage.php:76
+msgid "Count"
+msgstr "Anzahl"
+
+#: includes/Protection/HealthPage.php:76
+msgid "Operation"
+msgstr "Vorgang"
+
+#: includes/Protection/HealthPage.php:76
+msgid "State"
+msgstr "Status"
+
+#: includes/Protection/HealthPage.php:76
+msgid "Stored receipts"
+msgstr "Gespeicherte Verarbeitungsbelege"
+
+#: includes/Protection/Module.php:73
+msgid "This verification request is too large. Please try again."
+msgstr "Diese Verifizierungsanfrage ist zu groß. Bitte versuchen Sie es erneut."
+
+#: includes/Protection/Privacy.php:28 includes/Protection/Privacy.php:42
+#: includes/Protection/Privacy.php:71 includes/Protection/Privacy.php:84
+msgid "Public request protection"
+msgstr "Schutz öffentlicher Anfragen"
+
+#: includes/Protection/Privacy.php:75
+msgid "Request processing record"
+msgstr "Datensatz zur Verarbeitung einer Anfrage"
+
+#: includes/Protection/Privacy.php:88
+msgid "Request allowance counter"
+msgstr "Zähler für das Anfragekontingent"
+
+#: includes/Protection/Privacy.php:125
+msgid ""
+"Linked request data was removed. Minimal duplicate-request markers remain "
+"until their original retry window ends."
+msgstr "Die zugeordneten Anfragedaten wurden entfernt. Kennzeichen zur Vermeidung doppelter Anfragen bleiben bis zum Ende der ursprünglichen Wiederholungsfrist gespeichert."
+
 #. translators: %s: email domain.
 #: includes/Registration/AccountSignals.php:56
 #, php-format
@@ -3789,12 +3957,6 @@ msgstr "Summen"
 #: includes/Vocabulary/Terms.php:33
 msgid "Continue to Proforma request"
 msgstr "Weiter zur Proforma-Anfrage"
-
-#. translators: %s: product name.
-#: includes/Vocabulary/Terms.php:35
-#, php-format
-msgid "Remove %s from the solution draft"
-msgstr "%s aus dem Lösungsentwurf entfernen"
 
 #: includes/Vocabulary/Terms.php:36
 msgid "Solution draft updated."

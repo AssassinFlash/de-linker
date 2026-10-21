@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-21T12:14:46+00:00\n"
+"POT-Creation-Date: 2026-10-21T20:31:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -113,6 +113,22 @@ msgstr ""
 
 #: build/accounts.js:2
 msgid "Review account"
+msgstr ""
+
+#: build/protection.js:1
+msgid "Checking verification…"
+msgstr ""
+
+#: build/protection.js:1 includes/Protection/Controller.php:221
+msgid "Verification could not be completed. Please try again."
+msgstr ""
+
+#: build/protection.js:1
+msgid "Verification expired. Please try again."
+msgstr ""
+
+#: build/protection.js:1
+msgid "Verification passed. No business request was submitted."
 msgstr ""
 
 #: content/livecanvas/archive_product.html:12
@@ -609,7 +625,7 @@ msgid "Language"
 msgstr ""
 
 #: includes/Admin/DocumentsMetaBox.php:75
-#: includes/Admin/DocumentsMetaBox.php:140
+#: includes/Admin/DocumentsMetaBox.php:140 includes/Inquiry/Form.php:203
 #: includes/Presentation/ComparePage.php:220
 msgid "Remove"
 msgstr ""
@@ -725,12 +741,12 @@ msgstr ""
 msgid "Where can we reply?"
 msgstr ""
 
-#: includes/Contact/Form.php:153 includes/Inquiry/Form.php:156
+#: includes/Contact/Form.php:153 includes/Inquiry/Form.php:157
 #: includes/Settings/SettingsTab.php:137
 msgid "Name"
 msgstr ""
 
-#: includes/Contact/Form.php:155 includes/Inquiry/Form.php:157
+#: includes/Contact/Form.php:155 includes/Inquiry/Form.php:158
 msgid "Reply email"
 msgstr ""
 
@@ -742,11 +758,11 @@ msgstr ""
 msgid "No account or Project is needed to ask a question."
 msgstr ""
 
-#: includes/Contact/Form.php:166 includes/Inquiry/Form.php:159
+#: includes/Contact/Form.php:166 includes/Inquiry/Form.php:160
 msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 
-#: includes/Contact/Form.php:168 includes/Inquiry/Form.php:160
+#: includes/Contact/Form.php:168 includes/Inquiry/Form.php:161
 #: templates/myaccount/auth/form-register.php:144
 msgid "Privacy"
 msgstr ""
@@ -970,7 +986,7 @@ msgid ""
 "account."
 msgstr ""
 
-#: includes/Gating/DraftSummary.php:60 includes/Inquiry/Form.php:161
+#: includes/Gating/DraftSummary.php:60 includes/Inquiry/Form.php:162
 msgid "Send inquiry"
 msgstr ""
 
@@ -1118,36 +1134,36 @@ msgid ""
 "on every failure."
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:32 includes/Inquiry/Checkout.php:143
+#: includes/Inquiry/Checkout.php:44 includes/Inquiry/Checkout.php:155
 msgid "Please use the inquiry form to send your inquiry."
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:98
+#: includes/Inquiry/Checkout.php:110
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:35
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:73
 #: includes/Vocabulary/Labels.php:97 includes/Vocabulary/Terms.php:107
 msgid "Inquiry received"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:99 includes/Inquiry/Form.php:162
+#: includes/Inquiry/Checkout.php:111 includes/Inquiry/Form.php:163
 #: templates/emails/linker-inquiry-received.php:40
 msgid "We reply within one business day."
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:101
+#: includes/Inquiry/Checkout.php:113
 msgid "Create an account with this email"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:101
+#: includes/Inquiry/Checkout.php:113
 msgid "View inquiries"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:102
+#: includes/Inquiry/Checkout.php:114
 #: templates/emails/linker-inquiry-received.php:40
 msgid "The Linker team will reply to the email address you provided."
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:104
+#: includes/Inquiry/Checkout.php:116
 msgid "We have not sent a confirmation email."
 msgstr ""
 
@@ -1181,40 +1197,40 @@ msgstr ""
 msgid "New inquiry #{order_number}"
 msgstr ""
 
-#: includes/Inquiry/Form.php:151 includes/Vocabulary/Labels.php:97
+#: includes/Inquiry/Form.php:152 includes/Vocabulary/Labels.php:97
 msgid "Send an inquiry"
 msgstr ""
 
-#: includes/Inquiry/Form.php:152
+#: includes/Inquiry/Form.php:153
 msgid ""
 "Tell us what you need. The products in your solution draft will be included."
 msgstr ""
 
-#: includes/Inquiry/Form.php:153
+#: includes/Inquiry/Form.php:154
 msgid "Message (optional)"
 msgstr ""
 
-#: includes/Inquiry/Form.php:154
+#: includes/Inquiry/Form.php:155
 msgid "Your reply details"
 msgstr ""
 
-#: includes/Inquiry/Form.php:155
+#: includes/Inquiry/Form.php:156
 msgid "Change"
 msgstr ""
 
-#: includes/Inquiry/Form.php:158
+#: includes/Inquiry/Form.php:159
 msgid "Company (optional)"
 msgstr ""
 
-#: includes/Inquiry/Form.php:163
+#: includes/Inquiry/Form.php:164
 msgid "No account needed."
 msgstr ""
 
-#: includes/Inquiry/Form.php:164
+#: includes/Inquiry/Form.php:165
 msgid "Have an approved account? Log in for net prices and saved details."
 msgstr ""
 
-#: includes/Inquiry/Form.php:165
+#: includes/Inquiry/Form.php:166
 #: includes/Presentation/ProductShortcodes.php:1917
 #: includes/Presentation/ProductShortcodes.php:1919
 #: includes/Vocabulary/Labels.php:101 includes/Vocabulary/Labels.php:176
@@ -1223,27 +1239,33 @@ msgstr ""
 msgid "Solution draft"
 msgstr ""
 
-#: includes/Inquiry/Form.php:166
+#: includes/Inquiry/Form.php:167
 msgid "Edit solution draft"
 msgstr ""
 
-#: includes/Inquiry/Form.php:167 includes/Inquiry/Form.php:197
+#: includes/Inquiry/Form.php:168 includes/Inquiry/Form.php:198
 #: includes/Vocabulary/Terms.php:65
 #: templates/emails/linker-genie-handoff.php:65
 msgid "Quantity"
 msgstr ""
 
-#: includes/Inquiry/Form.php:168 includes/Vocabulary/Terms.php:32
+#: includes/Inquiry/Form.php:169 includes/Vocabulary/Terms.php:32
 msgid "Update solution draft"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/Inquiry/Form.php:199
+#: includes/Inquiry/Form.php:200
 #, php-format
 msgid "Quantity for %s"
 msgstr ""
 
-#: includes/Inquiry/Form.php:206
+#. translators: %s: product name.
+#: includes/Inquiry/Form.php:204 includes/Vocabulary/Terms.php:35
+#, php-format
+msgid "Remove %s from the solution draft"
+msgstr ""
+
+#: includes/Inquiry/Form.php:210
 msgid "You can send a message without products."
 msgstr ""
 
@@ -1605,7 +1627,7 @@ msgstr ""
 msgid "Commercial"
 msgstr ""
 
-#: includes/Presentation/LanguageLinks.php:52
+#: includes/Presentation/LanguageLinks.php:53
 #: includes/Presentation/LibraryPage.php:515
 msgid "English"
 msgstr ""
@@ -2893,6 +2915,152 @@ msgstr ""
 msgid "No Proforma number could be reserved; please try again."
 msgstr ""
 
+#: includes/Protection/Admission.php:166
+msgid ""
+"The request status could not be confirmed. Please check before sending it "
+"again."
+msgstr ""
+
+#: includes/Protection/Admission.php:166
+msgid "Your request could not be processed. Please try again."
+msgstr ""
+
+#: includes/Protection/HealthPage.php:26 includes/Protection/HealthPage.php:60
+msgid "Public entry protection"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:43
+msgid "Off"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:44
+msgid "Observe"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:45
+msgid "Enforce"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:60
+msgid "Configuration"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:60
+msgid "Configured"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:60
+msgid "Environment"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:60
+msgid "Invalid configuration"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:60
+msgid "Live keys or not configured"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:60
+msgid "Mode"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:60
+msgid "Not configured"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:60
+msgid "Test keys; not permitted in production"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:60
+msgid "Validation keys"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:61
+msgid "Connected handlers"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:61
+msgid ""
+"The mode and keys do not prove that every entry is protected. Check the "
+"connected handlers and observed results below."
+msgstr ""
+
+#: includes/Protection/HealthPage.php:63
+msgid ""
+"No business or resource handlers have been connected to this shared service."
+msgstr ""
+
+#: includes/Protection/HealthPage.php:71
+msgid "Check verification"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:71
+msgid ""
+"This checks the shared verification service. It does not create an inquiry, "
+"send mail or call a model."
+msgstr ""
+
+#: includes/Protection/HealthPage.php:71
+msgid "Verification check"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:72
+msgid ""
+"Counts cover receipts still in the retry window. They are not a complete "
+"traffic history or an exact cost report."
+msgstr ""
+
+#: includes/Protection/HealthPage.php:72
+msgid "Observed processing"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:74
+msgid ""
+"The admission journal is unavailable. No successful protection check can be "
+"inferred from this page."
+msgstr ""
+
+#: includes/Protection/HealthPage.php:76
+msgid "Count"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:76
+msgid "Operation"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:76
+msgid "State"
+msgstr ""
+
+#: includes/Protection/HealthPage.php:76
+msgid "Stored receipts"
+msgstr ""
+
+#: includes/Protection/Module.php:73
+msgid "This verification request is too large. Please try again."
+msgstr ""
+
+#: includes/Protection/Privacy.php:28 includes/Protection/Privacy.php:42
+#: includes/Protection/Privacy.php:71 includes/Protection/Privacy.php:84
+msgid "Public request protection"
+msgstr ""
+
+#: includes/Protection/Privacy.php:75
+msgid "Request processing record"
+msgstr ""
+
+#: includes/Protection/Privacy.php:88
+msgid "Request allowance counter"
+msgstr ""
+
+#: includes/Protection/Privacy.php:125
+msgid ""
+"Linked request data was removed. Minimal duplicate-request markers remain "
+"until their original retry window ends."
+msgstr ""
+
 #. translators: %s: email domain.
 #: includes/Registration/AccountSignals.php:56
 #, php-format
@@ -3559,12 +3727,6 @@ msgstr ""
 
 #: includes/Vocabulary/Terms.php:33
 msgid "Continue to Proforma request"
-msgstr ""
-
-#. translators: %s: product name.
-#: includes/Vocabulary/Terms.php:35
-#, php-format
-msgid "Remove %s from the solution draft"
 msgstr ""
 
 #: includes/Vocabulary/Terms.php:36

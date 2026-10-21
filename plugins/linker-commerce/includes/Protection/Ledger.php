@@ -39,18 +39,20 @@ final class Ledger {
 	 * @param Allowance[]                                       $allowances Server-selected dimensions.
 	 * @param int                                               $lease Seconds before unused/in-flight recovery.
 	 * @param list<array{source: Allowance, target: Allowance}> $carry Anonymous spend to import on login.
+	 * @param string                                            $purpose Server-owned operation kind.
+	 * @param string                                            $binding Optional private current-subject reference.
 	 * @return array<string,mixed>|WP_Error Durable receipt or explicit refusal.
 	 */
-	public function reserve( string $id, string $fingerprint, array $allowances, int $lease, array $carry = array() ): array|WP_Error {
+	public function reserve( string $id, string $fingerprint, array $allowances, int $lease, array $carry = array(), string $purpose = 'operation', string $binding = '' ): array|WP_Error {
 		$id = strtolower( $id );
-		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) || array() === $allowances || count( $allowances ) > self::MAX_DIMENSIONS || count( $carry ) > self::MAX_DIMENSIONS || $lease < 1 || $lease > self::MAX_LEASE ) {
+		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) || array() === $allowances || count( $allowances ) > self::MAX_DIMENSIONS || count( $carry ) > self::MAX_DIMENSIONS || $lease < 1 || $lease > self::MAX_LEASE || 1 !== preg_match( '/\A[a-z0-9_]{1,40}\z/', $purpose ) || ( '' !== $binding && 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $binding ) ) ) {
 			return self::error( 'input' );
 		}
 		return $this->edit(
-			static function ( array &$state, int $now ) use ( $id, $fingerprint, $allowances, $lease, $carry ): array|WP_Error {
+			static function ( array &$state, int $now ) use ( $id, $fingerprint, $allowances, $lease, $carry, $purpose, $binding ): array|WP_Error {
 				if ( isset( $state['receipts'][ $id ] ) ) {
 					$existing = $state['receipts'][ $id ];
-					return hash_equals( (string) $existing['fingerprint'], $fingerprint ) ? $existing : self::error( 'payload_changed' );
+					return hash_equals( (string) $existing['fingerprint'], $fingerprint ) && ( $existing['purpose'] ?? '' ) === $purpose && ( $existing['binding'] ?? '' ) === $binding ? $existing : self::error( 'payload_changed' );
 				}
 				if ( count( $state['receipts'] ) >= self::MAX_RECEIPTS ) {
 					return self::error( 'capacity' );
@@ -123,6 +125,8 @@ final class Ledger {
 				}
 				$receipt                      = array(
 					'status'      => 'reserved',
+					'purpose'     => $purpose,
+					'binding'     => $binding,
 					'created_at'  => $now,
 					'fingerprint' => $fingerprint,
 					'lease_until' => $now + $lease,
@@ -162,12 +166,13 @@ final class Ledger {
 	 * @phpstan-impure
 	 * Only the winner dispatches; a replay cannot dispatch a second time.
 	 *
-	 * @param string $id UUID.
-	 * @param string $fingerprint Bound input fingerprint.
+	 * @param string                                                            $id UUID.
+	 * @param string                                                            $fingerprint Bound input fingerprint.
+	 * @param array{id:string,binding:string,action:string,single:bool}|array{} $proof Validated signed proof reference; empty for trusted background work.
 	 * @return array<string,mixed>|WP_Error Updated receipt.
 	 */
-	public function dispatch( string $id, string $fingerprint ): array|WP_Error {
-		return $this->transition( $id, $fingerprint, 'dispatch', 0 );
+	public function dispatch( string $id, string $fingerprint, array $proof = array() ): array|WP_Error {
+		return $this->transition( $id, $fingerprint, 'dispatch', 0, $proof );
 	}
 
 	/**
@@ -195,6 +200,34 @@ final class Ledger {
 	 */
 	public function cancel( string $id, string $fingerprint ): array|WP_Error {
 		return $this->transition( $id, $fingerprint, 'cancel', 0 );
+	}
+
+	/**
+	 * Recovery and aggregate staff health share admission's authoritative read.
+	 *
+	 * @phpstan-impure
+	 * @return array<string,mixed>|WP_Error Counts only; never private receipt data.
+	 */
+	public function summary(): array|WP_Error {
+		return $this->edit(
+			static function ( array &$state ): array {
+				$counts = array();
+				foreach ( $state['receipts'] as $receipt ) {
+					$purpose = $receipt['purpose'];
+					$status  = $receipt['status'];
+					if ( str_starts_with( $purpose, 'verification_' ) && 'completed' === $status ) {
+						$verification = Verification::from_code( $receipt['outcome'] );
+						$status      .= '/' . $verification->status . '/' . $verification->reason;
+					}
+					$counts[ $purpose ][ $status ] = ( $counts[ $purpose ][ $status ] ?? 0 ) + 1;
+				}
+				return array(
+					'counts'   => $counts,
+					'receipts' => count( $state['receipts'] ),
+					'buckets'  => count( $state['buckets'] ),
+				);
+			}
+		);
 	}
 
 	/**
@@ -227,17 +260,26 @@ final class Ledger {
 						$data[] = array(
 							'id'              => $id,
 							'status'          => $receipt['status'],
+							'purpose'         => $receipt['purpose'],
 							'input_reference' => $receipt['fingerprint'],
 							'outcome'         => $receipt['outcome'],
 							'retry_until'     => $receipt['retry_until'],
 						);
 						if ( $erase ) {
+							foreach ( $state['receipts'] as $parent_id => $parent ) {
+								if ( ( $parent['consumed_by'] ?? '' ) === $id ) {
+									// Retain single-use without retaining the erased record link.
+									$state['receipts'][ $parent_id ]['consumed_by'] = 'erased';
+								}
+							}
 							if ( in_array( $receipt['status'], array( 'reserved', 'dispatched' ), true ) ) {
 								self::release( $state, $receipt, 'reserved' === $receipt['status'] );
 							}
 							// Keep only an opaque replay tombstone until its original expiry.
 							$state['receipts'][ $id ] = array(
 								'status'      => 'erased',
+								'purpose'     => 'erased',
+								'binding'     => '',
 								'created_at'  => 0,
 								'fingerprint' => '',
 								'lease_until' => 0,
@@ -275,25 +317,39 @@ final class Ledger {
 	/**
 	 * Serialized compare-and-transition, with no provider or business I/O.
 	 *
-	 * @param string $id UUID.
-	 * @param string $fingerprint Bound input.
-	 * @param string $operation Transition.
-	 * @param int    $outcome Native result.
+	 * @param string                                                            $id UUID.
+	 * @param string                                                            $fingerprint Bound input.
+	 * @param string                                                            $operation Transition.
+	 * @param int                                                               $outcome Native result.
+	 * @param array{id:string,binding:string,action:string,single:bool}|array{} $proof Checked proof reference.
 	 * @return array<string,mixed>|WP_Error Current state.
 	 */
-	private function transition( string $id, string $fingerprint, string $operation, int $outcome ): array|WP_Error {
+	private function transition( string $id, string $fingerprint, string $operation, int $outcome, array $proof = array() ): array|WP_Error {
 		$id = strtolower( $id );
 		if ( ! wp_is_uuid( $id, 4 ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $fingerprint ) ) {
 			return self::error( 'input' );
 		}
 		return $this->edit(
-			static function ( array &$state ) use ( $id, $fingerprint, $operation, $outcome ): array|WP_Error {
+			static function ( array &$state, int $now ) use ( $id, $fingerprint, $operation, $outcome, $proof ): array|WP_Error {
 				$receipt = $state['receipts'][ $id ] ?? null;
 				if ( ! is_array( $receipt ) || ! hash_equals( (string) $receipt['fingerprint'], $fingerprint ) ) {
 					return self::error( 'unknown_receipt' );
 				}
 				$status = (string) $receipt['status'];
 				if ( 'dispatch' === $operation && 'reserved' === $status ) {
+					if ( array() !== $proof ) {
+						$parent  = $state['receipts'][ $proof['id'] ] ?? null;
+						$purpose = 'verification_' . $proof['action'];
+						if ( ! is_array( $parent ) || $purpose !== $parent['purpose'] || $proof['binding'] !== $parent['binding'] || 'completed' !== $parent['status'] || 1 !== $parent['outcome'] || $parent['created_at'] + Proof::LIFETIME <= $now ) {
+							return self::error( 'proof' );
+						}
+						if ( $proof['single'] ) {
+							if ( isset( $parent['consumed_by'] ) && $parent['consumed_by'] !== $id ) {
+								return self::error( 'proof_reused' );
+							}
+							$state['receipts'][ $proof['id'] ]['consumed_by'] = $id;
+						}
+					}
 					$receipt['status'] = 'dispatched';
 				} elseif ( 'cancel' === $operation && 'reserved' === $status ) {
 					self::release( $state, $receipt, true );
@@ -410,7 +466,7 @@ final class Ledger {
 			}
 		}
 		foreach ( $state['receipts'] as $receipt ) {
-			if ( ! is_array( $receipt ) || ! is_string( $receipt['fingerprint'] ?? null ) || ! in_array( $receipt['status'] ?? '', array( 'reserved', 'dispatched', 'unresolved', 'completed', 'cancelled', 'expired', 'erased' ), true ) || ! is_int( $receipt['created_at'] ?? null ) || ! is_int( $receipt['lease_until'] ?? null ) || ! is_int( $receipt['retry_until'] ?? null ) || ! is_array( $receipt['debits'] ?? null ) || ! is_int( $receipt['outcome'] ?? null ) || ! is_array( $receipt['owners'] ?? null ) || count( array_filter( $receipt['owners'], 'is_string' ) ) !== count( $receipt['owners'] ) ) {
+			if ( ! is_array( $receipt ) || ! is_string( $receipt['purpose'] ?? null ) || ! is_string( $receipt['binding'] ?? null ) || ! is_string( $receipt['fingerprint'] ?? null ) || ! in_array( $receipt['status'] ?? '', array( 'reserved', 'dispatched', 'unresolved', 'completed', 'cancelled', 'expired', 'erased' ), true ) || ! is_int( $receipt['created_at'] ?? null ) || ! is_int( $receipt['lease_until'] ?? null ) || ! is_int( $receipt['retry_until'] ?? null ) || ! is_array( $receipt['debits'] ?? null ) || ! is_int( $receipt['outcome'] ?? null ) || ! is_array( $receipt['owners'] ?? null ) || count( array_filter( $receipt['owners'], 'is_string' ) ) !== count( $receipt['owners'] ) ) {
 				throw new \RuntimeException( 'ledger_invalid_receipt' );
 			}
 			foreach ( $receipt['debits'] as $debit ) {
