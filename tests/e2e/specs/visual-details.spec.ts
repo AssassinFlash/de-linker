@@ -98,6 +98,11 @@ for (const locale of ['en', 'de'] as const) {
 			await expect(current).toHaveAttribute('lang', locale);
 			for (const [i, path] of paths.entries()) {
 				const link = page.locator('.footer-identity-node').nth(i);
+				const label = await link.locator('span').evaluate((node) => ({
+					height: node.getBoundingClientRect().height,
+					line: parseFloat(getComputedStyle(node).lineHeight),
+				}));
+				expect(label.height).toBeLessThanOrEqual(label.line + 1);
 				await expect(link).toHaveAttribute('href', path);
 				expect(
 					(await link.boundingBox())!.height
