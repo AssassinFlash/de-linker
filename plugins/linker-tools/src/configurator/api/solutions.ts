@@ -46,8 +46,7 @@ function pdfBase64( blob: Blob ): Promise< string > {
 			const comma = data.indexOf( ',' );
 			resolve( comma >= 0 ? data.slice( comma + 1 ) : data );
 		};
-		reader.onerror = () =>
-			reject( reader.error ?? new Error( 'report' ) );
+		reader.onerror = () => reject( reader.error ?? new Error( 'report' ) );
 		reader.readAsDataURL( blob );
 	} );
 }
@@ -58,9 +57,7 @@ export async function saveSolution(
 	body: SolutionBody,
 	fetcher: Fetch = ( ...args ) => fetch( ...args )
 ): Promise< SavedSolution > {
-	const reportPdf = body.reportPdf
-		? await pdfBase64( body.reportPdf )
-		: '';
+	const reportPdf = body.reportPdf ? await pdfBase64( body.reportPdf ) : '';
 	const response = await fetcher( `${ restUrl }linker/v1/solutions`, {
 		method: 'POST',
 		credentials: 'same-origin',

@@ -421,9 +421,7 @@ test( 'a design report that cannot be built is not saved without it', async () =
 		fireEvent.click( saveButton );
 	} );
 	expect(
-		await screen.findByText(
-			'The solution could not be saved. Try again.'
-		)
+		await screen.findByText( 'The solution could not be saved. Try again.' )
 	).toBeInTheDocument();
 	expect( save ).not.toHaveBeenCalled();
 } );
