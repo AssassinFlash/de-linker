@@ -109,6 +109,43 @@ def test_an_english_question_on_a_german_page_is_searched_in_english(
     assert {call.arguments.get("lang") for call in prepared.route.calls} == {"en"}
 
 
+def test_a_roof_step_question_asks_size_hint_and_keeps_its_url(
+    vocabulary: Vocabulary,
+) -> None:
+    """#497: the route's one call is size-hint; its URL is the action's."""
+    seen: list[httpx.Request] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        return httpx.Response(
+            200,
+            json={
+                "result": {
+                    "summary": "Open the Solution Configurator.",
+                    "configurator_url": "https://site.test/solution-configurator/",
+                }
+            },
+        )
+
+    client = AbilityClient(
+        "http://site.test",
+        transport=httpx.MockTransport(handle),
+        sleep=lambda s: None,
+    )
+    understander = Understander(lambda: vocabulary, FakeJev(_reading("sizing")))
+    prepared = understander.prepare(
+        _request("What happens if I skip the roof?"), client
+    )
+    assert prepared.route.name == "roof"
+    assert prepared.calls_made == 1
+    (request,) = seen
+    assert request.url.path.endswith("/linker/size-hint/run")
+    assert not request.url.params
+    fact = prepared.facts.facts["size.configurator_url"]
+    assert fact.value == "https://site.test/solution-configurator/"
+    assert fact.source == "size-hint"
+
+
 def test_jev_failure_is_logged_and_the_product_word_still_searches(
     vocabulary: Vocabulary, caplog: pytest.LogCaptureFixture
 ) -> None:

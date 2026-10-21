@@ -5,7 +5,8 @@ import pytest
 from linker_genie.jev import Reading
 from linker_genie.lexicon import Match
 from linker_genie.prefill import sizing_input
-from linker_genie.route import CONFIDENT, SEARCH_LIMIT, Subject, plan
+from linker_genie.route import CONFIDENT, SEARCH_LIMIT, Call, Subject, plan
+from linker_genie.template import ROOF
 
 NONE = Subject((), {}, {})
 H2 = Subject((4107,), {4107: "inverters", 1832: "home-storage"}, {4107: "H2-10K-T3"})
@@ -48,6 +49,87 @@ def test_sizing_figures_are_read_in_code(
     # Round-2 regressions (negation, questions, postcode, cross-turn) are
     # registered for #339 in test_prefill.py.
     assert sizing_input(message) == expected
+
+
+@pytest.mark.parametrize(
+    ("message", "lang", "marker"),
+    [
+        ("What does the Roof detail step do?", "en", "roofdetail"),
+        ("What happens if I skip the roof?", "en", "skiptheroof"),
+        ("Is the roof step optional?", "en", "roofstep"),
+        ("What happens without a roof plane?", "en", "withoutaroof"),
+        ("What if I don't draw the roof?", "en", "dontdrawtheroof"),
+        ("Was macht der Schritt Dachdetails?", "de", "dachdetail"),
+        ("Was passiert, wenn ich das Dach weglasse?", "de", "dachweglass"),
+        ("Kann ich den Dachschritt überspringen?", "de", "dachschritt"),
+        ("Was passiert ohne Dach?", "de", "ohnedach"),
+        ("Was passiert, wenn ich keine Dachfläche angebe?", "de", "keinedach"),
+        ("Was passiert, wenn ich kein Dach angebe?", "de", "keindach"),
+        ("Muss ich das Dach einzeichnen?", "de", "dacheinzeich"),
+        ("Was passiert, wenn die Dachfläche fehlt?", "de", "dachflächefehlt"),
+    ],
+)
+def test_a_roof_step_question_is_the_signed_sentence_and_the_configurator(
+    message: str, lang: str, marker: str
+) -> None:
+    """#497: a fixed sentence and size-hint's URL; no cards and no handoff."""
+    route = plan(message, [], _reading("sizing", 1.0), NONE, lang)
+    assert route.name == "roof"
+    assert route.calls == (Call("linker/size-hint", {}),)
+    assert route.action == "open_configurator"
+    assert route.no_cards and route.no_handoff
+    assert route.answer == ROOF[lang]
+    assert f"roof step: {marker}" in route.reasons
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "What size battery for 8 kWp PV and 6000 kWh per year?",
+        "I need a hybrid inverter for a three-phase house, 12 kWp on the roof, backup is a must",
+        "Which inverter fits a south roof?",
+        "Wie viel kWp passen auf mein Dach?",
+        "Wie viel kWp kann ich auf dem Dach aufnehmen?",
+        "Wie viele Module kann ich auf dem Dach aufnehmen?",
+    ],
+)
+def test_a_roof_measurement_does_not_take_the_roof_step_sentence(message: str) -> None:
+    """A sizing question that mentions the roof is still a sizing question."""
+    lang = "de" if "Dach" in message else "en"
+    route = plan(message, [], _reading("sizing", 1.0), NONE, lang)
+    assert route.name != "roof"
+
+
+@pytest.mark.parametrize(
+    ("message", "lang"),
+    [
+        ("Do you offer roof planning?", "en"),
+        ("Bieten Sie Dachplanung an?", "de"),
+    ],
+)
+def test_a_company_roof_planning_offer_is_still_a_company_question(
+    message: str, lang: str
+) -> None:
+    """#497 explains the step; a company offer is the team's sentence (2026-10-05)."""
+    route = plan(message, [], _reading("company_logistics_service"), NONE, lang)
+    assert route.name == "service"
+
+
+def test_the_roof_step_answer_repeats_the_engine_orientation_sentence() -> None:
+    """#497, #479 C57: the same numbers and wording as limit.default_orientation.
+
+    services/engine/src/linker_engine/texts.py holds the signed sentence; the
+    engine's report prints it when a request has no roof plane. This is the
+    cross-service pin, the way size-hint-urls.json pins the configurator URL.
+    """
+    assert (
+        "Without a roof plane, the yield assumes 35° tilt facing south "
+        "(HTW Berlin calculator default)." in ROOF["en"]
+    )
+    assert (
+        "Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an "
+        "(Vorgabe des HTW-Rechners)." in ROOF["de"]
+    )
 
 
 def test_a_document_question_searches_the_documents_of_its_product() -> None:

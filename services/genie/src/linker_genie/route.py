@@ -9,7 +9,9 @@ always runs the product search: a product word is never a greeting. A short body
 that more than one product holds, or a shared trailing suffix with no other product
 word, is a fixed question: the service writes it and the model does not run. An
 inquiry a guest may send, the whole-project remit, and the weather are fixed
-sentences the same way.
+sentences the same way. The Roof detail step's role and the cost of skipping it
+are a fixed sentence too (#497), with size-hint supplying the configurator
+action.
 """
 
 from __future__ import annotations
@@ -272,6 +274,10 @@ RouteName = Literal[
     # A fixed sentence: an inquiry open to guests, the whole-project remit, or
     # the weather. The service writes `Route.answer`. No tool call, no model.
     "scripted",
+    # The Roof detail step (#497): its role and what skipping it costs. The
+    # service writes `Route.answer`; size-hint supplies the configurator URL.
+    # No model.
+    "roof",
 ]
 
 # A kWp or a yearly kWh keeps the turn on sizing. The extreme search uses
@@ -628,7 +634,7 @@ def _attach_esa_battery(route: Route, message: str, lang: str) -> Route:
     """Stamp the signed battery sentence without skipping the model.
 
     A products route with `answer` set still runs the model: `_answer`
-    short-circuits only person, clarify, scripted and parts. `finish()`
+    short-circuits only person, clarify, scripted, roof and parts. `finish()`
     replaces the model's prose when this reason is present. A route that
     already has its own sentence, a stock answer, or another name is left
     alone. Product ids stay the tool's; this stamp names the codes only.
@@ -716,6 +722,12 @@ def _plan_turn(
     scripted = _scripted(message, lang, reasons)
     if scripted is not None:
         return scripted
+    # The Roof detail step's role and the cost of skipping it (#497). The
+    # sentence is signed, and the configurator action's URL comes from
+    # size-hint. A confident sizing or document reading does not replace it.
+    roof = _roof_step(message, lang, reasons)
+    if roof is not None:
+        return roof
     # A brand or series extreme is one aggregate (#368), not a brand/model
     # conflict. Two catalog models stay on the per-model searches for
     # smallest and largest: one class aggregate would hide those codes. An
@@ -2290,6 +2302,84 @@ def _whole_project(compact: str) -> bool:
     return english or german
 
 
+# Roof-step questions (#497), on the compact form `lexicon.normalize` produces.
+# The step's own name is enough ("Roof detail", "Dachdetails"); the other half
+# is skipping it ("skip the roof", "ohne Dach"). A sizing question that names
+# roof measurements ("12 kWp on the roof") matches none of these. Umlauts stay
+# letters in the compact form; the German skipping words are listed with and
+# without them.
+_ROOF_STEP = (
+    "roofdetail",
+    "roofstep",
+    "skiptheroof",
+    "skiproof",
+    "withouttheroof",
+    "withoutaroof",
+    "leavetheroofout",
+    "leaveouttheroof",
+    "ignoretheroof",
+    "dontusetheroof",
+    "donotusetheroof",
+    "notusetheroof",
+    "dontdrawtheroof",
+    "fillintheroof",
+    "dontprovidetheroof",
+    "norofplane",
+    "roofoptional",
+    "roofmatter",
+    "dachdetail",
+    "dachschritt",
+    "dachweglass",
+    "dachauslass",
+    "dachignorier",
+    "dachflächeaufnehm",
+    "dachflaecheaufnehm",
+    "dachnichtaufnehm",
+    "dacheinzeich",
+    "dachnichtangeb",
+    "dachnichtausfüll",
+    "dachnichtausfuell",
+    "dachflächenichtausfüll",
+    "dachflaechenichtausfuell",
+    "dachüberspring",
+    "dachueberspring",
+    "ohnedach",
+    "ohnedasdach",
+    "keinedach",
+    "keindach",
+    "dachfehlt",
+    "dachflächefehlt",
+    "dachflaechefehlt",
+)
+
+
+def _roof_step(message: str, lang: str, reasons: list[str]) -> Route | None:
+    """The Roof detail step's role and the cost of skipping it (#497).
+
+    Matched on `lexicon.normalize`, so spaces and punctuation do not matter.
+    The sentence is signed in `template.ROOF`. size-hint supplies the
+    configurator URL with no fields, so the action carries no figure the
+    customer did not state. No model runs.
+    """
+    compact = normalize(message)
+    marker = next((item for item in _ROOF_STEP if item in compact), None)
+    if marker is None:
+        return None
+    # Lazy: template imports Route from this module.
+    from linker_genie.template import ROOF
+
+    language = "de" if lang == "de" else "en"
+    return Route(
+        "roof",
+        (Call("linker/size-hint", {}),),
+        action="open_configurator",
+        no_cards=True,
+        no_handoff=True,
+        answer=ROOF[language],
+        reasons=(*reasons, f"roof step: {marker}"),
+    )
+
+
 def service(message: str, reasons: list[str]) -> Route:
     """A company, delivery or service question: the team sentence (owner 2026-10-05)."""
     return Route(
@@ -2313,9 +2403,9 @@ def with_page(
     Jev's `about_this_page` decides (#234). A signed-in customer's account page is
     their inquiries (inquiry-status); a solution draft is its products and the
     pairings among them; any other page is read (read-page). A request for a person,
-    a company question, an inquiry status, a clarifying question or a scripted
-    sentence reads nothing, and a delivery question about a page goes to the
-    team whatever Jev says (`_LOGISTICS`).
+    a company question, an inquiry status, a clarifying question, a scripted
+    sentence or the Roof detail step's sentence reads nothing, and a delivery
+    question about a page goes to the team whatever Jev says (`_LOGISTICS`).
 
     The calls fit the turn's budget in a fixed priority: the route's own calls (the
     subject's get-product among them) first, then the page, then the draft's pairs; a
@@ -2328,6 +2418,7 @@ def with_page(
         "inquiry",
         "clarify",
         "scripted",
+        "roof",
     ):
         return route
     if _LOGISTICS.search(message) and not route.stock:

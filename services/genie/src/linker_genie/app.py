@@ -37,9 +37,9 @@ from linker_genie.agent import (
     provider_name,
 )
 from linker_genie.conversation import last_customer_message
-from linker_genie.cycle import TurnResult, run
+from linker_genie.cycle import TurnResult, fatal_class, run
 from linker_genie.facts import TurnFacts
-from linker_genie.failure import is_row
+from linker_genie.failure import from_log, is_row
 from linker_genie.gate import Gate
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
@@ -56,7 +56,13 @@ from linker_genie.schema import (
     VoteRequest,
 )
 from linker_genie.storeapi import StoreVocabulary
-from linker_genie.template import fallback, finish, stock_answer, team_sentence
+from linker_genie.template import (
+    fallback,
+    finish,
+    roof_answer,
+    stock_answer,
+    team_sentence,
+)
 from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 
@@ -231,12 +237,17 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
             else:
                 prepared.log["contact"] = offer.reason
     # A request for a person, a parts list, a short-code clarification, a scripted
-    # sentence, and a simple stock status are answered by the service alone: no
-    # model ran (model-routing audits read provider/model). The four model
-    # channels are unchanged; this route is a sentence, not a channel.
-    code_made = prepared.route.name in ("person", "parts", "clarify", "scripted") or (
-        simple_stock(prepared.route) and result.attempts == 0
-    )
+    # sentence, the Roof detail step's sentence, and a simple stock status are
+    # answered by the service alone: no model ran (model-routing audits read
+    # provider/model). The four model channels are unchanged; these routes are
+    # sentences, not channels.
+    code_made = prepared.route.name in (
+        "person",
+        "parts",
+        "clarify",
+        "scripted",
+        "roof",
+    ) or (simple_stock(prepared.route) and result.attempts == 0)
     with timing.phase(clock, timing.LOG):
         turn_id = turn_log().record(
             conversation_id=body.conversation_id,
@@ -331,8 +342,9 @@ def _answer(
 ) -> tuple[TurnResult, dict[str, object] | None]:
     """The turn's answer: the model's; the service's own for a request for a person
     (contact.answer; #243); a short-code clarification (route.answer); a scripted
-    sentence (route.answer); or the parts list's (parts.answer; #251). With a
-    service block, no model runs and none can claim it sent anything."""
+    sentence (route.answer); the Roof detail step's sentence and configurator
+    action (#497); or the parts list's (parts.answer; #251). With a service
+    block, no model runs and none can claim it sent anything."""
     # A person request and a parts list are written by the service. Their
     # sentences follow the question, the same rule as a model answer.
     language = turn_language(body)
@@ -387,6 +399,43 @@ def _answer(
             TurnResult(
                 output=scripted,
                 facts=TurnFacts(),
+                grounded=True,
+                failures=(),
+                fallback=False,
+                attempts=0,
+            ),
+            None,
+        )
+    if prepared.route.name == "roof" and prepared.route.answer:
+        # The sentence is fixed in template.ROOF (#497). size-hint ran with the
+        # route, so the action's URL is the site's; no model ran and no figure
+        # can be invented. A failed size-hint is an ability failure like any
+        # other route call: the degraded sentence, never a clean turn whose
+        # action silently lost its URL.
+        roof_failures = [
+            from_log(entry) for entry in prepared.log.get("call_failures", ())
+        ]
+        if roof_failures:
+            return (
+                TurnResult(
+                    output=fallback(
+                        prepared.facts,
+                        body.locale,
+                        prepared.route,
+                        failure_class=fatal_class(roof_failures),
+                    ),
+                    facts=prepared.facts,
+                    grounded=False,
+                    failures=tuple(item.text for item in roof_failures),
+                    fallback=True,
+                    attempts=0,
+                ),
+                None,
+            )
+        return (
+            TurnResult(
+                output=roof_answer(prepared.route.answer, prepared.facts, language),
+                facts=prepared.facts,
                 grounded=True,
                 failures=(),
                 fallback=False,

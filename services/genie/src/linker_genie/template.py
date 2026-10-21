@@ -241,6 +241,26 @@ SCRIPTED = {
         ),
     },
 }
+# The Roof detail step (#497): its role and the cost of skipping it. The role
+# sentence is the site card's own copy (#12, docs/acceptance/2026-10-10/12/
+# copy-review.md §3); the last sentence is the engine's limit.default_orientation
+# verbatim (services/engine/src/linker_engine/texts.py, #479 C57). The step is
+# optional, and without it the yield falls back to that orientation. EN is
+# settled first; DE keeps the site's sentence and is written on its own. The
+# service writes the whole turn, and the action's URL comes from size-hint.
+ROOF = {
+    "en": (
+        "The Roof detail step adds the building's layout. It is optional and "
+        "maps the roof surface and module placement. Without a roof plane, "
+        "the yield assumes 35° tilt facing south (HTW Berlin calculator "
+        "default)."
+    ),
+    "de": (
+        "Der Schritt Dachdetails nimmt die Dachfläche auf. Er ist optional und "
+        "zeichnet die Lage der Module ein. Ohne Dachfläche nimmt der Ertrag "
+        "35° Neigung nach Süden an (Vorgabe des HTW-Rechners)."
+    ),
+}
 # A service backstop, not a sentence the model is told to copy. Appended only
 # when a released pairing condition names a hyphenated model code the text
 # omitted and a card shows that partner. Comma-joined, so the German line
@@ -321,6 +341,21 @@ def login_required(locale: str) -> TurnOutput:
         language=language,
         blocks=[TextBlock(text=LOGIN_REQUIRED[language])],
     )
+
+
+def roof_answer(text: str, facts: TurnFacts, language: Locale) -> TurnOutput:
+    """The Roof detail step's turn (#497): the signed sentence and the action.
+
+    `text` is `ROOF` for this turn's language. hydrate fills the configurator
+    URL from size-hint's fact, so the link is the site's and not one the answer
+    wrote. The action is drawn only when that fact is here, the same gate the
+    sizing fallback uses: a failed call is the caller's degraded turn, never a
+    clickable step with no URL. No cards and no handoff: the route's shape.
+    """
+    blocks: list[Block] = [TextBlock(text=text)]
+    if "size.configurator_url" in facts.facts:
+        blocks.append(ActionBlock(name="open_configurator", args={}))
+    return hydrate(TurnOutput(language=language, blocks=blocks), facts)
 
 
 def _pair_document_refs(facts: TurnFacts) -> list[str]:

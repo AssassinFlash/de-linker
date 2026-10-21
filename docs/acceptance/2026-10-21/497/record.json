@@ -1,0 +1,464 @@
+{
+  "ticket": 497,
+  "kind": "local Genie guest walkthrough",
+  "instance": "w497",
+  "origin": "http://127.0.0.1:9264",
+  "genie": "http://127.0.0.1:9266",
+  "startedAt": "2026-10-21T11:32:33.155Z",
+  "startedDb": "2026-10-21 11:32:33",
+  "mailSent": false,
+  "accountUsed": false,
+  "cases": [
+    {
+      "locale": "en",
+      "viewport": "1440x900",
+      "kind": "role",
+      "question": "What does the Roof detail step do?",
+      "answer": "The Roof detail step adds the building's layout. It is optional and maps the roof surface and module placement. Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+      "orientationExact": true,
+      "answerExact": true,
+      "action": {
+        "name": "open_configurator",
+        "href": "http://127.0.0.1:9264/solution-configurator/"
+      },
+      "actionUrlExact": true,
+      "counts": {
+        "cards": 0,
+        "handoff": 0,
+        "ask": 0
+      },
+      "htmlLang": "en-US",
+      "title": "Ask About a Product, Model or Datasheet | Linker",
+      "screenshot": "shots/roof-role-en-1440.png",
+      "pass": true
+    },
+    {
+      "locale": "en",
+      "viewport": "1440x900",
+      "kind": "skip",
+      "question": "What happens if I skip the roof?",
+      "answer": "The Roof detail step adds the building's layout. It is optional and maps the roof surface and module placement. Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+      "orientationExact": true,
+      "answerExact": true,
+      "action": {
+        "name": "open_configurator",
+        "href": "http://127.0.0.1:9264/solution-configurator/"
+      },
+      "actionUrlExact": true,
+      "counts": {
+        "cards": 0,
+        "handoff": 0,
+        "ask": 0
+      },
+      "htmlLang": "en-US",
+      "title": "Ask About a Product, Model or Datasheet | Linker",
+      "screenshot": "shots/roof-skip-en-1440.png",
+      "pass": true
+    },
+    {
+      "locale": "en",
+      "viewport": "390x844",
+      "kind": "role",
+      "question": "What does the Roof detail step do?",
+      "answer": "The Roof detail step adds the building's layout. It is optional and maps the roof surface and module placement. Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+      "orientationExact": true,
+      "answerExact": true,
+      "action": {
+        "name": "open_configurator",
+        "href": "http://127.0.0.1:9264/solution-configurator/"
+      },
+      "actionUrlExact": true,
+      "counts": {
+        "cards": 0,
+        "handoff": 0,
+        "ask": 0
+      },
+      "htmlLang": "en-US",
+      "title": "Ask About a Product, Model or Datasheet | Linker",
+      "screenshot": "shots/roof-role-en-390.png",
+      "pass": true
+    },
+    {
+      "locale": "en",
+      "viewport": "390x844",
+      "kind": "skip",
+      "question": "What happens if I skip the roof?",
+      "answer": "The Roof detail step adds the building's layout. It is optional and maps the roof surface and module placement. Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+      "orientationExact": true,
+      "answerExact": true,
+      "action": {
+        "name": "open_configurator",
+        "href": "http://127.0.0.1:9264/solution-configurator/"
+      },
+      "actionUrlExact": true,
+      "counts": {
+        "cards": 0,
+        "handoff": 0,
+        "ask": 0
+      },
+      "htmlLang": "en-US",
+      "title": "Ask About a Product, Model or Datasheet | Linker",
+      "screenshot": "shots/roof-skip-en-390.png",
+      "pass": true
+    },
+    {
+      "locale": "de",
+      "viewport": "1440x900",
+      "kind": "role",
+      "question": "Was macht der Schritt Dachdetails?",
+      "answer": "Der Schritt Dachdetails nimmt die Dachfläche auf. Er ist optional und zeichnet die Lage der Module ein. Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+      "orientationExact": true,
+      "answerExact": true,
+      "action": {
+        "name": "open_configurator",
+        "href": "http://127.0.0.1:9264/solution-configurator/"
+      },
+      "actionUrlExact": true,
+      "counts": {
+        "cards": 0,
+        "handoff": 0,
+        "ask": 0
+      },
+      "htmlLang": "de-DE",
+      "title": "Fragen Sie nach einem Produkt, Modell oder Datenblatt | Linker",
+      "screenshot": "shots/roof-role-de-1440.png",
+      "pass": true
+    },
+    {
+      "locale": "de",
+      "viewport": "1440x900",
+      "kind": "skip",
+      "question": "Was passiert, wenn ich das Dach weglasse?",
+      "answer": "Der Schritt Dachdetails nimmt die Dachfläche auf. Er ist optional und zeichnet die Lage der Module ein. Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+      "orientationExact": true,
+      "answerExact": true,
+      "action": {
+        "name": "open_configurator",
+        "href": "http://127.0.0.1:9264/solution-configurator/"
+      },
+      "actionUrlExact": true,
+      "counts": {
+        "cards": 0,
+        "handoff": 0,
+        "ask": 0
+      },
+      "htmlLang": "de-DE",
+      "title": "Fragen Sie nach einem Produkt, Modell oder Datenblatt | Linker",
+      "screenshot": "shots/roof-skip-de-1440.png",
+      "pass": true
+    },
+    {
+      "locale": "de",
+      "viewport": "390x844",
+      "kind": "role",
+      "question": "Was macht der Schritt Dachdetails?",
+      "answer": "Der Schritt Dachdetails nimmt die Dachfläche auf. Er ist optional und zeichnet die Lage der Module ein. Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+      "orientationExact": true,
+      "answerExact": true,
+      "action": {
+        "name": "open_configurator",
+        "href": "http://127.0.0.1:9264/solution-configurator/"
+      },
+      "actionUrlExact": true,
+      "counts": {
+        "cards": 0,
+        "handoff": 0,
+        "ask": 0
+      },
+      "htmlLang": "de-DE",
+      "title": "Fragen Sie nach einem Produkt, Modell oder Datenblatt | Linker",
+      "screenshot": "shots/roof-role-de-390.png",
+      "pass": true
+    },
+    {
+      "locale": "de",
+      "viewport": "390x844",
+      "kind": "skip",
+      "question": "Was passiert, wenn ich das Dach weglasse?",
+      "answer": "Der Schritt Dachdetails nimmt die Dachfläche auf. Er ist optional und zeichnet die Lage der Module ein. Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+      "orientationExact": true,
+      "answerExact": true,
+      "action": {
+        "name": "open_configurator",
+        "href": "http://127.0.0.1:9264/solution-configurator/"
+      },
+      "actionUrlExact": true,
+      "counts": {
+        "cards": 0,
+        "handoff": 0,
+        "ask": 0
+      },
+      "htmlLang": "de-DE",
+      "title": "Fragen Sie nach einem Produkt, Modell oder Datenblatt | Linker",
+      "screenshot": "shots/roof-skip-de-390.png",
+      "pass": true
+    }
+  ],
+  "turnLog": [
+    {
+      "id": 29,
+      "question": "What does the Roof detail step do?",
+      "locale": "en",
+      "answeredIn": "en",
+      "route": "roof",
+      "provider": "service",
+      "model": "none",
+      "grounded": 1,
+      "fallback": 0,
+      "failures": [],
+      "blocks": [
+        "text",
+        "action"
+      ],
+      "answer": "The Roof detail step adds the building's layout. It is optional and maps the roof surface and module placement. Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+      "answerExact": true,
+      "orientationExact": true,
+      "action": {
+        "type": "action",
+        "name": "open_configurator",
+        "args": {
+          "url": "http://127.0.0.1:9264/solution-configurator/"
+        }
+      },
+      "sizeHint": {
+        "arguments": {},
+        "ok": true
+      },
+      "pass": true
+    },
+    {
+      "id": 30,
+      "question": "What happens if I skip the roof?",
+      "locale": "en",
+      "answeredIn": "en",
+      "route": "roof",
+      "provider": "service",
+      "model": "none",
+      "grounded": 1,
+      "fallback": 0,
+      "failures": [],
+      "blocks": [
+        "text",
+        "action"
+      ],
+      "answer": "The Roof detail step adds the building's layout. It is optional and maps the roof surface and module placement. Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+      "answerExact": true,
+      "orientationExact": true,
+      "action": {
+        "type": "action",
+        "name": "open_configurator",
+        "args": {
+          "url": "http://127.0.0.1:9264/solution-configurator/"
+        }
+      },
+      "sizeHint": {
+        "arguments": {},
+        "ok": true
+      },
+      "pass": true
+    },
+    {
+      "id": 31,
+      "question": "What does the Roof detail step do?",
+      "locale": "en",
+      "answeredIn": "en",
+      "route": "roof",
+      "provider": "service",
+      "model": "none",
+      "grounded": 1,
+      "fallback": 0,
+      "failures": [],
+      "blocks": [
+        "text",
+        "action"
+      ],
+      "answer": "The Roof detail step adds the building's layout. It is optional and maps the roof surface and module placement. Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+      "answerExact": true,
+      "orientationExact": true,
+      "action": {
+        "type": "action",
+        "name": "open_configurator",
+        "args": {
+          "url": "http://127.0.0.1:9264/solution-configurator/"
+        }
+      },
+      "sizeHint": {
+        "arguments": {},
+        "ok": true
+      },
+      "pass": true
+    },
+    {
+      "id": 32,
+      "question": "What happens if I skip the roof?",
+      "locale": "en",
+      "answeredIn": "en",
+      "route": "roof",
+      "provider": "service",
+      "model": "none",
+      "grounded": 1,
+      "fallback": 0,
+      "failures": [],
+      "blocks": [
+        "text",
+        "action"
+      ],
+      "answer": "The Roof detail step adds the building's layout. It is optional and maps the roof surface and module placement. Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+      "answerExact": true,
+      "orientationExact": true,
+      "action": {
+        "type": "action",
+        "name": "open_configurator",
+        "args": {
+          "url": "http://127.0.0.1:9264/solution-configurator/"
+        }
+      },
+      "sizeHint": {
+        "arguments": {},
+        "ok": true
+      },
+      "pass": true
+    },
+    {
+      "id": 33,
+      "question": "Was macht der Schritt Dachdetails?",
+      "locale": "de",
+      "answeredIn": "de",
+      "route": "roof",
+      "provider": "service",
+      "model": "none",
+      "grounded": 1,
+      "fallback": 0,
+      "failures": [],
+      "blocks": [
+        "text",
+        "action"
+      ],
+      "answer": "Der Schritt Dachdetails nimmt die Dachfläche auf. Er ist optional und zeichnet die Lage der Module ein. Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+      "answerExact": true,
+      "orientationExact": true,
+      "action": {
+        "type": "action",
+        "name": "open_configurator",
+        "args": {
+          "url": "http://127.0.0.1:9264/solution-configurator/"
+        }
+      },
+      "sizeHint": {
+        "arguments": {},
+        "ok": true
+      },
+      "pass": true
+    },
+    {
+      "id": 34,
+      "question": "Was passiert, wenn ich das Dach weglasse?",
+      "locale": "de",
+      "answeredIn": "de",
+      "route": "roof",
+      "provider": "service",
+      "model": "none",
+      "grounded": 1,
+      "fallback": 0,
+      "failures": [],
+      "blocks": [
+        "text",
+        "action"
+      ],
+      "answer": "Der Schritt Dachdetails nimmt die Dachfläche auf. Er ist optional und zeichnet die Lage der Module ein. Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+      "answerExact": true,
+      "orientationExact": true,
+      "action": {
+        "type": "action",
+        "name": "open_configurator",
+        "args": {
+          "url": "http://127.0.0.1:9264/solution-configurator/"
+        }
+      },
+      "sizeHint": {
+        "arguments": {},
+        "ok": true
+      },
+      "pass": true
+    },
+    {
+      "id": 35,
+      "question": "Was macht der Schritt Dachdetails?",
+      "locale": "de",
+      "answeredIn": "de",
+      "route": "roof",
+      "provider": "service",
+      "model": "none",
+      "grounded": 1,
+      "fallback": 0,
+      "failures": [],
+      "blocks": [
+        "text",
+        "action"
+      ],
+      "answer": "Der Schritt Dachdetails nimmt die Dachfläche auf. Er ist optional und zeichnet die Lage der Module ein. Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+      "answerExact": true,
+      "orientationExact": true,
+      "action": {
+        "type": "action",
+        "name": "open_configurator",
+        "args": {
+          "url": "http://127.0.0.1:9264/solution-configurator/"
+        }
+      },
+      "sizeHint": {
+        "arguments": {},
+        "ok": true
+      },
+      "pass": true
+    },
+    {
+      "id": 36,
+      "question": "Was passiert, wenn ich das Dach weglasse?",
+      "locale": "de",
+      "answeredIn": "de",
+      "route": "roof",
+      "provider": "service",
+      "model": "none",
+      "grounded": 1,
+      "fallback": 0,
+      "failures": [],
+      "blocks": [
+        "text",
+        "action"
+      ],
+      "answer": "Der Schritt Dachdetails nimmt die Dachfläche auf. Er ist optional und zeichnet die Lage der Module ein. Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+      "answerExact": true,
+      "orientationExact": true,
+      "action": {
+        "type": "action",
+        "name": "open_configurator",
+        "args": {
+          "url": "http://127.0.0.1:9264/solution-configurator/"
+        }
+      },
+      "sizeHint": {
+        "arguments": {},
+        "ok": true
+      },
+      "pass": true
+    }
+  ],
+  "assertions": {
+    "cases": 8,
+    "casesPass": true,
+    "turnLogRows": 8,
+    "turnLogPass": true,
+    "noCards": true,
+    "noHandoff": true,
+    "noAsk": true,
+    "actionUrl": true,
+    "orientationExact": true,
+    "serviceWroteEveryTurn": true
+  },
+  "snapshot": {
+    "name": "20261021-1023",
+    "taken": "2026-10-21T02:26:29+00:00"
+  },
+  "finishedAt": "2026-10-21T11:32:55.653Z"
+}
