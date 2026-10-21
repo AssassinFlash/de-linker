@@ -206,10 +206,9 @@ jobs:
 
       # #521: native pre-dispatch resource/replay/privacy fixtures. The preceding
       # page-cache step installs the local-only service token. All HTTP is
-      # intercepted and sizing/version inputs here are explicitly synthetic.
+      # intercepted; running-version responses and sizing inputs are synthetic.
       - name: public resource admission and private service handoff
         run: |
-          just wp smoke config set LINKER_ENGINE_RESOURCE_VERSION synthetic-ci-resource-release --type=constant
           just wp smoke option update linker_engine_url http://127.0.0.1:9
           just wp smoke option update linker_genie_url http://127.0.0.1:9
           cd plugins/linker-tools

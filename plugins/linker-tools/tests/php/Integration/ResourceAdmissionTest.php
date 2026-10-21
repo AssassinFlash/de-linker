@@ -49,8 +49,31 @@ final class ResourceAdmissionTest extends TestCase {
 	 */
 	private array $cookies = array();
 
+	/** Synthetic private live-version HTTP fixture, removed after each case.
+	 *
+	 * @var \Closure
+	 */
+	private \Closure $live_version;
+
+	/** Mutable synthetic running version for restart fixtures.
+	 *
+	 * @var string
+	 */
+	private string $running_version = '';
+
+
 	/** Isolate the journal and official dummy configuration. */
 	protected function setUp(): void {
+		$this->running_version = hash( 'sha256', 'synthetic-running-engine-a' );
+		$this->live_version    = function ( mixed $old, array $args, string $url ): mixed {
+			if ( ! str_ends_with( $url, '/resource/version' ) ) {
+				return $old; }
+			return array(
+				'response' => array( 'code' => 200 ),
+				'body'     => wp_json_encode( array( 'version' => $this->running_version ) ),
+			);
+		};
+		add_filter( 'pre_http_request', $this->live_version, -1, 3 );
 		$this->old = get_option( Ledger::OPTION );
 		delete_option( Ledger::OPTION );
 		$this->cookies               = $_COOKIE;
@@ -69,6 +92,7 @@ final class ResourceAdmissionTest extends TestCase {
 
 	/** Restore the local fixture without touching real service settings. */
 	protected function tearDown(): void {
+		remove_filter( 'pre_http_request', $this->live_version, -1 );
 		delete_option( Ledger::OPTION );
 		if ( false !== $this->old ) {
 			update_option( Ledger::OPTION, $this->old, false );
@@ -519,6 +543,7 @@ final class ResourceAdmissionTest extends TestCase {
 			return array(
 				'response' => array( 'code' => 1 === $calls ? 503 : 200 ),
 				'body'     => '{"synthetic":true}',
+				'headers'  => array( 'x-linker-engine-version' => $args['headers']['X-Linker-Engine-Version'] ),
 			);
 		};
 		add_filter( 'pre_http_request', $fixture, 0, 3 );
@@ -594,9 +619,9 @@ final class ResourceAdmissionTest extends TestCase {
 	}
 
 	/**
-	 * Missing release is advisory in observe; private service auth still applies.
+	 * Unavailable live version is advisory in observe; private service auth still applies.
 	 */
-	public function test_observe_native_saved_design_does_not_require_new_release_configuration(): void {
+	public function test_observe_native_saved_design_does_not_require_live_version_readback(): void {
 		$user = wp_insert_user(
 			array(
 				'user_login' => 'g521-' . wp_generate_uuid4(),
@@ -618,11 +643,12 @@ final class ResourceAdmissionTest extends TestCase {
 			return array(
 				'response' => array( 'code' => 200 ),
 				'body'     => '{"synthetic":true}',
+				'headers'  => array( 'x-linker-engine-version' => $args['headers']['X-Linker-Engine-Version'] ),
 			);
 		};
 		add_filter( 'pre_http_request', $fixture, 0, 3 );
 		try {
-			$engine = new \Linker\Tools\Protection\NativeEngine( '' );
+			$engine = new \Linker\Tools\Protection\NativeEngine( new \Linker\Tools\Protection\EngineVersion( static fn(): string => '' ) );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=observe' );
 			$this->assertSame( array( 200, '{"synthetic":true}' ), $engine->request( null, $url, '{"synthetic":true}' ) );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
@@ -739,7 +765,7 @@ final class ResourceAdmissionTest extends TestCase {
 		$base    = rtrim( (string) get_option( 'linker_engine_url', '' ), '/' );
 		$urls    = array();
 		$fixture = static function ( mixed $old, array $args, string $url ) use ( $base, &$urls ): mixed {
-			if ( ! str_starts_with( $url, $base . '/' ) ) {
+			if ( ! str_starts_with( $url, $base . '/' ) || str_ends_with( $url, '/resource/version' ) ) {
 				return $old; }
 			$urls[]  = $url;
 			$input   = json_decode( $args['body'], true );
@@ -747,7 +773,10 @@ final class ResourceAdmissionTest extends TestCase {
 			return array(
 				'response' => array( 'code' => $invalid ? 422 : 200 ),
 				'body'     => '{"synthetic":"native-engine"}',
-				'headers'  => array( 'content-type' => 'application/json' ),
+				'headers'  => array(
+					'content-type'            => 'application/json',
+					'x-linker-engine-version' => $args['headers']['X-Linker-Engine-Version'],
+				),
 			);
 		};
 		add_filter( 'pre_http_request', $fixture, 0, 3 );
@@ -802,6 +831,159 @@ final class ResourceAdmissionTest extends TestCase {
 				$this->assertSame( 'linker_engine_path', $response->get_data()['code'] );
 			}
 			$this->assertCount( 3, $urls, 'No query/body override reaches any additional upstream work.' );
+		} finally {
+			remove_filter( 'pre_http_request', $fixture, 0 );
+		}
+	}
+	/** A nightly restart changes public/native canonical keys within the same UTC day. */
+	public function test_live_engine_rotation_never_reuses_the_previous_loaded_snapshot(): void {
+		$resources = new Resources();
+		$calls     = 0;
+		$handler   = array(
+			'callback' => function () use ( &$calls ): WP_REST_Response {
+						++$calls;
+						$this->assertSame( $this->running_version, Resources::engine_version() );
+						return new WP_REST_Response( array( 'snapshot' => $this->running_version ) );
+			},
+		);
+		$input     = array(
+			'plz'        => '80538',
+			'annual_kwh' => 5000,
+		);
+		$first     = $resources->dispatch( null, $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ), '', $handler );
+		$old       = $this->running_version;
+		$this->assertSame( $old, $first->get_data()['snapshot'] );
+		$resources->dispatch( null, $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ), '', $handler );
+		$this->assertSame( 1, $calls );
+		$this->running_version = hash( 'sha256', 'synthetic-nightly-engine-b' );
+		$rotated               = $resources->dispatch( null, $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ), '', $handler );
+		$this->assertSame( $this->running_version, $rotated->get_data()['snapshot'] );
+		$this->assertSame( 2, $calls );
+		$unavailable = static function ( mixed $prior, array $args, string $url ): mixed {
+			return str_ends_with( $url, '/resource/version' ) ? new WP_Error( 'synthetic-version-down' ) : $prior;
+		};
+		add_filter( 'pre_http_request', $unavailable, 999, 3 );
+		try {
+			$failed = $resources->dispatch( null, $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ), '', $handler );
+			$this->assertInstanceOf( WP_Error::class, $failed );
+			$this->assertSame( 503, $failed->get_error_data()['status'] );
+			$this->assertSame( 2, $calls, 'Even a known cached result requires current live readback.' );
+			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=observe' );
+			$native = array( 'callback' => static fn(): WP_REST_Response => new WP_REST_Response( array( 'native' => true ) ) );
+			$this->assertInstanceOf( WP_REST_Response::class, $resources->dispatch( null, $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ), '', $native ) );
+		} finally {
+			remove_filter( 'pre_http_request', $unavailable, 999 );
+			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
+		}
+		$version               = new \Linker\Tools\Protection\EngineVersion();
+		$scope                 = new \stdClass();
+		$before                = $version->current( $scope );
+		$this->running_version = hash( 'sha256', 'synthetic-next-live-version' );
+		$this->assertSame( $before, $version->current( $scope ), 'Only this in-flight request can reuse its handshake.' );
+		$this->assertSame( $this->running_version, $version->current( new \stdClass() ) );
+	}
+
+	/** Native saved designs read live version first and refuse mismatched success headers. */
+	public function test_native_engine_rotation_and_wrong_worker_response_are_not_cached_as_success(): void {
+		$user = wp_insert_user(
+			array(
+				'user_login' => 'g521-' . wp_generate_uuid4(),
+				'user_pass'  => wp_generate_password( 32 ),
+				'user_email' => wp_generate_uuid4() . '@example.test',
+				'role'       => 'customer',
+			)
+		);
+		$this->assertIsInt( $user );
+		wp_set_current_user( $user );
+		$url     = rtrim( (string) get_option( 'linker_engine_url', '' ), '/' ) . '/design/residential';
+		$calls   = 0;
+		$state   = new class() {
+			/** Synthetic rolling-worker response fault.
+			 *
+			 * @var bool
+			 */
+			public bool $wrong = false;
+		};
+		$fixture = function ( mixed $old, array $args, string $target ) use ( $url, &$calls, $state ): mixed {
+			if ( $target !== $url ) {
+				return $old; }
+			++$calls;
+			$this->assertSame( $this->running_version, $args['headers']['X-Linker-Engine-Version'] );
+			return array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array( 'x-linker-engine-version' => $state->wrong ? str_repeat( 'f', 64 ) : $this->running_version ),
+				'body'     => wp_json_encode( array( 'snapshot' => $this->running_version ) ),
+			);
+		};
+		add_filter( 'pre_http_request', $fixture, 0, 3 );
+		try {
+			$engine = new \Linker\Tools\Protection\NativeEngine();
+			$body   = '{"plz":"80538","annual_kwh":5000}';
+			$first  = $engine->request( null, $url, $body );
+			$this->assertIsArray( $first );
+			$this->assertSame( 200, $first[0] );
+			$first = $engine->request( null, $url, $body );
+			$this->assertIsArray( $first );
+			$this->assertSame( 200, $first[0] );
+			$this->assertSame( 1, $calls );
+			$this->running_version = hash( 'sha256', 'synthetic-native-nightly-b' );
+			$rotated               = $engine->request( null, $url, $body );
+			$this->assertIsArray( $rotated );
+			$this->assertSame( $this->running_version, json_decode( $rotated[1], true )['snapshot'] );
+			$this->assertSame( 2, $calls );
+			$this->running_version = hash( 'sha256', 'synthetic-restart-race-c' );
+			$state->wrong          = true;
+			$failed                = $engine->request( null, $url, $body );
+			$this->assertIsArray( $failed );
+			$this->assertSame( 503, $failed[0] );
+			$state->wrong = false;
+			$first        = $engine->request( null, $url, $body );
+			$this->assertIsArray( $first );
+			$this->assertSame( 200, $first[0] );
+			$this->assertSame( 4, $calls, 'A wrong-worker success never becomes the canonical success.' );
+		} finally {
+			remove_filter( 'pre_http_request', $fixture, 0 );
+			wp_set_current_user( 0 );
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+			wp_delete_user( $user );
+		}
+	}
+	/** An actual public proxy success from the wrong worker cannot poison a canonical result. */
+	public function test_public_proxy_rejects_wrong_worker_success_then_recovers(): void {
+		$url     = rtrim( (string) get_option( 'linker_engine_url', '' ), '/' ) . '/design/residential';
+		$state   = new class() {
+			/** Synthetic wrong-worker response.
+			 *
+			 * @var bool
+			 */
+			public bool $wrong = true;
+		};
+		$calls   = 0;
+		$fixture = function ( mixed $old, array $args, string $target ) use ( $url, $state, &$calls ): mixed {
+			if ( $target !== $url ) {
+				return $old; }
+			++$calls;
+			return array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array( 'x-linker-engine-version' => $state->wrong ? str_repeat( 'f', 64 ) : $args['headers']['X-Linker-Engine-Version'] ),
+				'body'     => '{"synthetic":"actual-worker-result"}',
+			);
+		};
+		add_filter( 'pre_http_request', $fixture, 0, 3 );
+		try {
+			$input  = array(
+				'plz'        => '80538',
+				'annual_kwh' => 5000,
+			);
+			$failed = rest_do_request( $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ) );
+			$this->assertSame( 502, $failed->get_status() );
+			$this->assertSame( 'linker_engine_upstream', $failed->get_data()['code'] );
+			$state->wrong = false;
+			$recovered    = rest_do_request( $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ) );
+			$this->assertSame( 200, $recovered->get_status() );
+			$this->assertSame( 'actual-worker-result', $recovered->get_data()['synthetic'] );
+			$this->assertSame( 200, rest_do_request( $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ) )->get_status() );
+			$this->assertSame( 2, $calls );
 		} finally {
 			remove_filter( 'pre_http_request', $fixture, 0 );
 		}

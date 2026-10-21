@@ -33,9 +33,12 @@ App = Callable[[Scope, Receive, Send], Awaitable[None]]
 class Gate:
     """ASGI middleware: the shared token on every POST, the body cap on each."""
 
-    def __init__(self, app: App, limit: int) -> None:
+    def __init__(
+        self, app: App, limit: int, version: Callable[[], str] | None = None
+    ) -> None:
         self.app = app
         self.limit = limit
+        self.version = version
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         mode = os.environ.get("LINKER_ENGINE_GATE_MODE", "off")
@@ -109,6 +112,19 @@ class Gate:
         if not re.fullmatch(r"[a-f0-9]{64}", subject):
             await _answer(send, 400, "resource subject is required")
             return
+        expected_version = headers.get("x-linker-engine-version", "")
+        if expected_version:
+            try:
+                current_version = self.version() if self.version else ""
+            except (OSError, ValueError, RuntimeError):
+                await _answer(send, 503, "engine version is unavailable")
+                return
+            if (
+                not re.fullmatch(r"[a-f0-9]{64}", expected_version)
+                or current_version != expected_version
+            ):
+                await _answer(send, 409, "engine version changed")
+                return
         directory = Path(
             os.environ.get(
                 "LINKER_ENGINE_CACHE", str(Path.home() / ".cache" / "linker-engine")
@@ -123,8 +139,17 @@ class Gate:
         if ident is None:
             await _answer(send, 429, "a calculation is already running")
             return
+
+        async def versioned_send(message: Message) -> None:
+            if expected_version and message["type"] == "http.response.start":
+                message = dict(message)
+                message["headers"] = list(message.get("headers", [])) + [
+                    (b"x-linker-engine-version", expected_version.encode())
+                ]
+            await send(message)
+
         try:
-            await self.app(scope, replay, send)
+            await self.app(scope, replay, versioned_send)
         finally:
             slots.release(ident)
 

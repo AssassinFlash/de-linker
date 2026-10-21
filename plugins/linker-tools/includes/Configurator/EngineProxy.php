@@ -233,6 +233,10 @@ final class EngineProxy {
 				$args['headers']['X-Linker-Resource-Subject'] = '' !== $identity->account ? $identity->account : $identity->browser;
 			}
 		}
+		$version = \Linker\Tools\Protection\Resources::engine_version();
+		if ( '' !== $version && 'POST' === $method ) {
+			$args['headers']['X-Linker-Engine-Version'] = $version;
+		}
 		if ( 'POST' === $method ) {
 			$args['body'] = $body;
 		}
@@ -241,6 +245,9 @@ final class EngineProxy {
 			: wp_remote_get( $url, $args );
 		if ( is_wp_error( $response ) ) {
 			return $response;
+		}
+		if ( '' !== $version && (int) wp_remote_retrieve_response_code( $response ) < 400 && wp_remote_retrieve_header( $response, 'x-linker-engine-version' ) !== $version ) {
+			return new WP_Error( 'linker_engine_version', 'The engine snapshot changed.', array( 'status' => 503 ) );
 		}
 		return array(
 			(int) wp_remote_retrieve_response_code( $response ),

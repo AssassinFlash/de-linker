@@ -52,7 +52,7 @@ final class EngineProxyTest extends TestCase {
 	public function test_an_off_list_path_is_refused_without_reading_the_option(): void {
 		WP_Mock::userFunction( 'get_option', array( 'times' => 0 ) );
 
-		foreach ( array( 'admin/restart', 'design/residential/extra', 'geo/plz/../../etc' ) as $path ) {
+		foreach ( array( 'admin/restart', 'design/residential/extra', 'geo/plz/../../etc', 'resource/version' ) as $path ) {
 			$result = $this->proxy()->forward( $this->request( 'GET', $path ) );
 			$this->assertInstanceOf( WP_Error::class, $result, $path );
 			$this->assertSame( 'linker_engine_path', $result->get_error_code(), $path );
