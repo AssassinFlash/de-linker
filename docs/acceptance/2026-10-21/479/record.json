@@ -1,0 +1,1315 @@
+{
+  "ticket": 479,
+  "kind": "local snapshot walkthrough",
+  "instance": {
+    "before": {
+      "orders": 66,
+      "mailFiles": 0,
+      "solutions": 0,
+      "customers": 13
+    },
+    "after": {
+      "orders": 66,
+      "mailFiles": 0,
+      "solutions": 0,
+      "customers": 13
+    },
+    "engineOption": "http://127.0.0.1:9259"
+  },
+  "origin": "http://127.0.0.1:9258",
+  "startedAt": "2026-10-21T03:19:54.062Z",
+  "mailSent": false,
+  "inquirySent": false,
+  "registered": false,
+  "forbiddenPosts": [],
+  "posts": [
+    {
+      "label": "C22-unknown",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C22-unknown",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C22-yield-503",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C22-yield-503",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C28",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C31",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C31",
+      "path": "/wp-json/linker-ai/v1/engine/report/pdf"
+    },
+    {
+      "label": "C31",
+      "path": "/wp-json/linker/v1/solutions"
+    },
+    {
+      "label": "C31",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C31",
+      "path": "/wp-json/linker-ai/v1/engine/report/pdf"
+    },
+    {
+      "label": "C31",
+      "path": "/wp-json/linker/v1/solutions"
+    },
+    {
+      "label": "C57",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C57",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/wc/store/v1/cart/add-item"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/linker-ai/v1/engine/report/pdf"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/linker/v1/solutions"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/linker-ai/v1/engine/design/residential"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/linker-ai/v1/engine/report/pdf"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/linker/v1/solutions"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/wc/store/v1/cart/remove-item"
+    },
+    {
+      "label": "C30",
+      "path": "/wp-json/wc/store/v1/cart/remove-item"
+    }
+  ],
+  "rows": {
+    "C08": {
+      "en": {
+        "states": [
+          {
+            "focus": "linker-tab-residential",
+            "checked": [
+              "linker-tab-residential"
+            ],
+            "labels": [
+              "Residential",
+              "Commercial & industrial",
+              "Utility"
+            ],
+            "tabIndex": [
+              0,
+              -1,
+              -1
+            ],
+            "panel": "linker-panel-residential"
+          },
+          {
+            "key": "ArrowRight",
+            "focus": "linker-tab-commercial",
+            "checked": [
+              "linker-tab-commercial"
+            ],
+            "labels": [
+              "Residential",
+              "Commercial & industrial",
+              "Utility"
+            ],
+            "tabIndex": [
+              -1,
+              0,
+              -1
+            ],
+            "panel": "linker-panel-commercial"
+          },
+          {
+            "key": "ArrowRight",
+            "focus": "linker-tab-utility",
+            "checked": [
+              "linker-tab-utility"
+            ],
+            "labels": [
+              "Residential",
+              "Commercial & industrial",
+              "Utility"
+            ],
+            "tabIndex": [
+              -1,
+              -1,
+              0
+            ],
+            "panel": "linker-panel-utility"
+          },
+          {
+            "key": "ArrowRight",
+            "focus": "linker-tab-residential",
+            "checked": [
+              "linker-tab-residential"
+            ],
+            "labels": [
+              "Residential",
+              "Commercial & industrial",
+              "Utility"
+            ],
+            "tabIndex": [
+              0,
+              -1,
+              -1
+            ],
+            "panel": "linker-panel-residential"
+          },
+          {
+            "key": "ArrowLeft",
+            "focus": "linker-tab-utility",
+            "checked": [
+              "linker-tab-utility"
+            ],
+            "labels": [
+              "Residential",
+              "Commercial & industrial",
+              "Utility"
+            ],
+            "tabIndex": [
+              -1,
+              -1,
+              0
+            ],
+            "panel": "linker-panel-utility"
+          }
+        ],
+        "shots": [
+          "shots/c08-arrows-en-1440.png",
+          "shots/c08-arrows-en-390.png"
+        ]
+      },
+      "de": {
+        "states": [
+          {
+            "focus": "linker-tab-residential",
+            "checked": [
+              "linker-tab-residential"
+            ],
+            "labels": [
+              "Wohngebäude",
+              "Gewerbe und Industrie",
+              "Großanlagen"
+            ],
+            "tabIndex": [
+              0,
+              -1,
+              -1
+            ],
+            "panel": "linker-panel-residential"
+          },
+          {
+            "key": "ArrowRight",
+            "focus": "linker-tab-commercial",
+            "checked": [
+              "linker-tab-commercial"
+            ],
+            "labels": [
+              "Wohngebäude",
+              "Gewerbe und Industrie",
+              "Großanlagen"
+            ],
+            "tabIndex": [
+              -1,
+              0,
+              -1
+            ],
+            "panel": "linker-panel-commercial"
+          },
+          {
+            "key": "ArrowRight",
+            "focus": "linker-tab-utility",
+            "checked": [
+              "linker-tab-utility"
+            ],
+            "labels": [
+              "Wohngebäude",
+              "Gewerbe und Industrie",
+              "Großanlagen"
+            ],
+            "tabIndex": [
+              -1,
+              -1,
+              0
+            ],
+            "panel": "linker-panel-utility"
+          },
+          {
+            "key": "ArrowRight",
+            "focus": "linker-tab-residential",
+            "checked": [
+              "linker-tab-residential"
+            ],
+            "labels": [
+              "Wohngebäude",
+              "Gewerbe und Industrie",
+              "Großanlagen"
+            ],
+            "tabIndex": [
+              0,
+              -1,
+              -1
+            ],
+            "panel": "linker-panel-residential"
+          },
+          {
+            "key": "ArrowLeft",
+            "focus": "linker-tab-utility",
+            "checked": [
+              "linker-tab-utility"
+            ],
+            "labels": [
+              "Wohngebäude",
+              "Gewerbe und Industrie",
+              "Großanlagen"
+            ],
+            "tabIndex": [
+              -1,
+              -1,
+              0
+            ],
+            "panel": "linker-panel-utility"
+          }
+        ],
+        "shots": [
+          "shots/c08-arrows-de-1440.png",
+          "shots/c08-arrows-de-390.png"
+        ]
+      }
+    },
+    "C22": {
+      "unknownPostcode": {
+        "en": {
+          "answer": {
+            "status": 422,
+            "body": {
+              "detail": {
+                "error": "invalid_input",
+                "field": "plz"
+              }
+            },
+            "requestUrl": "http://127.0.0.1:9258/wp-json/linker-ai/v1/engine/design/residential",
+            "ms": 175
+          },
+          "copy": "We do not know this postcode. Check it and try again. Try again",
+          "retry": [
+            "Try again"
+          ],
+          "expected": "We do not know this postcode. Check it and try again.",
+          "shots": [
+            "shots/c22-unknown-plz-en-1440.png",
+            "shots/c22-unknown-plz-en-390.png"
+          ]
+        },
+        "de": {
+          "answer": {
+            "status": 422,
+            "body": {
+              "detail": {
+                "error": "invalid_input",
+                "field": "plz"
+              }
+            },
+            "requestUrl": "http://127.0.0.1:9258/wp-json/linker-ai/v1/engine/design/residential",
+            "ms": 143
+          },
+          "copy": "Diese Postleitzahl ist uns nicht bekannt. Prüfen Sie sie und versuchen Sie es erneut. Erneut versuchen",
+          "retry": [
+            "Erneut versuchen"
+          ],
+          "expected": "Diese Postleitzahl ist uns nicht bekannt. Prüfen Sie sie und versuchen Sie es erneut.",
+          "shots": [
+            "shots/c22-unknown-plz-de-1440.png",
+            "shots/c22-unknown-plz-de-390.png"
+          ]
+        }
+      },
+      "yield503": {
+        "optionBefore": "http://127.0.0.1:9259",
+        "stub": {
+          "script": "stub503.py",
+          "port": 9333,
+          "answer": "POST /design/residential -> 503 detail.error=yield_unavailable",
+          "requests": 2,
+          "log": [
+            "stub503: listening on 127.0.0.1:9333",
+            "stub503: \"GET /health HTTP/1.1\" 200 -",
+            "stub503: \"POST /design/residential HTTP/1.1\" 503 -",
+            "stub503: \"POST /design/residential HTTP/1.1\" 503 -"
+          ]
+        },
+        "languages": {
+          "en": {
+            "answer": {
+              "status": 503,
+              "body": {
+                "detail": {
+                  "error": "yield_unavailable",
+                  "message": "stub: PVGIS did not answer"
+                }
+              },
+              "requestUrl": "http://127.0.0.1:9258/wp-json/linker-ai/v1/engine/design/residential",
+              "ms": 150
+            },
+            "copy": "The yield service did not answer. Try again in a minute. Try again",
+            "expected": "The yield service did not answer. Try again in a minute.",
+            "shots": [
+              "shots/c22-yield-503-en-1440.png",
+              "shots/c22-yield-503-en-390.png"
+            ]
+          },
+          "de": {
+            "answer": {
+              "status": 503,
+              "body": {
+                "detail": {
+                  "error": "yield_unavailable",
+                  "message": "stub: PVGIS did not answer"
+                }
+              },
+              "requestUrl": "http://127.0.0.1:9258/wp-json/linker-ai/v1/engine/design/residential",
+              "ms": 155
+            },
+            "copy": "Der Ertragsdienst hat nicht geantwortet. Versuchen Sie es in einer Minute erneut. Erneut versuchen",
+            "expected": "Der Ertragsdienst hat nicht geantwortet. Versuchen Sie es in einer Minute erneut.",
+            "shots": [
+              "shots/c22-yield-503-de-1440.png",
+              "shots/c22-yield-503-de-390.png"
+            ]
+          }
+        },
+        "optionDuring": {
+          "update": "Success: Updated 'linker_engine_url' option.",
+          "value": "http://127.0.0.1:9333"
+        },
+        "optionAfter": {
+          "update": "Success: Updated 'linker_engine_url' option.",
+          "value": "http://127.0.0.1:9259"
+        }
+      }
+    },
+    "C28": {
+      "en": {
+        "designStatus": 200,
+        "lines": [
+          {
+            "id": 3556,
+            "model": "GW10K-ETA-G20",
+            "quantity": 1
+          },
+          {
+            "id": 3611,
+            "model": "GW6.0-BAT-D-G20",
+            "quantity": 1
+          }
+        ],
+        "cases": {
+          "retry": {
+            "mode": "retry",
+            "cardStates": [
+              {
+                "state": "retry",
+                "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+                "text": "Not added. Try again."
+              },
+              {
+                "state": "retry",
+                "title": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+                "text": "Not added. Try again."
+              }
+            ],
+            "action": {
+              "text": "Some products are not confirmed in your solution draft. See the cards above.",
+              "href": "",
+              "buttons": [
+                {
+                  "label": "Add all to solution draft",
+                  "disabled": false,
+                  "busy": "false"
+                },
+                {
+                  "label": "Save solution",
+                  "disabled": false,
+                  "busy": "false"
+                }
+              ]
+            },
+            "addPosts": 2,
+            "cartReads": 2,
+            "postAddReads": 1,
+            "postAddGapsMs": [],
+            "expectedCard": "Not added. Try again.",
+            "expectedOrder": "Some products are not confirmed in your solution draft. See the cards above.",
+            "shots": [
+              "shots/c28-add-retry-en-1440.png",
+              "shots/c28-add-retry-en-390.png"
+            ]
+          },
+          "mixed": {
+            "mode": "mixed",
+            "cardStates": [
+              {
+                "state": "retry",
+                "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+                "text": "Not added. Try again."
+              },
+              {
+                "state": "added",
+                "title": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+                "text": "In your solution draft"
+              }
+            ],
+            "action": {
+              "text": "Some products are not confirmed in your solution draft. See the cards above.",
+              "href": "",
+              "buttons": [
+                {
+                  "label": "Add all to solution draft",
+                  "disabled": false,
+                  "busy": "false"
+                },
+                {
+                  "label": "Save solution",
+                  "disabled": false,
+                  "busy": "false"
+                }
+              ]
+            },
+            "addPosts": 2,
+            "cartReads": 2,
+            "postAddReads": 1,
+            "postAddGapsMs": [],
+            "expectedCard": null,
+            "expectedOrder": "Some products are not confirmed in your solution draft. See the cards above.",
+            "shots": [
+              "shots/c28-add-mixed-en-1440.png",
+              "shots/c28-add-mixed-en-390.png"
+            ]
+          },
+          "unverified": {
+            "mode": "short",
+            "cardStates": [
+              {
+                "state": "unverified",
+                "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+                "text": "Sent, but the draft does not show it yet. Please check."
+              },
+              {
+                "state": "unverified",
+                "title": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+                "text": "Sent, but the draft does not show it yet. Please check."
+              }
+            ],
+            "action": {
+              "text": "Some products are not confirmed in your solution draft. See the cards above.",
+              "href": "",
+              "buttons": [
+                {
+                  "label": "Add all to solution draft",
+                  "disabled": false,
+                  "busy": "false"
+                },
+                {
+                  "label": "Save solution",
+                  "disabled": false,
+                  "busy": "false"
+                }
+              ]
+            },
+            "addPosts": 2,
+            "cartReads": 5,
+            "postAddReads": 4,
+            "postAddGapsMs": [
+              255,
+              254,
+              254
+            ],
+            "expectedCard": "Sent, but the draft does not show it yet. Please check.",
+            "expectedOrder": "Some products are not confirmed in your solution draft. See the cards above.",
+            "shots": [
+              "shots/c28-add-unverified-en-1440.png",
+              "shots/c28-add-unverified-en-390.png"
+            ]
+          },
+          "settled": {
+            "mode": "short",
+            "cardStates": [
+              {
+                "state": "added",
+                "title": "GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module)",
+                "text": "In your solution draft"
+              },
+              {
+                "state": "added",
+                "title": "GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh)",
+                "text": "In your solution draft"
+              }
+            ],
+            "action": {
+              "text": "All products are in your solution draft.",
+              "href": "",
+              "buttons": [
+                {
+                  "label": "Add all to solution draft",
+                  "disabled": false,
+                  "busy": "false"
+                },
+                {
+                  "label": "Save solution",
+                  "disabled": false,
+                  "busy": "false"
+                }
+              ]
+            },
+            "addPosts": 2,
+            "cartReads": 5,
+            "postAddReads": 4,
+            "postAddGapsMs": [
+              254,
+              255,
+              254
+            ],
+            "expectedCard": null,
+            "expectedOrder": "All products are in your solution draft.",
+            "shots": [
+              "shots/c28-add-settled-en-1440.png",
+              "shots/c28-add-settled-en-390.png"
+            ]
+          }
+        }
+      },
+      "de": {
+        "designStatus": 200,
+        "lines": [
+          {
+            "id": 3556,
+            "model": "GW10K-ETA-G20",
+            "quantity": 1
+          },
+          {
+            "id": 3611,
+            "model": "GW6.0-BAT-D-G20",
+            "quantity": 1
+          }
+        ],
+        "cases": {
+          "retry": {
+            "mode": "retry",
+            "cardStates": [
+              {
+                "state": "retry",
+                "title": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)",
+                "text": "Nicht hinzugefügt. Versuchen Sie es erneut."
+              },
+              {
+                "state": "retry",
+                "title": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)",
+                "text": "Nicht hinzugefügt. Versuchen Sie es erneut."
+              }
+            ],
+            "action": {
+              "text": "Einige Produkte sind in Ihrem Lösungsentwurf nicht bestätigt. Einzelheiten stehen in den Karten oben.",
+              "href": "",
+              "buttons": [
+                {
+                  "label": "Alles zum Lösungsentwurf hinzufügen",
+                  "disabled": false,
+                  "busy": "false"
+                },
+                {
+                  "label": "Lösung speichern",
+                  "disabled": false,
+                  "busy": "false"
+                }
+              ]
+            },
+            "addPosts": 2,
+            "cartReads": 2,
+            "postAddReads": 1,
+            "postAddGapsMs": [],
+            "expectedCard": "Nicht hinzugefügt. Versuchen Sie es erneut.",
+            "expectedOrder": "Einige Produkte sind in Ihrem Lösungsentwurf nicht bestätigt. Einzelheiten stehen in den Karten oben.",
+            "shots": [
+              "shots/c28-add-retry-de-1440.png",
+              "shots/c28-add-retry-de-390.png"
+            ]
+          },
+          "mixed": {
+            "mode": "mixed",
+            "cardStates": [
+              {
+                "state": "retry",
+                "title": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)",
+                "text": "Nicht hinzugefügt. Versuchen Sie es erneut."
+              },
+              {
+                "state": "added",
+                "title": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)",
+                "text": "In Ihrem Lösungsentwurf"
+              }
+            ],
+            "action": {
+              "text": "Einige Produkte sind in Ihrem Lösungsentwurf nicht bestätigt. Einzelheiten stehen in den Karten oben.",
+              "href": "",
+              "buttons": [
+                {
+                  "label": "Alles zum Lösungsentwurf hinzufügen",
+                  "disabled": false,
+                  "busy": "false"
+                },
+                {
+                  "label": "Lösung speichern",
+                  "disabled": false,
+                  "busy": "false"
+                }
+              ]
+            },
+            "addPosts": 2,
+            "cartReads": 2,
+            "postAddReads": 1,
+            "postAddGapsMs": [],
+            "expectedCard": null,
+            "expectedOrder": "Einige Produkte sind in Ihrem Lösungsentwurf nicht bestätigt. Einzelheiten stehen in den Karten oben.",
+            "shots": [
+              "shots/c28-add-mixed-de-1440.png",
+              "shots/c28-add-mixed-de-390.png"
+            ]
+          },
+          "unverified": {
+            "mode": "short",
+            "cardStates": [
+              {
+                "state": "unverified",
+                "title": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)",
+                "text": "Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf."
+              },
+              {
+                "state": "unverified",
+                "title": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)",
+                "text": "Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf."
+              }
+            ],
+            "action": {
+              "text": "Einige Produkte sind in Ihrem Lösungsentwurf nicht bestätigt. Einzelheiten stehen in den Karten oben.",
+              "href": "",
+              "buttons": [
+                {
+                  "label": "Alles zum Lösungsentwurf hinzufügen",
+                  "disabled": false,
+                  "busy": "false"
+                },
+                {
+                  "label": "Lösung speichern",
+                  "disabled": false,
+                  "busy": "false"
+                }
+              ]
+            },
+            "addPosts": 2,
+            "cartReads": 5,
+            "postAddReads": 4,
+            "postAddGapsMs": [
+              253,
+              255,
+              255
+            ],
+            "expectedCard": "Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf.",
+            "expectedOrder": "Einige Produkte sind in Ihrem Lösungsentwurf nicht bestätigt. Einzelheiten stehen in den Karten oben.",
+            "shots": [
+              "shots/c28-add-unverified-de-1440.png",
+              "shots/c28-add-unverified-de-390.png"
+            ]
+          },
+          "settled": {
+            "mode": "short",
+            "cardStates": [
+              {
+                "state": "added",
+                "title": "GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul)",
+                "text": "In Ihrem Lösungsentwurf"
+              },
+              {
+                "state": "added",
+                "title": "GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh)",
+                "text": "In Ihrem Lösungsentwurf"
+              }
+            ],
+            "action": {
+              "text": "Alle Produkte sind in Ihrem Lösungsentwurf.",
+              "href": "",
+              "buttons": [
+                {
+                  "label": "Alles zum Lösungsentwurf hinzufügen",
+                  "disabled": false,
+                  "busy": "false"
+                },
+                {
+                  "label": "Lösung speichern",
+                  "disabled": false,
+                  "busy": "false"
+                }
+              ]
+            },
+            "addPosts": 2,
+            "cartReads": 5,
+            "postAddReads": 4,
+            "postAddGapsMs": [
+              253,
+              256,
+              255
+            ],
+            "expectedCard": null,
+            "expectedOrder": "Alle Produkte sind in Ihrem Lösungsentwurf.",
+            "shots": [
+              "shots/c28-add-settled-de-1440.png",
+              "shots/c28-add-settled-de-390.png"
+            ]
+          }
+        }
+      }
+    },
+    "C31": {
+      "en": {
+        "designStatus": 200,
+        "saveRequest": "http://127.0.0.1:9258/wp-json/linker/v1/solutions?lang=en",
+        "saveStatus": 500,
+        "action": {
+          "text": "The solution could not be saved. Try again.",
+          "href": "",
+          "buttons": [
+            {
+              "label": "Add all to solution draft",
+              "disabled": false,
+              "busy": "false"
+            },
+            {
+              "label": "Save solution",
+              "disabled": false,
+              "busy": "false"
+            }
+          ]
+        },
+        "expected": "The solution could not be saved. Try again.",
+        "shots": [
+          "shots/c31-save-failed-en-1440.png",
+          "shots/c31-save-failed-en-390.png"
+        ]
+      },
+      "de": {
+        "designStatus": 200,
+        "saveRequest": "http://127.0.0.1:9258/wp-json/linker/v1/solutions?lang=de",
+        "saveStatus": 500,
+        "action": {
+          "text": "Die Lösung konnte nicht gespeichert werden. Versuchen Sie es erneut.",
+          "href": "",
+          "buttons": [
+            {
+              "label": "Alles zum Lösungsentwurf hinzufügen",
+              "disabled": false,
+              "busy": "false"
+            },
+            {
+              "label": "Lösung speichern",
+              "disabled": false,
+              "busy": "false"
+            }
+          ]
+        },
+        "expected": "Die Lösung konnte nicht gespeichert werden. Versuchen Sie es erneut.",
+        "shots": [
+          "shots/c31-save-failed-de-1440.png",
+          "shots/c31-save-failed-de-390.png"
+        ]
+      }
+    },
+    "C57": {
+      "en": {
+        "designStatus": 200,
+        "requestKeys": [
+          "locale",
+          "plz",
+          "annual_kwh",
+          "pv_kwp",
+          "phase",
+          "backup",
+          "heat_pump",
+          "electric_vehicle"
+        ],
+        "requestHasPlanes": false,
+        "reportSections": [
+          "site",
+          "yield",
+          "storage",
+          "metrics",
+          "basis",
+          "releases",
+          "bom",
+          "assumptions",
+          "next"
+        ],
+        "expected": "Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+        "facts": {
+          "heading": "Assumptions and limits",
+          "paragraphs": [
+            "This report contains no economics: no payback period, cash flow or feed-in tariff.",
+            "The string layout uses Trina Solar TSM-460NEG9R.28 as a reference module; the module you install can change it.",
+            "Self-sufficiency figures describe an average household; measured values differ with each household's habits.",
+            "Without a roof plane, the yield assumes 35° tilt facing south (HTW Berlin calculator default).",
+            "Open-circuit voltage checked at −10 °C cell temperature. (Planning assumption without a published source)",
+            "MPP voltage checked at 70 °C cell temperature, with the module's Voc temperature coefficient. (Planning assumption without a published source)",
+            "DC cable: 15 m per string and pole until the route is measured. (Planning assumption without a published source)",
+            "Two connector pairs per string: one at the array, one at the inverter. (Planning assumption without a published source)"
+          ],
+          "hasSentence": true
+        },
+        "shots": [
+          "shots/c57-report-orientation-en-1440.png",
+          "shots/c57-report-orientation-en-390.png"
+        ]
+      },
+      "de": {
+        "designStatus": 200,
+        "requestKeys": [
+          "locale",
+          "plz",
+          "annual_kwh",
+          "pv_kwp",
+          "phase",
+          "backup",
+          "heat_pump",
+          "electric_vehicle"
+        ],
+        "requestHasPlanes": false,
+        "reportSections": [
+          "site",
+          "yield",
+          "storage",
+          "metrics",
+          "basis",
+          "releases",
+          "bom",
+          "assumptions",
+          "next"
+        ],
+        "expected": "Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+        "facts": {
+          "heading": "Annahmen und Grenzen",
+          "paragraphs": [
+            "Dieser Bericht enthält keine Wirtschaftlichkeitsrechnung: keine Amortisationszeit, keinen Cashflow, keine Einspeisevergütung.",
+            "Die Stringauslegung verwendet Trina Solar TSM-460NEG9R.28 als Referenzmodul; das tatsächlich verbaute Modul kann sie verändern.",
+            "Die Autarkiewerte beschreiben einen durchschnittlichen Haushalt; Messwerte weichen je nach Verbrauchsverhalten ab.",
+            "Ohne Dachfläche nimmt der Ertrag 35° Neigung nach Süden an (Vorgabe des HTW-Rechners).",
+            "Leerlaufspannung geprüft bei −10 °C Zelltemperatur. (Planungsannahme ohne veröffentlichte Quelle)",
+            "MPP-Spannung geprüft bei 70 °C Zelltemperatur, mit dem Voc-Temperaturkoeffizienten des Moduls. (Planungsannahme ohne veröffentlichte Quelle)",
+            "DC-Kabel: 15 m je Strang und Pol, bis der Leitungsweg aufgemessen ist. (Planungsannahme ohne veröffentlichte Quelle)",
+            "Zwei Steckverbinderpaare je Strang: eines am Generator, eines am Wechselrichter. (Planungsannahme ohne veröffentlichte Quelle)"
+          ],
+          "hasSentence": true
+        },
+        "shots": [
+          "shots/c57-report-orientation-de-1440.png",
+          "shots/c57-report-orientation-de-390.png"
+        ]
+      }
+    },
+    "C30": {
+      "guest": {
+        "en": {
+          "designStatus": 200,
+          "lines": [
+            {
+              "id": 3556,
+              "model": "GW10K-ETA-G20",
+              "quantity": 1
+            },
+            {
+              "id": 3611,
+              "model": "GW6.0-BAT-D-G20",
+              "quantity": 1
+            }
+          ],
+          "saveRequest": "http://127.0.0.1:9258/wp-json/linker/v1/solutions?lang=en",
+          "saveStatus": 202,
+          "saveAnswer": {
+            "id": 0,
+            "url": "http://127.0.0.1:9258/my-account/saved-solutions/"
+          },
+          "setCookieHeader": null,
+          "cookiesBefore": [
+            {
+              "name": "woocommerce_items_in_cart",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": -1
+            },
+            {
+              "name": "wp_woocommerce_session_*",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": 1792725640.259132
+            },
+            {
+              "name": "woocommerce_cart_hash",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": -1
+            }
+          ],
+          "cookiesAfter": [
+            {
+              "name": "woocommerce_items_in_cart",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": -1
+            },
+            {
+              "name": "wp_woocommerce_session_*",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": 1792725640.259132
+            },
+            {
+              "name": "woocommerce_cart_hash",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": -1
+            }
+          ],
+          "action": {
+            "text": "All products are in your solution draft.Saved to your account. Open saved solution",
+            "href": "http://127.0.0.1:9258/my-account/saved-solutions/",
+            "buttons": [
+              {
+                "label": "Add all to solution draft",
+                "disabled": false,
+                "busy": "false"
+              },
+              {
+                "label": "Save solution",
+                "disabled": false,
+                "busy": "false"
+              }
+            ]
+          },
+          "expected": "Saved to your account.",
+          "shots": [
+            "shots/c30-guest-saved-en-1440.png",
+            "shots/c30-guest-saved-en-390.png"
+          ]
+        },
+        "de": {
+          "designStatus": 200,
+          "lines": [
+            {
+              "id": 3556,
+              "model": "GW10K-ETA-G20",
+              "quantity": 1
+            },
+            {
+              "id": 3611,
+              "model": "GW6.0-BAT-D-G20",
+              "quantity": 1
+            }
+          ],
+          "saveRequest": "http://127.0.0.1:9258/wp-json/linker/v1/solutions?lang=de",
+          "saveStatus": 202,
+          "saveAnswer": {
+            "id": 0,
+            "url": "http://127.0.0.1:9258/de/mein-konto/gespeicherte-loesungen/"
+          },
+          "setCookieHeader": null,
+          "cookiesBefore": [
+            {
+              "name": "woocommerce_items_in_cart",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": -1
+            },
+            {
+              "name": "wp_woocommerce_session_*",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": 1792725640.259132
+            },
+            {
+              "name": "woocommerce_cart_hash",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": -1
+            }
+          ],
+          "cookiesAfter": [
+            {
+              "name": "woocommerce_items_in_cart",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": -1
+            },
+            {
+              "name": "wp_woocommerce_session_*",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": 1792725640.259132
+            },
+            {
+              "name": "woocommerce_cart_hash",
+              "domain": "127.0.0.1",
+              "path": "/",
+              "expires": -1
+            }
+          ],
+          "action": {
+            "text": "Alle Produkte sind in Ihrem Lösungsentwurf.In Ihrem Konto gespeichert. Gespeicherte Lösung öffnen",
+            "href": "http://127.0.0.1:9258/de/mein-konto/gespeicherte-loesungen/",
+            "buttons": [
+              {
+                "label": "Alles zum Lösungsentwurf hinzufügen",
+                "disabled": false,
+                "busy": "false"
+              },
+              {
+                "label": "Lösung speichern",
+                "disabled": false,
+                "busy": "false"
+              }
+            ]
+          },
+          "expected": "In Ihrem Konto gespeichert.",
+          "shots": [
+            "shots/c30-guest-saved-de-1440.png",
+            "shots/c30-guest-saved-de-390.png"
+          ]
+        }
+      },
+      "claim": {
+        "loginLanding": "http://127.0.0.1:9258/de/mein-konto/?admin-access=staff",
+        "languages": {
+          "en": {
+            "page": {
+              "url": "http://127.0.0.1:9258/my-account/saved-solutions/",
+              "lang": "en-US",
+              "title": "Partner Account: Sign In or Register | Linker",
+              "rows": [
+                "GoodWe GW10K-ETA-G20, 80331 Saved on · 21 October 2026 1 × GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module) 1 × GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh) Add to solution draft",
+                "GoodWe GW10K-ETA-G20, 80538 Saved on · 21 October 2026 1 × GoodWe ESA GW10K-ETA-G20 (10 kW three-phase power module) 1 × GoodWe GW6.0-BAT-D-G20 (ESA battery module, 6.0 kWh) Add to solution draft"
+              ],
+              "empty": "",
+              "heading": "Saved solutions"
+            },
+            "shots": [
+              "shots/c30-claimed-en-1440.png",
+              "shots/c30-claimed-en-390.png"
+            ]
+          },
+          "de": {
+            "page": {
+              "url": "http://127.0.0.1:9258/de/mein-konto/gespeicherte-loesungen/",
+              "lang": "de-DE",
+              "title": "Gespeicherte Lösungen | Linker",
+              "rows": [
+                "GoodWe GW10K-ETA-G20, 80331 Gespeichert am · 21. Oktober 2026 1 × GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul) 1 × GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh) Zum Lösungsentwurf hinzufügen",
+                "GoodWe GW10K-ETA-G20, 80538 Gespeichert am · 21. Oktober 2026 1 × GoodWe ESA GW10K-ETA-G20 (dreiphasiges 10-kW-Leistungsmodul) 1 × GoodWe GW6.0-BAT-D-G20 (ESA-Batteriemodul, 6,0 kWh) Zum Lösungsentwurf hinzufügen"
+              ],
+              "empty": "",
+              "heading": "Gespeicherte Lösungen"
+            },
+            "shots": [
+              "shots/c30-claimed-de-1440.png",
+              "shots/c30-claimed-de-390.png"
+            ]
+          }
+        }
+      },
+      "session": {
+        "beforeLogin": {
+          "kept": "1",
+          "en": "1",
+          "de": "1"
+        },
+        "afterClaim": {
+          "kept": "0"
+        }
+      },
+      "cleanup": {
+        "draft": {
+          "removed": [
+            {
+              "id": 3556,
+              "status": 200
+            },
+            {
+              "id": 3611,
+              "status": 200
+            }
+          ],
+          "remaining": 0,
+          "left": []
+        },
+        "userId": "49",
+        "solutionIds": "8014 8015",
+        "deletedSolutions": [
+          "Success: Deleted post 8014.",
+          "Success: Deleted post 8015."
+        ],
+        "solutionsRemaining": "0",
+        "deletedUser": "Success: Removed user 49 from http://127.0.0.1:9258.",
+        "userGone": true
+      }
+    }
+  },
+  "cleanup": {},
+  "environment": {
+    "pages": {
+      "en": {
+        "url": "http://127.0.0.1:9258/solution-configurator/",
+        "lang": "en-US",
+        "mount": true,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "status": 200
+      },
+      "de": {
+        "url": "http://127.0.0.1:9258/de/loesungskonfigurator/",
+        "lang": "de-DE",
+        "mount": true,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "status": 200
+      }
+    }
+  },
+  "build": {
+    "src": "http://127.0.0.1:9258/wp-content/plugins/linker-tools/build/configurator.js?ver=bacae88a042528100047",
+    "ver": "bacae88a042528100047",
+    "sha256": "7ac9d249d7afd305f1ec0d63c7f1475aecc8d9f3efb48a29072c8ec5af5eaee5",
+    "bytes": 209422
+  },
+  "gazetteer": {
+    "file": "services/engine/data/plz_de.csv.gz",
+    "rows": 10813,
+    "containsUnknown": false
+  },
+  "settle": {
+    "settleMs": 250,
+    "settleReads": 3
+  },
+  "assertions": {
+    "noForbiddenPosts": true,
+    "countersNumeric": true,
+    "mailReadable": true,
+    "mailUnchanged": true,
+    "ordersUnchanged": true,
+    "solutionsUnchanged": true,
+    "customersUnchanged": true,
+    "engineOptionRestored": true
+  },
+  "finishedAt": "2026-10-21T03:21:07.395Z"
+}

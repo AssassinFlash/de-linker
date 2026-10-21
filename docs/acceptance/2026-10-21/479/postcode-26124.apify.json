@@ -1,0 +1,35 @@
+{
+ "question": "26124 is a real German postcode (Oldenburg) that the engine's place gazetteer does not hold, so a real customer can reach C22's unknown-postcode answer.",
+ "gazetteer": {
+  "file": "services/engine/data/plz_de.csv.gz",
+  "derived_from": "GeoNames DE postal-code export, 2026-10-09 (services/engine/scripts/build_plz.py)",
+  "contains_26124": false,
+  "checked": "walk.mjs reads the gzip table and records record.json gazetteer.containsUnknown"
+ },
+ "apify": [
+  {
+   "actor": "apify/google-search-scraper",
+   "query": "\"26124\" Oldenburg Postleitzahl",
+   "started": "2026-10-21T02:29:03Z",
+   "sources": [
+    {
+     "title": "Über Oldenburg | Kommunales Immobilienportal",
+     "url": "https://www.kip.net/niedersachsen/oldenburg/standortinformationen",
+     "description": "Bundesland: Niedersachsen ; Landkreis: Oldenburg (Stadt) ; Postleitzahl: 26121, 26122, 26123, 26124, 26125, 26126...[+] ; Vorwahl *:. 0441 ; Einwohner: 163.830."
+    },
+    {
+     "title": "Informationen für Unternehmen",
+     "url": "https://schulpraktikumsfinder.de/informationen-fuer-unternehmen/",
+     "description": "ausbildungsberatung@oldenburg.ihk.de · +49 (0)441 2220-471. 26121,26122,26123,26124,26125,26126,26127,26128,26129,26130,26131,26132,26133,26134,26135,26160 ..."
+    }
+   ]
+  },
+  {
+   "actor": "apify/website-content-crawler",
+   "url": "https://de.wikipedia.org/wiki/Oldenburg_(Oldenburg)",
+   "started": "2026-10-21T02:32:01Z",
+   "excerpt": "Postleitzahlen: 26121–26135 (Oldenburg infobox, de.wikipedia.org/wiki/Oldenburg_(Oldenburg))"
+  }
+ ],
+ "conclusion": "Two independent directories list 26124 among Oldenburg's postcodes, Wikipedia's infobox gives Oldenburg's range as 26121-26135, and the IHK Oldenburg contact page at schulpraktikumsfinder.de also lists it. It is real, five digits, and absent from the gazetteer."
+}
