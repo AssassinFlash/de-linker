@@ -1,0 +1,108 @@
+{
+  "at": "2026-10-22T06:44:24.267Z",
+  "body": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-792 page-child parent-pageid-746 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas cs-at-cover",
+  "controls": [
+    {
+      "background": "rgba(255, 255, 255, 0.08)",
+      "color": "rgb(255, 255, 255)",
+      "label": "Search products",
+      "rect": {
+        "bottom": 67,
+        "height": 46,
+        "width": 46,
+        "x": 1012.5,
+        "y": 21
+      }
+    },
+    {
+      "background": "rgba(255, 255, 255, 0.08)",
+      "color": "rgb(255, 255, 255)",
+      "label": "Solution draft",
+      "rect": {
+        "bottom": 67,
+        "height": 46,
+        "width": 46,
+        "x": 1066.5,
+        "y": 21
+      }
+    },
+    {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(21, 53, 47)",
+      "label": "Contact Linker",
+      "rect": {
+        "bottom": 67,
+        "height": 46,
+        "width": 141.1015625,
+        "x": 1274.8984375,
+        "y": 21
+      }
+    }
+  ],
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792651246"
+  ],
+  "expanded": [
+    "Products"
+  ],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgba(0, 0, 0, 0)",
+    "filter": "none",
+    "rect": {
+      "bottom": 89,
+      "height": 89,
+      "width": 1440,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "language": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "focused": false,
+      "hovered": false,
+      "href": "http://127.0.0.1:9290/solution/commercial-storage/",
+      "outline": "rgb(255, 255, 255) none 3px",
+      "outlineOffset": "0px",
+      "parentBackground": "rgb(21, 53, 47)",
+      "rect": {
+        "bottom": 66,
+        "height": 44,
+        "width": 44,
+        "x": 1172.5,
+        "y": 22
+      },
+      "text": "EN",
+      "underline": "rgb(255, 255, 255)"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "focused": false,
+      "hovered": false,
+      "href": "http://127.0.0.1:9290/de/loesung/gewerbespeicher/",
+      "outline": "rgb(255, 255, 255) none 3px",
+      "outlineOffset": "0px",
+      "parentBackground": "rgb(21, 53, 47)",
+      "rect": {
+        "bottom": 66,
+        "height": 44,
+        "width": 44,
+        "x": 1216.5,
+        "y": 22
+      },
+      "text": "DE",
+      "underline": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "logoFilter": "brightness(0) invert(1)",
+  "overflow": false,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/solution/commercial-storage/",
+  "width": 1440
+}

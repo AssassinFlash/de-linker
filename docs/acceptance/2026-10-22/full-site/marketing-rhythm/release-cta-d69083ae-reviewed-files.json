@@ -1,0 +1,2570 @@
+{
+  "scope": "Reviewer actually reopened all 36 original JPEGs individually; records bind each of their 36 JSON companions. Static reads only; no browser or instance operation.",
+  "source_aggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661",
+  "records": [
+    {
+      "stem": "release-installer-en-1440-normal",
+      "url": "http://127.0.0.1:9290/for-installer/",
+      "at": "2026-10-22T07:58:15.154Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-1440-normal.json",
+        "bytes": 2723,
+        "sha256": "be6cd50e940c2c4bb40e426f37c33bbf653febe98d54253901b38ba49c0516ab"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-1440-normal.jpg",
+        "bytes": 112815,
+        "sha256": "beacee3b008b308e9ca08cef551faec996523092250fa2d32b973dd14e28ca5b"
+      },
+      "links": [
+        {
+          "text": "Plan a Project Solution →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 464.4296875,
+            "height": 48,
+            "right": 302.6015625,
+            "width": 202.6015625,
+            "x": 100,
+            "y": 416.4296875
+          }
+        },
+        {
+          "text": "Open Partner Account",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgb(255, 255, 255)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 464.4296875,
+            "height": 48,
+            "right": 504.4609375,
+            "width": 189.859375,
+            "x": 314.6015625,
+            "y": 416.4296875
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-en-1440-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/for-installer/",
+      "at": "2026-10-22T07:58:15.408Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-1440-action1-hover-focus.json",
+        "bytes": 2722,
+        "sha256": "3cf31cacf49eeb0a0676ee849f6d558668f478161539b29ebd76606d311dd55b"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-1440-action1-hover-focus.jpg",
+        "bytes": 112975,
+        "sha256": "73669b7a7e9da159be1a05230a84816225adbd6e923f71c8d1102f38ae66b48a"
+      },
+      "links": [
+        {
+          "text": "Plan a Project Solution →",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgb(255, 255, 255)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 523.9296875,
+            "height": 48,
+            "right": 302.6015625,
+            "width": 202.6015625,
+            "x": 100,
+            "y": 475.9296875
+          }
+        },
+        {
+          "text": "Open Partner Account",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgb(255, 255, 255)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 523.9296875,
+            "height": 48,
+            "right": 504.4609375,
+            "width": 189.859375,
+            "x": 314.6015625,
+            "y": 475.9296875
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-en-1440-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/for-installer/",
+      "at": "2026-10-22T07:58:15.679Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-1440-action2-hover-focus.json",
+        "bytes": 2726,
+        "sha256": "b6bf8249a854f052b59b50f3c9035863e61abd7bbf4ad9687f2b8b726117a604"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-1440-action2-hover-focus.jpg",
+        "bytes": 113131,
+        "sha256": "789b7c77932c2f5296188493ca03021225b3477974fae9cecdf3491890ca9aa8"
+      },
+      "links": [
+        {
+          "text": "Plan a Project Solution →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 523.9296875,
+            "height": 48,
+            "right": 302.6015625,
+            "width": 202.6015625,
+            "x": 100,
+            "y": 475.9296875
+          }
+        },
+        {
+          "text": "Open Partner Account",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgb(255, 255, 255)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 523.9296875,
+            "height": 48,
+            "right": 504.4609375,
+            "width": 189.859375,
+            "x": 314.6015625,
+            "y": 475.9296875
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-en-390-normal",
+      "url": "http://127.0.0.1:9290/for-installer/",
+      "at": "2026-10-22T07:58:23.811Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-390-normal.json",
+        "bytes": 2659,
+        "sha256": "d79c9bd5b4ddda66bdb4f83cdd95d80298ee8898893a4614f094e8b15f2f53c9"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-390-normal.jpg",
+        "bytes": 50690,
+        "sha256": "afeeb99cbc1e0be26c231949e49cd93f3f461c4e14442f8d8eedf462498c4d70"
+      },
+      "links": [
+        {
+          "text": "Plan a Project Solution →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 452.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 404.84375
+          }
+        },
+        {
+          "text": "Open Partner Account",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgb(255, 255, 255)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 512.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 464.84375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-en-390-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/for-installer/",
+      "at": "2026-10-22T07:58:23.971Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-390-action1-hover-focus.json",
+        "bytes": 2657,
+        "sha256": "3644d4b24ab331f5b3609454dc67a60a3eeb2e3d56411e45ed12a8aa8e868d35"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-390-action1-hover-focus.jpg",
+        "bytes": 50634,
+        "sha256": "5122711dcf14eaf4ddff5a5c19f889e7ac1f5f5385eac73a7b8b1f727579bcfa"
+      },
+      "links": [
+        {
+          "text": "Plan a Project Solution →",
+          "color": "rgb(70, 157, 148)",
+          "background": "rgb(197, 225, 222)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.84375
+          }
+        },
+        {
+          "text": "Open Partner Account",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgb(255, 255, 255)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 505.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 457.84375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-en-390-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/for-installer/",
+      "at": "2026-10-22T07:58:24.176Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-390-action2-hover-focus.json",
+        "bytes": 2661,
+        "sha256": "58d23a284f2894dd69a64dfcdf97826423e4541f45eb182ac9f60a59f65e2402"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-en-390-action2-hover-focus.jpg",
+        "bytes": 48029,
+        "sha256": "9c5674d021fe2b87799b2d93ef62dee4a1e7d23edcbdb937582f2064a7d684d7"
+      },
+      "links": [
+        {
+          "text": "Plan a Project Solution →",
+          "color": "rgb(247, 251, 250)",
+          "background": "rgb(17, 130, 118)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(247, 251, 250) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 385.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 337.84375
+          }
+        },
+        {
+          "text": "Open Partner Account",
+          "color": "rgb(12, 123, 111)",
+          "background": "rgb(255, 255, 255)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.84375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-de-1440-normal",
+      "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+      "at": "2026-10-22T07:58:16.613Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-1440-normal.json",
+        "bytes": 2764,
+        "sha256": "bb711832dc46fa5ef42325c4dc0ddb181e38531ec2db7884388095fd0e29507a"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-1440-normal.jpg",
+        "bytes": 118954,
+        "sha256": "75595da827ba73ee19094ac39144a5883b7e4b948a85cbfd2dd3ca5a43462621"
+      },
+      "links": [
+        {
+          "text": "Projektlösung planen →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 491.1328125,
+            "height": 48,
+            "right": 295.1015625,
+            "width": 195.1015625,
+            "x": 100,
+            "y": 443.1328125
+          }
+        },
+        {
+          "text": "Partnerkonto öffnen",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgb(255, 255, 255)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 491.1328125,
+            "height": 48,
+            "right": 483.21875,
+            "width": 176.1171875,
+            "x": 307.1015625,
+            "y": 443.1328125
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-de-1440-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+      "at": "2026-10-22T07:58:16.786Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-1440-action1-hover-focus.json",
+        "bytes": 2763,
+        "sha256": "2da30fe92114b8844098eb7e453bc924b503cd720d47f3bc144824ae0731c786"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-1440-action1-hover-focus.jpg",
+        "bytes": 117735,
+        "sha256": "2efb1ac32939ce16a025b8d869dc89ed91a64c69f18e7f7562e4152276c8227a"
+      },
+      "links": [
+        {
+          "text": "Projektlösung planen →",
+          "color": "rgb(48, 146, 136)",
+          "background": "rgb(219, 236, 234)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.1328125,
+            "height": 48,
+            "right": 295.1015625,
+            "width": 195.1015625,
+            "x": 100,
+            "y": 476.1328125
+          }
+        },
+        {
+          "text": "Partnerkonto öffnen",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgb(255, 255, 255)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.1328125,
+            "height": 48,
+            "right": 483.21875,
+            "width": 176.1171875,
+            "x": 307.1015625,
+            "y": 476.1328125
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-de-1440-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+      "at": "2026-10-22T07:58:17.016Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-1440-action2-hover-focus.json",
+        "bytes": 2767,
+        "sha256": "75ba6d4074d7565c7b78ffb04dd90f6c746b26d89e76b3a7843c1d57ea824f15"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-1440-action2-hover-focus.jpg",
+        "bytes": 118095,
+        "sha256": "bc7062cf4043089a09f6a3e966251fda2af687151b4344056278e873ade7b6b3"
+      },
+      "links": [
+        {
+          "text": "Projektlösung planen →",
+          "color": "rgb(251, 253, 253)",
+          "background": "rgb(14, 128, 116)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(251, 253, 253) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.1328125,
+            "height": 48,
+            "right": 295.1015625,
+            "width": 195.1015625,
+            "x": 100,
+            "y": 476.1328125
+          }
+        },
+        {
+          "text": "Partnerkonto öffnen",
+          "color": "rgb(12, 126, 114)",
+          "background": "rgb(255, 255, 255)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.1328125,
+            "height": 48,
+            "right": 483.21875,
+            "width": 176.1171875,
+            "x": 307.1015625,
+            "y": 476.1328125
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-de-390-normal",
+      "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+      "at": "2026-10-22T07:58:25.059Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-390-normal.json",
+        "bytes": 2719,
+        "sha256": "a0bbde0834de4f39126ff0f1b8a5076a8a302c135f65c48c5169b24f2d88d624"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-390-normal.jpg",
+        "bytes": 51304,
+        "sha256": "25d9b1d344e7e796a79e98a5443b444931f462f2a1b2569cd357e1340834aee5"
+      },
+      "links": [
+        {
+          "text": "Projektlösung planen →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 543.5703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 495.5703125
+          }
+        },
+        {
+          "text": "Partnerkonto öffnen",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgb(255, 255, 255)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 603.5703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 555.5703125
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-de-390-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+      "at": "2026-10-22T07:58:25.312Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-390-action1-hover-focus.json",
+        "bytes": 2718,
+        "sha256": "7fc893b1b961f553f72d50c0036ef44c9bb4f45b49de7b762a07e91f8ad9d18c"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-390-action1-hover-focus.jpg",
+        "bytes": 50487,
+        "sha256": "710d78617ee5156394921c91ac3048735e0e1ca813e9e712e250db3734e311d5"
+      },
+      "links": [
+        {
+          "text": "Projektlösung planen →",
+          "color": "rgb(13, 127, 115)",
+          "background": "rgb(254, 255, 255)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 446.0703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 398.0703125
+          }
+        },
+        {
+          "text": "Partnerkonto öffnen",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgb(255, 255, 255)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 506.0703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 458.0703125
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-installer-de-390-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+      "at": "2026-10-22T07:58:25.513Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-390-action2-hover-focus.json",
+        "bytes": 2722,
+        "sha256": "7ef6f6df9d3a3865094ad6896b3decbf60843bf63e958b88ff0e9895168c1af3"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-installer-de-390-action2-hover-focus.jpg",
+        "bytes": 47654,
+        "sha256": "805d84befd69158bdf1cea0cc67831b87ec8a8c9e3878c537aa2b17a9a6c02cb"
+      },
+      "links": [
+        {
+          "text": "Projektlösung planen →",
+          "color": "rgb(251, 253, 253)",
+          "background": "rgb(16, 129, 117)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(251, 253, 253) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 386.0703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 338.0703125
+          }
+        },
+        {
+          "text": "Partnerkonto öffnen",
+          "color": "rgb(12, 126, 114)",
+          "background": "rgb(255, 255, 255)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 446.0703125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 398.0703125
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-en-1440-normal",
+      "url": "http://127.0.0.1:9290/services-support/",
+      "at": "2026-10-22T07:58:18.027Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-1440-normal.json",
+        "bytes": 2676,
+        "sha256": "19cf1f47a66940edfc90dd5a24ed3aeccef7f578fb985d9ca5357957d565e862"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-1440-normal.jpg",
+        "bytes": 102420,
+        "sha256": "acdb829b95d42a7f1d0e9863dad40e1b8198790ec29bdef4951bf2ee9b5b7a0a"
+      },
+      "links": [
+        {
+          "text": "Open Support Request →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 468.109375,
+            "height": 48,
+            "right": 308.1484375,
+            "width": 208.1484375,
+            "x": 100,
+            "y": 420.109375
+          }
+        },
+        {
+          "text": "Access Partner Portal",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 468.109375,
+            "height": 48,
+            "right": 503.65625,
+            "width": 183.5078125,
+            "x": 320.1484375,
+            "y": 420.109375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-en-1440-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/services-support/",
+      "at": "2026-10-22T07:58:18.266Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-1440-action1-hover-focus.json",
+        "bytes": 2674,
+        "sha256": "aced4ff02c62c487f2e901efe397d5905d387f8050ac8e7eef66d768539e401e"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-1440-action1-hover-focus.jpg",
+        "bytes": 102903,
+        "sha256": "77b38badd8ea9b3fba60badbb9712c159b0328b8122e0212938fd9abfd1a634a"
+      },
+      "links": [
+        {
+          "text": "Open Support Request →",
+          "color": "rgb(13, 127, 116)",
+          "background": "rgb(254, 255, 254)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.109375,
+            "height": 48,
+            "right": 308.1484375,
+            "width": 208.1484375,
+            "x": 100,
+            "y": 476.109375
+          }
+        },
+        {
+          "text": "Access Partner Portal",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.109375,
+            "height": 48,
+            "right": 503.65625,
+            "width": 183.5078125,
+            "x": 320.1484375,
+            "y": 476.109375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-en-1440-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/services-support/",
+      "at": "2026-10-22T07:58:18.527Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-1440-action2-hover-focus.json",
+        "bytes": 2678,
+        "sha256": "b43711f236e24a9a2bdbc7ac0c64b6f7fbd3e86f547d98e66c8bdaf058317ae1"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-1440-action2-hover-focus.jpg",
+        "bytes": 103071,
+        "sha256": "9b55e26d8e44cdafc69119870cc583e9e615823f9c838a22a8f516f227ff1b40"
+      },
+      "links": [
+        {
+          "text": "Open Support Request →",
+          "color": "rgb(245, 250, 249)",
+          "background": "rgb(22, 132, 121)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(245, 250, 249) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.109375,
+            "height": 48,
+            "right": 308.1484375,
+            "width": 208.1484375,
+            "x": 100,
+            "y": 476.109375
+          }
+        },
+        {
+          "text": "Access Partner Portal",
+          "color": "rgb(12, 124, 112)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.109375,
+            "height": 48,
+            "right": 503.65625,
+            "width": 183.5078125,
+            "x": 320.1484375,
+            "y": 476.109375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-en-390-normal",
+      "url": "http://127.0.0.1:9290/services-support/",
+      "at": "2026-10-22T07:58:26.324Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-390-normal.json",
+        "bytes": 2636,
+        "sha256": "f191b7f7094915d055094f3ea1c5be6765f166557ad5949c5d8740c811675a9b"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-390-normal.jpg",
+        "bytes": 43896,
+        "sha256": "6fa8866eb4e853de911a1e1bdc1462f93630231beaf968b4b9cca1b029e8883e"
+      },
+      "links": [
+        {
+          "text": "Open Support Request →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 502.421875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 454.421875
+          }
+        },
+        {
+          "text": "Access Partner Portal",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 562.421875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 514.421875
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-en-390-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/services-support/",
+      "at": "2026-10-22T07:58:26.550Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-390-action1-hover-focus.json",
+        "bytes": 2634,
+        "sha256": "4e939072acab63bac11d9c54c7b58ac078ab1cae1cc00ddfedcae5657346e5e9"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-390-action1-hover-focus.jpg",
+        "bytes": 43774,
+        "sha256": "ac388862c60a7d1e924f4982fab1bf4f1fcab2d4163f43f53f54c81e22dfb38c"
+      },
+      "links": [
+        {
+          "text": "Open Support Request →",
+          "color": "rgb(18, 130, 119)",
+          "background": "rgb(249, 252, 251)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.921875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.921875
+          }
+        },
+        {
+          "text": "Access Partner Portal",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 505.921875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 457.921875
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-en-390-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/services-support/",
+      "at": "2026-10-22T07:58:26.799Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-390-action2-hover-focus.json",
+        "bytes": 2638,
+        "sha256": "a701cd992271ea0c1eada211573690f8be5c00f9016913c714426633000a10b6"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-en-390-action2-hover-focus.jpg",
+        "bytes": 39892,
+        "sha256": "a6a004675d5c916e328d5f8a2abda4992b4c544b4be164a73bd60fa7af65bc19"
+      },
+      "links": [
+        {
+          "text": "Open Support Request →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 385.921875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 337.921875
+          }
+        },
+        {
+          "text": "Access Partner Portal",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.921875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.921875
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-de-1440-normal",
+      "url": "http://127.0.0.1:9290/de/kundendienst/",
+      "at": "2026-10-22T07:58:19.480Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-1440-normal.json",
+        "bytes": 2711,
+        "sha256": "cf371ced7a80f29406ab5fd8fa20f7a5247c40a739884cf007af3ed891ae8004"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-1440-normal.jpg",
+        "bytes": 105196,
+        "sha256": "140da968ccb612a8c93c258f2c4e30214203acb4d7f36211158ae95b7c113da0"
+      },
+      "links": [
+        {
+          "text": "Support-Anfrage öffnen →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 494.1484375,
+            "height": 48,
+            "right": 319.1328125,
+            "width": 219.1328125,
+            "x": 100,
+            "y": 446.1484375
+          }
+        },
+        {
+          "text": "Auf Partnerportal zugreifen",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 494.1484375,
+            "height": 48,
+            "right": 553.234375,
+            "width": 222.1015625,
+            "x": 331.1328125,
+            "y": 446.1484375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-de-1440-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/de/kundendienst/",
+      "at": "2026-10-22T07:58:19.779Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-1440-action1-hover-focus.json",
+        "bytes": 2709,
+        "sha256": "06c794938011d4011f004ca3b774a20620bb1d6b190987d4c553a6d772046fa7"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-1440-action1-hover-focus.jpg",
+        "bytes": 108289,
+        "sha256": "49a6a15a03901dcc9fcedc7d157d3e6cff30a00e42b40550fa92742d525ed70b"
+      },
+      "links": [
+        {
+          "text": "Support-Anfrage öffnen →",
+          "color": "rgb(16, 129, 117)",
+          "background": "rgb(251, 253, 253)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.1484375,
+            "height": 48,
+            "right": 319.1328125,
+            "width": 219.1328125,
+            "x": 100,
+            "y": 476.1484375
+          }
+        },
+        {
+          "text": "Auf Partnerportal zugreifen",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.1484375,
+            "height": 48,
+            "right": 553.234375,
+            "width": 222.1015625,
+            "x": 331.1328125,
+            "y": 476.1484375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-de-1440-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/de/kundendienst/",
+      "at": "2026-10-22T07:58:20.139Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-1440-action2-hover-focus.json",
+        "bytes": 2713,
+        "sha256": "a6ea14e6e080730ff7fdf17f27a4f4c0ae8f6192040850f2e8cb08277dcc3ca9"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-1440-action2-hover-focus.jpg",
+        "bytes": 108333,
+        "sha256": "7b126158a9dbf89c43a5b91713de88cc65244a770ca9e3a06491346b4350cedc"
+      },
+      "links": [
+        {
+          "text": "Support-Anfrage öffnen →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.1484375,
+            "height": 48,
+            "right": 319.1328125,
+            "width": 219.1328125,
+            "x": 100,
+            "y": 476.1484375
+          }
+        },
+        {
+          "text": "Auf Partnerportal zugreifen",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.1484375,
+            "height": 48,
+            "right": 553.234375,
+            "width": 222.1015625,
+            "x": 331.1328125,
+            "y": 476.1484375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-de-390-normal",
+      "url": "http://127.0.0.1:9290/de/kundendienst/",
+      "at": "2026-10-22T07:58:27.625Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-390-normal.json",
+        "bytes": 2668,
+        "sha256": "81e394e67859163ebff2816dc4d32af25ae9e1127f28954d2cffb3315e37f282"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-390-normal.jpg",
+        "bytes": 47414,
+        "sha256": "454d0b9610ca7ef440ec838642c708e5a5e6b04c6006359bb699521341f270fd"
+      },
+      "links": [
+        {
+          "text": "Support-Anfrage öffnen →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 548.9765625,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 500.9765625
+          }
+        },
+        {
+          "text": "Auf Partnerportal zugreifen",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 608.9765625,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 560.9765625
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-de-390-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/de/kundendienst/",
+      "at": "2026-10-22T07:58:27.830Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-390-action1-hover-focus.json",
+        "bytes": 2666,
+        "sha256": "3a97c1d0fb12ccb84b632f14ef988f338a020dd7c4de709262abb9b3450d13ca"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-390-action1-hover-focus.jpg",
+        "bytes": 43133,
+        "sha256": "43bf6cfc3f92f7d8843e5e34228f500e96f2419daa3c736e2176b84d5260764e"
+      },
+      "links": [
+        {
+          "text": "Support-Anfrage öffnen →",
+          "color": "rgb(30, 137, 126)",
+          "background": "rgb(237, 245, 244)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.9765625,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.9765625
+          }
+        },
+        {
+          "text": "Auf Partnerportal zugreifen",
+          "color": "rgb(23, 39, 33)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 505.9765625,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 457.9765625
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-services-de-390-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/de/kundendienst/",
+      "at": "2026-10-22T07:58:28.060Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-390-action2-hover-focus.json",
+        "bytes": 2670,
+        "sha256": "540dcef3b2e18c6c737a56d6811427b20bf35483516819665c27c1e755c2691a"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-services-de-390-action2-hover-focus.jpg",
+        "bytes": 41151,
+        "sha256": "c47d339a4800ddb22d668e77678ef0fdd9847e474bfe91212f7a07ebea2623f3"
+      },
+      "links": [
+        {
+          "text": "Support-Anfrage öffnen →",
+          "color": "rgb(251, 253, 253)",
+          "background": "rgb(14, 128, 116)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(251, 253, 253) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 385.9765625,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 337.9765625
+          }
+        },
+        {
+          "text": "Auf Partnerportal zugreifen",
+          "color": "rgb(12, 125, 114)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.9765625,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.9765625
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-en-1440-normal",
+      "url": "http://127.0.0.1:9290/solution/",
+      "at": "2026-10-22T07:58:21.033Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-1440-normal.json",
+        "bytes": 2687,
+        "sha256": "9684dc5af7ec05c9798262779ee27662b445b292fad0b3afc4993f59fea1747b"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-1440-normal.jpg",
+        "bytes": 112909,
+        "sha256": "4940164ce9e67b0123413fffc96931716cf74de368621bca0e8740b8ceecd3b6"
+      },
+      "links": [
+        {
+          "text": "Plan with the Solution Configurator →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 374.515625,
+            "height": 48,
+            "right": 1099.9453125,
+            "width": 284.390625,
+            "x": 815.5546875,
+            "y": 326.515625
+          }
+        },
+        {
+          "text": "Talk to Our Engineers",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 374.515625,
+            "height": 48,
+            "right": 1290.421875,
+            "width": 178.4765625,
+            "x": 1111.9453125,
+            "y": 326.515625
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-en-1440-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/solution/",
+      "at": "2026-10-22T07:58:21.235Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-1440-action1-hover-focus.json",
+        "bytes": 2685,
+        "sha256": "71225fb0922175bb1f45d806566a0194f734b94d8fdc092b5ac3ece8401cc682"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-1440-action1-hover-focus.jpg",
+        "bytes": 107389,
+        "sha256": "47b40b81e14e7098e90b46974a8e30fa59baeab01333d09443aef96ba1239c90"
+      },
+      "links": [
+        {
+          "text": "Plan with the Solution Configurator →",
+          "color": "rgb(32, 138, 127)",
+          "background": "rgb(235, 244, 243)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.015625,
+            "height": 48,
+            "right": 1099.9453125,
+            "width": 284.390625,
+            "x": 815.5546875,
+            "y": 476.015625
+          }
+        },
+        {
+          "text": "Talk to Our Engineers",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.015625,
+            "height": 48,
+            "right": 1290.421875,
+            "width": 178.4765625,
+            "x": 1111.9453125,
+            "y": 476.015625
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-en-1440-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/solution/",
+      "at": "2026-10-22T07:58:21.418Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-1440-action2-hover-focus.json",
+        "bytes": 2686,
+        "sha256": "a93e1fbf3789275d7119a5270737970fac5adf78838f07451294d51cf31df017"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-1440-action2-hover-focus.jpg",
+        "bytes": 107384,
+        "sha256": "2320965fea9fd23ad57a27ad2780725452f4347b21253af45c044526a8e198df"
+      },
+      "links": [
+        {
+          "text": "Plan with the Solution Configurator →",
+          "color": "rgb(234, 244, 243)",
+          "background": "rgb(27, 135, 124)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(234, 244, 243) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.015625,
+            "height": 48,
+            "right": 1099.9453125,
+            "width": 284.390625,
+            "x": 815.5546875,
+            "y": 476.015625
+          }
+        },
+        {
+          "text": "Talk to Our Engineers",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.015625,
+            "height": 48,
+            "right": 1290.421875,
+            "width": 178.4765625,
+            "x": 1111.9453125,
+            "y": 476.015625
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-en-390-normal",
+      "url": "http://127.0.0.1:9290/solution/",
+      "at": "2026-10-22T07:58:28.960Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-390-normal.json",
+        "bytes": 2584,
+        "sha256": "dbb9e63ba6e46df9d157cd39538e6994b995451e2e678e3d7f06cd28b56cd60e"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-390-normal.jpg",
+        "bytes": 46371,
+        "sha256": "35b1a31ecc37397f427681d840ef801a515623ebecb716965ffa18c1d64ff553"
+      },
+      "links": [
+        {
+          "text": "Plan with the Solution Configurator →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 584.375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 536.375
+          }
+        },
+        {
+          "text": "Talk to Our Engineers",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 644.375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 596.375
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-en-390-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/solution/",
+      "at": "2026-10-22T07:58:29.232Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-390-action1-hover-focus.json",
+        "bytes": 2582,
+        "sha256": "e2fba6fe2310cf747fba775358a8004e4ebac13d8b581571833218df9c2c1455"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-390-action1-hover-focus.jpg",
+        "bytes": 44347,
+        "sha256": "78f9d4c4fdfabae3e27af9544c70fa757302914112951f4bc922c535b7137a6f"
+      },
+      "links": [
+        {
+          "text": "Plan with the Solution Configurator →",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgb(255, 255, 255)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.875
+          }
+        },
+        {
+          "text": "Talk to Our Engineers",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 505.875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 457.875
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-en-390-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/solution/",
+      "at": "2026-10-22T07:58:29.438Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-390-action2-hover-focus.json",
+        "bytes": 2583,
+        "sha256": "0a495dd4e683ef31ca190e9968a0ffcbf5e7a4391debeb0265da322cbf283824"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-en-390-action2-hover-focus.jpg",
+        "bytes": 43393,
+        "sha256": "bbeb3a7fddee8150e4a3df075b850fd8974eb36d34f274d0d6406b4409210154"
+      },
+      "links": [
+        {
+          "text": "Plan with the Solution Configurator →",
+          "color": "rgb(254, 255, 255)",
+          "background": "rgb(13, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(254, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 385.875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 337.875
+          }
+        },
+        {
+          "text": "Talk to Our Engineers",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.875,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.875
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-de-1440-normal",
+      "url": "http://127.0.0.1:9290/de/loesung/",
+      "at": "2026-10-22T07:58:22.410Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-1440-normal.json",
+        "bytes": 2674,
+        "sha256": "19dba46916e860d2afa63ce15ccc42e537ea14f3cf0bf334a04c9edbd35c514b"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-1440-normal.jpg",
+        "bytes": 118522,
+        "sha256": "c322418a25cfb064635b3aa33bb2879279ab7cb8e7a8b0424321aea2866d6347"
+      },
+      "links": [
+        {
+          "text": "Mit dem Lösungskonfigurator planen →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 384,
+            "height": 48,
+            "right": 1112.4296875,
+            "width": 296.875,
+            "x": 815.5546875,
+            "y": 336
+          }
+        },
+        {
+          "text": "Sprechen Sie mit unseren Ingenieuren",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 444,
+            "height": 48,
+            "right": 1106.0078125,
+            "width": 290.453125,
+            "x": 815.5546875,
+            "y": 396
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-de-1440-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/de/loesung/",
+      "at": "2026-10-22T07:58:22.645Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-1440-action1-hover-focus.json",
+        "bytes": 2672,
+        "sha256": "00d1daeebe3101d4f47bfc0e7b1db58caf61b0feb3aeeeafe89af69ffccdff69"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-1440-action1-hover-focus.jpg",
+        "bytes": 112465,
+        "sha256": "d3d91c4b3af3f384ebfe64385b4009b6de2d5d4ebc662bd3a3011afc7ee20398"
+      },
+      "links": [
+        {
+          "text": "Mit dem Lösungskonfigurator planen →",
+          "color": "rgb(69, 157, 148)",
+          "background": "rgb(198, 225, 222)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524,
+            "height": 48,
+            "right": 1112.4296875,
+            "width": 296.875,
+            "x": 815.5546875,
+            "y": 476
+          }
+        },
+        {
+          "text": "Sprechen Sie mit unseren Ingenieuren",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 584,
+            "height": 48,
+            "right": 1106.0078125,
+            "width": 290.453125,
+            "x": 815.5546875,
+            "y": 536
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-de-1440-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/de/loesung/",
+      "at": "2026-10-22T07:58:22.952Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-1440-action2-hover-focus.json",
+        "bytes": 2673,
+        "sha256": "d0150082282689c306cbde945147c3d2ae0e3a783bc165c3d09cccc78f5f51d4"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-1440-action2-hover-focus.jpg",
+        "bytes": 116257,
+        "sha256": "072d637a8ca7c7013a24e2db4386dc53d88b014da62f5477eff7d67b796f2727"
+      },
+      "links": [
+        {
+          "text": "Mit dem Lösungskonfigurator planen →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 464,
+            "height": 48,
+            "right": 1112.4296875,
+            "width": 296.875,
+            "x": 815.5546875,
+            "y": 416
+          }
+        },
+        {
+          "text": "Sprechen Sie mit unseren Ingenieuren",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524,
+            "height": 48,
+            "right": 1106.0078125,
+            "width": 290.453125,
+            "x": 815.5546875,
+            "y": 476
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-de-390-normal",
+      "url": "http://127.0.0.1:9290/de/loesung/",
+      "at": "2026-10-22T07:58:30.308Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": false
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-390-normal.json",
+        "bytes": 2635,
+        "sha256": "c81405f635863ad58ccb21f9cfbc383cfa8b0d53531743fb521f1373cb7dc644"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-390-normal.jpg",
+        "bytes": 49984,
+        "sha256": "064dd218ba09450dbec58c0145f4fe97ed8e3886f0b3940ac4ef41f19dc52195"
+      },
+      "links": [
+        {
+          "text": "Mit dem Lösungskonfigurator planen →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 623.78125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 575.78125
+          }
+        },
+        {
+          "text": "Sprechen Sie mit unseren Ingenieuren",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 683.78125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 635.78125
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-de-390-action1-hover-focus",
+      "url": "http://127.0.0.1:9290/de/loesung/",
+      "at": "2026-10-22T07:58:30.546Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-390-action1-hover-focus.json",
+        "bytes": 2634,
+        "sha256": "a0adbd4467fb6aa0295c5d8d624c3d5b5cbfe2e9a14e344928ed3bb3bfb87e11"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-390-action1-hover-focus.jpg",
+        "bytes": 47419,
+        "sha256": "4374f0f7eca1b06e49f9370efab125c290601dc59035966a08232b1834e7f83b"
+      },
+      "links": [
+        {
+          "text": "Mit dem Lösungskonfigurator planen →",
+          "color": "rgb(40, 142, 131)",
+          "background": "rgb(227, 240, 239)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.78125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.78125
+          }
+        },
+        {
+          "text": "Sprechen Sie mit unseren Ingenieuren",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 505.78125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 457.78125
+          }
+        }
+      ]
+    },
+    {
+      "stem": "release-application-de-390-action2-hover-focus",
+      "url": "http://127.0.0.1:9290/de/loesung/",
+      "at": "2026-10-22T07:58:30.806Z",
+      "checks": {
+        "source": true,
+        "stylesheet": true,
+        "guest": true,
+        "fonts": true,
+        "overflow": true,
+        "width": true,
+        "lang": true,
+        "paragraph_gap": true,
+        "action_gap": true,
+        "flex": true,
+        "previous_font": true,
+        "labels_font": true,
+        "height": true,
+        "two_links": true,
+        "focus": true,
+        "target_focus_hover": true,
+        "phone_columns": true,
+        "normal_not_hovered": true
+      },
+      "json": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-390-action2-hover-focus.json",
+        "bytes": 2635,
+        "sha256": "d276ad9dc88b819352e83ccfad05c2aac5d74474ed6875c10db7a01a7a2451fe"
+      },
+      "image": {
+        "path": "docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/release-application-de-390-action2-hover-focus.jpg",
+        "bytes": 45166,
+        "sha256": "e14e440c88030858317301a29071e20f76f3d8383b50f581e6eed48482d0fe15"
+      },
+      "links": [
+        {
+          "text": "Mit dem Lösungskonfigurator planen →",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(12, 127, 115)",
+          "focused": false,
+          "hovered": false,
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 385.78125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 337.78125
+          }
+        },
+        {
+          "text": "Sprechen Sie mit unseren Ingenieuren",
+          "color": "rgb(12, 127, 115)",
+          "background": "rgba(0, 0, 0, 0)",
+          "focused": true,
+          "hovered": true,
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.78125,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.78125
+          }
+        }
+      ]
+    }
+  ],
+  "failed_checks": [
+    {
+      "stem": "release-application-de-390-normal",
+      "failed": [
+        "normal_not_hovered"
+      ]
+    }
+  ]
+}

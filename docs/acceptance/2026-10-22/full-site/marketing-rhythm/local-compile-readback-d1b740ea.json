@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-22T07:11:28.993411+00:00",
+  "source_aggregate": "d1b740ea801a440ba3a05ab60026a000ebfb06cd64484d53cb3467ee9fcd34e4",
+  "installed_sources": [
+    {
+      "path": "plugins/linker-commerce/content/windpress/chrome.css",
+      "sha256": "a43202bb828ad63b0d7d49881af91be9bc42cd88c7bdd4aedb338d939aa905f9",
+      "bytes": 34623
+    },
+    {
+      "path": "plugins/linker-commerce/content/windpress/marketing-rhythm.css",
+      "sha256": "710fb37175f4b157816880e151fd9796b0e5e68ae5c3408f71a75aa0ecc80139",
+      "bytes": 4549
+    }
+  ],
+  "cache": {
+    "mtime": 1792652406.7601414,
+    "bytes": 709392,
+    "sha256": "d3bc8291cbdc18d26f31348983673712c14466144b1ea1ccfb1725dc00a17bca"
+  },
+  "official_store_http_status": 200,
+  "official_index_http_status": 200,
+  "official_response_evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/marketing-rhythm-compile-8c-index.json"
+}

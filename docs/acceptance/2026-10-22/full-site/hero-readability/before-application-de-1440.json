@@ -1,0 +1,57 @@
+{
+  "actions": [
+    {
+      "fontSize": "13px",
+      "href": "http://127.0.0.1:9290/de/loesung/#arenas",
+      "rect": {
+        "height": 45.5,
+        "width": 251.9140625,
+        "x": 594.0390625,
+        "y": 617.5
+      },
+      "text": "Speicher nach Größe ansehen ↓"
+    },
+    {
+      "fontSize": "12px",
+      "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+      "rect": {
+        "height": 28,
+        "width": 170.6171875,
+        "x": 634.6875,
+        "y": 675
+      },
+      "text": "Lösungskonfigurator öffnen →"
+    }
+  ],
+  "bodyClasses": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-6871 page-parent wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas sol-at-cover",
+  "cover": {
+    "before": "linear-gradient(rgba(7, 29, 52, 0.52), rgba(7, 29, 52, 0.08) 46%, rgba(3, 19, 34, 0.2) 62%, rgba(3, 19, 34, 0.82))",
+    "className": "lk-hero-sol sol-cover",
+    "rect": {
+      "height": 750,
+      "width": 1440,
+      "x": 0,
+      "y": 1
+    }
+  },
+  "fontStatus": "loaded",
+  "heading": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "48.96px",
+    "lineHeight": "56.304px",
+    "rect": {
+      "height": 112.609375,
+      "width": 940,
+      "x": 250,
+      "y": 174.1484375
+    },
+    "text": "Speichersysteme, die zu Ihrer Arbeitsweise auf den Standorten passen."
+  },
+  "overflow": 0,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/de/loesung/",
+  "viewport": [
+    1440,
+    1000
+  ]
+}

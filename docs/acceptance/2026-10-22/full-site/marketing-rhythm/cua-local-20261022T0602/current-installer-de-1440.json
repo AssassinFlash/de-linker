@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-22T06:45:39.745Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "12px",
+      "lineBreaks": [],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 491.1328125,
+            "height": 48,
+            "right": 295.1015625,
+            "width": 195.1015625,
+            "x": 100,
+            "y": 443.1328125
+          },
+          "text": "Projektlösung planen →"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "1px solid rgb(158, 178, 163)",
+          "color": "rgb(23, 39, 33)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/mein-konto/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 491.1328125,
+            "height": 48,
+            "right": 483.21875,
+            "width": 176.1171875,
+            "x": 307.1015625,
+            "y": 443.1328125
+          },
+          "text": "Partnerkonto öffnen"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "25.28px",
+        "rect": {
+          "bottom": 411.1328125,
+          "height": 329.8515625,
+          "right": 1340,
+          "width": 1240,
+          "x": 100,
+          "y": 81.28125
+        },
+        "tag": "DIV",
+        "text": "\n\n     Solar- & Speicherlösungen\n    \n\n     Bereit, Ihre nächste Installation zu planen und zu beschaffen?\n    \n\n     Linker liefert Hybridpakete für Wohngebäude und gewerbliche Outdoor-Schränke, mit der Auslegung im Lösungskonfigurator und technischer Unterstützung für die Installation.\n    \n"
+      },
+      "rect": {
+        "bottom": 491.1328125,
+        "height": 48,
+        "right": 1340,
+        "width": 1240,
+        "x": 100,
+        "y": 443.1328125
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+  "width": 1440
+}

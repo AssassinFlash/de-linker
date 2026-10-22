@@ -1,0 +1,135 @@
+{
+  "actions": {
+    "direction": "row",
+    "display": "flex",
+    "gap": "12px",
+    "rect": {
+      "bottom": 524.1328125,
+      "height": 48,
+      "left": 100,
+      "right": 1340,
+      "top": 476.1328125,
+      "width": 1240,
+      "x": 100,
+      "y": 476.1328125
+    }
+  },
+  "admin": false,
+  "at": "2026-10-22T06:09:07.853Z",
+  "body": {
+    "font": "16px",
+    "lineHeight": "26.4px",
+    "rect": {
+      "bottom": 444.1328125,
+      "height": 79.1953125,
+      "left": 100,
+      "right": 730,
+      "top": 364.9375,
+      "width": 630,
+      "x": 100,
+      "y": 364.9375
+    }
+  },
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792648845"
+  ],
+  "fonts": "loaded",
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none",
+    "rect": {
+      "bottom": 89,
+      "height": 89,
+      "left": 0,
+      "right": 1440,
+      "top": 0,
+      "width": 1440,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "heading": {
+    "font": "62px",
+    "hyphens": "manual",
+    "rect": {
+      "bottom": 345.9375,
+      "height": 200.859375,
+      "left": 100,
+      "right": 800,
+      "top": 145.078125,
+      "width": 700,
+      "x": 100,
+      "y": 145.078125
+    },
+    "text": "Bereit, Ihre nächste Installation zu planen und zu beschaffen?",
+    "textWrap": "balance"
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "links": [
+    {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(12, 127, 115)",
+      "focus": false,
+      "font": "14px",
+      "hover": true,
+      "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+      "outline": {
+        "color": "rgb(12, 127, 115)",
+        "offset": "0px",
+        "style": "none",
+        "width": "3px"
+      },
+      "rect": {
+        "bottom": 524.1328125,
+        "height": 48,
+        "left": 100,
+        "right": 295.1015625,
+        "top": 476.1328125,
+        "width": 195.1015625,
+        "x": 100,
+        "y": 476.1328125
+      },
+      "text": "Projektlösung planen →"
+    },
+    {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(23, 39, 33)",
+      "focus": true,
+      "font": "14px",
+      "hover": false,
+      "href": "http://127.0.0.1:9290/de/mein-konto/",
+      "outline": {
+        "color": "rgb(12, 127, 115)",
+        "offset": "2px",
+        "style": "solid",
+        "width": "2px"
+      },
+      "rect": {
+        "bottom": 524.1328125,
+        "height": 48,
+        "left": 307.1015625,
+        "right": 483.21875,
+        "top": 476.1328125,
+        "width": 176.1171875,
+        "x": 307.1015625,
+        "y": 476.1328125
+      },
+      "text": "Partnerkonto öffnen"
+    }
+  ],
+  "overflow": false,
+  "section": {
+    "bottom": 629.1328125,
+    "height": 619.8515625,
+    "left": 0,
+    "right": 1440,
+    "top": 9.28125,
+    "width": 1440,
+    "x": 0,
+    "y": 9.28125
+  },
+  "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+  "verticalGap": 32,
+  "width": 1440
+}

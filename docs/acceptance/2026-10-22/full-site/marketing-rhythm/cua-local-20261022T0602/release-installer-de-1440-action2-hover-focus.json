@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-22T07:58:17.016Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "12px",
+      "lineBreaks": [],
+      "links": [
+        {
+          "background": "rgb(14, 128, 116)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(251, 253, 253)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+          "outline": "rgb(251, 253, 253) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.1328125,
+            "height": 48,
+            "right": 295.1015625,
+            "width": 195.1015625,
+            "x": 100,
+            "y": 476.1328125
+          },
+          "text": "Projektlösung planen →"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "1px solid rgb(14, 128, 116)",
+          "color": "rgb(12, 126, 114)",
+          "focused": true,
+          "font": "14px",
+          "hovered": true,
+          "href": "http://127.0.0.1:9290/de/mein-konto/",
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.1328125,
+            "height": 48,
+            "right": 483.21875,
+            "width": 176.1171875,
+            "x": 307.1015625,
+            "y": 476.1328125
+          },
+          "text": "Partnerkonto öffnen"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "25.28px",
+        "rect": {
+          "bottom": 444.1328125,
+          "height": 329.8515625,
+          "right": 1340,
+          "width": 1240,
+          "x": 100,
+          "y": 114.28125
+        },
+        "tag": "DIV",
+        "text": "\n\n     Solar- & Speicherlösungen\n    \n\n     Bereit, Ihre nächste Installation zu planen und zu beschaffen?\n    \n\n     Linker liefert Hybridpakete für Wohngebäude und gewerbliche Outdoor-Schränke, mit der Auslegung im Lösungskonfigurator und technischer Unterstützung für die Installation.\n    \n"
+      },
+      "rect": {
+        "bottom": 524.1328125,
+        "height": 48,
+        "right": 1340,
+        "width": 1240,
+        "x": 100,
+        "y": 476.1328125
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+  "width": 1440,
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661",
+  "stylesheets": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792655451"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-22T07:01:21.443554+00:00",
+  "status": "preliminary network-path diagnostic, not a controlled loading baseline or improvement claim",
+  "url": "https://de-linker.com/",
+  "simultaneous_activity": [
+    "full backup",
+    "other authorized thread",
+    "local test activity"
+  ],
+  "observations": [
+    {
+      "environment": "hosting-server request to public site",
+      "http_code": 200,
+      "dns_s": 0.317909,
+      "connect_s": 0.31803,
+      "tls_s": 0.348882,
+      "pretransfer_s": 0.349021,
+      "ttfb_s": 0.968144,
+      "total_s": 0.97342,
+      "compressed_bytes": 90324,
+      "remote_ip": "46.202.156.7"
+    },
+    {
+      "environment": "Mac request to public site",
+      "http_code": 200,
+      "dns_s": 0.020857,
+      "connect_s": 0.021712,
+      "tls_s": 2.774552,
+      "pretransfer_s": 2.775249,
+      "ttfb_s": 3.991863,
+      "total_s": 4.78139,
+      "compressed_bytes": 69438,
+      "remote_ip": "198.18.0.71"
+    }
+  ],
+  "limits": [
+    "single request in each environment",
+    "different curl builds and compression support",
+    "compressed byte counts differ; payload equivalence not established",
+    "not pure PHP execution time",
+    "no browser LCP, INP or CLS measured",
+    "no site performance percentage improvement established"
+  ]
+}

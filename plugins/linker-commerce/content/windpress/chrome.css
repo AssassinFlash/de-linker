@@ -22,7 +22,8 @@
 @media (min-width:1280px){:root{--lk-header-h:88px}}
 :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 24px)}
 body.admin-bar :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 56px)}
-header#lc-header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--proto-neutral-200)}
+/* Keep scrolled titles behind an opaque navigation surface. */
+header#lc-header{position:sticky;top:0;z-index:1000;background:#fff;border-bottom:1px solid var(--proto-neutral-200)}
 body.admin-bar header#lc-header{top:32px}
 @media (max-width:782px){body.admin-bar header#lc-header{top:46px}}
 #tv-header-v2{font-family:var(--proto-font-sans);position:relative;background:transparent;padding-top:0!important;padding-bottom:0!important;color:var(--proto-ink)}
