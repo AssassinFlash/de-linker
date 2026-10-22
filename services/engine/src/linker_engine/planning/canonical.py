@@ -14,7 +14,13 @@ type Object = dict[str, Json]
 
 
 def _validate(value: object) -> None:
-    if value is None or type(value) in (bool, int, str):
+    if value is None or type(value) in (bool, int):
+        return
+    if type(value) is str:
+        try:
+            value.encode("utf-8")
+        except UnicodeError as error:
+            raise InvalidInput("JSON strings must be valid Unicode") from error
         return
     if type(value) is float:
         if not math.isfinite(value):
@@ -28,6 +34,7 @@ def _validate(value: object) -> None:
         for key, item in value.items():
             if not isinstance(key, str):
                 raise InvalidInput("JSON object keys must be strings")
+            _validate(key)
             _validate(item)
         return
     raise InvalidInput("value is not JSON")

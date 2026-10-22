@@ -67,13 +67,23 @@ release. Provider acquisition is a separate trusted adapter, not a browser claim
 
 Protocol bounds of 256 characters for identifiers/labels/project titles and
 4096 for source notes are application transport choices, not physical limits.
-Deployment byte/CSV/page limits have no hidden default. Worker interval limits
+Deployment byte/CSV/page/JSON-nesting limits have no hidden default. Worker interval limits
 and numerical tolerances stay frozen by the existing energy service.
 
 Errors return domain codes or validation field paths/types, without exception
 traces, row/file values, submitted private content or service credentials.
 Unexpected internal failures do not become valid results. The factory must
 reject differing HTTP/energy/kernel authorities rather than mix their data.
+Framework parsing/routing errors use the same envelope (`invalid_input`,
+`not_found`, `method_not_allowed`, `request_too_large`, or `http_error`);
+unexpected failures return `execution_failed` with status 500 and are logged
+privately. Escaped lone Unicode surrogates in values or keys are invalid input,
+not internal storage failures.
+JSON nesting is checked before recursive command validation, outside quoted
+strings, and over-limit input returns `json_too_deep`. Validation diagnostics
+contain at most 16 fields, 16 path segments per field and 64 characters per
+segment, with `truncated: true` when clipped. These are bounded diagnostic
+policy, not scientific limits. Invalid syntax remains a framework parse error.
 
 ## Actual acceptance required
 

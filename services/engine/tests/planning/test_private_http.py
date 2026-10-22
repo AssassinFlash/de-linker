@@ -76,7 +76,7 @@ def rig(workspace: Workspace) -> Iterator[Rig]:
         workspace,
         service,
         credential=lambda: TOKEN,
-        limits=HttpLimits(100_000, 10_000, 2),
+        limits=HttpLimits(100_000, 10_000, 2, 16),
     )
     with TestClient(app, raise_server_exceptions=False) as client:
         yield Rig(workspace, kernel, client)
@@ -93,6 +93,117 @@ def test_every_http_method_is_private_even_when_old_gate_mode_is_off(
     assert response.status_code == 401
     assert response.headers["cache-control"] == "no-store, private"
     assert response.headers["x-content-type-options"] == "nosniff"
+
+
+@pytest.mark.parametrize(
+    ("method", "path", "content", "status", "code"),
+    [
+        ("POST", "/unknown", b"{}", 404, "not_found"),
+        ("GET", "/projects/read", b"", 405, "method_not_allowed"),
+        ("POST", "/projects/read", b"\xff", 400, "invalid_input"),
+        (
+            "POST",
+            "/projects/create",
+            b'{"schema_version":1,"title":"x","inputs":{"text":"\\ud800"},"key":"x"}',
+            422,
+            "invalid_input",
+        ),
+        (
+            "POST",
+            "/projects/create",
+            b'{"schema_version":1,"title":"x","inputs":{"\\ud800":0},"key":"x"}',
+            422,
+            "invalid_input",
+        ),
+    ],
+)
+def test_framework_and_unicode_errors_use_the_private_error_contract(
+    rig: Rig, method: str, path: str, content: bytes, status: int, code: str
+) -> None:
+    response = rig.client.request(
+        method,
+        path,
+        content=content,
+        headers={**headers(), "Content-Type": "application/json"},
+    )
+    assert response.status_code == status
+    assert response.json() == {"error": {"code": code}}
+    assert response.headers["cache-control"] == "no-store, private"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert rig.post("/projects/list", {"page_size": 2, "after": None})["items"] == []
+
+
+def test_unexpected_failure_has_a_code_without_private_exception_content(
+    rig: Rig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def fail(*_args: object, **_kwargs: object) -> None:
+        raise RuntimeError("private fixture content must not escape")
+
+    monkeypatch.setattr(rig.workspace, "create", fail)
+    response = rig.client.post(
+        "/projects/create",
+        json={"schema_version": 1, "title": "x", "inputs": {}, "key": "x"},
+        headers=headers(),
+    )
+    assert response.status_code == 500
+    assert response.json() == {"error": {"code": "execution_failed"}}
+    assert response.headers["cache-control"] == "no-store, private"
+
+
+def test_deep_small_json_is_rejected_before_recursive_union_error_amplification(
+    rig: Rig,
+) -> None:
+    body = (
+        b'{"schema_version":1,"title":"x","inputs":{"tree":'
+        + b"[" * 1200
+        + b"0"
+        + b"]" * 1200
+        + b'},"key":"deep"}'
+    )
+    assert len(body) < 2500
+    response = rig.client.post(
+        "/projects/create",
+        content=body,
+        headers={**headers(), "Content-Type": "application/json"},
+    )
+    assert response.status_code == 422
+    assert response.json() == {"error": {"code": "json_too_deep"}}
+    assert len(response.content) < 100
+    assert rig.post("/projects/list", {"page_size": 2, "after": None})["items"] == []
+
+
+def test_depth_check_ignores_brackets_quotes_and_escapes_inside_strings(
+    rig: Rig,
+) -> None:
+    value = "å😀" + '{["\\' * 1000
+    project = rig.post(
+        "/projects/create",
+        {"title": "Unicode fixture", "inputs": {"text": value}, "key": "text"},
+    )
+    assert project["inputs"] == {"text": value}
+
+
+def test_validation_diagnostics_are_bounded_and_explicitly_truncated(rig: Rig) -> None:
+    response = rig.client.post(
+        "/projects/create",
+        json={
+            "schema_version": 1,
+            "title": "x",
+            "inputs": {},
+            "key": "bounded",
+            **{f"unknown{n}" + "a" * 200: "private-value" for n in range(100)},
+        },
+        headers=headers(),
+    )
+    assert response.status_code == 422
+    detail = response.json()["error"]
+    assert detail["truncated"] is True
+    assert len(detail["fields"]) == 16
+    assert len(response.content) < 3000
+    assert "private-value" not in response.text
+    for field in detail["fields"]:
+        assert len(field["path"]) <= 16
+        assert all(len(part) <= 64 for part in field["path"])
 
 
 def exercise_boundary(
@@ -119,7 +230,10 @@ def exercise_boundary(
         await send({"type": "http.response.body", "body": b"ok"})
 
     boundary = ServiceBoundary(
-        downstream, credential=lambda: TOKEN if configured else "", max_body_bytes=limit
+        downstream,
+        credential=lambda: TOKEN if configured else "",
+        max_body_bytes=limit,
+        max_json_depth=16,
     )
 
     async def run() -> None:

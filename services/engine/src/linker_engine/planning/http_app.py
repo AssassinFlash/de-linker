@@ -10,12 +10,14 @@ from __future__ import annotations
 
 import base64
 import binascii
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 
 from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
 
 from .access import positive_integer
@@ -50,15 +52,23 @@ from .profile_import import ProfileImport
 from .service_boundary import ServiceBoundary, verified_actor
 from .workspace import Workspace
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass(frozen=True)
 class HttpLimits:
     max_body_bytes: int
     max_csv_bytes: int
     max_page_size: int
+    max_json_depth: int
 
     def __post_init__(self) -> None:
-        for name in ("max_body_bytes", "max_csv_bytes", "max_page_size"):
+        for name in (
+            "max_body_bytes",
+            "max_csv_bytes",
+            "max_page_size",
+            "max_json_depth",
+        ):
             positive_integer(getattr(self, name), name)
 
 
@@ -91,13 +101,43 @@ def create_private_app(
     async def bad_command(
         _request: Request, error: RequestValidationError
     ) -> JSONResponse:
+        # Bounded transport diagnostics, not engineering tolerances. The
+        # explicit request depth gate precedes recursive union validation.
+        errors = error.errors()
         fields: list[Json] = [
-            {"path": [str(part) for part in item["loc"]], "kind": item["type"]}
-            for item in error.errors()
+            {
+                "path": [str(part)[:64] for part in item["loc"][:16]],
+                "kind": item["type"],
+            }
+            for item in errors[:16]
         ]
+        detail: Object = {"code": "invalid_input", "fields": fields}
+        if len(errors) > 16 or any(
+            len(item["loc"]) > 16 or any(len(str(part)) > 64 for part in item["loc"])
+            for item in errors[:16]
+        ):
+            detail["truncated"] = True
+        return JSONResponse({"error": detail}, status_code=422)
+
+    @app.exception_handler(HTTPException)
+    async def framework_error(_request: Request, error: HTTPException) -> JSONResponse:
+        code = {
+            400: "invalid_input",
+            404: "not_found",
+            405: "method_not_allowed",
+            413: "request_too_large",
+        }.get(error.status_code, "http_error")
+        allowed = (error.headers or {}).get("Allow")
         return JSONResponse(
-            {"error": {"code": "invalid_input", "fields": fields}}, status_code=422
+            {"error": {"code": code}},
+            status_code=error.status_code,
+            headers={"Allow": allowed} if allowed else None,
         )
+
+    @app.exception_handler(Exception)
+    async def unexpected_error(_request: Request, error: Exception) -> JSONResponse:
+        logger.error("private planner request failed", exc_info=error)
+        return JSONResponse({"error": {"code": "execution_failed"}}, status_code=500)
 
     @app.post("/version")
     def runtime(_body: Command) -> Object:
@@ -259,5 +299,8 @@ def create_private_app(
         )
 
     return ServiceBoundary(
-        app, credential=credential, max_body_bytes=limits.max_body_bytes
+        app,
+        credential=credential,
+        max_body_bytes=limits.max_body_bytes,
+        max_json_depth=limits.max_json_depth,
     )

@@ -43,12 +43,19 @@ async def answer(send: Send, status: int, code: str) -> None:
 
 class ServiceBoundary:
     def __init__(
-        self, app: ASGIApp, *, credential: Callable[[], str], max_body_bytes: int
+        self,
+        app: ASGIApp,
+        *,
+        credential: Callable[[], str],
+        max_body_bytes: int,
+        max_json_depth: int,
     ) -> None:
         positive_integer(max_body_bytes, "private planner body limit")
+        positive_integer(max_json_depth, "private planner JSON depth limit")
         self.app = app
         self.credential = credential
         self.max_body_bytes = max_body_bytes
+        self.max_json_depth = max_json_depth
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
@@ -132,6 +139,10 @@ class ServiceBoundary:
         if expected_size is not None and size != expected_size:
             await answer(private_send, 400, "incomplete_request")
             return
+        body = b"".join(chunks)
+        if _too_deep(body, self.max_json_depth):
+            await answer(private_send, 422, "json_too_deep")
+            return
         scope = dict(scope)
         scope[ACTOR_SCOPE] = actor
         sent = False
@@ -142,12 +153,40 @@ class ServiceBoundary:
                 sent = True
                 return {
                     "type": "http.request",
-                    "body": b"".join(chunks),
+                    "body": body,
                     "more_body": False,
                 }
             return await receive()
 
         await self.app(scope, replay, private_send)
+
+
+def _too_deep(body: bytes, ceiling: int) -> bool:
+    """Bound nesting before Pydantic's recursive JSON union, ignoring strings.
+
+    This is a resource precheck, not a second JSON parser. Malformed syntax
+    still goes through the framework's typed invalid-input response.
+    """
+    depth = 0
+    quoted = False
+    escaped = False
+    for char in body:
+        if quoted:
+            if escaped:
+                escaped = False
+            elif char == 92:
+                escaped = True
+            elif char == 34:
+                quoted = False
+        elif char == 34:
+            quoted = True
+        elif char in (91, 123):
+            depth += 1
+            if depth > ceiling:
+                return True
+        elif char in (93, 125):
+            depth -= 1
+    return False
 
 
 def verified_actor(scope: Scope, *, write: bool = False) -> Actor:
