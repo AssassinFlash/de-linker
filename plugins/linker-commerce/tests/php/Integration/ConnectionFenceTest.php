@@ -108,6 +108,23 @@ final class ConnectionFenceTest extends IntegrationTestCase {
 		self::assertSame( $retries, self::retries() );
 		self::assertSame( $report, ( new \mysqli_driver() )->report_mode );
 	}
+	/** Native before/after hooks can hold the exact same scope across their writes. */
+	public function test_explicit_scope_survives_separate_hooks_and_close_is_idempotent(): void {
+		$before = self::retries();
+		$scope  = ConnectionFence::enter();
+		self::assertSame( 0, self::retries() );
+		$scope->assert_current();
+		ConnectionFence::run(
+			static function (): void {
+				self::assertSame( 0, self::retries() );
+			}
+		);
+		$scope->assert_current();
+		$scope->close();
+		$scope->close();
+		self::assertSame( $before, self::retries() );
+	}
+
 	/**
 	 * Read native driver policy after a nested scope really exits.
 	 *
