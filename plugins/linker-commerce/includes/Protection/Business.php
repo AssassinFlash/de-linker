@@ -77,20 +77,15 @@ final class Business {
 			if ( $required && ! $config->ready() ) {
 				return new WP_Error( 'linker_admission_configuration', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
 			}
-			$verified = $config->ready() ? Intake::verified_proof( $proof, $action, $identity, $id ) : null;
-			if ( $required && null === $verified ) {
+			$verified = $config->ready() && Intake::verified( $proof, $action, $identity, $id );
+			if ( $required && ! $verified ) {
 				return new WP_Error( 'linker_admission_proof', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 400 ) );
 			}
-			$message    = $payload['message'] ?? ( $payload['details']['message'] ?? '' );
-			$campaign   = is_string( $message ) && Campaign::matches( $message );
-			$individual = $campaign && '1' === ( $post['linker_individual_review'] ?? '' );
-			if ( $individual ) {
-				$hex = hash_hmac( 'sha256', 'individual-review|' . $id . '|' . $identity->binding(), wp_salt( 'nonce' ) );
-				$id  = substr( $hex, 0, 8 ) . '-' . substr( $hex, 8, 4 ) . '-4' . substr( $hex, 13, 3 ) . '-8' . substr( $hex, 17, 3 ) . '-' . substr( $hex, 20, 12 );
+			if ( Campaign::submitted( $payload ) ) {
+				return new WP_Error( 'linker_admission_input', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 400 ) );
 			}
-			$lane = $campaign ? ( $individual ? 'individual' : 'campaign' ) : ( null !== $verified ? '' : 'verification' );
-			if ( '' !== $lane ) {
-				return Intake::run( $lane, $action, $id, $fp, $identity, $payload, $limits, $carry, $owners, $work, $required ? $verified : array() );
+			if ( ! $verified ) {
+				return Intake::run( 'verification', $action, $id, $fp, $identity, $payload, $limits, $carry, $owners, $work );
 			}
 		}
 		$permit = $gate->reserve( $action, $proof, $id, $payload, $limits, 120, true, $carry, $owners );
