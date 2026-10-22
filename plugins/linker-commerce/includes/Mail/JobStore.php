@@ -47,9 +47,13 @@ final class JobStore {
 	 * Promote an original job explicitly restored by staff.
 	 *
 	 * @param int $id Original job explicitly restored by staff.
+	 * @throws \RuntimeException When the priority cannot be persisted.
 	 */
 	public function promote( int $id ): void {
 		update_post_meta( $id, self::PRIORITY_META, 'yes' );
+		if ( ! $this->critical( $id ) ) {
+			throw new \RuntimeException( esc_html( 'notification_priority_write_failed' ) );
+		}
 	}
 
 	/**
