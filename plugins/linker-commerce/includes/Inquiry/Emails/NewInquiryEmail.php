@@ -84,27 +84,7 @@ final class NewInquiryEmail extends TeamEmail {
 	 * @param WC_Order $order The locked inquiry, including initial_result.
 	 */
 	public function capture( WC_Order $order ): ?Message {
-		$message = null;
-		$capture = static function ( $pre, array $atts ) use ( &$message ) {
-			if ( null === $pre ) {
-				$message = Message::from_wp_mail( $atts );
-			}
-			return true;
-		};
-		// Woo's native logger otherwise calls this capture a successful send.
-		$logging = function ( bool $enabled, string $id, \WC_Email $email ): bool {
-			return $email === $this ? false : $enabled;
-		};
-		add_filter( 'woocommerce_email_log_enabled', $logging, 10, 3 );
-		// Before Outbox's priority 10; native WC locale/sender filters are active.
-		add_filter( 'pre_wp_mail', $capture, 9, 2 );
-		try {
-			$this->notify_received( $order );
-		} finally {
-			remove_filter( 'pre_wp_mail', $capture, 9 );
-			remove_filter( 'woocommerce_email_log_enabled', $logging, 10 );
-		}
-		return $message;
+		return \Linker\Commerce\Mail\Capture::run( $this, function () use ( $order ): void { $this->notify_received( $order ); } );
 	}
 
 	/**

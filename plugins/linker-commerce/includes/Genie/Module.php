@@ -137,6 +137,7 @@ final class Module {
 		return array(
 			'order'   => $order->get_id(),
 			'receipt' => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'receipt_pending' => 'assessment_pending' === $order->get_meta( ReceiptLimit::SKIPPED_META ),
 		);
 	}
 
@@ -202,6 +203,7 @@ final class Module {
 		return array(
 			'order'   => $order->get_id(),
 			'receipt' => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'receipt_pending' => 'assessment_pending' === $order->get_meta( ReceiptLimit::SKIPPED_META ),
 		);
 	}
 
@@ -240,16 +242,20 @@ final class Module {
 	 * @param mixed $sent  An earlier answer: true when another listener sent it.
 	 * @param mixed $email to, locale, messages.
 	 */
-	public function send( mixed $sent, mixed $email ): bool {
-		if ( true === $sent ) {
-			return true;
+	public function send( mixed $sent, mixed $email ): bool|array {
+		if ( true === $sent || ( is_array( $sent ) && 'pending' === ( $sent['status'] ?? '' ) ) ) {
+			return $sent;
 		}
 		$conversation = Conversation::from_array( is_array( $email ) ? $email : array() );
 		if ( null === $conversation ) {
 			return false;
 		}
 		WC()->mailer();
-		return ( new ConversationEmail( $this->plugin_file ) )->notify( $conversation );
+		$source = is_array( $email ) ? $email : array();
+		$id = $source['conversation_id'] ?? 0;
+		if ( ! is_int( $id ) || $id < 1 ) { return false; }
+		$message = ( new ConversationEmail( $this->plugin_file ) )->capture( $conversation );
+		return null === $message ? false : \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::enqueue( $id, $source['messages'], $conversation, $message );
 	}
 
 	/**

@@ -55,7 +55,14 @@ final class InquiryReceivedEmail extends CustomerOrderEmail {
 		if ( '' !== $order->get_meta( ReceiptLimit::SKIPPED_META ) ) {
 			return;
 		}
-		parent::trigger( $order_id, $order );
+		\Linker\Commerce\Inquiry\Assessment\Queue::defer( $order );
+	}
+
+	/** Capture the native receipt without sending or spending a mail allowance.
+	 * @param WC_Order $order Native inquiry.
+	 */
+	public function capture( WC_Order $order ): ?\Linker\Commerce\Mail\Message {
+		return \Linker\Commerce\Mail\Capture::run( $this, function () use ( $order ): void { parent::trigger( $order->get_id(), $order ); } );
 	}
 
 	/**
