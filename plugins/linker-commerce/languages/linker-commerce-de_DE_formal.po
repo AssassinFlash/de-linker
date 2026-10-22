@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-22T09:19:27+00:00\n"
+"POT-Creation-Date: 2026-10-22T09:32:29+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1266,8 +1266,8 @@ msgstr "Die Anzahl der ausstehenden Anfragen ist nicht verfügbar."
 #. translators: %d: saved inquiries awaiting staff review.
 #: includes/Health/PendingReviews.php:48
 #, php-format
-msgid "%d saved inquiries need staff review."
-msgstr "%d gespeicherte Anfragen müssen vom Team geprüft werden."
+msgid "Saved inquiries awaiting staff review: %d."
+msgstr "Gespeicherte Anfragen zur manuellen Prüfung: %d."
 
 #: includes/Health/PendingReviews.php:50
 msgid "Review saved inquiries"
@@ -1283,22 +1283,22 @@ msgstr "Älteste Anfrage: vor %s."
 msgid "No saved inquiry is awaiting staff review."
 msgstr "Es wartet keine gespeicherte Anfrage auf die Prüfung durch das Team."
 
-#: includes/Health/ReviewReminder.php:102
+#: includes/Health/ReviewReminder.php:104
 msgid "Saved inquiries need staff review"
 msgstr "Gespeicherte Anfragen müssen vom Team geprüft werden"
 
 #. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL.
-#: includes/Health/ReviewReminder.php:104
+#: includes/Health/ReviewReminder.php:106
 #, php-format
 msgid ""
-"%1$d saved inquiries need verification or staff review.\n"
+"Saved inquiries awaiting staff review: %1$d.\n"
 "Oldest inquiry: %2$s ago.\n"
 "Count checked: %3$s.\n"
 "Review saved inquiries: %4$s\n"
 "\n"
 "These inquiries are saved. Their individual team notifications have not been "
 "released."
-msgstr "%1$d gespeicherte Anfragen benötigen eine Verifizierung oder eine Prüfung durch das Team.\nÄlteste Anfrage: vor %2$s.\nStand der Zählung: %3$s.\nGespeicherte Anfragen prüfen: %4$s\n\nDiese Anfragen sind gespeichert. Die einzelnen Benachrichtigungen an das Team sind noch nicht freigegeben."
+msgstr "Gespeicherte Anfragen zur manuellen Prüfung: %1$d.\nÄlteste Anfrage: vor %2$s.\nStand der Zählung: %3$s.\nGespeicherte Anfragen prüfen: %4$s\n\nDiese Anfragen sind gespeichert. Die einzelnen Benachrichtigungen an das Team sind noch nicht freigegeben."
 
 #: includes/Inquiry/Assessment/Admin.php:29
 msgid "Inquiry review"
@@ -5587,6 +5587,29 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#, php-format
+#~ msgid ""
+#~ "%1$d saved inquiries need verification or staff review.\n"
+#~ "Oldest inquiry: %2$s ago.\n"
+#~ "Count checked: %3$s.\n"
+#~ "Review saved inquiries: %4$s\n"
+#~ "\n"
+#~ "These inquiries are saved. Their individual team notifications have not "
+#~ "been released."
+#~ msgstr ""
+#~ "%1$d gespeicherte Anfragen benötigen eine Verifizierung oder eine Prüfung "
+#~ "durch das Team.\n"
+#~ "Älteste Anfrage: vor %2$s.\n"
+#~ "Stand der Zählung: %3$s.\n"
+#~ "Gespeicherte Anfragen prüfen: %4$s\n"
+#~ "\n"
+#~ "Diese Anfragen sind gespeichert. Die einzelnen Benachrichtigungen an das "
+#~ "Team sind noch nicht freigegeben."
+
+#, php-format
+#~ msgid "%d saved inquiries need staff review."
+#~ msgstr "%d gespeicherte Anfragen müssen vom Team geprüft werden."
 
 #~ msgid "Initial guidance only. Every inquiry is accepted and notified."
 #~ msgstr ""

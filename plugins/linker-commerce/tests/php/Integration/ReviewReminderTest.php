@@ -57,7 +57,7 @@ final class ReviewReminderTest extends IntegrationTestCase {
 		$job = ( new JobStore() )->load( $jobs[0] );
 		$this->assertNotNull( $job );
 		$this->assertTrue( $job['message']->critical );
-		$this->assertStringContainsString( '3 saved inquiries', $job['message']->body );
+		$this->assertStringContainsString( 'Saved inquiries awaiting staff review: 3.', $job['message']->body );
 		$this->assertStringContainsString( $data['url'], $job['message']->body );
 		$this->assertStringNotContainsString( 'Customer payload', $job['message']->body );
 		$this->assertIsInt( as_next_scheduled_action( Outbox::HOOK, array( $jobs[0] ), Outbox::GROUP ) );

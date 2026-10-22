@@ -1,6 +1,6 @@
 # Mail transport capacity evidence
 
-Baseline: deployed notification-hold source `c0900e7`; independent branch `codex/545-mail-capacity`, never main's unrelated product-selection changes. Native production-shaped instance `m545` at port 9314 uses the 2026-10-22 snapshot, matching active third-party plugins, themes/uploads and local-only mail/HTTP isolation. A bare `m545c` at 9320 repeats CI's native mail filter. Neither instance owns production credentials or sends external mail; authenticated SMTP tests use a test-owned loopback sink with fake credentials and PHP fallback writes local files.
+Baseline: deployed notification-hold source `c0900e7`; independent branch `codex/545-mail-capacity`, never main's unrelated product-selection changes. Native production-shaped instance `m545` at port 9314 uses the 2026-10-22 snapshot, matching active third-party plugins, themes/uploads and local-only mail/HTTP isolation. A bare `m545c` at 9320 repeats CI's native mail filter. Neither instance sends external mail; authenticated SMTP fixtures inject fake credentials into a test-owned loopback sink and PHP fallback writes local files.
 
 Read-only production configuration check returned only `authenticated_identity_matches_settings=true` and `username_matches_verified_mailbox=true`. Account sending capacity was verified by the coordinating root in hPanel; its screenshot remains private. No production quota, routing, forwarding, credential, model or held inquiry was changed by this worker.
 

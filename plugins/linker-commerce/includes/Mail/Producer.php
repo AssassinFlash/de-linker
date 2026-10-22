@@ -18,9 +18,16 @@ use WC_Email;
  */
 final class Producer {
 
+	/**
+	 * Server-owned nested producer context, restored after every call.
+	 *
+	 * @var bool
+	 */
 	private static bool $critical = false;
 	/**
-	 * @var array<string, true> Native WordPress password-reset calls awaiting wp_mail.
+	 * Native WordPress password-reset calls awaiting wp_mail.
+	 *
+	 * @var array<string, true>
 	 */
 	private static array $resets = array();
 

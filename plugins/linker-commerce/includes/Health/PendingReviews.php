@@ -45,7 +45,7 @@ final class PendingReviews implements Block {
 		return array(
 			array(
 				/* translators: %d: saved inquiries awaiting staff review. */
-				'label'     => sprintf( __( '%d saved inquiries need staff review.', 'linker-commerce' ), $data['count'] ),
+				'label'     => sprintf( __( 'Saved inquiries awaiting staff review: %d.', 'linker-commerce' ), $data['count'] ),
 				'url'       => $data['url'],
 				'link_text' => __( 'Review saved inquiries', 'linker-commerce' ),
 				/* translators: %s: age of the oldest saved inquiry. */

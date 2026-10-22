@@ -122,3 +122,9 @@ msgstr "暂时无法核实待复核询盘的数量。"
 
 msgid "Review saved inquiries"
 msgstr "查看并复核已保存的询盘"
+
+msgid "Saved inquiries awaiting staff review: %1$d.\nOldest inquiry: %2$s ago.\nCount checked: %3$s.\nReview saved inquiries: %4$s\n\nThese inquiries are saved. Their individual team notifications have not been released."
+msgstr "已保存、待人工复核的询盘：%1$d。\n最早一条询盘保存于 %2$s 前。\n统计时间：%3$s。\n查看并复核已保存的询盘：%4$s\n\n这些询盘已保存。它们各自的团队通知仍在暂缓状态。"
+
+msgid "Saved inquiries awaiting staff review: %d."
+msgstr "已保存、待人工复核的询盘：%d。"

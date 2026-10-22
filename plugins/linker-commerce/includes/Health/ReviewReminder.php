@@ -103,7 +103,7 @@ final class ReviewReminder {
 		try {
 			$subject = __( 'Saved inquiries need staff review', 'linker-commerce' );
 			/* translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL. */
-			$body    = sprintf( __( "%1\$d saved inquiries need verification or staff review.\nOldest inquiry: %2\$s ago.\nCount checked: %3\$s.\nReview saved inquiries: %4\$s\n\nThese inquiries are saved. Their individual team notifications have not been released.", 'linker-commerce' ), $data['count'], human_time_diff( $data['oldest'], $now ), wp_date( 'Y-m-d H:i:s T', $now ), $data['url'] );
+			$body    = sprintf( __( "Saved inquiries awaiting staff review: %1\$d.\nOldest inquiry: %2\$s ago.\nCount checked: %3\$s.\nReview saved inquiries: %4\$s\n\nThese inquiries are saved. Their individual team notifications have not been released.", 'linker-commerce' ), $data['count'], human_time_diff( $data['oldest'], $now ), wp_date( 'Y-m-d H:i:s T', $now ), $data['url'] );
 			$options = new Options();
 			$sender  = $options->notify_sender();
 			$headers = Message::mark_internal( array( sprintf( 'From: %s <%s>', $sender->name, $sender->email ), 'Content-Type: text/plain; charset=UTF-8' ) );
