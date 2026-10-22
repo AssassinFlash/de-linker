@@ -1,0 +1,14 @@
+[
+  {
+    "file": "02-pvgis-5-user-manual-joint-research-centre-european-commission.md",
+    "sha256": "a9959dafb6ed04b255ee60b225d98339335fba0473daef063644b1ef00e8d6ec",
+    "source_local": "/Users/chesterjohn/Documents/de-linker/docs/research/2026-10-22-configurator-europe/raw/02-pvgis-5-user-manual-joint-research-centre-european-commission.md",
+    "retrieval": "existing 2026-10-22 root Apify source snapshot; provenance in file header; copied unchanged"
+  },
+  {
+    "file": "06-faq-zum-unabh-ngig-keitsrechner-htw-berlin.md",
+    "sha256": "799217de0e527651b58742573554697fd97718188752585c865cbb2e2d0b9a9f",
+    "source_local": "/Users/chesterjohn/Documents/de-linker/docs/research/2026-10-22-configurator-europe/raw/06-faq-zum-unabh-ngig-keitsrechner-htw-berlin.md",
+    "retrieval": "existing 2026-10-22 root Apify source snapshot; provenance in file header; copied unchanged"
+  }
+]

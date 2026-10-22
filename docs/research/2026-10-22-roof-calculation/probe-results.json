@@ -1,0 +1,1961 @@
+{
+  "baseline": "123aea571e80b5b1ba756816914ba86408866ba5",
+  "method": "offline probes; shipped compatibility plus repository fixture feed; synthetic boundary inputs; no network or production",
+  "module": {
+    "model": "TSM-460NEG9R.28",
+    "pmax_w": 460.0,
+    "length_m": 1.762,
+    "width_m": 1.134
+  },
+  "newell_planar_geometry_control": {
+    "ring": [
+      [
+        0,
+        0
+      ],
+      [
+        10,
+        0
+      ],
+      [
+        10,
+        8.660254037844386
+      ],
+      [
+        0,
+        8.660254037844386
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "tilt_deg": 30.0,
+    "azimuth_deg": 180.0,
+    "area_m2": 100.0
+  },
+  "citygml_hole": {
+    "expected_faces": 1,
+    "expected_net_roof_m2": 84,
+    "actual_faces": 2,
+    "actual_sum_roof_m2": 116.0,
+    "actual_modules_by_face": [
+      40,
+      2
+    ],
+    "interior_hole_preserved": false
+  },
+  "string_layout_roof_count_increases": [
+    {
+      "inverter": "HS2-10K-T2-X",
+      "roof_count": 1,
+      "roof_kwp": 0.46,
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "groups": [
+        {
+          "mppt": 1,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 5,
+          "fuses": 0
+        },
+        {
+          "mppt": 2,
+          "plane": null,
+          "strings": 0,
+          "modules_per_string": 0,
+          "fuses": 0
+        }
+      ]
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "roof_count": 2,
+      "roof_kwp": 0.92,
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "groups": [
+        {
+          "mppt": 1,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 5,
+          "fuses": 0
+        },
+        {
+          "mppt": 2,
+          "plane": null,
+          "strings": 0,
+          "modules_per_string": 0,
+          "fuses": 0
+        }
+      ]
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "roof_count": 3,
+      "roof_kwp": 1.38,
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "groups": [
+        {
+          "mppt": 1,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 5,
+          "fuses": 0
+        },
+        {
+          "mppt": 2,
+          "plane": null,
+          "strings": 0,
+          "modules_per_string": 0,
+          "fuses": 0
+        }
+      ]
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "roof_count": 4,
+      "roof_kwp": 1.84,
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "groups": [
+        {
+          "mppt": 1,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 5,
+          "fuses": 0
+        },
+        {
+          "mppt": 2,
+          "plane": null,
+          "strings": 0,
+          "modules_per_string": 0,
+          "fuses": 0
+        }
+      ]
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "roof_count": 19,
+      "roof_kwp": 8.74,
+      "string_count": 20,
+      "string_kwp": 9.2,
+      "groups": [
+        {
+          "mppt": 1,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 10,
+          "fuses": 0
+        },
+        {
+          "mppt": 2,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 10,
+          "fuses": 0
+        }
+      ]
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "roof_count": 21,
+      "roof_kwp": 9.66,
+      "string_count": 22,
+      "string_kwp": 10.12,
+      "groups": [
+        {
+          "mppt": 1,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 11,
+          "fuses": 0
+        },
+        {
+          "mppt": 2,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 11,
+          "fuses": 0
+        }
+      ]
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "roof_count": 23,
+      "roof_kwp": 10.58,
+      "string_count": 24,
+      "string_kwp": 11.04,
+      "groups": [
+        {
+          "mppt": 1,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 12,
+          "fuses": 0
+        },
+        {
+          "mppt": 2,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 12,
+          "fuses": 0
+        }
+      ]
+    },
+    {
+      "inverter": "HS2-10K-T2-X",
+      "roof_count": 25,
+      "roof_kwp": 11.5,
+      "string_count": 26,
+      "string_kwp": 11.96,
+      "groups": [
+        {
+          "mppt": 1,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 13,
+          "fuses": 0
+        },
+        {
+          "mppt": 2,
+          "plane": 0,
+          "strings": 1,
+          "modules_per_string": 13,
+          "fuses": 0
+        }
+      ]
+    }
+  ],
+  "full_residential_roof_to_bom_increases": [
+    {
+      "input_roof_count": 1,
+      "input_kwp": 0.46,
+      "selected_inverter": "HS3-5K-T2-W/G-PX",
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "yield_planes_kwp": 0.46,
+      "yield_mean_kwh": 471.0,
+      "bom_module_quantities": [
+        5.0
+      ]
+    },
+    {
+      "input_roof_count": 2,
+      "input_kwp": 0.92,
+      "selected_inverter": "HS3-5K-T2-W/G-PX",
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "yield_planes_kwp": 0.92,
+      "yield_mean_kwh": 942.0,
+      "bom_module_quantities": [
+        5.0
+      ]
+    },
+    {
+      "input_roof_count": 3,
+      "input_kwp": 1.38,
+      "selected_inverter": "HS3-5K-T2-W/G-PX",
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "yield_planes_kwp": 1.38,
+      "yield_mean_kwh": 1413.0,
+      "bom_module_quantities": [
+        5.0
+      ]
+    },
+    {
+      "input_roof_count": 4,
+      "input_kwp": 1.84,
+      "selected_inverter": "HS3-5K-T2-W/G-PX",
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "yield_planes_kwp": 1.84,
+      "yield_mean_kwh": 1884.0,
+      "bom_module_quantities": [
+        5.0
+      ]
+    },
+    {
+      "input_roof_count": 19,
+      "input_kwp": 8.74,
+      "selected_inverter": "GW8K-ETA-G20",
+      "string_count": 20,
+      "string_kwp": 9.2,
+      "yield_planes_kwp": 8.74,
+      "yield_mean_kwh": 8950.0,
+      "bom_module_quantities": [
+        20.0
+      ]
+    },
+    {
+      "input_roof_count": 23,
+      "input_kwp": 10.58,
+      "selected_inverter": "GW10K-ETA-G20",
+      "string_count": 24,
+      "string_kwp": 11.04,
+      "yield_planes_kwp": 10.58,
+      "yield_mean_kwh": 10834.0,
+      "bom_module_quantities": [
+        24.0
+      ]
+    },
+    {
+      "input_roof_count": 25,
+      "input_kwp": 11.5,
+      "selected_inverter": "GW12K-ETA-G20",
+      "string_count": 26,
+      "string_kwp": 11.96,
+      "yield_planes_kwp": 11.5,
+      "yield_mean_kwh": 11776.0,
+      "bom_module_quantities": [
+        26.0
+      ]
+    },
+    {
+      "input_roof_count": 29,
+      "input_kwp": 13.34,
+      "selected_inverter": "GW12K-ETA-G20",
+      "string_count": 30,
+      "string_kwp": 13.8,
+      "yield_planes_kwp": 13.34,
+      "yield_mean_kwh": 13660.0,
+      "bom_module_quantities": [
+        30.0
+      ]
+    },
+    {
+      "input_roof_count": 31,
+      "input_kwp": 14.26,
+      "selected_inverter": "GW15K-ETA-G20",
+      "string_count": 32,
+      "string_kwp": 14.72,
+      "yield_planes_kwp": 14.26,
+      "yield_mean_kwh": 14602.0,
+      "bom_module_quantities": [
+        32.0
+      ]
+    },
+    {
+      "input_roof_count": 38,
+      "input_kwp": 17.48,
+      "selected_inverter": "GW15K-ETA-G20",
+      "string_count": 39,
+      "string_kwp": 17.94,
+      "yield_planes_kwp": 17.48,
+      "yield_mean_kwh": 17900.0,
+      "bom_module_quantities": [
+        39.0
+      ]
+    }
+  ],
+  "cross_midnight_peak": {
+    "event_hours": 8,
+    "peak_kw": 20,
+    "cap_kw": 10,
+    "engine": {
+      "cap_kw": 10,
+      "power_kw": 10.0,
+      "energy_kwh": 42.6,
+      "events": 1,
+      "short_days": 0
+    },
+    "physical_usable_energy_lower_bound_kwh": 85.1063829787234,
+    "undersizing_factor": 1.9978024173409248
+  },
+  "recharge_energy_balance": {
+    "engine": {
+      "cap_kw": 10,
+      "power_kw": 10.0,
+      "energy_kwh": 10.6,
+      "events": 7,
+      "short_days": 0
+    },
+    "daily_ac_discharge_need_kwh": 10,
+    "daily_grid_headroom_kwh": 10,
+    "battery_energy_drawn_at_engine_eta_kwh": 10.638297872340425,
+    "minimum_charge_energy_if_lossless_kwh": 10.638297872340425
+  },
+  "csv_time_and_column_semantics": {
+    "hourly_samples": 672,
+    "true_days_in_hourly_fixture": 28,
+    "engine_days": 7.0,
+    "accepted_repeated_timestamps_with_extra_numeric_column": true,
+    "true_load_peak_kw": 20,
+    "extra_column_engine_peak_kw": 672.0,
+    "extra_column_first_values": [
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0
+    ]
+  },
+  "commercial_joint_pv_path": {
+    "base": {
+      "status": "sized",
+      "load": {
+        "intervals": 672,
+        "days": 7.0,
+        "annual_kwh": 8343.0,
+        "peak_kw": 20.0,
+        "base_kw": 0.0,
+        "full_load_hours": 417.0,
+        "duration_curve_kw": [
+          20.0,
+          20.0,
+          20.0,
+          20.0,
+          20.0,
+          20.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "options": [
+        {
+          "cap_kw": 19.0,
+          "power_kw": 1.0,
+          "energy_kwh": 4.3,
+          "events": 1
+        },
+        {
+          "cap_kw": 18.0,
+          "power_kw": 2.0,
+          "energy_kwh": 8.5,
+          "events": 1
+        },
+        {
+          "cap_kw": 17.0,
+          "power_kw": 3.0,
+          "energy_kwh": 12.8,
+          "events": 1
+        },
+        {
+          "cap_kw": 16.0,
+          "power_kw": 4.0,
+          "energy_kwh": 17.0,
+          "events": 1
+        },
+        {
+          "cap_kw": 15.0,
+          "power_kw": 5.0,
+          "energy_kwh": 21.3,
+          "events": 1
+        },
+        {
+          "cap_kw": 14.0,
+          "power_kw": 6.0,
+          "energy_kwh": 25.5,
+          "events": 1
+        }
+      ],
+      "power_kw_range": {
+        "low": 10.0,
+        "high": 10.0
+      },
+      "energy_kwh_range": {
+        "low": 42.6,
+        "high": 42.6
+      },
+      "basis": [
+        "Peak of 20 kW capped at 10 kW: 10 kW of battery power and 42.6 kWh of usable energy for the day with the largest area above the cap"
+      ],
+      "systems": [
+        {
+          "inverter": {
+            "id": 1946,
+            "sku": "DLK-GOODWE-GW80KETG10",
+            "model": "GW80K-ET-G10",
+            "brand": "GoodWe",
+            "device_class": "inverters"
+          },
+          "inverter_units": 1,
+          "battery": {
+            "id": 1954,
+            "sku": "DLK-GOODWE-GW614BATACG10",
+            "model": "GW61.4-BAT-AC-G10",
+            "brand": "GoodWe",
+            "device_class": "battery-systems"
+          },
+          "battery_units": 1,
+          "usable_kwh": 60.0,
+          "power_kw": 80.0,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10.",
+              "The Battery Compatibility Overview (p. 6) states that GW61.4-BAT-AC-G10 paired with ET (80–100 kW) cannot reach the inverter's full power output. GoodWe's BAT-C datasheet (p. 2) gives the GW61.4-BAT-AC-G10 an operating voltage range of 275.52 to 346.56 V (nominal 307.2 V); the ET 75–100 kW datasheet (p. 2) gives a battery voltage range of 300 to 800 V and a start-up voltage of 300 V."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                "page": null
+              }
+            ]
+          },
+          "lines": [
+            {
+              "role": "inverter",
+              "product": {
+                "id": 1946,
+                "sku": "DLK-GOODWE-GW80KETG10",
+                "model": "GW80K-ET-G10",
+                "brand": "GoodWe",
+                "device_class": "inverters"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Hybrid inverter",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                  "page": null
+                }
+              ]
+            },
+            {
+              "role": "battery",
+              "product": {
+                "id": 1954,
+                "sku": "DLK-GOODWE-GW614BATACG10",
+                "model": "GW61.4-BAT-AC-G10",
+                "brand": "GoodWe",
+                "device_class": "battery-systems"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Battery system",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                  "page": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inverter": {
+            "id": 1946,
+            "sku": "DLK-GOODWE-GW80KETG10",
+            "model": "GW80K-ET-G10",
+            "brand": "GoodWe",
+            "device_class": "inverters"
+          },
+          "inverter_units": 1,
+          "battery": {
+            "id": 1955,
+            "sku": "DLK-GOODWE-GW1126BATACG10",
+            "model": "GW112.6-BAT-AC-G10",
+            "brand": "GoodWe",
+            "device_class": "battery-systems"
+          },
+          "battery_units": 1,
+          "usable_kwh": 110.0,
+          "power_kw": 80.0,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                "page": null
+              }
+            ]
+          },
+          "lines": [
+            {
+              "role": "inverter",
+              "product": {
+                "id": 1946,
+                "sku": "DLK-GOODWE-GW80KETG10",
+                "model": "GW80K-ET-G10",
+                "brand": "GoodWe",
+                "device_class": "inverters"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Hybrid inverter",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                  "page": null
+                }
+              ]
+            },
+            {
+              "role": "battery",
+              "product": {
+                "id": 1955,
+                "sku": "DLK-GOODWE-GW1126BATACG10",
+                "model": "GW112.6-BAT-AC-G10",
+                "brand": "GoodWe",
+                "device_class": "battery-systems"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Battery system",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                  "page": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inverter": {
+            "id": 1947,
+            "sku": "DLK-GOODWE-GW9999KETG10",
+            "model": "GW99.99K-ET-G10",
+            "brand": "GoodWe",
+            "device_class": "inverters"
+          },
+          "inverter_units": 1,
+          "battery": {
+            "id": 1954,
+            "sku": "DLK-GOODWE-GW614BATACG10",
+            "model": "GW61.4-BAT-AC-G10",
+            "brand": "GoodWe",
+            "device_class": "battery-systems"
+          },
+          "battery_units": 1,
+          "usable_kwh": 60.0,
+          "power_kw": 100.0,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10.",
+              "The Battery Compatibility Overview (p. 6) states that GW61.4-BAT-AC-G10 paired with ET (80–100 kW) cannot reach the inverter's full power output. GoodWe's BAT-C datasheet (p. 2) gives the GW61.4-BAT-AC-G10 an operating voltage range of 275.52 to 346.56 V (nominal 307.2 V); the ET 75–100 kW datasheet (p. 2) gives a battery voltage range of 300 to 800 V and a start-up voltage of 300 V."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                "page": null
+              }
+            ]
+          },
+          "lines": [
+            {
+              "role": "inverter",
+              "product": {
+                "id": 1947,
+                "sku": "DLK-GOODWE-GW9999KETG10",
+                "model": "GW99.99K-ET-G10",
+                "brand": "GoodWe",
+                "device_class": "inverters"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Hybrid inverter",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                  "page": null
+                }
+              ]
+            },
+            {
+              "role": "battery",
+              "product": {
+                "id": 1954,
+                "sku": "DLK-GOODWE-GW614BATACG10",
+                "model": "GW61.4-BAT-AC-G10",
+                "brand": "GoodWe",
+                "device_class": "battery-systems"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Battery system",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                  "page": null
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "Above 30 kVA, VDE-AR-N 4105 requires central grid and system protection (NA-Schutz).",
+        "The profile covers 7 days; a full year shows the true annual peak."
+      ],
+      "inquiry": "mailto:sales@de-linker.com?subject=Commercial%20storage%20inquiry%2080538"
+    },
+    "with_self_consumption_and_1000kwp": {
+      "status": "sized",
+      "load": {
+        "intervals": 672,
+        "days": 7.0,
+        "annual_kwh": 8343.0,
+        "peak_kw": 20.0,
+        "base_kw": 0.0,
+        "full_load_hours": 417.0,
+        "duration_curve_kw": [
+          20.0,
+          20.0,
+          20.0,
+          20.0,
+          20.0,
+          20.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "options": [
+        {
+          "cap_kw": 19.0,
+          "power_kw": 1.0,
+          "energy_kwh": 4.3,
+          "events": 1
+        },
+        {
+          "cap_kw": 18.0,
+          "power_kw": 2.0,
+          "energy_kwh": 8.5,
+          "events": 1
+        },
+        {
+          "cap_kw": 17.0,
+          "power_kw": 3.0,
+          "energy_kwh": 12.8,
+          "events": 1
+        },
+        {
+          "cap_kw": 16.0,
+          "power_kw": 4.0,
+          "energy_kwh": 17.0,
+          "events": 1
+        },
+        {
+          "cap_kw": 15.0,
+          "power_kw": 5.0,
+          "energy_kwh": 21.3,
+          "events": 1
+        },
+        {
+          "cap_kw": 14.0,
+          "power_kw": 6.0,
+          "energy_kwh": 25.5,
+          "events": 1
+        }
+      ],
+      "power_kw_range": {
+        "low": 10.0,
+        "high": 10.0
+      },
+      "energy_kwh_range": {
+        "low": 42.6,
+        "high": 42.6
+      },
+      "basis": [
+        "Peak of 20 kW capped at 10 kW: 10 kW of battery power and 42.6 kWh of usable energy for the day with the largest area above the cap"
+      ],
+      "systems": [
+        {
+          "inverter": {
+            "id": 1946,
+            "sku": "DLK-GOODWE-GW80KETG10",
+            "model": "GW80K-ET-G10",
+            "brand": "GoodWe",
+            "device_class": "inverters"
+          },
+          "inverter_units": 1,
+          "battery": {
+            "id": 1954,
+            "sku": "DLK-GOODWE-GW614BATACG10",
+            "model": "GW61.4-BAT-AC-G10",
+            "brand": "GoodWe",
+            "device_class": "battery-systems"
+          },
+          "battery_units": 1,
+          "usable_kwh": 60.0,
+          "power_kw": 80.0,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10.",
+              "The Battery Compatibility Overview (p. 6) states that GW61.4-BAT-AC-G10 paired with ET (80–100 kW) cannot reach the inverter's full power output. GoodWe's BAT-C datasheet (p. 2) gives the GW61.4-BAT-AC-G10 an operating voltage range of 275.52 to 346.56 V (nominal 307.2 V); the ET 75–100 kW datasheet (p. 2) gives a battery voltage range of 300 to 800 V and a start-up voltage of 300 V."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                "page": null
+              }
+            ]
+          },
+          "lines": [
+            {
+              "role": "inverter",
+              "product": {
+                "id": 1946,
+                "sku": "DLK-GOODWE-GW80KETG10",
+                "model": "GW80K-ET-G10",
+                "brand": "GoodWe",
+                "device_class": "inverters"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Hybrid inverter",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                  "page": null
+                }
+              ]
+            },
+            {
+              "role": "battery",
+              "product": {
+                "id": 1954,
+                "sku": "DLK-GOODWE-GW614BATACG10",
+                "model": "GW61.4-BAT-AC-G10",
+                "brand": "GoodWe",
+                "device_class": "battery-systems"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Battery system",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                  "page": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inverter": {
+            "id": 1946,
+            "sku": "DLK-GOODWE-GW80KETG10",
+            "model": "GW80K-ET-G10",
+            "brand": "GoodWe",
+            "device_class": "inverters"
+          },
+          "inverter_units": 1,
+          "battery": {
+            "id": 1955,
+            "sku": "DLK-GOODWE-GW1126BATACG10",
+            "model": "GW112.6-BAT-AC-G10",
+            "brand": "GoodWe",
+            "device_class": "battery-systems"
+          },
+          "battery_units": 1,
+          "usable_kwh": 110.0,
+          "power_kw": 80.0,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                "page": null
+              }
+            ]
+          },
+          "lines": [
+            {
+              "role": "inverter",
+              "product": {
+                "id": 1946,
+                "sku": "DLK-GOODWE-GW80KETG10",
+                "model": "GW80K-ET-G10",
+                "brand": "GoodWe",
+                "device_class": "inverters"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Hybrid inverter",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                  "page": null
+                }
+              ]
+            },
+            {
+              "role": "battery",
+              "product": {
+                "id": 1955,
+                "sku": "DLK-GOODWE-GW1126BATACG10",
+                "model": "GW112.6-BAT-AC-G10",
+                "brand": "GoodWe",
+                "device_class": "battery-systems"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Battery system",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                  "page": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inverter": {
+            "id": 1947,
+            "sku": "DLK-GOODWE-GW9999KETG10",
+            "model": "GW99.99K-ET-G10",
+            "brand": "GoodWe",
+            "device_class": "inverters"
+          },
+          "inverter_units": 1,
+          "battery": {
+            "id": 1954,
+            "sku": "DLK-GOODWE-GW614BATACG10",
+            "model": "GW61.4-BAT-AC-G10",
+            "brand": "GoodWe",
+            "device_class": "battery-systems"
+          },
+          "battery_units": 1,
+          "usable_kwh": 60.0,
+          "power_kw": 100.0,
+          "release": {
+            "verdict": "released",
+            "conditions": [
+              "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10.",
+              "The Battery Compatibility Overview (p. 6) states that GW61.4-BAT-AC-G10 paired with ET (80–100 kW) cannot reach the inverter's full power output. GoodWe's BAT-C datasheet (p. 2) gives the GW61.4-BAT-AC-G10 an operating voltage range of 275.52 to 346.56 V (nominal 307.2 V); the ET 75–100 kW datasheet (p. 2) gives a battery voltage range of 300 to 800 V and a start-up voltage of 300 V."
+            ],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                "page": null
+              },
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                "page": null
+              }
+            ]
+          },
+          "lines": [
+            {
+              "role": "inverter",
+              "product": {
+                "id": 1947,
+                "sku": "DLK-GOODWE-GW9999KETG10",
+                "model": "GW99.99K-ET-G10",
+                "brand": "GoodWe",
+                "device_class": "inverters"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Hybrid inverter",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                  "page": null
+                }
+              ]
+            },
+            {
+              "role": "battery",
+              "product": {
+                "id": 1954,
+                "sku": "DLK-GOODWE-GW614BATACG10",
+                "model": "GW61.4-BAT-AC-G10",
+                "brand": "GoodWe",
+                "device_class": "battery-systems"
+              },
+              "quantity": 1.0,
+              "unit": "pcs",
+              "label": "Battery system",
+              "basis": [],
+              "documents": [
+                {
+                  "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                  "page": null
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "warnings": [
+        "Above 30 kVA, VDE-AR-N 4105 requires central grid and system protection (NA-Schutz).",
+        "The profile covers 7 days; a full year shows the true annual peak."
+      ],
+      "inquiry": "mailto:sales@de-linker.com?subject=Commercial%20storage%20inquiry%2080538"
+    },
+    "identical_entire_result": true
+  },
+  "commercial_battery_power_ignored": {
+    "requested_kw": 75,
+    "requested_kwh": 60,
+    "first_system": {
+      "inverter": {
+        "id": 1946,
+        "sku": "DLK-GOODWE-GW80KETG10",
+        "model": "GW80K-ET-G10",
+        "brand": "GoodWe",
+        "device_class": "inverters"
+      },
+      "inverter_units": 1,
+      "battery": {
+        "id": 1954,
+        "sku": "DLK-GOODWE-GW614BATACG10",
+        "model": "GW61.4-BAT-AC-G10",
+        "brand": "GoodWe",
+        "device_class": "battery-systems"
+      },
+      "battery_units": 1,
+      "usable_kwh": 60.0,
+      "power_kw": 80.0,
+      "release": {
+        "verdict": "released",
+        "conditions": [
+          "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10.",
+          "The Battery Compatibility Overview (p. 6) states that GW61.4-BAT-AC-G10 paired with ET (80–100 kW) cannot reach the inverter's full power output. GoodWe's BAT-C datasheet (p. 2) gives the GW61.4-BAT-AC-G10 an operating voltage range of 275.52 to 346.56 V (nominal 307.2 V); the ET 75–100 kW datasheet (p. 2) gives a battery voltage range of 300 to 800 V and a start-up voltage of 300 V."
+        ],
+        "documents": [
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+            "page": null
+          },
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+            "page": null
+          },
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+            "page": null
+          },
+          {
+            "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+            "page": null
+          }
+        ]
+      },
+      "lines": [
+        {
+          "role": "inverter",
+          "product": {
+            "id": 1946,
+            "sku": "DLK-GOODWE-GW80KETG10",
+            "model": "GW80K-ET-G10",
+            "brand": "GoodWe",
+            "device_class": "inverters"
+          },
+          "quantity": 1.0,
+          "unit": "pcs",
+          "label": "Hybrid inverter",
+          "basis": [],
+          "documents": [
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+              "page": null
+            }
+          ]
+        },
+        {
+          "role": "battery",
+          "product": {
+            "id": 1954,
+            "sku": "DLK-GOODWE-GW614BATACG10",
+            "model": "GW61.4-BAT-AC-G10",
+            "brand": "GoodWe",
+            "device_class": "battery-systems"
+          },
+          "quantity": 1.0,
+          "unit": "pcs",
+          "label": "Battery system",
+          "basis": [],
+          "documents": [
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+              "page": null
+            }
+          ]
+        }
+      ]
+    },
+    "battery_power_figure": {
+      "value": "55.2 / 67.5",
+      "unit": "kW",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+        "page": 2
+      },
+      "value_de": null
+    },
+    "source_caveat": "fixture reproduces the data consumer; original hosted PDF not re-fetched in this probe"
+  },
+  "commercial_cabinet_parallel_gate_bypassed": {
+    "requested_kw": 100,
+    "requested_kwh": 600,
+    "parallel_contract_count": 0,
+    "systems": [
+      {
+        "inverter": {
+          "id": 6321,
+          "sku": "DLK-GOODWE-GW125261ESALCNG10",
+          "model": "GW125/261-ESA-LCN-G10",
+          "brand": "GoodWe",
+          "device_class": "all-in-one-systems"
+        },
+        "inverter_units": 3,
+        "battery": null,
+        "battery_units": 0,
+        "usable_kwh": 783.8,
+        "power_kw": 375.0,
+        "release": null,
+        "lines": [
+          {
+            "role": "inverter",
+            "product": {
+              "id": 6321,
+              "sku": "DLK-GOODWE-GW125261ESALCNG10",
+              "model": "GW125/261-ESA-LCN-G10",
+              "brand": "GoodWe",
+              "device_class": "all-in-one-systems"
+            },
+            "quantity": 3.0,
+            "unit": "pcs",
+            "label": "Hybrid inverter",
+            "basis": [],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+                "page": null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "pvgis_htw_disconnection": {
+    "low_yield_kwh": 2208.0,
+    "high_yield_kwh": 7728.0,
+    "low_metrics": {
+      "usable_kwh": 5.8,
+      "autarky_range": {
+        "low": 0.6184,
+        "high": 0.7184
+      },
+      "self_consumption_range": {
+        "low": 0.4826,
+        "high": 0.5533
+      },
+      "without_storage_autarky_range": {
+        "low": 0.2813,
+        "high": 0.3813
+      },
+      "without_storage_self_consumption_range": {
+        "low": 0.1987,
+        "high": 0.2695
+      },
+      "basis": "HTW Berlin Unabhängigkeitsrechner, tables of 2024-08-23"
+    },
+    "high_metrics": {
+      "usable_kwh": 5.8,
+      "autarky_range": {
+        "low": 0.6184,
+        "high": 0.7184
+      },
+      "self_consumption_range": {
+        "low": 0.4826,
+        "high": 0.5533
+      },
+      "without_storage_autarky_range": {
+        "low": 0.2813,
+        "high": 0.3813
+      },
+      "without_storage_self_consumption_range": {
+        "low": 0.1987,
+        "high": 0.2695
+      },
+      "basis": "HTW Berlin Unabhängigkeitsrechner, tables of 2024-08-23"
+    },
+    "identical_metrics": true,
+    "lossless_autarky_upper_bound_low_yield": 0.552
+  },
+  "positive_method_controls": {
+    "storage_10kwp_4000kwh_upper_kwh": 6.0,
+    "small_pv_rejected_for_cycling": true,
+    "w_to_kw_and_wh_to_kwh": true,
+    "unrecognized_unit_stays_unknown": true,
+    "unknown_phase_stays_unknown": true,
+    "unknown_pair_stays_unknown": true,
+    "narrow_rejection_overrides_family_release": true,
+    "exact_htw_table_node_preserved": true
+  },
+  "backup_power_not_an_eligibility_gate": {
+    "requested_backup_kw": 10,
+    "requested_backup_hours": 0.5,
+    "reserve_kwh": 5.32,
+    "selected_inverter": "GW5K-ETA-G20",
+    "inverter_ac_power_kw": 5.0,
+    "available_backup_figure": {
+      "value": "5",
+      "unit": "kVA",
+      "citation": {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "page": 2
+      },
+      "value_de": null
+    },
+    "selected_battery_kwh": 10.0,
+    "eligibility_rules": [
+      {
+        "id": "application",
+        "passed": true,
+        "value": "home",
+        "limit": "home",
+        "label": "Application",
+        "text": "residential, as selected"
+      },
+      {
+        "id": "phase",
+        "passed": true,
+        "value": 3.0,
+        "limit": 3.0,
+        "label": "Grid connection phases",
+        "text": "3-phase, as selected"
+      },
+      {
+        "id": "pv_input",
+        "passed": true,
+        "value": 10.0,
+        "limit": 5.52,
+        "label": "Maximum PV input of the inverter covers the array",
+        "text": "10 kW for a 5.52 kWp array"
+      },
+      {
+        "id": "dc_ac_ratio",
+        "passed": true,
+        "value": 1.1,
+        "limit": 2.0,
+        "label": "DC/AC ratio within the manufacturer's limit",
+        "text": "1.10, at most 2.00 per the manufacturer"
+      },
+      {
+        "id": "string_count",
+        "passed": true,
+        "value": 12.0,
+        "limit": null,
+        "label": "Array fits the MPPT inputs",
+        "text": "12 modules connected"
+      },
+      {
+        "id": "battery_release",
+        "passed": true,
+        "value": 6.0,
+        "limit": null,
+        "label": "Battery released by the manufacturers",
+        "text": "6 released batteries"
+      },
+      {
+        "id": "backup_storage",
+        "passed": true,
+        "value": 10.0,
+        "limit": 5.32,
+        "label": "Released battery configuration covers the backup reserve",
+        "text": "10 kWh usable for a 5.32 kWh reserve"
+      }
+    ]
+  },
+  "required_accessory_missing_feed_fault_injection": {
+    "injected_change": "removed BC2-HV1 product from fixture feed; unchanged shipped release requires that accessory",
+    "selected_inverter": "H2-10K-T3",
+    "selected_battery": "BU2-5.0-HV1",
+    "release": {
+      "verdict": "released_with_accessory",
+      "conditions": [
+        "SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and the B2 manual (V1.2, PDF p5) says the B2 can only be used as such a set: the control module is an article of its own.",
+        "SAJ's Configuration Instructions V1.0 (Section 2) give the H2 series system as H2 + BC2 + BU2. SAJ's B2 datasheet names B2-5.0 to B2-25.0 as one to five BU2-5.0 modules with one BC2-HV1 control module, and SAJ's B2 manual (V1.2, PDF p5) says the B2 can only be used as a set with SAJ's H2 high voltage series storage inverter. The listing does not cover the one-module B2-5.0, whose operating voltage lies below the H2 T3's battery voltage range.",
+        "One BU2-5.0 module alone operates at 89.6 to 115.2 V (SAJ's B2 datasheet gives this for the one-module B2-5.0), below the H2 T3's battery voltage range of 180 to 800 V; two modules operate at 179.2 to 230.4 V."
+      ],
+      "documents": [
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+          "page": null
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+          "page": null
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        },
+        {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+          "page": 37
+        }
+      ]
+    },
+    "actual_bom_models": [
+      "H2-10K-T3",
+      "BU2-5.0-HV1"
+    ],
+    "design_still_selected": true
+  },
+  "battery_electrical_constraints_fault_injection": {
+    "injected_change": "battery operating voltage 2000–2500V and maximum discharge current 0.01A; unchanged release/quantity data",
+    "original_quantities_energy": [
+      [
+        2,
+        9.0
+      ],
+      [
+        3,
+        13.5
+      ],
+      [
+        4,
+        18.0
+      ],
+      [
+        5,
+        22.5
+      ]
+    ],
+    "mutated_quantities_energy": [
+      [
+        2,
+        9.0
+      ],
+      [
+        3,
+        13.5
+      ],
+      [
+        4,
+        18.0
+      ],
+      [
+        5,
+        22.5
+      ]
+    ],
+    "unchanged": true,
+    "scope": "data-consumer dependency proof; not a real product voltage failure"
+  },
+  "roof_report_provenance": {
+    "roof_input_fields": [
+      "locale",
+      "plz",
+      "annual_kwh",
+      "pv_kwp",
+      "planes",
+      "location",
+      "roof_source",
+      "phase",
+      "backup",
+      "backup_load_kw",
+      "backup_hours",
+      "heat_pump",
+      "electric_vehicle",
+      "existing_inverter",
+      "inverter_id",
+      "battery_id"
+    ],
+    "roof_report": {
+      "title": "Design report",
+      "subtitle": "Solution Configurator, residential system",
+      "generated_at": "audit",
+      "locale": "en",
+      "sections": [
+        {
+          "id": "site",
+          "title": "Site and inputs",
+          "rows": [
+            {
+              "label": "Postcode",
+              "value": "80538 München",
+              "href": null
+            },
+            {
+              "label": "Position",
+              "value": "48.140, 11.588",
+              "href": null
+            },
+            {
+              "label": "Annual consumption",
+              "value": "4,000 kWh",
+              "href": null
+            },
+            {
+              "label": "PV array",
+              "value": "5.52 kWp",
+              "href": null
+            },
+            {
+              "label": "Roof plane 1",
+              "value": "5.52 kWp, tilt 35°, facing 180°",
+              "href": null
+            },
+            {
+              "label": "Roof planes",
+              "value": "Drawn on the aerial image",
+              "href": null
+            },
+            {
+              "label": "Grid connection",
+              "value": "3-phase",
+              "href": null
+            },
+            {
+              "label": "Backup supply",
+              "value": "Not needed",
+              "href": null
+            },
+            {
+              "label": "Heat pump",
+              "value": "No",
+              "href": null
+            },
+            {
+              "label": "Electric car",
+              "value": "No",
+              "href": null
+            }
+          ],
+          "paragraphs": [],
+          "table": null
+        },
+        {
+          "id": "yield",
+          "title": "PV yield",
+          "rows": [
+            {
+              "label": "Annual yield, range over 2022–2023",
+              "value": "5,652 kWh",
+              "href": null
+            },
+            {
+              "label": "Mean annual yield",
+              "value": "5,652 kWh",
+              "href": null
+            },
+            {
+              "label": "Specific yield",
+              "value": "1,024 kWh/kWp",
+              "href": null
+            },
+            {
+              "label": "Source",
+              "value": "PVGIS 5 (synthetic audit fixture) through pvlib, system loss 14 %",
+              "href": null
+            }
+          ],
+          "paragraphs": [],
+          "table": null
+        },
+        {
+          "id": "storage",
+          "title": "Storage sizing",
+          "rows": [
+            {
+              "label": "PV at least 0.5 kWp per MWh of annual consumption (HTW Berlin)",
+              "value": "1.38 kWp per MWh, at least 0.5 · met",
+              "href": null
+            },
+            {
+              "label": "Usable capacity at most 1.5 kWh per kWp (HTW Berlin)",
+              "value": "1.5 kWh × 5.52 kWp = 8.28 kWh",
+              "href": null
+            },
+            {
+              "label": "Usable capacity at most 1.5 kWh per MWh of annual consumption (HTW Berlin)",
+              "value": "1.5 kWh × 4 MWh = 6 kWh",
+              "href": null
+            },
+            {
+              "label": "Usable capacity, HTW upper limit",
+              "value": "6 kWh",
+              "href": null
+            },
+            {
+              "label": "Proposed usable capacity",
+              "value": "5.8 kWh (1 × GW6.0-BAT-D-G20)",
+              "href": null
+            }
+          ],
+          "paragraphs": [],
+          "table": null
+        },
+        {
+          "id": "metrics",
+          "title": "Self-sufficiency and self-consumption",
+          "rows": [
+            {
+              "label": "Self-sufficiency with storage",
+              "value": "62 % – 72 %",
+              "href": null
+            },
+            {
+              "label": "Self-consumption with storage",
+              "value": "48 % – 55 %",
+              "href": null
+            },
+            {
+              "label": "Self-sufficiency without storage",
+              "value": "28 % – 38 %",
+              "href": null
+            },
+            {
+              "label": "Self-consumption without storage",
+              "value": "20 % – 27 %",
+              "href": null
+            },
+            {
+              "label": "Method",
+              "value": "HTW Berlin Unabhängigkeitsrechner tables; the range covers the spread of real households (most within 5 percentage points of the table value)",
+              "href": null
+            }
+          ],
+          "paragraphs": [],
+          "table": null
+        },
+        {
+          "id": "basis",
+          "title": "Selection basis",
+          "rows": [
+            {
+              "label": "Inverter",
+              "value": "GoodWe GW5K-ETA-G20",
+              "href": null
+            },
+            {
+              "label": "Application",
+              "value": "residential, as selected · met",
+              "href": null
+            },
+            {
+              "label": "Grid connection phases",
+              "value": "3-phase, as selected · met",
+              "href": null
+            },
+            {
+              "label": "Maximum PV input of the inverter covers the array",
+              "value": "10 kW for a 5.52 kWp array · met",
+              "href": null
+            },
+            {
+              "label": "DC/AC ratio within the manufacturer's limit",
+              "value": "1.10, at most 2.00 per the manufacturer · met",
+              "href": null
+            },
+            {
+              "label": "Array fits the MPPT inputs",
+              "value": "12 modules connected · met",
+              "href": null
+            },
+            {
+              "label": "Battery released by the manufacturers",
+              "value": "6 released batteries · met",
+              "href": null
+            },
+            {
+              "label": "String layout",
+              "value": "12 × 460 Wp in one string; Voc at −10 °C: 58.3 V per module",
+              "href": null
+            }
+          ],
+          "paragraphs": [],
+          "table": null
+        },
+        {
+          "id": "releases",
+          "title": "Manufacturer releases and documents",
+          "rows": [
+            {
+              "label": "GW5K-ETA-G20 + GW6.0-BAT-D-G20",
+              "value": "Released",
+              "href": null
+            },
+            {
+              "label": "Document",
+              "value": "GW_ESA-5-30kW_Datasheet-EN.pdf",
+              "href": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf"
+            },
+            {
+              "label": "Document",
+              "value": "GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+              "href": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf"
+            }
+          ],
+          "paragraphs": [
+            "The GoodWe ESA datasheet lists GW6.0-BAT-D-G20 and GW9.0-BAT-D-G20 modules and prints scalability of 12 pcs (p. 3). The user manual limits one column to six batteries and names a battery expansion kit for higher capacity or a lower column (p. 79)."
+          ],
+          "table": null
+        },
+        {
+          "id": "bom",
+          "title": "Bill of materials",
+          "rows": [],
+          "paragraphs": [],
+          "table": {
+            "columns": [
+              "Qty",
+              "Item",
+              "Model",
+              "Supplied by"
+            ],
+            "rows": [
+              [
+                "1 pc",
+                "Hybrid inverter",
+                "GoodWe GW5K-ETA-G20",
+                "Linker product"
+              ],
+              [
+                "1 pc",
+                "Battery modules",
+                "GoodWe GW6.0-BAT-D-G20",
+                "Linker product"
+              ],
+              [
+                "12 pcs",
+                "PV modules of your choice (layout checked with Trina Solar TSM-460NEG9R.28)",
+                "–",
+                "Installer's scope"
+              ],
+              [
+                "1 set",
+                "Mounting system for 12 modules",
+                "–",
+                "Installer's scope"
+              ],
+              [
+                "30 m",
+                "PV string cable for both poles; measure the route on site",
+                "–",
+                "Installer's scope"
+              ],
+              [
+                "2 pairs",
+                "PV connector pairs, mating the module and the inverter connectors",
+                "–",
+                "Installer's scope"
+              ],
+              [
+                "1 set",
+                "AC protection and grid connection to VDE-AR-N 4105",
+                "–",
+                "Installer's scope"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "assumptions",
+          "title": "Assumptions and limits",
+          "rows": [],
+          "paragraphs": [
+            "This report contains no economics: no payback period, cash flow or feed-in tariff.",
+            "The string layout uses Trina Solar TSM-460NEG9R.28 as a reference module; the module you install can change it.",
+            "Self-sufficiency figures describe an average household; measured values differ with each household's habits.",
+            "Open-circuit voltage checked at −10 °C cell temperature. (Planning assumption without a published source)",
+            "MPP voltage checked at 70 °C cell temperature, with the module's Voc temperature coefficient. (Planning assumption without a published source)",
+            "DC cable: 15 m per string and pole until the route is measured. (Planning assumption without a published source)",
+            "Two connector pairs per string: one at the array, one at the inverter. (Planning assumption without a published source)"
+          ],
+          "table": null
+        },
+        {
+          "id": "next",
+          "title": "Next steps",
+          "rows": [],
+          "paragraphs": [
+            "Add the Linker products to your solution draft and request a Proforma; we reply within one business day.",
+            "Before ordering, confirm the string layout with the module you install, the cable routes and the grid connection on site."
+          ],
+          "table": null
+        }
+      ]
+    },
+    "report_unverified_rule_ids": [
+      "string_t_min",
+      "string_t_cell_max",
+      "dc_cable_length",
+      "connector_pairs"
+    ],
+    "roof_assumption_ids_omitted": [
+      "module_gap",
+      "roof_edge_inset",
+      "roof_flat",
+      "roof_max_tilt",
+      "roof_north"
+    ]
+  }
+}

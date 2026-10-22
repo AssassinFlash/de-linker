@@ -1,0 +1,58 @@
+{
+  "result_file": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-calculation-550/docs/research/2026-10-22-roof-calculation/probe-results.json",
+  "counterexample_groups": 16,
+  "full_bom_mismatches": [
+    {
+      "input_roof_count": 1,
+      "input_kwp": 0.46,
+      "selected_inverter": "HS3-5K-T2-W/G-PX",
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "yield_planes_kwp": 0.46,
+      "yield_mean_kwh": 471.0,
+      "bom_module_quantities": [
+        5.0
+      ]
+    },
+    {
+      "input_roof_count": 2,
+      "input_kwp": 0.92,
+      "selected_inverter": "HS3-5K-T2-W/G-PX",
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "yield_planes_kwp": 0.92,
+      "yield_mean_kwh": 942.0,
+      "bom_module_quantities": [
+        5.0
+      ]
+    },
+    {
+      "input_roof_count": 3,
+      "input_kwp": 1.38,
+      "selected_inverter": "HS3-5K-T2-W/G-PX",
+      "string_count": 5,
+      "string_kwp": 2.3,
+      "yield_planes_kwp": 1.38,
+      "yield_mean_kwh": 1413.0,
+      "bom_module_quantities": [
+        5.0
+      ]
+    }
+  ],
+  "cross_midnight": {
+    "event_hours": 8,
+    "peak_kw": 20,
+    "cap_kw": 10,
+    "engine": {
+      "cap_kw": 10,
+      "power_kw": 10.0,
+      "energy_kwh": 42.6,
+      "events": 1,
+      "short_days": 0
+    },
+    "physical_usable_energy_lower_bound_kwh": 85.1063829787234,
+    "undersizing_factor": 1.9978024173409248
+  },
+  "joint_pv_identical": true,
+  "htw_invariant": true
+}
