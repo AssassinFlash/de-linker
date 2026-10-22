@@ -65,6 +65,13 @@ def deepseek(raw: dict[str, Any] | None = None) -> dict[str, Any]:
     }
 
 
+def test_unestablished_dated_escalation_model_does_not_authorize() -> None:
+    response = deepseek()
+    response["model"] = "deepseek-flash-20261023"
+    result = assessment._escalation(response)
+    assert (result["decision"], result["reason"]) == ("unknown", "invalid_model")
+
+
 @pytest.mark.parametrize(
     "change",
     [

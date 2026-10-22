@@ -190,9 +190,7 @@ def parse(body: Any) -> dict[str, Any]:
 
 
 def _escalation(body: Any) -> dict[str, Any]:
-    if not isinstance(body, dict) or not re.fullmatch(
-        r"deepseek-flash(?:-\d{8})?", str(body.get("model", ""))
-    ):
+    if not isinstance(body, dict) or body.get("model") != ESCALATION_MODEL:
         return undetermined("invalid_model")
     try:
         raw = json.loads(body["choices"][0]["message"]["content"])
