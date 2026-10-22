@@ -34,6 +34,33 @@ final class JobStore {
 	private const ERROR_META    = '_linker_mail_error';
 
 	/**
+	 * Erase the frozen personal message and subject while preserving the private job/audit identity.
+	 *
+	 * @param int $id A source-owned native job being erased.
+	 * @throws \RuntimeException Copy removal must be confirmed before privacy reports success.
+	 */
+	public function erase_message( int $id ): void {
+		delete_post_meta( $id, self::MESSAGE_META );
+		clean_post_cache( $id );
+		if ( metadata_exists( 'post', $id, self::MESSAGE_META ) ) {
+			throw new \RuntimeException( 'mail_message_erasure_unconfirmed' );
+		}
+		if ( self::POST_TYPE === get_post_type( $id ) ) {
+			$written = wp_update_post(
+				array(
+					'ID'         => $id,
+					'post_title' => 'erased',
+				),
+				true
+			);
+			clean_post_cache( $id );
+			if ( is_wp_error( $written ) || 'erased' !== get_post_field( 'post_title', $id, 'raw' ) ) {
+				throw new \RuntimeException( 'mail_subject_erasure_unconfirmed' );
+			}
+		}
+	}
+
+	/**
 	 * Post status of a message that failed every attempt.
 	 */
 	public const FAILED_STATUS = 'draft';

@@ -26,6 +26,29 @@ final class ConversationAuthorization {
 	 * @return bool|array{status:string}
 	 */
 	public static function enqueue( int $id, array $messages, Conversation $conversation, Message $captured ): bool|array {
+		$answer = false;
+		Lock::run(
+			'conversation-source-' . $id,
+			static function () use ( $id, $messages, $conversation, $captured, &$answer ): void {
+				$erased = AuthorizationStore::read( 'conversation-erased-' . $id );
+				if ( ! is_array( $erased ) || array() !== $erased ) {
+					return; }
+				$answer = self::enqueue_current( $id, $messages, $conversation, $captured );
+			}
+		);
+		return $answer;
+	}
+
+	/** Freeze only while owning the source-level deletion lock.
+	 *
+	 * @param int          $id Native source.
+	 * @param array<mixed> $messages Full native messages.
+	 * @param Conversation $conversation Native rendered conversation.
+	 * @param Message      $captured Actual native mail.
+	 * @return bool|array{status:string} Durable result.
+	 * @throws \RuntimeException A transaction cannot publish an unconfirmed source/job.
+	 */
+	private static function enqueue_current( int $id, array $messages, Conversation $conversation, Message $captured ): bool|array {
 		$source = array(
 			'conversation_id'   => $id,
 			'messages'          => $messages,
@@ -99,6 +122,7 @@ final class ConversationAuthorization {
 	 * @param array<string,mixed> $source Frozen native source.
 	 */
 	private static function current( array $source ): bool {
+		clean_post_cache( (int) ( $source['conversation_id'] ?? 0 ) );
 		/** Default-deny authoritative native thread check.
  *
  * @since 0.1.0
@@ -295,8 +319,31 @@ final class ConversationAuthorization {
 	 */
 	public function erase_source( int $id ): void {
 		if ( 'linker_conversation' !== get_post_type( $id ) ) {
-			return;
-		}
+			return; }
+		$locked = Lock::run(
+			'conversation-source-' . $id,
+			function () use ( $id ): void {
+				$revoked = AuthorizationStore::edit(
+					'conversation-erased-' . $id,
+					static function ( array &$state ): void {
+						$state['status'] = 'erased';
+					}
+				);
+				if ( ! $revoked ) {
+					throw new \RuntimeException( 'conversation_source_erasure_unavailable' ); }
+				$this->erase_current( $id );
+			}
+		);
+		if ( ! $locked ) {
+			throw new \RuntimeException( 'conversation_source_erasure_busy' ); }
+	}
+
+	/** Remove every copy after the source-level irreversible tombstone is durable.
+	 *
+	 * @param int $id Native conversation whose deletion is serialized with producers.
+	 * @throws \RuntimeException Erasure remains visibly retryable until every copy is removed.
+	 */
+	private function erase_current( int $id ): void {
 		foreach ( get_posts(
 			array(
 				'post_type'   => JobStore::POST_TYPE,
@@ -317,13 +364,14 @@ final class ConversationAuthorization {
 			if ( ! $revoked ) {
 				throw new \RuntimeException( 'conversation_authorization_erasure_failed' );
 			}
-			foreach ( array( self::SOURCE, '_linker_mail_message' ) as $key ) {
+			foreach ( array( self::SOURCE ) as $key ) {
 				delete_post_meta( $job, $key );
 				wp_cache_delete( $job, 'post_meta' );
 				if ( metadata_exists( 'post', $job, $key ) ) {
 					throw new \RuntimeException( 'conversation_mail_erasure_failed' );
 				}
 			}
+			( new JobStore() )->erase_message( $job );
 			update_post_meta( $job, self::PENDING, 'erased' );
 		}
 	}
