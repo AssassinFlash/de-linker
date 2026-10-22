@@ -1,0 +1,253 @@
+                                                                                                                   Note de mise à jour 2026.0
+
+
+
+
+                                               Sommaire
+
+  elec calc SOLAR                                                                                                                               1
+
+  Import d’un projet depuis archelios PRO                                                                                                       3
+
+  L’analyse du risque foudre                                                                                                                    4
+
+  Le composant parafoudre                                                                                                                       5
+
+  La gestion avancée des scénarios                                                                                                              5
+
+  L’interverrouillage des composants                                                                                                            6
+
+
+
+
+Trace Software                                                                                                W: www.trace-software.com
+Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+76430 Saint Romain de Colbosc                                                                                        T : +33 (0)2 32 79 44 24
+
+
+                                SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                       Note de mise à jour 2026.0
+
+
+
+    La mise à jour 2026.0 d’elec calc apporte des changements majeurs au logiciel. Le
+    rendant plus précis, plus performant et polyvalent. Toujours au service de vos projets, des
+    plus simples aux plus complexes.
+
+
+
+       elec calc SOLAR
+
+    Un des changements majeurs est l’arrivée de la nouvelle version elec calc SOLAR, cette
+    version dédiée au dimensionnement photovoltaïque en courant continu permet de
+    modéliser l’ensemble de vos installations.
+
+
+
+
+    La solution elec calc SOLAR ajoute la possibilité de modéliser toute une chaîne
+    photovoltaïque. Tout en intégrant les principaux composants tels que les groupes
+    photovoltaïques, les onduleurs et les parafoudres
+
+    Ces ajouts permettent donc de modéliser toute la partie DC, tout en respectant les
+    prescriptions des normes NF C 15 712-1 et CEI 60364-7-712. L’ensemble des détails de
+    votre installation sont vérifiés pour assurer une fiabilité et une conformité.
+
+
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+1   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T : +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                       Note de mise à jour 2026.0
+    L’interface de saisie a été pensée pour rester ergonomique et visuelle, facilitant le dessin
+    des chaînes photovoltaïques, la gestion de leurs caractéristiques électriques ainsi que
+    la représentation schématique de l’ensemble de l’installation.
+
+    Une fois votre installation photovoltaïque dessinée et dimensionnée, prolongez-la sur votre
+    installation en courant alternatif afin de la coupler à un tarif bleu, jaune ou un poste HT-BT.
+
+
+
+
+    Le tout en assurant la conformité suivant la norme NF C 15 100 de vos tableaux en
+    autoconsommation et de vos IRVE.
+
+    Afin d’accompagner cette nouvelle version, le catalogue fabricants d’elec calc s’enrichit
+    de nombreuses références dédiées au photovoltaïque. La base intègre désormais 373
+    fabricants et plus de 12 000 références pour les installations solaires, permettant de
+    modéliser et dimensionner vos projets avec un large éventail de références
+
+    Enfin, générez l’ensemble du dossier
+    technique avec notamment la note
+    de calcul qui permet de retracer
+    l’ensemble des critères de vérifications
+    de l’installation.
+
+
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+2   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T : +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                       Note de mise à jour 2026.0
+       Import archelios PRO dans elec calc
+
+    Il est désormais possible d’importer directement un projet issu de archelios PRO dans
+    elec calc. archelios PRO est un logiciel dédié à la conception, la simulation et au calcul
+    du productible d’installations photovoltaïques.
+
+
+
+
+    Permettant notamment de réaliser des études de faisabilité, des simulations de
+    production et des analyses technico-économiques pour tout type de projet solaires.
+
+    Grâce à cette nouvelle fonctionnalité, les projets conçus dans archelios PRO peuvent
+    être modélisés automatiquement dans elec calc afin de poursuivre l’étude avec le
+    dimensionnement électrique et les vérifications normatives de l’installation.
+
+    Lors de l’import, l’architecture du projet est automatiquement récupérée, incluant
+    notamment les références des panneaux photovoltaïques, des onduleurs ainsi que la
+    structure générale de l’installation.
+
+
+
+
+    L’utilisateur peut ainsi finaliser rapidement le dimensionnement et la configuration des
+    protections directement dans elec calc.
+
+    Cette fonctionnalité est disponible dans les versions elec calc SOLAR ou dans chaque
+    version d’elec calc avec module SOLAR.
+
+
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+3   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T : +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                       Note de mise à jour 2026.0
+
+       L’analyse du risque foudre
+
+    Cette version introduit également une nouvelle
+    fonctionnalité d’analyse du risque foudre,
+    disponible sur l’ensemble des versions d’elec
+    calc.
+
+    Cette analyse permet d’évaluer la nécessité
+    d’installer des dispositifs de protection contre les
+    surtensions et d’en faciliter le dimensionnement.
+
+    L’utilisateur peut ainsi réaliser une évaluation du
+    risque foudre basée sur les recommandations
+    de la norme NF C 15-100, en tenant compte
+    de l’environnement de l’installation, des
+    longueurs de lignes d’alimentation ou encore
+    des conséquences potentielles des surtensions.
+
+
+
+
+                                                                                        À partir de cette analyse, elec calc
+                                                                                        permet de déterminer la nécessité
+                                                                                        d’installer des parafoudres et de
+                                                                                        modéliser leurs circuits d’alimentation,
+                                                                                        aussi bien pour les installations en courant
+                                                                                        alternatif (AC) que pour les installations
+                                                                                        photovoltaïques en courant continu
+                                                                                        (DC).
+
+                                                                                        Dans     le   cas   des    installations
+                                                                                        photovoltaïques avec elec calc SOLAR
+                                                                                        et le module SOLAR, cette analyse
+                                                                                        influence également certaines règles
+                                                                                        de dimensionnement de la partie DC,
+                                                                                        garantissant une conception cohérente
+                                                                                        et conforme aux recommandations
+                                                                                        normatives.
+
+
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+4   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T : +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                       Note de mise à jour 2026.0
+
+       Le composant parafoudre
+
+    Pour aller au bout de cette logique, elec calc 2026.0 intègre
+    désormais un nouveau composant parafoudre, disponible aussi
+    bien en courant alternatif qu’en courant continu.
+
+    Ce nouveau composant permet de modéliser sur votre synoptique
+    un parafoudre. Choisissez le type, le type de connexion et si ce
+    dernier bénéficie d’une protection intégrée.
+
+    Vous aurez ensuite la possibilité d’associer une référence issue du catalogue fabricant
+    pour fiabiliser et accélérer votre saisie.
+
+    Le logiciel prend ensuite en charge l’ensemble des vérifications normatives, pour un
+    dimensionnement cohérent de vos protections contre les surtensions.
+
+
+       Gestion avancée des scénarios
+
+    Une nouvelle fonctionnalité vient enrichir la gestion des scénarios dans elec calc avec
+    l’introduction d’un mode avancé de pilotage de l’état des composants.
+
+
+
+
+    Ce nouveau mode propose une vue centralisée sous forme de tableau, permettant de
+    regrouper les différents objets dont l’utilisateur souhaite gérer l’état (ouvert / fermé).
+
+    Cette approche offre une vision globale, sur l’ensemble du projet et facilite la modification
+    rapide de plusieurs éléments au sein d’une même interface.
+
+    Cette évolution améliore la cohérence des configurations et renforce l’ergonomie lors
+    de la définition des scénarios.Ces améliorations apportent plus de confort et d’efficacité
+    dans la gestion des configurations des études, notamment sur les projets comportant
+    de nombreux équipements.
+
+    Trace Software                                                                                                W: www.trace-software.com
+5   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T : +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                       Note de mise à jour 2026.0
+
+       L’interverrouillage des composants
+
+    La fenêtre de gestion avancée des
+    scénarios vous offre également la possibilité
+    d’interverrouiller deux composants.
+
+    Cela permet de lier le fonctionnement de
+    deux éléments afin de garantir que leurs
+    états restent cohérents entre eux.
+
+
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+6   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T : +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+

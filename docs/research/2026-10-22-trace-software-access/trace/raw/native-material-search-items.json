@@ -1,0 +1,379 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:dl.trace-software.com archelios exe zip pdf",
+      "url": "http://www.google.com/search?q=site%3Adl.trace-software.com+archelios+exe+zip+pdf&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Adl.trace-software.com+archelios+exe+zip+pdf&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/QjEB5heQ087GcySFp/records/zKolsEnt6YhvDLF-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:trace-software.com \"sample project\" archelios",
+      "url": "http://www.google.com/search?q=site%3Atrace-software.com+%22sample+project%22+archelios&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Atrace-software.com+%22sample+project%22+archelios&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [
+      {
+        "title": "Sample project archelios download",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+download&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAgzEAE"
+      },
+      {
+        "title": "Sample project archelios free download",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+free+download&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAg2EAE"
+      },
+      {
+        "title": "Sample project archelios free",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+free&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAg3EAE"
+      },
+      {
+        "title": "Sample project archelios crack",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+crack&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAg1EAE"
+      },
+      {
+        "title": "Sample project archelios for windows 10",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+for+windows+10&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAg0EAE"
+      },
+      {
+        "title": "Sample project archelios download",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+download&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAgzEAE"
+      },
+      {
+        "title": "Sample project archelios free download",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+free+download&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAg2EAE"
+      },
+      {
+        "title": "Sample project archelios free",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+free&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAg3EAE"
+      },
+      {
+        "title": "Sample project archelios crack",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+crack&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAg1EAE"
+      },
+      {
+        "title": "Sample project archelios for windows 10",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&sxsrf=APpeQnvNW62Phlklk7TrY0EpwlBtLlfEFw:1792671957847&q=Sample+project+archelios+for+windows+10&sa=X&ved=2ahUKEwj9yvu5z82XAxU1q5UCHQq1JvMQ1QJ6BAg0EAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [
+      {
+        "title": "archelios PRO Free : free PV Design Software",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESlgEB6zswFe36OFYMdYQGGurbEVGMSmn_KnutP_J6GbffvlBwDogzh2njuY-TpVtaSWe-msZ8immNsiQrf2UPyhPl3OmYaYLy3PMbLc5jo-njQK-MgewIHESd6b7dvxvveC0CnvM1PVxcojuNA-T5DY690SZMze6WyCMMLcj2uvq5FssyL_HFbNVdCNb65RH5TWjTi0Eao80",
+        "displayedUrl": "https://www.trace-software.com › Home › Our Solutions",
+        "description": "archelios PRO Free is a professional software for the design, calculation, and simulation of your PV project up to 36 kWp, FREE OF CHARGE.",
+        "emphasizedKeywords": [
+          "archelios PRO Free"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "10 good reasons to use archelios PRO photovoltaic software",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESigEB6zswFc3lUY4rblXabk-TFdhfdS0YqY1LOIiTy3CWFc_mYNVfETiNonUw6zrrRsbdFkVdl_A8RE30GSUMU0MGFw_QrACqP4MwGwCsHHJdxb7Wa6ounBi9hS1CAdBlBkjeW7z6nsUi0DwapMTmr31lW4s_iOE6Nv-EpW6HqP7V-a9U_ESBlzycq9k",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "Discover the 10 major advantages of archelios PRO software for designing, simulating and optimizing your photovoltaic projects.",
+        "date": "2025-05-26T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "archelios",
+          "projects"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "archelios PRO: a new version focused on reliability, ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESqwEB6zswFZFn89q_TxNrgMFlaq3Y1zWNC4TTWPODhFIWMvcyaK21o-EyYcv4h9ugzZvKi_qirEu7yaQ15HgQgv78okPvsUG3CHRhgYzMf7Tx5Cb3Y-kWLTM-bXJ17I9p9NBXDg77Y2sT5N3JkXze__FykACE9hBs_CxqTb9cgUxY37JwpZdw_WucYZ75S0sovJTz1yNY5EEuSYZ5S6d-2jNPOCqfU0RVFMkkt0k",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "Designed to simulate all types of PV installations, archelios PRO supports professionals in their technical and economic studies, guaranteeing ...Read more",
+        "date": "2025-11-21T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "archelios PRO"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "archelios CALC - Software for solar energy",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESegHrOzAVWCctc11YxRe-ieYiAdANozFrdjLGR4nuZv5_ACSo5JTX-10SK3ehYAcAYYpfpS078cViDXH1ddX0iXuH0frbzSSry81gwJro4jIPNVWwwTI2WqaDwJwP2lFiHnaQ_Ju9Z3TcuVojwmDDYpiRL0QS7ue_hha3",
+        "displayedUrl": "https://www.trace-software.com › Home › Our Solutions",
+        "description": "archelios CALC is a software solution from Trace Software's solar range, suitable for all types of photovoltaic installations.",
+        "emphasizedKeywords": [
+          "archelios CALC"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "How Valaurys uses archelios PRO to secure and ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESrwEB6zswFdzCsr-zhyndDshDTs0NLPeJcAbyE1GvB4NPAIuTgNMvo9jQfvI2revl8WIS3T-AKVAJsNfxQAcM8en6ZdTqiJBUA6uGc7YRwLbk31p71577Oy4WyLIyt7sUaBWLzwE4TmYta80XKDD6tjHk-JtYgVdOEhflWrqQQ82bsECBS5Ay4Zq9lPDvDXjN41dlCmenkBtfvioOcP6tqgwAW-6nED0r9kJns5yGbx5K",
+        "displayedUrl": "https://www.trace-software.com › how-valaurys-uses-ar...",
+        "description": "Discover how Valaurys relies on archelios PRO to design reliable, bankable, and high-performance photovoltaic projects.",
+        "emphasizedKeywords": [
+          "reliable, bankable, and high-performance photovoltaic projects"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "The new version of PV software, archelios PRO",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESzwEB6zswFYfrSe42D2oeDyc4dxz02mQR9qYmqhAepiwzvTxhVmJL1hCznWkBNV0ZKlIhd7OYxthMInTwg0kzed0AFmjqxl6TzVDjGJIigEBUkLVh4yqV7G3W9Dr2oVAld3zT_8-C4eKj6OKW-mh7LsIuMC4vKyXBkqBe9N4BMa_g3yx1AaIR2xkcPRprVb8GCWDFWKgSdbv-vwjmgY4VhSr0WDzQaqgfTEHjK8D5IXr1Ryxo1gcBuC15lZRrhO-XHsW9qBICEJCpY6dh8oJDmN8",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "archeliosTM PRO allows to size any type of solar project, from a few kWp to several dozen MWp, on roof, shade, or on the ground.",
+        "date": "2021-04-24T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "archeliosTM PRO"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "archelios PRO : when technicality meets ergonomics",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESjgEB6zswFYiyhVQk9nBq1Ir3ApugnwoTB8v2rQH6H9HhjnLN6jLyJUKwwHlXFzmwduoPnzouLbDyaE_HtjexHMty1orZkPwBzPHJgsw5yDtU1WAczdpxTykD4zTuV5rHt0J_EkhqXthxGVd6eULA_DUJ5KOMvUK9RFFvAuZ-XcVZeaTPMWi54vgad5E7ZLUK",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "Aimed at design offices, archelios PRO is designed to facilitate the study and conception of photovoltaic installations of all sizes.",
+        "date": "2024-10-04T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "archelios PRO"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "10 good reasons to use archelios PRO photovoltaic design ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESnwEB6zswFf9wC38WNcpiCTMhF2d6Q7DS-5GPb2ebAJ1-OxK3mE5ZK8UmtIptlQKL1OtddGksCCy5rXkbRlDDu6rTstEnWvcVkeXjAQ0eaDowpha5th7kIHJilt6VVYHGe-orwi0-_SBkcmp0mKE2zCkgpl_tJ8r6vemT64oFfdumprTQ8a6NcN_oJ_eCD3pOorgHmcsLs3eAdHjzNTDp42s",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "archeliosTM PRO is an online application and is one of the most versatile tools on the market for the design of photovoltaic projects, 3D ...",
+        "date": "2024-06-28T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "archeliosTM PRO"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Case studies",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESagHrOzAV75lN957nOwhl_F37Lrg4rykeXxocdMOsRIQ7Vp1ocZCL0RkWV8_Dke8cT4XMqxAISTwgN38XZElZ1ABPiSxwV0LqT2GIvpLEg31RKRPbbUdHrGaRixR2EoayTSnEThuU479q3Nw",
+        "displayedUrl": "https://www.trace-software.com › case-studies",
+        "description": "They trust in Trace Software and they talk about it. Here are a few testimonials from users of our elec calc and archelios suite software.Read more",
+        "emphasizedKeywords": [
+          "archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Sizing and Optimisation of a Photovoltaic Project for Self- ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.google.com/goto?url=CAESpAEB6zswFeRPMJoMYyCEI8kzg98pj0KzgOKpyeYgvgBXnDOYEjCqUmGp2gCm7y5hEG1h8BkCIipDih148kgtc4TmroLLwI5Uz0hEH3CO9bFfcZhm9xhzcpXUih1ZF2gcLD6K_x0O_buXGE_n3HUM_RjNnqMamHbKvMV05E1ItTUWzoyxDYzqcttuyfm8oX3i3Z5ldkXgcH42rOrpzpqivw81uGJRjQ",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "archelios PRO offers users the possibility to simulate a storage system and optimise its capacity to achieve the desired autonomy. It is also ...Read more",
+        "date": "2025-02-20T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "archelios PRO"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      }
+    ],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/QjEB5heQ087GcySFp/records/qnxtrF4JCJ8hBsr-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:trace-software.com \"example\" \"project\" \"download\" elec calc",
+      "url": "http://www.google.com/search?q=site%3Atrace-software.com+%22example%22+%22project%22+%22download%22+elec+calc&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Atrace-software.com+%22example%22+%22project%22+%22download%22+elec+calc&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "How to check thermal stresses in an electrical conductor?",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/how-to-check-thermal-stresses-in-an-electrical-conductor/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "Example of calculation: Highlighting a thermal stress problem ... elec calc project · archelios PRO · archelios CALC · TRAINING · elec calc ...Read more",
+        "date": "2026-02-25T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Example",
+          "elec calc project",
+          "CALC",
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Neutral regime: understand TN-C, TN-S, IT and TT to ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/technical-neutral-regime-understand-tn-c-tn-s-it-and-tt-to-properly-design-your-installations/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "In the UK, DNOs use TT where PME cannot safely be offered for example ... elec calc project · archelios PRO · archelios CALC · TRAINING · elec ...Read more",
+        "date": "2026-07-08T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "example",
+          "elec calc project",
+          "CALC",
+          "elec"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "The 5 common mistakes in arc flash studies",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/technical-the-5-common-mistakes-in-arc-flash-studies/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "For example, environments such as the arc flash module integrated into elec calc ... elec calc project · archelios PRO · archelios CALC · TRAINING ...Read more",
+        "date": "2026-05-13T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "example",
+          "elec calc",
+          "elec calc project",
+          "CALC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Sizing and Optimisation of a Photovoltaic Project for Self- ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/sizing-and-optimisation-of-a-photovoltaic-project-for-self-consumption/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "electricity supplier, the consumer can download it from his customer area. ... elec calc project · archelios PRO · archelios CALC · TRAINING ...Read more",
+        "date": "2025-02-20T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "electricity",
+          "download",
+          "elec calc project",
+          "CALC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "What are the benefits of a C&I solar project for a company?",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/what-are-the-benefits-of-a-ci-solar-project-for-a-company/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "Download the PDF checklist! 8 essential points to maximise the financial benefits of your C&I solar project. Download the checklist ...Read more",
+        "date": "2026-01-12T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Download",
+          "project",
+          "Download"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Agrivoltaics: how agri-PV projects work, interest and limits",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/technical-agrivoltaics-how-agri-pv-projects-work-interest-and-limits/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "Example with a concrete case: A 14.5 MWp cattle agrivoltaic ... elec calc project · archelios PRO · archelios CALC · TRAINING · elec calc ...Read more",
+        "date": "2026-04-09T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Example",
+          "elec calc project",
+          "CALC",
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/QjEB5heQ087GcySFp/records/BE9NnCsfz8V3Bbd-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:dl.trace-software.com elec calc exe zip",
+      "url": "http://www.google.com/search?q=site%3Adl.trace-software.com+elec+calc+exe+zip&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Adl.trace-software.com+elec+calc+exe+zip&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/QjEB5heQ087GcySFp/records/gZsEits0adIbWBX-1.html"
+  }
+]

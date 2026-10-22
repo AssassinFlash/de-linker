@@ -1,0 +1,421 @@
+                                                                                                                                   Guide d’installation
+
+
+
+
+                                                   Sommaire
+    Guide d’installation d’ elec calc
+      Avant propos                                                                                                                                  3
+      Installation du logiciel                                                                                                                      3
+      Mise à jour du logiciel                                                                                                                       4
+      Désinstallation du logiciel                                                                                                                   4
+      Activation standard de la licence                                                                                                             5
+      Activation de la licence par mail                                                                                                             6
+
+    Le Gestionnaire et le Serveur de licences
+      Modes d’utilisation et serveur de licence flottante                                                                                           7
+      Le mode nomade                                                                                                                                8
+      Le transfert de licences                                                                                                                      9
+      Maintenance du Gestionnaire de licences                                                                                                      10
+
+    FAQ elec calc
+      Protection inactive                                                                                                                          10
+      Le service TSI a cessé de fonctionner ou n’est pas accessible ou on a
+      forcé votre déconnexion                                                                                                                      11
+      Il vous reste X jours avant l’expiration / réactivation de votre licence                                                                     11
+
+    Contacts
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+2   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                                   Guide d’installation
+    Guide d’installation d’ elec calc
+       Avant propos :
+
+       Configuration minimale                                                          Instructions pour l’installation
+      Windows 10, 11 (64bits)                                                         Afin de mener à bien l’installation, il est
+      Disque dur : HDD avec 20Gb d’espace disponible                                  indispensable d’ouvrir votre session windows en
+                                                                                      mode administrateur.
+      Mémoire RAM :16b
+      Processeur : i5                                                                 Le programme d’installation vous a été fourni
+                                                                                      sous forme de fichier.exe auto-extractible,
+       Configuration recommandée                                                      excecutez le fichier «Install.exe» téléchargé.
+
+      Disque dur : SSD avec 20Gb d’espace disponible                                  Les composants nécessaires au fonctionnement
+      Mémoire RAM : 32Gb                                                              d’elec calc, comme Framework, s’ils sont
+                                                                                      manquants sur le poste de travail, sont
+      Processeur : i5 >3Ghz
+                                                                                      automatiquement installés par le programme
+      Affichage : 1920 x 1980 (Full HD)                                               d’installation de ces composants.
+
+
+
+       Installation du logiciel :
+
+                                    1                                                                                       2
+                                                                                     Vous devez indiquer le répertoire d’installation de
+       Après le message d’avertissement et d’acceptation
+                                                                                     l’application ainsi que celui des données. Le répertoire
+       de la licence, la procédure d’installation vous guidera
+                                                                                     des données doit avoir un accès en « Lecture/Ecriture»
+       dans l’installation d’elec calc.
+                                                                                     pour tous les utilisateurs du logiciel.
+
+
+
+
+    Nota : l’installation des données sur un serveur est possible mais suivant la vitesse du réseau, cela peut
+    augmenter considérablement les temps d’accès au catalogue.
+
+    Trace Software                                                                                                W: www.trace-software.com
+3   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                                   Guide d’installation
+
+
+                                    3                                                                                       4
+      Sélectionnez ensuite la langue d’utilisation d’elec calc.
+                                                                                       Il vous est demandé de sélectionner les éléments que
+      Ce paramètre pourra être modifié dans l’interface de
+                                                                                       vous souhaitez installer :
+      l’application.
+
+
+
+
+      Dans le cas d’une installation de type «monoposte», le Serveur de licences et le Gestionnaire de licences doivent
+      être installés sur le poste de travail. Dans le cas contraire, il est possible de désactiver leur installation pour les
+      installer sur un serveur de réseau. Consultez le chapitre relatif au Serveur et Gestionnaire de licences de ce
+      document pour plus d’informations.
+      Durant l’installation, d’autres boîtes de dialogue peuvent s’ouvrir, correspondant à l’installation des composants
+      nécessaires au fonctionnement de l’application.
+
+
+
+
+        Mise à jour du logiciel :
+
+    elec calc intègre une fonctionnalité qui vous prévient de la disponibilité d’une mise à jour et vous propose de
+    l’installer au démarrage de l’application.
+
+
+        Désinstallation :
+
+    Avant la désinstallation d’elec calc, il convient de vérifier l’état de la licence. Si le Gestionnaire de licences
+    est installé sur la même machine, il convient au préalable de transférer la licence, faute de quoi celle-ci serait
+    définitivement perdue. Si la licence est de type « Nomade », il convient de la restituer.
+    Si vous souhaitez conserver vos données, il convient de faire une sauvegarde du répertoire « C:\ProgramData\
+    eleccalc\Data ».
+
+
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+4   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                                   Guide d’installation
+
+        Activation standard de la licence :
+
+    Lors de votre achat, un numéro de licence vous a été octroyé. Cette licence, pour être utilisée, doit être
+    activée par le biais d’une connexion internet ou par e-mail. Ces trois étapes vous indiquent comment activer
+    votre licence et ainsi activer votre accès sur elec calc.
+
+
+
+
+    Nous préconisons d’utiliser l’activation via internet en premier et si la procédure échoue, l’activation par
+    «Mail» doit être utilisée. La licence activée apparaît dans la liste des licences disponibles. Chaque poste de
+    travail équipé d’elec calc et connecté au Gestionnaire de licences pourra utiliser cette licence.
+
+
+                                       Vous pouvez désormais utiliser
+    Trace Software                                                                                                W: www.trace-software.com
+5   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                                   Guide d’installation
+
+        Activation de la licence par mail :
+
+    Si votre gestionnaire de licence n’a pas accès à internet. Il existe une alternative afin de pouvoir activer votre
+    licence via un échange de mail. Pour ce faire, vous devez ouvrir votre gestionnaire de licences.
+    Dans le menu du gestionnaire de licence, sélectionnez l’onglet «Activation / Réactivation, puis cliquez sur la
+    fonctionnalité «Génerer un mail...»
+
+
+
+
+                Gestionnaire de
+                   licences
+
+
+
+    Une boite de dialogue contenant un code va s’ouvrir. Le contenu
+    du message doit être copié et envoyé dans le corps d’un mail à
+    l’adresse suivante :
+
+
+
+
+    En retour, le code d’activation de votre licence vous sera envoyé.
+    Dans l’onglet «Activation / Réactivation» vous devrez cliquer sur la
+    fonctionnalité «(Ré)Activer des licences par la saisie d’un code...»
+    et saisir le code d’activation associé dans la boite de dialogue.
+
+
+
+
+                                    Vous pouvez désormais utiliser
+    Trace Software                                                                                                W: www.trace-software.com
+6   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                                   Guide d’installation
+    Le Gestionnaire et le Serveur de licences
+        Modes d’utilisation et serveur de licences flottantes :
+
+    elec calc dispose de deux modes d’utilisation au regard des licences et des postes de travail utilisateurs :
+        Utilisation monoposte : elec calc est utilisé sur un seul poste de travail. Les pages 2 à 4 de ce manuel
+       expliquent ce cas de figure.
+         Utilisation en licence flottante (Option) : elec calc est installé sur plusieurs postes de travail indifféremment
+       du nombre de licences possédées. Le nombre d’instances du logiciel utilisées simultanément ne peut
+       excéder le nombre de licences. L’infographie ci-dessous vous explique comment configurer un Serveur de
+       licences flottantes.
+
+
+
+                                                                    Activez votre ou
+         Pour configurer votre Serveur : lancez                     vos licences sur
+                                                                    le Serveur via le                        Installez elec calcTM sur les machines
+         le programme d’installation en ne
+                                                                    Gestionnaire de                          de votre choix sans le Gestionnaire
+         sélectionnant que les composants
+                                                                        licences                             et le Serveur de licences. Ouvrez elec
+         nécessaires (Serveur de licences et
+                                                                        (P.3 et 4)                           calc et renseignez l’IP du serveur dans
+         Gestionnaire de licences).
+                                                                                                             l’onglet protection.
+
+
+
+
+    Le Gestionnaire de licences du Serveur permet également d’assurer un suivi sur l’utilisation des licences
+    (quel est le poste de travail qui utilise telle licence ? Connaître sa durée d’utilisation, etc.).
+
+    Trace Software                                                                                                W: www.trace-software.com
+7   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                                   Guide d’installation
+
+        Le mode nomade :
+
+    L’option « Nomade » d’une licence permet d’extraire temporairement la licence du Gestionnaire de licences
+    pour l’affecter à un poste de travail. Ce poste de travail pourra ainsi se déconnecter du réseau et continuer à
+    utiliser elec calc.
+    La licence transformée en Nomade est utilisable pour une durée définie lors de l’emprunt. À la fin de cette
+    licences peut désactiver cette fonctionnalité dans le Gestionnaire de licences.
+    Il existe deux cas de figure concernant le mode nomade :
+
+
+
+                         Le poste de travail est connécté au Gestionnaire de licences : Dans l’interface d’elec
+                         calcTM, sélectionnez l’onglet protection, puis sélectionnez l’otpion «Transformer en
+                         nomade» pour emprunter la licence. Après avoir indiqué la durée de l’emprunt, la
+                         licence est automatiquement marquée comme Nomade.
+
+
+
+
+                         Lorsque le poste de travail n’est pas connecté au Gestionnaire de licences, il est possible
+                         d’emprunter une licence par l’échange de codes entre elec calc et le Gestionnaire de
+                         licences. Dans elec calcTM, allez dans l’onglet protection, puis cliquez sur «Demander
+                         licence». Une boite de dialogue va s’ouvrir, copiez collez le code en partie haute.
+                         Envoyez le code à votre administrateur.
+
+
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+8   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                                   Guide d’installation
+
+                          Dans le Gestionnaire de licences :
+                          Copiez collez le code de l’utilisateur
+                          dans la partie haute de la boite de
+                          dialogue ouverte après avoir cliquez
+                          sur «Affecter une licence nomade».
+
+
+
+        Cliquez sur le bouton «Affecter une licence à l’utilisateur distant». Indiquez la date de fin de l’emprunt de la
+        licence.
+
+
+
+
+        Copiez le code ainsi généré dans la partie basse de la boite de dialogue. Envoyez ce code à l’utilisateur.
+
+
+        De nouveau dans elec calcTM : Rendez-vous dans le menu protection, cliquez sur «Demander licence».
+
+        Copiez dans la partie basse de la boîte de dialogue, le code expédié par l’administrateur de licences.
+
+        Vous disposez de la licence pendant le nombre de jours définis par l’administrateur de licences.
+
+
+        Sur ces mêmes principes, la licence Nomade peut être restituée ou prolongée avant la date de fin de l’emprunt.
+
+
+                          1 : Utilisateur                                                                     2 : Administrateur
+
+
+
+
+        Dans l’onglet protection, cliquez sur rendre licence.                        Dans l’onglet procuration du gestionnaire de licences,
+                                                                                     cliquez sur Libérer une licence nomade.
+        Copiez le code de restitution et transmettez-le à
+        l’administrateur de licences.                                                Entrez le code fourni par l’utilisateur.
+
+
+
+
+        Transfert de licence :
+
+
+
+
+        Lors d’un changement de machine, il convient de
+        transférer la licence via le Gestionnaire de licences
+        pour pouvoir l’activer sur un nouveau poste.
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+9   Parc Eco-Normandie                                                                                      E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                                   Guide d’installation
+
+
+        Maintenance du Gestionnnaire de licences :
+
+     Le Gestionnaire de licences est protégé par un mot de passe qui vous est demandé lors de la connexion
+    avec le Serveur de licences. Ce mot de passe peut être modifié :
+
+
+
+
+       La section Réservé support Trace Software
+     permet la saisie de commandes de maintenance
+     et de dépannages qui vous seront indiquées par
+     les techniciens du support technique de Trace
+     Software International en cas de problème.
+
+        Un utilisateur peut être déconnecté par
+     l’administrateur de licences sauf si cet utilisateur
+     dispose d’une licence Nomade.
+
+
+
+
+    FAQ elec calcTM
+        Protection inactive :
+                                                        Ce message indique que votre licence n’est pas active. Vérifiez dans
+                                                        le Gestionnaire de licences (sur votre machine ou le serveur distant
+                                                        pour les licences flottantes) que la licence est bien présente et active.
+
+
+                                                        Si la licence n’est pas active, activez là depuis le menu du Gestionnaire
+                                                        de licences. (Page 3 de ce manuel)
+
+
+                                                        Si vous avez des restrictions sur votre connexion internet (proxy…),
+                                                        faites une activation par mail.(Page 4 de ce manuel)
+    Trace Software                                                                                                W: www.trace-software.com
+10 Parc Eco-Normandie                                                                                       E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+                                                                                                                                   Guide d’installation
+
+
+        Le service TSI a cessé de fonctionner ou n’est pas acessible :
+
+
+                                                                                     Ce message indique la survenue d’un problème lié
+                                                                                     à la configuration de votre ordinateur.
+
+
+    Vérifiez les pare-feux, sur les machines client et serveur (y compris les pares-feux Windows). Les ports TCP
+    suivants doivent être ouverts pour permettre la connexion entre elec calc et le Serveur de licences : 6666
+    et 10050 à 10060 (La largeur de la plage doit correspondre au nombre de connexions simultanées sur le
+    Serveur de licences, en d’autres termes, au nombre de licences).
+    Si les ports 10050 à 10060 ne sont pas ouverts, le logiciel elec calc, ne recevant aucune réponse du serveur,
+    considère que le service ne fonctionne pas.
+
+
+        Il vous reste X jours avant l’expiration / réactivation de votre licence :
+
+                                                                              L’activation d’une licence est valable pour une durée
+                                                                              de 365 jours ou bien 60 jours à l’achat de cette licence.
+                                                                              À la fin de cette période, il nécessaire de réactiver la
+                                                                              licence depuis le Gestionnaire de licences. (Page 3 de
+                                                                              ce manuel)
+                                                                              Si vous avez des restrictions sur votre connexion
+                                                                              (proxy…), faites une activation par mail. (Page 4 de
+                                                                              ce manuel)
+
+
+
+    Contacts
+    Besoin d’aide ? De nombreux outils et services sont mis à votre disposition afin de vous permettre de
+    résoudre des problèmes techniques et métiers.
+
+
+
+             Lien vers notre                                                                                                       Créer un ticket de
+                   Site FAQ                                                                                                        support
+
+
+
+            Lien vers notre                                                                                                        Hotline au :
+           chaîne Youtube                                                                                                          +33 (0)2 32 79 44 24
+
+
+
+          Aide intégrée du                                                                                                         Site support Trace
+       logiciel (touche F1)
+
+
+    Trace Software                                                                                                W: www.trace-software.com
+11 Parc Eco-Normandie                                                                                       E: commercial@trace-software.com
+    76430 Saint Romain de Colbosc                                                                                        T: +33 (0)2 32 79 44 24
+
+
+                                    SAS au capital de 195 282 € - SIRET : 507 704 716 00012 - APE : 5829A
+

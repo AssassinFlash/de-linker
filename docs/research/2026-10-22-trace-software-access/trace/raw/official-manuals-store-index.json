@@ -1,0 +1,59 @@
+{
+  "items": [
+    {
+      "key": "CRAWLEE_STATE",
+      "size": 635,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/CRAWLEE_STATE"
+    },
+    {
+      "key": "ERROR_REPORT_DATASET",
+      "size": 63,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/ERROR_REPORT_DATASET"
+    },
+    {
+      "key": "INPUT",
+      "size": 1702,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/INPUT"
+    },
+    {
+      "key": "SDK-FILE-DOWNLOADER-STATE",
+      "size": 168,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/SDK-FILE-DOWNLOADER-STATE"
+    },
+    {
+      "key": "SDK-UNNAMED-QUEUE-STATE",
+      "size": 75,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/SDK-UNNAMED-QUEUE-STATE"
+    },
+    {
+      "key": "SDK_CRAWLER_STATISTICS_0",
+      "size": 801,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/SDK_CRAWLER_STATISTICS_0"
+    },
+    {
+      "key": "SDK_CRAWLER_STATISTICS_website-content-crawler",
+      "size": 412,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/SDK_CRAWLER_STATISTICS_website-content-crawler"
+    },
+    {
+      "key": "SDK_SESSION_POOL_STATE",
+      "size": 351,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/SDK_SESSION_POOL_STATE"
+    },
+    {
+      "key": "file-449fe6e-Managing_License_Elec_Calc_FR.pdf",
+      "size": 189897,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/file-449fe6e-Managing_License_Elec_Calc_FR.pdf"
+    },
+    {
+      "key": "file-9a277c5-01_FR_elec_calc_Guide_d_installation_du_logiciel_et_",
+      "size": 4954203,
+      "recordPublicUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/file-9a277c5-01_FR_elec_calc_Guide_d_installation_du_logiciel_et_"
+    }
+  ],
+  "count": 10,
+  "limit": 1000,
+  "exclusiveStartKey": null,
+  "isTruncated": false,
+  "nextExclusiveStartKey": null
+}

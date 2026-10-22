@@ -1,0 +1,122 @@
+[
+  {
+    "source_url": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+    "local_file": "docs/research/2026-10-22-trace-software-access/trace/raw/files/Managing_License_Elec_Calc_FR.pdf",
+    "sha256": "508c199a1af9a5333389a28325d23ae11f0d59b8f06045114fb7fdcc27347d3c",
+    "bytes": 189897,
+    "apify_run": "ywLYDgn5c0utm2b4y",
+    "apify_dataset": "i94Tjn3yO4k6hvMnN",
+    "apify_record": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/file-449fe6e-Managing_License_Elec_Calc_FR.pdf",
+    "source_response": {
+      "loadedUrl": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+      "loadedTime": "2026-10-22T12:23:56.324Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 189897,
+      "contentType": "application/pdf"
+    },
+    "record_content_type": "application/pdf",
+    "pdfinfo": "Author:          Trace Software International\nCreator:         Microsoft® Word 2013\nProducer:        Microsoft® Word 2013\nCreationDate:    Mon Apr 25 21:52:17 2016 CST\nModDate:         Mon Apr 25 21:52:39 2016 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          yes\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           4\nEncrypted:       no\nPage size:       595.32 x 841.92 pts (A4)\nPage rot:        0\nFile size:       189897 bytes\nOptimized:       no\nPDF version:     1.5\n"
+  },
+  {
+    "source_url": "https://dl.trace-software.com/dl//frk/docs/Installing/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf",
+    "local_file": "docs/research/2026-10-22-trace-software-access/trace/raw/files/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf",
+    "sha256": "83c793a4a74bdc9268a92c10459c3cec6eaf1408dfea299c1846eb87f76ec12c",
+    "bytes": 4954203,
+    "apify_run": "ywLYDgn5c0utm2b4y",
+    "apify_dataset": "i94Tjn3yO4k6hvMnN",
+    "apify_record": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/file-9a277c5-01_FR_elec_calc_Guide_d_installation_du_logiciel_et_",
+    "source_response": {
+      "loadedUrl": "https://dl.trace-software.com/dl//frk/docs/Installing/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl//frk/docs/Installing/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf",
+      "loadedTime": "2026-10-22T12:24:34.749Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 4954203,
+      "contentType": "application/pdf"
+    },
+    "record_content_type": "application/pdf",
+    "pdfinfo": "Creator:         Adobe InDesign 21.5 (Windows)\nProducer:        Adobe PDF Library 18.0\nCreationDate:    Tue Aug 18 17:05:36 2026 CST\nModDate:         Tue Aug 18 17:05:39 2026 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           11\nEncrypted:       no\nPage size:       595.276 x 841.89 pts (A4)\nPage rot:        0\nFile size:       4954203 bytes\nOptimized:       yes\nPDF version:     1.7\n"
+  },
+  {
+    "source_url": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+    "local_file": "docs/research/2026-10-22-trace-software-access/trace/raw/files/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+    "sha256": "512760d3752676825bfdba0038421806e174969cfc6f199be39573b0f9353ceb",
+    "bytes": 2072413,
+    "apify_run": "075RaK9q6RLvAau0o",
+    "apify_dataset": "4CFUf3DSoExaUvdiM",
+    "apify_record": "https://api.apify.com/v2/key-value-stores/WXau52XWTJh4F5eee/records/file-113315a-01_FR_Note_de_mise_a_jour_2026.0.pdf",
+    "source_response": {
+      "loadedUrl": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+      "loadedTime": "2026-10-22T12:32:33.011Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 2072413,
+      "contentType": "application/pdf"
+    },
+    "record_content_type": "application/pdf",
+    "pdfinfo": "Creator:         Adobe InDesign 21.3 (Windows)\nProducer:        Adobe PDF Library 18.0\nCreationDate:    Thu Apr 30 20:42:28 2026 CST\nModDate:         Thu Apr 30 20:42:31 2026 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           8\nEncrypted:       no\nPage size:       595.276 x 841.89 pts (A4)\nPage rot:        0\nFile size:       2072413 bytes\nOptimized:       yes\nPDF version:     1.7\n"
+  },
+  {
+    "source_url": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf",
+    "local_file": "docs/research/2026-10-22-trace-software-access/trace/raw/files/FlyerACpro_FR_LT.pdf",
+    "sha256": "fb996ac9d340426d4155f0d76997dac1d08e85bd62f12f6edfe6c05caffda58e",
+    "bytes": 763019,
+    "apify_run": "075RaK9q6RLvAau0o",
+    "apify_dataset": "4CFUf3DSoExaUvdiM",
+    "apify_record": "https://api.apify.com/v2/key-value-stores/WXau52XWTJh4F5eee/records/file-c49b2d3-FlyerACpro_FR_LT.pdf",
+    "source_response": {
+      "loadedUrl": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf",
+      "loadedTime": "2026-10-22T12:32:35.121Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 763019,
+      "contentType": "application/pdf"
+    },
+    "record_content_type": "application/pdf",
+    "pdfinfo": "Creator:         Adobe InDesign CC 2014 (Windows)\nProducer:        Adobe PDF Library 11.0\nCreationDate:    Wed Apr 22 17:16:12 2015 CST\nModDate:         Fri Sep  9 18:07:27 2016 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           4\nEncrypted:       no\nPage size:       595.276 x 841.89 pts (A4)\nPage rot:        0\nFile size:       763019 bytes\nOptimized:       no\nPDF version:     1.7\n"
+  },
+  {
+    "source_url": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf",
+    "local_file": "docs/research/2026-10-22-trace-software-access/trace/raw/files/FlyerACsuite_FR_LT.pdf",
+    "sha256": "1604a164a92526f3051e99da55eaf1cd521bca0ebbc031d1aa688e8ab2201760",
+    "bytes": 1646021,
+    "apify_run": "075RaK9q6RLvAau0o",
+    "apify_dataset": "4CFUf3DSoExaUvdiM",
+    "apify_record": "https://api.apify.com/v2/key-value-stores/WXau52XWTJh4F5eee/records/file-f7673a3-FlyerACsuite_FR_LT.pdf",
+    "source_response": {
+      "loadedUrl": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf",
+      "loadedTime": "2026-10-22T12:32:55.547Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 1646021,
+      "contentType": "application/pdf"
+    },
+    "record_content_type": "application/pdf",
+    "pdfinfo": "Creator:         Adobe InDesign CC 2014 (Windows)\nProducer:        Adobe PDF Library 11.0\nCreationDate:    Thu Apr 23 16:34:16 2015 CST\nModDate:         Thu Apr 23 16:43:00 2015 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           4\nEncrypted:       no\nPage size:       595.276 x 841.89 pts (A4)\nPage rot:        0\nFile size:       1646021 bytes\nOptimized:       no\nPDF version:     1.7\n"
+  },
+  {
+    "source_url": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf",
+    "local_file": "docs/research/2026-10-22-trace-software-access/trace/raw/files/04_DE_Update-Notiz_2025.1.pdf",
+    "sha256": "80905f3239d55446bff97256f3192d489a08e570aece81958a5a232e8322cbc9",
+    "bytes": 1404216,
+    "apify_run": "075RaK9q6RLvAau0o",
+    "apify_dataset": "4CFUf3DSoExaUvdiM",
+    "apify_record": "https://api.apify.com/v2/key-value-stores/WXau52XWTJh4F5eee/records/file-9de6efa-04_DE_Update-Notiz_2025.1.pdf",
+    "source_response": {
+      "loadedUrl": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf",
+      "loadedTime": "2026-10-22T12:33:35.333Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 1404216,
+      "contentType": "application/pdf"
+    },
+    "record_content_type": "application/pdf",
+    "pdfinfo": "Creator:         Adobe InDesign 21.0 (Windows)\nProducer:        Adobe PDF Library 18.0\nCreationDate:    Tue Nov 18 20:36:30 2025 CST\nModDate:         Tue Nov 18 20:36:31 2025 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           7\nEncrypted:       no\nPage size:       595.276 x 841.89 pts (A4)\nPage rot:        0\nFile size:       1404216 bytes\nOptimized:       yes\nPDF version:     1.7\n"
+  }
+]

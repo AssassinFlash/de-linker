@@ -1,0 +1,54 @@
+[
+  {
+    "url": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+    "crawl": {
+      "loadedUrl": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+      "loadedTime": "2026-10-22T12:23:56.324Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 189897,
+      "contentType": "application/pdf"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "Managing_License_Elec_Calc_FR.pdf"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/file-449fe6e-Managing_License_Elec_Calc_FR.pdf"
+  },
+  {
+    "url": "https://dl.trace-software.com/dl//frk/docs/Installing/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf",
+    "crawl": {
+      "loadedUrl": "https://dl.trace-software.com/dl//frk/docs/Installing/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl//frk/docs/Installing/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf",
+      "loadedTime": "2026-10-22T12:24:34.749Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 4954203,
+      "contentType": "application/pdf"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://dl.trace-software.com/dl//frk/docs/Installing/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/EqYwkGug4af95i7qJ/records/file-9a277c5-01_FR_elec_calc_Guide_d_installation_du_logiciel_et_"
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "startUrls": [
+    {
+      "url": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf"
+    },
+    {
+      "url": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf"
+    },
+    {
+      "url": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf"
+    },
+    {
+      "url": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 4,
+  "maxConcurrency": 2,
+  "saveHtml": true,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveFiles": true,
+  "htmlTransformer": "none",
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

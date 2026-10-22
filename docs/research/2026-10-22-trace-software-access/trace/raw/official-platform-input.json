@@ -1,0 +1,26 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.trace-software.com/en/product/elec-calc-solar-annual-subscription/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/product/archelios-calc-software-annual-subscription/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/product/elec-calc-mv-lv-annual-subscription/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "maxConcurrency": 2,
+  "saveHtml": true,
+  "saveMarkdown": true,
+  "saveText": true,
+  "removeCookieWarnings": false,
+  "removeElementsCssSelector": "",
+  "htmlTransformer": "none",
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

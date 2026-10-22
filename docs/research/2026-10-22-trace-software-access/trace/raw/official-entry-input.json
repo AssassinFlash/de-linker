@@ -1,0 +1,24 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.tracesoftware.cn/"
+    },
+    {
+      "url": "https://www.trace-software.com/"
+    },
+    {
+      "url": "https://www.tracesoftware.cn/trial-request/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "maxConcurrency": 2,
+  "saveHtml": true,
+  "saveMarkdown": true,
+  "saveText": true,
+  "removeCookieWarnings": true,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

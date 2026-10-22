@@ -1,0 +1,39 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/archelios-pro-free-free-pv-design-software/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/archelios-calc/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/electrical-installations-calculation-software/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/elec-calc-solar-complete-pv-design-software-from-panel-to-ev-charging-point/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/resources/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-services/trace-software-training/training-course-archelios-pro/"
+    },
+    {
+      "url": "https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/"
+    }
+  ],
+  "pageFunction": "async function pageFunction(context) { return {url:context.request.url,loadedUrl:location.href,title:document.title,text:document.body.innerText,links:Array.from(document.querySelectorAll('a[href]')).map(a=>({url:a.href,text:a.innerText.trim(),download:a.download})),forms:Array.from(document.forms).map(f=>({action:f.action,method:f.method,inputs:Array.from(f.elements).map(x=>({tag:x.tagName,name:x.name,type:x.type,required:x.required,placeholder:x.placeholder,options:x.options?Array.from(x.options).map(o=>({value:o.value,text:o.text})):undefined}))})),embeds:Array.from(document.querySelectorAll('iframe,video,source,embed')).map(x=>({tag:x.tagName,src:x.src})),html:document.documentElement.outerHTML};}",
+  "linkSelector": "",
+  "maxRequestsPerCrawl": 8,
+  "maxConcurrency": 2,
+  "maxRequestRetries": 1,
+  "downloadMedia": false,
+  "downloadCss": false,
+  "injectJQuery": false,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

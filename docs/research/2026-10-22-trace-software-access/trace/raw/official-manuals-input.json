@@ -1,0 +1,22 @@
+{
+  "startUrls": [
+    {
+      "url": "https://dl.trace-software.com/dl//frk/docs/Installing/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf"
+    },
+    {
+      "url": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 2,
+  "maxConcurrency": 2,
+  "saveHtml": true,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveFiles": true,
+  "htmlTransformer": "none",
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

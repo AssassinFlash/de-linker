@@ -1,0 +1,6 @@
+{
+  "queries": "site:trace-software.com archelios filetype:pdf\nsite:dl.trace-software.com archelios\nsite:trace-software.com archelios \"report\" \"example\"\nsite:trace-software.com \".exe\" OR \".zip\"",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 10,
+  "maxConcurrency": 2
+}

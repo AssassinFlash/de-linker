@@ -1,0 +1,31 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/"
+    },
+    {
+      "url": "https://www.archelios.cn/"
+    },
+    {
+      "url": "https://www.archelios.cn/online/bin/Archelios-Online-Login.php?lang=cn"
+    },
+    {
+      "url": "https://tracesoftware.cn/archelios-pro-news/"
+    },
+    {
+      "url": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 5,
+  "maxConcurrency": 2,
+  "saveHtml": true,
+  "saveMarkdown": true,
+  "saveText": true,
+  "removeCookieWarnings": true,
+  "removeElementsCssSelector": "",
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

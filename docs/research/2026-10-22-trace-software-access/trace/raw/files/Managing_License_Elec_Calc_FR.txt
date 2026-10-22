@@ -1,0 +1,163 @@
+  Managing_License_Elec_Calc_FR (Ind : B)
+                             25/04/2016
+
+
+
+
+Gestion des licences
+
+
+
+
+                                       1
+A quoi sert le Gestionnaire de licences ?
+elec calc est protégé par un numéro de licence qui vous a été octroyé lors de votre achat.
+Cette licence, pour être utilisée, doit être activée par le biais d’une connexion Internet ou
+par email. Lors d’un changement de poste de travail, la licence doit être transférée de
+l’ancien poste de travail pour être activée sur le nouveau poste de travail.
+Une licence peut contenir des modules et/ou des options.
+Le Gestionnaire de licences vous permet de gérer toutes ces tâches et d’assurer un suivi
+sur l’utilisation des licences. Il se met à jour toutes les soixante secondes ou
+automatiquement lors d’un appui sur le bouton Actualiser.
+Lors du lancement de elec calc, une connexion est automatiquement établie avec le
+Gestionnaire de licences (qu’il soit installé en local ou en réseau) pour s’assurer de la
+disponibilité de la licence.
+
+
+Installation du gestionnaire de licences
+Utilisation monoposte : elec calc est utilisé sur un, et un seul poste de travail.
+Utilisation en licence flottante : elec calc est installé sur plusieurs postes de travail
+indifféremment du nombre de licences possédées. Le nombre d’instances du logiciel
+utilisées simultanément ne peut excéder le nombre de licences.
+
+Le Serveur de licences est un Service Windows permettant la distribution des licences
+sur les postes équipés de elec calc.
+Le Gestionnaire de licences est une interface dans laquelle vous pouvez gérer les
+licences mais également visualiser leur utilisation.
+Que l’utilisation de elec calc soit de type « monoposte » ou de type « réseau »,
+l’installation du Serveur et du Gestionnaire de licences est obligatoire.
+
+Lors d’une utilisation monoposte, le Serveur de licences et le Gestionnaire de licences
+doivent être installés sur le poste de travail. Si les licences sont partagées (licences
+flottantes), ils doivent obligatoirement être installés sur le serveur.
+
+Pour installer le Serveur de licences et le Gestionnaire de licences sur le poste de travail,
+vous pouvez cocher les cases correspondantes lors de la sélection des composants à
+installer.
+Pour installer le Serveur de licences et Gestionnaire de licences sur le serveur, Lancez le
+programme d’installation en ne sélectionnant que les composants nécessaires (Serveur de
+licences et Gestionnaire de licences).
+Pour plus d’informations sur l’utilisation du Gestionnaire de licences, consultez la
+documentation s’y référant.
+
+
+Utilisation du Gestionnaire de licences
+Elec calc se connecte au Gestionnaire de licences pour s’assurer de la disponibilité d’une
+licence. Le Gestionnaire de licences se connecte lui, aux serveurs de Trace Software
+International pour activer ou transférer une licence.
+
+Veillez à ce que les connexions soient autorisées par les logiciels de type antivirus ou pare-
+feu. Le port 6666 est utilisé pour la connexion entre le Serveur de licences et le
+Gestionnaire de licences et la connexion entre le Serveur de licences et les postes de
+travail. Les ports 10050 et suivants sont utilisés pour les connexions entre le Serveur
+de licences et le Gestionnaire de licences pour identifier chaque poste de travail.
+
+
+
+
+                                                                                            2
+Connexion
+Le Gestionnaire de licences utilise deux composants : « Serveur de licences », de type
+Service Windows et « Gestionnaire de licences », interface du Gestionnaire de licences.
+Ces deux composants doivent être connectés ensemble pour pouvoir fonctionner. Le menu
+Connexion dispose de commandes permettant de se connecter ou de se déconnecter du
+Service. Ce menu vous permet également de paramétrer l’adresse IP de la machine sur
+laquelle a été installé le Serveur de licences (Lorsque les deux composants ne sont pas
+installés sur la même machine).
+
+Gestion des licences
+Dans un premier temps, il est nécessaire d’ajouter la licence au Gestionnaire de licences
+(Menu : Licence > Ajouter un numéro de licence). Ensuite, cette licence, pour être
+utilisée, doit être activée (Menu : Activation > Activation Web / Activation Mail /
+Activation String). Vous disposez de trois modes d’activation. Nous préconisons d’utiliser
+l’option « Web » dans un premier temps et si la procédure échoue, d’utiliser l’option
+« Mail ». La licence activée apparaît dans la liste des licences disponibles. Chaque poste de
+travail équipé de elec calc et connecté au Gestionnaire de licences pourra utiliser cette
+licence.
+
+Lors d’une réinstallation du Gestionnaire de licences (ou d’un changement de machine), il
+convient de transférer la licence (Menu : Transfert > Transférer licence Web /
+Transférer licence Mail) pour pouvoir l’activer à nouveau.
+
+Le Gestionnaire de licences permet également d’assurer un suivi sur l’utilisation des
+licences (Quel est le poste de travail qui utilise telle licence ? Connaître sa durée
+d’utilisation…).
+
+Gestion des nomades
+L’option « Nomade » d’une licence permet d’extraire temporairement la licence du
+Gestionnaire de licences pour l’affecter à un poste de travail. Ce poste de travail pourra
+ainsi se déconnecter du réseau et continuer à utiliser elec calc.
+La licence transformée en Nomade est utilisable pour une durée définie lors de l’emprunt.
+A la fin de cette durée, la licence redevient automatiquement disponible pour les autres
+utilisateurs.
+L’administrateur des licences, peut désactiver cette fonctionnalité en décochant la case
+Autoriser la conversion de licence en nomade.
+
+Lorsque le poste de travail est connecté au Gestionnaire de licences, dans l’interface de
+elec calc (Menu : EC >Protection), sélectionnez l’option Transformer en nomade pour
+emprunter la licence. Après avoir indiqué la durée de l’emprunt, la licence est
+automatiquement marquée comme Nomade.
+
+Lorsque le poste de travail n’est pas connecté au Gestionnaire de licences, il est possible
+d’emprunter une licence par l’échange de codes entre elec calc et le Gestionnaire de
+licences.
+Important : Il convient de réaliser cette opération simultanément, la fermeture des boîtes
+de dialogue coté Utilisateur et coté Administrateur des licences entraîne une réinitialisation
+des codes et de ce fait la licence pourrait être indisponible sur la durée de l’emprunt.
+       Dans elec calc
+              Menu : EC > Protection >Demander licence
+              Copiez le code affiché dans la partie haute de la boîte de dialogue.
+              Envoyez ce code à votre Administrateur de licences.
+              NE PAS REFERMER LA BOITE DE DIALOGUE et attendre la réception du code
+              expédié par l’Administrateur des licences.
+
+
+
+                                                                                            3
+      Dans le Gestionnaire de licences
+             Menu : Procuration > Affecter une licence nomade
+             Copiez dans la partie haute de la boîte de dialogue, le code expédié par
+             l’utilisateur.
+             Cliquez sur le bouton Affecter une licence à l’utilisateur.
+             Indiquez la date de fin de l’emprunt de la licence
+             Copiez le code ainsi généré dans la partie basse de la boîte de dialogue.
+             Envoyez ce code à l’utilisateur.
+
+      Dans elec calc
+            Menu : EC > Protection > Demander licence
+            Copiez dans la partie basse de la boîte de dialogue, le code expédié par
+            l’Administrateur des licences.
+            Vous disposez de la licence pendant le nombre de jours définis par
+            l’Administrateur des licences.
+
+Sur ces mêmes principes, la licence Nomade peut être restituée avant la date de fin de
+l’emprunt (Menu : Procuration > Libérer une licence nomade). La durée d’emprunt
+peut également être prolongée (Menu : Procuration > Prolonger une licence
+nomade).
+
+Maintenance
+Le Gestionnaire de licences est protégé par un mot de passe qui vous est demandé lors
+de la connexion avec le Serveur de licences. Ce mot de passe peut être modifié (Menu :
+Maintenance > Changer le mot de passe Administrateur).
+Un utilisateur peut être déconnecté par l’administrateur de licences (Menu : Maintenance
+> Déconnecter un utilisateur) sauf si cet utilisateur dispose d’une licence Nomade.
+
+La section Réservé support Trace Software permet la saisie de commandes de
+maintenance et de dépannages qui vous seront indiquées par les techniciens du support
+technique de Trace Software en cas de problème.
+
+
+
+
+                                                                                      4
+

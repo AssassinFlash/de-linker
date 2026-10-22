@@ -1,0 +1,47 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.archelios.com/online/bin/Archelios-Online-Login.php?lang=en"
+    },
+    {
+      "url": "https://contenu.trace-software.com/en/download-our-archelios-pro-software-brochure"
+    },
+    {
+      "url": "https://contenu.trace-software.com/en/download-our-archelios-calc-software-brochure"
+    },
+    {
+      "url": "https://contenu.trace-software.com/en/download-our-brochure-on-elec-calc-software"
+    },
+    {
+      "url": "https://contenu.trace-software.com/en/download-the-elec-calc-solar-software-brochure"
+    },
+    {
+      "url": "https://contenu.trace-software.com/en/download-our-trace-software-training-brochure"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-services/webinars/"
+    },
+    {
+      "url": "http://support.trace-software.com/Pages/login.aspx"
+    },
+    {
+      "url": "https://tracesoftware.cn/services/technical-webinars/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/brochure/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 10,
+  "maxConcurrency": 2,
+  "saveHtml": true,
+  "saveMarkdown": true,
+  "saveText": true,
+  "removeCookieWarnings": false,
+  "removeElementsCssSelector": "",
+  "htmlTransformer": "none",
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

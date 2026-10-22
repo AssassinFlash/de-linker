@@ -1,0 +1,177 @@
+             Conception photovoltaïque
+             et calcul du productible
+Archelios Pro est une application en ligne de conception, de simulation et d’analyse économique de
+projets photovoltaïques destinée aux professionnels. Archelios Pro offre toutes les fonctionnalités et
+bases de données nécessaires à la conception de tout type d’installation photovoltaïque (sur toitures,
+au sol, injection réseau, sites isolés ou auto-consommation).
+
+Simple à utiliser, Archelios Pro fournit les calculs de productible les plus précis au monde, en se
+basant sur une simulation en 3D du projet. Véritable outil d’aide à la décision, Archelios Pro permet
+une analyse complète de la rentabilité de l’installation. Grâce aux fonctions de comparaison multi-projets,
+le concepteur peut définir la meilleure configuration possible pour une installation optimale.
+Visuel, précis
+et accessible partout
+
+           Grâce au plug-in SketchUp, reconnu mondialement
+           pour son ergonomie, Archelios Pro offre une simula-
+           tion en 3D de l’installation photovoltaïque, ainsi que
+de l’architecture du bâtiment et de son environnement. Le
+concepteur peut ainsi trouver la meilleure configuration pos-
+sible en tenant compte de l’environnement proche. Les masque
+lointains sont quant à eux calculés automatiquement sur la
+terre entière grâce aux modèles de la NASA.
+
+
+          Les paramètres détaillés de chaque composant
+          sont facilement éditables et modifiables.
+          Proposant un vaste choix de modules et d’onduleurs
+(+ de 12 000 références de modules et + de 1500 onduleurs),
+Archelios Pro facilite le choix du meilleur matériel pour un
+rendement optimal de l’installation.
+
+
+            Archelios Pro est une application en ligne qui est
+            accessible partout et qui permet la sauvegarde des
+            projets photovoltaïques dans le cloud (transmission
+sécurisée en https et serveur dédié, avec processus de
+sauvegarde redondante) : ils peuvent ainsi être partagés
+avec vos collègues, visualisés et édités chez le client,
+sur un ordinateur ou un smartphone, pour une grande
+souplesse d’utilisation. Vous n’avez plus aucun souci
+d’installation, Archelios Pro est compatible avec tous les
+navigateurs internet et vous êtes assurés d’avoir la dernière
+version à jour du logiciel et des bases de données.
+
+
+
+
+Outil de décision économique
+Archelios Pro calcule les résultats de production de manière très détaillée. En effet, ces résultats prennent en compte
+l’ensemble des pertes (masques, ombrages, température, vieillissement, déperdition des matériels, temps de maintenance,
+etc). Ils sont fournis heure par heure et année après année.
+
+Archelios pro fournit des indicateurs économiques de rentabilité sur une période définie. Ceux-ci tiennent compte du coût
+d’investissement global, de la durée de vie des matériels et de leur renouvellement au fil du temps, des frais de maintenance,
+des taux d’intérêt bancaires, du montant des aides éventuelles et enfin, du prix de revente du kWh (injection) ou de non-
+consommation (autoconsommation). Ces informations sont utilisées pour fournir une analyse financière complète du retour sur
+investissement.
+   Les fonctionnalités
+     LES POINTS FORTS
+                                                                                                                      Simulation en 3D avec le plug-in SketchUp
+• Accès à une couverture géographique mondiale des
+stations météo pour les données d’ensoleillement
+                                                                                                                      • Simulation du bâtiment et de son environnement
+• Modélisation en 3D de l’installation et de chaque
+                                                                                                                      • Inclinaison de la toiture et prise en compte de zones
+composant grâce au plug-in SketchUp (calcul précis des
+                                                                                                                      d’exclusion
+ombrages proches par la modélisation des courbes I(V) pour
+                                                                                                                      • Calepinage et câblage automatique en 3D
+chaque module et string)
+                                                                                                                      • Simulation en 3D de chaque composant
+• Simulation en 3D du calepinage et du câblage
+                                                                                                                      • Calcul automatique de la longueur des câbles
+• Application en ligne, simple à utiliser, facile d’accès, y
+                                                                                                                      • Simulation en 3D des ombrages et du masque proche
+compris sur smartphone, avec une visualisation graphique
+                                                                                                                      heure par heure pour chaque module
+claire et détaillée
+• Comparatif facile entre projets (choix de matériels ou câblage
+différent) pour une rentabilité optimale
+• Calcul de la production et de la rentabilité économique avec
+prise en compte du CGA (coût global actualisé) en €/kWh
+• Calculs précis et détaillés pour une estimation réelle du
+projet (logiciel le plus précis au monde*)
+• Outil innovant pour estimer l’auto-consommation (édition de
+profils de consommation électrique quotidiens) et le stockage
+d’énergie
+• Possibilité d’exporter le projet photovoltaïque vers arche-
+lios calc pour permettre le dimensionnement des câbles et la
+finition du projet.
+
+
+
+
+Adapté aux exigences du marché photovoltaïque
+Archelios Pro a évolué depuis 2001 et prend désormais en
+compte les projets d’auto-consommation où l’électricité
+produite par l’installation photovoltaïque est utilisée pour
+couvrir les besoins électriques du producteur.
+
+Calcul du gisement solaire
+
+• Géolocalisation avec Google Maps
+                                                                                                                      Dimensionnement de l’installation
+• Accès aux données de + de 1 500 stations météo dans le
+monde entier et import de données météo
+                                                                                                                      • Choix du matériel à partir d’une large base de données
+• Utilisation des résultats météo pour la modélisation :
+                                                                                                                      multi-fabricants (onduleurs, modules, batteries, etc.)
+éclairement, irradiation, fraction solaire, vitesse du vent, diffus,
+                                                                                                                      • Paramètres de simulation complet, avec des
+rayonnement, valeur d’albédo
+                                                                                                                      valeurs par défaut cohérentes (plage de température,
+• Calcul automatique du masque lointain (données NASA)
+                                                                                                                      paramètres de ventilation et puissance de crête des modules,
+                                                                                                                      tension maximum des onduleurs, courant maximum, ratio
+                                                                                                                      puissance onduleur / puissance crête, …)
+                                                                                                                      • Choix de l’onduleur, gestion des multi-MPPT,
+                                                                                                                      micro-onduleurs, optimiseurs
+                                                                                                                      • Affichage des résultats détaillés de chaque composant
+                                                                                                                      (module, string, onduleur)
+
+
+
+
+* Parmis les logiciels professionnels. Précision attestée par deux études internationales : Photon international et journal IJEEE.
+Calcul du productible                                                          Calcul pour l’auto-consommation
+
+• Simulation de la production annuelle AC et DC heure                          • Simulation de projets d’auto-consommation avec option de
+par heure                                                                      stockage : calcul de la production et des besoins électriques
+• Calcul du ratio de performance                                               • Définition d’un profil de consommation : calcul des besoins
+• Calcul des courbes I(V) et P(V) heure par heure pour chaque                  électriques en fonction du nombre et du type d’appareils
+module et string                                                               électriques utilisés et d’un profil de consommation (par heure,
+• Prise en compte exhaustive des pertes (masques,                              jour, mois ou par saison)
+encrassement…), y compris celles liées à la ventilation                        • Calculs réalistes de production et de consommation heure
+des modules                                                                    par heure
+                                                                               • Possibilité d’importer un scénario-type de besoins
+                                                                               • Génération de graphiques représentant la production,
+                                                                               la consommation, l’autoproduction, l’autoconsommation,
+                                                                               le besoin en stockage d’énergie
+
+
+
+
+    Sélection automatique des configurations modules/onduleurs valide
+
+                                                                               Echange des résultats et comparaison entre projets
+Calcul de la rentabilité de l’installation
+                                                                               • Application web avec accès en ligne et mise à jour
+• Calcul sur toute la période d’observation des revenus par an                 automatique
+• Prise en compte de l’investissement global, des frais de                     • Génération du projet au format pdf
+renouvellement d’équipements, des frais de maintenance, de                     • Partage d’un lien de consultation en ligne sur le projet pour
+l’emprunt bancaire avec son taux d’intérêt et du montant des                   échanger les résultats
+aides éventuelles                                                              • Comparatif de projets entre eux (câblage ou équipements
+• Calcul du retour sur investissement, du CGA (coût global                     différents) pour comparer leurs résultats économiques
+actualisé), de la VAN (valeur actuelle nette)                                  • Rapport de sortie personnalisable
+
+
+
+
+        Ils nous font confiance
+
+
+
+
+              Archelios a été développé avec le soutien financier de l’ADEME.
+
+
+
+
+                                    Trace Software International    Tel. : +33 (0)2 32 79 44 24
+                                    Parc Eco Normandie
+                                    76430 Saint Romain, France
+                                                                    Fax. : +33 (0)2 22 44 89 56
+                                                                    Email : commercial@trace-software.com
+                                                                                                            www.trace-software.com
+

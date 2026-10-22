@@ -1,0 +1,471 @@
+[
+  {
+    "url": "https://www.trace-software.com/",
+    "crawl": {
+      "loadedUrl": "https://www.trace-software.com/fr/",
+      "loadedTime": "2026-10-22T12:13:07.167Z",
+      "referrerUrl": "https://www.trace-software.com/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 26582,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.trace-software.com/fr/",
+      "title": "Trace Software : des logiciels innovants pour des bâtiments durables",
+      "description": "Découvrez Trace Software, éditeur de logiciels en conception d'installations électriques, photovoltaïque et en gestion de l'énergie.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "fr-FR",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "fr_FR"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "de_DE"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "es_ES"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "en_GB"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:title",
+          "content": "Trace Software : des logiciels innovants pour des bâtiments durables"
+        },
+        {
+          "property": "og:description",
+          "content": "Découvrez Trace Software, éditeur de logiciels en conception d'installations électriques, photovoltaïque et en gestion de l'énergie."
+        },
+        {
+          "property": "og:url",
+          "content": "https://www.trace-software.com/fr/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Trace Software"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2026-09-24T09:13:23+00:00"
+        },
+        {
+          "property": "og:image",
+          "content": "https://www.trace-software.com/wp-content/uploads/2025/04/Trace-software-iso-top-530x530-1.jpg"
+        },
+        {
+          "property": "og:image:width",
+          "content": "530"
+        },
+        {
+          "property": "og:image:height",
+          "content": "530"
+        },
+        {
+          "property": "og:image:type",
+          "content": "image/jpeg"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://www.trace-software.com/fr/",
+              "url": "https://www.trace-software.com/fr/",
+              "name": "Trace Software : des logiciels innovants pour des bâtiments durables",
+              "isPartOf": {
+                "@id": "https://www.trace-software.com/fr/#website"
+              },
+              "about": {
+                "@id": "https://www.trace-software.com/fr/#organization"
+              },
+              "primaryImageOfPage": {
+                "@id": "https://www.trace-software.com/fr/#primaryimage"
+              },
+              "image": {
+                "@id": "https://www.trace-software.com/fr/#primaryimage"
+              },
+              "thumbnailUrl": "https://www.trace-software.com/wp-content/uploads/2025/04/Trace-software-iso-top-530x530-1.jpg",
+              "datePublished": "2024-05-24T14:41:13+00:00",
+              "dateModified": "2026-09-24T09:13:23+00:00",
+              "description": "Découvrez Trace Software, éditeur de logiciels en conception d'installations électriques, photovoltaïque et en gestion de l'énergie.",
+              "breadcrumb": {
+                "@id": "https://www.trace-software.com/fr/#breadcrumb"
+              },
+              "inLanguage": "fr-FR",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://www.trace-software.com/fr/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "ImageObject",
+              "inLanguage": "fr-FR",
+              "@id": "https://www.trace-software.com/fr/#primaryimage",
+              "url": "https://www.trace-software.com/wp-content/uploads/2025/04/Trace-software-iso-top-530x530-1.jpg",
+              "contentUrl": "https://www.trace-software.com/wp-content/uploads/2025/04/Trace-software-iso-top-530x530-1.jpg",
+              "width": 530,
+              "height": 530,
+              "caption": "Logo trace software"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.trace-software.com/fr/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.trace-software.com/fr/#website",
+              "url": "https://www.trace-software.com/fr/",
+              "name": "Trace Software",
+              "description": "",
+              "publisher": {
+                "@id": "https://www.trace-software.com/fr/#organization"
+              },
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://www.trace-software.com/fr/?s={search_term_string}"
+                  },
+                  "query-input": {
+                    "@type": "PropertyValueSpecification",
+                    "valueRequired": true,
+                    "valueName": "search_term_string"
+                  }
+                }
+              ],
+              "inLanguage": "fr-FR"
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.trace-software.com/fr/#organization",
+              "name": "Trace Software",
+              "url": "https://www.trace-software.com/fr/",
+              "logo": {
+                "@type": "ImageObject",
+                "inLanguage": "fr-FR",
+                "@id": "https://www.trace-software.com/fr/#/schema/logo/image/",
+                "url": "https://www.trace-software.com/wp-content/uploads/2024/06/trace-software-logo-long-color-default-1.svg",
+                "contentUrl": "https://www.trace-software.com/wp-content/uploads/2024/06/trace-software-logo-long-color-default-1.svg",
+                "width": 218,
+                "height": 32,
+                "caption": "Trace Software"
+              },
+              "image": {
+                "@id": "https://www.trace-software.com/fr/#/schema/logo/image/"
+              }
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "accept-ranges": "bytes",
+        "age": "58",
+        "cache-control": "max-age=3600, public",
+        "content-encoding": "gzip",
+        "content-length": "26582",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:12:08 GMT",
+        "etag": "\"3dca39b275be5ce508dd2c7e5ff7af5d\"",
+        "last-modified": "Thu, 22 Oct 2026 12:12:08 GMT",
+        "link": "<https://www.trace-software.com/wp-json/>; rel=\"https://api.w.org/\", <https://www.trace-software.com/wp-json/wp/v2/pages/29>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://www.trace-software.com/>; rel=shortlink",
+        "permissions-policy": "private-state-token-redemption=(self \"https://www.google.com\" \"https://www.gstatic.com\" \"https://recaptcha.net\" \"https://challenges.cloudflare.com\" \"https://hcaptcha.com\"), private-state-token-issuance=(self \"https://www.google.com\" \"https://www.gstatic.com\" \"https://recaptcha.net\" \"https://challenges.cloudflare.com\" \"https://hcaptcha.com\")",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnu3.phpnet.org (Varnish/7.7)",
+        "x-cache": "HIT",
+        "x-cacheable": ":perhaps:",
+        "x-cachettl": "3541s",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-varnish": "2124883245 2108012682",
+        "x-varnutype": "5",
+        "x-xss-protection": "1; mode=block"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "des logiciels innovants pour des bâtiments durables\n« La prise en main d'archelios PRO est intuitive et rapide. L’intégration directe avec SketchUp nous fait gagner beaucoup de temps lors de la modélisation 3D des toitures. »\nEva RAVIER\nIngénieure Bureau d'études photovoltaïque - APEM Energie\nLire le témoignage complet\n« Toutes les notes de calcul du site ont été réalisées avec elec calc. C’est ce qui nous permet de les modifier facilement à chaque nouvelle intervention, sans repartir de zéro. » \nSébastien Guebel\nTwins Engineering Specialist - CBRE\nLire le témoignage complet\n« La réactivité et l'ergonomie de la plateforme green solution ont été cruciales pour nous. Elles nous permettent de répondre rapidement et efficacement aux besoins de nos clients.»\nFabrice Kipp\nFondateur - Optima Energie\nLire le témoignage complet\n« Nos métiers deviennent plus complexes, plus connectés, mais aussi plus passionnants. Grâce à des solutions comme elec calc et archelios, nous pouvons relever ces défis sereinement et continuer à livrer des installations sûres, performantes et durables. »\nSébastien Lenertz\nCoordinateur Responsable BtoB - ENERSOL\nLire le témoignage complet\n« elec calc permet de faire un pré-calcul pour optimiser la section des câbles et de faire des devis pour les installations qui collent à la réalité. »\nYann Le Saout\nResponsable d’études - Actemium\nLire le témoignage complet\n« Récemment, sur un hangar agricole, notre cliente a pu obtenir son financement bancaire grâce à l’étude réalisée avec archelios PRO, preuve de la fiabilité et de la clarté de l’outil. »\nHugo Lemaire\nCo-gérant - Valaurys\nLire le témoignage complet\n« Les équipes de Trace Software sont à l’écoute et prêtes à co-construire des solutions adaptées à nos besoins spécifiques. Leur approche ne se limite pas à une simple prestation de service : elles se positionnent comme de véritables partenaires, collaborant étroitement avec nos équipes pour comprendre nos enjeux et proposer des solutions sur mesure. »\nXavier Dubois​\nResponsable Smart Building – Jumeau numérique​ - Amexia Facility\nLire le témoignage\n« Nous pouvons réaliser des études de dossier sérieuses et approfondies, avec un rendu de grande qualité pour nos clients. L’ergonomie des outils et leur qualité en font de véritables alliés au quotidien. »\nLaurent Guilbaud\nPrésident - Groupe BGE\nLire le témoignage complet\n« Sans les solutions de la gamme green systèmes, on n’aurait tout simplement pas pu créer d’offre. Elles nous permettent de structurer nos analyses, d’éditer des rapports et de proposer à nos clients des pistes concrètes pour ajuster leurs abonnements ou mieux maîtriser leurs usages. »\nArnaud Bréjot \nPrésident et Fondateur - Gaïa eCo Systems",
+    "html": "<div id=\"readability-content\"><h1>des logiciels innovants pour des bâtiments durables</h1><div id=\"readability-page-1\" class=\"page\"><div><div data-id=\"1\"><p><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Solaire.svg\" alt=\"Badge-FR-Solaire\" width=\"130\" height=\"37\"></p><p>« La prise en main d'archelios PRO est intuitive et rapide. L’intégration directe avec SketchUp nous fait gagner beaucoup de temps lors de la modélisation 3D des toitures. »</p><div><p>Eva RAVIER<br><em>Ingénieure Bureau d'études photovoltaïque - APEM Energie</em></p></div><p><a href=\"https://www.trace-software.com/fr/apem-energie-la-precision-au-service-du-solaire-grace-a-la-gamme-archelios/\">Lire le témoignage complet</a></p></div><div data-id=\"2\"><p><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Electricite.svg\" alt=\"\" width=\"159\" height=\"37\"></p><p>« Toutes les notes de calcul du site ont été réalisées avec elec calc. C’est ce qui nous permet de les modifier facilement à chaque nouvelle intervention, sans repartir de zéro. »&nbsp;</p><div><p>Sébastien Guebel<br><em>Twins Engineering Specialist - CBRE</em></p></div><p><a href=\"https://www.trace-software.com/fr/simplicite-reactivite-et-fiabilite-comment-cbre-maitrise-la-gestion-electrique-de-ses-sites-avec-elec-calc/\">Lire le témoignage complet</a></p></div><div data-id=\"3\"><p><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Energie.svg\" alt=\"Badge-FR-Energie\" width=\"132\" height=\"36\"></p><p>« La réactivité et l'ergonomie de la plateforme green solution ont été cruciales pour nous. Elles nous permettent de répondre rapidement et efficacement aux besoins de nos clients.»</p><div><p>Fabrice Kipp<br><em>Fondateur - Optima Energie</em></p></div><p><a href=\"https://www.trace-software.com/fr/trace-software/etudes-de-cas/innovation-et-synergie-la-collaboration-gagnante-doptima-energie-avec-trace-software/\">Lire le témoignage complet</a></p></div><div data-id=\"4\"><p><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Electricite.svg\" alt=\"\" width=\"150\" height=\"35\"><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Solaire.svg\" alt=\"Badge-FR-Solaire\" width=\"130\" height=\"37\"></p><p>« Nos métiers deviennent plus complexes, plus connectés, mais aussi plus passionnants. Grâce à des solutions comme elec calc et archelios, nous pouvons relever ces défis sereinement et continuer à livrer des installations sûres, performantes et durables. »</p><div><p>Sébastien Lenertz</p><p><em>Coordinateur Responsable BtoB - ENERSOL</em></p></div><p><a href=\"https://www.trace-software.com/fr/enersol-vingt-ans-dexpertise-solaire-au-service-dinstallations-fiables-et-connectees/\">Lire le témoignage complet</a></p></div><div data-id=\"5\"><p><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/06/Badge.png\" alt=\"badge électricité\" width=\"151\" height=\"45\"></p><p>« elec calc permet de faire un pré-calcul pour optimiser la section des câbles et de faire des devis pour les installations qui collent à la réalité. »</p><div><p>Yann Le Saout<br><em>Responsable d’études - Actemium<br></em></p></div><p><a href=\"https://www.trace-software.com/fr/centre-actemium-vinci-energies/\">Lire le témoignage complet</a></p></div><div data-id=\"6\"><p><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Solaire.svg\" alt=\"Badge-FR-Solaire\" width=\"105\" height=\"30\"></p><p>« Récemment, sur un hangar agricole, notre cliente a pu obtenir son financement bancaire grâce à l’étude réalisée avec archelios PRO, preuve de la fiabilité et de la clarté de l’outil. »</p><div><p>Hugo Lemaire<br><em>Co-gérant - Valaurys</em></p></div><p><a href=\"https://www.trace-software.com/fr/comment-valaurys-utilise-archelios-pro-pour-securiser-et-accelerer-des-projets-solaires-exigeants/\">Lire le témoignage complet</a></p></div><div data-id=\"7\"><p><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Energie.svg\" alt=\"\" width=\"128\" height=\"35\"></p><p>« Les équipes de Trace Software sont à l’écoute et prêtes à co-construire des solutions adaptées à nos besoins spécifiques. Leur approche ne se limite pas à une simple prestation de service : elles se positionnent comme de véritables partenaires, collaborant étroitement avec nos équipes pour comprendre nos enjeux et proposer des solutions sur mesure. »</p><div><p>Xavier Dubois​<br><em>Responsable Smart Building – Jumeau numérique​ - Amexia Facility<br></em></p></div><p><a href=\"https://www.trace-software.com/fr/green-solution-amexia-facility-optimise-lexploitation-des-batiments-avec-un-ecosysteme-innovant-et-vertueux/\">Lire le témoignage</a></p></div><div data-id=\"8\"><p><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Solaire.svg\" alt=\"\" width=\"119\" height=\"34\"></p><p>« Nous pouvons réaliser des études de dossier sérieuses et approfondies, avec un rendu de grande qualité pour nos clients. L’ergonomie des outils et leur qualité en font de véritables alliés au quotidien. »</p><div><p>Laurent Guilbaud<br><em>Président - Groupe BGE</em></p></div><p><a href=\"https://www.trace-software.com/fr/solutions/concevez-simulez-et-analysez-vos-projets-photovoltaiques-avec-archelios-pro/\">Lire le témoignage complet</a></p></div><div data-id=\"9\"><p><img loading=\"lazy\" decoding=\"async\" src=\"https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Energie.svg\" alt=\"Badge-FR-Energie\" width=\"110\" height=\"30\"></p><p>« Sans les solutions de la gamme green systèmes, on n’aurait tout simplement pas pu créer d’offre. Elles nous permettent de structurer nos analyses, d’éditer des rapports et de proposer à nos clients des pistes concrètes pour ajuster leurs abonnements ou mieux maîtriser leurs usages. »</p><div><p>Arnaud Bréjot <br><em>Président et Fondateur - Gaïa eCo Systems</em></p></div></div></div></div></div>",
+    "htmlUrl": null,
+    "markdown": "# des logiciels innovants pour des bâtiments durables\n\n![Badge-FR-Solaire](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Solaire.svg)\n\n« La prise en main d'archelios PRO est intuitive et rapide. L’intégration directe avec SketchUp nous fait gagner beaucoup de temps lors de la modélisation 3D des toitures. »\n\nEva RAVIER  \n_Ingénieure Bureau d'études photovoltaïque - APEM Energie_\n\n[Lire le témoignage complet](https://www.trace-software.com/fr/apem-energie-la-precision-au-service-du-solaire-grace-a-la-gamme-archelios/)\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Electricite.svg)\n\n« Toutes les notes de calcul du site ont été réalisées avec elec calc. C’est ce qui nous permet de les modifier facilement à chaque nouvelle intervention, sans repartir de zéro. » \n\nSébastien Guebel  \n_Twins Engineering Specialist - CBRE_\n\n[Lire le témoignage complet](https://www.trace-software.com/fr/simplicite-reactivite-et-fiabilite-comment-cbre-maitrise-la-gestion-electrique-de-ses-sites-avec-elec-calc/)\n\n![Badge-FR-Energie](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Energie.svg)\n\n« La réactivité et l'ergonomie de la plateforme green solution ont été cruciales pour nous. Elles nous permettent de répondre rapidement et efficacement aux besoins de nos clients.»\n\nFabrice Kipp  \n_Fondateur - Optima Energie_\n\n[Lire le témoignage complet](https://www.trace-software.com/fr/trace-software/etudes-de-cas/innovation-et-synergie-la-collaboration-gagnante-doptima-energie-avec-trace-software/)\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Electricite.svg)![Badge-FR-Solaire](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Solaire.svg)\n\n« Nos métiers deviennent plus complexes, plus connectés, mais aussi plus passionnants. Grâce à des solutions comme elec calc et archelios, nous pouvons relever ces défis sereinement et continuer à livrer des installations sûres, performantes et durables. »\n\nSébastien Lenertz\n\n_Coordinateur Responsable BtoB - ENERSOL_\n\n[Lire le témoignage complet](https://www.trace-software.com/fr/enersol-vingt-ans-dexpertise-solaire-au-service-dinstallations-fiables-et-connectees/)\n\n![badge électricité](https://www.trace-software.com/wp-content/uploads/2024/06/Badge.png)\n\n« elec calc permet de faire un pré-calcul pour optimiser la section des câbles et de faire des devis pour les installations qui collent à la réalité. »\n\nYann Le Saout  \n_Responsable d’études - Actemium  \n_\n\n[Lire le témoignage complet](https://www.trace-software.com/fr/centre-actemium-vinci-energies/)\n\n![Badge-FR-Solaire](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Solaire.svg)\n\n« Récemment, sur un hangar agricole, notre cliente a pu obtenir son financement bancaire grâce à l’étude réalisée avec archelios PRO, preuve de la fiabilité et de la clarté de l’outil. »\n\nHugo Lemaire  \n_Co-gérant - Valaurys_\n\n[Lire le témoignage complet](https://www.trace-software.com/fr/comment-valaurys-utilise-archelios-pro-pour-securiser-et-accelerer-des-projets-solaires-exigeants/)\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Energie.svg)\n\n« Les équipes de Trace Software sont à l’écoute et prêtes à co-construire des solutions adaptées à nos besoins spécifiques. Leur approche ne se limite pas à une simple prestation de service : elles se positionnent comme de véritables partenaires, collaborant étroitement avec nos équipes pour comprendre nos enjeux et proposer des solutions sur mesure. »\n\nXavier Dubois​  \n_Responsable Smart Building – Jumeau numérique​ - Amexia Facility  \n_\n\n[Lire le témoignage](https://www.trace-software.com/fr/green-solution-amexia-facility-optimise-lexploitation-des-batiments-avec-un-ecosysteme-innovant-et-vertueux/)\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Solaire.svg)\n\n« Nous pouvons réaliser des études de dossier sérieuses et approfondies, avec un rendu de grande qualité pour nos clients. L’ergonomie des outils et leur qualité en font de véritables alliés au quotidien. »\n\nLaurent Guilbaud  \n_Président - Groupe BGE_\n\n[Lire le témoignage complet](https://www.trace-software.com/fr/solutions/concevez-simulez-et-analysez-vos-projets-photovoltaiques-avec-archelios-pro/)\n\n![Badge-FR-Energie](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-FR-Energie.svg)\n\n« Sans les solutions de la gamme green systèmes, on n’aurait tout simplement pas pu créer d’offre. Elles nous permettent de structurer nos analyses, d’éditer des rapports et de proposer à nos clients des pistes concrètes pour ajuster leurs abonnements ou mieux maîtriser leurs usages. »\n\nArnaud Bréjot  \n_Président et Fondateur - Gaïa eCo Systems_"
+  },
+  {
+    "url": "https://www.tracesoftware.cn/trial-request/",
+    "crawl": {
+      "loadedUrl": "https://tracesoftware.cn/trial-request/",
+      "loadedTime": "2026-10-22T12:13:12.561Z",
+      "referrerUrl": "https://www.tracesoftware.cn/trial-request/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 24463,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://tracesoftware.cn/trial-request/",
+      "title": "免费试用 | Trace Software International",
+      "description": "如果您希望申请免费试用软件，请您认真填写以下表格，我们会发送符合您需求的软件， Trace Software 解决方案全部提供免费试用，无需任何费用及保证，您可以免费获得我们最新版本软件的试用，为何不体验一下呢？",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:title",
+          "content": "免费试用 | Trace Software International"
+        },
+        {
+          "property": "og:description",
+          "content": "如果您希望申请免费试用软件，请您认真填写以下表格，我们会发送符合您需求的软件， Trace Software 解决方案全部提供免费试用，无需任何费用及保证，您可以免费获得我们最新版本软件的试用，为何不体验一下呢？"
+        },
+        {
+          "property": "og:url",
+          "content": "https://tracesoftware.cn/trial-request/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "tracesoftware.cn"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2026-03-18T02:54:33+00:00"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://tracesoftware.cn/trial-request/",
+              "url": "https://tracesoftware.cn/trial-request/",
+              "name": "免费试用 | Trace Software International",
+              "isPartOf": {
+                "@id": "https://tracesoftware.cn/#website"
+              },
+              "datePublished": "2016-03-08T10:19:52+00:00",
+              "dateModified": "2026-03-18T02:54:33+00:00",
+              "description": "如果您希望申请免费试用软件，请您认真填写以下表格，我们会发送符合您需求的软件， Trace Software 解决方案全部提供免费试用，无需任何费用及保证，您可以免费获得我们最新版本软件的试用，为何不体验一下呢？",
+              "breadcrumb": {
+                "@id": "https://tracesoftware.cn/trial-request/#breadcrumb"
+              },
+              "inLanguage": "en-US",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://tracesoftware.cn/trial-request/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://tracesoftware.cn/trial-request/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://tracesoftware.cn/home-2/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "下载试用"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://tracesoftware.cn/#website",
+              "url": "https://tracesoftware.cn/",
+              "name": "tracesoftware.cn",
+              "description": "",
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://tracesoftware.cn/?s={search_term_string}"
+                  },
+                  "query-input": "required name=search_term_string"
+                }
+              ],
+              "inLanguage": "en-US"
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "cache-control": "max-age=3, must-revalidate",
+        "content-encoding": "gzip",
+        "content-length": "24463",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:13:11 GMT",
+        "server": "Apache",
+        "vary": "Accept-Encoding,Cookie"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "免费试用 | Trace Software International\narchelios™ PRO 光伏电站前期设计和仿真软件请“点击这里申请试用”。\n下方表格仅可申请 elec calc™ 供配电计算选型软件、elec calc™ SOLAR 光伏电气设计软件试用。\n城市*\n公司*\n姓名*\n职务*\n手机*\nEmail*\n您的需求\n希望试用软件：*\nelec calc 中低压配电设计计算 \nelec calc BIM 电气BIM集成 \nelec calc GRID 智能电网/新型电力系统 \nelec calc SOLAR 光伏电气设计软件 \narchelios PRO 光伏电站前期设计仿真软件，请到 www.archelios.cn 申请试用，这里不提供哦！\n当前电气设计和计算工具是？*\n正在使用的3D/BIM或仿真软件：*\nRevit \nSketchUp \n其他 \nPVSyst \n无 \n是否需要报价或演示：*\n是 \n否 \n请描述具体业务需求及或计算内容*\n通过何种方式了解到Trace Software的？\n我同意接收来自Trace Software的产品和服务信息。 \nThis field should be left blank \nPlease wait...\n关注微信公众号，随时获取培训咨询",
+    "html": "<div id=\"readability-content\"><h1>免费试用 | Trace Software International</h1><div id=\"readability-page-1\" class=\"page\"><div id=\"after_section_1\"><div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p><span><a href=\"https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/#freeversion\">archelios™ PRO 光伏电站前期设计和仿真软件请<strong>“点击这里申请试用”</strong>。</a></span></p>\n\n</div>\n\n<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p>下方表格仅可申请 elec calc™ 供配电计算选型软件、elec calc™ SOLAR 光伏电气设计软件试用。</p>\n\n</div>\n\n<div id=\"iphorm-outer-6ad9fbe523392\" itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\">\n    \n    <form id=\"iphorm-6ad9fbe523392\" action=\"/trial-request/#iphorm-6ad9fbe523392\" method=\"post\" enctype=\"multipart/form-data\" novalidate=\"novalidate\">\n        <div>\n                <div>\n                <div><div>\n        <p><label for=\"iphorm_20_25_6ad9fbe523392\">城市<span>*</span></label></p>\n            </div><div>\n        <p><label for=\"iphorm_20_9_6ad9fbe523392\">公司<span>*</span></label></p>\n            </div></div><div><div>\n        <p><label for=\"iphorm_20_2_6ad9fbe523392\">姓名<span>*</span></label></p>\n            </div><div>\n        <p><label for=\"iphorm_20_35_6ad9fbe523392\">职务<span>*</span></label></p>\n            </div></div><div><div>\n        <p><label for=\"iphorm_20_10_6ad9fbe523392\">手机<span>*</span></label></p>\n            </div><div>\n        <p><label for=\"iphorm_20_12_6ad9fbe523392\">Email<span>*</span></label></p>\n            </div></div></div><div>\n                <p><h4>您的需求</h4></p><div>\n        <p><label>希望试用软件：<span>*</span></label></p><div>\n            <div>\n                            <p><label for=\"iphorm_20_16_6ad9fbe523392_1\">\n                        \n                        elec calc 中低压配电设计计算                    </label>\n                </p>\n                            <p><label for=\"iphorm_20_16_6ad9fbe523392_2\">\n                        \n                        elec calc BIM 电气BIM集成                    </label>\n                </p>\n                            <p><label for=\"iphorm_20_16_6ad9fbe523392_3\">\n                        \n                        elec calc GRID 智能电网/新型电力系统                    </label>\n                </p>\n                            <p><label for=\"iphorm_20_16_6ad9fbe523392_4\">\n                        \n                        elec calc SOLAR 光伏电气设计软件                    </label>\n                </p>\n                        </div>\n                <p>archelios PRO 光伏电站前期设计仿真软件，请到  www.archelios.cn 申请试用，这里不提供哦！</p>\n        </div>\n            </div><div>\n        <p><label for=\"iphorm_20_33_6ad9fbe523392\">当前电气设计和计算工具是？<span>*</span></label></p>\n            </div><div>\n        <p><label>正在使用的3D/BIM或仿真软件：<span>*</span></label></p><div>\n                            <p><label for=\"iphorm_20_30_6ad9fbe523392_1\">\n                        \n                        Revit                    </label>\n                </p>\n                            <p><label for=\"iphorm_20_30_6ad9fbe523392_2\">\n                        \n                        SketchUp                    </label>\n                </p>\n                            <p><label for=\"iphorm_20_30_6ad9fbe523392_3\">\n                        \n                        其他                    </label>\n                </p>\n                            <p><label for=\"iphorm_20_30_6ad9fbe523392_4\">\n                        \n                        PVSyst                    </label>\n                </p>\n                            <p><label for=\"iphorm_20_30_6ad9fbe523392_5\">\n                        \n                        无                    </label>\n                </p>\n                        </div>\n            </div><div>\n        <p><label>是否需要报价或演示：<span>*</span></label></p><div>\n                            <p><label for=\"iphorm_20_34_6ad9fbe523392_1\">\n                        \n                        是                    </label>\n                </p>\n                            <p><label for=\"iphorm_20_34_6ad9fbe523392_2\">\n                        \n                        否                    </label>\n                </p>\n                        </div>\n            </div><div>\n        <p><label for=\"iphorm_20_17_6ad9fbe523392\">请描述具体业务需求及或计算内容<span>*</span></label></p>\n            </div><div>\n        <p><label for=\"iphorm_20_28_6ad9fbe523392\">通过何种方式了解到Trace Software的？</label></p>\n            </div><div>\n                            <p><label for=\"iphorm_20_18_6ad9fbe523392_1\">\n                        \n                        我同意接收来自Trace Software的产品和服务信息。                    </label>\n                </p>\n                        </div></div><p><label>This field should be left blank</label>\n</p>                <div>\n                    \n                    <p><span>Please wait...</span></p>\n                </div>\n            </div>\n            </form>\n    \n</div>\n\n<div><h2 itemprop=\"headline\">关注微信公众号，随时获取培训咨询</h2></div>\n\n<div itemprop=\"image\" itemscope=\"itemscope\" itemtype=\"https://schema.org/ImageObject\"><p><img decoding=\"async\" fetchpriority=\"high\" src=\"https://www.tracesoftware.cn/wp-content/uploads/2018/01/weixin125x125.jpg\" alt=\"\" title=\"\" itemprop=\"thumbnailUrl\"></p></div>\n</div></div></div>",
+    "htmlUrl": null,
+    "markdown": "# 免费试用 | Trace Software International\n\n[archelios™ PRO 光伏电站前期设计和仿真软件请**“点击这里申请试用”**。](https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/#freeversion)\n\n下方表格仅可申请 elec calc™ 供配电计算选型软件、elec calc™ SOLAR 光伏电气设计软件试用。\n\n城市\\*\n\n公司\\*\n\n姓名\\*\n\n职务\\*\n\n手机\\*\n\nEmail\\*\n\n#### 您的需求\n\n希望试用软件：\\*\n\nelec calc 中低压配电设计计算\n\nelec calc BIM 电气BIM集成\n\nelec calc GRID 智能电网/新型电力系统\n\nelec calc SOLAR 光伏电气设计软件\n\narchelios PRO 光伏电站前期设计仿真软件，请到 www.archelios.cn 申请试用，这里不提供哦！\n\n当前电气设计和计算工具是？\\*\n\n正在使用的3D/BIM或仿真软件：\\*\n\nRevit\n\nSketchUp\n\n其他\n\nPVSyst\n\n无\n\n是否需要报价或演示：\\*\n\n是\n\n否\n\n请描述具体业务需求及或计算内容\\*\n\n通过何种方式了解到Trace Software的？\n\n我同意接收来自Trace Software的产品和服务信息。\n\nThis field should be left blank\n\nPlease wait...\n\n## 关注微信公众号，随时获取培训咨询\n\n![](https://www.tracesoftware.cn/wp-content/uploads/2018/01/weixin125x125.jpg)"
+  },
+  {
+    "url": "https://www.tracesoftware.cn/",
+    "crawl": {
+      "loadedUrl": "https://tracesoftware.cn/",
+      "loadedTime": "2026-10-22T12:13:18.165Z",
+      "referrerUrl": "https://www.tracesoftware.cn/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 32890,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://tracesoftware.cn/home-2/",
+      "title": "逸莱轲|光伏软件|电气计算软件|光伏三维设计建模仿真选型软件|供配电计算计算|-Trace Software",
+      "description": "法国Trace Software是世界领先的电气软件厂商，产品包括：电气计算软件eleccalc，建筑电气BIM软件eleccalc BIM，光伏设计仿真计算软件Archelios，提供建筑电气设计软件，电气计算软件，光伏计算，建筑电气BIM软件解决方案。",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:title",
+          "content": "逸莱轲|光伏软件|电气计算软件|光伏三维设计建模仿真选型软件|供配电计算计算|-Trace Software"
+        },
+        {
+          "property": "og:description",
+          "content": "法国Trace Software是世界领先的电气软件厂商，产品包括：电气计算软件eleccalc，建筑电气BIM软件eleccalc BIM，光伏设计仿真计算软件Archelios，提供建筑电气设计软件，电气计算软件，光伏计算，建筑电气BIM软件解决方案。"
+        },
+        {
+          "property": "og:url",
+          "content": "https://tracesoftware.cn/home-2/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "tracesoftware.cn"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2025-07-29T13:45:28+00:00"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://tracesoftware.cn/home-2/",
+              "url": "https://tracesoftware.cn/home-2/",
+              "name": "逸莱轲|光伏软件|电气计算软件|光伏三维设计建模仿真选型软件|供配电计算计算|-Trace Software",
+              "isPartOf": {
+                "@id": "https://tracesoftware.cn/#website"
+              },
+              "datePublished": "2014-08-06T11:41:48+00:00",
+              "dateModified": "2025-07-29T13:45:28+00:00",
+              "description": "法国Trace Software是世界领先的电气软件厂商，产品包括：电气计算软件eleccalc，建筑电气BIM软件eleccalc BIM，光伏设计仿真计算软件Archelios，提供建筑电气设计软件，电气计算软件，光伏计算，建筑电气BIM软件解决方案。",
+              "breadcrumb": {
+                "@id": "https://tracesoftware.cn/home-2/#breadcrumb"
+              },
+              "inLanguage": "en-US",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://tracesoftware.cn/home-2/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://tracesoftware.cn/home-2/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://tracesoftware.cn/#website",
+              "url": "https://tracesoftware.cn/",
+              "name": "tracesoftware.cn",
+              "description": "",
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://tracesoftware.cn/?s={search_term_string}"
+                  },
+                  "query-input": "required name=search_term_string"
+                }
+              ],
+              "inLanguage": "en-US"
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "cache-control": "max-age=3, must-revalidate",
+        "content-encoding": "gzip",
+        "content-length": "32890",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:13:16 GMT",
+        "server": "Apache",
+        "vary": "Accept-Encoding,Cookie"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "逸莱轲|光伏软件|电气计算软件|光伏三维设计建模仿真选型软件|供配电计算计算|-Trace Software\nTrace Software International，具有35年电气CAD/CAE解决方案的开发和服务经验(1987-至今)专注于全球范围内的CAE工程软件开发和服务。 公司坚持在电气工程及新能源数字化领域投入研发，使我们的产品成为在世界范围内最受用户喜爱的专业产品之一。解决方案涵盖了低压/高压电力系统计算及选型，光伏电站仿真、设计及计算选型等领域。\n分别在法国(总部)，西班牙，德国，中国，摩洛哥设有分公司，我们的使命是用我们的经验、专业、以及可靠和稳定的产品为客户提供最优的服务体验。\n了解更多\n技术支持\n对Trace Software的产品有任何疑问、建议或意见，\n请联系我们的技术团队。\n专家团队\n有关Trace Software产品的介绍、咨询或技术信息？\n我们的专家团队将乐意为您提供帮助。",
+    "html": "<div id=\"readability-content\"><h1>逸莱轲|光伏软件|电气计算软件|光伏三维设计建模仿真选型软件|供配电计算计算|-Trace Software</h1><div id=\"readability-page-1\" class=\"page\"><div id=\"wrap_all\" data-scroll-offset=\"116\">\n\n\t<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\" id=\"av_section_3\"><p>Trace Software International，具有35年电气CAD/CAE解决方案的开发和服务经验(1987-至今)专注于全球范围内的CAE工程软件开发和服务。 公司坚持在电气工程及新能源数字化领域投入研发，使我们的产品成为在世界范围内最受用户喜爱的专业产品之一。解决方案涵盖了低压/高压电力系统计算及选型，光伏电站仿真、设计及计算选型等领域。</p>\n<p>分别在法国(总部)，西班牙，德国，中国，摩洛哥设有分公司，我们的使命是用我们的经验、专业、以及可靠和稳定的产品为客户提供最优的服务体验。</p>\n<p><strong><a href=\"https://www.tracesoftware.cn/trace-software/our-company/\">了解更多</a></strong></p>\n\n\n\n\n</div><div id=\"av_section_4\">\n<div><article itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><div><header><h3 itemprop=\"headline\"><a href=\"https://tracesoftware.cn/services/technical-support/\" title=\"技术支持\">技术支持</a></h3></header><div itemprop=\"text\"><p>对Trace Software的产品有任何疑问、建议或意见，</p>\n<p>请联系我们的技术团队。</p>\n\n</div></div></article></div><div><article itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><div><header><h3 itemprop=\"headline\"><a href=\"https://tracesoftware.cn/trace-software/contact-us/\" title=\"专家团队\">专家团队</a></h3></header><div itemprop=\"text\"><p>有关Trace Software产品的介绍、咨询或技术信息？</p>\n<p>我们的专家团队将乐意为您提供帮助。</p>\n\n</div></div></article></div>\n</div><!-- close default .container_wrap element -->\t\t\t\t\n\n\t\n\n\t\n\t\t\t\t\n\n\n\t\t\t\t\t<!-- end main -->\n\t\t</div></div></div>",
+    "htmlUrl": null,
+    "markdown": "# 逸莱轲|光伏软件|电气计算软件|光伏三维设计建模仿真选型软件|供配电计算计算|-Trace Software\n\nTrace Software International，具有35年电气CAD/CAE解决方案的开发和服务经验(1987-至今)专注于全球范围内的CAE工程软件开发和服务。 公司坚持在电气工程及新能源数字化领域投入研发，使我们的产品成为在世界范围内最受用户喜爱的专业产品之一。解决方案涵盖了低压/高压电力系统计算及选型，光伏电站仿真、设计及计算选型等领域。\n\n分别在法国(总部)，西班牙，德国，中国，摩洛哥设有分公司，我们的使命是用我们的经验、专业、以及可靠和稳定的产品为客户提供最优的服务体验。\n\n**[了解更多](https://www.tracesoftware.cn/trace-software/our-company/)**\n\n### [技术支持](https://tracesoftware.cn/services/technical-support/ \"技术支持\")\n\n对Trace Software的产品有任何疑问、建议或意见，\n\n请联系我们的技术团队。\n\n### [专家团队](https://tracesoftware.cn/trace-software/contact-us/ \"专家团队\")\n\n有关Trace Software产品的介绍、咨询或技术信息？\n\n我们的专家团队将乐意为您提供帮助。"
+  }
+]

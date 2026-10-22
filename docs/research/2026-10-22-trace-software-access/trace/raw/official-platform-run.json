@@ -1,0 +1,10 @@
+{
+  "id": "Rlr6OmpeYXrlZnqSE",
+  "actId": "aYG0l9s7dbB7j3gbS",
+  "status": "SUCCEEDED",
+  "defaultDatasetId": "w4ShSsemP5UCkg7R9",
+  "defaultKeyValueStoreId": "C6NnoFCexH2IQ61Rn",
+  "startedAt": "2026-10-22T12:30:04.856Z",
+  "finishedAt": "2026-10-22T12:30:14.457Z",
+  "statusMessage": "Finished! Total 3 requests: 3 succeeded, 0 failed."
+}

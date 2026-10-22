@@ -1,0 +1,6 @@
+{
+  "queries": "site:dl.trace-software.com archelios exe zip pdf\nsite:trace-software.com \"sample project\" archelios\nsite:trace-software.com \"example\" \"project\" \"download\" elec calc\nsite:dl.trace-software.com elec calc exe zip",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 10,
+  "maxConcurrency": 2
+}

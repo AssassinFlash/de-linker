@@ -1,0 +1,106 @@
+[
+  {
+    "url": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+    "crawl": {
+      "loadedUrl": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+      "loadedTime": "2026-10-22T12:32:33.011Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 2072413,
+      "contentType": "application/pdf"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "01_FR_Note_de_mise_a_jour_2026.0.pdf"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/WXau52XWTJh4F5eee/records/file-113315a-01_FR_Note_de_mise_a_jour_2026.0.pdf"
+  },
+  {
+    "url": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf",
+    "crawl": {
+      "loadedUrl": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf",
+      "loadedTime": "2026-10-22T12:32:35.121Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 763019,
+      "contentType": "application/pdf"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "FlyerACpro_FR_LT.pdf"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/WXau52XWTJh4F5eee/records/file-c49b2d3-FlyerACpro_FR_LT.pdf"
+  },
+  {
+    "url": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf",
+    "crawl": {
+      "loadedUrl": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf",
+      "loadedTime": "2026-10-22T12:32:55.547Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 1646021,
+      "contentType": "application/pdf"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "FlyerACsuite_FR_LT.pdf"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/WXau52XWTJh4F5eee/records/file-f7673a3-FlyerACsuite_FR_LT.pdf"
+  },
+  {
+    "url": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf",
+    "crawl": {
+      "loadedUrl": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf",
+      "depth": 0,
+      "referrerUrl": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf",
+      "loadedTime": "2026-10-22T12:33:35.333Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 1404216,
+      "contentType": "application/pdf"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "04_DE_Update-Notiz_2025.1.pdf"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/WXau52XWTJh4F5eee/records/file-9de6efa-04_DE_Update-Notiz_2025.1.pdf"
+  }
+]

@@ -1,0 +1,229 @@
+          La suite complète dédiée à la conception photovoltaïque
+
+
+
+                                                                 en https et serveur dédié, avec processus de sauvegarde
+                                                                 redondante) : ils peuvent ainsi être partagés avec vos
+                                                                 collègues, visualisés et édités chez le client, sur un ordinateur
+                                                                 ou un smartphone, pour une grande souplesse d’utilisation.
+Conception photovoltaïque                                        Vous n’avez plus aucun souci d’installation, Archelios PRO
+                                                                 est compatible avec tous les navigateurs internet et vous
+et calcul du productible                                         êtes assurés d’avoir la dernière version à jour du logiciel et
+                                                                 des bases de données.
+Archelios™ PRO est une application en ligne de
+conception, de simulation et d’analyse économique
+de projets photovoltaïques destinée aux professionnels
+pour tout type d’installation photovoltaïque (sur
+toitures, au sol, injection réseau, sites isolés ou auto-
+consommation).
+
+Simple à utiliser, Archelios™ PRO fournit les calculs de
+productible les plus précis au monde, en se basant sur une
+simulation en 3D du projet. Grâce aux fonctions de compa-
+raison multi-projets, le concepteur peut définir la meilleure
+configuration possible pour une installation optimale.
+
+
+
+
+Visuel, précis et accessible partout
+      Grâce au plug-in SketchUp, reconnu mondialement            Outil de décision économique
+      pour son ergonomie, Archelios PRO offre une
+simulation en 3D de l’installation photovoltaïque, ainsi que     Archelios PRO calcule les résultats de production de manière
+de l’architecture du bâtiment et de son environnement.           très détaillée en prenant en compte l’ensemble des pertes
+Le concepteur peut ainsi trouver la meilleure configuration      (masques, ombrages, température, vieillissement, déperdition
+possible en tenant compte l’environnement proche. Les            des matériels, etc). Ils sont fournis heure par heure et
+masques lointains sont quant à eux calculés automatique-         année après année.
+ment sur la Terre entière grâce aux modèles de la NASA.
+                                                                 Archelios PRO fournit des indicateurs économiques de
+      Proposant un vaste choix de modules et                     rentabilité sur une période définie. Ceux-ci tiennent compte
+      d’onduleurs (+ de 12 000 références de modules et          du coût d’investissement global, de la durée de vie des
++ de 1 500 onduleurs), Archelios PRO facilite le choix du        matériels et de leur renouvellement au fil du temps, des frais
+meilleur matériel pour un rendement optimal de l’installation.   de maintenance, des taux d’intérêt bancaires, du montant
+                                                                 des aides éventuelles et enfin, du prix de revente du kWh
+       Archelios PRO est une application en ligne qui est        (injection) ou de non-consommation (autoconsommation).
+       accessible partout et qui permet la sauvegarde des        Ces informations sont utilisées pour fournir une analyse
+projets photovoltaïques sur le cloud (transmission sécurisée     financière financière complète du retour sur investissement.
+  Les fonctionnalités d’Archelios PRO
+       LES POINTS FORTS
+                                                                                                                 Dimensionnement de l’installation
+• Accès à une couverture géographique mondiale des
+stations météo pour les données d’ensoleillement                                                                 • Choix du matériel à partir d’une large base de données
+• Modélisation en 3D de l’installation et de chaque                                                              multi-fabricants
+composant grâce au plug-in SketchUp (calcul précis des                                                           • Paramètres de simulation complets, avec des valeurs par
+ombrages proches par la modélisation des courbes I(V)                                                            défaut cohérentes
+pour chaque module et string)                                                                                    • Choix de l’onduleur, gestion des multi-MPPT, micro-
+• Simulation en 3D du calepinage et du câblage pour un                                                           onduleurs, optimiseurs
+rendement maximum                                                                                                • Affichage des résultats détaillés de chaque composant
+• Application en ligne, simple à utiliser, facile d’accès, y                                                     (module, string, onduleur)
+compris sur smartphone, avec une visualisation graphique
+claire et détaillée                                                                                              Calcul du productible
+• Comparatif facile entre projets (choix de matériels ou
+câblage différent) pour une rentabilité optimale                                                                 • Simulation de la production annuelle AC et DC heure par
+• Calcul de la production et de la rentabilité économique                                                        heure
+avec prise en compte du CGA (coût global actualisé)                                                              • Calcul du ratio de performance et des courbes I(V) et P(V)
+en €/kWh                                                                                                         heure par heure pour chaque module et string
+• Calculs précis et détaillés pour une estimation réelle du                                                      • Prise en compte exhaustive des pertes, y compris celles
+projet (logiciel le plus précis au monde*)                                                                       liées à la ventilation des modules
+• Outil innovant pour estimer l’auto-consommation
+(édition de profils de consommation électrique quotidiens) et
+le stockage d’énergie
+• Possibilité d’exporter le projet photovoltaïque vers
+archelios calc pour permettre le dimensionnement des câbles,
+la finition du projet et un contrôle normatif de l’installation.
+
+Adapté aux exigences du marché photovoltaïque
+Archelios PRO a évolué depuis 2001 et prend désormais
+en compte les projets d’auto-consommation où l’électricité                                                                           Sélection automatique des configurations modules/onduleurs valide
+produite par l’installation photovoltaïque est utilisée pour
+couvrir les besoins électriques du producteur.                                                                   Calcul de la rentabilité de l’installation
+
+Calcul du gisement solaire                                                                                       • Calcul sur toute la période d’observation des revenus par an
+                                                                                                                 • Prise en compte de l’investissement global, des frais de
+• Géolocalisation avec Google Maps et accès aux données                                                          maintenance, de l’emprunt bancaire et du montant des
+de + de 1 500 stations météo dans le monde entier                                                                aides éventuelles
+• Utilisation des résultats météo pour la modélisation                                                           • Calcul du retour sur investissement, du CGA (coût global
+(éclairement, irradiation, …)                                                                                    actualisé), de la VAN (valeur actuelle nette)
+• Calcul automatique du masque lointain (données NASA)
+
+
+
+
+                                                                                                                 Calcul pour l’auto-consommation
+
+Simulation en 3D avec le plug-in SketchUp                                                                        • Simulation de projets d’auto-consommation avec option
+                                                                                                                 de stockage
+• Simulation du bâtiment et de son environnement                                                                 • Définition d’un profil de consommation et calculs réalistes
+• Calepinage et câblage automatique en 3D et simulation                                                          de production et de consommation heure par heure
+en 3D de chaque composant, des ombrages et du masque
+proche                                                                                                           Echange des résultats et comparaison entre projets
+
+                                                                                                                 • Application web avec accès en ligne et mise à jour
+                                                                                                                 automatique
+                                                                                                                 • Génération du projet au format pdf ou partage d’un lien de
+                                                                                                                 consultation en ligne
+                                                                                                                 • Comparatif de projets entre eux
+* Parmis les logiciels professionnels. Précision attestée par deux études internationales : Photon international et journal IJEEE.
+Dimensionnement des                                                                              La plus grande attention a été portée à tous
+installations photovoltaïques                                                                    les éléments de l’installation photovoltaïque.
+
+Archelios™ CALC est un logiciel conçu pour per-                                                  Le générateur photovoltaïque est décrit précisément :
+mettre aux professionnels de dimensionner leurs ins-                                             • Caractéristiques des panneaux
+tallations photovoltaïques raccordées au réseau pu-                                              • Nombre et organisation des panneaux
+blic selon les différents guides NF. Archelios™ CALC                                             • Environnement de pose (un lien vers le site PVGIS
+prend en compte tous les éléments constituant une                                                de la commission européenne est proposé, pour l’aide aux
+                                                                                                 calculs de perte d’irradiation)
+installation photovoltaïque et apporte pour chacun des
+                                                                                                 • Températures d’utilisation mini/maxi
+renseignements sur l’état de conformité par une
+présentation claire et conviviale.                                                               L’adaptation de l’onduleur est optimisé selon :
+                                                                                                 • Niveau de puissance avec possibilité de surclassement
+En quelques fenêtres, archelios™ CALC présente une vue                                           • Niveaux de courant et de tension mini/maxi
+globale et synthétique de l’installation photovoltaïque, des                                     • Prise en compte des variations de température d’emploi
+modules photovoltaïques jusqu’au raccordement au réseau                                          des panneaux
+public de distribution, de la simple installation en habitat,                                    • Gestion des trackers et des points de connexion des
+jusqu’aux installations multi onduleurs répartis sur un réseau                                   onduleurs.
+triphasé.
+                                                                                                 Les câbles sont dimensionnés pour répondre aux
+                                                                                                 différentes contraintes :
+                                                                                                 • Prise en compte des obligations contre les risques
+                                                                                                 d’incendie
+                                                                                                 • Courant d’emploi
+                                                                                                 • Mode de pose
+                                                                                                 • Chute maximale de tension imposée (3%),
+                                                                                                  recommandée (1%)
+                                                                                                 • Contrainte thermique
+
+
+                                  Normes CEI & NF C15-712
+
+
+
+
+Archelios™ CALC affiche en temps réel :
+• le synoptique complet et détaillé de l’installation, où la
+validité de chaque composant est signalée par un code
+couleur.
+• une zone de saisie qui s’adapte automatiquement au
+composant sélectionné.
+
+La saisie peut se faire individuellement, pour chaque
+composant, ou globalement, au travers d’une multi
+sélection.
+Les caractéristiques des composants peuvent être intégrées
+directement à partir des catalogues inclus dans archelios
+calc™ ou saisies manuellement.
+                                                                                                 Les protections fusibles sont facultatives ou imposées
+                                                                                                 s’il y a lieu :
+                                                                                                 • Calcul des calibres mini/maxi admissibles
+                                                                                                 • Tension assignée DC
+                                                                                                 Optimisation du ou des onduleurs :
+                                                                                                 • Cohérence avec le raccordement au réseau public
+                                                                                                 (puissance, type, ...)
+                                                                                                 • Calculs des courants résultants (répartition des phases
+                                                                                                 • Contrôle du déséquilibre de charge sur le réseau public
+
+                                                                                                 Optimisation du ou des onduleurs :
+                                                                                                 • Cohérence avec le raccordement au réseau public
+                                                                                                 (puissance, type, ...)
+Visualisation dynamique générateur / Onduleur et graphique sur le taux de charge de l’onduleur   • Calculs des courants résultants (répartition des phases
+                                                                                                 • Contrôle du déséquilibre de charge sur le réseau public
+Dimensionnement des protections :
+• Calcul des calibres
+• Pouvoir de coupure
+• Seuils thermiques et magnétiques
+• Seuil différentiel selon l’environnement
+• Temps de fonctionnement
+
+Etude systémique des parafoudres
+• Evaluation du besoin de parafoudres en fonction
+de l’environnement
+• Définition automatique des types et caractéristiques
+des parafoudres
+• Contrôle des protections associées aux parafoudres
+
+
+
+
+Les points forts d’Archelios CALC*
+• Solution professionnelle de dimensionnement électrique                               • Utilisation interactive d’Excel permettant de saisir et de
+DC et AC, mono ou multi onduleurs                                                      modifier n’importe quel objet de l’installation rapidement
+• Sécurité et conformité : calculs et contrôles normatifs                              (caractéristiques, repères, longueurs…)
+(guide NF C15-712-1, C15-100, C32-502, …)                                              • Traitement de tout type d’installation PV
+• Base de données multi-constructeurs pour tous les                                    • Documentation complète de l’installation pour le contrôle
+matériels (modules, protections, onduleurs, câbles,                                    (note de calcul, nomenclatures, listes de câbles, schéma
+parafoudres, interrupteurs…) : Sharp, Photowatt, Sanyo,                                unifilaire…)
+Alphasolar, SMA…, + de 50 constructeurs avec préfiltrage                               • Outil convivial, facile à prendre en main avec un af-
+automatique du choix des appareils compatibles avec                                    fichage synthétique de l’installation et une visuali-
+l’installation                                                                         sation contextuelle détaillée pour chaque élément
+• Possibilité de saisie de catalogues personnalisés                                    • Possibilité de traiter des installations de plus de 250 kVA
+• Traitement indépendant des différents composants ou                                  avec un raccordement sur transformateur, via un module
+saisie en multi-sélection pour une conception flexible et                              Haute Tension
+rapide                                                                                 • Export des données au format DWG du schéma unifilaire
+• Calcul de l’installation en temps-réel et visualisation des                          • Possibilité d’importer le projet photovoltaïque provenant
+anomalies et de l’adéquation du matériel choisi                                        d’Archelios PRO pour son dimensionnement
+
+* Archelios CALC est le nouveau nom de solar calc depuis 2015, les fonctionnalités du logiciel restent identiques. Solar calc, développé et commercialisé par Trace Software
+depuis 2009, a pris le nom d’Archelios CALC pour marquer sa complémentarité et l’échange possible avec archelios pro pour une conception photovoltaïque complète avec
+une seule suite de logiciels.
+
+
+
+
+         Ils nous font confiance
+
+
+
+
+             Archelios a été développé avec le soutien financier de l’ADEME.
+
+
+
+
+                                         Trace Software International       Tel. : +33 (0)2 32 79 44 24
+                                         Parc Eco Normandie
+                                         76430 Saint Romain, France
+                                                                            Fax. : +33 (0)2 22 44 89 56
+                                                                            Email : commercial@trace-software.com
+                                                                                                                       www.trace-software.com
+

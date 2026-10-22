@@ -1,0 +1,527 @@
+[
+  {
+    "url": "https://www.archelios.cn/",
+    "crawl": {
+      "loadedUrl": "https://www.archelios.cn/online/bin/Archelios-Online-Login.php?lang=cn",
+      "loadedTime": "2026-10-22T12:15:06.432Z",
+      "referrerUrl": "https://www.archelios.cn/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 7981,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.archelios.cn/online/bin/Archelios-Online-Login.php?lang=cn",
+      "title": "Archelios PRO",
+      "description": "",
+      "author": "",
+      "keywords": null,
+      "languageCode": "cn",
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-store, no-cache, must-revalidate",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-length": "7981",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:15:06 GMT",
+        "expires": "Thu, 19 Nov 1981 08:52:00 GMT",
+        "p3p": "CP=\"CAO PSA OUR\"",
+        "pragma": "no-cache",
+        "server": "nginx/1.14.2",
+        "vary": "Accept-Encoding",
+        "x-powered-by": "PHP/7.3.29-1~deb10u1"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Archelios PRO\n登录\n用户名 请输入用户名 密码 输入密码 \n忘记密码？",
+    "html": "<div id=\"readability-content\"><h1>Archelios PRO</h1><div id=\"readability-page-1\" class=\"page\">\n            <header id=\"header\"><!-- #8323 éviter que le logo soit collé aux bords -->\n\t\t\t<!--<span id=\"logo\"></span>-->\n\t\t\t<p><a href=\"http://www.tracesoftware.cn/archelios-pro/solar-design-software/\">\n\t\t\t\t\t<span> <img src=\"https://www.archelios.cn/img/LogoTraceSoftware.fw.png\" alt=\"Trace Software International\" height=\"60\"> </span>\n\t\t\t\t</a>\n\t\t\t</p>\n\t\t\t<!-- #7949 Le mail est à enlever\n\t\t\t\t<span id=\"login-header-space\" class=\"pull-right\">\n\t\t\t\t<i class=\"fa fa-envelope-o fa-lg txt-color-blue\"></i>\n\t\t\t\t<a href='javascript:mailSupport(\"support@trace-software.com\",\"archelios PRO request\")'> support@trace-software.com</a>\n\t\t\t</span>-->\n\t\t</header>\n\t\n\t<div id=\"printableArea\" role=\"main\">\n\t\t\t\t<!-- NO 25 multiple lang dropdown : find all flags in the image folder -->\n\t\t\t\t<ul>\n\t\t\t\t\t<li>\n\t\t\t\t\t\t\t\t\t\t\t\t</li></ul>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t<!-- end multiple lang -->\n\n\t\t\t\t<div>\n\t\t\t\t\t<div>\n\t\t\t\t\t\t\t<form action=\"Archelios-Online-Login.php?lang=cn&amp;origine=\" id=\"login-form\" method=\"post\" role=\"form\">\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t<header>\n\t\t\t\t\t\t\t\t\t<h2><img src=\"https://www.archelios.cn/img/logo-pro.png\" alt=\"Archelios PRO\" height=\"42\"></h2>\n\t\t\t\t\t\t\t\t\t<h2><b>登录</b></h2>\n\t\t\t\t\t\t\t\t</header>\n\t\t\t\t\t\t\t\t<fieldset>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<section>\n\t\t\t\t\t\t\t\t\t\t<label>用户名</label>\n\t\t\t\t\t\t\t\t\t\t<label> <i></i>\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t<b><i></i> 请输入用户名</b></label>\n\t\t\t\t\t\t\t\t\t</section>\n\t\t\t\t\t\t\t\t\t<section>\n\t\t\t\t\t\t\t\t\t\t<label lang=\"es\">密码</label>\n\t\t\t\t\t\t\t\t\t\t<label> <i></i>\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t<b><i></i> 输入密码</b> </label>\n\t\t\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t\t\t<!-- <a href=\"https://www.archelios.com/gestion/envoi_mdp-fr.php?lang=\"></a> -->\n\t\t\t\t\t\t\t\t\t\t\t<p><a href=\"https://www.archelios.cn/Archelios-forgot-password.php?lang=cn\">忘记密码？</a>\t\t\t\t\t\t\t\t\t\t</p></div>\n\t\t\t\t\t\t\t\t\t</section>\n\t\t\t\t\t\t\t\t\t<!-- <section>\n\t\t\t\t\t\t\t\t\t\t<label class=\"checkbox\">\n\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"remember\" checked=\"\">\n\t\t\t\t\t\t\t\t\t\t\t<i></i>Stay signed in</label>\n\t\t\t\t\t\t\t\t\t</section>-->\n\t\t\t\t\t\t\t\t</fieldset>\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</form>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t<p><img src=\"https://www.archelios.cn/img/demo/screen-archeliospro.png\" alt=\"archelios\">\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\n\t\t\t\n\n\t\t\t<!-- Prévenir utilisateur de notre présence à Intersolar\n\t\t\t<div class=\"row col-lg-12\">\n                /*\n\t\t\t\t\tif ($langage == 'fr')\n\t\t\t\t        echo \"<img src='./img/sign-intersolar-fr-2019.jpg' style='margin-left: 2%;'>\";\n\t\t\t\t    else if ($langage == 'es')\n\t\t\t\t        echo \"<img src='./img/sign-intersolar-es-2019.jpg' style='margin-left: 2%;'>\";\n\t\t\t\t    else\n\t\t\t\t        echo \"<img src='./img/sign-intersolar-en-2019.jpg' style='margin-left: 2%;'>\";\n\t\t\t\t*/\n\t\t\t</div>-->\n\n\t\t\t<!--<div class=\"row col-xs-12 col-sm-12 col-md-7 col-lg-7\">\n\t\t\t\t<h3 style=\"text-align: center; color:#6e6e70;\">光伏电站的设计，仿真和计算 <a href=\"https://youtu.be/dLvx0fJTvSE?list=PLnpnrjTc9SIcnUfMIyUNK6VJCWapWrfre\" target=\"_blank\" style=\"color:#cb3108;margin-top:5px;\"><i class=\"fa fa-youtube-play\" style=\"font-size: 1.5em;\" aria-hidden=\"true\" title=\"archelios PRO视频\"></i></a></h3>\n\t\t\t\t<h3 style=\"text-align: center; color:#6e6e70;\">更多信息:  <a href=\"http://www.tracesoftware.cn/archelios-pro/solar-pv-design-software/\" target=\"_blank\"> archelios PRO 新系列</a></h3>\n\t\t\t</div>-->\n\n\t\t\t<!--<div class=\"row\">&nbsp;</div>\n\t\t\t<div class=\"row\">\n\t\t\t\t<div class=\"alert alert-success col-xs-12 col-sm-12 col-md-7 col-lg-7\" role=\"alert\">\n\t\t\t\t\t<h4><b> </b></h4><br>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<br/>\n\t\t\t\t\t</p>\n\t\t\t\t</div>\t\n\t\t\t</div> -->\n\n\t\t\t\n\t\t\t\t\t\n\t\t\t<!--NO 817 Prévenir utilisateur de la nouvelle version sur page login (avec nouvelles fonctionnalités) -->\n\t\t\t<!--<div class=\"row\">\n\t\t\t\t<div class=\"alert alert-info col-xs-12 col-sm-12 col-md-7 col-lg-7\" role=\"alert\">\n\t\t\t\t\t<h4><b> </b></h4><br>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li><img src=\"./img/logo_SMA.png\" style=\"display:inline-block;margin-left: 10px;margin-right: 10px;height: 1.5em;margin-top: -5px\"></li>\n\t\t\t\t\t\t<li></li>\n\t\t\t\t\t\t<li></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\t\t\t\t\n\t\t\t</div> -->\n\n\t\t</div>\n\t<!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)\n<script data-pace-options='{ \"restartOnRequestAfter\": true }' src=\"js/plugin/pace/pace.min.js\"></script>-->\n\t<!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->\n\t\n\t<!--<script src=\"//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.js\"></script>-->\n\t\n\t\n\t<!-- JS TOUCH : include this plugin for mobile drag / drop touch events \t-->\n\t\n\t<!-- BOOTSTRAP JS -->\n\t\n\n\t<!-- JQUERY VALIDATE -->\n\t\n\n\t<!-- JQUERY MASKED INPUT -->\n\t\n\n\t<!-- JQUERY SELECT2 INPUT -->\n\t\n\n\t<!-- browser msie issue fix -->\n\t\n\n\t<!-- SmartClick: For mobile devices -->\n\t\n\n\n\n\t<!--[if IE 7]>\n\n\t\t<h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>\n\n\t<![endif]-->\n\t<!-- MAIN APP JS FILE -->\n\t <!-- Fonctions utiles -->\n\t\n\t\n\t   <!-- NO 654 -->\n\n\t<!-- Your GOOGLE ANALYTICS CODE Below -->\n\t\n        \n    </div></div>",
+    "htmlUrl": null,
+    "markdown": "# Archelios PRO\n\n[![Trace Software International](https://www.archelios.cn/img/LogoTraceSoftware.fw.png)](http://www.tracesoftware.cn/archelios-pro/solar-design-software/)\n\n## ![Archelios PRO](https://www.archelios.cn/img/logo-pro.png)\n\n## **登录**\n\n用户名 **请输入用户名**\n\n密码 **输入密码**\n\n[忘记密码？](https://www.archelios.cn/Archelios-forgot-password.php?lang=cn)\n\n![archelios](https://www.archelios.cn/img/demo/screen-archeliospro.png)"
+  },
+  {
+    "url": "https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/",
+    "crawl": {
+      "loadedUrl": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/",
+      "loadedTime": "2026-10-22T12:15:08.619Z",
+      "referrerUrl": "https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 29122,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/",
+      "title": "archelios Pro FREE: 免费光伏软件 | Trace Software International",
+      "description": "archelios™ Pro Free 是一款免费专业光伏软件 ，帮助您完成36 kWp以内的光伏项目设计，算量和模拟。",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:title",
+          "content": "archelios Pro FREE: 免费光伏软件 | Trace Software International"
+        },
+        {
+          "property": "og:description",
+          "content": "archelios™ Pro Free 是一款免费专业光伏软件 ，帮助您完成36 kWp以内的光伏项目设计，算量和模拟。"
+        },
+        {
+          "property": "og:url",
+          "content": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "tracesoftware.cn"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2026-04-13T03:25:52+00:00"
+        },
+        {
+          "property": "og:image",
+          "content": "https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-free-ONLY.png"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/",
+              "url": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/",
+              "name": "archelios Pro FREE: 免费光伏软件 | Trace Software International",
+              "isPartOf": {
+                "@id": "https://tracesoftware.cn/#website"
+              },
+              "primaryImageOfPage": {
+                "@id": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/#primaryimage"
+              },
+              "image": {
+                "@id": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/#primaryimage"
+              },
+              "thumbnailUrl": "https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-free-ONLY.png",
+              "datePublished": "2020-06-22T09:56:15+00:00",
+              "dateModified": "2026-04-13T03:25:52+00:00",
+              "description": "archelios™ Pro Free 是一款免费专业光伏软件 ，帮助您完成36 kWp以内的光伏项目设计，算量和模拟。",
+              "breadcrumb": {
+                "@id": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/#breadcrumb"
+              },
+              "inLanguage": "en-US",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://tracesoftware.cn/archelios-pro/free-pv-design-software/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "ImageObject",
+              "inLanguage": "en-US",
+              "@id": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/#primaryimage",
+              "url": "https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-free-ONLY.png",
+              "contentUrl": "https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-free-ONLY.png"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://tracesoftware.cn/home-2/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "archelios™ Pro",
+                  "item": "https://tracesoftware.cn/archelios-pro/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": "archelios™ Pro Free 免费光伏软件"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://tracesoftware.cn/#website",
+              "url": "https://tracesoftware.cn/",
+              "name": "tracesoftware.cn",
+              "description": "",
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://tracesoftware.cn/?s={search_term_string}"
+                  },
+                  "query-input": "required name=search_term_string"
+                }
+              ],
+              "inLanguage": "en-US"
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "cache-control": "max-age=3, must-revalidate",
+        "content-encoding": "gzip",
+        "content-length": "29122",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:15:08 GMT",
+        "server": "Apache",
+        "vary": "Accept-Encoding,Cookie"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "archelios Pro FREE: 免费光伏软件 | Trace Software International\narchelios™ Pro Free 是一款免费专业光伏软件，可为36kWp以内的光伏项目设计，计算和模拟。\n无论您是小型承包商，培训机构，还是初创公司，只要您的项目不超过36kWp，archelios™ Pro Free 是您最好的选择。\narchelios™ Pro Free 为您的并网或自用光伏装置项目提供设计辅助，为您提供非常精确的预期产量计算，提供精确的经济分析，以最佳估计投资回报。\narchelios™ Pro Free 使用非常方便，界面人性化和可视化，既适用于刚接触光伏设计的新人，也适用于对光伏项目有更多经验的专业人士。\n免费\n<36kWp\nMeteonorm气象数据库\n逆变器和组件选型\n发电量预测\n自用电/储能\n项目经济性分析\n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n白银\n<100 kWp\nMeteonorm气象数据库\n逆变器和组件选型\n发电量预测\n自用电/储能\n项目经济性分析\n光伏水泵选型\nPDF 报告输出\n更多设备选型库\nBIM&CO 组件库\n3D 网页建模\n3D 建模(SketchUp 插件)\n3D 组件布线\n导出至 archelios™ Calc\n导出至 archelios™ O&M\n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n技术支持\n黄金\n<1MWp\nMeteonorm气象数据库\n逆变器和组件选型\n发电量预测\n自用电/储能\n项目经济性分析\n光伏水泵选型\nPDF 报告输出\n更多设备选型库\nBIM&CO 组件库\n3D 网页建模\n3D 建模(SketchUp 插件)\n3D 组件布线\n导出至 archelios™ Calc\n导出至 archelios™ O&M\n3D 汇流箱和逆变器布线\nDXF 3D 导出(AutoCAD)\nGeoJSON 导出\nKML 导出(Google Earth)\n用户个性配置化文件导入\n跟踪系统\n项目方案对比\n- \n- \n- \n技术支持/电话\n白金\n无限制\nMeteonorm气象数据库\n逆变器和组件选型\n发电量预测\n自用电/储能\n项目经济性分析\n光伏水泵选型\nPDF 报告输出\n更多设备选型库\nBIM&CO 组件库\n3D 网页建模\n3D 建模(SketchUp/Revit 插件)\n3D 组件布线\n导出至 archelios™ Calc\n导出至 archelios™ O&M\n3D 汇流箱和逆变器布线\nDXF 3D 导出(AutoCAD)\nGeoJSON 导出\nKML 导出(Google Earth)\n用户个性配置化文件导入\n跟踪系统\n项目方案对比\n限光优化\n3D - 土方量计算 (Sketchup)\n大型电站的损失指标\n技术支持/电话/远程\n项目最大容量: 36 kWp\n通过 archelios™ Pro Free ，您可以设计36 kWp以内的任何光伏项目，如小型光伏屋顶、家用和小型工业项目，无需高细节要求。\n逆变器&组件选型\n包括强大的功能和逆变器与光伏组件选型助手。包含庞大的逆变器选型库，一旦选择了制造商品牌，archelios™ Pro 将根据项目向您推荐使用哪种逆变器配置。\n自用消耗光伏系统管理\n软件可以对自发自用光伏项目进行模拟，并根据自消耗配置、根据年度账单和产量计算提供储能建议。\n产量预测\n通过 archelios™ Pro 您可以根据气象数据库中的环境和条件计算组件的光伏发电潜力。此外，它还自动计算会影响组件性能的水平阴影，从而获得光伏发电量估算的准确计算。\n经济性分析\narchelios™ Pro 提供了经济结果和银行指标，这些指标让用户能够看到安装成本及其盈利能力，以及投资回报率。",
+    "html": "<div id=\"readability-content\"><h1>archelios Pro FREE: 免费光伏软件 | Trace Software International</h1><div id=\"readability-page-1\" class=\"page\"><div id=\"after_section_1\">\n\n<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p><strong>archelios™ Pro Free 是一款免费专业光伏软件，可为36kWp以内的光伏项目设计，计算和模拟。</strong></p>\n<p>无论您是小型承包商，培训机构，还是初创公司，只要您的项目不超过36kWp，archelios™ Pro Free&nbsp;是您最好的选择。</p>\n<p>archelios™ Pro Free 为您的<strong>并网或自用光伏装置项目提供设计辅助</strong>，为您提供非常精确的预期产量计算，提供精确的经济分析，以最佳估计投资回报。</p>\n</div>\n\n\n\n\n\n<section itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p><strong>archelios™ Pro Free 使用非常方便，界面人性化和可视化</strong>，既适用于刚接触光伏设计的新人，也适用于对光伏项目有更多经验的专业人士。</p></section>\n\n<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\">\n      <!-- Plan Features -->\n      <div>\n       <p><img src=\"https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-free-ONLY.png\"></p><div>\n          <p>免费</p>\n <p>&lt;36kWp</p>\n        </div>\n        <ul>\n          <li>Meteonorm气象数据库</li>\n          <li>逆变器和组件选型</li>\n          <li>发电量预测</li>\n          <li>自用电/储能</li>\n          <li>项目经济性分析</li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n        </ul>\n       \n      </div>\n      <!-- \"Basic\" Plan -->\n       <div>\n         <p><img src=\"https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-silver-ONLY.png\"></p><div>\n          <p>白银</p>\n          <p>&lt;100 kWp</p>\n        </div>\n        <ul>\n          <li>Meteonorm气象数据库</li>\n          <li>逆变器和组件选型</li>\n          <li>发电量预测</li>\n          <li>自用电/储能</li>\n          <li>项目经济性分析</li>\n          <li>光伏水泵选型</li>\n          <li>PDF 报告输出</li>\n          <li>更多设备选型库</li>\n          <li>BIM&amp;CO 组件库</li>\n          <li>3D 网页建模</li>\n          <li>3D 建模(SketchUp 插件)</li>\n          <li>3D 组件布线</li>\n          <li>导出至 archelios™ Calc</li>\n          <li>导出至 archelios™ O&amp;M</li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li><b>技术支持</b></li>\n        </ul>\n       \n      </div>\n      <!-- \"Premium\" Plan -->\n  <div>\n         <p><img src=\"https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-gold-ONLY.png\"></p><div>\n          <p>黄金</p>\n          <p>&lt;1MWp</p>\n        </div>\n        <ul>\n          <li>Meteonorm气象数据库</li>\n          <li>逆变器和组件选型</li>\n          <li>发电量预测</li>\n          <li>自用电/储能</li>\n          <li>项目经济性分析</li>\n          <li>光伏水泵选型</li>\n          <li>PDF 报告输出</li>\n          <li>更多设备选型库</li>\n          <li>BIM&amp;CO 组件库</li>\n          <li>3D 网页建模</li>\n          <li>3D 建模(SketchUp 插件)</li>\n          <li>3D 组件布线</li>\n          <li>导出至 archelios™ Calc</li>\n          <li>导出至 archelios™ O&amp;M</li>\n          <li>3D 汇流箱和逆变器布线</li>\n          <li>DXF 3D 导出(AutoCAD)</li>\n          <li>GeoJSON 导出</li>\n          <li>KML 导出(Google Earth)</li>\n          <li>用户个性配置化文件导入</li>\n          <li>跟踪系统</li>\n          <li>项目方案对比</li>\n          <li> - </li>\n          <li> - </li>\n          <li> - </li>\n          <li><b>技术支持/电话</b></li>\n        </ul>\n        \n      </div>\n      <!-- \"Ultmate\" Plan -->\n      <div>\n       <p><img src=\"https://www.tracesoftware.cn/wp-content/uploads/2022/03/archelios-pro-platinum-ONLY.png\"></p>\n        <div>\n          <p>白金</p>\n          <p>无限制</p>\n        </div>\n        <ul>\n          <li>Meteonorm气象数据库</li>\n          <li>逆变器和组件选型</li>\n          <li>发电量预测</li>\n          <li>自用电/储能</li>\n          <li>项目经济性分析</li>\n          <li>光伏水泵选型</li>\n          <li>PDF 报告输出</li>\n          <li>更多设备选型库</li>\n          <li>BIM&amp;CO 组件库</li>\n          <li>3D 网页建模</li>\n          <li>3D 建模(SketchUp/Revit 插件)</li>\n          <li>3D 组件布线</li>\n          <li>导出至 archelios™ Calc</li>\n          <li>导出至 archelios™ O&amp;M</li>\n          <li>3D 汇流箱和逆变器布线</li>\n          <li>DXF 3D 导出(AutoCAD)</li>\n          <li>GeoJSON 导出</li>\n          <li>KML 导出(Google Earth)</li>\n          <li>用户个性配置化文件导入</li>\n          <li>跟踪系统</li>\n          <li>项目方案对比</li>\n          <li>限光优化</li>\n          <li>3D - 土方量计算 (Sketchup)</li>\n          <li>大型电站的损失指标</li>\n<li><b>技术支持/电话/远程</b></li>\n        </ul>\n       \n      </div>\n    </div>\n\n\n\n\n<div><ul>\n<li><article itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><div><header><h4 itemprop=\"headline\">项目最大容量: 36 kWp</h4></header><div itemprop=\"text\">\n<hr>\n<p>通过 <strong>archelios™ Pro Free ，</strong>您可以<strong>设计36 kWp以内的任何光伏项目</strong>，<strong>如小型光伏屋顶、家用和小型工业项目</strong>，无需高细节要求。</p>\n</div></div></article></li>\n</ul></div>\n<div><ul>\n<li><article itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><div><header><h4 itemprop=\"headline\">逆变器&amp;组件选型</h4></header><div itemprop=\"text\">\n<hr>\n<p>包括强大的功能和<strong>逆变器与光伏组件选型助手</strong>。包含庞大的逆变器选型库，一旦选择了制造商品牌，archelios™ Pro 将根据项目向您推荐使用哪种逆变器配置。</p>\n</div></div></article></li>\n<li><article itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><div><header><h4 itemprop=\"headline\">自用消耗光伏系统管理</h4></header><div itemprop=\"text\">\n<hr>\n<p>软件可以对<strong>自发自用光伏项目进行模拟</strong>，并根据自消耗配置、根据年度账单和产量计算提供储能建议。</p>\n</div></div></article></li>\n</ul></div>\n<div><ul>\n<li><article itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><div><header><h4 itemprop=\"headline\">产量预测</h4></header><div itemprop=\"text\">\n<hr>\n<p>通过 archelios™ Pro 您可以根据气象数据库中的环境和条件<strong>计算组件的光伏发电潜力</strong>。此外，它还<strong>自动计算会影响组件性能的水平阴影</strong>，从而获得光伏发电量估算的准确计算。</p>\n</div></div></article></li>\n<li><article itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><div><header><h4 itemprop=\"headline\">经济性分析</h4></header><div itemprop=\"text\">\n<hr>\n<p>archelios™ Pro&nbsp;提供了经济结果和银行指标，这些指标让用户能够看到安装成本及其盈利能力，以及投资回报率。</p>\n</div></div></article></li>\n</ul></div>\n\n\n\n\n\n\n\n\n\n</div></div></div>",
+    "htmlUrl": null,
+    "markdown": "# archelios Pro FREE: 免费光伏软件 | Trace Software International\n\n**archelios™ Pro Free 是一款免费专业光伏软件，可为36kWp以内的光伏项目设计，计算和模拟。**\n\n无论您是小型承包商，培训机构，还是初创公司，只要您的项目不超过36kWp，archelios™ Pro Free 是您最好的选择。\n\narchelios™ Pro Free 为您的**并网或自用光伏装置项目提供设计辅助**，为您提供非常精确的预期产量计算，提供精确的经济分析，以最佳估计投资回报。\n\n**archelios™ Pro Free 使用非常方便，界面人性化和可视化**，既适用于刚接触光伏设计的新人，也适用于对光伏项目有更多经验的专业人士。\n\n![](https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-free-ONLY.png)\n\n免费\n\n<36kWp\n\n*   Meteonorm气象数据库\n*   逆变器和组件选型\n*   发电量预测\n*   自用电/储能\n*   项目经济性分析\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n\n![](https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-silver-ONLY.png)\n\n白银\n\n<100 kWp\n\n*   Meteonorm气象数据库\n*   逆变器和组件选型\n*   发电量预测\n*   自用电/储能\n*   项目经济性分析\n*   光伏水泵选型\n*   PDF 报告输出\n*   更多设备选型库\n*   BIM&CO 组件库\n*   3D 网页建模\n*   3D 建模(SketchUp 插件)\n*   3D 组件布线\n*   导出至 archelios™ Calc\n*   导出至 archelios™ O&M\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   \\-\n*   **技术支持**\n\n![](https://www.tracesoftware.cn/wp-content/uploads/2020/06/archelios-pro-gold-ONLY.png)\n\n黄金\n\n<1MWp\n\n*   Meteonorm气象数据库\n*   逆变器和组件选型\n*   发电量预测\n*   自用电/储能\n*   项目经济性分析\n*   光伏水泵选型\n*   PDF 报告输出\n*   更多设备选型库\n*   BIM&CO 组件库\n*   3D 网页建模\n*   3D 建模(SketchUp 插件)\n*   3D 组件布线\n*   导出至 archelios™ Calc\n*   导出至 archelios™ O&M\n*   3D 汇流箱和逆变器布线\n*   DXF 3D 导出(AutoCAD)\n*   GeoJSON 导出\n*   KML 导出(Google Earth)\n*   用户个性配置化文件导入\n*   跟踪系统\n*   项目方案对比\n*   \\-\n*   \\-\n*   \\-\n*   **技术支持/电话**\n\n![](https://www.tracesoftware.cn/wp-content/uploads/2022/03/archelios-pro-platinum-ONLY.png)\n\n白金\n\n无限制\n\n*   Meteonorm气象数据库\n*   逆变器和组件选型\n*   发电量预测\n*   自用电/储能\n*   项目经济性分析\n*   光伏水泵选型\n*   PDF 报告输出\n*   更多设备选型库\n*   BIM&CO 组件库\n*   3D 网页建模\n*   3D 建模(SketchUp/Revit 插件)\n*   3D 组件布线\n*   导出至 archelios™ Calc\n*   导出至 archelios™ O&M\n*   3D 汇流箱和逆变器布线\n*   DXF 3D 导出(AutoCAD)\n*   GeoJSON 导出\n*   KML 导出(Google Earth)\n*   用户个性配置化文件导入\n*   跟踪系统\n*   项目方案对比\n*   限光优化\n*   3D - 土方量计算 (Sketchup)\n*   大型电站的损失指标\n*   **技术支持/电话/远程**\n\n*   #### 项目最大容量: 36 kWp\n    \n    * * *\n    \n    通过 **archelios™ Pro Free ，**您可以**设计36 kWp以内的任何光伏项目**，**如小型光伏屋顶、家用和小型工业项目**，无需高细节要求。\n    \n\n*   #### 逆变器&组件选型\n    \n    * * *\n    \n    包括强大的功能和**逆变器与光伏组件选型助手**。包含庞大的逆变器选型库，一旦选择了制造商品牌，archelios™ Pro 将根据项目向您推荐使用哪种逆变器配置。\n    \n*   #### 自用消耗光伏系统管理\n    \n    * * *\n    \n    软件可以对**自发自用光伏项目进行模拟**，并根据自消耗配置、根据年度账单和产量计算提供储能建议。\n    \n\n*   #### 产量预测\n    \n    * * *\n    \n    通过 archelios™ Pro 您可以根据气象数据库中的环境和条件**计算组件的光伏发电潜力**。此外，它还**自动计算会影响组件性能的水平阴影**，从而获得光伏发电量估算的准确计算。\n    \n*   #### 经济性分析\n    \n    * * *\n    \n    archelios™ Pro 提供了经济结果和银行指标，这些指标让用户能够看到安装成本及其盈利能力，以及投资回报率。"
+  },
+  {
+    "url": "https://www.archelios.cn/online/bin/Archelios-Online-Login.php?lang=cn",
+    "crawl": {
+      "loadedUrl": "https://www.archelios.cn/online/bin/Archelios-Online-Login.php?lang=cn",
+      "loadedTime": "2026-10-22T12:15:08.929Z",
+      "referrerUrl": "https://www.archelios.cn/online/bin/Archelios-Online-Login.php?lang=cn",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 7981,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.archelios.cn/online/bin/Archelios-Online-Login.php?lang=cn",
+      "title": "Archelios PRO",
+      "description": "",
+      "author": "",
+      "keywords": null,
+      "languageCode": "cn",
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-store, no-cache, must-revalidate",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-length": "7981",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:15:08 GMT",
+        "expires": "Thu, 19 Nov 1981 08:52:00 GMT",
+        "p3p": "CP=\"CAO PSA OUR\"",
+        "pragma": "no-cache",
+        "server": "nginx/1.14.2",
+        "vary": "Accept-Encoding",
+        "x-powered-by": "PHP/7.3.29-1~deb10u1",
+        "set-cookie": "PHPSESSID=7f9a3ae3c3602f56d3be0186683e14f9; path=/"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Archelios PRO\n登录\n用户名 请输入用户名 密码 输入密码 \n忘记密码？",
+    "html": "<div id=\"readability-content\"><h1>Archelios PRO</h1><div id=\"readability-page-1\" class=\"page\">\n            <header id=\"header\"><!-- #8323 éviter que le logo soit collé aux bords -->\n\t\t\t<!--<span id=\"logo\"></span>-->\n\t\t\t<p><a href=\"http://www.tracesoftware.cn/archelios-pro/solar-design-software/\">\n\t\t\t\t\t<span> <img src=\"https://www.archelios.cn/online/bin/img/LogoTraceSoftware.fw.png\" alt=\"Trace Software International\" height=\"60\"> </span>\n\t\t\t\t</a>\n\t\t\t</p>\n\t\t\t<!-- #7949 Le mail est à enlever\n\t\t\t\t<span id=\"login-header-space\" class=\"pull-right\">\n\t\t\t\t<i class=\"fa fa-envelope-o fa-lg txt-color-blue\"></i>\n\t\t\t\t<a href='javascript:mailSupport(\"support@trace-software.com\",\"archelios PRO request\")'> support@trace-software.com</a>\n\t\t\t</span>-->\n\t\t</header>\n\t\n\t<div id=\"printableArea\" role=\"main\">\n\t\t\t\t<!-- NO 25 multiple lang dropdown : find all flags in the image folder -->\n\t\t\t\t<ul>\n\t\t\t\t\t<li>\n\t\t\t\t\t\t\t\t\t\t\t\t</li></ul>\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t<!-- end multiple lang -->\n\n\t\t\t\t<div>\n\t\t\t\t\t<div>\n\t\t\t\t\t\t\t<form action=\"Archelios-Online-Login.php?lang=cn&amp;origine=\" id=\"login-form\" method=\"post\" role=\"form\">\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t<header>\n\t\t\t\t\t\t\t\t\t<h2><img src=\"https://www.archelios.cn/online/bin/img/logo-pro.png\" alt=\"Archelios PRO\" height=\"42\"></h2>\n\t\t\t\t\t\t\t\t\t<h2><b>登录</b></h2>\n\t\t\t\t\t\t\t\t</header>\n\t\t\t\t\t\t\t\t<fieldset>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t<section>\n\t\t\t\t\t\t\t\t\t\t<label>用户名</label>\n\t\t\t\t\t\t\t\t\t\t<label> <i></i>\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t<b><i></i> 请输入用户名</b></label>\n\t\t\t\t\t\t\t\t\t</section>\n\t\t\t\t\t\t\t\t\t<section>\n\t\t\t\t\t\t\t\t\t\t<label lang=\"es\">密码</label>\n\t\t\t\t\t\t\t\t\t\t<label> <i></i>\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t<b><i></i> 输入密码</b> </label>\n\t\t\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t\t\t<!-- <a href=\"https://www.archelios.com/gestion/envoi_mdp-fr.php?lang=\"></a> -->\n\t\t\t\t\t\t\t\t\t\t\t<p><a href=\"https://www.archelios.cn/online/bin/Archelios-forgot-password.php?lang=cn\">忘记密码？</a>\t\t\t\t\t\t\t\t\t\t</p></div>\n\t\t\t\t\t\t\t\t\t</section>\n\t\t\t\t\t\t\t\t\t<!-- <section>\n\t\t\t\t\t\t\t\t\t\t<label class=\"checkbox\">\n\t\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"remember\" checked=\"\">\n\t\t\t\t\t\t\t\t\t\t\t<i></i>Stay signed in</label>\n\t\t\t\t\t\t\t\t\t</section>-->\n\t\t\t\t\t\t\t\t</fieldset>\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t</form>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t<p><img src=\"https://www.archelios.cn/online/bin/img/demo/screen-archeliospro.png\" alt=\"archelios\">\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\n\t\t\t\n\n\t\t\t<!-- Prévenir utilisateur de notre présence à Intersolar\n\t\t\t<div class=\"row col-lg-12\">\n                /*\n\t\t\t\t\tif ($langage == 'fr')\n\t\t\t\t        echo \"<img src='./img/sign-intersolar-fr-2019.jpg' style='margin-left: 2%;'>\";\n\t\t\t\t    else if ($langage == 'es')\n\t\t\t\t        echo \"<img src='./img/sign-intersolar-es-2019.jpg' style='margin-left: 2%;'>\";\n\t\t\t\t    else\n\t\t\t\t        echo \"<img src='./img/sign-intersolar-en-2019.jpg' style='margin-left: 2%;'>\";\n\t\t\t\t*/\n\t\t\t</div>-->\n\n\t\t\t<!--<div class=\"row col-xs-12 col-sm-12 col-md-7 col-lg-7\">\n\t\t\t\t<h3 style=\"text-align: center; color:#6e6e70;\">光伏电站的设计，仿真和计算 <a href=\"https://youtu.be/dLvx0fJTvSE?list=PLnpnrjTc9SIcnUfMIyUNK6VJCWapWrfre\" target=\"_blank\" style=\"color:#cb3108;margin-top:5px;\"><i class=\"fa fa-youtube-play\" style=\"font-size: 1.5em;\" aria-hidden=\"true\" title=\"archelios PRO视频\"></i></a></h3>\n\t\t\t\t<h3 style=\"text-align: center; color:#6e6e70;\">更多信息:  <a href=\"http://www.tracesoftware.cn/archelios-pro/solar-pv-design-software/\" target=\"_blank\"> archelios PRO 新系列</a></h3>\n\t\t\t</div>-->\n\n\t\t\t<!--<div class=\"row\">&nbsp;</div>\n\t\t\t<div class=\"row\">\n\t\t\t\t<div class=\"alert alert-success col-xs-12 col-sm-12 col-md-7 col-lg-7\" role=\"alert\">\n\t\t\t\t\t<h4><b> </b></h4><br>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t<br/>\n\t\t\t\t\t</p>\n\t\t\t\t</div>\t\n\t\t\t</div> -->\n\n\t\t\t\n\t\t\t\t\t\n\t\t\t<!--NO 817 Prévenir utilisateur de la nouvelle version sur page login (avec nouvelles fonctionnalités) -->\n\t\t\t<!--<div class=\"row\">\n\t\t\t\t<div class=\"alert alert-info col-xs-12 col-sm-12 col-md-7 col-lg-7\" role=\"alert\">\n\t\t\t\t\t<h4><b> </b></h4><br>\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li><img src=\"./img/logo_SMA.png\" style=\"display:inline-block;margin-left: 10px;margin-right: 10px;height: 1.5em;margin-top: -5px\"></li>\n\t\t\t\t\t\t<li></li>\n\t\t\t\t\t\t<li></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\t\t\t\t\n\t\t\t</div> -->\n\n\t\t</div>\n\t<!-- PACE LOADER - turn this on if you want ajax loading to show (caution: uses lots of memory on iDevices)\n<script data-pace-options='{ \"restartOnRequestAfter\": true }' src=\"js/plugin/pace/pace.min.js\"></script>-->\n\t<!-- Link to Google CDN's jQuery + jQueryUI; fall back to local -->\n\t\n\t<!--<script src=\"//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.js\"></script>-->\n\t\n\t\n\t<!-- JS TOUCH : include this plugin for mobile drag / drop touch events \t-->\n\t\n\t<!-- BOOTSTRAP JS -->\n\t\n\n\t<!-- JQUERY VALIDATE -->\n\t\n\n\t<!-- JQUERY MASKED INPUT -->\n\t\n\n\t<!-- JQUERY SELECT2 INPUT -->\n\t\n\n\t<!-- browser msie issue fix -->\n\t\n\n\t<!-- SmartClick: For mobile devices -->\n\t\n\n\n\n\t<!--[if IE 7]>\n\n\t\t<h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>\n\n\t<![endif]-->\n\t<!-- MAIN APP JS FILE -->\n\t <!-- Fonctions utiles -->\n\t\n\t\n\t   <!-- NO 654 -->\n\n\t<!-- Your GOOGLE ANALYTICS CODE Below -->\n\t\n        \n    </div></div>",
+    "htmlUrl": null,
+    "markdown": "# Archelios PRO\n\n[![Trace Software International](https://www.archelios.cn/online/bin/img/LogoTraceSoftware.fw.png)](http://www.tracesoftware.cn/archelios-pro/solar-design-software/)\n\n## ![Archelios PRO](https://www.archelios.cn/online/bin/img/logo-pro.png)\n\n## **登录**\n\n用户名 **请输入用户名**\n\n密码 **输入密码**\n\n[忘记密码？](https://www.archelios.cn/online/bin/Archelios-forgot-password.php?lang=cn)\n\n![archelios](https://www.archelios.cn/online/bin/img/demo/screen-archeliospro.png)"
+  },
+  {
+    "url": "https://tracesoftware.cn/archelios-pro-news/",
+    "crawl": {
+      "loadedUrl": "https://tracesoftware.cn/archelios-pro-news/",
+      "loadedTime": "2026-10-22T12:15:10.690Z",
+      "referrerUrl": "https://tracesoftware.cn/archelios-pro-news/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 20870,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://tracesoftware.cn/archelios-pro-news/",
+      "title": "archelios™ PRO 光伏设计仿真软件",
+      "description": "archelios™ PRO 光伏电站3D三维建模，设计，计算，仿真软件，适用于分布式光伏设计，户用光伏设计，工商业光伏设计，地面电站光伏设计，山地电站光伏设计",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:title",
+          "content": "archelios™ PRO 光伏设计仿真软件"
+        },
+        {
+          "property": "og:description",
+          "content": "archelios™ PRO 光伏电站3D三维建模，设计，计算，仿真软件，适用于分布式光伏设计，户用光伏设计，工商业光伏设计，地面电站光伏设计，山地电站光伏设计"
+        },
+        {
+          "property": "og:url",
+          "content": "https://tracesoftware.cn/archelios-pro-news/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "tracesoftware.cn"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2026-07-28T01:20:17+00:00"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://tracesoftware.cn/archelios-pro-news/",
+              "url": "https://tracesoftware.cn/archelios-pro-news/",
+              "name": "archelios™ PRO 光伏设计仿真软件",
+              "isPartOf": {
+                "@id": "https://tracesoftware.cn/#website"
+              },
+              "datePublished": "2022-10-31T08:50:33+00:00",
+              "dateModified": "2026-07-28T01:20:17+00:00",
+              "description": "archelios™ PRO 光伏电站3D三维建模，设计，计算，仿真软件，适用于分布式光伏设计，户用光伏设计，工商业光伏设计，地面电站光伏设计，山地电站光伏设计",
+              "breadcrumb": {
+                "@id": "https://tracesoftware.cn/archelios-pro-news/#breadcrumb"
+              },
+              "inLanguage": "en-US",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://tracesoftware.cn/archelios-pro-news/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://tracesoftware.cn/archelios-pro-news/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://tracesoftware.cn/home-2/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "archelios™ PRO 光伏软件-集成页面"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://tracesoftware.cn/#website",
+              "url": "https://tracesoftware.cn/",
+              "name": "tracesoftware.cn",
+              "description": "",
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://tracesoftware.cn/?s={search_term_string}"
+                  },
+                  "query-input": "required name=search_term_string"
+                }
+              ],
+              "inLanguage": "en-US"
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "cache-control": "max-age=3, must-revalidate",
+        "content-encoding": "gzip",
+        "content-length": "20870",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:15:10 GMT",
+        "server": "Apache",
+        "vary": "Accept-Encoding,Cookie"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "archelios™ PRO 光伏设计仿真软件\nelec calc SOLAR 一站式光伏电气设计软件，覆盖光伏直流组串、交流配电、充电桩及负荷一体化电气设计与计算选型校验。\n✅ 直流侧单线图建模与电气选型合规校验\n✅ 交流配电 + 充电桩负载一体化网侧设计\n✅ 内置万余件光伏设备、电缆、开关数据库\n✅ 一键导入 archelios PRO 项目，无需重复建模\n✅ 批量输出计算书、原理图、BOM 物料清单",
+    "html": "<div id=\"readability-content\"><h1>archelios™ PRO 光伏设计仿真软件</h1><div id=\"readability-page-1\" class=\"page\"><div><main role=\"main\" itemprop=\"mainContentOfPage\"><div><div itemprop=\"image\" itemscope=\"itemscope\" itemtype=\"https://schema.org/ImageObject\"><p><img decoding=\"async\" fetchpriority=\"high\" src=\"https://tracesoftware.cn/wp-content/uploads/2026/07/eleccalc-solar-light-badge-NEW.png\" alt=\"\" title=\"\" height=\"44\" width=\"314\" itemprop=\"thumbnailUrl\" srcset=\"https://tracesoftware.cn/wp-content/uploads/2026/07/eleccalc-solar-light-badge-NEW.png 314w, https://tracesoftware.cn/wp-content/uploads/2026/07/eleccalc-solar-light-badge-NEW-300x42.png 300w\" sizes=\"(max-width: 314px) 100vw, 314px\"></p></div>\n<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p><strong>elec calc SOLAR 一站式光伏电气设计软件，覆盖光伏直流组串、交流配电、充电桩及负荷一体化电气设计与计算选型校验。</strong></p>\n<p>✅ 直流侧单线图建模与电气选型合规校验</p>\n<p>✅ 交流配电 + 充电桩负载一体化网侧设计</p>\n<p>✅ 内置万余件光伏设备、电缆、开关数据库</p>\n<p>✅ 一键导入 archelios PRO 项目，无需重复建模</p>\n<p>✅ 批量输出计算书、原理图、BOM 物料清单</p>\n\n\n</div>\n</div></main><!-- close content main element --> <!-- section close by builder template -->\t\t</div></div></div>",
+    "htmlUrl": null,
+    "markdown": "# archelios™ PRO 光伏设计仿真软件\n\n![](https://tracesoftware.cn/wp-content/uploads/2026/07/eleccalc-solar-light-badge-NEW.png)\n\n**elec calc SOLAR 一站式光伏电气设计软件，覆盖光伏直流组串、交流配电、充电桩及负荷一体化电气设计与计算选型校验。**\n\n✅ 直流侧单线图建模与电气选型合规校验\n\n✅ 交流配电 + 充电桩负载一体化网侧设计\n\n✅ 内置万余件光伏设备、电缆、开关数据库\n\n✅ 一键导入 archelios PRO 项目，无需重复建模\n\n✅ 批量输出计算书、原理图、BOM 物料清单"
+  },
+  {
+    "url": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/",
+    "crawl": {
+      "loadedUrl": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/",
+      "loadedTime": "2026-10-22T12:15:11.519Z",
+      "referrerUrl": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 27035,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/",
+      "title": "集成式光伏电站电气设计、计算、选型解决方案",
+      "description": "elec calc™ SOLAR 是专为光伏电站项目打造的专业电气设计与选型计算软件，覆盖从光伏组件、逆变器到并网、充电桩全链路设计与合规校验。从光伏系统到充电桩，一站式完成光伏项目全电气设计与选型计算。",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:title",
+          "content": "集成式光伏电站电气设计、计算、选型解决方案"
+        },
+        {
+          "property": "og:description",
+          "content": "elec calc™ SOLAR 是专为光伏电站项目打造的专业电气设计与选型计算软件，覆盖从光伏组件、逆变器到并网、充电桩全链路设计与合规校验。从光伏系统到充电桩，一站式完成光伏项目全电气设计与选型计算。"
+        },
+        {
+          "property": "og:url",
+          "content": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "tracesoftware.cn"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2026-07-10T07:33:29+00:00"
+        },
+        {
+          "property": "og:image",
+          "content": "https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-1030x595.png"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/",
+              "url": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/",
+              "name": "集成式光伏电站电气设计、计算、选型解决方案",
+              "isPartOf": {
+                "@id": "https://tracesoftware.cn/#website"
+              },
+              "primaryImageOfPage": {
+                "@id": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/#primaryimage"
+              },
+              "image": {
+                "@id": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/#primaryimage"
+              },
+              "thumbnailUrl": "https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-1030x595.png",
+              "datePublished": "2026-03-13T02:02:17+00:00",
+              "dateModified": "2026-07-10T07:33:29+00:00",
+              "description": "elec calc™ SOLAR 是专为光伏电站项目打造的专业电气设计与选型计算软件，覆盖从光伏组件、逆变器到并网、充电桩全链路设计与合规校验。从光伏系统到充电桩，一站式完成光伏项目全电气设计与选型计算。",
+              "breadcrumb": {
+                "@id": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/#breadcrumb"
+              },
+              "inLanguage": "en-US",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "ImageObject",
+              "inLanguage": "en-US",
+              "@id": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/#primaryimage",
+              "url": "https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar.png",
+              "contentUrl": "https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar.png",
+              "width": 1920,
+              "height": 1110
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://tracesoftware.cn/home-2/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "我们的解决方案",
+                  "item": "https://tracesoftware.cn/products-2/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": "elec calc™ SOLAR : 集成式光伏电站电气设计计算与选型解决方案"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://tracesoftware.cn/#website",
+              "url": "https://tracesoftware.cn/",
+              "name": "tracesoftware.cn",
+              "description": "",
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://tracesoftware.cn/?s={search_term_string}"
+                  },
+                  "query-input": "required name=search_term_string"
+                }
+              ],
+              "inLanguage": "en-US"
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "cache-control": "no-store, no-cache, must-revalidate",
+        "content-encoding": "gzip",
+        "content-length": "27035",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:15:10 GMT",
+        "expires": "Thu, 19 Nov 1981 08:52:00 GMT",
+        "link": "<https://tracesoftware.cn/wp-json/>; rel=\"https://api.w.org/\", <https://tracesoftware.cn/wp-json/wp/v2/pages/48325>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://tracesoftware.cn/?p=48325>; rel=shortlink",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "vary": "Accept-Encoding,Cookie",
+        "set-cookie": "PHPSESSID=4sepd16ehqt9k0vl9d3isqvms8; path=/"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "集成式光伏电站电气设计、计算、选型解决方案\nelec calc SOLAR\n集成式光伏电站电气设计计算与选型解决方案\nelec calc™ SOLAR 是专为光伏电站项目打造的专业电气设计与选型计算软件，覆盖从光伏组件、逆变器到并网、充电桩全链路设计与合规校验。\nelec calc™ SOLAR 是面向光伏安装工程的专业设计与选型工具，精准满足各类光伏项目设计要求。\n无论屋顶光伏、车棚光伏、地面光伏电站，均可在同一项目内完成直流侧和交流侧全流程设计，并自动生成电气计算书，电缆选型手册，单线图，BOM材料清单等合规报告。\n交直流一体化设计与计算\n直流侧计算，自动按IEC 60364, UTE C 15-712 光伏电气标准校验合规性\n交流侧计算，至并网点，支持高压 / 低压升压站变电站设计，符合 IEC 60364 标准\n同一项目内可完成：\n光伏组件串列的选型\n逆变器与 MPPT 的选型\n直流电缆截面积、载流量计算\n交流电缆截面积、载流量、热稳定计算\n交直流开关选型计算\n电动汽车充电桩及各类负荷计算\n微电网并网潮流计算\n短路电流计算\n其他电气计算\n实时监控与校验 \n实时功率平衡计算，负荷计算，功率因数计算，无功补偿计算\n自动执行IEC系列标准校验，清晰提示不合规项并提供修改建议\n合规性及权威认证\n获得 ELIE BT 2025 认证，确保专业光伏设计合规可靠\n低压计算执行 IEC 60038，IEC 60364，IEC 60909，IEC 61660， IEEE 946等标准\n高压计算执行 IEC 60038，IEC 61936，IEC 60949 等标准\n产品标准执行 IEC 60076，IEC 60079，IEC 60282，IEC 61439，IEC 60502，IEC 60831，IEC 60947，IEC 62271等标准\n智能建模与高效设计\n智能建模系统，模块化设计，快速搭建光伏系统单线图\n支持一键自动选型计算\n严格执行IEC标准输出计算结果，最优电缆截面、保护设备选型计算\n多品牌厂商选型数据库\n内置超 150,000 条通用电气元器件（低压设备数据库）\n光伏专用库超 12,000 条光伏专属型号\n光伏组件\n逆变器\n断路器、保护器件\n自动生成技术文件\n一键输出完整技术文档：\n计算书\n电气单线图\n电气拓扑图\n详细物料清单（BOM）\n电缆选型清册\n与archelios PRO 光伏储能三维设计仿真软件无缝对接，组串系统单线图\n官方数据库持续更新\n用户可自定义数据库",
+    "html": "<div id=\"readability-content\"><h1>集成式光伏电站电气设计、计算、选型解决方案</h1><div id=\"readability-page-1\" class=\"page\"><div><main role=\"main\" itemprop=\"mainContentOfPage\"><div><section itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p itemprop=\"text\"><h2><span>elec calc SOLAR</span></h2>\n</p></section>\n<section itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p itemprop=\"text\"><h2><span>集成式光伏电站电气设计计算与选型解决方案</span></h2>\n</p></section>\n\n\n\n<div><div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p>elec calc™ SOLAR 是专为<strong>光伏电站项目</strong>打造的专业电气设计与选型计算软件，覆盖从光伏组件、逆变器到并网、充电桩全链路设计与合规校验。</p>\n\n\n\n<article>\n\n</article>\n\n</div>\n<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p>elec calc™ SOLAR 是面向光伏安装工程的专业设计与选型工具，精准满足各类光伏项目设计要求。</p>\n\n\n\n<article>\n\n</article>\n\n</div>\n<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p>无论屋顶光伏、车棚光伏、地面光伏电站，均可在同一项目内完成<strong>直流侧和交流侧全流程设计</strong>，并自动生成电气计算书，电缆选型手册，单线图，BOM材料清单等合规报告。</p>\n\n\n\n<article>\n\n</article>\n\n</div></div>\n<section itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p><a href=\"https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar.png\"><img decoding=\"async\" src=\"https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-1030x595.png\" alt=\"\" width=\"1030\" height=\"595\" srcset=\"https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-1030x595.png 1030w, https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-300x173.png 300w, https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-768x444.png 768w, https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-1536x888.png 1536w, https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-1500x867.png 1500w, https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-705x408.png 705w, https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar.png 1920w\" sizes=\"(max-width: 1030px) 100vw, 1030px\"></a></p></section>\n\n\n\n<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p><strong>交直流一体化设计与计算</strong></p>\n<article>\n<div>\n<ul>\n<li><strong>直流侧计算</strong>，自动按<strong>IEC 60364, UTE C 15-712 光伏电气标准</strong>校验合规性</li>\n<li><strong>交流侧计算</strong>，至并网点，支持高压 / 低压升压站变电站设计，符合&nbsp;<strong>IEC 60364 标准</strong></li>\n<li><strong>同一项目内可完成</strong>：</li>\n</ul>\n</div>\n</article>\n<p>光伏组件串列的选型</p>\n<p>逆变器与 MPPT 的选型</p>\n<p>直流电缆截面积、载流量计算</p>\n<p>交流电缆截面积、载流量、热稳定计算</p>\n<p>交直流开关选型计算</p>\n<p>电动汽车充电桩及各类负荷计算</p>\n<p>微电网并网潮流计算</p>\n<p>短路电流计算</p>\n<p>其他电气计算</p>\n<header><strong>实时监控与校验</strong></header>\n<ul>\n<li>实时功率平衡计算，负荷计算，功率因数计算，无功补偿计算</li>\n<li>自动执行IEC系列标准校验，清晰提示不合规项并提供修改建议</li>\n</ul>\n<p><strong>合规性及权威认证</strong></p>\n<div>\n<ul>\n<li>获得&nbsp;<strong>ELIE BT 2025 认证</strong>，确保专业光伏设计合规可靠</li>\n<li>低压计算执行 IEC 60038，IEC 60364，IEC 60909，IEC 61660， IEEE 946等标准</li>\n<li>高压计算执行 IEC 60038，IEC 61936，IEC 60949 等标准</li>\n<li>产品标准执行 IEC 60076，IEC 60079，IEC 60282，IEC 61439，IEC 60502，IEC 60831，IEC 60947，IEC 62271等标准</li>\n</ul>\n</div>\n\n\n<article>\n\n</article>\n\n</div>\n<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><header>\n<div>\n<header>\n\n<div>\n<header>\n<p><strong>智能建模与高效设计</strong></p>\n</header>\n<div>\n<ul>\n<li><strong>智能建模系统</strong>，模块化设计，快速搭建光伏系统单线图</li>\n<li>支持<strong>一键自动选型计算</strong></li>\n<li>\n<div data-page-id=\"SPu7f3iQwdzqeXcITGgcDkLInUd\" data-lark-html-role=\"root\" data-docx-has-block-data=\"false\">\n<p>严格执行IEC标准输出计算结果，最优电缆截面、保护设备选型计算</p>\n</div>\n</li>\n</ul>\n</div>\n<p><strong>多品牌厂商选型数据库</strong></p>\n</div>\n</header>\n</div>\n<div>\n<ul>\n<li>内置<strong>超 150,000 条通用电气元器件（低压设备数据库）</strong></li>\n<li>光伏专用库<strong>超 12,000 条光伏专属型号</strong></li>\n</ul>\n</div>\n<p>光伏组件</p>\n<p>逆变器</p>\n<p>断路器、保护器件</p>\n<p><strong>自动生成技术文件</strong></p>\n<article>\n<div data-page-id=\"SPu7f3iQwdzqeXcITGgcDkLInUd\" data-lark-html-role=\"root\" data-docx-has-block-data=\"false\">\n<ul>\n<li>一键输出完整技术文档：</li>\n</ul>\n</div>\n</article>\n<p>计算书</p>\n<p>电气单线图</p>\n<p>电气拓扑图</p>\n<p>详细物料清单（BOM）</p>\n<p>电缆选型清册</p>\n<article>\n<div>\n<header>\n<div>\n<ul>\n<li>\n<div data-page-id=\"SPu7f3iQwdzqeXcITGgcDkLInUd\" data-lark-html-role=\"root\" data-docx-has-block-data=\"false\">\n<p>与archelios PRO 光伏储能三维设计仿真软件无缝对接，组串系统单线图</p>\n</div>\n</li>\n<li>官方数据库持续更新</li>\n<li>用户可自定义数据库</li>\n</ul>\n</div>\n</header>\n</div>\n</article>\n\n</header>\n\n\n<article>\n\n</article>\n</div>\n\n\n\n\n<div itemprop=\"text\" itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"><p><img decoding=\"async\" src=\"https://tracesoftware.cn/wp-content/uploads/2026/05/ec-solar-3.png\" alt=\"\" width=\"1800\" height=\"378\" srcset=\"https://tracesoftware.cn/wp-content/uploads/2026/05/ec-solar-3.png 1800w, https://tracesoftware.cn/wp-content/uploads/2026/05/ec-solar-3-300x63.png 300w, https://tracesoftware.cn/wp-content/uploads/2026/05/ec-solar-3-1030x216.png 1030w, https://tracesoftware.cn/wp-content/uploads/2026/05/ec-solar-3-768x161.png 768w, https://tracesoftware.cn/wp-content/uploads/2026/05/ec-solar-3-1536x323.png 1536w, https://tracesoftware.cn/wp-content/uploads/2026/05/ec-solar-3-1500x315.png 1500w, https://tracesoftware.cn/wp-content/uploads/2026/05/ec-solar-3-705x148.png 705w\" sizes=\"(max-width: 1800px) 100vw, 1800px\"></p>\n\n\n\n\n</div>\n\n<article itemscope=\"itemscope\" itemtype=\"https://schema.org/CreativeWork\"></article>\n\n</div></main><!-- close content main element --> <!-- section close by builder template -->\t\t</div></div></div>",
+    "htmlUrl": null,
+    "markdown": "# 集成式光伏电站电气设计、计算、选型解决方案\n\n## elec calc SOLAR\n\n## 集成式光伏电站电气设计计算与选型解决方案\n\nelec calc™ SOLAR 是专为**光伏电站项目**打造的专业电气设计与选型计算软件，覆盖从光伏组件、逆变器到并网、充电桩全链路设计与合规校验。\n\nelec calc™ SOLAR 是面向光伏安装工程的专业设计与选型工具，精准满足各类光伏项目设计要求。\n\n无论屋顶光伏、车棚光伏、地面光伏电站，均可在同一项目内完成**直流侧和交流侧全流程设计**，并自动生成电气计算书，电缆选型手册，单线图，BOM材料清单等合规报告。\n\n[![](https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar-1030x595.png)](https://tracesoftware.cn/wp-content/uploads/2026/03/elec-calc-solar.png)\n\n**交直流一体化设计与计算**\n\n*   **直流侧计算**，自动按**IEC 60364, UTE C 15-712 光伏电气标准**校验合规性\n*   **交流侧计算**，至并网点，支持高压 / 低压升压站变电站设计，符合 **IEC 60364 标准**\n*   **同一项目内可完成**：\n\n光伏组件串列的选型\n\n逆变器与 MPPT 的选型\n\n直流电缆截面积、载流量计算\n\n交流电缆截面积、载流量、热稳定计算\n\n交直流开关选型计算\n\n电动汽车充电桩及各类负荷计算\n\n微电网并网潮流计算\n\n短路电流计算\n\n其他电气计算\n\n**实时监控与校验**\n\n*   实时功率平衡计算，负荷计算，功率因数计算，无功补偿计算\n*   自动执行IEC系列标准校验，清晰提示不合规项并提供修改建议\n\n**合规性及权威认证**\n\n*   获得 **ELIE BT 2025 认证**，确保专业光伏设计合规可靠\n*   低压计算执行 IEC 60038，IEC 60364，IEC 60909，IEC 61660， IEEE 946等标准\n*   高压计算执行 IEC 60038，IEC 61936，IEC 60949 等标准\n*   产品标准执行 IEC 60076，IEC 60079，IEC 60282，IEC 61439，IEC 60502，IEC 60831，IEC 60947，IEC 62271等标准\n\n**智能建模与高效设计**\n\n*   **智能建模系统**，模块化设计，快速搭建光伏系统单线图\n*   支持**一键自动选型计算**\n*   严格执行IEC标准输出计算结果，最优电缆截面、保护设备选型计算\n    \n\n**多品牌厂商选型数据库**\n\n*   内置**超 150,000 条通用电气元器件（低压设备数据库）**\n*   光伏专用库**超 12,000 条光伏专属型号**\n\n光伏组件\n\n逆变器\n\n断路器、保护器件\n\n**自动生成技术文件**\n\n*   一键输出完整技术文档：\n\n计算书\n\n电气单线图\n\n电气拓扑图\n\n详细物料清单（BOM）\n\n电缆选型清册\n\n*   与archelios PRO 光伏储能三维设计仿真软件无缝对接，组串系统单线图\n    \n*   官方数据库持续更新\n*   用户可自定义数据库\n\n![](https://tracesoftware.cn/wp-content/uploads/2026/05/ec-solar-3.png)"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "method": "Only Apify API and authorized Apify crawler outputs; no direct origin fetches from this machine.",
+  "token_handling": "Existing helper reads environment or existing config; Authorization header only. No credential copied. Apify ephemeral record signatures removed from archived JSON.",
+  "blocked_attempt": {
+    "actor": "apify/web-scraper",
+    "status": 403,
+    "error_type": "full-permission-actor-not-approved",
+    "action": "No permissions approved; used existing website-content-crawler with htmlTransformer=none instead."
+  },
+  "pdf_run_note": "The file downloader stored two original PDFs with HTTP 200 and fileUrl records. The crawler summary reports 0 succeeded / 2 failed because content text extraction failed. Original bytes were read back from Apify key-value storage, verified as PDF, hashed and parsed locally."
+}

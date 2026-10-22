@@ -1,0 +1,530 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:trace-software.com archelios \"Mac\"",
+      "url": "http://www.google.com/search?q=site%3Atrace-software.com+archelios+%22Mac%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Atrace-software.com+archelios+%22Mac%22&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/mcYgn7V3W0dJ6wnXL/records/JXG1iWUL2IJBlNP-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:trace-software.com archelios \"manual\" pdf",
+      "url": "http://www.google.com/search?q=site%3Atrace-software.com+archelios+%22manual%22+pdf&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Atrace-software.com+archelios+%22manual%22+pdf&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [
+      {
+        "title": "Archelios manual pdf download",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&rlz=1C1ONGR_enUS1172US1172&sxsrf=APpeQnsYELUzuhDCNl1Hb6n725ssdW5NSw:1792671594710&q=Archelios+manual+pdf+download&sa=X&ved=2ahUKEwj-veeMzs2XAxWILtAFHfYzAOUQ1QJ6BAgLEAE"
+      },
+      {
+        "title": "Archelios manual pdf free",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&rlz=1C1ONGR_enUS1172US1172&sxsrf=APpeQnsYELUzuhDCNl1Hb6n725ssdW5NSw:1792671594710&q=Archelios+manual+pdf+free&sa=X&ved=2ahUKEwj-veeMzs2XAxWILtAFHfYzAOUQ1QJ6BAgNEAE"
+      },
+      {
+        "title": "Archelios manual pdf download",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&rlz=1C1ONGR_enUS1172US1172&sxsrf=APpeQnsYELUzuhDCNl1Hb6n725ssdW5NSw:1792671594710&q=Archelios+manual+pdf+download&sa=X&ved=2ahUKEwj-veeMzs2XAxWILtAFHfYzAOUQ1QJ6BAgLEAE"
+      },
+      {
+        "title": "Archelios manual pdf free",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&hl=en&gl=us&rlz=1C1ONGR_enUS1172US1172&sxsrf=APpeQnsYELUzuhDCNl1Hb6n725ssdW5NSw:1792671594710&q=Archelios+manual+pdf+free&sa=X&ved=2ahUKEwj-veeMzs2XAxWILtAFHfYzAOUQ1QJ6BAgNEAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "archelios PRO: a new version focused on reliability, ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "This new integration ensures full compatibility between the mounting system and the project layout, while avoiding manual re-entry or repeated ...Read more",
+        "date": "2025-11-21T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "manual"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Software Fotovoltaico PV - archelios PRO",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/es/nuestras-soluciones/software-diseno-instalaciones-fotovoltaicas/",
+        "displayedUrl": "https://www.trace-software.com › ...",
+        "description": "Propuesta automática o introducción manual de la configuración del inversor; Gestión de todos los tipos de inversores (inversores multiMPPT, microinversores ...Read more",
+        "emphasizedKeywords": [
+          "manual"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "archelios CALC - Software dedicado a la energía solar",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/es/nuestras-soluciones/calculo-y-dimensionamiento-instalaciones-fotovoltaicas/",
+        "displayedUrl": "https://www.trace-software.com › ...",
+        "description": "Elección de la referencia del fabricante o introducción manual de los valores nominales ... Diagrama unifilar PDF y DWG. Edición de diagrama de instalación ...Read more",
+        "emphasizedKeywords": [
+          "manual",
+          "PDF"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "elec calc range : Calculation Software",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/our-solutions/elec-calc-range/",
+        "displayedUrl": "https://www.trace-software.com › Home › Our Solutions",
+        "description": "Automatic and manual identification of components, mass processing on spreadsheet or Excel ... archelios PRO training · archelios CALC training · SERVICES.Read more",
+        "emphasizedKeywords": [
+          "manual",
+          "archelios",
+          "archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "elec calc LV limited to 630 Kva - Annual suscription",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/product/elec-calc-lv-limited-to-630-kva-annual-subscription/",
+        "displayedUrl": "https://www.trace-software.com › Home › Electricity",
+        "description": "Automatic and manual marking of components; Entering data from spreadsheet; Customizable grid. SOURCES & LOADS. Power balance (active, reactive, apparent and ...Read more",
+        "emphasizedKeywords": [
+          "manual"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "elec calc (MV/LV) - annual subscription",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/product/elec-calc-mv-lv-annual-subscription/",
+        "displayedUrl": "https://www.trace-software.com › Home › Electricity",
+        "description": "Automatic and manual marking of components; Entering data from spreadsheet ... archelios PRO training · archelios CALC training · SERVICES · RESOURCES · Blog ...Read more",
+        "emphasizedKeywords": [
+          "manual",
+          "archelios",
+          "archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "elec calc LV annual subscription",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/product/elec-calc-lv-annual-subscription/",
+        "displayedUrl": "https://www.trace-software.com › Home › Electricity",
+        "description": "Automatic and manual marking of components; Entering data from spreadsheet ... archelios PRO training · archelios CALC training · SERVICES · RESOURCES · Blog ...Read more",
+        "emphasizedKeywords": [
+          "manual",
+          "archelios",
+          "archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "¿Cómo comprobar el estrés térmico en un conductor ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/es/como-comprobar-el-estres-termico-en-un-conductor-electrico/",
+        "displayedUrl": "https://www.trace-software.com › ...",
+        "description": "Este enfoque garantiza un diseño completo y coherente, incluso en instalaciones complejas o de arranque múltiple, donde un cálculo manual se ...Read more",
+        "date": "2026-02-24T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "manual"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/mcYgn7V3W0dJ6wnXL/records/YIGtZznn6UwE6JQ-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:trace-software.com \"elec calc\" \"Windows\"",
+      "url": "http://www.google.com/search?q=site%3Atrace-software.com+%22elec+calc%22+%22Windows%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Atrace-software.com+%22elec+calc%22+%22Windows%22&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Guide d'installation du logiciel elec calc.",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl//frk/docs/Installing/01_FR_elec_calc_Guide_d_installation_du_logiciel_et_d_activation_de_la_licence.pdf",
+        "displayedUrl": "https://dl.trace-software.com › docs › Installing",
+        "description": "Windows 10, 11 (64bits). Disque dur : HDD avec 20Gb d'espace disponible ... elec calc intègre une fonctionnalité qui vous prévient de la disponibilité d ...Read more",
+        "emphasizedKeywords": [
+          "Windows",
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "elec calc IRVE - Annual subscription",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/product/elec-calc-solar-annual-subscription/",
+        "displayedUrl": "https://www.trace-software.com › Home › Electricity",
+        "description": "Recommended configuration: Windows® 11, 32 GB RAM, minimum free disk space ... interface elec calc. Badge-ENG-Electricite logo elec calc BT. Electrical ...Read more",
+        "emphasizedKeywords": [
+          "Windows",
+          "elec calc",
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "elec calc IRVE - Annual subscription",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/product/elec-calc-irve-annual-subscription/",
+        "displayedUrl": "https://www.trace-software.com › Home › Electricity",
+        "description": "Windows® 7 SP1, 8.1 & 10 (32 & 64 bits); 16 GB RAM recommended, 1.5 GB free ... elec calc IRVE is used to model and size any type of low-voltage ...Read more",
+        "emphasizedKeywords": [
+          "Windows",
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Virtual storage or on-site battery: a comparison for your ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/virtual-storage-or-on-site-battery-a-practical-comparison-for-your-solar-projects/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "Test battery variants (power/energy, usage windows, network load, mini/max SOC); ... elec calc IRVE · elec calc · elec calc SOLAR · elec calc BIM ...Read more",
+        "date": "2025-10-24T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "windows",
+          "elec calc",
+          "elec calc",
+          "elec calc",
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Gestion des licences",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+        "displayedUrl": "https://dl.trace-software.com › ManagingLicense",
+        "description": "Le Serveur de licences est un Service Windows permettant la distribution des licences sur les postes équipés de elec calc. Le Gestionnaire de ...Read more",
+        "date": "2016-04-25T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Windows",
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "BIM and Sustainability",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/bim-and-sustainability/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "elec calc™ BIM is the first software in the world that integrates the electrical calculations into the Open BIM process. It is equipped with an ...Read more",
+        "date": "2019-11-04T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "elec calc BT - Abonnement annuel",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/fr/produit/elec-calc-bt-abonnement-annuel/",
+        "displayedUrl": "https://www.trace-software.com › ...",
+        "description": "Configuration recommandée : Windows® 11, 32 Go de RAM, Espace disque mini ... elec-calc-irve logo. Logiciel de calcul et de conception électrique pour ...Read more",
+        "emphasizedKeywords": [
+          "Windows",
+          "elec-calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Formation auto fil",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/fr/services/formations/formation-auto-fil/",
+        "displayedUrl": "https://www.trace-software.com › ...",
+        "description": "Prérequis. • Connaissances d'Excel en tant qu'utilisateur de base • Connaissances de l'environnement Windows ... elec calc SOLAR · elec calc BIM · elec calc GRID ...Read more",
+        "emphasizedKeywords": [
+          "Windows",
+          "elec calc",
+          "elec calc",
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "elecworks pour solidWorks",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/pdf/3d2-numero30.pdf",
+        "displayedUrl": "https://dl.trace-software.com › pdf",
+        "description": "Au-delà de l'interface aux standards. Windows, de la compatibilité native ... Elec Calc : Le logiciel de calcul d'installations électriques ...Read more",
+        "date": "2011-09-30T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Windows",
+          "Elec Calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/mcYgn7V3W0dJ6wnXL/records/qSb6Zxkz10D6MqM-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:tracesoftware.cn 下载 elec calc",
+      "url": "http://www.google.com/search?q=site%3Atracesoftware.cn+%E4%B8%8B%E8%BD%BD+elec+calc&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Atracesoftware.cn+%E4%B8%8B%E8%BD%BD+elec+calc&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "elec calc - Electrical Standard Software",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/products-2/elec-calc/electrical-standard-software/",
+        "displayedUrl": "https://tracesoftware.cn › products-2",
+        "description": "elec calcTM is a software package allowing to calculate or to verify the dimensioning of an electrical installation",
+        "emphasizedKeywords": [
+          "elec calcTM"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "elec calc - Excel import export",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/products-2/elec-calc/excel-import-export/",
+        "displayedUrl": "https://tracesoftware.cn › products-2",
+        "description": "This import module allows to generate an import file of your elec calcTM data under the Excel format and to directly inform under Excel all data of the project",
+        "emphasizedKeywords": [
+          "elec"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "elec calc - TR-CIEL software",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/products-2/elec-calc/tr-ciel-elec-calc/",
+        "displayedUrl": "https://tracesoftware.cn › products-2",
+        "description": "用户下载区 · 远程技术支持 · 技术支持报告系统 · 学习资料 · 经验和技巧 · 网上课堂 · 下载更新 · elec calc · archelios · 建议与意见 · 建议与意见 · 赞助合作计划.",
+        "emphasizedKeywords": [
+          "下载",
+          "下载",
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "数字化赋能– CHINT elec calc 特别版推出",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/digital-empowerment-chint-elec-calc-special-edition/",
+        "displayedUrl": "https://tracesoftware.cn › digital-e...",
+        "description": "elec calc (CHINT) 是Trace Software 为CHINT 用户定制开发的版本。它拥有独立的安装包、专属的软件标识和操作界面。定制的许可证由数字序列号组成，获取 ...",
+        "date": "2024-10-23T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "elec calc (CHINT"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Export to elecworks or Solidworks Electrical | elec calc",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/products-2/elec-calc/export-to-elecworks-or-solidworks-electrical/",
+        "displayedUrl": "https://tracesoftware.cn › products-2",
+        "description": "With elec calc, export your calculation data to elecworks or SolidWorks Electrical and automatically generate the single-line and multi-line diagrams!",
+        "emphasizedKeywords": [
+          "export your calculation data to elecworks or SolidWorks Electrical"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "elec calc - Electrical Equipment | Trace Software International",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/products-2/elec-calc/electrical-equipment-and-manufacturer-data/",
+        "displayedUrl": "https://tracesoftware.cn › elec-calc",
+        "description": "elec calc™ includes a large database of multi-manufacturer data with electrical equipment references ... elec calc™ GRID 智能电网 ... 用户下载区 · 远程技术支持 ...",
+        "emphasizedKeywords": [
+          "GRID 智能电网"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "Lighting Software - elec calc EP",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/products-2/elec-calc-ep/lighting-software/",
+        "displayedUrl": "https://tracesoftware.cn › products-2",
+        "description": "用户下载区 · 远程技术支持 · 技术支持报告系统 · 学习资料 · 经验和技巧 · 网上课堂 · 下载更新 · elec calc · archelios · 建议与意见 · 建议与意见 · 赞助合作计划.",
+        "emphasizedKeywords": [
+          "用"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "elec calc™ GRID 多电源及分布式电源电力系统计算和仿真",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/products-2/software-for-sizing-and-simulation-of-multi-source-grid-power-networks/",
+        "displayedUrl": "https://tracesoftware.cn › products-2",
+        "description": "elec calcTM GRID 是一个智能电网设计平台,集电气设计、计算、标准验证、设备选型于一体的一站式解决方案。 能同时管理复杂的高压和低压电力系统。",
+        "emphasizedKeywords": [
+          "elec calcTM GRID"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "集成式光伏电站电气设计、计算、选型解决方案",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/",
+        "displayedUrl": "https://tracesoftware.cn › products-2",
+        "description": "elec calc™ SOLAR 是专为光伏电站项目打造的专业电气设计与选型计算软件，覆盖从光伏组件、逆变器到并网、充电桩全链路设计与合规校验。从光伏系统到充电桩， ...",
+        "emphasizedKeywords": [
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "高低压计算解决方案",
+        "websiteTitle": "tracesoftware.cn",
+        "url": "https://tracesoftware.cn/elec-calc-2/hv-lv-calculations-in-one-solution/",
+        "displayedUrl": "https://tracesoftware.cn › elec-calc-2",
+        "description": "探索elec calc优势，高低压计算解决方案，快速可视化整个高压或低压电气装置，中低压选型分析计算，系统图设计，潮流分析，短路电流计算，计算报告自动生成一气呵成。",
+        "emphasizedKeywords": [
+          "elec calc"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/mcYgn7V3W0dJ6wnXL/records/TqtarUnZZ5o3vox-1.html"
+  }
+]

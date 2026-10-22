@@ -1,0 +1,6 @@
+{
+  "queries": "site:trace-software.com \"elec calc\" \"Windows\"\nsite:trace-software.com archelios \"Mac\"\nsite:trace-software.com archelios \"manual\" pdf\nsite:tracesoftware.cn 下载 elec calc",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 10,
+  "maxConcurrency": 2
+}

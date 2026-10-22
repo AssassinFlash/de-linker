@@ -1,0 +1,702 @@
+[
+  {
+    "url": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/",
+    "links": [
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/en/brochure/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/fr/brochure/"
+      },
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochure",
+        "url": "https://contenu.trace-software.com/en/download-our-archelios-pro-software-brochure"
+      },
+      {
+        "text": "Login",
+        "url": "https://www.archelios.com/online/bin/Archelios-Online-Login.php?lang=en"
+      },
+      {
+        "text": "Download",
+        "url": "https://contenu.trace-software.com/en/download-our-archelios-pro-software-brochure"
+      }
+    ],
+    "forms": [
+      {
+        "role": "search",
+        "method": "get",
+        "class": "search-form",
+        "action": "https://www.trace-software.com/en/"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "search",
+        "class": "search-field",
+        "value": null,
+        "placeholder": "Search",
+        "name": "s"
+      },
+      {
+        "type": "submit",
+        "class": "search-submit",
+        "value": "Search"
+      }
+    ],
+    "embeds": [
+      "https://www.googletagmanager.com/ns.html?id=GTM-MV7BCSHH",
+      "https://www.youtube.com/embed/6EUY8g4-hFs?feature=oembed"
+    ]
+  },
+  {
+    "url": "https://www.trace-software.com/en/our-solutions/archelios-calc/",
+    "links": [
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/en/brochure/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/fr/brochure/"
+      },
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochure",
+        "url": "https://contenu.trace-software.com/en/download-our-archelios-calc-software-brochure"
+      },
+      {
+        "text": "Download",
+        "url": "https://contenu.trace-software.com/en/download-our-archelios-calc-software-brochure"
+      }
+    ],
+    "forms": [
+      {
+        "role": "search",
+        "method": "get",
+        "class": "search-form",
+        "action": "https://www.trace-software.com/en/"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "search",
+        "class": "search-field",
+        "value": null,
+        "placeholder": "Search",
+        "name": "s"
+      },
+      {
+        "type": "submit",
+        "class": "search-submit",
+        "value": "Search"
+      }
+    ],
+    "embeds": [
+      "https://www.googletagmanager.com/ns.html?id=GTM-MV7BCSHH",
+      "https://www.youtube.com/embed/k35qrA2U4rk?feature=oembed"
+    ]
+  },
+  {
+    "url": "https://www.trace-software.com/en/our-solutions/electrical-installations-calculation-software/",
+    "links": [
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/en/brochure/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/fr/brochure/"
+      },
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Download",
+        "url": "https://contenu.trace-software.com/en/download-our-brochure-on-elec-calc-software"
+      }
+    ],
+    "forms": [
+      {
+        "role": "search",
+        "method": "get",
+        "class": "search-form",
+        "action": "https://www.trace-software.com/en/"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "search",
+        "class": "search-field",
+        "value": null,
+        "placeholder": "Search",
+        "name": "s"
+      },
+      {
+        "type": "submit",
+        "class": "search-submit",
+        "value": "Search"
+      }
+    ],
+    "embeds": [
+      "https://www.googletagmanager.com/ns.html?id=GTM-MV7BCSHH"
+    ]
+  },
+  {
+    "url": "https://www.trace-software.com/en/our-solutions/archelios-pro-free-free-pv-design-software/",
+    "links": [
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/en/brochure/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/fr/brochure/"
+      },
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Download",
+        "url": "https://contenu.trace-software.com/en/download-our-archelios-pro-software-brochure"
+      }
+    ],
+    "forms": [
+      {
+        "role": "search",
+        "method": "get",
+        "class": "search-form",
+        "action": "https://www.trace-software.com/en/"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "search",
+        "class": "search-field",
+        "value": null,
+        "placeholder": "Search",
+        "name": "s"
+      },
+      {
+        "type": "submit",
+        "class": "search-submit",
+        "value": "Search"
+      }
+    ],
+    "embeds": [
+      "https://www.googletagmanager.com/ns.html?id=GTM-MV7BCSHH"
+    ]
+  },
+  {
+    "url": "https://www.trace-software.com/en/resources/",
+    "links": [
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/en/brochure/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/fr/brochure/"
+      },
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Download",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Discover",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Download",
+        "url": "https://www.trace-software.com/en/brochure/"
+      },
+      {
+        "text": "Download",
+        "url": "https://www.trace-software.com/en/case-studies/"
+      }
+    ],
+    "forms": [
+      {
+        "role": "search",
+        "method": "get",
+        "class": "search-form",
+        "action": "https://www.trace-software.com/en/"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "search",
+        "class": "search-field",
+        "value": null,
+        "placeholder": "Search",
+        "name": "s"
+      },
+      {
+        "type": "submit",
+        "class": "search-submit",
+        "value": "Search"
+      }
+    ],
+    "embeds": [
+      "https://www.googletagmanager.com/ns.html?id=GTM-MV7BCSHH"
+    ]
+  },
+  {
+    "url": "https://www.trace-software.com/en/our-solutions/elec-calc-solar-complete-pv-design-software-from-panel-to-ev-charging-point/",
+    "links": [
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/en/brochure/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/fr/brochure/"
+      },
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochure",
+        "url": "https://contenu.trace-software.com/en/download-the-elec-calc-solar-software-brochure"
+      },
+      {
+        "text": "Download",
+        "url": "https://contenu.trace-software.com/en/download-the-elec-calc-solar-software-brochure"
+      }
+    ],
+    "forms": [
+      {
+        "role": "search",
+        "method": "get",
+        "class": "search-form",
+        "action": "https://www.trace-software.com/en/"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "search",
+        "class": "search-field",
+        "value": null,
+        "placeholder": "Search",
+        "name": "s"
+      },
+      {
+        "type": "submit",
+        "class": "search-submit",
+        "value": "Search"
+      }
+    ],
+    "embeds": [
+      "https://www.googletagmanager.com/ns.html?id=GTM-MV7BCSHH",
+      "https://www.youtube.com/embed/GZXW7L3b_PU?feature=oembed"
+    ]
+  },
+  {
+    "url": "https://www.trace-software.com/en/our-services/trace-software-training/training-course-archelios-pro/",
+    "links": [
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/en/brochure/"
+      },
+      {
+        "text": "Brochures",
+        "url": "https://www.trace-software.com/fr/brochure/"
+      },
+      {
+        "text": "White Papers & Templates",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "Webinars & Videos",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "Brochure",
+        "url": "https://contenu.trace-software.com/en/download-our-trace-software-training-brochure"
+      },
+      {
+        "text": "Download the brochure",
+        "url": "https://contenu.trace-software.com/en/download-our-trace-software-training-brochure"
+      },
+      {
+        "text": "",
+        "url": "https://www.trace-software.com/en/white-papers-templates/"
+      },
+      {
+        "text": "",
+        "url": "https://www.trace-software.com/en/our-services/webinars/"
+      },
+      {
+        "text": "",
+        "url": "https://www.trace-software.com/en/brochure/"
+      }
+    ],
+    "forms": [
+      {
+        "role": "search",
+        "method": "get",
+        "class": "search-form",
+        "action": "https://www.trace-software.com/en/"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "search",
+        "class": "search-field",
+        "value": null,
+        "placeholder": "Search",
+        "name": "s"
+      },
+      {
+        "type": "submit",
+        "class": "search-submit",
+        "value": "Search"
+      }
+    ],
+    "embeds": [
+      "https://www.googletagmanager.com/ns.html?id=GTM-MV7BCSHH"
+    ]
+  },
+  {
+    "url": "https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/",
+    "links": [
+      {
+        "text": "Youtube",
+        "url": "https://www.youtube.com/c/TraceSoftware"
+      },
+      {
+        "text": "网上课堂",
+        "url": "https://tracesoftware.cn/services/technical-webinars/"
+      },
+      {
+        "text": "E-DEMOS",
+        "url": "https://tracesoftware.cn/register-e-demo/"
+      },
+      {
+        "text": "用户下载区",
+        "url": "http://support.trace-software.com/Pages/login.aspx"
+      },
+      {
+        "text": "网上课堂",
+        "url": "https://tracesoftware.cn/services/technical-webinars/"
+      },
+      {
+        "text": "下载更新",
+        "url": "http://support.trace-software.com/Pages/login.aspx"
+      },
+      {
+        "text": "工业合作伙伴",
+        "url": "https://tracesoftware.cn/trace-software/industrial-partnerships/"
+      },
+      {
+        "text": "免费试用",
+        "url": "https://tracesoftware.cn/trial-request/"
+      },
+      {
+        "text": "立即开通黄金版试用，到期自动转为免费版！",
+        "url": "https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/#freeversion"
+      },
+      {
+        "text": "已有账号,登录使用",
+        "url": "https://www.archelios.cn/online/bin/Archelios-Online-Login.php?lang=cn"
+      },
+      {
+        "text": "立即开通黄金版试用，到期自动转为免费版！",
+        "url": "https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/#freeversion"
+      }
+    ],
+    "forms": [
+      {
+        "action": "#"
+      },
+      {
+        "id": "iphorm-6ad9fdf22177a",
+        "class": "iphorm iphorm-form-25",
+        "action": "/archelios-pro/free-pv-design-software/#iphorm-6ad9fdf22177a",
+        "method": "post",
+        "enctype": "multipart/form-data",
+        "novalidate": "novalidate"
+      },
+      {
+        "id": "iphorm-6ad9fdf223668",
+        "class": "iphorm iphorm-form-4",
+        "action": "/archelios-pro/free-pv-design-software/#iphorm-6ad9fdf223668",
+        "method": "post",
+        "enctype": "multipart/form-data",
+        "novalidate": "novalidate"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "polyglot-language-options"
+      },
+      {
+        "type": "hidden",
+        "name": "iphorm_id",
+        "value": "25"
+      },
+      {
+        "type": "hidden",
+        "name": "iphorm_uid",
+        "value": "6ad9fdf22177a"
+      },
+      {
+        "type": "hidden",
+        "name": "form_url",
+        "value": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/"
+      },
+      {
+        "type": "hidden",
+        "name": "referring_url",
+        "value": "https://tracesoftware.cn/"
+      },
+      {
+        "type": "hidden",
+        "name": "post_id",
+        "value": "22960"
+      },
+      {
+        "type": "hidden",
+        "name": "post_title",
+        "value": "archelios™ Pro Free 免费光伏软件"
+      },
+      {
+        "class": "iphorm-element-text  iphorm_25_2",
+        "id": "iphorm_25_2_6ad9fdf22177a",
+        "type": "text",
+        "name": "iphorm_25_2",
+        "value": null,
+        "style": "background-color: rgb(255, 255, 255);border: 1px solid rgb(219, 219, 219);color: rgb(138, 138, 138);"
+      },
+      {
+        "class": "iphorm-element-text  iphorm_25_9",
+        "id": "iphorm_25_9_6ad9fdf22177a",
+        "type": "text",
+        "name": "iphorm_25_9",
+        "value": null,
+        "style": "background-color: rgb(255, 255, 255);border: 1px solid rgb(219, 219, 219);color: rgb(138, 138, 138);"
+      },
+      {
+        "class": "iphorm-element-text  iphorm_25_12",
+        "id": "iphorm_25_12_6ad9fdf22177a",
+        "type": "email",
+        "name": "iphorm_25_12",
+        "value": null,
+        "style": "background-color: rgb(255, 255, 255);border: 1px solid rgb(219, 219, 219);color: rgb(138, 138, 138);"
+      },
+      {
+        "class": "iphorm-element-text  iphorm_25_25",
+        "id": "iphorm_25_25_6ad9fdf22177a",
+        "type": "text",
+        "name": "iphorm_25_25",
+        "value": null,
+        "style": "background-color: rgb(255, 255, 255);border: 1px solid rgb(219, 219, 219);color: rgb(138, 138, 138);"
+      },
+      {
+        "class": "iphorm-element-text  iphorm_25_10",
+        "id": "iphorm_25_10_6ad9fdf22177a",
+        "type": "text",
+        "name": "iphorm_25_10",
+        "value": null,
+        "style": "background-color: rgb(255, 255, 255);border: 1px solid rgb(219, 219, 219);color: rgb(138, 138, 138);"
+      },
+      {
+        "class": "iphorm-element-text  iphorm_25_32",
+        "id": "iphorm_25_32_6ad9fdf22177a",
+        "type": "text",
+        "name": "iphorm_25_32",
+        "value": null,
+        "style": "background-color: rgb(255, 255, 255);border: 1px solid rgb(219, 219, 219);color: rgb(138, 138, 138);"
+      },
+      {
+        "class": "iphorm-element-select  iphorm_25_11",
+        "name": "iphorm_25_11",
+        "id": "iphorm_25_11_6ad9fdf22177a"
+      },
+      {
+        "class": "iphorm-element-checkbox iphorm_25_16 iphorm_25_16_1",
+        "type": "checkbox",
+        "name": "iphorm_25_16[]",
+        "id": "iphorm_25_16_6ad9fdf22177a_1",
+        "value": "yes"
+      },
+      {
+        "class": "iphorm-element-checkbox iphorm_25_16 iphorm_25_16_2",
+        "type": "checkbox",
+        "name": "iphorm_25_16[]",
+        "id": "iphorm_25_16_6ad9fdf22177a_2",
+        "value": "no"
+      },
+      {
+        "class": "iphorm-element-captcha  iphorm_25_33",
+        "id": "iphorm_25_33_6ad9fdf22177a",
+        "type": "text",
+        "name": "iphorm_25_33",
+        "value": null,
+        "style": "background-color: rgb(255, 255, 255);border: 1px solid rgb(219, 219, 219);color: rgb(138, 138, 138);"
+      },
+      {
+        "type": "text",
+        "name": "iphorm_25_0"
+      },
+      {
+        "class": "iphorm-submit-element",
+        "type": "submit",
+        "name": "iphorm_submit"
+      },
+      {
+        "type": "hidden",
+        "name": "iphorm_id",
+        "value": "4"
+      },
+      {
+        "type": "hidden",
+        "name": "iphorm_uid",
+        "value": "6ad9fdf223668"
+      },
+      {
+        "type": "hidden",
+        "name": "form_url",
+        "value": "https://tracesoftware.cn/archelios-pro/free-pv-design-software/"
+      },
+      {
+        "type": "hidden",
+        "name": "referring_url",
+        "value": "https://tracesoftware.cn/"
+      },
+      {
+        "type": "hidden",
+        "name": "post_id",
+        "value": "22960"
+      },
+      {
+        "type": "hidden",
+        "name": "post_title",
+        "value": "archelios™ Pro Free 免费光伏软件"
+      },
+      {
+        "class": "iphorm-element-text  iphorm_4_1",
+        "id": "iphorm_4_1_6ad9fdf223668",
+        "type": "text",
+        "name": "iphorm_4_1",
+        "value": null,
+        "style": "background-color: rgb(255, 255, 255);border: 1px solid rgb(224, 224, 224);"
+      },
+      {
+        "class": "iphorm-element-captcha  iphorm_4_2",
+        "id": "iphorm_4_2_6ad9fdf223668",
+        "type": "text",
+        "name": "iphorm_4_2",
+        "value": null,
+        "style": "background-color: rgb(255, 255, 255);border: 1px solid rgb(224, 224, 224);"
+      },
+      {
+        "type": "text",
+        "name": "iphorm_4_0"
+      },
+      {
+        "class": "iphorm-submit-element",
+        "type": "submit",
+        "name": "iphorm_submit"
+      }
+    ],
+    "embeds": [
+      "//player.bilibili.com/player.html?isOutside=true&aid=661492501&bvid=BV1Th4y1h7vm&cid=1546086657&p=1"
+    ]
+  }
+]

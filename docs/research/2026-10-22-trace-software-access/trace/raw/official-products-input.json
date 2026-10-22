@@ -1,0 +1,41 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/archelios-pro-free-free-pv-design-software/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/archelios-calc/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/electrical-installations-calculation-software/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/elec-calc-solar-complete-pv-design-software-from-panel-to-ev-charging-point/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/resources/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-services/trace-software-training/training-course-archelios-pro/"
+    },
+    {
+      "url": "https://www.tracesoftware.cn/archelios-pro/free-pv-design-software/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 8,
+  "maxConcurrency": 2,
+  "saveHtml": true,
+  "saveMarkdown": true,
+  "saveText": true,
+  "removeCookieWarnings": false,
+  "removeElementsCssSelector": "",
+  "htmlTransformer": "none",
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}

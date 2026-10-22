@@ -1,0 +1,227 @@
+                                                                                                                             Update-Notiz 2025.1
+
+
+
+                                                             Inhoud
+Ergänzung der Wahrscheinlichkeitsindikatoren                                                                                                    1
+
+Integration der Wahrscheinlichkeitsparameter in den PDF-Bericht                                                                                 1
+
+Neue ELMAS-Verbrauchsprofile                                                                                                                    2
+
+Anzeigeoption für NSHV im vereinfachten Einliniendiagramm                                                                                       2
+
+API Enstall                                                                                                                                     3
+
+Neue Wetterdaten in Meteonorm 9                                                                                                                 4
+
+Kompatibilität und Optimierungen des Revit-Plug-ins                                                                                             4
+
+Änderungen an der Benutzeroberfläche                                                                                                            5
+
+Fehlerbehebungen                                                                                                                                5
+
+
+
+
+Trace Software GmbH                                                                                           W: www.trace-software.com
+Savignystaße 43                                                                                               E: sales@trace-software.com
+60325 Frankfurt am Main                                                                                              T : +49 (0) 151 16528462
+
+
+                          Trace Software GmbH – Ust-IdNr.: DE337047245 – Amtsgericht Frankfurt am Main, HRB 118657
+                                                                                                                                 Update-Notiz 2025.1
+
+    Update-Notiz 2025.1
+       Ergänzung der Wahrscheinlichkeitsindikatoren:
+
+    archelios PRO verfügt nun über die Berechnung beliebiger Wahrscheinlichkeitsindikatoren,
+    abhängig von der jeweiligen Softwareversion.
+    Dies ermöglicht eine genauere Analyse der mit der Produktion verbundenen Risiken durch
+    Prüfung verschiedener Szenarien.
+    Die Studien gewinnen so an Präzision und Sicherheit, insbesondere bei großen Anlagen, bei
+    denen Risiken entsprechend antizipiert werden müssen.
+
+
+
+
+       Integration der Wahrscheinlichkeitsparameter in den PDF-Bericht:
+
+
+
+
+    Diese Entwicklung gewährleistet vollständige Transparenz über die in der Simulation
+    verwendeten Einstellungen und verbessert die Nachvollziehbarkeit der Ergebnisse.
+    Der Bericht reflektiert die erstellte Studie noch genauer und begründet die gewählten
+    Optionen klar und deutlich.
+
+
+    Trace Software GmbH                                                                                           W: www.trace-software.com
+1   Savignystaße 43                                                                                               E: sales@trace-software.com
+    60325 Frankfurt am Main                                                                                              T : +49 (0) 151 16528462
+
+
+                              Trace Software GmbH – Ust-IdNr.: DE337047245 – Amtsgericht Frankfurt am Main, HRB 118657
+                                                                                                                                 Update-Notiz 2025.1
+
+
+
+       Neue ELMAS-Verbrauchsprofile:
+
+                                                                           Es stehen neue Verbrauchsprofile aus der ELMAS-
+                                                                           Datenbank (Electrical Load Measurements
+                                                                           Aggregated by business Sectors in France) für den
+                                                                           Industrie- und Dienstleistungssektor zur Verfügung.
+                                                                           Die Datenbank umfasst 18 Stundenprofile, die
+                                                                           auf Grundlage von 55.000 realen Profilen erstellt
+                                                                           wurden.
+                                                                           Mithilfe dieser Daten lassen sich realistischere
+                                                                           Verbraucherverhalten simulieren und zuverlässigere
+                                                                           Ergebnisse erzielen, wenn keine realen Kurven
+                                                                           vorliegen.
+
+
+
+
+       Anzeigeoption für NSHV im vereinfachten Einliniendiagramm:
+
+    Das vereinfachte Single Line Diagramm wurde für Projekte mit Gesamtverkauf angepasst:
+    Der NSHV wird nicht mehr standardmäßig angezeigt, da bei dieser Art von Konfiguration kein
+    Verbrauch zu erwarten ist. Es besteht weiterhin die Möglichkeit, ihn bei Bedarf einzublenden.
+
+    Diese Anpassung macht die
+    Diagramme            repräsentativer,
+    begrenzt die Nachbearbeitung
+    in AutoCAD und beschleunigt die
+    Vorbereitung der Unterlagen für
+    die     Konformitätsbescheinigung
+    Ihrer Elektroinstallation.
+
+
+
+
+    Trace Software GmbH                                                                                           W: www.trace-software.com
+2   Savignystaße 43                                                                                               E: sales@trace-software.com
+    60325 Frankfurt am Main                                                                                              T : +49 (0) 151 16528462
+
+
+                              Trace Software GmbH – Ust-IdNr.: DE337047245 – Amtsgericht Frankfurt am Main, HRB 118657
+                                                                                                                                 Update-Notiz 2025.1
+
+       API Enstall:
+
+    Im Rahmen der kontinuierlichen Weiterentwicklung unserer Plattform ermöglicht eine neue
+    Funktion nun die direkte Verbindung zwischen der Modellierungs- und Layoutphase und der
+    Enstall-API. Diese Integration erlaubt eine noch präzisere und konsistentere Konfiguration
+    des Montagesystems, da technische Einschränkungen bereits in den frühen Projektphasen
+    berücksichtigt werden.
+    Dank dieser Erweiterung können die Nutzer sicherstellen, dass das ausgewählte
+    Montagesystem vollständig mit der modellierten Anlage kompatibel ist. Die Komponenten
+    sowie die zugehörigen Preise werden automatisch in den Wirtschaftlichkeitsbericht integriert,
+    was für mehr Transparenz und eine verlässliche Kostenkontrolle sorgt. Zusätzlich wird der
+    Enstall-Bericht beim PDF-Export als Anhang beigefügt, für eine optimierte Kommunikation
+    und erleichterte Validierung des Projekts.
+
+
+
+
+    Die zentrale Zusammenführung aller Daten
+    in einer einzigen archelios PRO-Studie spart
+    wertvolle Zeit.
+    Eine erneute Modellierung beim Anbieter
+    des Montagesystems entfällt, was den
+    Prozess nicht nur vereinfacht, sondern auch
+    das Risiko von Fehlern oder Inkonsistenzen
+    reduziert.
+
+
+
+
+    Trace Software GmbH                                                                                           W: www.trace-software.com
+3   Savignystaße 43                                                                                               E: sales@trace-software.com
+    60325 Frankfurt am Main                                                                                              T : +49 (0) 151 16528462
+
+
+                              Trace Software GmbH – Ust-IdNr.: DE337047245 – Amtsgericht Frankfurt am Main, HRB 118657
+                                                                                                                                 Update-Notiz 2025.1
+
+       Neue Wetterdaten in Meteonorm 9:
+
+    Die Wetterdatenbank wurde auf Meteonorm 9 aktualisiert, die 2025 veröffentlicht
+    wurde. Diese Entwicklung bietet mehr als 4.000 TMY-Wetterstationen (Typical Meteorological
+    Year) mit breiterer Abdeckung und optimierter Datenqualität.
+    Die aktualisierten Daten werden nun standardmäßig in archelios PRO-Simulationen genutzt,
+    um realitätsnahe Bedingungen und präzisere Produktionsergebnisse sicherzustellen.
+
+
+
+
+       Kompatibilität und Optimierungen des Revit-Plug-ins:
+
+    Mit Version 2025.1 erreicht archelios PRO einen neuen Meilenstein in der BIM-Integration:
+    Das Revit-Plug-in ist nun vollständig kompatibel mit Revit 2026.
+    Darüber hinaus wurden umfassende Leistungsoptimierungen vorgenommen, um den Export
+    nach archelios PRO zu beschleunigen, insbesondere bei großen oder komplexen Projekten.
+    Die Exportzeiten wurden reduziert, der Dateiaustausch vereinfacht und der gesamte
+    Workflow zwischen BIM-Modell und PV-Simulation stabilisiert.
+
+
+
+
+    Trace Software GmbH                                                                                           W: www.trace-software.com
+4   Savignystaße 43                                                                                               E: sales@trace-software.com
+    60325 Frankfurt am Main                                                                                              T : +49 (0) 151 16528462
+
+
+                              Trace Software GmbH – Ust-IdNr.: DE337047245 – Amtsgericht Frankfurt am Main, HRB 118657
+                                                                                                                                 Update-Notiz 2025.1
+
+    Änderungen an der Benutzeroberfläche
+      Hinzufügen der Fragen zum Thema Speicherung zu den FAQ.
+     Zusätzlicher Link für das Erzwingen der Abmeldung von einem Konto, wenn das Popup-
+    Fenster „Dieses Konto ist bereits angemeldet“ erscheint.
+
+     Hinzufügen der Zeile „Mit Speicher“ zum Abschnitt „Monatlicher Eigenverbrauch“ im CSV-
+    Export.
+      Ergänzung der Parameter zum Temperaturbereich – Zelltemperatur.
+
+     Ergänzung von Angaben zum Fehler-Popup bei fehlenden Daten im Datenblatt einer
+    Batterie.
+      Umbenennung der Begriffe „Projekttyp“ in der Registerkarte „Wirtschaftlichkeit“.
+
+
+
+    Fehlerbehebungen
+      Korrektur des Begriffs „Wartung“ im PDF-Bericht.
+     Korrektur eines Fehlers bei der Bildgröße, welcher die Bearbeitung des Berichts verhinderte
+    oder verzögerte.
+     Korrektur eines Anzeigefehlers auf der Schaltfläche „Optimierung der Wechselrichterleistung”
+    in der spanischen und portugiesischen Sprachversion.
+
+     Behebung eines Fehlers im PDF-Bericht, bei dem die Deaktivierung des Abschnitts „Standort”
+    eine leere Seite erzeugte.
+     Korrektur eines Fehlers, der die Auswahl der Schaltfläche „Bereit für Archelios CALC” im
+    Modulauswahlfenster verhinderte.
+
+      Behebung eines Fehlers im generischen Verbrauchsprofil „Verwaltung”.
+
+      Behebung eines Fehlers zweier vertauschter Werkzeugtitel in der Ergebnistabelle der
+    Eigenverbrauchsberechnung.
+
+      Fehlerkorrektur bei der Batteriealterung, die im Jahr 20 abnimmt.
+
+      Behebung eines Fehlers bei der Bezeichnung der Wetterstation im CSV-Export.
+
+      Fehlerkorrektur der die Anzeige der Werkzeugtipps im Wechselrichter-Konfigurator
+    blockierte.
+
+
+
+
+    Trace Software GmbH                                                                                           W: www.trace-software.com
+5   Savignystaße 43                                                                                               E: sales@trace-software.com
+    60325 Frankfurt am Main                                                                                              T : +49 (0) 151 16528462
+
+
+                              Trace Software GmbH – Ust-IdNr.: DE337047245 – Amtsgericht Frankfurt am Main, HRB 118657
+

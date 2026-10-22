@@ -1,0 +1,352 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:dl.trace-software.com archelios",
+      "url": "http://www.google.com/search?q=site%3Adl.trace-software.com+archelios&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Adl.trace-software.com+archelios&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "A",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "et calcul du productible",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf",
+        "displayedUrl": "https://dl.trace-software.com › FlyerACpro_FR_LT",
+        "description": "Archelios Pro est une application en ligne de conception, de simulation et d'analyse économique de projets photovoltaïques destinée aux professionnels.",
+        "emphasizedKeywords": [
+          "Archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "La suite complète dédiée à la conception photovoltaïque",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf",
+        "displayedUrl": "https://dl.trace-software.com › FlyerACsuite_FR_LT",
+        "description": "Archelios™ PRO est une application en ligne de conception, de simulation et d'analyse économique de projets photovoltaïques destinée aux professionnels pour ...Read more",
+        "emphasizedKeywords": [
+          "Archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Update-Notiz 2025.1",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf",
+        "displayedUrl": "https://dl.trace-software.com › archelios_PRO › 04...",
+        "description": "archelios PRO verfügt nun über die Berechnung beliebiger Wahrscheinlichkeitsindikatoren, abhängig von der jeweiligen Softwareversion.Read more",
+        "emphasizedKeywords": [
+          "archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "elec calc SOLAR Import d'un projet depuis archelios PRO L ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+        "displayedUrl": "https://dl.trace-software.com › docs › Changelog",
+        "description": "archelios PRO est un logiciel dédié à la conception, la simulation et au calcul du productible d'installations photovoltaïques. Permettant notamment de ...Read more",
+        "emphasizedKeywords": [
+          "archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Gestion des licences",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+        "displayedUrl": "https://dl.trace-software.com › ManagingLicense",
+        "description": "Le Serveur de licences est un Service Windows permettant la distribution des licences sur les postes équipés de elec calc.",
+        "date": "2016-04-25T12:00:00.000Z",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/PPtueKUkgrnqGGG7d/records/Hd5R1og0oV3nLUN-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:trace-software.com archelios filetype:pdf",
+      "url": "http://www.google.com/search?q=site%3Atrace-software.com+archelios+filetype%3Apdf&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Atrace-software.com+archelios+filetype%3Apdf&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "et calcul du productible",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/pdf/FlyerACpro_FR_LT.pdf",
+        "displayedUrl": "https://dl.trace-software.com › FlyerACpro_FR_LT",
+        "description": "Archelios Pro est une application en ligne de conception, de simulation et d'analyse économique de projets photovoltaïques destinée aux professionnels ...Read more",
+        "emphasizedKeywords": [
+          "Archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "La suite complète dédiée à la conception photovoltaïque",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/pdf/FlyerACsuite_FR_LT.pdf",
+        "displayedUrl": "https://dl.trace-software.com › FlyerACsuite_FR_LT",
+        "description": "Archelios™ PRO est une application en ligne de conception, de simulation et d'analyse économique de projets photovoltaïques destinée aux professionnels pour ...Read more",
+        "emphasizedKeywords": [
+          "Archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Update-Notiz 2025.1",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/archelios_PRO/04_DE_Update-Notiz_2025.1.pdf",
+        "displayedUrl": "https://dl.trace-software.com › archelios_PRO › 04...",
+        "description": "archelios PRO verfügt nun über die Berechnung beliebiger Wahrscheinlichkeitsindikatoren, abhängig von der jeweiligen Softwareversion.Read more",
+        "emphasizedKeywords": [
+          "archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "elec calc SOLAR Import d'un projet depuis archelios PRO L ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl//frk/docs/Changelog/01_FR_Note_de_mise_a_jour_2026.0.pdf",
+        "displayedUrl": "https://dl.trace-software.com › docs › Changelog",
+        "description": "archelios PRO est un logiciel dédié à la conception, la simulation et au calcul du productible d'installations photovoltaïques. Permettant notamment de ...Read more",
+        "emphasizedKeywords": [
+          "archelios"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Gestion des licences",
+        "websiteTitle": "Trace Software",
+        "url": "https://dl.trace-software.com/dl/frk/docs/ManagingLicense/Managing_License_Elec_Calc_FR.pdf",
+        "displayedUrl": "https://dl.trace-software.com › ManagingLicense",
+        "description": "A quoi sert le Gestionnaire de licences ? elec calc est protégé par un numéro de licence qui vous a été octroyé lors de votre achat.Read more",
+        "date": "2016-04-25T12:00:00.000Z",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/PPtueKUkgrnqGGG7d/records/b6xY6xcE9eRAGXq-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:trace-software.com \".exe\" OR \".zip\"",
+      "url": "http://www.google.com/search?q=site%3Atrace-software.com+%22.exe%22+OR+%22.zip%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Atrace-software.com+%22.exe%22+OR+%22.zip%22&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Gamme elec calc : des logiciels de calcul d'installations ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/fr/solutions/gamme-logiciels-calcul-installations-electriques/",
+        "displayedUrl": "https://www.trace-software.com › ...",
+        "description": "La gamme elec calc : des logiciels dédiés au dimensionnement d'installations électriques en haute et basse tension, en toute simplicité et conformité.",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/PPtueKUkgrnqGGG7d/records/nUtMnEtlwyPQb7j-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:trace-software.com archelios \"report\" \"example\"",
+      "url": "http://www.google.com/search?q=site%3Atrace-software.com+archelios+%22report%22+%22example%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Atrace-software.com+archelios+%22report%22+%22example%22&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "ENERSOL: 20 years of solar expertise at the service ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/enersol-twenty-years-of-solar-expertise-at-the-service-of-reliable-and-connected-installations/",
+        "displayedUrl": "https://www.trace-software.com › enersol-twenty-years-...",
+        "description": "... report on the expected production ,” explains Sébastien Lenertz.This report ... The example is telling: “A manufacturer had just released a range of ...Read more",
+        "emphasizedKeywords": [
+          "report",
+          "report",
+          "example"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "elec calc 2020 : The electrical calculations made easy",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/elec-calc-2020-the-electrical-calculations-made-easy/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "Display of the error messages in the calculations report ... From now it is possible to search according to the data entered, for example, Ith ...Read more",
+        "date": "2020-03-27T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "report",
+          "example"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "The 5 common mistakes in arc flash studies",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/technical-the-5-common-mistakes-in-arc-flash-studies/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "Field example: a modular circuit breaker has been replaced with a ... Typical cause: the final deliverable stops at the report and a ...Read more",
+        "date": "2026-05-13T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "example",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Virtual storage or on-site battery: a comparison for your ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/virtual-storage-or-on-site-battery-a-practical-comparison-for-your-solar-projects/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "In addition, the networks are gradually opening up: in France, for example ... Finally, export a technical report, ready to be shared (self ...Read more",
+        "date": "2025-10-24T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "example",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Determination of the cross-section of active conductors",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/determination-of-the-cross-section-of-active-conductors/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "As an example, the following table (B.52.4 of IEC 60364-5-52) gives ... A detailed compliance report with all the project assumptions.Read more",
+        "date": "2025-07-20T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "example",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Neutral regime: understand TN-C, TN-S, IT and TT to ...",
+        "websiteTitle": "Trace Software",
+        "url": "https://www.trace-software.com/en/technical-neutral-regime-understand-tn-c-tn-s-it-and-tt-to-properly-design-your-installations/",
+        "displayedUrl": "https://www.trace-software.com › Home › Blog & News",
+        "description": "In the UK, DNOs use TT where PME cannot safely be offered for example ... report ready for the technical file. elec calc also holds Gimelec ...Read more",
+        "date": "2026-07-08T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "example",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/PPtueKUkgrnqGGG7d/records/zvnNvKGybCjfruU-0.html"
+  }
+]
