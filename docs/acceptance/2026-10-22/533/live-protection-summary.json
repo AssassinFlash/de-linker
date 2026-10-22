@@ -24,5 +24,18 @@
   "production_manifest_state": "archived",
   "protection_source_baseline": "003cedd399fc4781f8fe31f9896ea9d2a9c87282",
   "manifest_stable_across_read": true,
-  "campaign_rule": "transfer-confirmed-20261022-v2"
+  "campaign_rule": "transfer-confirmed-20261022-v2",
+  "latest_readonly_observation": {
+    "observed_at": "2026-10-22T17:55:28+00:00",
+    "production_manifest": "20261022T161243470627Z-3c3c3c25",
+    "manifest_stable_archived": true,
+    "matching_campaign_requests": 591,
+    "complete_campaign_samples": 3,
+    "additional_grouped_requests": 588,
+    "pending_verification_records": 77,
+    "administrator_count": 1,
+    "enabled_factor_count": 0,
+    "saved_totp_key_count": 0,
+    "limitation": "This narrow readback refreshes only these aggregates and MFA booleans. Earlier source, held-job and transport proofs retain their own timestamps."
+  }
 }
