@@ -34,8 +34,10 @@ Completed / Abgeschlossen · Cancelled / Storniert. German cart words
 
 ## Architecture in one breath
 
-React+TS on WordPress's own React (`@wordpress/scripts`, one npm package per
-plugin); PHP 8.3 Composer PSR-4, PHPUnit/WP-Mock, PHPStan L8, WPCS+Woo sniffs;
+React+TS on WordPress's own React for the existing plugin entries; the unified
+planner is being built with an isolated modern runtime (see
+`docs/adr/0002-isolated-planner-runtime.md`).
+PHP 8.3 Composer PSR-4, PHPUnit/WP-Mock, PHPStan L8, WPCS+Woo sniffs;
 FastAPI services on the VPS (engine: sizing/PVGIS/LoD2/report; genie:
 grounded deepseek-flash chat over a hosted-PDF index, FTS5+sqlite-vec);
 Polylang free + our narrow i18n companion plugin; presentation layer =

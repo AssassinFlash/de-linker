@@ -29,7 +29,15 @@
 
 2026-10-23已接通真实PVGIS原件→owned asset→冻结run→EnergyKernel Worker→连续能流与指标。Apify取回ERA5/SARAH3各8784行完整2020原文，保存精确URL/HTTP/MIME/UTC/原文hash；ERA5中心均值与SARAH瞬时时点显式重建分开，不重复扣loss。真实Unknown技术响应整年无P、北向-180被返回-179的错配均拒绝。独立评审找到超范围JSON整数裸OverflowError并修复，新增两个回归；最终37198e86的183项planning、340项整引擎独立通过，Spec/Standards均通过。固定记录在PVGIS-REVIEW.md；没有将小时天气当实际15分钟峰值，也没有公开挂载、部署或授予设备放行。
 
-真实产品输入与原生身份研究已入库：2026-10-23-capability-inputs/FACT-INTAKE.md确认大量原值/条件没有穿过现有feed，并记录AU/BEU版本冲突；2026-10-23-planning-gateway/NATIVE-IDENTITY.md核本机WP/Woo签名session、guest→user专门hook、CartToken克隆与nonce/Origin边界。它们不是已经修好或真实HTTP已验收的声明；正在落实新事实合同及原生私有网关。全106件源产品的精确引用绑定库存继续核实，不能用仅9件代表研究代替全量覆盖。
+真实产品输入与原生身份研究已入库：2026-10-23-capability-inputs/FACT-INTAKE.md确认大量原值/条件没有穿过现有feed，并记录AU/BEU版本冲突；2026-10-23-planning-gateway/NATIVE-IDENTITY.md核本机WP/Woo签名session、guest→user专门hook、CartToken克隆与nonce/Origin边界。它们不是已经修好或真实HTTP已验收的声明。全106件源产品现已补齐原字段/引用库存，见2026-10-23-fact-sources/SOURCE-BINDINGS.md：2482项原图值、80个文档字节版本，分开精确文件身份、已核目标和未决候选；条件/多源引用不再被研究清单丢弃。新feed/capability编译器及逐字段工程放行仍待实现，不能把来源绑定数量当作已核产品能力。
+
+2026-10-23私有RPC工厂通过独立双轴复核，最终bc68b112，见PRIVATE-GATEWAY-REVIEW.md。每种方法先服务鉴权，再接受WP私有主体；真实资产/项目/运行/轨迹路径均检查归属。独立反例推动同批修复错误协议、递归验证放大、UTF16/32深度绕过及框架外异常。尚未公开挂载，不是WP原生身份验收。
+
+整访客接管与退役最终726557ac通过双轴复核，见SESSION-CLAIM-REVIEW.md。所有项目/历史原子转移，数据库约束同时阻止已启动旧进程重新创建退役访客项目；schema1→2、回滚、旧备份恢复、跨进程竞争均有实际证据。整engine395项通过，mypy/ruff通过。WP原生会话/登录hook/耐久outbox和真实浏览器仍未接通，不能把私有双主体夹具当作用户登录路径已完成。
+
+业主补充：允许现代架构与新库，先正确使用，再采用当前稳定现代技术；并明确不能只考虑3D。新局部前端决定见docs/adr/0002-isolated-planner-runtime.md，整套应用合同见docs/specs/548-workbench-application.md。能力映射2026-10-23-modern-workbench/CAPABILITY-MAP.md覆盖W01–W22及A–D真实路径，区分实操、源码、官方描述与本站推导。React19/Fiber9/Drei10/Three/Vite与Query/ECharts/Ajv官方证据均经Apify取得；旧站wp.element保持隔离，WindPress仍是唯一样式编译管线。
+
+apps/planner当前只有开发中的独立包/锁文件、严格类型、米制几何/组件姿态、wire校验与编辑history基础；依赖已安装、类型检查和9项解析几何/拒绝输入/撤销分支夹具通过。尚无入口/构建manifest、实际3D renderer、WordPress mount或浏览器验收。这是未完成的同次实施工作，不能描述成已可用的新工作台或现代化完成。8794原型仍是纯示意，不会因安装新库自动变成正式实现。
 
 继续落实几何/详细PV链/设备条件/国家包与报告、统一React工作台、WP身份/上传网关、Genie与Woo交接及全站入口/旧资料迁移。输入修改不能覆盖旧结果，任务成功不能等同工程放行，所有消费者读取同一冻结运行。每部分纳入同次验收，不以组件完成结案。
 

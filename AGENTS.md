@@ -48,6 +48,7 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
   - **执行分工改定**：Genie 相关的票由 Claude 用子代理执行，一个子代理接一张票；其余的票交给 Codex，一个 Codex 任务接一张票。Claude 负责开任务、评审、合并、部署，并在合并后开启被解锁的票。先各试一张（子代理 #249、Codex #246），通过后再铺开。执行者一律在自己的工作树和本地实例里干活，不部署、不合并、不写生产。
   - **生产写入默认已获同意**：部署和票所需的数据写入不必再逐次请示；照旧先备份、后读回，并把改动与回滚方法记在票上。超出票计划的不可逆操作（例如删除旧的 `wp_genie_*` 表）仍单独请示。
 - 2026-10-19：**Genie、Solution Configurator 与 RoofTop Canvas 的修改以复刻为先。**任何逻辑或功能层面的修改、测试、优化与工具间集成之前，先参照各工具既有的功能建立（规格、原型、现有实现与验收记录）与竞品研究（`docs/research/` 下对应 dossier；Genie 另有 Knocket `TRIAL.md` 与 `2026-10-18-judge-remit/`）；有成熟模式就复刻，没有先例才写设计理由再改。不拍脑袋发明。
+- 2026-10-23：**统一配置器允许独立现代前端。**业主明确先正确使用，再采用当前稳定、现代的技术；允许调整架构和引入库，前提是保护既有站点。配置器的局部运行环境与构建例外见 `docs/adr/0002-isolated-planner-runtime.md`；此授权不等于构建、计算或生产验收通过。
 
 业主只回答事实（产品数据、价格、承诺、厂商怎么说）。产品范围、工具存废、架构、措辞由本线按竞品映射与证据决定；决定只因新证据改变，改变时写明证据。
 
@@ -60,7 +61,7 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
 
 ## 4. 技术选型（按复刻与适用定，证据见 docs/research/2026-10-09/framework-choice.md）
 
-- 前端：React + TypeScript，用 WordPress 自带的 React；`@wordpress/scripts` 构建；`@wordpress/i18n` + `wp i18n make-json`。每个插件一个 npm 包，三类工具是同一包的入口。
+- 前端：既有插件用 WordPress 自带的 React、`@wordpress/scripts`、`@wordpress/i18n` + `wp i18n make-json`；每个插件一个 npm 包。统一配置器按 2026-10-23 裁定采用隔离的 `apps/planner` 包，不升级站点全局 React；样式仍走同一 WindPress 管线。
 - PHP：Composer + PSR-4 命名空间，一类一文件；PHPUnit 9.6（WP_Mock）；PHPStan level 8；WPCS 3 + woocommerce-sniffs；Composer 锁 PHP 8.3。
 - Python 服务（VPS，Python 3.12）：uv + pyproject；FastAPI + Pydantic AI；ruff、mypy、pytest。
 - 多语言：Polylang 免费版做基座 + 我们自己的窄插件（同 slug、URL 段翻译、保存即翻译、REST lang、Woo 最小同步）。
