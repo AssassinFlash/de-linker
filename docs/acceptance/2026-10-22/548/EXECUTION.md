@@ -23,7 +23,7 @@
 
 基础项目/执行31项、时间/CSV/TZif/重采样27项已分别通过Spec与Standards独立固定提交复核。连续单AC能流及来源/命令/模式/独立合理算术与硬库存见证实现后，固定3c533482的planning组件110项通过，两个独立评审轴通过。记录分别在WORKSPACE-REVIEW.md、TIME-SERIES-REVIEW.md、ENERGY-REVIEW.md；不是设备/气象/全产品放行。
 
-2026-10-23新增真实永久资产/CSV导入→项目运行→注册EnergyKernel Worker→轨迹/指标/独立验证链。客户端不能选运行时或拿另一个hash替换项目选定的asset ID；原文件、映射、TZif、runtime源文件/lock/平台身份固定。变更后的项目不覆盖旧run；server设置变更后的重复意图复用原回执。永久CAS拒绝有时限provider原数据；asset/result子依赖也进入备份校验。19项新真实链路夹具与既有组件合计129项通过，mypy/ruff/format通过。该批独立评审进行中，未公开挂载、未部署。
+2026-10-23新增真实永久资产/CSV导入→项目运行→注册EnergyKernel Worker→轨迹/指标/独立验证链。客户端不能选运行时或拿另一个hash替换项目选定的asset ID；原文件、映射、TZif、runtime源文件/lock/平台身份固定。变更后的项目不覆盖旧run；server设置变更后的重复意图复用原回执。永久CAS拒绝有时限provider原数据；asset/result子依赖也进入备份校验。19项新真实链路夹具与既有组件合计129项通过后，独立评审找到并修复严格schema版本类型缺口，增加12项回归。固定685773a1的planning141项、两个独立评审轴均通过；整引擎298项通过（19.49s），mypy/ruff/format通过。记录在ENERGY-JOB-REVIEW.md。尚未公开挂载、未部署。
 
 地图接入研究已形成MAP-ADAPTER.md，经Apify七组成功run核28个官方页面。Google地图/地点与Solar自动数据分别对待；成熟绘图层、来源权利、留存与米制领域边界须落实到实际适配器，不借第三方key、不把原型没画地图当取消技术路线。受时限数据的缓存/备份生命周期仍需实际实现，永久资产路径不能冒充已覆盖它。
 

@@ -42,3 +42,11 @@ version guards also check integer identity. Ten direct/enqueue regressions and
 two actual malformed-durable-job Worker regressions cover the original cases.
 The repaired fixed commit will be rechecked by both independent axes. Full
 planning has 141 passing tests (6.66s), with strict mypy/Ruff/format checks.
+
+Both axes independently passed fixed `685773a143e07d6e934ba5e233f91c28e855024d`
+from isolated git archives, 141 tests each (6.54s / 6.57s). Spec additionally
+created reference/hash-consistent malformed profile metadata and manifests;
+boolean/float versions failed in the real Worker as version_unavailable with
+no result. Correct integer versions completed the analytic scenario. No
+remaining blocker or scope expansion was found. Whole engine after the fix:
+298 tests passed in 19.49s; Ruff lint/format and strict mypy passed.
