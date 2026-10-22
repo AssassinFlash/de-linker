@@ -574,12 +574,15 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	 * The actual core error hook rolls back preceding native profile extension metadata.
 	 */
 	public function test_pending_core_profile_error_restores_earlier_billing_writes(): void {
+		require_once ABSPATH . 'wp-admin/includes/admin.php';
+		$this->assertNotFalse( has_action( 'personal_options_update', 'send_confirmation_on_profile_email' ) );
 		$customer = $this->customer();
 		update_user_meta( $customer->get_id(), Approval::STATUS_META, Approval::PENDING );
 		$this->as_user( $customer->get_id() );
 		$before = $this->summary();
 		$this->assertIsArray( RegistrationSlots::reserve( wp_generate_uuid4(), RegistrationSlots::MAX_BYTES - $before['business_bytes'] ) );
-		$original = $customer->get_billing_company();
+		$original       = $customer->get_billing_company();
+		$_POST['email'] = $this->native_user( $customer->get_id() )->user_email;
 		do_action( 'personal_options_update', $customer->get_id() );
 		update_user_meta( $customer->get_id(), 'billing_company', $original . ' growth' );
 		$errors = new WP_Error();
@@ -596,6 +599,8 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	 * A busy capacity mutex must also roll back core extension fields written before validation.
 	 */
 	public function test_busy_core_profile_does_not_save_earlier_extension_fields(): void {
+		require_once ABSPATH . 'wp-admin/includes/admin.php';
+		$this->assertNotFalse( has_action( 'personal_options_update', 'send_confirmation_on_profile_email' ) );
 		$customer = $this->customer();
 		update_user_meta( $customer->get_id(), Approval::STATUS_META, Approval::PENDING );
 		$this->as_user( $customer->get_id() );
@@ -604,7 +609,8 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$lock  = 'linker-assessment-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/registration-capacity' );
 		$this->assertSame( '1', $other->get_var( $other->prepare( 'SELECT GET_LOCK(%s, 0)', $lock ) ) );
 		try {
-			$original = $customer->get_billing_company();
+			$original       = $customer->get_billing_company();
+			$_POST['email'] = $this->native_user( $customer->get_id() )->user_email;
 			do_action( 'personal_options_update', $customer->get_id() );
 			update_user_meta( $customer->get_id(), 'billing_company', $original . ' must roll back' );
 			$errors = new WP_Error();
