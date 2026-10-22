@@ -51,6 +51,9 @@ final class Plugin {
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'load_textdomain' ) );
+		// Polylang caches this declaration before pll_init. Terms stay shared;
+		// native archive routes and product queries still need the language.
+		add_filter( 'pll_filtered_taxonomies', array( new TranslatedTypes(), 'shared_archives' ) );
 		add_action( 'pll_init', array( $this, 'hook' ) );
 	}
 
@@ -79,6 +82,8 @@ final class Plugin {
 		$types = new TranslatedTypes();
 		add_filter( 'pll_get_post_types', array( $types, 'post_types' ), 10, 2 );
 		add_filter( 'pll_get_taxonomies', array( $types, 'taxonomies' ), 10, 2 );
+		add_action( 'woocommerce_product_query', array( $types, 'shared_archive_query' ) );
+		add_filter( 'pll_hide_archive_translation_url', array( $types, 'hide_shared_archive' ), 10, 3 );
 
 		// One slug for an English object and its German version.
 		$post_slugs = new PostSlugs( $languages );

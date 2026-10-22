@@ -1,0 +1,13 @@
+{
+  "local_only": true,
+  "latest_present_changed_template_ids": [
+    6961
+  ],
+  "all_31_LC_posts_full_HTML_and_metadata_match_exact_saved_pre_run_state": true,
+  "all_51_shared_terms_local_privacy_brand_option_unchanged": true,
+  "settings_and_additional_css_match_saved_pre_run_state": true,
+  "backup_consumed_after_successful_rollback": true,
+  "official_present_restored_final_state_exact": true,
+  "first_assertion_diagnostic": "The first driver incorrectly compared the latest-present rollback to an earlier pre-archive baseline. Each official present snapshots its own pre-run state. The retained diagnostic is not a product rollback failure. Archive assignment rollback to the original baseline was independently exercised in the earlier LC lifecycle.",
+  "scope": "Latest native shop-template present rollback; final archive templates intentionally remain as in the saved latest pre-run state. No WindPress-volume rollback or production/browser acceptance is claimed. Official force compile follows restoration."
+}

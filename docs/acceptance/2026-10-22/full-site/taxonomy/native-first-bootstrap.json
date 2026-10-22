@@ -1,0 +1,343 @@
+{
+  "native_filtered": [
+    "post_format",
+    "product_brand",
+    "pa_brand",
+    "pa_series"
+  ],
+  "fingerprint": "0667b179c7bee4ba2b7e02ce408fbe20",
+  "rules": {
+    "(de)/brand/(.+?)/seite/?([0-9]{1,})/?$": "index.php?lang=$matches[1]&product_brand=$matches[2]&paged=$matches[3]",
+    "(de)/brand/([^/]+)/seite/?([0-9]{1,})/?$": "index.php?lang=$matches[1]&pa_brand=$matches[2]&paged=$matches[3]",
+    "(de)/series/([^/]+)/seite/?([0-9]{1,})/?$": "index.php?lang=$matches[1]&pa_series=$matches[2]&paged=$matches[3]",
+    "(de)/brand/(.+?)/feed/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=$matches[1]&product_brand=$matches[2]&feed=$matches[3]",
+    "brand/(.+?)/feed/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=en&product_brand=$matches[1]&feed=$matches[2]",
+    "(de)/brand/(.+?)/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=$matches[1]&product_brand=$matches[2]&feed=$matches[3]",
+    "brand/(.+?)/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=en&product_brand=$matches[1]&feed=$matches[2]",
+    "(de)/brand/(.+?)/page/?([0-9]{1,})/?$": "index.php?lang=$matches[1]&product_brand=$matches[2]&paged=$matches[3]",
+    "brand/(.+?)/page/?([0-9]{1,})/?$": "index.php?lang=en&product_brand=$matches[1]&paged=$matches[2]",
+    "(de)/brand/(.+?)/?$": "index.php?lang=$matches[1]&product_brand=$matches[2]",
+    "brand/(.+?)/?$": "index.php?lang=en&product_brand=$matches[1]",
+    "(de)/brand/([^/]+)/feed/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=$matches[1]&pa_brand=$matches[2]&feed=$matches[3]",
+    "brand/([^/]+)/feed/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=en&pa_brand=$matches[1]&feed=$matches[2]",
+    "(de)/brand/([^/]+)/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=$matches[1]&pa_brand=$matches[2]&feed=$matches[3]",
+    "brand/([^/]+)/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=en&pa_brand=$matches[1]&feed=$matches[2]",
+    "(de)/brand/([^/]+)/page/?([0-9]{1,})/?$": "index.php?lang=$matches[1]&pa_brand=$matches[2]&paged=$matches[3]",
+    "brand/([^/]+)/page/?([0-9]{1,})/?$": "index.php?lang=en&pa_brand=$matches[1]&paged=$matches[2]",
+    "(de)/brand/([^/]+)/?$": "index.php?lang=$matches[1]&pa_brand=$matches[2]",
+    "brand/([^/]+)/?$": "index.php?lang=en&pa_brand=$matches[1]",
+    "(de)/series/([^/]+)/feed/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=$matches[1]&pa_series=$matches[2]&feed=$matches[3]",
+    "series/([^/]+)/feed/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=en&pa_series=$matches[1]&feed=$matches[2]",
+    "(de)/series/([^/]+)/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=$matches[1]&pa_series=$matches[2]&feed=$matches[3]",
+    "series/([^/]+)/(feed|rdf|rss|rss2|atom)/?$": "index.php?lang=en&pa_series=$matches[1]&feed=$matches[2]",
+    "(de)/series/([^/]+)/page/?([0-9]{1,})/?$": "index.php?lang=$matches[1]&pa_series=$matches[2]&paged=$matches[3]",
+    "series/([^/]+)/page/?([0-9]{1,})/?$": "index.php?lang=en&pa_series=$matches[1]&paged=$matches[2]",
+    "(de)/series/([^/]+)/?$": "index.php?lang=$matches[1]&pa_series=$matches[2]",
+    "series/([^/]+)/?$": "index.php?lang=en&pa_series=$matches[1]"
+  },
+  "taxonomies": {
+    "product_brand": {
+      "translated": false,
+      "rewrite": {
+        "with_front": false,
+        "hierarchical": true,
+        "ep_mask": 0,
+        "slug": "brand"
+      },
+      "public": true,
+      "query_var": "product_brand",
+      "object_type": [
+        "product"
+      ],
+      "terms": [
+        {
+          "id": 205,
+          "slug": "chint",
+          "count": 2
+        },
+        {
+          "id": 436,
+          "slug": "dehn",
+          "count": 0
+        },
+        {
+          "id": 194,
+          "slug": "ecoflow",
+          "count": 38
+        },
+        {
+          "id": 191,
+          "slug": "goodwe",
+          "count": 48
+        },
+        {
+          "id": 437,
+          "slug": "lapp",
+          "count": 0
+        },
+        {
+          "id": 206,
+          "slug": "mbs",
+          "count": 0
+        },
+        {
+          "id": 438,
+          "slug": "mersen",
+          "count": 0
+        },
+        {
+          "id": 193,
+          "slug": "pylontech",
+          "count": 2
+        },
+        {
+          "id": 192,
+          "slug": "saj",
+          "count": 68
+        },
+        {
+          "id": 440,
+          "slug": "staubli",
+          "count": 0
+        },
+        {
+          "id": 442,
+          "slug": "trina-solar",
+          "count": 0
+        }
+      ]
+    },
+    "pa_brand": {
+      "translated": false,
+      "rewrite": {
+        "with_front": false,
+        "hierarchical": true,
+        "ep_mask": 0,
+        "slug": "/brand"
+      },
+      "public": true,
+      "query_var": "pa_brand",
+      "object_type": [
+        "product"
+      ],
+      "terms": [
+        {
+          "id": 208,
+          "slug": "chint",
+          "count": 2
+        },
+        {
+          "id": 443,
+          "slug": "dehn",
+          "count": 0
+        },
+        {
+          "id": 45,
+          "slug": "ecoflow",
+          "count": 42
+        },
+        {
+          "id": 70,
+          "slug": "goodwe",
+          "count": 98
+        },
+        {
+          "id": 444,
+          "slug": "lapp",
+          "count": 0
+        },
+        {
+          "id": 209,
+          "slug": "mbs",
+          "count": 0
+        },
+        {
+          "id": 445,
+          "slug": "mersen",
+          "count": 0
+        },
+        {
+          "id": 78,
+          "slug": "pylontech",
+          "count": 2
+        },
+        {
+          "id": 94,
+          "slug": "saj",
+          "count": 68
+        },
+        {
+          "id": 446,
+          "slug": "staubli",
+          "count": 0
+        },
+        {
+          "id": 447,
+          "slug": "trina-solar",
+          "count": 0
+        }
+      ]
+    },
+    "pa_series": {
+      "translated": false,
+      "rewrite": {
+        "with_front": false,
+        "hierarchical": true,
+        "ep_mask": 0,
+        "slug": "/series"
+      },
+      "public": true,
+      "query_var": "pa_series",
+      "object_type": [
+        "product"
+      ],
+      "terms": [
+        {
+          "id": 507,
+          "slug": "chint",
+          "count": 2
+        },
+        {
+          "id": 519,
+          "slug": "ecoflow-battery-installation-accessories",
+          "count": 2
+        },
+        {
+          "id": 518,
+          "slug": "ecoflow-ocean-2-battery",
+          "count": 2
+        },
+        {
+          "id": 511,
+          "slug": "ecoflow-ocean2-hd-p3-s2",
+          "count": 14
+        },
+        {
+          "id": 516,
+          "slug": "ecoflow-ocean2-lfp-battery-s2",
+          "count": 4
+        },
+        {
+          "id": 515,
+          "slug": "ecoflow-ocean2-plus-hd-p1-s2",
+          "count": 20
+        },
+        {
+          "id": 502,
+          "slug": "goodwe-bat-c",
+          "count": 10
+        },
+        {
+          "id": 510,
+          "slug": "goodwe-ems",
+          "count": 4
+        },
+        {
+          "id": 523,
+          "slug": "goodwe-esa-3-10kw-eha-g20",
+          "count": 12
+        },
+        {
+          "id": 512,
+          "slug": "goodwe-esa-5-30kw-eta-g20",
+          "count": 22
+        },
+        {
+          "id": 520,
+          "slug": "goodwe-esa-bat-d-g20",
+          "count": 12
+        },
+        {
+          "id": 522,
+          "slug": "goodwe-esa-lcn",
+          "count": 2
+        },
+        {
+          "id": 501,
+          "slug": "goodwe-et-80-100k",
+          "count": 8
+        },
+        {
+          "id": 517,
+          "slug": "goodwe-etr",
+          "count": 12
+        },
+        {
+          "id": 513,
+          "slug": "goodwe-hca",
+          "count": 6
+        },
+        {
+          "id": 508,
+          "slug": "goodwe-meters",
+          "count": 4
+        },
+        {
+          "id": 509,
+          "slug": "goodwe-sts-125k",
+          "count": 2
+        },
+        {
+          "id": 524,
+          "slug": "goodwe-sts-30-60k",
+          "count": 4
+        },
+        {
+          "id": 505,
+          "slug": "pylontech-optim-utility",
+          "count": 2
+        },
+        {
+          "id": 496,
+          "slug": "saj-accessories",
+          "count": 2
+        },
+        {
+          "id": 500,
+          "slug": "saj-b2-bu3",
+          "count": 12
+        },
+        {
+          "id": 506,
+          "slug": "saj-b2-hv-5-25kwh",
+          "count": 4
+        },
+        {
+          "id": 503,
+          "slug": "saj-ci-line",
+          "count": 14
+        },
+        {
+          "id": 514,
+          "slug": "saj-data-collectors",
+          "count": 2
+        },
+        {
+          "id": 521,
+          "slug": "saj-emanager",
+          "count": 2
+        },
+        {
+          "id": 504,
+          "slug": "saj-emanager-c1-pro",
+          "count": 2
+        },
+        {
+          "id": 497,
+          "slug": "saj-h2",
+          "count": 12
+        },
+        {
+          "id": 498,
+          "slug": "saj-hs2",
+          "count": 8
+        },
+        {
+          "id": 499,
+          "slug": "saj-hs3",
+          "count": 10
+        }
+      ]
+    }
+  }
+}

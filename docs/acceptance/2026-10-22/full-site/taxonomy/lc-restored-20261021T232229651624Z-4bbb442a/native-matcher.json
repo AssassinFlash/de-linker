@@ -1,0 +1,289 @@
+{
+  "phase": "restored",
+  "local_only": true,
+  "run": "20261021T232229651624Z-4bbb442a",
+  "observer_removed": true,
+  "scope": "Actual native LC matcher IDs and rendered root/input; no visual or production acceptance. Observer passes the selected ID through unchanged.",
+  "rows": [
+    {
+      "observed_at": "2026-10-21T23:22:30.482061+00:00",
+      "requested": "http://127.0.0.1:9290/brand/dehn/",
+      "final": "http://127.0.0.1:9290/brand/dehn/",
+      "status": 200,
+      "body_sha256": "311c587d349fd643847b41e02cf666d6b0b99f88d1389b184a4e9094b838527a",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/brand/dehn/",
+        "language": "en",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 231,
+          "post_id_argument": 0,
+          "global_post_type": false,
+          "object": {
+            "id": 436,
+            "taxonomy": "product_brand",
+            "slug": "dehn"
+          },
+          "query_post_type": "product",
+          "main_query_count": 0,
+          "generic_lookup": 231
+        },
+        "rendered_id": 231
+      }
+    },
+    {
+      "observed_at": "2026-10-21T23:22:30.654997+00:00",
+      "requested": "http://127.0.0.1:9290/de/brand/dehn/",
+      "final": "http://127.0.0.1:9290/de/brand/dehn/",
+      "status": 200,
+      "body_sha256": "89caa63e30f2ea7e01f95bb1ac69f128ae2edf44ef39ee196b359502d68cc8aa",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/de/brand/dehn/",
+        "language": "de",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 6905,
+          "post_id_argument": 0,
+          "global_post_type": false,
+          "object": {
+            "id": 436,
+            "taxonomy": "product_brand",
+            "slug": "dehn"
+          },
+          "query_post_type": "product",
+          "main_query_count": 0,
+          "generic_lookup": 6905
+        },
+        "rendered_id": 6905
+      }
+    },
+    {
+      "observed_at": "2026-10-21T23:22:30.816843+00:00",
+      "requested": "http://127.0.0.1:9290/brand/chint/",
+      "final": "http://127.0.0.1:9290/brand/chint/",
+      "status": 200,
+      "body_sha256": "69daf4b9099b0eaaf5503e89fb258f72eb334bd2260e7dc6bbaac62cd44296a5",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/brand/chint/",
+        "language": "en",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 231,
+          "post_id_argument": 2281,
+          "global_post_type": "product",
+          "object": {
+            "id": 205,
+            "taxonomy": "product_brand",
+            "slug": "chint"
+          },
+          "query_post_type": "product",
+          "main_query_count": 1,
+          "generic_lookup": 231
+        },
+        "rendered_id": 231
+      }
+    },
+    {
+      "observed_at": "2026-10-21T23:22:30.978060+00:00",
+      "requested": "http://127.0.0.1:9290/de/brand/chint/",
+      "final": "http://127.0.0.1:9290/de/brand/chint/",
+      "status": 200,
+      "body_sha256": "4150291a47dceb440ac5952fbdd4c6e93747164db6c282a6dc572eb32336a7da",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/de/brand/chint/",
+        "language": "de",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 6905,
+          "post_id_argument": 6720,
+          "global_post_type": "product",
+          "object": {
+            "id": 205,
+            "taxonomy": "product_brand",
+            "slug": "chint"
+          },
+          "query_post_type": "product",
+          "main_query_count": 1,
+          "generic_lookup": 6905
+        },
+        "rendered_id": 6905
+      }
+    },
+    {
+      "observed_at": "2026-10-21T23:22:31.099728+00:00",
+      "requested": "http://127.0.0.1:9290/brand/chint/?q=linker-owned-no-match-20261022",
+      "final": "http://127.0.0.1:9290/brand/chint/?q=linker-owned-no-match-20261022",
+      "status": 200,
+      "body_sha256": "0960bd6bedb3b1cc8d941323bbc3c343246da422d94697c135ae8c0e847f183a",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/brand/chint/?q=linker-owned-no-match-20261022",
+        "language": "en",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 231,
+          "post_id_argument": 0,
+          "global_post_type": false,
+          "object": {
+            "id": 205,
+            "taxonomy": "product_brand",
+            "slug": "chint"
+          },
+          "query_post_type": "product",
+          "main_query_count": 0,
+          "generic_lookup": 231
+        },
+        "rendered_id": 231
+      }
+    },
+    {
+      "observed_at": "2026-10-21T23:22:31.240019+00:00",
+      "requested": "http://127.0.0.1:9290/de/brand/chint/?q=linker-owned-no-match-20261022",
+      "final": "http://127.0.0.1:9290/de/brand/chint/?q=linker-owned-no-match-20261022",
+      "status": 200,
+      "body_sha256": "c5d3afb714215d6ef7a285a5f42c611944d9f831e35261756440b6f83131f648",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/de/brand/chint/?q=linker-owned-no-match-20261022",
+        "language": "de",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 6905,
+          "post_id_argument": 0,
+          "global_post_type": false,
+          "object": {
+            "id": 205,
+            "taxonomy": "product_brand",
+            "slug": "chint"
+          },
+          "query_post_type": "product",
+          "main_query_count": 0,
+          "generic_lookup": 6905
+        },
+        "rendered_id": 6905
+      }
+    },
+    {
+      "observed_at": "2026-10-21T23:22:31.362016+00:00",
+      "requested": "http://127.0.0.1:9290/series/chint/?q=linker-owned-no-match-20261022",
+      "final": "http://127.0.0.1:9290/series/chint/?q=linker-owned-no-match-20261022",
+      "status": 200,
+      "body_sha256": "00f8c0fc37ae31e856096d044f82600782618980e4b6dcc3be4f1130169f582f",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/series/chint/?q=linker-owned-no-match-20261022",
+        "language": "en",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 231,
+          "post_id_argument": 0,
+          "global_post_type": false,
+          "object": {
+            "id": 507,
+            "taxonomy": "pa_series",
+            "slug": "chint"
+          },
+          "query_post_type": "product",
+          "main_query_count": 0,
+          "generic_lookup": 231
+        },
+        "rendered_id": 231
+      }
+    },
+    {
+      "observed_at": "2026-10-21T23:22:31.499850+00:00",
+      "requested": "http://127.0.0.1:9290/de/series/chint/?q=linker-owned-no-match-20261022",
+      "final": "http://127.0.0.1:9290/de/series/chint/?q=linker-owned-no-match-20261022",
+      "status": 200,
+      "body_sha256": "0564110099906589a763c224de2d4126d610b29cf4a8c91cd1858ae130509c28",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/de/series/chint/?q=linker-owned-no-match-20261022",
+        "language": "de",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 6905,
+          "post_id_argument": 0,
+          "global_post_type": false,
+          "object": {
+            "id": 507,
+            "taxonomy": "pa_series",
+            "slug": "chint"
+          },
+          "query_post_type": "product",
+          "main_query_count": 0,
+          "generic_lookup": 6905
+        },
+        "rendered_id": 6905
+      }
+    },
+    {
+      "observed_at": "2026-10-21T23:22:31.908072+00:00",
+      "requested": "http://127.0.0.1:9290/product-category/inverters/?q=linker-owned-no-match-20261022",
+      "final": "http://127.0.0.1:9290/product-category/inverters/?q=linker-owned-no-match-20261022",
+      "status": 200,
+      "body_sha256": "81a1f6907cf41a86a7bb1abb5f0e2306ecaa088eed7374ce34c2dc5f16bed66e",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/product-category/inverters/?q=linker-owned-no-match-20261022",
+        "language": "en",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 231,
+          "post_id_argument": 0,
+          "global_post_type": false,
+          "object": {
+            "id": 449,
+            "taxonomy": "product_cat",
+            "slug": "inverters"
+          },
+          "query_post_type": "",
+          "main_query_count": 0,
+          "generic_lookup": 231
+        },
+        "rendered_id": 231
+      }
+    },
+    {
+      "observed_at": "2026-10-21T23:22:32.407705+00:00",
+      "requested": "http://127.0.0.1:9290/de/produkt-kategorie/wechselrichter/?q=linker-owned-no-match-20261022",
+      "final": "http://127.0.0.1:9290/de/produkt-kategorie/wechselrichter/?q=linker-owned-no-match-20261022",
+      "status": 200,
+      "body_sha256": "c6800d5b96652e9e7b469f9d7fe2bbc1241380f2fba1218d06058601a080f07c",
+      "has_lc_products_root": true,
+      "has_search_input": true,
+      "native": {
+        "request": "/de/produkt-kategorie/wechselrichter/?q=linker-owned-no-match-20261022",
+        "language": "de",
+        "is_404": false,
+        "matcher": {
+          "selected_id": 6905,
+          "post_id_argument": 0,
+          "global_post_type": false,
+          "object": {
+            "id": 610,
+            "taxonomy": "product_cat",
+            "slug": "wechselrichter"
+          },
+          "query_post_type": "",
+          "main_query_count": 0,
+          "generic_lookup": 6905
+        },
+        "rendered_id": 6905
+      }
+    }
+  ]
+}

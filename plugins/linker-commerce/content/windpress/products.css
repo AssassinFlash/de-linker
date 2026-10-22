@@ -93,6 +93,31 @@ body #linker-products.sf-products .wbs {
 body #linker-products.sf-products .wbs small { color: var(--shop-muted); font-size: 10px; }
 body #linker-products.sf-products .wbs.on { color: var(--shop-teal); border-color: currentColor; }
 body #linker-products.sf-products .product-layout { grid-template-columns: 210px minmax(0, 1fr); gap: 32px; }
+
+/* Native empty loops retain the same LC archive and useful exit actions. */
+body #linker-products.sf-products .sf-empty-filters :is(.wbchip, .wbclear) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+body #linker-products.sf-products .sf-empty-state .tv-empty-state {
+  color: var(--shop-ink);
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 56ch;
+}
+body #linker-products.sf-products .sf-empty-action {
+  border: 1px solid var(--shop-teal);
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+body #linker-products.sf-products .sf-empty-action-primary { background: var(--shop-teal); color: #fff; }
+body #linker-products.sf-products .sf-empty-action:hover { background: var(--shop-ink); border-color: var(--shop-ink); color: #fff; }
+body #linker-products.sf-products .sf-empty-action:focus-visible { outline: 2px solid var(--shop-teal); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  body #linker-products.sf-products .sf-empty-action { transition: none; }
+}
 body #linker-products.sf-products .sidebar-filters { font-size: 12px; }
 body #linker-products.sf-products .rail-head { margin-bottom: 18px; }
 body #linker-products.sf-products .rail-head-label { font-size: 16px; font-weight: 600; }

@@ -49,6 +49,8 @@ final class PluginTest extends TestCase {
 	private const HOOKS = array(
 		array( 'filter', 'pll_get_post_types', TranslatedTypes::class, 'post_types', 10, 2 ),
 		array( 'filter', 'pll_get_taxonomies', TranslatedTypes::class, 'taxonomies', 10, 2 ),
+		array( 'action', 'woocommerce_product_query', TranslatedTypes::class, 'shared_archive_query', 10, 1 ),
+		array( 'filter', 'pll_hide_archive_translation_url', TranslatedTypes::class, 'hide_shared_archive', 10, 3 ),
 		array( 'filter', 'wp_unique_post_slug', PostSlugs::class, 'unique', 10, 6 ),
 		array( 'filter', 'wp_update_term_parent', TermSlugs::class, 'note', 10, 3 ),
 		array( 'filter', 'get_terms_args', TermSlugs::class, 'narrow', 20, 1 ),
@@ -144,6 +146,7 @@ final class PluginTest extends TestCase {
 
 		WP_Mock::expectActionAdded( 'init', array( $plugin, 'load_textdomain' ) );
 		WP_Mock::expectActionAdded( 'pll_init', array( $plugin, 'hook' ) );
+		WP_Mock::expectHookAdded( 'filter', 'pll_filtered_taxonomies', array( new AnyInstance( TranslatedTypes::class ), 'shared_archives' ), 10, 1 );
 
 		$plugin->register();
 

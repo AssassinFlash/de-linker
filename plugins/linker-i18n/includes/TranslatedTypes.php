@@ -27,6 +27,12 @@ final class TranslatedTypes {
 	public const PRESENT_TYPES = array( 'lc_partial', 'lc_dynamic_template' );
 
 	/**
+	 * Public proper-name archives: one term, language-filtered product results.
+	 * Polylang's pll_filtered_taxonomies owns their route and link generation.
+	 */
+	public const SHARED_ARCHIVES = array( 'product_brand', 'pa_brand', 'pa_series' );
+
+	/**
 	 * Taxonomies with German terms: post categories, product categories, and
 	 * the product attributes whose values are words. The live attributes on
 	 * 2026-10-09: phase (Single-phase, Three-phase), battery voltage (High
@@ -76,5 +82,60 @@ final class TranslatedTypes {
 			$taxonomies[ $taxonomy ] = $taxonomy;
 		}
 		return $taxonomies;
+	}
+
+	/**
+	 * Declares untranslated archives before Polylang caches its taxonomy list.
+	 * Native Polylang intersects these names with registered taxonomies later.
+	 *
+	 * @param array<int, string> $taxonomies Native and other plugins' shared archives.
+	 * @return array<int, string>
+	 */
+	public function shared_archives( array $taxonomies ): array {
+		return array_values( array_unique( array_merge( $taxonomies, self::SHARED_ARCHIVES ) ) );
+	}
+
+	/**
+	 * Declares the inferred product type before Polylang counts archive twins.
+	 * WooCommerce leaves taxonomy post_type empty; Polylang otherwise counts
+	 * blog posts and hides valid language links for these shared product terms.
+	 *
+	 * @param \WP_Query $query WooCommerce's native product query.
+	 */
+	public function shared_archive_query( \WP_Query $query ): void {
+		if ( ! $query->is_main_query() || ! $query->is_tax( self::SHARED_ARCHIVES ) ) {
+			return;
+		}
+		if ( in_array( $query->get( 'post_type' ), array( '', null ), true ) ) {
+			$query->set( 'post_type', 'product' );
+		}
+	}
+
+	/**
+	 * A valid shared root stays reachable even when the other language is empty.
+	 * Polylang still builds its URL; counts, products and term identity stay native.
+	 * Paged, feed, missing and unrelated archives keep the native hide decision.
+	 *
+	 * @param bool                 $hide     Native archive-count decision.
+	 * @param string               $language Native target language slug.
+	 * @param array<string, mixed> $args     Native count arguments for this archive.
+	 */
+	public function hide_shared_archive( bool $hide, string $language, array $args ): bool {
+		if ( ! $hide || ! is_main_query() || is_404() || is_paged() || is_feed() || is_search() ) {
+			return $hide;
+		}
+		$term = get_queried_object();
+		if ( ! $term instanceof \WP_Term || 0 >= $term->term_id || ! in_array( $term->taxonomy, self::SHARED_ARCHIVES, true ) || pll_is_translated_taxonomy( $term->taxonomy ) ) {
+			return $hide;
+		}
+		$taxonomy = get_taxonomy( $term->taxonomy );
+		if ( ! $taxonomy || ! $taxonomy->public || ! $taxonomy->publicly_queryable || ! in_array( 'product', $taxonomy->object_type, true ) || ! is_string( $taxonomy->query_var ) ) {
+			return $hide;
+		}
+		$argument_slug = $args[ $taxonomy->query_var ] ?? null;
+		if ( 'product' !== ( $args['post_type'] ?? null ) || $term->slug !== $argument_slug || ! in_array( $language, pll_languages_list( array( 'fields' => 'slug' ) ), true ) ) {
+			return $hide;
+		}
+		return false;
 	}
 }

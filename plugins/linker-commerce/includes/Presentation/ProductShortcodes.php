@@ -413,6 +413,9 @@ final class ProductShortcodes {
 		if ( have_posts() ) {
 			return '';
 		}
+		if ( array() === $this->filters->requested() ) {
+			return '<div class="wb-empty"><p class="tv-empty-state">' . esc_html__( 'No products are listed here.', 'linker-commerce' ) . '</p></div>';
+		}
 		return '<div class="wb-empty"><p class="tv-empty-state">' . esc_html__( 'No product matches these filters. Clear one to see more.', 'linker-commerce' ) . '</p></div>';
 	}
 

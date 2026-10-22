@@ -23,6 +23,12 @@ use WP_Post;
  */
 final class TemplatesTest extends TestCase {
 
+	/** Existing template tests opt into public product taxonomies explicitly. */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'get_object_taxonomies' )->andReturn( array() )->byDefault();
+	}
+
 	/**
 	 * Every Woo page the presentation layer owns has an exported HTML file and a LiveCanvas meta key.
 	 */

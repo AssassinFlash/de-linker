@@ -1,0 +1,82 @@
+{
+  "action": {
+    "background": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)",
+    "href": "http://127.0.0.1:9290/de/produkte/",
+    "outline": "rgb(255, 255, 255) none 3px",
+    "outlineOffset": "0px",
+    "rect": {
+      "bottom": 558.59375,
+      "height": 46,
+      "left": 315,
+      "right": 447.46875,
+      "top": 512.59375,
+      "width": 132.46875,
+      "x": 315,
+      "y": 512.59375
+    },
+    "text": "Alle Produkte"
+  },
+  "canonical": "http://127.0.0.1:9290/de/brand/dehn/",
+  "chips": [],
+  "contact": {
+    "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie:%20DEHN&search&source=http://127.0.0.1:9290/de/brand/dehn/",
+    "rect": {
+      "bottom": 706.359375,
+      "height": 44,
+      "left": 1175,
+      "right": 1349,
+      "top": 662.359375,
+      "width": 174,
+      "x": 1175,
+      "y": 662.359375
+    }
+  },
+  "count": null,
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792625222"
+  ],
+  "empty": "Hier sind keine Produkte aufgeführt.\n\t\t\t\t\t\n\t\t\t\t\t\tAlle Produkte",
+  "emptyRect": {
+    "bottom": 591.59375,
+    "height": 160.796875,
+    "left": 282,
+    "right": 1400,
+    "top": 430.796875,
+    "width": 1118,
+    "x": 282,
+    "y": 430.796875
+  },
+  "focus": {
+    "tag": "BODY",
+    "text": "    Ihre Cookie-Auswahl  Wir verwenden notwendige Cookies für den Betrieb dieser Website. Mit Ihrer "
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/brand/dehn/",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/dehn/",
+      "lang": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/dehn/",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/dehn/",
+      "lang": "de"
+    }
+  ],
+  "loadedFonts": "loaded",
+  "overflow": false,
+  "products": [],
+  "root": true,
+  "sort": false,
+  "url": "http://127.0.0.1:9290/de/brand/dehn/",
+  "width": 1440,
+  "y": 0
+}

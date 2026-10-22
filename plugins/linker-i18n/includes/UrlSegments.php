@@ -105,7 +105,14 @@ final class UrlSegments {
 		if ( ! $this->languages->ready() ) {
 			return;
 		}
-		$fingerprint = md5( (string) wp_json_encode( $this->german_rules() ) );
+		$fingerprint = md5(
+			(string) wp_json_encode(
+				array(
+					'german'          => $this->german_rules(),
+					'shared_archives' => TranslatedTypes::SHARED_ARCHIVES,
+				)
+			)
+		);
 		if ( get_option( self::FINGERPRINT_OPTION ) === $fingerprint ) {
 			return;
 		}

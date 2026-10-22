@@ -1,0 +1,78 @@
+{
+  "active": "    Ihre Cookie-Auswahl  Wir verwenden notwendige Cookies für den Betrieb dieser Website. Mit Ihrer Einwilligung analysieren wir die Nutzung mit Googl",
+  "bodyClass": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-6907 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas",
+  "canonical": [
+    "http://127.0.0.1:9290/de/kontakt/"
+  ],
+  "heading": "Gestalten wir gemeinsamden nächsten Schritt.",
+  "height": 1000,
+  "helper": [
+    {
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie%3A+Chint&search&source=http%3A%2F%2F127.0.0.1%3A9290%2Fde%2Fbrand%2Fchint%2F",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie%3A+Chint&search&source=http%3A%2F%2F127.0.0.1%3A9290%2Fde%2Fbrand%2Fchint%2F",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie%3A+Chint&search&source=http%3A%2F%2F127.0.0.1%3A9290%2Fde%2Fbrand%2Fchint%2F",
+      "text": "Deutsch"
+    }
+  ],
+  "hreflangs": [
+    {
+      "lang": "en",
+      "url": "http://127.0.0.1:9290/contact/"
+    },
+    {
+      "lang": "de",
+      "url": "http://127.0.0.1:9290/de/kontakt/"
+    },
+    {
+      "lang": "x-default",
+      "url": "http://127.0.0.1:9290/contact/"
+    }
+  ],
+  "lang": "de-DE",
+  "observedAt": "2026-10-21T22:35:32.783Z",
+  "overflow": false,
+  "paging": [],
+  "products": [],
+  "scrollY": 0,
+  "switches": [
+    {
+      "href": "http://127.0.0.1:9290/contact/",
+      "language": "en",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie%3A+Chint&search&source=http%3A%2F%2F127.0.0.1%3A9290%2Fde%2Fbrand%2Fchint%2F",
+      "language": "de",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/contact/",
+      "language": "en",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie%3A+Chint&search&source=http%3A%2F%2F127.0.0.1%3A9290%2Fde%2Fbrand%2Fchint%2F",
+      "language": "de",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/contact/",
+      "language": "en",
+      "text": "Englisch"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie%3A+Chint&search&source=http%3A%2F%2F127.0.0.1%3A9290%2Fde%2Fbrand%2Fchint%2F",
+      "language": "de",
+      "text": "Deutsch"
+    }
+  ],
+  "title": "Kontakt zu Linker | Anfragen zu Solar & Speicher",
+  "url": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie%3A+Chint&search=&source=http%3A%2F%2F127.0.0.1%3A9290%2Fde%2Fbrand%2Fchint%2F",
+  "width": 1440
+}
