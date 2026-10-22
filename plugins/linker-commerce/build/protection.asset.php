@@ -2,5 +2,5 @@
 	'dependencies' => array(
 		'wp-i18n'
 	),
-	'version' => 'ab511f8411e5f2e96909'
+	'version' => 'd03230f9bce95ed20cea'
 );

@@ -19,6 +19,9 @@ use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Contact\Submission;
 use Linker\Commerce\Protection\Business;
+use Linker\Commerce\Protection\Admission;
+use Linker\Commerce\Protection\Configuration;
+use Linker\Commerce\Protection\FormFields;
 use Linker\Commerce\Protection\Allowance;
 use Linker\Commerce\Protection\BusinessRecord;
 use Linker\Commerce\Protection\Identity;
@@ -103,6 +106,75 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			'linker_contact_nonce' => wp_create_nonce( ContactForm::NONCE_ACTION ),
 			'linker_draft_hash'    => WC()->cart->get_cart_hash(),
 		);
+	}
+
+	/** Private rollout choice is restored after every fixture. */
+	private function optional_business_verification(): void {
+		$old = getenv( 'LINKER_BUSINESS_VERIFICATION' );
+		putenv( 'LINKER_BUSINESS_VERIFICATION=optional' );
+		$this->later( static fn () => putenv( false === $old ? 'LINKER_BUSINESS_VERIFICATION' : 'LINKER_BUSINESS_VERIFICATION=' . $old ) );
+	}
+
+	/** Both actual business writers remain idempotent without any widget/key. */
+	public function test_optional_business_verification_preserves_native_records_and_retries_without_keys(): void {
+		$this->optional_business_verification();
+		$keys = array( 'LINKER_TURNSTILE_SITE_KEY', 'LINKER_TURNSTILE_SECRET_KEY' );
+		foreach ( $keys as $key ) {
+			$old = getenv( $key );
+			putenv( $key );
+			$this->later( static fn () => putenv( false === $old ? $key : $key . '=' . $old ) );
+		}
+		foreach ( array( 'contact', 'inquiry' ) as $action ) {
+			$post                 = $this->post( $action );
+			$post['linker_proof'] = '';
+			$send                 = 'contact' === $action ? new ContactHandler() : new Handler();
+			$first                = $send->process( $post );
+			$this->assertFalse( is_wp_error( $first ) );
+			$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+			$this->assertCount( 1, $orders );
+			$order = $orders[0];
+			$this->later( static fn () => $order->delete( true ) );
+			$this->assertSame( Statuses::RECEIVED, $order->get_status() );
+			$this->assertSame( 0, $order->get_customer_id() );
+			$this->assertSame( $post['linker_request_id'], $order->get_meta( BusinessRecord::REQUEST ) );
+			$this->assertFalse( is_wp_error( $send->process( $post ) ) );
+			$this->assertCount( 1, wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+			$this->assertStringNotContainsString( '<noscript>', FormFields::render( $action ) );
+		}
+	}
+
+	/** Optional challenge never changes the enforced shared submission budget. */
+	public function test_optional_business_verification_still_enforces_atomic_quota(): void {
+		$this->optional_business_verification();
+		$limit = static fn ( array $limits, string $action, Identity $identity ): array => array_merge( $limits, array( new Allowance( 'optional_fixture', $identity->browser, 1, HOUR_IN_SECONDS ) ) );
+		add_filter( 'linker_commerce_public_business_limits', $limit, 99, 3 );
+		$this->later( static fn () => remove_filter( 'linker_commerce_public_business_limits', $limit, 99 ) );
+		$first                 = $this->post( 'contact' );
+		$first['linker_proof'] = '';
+		$this->assertSame( 'sent', ( new ContactHandler() )->process( $first ) );
+		$order = wc_get_orders( array( 'billing_email' => $first['email'] ) )[0];
+		$this->later( static fn () => $order->delete( true ) );
+		$second                 = $this->post( 'contact' );
+		$second['linker_proof'] = '';
+		$this->assertSame( 'throttled', ( new ContactHandler() )->process( $second ) );
+		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $second['email'] ) ) );
+	}
+
+	/** Native input guards and all non-business proof requirements stay intact. */
+	public function test_optional_business_verification_preserves_native_guards_and_other_action_proofs(): void {
+		$this->optional_business_verification();
+		$post                 = $this->post( 'contact' );
+		$post['linker_proof'] = '';
+		foreach ( array( array( 'website' => 'https://spam.example.test' ), array( 'linker_contact_nonce' => 'forged' ), array( 'linker_started_nonce' => 'forged' ) ) as $bad ) {
+			$this->assertSame( 'invalid', ( new ContactHandler() )->process( array_replace( $post, $bad ) ) );
+		}
+		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+		foreach ( array( 'genie', 'genie_contact', 'genie_inquiry', 'draft_write', 'registration', 'password_reset', 'login', 'comment' ) as $action ) {
+			$this->assertTrue( Configuration::verification_required( $action ) );
+			$permit = ( new Admission( Configuration::current() ) )->reserve( $action, '', wp_generate_uuid4(), array(), array(), 10 );
+			$this->assertInstanceOf( WP_Error::class, $permit );
+			$this->assertSame( 'linker_admission_proof', $permit->get_error_code() );
+		}
 	}
 
 	/**

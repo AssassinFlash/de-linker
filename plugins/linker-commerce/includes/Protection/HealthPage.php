@@ -58,6 +58,7 @@ final class HealthPage {
 		 */
 		$consumers = apply_filters( 'linker_commerce_public_protection_consumers', array() );
 		echo '<div class="wrap"><h1>' . esc_html__( 'Public entry protection', 'linker-commerce' ) . '</h1><h2>' . esc_html__( 'Configuration', 'linker-commerce' ) . '</h2><dl><dt>' . esc_html__( 'Mode', 'linker-commerce' ) . '</dt><dd><strong>' . esc_html( $modes[ $health['mode'] ] ?? __( 'Invalid configuration', 'linker-commerce' ) ) . '</strong></dd><dt>' . esc_html__( 'Validation keys', 'linker-commerce' ) . '</dt><dd>' . esc_html( $health['configured'] ? __( 'Configured', 'linker-commerce' ) : __( 'Not configured', 'linker-commerce' ) ) . '</dd><dt>' . esc_html__( 'Environment', 'linker-commerce' ) . '</dt><dd>' . esc_html( $health['test_keys'] ? __( 'Test keys; not permitted in production', 'linker-commerce' ) : __( 'Live keys or not configured', 'linker-commerce' ) ) . '</dd></dl>';
+		echo '<p><code>contact/inquiry: ' . esc_html( Configuration::verification_required( 'contact' ) ? 'verification_and_quota' : 'quota_only' ) . '</code></p>';
 		echo '<p>' . esc_html__( 'The mode and keys do not prove that every entry is protected. Check the connected handlers and observed results below.', 'linker-commerce' ) . '</p><h2>' . esc_html__( 'Connected handlers', 'linker-commerce' ) . '</h2>';
 		if ( array() === $consumers ) {
 			echo '<p>' . esc_html__( 'No business or resource handlers have been connected to this shared service.', 'linker-commerce' ) . '</p>';

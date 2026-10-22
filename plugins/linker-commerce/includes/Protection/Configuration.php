@@ -41,6 +41,18 @@ final class Configuration {
 		return self::value( 'LINKER_PUBLIC_PROTECTION_MODE', 'off' );
 	}
 
+	/**
+	 * Owner availability priority, 2026-10-22: ordinary business messages can
+	 * retain strict quotas without depending on a third-party challenge. Only
+	 * the private opt-in can select this; client-supplied flags have no effect.
+	 *
+	 * @param string $action Trusted native operation.
+	 */
+	public static function verification_required( string $action ): bool {
+		return ! in_array( $action, array( 'contact', 'inquiry' ), true )
+			|| 'optional' !== self::value( 'LINKER_BUSINESS_VERIFICATION', 'required' );
+	}
+
 	/** Do not treat an invalid mode or incomplete key pair as usable protection. */
 	public function ready(): bool {
 		return in_array( $this->mode, array( 'observe', 'enforce' ), true ) && $this->configured();
