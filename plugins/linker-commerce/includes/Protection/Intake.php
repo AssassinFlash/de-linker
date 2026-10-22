@@ -67,7 +67,7 @@ final class Intake {
 		if ( ! wp_is_uuid( $id, 4 ) || ! isset( IntakeStore::CAPACITY[ $lane ] ) ) {
 			return new WP_Error( 'linker_admission_input', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 		}
-		$json = wp_json_encode( $payload );
+		$json = wp_json_encode( $payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		if ( ! is_string( $json ) || strlen( $json ) > self::MAX_BYTES || ( 'inquiry' === $action && WC()->cart->get_cart_contents_count() > 0 && count( WC()->cart->get_cart() ) > self::MAX_LINES ) ) {
 			return new WP_Error( 'linker_intake_size', __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) );
 		}
