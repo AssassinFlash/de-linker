@@ -238,7 +238,7 @@ final class SelectionContext {
 	 */
 	private static function same_origin( string $url ): bool {
 		$parts = wp_parse_url( $url );
-		$home  = wp_parse_url( home_url( '/' ) );
+		$home  = wp_parse_url( home_url() );
 		return is_array( $parts ) && is_array( $home ) && ! isset( $parts['user'] ) && ! isset( $parts['pass'] )
 			&& in_array( $parts['scheme'] ?? '', array( 'http', 'https' ), true )
 			&& strtolower( $parts['scheme'] ) === strtolower( (string) ( $home['scheme'] ?? '' ) )
