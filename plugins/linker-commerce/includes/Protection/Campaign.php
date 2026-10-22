@@ -16,6 +16,27 @@ final class Campaign {
 	public const DISABLED = 'linker_confirmed_campaign_disabled';
 
 	/**
+	 * Match editable recovery content using the native submission's normalization.
+	 *
+	 * @param array<string,mixed> $post Unslashed form values; credentials are excluded.
+	 * @param bool                $selection Contact's optional normalized selection.
+	 */
+	public static function recovery_matches( array $post, bool $selection = true ): bool {
+		$fields = array();
+		foreach ( array( 'name', 'email', 'company' ) as $key ) {
+			$value          = $post[ $key ] ?? '';
+			$fields[ $key ] = mb_substr( trim( sanitize_text_field( is_scalar( $value ) ? (string) $value : '' ) ), 0, \Linker\Commerce\Contact\Submission::MAX_TEXT );
+		}
+		$message           = $post['message'] ?? '';
+		$fields['message'] = mb_substr( trim( sanitize_textarea_field( is_scalar( $message ) ? (string) $message : '' ) ), 0, \Linker\Commerce\Contact\Submission::MAX_MESSAGE );
+		if ( $selection ) {
+			$raw                 = $post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] ?? '';
+			$fields['selection'] = \Linker\Commerce\Contact\SelectionContext::normalize( is_string( $raw ) ? json_decode( $raw, true ) : null );
+		}
+		return self::submitted( $fields );
+	}
+
+	/**
 	 * Inspect the validated semantic fields, never transport credentials or joined text.
 	 *
 	 * @param array<string,mixed> $payload Native contact/inquiry semantic input.

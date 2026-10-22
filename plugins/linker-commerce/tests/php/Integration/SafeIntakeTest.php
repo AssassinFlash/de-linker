@@ -232,21 +232,66 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertFalse( get_option( IntakeStore::OPTION ) );
 	}
 
-	/** Confirmed activity cannot use the failed-input recovery storage either. */
+	/** Canonical names and normalized contact selection cannot enter recovery. */
 	public function test_campaign_is_not_stored_in_failed_contact_recovery(): void {
 		$post = $this->post();
 		$key  = 'linker_form_recovery_contact';
 		$old  = WC()->session->get( $key );
 		$this->later( static fn () => WC()->session->set( $key, $old ) );
-		$post['name'] = 'Вам перевод 100 руб. забрать тут https://fredmer.buzz/path';
+		$activity = 'Вам перевод 100 руб. забрать тут https://fredmer.buzz/path';
+		foreach ( array( $activity, str_replace( 'Вам перевод', "Вам\nперевод", $activity ), $activity . str_repeat( 'x', 200 ) . ' trailing' ) as $name ) {
+			$post['name'] = $name;
+			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+			self::assertSame( $old, WC()->session->get( $key ) );
+		}
+		$post['name'] = 'Installer recovery fixture';
+		$product      = $this->product( '10' );
+		$post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] = (string) wp_json_encode( array( 'source' => get_permalink( $product->get_id() ), 'selection' => array( 'q' => $activity ) ) );
 		\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
 		self::assertSame( $old, WC()->session->get( $key ) );
-		$post['name'] = 'Installer recovery fixture';
+		unset( $post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] );
 		\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
 		$saved = WC()->session->get( $key );
 		self::assertIsArray( $saved );
 		self::assertSame( $post['name'], $saved['fields']['name'] );
 		self::assertSame( $post['message'], $saved['fields']['message'] );
+	}
+
+	/** Actual native transport also excludes refused activity from inquiry recovery. */
+	public function test_refused_inquiry_transport_excludes_activity_and_keeps_normal_retry_input(): void {
+		putenv( 'LINKER_BUSINESS_VERIFICATION=required' );
+		$old_post = $_POST;
+		$old      = WC()->session->get( 'linker_inquiry_fields' );
+		$this->later( static fn () => WC()->session->set( 'linker_inquiry_fields', $old ) );
+		$redirect = static function (): string {
+			throw new \RuntimeException( 'fixture_redirect_reached' );
+		};
+		add_filter( 'wp_redirect', $redirect );
+		try {
+			foreach ( array( "Вам\nперевод 100 руб. забрать тут https://fredmer.buzz/path", 'Installer transport fixture' ) as $name ) {
+				$post         = $this->post();
+				$post['name'] = $name;
+				$_POST        = wp_slash( $post );
+				try {
+					( new Handler() )->handle();
+					self::fail( 'Native redirect was not reached.' );
+				} catch ( \RuntimeException $error ) {
+					self::assertSame( 'fixture_redirect_reached', $error->getMessage() );
+				}
+				$saved = WC()->session->get( 'linker_inquiry_fields' );
+				if ( 'Installer transport fixture' === $name ) {
+					self::assertIsArray( $saved );
+					self::assertSame( $post['name'], $saved['name'] );
+					self::assertSame( $post['message'], $saved['message'] );
+				} else {
+					self::assertNull( $saved );
+				}
+				self::assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+			}
+		} finally {
+			remove_filter( 'wp_redirect', $redirect );
+			$_POST = $old_post;
+		}
 	}
 
 	/** Missing proof saves complete data, no snapshot, mail, model or receipt budget. */
