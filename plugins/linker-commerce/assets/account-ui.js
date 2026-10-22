@@ -210,6 +210,8 @@
 				oneof.hidden = one;
 			}
 			if ( website && vat ) {
+				website.removeAttribute( 'aria-invalid' );
+				vat.removeAttribute( 'aria-invalid' );
 				if ( ! one ) {
 					website.setAttribute( 'aria-invalid', 'true' );
 					vat.setAttribute( 'aria-invalid', 'true' );
@@ -259,6 +261,16 @@
 				const target = panes[ step ].querySelector( 'input:not([type="hidden"]), select, textarea' );
 				if ( target ) {
 					target.focus();
+					const heading = register.closest( '.linker-auth' )?.querySelector( '#linker-auth-register-heading' );
+					if ( heading && typeof heading.scrollIntoView === 'function' ) {
+						const margin = Number.parseFloat( window.getComputedStyle( heading ).scrollMarginTop ) || 0;
+						const height = window.visualViewport?.height || window.innerHeight;
+						// Preserve native field focus in a short/keyboard viewport;
+						// otherwise the existing heading margin also reveals the step.
+						if ( target.getBoundingClientRect().bottom - heading.getBoundingClientRect().top + margin <= height ) {
+							heading.scrollIntoView( { block: 'start' } );
+						}
+					}
 				}
 			}
 		};
@@ -291,6 +303,13 @@
 			}
 			if ( event.target === website || event.target === vat ) {
 				const one = ( website && '' !== website.value.trim() ) || ( vat && '' !== vat.value.trim() );
+				if ( one ) {
+					for ( const alternative of [ website, vat ] ) {
+						if ( alternative && '' === alternative.value.trim() ) {
+							alternative.removeAttribute( 'aria-invalid' );
+						}
+					}
+				}
 				if ( oneof ) {
 					oneof.hidden = one;
 				}

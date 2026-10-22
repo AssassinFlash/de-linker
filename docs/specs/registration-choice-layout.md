@@ -9,8 +9,8 @@ text even though the label correctly requests centered alignment.
 
 Remove generated content only from `.linker-auth .form-row label.radio::before`.
 Keep Woo's labels, IDs, native inputs, full-control transparent input overlay,
-order, required semantics and checked/focus rules. No PHP or JS change is
-needed. Actual pointer tests also find no visual change on any unselected
+order, required semantics and checked/focus rules. This appearance stays in
+WindPress. Actual pointer tests also find no visual change on any unselected
 choice hover. Use the existing account hover fill and teal border to expose
 that affordance; the existing checked rule keeps its stronger selected fill.
 
@@ -33,6 +33,22 @@ form rows use automatic width so they stretch across their assigned track.
 Keep the existing one-column phone grid, two-column desktop name placement,
 gap, labels and native fields. This intentional field-width correction
 requires a new before-source backup and six second-step layout checks.
+
+The real empty-error → valid website → second step → Back flow also leaves
+the empty optional VAT field red. The existing client script clears only
+the edited field's error. On editing the proof pair, clear the empty
+alternative's stale marker; on a fresh validation, reset the pair before
+applying its current errors. Keep an untouched nonempty alternative's marker
+while typing. Website syntax, required values and authoritative server
+validation remain unchanged.
+
+Desktop Back also places the heading and step note above the sticky header.
+Keep native first-field focus. When the existing heading, its native scroll
+margin and focused field fit the current visual viewport, reveal that heading
+through native scrollIntoView. In a shorter viewport, retain native focus
+scrolling so the field takes priority. Initialization does not scroll. This
+uses the existing heading and shared header spacing; no new words, markup,
+network request, listener, CSS size or business mechanism is introduced.
 
 Work from the deployed 1dce2406 source and an owned, fully loaded snapshot
 instance. Back up its full database and exact source before changes. Preserve

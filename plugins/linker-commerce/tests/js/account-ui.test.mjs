@@ -269,6 +269,66 @@ test('a malformed website keeps the company step open; a VAT ID alone satisfies 
  assert.equal(vatOnly.form.dataset.activeStep,'2');
 });
 
+for(const [name,value] of [['linker_company_website','example.test'],['billing_vat_id','DE123456789']]){
+ test(`correcting ${name} clears the empty alternative's stale error`,()=>{
+  const {win,form,field}=registerForm();
+  completeCompany(form,{site:'',vat:''});
+  form.querySelector('[data-next]').click();
+  assert.equal(field('linker_company_website').getAttribute('aria-invalid'),'true');
+  assert.equal(field('billing_vat_id').getAttribute('aria-invalid'),'true');
+  field(name).value=value;
+  field(name).dispatchEvent(new win.Event('input',{bubbles:true}));
+  for(const other of ['linker_company_website','billing_vat_id']) assert.equal(field(other).hasAttribute('aria-invalid'),false);
+  form.querySelector('[data-next]').click();
+  assert.equal(form.dataset.activeStep,'2');
+  form.querySelector('[data-back]').click();
+  for(const other of ['linker_company_website','billing_vat_id']) assert.equal(field(other).hasAttribute('aria-invalid'),false);
+  assert.equal(field(name).value,value);
+ });
+}
+
+test('revalidation clears proof errors even when corrected values have no input event',()=>{
+ const {form,field}=registerForm();
+ completeCompany(form,{site:'',vat:''});
+ form.querySelector('[data-next]').click();
+ completeCompany(form);
+ form.querySelector('[data-next]').click();
+ assert.equal(form.dataset.activeStep,'2');
+ assert.equal(field('linker_company_website').hasAttribute('aria-invalid'),false);
+ assert.equal(field('billing_vat_id').hasAttribute('aria-invalid'),false);
+});
+
+test('editing the website does not clear an untouched nonempty VAT error',()=>{
+ const {win,field}=registerForm();
+ field('billing_vat_id').value='existing invalid value';
+ field('billing_vat_id').setAttribute('aria-invalid','true');
+ field('linker_company_website').value='example.test';
+ field('linker_company_website').dispatchEvent(new win.Event('input',{bubbles:true}));
+ assert.equal(field('billing_vat_id').getAttribute('aria-invalid'),'true');
+});
+
+for(const short of [false,true]){
+ test(`step changes retain native focus and ${short?'prioritize a short viewport':'show the step heading when it fits'}`,()=>{
+  const dom=new JSDOM(registerMarkup().replace('<div class="linker-auth">','<div class="linker-auth"><h1 id="linker-auth-register-heading">Create account</h1>'),{runScripts:'outside-only'});
+  const {window:win}=dom,form=win.document.querySelector('form'),heading=win.document.querySelector('h1');
+  const calls=[];
+  heading.scrollIntoView=(options)=>calls.push(options);
+  heading.getBoundingClientRect=()=>({top:0,bottom:30});
+  Object.defineProperty(win,'visualViewport',{value:{height:short?200:800},configurable:true});
+  for(const name of ['billing_first_name','billing_company']) form.querySelector(`[name="${name}"]`).getBoundingClientRect=()=>({top:270,bottom:320});
+  win.eval(script);
+  assert.equal(calls.length,0,'initialization must not scroll');
+  completeCompany(form);
+  form.querySelector('[data-next]').click();
+  assert.equal(win.document.activeElement,form.querySelector('[name="billing_first_name"]'));
+  assert.equal(calls.length,short?0:1);
+  form.querySelector('[data-back]').click();
+  assert.equal(win.document.activeElement,form.querySelector('[name="billing_company"]'));
+  assert.equal(calls.length,short?0:2);
+  for(const options of calls) assert.equal(options.block,'start');
+ });
+}
+
 test('a required row whose control lost aria-required is still checked',()=>{
  const dom=new JSDOM(`<div class="linker-auth"><form method="post" data-linker-register data-active-step="1">
   <div data-progress hidden><span data-progress-segment="1"></span><span data-progress-segment="2"></span></div>
