@@ -1,0 +1,72 @@
+{
+  "taken_at": "2026-10-22T03:35:42.261462+00:00",
+  "processes": {
+    "linker-genie": {
+      "pid": 54499,
+      "modes_paths": {
+        "LINKER_PROVIDER_BUDGET_MODE": "enforce",
+        "LINKER_PROVIDER_BUDGET_PATH": "/opt/linker-genie/state/private/provider.sqlite",
+        "LINKER_GENIE_WORK_MODE": "enforce",
+        "LINKER_GENIE_WORK_PATH": "/opt/linker-genie/state/private/work.sqlite"
+      },
+      "uid": 0
+    },
+    "linker-genie-judge": {
+      "pid": 54500,
+      "modes_paths": {
+        "LINKER_PROVIDER_BUDGET_MODE": "enforce",
+        "LINKER_PROVIDER_BUDGET_PATH": "/opt/linker-genie/state/private/provider.sqlite",
+        "LINKER_GENIE_WORK_MODE": "enforce",
+        "LINKER_GENIE_WORK_PATH": "/opt/linker-genie/state/private/work.sqlite"
+      },
+      "uid": 0
+    },
+    "linker-engine": {
+      "pid": 54498,
+      "modes_paths": {
+        "LINKER_ENGINE_GATE_MODE": "enforce",
+        "LINKER_ENGINE_CACHE": "/root/.cache/linker-engine"
+      },
+      "uid": 0
+    }
+  },
+  "stores": {
+    "LINKER_PROVIDER_BUDGET_PATH": {
+      "path": "/opt/linker-genie/state/private/provider.sqlite",
+      "outside_release": true,
+      "nearest_existing_parent": "/opt/linker-genie/state/private",
+      "parent_mode": "0o700",
+      "writable": true,
+      "file_exists": true,
+      "file_mode": "0o600",
+      "symlink": false,
+      "integrity": "ok",
+      "counts": [
+        {
+          "provider": "deepseek",
+          "attempts": 2
+        },
+        {
+          "provider": "jev",
+          "attempts": 3
+        }
+      ]
+    },
+    "LINKER_GENIE_WORK_PATH": {
+      "path": "/opt/linker-genie/state/private/work.sqlite",
+      "outside_release": true,
+      "nearest_existing_parent": "/opt/linker-genie/state/private",
+      "parent_mode": "0o700",
+      "writable": true,
+      "file_exists": false
+    },
+    "engine_slots": {
+      "path": "/root/.cache/linker-engine/private/slots.sqlite",
+      "outside_release": true,
+      "nearest_existing_parent": "/root/.cache/linker-engine",
+      "parent_mode": "0o755",
+      "writable": true,
+      "file_exists": false
+    }
+  }
+}

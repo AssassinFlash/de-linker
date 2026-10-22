@@ -1,0 +1,1703 @@
+{
+  "deploy_exit": 0,
+  "samples": [
+    {
+      "endpoint": "home",
+      "phase": "before",
+      "started_at": "2026-10-21T23:58:33.199005+00:00",
+      "elapsed_seconds": 4.69153749999532,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "before",
+      "started_at": "2026-10-21T23:58:37.890583+00:00",
+      "elapsed_seconds": 4.179661084002873,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "before",
+      "started_at": "2026-10-21T23:58:42.070257+00:00",
+      "elapsed_seconds": 4.203141000005417,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "product",
+      "phase": "before",
+      "started_at": "2026-10-21T23:58:46.273414+00:00",
+      "elapsed_seconds": 4.4105983749977895,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "before",
+      "started_at": "2026-10-21T23:58:50.684024+00:00",
+      "elapsed_seconds": 3.4871462080045603,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "before",
+      "started_at": "2026-10-21T23:58:54.171179+00:00",
+      "elapsed_seconds": 3.0470962500039604,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "before",
+      "started_at": "2026-10-21T23:58:57.218289+00:00",
+      "elapsed_seconds": 3.1591573330006213,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:15.330091+00:00",
+      "elapsed_seconds": 4.468485332996352,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:20.808667+00:00",
+      "elapsed_seconds": 4.40314912499889,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:26.219141+00:00",
+      "elapsed_seconds": 4.178341250000813,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:31.400015+00:00",
+      "elapsed_seconds": 4.542707540997071,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:36.949740+00:00",
+      "elapsed_seconds": 2.978632791993732,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:40.938407+00:00",
+      "elapsed_seconds": 2.637263874996279,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:44.584155+00:00",
+      "elapsed_seconds": 3.098900290999154,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:48.692495+00:00",
+      "elapsed_seconds": 4.194939459004672,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:53.889201+00:00",
+      "elapsed_seconds": 4.134865083004115,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-21T23:59:59.034163+00:00",
+      "elapsed_seconds": 4.663640750004561,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:04.707467+00:00",
+      "elapsed_seconds": 4.476622583999415,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:10.188571+00:00",
+      "elapsed_seconds": 3.3234037090005586,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:14.522079+00:00",
+      "elapsed_seconds": 3.2595676249984535,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:18.788414+00:00",
+      "elapsed_seconds": 3.061142332997406,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:22.857612+00:00",
+      "elapsed_seconds": 4.351780583005166,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:28.215491+00:00",
+      "elapsed_seconds": 4.283277167000051,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:33.501973+00:00",
+      "elapsed_seconds": 4.48778350000066,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:38.998714+00:00",
+      "elapsed_seconds": 4.654945833004604,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:44.663725+00:00",
+      "elapsed_seconds": 3.318742250005016,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:48.990261+00:00",
+      "elapsed_seconds": 3.026424458999827,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:53.020288+00:00",
+      "elapsed_seconds": 3.498063999999431,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:00:57.518713+00:00",
+      "elapsed_seconds": 4.433802166997339,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:01:02.959700+00:00",
+      "elapsed_seconds": 4.120036415995855,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:01:08.086183+00:00",
+      "elapsed_seconds": 4.221991000005801,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:01:13.317169+00:00",
+      "elapsed_seconds": 4.430886750000354,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:01:18.757043+00:00",
+      "elapsed_seconds": 6.591049874994496,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:01:26.355610+00:00",
+      "elapsed_seconds": 6.701456667004095,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:01:34.068067+00:00",
+      "elapsed_seconds": 3.328504500001145,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:01:38.398377+00:00",
+      "elapsed_seconds": 4.923273084001266,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:01:44.331669+00:00",
+      "elapsed_seconds": 4.195629375004501,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:01:49.536875+00:00",
+      "elapsed_seconds": 30.003336958005093,
+      "status": null,
+      "valid": false,
+      "error": "CutoverError: GET https://de-linker.com/proforma-request/?cbq=1792627309536901000: <urlopen error timed out>",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:02:20.546597+00:00",
+      "elapsed_seconds": 8.182018332998268,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:02:29.731382+00:00",
+      "elapsed_seconds": 6.834964166999271,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:02:37.575247+00:00",
+      "elapsed_seconds": 3.4748436250010855,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:02:42.055131+00:00",
+      "elapsed_seconds": 6.443397958006244,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:02:49.508626+00:00",
+      "elapsed_seconds": 4.481506000003719,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:02:54.992654+00:00",
+      "elapsed_seconds": 4.3902526250021765,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:00.392000+00:00",
+      "elapsed_seconds": 4.316233999998076,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:05.713707+00:00",
+      "elapsed_seconds": 4.713833874993725,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:11.437501+00:00",
+      "elapsed_seconds": 3.6300622499984456,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:16.077652+00:00",
+      "elapsed_seconds": 7.018151749995013,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:24.105848+00:00",
+      "elapsed_seconds": 3.093341583000438,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:28.202406+00:00",
+      "elapsed_seconds": 4.156159916994511,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:33.363416+00:00",
+      "elapsed_seconds": 4.288580624997849,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:38.656912+00:00",
+      "elapsed_seconds": 4.334579207999923,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:44.000106+00:00",
+      "elapsed_seconds": 4.3077344999983325,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:49.315657+00:00",
+      "elapsed_seconds": 3.2890960840013577,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:53.614842+00:00",
+      "elapsed_seconds": 3.5508001249982044,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:03:58.175764+00:00",
+      "elapsed_seconds": 3.2265643749997253,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:02.404691+00:00",
+      "elapsed_seconds": 4.580071290998603,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:07.991874+00:00",
+      "elapsed_seconds": 4.30237899999338,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:13.304158+00:00",
+      "elapsed_seconds": 4.064123667005333,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:18.378360+00:00",
+      "elapsed_seconds": 4.650962708001316,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:24.036002+00:00",
+      "elapsed_seconds": 5.117876165997586,
+      "status": null,
+      "valid": false,
+      "error": "CutoverError: GET https://de-linker.com/wp-json/linker/v1/catalog-search?q=SAJ&limit=2&lang=en&cbq=1792627464036029000: <urlopen error Tunnel connection failed: 503 Service Unavailable>",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:30.162701+00:00",
+      "elapsed_seconds": 7.095289500000945,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:38.266701+00:00",
+      "elapsed_seconds": 2.977907333006442,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:42.254678+00:00",
+      "elapsed_seconds": 4.155603458995756,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:47.416711+00:00",
+      "elapsed_seconds": 4.513286207999045,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:52.940154+00:00",
+      "elapsed_seconds": 4.442746334003459,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:04:58.390117+00:00",
+      "elapsed_seconds": 4.397740291999071,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:03.795530+00:00",
+      "elapsed_seconds": 3.309020332999353,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:08.107303+00:00",
+      "elapsed_seconds": 3.24974987499445,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:12.362986+00:00",
+      "elapsed_seconds": 3.283171124996443,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:16.653209+00:00",
+      "elapsed_seconds": 4.145404625000083,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:21.807344+00:00",
+      "elapsed_seconds": 4.375737000002118,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:27.191378+00:00",
+      "elapsed_seconds": 4.0117537080004695,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:32.211993+00:00",
+      "elapsed_seconds": 4.301514749997295,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:37.515453+00:00",
+      "elapsed_seconds": 3.1847286249976605,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:41.703597+00:00",
+      "elapsed_seconds": 6.628408416996535,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:49.342170+00:00",
+      "elapsed_seconds": 3.0886140000002342,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:53.436747+00:00",
+      "elapsed_seconds": 4.456291415997839,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "steady"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:05:57.893097+00:00",
+      "elapsed_seconds": 4.106890667004336,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:02.110096+00:00",
+      "elapsed_seconds": 5.329628749997937,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:07.544935+00:00",
+      "elapsed_seconds": 4.319344249997812,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:11.974261+00:00",
+      "elapsed_seconds": 3.3836160840000957,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:15.466333+00:00",
+      "elapsed_seconds": 3.4805683749946184,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:19.053598+00:00",
+      "elapsed_seconds": 3.469293125002878,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:22.632544+00:00",
+      "elapsed_seconds": 4.43714058399928,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:27.179760+00:00",
+      "elapsed_seconds": 4.309039792002295,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:31.598075+00:00",
+      "elapsed_seconds": 4.441979666997213,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:36.144515+00:00",
+      "elapsed_seconds": 4.82644145800441,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:41.074313+00:00",
+      "elapsed_seconds": 3.9016971250021015,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:45.085815+00:00",
+      "elapsed_seconds": 3.4572609579990967,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:48.653091+00:00",
+      "elapsed_seconds": 3.4616350419964874,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:52.224892+00:00",
+      "elapsed_seconds": 4.661318165999546,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:06:56.994688+00:00",
+      "elapsed_seconds": 4.634926624996297,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:01.739810+00:00",
+      "elapsed_seconds": 4.648724875005428,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:06.494564+00:00",
+      "elapsed_seconds": 4.6395455000019865,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:11.244221+00:00",
+      "elapsed_seconds": 3.5265559170002234,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:14.876609+00:00",
+      "elapsed_seconds": 3.065929208001762,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:18.048494+00:00",
+      "elapsed_seconds": 3.872577458998421,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:22.028504+00:00",
+      "elapsed_seconds": 7.488896417002252,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:29.620363+00:00",
+      "elapsed_seconds": 7.764735124997969,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:37.485553+00:00",
+      "elapsed_seconds": 4.3068135420035105,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:41.899823+00:00",
+      "elapsed_seconds": 4.654042916998151,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:46.659619+00:00",
+      "elapsed_seconds": 3.406703666994872,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:50.175687+00:00",
+      "elapsed_seconds": 3.2911974580056267,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:53.576936+00:00",
+      "elapsed_seconds": 2.9380103750008857,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:07:56.623432+00:00",
+      "elapsed_seconds": 5.022262958998908,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:01.747996+00:00",
+      "elapsed_seconds": 7.664542042002722,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:09.521440+00:00",
+      "elapsed_seconds": 5.04966133400012,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:14.681190+00:00",
+      "elapsed_seconds": 4.516590041996096,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:19.307859+00:00",
+      "elapsed_seconds": 3.343006499999319,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:22.756800+00:00",
+      "elapsed_seconds": 3.313621959001466,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:26.174139+00:00",
+      "elapsed_seconds": 3.404493000001821,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:29.682825+00:00",
+      "elapsed_seconds": 4.298365708003985,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:34.083140+00:00",
+      "elapsed_seconds": 4.323284165999212,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:38.516490+00:00",
+      "elapsed_seconds": 7.475641708006151,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:46.099584+00:00",
+      "elapsed_seconds": 4.2556644170035725,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:50.462016+00:00",
+      "elapsed_seconds": 6.937355583999306,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:08:57.501640+00:00",
+      "elapsed_seconds": 3.4104842089946033,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:01.022262+00:00",
+      "elapsed_seconds": 2.944347500000731,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:04.072152+00:00",
+      "elapsed_seconds": 3.8249095419960213,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:08.004495+00:00",
+      "elapsed_seconds": 4.5413399590033805,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:12.651137+00:00",
+      "elapsed_seconds": 8.685698000001139,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:21.439761+00:00",
+      "elapsed_seconds": 5.448287332998007,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:26.998363+00:00",
+      "elapsed_seconds": 7.267279333995248,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:34.370286+00:00",
+      "elapsed_seconds": 6.441022957995301,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:40.917656+00:00",
+      "elapsed_seconds": 3.30929733299854,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:44.333052+00:00",
+      "elapsed_seconds": 4.362076500001422,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:48.799958+00:00",
+      "elapsed_seconds": 7.607653250001022,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:09:56.516511+00:00",
+      "elapsed_seconds": 7.878778790996876,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:04.496615+00:00",
+      "elapsed_seconds": 4.685417041997425,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:09.283775+00:00",
+      "elapsed_seconds": 6.798000541995862,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:16.183777+00:00",
+      "elapsed_seconds": 6.8400246250021155,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:23.129224+00:00",
+      "elapsed_seconds": 3.2576675829986925,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:26.496206+00:00",
+      "elapsed_seconds": 4.420160417001171,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:31.026333+00:00",
+      "elapsed_seconds": 8.021698541997466,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:39.150111+00:00",
+      "elapsed_seconds": 4.557637333004095,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:43.817930+00:00",
+      "elapsed_seconds": 7.67761341699952,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:51.603466+00:00",
+      "elapsed_seconds": 6.949092082999414,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:10:58.653537+00:00",
+      "elapsed_seconds": 3.1867054169997573,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:11:01.950281+00:00",
+      "elapsed_seconds": 2.946438541999669,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:11:05.003782+00:00",
+      "elapsed_seconds": 8.08066120800504,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:11:13.188474+00:00",
+      "elapsed_seconds": 7.296983124993858,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:11:20.589420+00:00",
+      "elapsed_seconds": 7.544122207997134,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:11:28.241638+00:00",
+      "elapsed_seconds": 4.403702875002637,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:11:32.752789+00:00",
+      "elapsed_seconds": 6.98801850000018,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:11:39.844553+00:00",
+      "elapsed_seconds": 6.526517416998104,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:11:46.472378+00:00",
+      "elapsed_seconds": 6.468292292003753,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "during",
+      "started_at": "2026-10-22T00:11:53.049209+00:00",
+      "elapsed_seconds": 8.394885167006578,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "during",
+      "started_at": "2026-10-22T00:12:01.551946+00:00",
+      "elapsed_seconds": 4.148977000004379,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "during",
+      "started_at": "2026-10-22T00:12:05.809683+00:00",
+      "elapsed_seconds": 4.127106125000864,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "product",
+      "phase": "during",
+      "started_at": "2026-10-22T00:12:10.039913+00:00",
+      "elapsed_seconds": 4.965874125002301,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:12:15.109998+00:00",
+      "elapsed_seconds": 3.735637041994778,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:12:18.954632+00:00",
+      "elapsed_seconds": 2.958600625002873,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "during",
+      "started_at": "2026-10-22T00:12:22.023321+00:00",
+      "elapsed_seconds": 2.8370987919988693,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "dense"
+    },
+    {
+      "endpoint": "home",
+      "phase": "after",
+      "started_at": "2026-10-22T00:12:24.862054+00:00",
+      "elapsed_seconds": 4.5096387500016135,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "contact",
+      "phase": "after",
+      "started_at": "2026-10-22T00:12:29.371705+00:00",
+      "elapsed_seconds": 4.081746875002864,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "proforma",
+      "phase": "after",
+      "started_at": "2026-10-22T00:12:33.453463+00:00",
+      "elapsed_seconds": 4.264775874995394,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "product",
+      "phase": "after",
+      "started_at": "2026-10-22T00:12:37.718253+00:00",
+      "elapsed_seconds": 4.785731541996938,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "commerce-rest",
+      "phase": "after",
+      "started_at": "2026-10-22T00:12:42.504116+00:00",
+      "elapsed_seconds": 3.017911709001055,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "i18n-rest",
+      "phase": "after",
+      "started_at": "2026-10-22T00:12:45.522512+00:00",
+      "elapsed_seconds": 3.1449640829960117,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    },
+    {
+      "endpoint": "tools-rest",
+      "phase": "after",
+      "started_at": "2026-10-22T00:12:48.667515+00:00",
+      "elapsed_seconds": 3.178289040995878,
+      "status": 200,
+      "valid": true,
+      "error": "",
+      "cadence": "snapshot"
+    }
+  ],
+  "fatal_logs_unchanged": true,
+  "directory_rename_proved": true,
+  "before_logs": {
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-09-22-1a31968e319acf80de1929ceb22d4ce9.log": [
+      "2052:55642757",
+      "1837"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-14-df19cd7153fe9997e54fe485d06a780c.log": [
+      "2052:15668177",
+      "1803"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-12-bdf7d5b123f2ecd67e2c46cf58a884f7.log": [
+      "2052:15667580",
+      "2018"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-08-d7c51a8bffc81b1976175d9742f856a7.log": [
+      "2052:15663301",
+      "1864"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-18-a48f209a723cdf975a62129fcb883143.log": [
+      "2052:15663484",
+      "6854"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-09-24-573fe48663f107190a45f1f9c8bbad9d.log": [
+      "2052:15664626",
+      "2438"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-21-0a45f6fb89e455db7bddb4a9d8e23303.log": [
+      "2052:15664701",
+      "2020"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-17-89888a97b14a1a53f51040218af493eb.log": [
+      "2052:15663447",
+      "33458"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-01-b48c1c726298981f3d40cda57c639bfb.log": [
+      "2052:15669556",
+      "2019"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-09-27-c22e60247f28c84ab90a585de1575c4b.log": [
+      "2052:15669223",
+      "3670"
+    ]
+  },
+  "after_logs": {
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-09-22-1a31968e319acf80de1929ceb22d4ce9.log": [
+      "2052:55642757",
+      "1837"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-14-df19cd7153fe9997e54fe485d06a780c.log": [
+      "2052:15668177",
+      "1803"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-12-bdf7d5b123f2ecd67e2c46cf58a884f7.log": [
+      "2052:15667580",
+      "2018"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-08-d7c51a8bffc81b1976175d9742f856a7.log": [
+      "2052:15663301",
+      "1864"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-18-a48f209a723cdf975a62129fcb883143.log": [
+      "2052:15663484",
+      "6854"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-09-24-573fe48663f107190a45f1f9c8bbad9d.log": [
+      "2052:15664626",
+      "2438"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-21-0a45f6fb89e455db7bddb4a9d8e23303.log": [
+      "2052:15664701",
+      "2020"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-17-89888a97b14a1a53f51040218af493eb.log": [
+      "2052:15663447",
+      "33458"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-10-01-b48c1c726298981f3d40cda57c639bfb.log": [
+      "2052:15669556",
+      "2019"
+    ],
+    "/home/u388076051/domains/de-linker.com/public_html/wp-content/uploads/wc-logs/fatal-errors-2026-09-27-c22e60247f28c84ab90a585de1575c4b.log": [
+      "2052:15669223",
+      "3670"
+    ]
+  },
+  "notes": [],
+  "successful": false
+}

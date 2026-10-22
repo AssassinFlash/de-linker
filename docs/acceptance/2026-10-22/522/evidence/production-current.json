@@ -1,0 +1,104 @@
+{
+  "taken_at": "2026-10-22T03:53:49.357507+00:00",
+  "environment": "production",
+  "protection": {
+    "mode": "enforce",
+    "configured": true,
+    "ready": true,
+    "test_keys": false
+  },
+  "consumers": {
+    "contact": "Contact\\Handler::process (admin-post)",
+    "inquiry": "Inquiry\\Handler::process (admin-post, guest/account)",
+    "registration": "Accounts (Woo process_registration_errors; WordPress registration_errors)",
+    "password_reset": "Accounts (native lostpassword_post, before key/mail)",
+    "login": "Login (wp_authenticate_user after failed use)",
+    "draft_write": "Draft (Woo forms, session reorder, wc-ajax, Store API)",
+    "comment": "Comments (native form, WordPress REST; pingback write closed in enforce)"
+  },
+  "assessment_enabled": true,
+  "assessment_client": true,
+  "heartbeat": "1792641181.7891",
+  "heartbeat_age": 49.02,
+  "recovery_next": 1792641214,
+  "recovery_action": true,
+  "engine_version": "2d41c946bc6fb9ace930da6cdc9a1ba529bf51c8874174cdb0ff00471354b2db",
+  "ledger": {
+    "counts": {
+      "observe_contact": {
+        "completed": 5
+      },
+      "verification_inquiry": {
+        "completed/valid/verified": 2
+      },
+      "verification_draft_write": {
+        "completed/valid/verified": 1
+      }
+    },
+    "receipts": 8,
+    "buckets": 7,
+    "windows": {
+      "business_browser_day": {
+        "buckets": 5,
+        "minimum_remaining": 19,
+        "reset_at": 1792713600
+      },
+      "verification_site_day": {
+        "buckets": 1,
+        "minimum_remaining": 4997,
+        "reset_at": 1792713600
+      },
+      "verification_connection_hour": {
+        "buckets": 1,
+        "minimum_remaining": 98,
+        "reset_at": 1792641600
+      }
+    },
+    "events": [
+      {
+        "purpose": "observe_contact",
+        "reason": "admitted",
+        "dimension": "",
+        "count": 5,
+        "reset_at": 1792713600,
+        "policy": "public-admission-519-v1"
+      },
+      {
+        "purpose": "verification_inquiry",
+        "reason": "admitted",
+        "dimension": "",
+        "count": 2,
+        "reset_at": 1792713600,
+        "policy": "public-admission-519-v1"
+      },
+      {
+        "purpose": "verification_draft_write",
+        "reason": "admitted",
+        "dimension": "",
+        "count": 1,
+        "reset_at": 1792713600,
+        "policy": "public-admission-519-v1"
+      }
+    ],
+    "policy": "public-admission-519-v1"
+  },
+  "test_mail": false,
+  "headers_hook": true,
+  "provider_hook": true,
+  "resource_hook": true,
+  "resource_routes": {
+    "/linker-ai/v1/genie/turn": "genie",
+    "/linker-ai/v1/genie/contact": "genie_contact",
+    "/linker-ai/v1/genie/inquiry": "genie_inquiry",
+    "/linker-ai/v1/genie/conversations/1/email": "conversation_mail",
+    "/linker-ai/v1/genie/turn/1/vote": "vote",
+    "/linker-ai/v1/genie/conversations": "conversation_create",
+    "/linker-ai/v1/engine/design/residential": "design",
+    "/linker-ai/v1/engine/design/commercial": "design",
+    "/linker-ai/v1/engine/roof/outline": "roof",
+    "/linker-ai/v1/engine/roof/pack": "roof",
+    "/linker-ai/v1/engine/report/pdf": "report_pdf",
+    "/linker/v1/solutions": "solution_save"
+  },
+  "windpress_defect": null
+}

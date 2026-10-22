@@ -1,0 +1,14 @@
+{
+  "wp-content/plugins/linker-commerce/includes/Protection/Module.php": true,
+  "wp-content/plugins/linker-commerce/includes/Protection/Accounts.php": true,
+  "wp-content/plugins/linker-commerce/includes/Protection/Draft.php": true,
+  "wp-content/plugins/linker-commerce/includes/Protection/Login.php": true,
+  "wp-content/plugins/linker-commerce/includes/Protection/Comments.php": true,
+  "wp-content/plugins/linker-commerce/includes/Inquiry/Assessment/Queue.php": true,
+  "wp-content/plugins/linker-commerce/includes/Inquiry/Assessment/RecoverySchedule.php": true,
+  "wp-content/plugins/linker-commerce/includes/Inquiry/Assessment/CustomerEvidence.php": true,
+  "wp-content/plugins/linker-tools/includes/Protection/Resources.php": true,
+  "wp-content/plugins/linker-tools/includes/Protection/ProviderBudget.php": true,
+  "wp-content/plugins/linker-tools/includes/Protection/EngineVersion.php": true,
+  "wp-content/plugins/linker-commerce/build/protection.js": true
+}

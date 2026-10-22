@@ -1,0 +1,2 @@
+genie {"path": "/opt/linker-genie/state/private/work.sqlite", "parent_mode": "0o700", "file_mode": "0o600", "readiness_slot_released": true, "integrity": "ok"}
+engine {"path": "/root/.cache/linker-engine/private/slots.sqlite", "parent_mode": "0o700", "file_mode": "0o600", "readiness_slot_released": true, "integrity": "ok"}

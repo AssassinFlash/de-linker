@@ -1,0 +1,664 @@
+{
+    "taken_at": "2026-10-22T03:38:24+00:00",
+    "hooks": {
+        "admin_post_nopriv_linker_contact": [
+            {
+                "callback": "Linker\\Commerce\\Contact\\Handler::handle",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "admin_post_linker_contact": [
+            {
+                "callback": "Linker\\Commerce\\Contact\\Handler::handle",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "admin_post_nopriv_linker_inquiry": [
+            {
+                "callback": "Linker\\Commerce\\Inquiry\\Handler::handle",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "admin_post_linker_inquiry": [
+            {
+                "callback": "Linker\\Commerce\\Inquiry\\Handler::handle",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "woocommerce_process_registration_errors": [
+            {
+                "callback": "Linker\\Commerce\\Registration\\Fields::validate",
+                "priority": 10,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Registration\\BotGuard::validate",
+                "priority": 20,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Protection\\Accounts::woocommerce_registration",
+                "priority": 30,
+                "accepted_args": 4
+            }
+        ],
+        "registration_errors": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Accounts::native_registration",
+                "priority": 30,
+                "accepted_args": 3
+            }
+        ],
+        "woocommerce_created_customer": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Accounts::created",
+                "priority": 1,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Registration\\Fields::save",
+                "priority": 5,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Inquiry\\AccountLink::claim",
+                "priority": 20,
+                "accepted_args": 1
+            }
+        ],
+        "user_register": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Accounts::created",
+                "priority": 1,
+                "accepted_args": 1
+            }
+        ],
+        "lostpassword_post": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Accounts::password_reset",
+                "priority": 30,
+                "accepted_args": 2
+            }
+        ],
+        "profile_update": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Accounts::reset_created",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "wp_authenticate_user": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Login::before_password",
+                "priority": 5,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Registration\\Approval::gate_login",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "wp_login_failed": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Login::failed",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "wp_login": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Login::complete",
+                "priority": 10,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Tools\\Genie\\Conversations::claim",
+                "priority": 10,
+                "accepted_args": 2
+            }
+        ],
+        "wp_loaded": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Draft::native",
+                "priority": 19,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\I18n\\UrlSegments::refresh",
+                "priority": 20,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Account\\SavedSolutions::add_to_draft",
+                "priority": 30,
+                "accepted_args": 1
+            }
+        ],
+        "woocommerce_load_cart_from_session": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Draft::reorder",
+                "priority": 1,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Account\\SavedSolutions::claim",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "rest_dispatch_request": [
+            {
+                "callback": "Linker\\Tools\\Protection\\Resources::dispatch",
+                "priority": 10,
+                "accepted_args": 4
+            },
+            {
+                "callback": "Linker\\I18n\\SameSlug\\Lookup::store_product",
+                "priority": 10,
+                "accepted_args": 3
+            },
+            {
+                "callback": "Linker\\Commerce\\Protection\\Draft::rest",
+                "priority": 10,
+                "accepted_args": 4
+            },
+            {
+                "callback": "Linker\\Commerce\\Protection\\Comments::rest",
+                "priority": 10,
+                "accepted_args": 4
+            }
+        ],
+        "rest_pre_dispatch": [
+            {
+                "callback": "Linker\\Tools\\Genie\\UserContext::enter",
+                "priority": 10,
+                "accepted_args": 3
+            },
+            {
+                "callback": "Linker\\Commerce\\Protection\\Module::body_limit",
+                "priority": 10,
+                "accepted_args": 3
+            },
+            {
+                "callback": "Linker\\Commerce\\Inquiry\\Checkout::block_store_checkout",
+                "priority": 10,
+                "accepted_args": 3
+            }
+        ],
+        "preprocess_comment": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Comments::native",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "comment_post": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Comments::complete",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "xmlrpc_methods": [
+            {
+                "callback": "Linker\\Commerce\\Protection\\Comments::xmlrpc",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "linker_tools_engine_request": [
+            {
+                "callback": "Linker\\Tools\\Protection\\NativeEngine::request",
+                "priority": 10,
+                "accepted_args": 3
+            }
+        ],
+        "linker_tools_provider_debit": [
+            {
+                "callback": "Linker\\Tools\\Protection\\ProviderBudget::take",
+                "priority": 10,
+                "accepted_args": 2
+            }
+        ],
+        "linker_commerce_inquiry_assessment_context": [
+            {
+                "callback": "Linker\\Tools\\Genie\\InquiryAssessmentContext::read",
+                "priority": 10,
+                "accepted_args": 3
+            }
+        ],
+        "woocommerce_checkout_create_order": [
+            {
+                "callback": "Linker\\I18n\\Woo\\Orders::record",
+                "priority": 10,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Registration\\BillingVatField::on_inquiry",
+                "priority": 10,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Inquiry\\Checkout::without_payment_method_title",
+                "priority": 10,
+                "accepted_args": 1
+            },
+            {
+                "callback": "Linker\\Commerce\\Inquiry\\OrderLocale::remember",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ],
+        "linker_inquiry_assessment_recover": [
+            {
+                "callback": "Linker\\Commerce\\Inquiry\\Assessment\\RecoverySchedule::recover",
+                "priority": 10,
+                "accepted_args": 1
+            }
+        ]
+    },
+    "mutating_routes": [
+        {
+            "route": "\/linker-ai\/v1\/genie\/turn",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Tools\\Genie\\Proxy::turn"
+        },
+        {
+            "route": "\/linker-ai\/v1\/genie\/turn\/(?P<id>[\\d]+)\/vote",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Tools\\Genie\\Proxy::vote"
+        },
+        {
+            "route": "\/linker-ai\/v1\/genie\/conversations",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Tools\\Genie\\Proxy::select_conversation"
+        },
+        {
+            "route": "\/linker-ai\/v1\/genie\/conversations\/(?P<id>[\\d]+)",
+            "methods": [
+                "DELETE"
+            ],
+            "callback": "Linker\\Tools\\Genie\\Proxy::delete_conversation"
+        },
+        {
+            "route": "\/linker-ai\/v1\/genie\/conversations\/(?P<id>[\\d]+)\/email",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Tools\\Genie\\Proxy::email_conversation"
+        },
+        {
+            "route": "\/linker-ai\/v1\/engine\/(?P<path>.+)",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Tools\\Configurator\\EngineProxy::forward"
+        },
+        {
+            "route": "\/linker-ai\/v1\/genie\/quality",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Tools\\Genie\\QualityRoute::receive"
+        },
+        {
+            "route": "\/linker-ai\/v1\/genie\/contact",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Tools\\Genie\\ContactRequest::send"
+        },
+        {
+            "route": "\/linker-ai\/v1\/genie\/inquiry",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Tools\\Genie\\InquiryRequest::send"
+        },
+        {
+            "route": "\/linker-ai\/v1\/genie\/entry-context",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Tools\\Genie\\EntryContext::read"
+        },
+        {
+            "route": "\/linker\/v1\/protection\/prepare",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Commerce\\Protection\\Controller::prepare"
+        },
+        {
+            "route": "\/linker\/v1\/protection\/verify",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Commerce\\Protection\\Controller::verify"
+        },
+        {
+            "route": "\/linker\/v1\/accounts\/(?P<id>\\d+)\/approval",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Commerce\\Registration\\AccountsController::decide"
+        },
+        {
+            "route": "\/linker\/v1\/solutions",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Commerce\\Account\\SolutionsRoute::create"
+        },
+        {
+            "route": "\/linker\/v1\/stock",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Linker\\Commerce\\Stock\\StockController::push"
+        },
+        {
+            "route": "\/wc\/store\/batch",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\Batch::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/add-item",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartAddItem::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/apply-coupon",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartApplyCoupon::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/coupons",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartCoupons::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/coupons",
+            "methods": [
+                "DELETE"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartCoupons::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/coupons\/(?P<code>[\\w-]+)",
+            "methods": [
+                "DELETE"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartCouponsByCode::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/extensions",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartExtensions::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/items",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartItems::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/items",
+            "methods": [
+                "DELETE"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartItems::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/items\/(?P<key>[\\w-]{32})",
+            "methods": [
+                "POST",
+                "PUT",
+                "PATCH"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartItemsByKey::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/items\/(?P<key>[\\w-]{32})",
+            "methods": [
+                "DELETE"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartItemsByKey::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/remove-coupon",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartRemoveCoupon::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/remove-item",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartRemoveItem::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/select-shipping-rate",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartSelectShippingRate::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/update-item",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartUpdateItem::get_response"
+        },
+        {
+            "route": "\/wc\/store\/cart\/update-customer",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartUpdateCustomer::get_response"
+        },
+        {
+            "route": "\/wc\/store\/checkout",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\Checkout::get_response"
+        },
+        {
+            "route": "\/wc\/store\/checkout",
+            "methods": [
+                "POST",
+                "PUT",
+                "PATCH"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\Checkout::get_response"
+        },
+        {
+            "route": "\/wc\/store\/checkout\/(?P<id>[\\d]+)",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CheckoutOrder::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/batch",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\Batch::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/add-item",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartAddItem::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/apply-coupon",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartApplyCoupon::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/coupons",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartCoupons::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/coupons",
+            "methods": [
+                "DELETE"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartCoupons::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/coupons\/(?P<code>[\\w-]+)",
+            "methods": [
+                "DELETE"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartCouponsByCode::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/extensions",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartExtensions::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/items",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartItems::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/items",
+            "methods": [
+                "DELETE"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartItems::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/items\/(?P<key>[\\w-]{32})",
+            "methods": [
+                "POST",
+                "PUT",
+                "PATCH"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartItemsByKey::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/items\/(?P<key>[\\w-]{32})",
+            "methods": [
+                "DELETE"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartItemsByKey::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/remove-coupon",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartRemoveCoupon::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/remove-item",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartRemoveItem::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/select-shipping-rate",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartSelectShippingRate::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/update-item",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartUpdateItem::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/cart\/update-customer",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CartUpdateCustomer::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/checkout",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\Checkout::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/checkout",
+            "methods": [
+                "POST",
+                "PUT",
+                "PATCH"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\Checkout::get_response"
+        },
+        {
+            "route": "\/wc\/store\/v1\/checkout\/(?P<id>[\\d]+)",
+            "methods": [
+                "POST"
+            ],
+            "callback": "Automattic\\WooCommerce\\StoreApi\\Routes\\V1\\CheckoutOrder::get_response"
+        },
+        {
+            "route": "\/wp\/v2\/comments",
+            "methods": [
+                "POST"
+            ],
+            "callback": "WP_REST_Comments_Controller::create_item"
+        }
+    ],
+    "native_options": {
+        "wordpress_registration": "0",
+        "woo_registration": "yes",
+        "default_comments": "open",
+        "default_pings": "open"
+    },
+    "xmlrpc_write_filter": [
+        "wp.newComment",
+        "wp.getComment",
+        "system.listMethods"
+    ]
+}

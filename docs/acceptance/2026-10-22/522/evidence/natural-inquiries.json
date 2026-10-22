@@ -1,0 +1,167 @@
+[
+  {
+    "id": 8026,
+    "source": "contact",
+    "status": "inquiry-received",
+    "accepted_at": 1792627866.278395,
+    "deadline": 1792627876.278395,
+    "completed_at": 1792627868.177327,
+    "elapsed": 1.8989319801330566,
+    "initial_result": {
+      "label": "suspected_spam",
+      "basis": "fraud_or_phishing",
+      "reason": "classified",
+      "model": "typesafe/jev-1.13-20260917",
+      "rubric": "inquiry-observation-v1",
+      "raw": {
+        "classification": {
+          "type": "choice",
+          "choice": "suspected_spam"
+        },
+        "basis": {
+          "type": "choice",
+          "choice": "fraud_or_phishing"
+        }
+      },
+      "seconds": 0.2717,
+      "started_at": 1792627867.640474,
+      "queue_seconds": 1.36207914352417
+    },
+    "latest_result": {
+      "label": "suspected_spam",
+      "basis": "fraud_or_phishing",
+      "reason": "classified",
+      "model": "typesafe/jev-1.13-20260917",
+      "rubric": "inquiry-observation-v1",
+      "raw": {
+        "classification": {
+          "type": "choice",
+          "choice": "suspected_spam"
+        },
+        "basis": {
+          "type": "choice",
+          "choice": "fraud_or_phishing"
+        }
+      },
+      "seconds": 0.2717,
+      "started_at": 1792627867.640474,
+      "queue_seconds": 1.36207914352417
+    },
+    "notification_job": 8027,
+    "pending": "no",
+    "outbox_job_present": false,
+    "outbox_post_status": false,
+    "outbox_attempts": null,
+    "frozen_evidence": true
+  },
+  {
+    "id": 8024,
+    "source": "contact",
+    "status": "inquiry-received",
+    "accepted_at": 1792627862.088116,
+    "deadline": 1792627872.088116,
+    "completed_at": 1792627864.528605,
+    "elapsed": 2.4404890537261963,
+    "initial_result": {
+      "label": "suspected_spam",
+      "basis": "fraud_or_phishing",
+      "reason": "classified",
+      "model": "typesafe/jev-1.13-20260917",
+      "rubric": "inquiry-observation-v1",
+      "raw": {
+        "classification": {
+          "type": "choice",
+          "choice": "suspected_spam"
+        },
+        "basis": {
+          "type": "choice",
+          "choice": "fraud_or_phishing"
+        }
+      },
+      "seconds": 0.181301,
+      "started_at": 1792627864.071668,
+      "queue_seconds": 1.9835519790649414
+    },
+    "latest_result": {
+      "label": "suspected_spam",
+      "basis": "fraud_or_phishing",
+      "reason": "classified",
+      "model": "typesafe/jev-1.13-20260917",
+      "rubric": "inquiry-observation-v1",
+      "raw": {
+        "classification": {
+          "type": "choice",
+          "choice": "suspected_spam"
+        },
+        "basis": {
+          "type": "choice",
+          "choice": "fraud_or_phishing"
+        }
+      },
+      "seconds": 0.181301,
+      "started_at": 1792627864.071668,
+      "queue_seconds": 1.9835519790649414
+    },
+    "notification_job": 8025,
+    "pending": "no",
+    "outbox_job_present": false,
+    "outbox_post_status": false,
+    "outbox_attempts": null,
+    "frozen_evidence": true
+  },
+  {
+    "id": 8022,
+    "source": "contact",
+    "status": "inquiry-received",
+    "accepted_at": 1792627860.30901,
+    "deadline": 1792627870.30901,
+    "completed_at": 1792627861.22742,
+    "elapsed": 0.918410062789917,
+    "initial_result": {
+      "label": "suspected_spam",
+      "basis": "fraud_or_phishing",
+      "reason": "classified",
+      "model": "typesafe/jev-1.13-20260917",
+      "rubric": "inquiry-observation-v1",
+      "raw": {
+        "classification": {
+          "type": "choice",
+          "choice": "suspected_spam"
+        },
+        "basis": {
+          "type": "choice",
+          "choice": "fraud_or_phishing"
+        }
+      },
+      "seconds": 0.315135,
+      "started_at": 1792627860.641866,
+      "queue_seconds": 0.3328559398651123
+    },
+    "latest_result": {
+      "label": "suspected_spam",
+      "basis": "fraud_or_phishing",
+      "reason": "classified",
+      "model": "typesafe/jev-1.13-20260917",
+      "rubric": "inquiry-observation-v1",
+      "raw": {
+        "classification": {
+          "type": "choice",
+          "choice": "suspected_spam"
+        },
+        "basis": {
+          "type": "choice",
+          "choice": "fraud_or_phishing"
+        }
+      },
+      "seconds": 0.315135,
+      "started_at": 1792627860.641866,
+      "queue_seconds": 0.3328559398651123
+    },
+    "notification_job": 8023,
+    "pending": "no",
+    "outbox_job_present": false,
+    "outbox_post_status": false,
+    "outbox_attempts": null,
+    "frozen_evidence": true
+  }
+]

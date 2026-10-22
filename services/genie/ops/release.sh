@@ -15,6 +15,7 @@ usage() {
 list_versions() {
     python3 - "$ROOT" <<'PY'
 import os
+import re
 import sys
 
 root = sys.argv[1]
@@ -22,7 +23,10 @@ if not os.path.isdir(root):
     raise SystemExit(0)
 for name in sorted(os.listdir(root)):
     path = os.path.join(root, name)
-    if os.path.isdir(path) and not os.path.islink(path) and not name.startswith("."):
+    # Only directories named by publish() are releases. Persistent ops, state
+    # and index directories must never consume retention or become a rollback.
+    if (re.fullmatch(r"[0-9]{8}T[0-9]{12}Z", name)
+            and os.path.isdir(path) and not os.path.islink(path)):
         print(name)
 PY
 }
