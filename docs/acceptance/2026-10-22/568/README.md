@@ -29,7 +29,7 @@ not deleted, automatically refunded or sent by this implementation.
 | `ConversationConfirmationCapacityTest` | Included in the same native run | Exact native confirmation token to one durable original job/ACK; two real workers; full retains retry; erased/expired/foreign source; caller transaction rollback |
 | `BusinessDispositionTest` | Included in the same native run | Guarded historical note/body/marker authority, invalidation returns debt, old registry restoration, exact rollback, no mail |
 | `ConversationRoutesTest` (Tools native) | 9 tests / 87 assertions | Real route callers preserve failure/retry and existing normal bool contract |
-| Commerce unit suite | 1,591 tests / 6,139 assertions; 350 native tests skipped by the unit bootstrap | All unit assertions pass; skipped native cases run separately using the native integration configuration |
+| Commerce unit suite | 1,591 tests / 6,139 assertions; 350 native tests skipped by the unit bootstrap | All unit assertions pass; the relevant 174 native cases above were executed separately, not all 350 native cases in this plugin |
 | Tools affected unit suite | 6 tests / 37 assertions | Bounded internal summary diagnostic; existing customer content remains unchanged |
 | Commerce / Tools PHPStan and owned-file WPCS | Pass | Commerce whole PHPStan, Tools whole PHPStan with 2 GiB analysis memory; 82 Commerce PHP files and four Tools PHP files follow native standards |
 
