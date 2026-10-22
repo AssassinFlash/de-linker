@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Inquiry\Assessment;
 
 use WC_Order;
+use Linker\Commerce\Mail\NotificationHold;
 
 /** Native Woo edit-screen meta box; it changes no inquiry or account status. */
 final class Admin {
@@ -19,6 +20,7 @@ final class Admin {
 	public function register(): void {
 		add_action( 'add_meta_boxes', array( $this, 'boxes' ) );
 		add_action( 'admin_post_linker_inquiry_assessment_correct', array( $this, 'correct' ) );
+		add_action( 'admin_post_linker_inquiry_notification_release', array( $this, 'release' ) );
 	}
 
 	/** Both native Woo storage modes use the same staff view. */
@@ -38,6 +40,7 @@ final class Admin {
 		if ( ! $order instanceof WC_Order || ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
+		NotificationHoldView::render( $order );
 		EvidenceView::render( $order );
 		$data = Queue::data( $order );
 		if ( array() === $data ) {
@@ -47,10 +50,35 @@ final class Admin {
 		$result = is_array( $data['result'] ?? null ) ? $data['result'] : Result::unknown( 'pending' );
 		echo '<h3>' . esc_html__( 'Jev initial assessment', 'linker-commerce' ) . '</h3>';
 		echo '<p><strong>' . esc_html( Result::label( (string) $result['label'] ) ) . '</strong><br />' . esc_html( Result::explanation( $result ) ) . '</p>';
-		echo '<p>' . esc_html__( 'Initial guidance only. Every inquiry is accepted and notified.', 'linker-commerce' ) . '</p>';
+		echo '<p>' . esc_html__( 'Model labels do not reject inquiries or stop team notifications.', 'linker-commerce' ) . '</p>';
 		echo '<dl><dt>' . esc_html__( 'Diagnostic', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $result['reason'] ) . '</dd><dt>' . esc_html__( 'Elapsed time', 'linker-commerce' ) . '</dt><dd>' . esc_html( number_format_i18n( (float) ( $data['elapsed'] ?? 0 ), 2 ) ) . ' s</dd><dt>' . esc_html__( 'Model / rubric', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $result['model'] . ' / ' . (string) $result['rubric'] ) . '</dd></dl>';
 		echo '<details><summary>' . esc_html__( 'Original model result', 'linker-commerce' ) . '</summary><textarea readonly class="large-text code" rows="10" aria-label="' . esc_attr__( 'Original model result', 'linker-commerce' ) . '">' . esc_textarea( (string) wp_json_encode( $result['raw'] ?? array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ) . '</textarea></details>';
 		ReviewView::render( $order );
+	}
+
+	/** Only a staff member with the record-bound nonce can release a hold. */
+	public function release(): void {
+		$id        = isset( $_POST['inquiry'] ) ? absint( $_POST['inquiry'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification -- Bound to the record-specific nonce below.
+		$reference = isset( $_POST['reference'] ) && is_string( $_POST['reference'] ) ? sanitize_text_field( wp_unslash( $_POST['reference'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification -- Bound into the nonce action below.
+		check_admin_referer( 'linker_notification_release_' . $id . '_' . $reference );
+		$result = NotificationHold::release( $id, $reference );
+		if ( is_wp_error( $result ) ) {
+			$status = 'forbidden' === $result->get_error_code() ? 403 : 409;
+			wp_die(
+				esc_html( $result->get_error_message() ),
+				'',
+				array(
+					'response'  => $status,
+					'back_link' => true,
+				)
+			);
+		}
+		$order = wc_get_order( $id );
+		if ( ! $order instanceof WC_Order ) {
+			wp_die( esc_html__( 'This inquiry is unavailable.', 'linker-commerce' ), '', array( 'response' => 404 ) );
+		}
+		wp_safe_redirect( $order->get_edit_order_url() );
+		exit;
 	}
 
 	/** Correction preserves raw evidence and emits no email or status change. */
