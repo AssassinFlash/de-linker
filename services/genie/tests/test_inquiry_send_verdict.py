@@ -239,6 +239,106 @@ def test_probabilities_are_preserved_and_cap_an_inconsistent_confidence() -> Non
 
 
 @pytest.mark.parametrize(
+    ("declared", "selected", "other", "expected"),
+    [
+        (None, 0.93, 0.06, 0.93),  # Observed .99 mass: no upward normalization.
+        (0.92, 0.93, 0.06, 0.92),
+        (1.0, 0.89, 0.01, 0.89),  # Missing mass cannot cross the .90 threshold.
+        (None, 0.95, 0.15, 0.95 / 1.10),
+        (0.85, 0.95, 0.15, 0.85),
+        (None, 1.0, 0.10, 1.0 / 1.10),
+    ],
+)
+def test_probability_mass_only_lowers_effective_confidence(
+    declared: float | None, selected: float, other: float, expected: float
+) -> None:
+    answer = {
+        "choice": "normal",
+        "confidence": declared,
+        "probabilities": {"normal": selected, "malicious": other, "unknown": 0.0},
+    }
+    actual = assessment._confidence(answer)
+    assert actual == pytest.approx(expected)
+    assert actual is not None and actual <= selected
+    if declared is not None:
+        assert actual <= declared
+
+
+@pytest.mark.parametrize(
+    "probabilities",
+    [
+        None,
+        {},
+        {"normal": 0, "malicious": 0, "unknown": 0},
+        {"normal": 1},
+        {"normal": 1, "malicious": 0, "unknown": 0, "other": 0},
+        {"normal": True, "malicious": 0, "unknown": 0},
+        {"normal": float("nan"), "malicious": 0, "unknown": 0},
+        {"normal": float("inf"), "malicious": 0, "unknown": 0},
+        {"normal": -0.1, "malicious": 0, "unknown": 0},
+        {"normal": 1.1, "malicious": 0, "unknown": 0},
+        {"normal": "1", "malicious": 0, "unknown": 0},
+    ],
+)
+def test_malformed_or_zero_mass_probabilities_remain_invalid(
+    probabilities: Any,
+) -> None:
+    raw = jev()
+    raw["answers"]["classification"]["probabilities"] = probabilities
+    assert (assessment.parse(raw)["decision"], assessment.parse(raw)["reason"]) == (
+        "unknown",
+        "invalid_response",
+    )
+
+
+def test_observed_incomplete_mass_is_accepted_without_upward_confidence_or_switch() -> (
+    None
+):
+    raw = answers("malicious", "fraud_or_phishing", confidence=0.92)
+    raw["basis"]["probabilities"] = {
+        "business_request": 0,
+        "service_or_complaint": 0,
+        "reporting_abuse": 0,
+        "fraud_or_phishing": 0.93,
+        "unsolicited_bulk_promotion": 0.04,
+        "meaningless_abuse": 0.02,
+        "insufficient_context": 0,
+    }
+    seen: list[str] = []
+
+    def upstream(request: httpx.Request) -> httpx.Response:
+        seen.append(str(request.url))
+        return httpx.Response(200, json=jev(raw))
+
+    result = asyncio.run(
+        assessment.assess(
+            body(),
+            key="synthetic",
+            escalation_key="synthetic",
+            transport=httpx.MockTransport(upstream),
+        )
+    )
+    assert (result["decision"], result["reason"]) == ("malicious", "classified")
+    assert assessment._confidence(result["raw"]["primary"]["answers"]["basis"]) == 0.92
+    assert seen == [assessment.ENDPOINT]
+    assert result["raw"]["escalation"] is None
+
+
+def test_excess_mass_cannot_turn_below_threshold_evidence_into_permission() -> None:
+    raw = jev()
+    raw["answers"]["classification"]["probabilities"] = {
+        "normal": 0.95,
+        "malicious": 0.15,
+        "unknown": 0,
+    }
+    result = assessment.parse(raw)
+    assert (result["decision"], result["reason"]) == (
+        "unknown",
+        "insufficient_confidence",
+    )
+
+
+@pytest.mark.parametrize(
     "raw",
     [
         answers(confidence=0.89),

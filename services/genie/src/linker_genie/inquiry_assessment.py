@@ -106,10 +106,14 @@ def _number(value: Any) -> float | None:
 
 def _confidence(answer: dict[str, Any]) -> float | None:
     declared = answer["confidence"]
-    selected = answer["probabilities"].get(answer["choice"])
-    if declared is None:
-        return selected if isinstance(selected, (int, float)) else None
-    return min(declared, selected) if selected is not None else declared
+    probabilities = answer["probabilities"]
+    if not probabilities:
+        return declared if isinstance(declared, (int, float)) else None
+    selected = probabilities[answer["choice"]]
+    # Spec 533: observed provider mass .99 has no precision guarantee. Never
+    # raise confidence for missing mass; excess mass can only lower it.
+    conservative = min(selected, selected / max(1.0, math.fsum(probabilities.values())))
+    return min(declared, conservative) if declared is not None else conservative
 
 
 def _parse_answers(raw: Any) -> dict[str, Any]:
@@ -131,14 +135,12 @@ def _parse_answers(raw: Any) -> dict[str, Any]:
         if item.get("confidence") is not None and confidence is None:
             return undetermined("invalid_response")
         probabilities = item.get("probabilities", {})
-        if probabilities is None:
-            probabilities = {}
         if not isinstance(probabilities, dict):
             return undetermined("invalid_response")
-        if probabilities and (
+        if "probabilities" in item and (
             set(probabilities) != set(labels)
             or any(_number(value) is None for value in probabilities.values())
-            or not math.isclose(sum(probabilities.values()), 1.0, abs_tol=1e-6)
+            or math.fsum(probabilities.values()) <= 0
         ):
             return undetermined("invalid_response")
         if probabilities and probabilities[item["choice"]] < max(
