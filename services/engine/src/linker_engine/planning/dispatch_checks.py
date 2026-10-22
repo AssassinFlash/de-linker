@@ -16,6 +16,7 @@ from .dispatch_frame import Flows
 from .dispatch_priorities import priority_residuals
 from .energy_origins import EnergyOrigins
 from .errors import InvalidInput, NumericalFailure
+from .inventory_witness import InventoryWitness
 from .numerical_tolerance import Tolerance
 
 
@@ -74,7 +75,7 @@ def verify(
     if terminal_min_kwh is not None:
         nonnegative(terminal_min_kwh, "terminal inventory requirement")
     checks: dict[str, Check] = {}
-    accumulated_state_roundoff_kwh = 0.0
+    inventory_witness = InventoryWitness(initial)
 
     def record(
         code: str,
@@ -161,17 +162,37 @@ def verify(
                 power_scale,
                 check.arithmetic_allowance_kw,
             )
-        # These source-transition bounds account for this step's paired
-        # products/addition/fsum. Inventory hard boundaries may use only this
-        # tracked numerical budget, never the generic absolute kWh tolerance.
-        accumulated_state_roundoff_kwh += math.fsum(
-            check.arithmetic_allowance_kw * dt
-            for check in local_checks
-            if check.code.startswith("origin_transition_kw_")
-        )
-        inventory_roundoff = accumulated_state_roundoff_kwh + math.fsum(
+        inventory = inventory_witness.advance(flow, model)
+        inventory_roundoff = inventory.tracked_deviation_kwh + math.fsum(
             math.ulp(value) if value else 0.0
             for value in (flow.before.total, flow.after.total)
+        )
+        # The conserved witness is an exact sum of recorded transfers. Its
+        # comparison receives one final float representation ULP, independent
+        # of idle padding, exact cycles or prior rounding-budget estimates.
+        capacity_ulp = inventory.tracked_deviation_kwh + (
+            math.ulp(model.usable_window_kwh) if model.usable_window_kwh else 0.0
+        )
+        reserve_ulp = inventory.tracked_deviation_kwh + (
+            math.ulp(frame.limits.reserve_kwh) if frame.limits.reserve_kwh else 0.0
+        )
+        record(
+            "capacity_conserved_inventory",
+            inventory.capacity_violation_kwh,
+            "kWh",
+            index,
+            energy_scale,
+            capacity_ulp,
+            inventory_boundary=True,
+        )
+        record(
+            "reserve_conserved_inventory",
+            inventory.reserve_violation_kwh,
+            "kWh",
+            index,
+            energy_scale,
+            reserve_ulp,
+            inventory_boundary=True,
         )
         ac_left = math.fsum((flow.pv_available_kw, flow.import_kw, flow.discharge_kw))
         ac_right = math.fsum(
@@ -590,8 +611,16 @@ def verify(
             "kWh",
             len(flows) - 1,
             terminal_min_kwh,
-            accumulated_state_roundoff_kwh
-            + (math.ulp(flows[-1].after.total) if flows[-1].after.total else 0.0),
+            inventory_roundoff,
+            inventory_boundary=True,
+        )
+        record(
+            "terminal_conserved_inventory",
+            inventory_witness.terminal_violation(terminal_min_kwh),
+            "kWh",
+            len(flows) - 1,
+            terminal_min_kwh,
+            math.ulp(terminal_min_kwh) if terminal_min_kwh else 0.0,
             inventory_boundary=True,
         )
     return Verification(tuple(checks.values()), tolerance)

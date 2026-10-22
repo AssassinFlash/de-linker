@@ -810,3 +810,47 @@ def test_verifier_rejects_overcapacity_initial_independently_of_replay_entry() -
     forged = replace(flow, before=over, after=over)
     with pytest.raises(InvalidInput, match="initial inventory"):
         verify((forged,), model, TOLERANCE, initial=over, terminal_min_kwh=0)
+
+
+@pytest.mark.parametrize("padding", ["idle", "exact_cycles"])
+def test_padding_cannot_create_a_budget_for_a_real_terminal_deficit(
+    padding: str,
+) -> None:
+    model = battery(1000, 10)
+    start = datetime(2024, 1, 1, tzinfo=UTC)
+    conditions = OperatingLimits("connected", 0, None, 0, True, False)
+    frames = [
+        Frame(
+            Interval(
+                start + timedelta(hours=index), start + timedelta(hours=index + 1)
+            ),
+            0 if padding == "idle" or index % 2 else 1,
+            1 if padding == "exact_cycles" and index % 2 else 0,
+            0,
+            conditions,
+            "gross_load",
+        )
+        for index in range(8760)
+    ]
+    event_start = frames[-1].interval.end
+    frames.append(
+        Frame(
+            Interval(event_start, event_start + timedelta(microseconds=1)),
+            10,
+            0,
+            0,
+            OperatingLimits("outage", 0, 0, 0, False, False),
+            "critical_load",
+        )
+    )
+    flows = run(tuple(frames), model, EnergyOrigins(0, 0, 1000))
+    assert flows[-1].after.total == pytest.approx(999.9999999972222)
+    verification = checks(flows, model, terminal=1000)
+    assert not verification.passed
+    terminal = next(
+        check
+        for check in verification.checks
+        if check.code == "terminal_conserved_inventory"
+    )
+    assert not terminal.passed
+    assert terminal.allowance == math.ulp(1000)

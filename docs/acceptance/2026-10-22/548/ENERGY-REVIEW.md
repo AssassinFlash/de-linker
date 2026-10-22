@@ -95,7 +95,14 @@ deficits could also be swallowed by the absolute energy budget. Capacity,
 reserve and terminal hard boundaries now accept only accumulated, exposed
 local arithmetic roundoff. The verifier independently enforces the strict
 initial physical window too. Three additional regressions cover these cases;
-planning now has 104 tests. No smaller task horizon or physical margin was
-introduced. Both independent axes will recheck this fixed increment. The full
+planning reached 104 tests. Spec then demonstrated why accumulating theoretical
+stock ULP bounds was still incorrect: 8760 exact idle frames could change the
+same tiny real cycle deficit from failed to passed. The hard-boundary path now
+uses an exact rational net-flow witness. Actual tracked deviation is exposed;
+no idle or exact-cycle prefix earns a stock-error budget. A separate conserved
+terminal comparison has a final representation ULP independent of padding.
+Both idle-prefix and exact-cycle-prefix regressions preserve the same deficit
+and reject it; planning has 106 tests. No smaller task horizon or physical
+margin was introduced. Both axes will recheck this fixed increment. The full
 physical configuration/Genie/Woo/UI integration and live acceptance remain
 active, not delivered by this component review.
