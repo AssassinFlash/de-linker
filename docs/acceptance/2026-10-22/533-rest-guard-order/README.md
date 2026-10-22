@@ -1,6 +1,6 @@
 # REST guard ordering — local acceptance
 
-Base: reviewed `b29a979a16c39651fdbfb265413621f9d96f599f`; branch `codex/533-rest-guard-order`. Runtime change is only MU user-guard registration priority10→20, after the observed ACF6.3.1 initializer. Reminder stop behavior remains inherited unchanged.
+Current base: deployed `97ef132f176066c25812c8093a1b5106c443b3fc`; branch `codex/533-rest-guard-current`. The original four-file repair was reviewed against `b29a979a16c39651fdbfb265413621f9d96f599f`. Runtime change remains only MU user-guard registration priority10→20, after the observed ACF6.3.1 initializer. The complete Commerce directory, including required proof, content rules, recovery and Intake, remains byte-identical to the current base; no other main changes are included.
 
 Production diagnosis was read-only: ordinary anonymous GETs, matching MU hashes, actual callback provenance and native user0 direct/REST comparisons. No account values are copied into the evidence. ACF's initialization callback erased an earlier WP_Error. This source repair has not been deployed by the implementer.
 
@@ -13,6 +13,10 @@ Production diagnosis was read-only: ordinary anonymous GETs, matching MU hashes,
 - The pending inventory candidate was examined only in a private harness: an injected already-authenticated selected state plus native administrator showed its priority10 denial erased to200, and request-local priority20 restored403. This isolates ordering; it is not a revalidation of actual application-password authentication. No candidate source is part of this branch.
 
 Private incident evidence lives under `attack-continuity/`: `wp-rest-user-filter-trace.json`, `wp-acf-cause-evidence.json`, `wp-guard-order-red.txt`, `wp-guard-order-green.txt`, `wp-guard-actual-acf-fixed.json`. No keys, credentials, returned user values or proprietary plugin copy are committed.
+
+## Current-base replay
+
+On a new owned bare mechanism instance `s533rest` (port9383), the unchanged SiteGuardsSmokeTest again passed **4 tests /25 assertions**, MU unit scope **12 tests /40 assertions**, and complete MU WPCS/PHPStan passed. This is mechanism evidence, not a visual replica or production readback. The actual production-byte-equal ACF initializer class was separately replayed on this owned instance with only its disabled-setting getter: priority10 reproduced anonymous200 after erasing rest_forbidden, priority20 returned anonymous collection/mixed-case item403, native list_users administrator200 and unrelated public types200. No inventory candidate or application credential was loaded. Request-local hooks were restored in finally; the existing native mail/outbound isolation remained installed. New private evidence is in `attack-continuity/rest-guard-current/`.
 
 ## Remaining gates
 
