@@ -87,6 +87,9 @@ policy, not scientific limits. Invalid syntax remains a framework parse error.
 The wire encoding is UTF-8. Invalid UTF-8 and literal NUL bytes are rejected
 before the JSON parser; UTF-16/32 auto-detection must not bypass the depth gate.
 An escaped `\u0000` is an ordinary JSON string value, not a literal wire NUL.
+The outer boundary also guards credential-source and pre-response downstream
+failures with the private `execution_failed` envelope. Once a response starts,
+a broken stream is terminated rather than replaced by a second response.
 
 ## Actual acceptance required
 

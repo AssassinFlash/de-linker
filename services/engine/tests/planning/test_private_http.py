@@ -229,6 +229,36 @@ def test_validation_diagnostics_are_bounded_and_explicitly_truncated(rig: Rig) -
         assert all(len(part) <= 64 for part in field["path"])
 
 
+@pytest.mark.parametrize("kind", ["source_error", "unencodable_secret", "app_error"])
+def test_outer_boundary_errors_are_private_and_typed_before_any_app_response(
+    kind: str,
+) -> None:
+    def credential() -> str:
+        if kind == "source_error":
+            raise OSError("private credential-source failure")
+        if kind == "unencodable_secret":
+            return "\ud800"
+        return TOKEN
+
+    async def app(_scope: Scope, _receive: Receive, _send: Send) -> None:
+        raise RuntimeError("private downstream fixture content")
+
+    boundary = ServiceBoundary(
+        app, credential=credential, max_body_bytes=1000, max_json_depth=16
+    )
+    # This deliberately minimal downstream has no lifespan protocol.
+    client = TestClient(boundary, raise_server_exceptions=False)
+    try:
+        response = client.post("/", content=b"{}", headers=headers())
+    finally:
+        client.close()
+    assert response.status_code == 500
+    assert response.json() == {"error": {"code": "execution_failed"}}
+    assert response.headers["cache-control"] == "no-store, private"
+    assert response.headers["pragma"] == "no-cache"
+    assert response.headers["x-content-type-options"] == "nosniff"
+
+
 def exercise_boundary(
     raw_headers: list[tuple[bytes, bytes]],
     chunks: list[Message],

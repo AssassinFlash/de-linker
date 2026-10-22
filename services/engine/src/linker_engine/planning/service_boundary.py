@@ -9,6 +9,7 @@ replace WP session/CSRF checks or resource admission. It has no off mode.
 from __future__ import annotations
 
 import hmac
+import logging
 import re
 from collections.abc import Callable
 from typing import cast
@@ -24,6 +25,7 @@ ACTOR_SCOPE = "linker.planning.verified_actor"
 TOKEN_HEADER = b"x-linker-service-token"
 KIND_HEADER = b"x-linker-planner-principal-kind"
 SUBJECT_HEADER = b"x-linker-planner-principal-subject"
+logger = logging.getLogger(__name__)
 
 
 async def answer(send: Send, status: int, code: str) -> None:
@@ -61,9 +63,12 @@ class ServiceBoundary:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
+        response_started = False
 
         async def private_send(message: Message) -> None:
+            nonlocal response_started
             if message["type"] == "http.response.start":
+                response_started = True
                 message = dict(message)
                 # No intermediary/browser may cache an owned result, including
                 # errors. Downstream code cannot accidentally weaken this.
@@ -80,6 +85,17 @@ class ServiceBoundary:
                 ]
             await send(message)
 
+        try:
+            await self._request(scope, receive, private_send)
+        except Exception:
+            if response_started:
+                # A partial stream cannot be replaced by a second response.
+                raise
+            logger.exception("private planner boundary failed")
+            await answer(private_send, 500, "execution_failed")
+
+    async def _request(self, scope: Scope, receive: Receive, send: Send) -> None:
+        private_send = send
         headers: dict[bytes, list[bytes]] = {}
         for key, value in scope.get("headers", []):
             headers.setdefault(key.lower(), []).append(value)
