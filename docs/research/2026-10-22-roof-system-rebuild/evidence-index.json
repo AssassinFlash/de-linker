@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-22",
+  "timezone": "Asia/Shanghai",
+  "status": "reviewable_proposal_not_approved_or_implemented",
+  "map": "https://github.com/AssassinFlash/de-linker/issues/548",
+  "code_baseline": "123aea571e80b5b1ba756816914ba86408866ba5",
+  "reports": [
+    {
+      "title": "当前屋顶工具的完整用户路径有哪些可复现问题？",
+      "issue": "https://github.com/AssassinFlash/de-linker/issues/549",
+      "commit": "b12377a5884c95ed96464ca4b9762c3ff89b8009",
+      "report": "https://github.com/AssassinFlash/de-linker/blob/b12377a5884c95ed96464ca4b9762c3ff89b8009/docs/research/2026-10-22-roof-experience/README.md",
+      "limitations": ["controlled recorded weather fixture for successful local UI path", "not all states tested in all language and viewport combinations", "source-only findings explicitly distinguished"]
+    },
+    {
+      "title": "系统选型的逻辑、约束与结果是否可信？",
+      "issue": "https://github.com/AssassinFlash/de-linker/issues/550",
+      "commit": "62e8036aa7e092d10f6b52b9e7e24f4d07973c7b",
+      "report": "https://github.com/AssassinFlash/de-linker/blob/62e8036aa7e092d10f6b52b9e7e24f4d07973c7b/docs/research/2026-10-22-roof-calculation/README.md",
+      "coordinator_rerun": {"executed": true, "counterexample_groups": 16, "exit_code": 0, "business_code_changed": false},
+      "limitations": ["synthetic boundary inputs and fault injection do not establish production incident frequency", "original device PDFs not all re-fetched", "not independent engineering validation"]
+    },
+    {
+      "title": "欧洲工商业屋顶规划有哪些可复刻且实际可行的成熟模式？",
+      "issue": "https://github.com/AssassinFlash/de-linker/issues/551",
+      "commit": "ad782cba169d298a49c8e0794e941328f9aab611",
+      "report": "https://github.com/AssassinFlash/de-linker/blob/ad782cba169d298a49c8e0794e941328f9aab611/docs/research/2026-10-22-roof-europe-precedents/REPORT.md",
+      "external_fact_channel": "Apify",
+      "limitations": ["official documentation is not hands-on competitor acceptance", "representative regions do not prove Europe-wide automatic coverage", "site-specific precision and costs unmeasured"]
+    }
+  ],
+  "designated_claude_review": {"complete": false, "reason": "genuine Claude OAuth expired; non-Claude routed invocations discarded"},
+  "production": {"business_code_changed": false, "data_changed": false, "emails_sent": false, "inquiries_submitted": false},
+  "remaining": ["designated research review", "task and output contract decisions", "user workflow and entry prototypes", "original hardware and country rule verification", "independent engineering benchmarks and real site accuracy", "performance and cost measurements", "implementation and deployment acceptance"]
+}
