@@ -21,7 +21,10 @@ come from a browser extension, while all four site-hosted Plus faces succeed.
 This is different from the earlier cross-origin font failure. Set the existing
 `.linker-auth` wrapper's font family to `var(--proto-font-sans)` so sign-in,
 registration and password surfaces explicitly use the already hosted site
-font. Keep all words, sizes, weights, colors and page structures. Resulting
+font. The theme also assigns a font directly to h1/h2, so authentication's
+headings explicitly inherit that same wrapper font; a wrapper declaration
+alone leaves their actual Inter glyphs unchanged. Keep all words, sizes,
+weights, colors and page structures. Resulting
 text-width and line-wrap changes inside auth are an intentional typography
 correction; account dashboards, marketing, header/footer, prices and business
 rules are outside the change.

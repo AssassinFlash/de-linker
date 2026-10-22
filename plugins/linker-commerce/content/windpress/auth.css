@@ -230,6 +230,8 @@
 	padding: clamp(20px, 4vw, 48px) 0;
 }
 
+.linker-auth :is(h1, h2) { font-family: inherit; }
+
 .linker-auth-inner {
 	display: grid;
 	gap: 20px;
