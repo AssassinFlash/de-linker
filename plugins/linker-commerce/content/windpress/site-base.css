@@ -34,3 +34,9 @@ html[lang^="de"] body[data-page] #theme-main,html[lang^="de"] :is(#lc-header,#lc
 #lc-header,#lc-footer{font-family:var(--proto-font-sans);font-size:var(--proto-size-md);line-height:var(--proto-leading-body);color:var(--proto-color-ink);letter-spacing:normal}
 body[data-page]{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--proto-color-canvas);color:var(--proto-color-ink);font-family:var(--proto-font-sans);font-size:var(--proto-size-md);line-height:var(--proto-leading-body)}
 body[data-page] #theme-main{flex:1 0 auto;background:transparent}
+
+/* SEOPress's employee editing beacon is fixed on screen and otherwise repeats
+   over the document on every printed page. It is not document content. */
+@media print {
+  #seopress-beacon-universal-metabox{display:none!important}
+}
