@@ -1,7 +1,7 @@
 /**
  * "Email me this conversation" under the transcript (ticket #235,
  * docs/specs/13-genie.md goal 7, acceptance A12): a signed-in customer's goes
- * to the account's address at once; a guest types the address and gets a
+ * is saved for automatic checks; a guest types the address and gets a
  * confirmation link there first. The outcome stays in place as a status line.
  */
 
@@ -163,7 +163,7 @@ function statusText( phase: Phase, to: string, limit: number ): string {
 			return sprintf(
 				// translators: %s is the email address the confirmation link went to.
 				__(
-					'A confirmation link is on its way to %s. The conversation follows once the link is opened.',
+					'A confirmation link is on its way to %s.',
 					'linker-tools'
 				),
 				to
