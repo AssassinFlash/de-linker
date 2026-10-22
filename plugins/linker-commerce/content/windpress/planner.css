@@ -72,7 +72,7 @@
   [data-linker-planner] .lp-edit-actions { display: flex; align-items: center; gap: 6px; }
   [data-linker-planner] .lp-save-state { color: var(--proto-neutral-500); font-size: 12px; margin-right: 14px; }
   [data-linker-planner] .lp-project-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); }
-  [data-linker-planner] .lp-project-aside { border-right: 1px solid var(--lp-line); padding: 40px 28px; background: rgb(255 255 255 / .5); }
+  [data-linker-planner] .lp-project-aside { min-width: 0; border-right: 1px solid var(--lp-line); padding: 40px 28px; background: rgb(255 255 255 / .5); }
   [data-linker-planner] .lp-project-aside h1 { font-size: 24px; margin-top: 16px; overflow-wrap: anywhere; }
   [data-linker-planner] .lp-project-aside p { color: var(--proto-neutral-500); font-size: 13px; }
   [data-linker-planner] .lp-project-aside nav { margin-top: 32px; display: grid; gap: 4px; }
@@ -83,7 +83,7 @@
   [data-linker-planner] .lp-source-note svg { flex-shrink: 0; }
   [data-linker-planner] .lp-editor-main { max-width: 1040px; width: 100%; min-width: 0; padding: 12px clamp(24px, 4vw, 64px) 64px; }
   [data-linker-planner] .lp-brief-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
-  [data-linker-planner] .lp-section { padding: 32px 0; border-bottom: 1px solid var(--lp-line); scroll-margin-top: calc(var(--lp-site-header-height, 0px) + var(--lp-project-bar-height, 0px) + 16px); }
+  [data-linker-planner] .lp-section { padding: 32px 0; border-bottom: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-section-heading { display: flex; gap: 18px; margin-bottom: 24px; }
   [data-linker-planner] .lp-section-heading p { color: var(--proto-neutral-500); font-size: 13px; margin: 8px 0 0; max-width: 580px; }
   [data-linker-planner] .lp-index { font-family: var(--proto-font-mono); color: var(--proto-teal-700); font-size: 11px; padding-top: 5px; }
@@ -120,7 +120,7 @@
     [data-linker-planner] .lp-page { padding: 28px 20px; }
     [data-linker-planner] .lp-rail-caption { max-width: 130px; line-height: 1.4; }
     [data-linker-planner] .lp-rail-current { padding: 8px; font-size: 12px; }
-    [data-linker-planner] .lp-project-layout { grid-template-columns: 1fr; }
+    [data-linker-planner] .lp-project-layout { grid-template-columns: minmax(0, 1fr); }
     [data-linker-planner] .lp-project-aside { padding: 28px 20px 0; border: 0; }
     [data-linker-planner] .lp-project-aside nav { display: flex; gap: 16px; overflow-x: auto; margin-top: 16px; border-bottom: 1px solid var(--lp-line); }
     [data-linker-planner] .lp-project-aside nav a { flex-shrink: 0; font-size: 12px; }
@@ -140,4 +140,9 @@
   @media (prefers-reduced-motion: reduce) {
     [data-linker-planner] .lp-button { transition: none; }
   }
+}
+/* chrome.css gives every [id] an unlayered site-header offset. Override only
+   this application's actual anchor targets so both measured bars are included. */
+[data-linker-planner] .lp-section[id] {
+  scroll-margin-top: calc(var(--lp-site-header-height, 0px) + var(--lp-project-bar-height, 0px) + 16px);
 }

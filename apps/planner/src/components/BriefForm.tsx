@@ -56,11 +56,18 @@ export function BriefForm({
 	);
 	return (
 		<div className="lp-brief">
-			<section className="lp-section" aria-labelledby="lp-brief-use">
+			<section
+				className="lp-section"
+				id="lp-brief-use"
+				tabIndex={-1}
+				aria-labelledby="lp-brief-use-heading"
+			>
 				<div className="lp-section-heading">
 					<span className="lp-index">01</span>
 					<div>
-						<h2 id="lp-brief-use">{__("Project brief", "linker-tools")}</h2>
+						<h2 id="lp-brief-use-heading">
+							{__("Project brief", "linker-tools")}
+						</h2>
 						<p>
 							{__(
 								"Available information can be saved now and completed as the design develops.",
@@ -125,11 +132,18 @@ export function BriefForm({
 					</label>
 				</div>
 			</section>
-			<section className="lp-section" aria-labelledby="lp-site">
+			<section
+				className="lp-section"
+				id="lp-site"
+				tabIndex={-1}
+				aria-labelledby="lp-site-heading"
+			>
 				<div className="lp-section-heading">
 					<span className="lp-index">02</span>
 					<div>
-						<h2 id="lp-site">{__("Project location", "linker-tools")}</h2>
+						<h2 id="lp-site-heading">
+							{__("Project location", "linker-tools")}
+						</h2>
 						<p>
 							{__(
 								"The project location and time zone are independent of the interface language.",
@@ -258,11 +272,16 @@ export function BriefForm({
 					</label>
 				</div>
 			</section>
-			<section className="lp-section" aria-labelledby="lp-load">
+			<section
+				className="lp-section"
+				id="lp-load"
+				tabIndex={-1}
+				aria-labelledby="lp-load-heading"
+			>
 				<div className="lp-section-heading">
 					<span className="lp-index">03</span>
 					<div>
-						<h2 id="lp-load">
+						<h2 id="lp-load-heading">
 							{__("Electricity consumption", "linker-tools")}
 						</h2>
 						<p>
@@ -341,11 +360,16 @@ export function BriefForm({
 					</label>
 				</div>
 			</section>
-			<section className="lp-section" aria-labelledby="lp-notes">
+			<section
+				className="lp-section"
+				id="lp-notes"
+				tabIndex={-1}
+				aria-labelledby="lp-notes-heading"
+			>
 				<div className="lp-section-heading">
 					<span className="lp-index">04</span>
 					<div>
-						<h2 id="lp-notes">{__("Project notes", "linker-tools")}</h2>
+						<h2 id="lp-notes-heading">{__("Project notes", "linker-tools")}</h2>
 					</div>
 				</div>
 				<label className="lp-field">

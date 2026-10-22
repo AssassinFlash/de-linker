@@ -3,9 +3,9 @@
     "bin/build-manifest.mjs": "89a7e82dc4739d84ef183405493ff5b1f8f7dbd2a4c2721dc6cd6b75117d7f4f",
     "package-lock.json": "04384148d98a70d68c83b406644901a7da09588deea73bae038b03ce2632074d",
     "package.json": "9e01620c0a3ca8e28c38d6f93e1a789be8e619eb1b140a0070d42527317f3533",
-    "src/components/BriefForm.tsx": "cacb3556754f4470dfb9f5ad87d2c2a06b0694712249fb8422a873a6be877892",
+    "src/components/BriefForm.tsx": "557965836361d7920f4ee57884394a930f10c632950518c6a12a303035760cf3",
     "src/components/Icon.tsx": "af6f28e985d9dc7954a2a4ba397f16e0b547f05b9594694343afb967832588de",
-    "src/components/NewProject.tsx": "0d88714a680e92447a5e21d77f345eea9966c6481bd5d2702d900912c9406474",
+    "src/components/NewProject.tsx": "f12ab507a19a3b031fa6c202f06169a9d611cc919a7ef5ed2354b9232fcd3677",
     "src/components/Notice.tsx": "29194bbbf88789c66bf1f3fcc8cb1c6634b587971d26fc303429bd654653d4cb",
     "src/components/NumberField.tsx": "ac4c7b88bd98a6c353a0b32c5982fe227a1d61224ce0f8066f4d807192b95e4b",
     "src/components/ProjectEditor.tsx": "9e8c29fd5cc05c9e309460094ec4c1455de2e10eafc1318d6d1f19862f9aaa4c",
@@ -13,7 +13,7 @@
     "src/components/SessionBoundary.tsx": "f76d1019895130fd24bb87848968074379e4f46f7c5f575caceb66f3b79aed11",
     "src/components/Workspace.tsx": "322d790faa291e74407996cb47e5d6603d5029df9c8456beeb014f2db384eb06",
     "src/contracts/brief.schema.json": "85b37c9425f34924b5ae2d04386a78d195dac2afbf26dc998e95b364a316580c",
-    "src/data/DraftStore.ts": "96ea52fa7732816056be3878a4e24c4fb9f0d348132c518fedd8fb5fc8be86bf",
+    "src/data/DraftStore.ts": "6e4ab9dea94ca47c95e08fa91b0e8e68e742b84605d2dd566dcef4b3bfb1b69e",
     "src/data/PlannerClient.ts": "764230dae5a7e88f19e2be44c57a240375f6658470aa148c8eea4672ee30d3ef",
     "src/data/boundedBody.ts": "566f0c44420b605bf5bf043aa79d278494211e88b19745a458b576edd0bcc076",
     "src/data/config.ts": "26f1dfaad33c9cbd4d12ccceb4d154406deb4239d8663d2a794679cf72f16490",
@@ -39,7 +39,7 @@
     "vite.config.ts": "a9c99cf04c71606380d2f00f9dcd1c4b9245193a5652429d99ee37b6c72d9099"
   },
   "build": {
-    "assets/planner.js": "fdc5f5596a1b08075f19ce47fdf4f40fdd5dee1b3e9386759f7b8e1886864820",
+    "assets/planner.js": "8a78b839e6eabbdbc4cef3d8b802e6cf6b747d671ce83b82663c45a56283741d",
     "vite-manifest.json": "cccc8dc021bafcf5f4c568db7ac0921dd3e9fd0eeac4347fe8b21d8e7babcee1",
     "windpress.scan.txt": "2bf5208fc17b1a0ba7ca2ec156220d617118b62421b61c4ed38536c955ccd50b"
   }

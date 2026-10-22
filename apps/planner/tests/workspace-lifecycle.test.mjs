@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import React, { act } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
 
 const session = {
@@ -391,4 +392,130 @@ test("creation authentication failure rechecks once and explicitly retries the e
 	assert.equal(creates, 2);
 	assert.equal(bodies[0], bodies[1]);
 	assert.equal(created.title, "Synthetic new project");
+});
+
+test("a former identity's delayed creation cannot dispatch or restore cache and navigation", async (t) => {
+	for (const stage of ["write", "clear"])
+		await t.test(stage, async (t) => {
+			const fixture = setupDom();
+			history.replaceState(null, "", "/workspace/");
+			const { createRoot } = await import("react-dom/client");
+			const { SessionBoundary } =
+				await import("../src/components/SessionBoundary.tsx");
+			const { Workspace } = await import("../src/components/Workspace.tsx");
+			const { emptyBrief } = await import("../src/domain/brief.ts");
+			const gate = deferred();
+			const oldSession = { ...session, kind: "user" };
+			const newSession = { ...oldSession, query_scope: "9".repeat(64) };
+			let nextSession = oldSession,
+				reached = false,
+				calls = 0,
+				cache,
+				currentScope;
+			const oldAck = {
+				id: "1".repeat(32),
+				title: "OLD OWNER SYNTHETIC PROJECT",
+				revision: 1,
+				input_sha256: "2".repeat(64),
+				inputs: { brief: emptyBrief() },
+			};
+			const store = {
+				async readCreation() {
+					return null;
+				},
+				async writeCreation() {
+					if (stage === "write") {
+						reached = true;
+						await gate.promise;
+					}
+				},
+				async clearCreation() {
+					if (stage === "clear") {
+						reached = true;
+						await gate.promise;
+					}
+				},
+			};
+			const client = {
+				invalidate() {},
+				async bootstrap() {
+					return nextSession;
+				},
+				async query() {
+					return { items: [], next: null };
+				},
+				async send() {
+					calls++;
+					return oldAck;
+				},
+			};
+			const config = {
+				locale: "en-GB",
+				countries: { NO: "Norway" },
+				baseUrl: location.origin + "/api/",
+				nonceUrl: location.origin + "/nonce",
+			};
+			function Track(props) {
+				cache = useQueryClient();
+				currentScope = props.session.query_scope;
+				return React.createElement(Workspace, props);
+			}
+			const root = createRoot(fixture.element);
+			t.after(() => fixture.dispose(root));
+			await act(async () =>
+				root.render(
+					React.createElement(
+						React.StrictMode,
+						null,
+						React.createElement(SessionBoundary, { client }, (value, recheck) =>
+							React.createElement(Track, {
+								key: value.query_scope,
+								session: value,
+								client,
+								store,
+								config,
+								recheck,
+							}),
+						),
+					),
+				),
+			);
+			await until(() =>
+				[...document.querySelectorAll("button")].some(
+					(button) =>
+						button.textContent.includes("New project") && !button.disabled,
+				),
+			);
+			await act(async () =>
+				[...document.querySelectorAll("button")]
+					.find((button) => button.textContent.includes("New project"))
+					.click(),
+			);
+			await enter(document.querySelector("input"), oldAck.title);
+			await act(async () =>
+				document
+					.querySelector("form")
+					.dispatchEvent(
+						new window.Event("submit", { bubbles: true, cancelable: true }),
+					),
+			);
+			await until(() => reached);
+			nextSession = newSession;
+			await act(async () => window.dispatchEvent(new window.Event("focus")));
+			await until(
+				() =>
+					currentScope === newSession.query_scope &&
+					!document.querySelector(".lp-workspace").parentElement.hidden,
+			);
+			assert.equal(location.search, "");
+			await act(async () => gate.resolve());
+			assert.equal(currentScope, newSession.query_scope);
+			assert.equal(location.search, "");
+			assert.equal(
+				cache.getQueryData([oldSession.query_scope, "project", oldAck.id]),
+				undefined,
+			);
+			assert.ok(!document.body.textContent.includes(oldAck.title));
+			assert.equal(calls, stage === "write" ? 0 : 1);
+		});
 });

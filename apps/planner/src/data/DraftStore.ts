@@ -50,11 +50,19 @@ export class DraftStore {
 		await committed;
 	}
 
-	async clearCreation(scope: string): Promise<void> {
+	async clearCreation(scope: string, body: string): Promise<void> {
+		storageKey(scope, "0".repeat(32));
+		validateCreation(body);
 		const db = await this.open();
 		const transaction = db.transaction(CREATIONS, "readwrite");
 		const committed = complete(transaction);
-		transaction.objectStore(CREATIONS).delete(scope);
+		const store = transaction.objectStore(CREATIONS);
+		const read = store.get(scope);
+		read.onsuccess = () => {
+			// A late acknowledgement must not erase a newer pending intent
+			// written by another view in the same verified browser scope.
+			if (read.result?.body === body) store.delete(scope);
+		};
 		await committed;
 	}
 

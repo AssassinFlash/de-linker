@@ -29,7 +29,9 @@ export function NewProject({
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [checking, setChecking] = useState(true);
 	const intent = useRef<string | null>(null);
+	const lifetime = useRef(0);
 	useEffect(() => {
+		lifetime.current++;
 		let active = true;
 		void store
 			.readCreation(session.query_scope)
@@ -49,10 +51,12 @@ export function NewProject({
 			});
 		return () => {
 			active = false;
+			lifetime.current++;
 		};
 	}, [session.query_scope, store]);
 	async function submit() {
 		if (busy || !title.trim()) return;
+		const instance = lifetime.current;
 		intent.current ??= wire(
 			{
 				schema_version: 1,
@@ -68,18 +72,25 @@ export function NewProject({
 		try {
 			await store
 				.writeCreation(session.query_scope, intent.current)
-				.catch(() => setRecoveryFailed(true));
+				.catch(() => {
+					if (lifetime.current === instance) setRecoveryFailed(true);
+				});
+			if (lifetime.current !== instance) return;
 			const project = readProject(
 				await client.send("projects/create", intent.current),
 			);
 			await store
-				.clearCreation(session.query_scope)
-				.catch(() => setRecoveryFailed(true));
+				.clearCreation(session.query_scope, intent.current)
+				.catch(() => {
+					if (lifetime.current === instance) setRecoveryFailed(true);
+				});
+			if (lifetime.current !== instance) return;
 			intent.current = null;
 			setOpen(false);
 			setTitle("");
 			created(project);
 		} catch (error) {
+			if (lifetime.current !== instance) return;
 			setFailed(true);
 			if (
 				error instanceof ApiError &&
@@ -89,7 +100,7 @@ export function NewProject({
 			)
 				recheck();
 		} finally {
-			setBusy(false);
+			if (lifetime.current === instance) setBusy(false);
 		}
 	}
 	if (!open)
