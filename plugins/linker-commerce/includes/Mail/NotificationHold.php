@@ -15,8 +15,11 @@ use WP_Error;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Inquiry\Assessment\StructuredMeta;
 
-/** A hold preserves the original inquiry and message; labels never create one. */
+/**
+ * A hold preserves the original inquiry and message; labels never create one.
+ */
 final class NotificationHold {
+
 	public const META     = '_linker_incident_hold';
 	public const RELEASED = '_linker_incident_released';
 	public const EVENT    = '_linker_notification_release';
@@ -79,8 +82,8 @@ final class NotificationHold {
 	/**
 	 * Restore one retained message. The HTTP controller also verifies its nonce.
 	 *
-	 * @param int    $id Native inquiry ID.
-	 * @param string $reference Hold shown to the staff member.
+	 * @param  int    $id        Native inquiry ID.
+	 * @param  string $reference Hold shown to the staff member.
 	 * @return array<string, mixed>|WP_Error Persisted release audit or explicit error.
 	 */
 	public static function release( int $id, string $reference ): array|WP_Error {
@@ -105,8 +108,8 @@ final class NotificationHold {
 				$job    = (int) ( Queue::data( $order )['notification_job'] ?? 0 );
 				$stored = ( new JobStore() )->load( $job );
 				if ( ! self::held( $order ) || ! hash_equals( self::reference( $order ), $reference ) || null === $stored || 'private' !== get_post_status( $job ) || ! $stored['message']->is_internal() || ( self::inquiry( $job ) > 0 && self::inquiry( $job ) !== $id ) ) {
-					$result = new WP_Error( 'notification_changed', __( 'This notification has changed. Reload the inquiry before trying again.', 'linker-commerce' ) );
-					return;
+						$result = new WP_Error( 'notification_changed', __( 'This notification has changed. Reload the inquiry before trying again.', 'linker-commerce' ) );
+						return;
 				}
 				$running = as_get_scheduled_actions(
 					array(
@@ -134,11 +137,11 @@ final class NotificationHold {
 					);
 					$note  = $order->add_order_note( __( 'Notification released by staff.', 'linker-commerce' ), 0, true );
 					if ( $note <= 0 || ! add_comment_meta( $note, self::EVENT, wp_slash( $event ), true ) || get_comment_meta( $note, self::EVENT, true ) !== $event ) {
-						throw new \RuntimeException( 'notification_release_audit_failed' );
+								throw new \RuntimeException( 'notification_release_audit_failed' );
 					}
 					// Cancel any stale pending attempt before restoring one future attempt.
 					as_unschedule_all_actions( Outbox::HOOK, array( $job ), Outbox::GROUP );
-					$slot   = max( time() + 2, ( new Throttle() )->next_slot( time() ) );
+					$slot   = max( time() + 2, ( new Throttle() )->next_message_slot( time(), $stored['message'], true ) );
 					$action = as_schedule_single_action( $slot, Outbox::HOOK, array( $job ), Outbox::GROUP, true );
 					if ( $action <= 0 ) {
 						throw new \RuntimeException( 'notification_release_schedule_failed' );
@@ -146,6 +149,7 @@ final class NotificationHold {
 					$event['action'] = $action;
 					$event['event']  = $note;
 					update_post_meta( $job, JobStore::INQUIRY_META, $id );
+					( new JobStore() )->promote( $job );
 					delete_post_meta( $job, self::META );
 					update_post_meta( $job, self::RELEASED, wp_slash( $event ) );
 					$order->delete_meta_data( self::META );

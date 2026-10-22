@@ -109,7 +109,7 @@ final class TestMode {
 		if ( '' === $address ) {
 			return $message;
 		}
-		return new Message( array( $address ), $message->subject, $message->body, self::without_copies( $message->headers ), $message->attachments );
+		return new Message( array( $address ), $message->subject, $message->body, self::without_copies( $message->headers ), $message->attachments, $message->critical, $message->category );
 	}
 
 	/**

@@ -29,8 +29,12 @@ final class ModuleTest extends TestCase {
 	 * Every wp_mail() call goes through the outbox; retries, the queue type and the email language are hooked.
 	 */
 	public function test_register_adds_the_hooks(): void {
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, \Linker\Commerce\Health\ReviewReminder::class, 'tick', 20 );
 		$this->expect_action_on_any( 'rest_api_init', \Linker\Commerce\Mail\SmtpHealth::class, 'register_routes' );
-			$jobs   = new JobStore();
+			$producer = new \Linker\Commerce\Mail\Producer();
+		WP_Mock::expectFilterAdded( 'woocommerce_mail_callback', array( $producer, 'woocommerce' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'retrieve_password_notification_email', array( $producer, 'password_reset' ), PHP_INT_MAX );
+		$jobs       = new JobStore();
 			$outbox = new Outbox( $jobs, new Throttle() );
 			$locale = new EmailLocale();
 			$policy = new EmailPolicy();
@@ -45,7 +49,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_email_recipient_customer_reset_password', array( $locale, 'password_recipient' ), 10, 3 );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $policy, 'switch_off_others' ), 1000 );
 
-			( new Module( $outbox, $jobs, $locale, $policy ) )->register();
+			( new Module( $outbox, $jobs, $locale, $policy, new \Linker\Commerce\Mail\SmtpHealth(), $producer ) )->register();
 
 		$this->assertConditionsMet();
 	}

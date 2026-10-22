@@ -516,6 +516,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	 */
 	public function test_target_receipt_cap_retains_business_and_team_with_no_reflected_spam(): void {
 		$target = 'same-target@example.test';
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		$store = new \Linker\Commerce\Mail\JobStore();
 		for ( $i = 0; $i < 3; ++$i ) {
@@ -556,6 +557,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	 * Login succeeds normally; only repeated failed use needs a scoped proof.
 	 */
 	public function test_genie_native_handoffs_report_all_suppressed_receipts(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		foreach ( array( 'contact', 'inquiry' ) as $door ) {
 			foreach ( array( 'target_cap', 'unavailable' ) as $reason ) {

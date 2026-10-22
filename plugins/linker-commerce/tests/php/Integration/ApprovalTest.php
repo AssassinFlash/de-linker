@@ -174,6 +174,7 @@ final class ApprovalTest extends IntegrationTestCase {
 	 * the team's reason; then the way back.
 	 */
 	public function test_the_three_actions_mail_the_customer_and_revert(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$customer = $this->customer();
 		update_user_meta( $customer->get_id(), 'locale', 'de_DE_formal' );
@@ -277,6 +278,7 @@ final class ApprovalTest extends IntegrationTestCase {
 	 * the mail chain still hands the message over for the customer's address.
 	 */
 	public function test_test_mode_delivers_to_one_address_only(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$test_mode = new TestMode();
 		$before    = $test_mode->address();
@@ -344,6 +346,7 @@ final class ApprovalTest extends IntegrationTestCase {
 		 * the reason is in the email.
 		 */
 	public function test_a_pending_account_reads_a_status_and_keeps_inquiry_access(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$customer = $this->customer();
 		update_user_meta( $customer->get_id(), 'locale', 'en_US' );
@@ -512,6 +515,7 @@ final class ApprovalTest extends IntegrationTestCase {
 	 * @param string $reason The team's reason, required for restrict and reject.
 	 */
 	private function approval_mail_body( string $locale, string $status, string $reason = '' ): string {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$customer = $this->customer();
 		update_user_meta( $customer->get_id(), 'locale', $locale );

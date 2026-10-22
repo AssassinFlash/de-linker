@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-22T07:19:36+00:00\n"
+"POT-Creation-Date: 2026-10-22T09:32:29+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1203,38 +1203,38 @@ msgid "SMTP configured; no SMTP attempt has been recorded."
 msgstr "SMTP ist konfiguriert. Es wurde noch kein SMTP-Versuch erfasst."
 
 #. translators: %s: option name.
-#: includes/Health/Monitor.php:119
+#: includes/Health/Monitor.php:122
 #, php-format
 msgid "the address option %s is empty"
 msgstr "die Adressoption %s ist leer"
 
 #. translators: %d: HTTP status code.
-#: includes/Health/Monitor.php:131
+#: includes/Health/Monitor.php:134
 #, php-format
 msgid "the service answered HTTP %d instead of 200"
 msgstr "der Dienst antwortete mit HTTP %d statt 200"
 
-#: includes/Health/Monitor.php:145
+#: includes/Health/Monitor.php:148
 #: templates/emails/linker-genie-conversation.php:37
 msgid "Genie"
 msgstr "Genie"
 
-#: includes/Health/Monitor.php:145
+#: includes/Health/Monitor.php:148
 msgid "engine"
 msgstr "Engine"
 
-#: includes/Health/Monitor.php:154
+#: includes/Health/Monitor.php:157
 msgid "The Solution Configurator"
 msgstr "Der Lösungskonfigurator"
 
 #. translators: %s: service name (Genie or engine).
-#: includes/Health/Monitor.php:166
+#: includes/Health/Monitor.php:169
 #, php-format
 msgid "The %s service failed its health check"
 msgstr "Gesundheitsprüfung fehlgeschlagen: Dienst %s"
 
 #. translators: 1: service name, 2: address, 3: reason, 4: UTC time, 5: what uses the service.
-#: includes/Health/Monitor.php:171
+#: includes/Health/Monitor.php:174
 #, php-format
 msgid ""
 "The daily health check could not reach the %1$s service.\n"
@@ -1255,6 +1255,51 @@ msgstr ""
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
 
+#: includes/Health/PendingReviews.php:25
+msgid "Inquiries awaiting staff review"
+msgstr "Anfragen zur Prüfung durch das Team"
+
+#: includes/Health/PendingReviews.php:36
+msgid "Pending inquiry counts are unavailable."
+msgstr "Die Anzahl der ausstehenden Anfragen ist nicht verfügbar."
+
+#. translators: %d: saved inquiries awaiting staff review.
+#: includes/Health/PendingReviews.php:48
+#, php-format
+msgid "Saved inquiries awaiting staff review: %d."
+msgstr "Gespeicherte Anfragen zur manuellen Prüfung: %d."
+
+#: includes/Health/PendingReviews.php:50
+msgid "Review saved inquiries"
+msgstr "Gespeicherte Anfragen prüfen"
+
+#. translators: %s: age of the oldest saved inquiry.
+#: includes/Health/PendingReviews.php:52
+#, php-format
+msgid "Oldest inquiry: %s ago."
+msgstr "Älteste Anfrage: vor %s."
+
+#: includes/Health/PendingReviews.php:58
+msgid "No saved inquiry is awaiting staff review."
+msgstr "Es wartet keine gespeicherte Anfrage auf die Prüfung durch das Team."
+
+#: includes/Health/ReviewReminder.php:104
+msgid "Saved inquiries need staff review"
+msgstr "Gespeicherte Anfragen müssen vom Team geprüft werden"
+
+#. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL.
+#: includes/Health/ReviewReminder.php:106
+#, php-format
+msgid ""
+"Saved inquiries awaiting staff review: %1$d.\n"
+"Oldest inquiry: %2$s ago.\n"
+"Count checked: %3$s.\n"
+"Review saved inquiries: %4$s\n"
+"\n"
+"These inquiries are saved. Their individual team notifications have not been "
+"released."
+msgstr "Gespeicherte Anfragen zur manuellen Prüfung: %1$d.\nÄlteste Anfrage: vor %2$s.\nStand der Zählung: %3$s.\nGespeicherte Anfragen prüfen: %4$s\n\nDiese Anfragen sind gespeichert. Die einzelnen Benachrichtigungen an das Team sind noch nicht freigegeben."
+
 #: includes/Inquiry/Assessment/Admin.php:29
 msgid "Inquiry review"
 msgstr "Anfrage prüfen"
@@ -1270,7 +1315,9 @@ msgstr "Ersteinschätzung durch Jev"
 
 #: includes/Inquiry/Assessment/Admin.php:53
 msgid "Model labels do not reject inquiries or stop team notifications."
-msgstr "Modellbewertungen führen weder zur Ablehnung einer Anfrage noch zum Anhalten der Teambenachrichtigung."
+msgstr ""
+"Modellbewertungen führen weder zur Ablehnung einer Anfrage noch zum Anhalten "
+"der Teambenachrichtigung."
 
 #: includes/Inquiry/Assessment/Admin.php:54
 msgid "Diagnostic"
@@ -1292,7 +1339,7 @@ msgstr "Ursprüngliches Modellergebnis"
 #: includes/Inquiry/Assessment/Admin.php:137
 #: includes/Inquiry/Assessment/Reviews.php:103
 #: includes/Inquiry/Assessment/Reviews.php:108
-#: includes/Mail/NotificationHold.php:90
+#: includes/Mail/NotificationHold.php:99
 msgid "This inquiry is unavailable."
 msgstr "Diese Anfrage ist nicht verfügbar."
 
@@ -1632,7 +1679,9 @@ msgstr "Benachrichtigung zurückgehalten"
 msgid ""
 "The inquiry and its original notification are retained. Releasing the "
 "notification queues the same message for delivery."
-msgstr "Die Anfrage und die ursprüngliche Benachrichtigung bleiben gespeichert. Mit der Freigabe stellen Sie dieselbe Nachricht in die Versandwarteschlange."
+msgstr ""
+"Die Anfrage und die ursprüngliche Benachrichtigung bleiben gespeichert. Mit "
+"der Freigabe stellen Sie dieselbe Nachricht in die Versandwarteschlange."
 
 #: includes/Inquiry/Assessment/NotificationHoldView.php:37
 msgid "Confirmed abuse campaign"
@@ -1652,7 +1701,9 @@ msgstr "ID der ursprünglichen Benachrichtigung"
 
 #: includes/Inquiry/Assessment/NotificationHoldView.php:39
 msgid "The original notification is unavailable. It has not been recreated."
-msgstr "Die ursprüngliche Benachrichtigung ist nicht verfügbar. Es wurde keine neue Nachricht erstellt."
+msgstr ""
+"Die ursprüngliche Benachrichtigung ist nicht verfügbar. Es wurde keine neue "
+"Nachricht erstellt."
 
 #: includes/Inquiry/Assessment/NotificationHoldView.php:44
 msgid "Release this notification"
@@ -1894,12 +1945,12 @@ msgstr ""
 "eine Anfrage eingegangen ist."
 
 #. translators: {order_number}: inquiry number, {company}: customer's company.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:109
+#: includes/Inquiry/Emails/NewInquiryEmail.php:115
 msgid "New inquiry #{order_number} from {company}"
 msgstr "Neue Anfrage #{order_number} von {company}"
 
 #. translators: {order_number}: inquiry number.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:117
+#: includes/Inquiry/Emails/NewInquiryEmail.php:123
 msgid "New inquiry #{order_number}"
 msgstr "Neue Anfrage #{order_number}"
 
@@ -2134,32 +2185,38 @@ msgctxt "Inquiry status"
 msgid "Cancelled"
 msgstr "Storniert"
 
-#: includes/Mail/JobStore.php:47
+#: includes/Mail/JobStore.php:76
 msgid "Queued emails"
 msgstr "E-Mails in der Warteschlange"
 
-#: includes/Mail/NotificationHold.php:82
+#: includes/Mail/NotificationHold.php:91
 msgid "You cannot release this notification."
 msgstr "Sie haben keine Berechtigung, diese Benachrichtigung freizugeben."
 
-#: includes/Mail/NotificationHold.php:84
+#: includes/Mail/NotificationHold.php:93
 msgid ""
 "This notification is being processed. Reload the inquiry before trying again."
-msgstr "Diese Benachrichtigung wird gerade verarbeitet. Laden Sie die Anfrage neu, bevor Sie es erneut versuchen."
+msgstr ""
+"Diese Benachrichtigung wird gerade verarbeitet. Laden Sie die Anfrage neu, "
+"bevor Sie es erneut versuchen."
 
-#: includes/Mail/NotificationHold.php:102
+#: includes/Mail/NotificationHold.php:111
 msgid "This notification has changed. Reload the inquiry before trying again."
-msgstr "Diese Benachrichtigung hat sich geändert. Laden Sie die Anfrage neu, bevor Sie es erneut versuchen."
+msgstr ""
+"Diese Benachrichtigung hat sich geändert. Laden Sie die Anfrage neu, bevor "
+"Sie es erneut versuchen."
 
-#: includes/Mail/NotificationHold.php:129
+#: includes/Mail/NotificationHold.php:138
 msgid "Notification released by staff."
 msgstr "Benachrichtigung durch einen Mitarbeiter freigegeben."
 
-#: includes/Mail/NotificationHold.php:164
+#: includes/Mail/NotificationHold.php:174
 msgid ""
 "The notification could not be released. Reload the inquiry before trying "
 "again."
-msgstr "Die Benachrichtigung konnte nicht freigegeben werden. Laden Sie die Anfrage neu, bevor Sie es erneut versuchen."
+msgstr ""
+"Die Benachrichtigung konnte nicht freigegeben werden. Laden Sie die Anfrage "
+"neu, bevor Sie es erneut versuchen."
 
 #: includes/Mail/SmtpHealth.php:58
 msgid "SMTP configured"
@@ -5530,6 +5587,29 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#, php-format
+#~ msgid ""
+#~ "%1$d saved inquiries need verification or staff review.\n"
+#~ "Oldest inquiry: %2$s ago.\n"
+#~ "Count checked: %3$s.\n"
+#~ "Review saved inquiries: %4$s\n"
+#~ "\n"
+#~ "These inquiries are saved. Their individual team notifications have not "
+#~ "been released."
+#~ msgstr ""
+#~ "%1$d gespeicherte Anfragen benötigen eine Verifizierung oder eine Prüfung "
+#~ "durch das Team.\n"
+#~ "Älteste Anfrage: vor %2$s.\n"
+#~ "Stand der Zählung: %3$s.\n"
+#~ "Gespeicherte Anfragen prüfen: %4$s\n"
+#~ "\n"
+#~ "Diese Anfragen sind gespeichert. Die einzelnen Benachrichtigungen an das "
+#~ "Team sind noch nicht freigegeben."
+
+#, php-format
+#~ msgid "%d saved inquiries need staff review."
+#~ msgstr "%d gespeicherte Anfragen müssen vom Team geprüft werden."
 
 #~ msgid "Initial guidance only. Every inquiry is accepted and notified."
 #~ msgstr ""

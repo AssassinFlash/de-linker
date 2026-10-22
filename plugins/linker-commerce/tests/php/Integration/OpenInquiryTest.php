@@ -327,6 +327,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$product = $this->product( '125' );
 		WC()->cart->add_to_cart( $product->get_id(), 2 );
 		WC()->cart->calculate_totals();
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$details = Submission::from_post(
 			array(
@@ -605,6 +606,7 @@ final class OpenInquiryTest extends IntegrationTestCase {
 				}
 			}
 		);
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$marker  = self::newest_mail_job();
 		$details = Submission::from_post(

@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Integration;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Mail\OptionBudgetLedger;
 use Linker\Commerce\Mail\TestMode;
 use PHPUnit\Framework\TestCase;
 use WC_Customer;
@@ -128,11 +129,18 @@ abstract class IntegrationTestCase extends TestCase {
 	private function isolate_mail(): void {
 		$test_to = get_option( TestMode::OPTION );
 		( new TestMode() )->enable( self::TESTER );
+		$ledger = get_option( OptionBudgetLedger::OPTION );
+		delete_option( OptionBudgetLedger::OPTION );
 		$sends  = get_option( Throttle::OPTION );
 		$marker = self::newest_mail_job();
 		delete_option( Throttle::OPTION );
 		$this->later(
-			static function () use ( $sends, $marker, $test_to ): void {
+			static function () use ( $sends, $marker, $test_to, $ledger ): void {
+				if ( false === $ledger ) {
+					delete_option( OptionBudgetLedger::OPTION );
+				} else {
+					update_option( OptionBudgetLedger::OPTION, $ledger, false );
+				}
 				if ( false === $test_to ) {
 					delete_option( TestMode::OPTION );
 				} else {

@@ -92,6 +92,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		}
 		// Fill the minute quota so every call is stored instead of sent at
 		// once (MailChainTest does the same): a sent call never becomes a row.
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 	}
 

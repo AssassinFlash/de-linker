@@ -15,6 +15,7 @@ namespace Linker\Commerce\Mail;
  */
 final class Module {
 
+
 	/**
 	 * Sets up the module.
 	 *
@@ -23,14 +24,17 @@ final class Module {
 	 * @param EmailLocale $locale The email language rule.
 	 * @param EmailPolicy $policy The WooCommerce emails that stay on.
 	 * @param SmtpHealth  $health Staff web-context readback of SMTP status.
+	 * @param Producer    $producer Native mail priority contexts.
 	 */
 	public function __construct(
 		private readonly Outbox $outbox,
 		private readonly JobStore $jobs,
 		private readonly EmailLocale $locale,
 		private readonly EmailPolicy $policy,
-		private readonly SmtpHealth $health = new SmtpHealth()
-	) {}
+		private readonly SmtpHealth $health = new SmtpHealth(),
+		private readonly Producer $producer = new Producer()
+	) {
+	}
 
 	/**
 	 * Adds the module's hooks.
@@ -38,8 +42,11 @@ final class Module {
 	public function register(): void {
 		add_action( 'rest_api_init', array( $this->health, 'register_routes' ) );
 		add_action( 'init', array( $this->jobs, 'register_post_type' ) );
-			add_filter( 'pre_wp_mail', array( $this->outbox, 'intercept' ), 10, 2 );
-			add_action( 'wp_mail_failed', array( $this->outbox, 'remember_error' ) );
+		add_action( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, array( new \Linker\Commerce\Health\ReviewReminder(), 'tick' ), 20 );
+				add_filter( 'woocommerce_mail_callback', array( $this->producer, 'woocommerce' ), 10, 2 );
+		add_filter( 'retrieve_password_notification_email', array( $this->producer, 'password_reset' ), PHP_INT_MAX );
+		add_filter( 'pre_wp_mail', array( $this->outbox, 'intercept' ), 10, 2 );
+		add_action( 'wp_mail_failed', array( $this->outbox, 'remember_error' ) );
 		add_action( 'phpmailer_init', array( $this->outbox, 'configure_mailer' ) );
 		add_action( Outbox::HOOK, array( $this->outbox, 'retry' ) );
 		add_filter( 'woocommerce_allow_switching_email_locale', array( $this->locale, 'allow' ), 10, 2 );

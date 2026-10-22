@@ -13,6 +13,8 @@ use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Mail\OptionBudgetLedger;
+use Linker\Commerce\Tests\Fixtures\BudgetMemory;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WP_Error;
@@ -94,6 +96,11 @@ final class OutboxTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
+		WP_Mock::userFunction( 'clean_post_cache', array( 'return' => null ) );
+		$GLOBALS['wpdb']         = Mockery::mock( \wpdb::class );
+		$GLOBALS['wpdb']->prefix = 'wp_';
+		$GLOBALS['wpdb']->allows( 'prepare' )->andReturn( 'lock' );
+		$GLOBALS['wpdb']->allows( 'get_var' )->andReturn( '1' );
 		WP_Mock::userFunction( 'get_option', array( 'return' => fn ( string $name, $default_value = false ) => $this->options[ $name ] ?? $default_value ) );
 		WP_Mock::userFunction(
 			'update_option',
@@ -167,7 +174,7 @@ final class OutboxTest extends TestCase {
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => str_contains( $email, '@' ) ? trim( $email ) : '' ) );
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): string|false => 1 === preg_match( '/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/', $email ) ? $email : false ) );
 
-		$this->outbox = new Outbox( new JobStore(), new Throttle() );
+		$this->outbox = new Outbox( new JobStore(), new Throttle( new BudgetMemory( $this->options ) ) );
 		WP_Mock::userFunction(
 			'wp_mail',
 			array(
@@ -232,7 +239,7 @@ final class OutboxTest extends TestCase {
 		$this->assertSame( array( 'sales@de-linker.com' ), $this->delivered[0][0] );
 		$this->assertContains( 'Bcc: a@example.test, b@example.test, c@example.test', $this->delivered[0][3] );
 		$this->assertSame( array(), $this->posts );
-		$this->assertCount( 1, $this->options[ Throttle::OPTION ] );
+		$this->assertCount( 1, $this->options[ OptionBudgetLedger::OPTION ]['entries'] );
 		$this->assertSame(
 			array( 'Email "' . self::call()['subject'] . '" sent to sales@de-linker.com, bcc a@example.test, b@example.test, c@example.test.' ),
 			$this->sent_lines,
@@ -298,7 +305,8 @@ final class OutboxTest extends TestCase {
 	 */
 	public function test_waits_for_the_quota(): void {
 		$this->logger( 0, 0 );
-		$now                               = time();
+		$now = time();
+		unset( $this->options[ OptionBudgetLedger::OPTION ] );
 		$this->options[ Throttle::OPTION ] = array_fill( 0, Throttle::PER_MINUTE, $now - 10 );
 
 		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
@@ -324,7 +332,8 @@ final class OutboxTest extends TestCase {
 		$this->assertNotContains( 'Bcc: a@example.test, b@example.test, c@example.test', $headers, 'No blind copy reaches the mailer.' );
 		$this->assertContains( 'Content-Type: text/html; charset=UTF-8', $headers, 'Everything else about the message stays.' );
 
-		$now                               = time();
+		$now = time();
+		unset( $this->options[ OptionBudgetLedger::OPTION ] );
 		$this->options[ Throttle::OPTION ] = array_fill( 0, Throttle::PER_MINUTE, $now - 10 );
 		$this->assertTrue( $this->outbox->intercept( null, self::call() ) );
 

@@ -11,6 +11,7 @@ namespace Linker\Commerce\Health;
 
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Mail\Message;
+use Linker\Commerce\Mail\Producer;
 use WP_Error;
 
 /**
@@ -25,6 +26,7 @@ use WP_Error;
  * own: the WP-Cron daily event, the HTTP API, and the mail queue.
  */
 final class Monitor {
+
 
 	/**
 	 * WP-Cron hook and Action Scheduler group of the daily check.
@@ -63,7 +65,8 @@ final class Monitor {
 	 * @param string  $plugin_file Absolute path of the main plugin file.
 	 * @param Options $options     The plugin settings.
 	 */
-	public function __construct( private readonly string $plugin_file, private readonly Options $options ) {}
+	public function __construct( private readonly string $plugin_file, private readonly Options $options ) {
+	}
 
 	/**
 	 * Adds the monitor's hooks.
@@ -107,15 +110,15 @@ final class Monitor {
 	/**
 	 * Asks one service whether it is up.
 	 *
-	 * @param string $base   The service's address, as instance configuration.
-	 * @param string $option The option the address came from.
+	 * @param  string $base   The service's address, as instance configuration.
+	 * @param  string $option The option the address came from.
 	 * @return string Why the service failed, or '' when it answered.
 	 */
 	private function check( string $base, string $option ): string {
 		$base = trim( $base );
 		if ( '' === $base ) {
 			return sprintf(
-				/* translators: %s: option name. */
+			/* translators: %s: option name. */
 				__( 'the address option %s is empty', 'linker-commerce' ),
 				$option
 			);
@@ -127,7 +130,7 @@ final class Monitor {
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( $code < 200 || $code >= 300 ) {
 			return sprintf(
-				/* translators: %d: HTTP status code. */
+			/* translators: %d: HTTP status code. */
 				__( 'the service answered HTTP %d instead of 200', 'linker-commerce' ),
 				$code
 			);
@@ -162,12 +165,12 @@ final class Monitor {
 	 */
 	private function alert( string $service, string $failure ): void {
 		$subject = sprintf(
-			/* translators: %s: service name (Genie or engine). */
+		/* translators: %s: service name (Genie or engine). */
 			__( 'The %s service failed its health check', 'linker-commerce' ),
 			$this->label( $service )
 		);
 		$body = sprintf(
-			/* translators: 1: service name, 2: address, 3: reason, 4: UTC time, 5: what uses the service. */
+		/* translators: 1: service name, 2: address, 3: reason, 4: UTC time, 5: what uses the service. */
 			__(
 				"The daily health check could not reach the %1\$s service.\n\nAddress: %2\$s\nReason: %3\$s\nChecked: %4\$s UTC\n\n%5\$s uses this service. The check runs once a day and repeats this message on every failure.",
 				'linker-commerce'
@@ -186,6 +189,6 @@ final class Monitor {
 		if ( array() !== $bcc ) {
 			$headers[] = 'Bcc: ' . implode( ', ', $bcc );
 		}
-		wp_mail( $this->options->notify_to(), $subject, $body, $headers );
+		Producer::critical( fn () => wp_mail( $this->options->notify_to(), $subject, $body, $headers ) );
 	}
 }
