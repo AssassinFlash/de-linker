@@ -344,8 +344,8 @@ class ContactRequest {
 				$cards[] = array(
 					'after'   => (int) ( $note['messages'] ?? 0 ),
 					'email'   => (string) $note['email'],
-					// A note of before the receipt (none was sent then) reads as none.
-					'receipt' => ! empty( $note['receipt'] ),
+					// Asynchronous authorization can update the receipt after this note.
+					'receipt' => self::current_receipt( $note ),
 				);
 			}
 		}
@@ -434,8 +434,19 @@ class ContactRequest {
 		}
 		return array(
 			'email'   => (string) ( $last['email'] ?? '' ),
-			'receipt' => ! empty( $last['receipt'] ),
+			'receipt' => self::current_receipt( $last ),
 		);
+	}
+
+	/**
+	 * Read the current receipt state after asynchronous checks, retaining older notes.
+	 *
+	 * @param array<string, mixed> $note Trusted persisted hand-off note.
+	 */
+	private static function current_receipt( array $note ): bool {
+		$order_id = (int) ( $note['order'] ?? 0 );
+		$order    = $order_id > 0 && function_exists( 'wc_get_order' ) ? wc_get_order( $order_id ) : false;
+		return $order instanceof \WC_Order ? '' === (string) $order->get_meta( '_linker_receipt_skipped' ) : ! empty( $note['receipt'] );
 	}
 
 	/**

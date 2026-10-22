@@ -159,6 +159,9 @@ final class ResourceAdmissionTest extends TestCase {
 		$request->set_header( 'X-Linker-Operation', wp_generate_uuid4() );
 		$request->set_header( 'X-Linker-Proof', $this->proof( $action ) );
 		$request->set_body( (string) wp_json_encode( $input ) );
+		if ( 1 === preg_match( '#/conversations/(\d+)/email$#', $route, $capture ) ) {
+			$request->set_url_params( array( 'id' => (int) $capture[1] ) );
+		}
 		return $request;
 	}
 
@@ -255,7 +258,7 @@ final class ResourceAdmissionTest extends TestCase {
 		global $wp_filter;
 		$held = array();
 		foreach ( array( Conversations::COOKIE_ACTION, Conversations::BROWSER_ACTION ) as $hook ) {
-			$held[ $hook ] = $wp_filter[ $hook ] ?? null;
+			$held[ $hook ] = isset( $wp_filter[ $hook ] ) ? clone $wp_filter[ $hook ] : null;
 			remove_all_actions( $hook );
 		}
 		try {
@@ -605,6 +608,55 @@ final class ResourceAdmissionTest extends TestCase {
 			remove_filter( 'linker_commerce_receipt_budget_reason', $gate, 10 );
 			remove_filter( 'linker_tools_genie_confirm_address', $sender );
 			wp_delete_post( $id, true );
+		}
+	}
+	/** JSON cannot replace a foreign URL source with an owned ID before admission. */
+	public function test_conversation_mail_ownership_is_bound_to_the_native_url_id(): void {
+		global $wp_filter;
+		$held = array();
+		foreach ( array( 'linker_tools_set_conversation_cookie', 'linker_tools_set_genie_browser_cookie' ) as $hook ) {
+			$held[ $hook ] = isset( $wp_filter[ $hook ] ) ? clone $wp_filter[ $hook ] : null;
+			remove_all_actions( $hook );
+		}
+		try {
+			$own = ( new Conversations() )->open();
+		} finally {
+			foreach ( $held as $hook => $callbacks ) {
+				if ( null !== $callbacks ) {
+					$wp_filter[ $hook ] = $callbacks; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore fixture-held native cookie hooks.
+				}
+			}
+		}
+		$this->assertGreaterThan( 0, $own );
+		$foreign                       = wp_insert_post( array( 'post_type' => Conversations::POST_TYPE, 'post_status' => 'private', 'post_author' => 0 ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- native fixture record.
+		$this->created_conversations[] = $own;
+		$this->created_conversations[] = $foreign;
+		$policy                        = static fn( array $old, string $action, Identity $identity ): array => array( new Allowance( 'fixture_business_day', $identity->browser, 20, DAY_IN_SECONDS ) );
+		$calls                         = 0;
+		$handler                       = array(
+			'callback' => static function () use ( &$calls ): WP_REST_Response {
+						++$calls;
+						return new WP_REST_Response( array( 'accepted' => true ) );
+			},
+		);
+		add_filter( 'linker_commerce_public_business_limits', $policy, 10, 3 );
+		try {
+			$resources = new Resources();
+			$request   = $this->request( '/linker-ai/v1/genie/conversations/' . $foreign . '/email', array( 'id' => $own ), 'conversation_mail' );
+			$before    = get_option( Ledger::OPTION );
+			$refused   = $resources->dispatch( null, $request, '', $handler );
+			$this->assertInstanceOf( WP_Error::class, $refused );
+			$this->assertSame( 'linker_resource_conversation', $refused->get_error_code() );
+			$this->assertSame( $before, get_option( Ledger::OPTION ), 'A foreign URL must be refused before capacity or receipt mutation.' );
+			$this->assertSame( 0, $calls );
+			$request  = $this->request( '/linker-ai/v1/genie/conversations/' . $own . '/email', array( 'id' => $foreign ), 'conversation_mail' );
+			$accepted = $resources->dispatch( null, $request, '', $handler );
+			$this->assertInstanceOf( WP_REST_Response::class, $accepted );
+			$this->assertSame( 200, $accepted->get_status() );
+			$this->assertSame( 1, $calls, 'The same native ownership rule accepts the URL-owned source.' );
+		} finally {
+			remove_filter( 'linker_commerce_public_business_limits', $policy, 10 );
+			wp_set_current_user( 0 );
 		}
 	}
 	/** Actual PHP transport never treats an off/malformed private guard as permission. */
