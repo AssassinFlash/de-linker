@@ -1,0 +1,3 @@
+# Captured documents, licenses and extracted source text are immutable evidence.
+# Keep their exact bytes and avoid interpreting PDF metadata as a text diff.
+captured-files/* -diff -text
