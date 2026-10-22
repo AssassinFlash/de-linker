@@ -545,6 +545,10 @@ msgstr "Lösung speichern"
 msgid "Sending…"
 msgstr "Wird gesendet …"
 
+#: build/genie.js:1 build/hero.js
+msgid "Your email request is saved and awaiting automatic checks. You do not need to submit it again."
+msgstr "Ihre E-Mail-Anfrage ist gespeichert und wartet auf die automatische Prüfung. Bitte senden Sie sie nicht erneut."
+
 #. translators: %s is the email address the conversation goes to.
 #: build/genie.js:4 build/hero.js
 msgid "Your email to %s is on its way."

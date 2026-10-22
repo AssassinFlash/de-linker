@@ -106,7 +106,7 @@ export function EmailConversation( {
 				<button
 					type="button"
 					className="linker-genie-app__email-start"
-					disabled={ 'sending' === phase }
+					disabled={ 'sending' === phase || 'pending' === phase }
 					onClick={ onStart }
 				>
 					<MailIcon size={ 16 } />
@@ -119,6 +119,7 @@ export function EmailConversation( {
 					role={
 						'sent' === phase ||
 						'confirm' === phase ||
+						'pending' === phase ||
 						'sending' === phase
 							? 'status'
 							: 'alert'
@@ -145,6 +146,11 @@ function statusText( phase: Phase, to: string, limit: number ): string {
 			return '';
 		case 'sending':
 			return __( 'Sending…', 'linker-tools' );
+		case 'pending':
+			return __(
+				'Your email request is saved and awaiting automatic checks. You do not need to submit it again.',
+				'linker-tools'
+			);
 		case 'sent':
 			// The Outbox sends at once or queues for the next free slot, so
 			// "on its way" rather than "sent".
@@ -220,7 +226,9 @@ export function LinkResult( { outcome }: { outcome: EmailOutcome } ) {
 	return (
 		<p
 			className="linker-genie-app__notice"
-			role={ 'sent' === outcome ? 'status' : 'alert' }
+			role={
+				'sent' === outcome || 'pending' === outcome ? 'status' : 'alert'
+			}
 		>
 			{ linkResultText( outcome ) }
 		</p>
@@ -234,6 +242,11 @@ export function LinkResult( { outcome }: { outcome: EmailOutcome } ) {
  */
 function linkResultText( outcome: EmailOutcome ): string {
 	switch ( outcome ) {
+		case 'pending':
+			return __(
+				'Your email request is saved and awaiting automatic checks. You do not need to submit it again.',
+				'linker-tools'
+			);
 		case 'sent':
 			return __(
 				'Email address confirmed. The conversation is on its way.',
