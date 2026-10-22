@@ -45,6 +45,9 @@ final class Module {
 		add_action( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, array( new \Linker\Commerce\Health\ReviewReminder(), 'tick' ), 20 );
 				add_filter( 'woocommerce_mail_callback', array( $this->producer, 'woocommerce' ), 10, 2 );
 		add_filter( 'retrieve_password_notification_email', array( $this->producer, 'password_reset' ), PHP_INT_MAX );
+		add_filter( 'email_change_email', array( $this->producer, 'account_change' ), PHP_INT_MAX, 3 );
+		add_filter( 'password_change_email', array( $this->producer, 'account_change' ), PHP_INT_MAX, 3 );
+		add_filter( 'wp_password_change_notification_email', array( $this->producer, 'password_changed_admin' ), PHP_INT_MAX, 3 );
 		add_filter( 'pre_wp_mail', array( $this->outbox, 'intercept' ), 10, 2 );
 		add_action( 'wp_mail_failed', array( $this->outbox, 'remember_error' ) );
 		add_action( 'phpmailer_init', array( $this->outbox, 'configure_mailer' ) );

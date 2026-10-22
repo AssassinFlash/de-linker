@@ -25,6 +25,16 @@ use Linker\Commerce\Mail\Throttle;
  */
 final class MailChainTest extends IntegrationTestCase {
 
+	/** A VAT notification originates in the actual trusted native Woo producer.
+	 *
+	 * @param mixed ...$arguments Original wp_mail arguments.
+	 */
+	private function transaction_mail( mixed ...$arguments ): bool {
+		$email = WC()->mailer()->get_emails()[ \Linker\Commerce\Registration\Emails\VatReviewEmail::class ];
+		$send  = ( new \Linker\Commerce\Mail\Producer() )->woocommerce( static fn () => wp_mail( ...$arguments ), $email );
+		return $send();
+	}
+
 	/**
 	 * While the switch is on, a business notification leaves for the tester
 	 * address alone, and the outbox queue keeps the recipients the caller
@@ -52,7 +62,7 @@ final class MailChainTest extends IntegrationTestCase {
 				delete_option( Throttle::OPTION );
 			}
 		);
-		$this->assertTrue( wp_mail( array( 'sales@de-linker.com' ), $subject, 'A Linker partner VAT check needs review. Bcc: archive@example.test', array( 'Bcc: archive@example.test' ) ) );
+		$this->assertTrue( $this->transaction_mail( array( 'sales@de-linker.com' ), $subject, 'A Linker partner VAT check needs review. Bcc: archive@example.test', array( 'Bcc: archive@example.test' ) ) );
 
 		$queued = $this->queued( $tag );
 		$this->assertCount( 1, $queued, 'The outbox stored the call before sending it.' );
@@ -61,7 +71,7 @@ final class MailChainTest extends IntegrationTestCase {
 
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
-		$this->assertTrue( wp_mail( array( 'sales@de-linker.com' ), $subject, 'A Linker partner VAT check needs review.' ) );
+		$this->assertTrue( $this->transaction_mail( array( 'sales@de-linker.com' ), $subject, 'A Linker partner VAT check needs review.' ) );
 		$sent = $this->files_naming( $tag );
 		$this->assertNotSame( array(), $sent, 'The business notification was written.' );
 		foreach ( $sent as $file ) {

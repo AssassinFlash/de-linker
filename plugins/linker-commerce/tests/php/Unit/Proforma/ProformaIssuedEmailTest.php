@@ -37,6 +37,7 @@ final class ProformaIssuedEmailTest extends TestCase {
 	 */
 	public function test_sends_the_link(): void {
 		$this->plain_text();
+		$this->options( array() );
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
 		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_proforma-issued_notification', ProformaIssuedEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );

@@ -155,13 +155,18 @@ final class Resources {
 		}
 		$payload['_route']  = strtolower( $request->get_route() );
 		$payload['_method'] = $request->get_method();
-		$identity           = Identity::current();
+		$url                = $request->get_url_params();
+		$id                 = 'conversation_mail' === $action ? (int) ( $url['id'] ?? 0 ) : (int) $request->get_param( 'id' );
+		if ( 'conversation_mail' === $action ) {
+			// Match the native producer's URL source, never JSON/query ID overrides.
+			$payload['id'] = $id;
+		}
+		$identity = Identity::current();
 		if ( is_wp_error( $identity ) ) {
 			return 'observe' === $configuration->mode ? $result : $identity;
 		}
 		// Native ownership is retained; reject an explicitly foreign conversation
 		// before reserving any quota or exposing a previous receipt.
-		$id = (int) $request->get_param( 'id' );
 		if ( 'enforce' === $configuration->mode && in_array( $action, array( 'conversation_write', 'conversation_mail' ), true ) && $id > 0 && ! ( new Conversations() )->may_use( $id ) ) {
 			return self::error( 'conversation', 404 );
 		}

@@ -271,15 +271,19 @@ final class NotificationHoldTest extends IntegrationTestCase {
 			)
 		);
 		$this->assertIsArray( NotificationHold::release( $order->get_id(), $basis ) );
-		// Run the registered native delivery owner twice: only the original job can send.
+		// A staff hold release does not supply the missing bound content verdict.
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array(), false );
 		/** This action is documented in Mail\Module::register(). */
 		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Outbox::HOOK is the fixed native linker_commerce_mail_attempt hook.
 		/** This action is documented in Mail\Module::register(). */
 		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Outbox::HOOK is the fixed native linker_commerce_mail_attempt hook.
-		$this->assertNull( ( new JobStore() )->load( $id ) );
-		$this->assertCount( 1, json_decode( (string) get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'] );
+		$retained = ( new JobStore() )->load( $id );
+		$this->assertNotNull( $retained );
+		$this->assertSame( 'Original notification body.', $retained['message']->body );
+		$this->assertSame( 0, $retained['attempts'] );
+		$this->assertFalse( get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+		$this->assertSame( array(), get_option( Throttle::OPTION ) );
 	}
 
 	/** An invalid or cross-record nonce never reaches the staff release operation. */
@@ -408,6 +412,14 @@ final class NotificationHoldTest extends IntegrationTestCase {
 				$order->delete( true );
 			}
 		);
+		// This fixture deliberately represents pre-policy incident data, not a new managed source.
+		delete_option( \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::PREFIX . $order->get_id() );
+		$order->delete_meta_data( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::MARKER );
+		$order->delete_meta_data( \Linker\Commerce\Inquiry\Assessment\AsyncRunner::META );
+		foreach ( array( Queue::PROCESS, Queue::EXPIRE ) as $hook ) {
+			as_unschedule_all_actions( $hook, array( $order->get_id() ), Outbox::GROUP );
+		}
+		$this->assertFalse( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::managed( $order->get_id() ) );
 		$message = new Message( array( self::TESTER ), 'Held synthetic inquiry', 'Original notification body.', array( Message::INTERNAL_HEADER ), array() );
 		$jobs    = new JobStore();
 		$id      = $jobs->create( $message );

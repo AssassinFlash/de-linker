@@ -196,6 +196,11 @@ final class Outbox {
 			$this->hold_review_reminder( $job_id );
 			return false;
 		}
+		if ( ! \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $message, $job_id ) ) {
+			if ( $job_id < 1 ) {
+				$this->jobs->create( $message ); }
+			return false;
+		}
 		$now       = time();
 		$critical  = $message->critical || ( $job_id > 0 && $this->jobs->critical( $job_id ) );
 		$transport = $message->is_internal() && $this->smtp->available() ? Throttle::SMTP : Throttle::PHP;
@@ -224,7 +229,7 @@ final class Outbox {
 						array( 'source' => self::LOG_SOURCE )
 					);
 						$fallback_now = time();
-						$wait_until   = $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical, $message->category );
+						$wait_until   = \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $message, $job_id ) ? $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical, $message->category ) : PHP_INT_MAX;
 					if ( $wait_until === $fallback_now ) {
 						$this->fallback = true;
 						$sent           = $this->deliver( $delivery );
@@ -239,6 +244,7 @@ final class Outbox {
 		}
 
 		if ( $sent ) {
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::delivered( $message, $job_id );
 			if ( $job_id > 0 ) {
 				$this->jobs->delete( $job_id );
 			}

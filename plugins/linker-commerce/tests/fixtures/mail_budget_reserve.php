@@ -6,6 +6,8 @@
  */
 
 declare( strict_types = 1 );
+
+global $argv;
 require $argv[1] . '/wp-load.php';
 file_put_contents( $argv[2] . '.ready', 'ready' );
 $linker_commerce_budget_deadline = microtime( true ) + 15;

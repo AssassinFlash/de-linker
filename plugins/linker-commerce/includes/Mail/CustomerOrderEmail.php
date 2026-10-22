@@ -74,6 +74,21 @@ abstract class CustomerOrderEmail extends WC_Email {
 	public function restore_locale(): void {}
 
 	/**
+	 * Read stored settings for each render so an unsaved default follows this
+	 * inquiry's active locale in a shared background mailer instance.
+	 */
+	public function get_subject() {
+		$this->init_settings();
+		return parent::get_subject();
+	}
+
+	/** The heading follows the current inquiry language; see get_subject(). */
+	public function get_heading() {
+		$this->init_settings();
+		return parent::get_heading();
+	}
+
+	/**
 	 * These emails are HTML only.
 	 */
 	public function get_email_type() {

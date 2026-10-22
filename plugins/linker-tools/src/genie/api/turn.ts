@@ -732,6 +732,7 @@ export async function deleteConversation(
 export const EMAIL_OUTCOMES = [
 	'sent',
 	'confirm',
+	'pending',
 	'invalid',
 	'unknown',
 	'empty',

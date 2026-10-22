@@ -31,40 +31,39 @@ add_filter( 'action_scheduler_allow_async_request_runner', '__return_false' );
 $linker_commerce_id      = (int) ( $argv[1] ?? 0 );
 $linker_commerce_barrier = (string) ( $argv[2] ?? '' );
 $linker_commerce_mode    = (string) ( $argv[3] ?? 'finish' );
-$linker_commerce_result  = array(
-	'label'   => 'normal',
-	'basis'   => 'business_request',
-	'reason'  => 'classified',
-	'model'   => 'typesafe/jev-1.13-20260917',
-	'rubric'  => 'inquiry-observation-v1',
-	'raw'     => array(
-		'classification' => array(
-			'type'   => 'choice',
-			'choice' => 'normal',
-		),
-		'basis'          => array(
-			'type'   => 'choice',
-			'choice' => 'business_request',
-		),
-	),
-	'seconds' => 0.1,
+require_once __DIR__ . '/AssessmentFixtureEnvironment.php';
+require_once __DIR__ . '/NormalMailAuthorizationFixture.php';
+\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
+add_filter(
+	'pre_http_request',
+	static function ( $pre, $args, $url ) {
+		if ( ! str_ends_with( $url, '/inquiries/assess' ) ) {
+			return $pre; }
+		$request = json_decode( $args['body'], true );
+		return array(
+			'response' => array( 'code' => 200 ),
+			'body'     => wp_json_encode( \Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture::verdict( $request['binding'] ) ),
+		);
+	},
+	10,
+	3
 );
-$linker_commerce_queue   = new \Linker\Commerce\Inquiry\Assessment\Queue();
+$linker_commerce_queue = new \Linker\Commerce\Inquiry\Assessment\Queue();
 try {
 	if ( 'hold' === $linker_commerce_mode || 'crash' === $linker_commerce_mode ) {
 		\Linker\Commerce\Inquiry\Assessment\Lock::run(
-			'release-' . $linker_commerce_id,
-			static function () use ( $linker_commerce_barrier, $linker_commerce_mode, $linker_commerce_queue, $linker_commerce_id, $linker_commerce_result ): void {
+			'send-process-' . $linker_commerce_id,
+			static function () use ( $linker_commerce_barrier, $linker_commerce_mode, $linker_commerce_queue, $linker_commerce_id ): void {
 				file_put_contents( $linker_commerce_barrier, 'locked' );
 				if ( 'crash' === $linker_commerce_mode ) {
 					exit( 0 ); // The DB connection dies without a notification handoff.
 				}
 				usleep( 2000000 ); // Deliberately overlap two real PHP connections.
-				$linker_commerce_queue->finish( $linker_commerce_id, $linker_commerce_result );
+				$linker_commerce_queue->process( $linker_commerce_id );
 			}
 		);
 	} else {
-		$linker_commerce_queue->finish( $linker_commerce_id, $linker_commerce_result );
+		$linker_commerce_queue->process( $linker_commerce_id );
 	}
 } catch ( \Throwable $linker_commerce_error ) {
 	fwrite( STDERR, get_class( $linker_commerce_error ) . ': ' . $linker_commerce_error->getMessage() . ' in ' . $linker_commerce_error->getFile() . ':' . $linker_commerce_error->getLine() );

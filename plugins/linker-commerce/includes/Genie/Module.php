@@ -135,8 +135,9 @@ final class Module {
 		}
 		$order = ( new Sender() )->message( $details, array( self::HANDOFF_META => $handoff ) );
 		return array(
-			'order'   => $order->get_id(),
-			'receipt' => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'order'           => $order->get_id(),
+			'receipt'         => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'receipt_pending' => 'assessment_pending' === $order->get_meta( ReceiptLimit::SKIPPED_META ),
 		);
 	}
 
@@ -200,8 +201,9 @@ final class Module {
 			return $order;
 		}
 		return array(
-			'order'   => $order->get_id(),
-			'receipt' => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'order'           => $order->get_id(),
+			'receipt'         => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
+			'receipt_pending' => 'assessment_pending' === $order->get_meta( ReceiptLimit::SKIPPED_META ),
 		);
 	}
 
@@ -230,26 +232,33 @@ final class Module {
 		return $emails;
 	}
 
-	/**
-	 * Sends one conversation; the SEND_FILTER answer.
-	 *
+	/** Sends one conversation; the SEND_FILTER answer.
 	 * WooCommerce's mailer is loaded first: it hangs the header and footer
 	 * of every site email on their actions. Each send is a new email object
 	 * (GenieEmail).
 	 *
 	 * @param mixed $sent  An earlier answer: true when another listener sent it.
 	 * @param mixed $email to, locale, messages.
+	 * @return bool|array{status:string} Accepted normal, durable pending, or not accepted.
 	 */
-	public function send( mixed $sent, mixed $email ): bool {
+	public function send( mixed $sent, mixed $email ): bool|array {
 		if ( true === $sent ) {
 			return true;
+		}
+		if ( is_array( $sent ) && 'pending' === ( $sent['status'] ?? '' ) ) {
+			return array( 'status' => 'pending' );
 		}
 		$conversation = Conversation::from_array( is_array( $email ) ? $email : array() );
 		if ( null === $conversation ) {
 			return false;
 		}
 		WC()->mailer();
-		return ( new ConversationEmail( $this->plugin_file ) )->notify( $conversation );
+		$source = is_array( $email ) ? $email : array();
+		$id     = $source['conversation_id'] ?? 0;
+		if ( ! is_int( $id ) || $id < 1 ) {
+			return false; }
+		$message = ( new ConversationEmail( $this->plugin_file ) )->capture( $conversation );
+		return null === $message ? false : \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::enqueue( $id, $source['messages'], $conversation, $message );
 	}
 
 	/**
