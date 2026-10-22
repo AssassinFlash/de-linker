@@ -245,11 +245,26 @@ def test_v1_archive_upgrades_before_publication_without_changing_source(
     project = workspace.create(
         GUEST, "Legacy schema fixture", {"retained": True}, key="create"
     )
-    with workspace.database.transaction() as connection:
-        connection.execute("DROP TABLE principal_closures")
-        connection.execute("PRAGMA user_version=1")
     snapshot = tmp_path / "v1-snapshot"
     archive.backup(workspace, snapshot)
+    # Build the exact legacy table layout in this isolated archive, not in a
+    # live v2 Workspace. Live connections now fence unsupported versions.
+    connection = sqlite3.connect(snapshot / "workspace.sqlite")
+    for trigger in (
+        "retired_guest_insert",
+        "retired_guest_owner_update",
+        "guest_closure_requires_complete_transfer",
+    ):
+        connection.execute(f"DROP TRIGGER {trigger}")
+    connection.execute("DROP TABLE principal_closures")
+    connection.execute("PRAGMA user_version=1")
+    connection.commit()
+    connection.close()
+    import json
+
+    manifest = json.loads((snapshot / "backup.json").read_bytes())
+    manifest["database_sha256"] = digest((snapshot / "workspace.sqlite").read_bytes())
+    (snapshot / "backup.json").write_text(json.dumps(manifest))
     before = (snapshot / "workspace.sqlite").read_bytes()
     restored = archive.restore(snapshot, tmp_path / "v2-restored")
     assert (snapshot / "workspace.sqlite").read_bytes() == before
@@ -259,6 +274,42 @@ def test_v1_archive_upgrades_before_publication_without_changing_source(
     GuestClaims(restored).claim(GUEST, USER, key="login")
     with pytest.raises(NotFound):
         restored.get(GUEST, project.id)
+
+
+def test_database_fences_a_preexisting_connection_that_ignores_new_python_checks(
+    workspace: Workspace,
+) -> None:
+    legacy_connection = sqlite3.connect(workspace.database.path, isolation_level=None)
+    try:
+        GuestClaims(workspace).claim(GUEST, USER, key="retire")
+        legacy_connection.execute("PRAGMA foreign_keys=ON")
+        legacy_connection.execute("BEGIN IMMEDIATE")
+        with pytest.raises(sqlite3.IntegrityError, match="retired principal"):
+            legacy_connection.execute(
+                "INSERT INTO projects (id,owner,title,revision,created_at,updated_at) VALUES (?,?,?,1,0,0)",
+                ("synthetic-late-id", GUEST.key, "Legacy writer"),
+            )
+        legacy_connection.rollback()
+        project = workspace.create(USER, "Current account", {}, key="user")
+        with pytest.raises(sqlite3.IntegrityError, match="retired principal"):
+            legacy_connection.execute(
+                "UPDATE projects SET owner=? WHERE id=?", (GUEST.key, project.id)
+            )
+        assert workspace.get(USER, project.id).owner == USER.key
+    finally:
+        legacy_connection.close()
+
+
+def test_current_workspace_rechecks_schema_on_each_operation(
+    workspace: Workspace,
+) -> None:
+    connection = sqlite3.connect(workspace.database.path)
+    connection.execute("PRAGMA user_version=999")
+    connection.close()
+    with pytest.raises(VersionUnavailable):
+        workspace.create(USER, "Stale process", {}, key="late")
+    with pytest.raises(VersionUnavailable):
+        workspace.projects(USER)
 
 
 def test_private_claim_uses_two_gateway_assertions_and_rejects_body_authority(

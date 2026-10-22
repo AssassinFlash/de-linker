@@ -103,4 +103,22 @@ CREATE TABLE IF NOT EXISTS principal_closures (
     receipt_sha256 TEXT NOT NULL,
     created_at REAL NOT NULL
 );
+CREATE TRIGGER IF NOT EXISTS retired_guest_insert
+BEFORE INSERT ON projects
+WHEN EXISTS (SELECT 1 FROM principal_closures WHERE guest=NEW.owner)
+BEGIN
+    SELECT RAISE(ABORT, 'retired principal');
+END;
+CREATE TRIGGER IF NOT EXISTS retired_guest_owner_update
+BEFORE UPDATE OF owner ON projects
+WHEN EXISTS (SELECT 1 FROM principal_closures WHERE guest=NEW.owner)
+BEGIN
+    SELECT RAISE(ABORT, 'retired principal');
+END;
+CREATE TRIGGER IF NOT EXISTS guest_closure_requires_complete_transfer
+BEFORE INSERT ON principal_closures
+WHEN EXISTS (SELECT 1 FROM projects WHERE owner=NEW.guest)
+BEGIN
+    SELECT RAISE(ABORT, 'guest projects remain');
+END;
 """

@@ -100,18 +100,23 @@ class Database:
         path.chmod(0o600)
         # The default is sqlite3.connect's documented five-second busy timeout,
         # not a promise that a production queue will meet a five-second SLA.
-        connection = self.connect()
+        connection = self._open_connection()
         try:
             connection.execute("PRAGMA journal_mode=WAL")
             connection.execute("BEGIN IMMEDIATE")
             current = connection.execute("PRAGMA user_version").fetchone()[0]
             if current not in (0, *READABLE_SCHEMA_VERSIONS):
                 raise VersionUnavailable("unsupported planning database version")
-            # Repository-owned CREATE TABLE/INDEX statements only. execute,
-            # rather than executescript, retains the migration's write lock.
-            for statement in SCHEMA.split(";"):
-                if statement.strip():
+            # SQLite recognises complete trigger bodies. executescript would
+            # release the already-held migration lock before running DDL.
+            statement = ""
+            for line in SCHEMA.splitlines(keepends=True):
+                statement += line
+                if sqlite3.complete_statement(statement):
                     connection.execute(statement)
+                    statement = ""
+            if statement.strip():
+                raise VersionUnavailable("incomplete planning schema")
             connection.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
             connection.commit()
         except BaseException:
@@ -121,11 +126,25 @@ class Database:
             connection.close()
         path.chmod(0o600)
 
-    def connect(self) -> sqlite3.Connection:
+    def _open_connection(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.path, isolation_level=None)
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA foreign_keys=ON")
         connection.execute("PRAGMA synchronous=FULL")
+        return connection
+
+    @staticmethod
+    def _require_schema(connection: sqlite3.Connection) -> None:
+        if connection.execute("PRAGMA user_version").fetchone()[0] != SCHEMA_VERSION:
+            raise VersionUnavailable("planning database version changed")
+
+    def connect(self) -> sqlite3.Connection:
+        connection = self._open_connection()
+        try:
+            self._require_schema(connection)
+        except BaseException:
+            connection.close()
+            raise
         return connection
 
     @contextmanager
@@ -133,6 +152,7 @@ class Database:
         connection = self.connect()
         try:
             connection.execute("BEGIN IMMEDIATE")
+            self._require_schema(connection)
             yield connection
             connection.commit()
         except BaseException:
@@ -146,6 +166,7 @@ class Database:
         connection = self.connect()
         try:
             connection.execute("BEGIN")
+            self._require_schema(connection)
             yield connection
             connection.commit()
         except BaseException:

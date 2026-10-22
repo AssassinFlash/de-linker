@@ -31,8 +31,13 @@ responsibility and must pass before browser mounting.
    substitute for the header. No raw cookie or service credential is returned.
 6. Persistence schema 2 adds a guest-closure ledger. Schema 1 upgrades under
    an exclusive write transaction; unknown versions are rejected. Existing
-   project/asset/result bytes are unchanged. Readers built for schema 1 must
-   reject schema 2 instead of reopening a retired guest through old code.
+   project/asset/result bytes are unchanged. New schema-1 service instances
+   reject schema 2. Database guards also reject a retired owner on INSERT or
+   owner UPDATE from an already-running old process; an incomplete transfer
+   cannot publish a closure. Current connections recheck their supported
+   version, including after obtaining a transaction lock/read snapshot.
+   Deployment drains old processes before migration; startup checks alone
+   must not be presented as fencing an already-running schema-1 process.
 7. Online backups include closure receipts as required byte dependencies.
    Verified schema-1 archives remain restorable and are upgraded in a private
    temporary directory before publication. The source archive stays unchanged.
