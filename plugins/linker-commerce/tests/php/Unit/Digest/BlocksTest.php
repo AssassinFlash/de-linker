@@ -35,7 +35,7 @@ final class BlocksTest extends TestCase {
 		$blocks = ( new Blocks( new JobStore() ) )->all();
 
 		$this->assertSame(
-			array( InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID, 'internal_mail' ),
+			array( InquiriesAwaitingProforma::ID, ProformasAwaitingReply::ID, FailedEmails::ID, 'internal_mail', 'pending_inquiry_reviews' ),
 			array_map( static fn ( Block $block ): string => $block->id(), $blocks )
 		);
 	}
@@ -90,6 +90,6 @@ final class BlocksTest extends TestCase {
 	public function test_a_broken_filter_keeps_the_built_ins(): void {
 		$this->filter_returns( 'linker_commerce_digest_blocks', 'nonsense' );
 
-		$this->assertCount( 4, ( new Blocks( new JobStore() ) )->all() );
+		$this->assertCount( 5, ( new Blocks( new JobStore() ) )->all() );
 	}
 }

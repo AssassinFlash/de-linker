@@ -44,6 +44,10 @@ final class Module {
 		add_filter( 'linker_commerce_public_protection_consumers', array( $this, 'consumers' ) );
 		add_filter( 'linker_commerce_receipt_budget_reason', array( $this, 'receipt_budget' ), 10, 4 );
 		( new BusinessRecord() )->register();
+		( new IntakeAdmin() )->register();
+		add_filter( 'linker_commerce_pending_review_summary', array( Intake::class, 'pending_summary' ), 10, 0 );
+		// Acquire the release boundary before other native erasure listeners write.
+		add_action( 'woocommerce_privacy_before_remove_order_personal_data', array( IntakeStore::class, 'forget' ), 0 );
 		( new Accounts() )->register();
 		( new Draft() )->register();
 		( new Login() )->register();

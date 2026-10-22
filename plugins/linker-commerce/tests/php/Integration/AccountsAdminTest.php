@@ -73,9 +73,11 @@ final class AccountsAdminTest extends IntegrationTestCase {
 		);
 		$before   = $this->job_ids();
 		$throttle = get_option( Throttle::OPTION, array() );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
 		$this->later(
 			static function () use ( $throttle ): void {
+				delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 				update_option( Throttle::OPTION, $throttle );
 			}
 		);

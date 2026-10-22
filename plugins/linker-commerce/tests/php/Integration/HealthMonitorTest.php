@@ -106,6 +106,7 @@ final class HealthMonitorTest extends IntegrationTestCase {
 		update_option( Options::NOTIFY_BCC, $bcc );
 		update_option( Monitor::GENIE_URL_OPTION, 'http://127.0.0.1:9' );
 		update_option( Monitor::ENGINE_URL_OPTION, $this->healthy_url() );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 
 		$captured = self::captured_mail();
@@ -126,6 +127,7 @@ final class HealthMonitorTest extends IntegrationTestCase {
 		// The healthy pair: a Genie that answers 200 too, and the same run
 		// sends nothing.
 		update_option( Monitor::GENIE_URL_OPTION, $this->healthy_url() );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 
 		$captured = self::captured_mail();

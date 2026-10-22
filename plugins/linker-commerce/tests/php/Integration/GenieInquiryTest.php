@@ -144,6 +144,7 @@ final class GenieInquiryTest extends IntegrationTestCase {
 		// card and the record carry exactly this array.
 		delete_option( \Linker\Tools\Genie\Proxy::OPTION );
 		update_option( Options::NOTIFY_BCC, 'copy-' . self::tag() . '@example.test' );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );
 		self::clear_limits();

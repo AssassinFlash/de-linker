@@ -1,0 +1,11 @@
+# Local verification
+
+- Commerce full unit configuration: **1,496 tests, 6,139 assertions, 273 expected skips** (native integration cases require the separate native configuration). No failures.
+- Production-shaped local snapshot `m545`, native filter `ReviewReminderTest|MailBudgetRollbackTest|MailBudgetTest|InternalSmtpTest|NotificationHoldTest`: **35 tests, 364 assertions**, no skips/failures.
+- Independent bare `m545c`, CI mail filter `ReviewReminderTest|MailBudgetRollbackTest|MailBudgetTest|InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest`: **54 tests, 526 assertions, 5 snapshot-dependent skips**, no failures.
+- New cap regression `test_reminder_transport_attempt_caps_preserve_other_critical_capacity`: **1 test, 31 assertions**. With 23 logical reminders already generated, one original job goes through failed SMTP, failed PHP and repeated SMTP failures. At 24 actual reminder SMTP attempts and 8 actual PHP attempts, retries wait without charging or changing the failure count. The native ledger has 384 SMTP / 72 PHP total attempts, preserving 16 / 8 for other critical work; an original staff-promoted job then actually succeeds through local PHP fallback. Future category scheduling does not expire real history, and tester redirection preserves the trusted category.
+- PHPStan level 8: no errors. Full PHPCS and the changed-file reruns are clean after the final copy/category changes. `git diff --check` is clean.
+- `just i18n-coverage`: gap 0 in all catalogs; `just i18n-validity`: 8 catalogs clean. EN/DE/Chinese count-neutral copy was accepted by root and compiled into shipped catalogs.
+- Real WP-CLI on the independent bare instance: `mail-budget pause`, `rollback`, repeated `rollback`, `resume` all completed. The empty fixture correctly reported zero appended charges on both projection runs, remained paused through projection, and resumed only on the explicit command. The populated/interrupted/error scenarios run in the native suite above.
+
+No external SMTP, provider model or production email was called. The SMTP sink permits loopback only, uses fake credentials and captures all recipients at the single synthetic tester. Production deployment, old/new ledger readback, actual intake-summary producer composition and real inbox acceptance remain coordinating-root gates.

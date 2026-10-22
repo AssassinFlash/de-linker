@@ -26,6 +26,7 @@ final class MailRetryTest extends IntegrationTestCase {
 	 * Three failures, then one delivery.
 	 */
 	public function test_three_failures_then_one_delivery(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$subject    = 'Linker integration test ' . self::tag();
 		$failures   = 3;

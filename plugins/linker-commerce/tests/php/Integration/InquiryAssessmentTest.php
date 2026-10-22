@@ -34,6 +34,7 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 				}
 			);
 		}
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		update_option( Queue::ENABLED, 'yes' );
 		update_option( Queue::HEARTBEAT, microtime( true ) );
