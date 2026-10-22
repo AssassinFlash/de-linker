@@ -200,12 +200,13 @@ final class Accounts {
 	}
 
 	/**
-	 * One allowlisted field, with the registration's existing 190-character ceiling.
+	 * One complete allowlisted field, matching the native registration's value.
+	 * Native Fields saves the full sanitized string; fingerprints must do so too.
 	 *
 	 * @param array<string,mixed> $post Native transport.
 	 * @param string              $key Field name.
 	 */
 	private static function text( array $post, string $key ): string {
-		return isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? mb_substr( sanitize_text_field( $post[ $key ] ), 0, 190 ) : '';
+		return isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_text_field( $post[ $key ] ) : '';
 	}
 }

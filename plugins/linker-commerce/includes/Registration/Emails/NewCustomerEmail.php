@@ -14,6 +14,8 @@ use Linker\Commerce\Registration\Fields;
 use Linker\Commerce\Registration\RegistrationInformation;
 use Linker\Commerce\Settings\Options;
 use WP_User;
+use Linker\Commerce\Mail\Message;
+use Linker\Commerce\Mail\Prepared;
 
 /**
  * Sent to the team mailbox when a customer registered (docs/specs/11-commerce.md,
@@ -21,6 +23,12 @@ use WP_User;
  * VAT check.
  */
 final class NewCustomerEmail extends TeamEmail {
+	/**
+	 * Prospective native rows, present only during pre-create capture.
+	 *
+	 * @var list<array{key:string,label:string,value:string,website:bool}>|null
+	 */
+	private ?array $preview_rows = null;
 
 	/**
 	 * Email id.
@@ -59,6 +67,23 @@ final class NewCustomerEmail extends TeamEmail {
 	}
 
 	/**
+	 * Capture the configured native message without a database account or mail.
+	 *
+	 * @param WP_User              $user Prospective identity, without a password.
+	 * @param array<string,string> $values Validated business values.
+	 */
+	public function preview( WP_User $user, array $values ): ?Message {
+		$this->preview_rows              = $this->information->prospective( $values, $user );
+		$this->placeholders['{company}'] = $values['billing_company'] ?? '';
+		try {
+			return Prepared::capture( fn () => $this->notify( $user ) );
+		} finally {
+			$this->preview_rows = null;
+			$this->object       = false;
+		}
+	}
+
+	/**
 	 * Default subject.
 	 */
 	public function get_default_subject() {
@@ -82,7 +107,7 @@ final class NewCustomerEmail extends TeamEmail {
 	protected function template_args(): array {
 		return array(
 			'customer'          => $this->object,
-			'registration_rows' => $this->object instanceof WP_User ? $this->information->rows( $this->object ) : array(),
+			'registration_rows' => $this->preview_rows ?? ( $this->object instanceof WP_User ? $this->information->rows( $this->object ) : array() ),
 		);
 	}
 }
