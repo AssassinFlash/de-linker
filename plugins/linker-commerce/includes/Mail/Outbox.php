@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Mail;
 
 use WP_Error;
+use Linker\Commerce\Inquiry\Assessment\Lock;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -123,10 +124,23 @@ final class Outbox {
 	 * @param int $job_id Job id.
 	 */
 	public function retry( int $job_id ): void {
-		$job = $this->jobs->load( $job_id );
-		if ( null !== $job ) {
-			$this->attempt( $job['message'], $job['attempts'], $job_id );
+		$inquiry = NotificationHold::inquiry( $job_id );
+		$work    = function () use ( $job_id ): void {
+			if ( NotificationHold::job_held( $job_id ) ) {
+				return;
+			}
+			$job = $this->jobs->load( $job_id );
+			if ( null !== $job ) {
+				$this->attempt( $job['message'], $job['attempts'], $job_id );
+			}
+		};
+		if ( $inquiry > 0 ) {
+			if ( ! Lock::run( 'release-' . $inquiry, $work ) && ! NotificationHold::job_held( $job_id ) ) {
+				as_schedule_single_action( time() + 1, self::HOOK, array( $job_id ), self::GROUP, true );
+			}
+			return;
 		}
+		$work();
 	}
 
 	/**

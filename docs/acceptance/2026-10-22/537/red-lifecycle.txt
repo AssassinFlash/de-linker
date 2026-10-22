@@ -1,0 +1,40 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+.F                                                                  2 / 2 (100%)
+
+Time: 00:00.384, Memory: 97.00 MB
+
+There was 1 failure:
+
+1) Linker\Commerce\Tests\Integration\NotificationHoldTest::test_all_stale_assessment_callbacks_leave_held_inquiry_unchanged
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+     'result' => Array &2 (
+         'label' => 'uncertain'
+         'basis' => 'insufficient_context'
+-        'reason' => 'deadline'
++        'reason' => 'late'
+         'model' => 'typesafe/jev-1.13'
+         'rubric' => 'inquiry-observation-v1'
+         'raw' => Array &3 ()
++    )
++    'completed_at' => 1792652901.196997
++    'elapsed' => 0.011467933654785156
++    'late_result' => Array &4 (
++        'label' => 'uncertain'
++        'basis' => 'insufficient_context'
++        'reason' => 'late'
++        'model' => 'typesafe/jev-1.13'
++        'rubric' => 'inquiry-observation-v1'
++        'raw' => Array &5 ()
+     )
+ )
+
+/Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/tests/php/Integration/NotificationHoldTest.php:58
+/Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 2, Assertions: 8, Failures: 1.

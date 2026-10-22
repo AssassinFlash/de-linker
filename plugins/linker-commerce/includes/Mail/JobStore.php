@@ -26,6 +26,8 @@ final class JobStore {
 	/**
 	 * Post meta: the message, its attempts so far, the last error.
 	 */
+	public const INQUIRY_META = '_linker_mail_inquiry';
+
 	private const MESSAGE_META  = '_linker_mail_message';
 	private const ATTEMPTS_META = '_linker_mail_attempts';
 	private const ERROR_META    = '_linker_mail_error';
@@ -57,9 +59,10 @@ final class JobStore {
 	 * Stores a message.
 	 *
 	 * @param Message $message Message.
+	 * @param int     $inquiry Native inquiry owning this original notification.
 	 * @return int Job id, 0 when the post could not be written.
 	 */
-	public function create( Message $message ): int {
+	public function create( Message $message, int $inquiry = 0 ): int {
 		$id = wp_insert_post(
 			array(
 				'post_type'   => self::POST_TYPE,
@@ -74,6 +77,9 @@ final class JobStore {
 		// The body lives in meta, which no content filter rewrites.
 		update_post_meta( $id, self::MESSAGE_META, wp_slash( (string) wp_json_encode( $message->to_array() ) ) );
 		update_post_meta( $id, self::ATTEMPTS_META, 0 );
+		if ( $inquiry > 0 ) {
+			update_post_meta( $id, self::INQUIRY_META, $inquiry );
+		}
 		return $id;
 	}
 
