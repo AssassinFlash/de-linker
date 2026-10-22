@@ -1,0 +1,39 @@
+{
+  "base": "c022f81a48010c9ee66967245d81468495b1b21f",
+  "head": "7ce513e162f7b1474788b986d41873b3970f8ca8",
+  "files": {
+    "plugins/linker-commerce/content/livecanvas/archive_product.html": "a0fb0b3f993c93edf67bd06f6de5ed098e301d12a8d6ca4099fc65caa3174652",
+    "plugins/linker-commerce/content/livecanvas/de/archive_product.html": "80c1ec1867f03c97923fb60c2ae8653048cf144e21b1e070e5dc8ec46413111d",
+    "plugins/linker-commerce/content/livecanvas/shop_page.html": "9449e57fbd72d2c2afabeecfb232ddbc90d594ee9452b9726fe01d328acbecfe",
+    "plugins/linker-commerce/content/windpress/products.css": "f3958e98c10665d654b76033e98452ccc00b9389224c950bc0835526b491ad26",
+    "plugins/linker-commerce/includes/Cli/PresentCommand.php": "68d95821f2b15f34317bdf46b2d65c68bd98ec6813a406cdcc6d83cd6b9b89a7",
+    "plugins/linker-commerce/includes/Presentation/ArchiveAssignments.php": "7c6e982e781efb469bdec33089c846774316e94e4c8019e86928f0dfb7fd6b14",
+    "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php": "e398ee95652c3be9b09d52a4179b619407f7ceab3dbdd9031e84fa916bff9556",
+    "plugins/linker-commerce/includes/Presentation/Templates.php": "e61ef26a53124651e9e6cf48792c27b327572c24843e491ad7b4695e7e7fab56",
+    "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.mo": "3b122b3d04d654ca95137f99c55555eab549d267da871de8c88bcefc85f968f9",
+    "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po": "234678b492ca99ee2362fe1af2e8c543d5f8975cd785308938c41ba24fea410a",
+    "plugins/linker-commerce/languages/linker-commerce.pot": "9bddddb38f3ecb9c23f31e250a1cc673761ea4ea651c86ef3626e0dede132fc4",
+    "plugins/linker-commerce/tests/php/Unit/Cli/PresentCommandTest.php": "634c00cce8d73f1a207da87dbde5d5744d8311a44fe90bc7c16edc26021200c2",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/ArchiveAssignmentsTest.php": "5e81e7dd67a98410892d8d3ec7dc1550a24ff4be654c610427d4f12d04e763cd",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/EmptyProductsTest.php": "10573a60742253c7afee3b8380d0e453ece6dac7ddcca8674295cb71b227f6a0",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/TemplatesTest.php": "484502cce1ac71cc89948e6fbaf2e483eac6ab747a4bc50ec1fe3c02c4084b78",
+    "plugins/linker-i18n/includes/Plugin.php": "e8e1635829f43bb1e58f510fad83c3d74c489344a30564a82de87108e910fde0",
+    "plugins/linker-i18n/includes/TranslatedTypes.php": "ebf4f82fa644cd6b30f5a9dc3954ce6c84b5b2527fb14f65fdc8aa8eb6383a6c",
+    "plugins/linker-i18n/includes/UrlSegments.php": "bf12d0cb7764600c43014944e214272f1ed71368489d87eb0571e9ff06c18ed8",
+    "plugins/linker-i18n/tests/php/Unit/PluginTest.php": "a6e8c0fed90eea7dd2f8100ae6f5f56823b8cfe4c4b42224b81e2dbd19ef3d8b",
+    "plugins/linker-i18n/tests/php/Unit/SeoTest.php": "6b008a384269a05b07576f210c477aaedbeee010648293fd7c831417e548cf41",
+    "plugins/linker-i18n/tests/php/Unit/SharedArchiveLinksTest.php": "69bd2515663ac6ad9de3960c5dc0f8806f78f81b7db53185ff7772612c18f11d",
+    "plugins/linker-i18n/tests/php/Unit/UrlSegmentsTest.php": "8fffddb0fa7224857820576b1d1c8460960398983b7e1c2b060c804d9c96e710"
+  },
+  "aggregate_method": "SHA256 compact sorted-key JSON map",
+  "aggregate_sha256": "d671e3b91033193ec848ad0d099c91268bc949b726d3138afc1f66f6bcf32dbc",
+  "catalog_semantic_delta": {
+    "new": {
+      "No products are listed here.": "Hier sind keine Produkte aufgef\u00fchrt."
+    },
+    "changed": [],
+    "removed": [],
+    "preserved_current_main_translations": 1013
+  },
+  "scope": "Twenty-two files after integration onto current main including PR527 protection. No pagination/contact continuity implementation yet."
+}

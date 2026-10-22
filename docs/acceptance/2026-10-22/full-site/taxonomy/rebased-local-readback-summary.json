@@ -1,0 +1,99 @@
+{
+  "source_base": "c022f81a48010c9ee66967245d81468495b1b21f",
+  "source_head": "7ce513e162f7b1474788b986d41873b3970f8ca8",
+  "source_aggregate": "d671e3b91033193ec848ad0d099c91268bc949b726d3138afc1f66f6bcf32dbc",
+  "native_run": "20261022T033539154643Z-98b3e51b",
+  "native_roots": 80,
+  "shared_terms": 51,
+  "empty_native_roots": 16,
+  "all_roots_status_language_identity_canonical_switch_and_post_languages_pass": true,
+  "terms_unchanged": true,
+  "observer_removed": true,
+  "browser_frames": [
+    {
+      "file": "browser-rebased-20261022T0340/de-1440-empty-brand.json",
+      "url": "http://127.0.0.1:9290/de/brand/dehn/",
+      "width": 1440,
+      "height": 1000,
+      "diagnostic": false
+    },
+    {
+      "file": "browser-rebased-20261022T0340/de-1440-shop-clear-restores-products.json",
+      "url": "http://127.0.0.1:9290/de/produkte/",
+      "width": 1440,
+      "height": 1000,
+      "diagnostic": false
+    },
+    {
+      "file": "browser-rebased-20261022T0340/de-1440-shop-empty-brand.json",
+      "url": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022&brand=chint",
+      "width": 1440,
+      "height": 1000,
+      "diagnostic": false
+    },
+    {
+      "file": "browser-rebased-20261022T0340/de-1440-shop-empty.json",
+      "url": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022",
+      "width": 1440,
+      "height": 1000,
+      "diagnostic": false
+    },
+    {
+      "file": "browser-rebased-20261022T0340/de-1440-shop-remove-brand-keeps-query.json",
+      "url": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022",
+      "width": 1440,
+      "height": 1000,
+      "diagnostic": false
+    },
+    {
+      "file": "browser-rebased-20261022T0340/de-390-empty-brand.json",
+      "url": "http://127.0.0.1:9290/de/brand/dehn/",
+      "width": 390,
+      "height": 844,
+      "diagnostic": false
+    },
+    {
+      "file": "browser-rebased-20261022T0340/de-390-shop-empty.json",
+      "url": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022",
+      "width": 390,
+      "height": 844,
+      "diagnostic": false
+    },
+    {
+      "file": "browser-rebased-20261022T0340/diagnostic-en-1440-search-submit-before-navigation.json",
+      "url": "http://127.0.0.1:9290/products/",
+      "width": 1440,
+      "height": 1000,
+      "diagnostic": true
+    },
+    {
+      "file": "browser-rebased-20261022T0340/en-1440-shop-empty.json",
+      "url": "http://127.0.0.1:9290/products/?q=linker-owned-no-match-20261022",
+      "width": 1440,
+      "height": 1000,
+      "diagnostic": false
+    },
+    {
+      "file": "browser-rebased-20261022T0340/en-390-empty-brand.json",
+      "url": "http://127.0.0.1:9290/brand/dehn/",
+      "width": 390,
+      "height": 844,
+      "diagnostic": false
+    },
+    {
+      "file": "browser-rebased-20261022T0340/en-390-shop-empty.json",
+      "url": "http://127.0.0.1:9290/products/?q=linker-owned-no-match-20261022",
+      "width": 390,
+      "height": 844,
+      "diagnostic": false
+    }
+  ],
+  "browser_scope": "Current-main integration spot-check: EN/DE x1440/390 actual native GET search and rendered empty state; DE desktop add/remove facet and clear-to-products; EN/DE mobile paired empty brand and native shop CTA. Earlier complete empty-state interaction captures retained separately.",
+  "open": [
+    "Family/native paging and selection language continuity",
+    "Catalogue context consumer on contact form",
+    "DE Reset label still English",
+    "Global header transparency and rest of whole-site matrix"
+  ],
+  "production_acceptance": false
+}

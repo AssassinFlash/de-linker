@@ -1,0 +1,12 @@
+{
+  "run": "20261022T033539154643Z-98b3e51b",
+  "completed": "2026-10-22T03:36:04.380007+00:00",
+  "count": 90,
+  "status_counts": {
+    "200": 87,
+    "404": 3
+  },
+  "terms_unchanged": true,
+  "fixture_removed": true,
+  "scope": "Actual native local HTTP/WordPress request, all current shared term links and explicit native pagination/feed probes; not browser visual or production acceptance."
+}

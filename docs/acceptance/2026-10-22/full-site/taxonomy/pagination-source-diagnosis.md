@@ -80,3 +80,11 @@ A deeper alternative would put only family leads into the native main query and 
 - EN/DE ×1440/390 visual/keyboard acceptance of the existing pager, counts, long German labels, sticky clearance and filter transitions. This investigation supplies no visual PASS.
 
 Only the source diagnosis and already captured duplicate-display evidence are established here. The proposed normalizer and all new edge consumers remain unimplemented and unverified.
+
+## Subsequent native SEO readback on current main
+
+The parent subsequently captured [the native shutdown-phase SEO values and emitted head](native-pagination-seo-shutdown-before.json) on the rebased local instance. This resolves the runtime uncertainty above without changing the original investigation's claims. The temporary observer was removed. The earlier `native-pagination-seo-before.json` sampled too early for the effective-noindex function and remains a diagnostic record.
+
+The configured `seopress_titles_paged_noindex` is `1`. EN and DE SAJ roots have effective noindex `""`, index robots, root canonical and normal alternates. Their native second-page requests have `is_paged=true`, effective noindex `1`, `follow, noindex` robots, no canonical and no alternates. The English-form German `/page/2/` address first reaches the native `/seite/2/` address. These observed values establish the canonical-suppression gate for this instance; they do not justify disabling that deliberate policy.
+
+The actual EN and DE shop `?product-page=2` requests have `is_paged=false`, effective noindex `""` and index robots. Their canonical is incorrectly the shop root while their alternates retain `product-page=2`. Thus the metadata mismatch for a real family page is confirmed by the native consumer, in addition to the display mismatch previously captured for native product paging. A repair must keep metadata consistent with the family address while respecting the configured paged-noindex policy. None of that normalization has been implemented by this document or by the basic shared-archive/empty-state candidate.
