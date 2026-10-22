@@ -1,0 +1,15 @@
+{
+  "startUrls": [
+    {"url": "https://developers.google.com/maps/documentation/javascript/maptypes"},
+    {"url": "https://developers.google.com/maps/documentation/solar/overview"},
+    {"url": "https://developers.google.com/maps/documentation/solar/coverage"},
+    {"url": "https://developers.google.com/maps/documentation/solar/policies"}
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 4,
+  "maxConcurrency": 2,
+  "saveHtml": false,
+  "saveMarkdown": true,
+  "respectRobotsTxtFile": true
+}

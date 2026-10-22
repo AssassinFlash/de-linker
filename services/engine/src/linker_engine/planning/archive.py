@@ -16,6 +16,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from .canonical import Object, decode_object, digest, encode
+from .dependencies import verify_dependencies
 from .errors import Conflict, InvalidInput, VersionUnavailable
 from .schema import SCHEMA_VERSION
 from .storage import Blobs
@@ -48,6 +49,13 @@ def _check_database(path: Path, blobs: Blobs) -> None:
         ).fetchall()
         for (sha256,) in references:
             blobs.read(sha256)
+        documents = connection.execute(
+            "SELECT metadata_sha256 FROM project_assets "
+            "UNION SELECT result_sha256 FROM runs WHERE result_sha256 IS NOT NULL "
+            "UNION SELECT output_sha256 FROM jobs WHERE output_sha256 IS NOT NULL"
+        ).fetchall()
+        for (sha256,) in documents:
+            verify_dependencies(blobs, blobs.object(sha256))
         for (sha256,) in connection.execute("SELECT manifest_sha256 FROM runs"):
             manifest = blobs.object(sha256)
             context = manifest.get("context")

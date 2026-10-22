@@ -8,6 +8,7 @@ from collections.abc import Callable, Mapping
 from threading import Event, Thread
 
 from .canonical import Object, encode
+from .dependencies import verify_dependencies
 from .errors import InvalidInput, LeaseLost, PlanningError
 from .jobs import Jobs
 from .records import JobKind, Lease
@@ -102,6 +103,7 @@ class Worker:
             if not isinstance(output, dict):
                 raise InvalidInput("executor result must be a JSON object")
             encode(output)
+            verify_dependencies(self.jobs.workspace.blobs, output)
             control.checkpoint()
         except LeaseLost:
             control.revoke()

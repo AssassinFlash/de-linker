@@ -171,6 +171,7 @@ class Workspace:
         *,
         key: str,
         max_attempts: int,
+        intent: Object | None = None,
     ) -> Run:
         """Enqueue a frozen dependency manifest; no numerical work in this call."""
         positive_integer(expected_revision, "expected revision")
@@ -181,7 +182,9 @@ class Workspace:
                 "expected_revision": expected_revision,
                 "context": resolved,
                 "max_attempts": max_attempts,
-            },
+            }
+            if intent is None
+            else {"expected_revision": expected_revision, "intent": intent},
             key,
         )
         # A command cannot refer to bytes that were never published. The

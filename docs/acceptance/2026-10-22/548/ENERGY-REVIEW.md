@@ -115,6 +115,18 @@ lossless cycles, sub-ULP auxiliary consumption at reserve, and creating stock
 under a generic power tolerance for a later outage. The fixed energy/component
 planning suite is 110 tests; the concurrently developed real CSV/worker adapter
 adds 11 more, 121 passing together before its separate review.
-Both axes will recheck this fixed increment. The full
+## Final independent recheck
+
+Both axes passed fixed `3c533482efbfb59c02025d7b3c48cf3d83caa0f1`.
+Standards independently ran the fixed 110-test planning suite from a temporary
+git archive; 20 analytic cycle groups/4000 frames and 9870 empty/full/exact-reserve
+traces also passed. Spec independently checked 22 targeted challenge groups,
+the microsecond-to-noninteger cycle cases and the 8760-step asymmetric-efficiency
+cycle (5 kWh final inventory; 27375 grid, 19710 load, 5475 charge loss, 2190
+discharge loss, all kWh). Padding did not change the real terminal deficit or
+its final allowance. Neither axis found a remaining blocker or scope expansion.
+
+These results validate this declared numerical component and its independent
+checks, not all possible physical systems or all float64 inputs. The full
 physical configuration/Genie/Woo/UI integration and live acceptance remain
 active, not delivered by this component review.

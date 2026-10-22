@@ -13,6 +13,7 @@ from typing import cast
 from uuid import uuid4
 
 from .canonical import Object
+from .dependencies import verify_dependencies
 from .errors import Conflict, InvalidInput, LeaseLost, VersionUnavailable
 from .records import JobKind, Lease
 from .workspace import Workspace
@@ -142,6 +143,7 @@ class Jobs:
     def complete(self, lease: Lease, result: Object) -> str:
         """Publish bytes and success together; late or cancelled attempts lose."""
         workspace = self.workspace
+        verify_dependencies(workspace.blobs, result)
         output = workspace.blobs.put_object(result)
         with workspace.database.transaction() as connection:
             row = connection.execute(
