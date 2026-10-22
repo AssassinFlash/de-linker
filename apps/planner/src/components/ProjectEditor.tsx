@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Configuration } from "../data/config.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
@@ -14,11 +14,16 @@ import {
 	useRemote,
 } from "../domain/draft.ts";
 import { emptyBrief, readBrief } from "../domain/brief.ts";
+import { readSelections } from "../domain/profiles.ts";
+import type { Measurement } from "../domain/profiles.ts";
 import { __, sprintf } from "../i18n.ts";
 import { BriefForm } from "./BriefForm.tsx";
 import { Icon } from "./Icon.tsx";
 import { Notice } from "./Notice.tsx";
 import { RevisionComparison } from "./RevisionComparison.tsx";
+import { ProfileIntake } from "./ProfileIntake.tsx";
+import { OwnedProfile } from "./OwnedProfile.tsx";
+import { measurementLabel } from "./ProfileLabels.ts";
 
 export function ProjectEditor({
 	project,
@@ -50,6 +55,10 @@ export function ProjectEditor({
 		restore,
 	} = useProjectDraft(project, session, client, store, recheck);
 	const [valid, setValid] = useState(true);
+	const profileGuard = useRef<() => boolean>(() => true);
+	const registerProfileGuard = useCallback((guard: () => boolean) => {
+		profileGuard.current = guard;
+	}, []);
 	const bar = useProjectBar();
 	const [closing, setClosing] = useState(false);
 	const [closeBlocked, setCloseBlocked] = useState<
@@ -66,6 +75,7 @@ export function ProjectEditor({
 	}, [valid]);
 	async function leave() {
 		if (closing) return;
+		if (!profileGuard.current()) return;
 		if (!valid) {
 			setCloseBlocked("invalid");
 			document
@@ -87,11 +97,13 @@ export function ProjectEditor({
 		return <p role="status">{__("Opening project…", "linker-tools")}</p>;
 	const dirty = isDirty(draft);
 	let brief;
+	let selections;
 	try {
 		brief =
 			draft.history.current.brief === undefined
 				? emptyBrief()
 				: readBrief(draft.history.current.brief);
+		selections = readSelections(draft.history.current.profile_selections);
 	} catch {
 		return (
 			<Notice error>
@@ -192,6 +204,10 @@ export function ProjectEditor({
 						<a href="#lp-load">
 							<Icon name="layers" />
 							{__("Electricity consumption", "linker-tools")}
+						</a>
+						<a href="#lp-profiles">
+							<Icon name="layers" />
+							{__("Interval data", "linker-tools")}
 						</a>
 					</nav>
 					<div className="lp-source-note">
@@ -313,6 +329,110 @@ export function ProjectEditor({
 								)
 							}
 						/>
+						<section
+							className="lp-section"
+							id="lp-profiles"
+							tabIndex={-1}
+							aria-labelledby="lp-profiles-heading"
+						>
+							<div className="lp-section-heading">
+								<span className="lp-index">05</span>
+								<div>
+									<h2 id="lp-profiles-heading">
+										{__("Interval data", "linker-tools")}
+									</h2>
+									<p>
+										{__(
+											"After import, the data's meaning and coverage are shown for review. A profile selection applies to the open draft and is saved with Save project. The annual consumption entry remains separate.",
+											"linker-tools",
+										)}
+									</p>
+								</div>
+							</div>
+							{Object.entries(selections.selected).map(([role, assetId]) => (
+								<details
+									className="lp-selected-profile lp-comparison"
+									key={role + assetId}
+								>
+									<summary>{measurementLabel(role as Measurement)}</summary>
+									<OwnedProfile
+										projectId={project.id}
+										assetId={assetId}
+										session={session}
+										client={client}
+										locale={config.locale}
+										expectedRole={role as Measurement}
+										recheck={recheck}
+									/>
+									<button
+										type="button"
+										className="lp-text-button"
+										onClick={() => {
+											if (!client.isCurrentScope(session.query_scope)) return;
+											update((previous) => {
+												const chosen = {
+													...readSelections(
+														previous.history.current.profile_selections,
+													).selected,
+												};
+												delete chosen[role as Measurement];
+												return editDraft(previous, {
+													...previous.history.current,
+													profile_selections: {
+														schema_version: 1,
+														selected: chosen,
+													},
+												});
+											});
+										}}
+									>
+										{__("Remove draft selection", "linker-tools")}
+									</button>
+									<p className="lp-profile-help">
+										{__(
+											"Removing a selection leaves the stored source unchanged. Save the project to record the change.",
+											"linker-tools",
+										)}
+									</p>
+								</details>
+							))}
+							<ProfileIntake
+								projectId={project.id}
+								session={session}
+								client={client}
+								store={store}
+								locale={config.locale}
+								timezone={brief.site.timezone}
+								recheck={recheck}
+								registerGuard={registerProfileGuard}
+								attach={async (assetId, role) => {
+									if (
+										!client.isCurrentScope(session.query_scope) ||
+										recoveries.length ||
+										draft.conflict
+									)
+										return false;
+									update((previous) =>
+										editDraft(previous, {
+											...previous.history.current,
+											profile_selections: {
+												schema_version: 1,
+												selected: {
+													...readSelections(
+														previous.history.current.profile_selections,
+													).selected,
+													[role]: assetId,
+												},
+											},
+										}),
+									);
+									return (
+										(await flush()) &&
+										client.isCurrentScope(session.query_scope)
+									);
+								}}
+							/>
+						</section>
 					</fieldset>
 				</div>
 			</div>

@@ -1,0 +1,3837 @@
+{
+  "schema_version": 1,
+  "status": "parent_selected_applied_source_and_catalog",
+  "scope": "Only the six new Profile components and the new Interval data content in ProjectEditor. Existing 99 source messages remain unchanged.",
+  "method": "TypeScript AST extraction of literal __ calls, deduplicated by English msgid, compared with the 99 messages at the recorded HEAD. Working-tree source hashes are the exact extraction snapshots, not a release claim.",
+  "extracted_at": "2026-10-22T23:26:22.101Z",
+  "head": "220c824e9b3b02409a106d31ee8c6269559ce827",
+  "baseline_count": 99,
+  "source_snapshots": [
+    {
+      "file": "apps/planner/src/components/ProfileIntake.tsx",
+      "sha256": "82434b8fa9f5bb5a41a3e7b313cc36bb82df1b5b45a6b34a192e07d653e574ca"
+    },
+    {
+      "file": "apps/planner/src/components/ProfileMapping.tsx",
+      "sha256": "272069d3ddd61822f3967ea053972dee5d674e930f1c5476dbb39e436a20ca6b"
+    },
+    {
+      "file": "apps/planner/src/components/ProfileLabels.ts",
+      "sha256": "e0c14e1b1e844208faa2ded16b67dc5076c59243f417120cfd87441f9c3f5b8a"
+    },
+    {
+      "file": "apps/planner/src/components/ProfileError.tsx",
+      "sha256": "5d9cd19cd039ccde3b588cf0ae010f04c545ac436f972f0afeb4706325eb0d19"
+    },
+    {
+      "file": "apps/planner/src/components/ProfileReview.tsx",
+      "sha256": "a50d6dbfa69d7654e665929c869fa9228230e07e1045d807fe956eee362ca24c"
+    },
+    {
+      "file": "apps/planner/src/components/OwnedProfile.tsx",
+      "sha256": "c14df4d33847cba42bcb11d8675e284c0d2274636fbbcc28b9cf812657ff9db9"
+    },
+    {
+      "file": "apps/planner/src/components/ProjectEditor.tsx",
+      "sha256": "e1d60c18eb421974b9c9f0b6ca68b6e94c1f91fd5ed9d4b54dfb219431fbdb95"
+    }
+  ],
+  "messages": [
+    {
+      "id": "CSV-001",
+      "original_en": "Import interval data",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 335
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Import interval data",
+        "de": "Zeitreihendaten importieren"
+      },
+      "final": {
+        "en": "Import interval data",
+        "de": "Zeitreihendaten importieren"
+      }
+    },
+    {
+      "id": "CSV-002",
+      "original_en": "Unconfirmed profile imports",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 342
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-03"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "Imports to review",
+        "de": "Importe zur Prüfung"
+      },
+      "final": {
+        "en": "Imports to review",
+        "de": "Importe zur Prüfung"
+      },
+      "implementation_note": "The current browser queue can include a stored source still awaiting selection, so use a neutral queue label. If the queue is restricted to unknown acknowledgements only, the original Unconfirmed profile imports is accurate."
+    },
+    {
+      "id": "CSV-003",
+      "original_en": "Finish importing or cancel the open file before leaving this project.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 366
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "The open file import must be completed or cancelled before leaving this project.",
+        "de": "Vor dem Verlassen dieses Projekts muss der offene Dateiimport abgeschlossen oder abgebrochen werden."
+      },
+      "final": {
+        "en": "Finish importing or cancel the open file before leaving this project.",
+        "de": "Vor dem Verlassen dieses Projekts muss der offene Dateiimport abgeschlossen oder abgebrochen werden."
+      }
+    },
+    {
+      "id": "CSV-004",
+      "original_en": "Browser recovery could not be stored or read. Keep this page open until the profile has been selected and the project saved.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 374
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-04"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "Browser recovery could not be stored or read. The open import may be lost if this page closes. After selecting the profile, the project still needs to be saved.",
+        "de": "Die Wiederherstellungsdaten konnten im Browser nicht gespeichert oder gelesen werden. Bei geschlossener Seite kann der offene Import verloren gehen. Nach Auswahl des Profils muss das Projekt gespeichert werden."
+      },
+      "final": {
+        "en": "Browser recovery could not be stored or read. The open import may be lost if this page closes. After selecting the profile, the project still needs to be saved.",
+        "de": "Die Wiederherstellungsdaten konnten im Browser nicht gespeichert oder gelesen werden. Bei geschlossener Seite kann der offene Import verloren gehen. Nach Auswahl des Profils muss das Projekt gespeichert werden."
+      }
+    },
+    {
+      "id": "CSV-005",
+      "original_en": "This import keeps its original file, mapping and request key. Retry to confirm its result.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 384
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-03"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "The import result is not confirmed. Retrying uses the original file, mapping and request key.",
+        "de": "Das Importergebnis ist noch nicht bestätigt. Ein erneuter Versuch verwendet die ursprüngliche Datei, die Spaltenzuordnung und die ursprüngliche Anfragekennung."
+      },
+      "final": {
+        "en": "The import result is not confirmed. Retrying uses the original file, mapping and request key.",
+        "de": "Das Importergebnis ist noch nicht bestätigt. Ein erneuter Versuch verwendet die ursprüngliche Datei, die Spaltenzuordnung und die ursprüngliche Anfragekennung."
+      },
+      "condition": "Only while no confirmed asset receipt is available; use CSV-A001 after confirmation."
+    },
+    {
+      "id": "CSV-006",
+      "original_en": "Captured import settings",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 389
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-03"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "Original import settings",
+        "de": "Ursprüngliche Importeinstellungen"
+      },
+      "final": {
+        "en": "Original import settings",
+        "de": "Ursprüngliche Importeinstellungen"
+      }
+    },
+    {
+      "id": "CSV-007",
+      "original_en": "Confirm import result",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 411
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-03"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "Check or retry this import",
+        "de": "Import prüfen oder erneut versuchen"
+      },
+      "final": {
+        "en": "Check or retry this import",
+        "de": "Import prüfen oder erneut versuchen"
+      }
+    },
+    {
+      "id": "CSV-008",
+      "original_en": "1 · Inspect source columns",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 418
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "1 · Preview source columns",
+        "de": "1 · Dateispalten ansehen"
+      },
+      "final": {
+        "en": "1 · Preview source columns",
+        "de": "1 · Dateispalten ansehen"
+      }
+    },
+    {
+      "id": "CSV-009",
+      "original_en": "Use a UTF-8 CSV with unique column headers. Previewing sends the file for a private, read-only structure check; it does not save a data source.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 421
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "CSV files need UTF-8 encoding and unique column headers. Preview sends the file for a private structure check without saving a project data source.",
+        "de": "CSV-Dateien benötigen UTF-8-Kodierung und eindeutige Spaltenüberschriften. Für die Vorschau wird die Datei zur privaten Strukturprüfung übertragen. Dabei wird keine Datenquelle im Projekt gespeichert."
+      },
+      "final": {
+        "en": "CSV files need UTF-8 encoding and unique column headers. Preview sends the file for a private structure check without saving a project data source.",
+        "de": "CSV-Dateien benötigen UTF-8-Kodierung und eindeutige Spaltenüberschriften. Für die Vorschau wird die Datei zur privaten Strukturprüfung übertragen. Dabei wird keine Datenquelle im Projekt gespeichert."
+      }
+    },
+    {
+      "id": "CSV-010",
+      "original_en": "Source file",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 427
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Source file",
+        "de": "Quelldatei"
+      },
+      "final": {
+        "en": "Source file",
+        "de": "Quelldatei"
+      }
+    },
+    {
+      "id": "CSV-011",
+      "original_en": "Column delimiter",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 437
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Column delimiter",
+        "de": "Spaltentrennzeichen"
+      },
+      "final": {
+        "en": "Column delimiter",
+        "de": "Spaltentrennzeichen"
+      }
+    },
+    {
+      "id": "CSV-012",
+      "original_en": "Select…",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 445
+        },
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 122
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Select…",
+        "de": "Auswählen…"
+      },
+      "final": {
+        "en": "Select…",
+        "de": "Auswählen…"
+      }
+    },
+    {
+      "id": "CSV-013",
+      "original_en": "Semicolon",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 446
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Semicolon",
+        "de": "Semikolon"
+      },
+      "final": {
+        "en": "Semicolon",
+        "de": "Semikolon"
+      }
+    },
+    {
+      "id": "CSV-014",
+      "original_en": "Comma",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 447
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Comma",
+        "de": "Komma"
+      },
+      "final": {
+        "en": "Comma",
+        "de": "Komma"
+      }
+    },
+    {
+      "id": "CSV-015",
+      "original_en": "Tab",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 448
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Tab",
+        "de": "Tabulator"
+      },
+      "final": {
+        "en": "Tab",
+        "de": "Tabulator"
+      }
+    },
+    {
+      "id": "CSV-016",
+      "original_en": "Vertical bar",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 450
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Vertical bar",
+        "de": "Senkrechter Strich"
+      },
+      "final": {
+        "en": "Vertical bar",
+        "de": "Senkrechter Strich"
+      }
+    },
+    {
+      "id": "CSV-017",
+      "original_en": "Preview columns",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 464
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Preview columns",
+        "de": "Spaltenvorschau"
+      },
+      "final": {
+        "en": "Preview columns",
+        "de": "Spaltenvorschau"
+      }
+    },
+    {
+      "id": "CSV-018",
+      "original_en": "Original file preview",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 486
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Original file preview",
+        "de": "Vorschau der Originaldatei"
+      },
+      "final": {
+        "en": "Original file preview",
+        "de": "Vorschau der Originaldatei"
+      }
+    },
+    {
+      "id": "CSV-019",
+      "original_en": "Original cells · preview only",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 491
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Original cells · preview only",
+        "de": "Originalzellen · nur Vorschau"
+      },
+      "final": {
+        "en": "Original cells · preview only",
+        "de": "Originalzellen · nur Vorschau"
+      }
+    },
+    {
+      "id": "CSV-020",
+      "original_en": "Physical line",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 495
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-07"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "precision_recommendation"
+      },
+      "final_proposed": {
+        "en": "Starting file line",
+        "de": "Erste Dateizeile"
+      },
+      "final": {
+        "en": "Starting file line",
+        "de": "Erste Dateizeile"
+      }
+    },
+    {
+      "id": "CSV-021",
+      "original_en": "data records; timestamps, units and values still need interpretation.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 518
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-09"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "localization_composition_recommendation"
+      },
+      "final_proposed": {
+        "en": "Data records: %s. Timestamps, units and values are checked after mapping.",
+        "de": "Datensätze: %s. Zeitangaben, Einheiten und Werte werden nach der Zuordnung geprüft."
+      },
+      "final": {
+        "en": "Data records: %s. Timestamps, units and values are checked after mapping.",
+        "de": "Datensätze: %s. Zeitangaben, Einheiten und Werte werden nach der Zuordnung geprüft."
+      },
+      "implementation_note": "Use one translatable formatted message with %s as the already-localized record count, rather than number-plus-English-fragment concatenation."
+    },
+    {
+      "id": "CSV-022",
+      "original_en": "2 · Confirm meaning and provenance",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 530
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "2 · Define values and source",
+        "de": "2 · Werte und Herkunft festlegen"
+      },
+      "final": {
+        "en": "2 · Define values and source",
+        "de": "2 · Werte und Herkunft festlegen"
+      }
+    },
+    {
+      "id": "CSV-023",
+      "original_en": "Source label",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 541
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Source label",
+        "de": "Bezeichnung der Datenquelle"
+      },
+      "final": {
+        "en": "Source label",
+        "de": "Bezeichnung der Datenquelle"
+      }
+    },
+    {
+      "id": "CSV-024",
+      "original_en": "Source and retention basis",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 553
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-02"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "Source and permission for permanent private storage",
+        "de": "Herkunft und Berechtigung zur dauerhaften privaten Speicherung"
+      },
+      "final": {
+        "en": "Source and permission for permanent private storage",
+        "de": "Herkunft und Berechtigung zur dauerhaften privaten Speicherung"
+      }
+    },
+    {
+      "id": "CSV-025",
+      "original_en": "State where the data came from and why it may be retained privately with this project.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 566
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-02"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "This records where the data came from and your permission to store it permanently with this private project. Examples include your own meter export or data you are authorised to retain.",
+        "de": "Hier werden die Herkunft der Daten und Ihre Berechtigung zur dauerhaften Speicherung in diesem privaten Projekt dokumentiert. Beispiele sind Ihr eigener Zählerexport oder Daten, die Sie mit entsprechender Berechtigung aufbewahren dürfen."
+      },
+      "final": {
+        "en": "This records where the data came from and your permission to store it permanently with this private project. Examples include your own meter export or data you are authorised to retain.",
+        "de": "Hier werden die Herkunft der Daten und Ihre Berechtigung zur dauerhaften Speicherung in diesem privaten Projekt dokumentiert. Beispiele sind Ihr eigener Zählerexport oder Daten, die Sie mit entsprechender Berechtigung aufbewahren dürfen."
+      }
+    },
+    {
+      "id": "CSV-026",
+      "original_en": "Complete each required choice. Mapped columns must be different and the interval duration must be positive. Original gaps and values are preserved.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 574
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "Each mapped column must be different and interval durations must be positive. The original file and gaps are preserved.",
+        "de": "Jede zugeordnete Spalte muss eindeutig sein, und die Intervalldauer muss positiv sein. Originaldatei und Datenlücken bleiben erhalten."
+      },
+      "final": {
+        "en": "Each mapped column must be different and interval durations must be positive. The original file and gaps are preserved.",
+        "de": "Jede zugeordnete Spalte muss eindeutig sein, und die Intervalldauer muss positiv sein. Originaldatei und Datenlücken bleiben erhalten."
+      }
+    },
+    {
+      "id": "CSV-027",
+      "original_en": "Import and review data",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 587
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Import and review data",
+        "de": "Daten importieren und prüfen"
+      },
+      "final": {
+        "en": "Import and review data",
+        "de": "Daten importieren und prüfen"
+      }
+    },
+    {
+      "id": "CSV-028",
+      "original_en": "Reading or storing source data…",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 597
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "Processing interval data…",
+        "de": "Zeitreihendaten werden verarbeitet…"
+      },
+      "final": {
+        "en": "Processing interval data…",
+        "de": "Zeitreihendaten werden verarbeitet…"
+      }
+    },
+    {
+      "id": "CSV-029",
+      "original_en": "Not used",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 121
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Not used",
+        "de": "Nicht verwendet"
+      },
+      "final": {
+        "en": "Not used",
+        "de": "Nicht verwendet"
+      }
+    },
+    {
+      "id": "CSV-030",
+      "original_en": "Timestamp column",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 158
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Timestamp column",
+        "de": "Zeitstempelspalte"
+      },
+      "final": {
+        "en": "Timestamp column",
+        "de": "Zeitstempelspalte"
+      }
+    },
+    {
+      "id": "CSV-031",
+      "original_en": "ISO date and time. An explicit UTC offset takes precedence over the selected time zone.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 162
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "ISO date and time. An explicit UTC offset takes precedence over the selected time zone.",
+        "de": "Datum und Uhrzeit im ISO-Format. Ein ausdrücklich angegebener UTC-Versatz hat Vorrang vor der ausgewählten Zeitzone."
+      },
+      "final": {
+        "en": "ISO date and time. An explicit UTC offset takes precedence over the selected time zone.",
+        "de": "Datum und Uhrzeit im ISO-Format. Ein ausdrücklich angegebener UTC-Versatz hat Vorrang vor der ausgewählten Zeitzone."
+      }
+    },
+    {
+      "id": "CSV-032",
+      "original_en": "Value column",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 169
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Value column",
+        "de": "Wertespalte"
+      },
+      "final": {
+        "en": "Value column",
+        "de": "Wertespalte"
+      }
+    },
+    {
+      "id": "CSV-033",
+      "original_en": "Measurement point",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 176
+        },
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 26
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Measurement point",
+        "de": "Messpunkt"
+      },
+      "final": {
+        "en": "Measurement point",
+        "de": "Messpunkt"
+      }
+    },
+    {
+      "id": "CSV-034",
+      "original_en": "Select what was measured. Net import cannot be substituted for total building load.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 180
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-05"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "substantive_accuracy_recommendation"
+      },
+      "final_proposed": {
+        "en": "What these values represent. Net grid import can include the effect of on-site generation and storage and cannot replace total site load.",
+        "de": "Entscheidend ist, was diese Werte abbilden. Der Netto-Netzbezug kann den Einfluss von Erzeugung und Speichern vor Ort enthalten und ersetzt nicht die gesamte Standortlast."
+      },
+      "final": {
+        "en": "What these values represent. Net grid import can include the effect of on-site generation and storage and cannot replace total site load.",
+        "de": "Entscheidend ist, was diese Werte abbilden. Der Netto-Netzbezug kann den Einfluss von Erzeugung und Speichern vor Ort enthalten und ersetzt nicht die gesamte Standortlast."
+      }
+    },
+    {
+      "id": "CSV-035",
+      "original_en": "Value meaning and unit",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 191
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Value meaning and unit",
+        "de": "Bedeutung und Einheit der Werte"
+      },
+      "final": {
+        "en": "Value meaning and unit",
+        "de": "Bedeutung und Einheit der Werte"
+      }
+    },
+    {
+      "id": "CSV-036",
+      "original_en": "An instantaneous power sample is not an interval average. Check the source definition.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 195
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "Supported values are average power over an interval or energy within an interval. Instantaneous power samples need a separate interpretation.",
+        "de": "Unterstützt werden mittlere Leistungen je Intervall und Energiemengen je Intervall. Einzelne momentane Leistungswerte benötigen eine gesonderte Interpretation."
+      },
+      "final": {
+        "en": "Supported values are average power over an interval or energy within an interval. Instantaneous power samples need a separate interpretation.",
+        "de": "Unterstützt werden mittlere Leistungen je Intervall und Energiemengen je Intervall. Einzelne momentane Leistungswerte benötigen eine gesonderte Interpretation."
+      }
+    },
+    {
+      "id": "CSV-037",
+      "original_en": "Average power over each interval · kW",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 200
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Average power over each interval · kW",
+        "de": "Mittlere Leistung je Intervall · kW"
+      },
+      "final": {
+        "en": "Average power over each interval · kW",
+        "de": "Mittlere Leistung je Intervall · kW"
+      }
+    },
+    {
+      "id": "CSV-038",
+      "original_en": "Energy within each interval · kWh",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 203
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Energy within each interval · kWh",
+        "de": "Energiemenge je Intervall · kWh"
+      },
+      "final": {
+        "en": "Energy within each interval · kWh",
+        "de": "Energiemenge je Intervall · kWh"
+      }
+    },
+    {
+      "id": "CSV-039",
+      "original_en": "Decimal separator in the file",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 207
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Decimal separator in the file",
+        "de": "Dezimaltrennzeichen in der Datei"
+      },
+      "final": {
+        "en": "Decimal separator in the file",
+        "de": "Dezimaltrennzeichen in der Datei"
+      }
+    },
+    {
+      "id": "CSV-040",
+      "original_en": "Point · 12.5",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 211
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Point · 12.5",
+        "de": "Punkt · 12.5"
+      },
+      "final": {
+        "en": "Point · 12.5",
+        "de": "Punkt · 12.5"
+      }
+    },
+    {
+      "id": "CSV-041",
+      "original_en": "Comma · 12,5",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 212
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Comma · 12,5",
+        "de": "Komma · 12,5"
+      },
+      "final": {
+        "en": "Comma · 12,5",
+        "de": "Komma · 12,5"
+      }
+    },
+    {
+      "id": "CSV-042",
+      "original_en": "Source type",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 215
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Source type",
+        "de": "Art der Datenquelle"
+      },
+      "final": {
+        "en": "Source type",
+        "de": "Art der Datenquelle"
+      }
+    },
+    {
+      "id": "CSV-043",
+      "original_en": "This declaration is saved with the file. It does not certify a meter or a model.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 219
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "This declaration is saved with the file. It describes the source you selected and does not verify the accuracy of a meter or model.",
+        "de": "Diese Angabe wird mit der Datei gespeichert. Sie ist Ihre Beschreibung der Datenherkunft und bestätigt nicht die Genauigkeit eines Zählers oder Modells."
+      },
+      "final": {
+        "en": "This declaration is saved with the file. It describes the source you selected and does not verify the accuracy of a meter or model.",
+        "de": "Diese Angabe wird mit der Datei gespeichert. Sie ist Ihre Beschreibung der Datenherkunft und bestätigt nicht die Genauigkeit eines Zählers oder Modells."
+      }
+    },
+    {
+      "id": "CSV-044",
+      "original_en": "How are interval boundaries defined?",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 230
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Interval boundaries",
+        "de": "Festlegung der Intervallgrenzen"
+      },
+      "final": {
+        "en": "Interval boundaries",
+        "de": "Festlegung der Intervallgrenzen"
+      }
+    },
+    {
+      "id": "CSV-045",
+      "original_en": "Timestamp and fixed duration",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 235
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Timestamp and fixed duration",
+        "de": "Zeitstempel und feste Dauer"
+      },
+      "final": {
+        "en": "Timestamp and fixed duration",
+        "de": "Zeitstempel und feste Dauer"
+      }
+    },
+    {
+      "id": "CSV-046",
+      "original_en": "Separate start and end columns",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 238
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Separate start and end columns",
+        "de": "Getrennte Spalten für Beginn und Ende"
+      },
+      "final": {
+        "en": "Separate start and end columns",
+        "de": "Getrennte Spalten für Beginn und Ende"
+      }
+    },
+    {
+      "id": "CSV-047",
+      "original_en": "The timestamp identifies…",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 244
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The timestamp identifies…",
+        "de": "Der Zeitstempel bezeichnet…"
+      },
+      "final": {
+        "en": "The timestamp identifies…",
+        "de": "Der Zeitstempel bezeichnet…"
+      }
+    },
+    {
+      "id": "CSV-048",
+      "original_en": "The start of the interval",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 249
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The start of the interval",
+        "de": "Den Beginn des Intervalls"
+      },
+      "final": {
+        "en": "The start of the interval",
+        "de": "Den Beginn des Intervalls"
+      }
+    },
+    {
+      "id": "CSV-049",
+      "original_en": "The end of the interval",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 252
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The end of the interval",
+        "de": "Das Ende des Intervalls"
+      },
+      "final": {
+        "en": "The end of the interval",
+        "de": "Das Ende des Intervalls"
+      }
+    },
+    {
+      "id": "CSV-050",
+      "original_en": "Interval duration",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 256
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Interval duration",
+        "de": "Intervalldauer"
+      },
+      "final": {
+        "en": "Interval duration",
+        "de": "Intervalldauer"
+      }
+    },
+    {
+      "id": "CSV-051",
+      "original_en": "Interval end column",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 268
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Interval end column",
+        "de": "Spalte für das Intervallende"
+      },
+      "final": {
+        "en": "Interval end column",
+        "de": "Spalte für das Intervallende"
+      }
+    },
+    {
+      "id": "CSV-052",
+      "original_en": "Source time zone",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 276
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Source time zone",
+        "de": "Zeitzone der Quelldaten"
+      },
+      "final": {
+        "en": "Source time zone",
+        "de": "Zeitzone der Quelldaten"
+      }
+    },
+    {
+      "id": "CSV-053",
+      "original_en": "Applies to timestamps without a UTC offset. Choose the source's time zone, which may differ from the project location.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 280
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "The source time zone applies to timestamps without a UTC offset and may differ from the project location.",
+        "de": "Die Zeitzone der Quelle gilt für Zeitstempel ohne UTC-Versatz. Sie kann von der Zeitzone des Projektstandorts abweichen."
+      },
+      "final": {
+        "en": "The source time zone applies to timestamps without a UTC offset and may differ from the project location.",
+        "de": "Die Zeitzone der Quelle gilt für Zeitstempel ohne UTC-Versatz. Sie kann von der Zeitzone des Projektstandorts abweichen."
+      }
+    },
+    {
+      "id": "CSV-054",
+      "original_en": "Repeated-time column · optional",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 293
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Repeated-time column · optional",
+        "de": "Spalte für doppelte Ortszeiten · optional"
+      },
+      "final": {
+        "en": "Repeated-time column · optional",
+        "de": "Spalte für doppelte Ortszeiten · optional"
+      }
+    },
+    {
+      "id": "CSV-055",
+      "original_en": "For local times repeated when clocks move back: 0 means the first occurrence, 1 the second. Leave unused for timestamps with UTC offsets.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 298
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "For repeated local times: 0 identifies the first occurrence, 1 the second. Timestamps with UTC offsets do not use this column.",
+        "de": "Bei doppelt vorkommenden Ortszeiten steht 0 für das erste und 1 für das zweite Vorkommen. Zeitstempel mit UTC-Versatz verwenden diese Spalte nicht."
+      },
+      "final": {
+        "en": "For repeated local times: 0 identifies the first occurrence, 1 the second. Timestamps with UTC offsets do not use this column.",
+        "de": "Bei doppelt vorkommenden Ortszeiten steht 0 für das erste und 1 für das zweite Vorkommen. Zeitstempel mit UTC-Versatz verwenden diese Spalte nicht."
+      }
+    },
+    {
+      "id": "CSV-056",
+      "original_en": "End repeated-time column · optional",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileMapping.tsx",
+          "line": 306
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "End repeated-time column · optional",
+        "de": "Spalte für doppelte Endzeiten · optional"
+      },
+      "final": {
+        "en": "End repeated-time column · optional",
+        "de": "Spalte für doppelte Endzeiten · optional"
+      }
+    },
+    {
+      "id": "CSV-057",
+      "original_en": "Total building load",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 7
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-05"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "substantive_accuracy_recommendation"
+      },
+      "final_proposed": {
+        "en": "Total site load",
+        "de": "Gesamte Standortlast"
+      },
+      "final": {
+        "en": "Total site load",
+        "de": "Gesamte Standortlast"
+      }
+    },
+    {
+      "id": "CSV-058",
+      "original_en": "Critical load",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 8
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Critical load",
+        "de": "Last kritischer Verbraucher"
+      },
+      "final": {
+        "en": "Critical load",
+        "de": "Last kritischer Verbraucher"
+      }
+    },
+    {
+      "id": "CSV-059",
+      "original_en": "Net grid import · negative values mean export",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 10
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Net grid import · negative values mean export",
+        "de": "Netto-Netzbezug · negative Werte bedeuten Einspeisung"
+      },
+      "final": {
+        "en": "Net grid import · negative values mean export",
+        "de": "Netto-Netzbezug · negative Werte bedeuten Einspeisung"
+      }
+    },
+    {
+      "id": "CSV-060",
+      "original_en": "Available PV output · AC",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 13
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Available PV output · AC",
+        "de": "Verfügbare PV-Leistung · AC"
+      },
+      "final": {
+        "en": "Available PV output · AC",
+        "de": "Verfügbare PV-Leistung · AC"
+      }
+    },
+    {
+      "id": "CSV-061",
+      "original_en": "Recorded PV generation · AC",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 14
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-05"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "substantive_accuracy_recommendation"
+      },
+      "final_proposed": {
+        "en": "PV generation · AC",
+        "de": "PV-Erzeugung · AC"
+      },
+      "final": {
+        "en": "PV generation · AC",
+        "de": "PV-Erzeugung · AC"
+      }
+    },
+    {
+      "id": "CSV-062",
+      "original_en": "External auxiliary load · AC",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 15
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "External auxiliary load · AC",
+        "de": "Externer Hilfsverbrauch · AC"
+      },
+      "final": {
+        "en": "External auxiliary load · AC",
+        "de": "Externer Hilfsverbrauch · AC"
+      }
+    },
+    {
+      "id": "CSV-063",
+      "original_en": "Measured",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 21
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Measured",
+        "de": "Gemessen"
+      },
+      "final": {
+        "en": "Measured",
+        "de": "Gemessen"
+      }
+    },
+    {
+      "id": "CSV-064",
+      "original_en": "Modelled",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 22
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Modelled",
+        "de": "Modelliert"
+      },
+      "final": {
+        "en": "Modelled",
+        "de": "Modelliert"
+      }
+    },
+    {
+      "id": "CSV-065",
+      "original_en": "Template",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 23
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Template",
+        "de": "Vorlage"
+      },
+      "final": {
+        "en": "Template",
+        "de": "Vorlage"
+      }
+    },
+    {
+      "id": "CSV-066",
+      "original_en": "Synthetic test data",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 24
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Synthetic test data",
+        "de": "Synthetische Testdaten"
+      },
+      "final": {
+        "en": "Synthetic test data",
+        "de": "Synthetische Testdaten"
+      }
+    },
+    {
+      "id": "CSV-067",
+      "original_en": "Source not identified",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 26
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Source not identified",
+        "de": "Datenherkunft unbekannt"
+      },
+      "final": {
+        "en": "Source not identified",
+        "de": "Datenherkunft unbekannt"
+      }
+    },
+    {
+      "id": "CSV-068",
+      "original_en": "Use ISO dates and times, for example 2024-01-01T00:00+01:00.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 31
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "An ISO date and time is required, for example 2024-01-01T00:00+01:00.",
+        "de": "Datum und Uhrzeit im ISO-Format sind erforderlich, zum Beispiel 2024-01-01T00:00+01:00."
+      },
+      "final": {
+        "en": "Use ISO dates and times, for example 2024-01-01T00:00+01:00.",
+        "de": "Datum und Uhrzeit im ISO-Format sind erforderlich, zum Beispiel 2024-01-01T00:00+01:00."
+      }
+    },
+    {
+      "id": "CSV-069",
+      "original_en": "A timestamp is outside the supported date range.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 35
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "A timestamp is outside the supported date range.",
+        "de": "Ein Zeitstempel liegt außerhalb des unterstützten Datumsbereichs."
+      },
+      "final": {
+        "en": "A timestamp is outside the supported date range.",
+        "de": "Ein Zeitstempel liegt außerhalb des unterstützten Datumsbereichs."
+      }
+    },
+    {
+      "id": "CSV-070",
+      "original_en": "The repeated-time column must contain 0 for the first occurrence or 1 for the second.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 39
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The repeated-time column must contain 0 for the first occurrence or 1 for the second.",
+        "de": "Die Spalte für doppelte Ortszeiten benötigt 0 für das erste oder 1 für das zweite Vorkommen."
+      },
+      "final": {
+        "en": "The repeated-time column must contain 0 for the first occurrence or 1 for the second.",
+        "de": "Die Spalte für doppelte Ortszeiten benötigt 0 für das erste oder 1 für das zweite Vorkommen."
+      }
+    },
+    {
+      "id": "CSV-071",
+      "original_en": "Use a UTC offset or a repeated-time column for a timestamp; both cannot apply together.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 43
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "A timestamp uses either a UTC offset or a repeated-time column. Both cannot apply together.",
+        "de": "Für einen Zeitstempel gilt entweder ein UTC-Versatz oder die Spalte für doppelte Ortszeiten. Beide Angaben sind zusammen nicht zulässig."
+      },
+      "final": {
+        "en": "A timestamp uses either a UTC offset or a repeated-time column. Both cannot apply together.",
+        "de": "Für einen Zeitstempel gilt entweder ein UTC-Versatz oder die Spalte für doppelte Ortszeiten. Beide Angaben sind zusammen nicht zulässig."
+      }
+    },
+    {
+      "id": "CSV-072",
+      "original_en": "A local timestamp cannot be converted within the supported date range.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 47
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "A local timestamp cannot be converted within the supported date range.",
+        "de": "Eine Ortszeit lässt sich innerhalb des unterstützten Datumsbereichs nicht umrechnen."
+      },
+      "final": {
+        "en": "A local timestamp cannot be converted within the supported date range.",
+        "de": "Eine Ortszeit lässt sich innerhalb des unterstützten Datumsbereichs nicht umrechnen."
+      }
+    },
+    {
+      "id": "CSV-073",
+      "original_en": "This local time does not exist during the daylight-saving clock change. Check the source time convention.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 51
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "This local time does not exist because of a clock change. The source time convention needs to be checked.",
+        "de": "Diese Ortszeit existiert wegen einer Zeitumstellung nicht. Die Zeitkonvention der Quelldaten muss geprüft werden."
+      },
+      "final": {
+        "en": "This local time does not exist because of a clock change. The source time convention needs to be checked.",
+        "de": "Diese Ortszeit existiert wegen einer Zeitumstellung nicht. Die Zeitkonvention der Quelldaten muss geprüft werden."
+      }
+    },
+    {
+      "id": "CSV-074",
+      "original_en": "The occurrence value does not match this local timestamp.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 55
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The occurrence value does not match this local timestamp.",
+        "de": "Die Angabe zum ersten oder zweiten Vorkommen passt nicht zu dieser Ortszeit."
+      },
+      "final": {
+        "en": "The occurrence value does not match this local timestamp.",
+        "de": "Die Angabe zum ersten oder zweiten Vorkommen passt nicht zu dieser Ortszeit."
+      }
+    },
+    {
+      "id": "CSV-075",
+      "original_en": "This local time occurs twice. Provide UTC offsets or map the repeated-time column.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 59
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "This local time occurs twice. Its UTC offset or a column identifying the occurrence is required.",
+        "de": "Diese Ortszeit kommt zweimal vor. Ein UTC-Versatz oder die Zuordnung einer Spalte für das erste und zweite Vorkommen ist erforderlich."
+      },
+      "final": {
+        "en": "This local time occurs twice. Its UTC offset or a column identifying the occurrence is required.",
+        "de": "Diese Ortszeit kommt zweimal vor. Ein UTC-Versatz oder die Zuordnung einer Spalte für das erste und zweite Vorkommen ist erforderlich."
+      }
+    },
+    {
+      "id": "CSV-076",
+      "original_en": "Check the selected decimal separator. Thousands separators and blank numeric values are not accepted.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 63
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "Numbers must match the selected decimal separator. Thousands separators and blank numeric values are not accepted.",
+        "de": "Zahlen müssen dem ausgewählten Dezimaltrennzeichen entsprechen. Tausendertrennzeichen und leere Zahlenfelder sind nicht zulässig."
+      },
+      "final": {
+        "en": "Numbers must match the selected decimal separator. Thousands separators and blank numeric values are not accepted.",
+        "de": "Zahlen müssen dem ausgewählten Dezimaltrennzeichen entsprechen. Tausendertrennzeichen und leere Zahlenfelder sind nicht zulässig."
+      }
+    },
+    {
+      "id": "CSV-077",
+      "original_en": "A numeric value is outside the finite supported range.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 67
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "A numeric value is outside the finite supported range.",
+        "de": "Ein Zahlenwert liegt außerhalb des unterstützten endlichen Zahlenbereichs."
+      },
+      "final": {
+        "en": "A numeric value is outside the finite supported range.",
+        "de": "Ein Zahlenwert liegt außerhalb des unterstützten endlichen Zahlenbereichs."
+      }
+    },
+    {
+      "id": "CSV-078",
+      "original_en": "Save the source file with UTF-8 encoding.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 70
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "The source file must use UTF-8 encoding.",
+        "de": "Die Quelldatei muss UTF-8-kodiert sein."
+      },
+      "final": {
+        "en": "Save the source file with UTF-8 encoding.",
+        "de": "Die Quelldatei muss UTF-8-kodiert sein."
+      }
+    },
+    {
+      "id": "CSV-079",
+      "original_en": "The first record must contain unique column names, including every mapped column.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 72
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The first record must contain unique column names, including every mapped column.",
+        "de": "Der erste Datensatz benötigt eindeutige Spaltennamen und muss alle zugeordneten Spalten enthalten."
+      },
+      "final": {
+        "en": "The first record must contain unique column names, including every mapped column.",
+        "de": "Der erste Datensatz benötigt eindeutige Spaltennamen und muss alle zugeordneten Spalten enthalten."
+      }
+    },
+    {
+      "id": "CSV-080",
+      "original_en": "This record has a different number of cells from the header. Check the delimiter and quotation marks.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 76
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "This record's cell count differs from the header. The delimiter or quotation marks may be incorrect.",
+        "de": "Die Anzahl der Zellen in diesem Datensatz weicht von der Kopfzeile ab. Das Trennzeichen oder die Anführungszeichen können fehlerhaft sein."
+      },
+      "final": {
+        "en": "This record has a different number of cells from the header. Check the delimiter and quotation marks.",
+        "de": "Die Anzahl der Zellen in diesem Datensatz weicht von der Kopfzeile ab. Das Trennzeichen oder die Anführungszeichen können fehlerhaft sein."
+      }
+    },
+    {
+      "id": "CSV-081",
+      "original_en": "An interval needs a positive duration within the supported date range.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 80
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "An interval needs a positive duration within the supported date range.",
+        "de": "Ein Intervall benötigt eine positive Dauer innerhalb des unterstützten Datumsbereichs."
+      },
+      "final": {
+        "en": "An interval needs a positive duration within the supported date range.",
+        "de": "Ein Intervall benötigt eine positive Dauer innerhalb des unterstützten Datumsbereichs."
+      }
+    },
+    {
+      "id": "CSV-082",
+      "original_en": "Intervals must be in time order and must not overlap. Correct the source rather than sorting it here.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 84
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "Intervals must be in time order and must not overlap. The importer preserves their order.",
+        "de": "Intervalle müssen zeitlich geordnet sein und dürfen sich nicht überschneiden. Der Import behält ihre Reihenfolge bei."
+      },
+      "final": {
+        "en": "Intervals must be in time order and must not overlap. Correct the source rather than sorting it here.",
+        "de": "Intervalle müssen zeitlich geordnet sein und dürfen sich nicht überschneiden. Der Import behält ihre Reihenfolge bei."
+      }
+    },
+    {
+      "id": "CSV-083",
+      "original_en": "Check the measurement point and signs. Negative power is accepted only for net grid import.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 88
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "Values must be finite and match the selected measurement point. Negative values are accepted only for net grid import.",
+        "de": "Die Werte müssen endlich sein und zum ausgewählten Messpunkt passen. Negative Werte sind nur beim Netto-Netzbezug zulässig."
+      },
+      "final": {
+        "en": "Values must be finite and match the selected measurement point. Negative values are accepted only for net grid import.",
+        "de": "Die Werte müssen endlich sein und zum ausgewählten Messpunkt passen. Negative Werte sind nur beim Netto-Netzbezug zulässig."
+      }
+    },
+    {
+      "id": "CSV-084",
+      "original_en": "The integrated energy exceeds the supported numeric range. Check the source units and values.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 92
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "Integrated energy is outside the supported numeric range. The source units and values need to be checked.",
+        "de": "Die integrierte Energiemenge liegt außerhalb des unterstützten Zahlenbereichs. Einheiten und Werte der Quelle müssen geprüft werden."
+      },
+      "final": {
+        "en": "Integrated energy is outside the supported numeric range. The source units and values need to be checked.",
+        "de": "Die integrierte Energiemenge liegt außerhalb des unterstützten Zahlenbereichs. Einheiten und Werte der Quelle müssen geprüft werden."
+      }
+    },
+    {
+      "id": "CSV-085",
+      "original_en": "The CSV quotation or record structure is invalid.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 96
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The CSV quotation or record structure is invalid.",
+        "de": "Die Anführungszeichen oder die Datensatzstruktur der CSV-Datei sind ungültig."
+      },
+      "final": {
+        "en": "The CSV quotation or record structure is invalid.",
+        "de": "Die Anführungszeichen oder die Datensatzstruktur der CSV-Datei sind ungültig."
+      }
+    },
+    {
+      "id": "CSV-086",
+      "original_en": "The file contains no data records.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileLabels.ts",
+          "line": 99
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The file contains no data records.",
+        "de": "Die Datei enthält keine Datensätze."
+      },
+      "final": {
+        "en": "The file contains no data records.",
+        "de": "Die Datei enthält keine Datensätze."
+      }
+    },
+    {
+      "id": "CSV-087",
+      "original_en": "The file or request exceeds this service's size limit.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileError.tsx",
+          "line": 16
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The file or request exceeds this service's size limit.",
+        "de": "Die Datei oder Anfrage überschreitet die Größenbegrenzung dieses Dienstes."
+      },
+      "final": {
+        "en": "The file or request exceeds this service's size limit.",
+        "de": "Die Datei oder Anfrage überschreitet die Größenbegrenzung dieses Dienstes."
+      }
+    },
+    {
+      "id": "CSV-088",
+      "original_en": "The data request could not be confirmed. Please retry.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileError.tsx",
+          "line": 20
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [
+          "COPY-04"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "The data request could not be confirmed. Please retry.",
+        "de": "Die Datenanfrage konnte nicht bestätigt werden. Bitte versuchen Sie es erneut."
+      },
+      "final": {
+        "en": "The data request could not be confirmed. Please retry.",
+        "de": "Die Datenanfrage konnte nicht bestätigt werden. Bitte versuchen Sie es erneut."
+      }
+    },
+    {
+      "id": "CSV-089",
+      "original_en": "CSV record starting at physical line %d.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileError.tsx",
+          "line": 27
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-07"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "precision_recommendation"
+      },
+      "final_proposed": {
+        "en": "The CSV record starts on file line %d.",
+        "de": "Der CSV-Datensatz beginnt in Dateizeile %d."
+      },
+      "final": {
+        "en": "The CSV record starts on file line %d.",
+        "de": "Der CSV-Datensatz beginnt in Dateizeile %d."
+      }
+    },
+    {
+      "id": "CSV-090",
+      "original_en": "Check the timestamp column.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileError.tsx",
+          "line": 35
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "The mapped timestamp column needs checking.",
+        "de": "Die zugeordnete Zeitstempelspalte muss geprüft werden."
+      },
+      "final": {
+        "en": "Check the timestamp column.",
+        "de": "Die zugeordnete Zeitstempelspalte muss geprüft werden."
+      }
+    },
+    {
+      "id": "CSV-091",
+      "original_en": "Check the interval end column.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileError.tsx",
+          "line": 37
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "The mapped interval end column needs checking.",
+        "de": "Die zugeordnete Spalte für das Intervallende muss geprüft werden."
+      },
+      "final": {
+        "en": "Check the interval end column.",
+        "de": "Die zugeordnete Spalte für das Intervallende muss geprüft werden."
+      }
+    },
+    {
+      "id": "CSV-092",
+      "original_en": "Check the value column.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileError.tsx",
+          "line": 39
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "The mapped value column needs checking.",
+        "de": "Die zugeordnete Wertespalte muss geprüft werden."
+      },
+      "final": {
+        "en": "Check the value column.",
+        "de": "Die zugeordnete Wertespalte muss geprüft werden."
+      }
+    },
+    {
+      "id": "CSV-093",
+      "original_en": "Check the header record.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileError.tsx",
+          "line": 40
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-08"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "optional_style_or_plain_language"
+      },
+      "final_proposed": {
+        "en": "The header record needs checking.",
+        "de": "Die Kopfzeile muss geprüft werden."
+      },
+      "final": {
+        "en": "Check the header record.",
+        "de": "Die Kopfzeile muss geprüft werden."
+      }
+    },
+    {
+      "id": "CSV-094",
+      "original_en": "Source type · user declaration",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 30
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "priority": "clarity_or_scope_recommendation",
+        "note": "Reuse the same msgid as CSV-042. Shared review also covers PVGIS model output, so user declaration cannot be a universal source-type label. User-declared CSV origin remains explained at its own mapping field."
+      },
+      "final_proposed": {
+        "en": "Source type",
+        "de": "Art der Datenquelle"
+      },
+      "final": {
+        "en": "Source type",
+        "de": "Art der Datenquelle"
+      }
+    },
+    {
+      "id": "CSV-095",
+      "original_en": "Energy in covered intervals",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 34
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Energy in covered intervals",
+        "de": "Energiemenge in den abgedeckten Intervallen"
+      },
+      "final": {
+        "en": "Energy in covered intervals",
+        "de": "Energiemenge in den abgedeckten Intervallen"
+      }
+    },
+    {
+      "id": "CSV-096",
+      "original_en": "Data records",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 37
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Data records",
+        "de": "Datensätze"
+      },
+      "final": {
+        "en": "Data records",
+        "de": "Datensätze"
+      }
+    },
+    {
+      "id": "CSV-097",
+      "original_en": "Covered duration",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 39
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Covered duration",
+        "de": "Abgedeckte Dauer"
+      },
+      "final": {
+        "en": "Covered duration",
+        "de": "Abgedeckte Dauer"
+      }
+    },
+    {
+      "id": "CSV-098",
+      "original_en": "Missing duration",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 42
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-10"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "precision_recommendation"
+      },
+      "final_proposed": {
+        "en": "Gap duration within the source period",
+        "de": "Lückendauer innerhalb des Quellzeitraums"
+      },
+      "final": {
+        "en": "Gap duration within the source period",
+        "de": "Lückendauer innerhalb des Quellzeitraums"
+      }
+    },
+    {
+      "id": "CSV-099",
+      "original_en": "Gaps",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 43
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Gaps",
+        "de": "Datenlücken"
+      },
+      "final": {
+        "en": "Gaps",
+        "de": "Datenlücken"
+      }
+    },
+    {
+      "id": "CSV-100",
+      "original_en": "Largest original interval",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 45
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-10"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "precision_recommendation"
+      },
+      "final_proposed": {
+        "en": "Longest original interval",
+        "de": "Längstes Originalintervall"
+      },
+      "final": {
+        "en": "Longest original interval",
+        "de": "Längstes Originalintervall"
+      }
+    },
+    {
+      "id": "CSV-101",
+      "original_en": "Effective resolution limit",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 49
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Effective resolution limit",
+        "de": "Zeitliche Auflösungsgrenze"
+      },
+      "final": {
+        "en": "Effective resolution limit",
+        "de": "Zeitliche Auflösungsgrenze"
+      }
+    },
+    {
+      "id": "CSV-102",
+      "original_en": "Minimum interval mean",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 53
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Minimum interval mean",
+        "de": "Kleinster Leistungsmittelwert je Intervall"
+      },
+      "final": {
+        "en": "Minimum interval mean",
+        "de": "Kleinster Leistungsmittelwert je Intervall"
+      }
+    },
+    {
+      "id": "CSV-103",
+      "original_en": "Maximum interval mean",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 57
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Maximum interval mean",
+        "de": "Größter Leistungsmittelwert je Intervall"
+      },
+      "final": {
+        "en": "Maximum interval mean",
+        "de": "Größter Leistungsmittelwert je Intervall"
+      }
+    },
+    {
+      "id": "CSV-104",
+      "original_en": "Data interpretation",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 63
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Data interpretation",
+        "de": "Auswertung der Quelldaten"
+      },
+      "final": {
+        "en": "Data interpretation",
+        "de": "Auswertung der Quelldaten"
+      }
+    },
+    {
+      "id": "CSV-105",
+      "original_en": "These figures describe the uploaded intervals. They are not an annual forecast, an instantaneous peak or a battery sizing result.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 78
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-06"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "clarity_or_scope_recommendation"
+      },
+      "final_proposed": {
+        "en": "The summary covers the full source period shown above. Maximum power is an interval average. This review does not determine instantaneous peaks, battery size or suitability for a calculation.",
+        "de": "Die Übersicht umfasst den gesamten oben angezeigten Quellzeitraum. Der größte Leistungswert ist ein Intervallmittelwert. Momentane Spitzen, eine erforderliche Speichergröße und die Eignung für eine Berechnung werden damit nicht bestimmt."
+      },
+      "final": {
+        "en": "The summary covers the full source period shown above. Maximum power is an interval average. This review does not determine instantaneous peaks, battery size or suitability for a calculation.",
+        "de": "Die Übersicht umfasst den gesamten oben angezeigten Quellzeitraum. Der größte Leistungswert ist ein Intervallmittelwert. Momentane Spitzen, eine erforderliche Speichergröße und die Eignung für eine Berechnung werden damit nicht bestimmt."
+      }
+    },
+    {
+      "id": "CSV-106",
+      "original_en": "The source contains gaps. Missing intervals have not been filled with zeros or estimated values.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 85
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "The source contains gaps. Missing intervals have not been filled with zeros or estimated values.",
+        "de": "Die Quelle enthält Datenlücken. Fehlende Intervalle wurden weder mit Nullen noch mit Schätzwerten aufgefüllt."
+      },
+      "final": {
+        "en": "The source contains gaps. Missing intervals have not been filled with zeros or estimated values.",
+        "de": "Die Quelle enthält Datenlücken. Fehlende Intervalle wurden weder mit Nullen noch mit Schätzwerten aufgefüllt."
+      }
+    },
+    {
+      "id": "CSV-107",
+      "original_en": "Net import includes the effect of on-site generation and storage. It does not identify total building consumption on its own.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 93
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-05"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "substantive_accuracy_recommendation"
+      },
+      "final_proposed": {
+        "en": "Net grid import can be affected by on-site generation and storage. Total site consumption cannot be derived from net import alone.",
+        "de": "Erzeugung und Speicher vor Ort können den Netto-Netzbezug beeinflussen. Der gesamte Standortverbrauch lässt sich daraus allein nicht ableiten."
+      },
+      "final": {
+        "en": "Net grid import can be affected by on-site generation and storage. Total site consumption cannot be derived from net import alone.",
+        "de": "Erzeugung und Speicher vor Ort können den Netto-Netzbezug beeinflussen. Der gesamte Standortverbrauch lässt sich daraus allein nicht ableiten."
+      }
+    },
+    {
+      "id": "CSV-108",
+      "original_en": "Some interval means were reconstructed. Finer output intervals do not create finer original observations.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 101
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Some interval means were reconstructed. Finer output intervals do not create finer original observations.",
+        "de": "Einige Intervallmittelwerte wurden rekonstruiert. Kürzere Ausgabeintervalle liefern keine zusätzlichen Originalmessungen."
+      },
+      "final": {
+        "en": "Some interval means were reconstructed. Finer output intervals do not create finer original observations.",
+        "de": "Einige Intervallmittelwerte wurden rekonstruiert. Kürzere Ausgabeintervalle liefern keine zusätzlichen Originalmessungen."
+      }
+    },
+    {
+      "id": "CSV-109",
+      "original_en": "Interpreted intervals",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 109
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Interpreted intervals",
+        "de": "Interpretierte Intervalle"
+      },
+      "final": {
+        "en": "Interpreted intervals",
+        "de": "Interpretierte Intervalle"
+      }
+    },
+    {
+      "id": "CSV-110",
+      "original_en": "Interpreted intervals · UTC · average kW",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 114
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Interpreted intervals · UTC · average kW",
+        "de": "Interpretierte Intervalle · UTC · mittlere Leistung in kW"
+      },
+      "final": {
+        "en": "Interpreted intervals · UTC · average kW",
+        "de": "Interpretierte Intervalle · UTC · mittlere Leistung in kW"
+      }
+    },
+    {
+      "id": "CSV-111",
+      "original_en": "Start",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 118
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Start",
+        "de": "Beginn"
+      },
+      "final": {
+        "en": "Start",
+        "de": "Beginn"
+      }
+    },
+    {
+      "id": "CSV-112",
+      "original_en": "End",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 119
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "End",
+        "de": "Ende"
+      },
+      "final": {
+        "en": "End",
+        "de": "Ende"
+      }
+    },
+    {
+      "id": "CSV-113",
+      "original_en": "Next intervals",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 141
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Next intervals",
+        "de": "Nächste Intervalle"
+      },
+      "final": {
+        "en": "Next intervals",
+        "de": "Nächste Intervalle"
+      }
+    },
+    {
+      "id": "CSV-114",
+      "original_en": "Gap locations · UTC",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 146
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Gap locations · UTC",
+        "de": "Lückenpositionen · UTC"
+      },
+      "final": {
+        "en": "Gap locations · UTC",
+        "de": "Lückenpositionen · UTC"
+      }
+    },
+    {
+      "id": "CSV-115",
+      "original_en": "Only the first gap locations are shown. Totals cover the complete profile.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 157
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Only the first gap locations are shown. Totals cover the complete profile.",
+        "de": "Es werden nur die ersten Lückenpositionen angezeigt. Die Summen beziehen sich auf das gesamte Profil."
+      },
+      "final": {
+        "en": "Only the first gap locations are shown. Totals cover the complete profile.",
+        "de": "Es werden nur die ersten Lückenpositionen angezeigt. Die Summen beziehen sich auf das gesamte Profil."
+      }
+    },
+    {
+      "id": "CSV-116",
+      "original_en": "Original source and interpretation record",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 166
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Original source and interpretation record",
+        "de": "Originalquelle und Interpretationsprotokoll"
+      },
+      "final": {
+        "en": "Original source and interpretation record",
+        "de": "Originalquelle und Interpretationsprotokoll"
+      }
+    },
+    {
+      "id": "CSV-117",
+      "original_en": "Original file SHA-256",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 169
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Original file SHA-256",
+        "de": "SHA-256 der Originaldatei"
+      },
+      "final": {
+        "en": "Original file SHA-256",
+        "de": "SHA-256 der Originaldatei"
+      }
+    },
+    {
+      "id": "CSV-118",
+      "original_en": "Interpretation SHA-256",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileReview.tsx",
+          "line": 171
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-10"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "precision_recommendation"
+      },
+      "final_proposed": {
+        "en": "Import metadata SHA-256",
+        "de": "SHA-256 der Import-Metadaten"
+      },
+      "final": {
+        "en": "Import metadata SHA-256",
+        "de": "SHA-256 der Import-Metadaten"
+      }
+    },
+    {
+      "id": "CSV-119",
+      "original_en": "Retry data preview",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/OwnedProfile.tsx",
+          "line": 98
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Retry data preview",
+        "de": "Datenvorschau erneut laden"
+      },
+      "final": {
+        "en": "Retry data preview",
+        "de": "Datenvorschau erneut laden"
+      }
+    },
+    {
+      "id": "CSV-120",
+      "original_en": "Reading the saved source…",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/OwnedProfile.tsx",
+          "line": 104
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Reading the saved source…",
+        "de": "Gespeicherte Quelle wird gelesen…"
+      },
+      "final": {
+        "en": "Reading the saved source…",
+        "de": "Gespeicherte Quelle wird gelesen…"
+      }
+    },
+    {
+      "id": "CSV-121",
+      "original_en": "First intervals",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/OwnedProfile.tsx",
+          "line": 121
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "First intervals",
+        "de": "Erste Intervalle"
+      },
+      "final": {
+        "en": "First intervals",
+        "de": "Erste Intervalle"
+      }
+    },
+    {
+      "id": "CSV-122",
+      "original_en": "Use this profile in the project",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/OwnedProfile.tsx",
+          "line": 130
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-01"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "Use this profile in the open draft",
+        "de": "Profil im offenen Projektentwurf verwenden"
+      },
+      "final": {
+        "en": "Use this profile in the open draft",
+        "de": "Profil im offenen Projektentwurf verwenden"
+      }
+    },
+    {
+      "id": "CSV-123",
+      "original_en": "Interval data",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 210
+        },
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 342
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "keep_english",
+        "issue_ids": [],
+        "note": "No substantive English issue found. German proposed independently for this operational context.",
+        "priority": "no_change_required"
+      },
+      "final_proposed": {
+        "en": "Interval data",
+        "de": "Zeitreihendaten"
+      },
+      "final": {
+        "en": "Interval data",
+        "de": "Zeitreihendaten"
+      }
+    },
+    {
+      "id": "CSV-124",
+      "original_en": "Import source records, check their meaning and coverage, then select the profiles to keep with this project. The annual consumption entry remains separate.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 346
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-01"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "After import, the data's meaning and coverage are shown for review. A profile selection applies to the open draft and is saved with Save project. The annual consumption entry remains separate.",
+        "de": "Nach dem Import werden Bedeutung und Abdeckung der Daten angezeigt. Die Profilauswahl gilt zunächst für den offenen Projektentwurf und wird mit „Projekt speichern“ im Projekt gespeichert. Die Angabe zum Jahresverbrauch bleibt davon getrennt."
+      },
+      "final": {
+        "en": "After import, the data's meaning and coverage are shown for review. A profile selection applies to the open draft and is saved with Save project. The annual consumption entry remains separate.",
+        "de": "Nach dem Import werden Bedeutung und Abdeckung der Daten angezeigt. Die Profilauswahl gilt zunächst für den offenen Projektentwurf und wird mit „Projekt speichern“ im Projekt gespeichert. Die Angabe zum Jahresverbrauch bleibt davon getrennt."
+      }
+    },
+    {
+      "id": "CSV-125",
+      "original_en": "Remove selection",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 389
+        }
+      ],
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "replace_proposed",
+        "issue_ids": [
+          "COPY-01"
+        ],
+        "note": "See the matching issue in PROFILE-COPY-REVIEW.md. Parent selection and implementation remain pending.",
+        "priority": "must_resolve_before_copy_acceptance"
+      },
+      "final_proposed": {
+        "en": "Remove draft selection",
+        "de": "Auswahl im Entwurf aufheben"
+      },
+      "final": {
+        "en": "Remove draft selection",
+        "de": "Auswahl im Entwurf aufheben"
+      }
+    }
+  ],
+  "reused_messages": [
+    {
+      "original_en": "Cancel",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProfileIntake.tsx",
+          "line": 477
+        }
+      ]
+    },
+    {
+      "original_en": "Opening project…",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 97
+        }
+      ]
+    },
+    {
+      "original_en": "This project contains an input format that this workspace cannot edit.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 111
+        }
+      ]
+    },
+    {
+      "original_en": "Projects",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "original_en": "Saving…",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 136
+        }
+      ]
+    },
+    {
+      "original_en": "Save not confirmed",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 138
+        }
+      ]
+    },
+    {
+      "original_en": "Input needs attention",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 140
+        }
+      ]
+    },
+    {
+      "original_en": "Unsaved changes",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 142
+        }
+      ]
+    },
+    {
+      "original_en": "Saved · revision %d",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 144
+        }
+      ]
+    },
+    {
+      "original_en": "Undo",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 150
+        },
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 151
+        }
+      ]
+    },
+    {
+      "original_en": "Redo",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 159
+        },
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 160
+        }
+      ]
+    },
+    {
+      "original_en": "Retry save",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 180
+        }
+      ]
+    },
+    {
+      "original_en": "Save project",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 181
+        }
+      ]
+    },
+    {
+      "original_en": "Project",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 187
+        }
+      ]
+    },
+    {
+      "original_en": "Site data is saved with your project. A roof layout can be added later.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 191
+        }
+      ]
+    },
+    {
+      "original_en": "Project sections",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 195
+        }
+      ]
+    },
+    {
+      "original_en": "Project brief",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 198
+        }
+      ]
+    },
+    {
+      "original_en": "Project location",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 202
+        }
+      ]
+    },
+    {
+      "original_en": "Electricity consumption",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 206
+        }
+      ]
+    },
+    {
+      "original_en": "Project information is kept with its source and revision.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 217
+        }
+      ]
+    },
+    {
+      "original_en": "Several local drafts are available for this project. Select one to compare with the saved revision.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 228
+        }
+      ]
+    },
+    {
+      "original_en": "Local draft · revision %d",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 240
+        }
+      ]
+    },
+    {
+      "original_en": "Correct the highlighted input before leaving this project.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 257
+        }
+      ]
+    },
+    {
+      "original_en": "Save the project before leaving. Browser recovery could not be stored.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 261
+        }
+      ]
+    },
+    {
+      "original_en": "Unsaved work from this browser has been restored.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 269
+        }
+      ]
+    },
+    {
+      "original_en": "Browser recovery is unavailable. Changes remain open here until the server confirms a save.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 277
+        }
+      ]
+    },
+    {
+      "original_en": "The save could not be confirmed. Your input is still here.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 285
+        }
+      ]
+    },
+    {
+      "original_en": "Open changes have been kept alongside the saved revision.",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 294
+        }
+      ]
+    },
+    {
+      "original_en": "Keep open changes",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 304
+        }
+      ]
+    },
+    {
+      "original_en": "Use saved revision",
+      "source_refs": [
+        {
+          "file": "apps/planner/src/components/ProjectEditor.tsx",
+          "line": 310
+        }
+      ]
+    }
+  ],
+  "additional_messages": [
+    {
+      "id": "CSV-A001",
+      "original_en": "The source is stored. Review its interpretation before selecting it in the open draft.",
+      "final_proposed": {
+        "en": "The source is stored. Review its interpretation before selecting it in the open draft.",
+        "de": "Die Quelle ist gespeichert. Prüfen Sie die Interpretation, bevor Sie das Profil im offenen Projektentwurf auswählen."
+      },
+      "condition": "Confirmed owned asset exists, but the profile has not yet been selected in the open draft.",
+      "issue_ids": [
+        "COPY-03"
+      ],
+      "source_refs": [],
+      "kind": "additional_or_conditional_message",
+      "status": "selected_by_parent",
+      "final": {
+        "en": "The source is stored. Review its interpretation before selecting it in the open draft.",
+        "de": "Die Quelle ist gespeichert. Prüfen Sie die Interpretation, bevor Sie das Profil im offenen Projektentwurf auswählen."
+      }
+    },
+    {
+      "id": "CSV-A002",
+      "original_en": "The profile is selected in the open draft. Save the project to confirm this selection.",
+      "final_proposed": {
+        "en": "The profile is selected in the open draft. Save the project to record this selection.",
+        "de": "Das Profil ist im offenen Projektentwurf ausgewählt. Mit „Projekt speichern“ wird diese Auswahl im Projekt gespeichert."
+      },
+      "condition": "Only after the confirmed profile is successfully attached to the open draft; this is not a server Save project receipt.",
+      "issue_ids": [
+        "COPY-01"
+      ],
+      "source_refs": [],
+      "kind": "additional_or_conditional_message",
+      "status": "selected_by_parent",
+      "final": {
+        "en": "The profile is selected in the open draft. Save the project to record this selection.",
+        "de": "Das Profil ist im offenen Projektentwurf ausgewählt. Mit „Projekt speichern“ wird diese Auswahl im Projekt gespeichert."
+      }
+    },
+    {
+      "id": "CSV-A003",
+      "original_en": null,
+      "final_proposed": {
+        "en": "Import stores the original file and these settings as a private project source. Selecting a profile and saving the project are separate steps.",
+        "de": "Beim Import werden die Originaldatei und diese Einstellungen als private Projektquelle gespeichert. Die Profilauswahl und das Speichern des Projekts erfolgen in eigenen Schritten."
+      },
+      "condition": "Immediately before the Import and review data action.",
+      "issue_ids": [
+        "COPY-01",
+        "COPY-02"
+      ],
+      "source_refs": [],
+      "kind": "additional_or_conditional_message",
+      "status": "selected_by_parent",
+      "final": {
+        "en": "Import stores the original file and these settings as a private project source. Selecting a profile and saving the project are separate steps.",
+        "de": "Beim Import werden die Originaldatei und diese Einstellungen als private Projektquelle gespeichert. Die Profilauswahl und das Speichern des Projekts erfolgen in eigenen Schritten."
+      }
+    },
+    {
+      "id": "CSV-A004",
+      "original_en": null,
+      "final_proposed": {
+        "en": "This name identifies the source in the project. The original file name is not stored.",
+        "de": "Diese Bezeichnung kennzeichnet die Datenquelle im Projekt. Der ursprüngliche Dateiname wird nicht gespeichert."
+      },
+      "condition": "Help below the user-entered Source label field; contingent on the parent preserving the stated original-filename policy.",
+      "issue_ids": [
+        "COPY-02"
+      ],
+      "source_refs": [],
+      "kind": "additional_or_conditional_message",
+      "status": "selected_by_parent",
+      "final": {
+        "en": "This name identifies the source in the project. The original file name is not stored.",
+        "de": "Diese Bezeichnung kennzeichnet die Datenquelle im Projekt. Der ursprüngliche Dateiname wird nicht gespeichert."
+      }
+    },
+    {
+      "id": "CSV-A005",
+      "original_en": null,
+      "final_proposed": {
+        "en": "For net grid import, energy is imports minus exports over the covered intervals.",
+        "de": "Beim Netto-Netzbezug ist die Energiemenge die Differenz aus Bezug und Einspeisung über die abgedeckten Intervalle."
+      },
+      "condition": "Quality review when measurement is net_import.",
+      "issue_ids": [
+        "COPY-05"
+      ],
+      "source_refs": [],
+      "kind": "additional_or_conditional_message",
+      "status": "selected_by_parent",
+      "final": {
+        "en": "For net grid import, energy is imports minus exports over the covered intervals.",
+        "de": "Beim Netto-Netzbezug ist die Energiemenge die Differenz aus Bezug und Einspeisung über die abgedeckten Intervalle."
+      }
+    },
+    {
+      "id": "CSV-A006",
+      "original_en": null,
+      "final_proposed": {
+        "en": "File lines include blank lines and line breaks inside quoted cells. They are not spreadsheet row numbers.",
+        "de": "Dateizeilen zählen auch Leerzeilen und Zeilenumbrüche innerhalb von Zellen in Anführungszeichen mit. Sie entsprechen nicht den Zeilennummern einer Tabellenkalkulation."
+      },
+      "condition": "Help for starting-file-line diagnostics or structure preview.",
+      "issue_ids": [
+        "COPY-07"
+      ],
+      "source_refs": [],
+      "kind": "additional_or_conditional_message",
+      "status": "selected_by_parent",
+      "final": {
+        "en": "File lines include blank lines and line breaks inside quoted cells. They are not spreadsheet row numbers.",
+        "de": "Dateizeilen zählen auch Leerzeilen und Zeilenumbrüche innerhalb von Zellen in Anführungszeichen mit. Sie entsprechen nicht den Zeilennummern einer Tabellenkalkulation."
+      }
+    },
+    {
+      "id": "CSV-A007",
+      "original_en": null,
+      "final_proposed": {
+        "en": "For this column, 0 identifies the first occurrence of a repeated local end time and 1 the second.",
+        "de": "In dieser Spalte steht 0 für das erste und 1 für das zweite Vorkommen einer doppelt auftretenden lokalen Endzeit."
+      },
+      "condition": "Help for End repeated-time column when explicit start/end columns are used.",
+      "issue_ids": [
+        "COPY-06"
+      ],
+      "source_refs": [],
+      "kind": "additional_or_conditional_message",
+      "status": "selected_by_parent",
+      "final": {
+        "en": "For this column, 0 identifies the first occurrence of a repeated local end time and 1 the second.",
+        "de": "In dieser Spalte steht 0 für das erste und 1 für das zweite Vorkommen einer doppelt auftretenden lokalen Endzeit."
+      }
+    },
+    {
+      "id": "CSV-A008",
+      "original_en": null,
+      "final_proposed": {
+        "en": "A shorter output interval does not increase the time resolution of the original data.",
+        "de": "Ein kürzeres Ausgabeintervall erhöht nicht die zeitliche Auflösung der Originaldaten."
+      },
+      "condition": "Help for Effective resolution limit; retain the complete source/transformations record.",
+      "issue_ids": [
+        "COPY-10"
+      ],
+      "source_refs": [],
+      "kind": "additional_or_conditional_message",
+      "status": "not_adopted_redundant",
+      "final": null
+    },
+    {
+      "id": "CSV-A009",
+      "original_en": null,
+      "source_refs": [],
+      "kind": "additional_or_conditional_message",
+      "status": "selected_by_parent",
+      "issue_ids": [
+        "COPY-01"
+      ],
+      "condition": "Help beside Remove draft selection; must not be presented as deleting the source or as an acknowledged project save.",
+      "final_proposed": {
+        "en": "Removing a selection leaves the stored source unchanged. Save the project to record the change.",
+        "de": "Beim Aufheben der Auswahl bleibt die gespeicherte Quelle unverändert. Mit „Projekt speichern“ wird die Änderung im Projekt gespeichert."
+      },
+      "final": {
+        "en": "Removing a selection leaves the stored source unchanged. Save the project to record the change.",
+        "de": "Beim Aufheben der Auswahl bleibt die gespeicherte Quelle unverändert. Mit „Projekt speichern“ wird die Änderung im Projekt gespeichert."
+      }
+    },
+    {
+      "id": "CSV-A010",
+      "original_en": "Original value meaning",
+      "source_refs": [],
+      "kind": "additional_message_requested_by_parent",
+      "status": "selected_by_parent",
+      "issue_ids": [
+        "COPY-06"
+      ],
+      "condition": "Quality facts label for the source's original value semantics and unit. The displayed value must come from frozen source metadata, not from UI language or a guess.",
+      "final_proposed": {
+        "en": "Original value meaning",
+        "de": "Bedeutung der Originalwerte"
+      },
+      "final": {
+        "en": "Original value meaning",
+        "de": "Bedeutung der Originalwerte"
+      }
+    },
+    {
+      "id": "CSV-A011",
+      "original_en": "Choose CSV file",
+      "final_proposed": {
+        "en": "Choose CSV file",
+        "de": "CSV-Datei auswählen"
+      },
+      "final": {
+        "en": "Choose CSV file",
+        "de": "CSV-Datei auswählen"
+      },
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "independent_approval",
+        "note": "Real CUA found a browser-language file control. Native chooser and temporary filename remain; translated application presentation is required. Independent reviewer approved these exact EN/DE strings."
+      }
+    },
+    {
+      "id": "CSV-A012",
+      "original_en": "No file selected",
+      "final_proposed": {
+        "en": "No file selected",
+        "de": "Keine Datei ausgewählt"
+      },
+      "final": {
+        "en": "No file selected",
+        "de": "Keine Datei ausgewählt"
+      },
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "independent_approval",
+        "note": "Real CUA found a browser-language file control. Native chooser and temporary filename remain; translated application presentation is required. Independent reviewer approved these exact EN/DE strings."
+      }
+    },
+    {
+      "id": "CSV-A013",
+      "original_en": "Recovered source file",
+      "final_proposed": {
+        "en": "Recovered source file",
+        "de": "Wiederhergestellte Quelldatei"
+      },
+      "final": {
+        "en": "Recovered source file",
+        "de": "Wiederhergestellte Quelldatei"
+      },
+      "status": "selected_by_parent",
+      "review": {
+        "decision": "independent_approval",
+        "note": "Real CUA found a browser-language file control. Native chooser and temporary filename remain; translated application presentation is required. Independent reviewer approved these exact EN/DE strings."
+      }
+    }
+  ],
+  "rejected_variants": [
+    {
+      "id": "CSV-R001",
+      "original_en": "The data request could not be confirmed. Your open input has been kept.",
+      "reason": "Generic ProfileError is also used by read-only profile preview; persistence can fail. The universal retention assurance is not supported.",
+      "replacement_id": "CSV-088"
+    }
+  ],
+  "decisions": {
+    "parent_selected": false,
+    "po_changed": false,
+    "ui_changed_by_reviewer": false,
+    "deployment_or_render_acceptance": false,
+    "final_status": "pending_parent_selection_and_implementation",
+    "parent_selection_status": "All must-resolve and substantive/precision/clarity directions selected; final exact strings and application pending parent. Parent retains active operational instructions CSV-003,068,078,080,082,090–093. Do not refresh extraction snapshot."
+  },
+  "terminology": {
+    "project_draft": {
+      "en": "open draft",
+      "de": "offener Projektentwurf",
+      "note": "The browser's editable project draft; distinct from the commerce Solution draft / Lösungsentwurf."
+    },
+    "interval_data": {
+      "en": "Interval data",
+      "de": "Zeitreihendaten",
+      "note": "Generic label covering load, net import, PV and auxiliary profiles. Lastgang is appropriate specifically for load profiles."
+    }
+  },
+  "final_selection": {
+    "source_message_count": 235,
+    "new_catalog_entries": 136,
+    "selected_review_messages": 137,
+    "source_sha256": {
+      "apps/planner/src/components/ProfileReview.tsx": "808472c57ade8a8f7c0ddddd6fe7a6ba4a73198a5f0af143d78121aeee5a7172",
+      "apps/planner/src/components/ProfileMapping.tsx": "3a07f919c006a43a21c9d43d1e38bf85f2405c04626115f7830c23f16d06888f",
+      "apps/planner/src/components/ProfileLabels.ts": "d6cf646c7ba6f54bd71b17498bd0eb69d899232ec6cdb3d01f9f8c5b0be60368",
+      "apps/planner/src/components/ProfileIntake.tsx": "03cf54e4b2b806d4d018684b2c0fc65fd35f5d0801ef40656cda71011b7d9a2e",
+      "apps/planner/src/components/ProfileError.tsx": "12893eee9d9b00cb976a63dab9bd3118210dab2a833c7f039be8abded6b3e910"
+    },
+    "native_gettext_and_visual": "pending"
+  }
+}

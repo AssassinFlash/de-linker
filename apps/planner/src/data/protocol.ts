@@ -1,3 +1,4 @@
+import type { ProfileIssue } from "./profileIssue.ts";
 /** Native gateway views; no owner secret or browser-selected principal. */
 export type Json =
 	null | boolean | number | string | readonly Json[] | JsonObject;
@@ -47,6 +48,7 @@ export const RPC_PATHS = [
 	"assets/read",
 	"assets/content",
 	"profiles/csv",
+	"profiles/inspect",
 	"profiles/preview",
 	"battery/scenario",
 ] as const;
@@ -56,11 +58,17 @@ export type JsonRpcPath = Exclude<RpcPath, "assets/content">;
 export class ApiError extends Error {
 	readonly status: number;
 	readonly code: string;
+	readonly profileIssue: ProfileIssue | null;
 
-	constructor(status: number, code: string) {
+	constructor(
+		status: number,
+		code: string,
+		profileIssue: ProfileIssue | null = null,
+	) {
 		super(code);
 		this.name = "ApiError";
 		this.status = status;
 		this.code = code;
+		this.profileIssue = profileIssue;
 	}
 }

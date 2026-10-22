@@ -55,6 +55,9 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 			reads++;
 			return stored;
 		},
+		async readProfileImports() {
+			return [];
+		},
 		async candidates() {
 			return [];
 		},
@@ -595,6 +598,9 @@ test("native confirmation fences pending creation, revision and navigation befor
 			const store = {
 				async read() {
 					return null;
+				},
+				async readProfileImports() {
+					return [];
 				},
 				async candidates() {
 					return [];

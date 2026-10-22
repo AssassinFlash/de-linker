@@ -68,6 +68,9 @@ test("a deferred close refused during same-scope verification remains retryable"
 		async read() {
 			return null;
 		},
+		async readProfileImports() {
+			return [];
+		},
 		async candidates() {
 			return [];
 		},

@@ -50,6 +50,10 @@ class ProjectInputs(Command):
     def validate_brief(cls, value: Object) -> Object:
         if "brief" in value:
             PlanningBrief.model_validate(value["brief"])
+        if "profile_selections" in value:
+            from .profile_selections import ProfileSelections
+
+            ProfileSelections.model_validate(value["profile_selections"])
         return value
 
 
@@ -103,6 +107,13 @@ class CsvImport(Command):
     source_label: Key
     rights_note: Note
     key: Key
+
+
+class CsvInspect(Command):
+    project_id: Id
+    content_base64: str
+    delimiter: str
+    page_size: Annotated[int, Field(strict=True, gt=0)]
 
 
 class BatteryScenario(Command):

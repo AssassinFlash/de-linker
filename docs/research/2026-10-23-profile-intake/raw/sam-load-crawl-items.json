@@ -1,0 +1,106 @@
+[
+  {
+    "url": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electric_load.html",
+    "crawl": {
+      "loadedUrl": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electric_load.html",
+      "loadedTime": "2026-10-22T23:12:22.826Z",
+      "referrerUrl": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electric_load.html",
+      "httpStatusCode": 404,
+      "depth": 0,
+      "contentLengthBytes": 5254,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electric_load.html",
+      "title": "Page not found · GitHub Pages",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": null,
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "content-encoding": "gzip",
+        "content-length": "5254",
+        "content-security-policy": "default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 23:12:22 GMT",
+        "etag": "W/\"6abcf5c5-24a3\"",
+        "server": "GitHub.com",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnish",
+        "x-cache": "MISS",
+        "x-cache-hits": "0",
+        "x-fastly-request-id": "a78aff4b89f7178e2763acdb5f6879843264b6e9",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "9A96:2A7CEB:1F6A268:21F8D14:6ADA9856",
+        "x-proxy-cache": "MISS",
+        "x-served-by": "cache-ewr-kewr1740076-EWR",
+        "x-timer": "S1792710743.580132,VS0,VE207"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "404\nFile not found\nThe site configured at this address does not contain the requested file. \nIf this is your site, make sure that the filename case matches the URL as well as any file permissions.\nFor root URLs (like http://example.com/) you must provide an index.html file. \nRead the full documentation for more information about using GitHub Pages. \nGitHub Status — @githubstatus",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "Page not found · GitHub Pages\n\n# 404\n\n**File not found**\n\nThe site configured at this address does not contain the requested file.\n\nIf this is your site, make sure that the filename case matches the URL as well as any file permissions.  \nFor root URLs (like `http://example.com/`) you must provide an `index.html` file.\n\n[Read the full documentation](https://help.github.com/pages/) for more information about using **GitHub Pages**.\n\n[GitHub Status](https://githubstatus.com/) — [@githubstatus](https://twitter.com/githubstatus)\n\n[](https://natlabrockies.github.io/)[](https://natlabrockies.github.io/)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/index.html",
+    "crawl": {
+      "loadedUrl": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/index.html",
+      "loadedTime": "2026-10-22T23:12:22.884Z",
+      "referrerUrl": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/index.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 10556,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/index.html",
+      "title": "Electricity Rates and Load — SAM Help",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "access-control-allow-origin": "*",
+        "age": "0",
+        "cache-control": "max-age=600",
+        "content-encoding": "gzip",
+        "content-length": "10556",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 23:12:22 GMT",
+        "etag": "W/\"6a4d441f-144e1\"",
+        "expires": "Thu, 22 Oct 2026 23:22:22 GMT",
+        "last-modified": "Tue, 07 Jul 2026 18:23:27 GMT",
+        "server": "GitHub.com",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnish",
+        "x-cache": "MISS",
+        "x-cache-hits": "0",
+        "x-fastly-request-id": "905f5a7ba36218caa98c4ba2ba8f4230a6ddb7fb",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "B73C:3CC9AD:195DB00:1C6F5BD:6ADA9856",
+        "x-proxy-cache": "MISS",
+        "x-served-by": "cache-dfw-kdal2120126-DFW",
+        "x-timer": "S1792710743.692526,VS0,VE125"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Skip to main content\nBack to top \nCtrl+K \n.rst \n.pdf \nElectricity Rates and Load\nElectricity Rates and Load#\nFor projects with the residential or commercial or third party ownership financial model that buy and sell electricity at retail rates, you specify a rate structure (net metering, energy rates, demand charges, and monthly charges) on the Electricity Rates page, and a building or facility load on the Electric Load page.\nElectric Load\nElectricity Rates\nElectricity Bill Results\nElectric Load\nInput Time Series Load Data\nHourly or Subhourly Load Profile\nAdjust Load Profile to Monthly Usage\nDownload\nMonthly Load Summary\nCalculate Load Data\nBuilding Energy Load Profile Estimator\nAnnual Adjustment\nWorking with Time Series Load Data\nData Sources\nTime Step and Convention\nImporting Data from a File\nPasting Load Data from your Computer’s Clipboard\nElectricity Rates\nOverview\nElectricity Rates Glossary\nRate Structure Definitions\nMetering and Billing Definitions\nOpenEI Utility Rate Database\nSave / Load Rate Data\nMetering and Billing\nFixed Charge\nMinimum Charges\nAnnual Escalation\nDescription and Applicability\nEnergy Charges\nEnergy Rate Table\nWeekday and Weekend Schedules for Energy Charges\nEnergy Rate Structure Examples\nBilling Demand\nBilling Demand by Month Table\nBilling Demand by Time-of use Period for Demand Charges\nDemand Charges\nDemand Rates by Month with Optional Tiers Rate Table\nDemand Rates by Time-of-use and/or Tiers\nWeekday and Weekend Schedules for Demand Charges\nElectricity Purchases\nElectricity Purchases\nRate Structure Definitions\nOpenEI Utility Rate Database\nSave / Load Rate Data\nMetering and Billing\nFixed Charge\nMinimum Charges\nAnnual Escalation\nDescription and Applicability\nEnergy Charges\nEnergy Rate Table\nWeekday and Weekend Schedules\nBilling Demand\nBilling Demand by Month Table\nBilling Demand by Time-of use Period\nDemand Charges\nDemand Rates by Month with Optional Tiers Rate Table\nDemand Rates by Time-of-use and/or Tiers\nElectricity Bill Results\nSummary\nData Tables\nMonthly Data / Electricity Rate Data by Year\nHourly / n Minute Data\nElectricity Rate Data by Tier and Period\nElectricity Demand Data by Period",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "Electricity Rates and Load — SAM Help\n\n[Skip to main content](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/index.html#main-content)\n\nBack to top  \n\n Ctrl+K\n\n[![SAM Help - Home](../_static/SAM-logo-horizontal.png)](https://natlabrockies.github.io/SAM/doc/index.html)\n\n*   [.rst](https://natlabrockies.github.io/SAM/doc/_sources/electricity-rates-and-load/index.rst \"Download source file\")\n*   .pdf\n\n# Electricity Rates and Load\n\n# Electricity Rates and Load[#](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/index.html#electricity-rates-and-load \"Link to this heading\")\n\nFor projects with the [residential or commercial](https://natlabrockies.github.io/SAM/doc/introduction/fin_overview.html#rescom) or [third party ownership](https://natlabrockies.github.io/SAM/doc/introduction/fin_overview.html#thirdparty) financial model that buy and sell electricity at retail rates, you specify a rate structure (net metering, energy rates, demand charges, and monthly charges) on the [Electricity Rates](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html) page, and a building or facility load on the [Electric Load](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html) page.\n\n*   [Electric Load](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html)\n    \n*   [Electricity Rates](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html)\n    \n*   [Electricity Bill Results](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_bill_results.html)\n    \n\n*   [Electric Load](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html)\n    *   [Input Time Series Load Data](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#input-time-series-load-data)\n        *   [Hourly or Subhourly Load Profile](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#hourly-or-subhourly-load-profile)\n        *   [Adjust Load Profile to Monthly Usage](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#adjust-load-profile-to-monthly-usage)\n        *   [Download](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#download)\n        *   [Monthly Load Summary](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#monthly-load-summary)\n    *   [Calculate Load Data](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#calculate-load-data)\n        *   [Building Energy Load Profile Estimator](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#building-energy-load-profile-estimator)\n        *   [Annual Adjustment](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#annual-adjustment)\n    *   [Working with Time Series Load Data](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#working-with-time-series-load-data)\n    *   [Data Sources](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#data-sources)\n    *   [Time Step and Convention](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#time-step-and-convention)\n    *   [Importing Data from a File](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#importing-data-from-a-file)\n    *   [Pasting Load Data from your Computer’s Clipboard](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_load.html#pasting-load-data-from-your-computer-s-clipboard)\n*   [Electricity Rates](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html)\n    *   [Overview](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#overview)\n    *   [Electricity Rates Glossary](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#electricity-rates-glossary)\n    *   [Rate Structure Definitions](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#rate-structure-definitions)\n    *   [Metering and Billing Definitions](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#metering-and-billing-definitions)\n    *   [OpenEI Utility Rate Database](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#openei-utility-rate-database)\n    *   [Save / Load Rate Data](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#save-load-rate-data)\n    *   [Metering and Billing](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#metering-and-billing)\n    *   [Fixed Charge](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#fixed-charge)\n    *   [Minimum Charges](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#minimum-charges)\n    *   [Annual Escalation](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#annual-escalation)\n    *   [Description and Applicability](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#description-and-applicability)\n    *   [Energy Charges](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#energy-charges)\n    *   [Energy Rate Table](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#energy-rate-table)\n    *   [Weekday and Weekend Schedules for Energy Charges](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#weekday-and-weekend-schedules-for-energy-charges)\n    *   [Energy Rate Structure Examples](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#energy-rate-structure-examples)\n    *   [Billing Demand](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#billing-demand)\n    *   [Billing Demand by Month Table](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#billing-demand-by-month-table)\n    *   [Billing Demand by Time-of use Period for Demand Charges](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#billing-demand-by-time-of-use-period-for-demand-charges)\n    *   [Demand Charges](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#demand-charges)\n    *   [Demand Rates by Month with Optional Tiers Rate Table](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#demand-rates-by-month-with-optional-tiers-rate-table)\n    *   [Demand Rates by Time-of-use and/or Tiers](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#demand-rates-by-time-of-use-and-or-tiers)\n    *   [Weekday and Weekend Schedules for Demand Charges](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_rates.html#weekday-and-weekend-schedules-for-demand-charges)\n*   [Electricity Purchases](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html)\n    *   [Electricity Purchases](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#id1)\n    *   [Rate Structure Definitions](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#rate-structure-definitions)\n    *   [OpenEI Utility Rate Database](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#openei-utility-rate-database)\n    *   [Save / Load Rate Data](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#save-load-rate-data)\n    *   [Metering and Billing](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#metering-and-billing)\n    *   [Fixed Charge](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#fixed-charge)\n    *   [Minimum Charges](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#minimum-charges)\n    *   [Annual Escalation](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#annual-escalation)\n    *   [Description and Applicability](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#description-and-applicability)\n    *   [Energy Charges](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#energy-charges)\n    *   [Energy Rate Table](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#energy-rate-table)\n    *   [Weekday and Weekend Schedules](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#weekday-and-weekend-schedules)\n    *   [Billing Demand](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#billing-demand)\n    *   [Billing Demand by Month Table](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#billing-demand-by-month-table)\n    *   [Billing Demand by Time-of use Period](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#billing-demand-by-time-of-use-period)\n    *   [Demand Charges](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#demand-charges)\n    *   [Demand Rates by Month with Optional Tiers Rate Table](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#demand-rates-by-month-with-optional-tiers-rate-table)\n    *   [Demand Rates by Time-of-use and/or Tiers](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_purchases.html#demand-rates-by-time-of-use-and-or-tiers)\n*   [Electricity Bill Results](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_bill_results.html)\n    *   [Summary](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_bill_results.html#summary)\n    *   [Data Tables](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_bill_results.html#data-tables)\n    *   [Monthly Data / Electricity Rate Data by Year](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_bill_results.html#monthly-data-electricity-rate-data-by-year)\n    *   [Hourly / n Minute Data](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_bill_results.html#hourly-n-minute-data)\n    *   [Electricity Rate Data by Tier and Period](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_bill_results.html#electricity-rate-data-by-tier-and-period)\n    *   [Electricity Demand Data by Period](https://natlabrockies.github.io/SAM/doc/electricity-rates-and-load/electricity_bill_results.html#electricity-demand-data-by-period)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

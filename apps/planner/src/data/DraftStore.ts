@@ -2,6 +2,7 @@ import type { Draft, SaveIntent } from "../domain/draft.ts";
 import { sameJson } from "../domain/draft.ts";
 import type { JsonObject, Project } from "./protocol.ts";
 import { readObject, readProject } from "./readProtocol.ts";
+import { readImport } from "../domain/profiles.ts";
 
 interface StoredDraft {
 	schema_version: 1;
@@ -22,18 +23,109 @@ export interface CreationIntent {
 	readonly body: string;
 	readonly createdAt: number;
 }
+export interface ProfileImportIntent {
+	readonly key: string;
+	readonly projectId: string;
+	readonly label: string;
+	readonly body: string;
+	readonly createdAt: number;
+}
 // Local recovery policy, never authority for an account/project or a saved run.
 const DATABASE = "linker-planner-recovery-v1";
 const STORE = "drafts";
 const CREATIONS = "creations";
 const CREATION_INTENTS = "creation_intents";
+const PROFILE_IMPORTS = "profile_imports";
 const MAX_RECOVERY_BYTES = 8 * 1024 * 1024;
 const MAX_RECOVERY_HISTORY = 20;
 // Browser recovery resource policy, not a project/account capacity limit.
 const MAX_CREATION_INTENTS = 128;
+// Raw uploads use the gateway's 16 MiB body window; recovery is independently
+// bounded to 32 intents / 32 MiB per verified scope, never silently evicted.
+const MAX_IMPORT_BYTES = 16 * 1024 * 1024;
+const MAX_SCOPE_IMPORT_BYTES = 32 * 1024 * 1024;
+const MAX_IMPORT_INTENTS = 32;
 
 export class DraftStore {
 	private connection: Promise<IDBDatabase> | null = null;
+
+	async readProfileImports(
+		scope: string,
+		projectId: string,
+	): Promise<readonly ProfileImportIntent[]> {
+		storageKey(scope, projectId);
+		const db = await this.open();
+		return new Promise((resolve, reject) =>
+			scanProfileImports(
+				db
+					.transaction(PROFILE_IMPORTS, "readonly")
+					.objectStore(PROFILE_IMPORTS),
+				scope,
+				(records) =>
+					resolve(records.filter((record) => record.projectId === projectId)),
+				reject,
+			),
+		);
+	}
+	async writeProfileImport(scope: string, body: string): Promise<void> {
+		const command = validateImport(body);
+		storageKey(scope, command.projectId);
+		const db = await this.open();
+		const transaction = db.transaction(PROFILE_IMPORTS, "readwrite");
+		const committed = complete(transaction);
+		const store = transaction.objectStore(PROFILE_IMPORTS);
+		let refusal: Error | null = null;
+		const refuse = (error: Error) => {
+			refusal = error;
+			transaction.abort();
+		};
+		scanProfileImports(
+			store,
+			scope,
+			(records) => {
+				const existing = records.find((record) => record.key === command.key);
+				if (existing) {
+					if (existing.body !== body)
+						refuse(new Error("profile_intent_conflict"));
+					return;
+				}
+				const bytes = records.reduce(
+					(sum, record) => sum + new TextEncoder().encode(record.body).length,
+					0,
+				);
+				if (
+					records.length >= MAX_IMPORT_INTENTS ||
+					bytes + new TextEncoder().encode(body).length > MAX_SCOPE_IMPORT_BYTES
+				) {
+					refuse(new Error("recovery_storage_limit"));
+					return;
+				}
+				store.put({
+					id: scope + ":" + command.key,
+					scope,
+					body,
+					created_at: Date.now(),
+				});
+			},
+			refuse,
+		);
+		await committed.catch((error: unknown) => {
+			throw refusal ?? error;
+		});
+	}
+	async clearProfileImport(scope: string, body: string): Promise<void> {
+		const command = validateImport(body);
+		storageKey(scope, command.projectId);
+		const db = await this.open();
+		const transaction = db.transaction(PROFILE_IMPORTS, "readwrite");
+		const committed = complete(transaction);
+		const store = transaction.objectStore(PROFILE_IMPORTS);
+		const read = store.get(scope + ":" + command.key);
+		read.onsuccess = () => {
+			if (read.result?.body === body) store.delete(scope + ":" + command.key);
+		};
+		await committed;
+	}
 
 	async readCreations(scope: string): Promise<readonly CreationIntent[]> {
 		storageKey(scope, "0".repeat(32));
@@ -215,7 +307,7 @@ export class DraftStore {
 		if (this.connection) return this.connection;
 		const opening = new Promise<IDBDatabase>((resolve, reject) => {
 			let refused = false;
-			const opened = indexedDB.open(DATABASE, 4);
+			const opened = indexedDB.open(DATABASE, 5);
 			opened.onupgradeneeded = () => {
 				if (!opened.result.objectStoreNames.contains(STORE))
 					opened.result.createObjectStore(STORE, { keyPath: "key" });
@@ -224,6 +316,12 @@ export class DraftStore {
 					drafts.createIndex("project_id", "project_id", { unique: false });
 				if (!opened.result.objectStoreNames.contains(CREATIONS))
 					opened.result.createObjectStore(CREATIONS, { keyPath: "scope" });
+				if (!opened.result.objectStoreNames.contains(PROFILE_IMPORTS)) {
+					const imports = opened.result.createObjectStore(PROFILE_IMPORTS, {
+						keyPath: "id",
+					});
+					imports.createIndex("scope", "scope", { unique: false });
+				}
 				if (!opened.result.objectStoreNames.contains(CREATION_INTENTS)) {
 					const intents = opened.result.createObjectStore(CREATION_INTENTS, {
 						keyPath: "id",
@@ -281,6 +379,76 @@ export class DraftStore {
 		});
 		return opening;
 	}
+}
+
+function validateImport(
+	body: string,
+): Omit<ProfileImportIntent, "body" | "createdAt"> {
+	if (new TextEncoder().encode(body).length > MAX_IMPORT_BYTES)
+		throw new Error("recovery_storage_limit");
+	const command = readImport(JSON.parse(body));
+	if (
+		!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(
+			command.key,
+		)
+	)
+		throw new Error("invalid_profile_recovery");
+	return {
+		key: command.key.toLowerCase(),
+		projectId: command.project_id,
+		label: command.source_label,
+	};
+}
+function scanProfileImports(
+	store: IDBObjectStore,
+	scope: string,
+	done: (records: ProfileImportIntent[]) => void,
+	fail: (error: Error) => void,
+): void {
+	const records: ProfileImportIntent[] = [];
+	let bytes = 0;
+	const cursor = store.index("scope").openCursor(scope);
+	cursor.onerror = () => fail(new Error("recovery_unavailable"));
+	cursor.onsuccess = () => {
+		try {
+			const row = cursor.result;
+			if (!row) {
+				done(
+					records.sort(
+						(a, b) => a.createdAt - b.createdAt || a.key.localeCompare(b.key),
+					),
+				);
+				return;
+			}
+			const value = readObject(row.value);
+			if (
+				value.scope !== scope ||
+				typeof value.body !== "string" ||
+				!Number.isSafeInteger(value.created_at) ||
+				(value.created_at as number) < 0
+			)
+				throw new Error("invalid_profile_recovery");
+			const command = validateImport(value.body);
+			if (value.id !== scope + ":" + command.key)
+				throw new Error("invalid_profile_recovery");
+			bytes += new TextEncoder().encode(value.body).length;
+			if (
+				records.length >= MAX_IMPORT_INTENTS ||
+				bytes > MAX_SCOPE_IMPORT_BYTES
+			)
+				throw new Error("recovery_storage_limit");
+			records.push({
+				...command,
+				body: value.body,
+				createdAt: value.created_at as number,
+			});
+			row.continue();
+		} catch (error) {
+			fail(
+				error instanceof Error ? error : new Error("invalid_profile_recovery"),
+			);
+		}
+	};
 }
 
 function validateCreation(body: string): { key: string; title: string } {

@@ -2,6 +2,7 @@ import { boundedBody } from "./boundedBody.ts";
 import { ApiError, RPC_PATHS } from "./protocol.ts";
 import type { JsonObject, JsonRpcPath, Session } from "./protocol.ts";
 import { readObject, readSession, wire } from "./readProtocol.ts";
+import { readProfileIssue } from "./profileIssue.ts";
 
 // Matches the reviewed native gateway. These are transport resource policy,
 // never a physical limit or a statement of production capacity.
@@ -213,6 +214,7 @@ export class PlannerClient {
 				typeof code === "string" && /^[a-zA-Z0-9_]{1,128}$/.test(code)
 					? code
 					: "request_failed",
+				readProfileIssue(nested?.profile_issue),
 			);
 		}
 		if (

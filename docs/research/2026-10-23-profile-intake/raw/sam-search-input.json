@@ -1,0 +1,7 @@
+{
+  "queries": "site:natlabrockies.github.io/SAM/doc \"Electric Load\" \"CSV\"\nsite:sam.nlr.gov \"load data\" \"daylight\" \"negative\"",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 5,
+  "saveHtml": false,
+  "saveHtmlToKeyValueStore": false
+}

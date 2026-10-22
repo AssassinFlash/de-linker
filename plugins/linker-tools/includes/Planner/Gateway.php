@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|cancel|energy|trace)|assets/(?:read|content)|profiles/(?:csv|preview)|battery/scenario';
+	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|cancel|energy|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|battery/scenario';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *

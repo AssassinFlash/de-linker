@@ -1,0 +1,21 @@
+{
+  "startUrls": [
+    {
+      "url": "https://help.valentin-software.com/pvsol/en/pages/consumption/"
+    },
+    {
+      "url": "https://help.valentin-software.com/pvsol/en/calculation/consumption/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 2,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": false,
+  "htmlTransformer": "none",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 60,
+  "maxRequestRetries": 1
+}

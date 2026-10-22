@@ -23,6 +23,7 @@ from starlette.types import ASGIApp
 from .access import active_actor, positive_integer
 from .assets import Assets
 from .canonical import Json, Object
+from .csv_inspection import inspect_csv
 from .csv_issue import CsvIssue
 from .energy_service import EnergyService
 from .errors import (
@@ -41,6 +42,7 @@ from .http_documents import (
     BatteryScenario,
     Command,
     CsvImport,
+    CsvInspect,
     EnergyEvaluate,
     ProfilePreviewRead,
     ProjectCreate,
@@ -55,6 +57,7 @@ from .http_index import project_page, run_page
 from .http_replay import HttpReplay
 from .http_views import asset_view, project_view, run_view
 from .profile_preview import ProfilePreview
+from .profile_selections import check_profile_selections
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
 from .workspace import Workspace
 
@@ -194,6 +197,7 @@ def create_private_app(
     @app.post("/projects/create")
     def create(body: ProjectCreate, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
+        check_profile_selections(assets, actor, None, body.inputs)
         return project_view(
             workspace.create(actor, body.title, body.inputs, key=body.key)
         )
@@ -219,6 +223,7 @@ def create_private_app(
         actor = verified_actor(request.scope, write=True)
         # Reject a foreign writer before publishing even an orphan input blob.
         workspace.get(actor, body.project_id)
+        check_profile_selections(assets, actor, body.project_id, body.inputs)
         return project_view(
             workspace.revise(
                 actor,
@@ -298,6 +303,18 @@ def create_private_app(
     def csv_profile(body: CsvImport, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
         return asset_view(intake.csv(actor, body))
+
+    @app.post("/profiles/inspect")
+    def csv_inspect(body: CsvInspect, request: Request) -> Object:
+        workspace.get(verified_actor(request.scope), body.project_id)
+        if body.page_size > limits.max_page_size:
+            raise InvalidInput("CSV preview page exceeds deployment limit")
+        return inspect_csv(
+            intake.decode_csv(body.content_base64),
+            body.delimiter,
+            page_size=body.page_size,
+            max_reply_bytes=limits.max_body_bytes,
+        )
 
     @app.post("/battery/scenario")
     def battery_scenario(body: BatteryScenario, request: Request) -> Object:

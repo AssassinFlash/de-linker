@@ -20,8 +20,11 @@ class HttpAssetIntake:
 
     def csv_content(self, actor: Actor, body: CsvImport) -> bytes:
         self.assets.check_write(actor, body.project_id)
+        return self.decode_csv(body.content_base64)
+
+    def decode_csv(self, content_base64: str) -> bytes:
         try:
-            content = base64.b64decode(body.content_base64, validate=True)
+            content = base64.b64decode(content_base64, validate=True)
         except (ValueError, binascii.Error) as error:
             raise InvalidInput("CSV must be valid base64") from error
         if len(content) > self.max_csv_bytes:

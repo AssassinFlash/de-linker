@@ -1,0 +1,203 @@
+{
+	"$defs": {
+		"Id": {
+			"pattern": "^[a-f0-9]{32}$",
+			"type": "string"
+		},
+		"Key": {
+			"maxLength": 256,
+			"minLength": 1,
+			"type": "string"
+		},
+		"MappingDocument": {
+			"additionalProperties": false,
+			"properties": {
+				"timestamp_column": {
+					"title": "Timestamp Column",
+					"type": "string"
+				},
+				"value_column": {
+					"title": "Value Column",
+					"type": "string"
+				},
+				"measurement": {
+					"$ref": "#/$defs/Measurement"
+				},
+				"value_kind": {
+					"enum": [
+						"interval_average_kw",
+						"interval_energy_kwh"
+					],
+					"title": "Value Kind",
+					"type": "string"
+				},
+				"timestamp_role": {
+					"enum": [
+						"start",
+						"end"
+					],
+					"title": "Timestamp Role",
+					"type": "string"
+				},
+				"timezone": {
+					"title": "Timezone",
+					"type": "string"
+				},
+				"origin": {
+					"$ref": "#/$defs/Origin"
+				},
+				"interval_seconds": {
+					"anyOf": [
+						{
+							"type": "number"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"title": "Interval Seconds"
+				},
+				"delimiter": {
+					"title": "Delimiter",
+					"type": "string"
+				},
+				"decimal": {
+					"enum": [
+						".",
+						","
+					],
+					"title": "Decimal",
+					"type": "string"
+				},
+				"end_timestamp_column": {
+					"anyOf": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"title": "End Timestamp Column"
+				},
+				"fold_column": {
+					"anyOf": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"title": "Fold Column"
+				},
+				"end_fold_column": {
+					"anyOf": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"title": "End Fold Column"
+				},
+				"offset_rule": {
+					"const": "explicit_offset_precedes_naive_timezone",
+					"title": "Offset Rule",
+					"type": "string"
+				},
+				"within_interval_assumption": {
+					"const": "constant_mean_no_new_observations",
+					"title": "Within Interval Assumption",
+					"type": "string"
+				}
+			},
+			"required": [
+				"timestamp_column",
+				"value_column",
+				"measurement",
+				"value_kind",
+				"timestamp_role",
+				"timezone",
+				"origin",
+				"interval_seconds",
+				"delimiter",
+				"decimal",
+				"end_timestamp_column",
+				"fold_column",
+				"end_fold_column",
+				"offset_rule",
+				"within_interval_assumption"
+			],
+			"title": "MappingDocument",
+			"type": "object"
+		},
+		"Measurement": {
+			"enum": [
+				"gross_load",
+				"critical_load",
+				"net_import",
+				"pv_available_ac",
+				"pv_generation_ac",
+				"aux_ac"
+			],
+			"type": "string"
+		},
+		"Note": {
+			"maxLength": 4096,
+			"minLength": 1,
+			"type": "string"
+		},
+		"Origin": {
+			"enum": [
+				"measured",
+				"modelled",
+				"template",
+				"synthetic"
+			],
+			"type": "string"
+		},
+		"SchemaVersion": {
+			"maximum": 1,
+			"minimum": 1,
+			"type": "integer"
+		}
+	},
+	"additionalProperties": false,
+	"properties": {
+		"schema_version": {
+			"$ref": "#/$defs/SchemaVersion"
+		},
+		"project_id": {
+			"$ref": "#/$defs/Id"
+		},
+		"content_base64": {
+			"title": "Content Base64",
+			"type": "string"
+		},
+		"mapping": {
+			"$ref": "#/$defs/MappingDocument"
+		},
+		"source_label": {
+			"$ref": "#/$defs/Key"
+		},
+		"rights_note": {
+			"$ref": "#/$defs/Note"
+		},
+		"key": {
+			"$ref": "#/$defs/Key"
+		}
+	},
+	"required": [
+		"schema_version",
+		"project_id",
+		"content_base64",
+		"mapping",
+		"source_label",
+		"rights_note",
+		"key"
+	],
+	"title": "CsvImport",
+	"type": "object"
+}

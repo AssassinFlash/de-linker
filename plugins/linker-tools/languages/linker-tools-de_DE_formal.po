@@ -2777,3 +2777,697 @@ msgstr "Die Projektangaben stimmen mit der gespeicherten Version überein."
 #: build/planner/assets/planner.js:1
 msgid "Unconfirmed project creations"
 msgstr "Unbestätigte Projekterstellungen"
+
+
+#: ../../apps/planner/src/components/OwnedProfile.tsx:98
+#: build/planner/assets/planner.js
+msgid "Retry data preview"
+msgstr "Datenvorschau erneut laden"
+
+#: ../../apps/planner/src/components/OwnedProfile.tsx:104
+#: build/planner/assets/planner.js
+msgid "Reading the saved source…"
+msgstr "Gespeicherte Quelle wird gelesen…"
+
+#: ../../apps/planner/src/components/OwnedProfile.tsx:121
+#: build/planner/assets/planner.js
+msgid "First intervals"
+msgstr "Erste Intervalle"
+
+#: ../../apps/planner/src/components/OwnedProfile.tsx:130
+#: build/planner/assets/planner.js
+msgid "Use this profile in the open draft"
+msgstr "Profil im offenen Projektentwurf verwenden"
+
+#: ../../apps/planner/src/components/ProfileError.tsx:16
+#: build/planner/assets/planner.js
+msgid "The file or request exceeds this service's size limit."
+msgstr "Die Datei oder Anfrage überschreitet die Größenbegrenzung dieses Dienstes."
+
+#: ../../apps/planner/src/components/ProfileError.tsx:20
+#: build/planner/assets/planner.js
+msgid "The data request could not be confirmed. Please retry."
+msgstr "Die Datenanfrage konnte nicht bestätigt werden. Bitte versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/ProfileError.tsx:28
+#: build/planner/assets/planner.js
+#, javascript-format
+msgid "The CSV record starts on file line %d."
+msgstr "Der CSV-Datensatz beginnt in Dateizeile %d."
+
+#: ../../apps/planner/src/components/ProfileError.tsx:34
+#: build/planner/assets/planner.js
+msgid "File lines include blank lines and line breaks inside quoted cells. They are not spreadsheet row numbers."
+msgstr "Dateizeilen zählen auch Leerzeilen und Zeilenumbrüche innerhalb von Zellen in Anführungszeichen mit. Sie entsprechen nicht den Zeilennummern einer Tabellenkalkulation."
+
+#: ../../apps/planner/src/components/ProfileError.tsx:43
+#: build/planner/assets/planner.js
+msgid "Check the timestamp column."
+msgstr "Die zugeordnete Zeitstempelspalte muss geprüft werden."
+
+#: ../../apps/planner/src/components/ProfileError.tsx:45
+#: build/planner/assets/planner.js
+msgid "Check the interval end column."
+msgstr "Die zugeordnete Spalte für das Intervallende muss geprüft werden."
+
+#: ../../apps/planner/src/components/ProfileError.tsx:47
+#: build/planner/assets/planner.js
+msgid "Check the value column."
+msgstr "Die zugeordnete Wertespalte muss geprüft werden."
+
+#: ../../apps/planner/src/components/ProfileError.tsx:48
+#: build/planner/assets/planner.js
+msgid "Check the header record."
+msgstr "Die Kopfzeile muss geprüft werden."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:342
+#: build/planner/assets/planner.js
+msgid "The profile is selected in the open draft. Save the project to record this selection."
+msgstr "Das Profil ist im offenen Projektentwurf ausgewählt. Mit „Projekt speichern“ wird diese Auswahl im Projekt gespeichert."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:353
+#: build/planner/assets/planner.js
+msgid "Import interval data"
+msgstr "Zeitreihendaten importieren"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:361
+#: build/planner/assets/planner.js
+msgid "Imports to review"
+msgstr "Importe zur Prüfung"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:385
+#: build/planner/assets/planner.js
+msgid "Finish importing or cancel the open file before leaving this project."
+msgstr "Vor dem Verlassen dieses Projekts muss der offene Dateiimport abgeschlossen oder abgebrochen werden."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:393
+#: build/planner/assets/planner.js
+msgid "Browser recovery could not be stored or read. The open import may be lost if this page closes. After selecting the profile, the project still needs to be saved."
+msgstr "Die Wiederherstellungsdaten konnten im Browser nicht gespeichert oder gelesen werden. Bei geschlossener Seite kann der offene Import verloren gehen. Nach Auswahl des Profils muss das Projekt gespeichert werden."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:404
+#: build/planner/assets/planner.js
+msgid "The source is stored. Review its interpretation before selecting it in the open draft."
+msgstr "Die Quelle ist gespeichert. Prüfen Sie die Interpretation, bevor Sie das Profil im offenen Projektentwurf auswählen."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:408
+#: build/planner/assets/planner.js
+msgid "The import result is not confirmed. Retrying uses the original file, mapping and request key."
+msgstr "Das Importergebnis ist noch nicht bestätigt. Ein erneuter Versuch verwendet die ursprüngliche Datei, die Spaltenzuordnung und die ursprüngliche Anfragekennung."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:413
+#: build/planner/assets/planner.js
+msgid "Original import settings"
+msgstr "Ursprüngliche Importeinstellungen"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:435
+#: build/planner/assets/planner.js
+msgid "Check or retry this import"
+msgstr "Import prüfen oder erneut versuchen"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:442
+#: build/planner/assets/planner.js
+msgid "1 · Preview source columns"
+msgstr "1 · Dateispalten ansehen"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:445
+#: build/planner/assets/planner.js
+msgid "CSV files need UTF-8 encoding and unique column headers. Preview sends the file for a private structure check without saving a project data source."
+msgstr "CSV-Dateien benötigen UTF-8-Kodierung und eindeutige Spaltenüberschriften. Für die Vorschau wird die Datei zur privaten Strukturprüfung übertragen. Dabei wird keine Datenquelle im Projekt gespeichert."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:451
+#: build/planner/assets/planner.js
+msgid "Source file"
+msgstr "Quelldatei"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:461
+#: build/planner/assets/planner.js
+msgid "Column delimiter"
+msgstr "Spaltentrennzeichen"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:477
+#: ../../apps/planner/src/components/ProfileMapping.tsx:122
+#: build/planner/assets/planner.js
+msgid "Select…"
+msgstr "Auswählen…"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:478
+#: build/planner/assets/planner.js
+msgid "Semicolon"
+msgstr "Semikolon"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:479
+#: build/planner/assets/planner.js
+msgid "Comma"
+msgstr "Komma"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:480
+#: build/planner/assets/planner.js
+msgid "Tab"
+msgstr "Tabulator"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:482
+#: build/planner/assets/planner.js
+msgid "Vertical bar"
+msgstr "Senkrechter Strich"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:496
+#: build/planner/assets/planner.js
+msgid "Preview columns"
+msgstr "Spaltenvorschau"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:518
+#: build/planner/assets/planner.js
+msgid "Original file preview"
+msgstr "Vorschau der Originaldatei"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:523
+#: build/planner/assets/planner.js
+msgid "Original cells · preview only"
+msgstr "Originalzellen · nur Vorschau"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:528
+#: build/planner/assets/planner.js
+msgid "Starting file line"
+msgstr "Erste Dateizeile"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:552
+#: build/planner/assets/planner.js
+#, javascript-format
+msgid "Data records: %s. Timestamps, units and values are checked after mapping."
+msgstr "Datensätze: %s. Zeitangaben, Einheiten und Werte werden nach der Zuordnung geprüft."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:565
+#: build/planner/assets/planner.js
+msgid "2 · Define values and source"
+msgstr "2 · Werte und Herkunft festlegen"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:575
+#: ../../apps/planner/src/components/ProfileReview.tsx:32
+#: build/planner/assets/planner.js
+msgid "Source label"
+msgstr "Bezeichnung der Datenquelle"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:586
+#: build/planner/assets/planner.js
+msgid "This name identifies the source in the project. The original file name is not stored."
+msgstr "Diese Bezeichnung kennzeichnet die Datenquelle im Projekt. Der ursprüngliche Dateiname wird nicht gespeichert."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:594
+#: build/planner/assets/planner.js
+msgid "Source and permission for permanent private storage"
+msgstr "Herkunft und Berechtigung zur dauerhaften privaten Speicherung"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:609
+#: build/planner/assets/planner.js
+msgid "This records where the data came from and your permission to store it permanently with this private project. Examples include your own meter export or data you are authorised to retain."
+msgstr "Hier werden die Herkunft der Daten und Ihre Berechtigung zur dauerhaften Speicherung in diesem privaten Projekt dokumentiert. Beispiele sind Ihr eigener Zählerexport oder Daten, die Sie mit entsprechender Berechtigung aufbewahren dürfen."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:617
+#: build/planner/assets/planner.js
+msgid "Each mapped column must be different and interval durations must be positive. The original file and gaps are preserved."
+msgstr "Jede zugeordnete Spalte muss eindeutig sein, und die Intervalldauer muss positiv sein. Originaldatei und Datenlücken bleiben erhalten."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:623
+#: build/planner/assets/planner.js
+msgid "Import stores the original file and these settings as a private project source. Selecting a profile and saving the project are separate steps."
+msgstr "Beim Import werden die Originaldatei und diese Einstellungen als private Projektquelle gespeichert. Die Profilauswahl und das Speichern des Projekts erfolgen in eigenen Schritten."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:636
+#: build/planner/assets/planner.js
+msgid "Import and review data"
+msgstr "Daten importieren und prüfen"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx:645
+#: build/planner/assets/planner.js
+msgid "Processing interval data…"
+msgstr "Zeitreihendaten werden verarbeitet…"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:7
+#: build/planner/assets/planner.js
+msgid "Total site load"
+msgstr "Gesamte Standortlast"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:8
+#: build/planner/assets/planner.js
+msgid "Critical load"
+msgstr "Last kritischer Verbraucher"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:10
+#: build/planner/assets/planner.js
+msgid "Net grid import · negative values mean export"
+msgstr "Netto-Netzbezug · negative Werte bedeuten Einspeisung"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:13
+#: build/planner/assets/planner.js
+msgid "Available PV output · AC"
+msgstr "Verfügbare PV-Leistung · AC"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:14
+#: build/planner/assets/planner.js
+msgid "PV generation · AC"
+msgstr "PV-Erzeugung · AC"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:15
+#: build/planner/assets/planner.js
+msgid "External auxiliary load · AC"
+msgstr "Externer Hilfsverbrauch · AC"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:21
+#: build/planner/assets/planner.js
+msgid "Measured"
+msgstr "Gemessen"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:22
+#: build/planner/assets/planner.js
+msgid "Modelled"
+msgstr "Modelliert"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:23
+#: build/planner/assets/planner.js
+msgid "Template"
+msgstr "Vorlage"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:24
+#: build/planner/assets/planner.js
+msgid "Synthetic test data"
+msgstr "Synthetische Testdaten"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:26
+#: build/planner/assets/planner.js
+msgid "Source not identified"
+msgstr "Datenherkunft unbekannt"
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:31
+#: build/planner/assets/planner.js
+msgid "Use ISO dates and times, for example 2024-01-01T00:00+01:00."
+msgstr "Datum und Uhrzeit im ISO-Format sind erforderlich, zum Beispiel 2024-01-01T00:00+01:00."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:35
+#: build/planner/assets/planner.js
+msgid "A timestamp is outside the supported date range."
+msgstr "Ein Zeitstempel liegt außerhalb des unterstützten Datumsbereichs."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:39
+#: build/planner/assets/planner.js
+msgid "The repeated-time column must contain 0 for the first occurrence or 1 for the second."
+msgstr "Die Spalte für doppelte Ortszeiten benötigt 0 für das erste oder 1 für das zweite Vorkommen."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:43
+#: build/planner/assets/planner.js
+msgid "A timestamp uses either a UTC offset or a repeated-time column. Both cannot apply together."
+msgstr "Für einen Zeitstempel gilt entweder ein UTC-Versatz oder die Spalte für doppelte Ortszeiten. Beide Angaben sind zusammen nicht zulässig."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:47
+#: build/planner/assets/planner.js
+msgid "A local timestamp cannot be converted within the supported date range."
+msgstr "Eine Ortszeit lässt sich innerhalb des unterstützten Datumsbereichs nicht umrechnen."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:51
+#: build/planner/assets/planner.js
+msgid "This local time does not exist because of a clock change. The source time convention needs to be checked."
+msgstr "Diese Ortszeit existiert wegen einer Zeitumstellung nicht. Die Zeitkonvention der Quelldaten muss geprüft werden."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:55
+#: build/planner/assets/planner.js
+msgid "The occurrence value does not match this local timestamp."
+msgstr "Die Angabe zum ersten oder zweiten Vorkommen passt nicht zu dieser Ortszeit."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:59
+#: build/planner/assets/planner.js
+msgid "This local time occurs twice. Its UTC offset or a column identifying the occurrence is required."
+msgstr "Diese Ortszeit kommt zweimal vor. Ein UTC-Versatz oder die Zuordnung einer Spalte für das erste und zweite Vorkommen ist erforderlich."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:63
+#: build/planner/assets/planner.js
+msgid "Numbers must match the selected decimal separator. Thousands separators and blank numeric values are not accepted."
+msgstr "Zahlen müssen dem ausgewählten Dezimaltrennzeichen entsprechen. Tausendertrennzeichen und leere Zahlenfelder sind nicht zulässig."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:67
+#: build/planner/assets/planner.js
+msgid "A numeric value is outside the finite supported range."
+msgstr "Ein Zahlenwert liegt außerhalb des unterstützten endlichen Zahlenbereichs."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:70
+#: build/planner/assets/planner.js
+msgid "Save the source file with UTF-8 encoding."
+msgstr "Die Quelldatei muss UTF-8-kodiert sein."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:72
+#: build/planner/assets/planner.js
+msgid "The first record must contain unique column names, including every mapped column."
+msgstr "Der erste Datensatz benötigt eindeutige Spaltennamen und muss alle zugeordneten Spalten enthalten."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:76
+#: build/planner/assets/planner.js
+msgid "This record has a different number of cells from the header. Check the delimiter and quotation marks."
+msgstr "Die Anzahl der Zellen in diesem Datensatz weicht von der Kopfzeile ab. Das Trennzeichen oder die Anführungszeichen können fehlerhaft sein."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:80
+#: build/planner/assets/planner.js
+msgid "An interval needs a positive duration within the supported date range."
+msgstr "Ein Intervall benötigt eine positive Dauer innerhalb des unterstützten Datumsbereichs."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:84
+#: build/planner/assets/planner.js
+msgid "Intervals must be in time order and must not overlap. Correct the source rather than sorting it here."
+msgstr "Intervalle müssen zeitlich geordnet sein und dürfen sich nicht überschneiden. Der Import behält ihre Reihenfolge bei."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:88
+#: build/planner/assets/planner.js
+msgid "Values must be finite and match the selected measurement point. Negative values are accepted only for net grid import."
+msgstr "Die Werte müssen endlich sein und zum ausgewählten Messpunkt passen. Negative Werte sind nur beim Netto-Netzbezug zulässig."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:92
+#: build/planner/assets/planner.js
+msgid "Integrated energy is outside the supported numeric range. The source units and values need to be checked."
+msgstr "Die integrierte Energiemenge liegt außerhalb des unterstützten Zahlenbereichs. Einheiten und Werte der Quelle müssen geprüft werden."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:96
+#: build/planner/assets/planner.js
+msgid "The CSV quotation or record structure is invalid."
+msgstr "Die Anführungszeichen oder die Datensatzstruktur der CSV-Datei sind ungültig."
+
+#: ../../apps/planner/src/components/ProfileLabels.ts:99
+#: build/planner/assets/planner.js
+msgid "The file contains no data records."
+msgstr "Die Datei enthält keine Datensätze."
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:121
+#: build/planner/assets/planner.js
+msgid "Not used"
+msgstr "Nicht verwendet"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:158
+#: build/planner/assets/planner.js
+msgid "Timestamp column"
+msgstr "Zeitstempelspalte"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:162
+#: build/planner/assets/planner.js
+msgid "ISO date and time. An explicit UTC offset takes precedence over the selected time zone."
+msgstr "Datum und Uhrzeit im ISO-Format. Ein ausdrücklich angegebener UTC-Versatz hat Vorrang vor der ausgewählten Zeitzone."
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:169
+#: build/planner/assets/planner.js
+msgid "Value column"
+msgstr "Wertespalte"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:176
+#: ../../apps/planner/src/components/ProfileReview.tsx:36
+#: build/planner/assets/planner.js
+msgid "Measurement point"
+msgstr "Messpunkt"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:180
+#: build/planner/assets/planner.js
+msgid "What these values represent. Net grid import can include the effect of on-site generation and storage and cannot replace total site load."
+msgstr "Entscheidend ist, was diese Werte abbilden. Der Netto-Netzbezug kann den Einfluss von Erzeugung und Speichern vor Ort enthalten und ersetzt nicht die gesamte Standortlast."
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:191
+#: build/planner/assets/planner.js
+msgid "Value meaning and unit"
+msgstr "Bedeutung und Einheit der Werte"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:195
+#: build/planner/assets/planner.js
+msgid "Supported values are average power over an interval or energy within an interval. Instantaneous power samples need a separate interpretation."
+msgstr "Unterstützt werden mittlere Leistungen je Intervall und Energiemengen je Intervall. Einzelne momentane Leistungswerte benötigen eine gesonderte Interpretation."
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:200
+#: ../../apps/planner/src/components/ProfileReview.tsx:48
+#: build/planner/assets/planner.js
+msgid "Average power over each interval · kW"
+msgstr "Mittlere Leistung je Intervall · kW"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:203
+#: ../../apps/planner/src/components/ProfileReview.tsx:49
+#: build/planner/assets/planner.js
+msgid "Energy within each interval · kWh"
+msgstr "Energiemenge je Intervall · kWh"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:207
+#: build/planner/assets/planner.js
+msgid "Decimal separator in the file"
+msgstr "Dezimaltrennzeichen in der Datei"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:211
+#: build/planner/assets/planner.js
+msgid "Point · 12.5"
+msgstr "Punkt · 12.5"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:212
+#: build/planner/assets/planner.js
+msgid "Comma · 12,5"
+msgstr "Komma · 12,5"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:215
+#: ../../apps/planner/src/components/ProfileReview.tsx:40
+#: build/planner/assets/planner.js
+msgid "Source type"
+msgstr "Art der Datenquelle"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:219
+#: build/planner/assets/planner.js
+msgid "This declaration is saved with the file. It describes the source you selected and does not verify the accuracy of a meter or model."
+msgstr "Diese Angabe wird mit der Datei gespeichert. Sie ist Ihre Beschreibung der Datenherkunft und bestätigt nicht die Genauigkeit eines Zählers oder Modells."
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:230
+#: build/planner/assets/planner.js
+msgid "Interval boundaries"
+msgstr "Festlegung der Intervallgrenzen"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:235
+#: build/planner/assets/planner.js
+msgid "Timestamp and fixed duration"
+msgstr "Zeitstempel und feste Dauer"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:238
+#: build/planner/assets/planner.js
+msgid "Separate start and end columns"
+msgstr "Getrennte Spalten für Beginn und Ende"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:244
+#: ../../apps/planner/src/components/ProfileReview.tsx:53
+#: build/planner/assets/planner.js
+msgid "The timestamp identifies…"
+msgstr "Der Zeitstempel bezeichnet…"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:249
+#: ../../apps/planner/src/components/ProfileReview.tsx:55
+#: build/planner/assets/planner.js
+msgid "The start of the interval"
+msgstr "Den Beginn des Intervalls"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:252
+#: ../../apps/planner/src/components/ProfileReview.tsx:56
+#: build/planner/assets/planner.js
+msgid "The end of the interval"
+msgstr "Das Ende des Intervalls"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:256
+#: build/planner/assets/planner.js
+msgid "Interval duration"
+msgstr "Intervalldauer"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:268
+#: build/planner/assets/planner.js
+msgid "Interval end column"
+msgstr "Spalte für das Intervallende"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:276
+#: ../../apps/planner/src/components/ProfileReview.tsx:51
+#: build/planner/assets/planner.js
+msgid "Source time zone"
+msgstr "Zeitzone der Quelldaten"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:280
+#: build/planner/assets/planner.js
+msgid "The source time zone applies to timestamps without a UTC offset and may differ from the project location."
+msgstr "Die Zeitzone der Quelle gilt für Zeitstempel ohne UTC-Versatz. Sie kann von der Zeitzone des Projektstandorts abweichen."
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:293
+#: build/planner/assets/planner.js
+msgid "Repeated-time column · optional"
+msgstr "Spalte für doppelte Ortszeiten · optional"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:298
+#: build/planner/assets/planner.js
+msgid "For repeated local times: 0 identifies the first occurrence, 1 the second. Timestamps with UTC offsets do not use this column."
+msgstr "Bei doppelt vorkommenden Ortszeiten steht 0 für das erste und 1 für das zweite Vorkommen. Zeitstempel mit UTC-Versatz verwenden diese Spalte nicht."
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:306
+#: build/planner/assets/planner.js
+msgid "End repeated-time column · optional"
+msgstr "Spalte für doppelte Endzeiten · optional"
+
+#: ../../apps/planner/src/components/ProfileMapping.tsx:311
+#: build/planner/assets/planner.js
+msgid "For this column, 0 identifies the first occurrence of a repeated local end time and 1 the second."
+msgstr "In dieser Spalte steht 0 für das erste und 1 für das zweite Vorkommen einer doppelt auftretenden lokalen Endzeit."
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:46
+#: build/planner/assets/planner.js
+msgid "Original value meaning"
+msgstr "Bedeutung der Originalwerte"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:61
+#: build/planner/assets/planner.js
+msgid "Energy in covered intervals"
+msgstr "Energiemenge in den abgedeckten Intervallen"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:64
+#: build/planner/assets/planner.js
+msgid "Data records"
+msgstr "Datensätze"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:66
+#: build/planner/assets/planner.js
+msgid "Covered duration"
+msgstr "Abgedeckte Dauer"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:70
+#: build/planner/assets/planner.js
+msgid "Gap duration within the source period"
+msgstr "Lückendauer innerhalb des Quellzeitraums"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:73
+#: build/planner/assets/planner.js
+msgid "Gaps"
+msgstr "Datenlücken"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:75
+#: build/planner/assets/planner.js
+msgid "Longest original interval"
+msgstr "Längstes Originalintervall"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:79
+#: build/planner/assets/planner.js
+msgid "Effective resolution limit"
+msgstr "Zeitliche Auflösungsgrenze"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:83
+#: build/planner/assets/planner.js
+msgid "Minimum interval mean"
+msgstr "Kleinster Leistungsmittelwert je Intervall"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:87
+#: build/planner/assets/planner.js
+msgid "Maximum interval mean"
+msgstr "Größter Leistungsmittelwert je Intervall"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:93
+#: build/planner/assets/planner.js
+msgid "Data interpretation"
+msgstr "Auswertung der Quelldaten"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:108
+#: build/planner/assets/planner.js
+msgid "The summary covers the full source period shown above. Maximum power is an interval average. This review does not determine instantaneous peaks, battery size or suitability for a calculation."
+msgstr "Die Übersicht umfasst den gesamten oben angezeigten Quellzeitraum. Der größte Leistungswert ist ein Intervallmittelwert. Momentane Spitzen, eine erforderliche Speichergröße und die Eignung für eine Berechnung werden damit nicht bestimmt."
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:115
+#: build/planner/assets/planner.js
+msgid "The source contains gaps. Missing intervals have not been filled with zeros or estimated values."
+msgstr "Die Quelle enthält Datenlücken. Fehlende Intervalle wurden weder mit Nullen noch mit Schätzwerten aufgefüllt."
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:124
+#: build/planner/assets/planner.js
+msgid "For net grid import, energy is imports minus exports over the covered intervals."
+msgstr "Beim Netto-Netzbezug ist die Energiemenge die Differenz aus Bezug und Einspeisung über die abgedeckten Intervalle."
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:130
+#: build/planner/assets/planner.js
+msgid "Net grid import can be affected by on-site generation and storage. Total site consumption cannot be derived from net import alone."
+msgstr "Erzeugung und Speicher vor Ort können den Netto-Netzbezug beeinflussen. Der gesamte Standortverbrauch lässt sich daraus allein nicht ableiten."
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:139
+#: build/planner/assets/planner.js
+msgid "Some interval means were reconstructed. Finer output intervals do not create finer original observations."
+msgstr "Einige Intervallmittelwerte wurden rekonstruiert. Kürzere Ausgabeintervalle liefern keine zusätzlichen Originalmessungen."
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:147
+#: build/planner/assets/planner.js
+msgid "Interpreted intervals"
+msgstr "Interpretierte Intervalle"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:152
+#: build/planner/assets/planner.js
+msgid "Interpreted intervals · UTC · average kW"
+msgstr "Interpretierte Intervalle · UTC · mittlere Leistung in kW"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:156
+#: build/planner/assets/planner.js
+msgid "Start"
+msgstr "Beginn"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:157
+#: build/planner/assets/planner.js
+msgid "End"
+msgstr "Ende"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:179
+#: build/planner/assets/planner.js
+msgid "Next intervals"
+msgstr "Nächste Intervalle"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:184
+#: build/planner/assets/planner.js
+msgid "Gap locations · UTC"
+msgstr "Lückenpositionen · UTC"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:195
+#: build/planner/assets/planner.js
+msgid "Only the first gap locations are shown. Totals cover the complete profile."
+msgstr "Es werden nur die ersten Lückenpositionen angezeigt. Die Summen beziehen sich auf das gesamte Profil."
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:204
+#: build/planner/assets/planner.js
+msgid "Original source and interpretation record"
+msgstr "Originalquelle und Interpretationsprotokoll"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:207
+#: build/planner/assets/planner.js
+msgid "Original file SHA-256"
+msgstr "SHA-256 der Originaldatei"
+
+#: ../../apps/planner/src/components/ProfileReview.tsx:209
+#: build/planner/assets/planner.js
+msgid "Import metadata SHA-256"
+msgstr "SHA-256 der Import-Metadaten"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx:210
+#: ../../apps/planner/src/components/ProjectEditor.tsx:342
+#: build/planner/assets/planner.js
+msgid "Interval data"
+msgstr "Zeitreihendaten"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx:346
+#: build/planner/assets/planner.js
+msgid "After import, the data's meaning and coverage are shown for review. A profile selection applies to the open draft and is saved with Save project. The annual consumption entry remains separate."
+msgstr "Nach dem Import werden Bedeutung und Abdeckung der Daten angezeigt. Die Profilauswahl gilt zunächst für den offenen Projektentwurf und wird mit „Projekt speichern“ im Projekt gespeichert. Die Angabe zum Jahresverbrauch bleibt davon getrennt."
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx:389
+#: build/planner/assets/planner.js
+msgid "Remove draft selection"
+msgstr "Auswahl im Entwurf aufheben"
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx:393
+#: build/planner/assets/planner.js
+msgid "Removing a selection leaves the stored source unchanged. Save the project to record the change."
+msgstr "Beim Aufheben der Auswahl bleibt die gespeicherte Quelle unverändert. Mit „Projekt speichern“ wird die Änderung im Projekt gespeichert."
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx
+#: build/planner/assets/planner.js
+msgid "Choose CSV file"
+msgstr "CSV-Datei auswählen"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx
+#: build/planner/assets/planner.js
+msgid "No file selected"
+msgstr "Keine Datei ausgewählt"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx
+#: build/planner/assets/planner.js
+msgid "Recovered source file"
+msgstr "Wiederhergestellte Quelldatei"

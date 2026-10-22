@@ -1016,6 +1016,74 @@ def csv_preview_command(project_id: str, content: bytes, key: str) -> Object:
     }
 
 
+def test_csv_column_inspection_is_owned_read_only_and_not_a_quality_release(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("csv-columns")
+    raw = b'time;power;note\n\nPRIVATE-TIME;PRIVATE-NUMBER;"two\nlines"\nnext;2;last\n'
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    command: Object = {
+        "project_id": project_id,
+        "content_base64": base64.b64encode(raw).decode(),
+        "delimiter": ";",
+        "page_size": 1,
+    }
+    result = rig.post("/profiles/inspect", command)
+    assert result == {
+        "schema_version": 1,
+        "evaluation_scope": "csv_structure_only",
+        "content_sha256": digest(raw),
+        "delimiter": ";",
+        "columns": ["time", "power", "note"],
+        "record_count": 2,
+        "rows": [
+            {"line": 3, "cells": ["PRIVATE-TIME", "PRIVATE-NUMBER", "two\nlines"]}
+        ],
+        "rows_truncated": True,
+    }
+    assert rig.workspace.get(USER, project_id).revision == 1
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+    foreign = rig.client.post(
+        "/profiles/inspect",
+        json={"schema_version": 1, **command, "content_base64": "not base64"},
+        headers=headers(FOREIGN),
+    )
+    assert foreign.status_code == 404
+    assert "PRIVATE" not in foreign.text
+    too_many = rig.client.post(
+        "/profiles/inspect",
+        json={"schema_version": 1, **command, "page_size": 3},
+        headers=headers(),
+    )
+    assert too_many.status_code == 422
+
+
+def test_csv_column_inspection_validates_rows_beyond_the_displayed_sample(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("csv-structure")
+    response = rig.client.post(
+        "/profiles/inspect",
+        json={
+            "schema_version": 1,
+            "project_id": project_id,
+            "content_base64": base64.b64encode(
+                b"time;power\nfirst;1\nsecond;2\nPRIVATE;3;extra\n"
+            ).decode(),
+            "delimiter": ";",
+            "page_size": 1,
+        },
+        headers=headers(),
+    )
+    assert response.status_code == 422
+    assert response.json()["error"]["profile_issue"] == {
+        "issue": "row_width",
+        "line": 4,
+        "field": None,
+    }
+    assert "PRIVATE" not in response.text
+
+
 @pytest.mark.parametrize(
     ("raw", "issue", "row", "field"),
     [
@@ -1064,6 +1132,53 @@ def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_da
     assert "PRIVATE-CELL" not in response.text and "Europe/Berlin" not in response.text
     assert response.headers["cache-control"] == "no-store, private"
     assert set(rig.workspace.blobs.directory.rglob("*")) == before
+
+
+def test_source_selection_cannot_relabel_measurement_or_reference_another_project(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("selection")
+    other_id = rig.create("other-source")
+    command = csv_preview_command(
+        project_id, b"time;power\n2024-01-01T00:00Z;-4\n", "source"
+    )
+    command["mapping"] = {
+        **cast(Object, command["mapping"]),
+        "measurement": "net_import",
+    }
+    asset = rig.post("/profiles/csv", command)
+
+    def revision(project: str, role: str, key: str) -> Object:
+        return {
+            "schema_version": 1,
+            "project_id": project,
+            "expected_revision": 1,
+            "inputs": {
+                "profile_selections": {
+                    "schema_version": 1,
+                    "selected": {role: asset["id"]},
+                }
+            },
+            "key": key,
+        }
+
+    for body, status in (
+        (revision(project_id, "gross_load", "bad-role"), 422),
+        (revision(other_id, "net_import", "bad-project"), 404),
+        (revision(project_id, "invented", "bad-measurement"), 422),
+    ):
+        response = rig.client.post("/projects/revise", json=body, headers=headers())
+        assert response.status_code == status
+    assert rig.workspace.get(USER, project_id).revision == 1
+    assert rig.workspace.get(USER, other_id).revision == 1
+    chosen = rig.post("/projects/revise", revision(project_id, "net_import", "valid"))
+    assert chosen["revision"] == 2
+    assert chosen["inputs"] == {
+        "profile_selections": {
+            "schema_version": 1,
+            "selected": {"net_import": asset["id"]},
+        }
+    }
 
 
 @pytest.mark.parametrize("second_value", [b"1e308", b"-1e308"])

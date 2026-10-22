@@ -1,0 +1,7 @@
+{
+  "queries": "site:help.valentin-software.com/pvsol/en load profile import csv\nsite:support.opensolar.com consumption csv interval data\nsite:samrepo.nrelcloud.org/help electricity load csv daylight",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 5,
+  "saveHtml": false,
+  "saveHtmlToKeyValueStore": false
+}

@@ -52,3 +52,11 @@ without clipping powers or removing negatives. Regression exercises the parser
 and actual ASGI for positive and mixed-sign overflow and asserts no new blobs.
 Targeted tests: 116 passed; full planning tests: 317 passed in 15.08s; ruff and
 format passed. These checks do not replace independent re-review.
+
+Fixed `220c824e9b3b02409a106d31ee8c6269559ce827` subsequently passed both
+independent axes. Spec ran all 317 planning tests (14.83s), four sign combinations
+and a legal finite cancellation control; Standards independently ran 317 tests
+(15.34s), three overflow combinations and a normal signed import. Actual ASGI
+returned 422 energy_range with no blobs/assets/failed receipts for overflow;
+finite signed data remained 200 and unchanged. No remaining service blocker was
+reported. This acceptance remains specific to that fixed service increment.

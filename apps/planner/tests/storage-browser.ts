@@ -9,6 +9,36 @@ const status = document.querySelector<HTMLElement>("#status")!;
 const results = document.querySelector<HTMLOListElement>("#results")!;
 const creation = (title: string, key = crypto.randomUUID()) =>
 	JSON.stringify({ schema_version: 1, title, inputs: {}, key });
+const profileImport = (
+	label: string,
+	projectId = "1".repeat(32),
+	key = crypto.randomUUID(),
+) =>
+	JSON.stringify({
+		schema_version: 1,
+		project_id: projectId,
+		content_base64: btoa("time;power\n2024-01-01T00:00Z;1\n"),
+		source_label: label,
+		rights_note: "Created by this native browser fixture",
+		key,
+		mapping: {
+			timestamp_column: "time",
+			value_column: "power",
+			measurement: "gross_load",
+			value_kind: "interval_average_kw",
+			timestamp_role: "start",
+			timezone: "UTC",
+			origin: "synthetic",
+			interval_seconds: 900,
+			delimiter: ";",
+			decimal: ".",
+			end_timestamp_column: null,
+			fold_column: null,
+			end_fold_column: null,
+			offset_rule: "explicit_offset_precedes_naive_timezone",
+			within_interval_assumption: "constant_mean_no_new_observations",
+		},
+	});
 function equal(actual: unknown, expected: unknown): void {
 	if (JSON.stringify(actual) !== JSON.stringify(expected))
 		throw new Error("fixture_assertion_failed");
@@ -98,7 +128,7 @@ button.addEventListener("click", async () => {
 			async () => {
 				await refuses(first.readCreations(scope), "recovery_blocked");
 				oldDb.close();
-				const upgraded = await open(4);
+				const upgraded = await open(5);
 				upgraded.close();
 				equal(
 					(await first.readCreations(scope)).map((item) => item.body),
@@ -200,6 +230,87 @@ button.addEventListener("click", async () => {
 			},
 		);
 		await fixture(
+			"concurrent upload intents preserve exact bytes and stay isolated by project and native scope",
+			async () => {
+				const a = profileImport("Synthetic upload A"),
+					b = profileImport("Synthetic upload B"),
+					other = profileImport("Synthetic other project", "2".repeat(32));
+				await Promise.all([
+					first.writeProfileImport(scope, a),
+					second.writeProfileImport(scope, b),
+					second.writeProfileImport(scope, other),
+					first.writeProfileImport(otherScope, a),
+				]);
+				equal(
+					(await first.readProfileImports(scope, project.id))
+						.map((record) => record.body)
+						.sort(),
+					[a, b].sort(),
+				);
+				equal(
+					(await first.readProfileImports(scope, "2".repeat(32))).map(
+						(record) => record.body,
+					),
+					[other],
+				);
+				equal(
+					(await first.readProfileImports(otherScope, project.id)).map(
+						(record) => record.body,
+					),
+					[a],
+				);
+				const changed = JSON.stringify({
+					...JSON.parse(a),
+					source_label: "Different bytes for one key",
+				});
+				await refuses(
+					second.writeProfileImport(scope, changed),
+					"profile_intent_conflict",
+				);
+				await second.clearProfileImport(scope, changed);
+				equal((await first.readProfileImports(scope, project.id)).length, 2);
+				await Promise.all([
+					first.clearProfileImport(scope, a),
+					second.writeProfileImport(scope, b),
+				]);
+				equal(
+					(await first.readProfileImports(scope, project.id)).map(
+						(record) => record.body,
+					),
+					[b],
+				);
+				equal(
+					(await first.readProfileImports(otherScope, project.id)).map(
+						(record) => record.body,
+					),
+					[a],
+				);
+				equal((await first.read(scope, project.id))?.baseline, project);
+			},
+		);
+		await fixture(
+			"upload recovery refuses its capacity limit without erasing unconfirmed requests",
+			async () => {
+				const boundedScope = "c".repeat(64);
+				for (let i = 0; i < 32; i++)
+					await first.writeProfileImport(
+						boundedScope,
+						profileImport("Synthetic bounded " + i),
+					);
+				await refuses(
+					second.writeProfileImport(
+						boundedScope,
+						profileImport("Synthetic over limit"),
+					),
+					"recovery_storage_limit",
+				);
+				equal(
+					(await first.readProfileImports(boundedScope, project.id)).length,
+					32,
+				);
+			},
+		);
+		await fixture(
 			"invalid legacy data stays intact and is reported instead of being silently dropped",
 			async () => {
 				await remove();
@@ -234,7 +345,7 @@ button.addEventListener("click", async () => {
 			},
 		);
 		await remove();
-		status.textContent = "Passed · 7 native IndexedDB fixtures";
+		status.textContent = `Passed · ${results.children.length} native IndexedDB fixtures`;
 	} catch (error) {
 		status.textContent =
 			"FAILED · " +
