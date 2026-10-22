@@ -11,6 +11,7 @@ namespace Linker\Commerce\Registration;
 
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Mail\Capacity;
+use Linker\Commerce\Mail\ConnectionFence;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Mail\Outbox;
@@ -275,69 +276,73 @@ final class RegistrationNotices {
 
 	/**
 	 * Delete only these notices' native jobs and pending body copies.
-	 * Unknown reservations keep their minimal accounting reference, never a timer refund.
+	 * Unknown reservations keep erasure pending; no failed cancellation becomes success.
 	 *
 	 * @param int $id Native user.
 	 */
 	public static function erase( int $id ): bool {
 		$done = false;
 		try {
-			Lock::run(
-				'registration-notices-' . $id,
+			ConnectionFence::run(
 				static function () use ( $id, &$done ): void {
-					$state = self::read( $id );
-					if ( null === $state ) {
-						$done = true;
-						return;
-					}
-					if ( count( $state ) > 2 || array() !== array_diff( array_keys( $state ), array( 'team', 'received' ) ) ) {
-						return;
-					}
-					$jobs = array_values( array_filter( array_map( static fn ( array $plan ): int => (int) ( $plan['job'] ?? 0 ), $state ), static fn ( int $job ): bool => $job > 0 ) );
-					$done = self::with_jobs(
-						$jobs,
-						static function () use ( $id, $state, $jobs ): bool {
-							try {
-								return self::acknowledge(
-									static function () use ( $id, $state ): bool {
-										global $wpdb;
-										if ( self::read( $id ) !== $state ) {
-											return false;
-										}
-										foreach ( $state as $kind => $plan ) {
-											$job = (int) ( $plan['job'] ?? 0 );
-											if ( 0 < $job && get_post( $job ) ) {
-												if ( (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
-													return false;
-												}
-												as_unschedule_all_actions( Outbox::HOOK, array( $job ), Outbox::GROUP );
-												( new JobStore() )->delete( $job );
-												clean_post_cache( $job );
-												if ( null !== ( new JobStore() )->load( $job ) ) {
-													return false;
-												}
-											}
-											if ( '' !== $wpdb->last_error ) {
-												return false;
-											}
-											$state[ $kind ] = array( 'state' => 'erased' );
-											if ( isset( $plan['reservation'] ) && ! Capacity::cancel_before_side_effect( $plan['reservation'] ) ) {
-												$state[ $kind ]['reservation'] = $plan['reservation'];
-											}
-										}
-										self::write( $id, $state );
-										delete_user_meta( $id, self::OWNER );
-										wp_cache_delete( $id, 'user_meta' );
-										return '' === get_user_meta( $id, self::OWNER, true );
-									}
-								);
-							} finally {
-								// These connection-owned mail locks stay held through COMMIT/ROLLBACK.
-								foreach ( $jobs as $job ) {
-									clean_post_cache( $job );
-								}
-								wp_cache_set_posts_last_changed();
+					Lock::run(
+						'registration-notices-' . $id,
+						static function () use ( $id, &$done ): void {
+							$state = self::read( $id );
+							if ( null === $state ) {
+								$done = true;
+								return;
 							}
+							if ( count( $state ) > 2 || array() !== array_diff( array_keys( $state ), array( 'team', 'received' ) ) ) {
+								return;
+							}
+							$jobs = array_values( array_filter( array_map( static fn ( array $plan ): int => (int) ( $plan['job'] ?? 0 ), $state ), static fn ( int $job ): bool => $job > 0 ) );
+							$done = self::with_jobs(
+								$jobs,
+								static function () use ( $id, $state, $jobs ): bool {
+									try {
+										return self::acknowledge(
+											static function () use ( $id, $state ): bool {
+												global $wpdb;
+												if ( self::read( $id ) !== $state ) {
+													return false;
+												}
+												foreach ( $state as $kind => $plan ) {
+													$job = (int) ( $plan['job'] ?? 0 );
+													if ( 0 < $job && get_post( $job ) ) {
+														if ( (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
+															return false;
+														}
+														as_unschedule_all_actions( Outbox::HOOK, array( $job ), Outbox::GROUP );
+														( new JobStore() )->delete( $job );
+														clean_post_cache( $job );
+														if ( null !== ( new JobStore() )->load( $job ) ) {
+															return false;
+														}
+													}
+													if ( '' !== $wpdb->last_error ) {
+														return false;
+													}
+													$state[ $kind ] = array( 'state' => 'erased' );
+													if ( isset( $plan['reservation'] ) && ! Capacity::cancel_before_side_effect( $plan['reservation'] ) ) {
+														return false;
+													}
+												}
+												self::write( $id, $state );
+												delete_user_meta( $id, self::OWNER );
+												wp_cache_delete( $id, 'user_meta' );
+												return '' === get_user_meta( $id, self::OWNER, true );
+											}
+										);
+									} finally {
+										// These connection-owned mail locks stay held through COMMIT/ROLLBACK.
+										foreach ( $jobs as $job ) {
+											clean_post_cache( $job );
+										}
+										wp_cache_set_posts_last_changed();
+									}
+								}
+							);
 						}
 					);
 				}
@@ -347,7 +352,7 @@ final class RegistrationNotices {
 		} finally {
 			wp_cache_delete( $id, 'user_meta' );
 		}
-			return $done;
+		return $done;
 	}
 
 	/**

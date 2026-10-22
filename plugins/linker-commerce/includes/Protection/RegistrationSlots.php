@@ -172,8 +172,7 @@ final class RegistrationSlots {
 							if ( '' !== $wpdb->last_error || null !== $user || ! isset( $state[ $key ] ) ) {
 								return self::unavailable();
 							}
-							$audit   = get_option( 'linker_registration_dispositions', array() );
-							$audit   = is_array( $audit ) ? $audit : array();
+							$audit   = self::audit();
 							$audit[] = array(
 								'key'    => $key,
 								'at'     => time(),
@@ -183,7 +182,7 @@ final class RegistrationSlots {
 							);
 							$audit   = array_slice( $audit, -self::MAX_PENDING );
 							update_option( 'linker_registration_dispositions', $audit, false );
-							if ( get_option( 'linker_registration_dispositions' ) !== $audit ) {
+							if ( self::audit() !== $audit ) {
 								return self::unavailable();
 							}
 							unset( $state[ $key ] );
@@ -226,10 +225,10 @@ final class RegistrationSlots {
 	public static function owned_data( string $owner ): array|WP_Error {
 		return self::edit(
 			static function ( array &$state ) use ( $owner ): array {
-				$audit = get_option( 'linker_registration_dispositions', array() );
+				$audit = self::audit();
 				return array(
 					'interrupted'  => array_filter( $state, static fn ( array $entry ): bool => ( $entry['owner'] ?? '' ) === $owner ),
-					'dispositions' => is_array( $audit ) ? array_values( array_filter( $audit, static fn ( array $record ): bool => ( $record['owner'] ?? '' ) === $owner ) ) : array(),
+					'dispositions' => array_values( array_filter( $audit, static fn ( array $record ): bool => ( $record['owner'] ?? '' ) === $owner ) ),
 				);
 			}
 		);
@@ -241,29 +240,37 @@ final class RegistrationSlots {
 	 * @param string $owner Native recipient HMAC.
 	 */
 	public static function forget_owner( string $owner ): bool {
-		$result = self::edit(
-			static function ( array &$state ) use ( $owner ): array|WP_Error {
-				foreach ( $state as &$entry ) {
-					if ( ( $entry['owner'] ?? '' ) === $owner ) {
-						unset( $entry['owner'] );
+		try {
+			return \Linker\Commerce\Mail\NativeTransaction::run(
+				static function () use ( $owner ): bool {
+					$result = self::edit(
+						static function ( array &$state ) use ( $owner ): array|WP_Error {
+							foreach ( $state as &$entry ) {
+								if ( ( $entry['owner'] ?? '' ) === $owner ) {
+									unset( $entry['owner'] );
+								}
+							}
+							unset( $entry );
+							$audit = self::audit();
+							foreach ( $audit as &$record ) {
+								if ( ( $record['owner'] ?? '' ) === $owner ) {
+									unset( $record['owner'], $record['reason'] );
+								}
+							}
+							unset( $record );
+							update_option( 'linker_registration_dispositions', $audit, false );
+							return self::audit() === $audit ? array() : self::unavailable();
+						}
+					);
+					if ( is_wp_error( $result ) ) {
+						throw new \RuntimeException( 'registration_audit_forget_failed' );
 					}
+					return true;
 				}
-				unset( $entry );
-				$audit = get_option( 'linker_registration_dispositions', array() );
-				if ( ! is_array( $audit ) ) {
-					return self::unavailable();
-				}
-				foreach ( $audit as &$record ) {
-					if ( ( $record['owner'] ?? '' ) === $owner ) {
-						unset( $record['owner'], $record['reason'] );
-					}
-				}
-				unset( $record );
-				update_option( 'linker_registration_dispositions', $audit, false );
-				return get_option( 'linker_registration_dispositions' ) === $audit ? array() : self::unavailable();
-			}
-		);
-		return is_array( $result );
+			);
+		} catch ( \Throwable $error ) {
+			return false;
+		}
 	}
 
 	/**
@@ -546,6 +553,7 @@ final class RegistrationSlots {
 					$result = self::unavailable();
 				} finally {
 					wp_cache_delete( self::OPTION, 'options' );
+					wp_cache_delete( 'linker_registration_dispositions', 'options' );
 					wp_cache_delete( 'notoptions', 'options' );
 					wp_cache_delete( 'alloptions', 'options' );
 				}
@@ -567,6 +575,26 @@ final class RegistrationSlots {
 			throw new \RuntimeException( 'registration_capacity_read_failed' );
 		}
 		return $row['value'];
+	}
+
+	/**
+	 * Read the bounded audit without option/negative caches on its owning connection.
+	 *
+	 * @return list<array<string,mixed>> Authoritative native staff decisions.
+	 * @throws \RuntimeException A failed read or lost owner is not an empty audit.
+	 */
+	private static function audit(): array {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- Same registration mutex and original native row-read contract as the slot registry.
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT (SELECT option_value FROM {$wpdb->options} WHERE option_name = %s FOR UPDATE NOWAIT) AS value, IS_USED_LOCK(%s) = CONNECTION_ID() AS owned", 'linker_registration_dispositions', self::lock_name() ), ARRAY_A );
+		if ( ! is_array( $row ) || '1' !== (string) ( $row['owned'] ?? '' ) || '' !== $wpdb->last_error || ( null !== $row['value'] && ! is_string( $row['value'] ) ) ) {
+			throw new \RuntimeException( 'registration_audit_read_failed' );
+		}
+		$audit = null === $row['value'] ? array() : maybe_unserialize( $row['value'] );
+		if ( ! is_array( $audit ) || count( $audit ) > self::MAX_PENDING || count( array_filter( $audit, 'is_array' ) ) !== count( $audit ) ) {
+			throw new \RuntimeException( 'registration_audit_invalid' );
+		}
+		return array_values( $audit );
 	}
 
 	/**

@@ -124,7 +124,7 @@ npm run lint:types
 
 新的隐私读取失败EN/DE定稿及独立copy意见见 [copy review](copy-review.md)。本机原生gettext读回EN源句和DE定稿正确；该新增浏览器错误状态未另做CUA截图。既有34张JPEG只证明上文所列客户/员工状态，本轮未改模板、CSS、前端源码或构建产物；不把旧截图说成这五项故障的浏览器证据。
 
-最新修复检查（PHP8.3，子进程继承本次命令的PHPRC）：
+第一轮修复检查（PHP8.3，子进程继承本次命令的PHPRC）：
 
 | 检查 | 结果 |
 |---|---|
@@ -138,3 +138,21 @@ npm run lint:types
 首次扩大套件中共享SIGKILL门失败，原因是父进程 `-c` 不传给子进程；子进程未继承实例配置。未修改业务或断言，命令级PHPRC及明确PHP8.3下该门先1test/12assertions通过，再整组132项通过。工具源码和构建产物无变化，本轮未重复前端build。真正生产入站/组合读回、新的完整Standards与Spec修复复审、CI均是协调者后续门。
 
 私密原始反证与输出名：`review-native-red.txt`、`review-recipient-red.txt`、`review-policy-red.txt`、`review-stale-parts-controlled-red.txt`、`review-native-final-phprc.txt`、`review-unit-php83.txt`、`review-phpstan-final.txt`、`review-wpcs-final.txt`、`review-readback.json`。不复制原始Message、SQL数据、凭证或邮箱路由到仓库。最后只读恢复检查仍为15个原有用户、13个pending、4029业务bytes、0interrupted/0reserved；原38任务status+全部metadata SHA一致，原五次public消耗的Ledger SHA亦与首轮清理记录一致。没有新增MU fixture、额度reset或外部邮件投递。
+
+
+## dc46完整复审：反向erase断线与audit读取
+
+固定 `dc46b974` 的 Spec／Standards 复审共同确认erase首读断线残余P1，Standards另确认audit读失败P2。这一轮保留全部首轮修法，只收窄两个原生writer及其测试：
+
+| 原生红门 | 修法与修后见证 |
+|---|---|
+| eraser已拿owner锁，第一次source SELECT被独立KILL；wpdb实际replay并丢锁，fresh比较后独立PHP的真实deliver(received)接受job，旧eraser仍报true且job存在 | 整段owner GET_LOCK→首读→job锁→NativeTransaction→commit/rollback→unlock共用原ConnectionFence；断线返回未完成，不重放。独立producer随后仍可正常接受，健康erase删除原job/AS，恢复和显式consumer均0次transport |
+| pending reservation的原生取消CAS写失败，erase仍报成功 | 取消失败令本轮ACK事务回滚，source、owner及两份capacity保留，健康重试完成 |
+| 原audit SELECT失败，export漏掉已有记录；forget_owner把failed-empty写回，另一owner的真实审计消失 | cache-free native audit读取同时核owner连接，失败显性可重试，不留failed negative cache。健康重试读取owned record，擦除只去掉本owner/reason，另一owner完整不变 |
+| audit先写成功，最后interrupted owner CAS失败，原调用者事务内留下半份擦除 | owner audit与slot标记同NativeTransaction/savepoint，失败两者回滚；caller-owned未提交数据仍存在、对独立连接不可见，由caller决定结束 |
+
+修前真正native输出：`erase-reverse-red.txt`（2项失败，明确native replay=1/concurrent handoff=1）；`audit-native-red.txt`（3项失败）；`audit-other-owner-controlled-red.txt`（临时恢复固定dc46的Slots原文，真实原生SELECT故障确认另一owner记录丢失，之后恢复修法）。没有把reviewer的离线probe称作原生实跑。新增独立producer worker只接受本机integration bootstrap校验的fixture账户，禁网络、禁mail transport及async runner，使用原生Message/ReceiptBudget/JobStore/AS交接。
+
+本轮最终相关回归为 **RegistrationCapacityTest + ConnectionFenceTest + PrivacyTest：68 tests / 1562 assertions，PASS**，包含5项新增native case以及健康erase、source ACK失败、job busy、外层owner、恢复和原job消费既有门。commerce全量PHPStan8、4个变更PHP文件WPCS及diff whitespace均通过。未改共享API、locale、客户文案、前端或构建产物；已通过且未受影响的完整unit、其它原生大组、i18n、build不重复运行。新增隐私错误仍只有原生/gettext证据，没有新增CUA截图。
+
+最终只读核查见私密 `erase-audit-readback.json`：15原用户、13pending、4029业务bytes、0interrupted/0reserved，原38任务status/meta SHA与保留的public Ledger SHA不变；管理员locale及本地fixture清理状态未变。新的固定head仍需协调者安排修复复核，不能将本轮作者检查称作独立评审PASS或上线。
