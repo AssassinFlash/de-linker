@@ -1,5 +1,9 @@
 # Notification transport capacity
 
+Owner update 2026-10-23: automatic review reminders are permanently disabled.
+[Stop policy](../533-stop-review-reminders.md) supersedes this document's reminder
+producer/attempt allowance; all other mail budgets and historical entries remain.
+
 The 22 October incident filled the single 80-message ledger although internal messages actually used authenticated SMTP. The owner's hPanel readback confirms Starter Business Email allows 1,000 messages per rolling 24 hours; a read-only runtime check confirms both the configured username and verified sender match that mailbox. This is capacity evidence, not a delivery guarantee.
 
 Initial operational allocation approved by the owner: SMTP 400/rolling day (40% of 1,000, leaving 600 for manual mail and other applications), PHP 80/day (80% of the shared-host 100), each 8/minute (the existing conservative allocation, no new provider minute claim). Of each daily allocation the final 10% SMTP (40) and 20% PHP (16) are reserved for critical producers. Ordinary traffic stops at 360/64 total attempts; critical traffic can use 400/80. These fractions are initial operational choices, not measured customer demand. Minute windows remain shared across priorities so a critical message may wait up to the next minute slot.
